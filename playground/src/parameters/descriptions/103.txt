@@ -1,0 +1,2 @@
+Envelope (B) amount for the Drive factor.
+At zero the gain stays constant, at higher values the envelope applies a time-variant attenuation.

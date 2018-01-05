@@ -1,0 +1,2 @@
+Key tracking of the filter resonance
+(0.0: no influence, 100.0: full tracking with the notes, Origin at C3=60)

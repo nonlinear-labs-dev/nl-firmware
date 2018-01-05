@@ -1,0 +1,78 @@
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
+#include <proxies/hwui/controls/Button.h>
+#include <proxies/hwui/controls/SelectedParameterValue.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <parameters/ModulationRoutingParameter.h>
+#include <parameters/PhysicalControlParameter.h>
+#include <parameters/MacroControlParameter.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ModulationRouterParameterLayouts.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
+
+ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2() :
+    super()
+{
+  addControl(new Button("HW Source..", BUTTON_A));
+  addControl(new Button("", BUTTON_B));
+  addControl(new Button("", BUTTON_C));
+  addControl(new Button("MC..", BUTTON_D));
+
+  addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+
+  highlight<ParameterNameLabel>();
+  highlight<SelectedParameterBarSlider>();
+  highlight<SelectedParameterValue>();
+}
+
+bool ModulationRouterParameterSelectLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
+{
+  if(down)
+  {
+    if(i == BUTTON_A)
+    {
+      if(auto p = dynamic_cast<ModulationRoutingParameter*>(getCurrentParameter()))
+      {
+        Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getSourceParameter());
+      }
+
+      return true;
+    }
+
+    if(i == BUTTON_D)
+    {
+      if(auto p = dynamic_cast<ModulationRoutingParameter*>(getCurrentParameter()))
+      {
+        p->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
+
+        Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getTargetParameter());
+      }
+
+      return true;
+    }
+  }
+
+  return super::onButton(i, down, modifiers);
+}
+
+ModulationRouterParameterEditLayout2::ModulationRouterParameterEditLayout2() :
+    super()
+{
+  addControl(new Button("", BUTTON_A));
+  addControl(new Button("", BUTTON_B));
+  addControl(new Button("", BUTTON_C));
+
+  addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+
+  highlight<ParameterNameLabel>();
+  highlight<SelectedParameterBarSlider>();
+  highlight<SelectedParameterValue>();
+}
+
+ButtonMenu *ModulationRouterParameterEditLayout2::createMenu(const Rect &rect)
+{
+  return new ParameterEditButtonMenu(rect);
+}

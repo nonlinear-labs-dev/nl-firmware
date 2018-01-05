@@ -1,0 +1,1 @@
+Amount of modulation of the cutoff frequency of the lowpass filter by Envelope C.

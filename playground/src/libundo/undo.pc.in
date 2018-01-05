@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+
+Name: undo library
+Description: a library for implementing undo/redo support
+Version: @VERSION@
+Requires: gio-2.0 >= @GLIB_REQUIRED_VERSION@
+Libs: -L${libdir} -lundo-@UNDO_API_VERSION@
+Cflags: -I${includedir}/undo-@UNDO_API_VERSION@ -std=c++0x

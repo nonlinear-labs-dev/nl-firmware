@@ -1,0 +1,1 @@
+Decay time [in milliseconds] of the second (exponential) decay segment.

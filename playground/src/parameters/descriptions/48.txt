@@ -1,0 +1,1 @@
+Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB]

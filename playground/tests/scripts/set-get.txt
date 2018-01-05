@@ -1,0 +1,287 @@
+set-defaults
+
+// set up test without physical controllers
+
+set-parameter id:0 value:0.5
+set-parameter id:12 value:0.0
+
+set-parameter id:254 value:0.0
+set-parameter id:260 value:0.0
+set-parameter id:265 value:0.0
+set-parameter id:270 value:0.0
+set-parameter id:275 value:0.0
+set-parameter id:280 value:0.0
+set-parameter id:285 value:0.0
+set-parameter id:290 value:0.0
+
+set-parameter id:243 value:0.0
+
+// MacroControl is changed directly:
+// test modulation with amount of 1
+
+select-parameter id:0
+set-modulation-source value:1
+set-modulation-amount value:1.0
+
+select-parameter id:12
+set-modulation-source value:1
+set-modulation-amount value:1.0
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.6
+expect-parameter id:12 value:0.2
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.7
+expect-parameter id:12 value:0.4
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.8
+expect-parameter id:12 value:0.6
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.9
+expect-parameter id:12 value:0.8
+
+set-parameter id:243 value:0.5
+expect-parameter id:0 value:1.0
+expect-parameter id:12 value:1.0
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.9
+expect-parameter id:12 value:0.8
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.8
+expect-parameter id:12 value:0.6
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.7
+expect-parameter id:12 value:0.4
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.6
+expect-parameter id:12 value:0.2
+
+set-parameter id:243 value:0.0
+expect-parameter id:0 value:0.5
+expect-parameter id:12 value:0.0
+
+// test modulation with amount of -1
+
+select-parameter id:0
+set-modulation-source value:1
+set-modulation-amount value:-1.0
+
+select-parameter id:12
+set-modulation-source value:1
+set-modulation-amount value:-1.0
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.4
+expect-parameter id:12 value:-0.2
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.3
+expect-parameter id:12 value:-0.4
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.2
+expect-parameter id:12 value:-0.6
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.1
+expect-parameter id:12 value:-0.8
+
+set-parameter id:243 value:0.5
+expect-parameter id:0 value:0.0
+expect-parameter id:12 value:-1.0
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.1
+expect-parameter id:12 value:-0.8
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.2
+expect-parameter id:12 value:-0.6
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.3
+expect-parameter id:12 value:-0.4
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.4
+expect-parameter id:12 value:-0.2
+
+set-parameter id:243 value:0.0
+expect-parameter id:0 value:0.5
+expect-parameter id:12 value:0.0
+
+// test modulation with amount of 0.5
+
+select-parameter id:0
+set-modulation-source value:1
+set-modulation-amount value:0.5
+
+select-parameter id:12
+set-modulation-source value:1
+set-modulation-amount value:0.5
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.55
+expect-parameter id:12 value:0.1
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.6
+expect-parameter id:12 value:0.2
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.65
+expect-parameter id:12 value:0.3
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.7
+expect-parameter id:12 value:0.4
+
+set-parameter id:243 value:0.5
+expect-parameter id:0 value:0.75
+expect-parameter id:12 value:0.5
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.7
+expect-parameter id:12 value:0.4
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.65
+expect-parameter id:12 value:0.3
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.6
+expect-parameter id:12 value:0.2
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.55
+expect-parameter id:12 value:0.1
+
+set-parameter id:243 value:0.0
+expect-parameter id:0 value:0.5
+expect-parameter id:12 value:0.0
+
+// test modulation with amount of -0.5
+
+select-parameter id:0
+set-modulation-source value:1
+set-modulation-amount value:-0.5
+
+select-parameter id:12
+set-modulation-source value:1
+set-modulation-amount value:-0.5
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.45
+expect-parameter id:12 value:-0.1
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.4
+expect-parameter id:12 value:-0.2
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.35
+expect-parameter id:12 value:-0.3
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.3
+expect-parameter id:12 value:-0.4
+
+set-parameter id:243 value:0.5
+expect-parameter id:0 value:0.25
+expect-parameter id:12 value:-0.5
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:0.3
+expect-parameter id:12 value:-0.4
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:0.35
+expect-parameter id:12 value:-0.3
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.4
+expect-parameter id:12 value:-0.2
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.45
+expect-parameter id:12 value:-0.1
+
+set-parameter id:243 value:0.0
+expect-parameter id:0 value:0.5
+expect-parameter id:12 value:0.0
+
+// test saturation
+
+set-parameter id:243 value:0.0
+set-parameter id:0 value:0.75
+set-parameter id:12 value:0.75
+set-parameter id:31 value:-0.75
+
+select-parameter id:0
+set-modulation-source value:1
+set-modulation-amount value:1.0
+
+select-parameter id:12
+set-modulation-source value:1
+set-modulation-amount value:1.0
+
+select-parameter id:31
+set-modulation-source value:1
+set-modulation-amount value:-1.0
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.85
+expect-parameter id:12 value:0.95
+expect-parameter id:31 value:-0.95
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.95
+expect-parameter id:12 value:1.0
+expect-parameter id:31 value:-1.0
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:1.0
+expect-parameter id:12 value:1.0
+expect-parameter id:31 value:-1.0
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:1.0
+expect-parameter id:12 value:1.0
+expect-parameter id:31 value:-1.0
+
+set-parameter id:243 value:0.5
+expect-parameter id:0 value:1.0
+expect-parameter id:12 value:1.0
+expect-parameter id:31 value:-1.0
+
+set-parameter id:243 value:0.4
+expect-parameter id:0 value:1.0
+expect-parameter id:12 value:1.0
+expect-parameter id:31 value:-1.0
+
+set-parameter id:243 value:0.3
+expect-parameter id:0 value:1.0
+expect-parameter id:12 value:1.0
+expect-parameter id:31 value:-1.0
+
+set-parameter id:243 value:0.2
+expect-parameter id:0 value:0.95
+expect-parameter id:12 value:1.0
+expect-parameter id:31 value:-1.0
+
+set-parameter id:243 value:0.1
+expect-parameter id:0 value:0.85
+expect-parameter id:12 value:0.95
+expect-parameter id:31 value:-0.95
+
+set-parameter id:243 value:0.0
+expect-parameter id:0 value:0.75
+expect-parameter id:12 value:0.75
+expect-parameter id:31 value:-0.75

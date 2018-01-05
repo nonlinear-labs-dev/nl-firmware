@@ -1,0 +1,34 @@
+set-defaults
+
+set-parameter id:0 value:0.5
+set-parameter id:12 value:0.0
+
+set-parameter id:254 value:0.0
+set-parameter id:260 value:0.0
+set-parameter id:265 value:0.0
+set-parameter id:270 value:0.0
+set-parameter id:275 value:0.0
+set-parameter id:280 value:0.0
+set-parameter id:285 value:0.0
+set-parameter id:290 value:0.0
+
+set-parameter id:243 value:0.0
+
+// MacroControl is changed directly:
+// test modulation with amount of 1%
+
+select-parameter id:12
+set-modulation-source value:1
+set-modulation-amount value:0.01
+
+// 1 / (100 * 100) 
+set-parameter id:243 value:0.01
+expect-parameter id:12 value:0.0
+
+// 1 / (100 * 10) 
+set-parameter id:243 value:0.1
+expect-parameter id:12 value:0.0
+
+// 1 / (100 * 1) 
+set-parameter id:243 value:1
+expect-parameter id:12 value:0.05

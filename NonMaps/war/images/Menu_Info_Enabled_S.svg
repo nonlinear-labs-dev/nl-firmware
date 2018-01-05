@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 28 28" enable-background="new 0 0 28 28" xml:space="preserve">
+<g>
+	<path fill="#4D4D4D" d="M3,27.5c-1.3789062,0-2.5-1.1210938-2.5-2.5V3c0-1.3789062,1.1210938-2.5,2.5-2.5h22
+		c1.3789062,0,2.5,1.1210938,2.5,2.5v22c0,1.3789062-1.1210938,2.5-2.5,2.5H3z"/>
+	<path fill="#666666" d="M25,1c1.1027832,0,2,0.8972015,2,2v22c0,1.1027985-0.8972168,2-2,2H3c-1.1027832,0-2-0.8972015-2-2V3
+		c0-1.1027985,0.8972168-2,2-2H25 M25,0H3C1.3499756,0,0,1.3499985,0,3v22c0,1.6500015,1.3499756,3,3,3h22
+		c1.6500244,0,3-1.3499985,3-3V3C28,1.3499985,26.6500244,0,25,0L25,0z"/>
+</g>
+<circle fill="#CCCCCC" cx="14.2281246" cy="9.1999998" r="1.35"/>
+<line fill="none" stroke="#CCCCCC" stroke-width="1.4" stroke-miterlimit="10" x1="18.7000008" y1="20.7841797" x2="10.15625" y2="20.7841797"/>
+<polyline fill="none" stroke="#CCCCCC" stroke-width="1.4" stroke-miterlimit="10" points="10.5562496,13.5404301 
+	14.5281248,13.5404301 14.5281248,20.7841797 "/>
+</svg>

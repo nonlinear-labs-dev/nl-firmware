@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Nonlinear Labs" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<title>NONLINEAR LABS - C15 - 5. Synthesis Engine</title>
+	
+	<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" href="../style.css" type="text/css" />
+	<link rel="stylesheet" href="../fonts/source-sans-pro.css" type="text/css" />
+
+	<script src="../../jq/jquery-1.7.1.min.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+	<div id="header">
+		<h1><a href="../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+	</div><!-- end header -->
+	
+	<div class="nav-bc">
+			<p><a href="../index.html">Contents</a><b>5. The Synthesis Engine</b></p>
+	</div><!-- end nav-bc -->
+
+	<div class="nav">
+			<p class="navleft"><a href="../interface/interface.html">4. User Interfaces</a></p>
+			<p class="navright"><a href="concept/concept.html">5.1 Concept</a></p>
+	</div><!-- end nav -->
+
+	<div id="main-content">	
+				
+		<div class="txt-block mb1">
+			
+			<h2>5. The Synthesis Engine</h2>
+			
+			<p>The C15's first synthesis engine is named "Phase 22". It can be seen as the latest stage of an ongoing, long-time development, combining and advancing experiences gained from precursor projects like Spark, Prism, Skanner and Kontour (available for Native Instruments Reaktor).<br /><br />
+			There has been a steady evolution and optimization of the overall architecture and signal flow, as well as the modulation mechanism and feedback structures. This process will continue, further refining and advancing the synthesis engine.</p>
+
+			<a href="concept/concept.html">5.1&ensp;Concept</a><br />
+			<a href="structure/structure.html">5.2.&ensp;Structure and Components</a><br />
+			<a href="parameter-ref/parameter-ref.html">5.3.&ensp;Parameter Reference</a><br />
+			<a href="tutorials/tutorials.html">5.4&ensp;Tutorials</a><br />
+			<a href="tutorials/shaper.html">5.4.1&ensp;The Shaper Unit</a><br />
+			<a href="tutorials/modulation_basics.html">5.4.2&ensp;Modulation Basics</a><br />
+			<a class="blocked" href="#">5.4.3&ensp;...</a><br />
+			<a class="blocked" href="#">5.4.4&ensp;...</a>
+
+
+		</div><!-- end txt -->
+
+	</div><!-- end main-content -->
+
+<!-- go-to-top -->
+<div id="totop"><a href="#"></a></div>
+
+<script>
+$(document).ready(function(){
+
+  // hide #totop first
+  $("#totop").hide();
+
+  // fade in #totop
+  $(function () {
+    $(window).scroll(function () {
+      if ($(this).scrollTop() > 500) {
+        $('#totop').fadeIn();
+      } else {
+        $('#totop').fadeOut();
+      }
+    });
+
+    // scroll body to 0px on click
+    $('#totop .fi-arrow-up').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+      }, 800);
+      return false;
+    });
+  });
+
+});
+</script>
+
+</body>
+</html>

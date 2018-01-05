@@ -1,0 +1,13 @@
+The first time you compile the library from a fresh
+checkout, you need to run the commands
+
+ gtkdocize
+ libtoolize
+ autoreconf -i -s
+
+gtkdocize installs some files needed by the tool we use to generate
+the API reference manual. autoreconf calls automake, aclocal, autoconf
+and libtoolize to create the GNU build system. You should not ever
+have to do this step again.
+
+Then run the configure script and 'make' as usual.

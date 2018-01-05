@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Nonlinear Labs" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<title>NONLINEAR LABS - C15 - Synth Engine - Gap Filter</title>
+	
+	<link rel="shortcut icon" href="../../../images/favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" href="../../../style.css" type="text/css" />
+	<link rel="stylesheet" href="../../../fonts/source-sans-pro.css" type="text/css" />
+</head>
+
+<body>
+	
+	<div id="header">
+		<h1><a href="../../../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+	</div><!-- end header -->
+	
+		<div class="nav-bc">
+			<p><a href="../../../index.html">Contents</a><a href="../../synth-engine.html">5. Synth Engine</a><a href="../structure.html">5.2. Structure</a><b>Gap Filter</b></p>
+		</div><!-- end nav-bc -->
+
+	<div id="main-content">	
+				
+		<div class="txt-block">
+
+			<h4 class="center-txt">Gap Filter</h4>
+			<p class="center-txt"><a href="../structure.html#block-medium">back to Structure</a></p>
+			<p>The Gap Filter marks the third effect and provides further filtering of the signal. It consists of two four-pole filters (with a damping slope of 24 dB per octave) which can run in parallel or in series. The filter types are static, as the first filter is a highpass, followed by the second (lowpass) filter.<br />The filter frequencies can be determined by a „Center“ frequency, which can be spread in the stereo field and shifted by the „Gap“ parameter, creating an offset between the high- and lowpass filters. The filter resonance can be adjusted as well, creating two resonance peaks in the signal spectrum.<br /><br />Both filter outputs can be blended by a Balance parameter, defining a crossfade mix of the two components.<br />The bipolar Mix parameter determines the amount of filtering in the resulting signal, crossfading the input signal with the filtered signal. Positive mix values mean that the filter components run in parallel, resulting in a band-reject behavior. Negative values produce a bandpass effect, as the filter components are running in series.</p>
+
+		</div><!-- end txt -->
+
+		<img src="gapfilter.svg"></img>
+		<img src="gapfilter-dia.svg"></img>
+
+	</div><!-- end main-content -->
+
+</body>
+</html>

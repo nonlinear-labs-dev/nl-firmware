@@ -1,0 +1,94 @@
+package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
+
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
+import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
+import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
+import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
+import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+
+public class StoreOptionsMenu extends Label {
+
+	public class StoreOptionsContextMenu extends ContextMenu {
+
+		public StoreOptionsContextMenu(OverlayLayout parent) {
+			super(parent);
+
+			addChild(new ContextMenuItem(this, "Append") {
+				@Override
+				public Control click(Position eventPoint) {
+					NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "append");
+					return super.click(eventPoint);
+				}
+			});
+
+			addChild(new ContextMenuItem(this, "Insert") {
+				@Override
+				public Control click(Position eventPoint) {
+					NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "insert");
+					return super.click(eventPoint);
+				}
+			});
+
+			addChild(new ContextMenuItem(this, "Overwrite") {
+				@Override
+				public Control click(Position eventPoint) {
+					NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "overwrite");
+					return super.click(eventPoint);
+				}
+			});
+		}
+	}
+
+	String currentSetting = "Append";
+
+	public StoreOptionsMenu(OverlayLayout parent) {
+		super(parent);
+	}
+
+	@Override
+	public String getDrawText(Context2d ctx) {
+		return currentSetting + " \u25BF";
+	}
+
+	@Override
+	protected double getFontHeight(Rect pixRect) {
+		return super.getFontHeight(pixRect) * 0.75;
+	}
+
+	@Override
+	public Control mouseDown(Position pos) {
+		Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
+		return o.setContextMenu(pos, new StoreOptionsContextMenu(o));
+	}
+
+	public void update(Node settingsNode) {
+		if (ServerProxy.didChange(settingsNode)) {
+			String str = ServerProxy.getChildText(settingsNode, "PresetStoreModeSetting", "value");
+			if (str != null && !str.isEmpty()) {
+				switch (str.toLowerCase()) {
+				case "append":
+					currentSetting = "Append";
+					break;
+
+				case "insert":
+					currentSetting = "Insert";
+					break;
+
+				case "overwrite":
+					currentSetting = "Overwrite";
+					break;
+				}
+
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			}
+		}
+	}
+
+}

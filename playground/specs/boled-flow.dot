@@ -1,0 +1,15 @@
+
+digraph boled_flow { 
+	size="8,8"; 
+	node [style="filled, bold" penwidth=1 fillcolor="white" fontname="Courier New" shape="box"];
+	"param-edit..." -> "preset-recall" [label="-> preset\n<- n/a"]
+	"param-edit..." -> "preset-store-direct" [label="-> store\n<- store | esc"]
+	"preset-store-direct" -> "bank-select" [label="-> bank\n<- bank | esc"]
+	"preset-store-direct" -> "preset-recall" [label="-> preset"]
+	"preset-recall" -> "preset-store" [label="-> store\n<- store | preset | esc"]
+	"preset-recall" -> "bank-select" [label="-> bank\n<- bank | esc"]
+	"preset-store" -> "bank-select" [label="-> bank\n<- bank | esc"]
+	"preset-recall" -> "param-edit..." [color=red;label="-> preset | esc"]
+	"HWUI" ->"param-edit..." [color=red;label="-> select-param"]
+}
+

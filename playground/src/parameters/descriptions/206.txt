@@ -1,0 +1,1 @@
+Resonance of both filters. Higher values create two resonance peaks at the upper and lower end of the gap.

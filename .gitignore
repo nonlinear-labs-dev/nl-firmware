@@ -2,6 +2,7 @@
 # Package Files #
 *.jar
 *.war
+NonMaps/jars/gwt-ll.dll
 NonMaps/war/gwt_bree/
 NonMaps/war/*.png
 NonMaps/war/*.svg

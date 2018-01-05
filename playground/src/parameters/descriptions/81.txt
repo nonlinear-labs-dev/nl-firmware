@@ -1,0 +1,1 @@
+Mix amount for the result of the ring modulation between both Oscillators & Shapers.

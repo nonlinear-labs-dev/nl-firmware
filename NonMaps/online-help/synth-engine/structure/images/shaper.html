@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="author" content="Nonlinear Labs" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<title>NONLINEAR LABS - C15 - Synth Engine - Shaper</title>
+	
+	<link rel="shortcut icon" href="../../../images/favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" href="../../../style.css" type="text/css" />
+	<link rel="stylesheet" href="../../../fonts/source-sans-pro.css" type="text/css" />
+</head>
+
+<body>
+	
+	<div id="header">
+		<h1><a href="../../../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+	</div><!-- end header -->
+	
+		<div class="nav-bc">
+			<p><a href="../../../index.html">Contents</a><a href="../../synth-engine.html">5. Synth Engine</a><a href="../structure.html">5.2. Structure</a><b>Shaper</b></p>
+		</div><!-- end nav-bc -->
+
+	<div id="main-content">	
+				
+		<div class="txt-block">
+
+			<h4 class="center-txt">Shaper</h4>
+			<p class="center-txt"><a href="../structure.html#block-medium">back to Structure</a></p>
+
+			<p>Each of the two branches is completed by a sine shaper unit, which can further manipulate the oscillator signal and enhance its spectrum. It also allows for the integration of the global feedback and a ring modulation signal.<br />The sine shaping mechanism can be compared to the computation of an oscillator signal, which is derived from a continuously growing phase that is folded over and over again, thus becoming periodical.<br /><br />From the periodical, wrapped phase signal, a sine approximation can be calculated. Within a sine shaper, the input signal is first amplified by a Drive parameter, which can be sensitive to the corresponding branch envelope. Afterwards, it will be interpreted as a phase signal that will be folded. The resulting signal could be broadly described as the „sine of a sine“.<br /><br />Certain overtones will emerge in proportion to the Drive level. The folding characteristic can be blended from a soft clipping behavior by a Fold parameter. With no fold present, the shaper effect resembles more a distortion or saturation effect, producing different harmonics.<br />Furthermore, an Asymetry parameter can shift the fundamental frequency by one octave. The resulting shaped signal can be crossfaded with the input signal by a bipolar Mix amount (as previously mentioned, the bipolar nature of lots of signal components can raise the complexity when using phase modulations or feedback).<br /><br />Two more signals can be blended into the mix. The feedback signal can be fed into a branch, the amount can be sensitive to Envelope C (blendable with the Gate signal). With the application of feedback, the global Feedback loop will be closed to some extent (depending on further settings).<br />Finally, the two branch signals are multiplied and each branch can blend to the „Ring Modulation“ signal by a certain amount. Ring modulation produces interesting patterns in the resulting spectrum, depending on the two incoming signals. Symmetrical frequency components emerge (one with the difference of the incoming frequencies, one with the sum of the incoming frequencies).<br /><br />Concludingly, the Shaper is another versatile module providing different ways to manipulate an Oscillator signal. Distortion effects are as possible as sine shaping, and feedback and ring modulation can be applied. The shaper not only affects the signal of a branch, but can also be blended onto phase modulation sources for the oscillators.<//p>
+
+		</div><!-- end txt -->
+
+		<p class="mt3 mb1">1. The first set of diagrams shows how the "Drive" parameter is influencing the audio signal (0 dB &hellip; 16 dB)</p>
+		<img src="shaper_drive.svg"></img>
+		<p class="mt3 mb1">1. The second set of diagrams shows how the "Fold" parameter is influencing the audio signal (0 % &hellip; 100 %)</p>
+		<img src="shaper_fold.svg"></img>
+		<p class="mt3 mb1">1. The third set of diagrams shows how the "Asymetry" parameter is influencing the audio signal (0 % &hellip; 100 %)</p>
+		<img src="shaper_asym.svg"></img>
+
+	</div><!-- end main-content -->
+
+</body>
+</html>
