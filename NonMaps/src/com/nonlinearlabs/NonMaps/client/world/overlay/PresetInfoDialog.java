@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.Date;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -15,6 +16,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -77,7 +79,7 @@ public class PresetInfoDialog extends GWTDialog {
 		panel.setWidget(c, 0, new Label(name));
 		panel.setWidget(c, 1, content);
 	}
-
+		
 	private void addContent() {
 		HTMLPanel bankNameAndPosition = new HTMLPanel("div", "");
 		bankNameAndPosition.getElement().addClassName("flex-div bankname-and-position");

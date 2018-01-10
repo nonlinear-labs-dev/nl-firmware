@@ -15,7 +15,7 @@ public class ValueDisplay extends Label {
 
 	public ValueDisplay(BeltParameterLayout parent) {
 		super(parent);
-		super.setFontHeightInPx(23);
+		super.setFontHeightInMM(6);
 	}
 
 	@Override

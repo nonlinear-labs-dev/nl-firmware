@@ -19,8 +19,8 @@ public abstract class Label extends OverlayControl {
 		return m_linecolor;
 	}
 	
-	public void setFontHeightInPx(double fontHeightInPx) {
-		this.fontHeightInPx = fontHeightInPx;
+	public void setFontHeightInMM(double fontHeightInMM) {
+		this.fontHeightInPx = Millimeter.toPixels(fontHeightInMM);
 	}
 
 	public Label(OverlayLayout parent) {

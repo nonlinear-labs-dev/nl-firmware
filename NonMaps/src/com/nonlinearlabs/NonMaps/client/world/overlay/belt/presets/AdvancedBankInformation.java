@@ -12,7 +12,7 @@ public class AdvancedBankInformation extends Label {
 	public AdvancedBankInformation(OverlayLayout parent) {
 		super(parent);
 		super.setFontColor(new RGB(120,120,120));
-		super.setFontHeightInPx(20);
+		super.setFontHeightInMM(5);
 	}
 
 	@Override

@@ -7,7 +7,7 @@ public class CurrentValuesName extends Label {
 
 	public CurrentValuesName(BeltParameterLayout parent) {
 		super(parent);
-		super.setFontHeightInPx(19);
+		super.setFontHeightInMM(5);
 	}
 
 	@Override
