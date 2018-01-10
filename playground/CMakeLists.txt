@@ -23,13 +23,7 @@ OPTION(DEV_PC
 OPTION(PROFILING
   "Enable built in profiler"
   OFF)
-  
-EXEC_PROGRAM("git"
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ARGS "log -1 --pretty=format:\"%ad\" --date=format:\"%Y-%m-%d %H:%M\""
-  OUTPUT_VARIABLE PLAYGROUND_VERSION)
-  
-message("PLAYGROUND-VERSION set to ${PLAYGROUND_VERSION}")
+
 
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
@@ -67,7 +61,6 @@ ADD_CUSTOM_TARGET(
 file(GLOB_RECURSE SOURCE_FILES
   src/*.cpp) 
   
-add_subdirectory(NonMaps)
 add_executable(playground ${SOURCE_FILES})
 
 TARGET_LINK_LIBRARIES(playground pthread)
@@ -81,8 +74,6 @@ endfunction(linkLib)
 foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
-
-add_dependencies(playground NonMaps)
 
 set_property(
   SOURCE src/device-info/SoftwareVersion.cpp

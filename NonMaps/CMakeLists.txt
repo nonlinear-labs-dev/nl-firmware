@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 project(NonMaps)
 
-message("Version: " ${PLAYGROUND_VERSION})
+message("searching for gwt compiler in: ${JARSDIR}")
 
 set(NONMAPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-set(JARSDIR ${NONMAPS_ROOT}/jars)
 set(OBJDIR ${NONMAPS_ROOT}/obj)
 set(ONLINEHELPDIR ${NONMAPS_ROOT}/online-help)
 set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/compilation-mappings.txt)
@@ -24,7 +23,7 @@ add_custom_command(OUTPUT ${OUTFILE}
   DEPENDS ${SOURCE_FILES}
   )
 
-add_custom_target(NonMaps
+add_custom_target(NonMaps ALL
   SOURCES ${OUTFILE}
   )
   
