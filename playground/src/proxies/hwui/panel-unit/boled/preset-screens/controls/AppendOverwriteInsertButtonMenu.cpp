@@ -165,7 +165,7 @@ shared_ptr<Preset> AppendOverwriteInsertButtonMenu::overwritePreset(AppendOverwr
   if(auto bank = preset->getBank())
   {
     size_t anchorPos = bank->getPresetPosition(preset->getUuid());
-    bank->undoableStorePreset(transaction, anchorPos, pm->getEditBuffer());
+    bank->undoableOverwritePreset(transaction, anchorPos, pm->getEditBuffer());
     bank->getPreset(anchorPos)->undoableSelect(transaction);
     bank->undoableSelect(transaction);
     return bank->getPreset(anchorPos);

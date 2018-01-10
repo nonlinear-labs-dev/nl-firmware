@@ -1,6 +1,8 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
@@ -20,9 +22,10 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImagePhase;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 
 class StorePreset extends SVGImage {
-
+	
 	Action action = Action.APPEND;
 	String presetToWaitFor = "";
+	RepeatingCommand dragDelay = null;
 
 	class DraggableButtonPhase extends SVGImagePhase implements EditBufferDraggingButton {
 
@@ -33,16 +36,45 @@ class StorePreset extends SVGImage {
 	}
 
 	StorePreset(OverlayLayout parent) {
-		super(parent, "Store_Enabled.svg", "Store_Drag.svg", "Store_Disabled.svg");
+		super(parent, "Store_Enabled.svg", "Store_Active.svg", "Store_Disabled.svg", "Store_Drag.svg");
 	}
 
 	@Override
 	public int getSelectedPhase() {
-		if (isCaptureControl() || isDraggingControl()) {
-			return 1;
+		boolean isCapturing = isCaptureControl() && dragDelay == null;
+		if (isCapturing || isDraggingControl()) {
+			return drawStates.drag.ordinal();
 		}
 
-		return 0;
+		if (isCaptureControl() && !isDraggingControl())
+			return drawStates.active.ordinal();
+
+		return drawStates.normal.ordinal();
+	}
+
+	@Override
+	public Control mouseDown(Position eventPoint) {
+		dragDelay = new RepeatingCommand() {
+
+			@Override
+			public boolean execute() {
+				if (dragDelay != null) {
+					dragDelay = null;
+					requestLayout();
+				}
+				return false;
+			}
+		};
+
+		Scheduler.get().scheduleFixedDelay(dragDelay, 500);
+		return super.mouseDown(eventPoint);
+	}
+
+	@Override
+	public Control mouseUp(Position eventPoint) {
+		dragDelay = null;
+		requestLayout();
+		return super.mouseUp(eventPoint);
 	}
 
 	@Override

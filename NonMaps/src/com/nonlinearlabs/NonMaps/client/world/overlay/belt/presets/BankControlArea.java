@@ -10,7 +10,7 @@ public class BankControlArea extends OverlayLayout {
 	public BankControlArea(OverlayLayout parent) {
 		super(parent);
 		addChild(bank = new BankControl(this));
-		bank.setHeaderTitleFontHeightInPx(20);
+		bank.setHeaderTitleFontHeightInMM(4);
 	}
 
 	@Override

@@ -8,9 +8,9 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 class PreviousPreset extends SVGImage {
-
+	
 	PreviousPreset(PrevNextPresetButtons parent) {
-		super(parent, "Preset_Up_Enabled.svg", "Preset_Up_Disabled.svg");
+		super(parent, "Preset_Up_Enabled.svg", "Preset_Up_Active.svg", "Preset_Up_Disabled.svg");
 	}
 
 	@Override
@@ -45,5 +45,15 @@ class PreviousPreset extends SVGImage {
 	private void doPresetSelection() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		pm.selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
+	}
+
+	@Override
+	public int getSelectedPhase() {
+		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
+
+		if (!pm.canPrev())
+			return drawStates.disabled.ordinal();;
+
+		return super.getSelectedPhase();
 	}
 }

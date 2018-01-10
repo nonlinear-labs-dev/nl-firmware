@@ -11,7 +11,8 @@ public class CurrentPresetNumber extends Label {
 	public CurrentPresetNumber(OverlayLayout parent) {
 		super(parent);
 		super.setFontColor(new RGB(120,120,120));
-		super.setFontHeightInPx(20);	}
+		super.setFontHeightInMM(4.5);	
+	}
 
 	@Override
 	public String getDrawText(Context2d ctx) {

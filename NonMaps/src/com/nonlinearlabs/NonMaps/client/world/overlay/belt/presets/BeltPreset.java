@@ -34,8 +34,8 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 		number = addChild(new PresetNumber(this));
 		name = addChild(new PresetName(this));
-		((Label)name).setFontHeightInPx(18);
-		((Label)number).setFontHeightInPx(18);
+		((Label)name).setFontHeightInMM(4);
+		((Label)number).setFontHeightInMM(4);
 	}
 
 	@Override

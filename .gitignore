@@ -2,6 +2,11 @@
 # Package Files #
 *.jar
 *.war
+playground/src/libundo/undo/Makefile.am
+playground/src/libundo/docs/Makefile.am
+playground/src/libundo/Makefile.am
+playground/Makefile
+NonMaps/Makefile
 NonMaps/jars/gwt-ll.dll
 NonMaps/war/gwt_bree/
 NonMaps/war/*.png
