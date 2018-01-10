@@ -43,7 +43,7 @@ PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
     auto bank = presetManager.addBank(transaction, x, y);
 
     bank->undoableInsertPreset(transaction, 0);
-    bank->undoableStorePreset(transaction, 0, presetManager.getEditBuffer());
+    bank->undoableOverwritePreset(transaction, 0, static_pointer_cast<Preset>(presetManager.getEditBuffer()));
     presetManager.undoableSelectBank(transaction, bank->getUuid());
     bank->getPreset(0)->undoableSelect(transaction);
 

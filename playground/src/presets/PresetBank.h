@@ -63,6 +63,7 @@ class PresetBank : public UpdateDocumentContributor, public AttributesOwner, pub
 
     bool setSelectedPreset (Glib::ustring uuid);
     void assignDefaultPosition();
+    void undoableAssignDefaultPosition(shared_ptr<UNDO::Transaction> transaction);
 
     void loadSync (shared_ptr<UNDO::Transaction> transaction, RefPtr<Gio::File> bankFolder, int numBank, int numBanks);
     void undoableSetName (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &name);
@@ -70,13 +71,12 @@ class PresetBank : public UpdateDocumentContributor, public AttributesOwner, pub
     void undoableSetPosition (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y);
     void undoableMovePreset (size_t from, size_t to);
     void undoableStorePreset (size_t pos, shared_ptr<EditBuffer> editBuffer);
-    void undoableStorePreset (UNDO::Scope::tTransactionPtr transaction, size_t pos, shared_ptr<EditBuffer> editBuffer);
     void undoableInsertPreset (UNDO::Scope::tTransactionPtr transaction, int pos);
     void undoableSelect (UNDO::Scope::tTransactionPtr transaction);
 
     void undoableAppendPreset (UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
     void undoableDeletePreset (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &uuid);
-    void undoableStorePreset (UNDO::Scope::tTransactionPtr transaction, size_t pos, tPresetPtr preset);
+    void undoableOverwritePreset (UNDO::Scope::tTransactionPtr transaction, size_t pos, tPresetPtr preset);
     void undoableSelectPreset (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &uuid);
     void undoableMovePosition (UNDO::Scope::tTransactionPtr transaction, double x, double y);
     void undoableEnsurePresetSelection (UNDO::Scope::tTransactionPtr transaction);
@@ -132,6 +132,8 @@ class PresetBank : public UpdateDocumentContributor, public AttributesOwner, pub
     void deleteOldPresetFiles (RefPtr<Gio::File> bankFolder);
     SaveResult savePresets (RefPtr<Gio::File> bankFolder);
     SaveResult saveMetadata (RefPtr<Gio::File> bankFolder);
+
+    std::pair<double, double> calcDefaultPosition() const;
 
     Glib::ustring m_name;
     Glib::ustring m_X = "0";

@@ -196,7 +196,7 @@ BankActions::BankActions(PresetManager &presetManager) :
               srcPreset->getName(), tgtBank->getName(true), anchorPos + 1);
           auto transaction = scope->getTransaction();
           tgtBank->undoableInsertPreset (transaction, anchorPos);
-          tgtBank->undoableStorePreset (transaction, anchorPos, srcPreset);
+          tgtBank->undoableOverwritePreset (transaction, anchorPos, srcPreset);
           tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
           tgtBank->undoableSelect (transaction);
         }
@@ -222,7 +222,7 @@ BankActions::BankActions(PresetManager &presetManager) :
               srcPreset->getName(), tgtBank->getName(true), anchorPos + 1);
           auto transaction = scope->getTransaction();
           tgtBank->undoableInsertPreset (transaction, anchorPos);
-          tgtBank->undoableStorePreset (transaction, anchorPos, srcPreset);
+          tgtBank->undoableOverwritePreset (transaction, anchorPos, srcPreset);
           tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
           tgtBank->undoableSelect (transaction);
         }
@@ -242,7 +242,7 @@ BankActions::BankActions(PresetManager &presetManager) :
               tgtBank->getName(true), anchorPos + 1);
           auto transaction = scope->getTransaction();
           tgtBank->undoableInsertPreset (transaction, anchorPos);
-          tgtBank->undoableStorePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
+          tgtBank->undoableOverwritePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
           tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
           tgtBank->undoableSelect (transaction);
         }
@@ -262,7 +262,7 @@ BankActions::BankActions(PresetManager &presetManager) :
               tgtBank->getName(true), anchorPos + 1);
           auto transaction = scope->getTransaction();
           tgtBank->undoableInsertPreset (transaction, anchorPos);
-          tgtBank->undoableStorePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
+          tgtBank->undoableOverwritePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
           tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
           tgtBank->undoableSelect (transaction);
         }
@@ -280,7 +280,7 @@ BankActions::BankActions(PresetManager &presetManager) :
             size_t anchorPos = tgtBank->getPresetPosition (presetToOverwrite);
             UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0'", tgtPreset->getName());
             auto transaction = scope->getTransaction();
-            tgtBank->undoableStorePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
+            tgtBank->undoableOverwritePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
             tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
             tgtBank->undoableSelect (transaction);
           }
@@ -291,21 +291,24 @@ BankActions::BankActions(PresetManager &presetManager) :
   {
     if (tBankPtr bank = m_presetManager.getSelectedBank())
     {
-      Glib::ustring uuid = request->get ("uuid");
+      auto uuid = request->get ("uuid");
+      auto newName = presetManager.createPresetNameBasedOn (m_presetManager.getEditBuffer()->getName());
 
-      UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Append preset");
-      UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+      auto scope = m_presetManager.getUndoScope().startTransaction ("Append preset");
+      auto transaction = scope->getTransaction();
 
       int desiredPresetPos = bank->getNumPresets();
       bank->undoableInsertPreset (transaction, desiredPresetPos);
-      bank->undoableStorePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
-      m_presetManager.undoableSelectBank (transaction, bank->getUuid());
+      bank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
+
+      auto newPreset = bank->getPreset (desiredPresetPos);
 
       if(!uuid.empty())
-        bank->getPreset (desiredPresetPos)->undoableSetUuid(transaction, uuid);
+        newPreset->undoableSetUuid(transaction, uuid);
 
-      bank->undoableSelectPreset (transaction, bank->getPreset (desiredPresetPos)->getUuid());
-      bank->getPreset (desiredPresetPos)->undoableSelect (scope->getTransaction());
+      bank->undoableSelectPreset (transaction, newPreset->getUuid());
+      newPreset->undoableSetName(transaction, newName);
+      m_presetManager.undoableSelectBank (transaction, bank->getUuid());
     }
   });
 
@@ -328,7 +331,7 @@ BankActions::BankActions(PresetManager &presetManager) :
 
           int desiredPresetPos = tgtBank->getNumPresets();
           tgtBank->undoableInsertPreset (transaction, desiredPresetPos);
-          tgtBank->undoableStorePreset (transaction, desiredPresetPos, srcPreset);
+          tgtBank->undoableOverwritePreset (transaction, desiredPresetPos, srcPreset);
           tgtBank->undoableSelectPreset (transaction, tgtBank->getPreset (desiredPresetPos)->getUuid());
           tgtBank->undoableSelect (transaction);
         }
@@ -348,7 +351,7 @@ BankActions::BankActions(PresetManager &presetManager) :
 
           int desiredPresetPos = tgtBank->getNumPresets();
           tgtBank->undoableInsertPreset (transaction, desiredPresetPos);
-          tgtBank->undoableStorePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
+          tgtBank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
           tgtBank->undoableSelectPreset (transaction, tgtBank->getPreset (desiredPresetPos)->getUuid());
           tgtBank->undoableSelect (transaction);
         }
@@ -358,20 +361,24 @@ BankActions::BankActions(PresetManager &presetManager) :
   {
     if (tBankPtr bank = m_presetManager.getSelectedBank())
     {
-      Glib::ustring uuid = request->get ("uuid");
+      auto uuid = request->get ("uuid");
+      auto newName = presetManager.createPresetNameBasedOn (m_presetManager.getEditBuffer()->getName());
 
-      UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Insert preset");
-      UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+      auto scope = m_presetManager.getUndoScope().startTransaction ("Insert preset");
+      auto transaction = scope->getTransaction();
 
       int selPreset = bank->getPresetPosition (bank->getSelectedPreset());
       int desiredPresetPos = selPreset + 1;
       bank->undoableInsertPreset (transaction, desiredPresetPos);
-      bank->undoableStorePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
+      bank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
+
+      auto newPreset = bank->getPreset (desiredPresetPos);
 
       if(!uuid.empty())
-        bank->getPreset (desiredPresetPos)->undoableSetUuid(transaction, uuid);
+        newPreset->undoableSetUuid(transaction, uuid);
 
-      bank->undoableSelectPreset (transaction, bank->getPreset (desiredPresetPos)->getUuid());
+      bank->undoableSelectPreset (transaction, newPreset->getUuid());
+      newPreset->undoableSetName(transaction, newName);
       m_presetManager.undoableSelectBank (transaction, bank->getUuid());
     }
   });
@@ -389,7 +396,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       int selPreset = bank->getPresetPosition (bank->getSelectedPreset());
       int desiredPresetPos = selPreset + 1;
       bank->undoableInsertPreset (transaction, desiredPresetPos);
-      bank->undoableStorePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
+      bank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
       auto p = bank->getPreset (desiredPresetPos);
       bank->undoableSelectPreset (transaction, p->getUuid());
       p->undoableSetName (transaction, name);
@@ -524,7 +531,7 @@ BankActions::BankActions(PresetManager &presetManager) :
         PresetManager::tBankPtr newBank = presetManager.addBank (scope->getTransaction(), x, y);
         auto transaction = scope->getTransaction();
         newBank->undoableInsertPreset (transaction, 0);
-        newBank->undoableStorePreset (transaction, 0, p);
+        newBank->undoableOverwritePreset (transaction, 0, p);
         newBank->undoableSetName(transaction, "New Bank");
         newBank->getPreset (0)->undoableSelect (transaction);
         m_presetManager.undoableSelectBank (transaction, newBank->getUuid());
@@ -553,7 +560,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       {
         auto pos = newBank->getNumPresets();
         newBank->undoableInsertPreset (transaction, pos);
-        newBank->undoableStorePreset (transaction, pos, src);
+        newBank->undoableOverwritePreset (transaction, pos, src);
       }
     }
 
@@ -587,7 +594,7 @@ BankActions::BankActions(PresetManager &presetManager) :
             size_t anchorPos = tgtBank->getPresetPosition (selPresetUUID);
             UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0'", tgtPreset->getName());
             auto transaction = scope->getTransaction();
-            tgtBank->undoableStorePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
+            tgtBank->undoableOverwritePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
             tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
             tgtBank->undoableSelect (transaction);
           }
@@ -629,7 +636,7 @@ BankActions::BankActions(PresetManager &presetManager) :
 
           auto pos = bank->getNumPresets();
           bank->undoableInsertPreset (transaction, pos);
-          bank->undoableStorePreset (transaction, pos, src);
+          bank->undoableOverwritePreset (transaction, pos, src);
         }
       }
     }
@@ -660,7 +667,7 @@ BankActions::BankActions(PresetManager &presetManager) :
             size_t anchorPos = tgtBank->getPresetPosition (selPresetUUID);
             UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0'", tgtPreset->getName());
             auto transaction = scope->getTransaction();
-            tgtBank->undoableStorePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
+            tgtBank->undoableOverwritePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
 
             auto p = tgtBank->getPreset (anchorPos);
             p->undoableSelect (transaction);
@@ -864,7 +871,7 @@ void BankActions::dropPresets(UNDO::TransactionCreationScope::tTransactionPtr tr
         else
         {
           bank->undoableInsertPreset(transaction, pos);
-          bank->undoableStorePreset(transaction, pos, src);
+          bank->undoableOverwritePreset(transaction, pos, src);
           pos++;
         }
       }
@@ -970,7 +977,15 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   XmlReader reader(stream, transaction);
   reader.read<PresetBankSerializer>(newBank, true);
 
-  newBank->undoableSetPosition(transaction, x, y);
+  if(x.empty() || y.empty())
+  {
+    newBank->undoableAssignDefaultPosition(transaction);
+  }
+  else
+  {
+    newBank->undoableSetPosition(transaction, x, y);
+  }
+
   newBank->undoableEnsurePresetSelection(transaction);
   newBank->undoableSetAttribute(transaction, "Name of Import File", fileName);
   auto lastModifiedSeconds = stoull(lastModified) / 1000;

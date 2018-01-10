@@ -160,7 +160,7 @@ public class Viewport extends MapsLayout {
 	}
 
 	public void autoScroll(int x, int y) {
-		double s = Millimeter.toPixels(2.5);
+		double s = Millimeter.toPixels(5);
 		NonDimension nonDim = toNonDimension(new Dimension(x * s, y * s));
 		moveBy(nonDim);
 		requestLayout();

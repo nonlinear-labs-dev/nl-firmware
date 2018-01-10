@@ -44,7 +44,6 @@ public class NonLinearWorld extends MapsLayout {
 	private boolean isShiftDown = false;
 	private boolean isSpaceDown = false;
 
-
 	private double maxLevelOfDetail = 0;
 
 	private TransitionDamper scrollAnimation = new TransitionDamper(0.9, new TransitionDamper.Client() {
@@ -83,6 +82,7 @@ public class NonLinearWorld extends MapsLayout {
 	public void init() {
 		viewport.init();
 	}
+
 	public DeveloperSettings getSettings() {
 		return settings;
 	}
@@ -220,10 +220,10 @@ public class NonLinearWorld extends MapsLayout {
 			viewport.drawBackground(ctx);
 			drawChildren(ctx, invalidationMask);
 			viewport.draw(ctx, invalidationMask);
-			
-			if(getPresetManager().hasMultipleRectangle())
+
+			if (getPresetManager().hasMultipleRectangle())
 				getPresetManager().getMoveSomeBanks().draw(ctx, invalidationMask);
-			
+
 			ctx.restore();
 		}
 	}
@@ -286,28 +286,20 @@ public class NonLinearWorld extends MapsLayout {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-		
-		
-		if(isShiftDown())
-		{
-			if(getPresetManager().hasMultipleRectangle())
-			{
+
+		if (isShiftDown()) {
+			if (getPresetManager().hasMultipleRectangle()) {
 				getPresetManager().updateMultipleRectangle(newPoint);
-			}
-			else
-			{
+			} else {
 				getPresetManager().startMultipleRectangle(newPoint);
 			}
 			return this;
-		}
-		else
-		{
-			if(getPresetManager().hasMultipleRectangle())
-			{
+		} else {
+			if (getPresetManager().hasMultipleRectangle()) {
 				getPresetManager().endMultipleRectangle();
 			}
 		}
-		
+
 		double xDiff = newPoint.getX() - oldPoint.getX();
 		double yDiff = newPoint.getY() - oldPoint.getY();
 
@@ -324,28 +316,27 @@ public class NonLinearWorld extends MapsLayout {
 	@Override
 	public Control mouseUp(Position eventPoint) {
 		scrollAnimation.run();
-		
+
 		NonMaps.get().getNonLinearWorld().setShiftDown(false);
 		NonMaps.get().getNonLinearWorld().setSpaceDown(false);
-		
-		if(getPresetManager().hasMultipleRectangle())
-		{
+
+		if (getPresetManager().hasMultipleRectangle()) {
 			getPresetManager().endMultipleRectangle();
 		}
-		
+
 		return this;
 	}
 
 	@Override
 	public Control pinch(Position eventPoint, double touchDist, TouchPinch pinch) {
-		zoom(-touchDist, eventPoint.getX(), eventPoint.getY());
+		zoom(-2 * touchDist, eventPoint.getX(), eventPoint.getY());
 		return this;
 	}
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		double pix = toYPixels(-amount);
-		zoom(12 * pix / getCurrentZoom(), eventPoint.getX(), eventPoint.getY());
+		zoom(24 * pix / getCurrentZoom(), eventPoint.getX(), eventPoint.getY());
 		return this;
 	}
 
@@ -463,7 +454,7 @@ public class NonLinearWorld extends MapsLayout {
 	public boolean handleKeyPress(final KeyDownEvent event) {
 		isShiftDown = event.isShiftKeyDown();
 		isSpaceDown = event.getNativeKeyCode() == KeyCodes.KEY_SPACE;
-		
+
 		Control ctrl = recurseChildren(new ControlFinder() {
 
 			@Override
@@ -475,21 +466,19 @@ public class NonLinearWorld extends MapsLayout {
 				return false;
 			}
 		});
-		
-
 
 		return (ctrl != null);
 	}
-	
+
 	public boolean handleKeyUp(final KeyUpEvent event) {
 		isShiftDown = event.isShiftKeyDown();
 		isSpaceDown = event.getNativeKeyCode() == KeyCodes.KEY_SPACE;
 		return true;
 	}
-	
+
 	public boolean handleKey(final KeyDownEvent event) {
 		isShiftDown = event.isShiftKeyDown();
-		
+
 		Control ctrl = recurseChildren(new ControlFinder() {
 
 			@Override
@@ -501,12 +490,10 @@ public class NonLinearWorld extends MapsLayout {
 				return false;
 			}
 		});
-		
-
 
 		return (ctrl != null);
 	}
-	
+
 	public boolean zoomTo(NonRect r, boolean animate) {
 		double ratio = viewport.getPixRect().getWidth()
 				/ (viewport.getPixRect().getHeight() - viewport.getOverlay().getBelt().getPixRect().getHeight());
@@ -613,11 +600,11 @@ public class NonLinearWorld extends MapsLayout {
 	public boolean isShiftDown() {
 		return isShiftDown;
 	}
-	
+
 	public void setShiftDown(boolean b) {
 		isShiftDown = b;
 	}
-	
+
 	public boolean isSpaceDown() {
 		return isSpaceDown;
 	}
