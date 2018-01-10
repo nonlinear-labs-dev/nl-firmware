@@ -19,7 +19,6 @@ file (COPY ${MAPS_IMAGES} DESTINATION ./war/images)
 
 add_custom_command(OUTPUT ${OUTFILE}
   COMMAND java -Xmx512m -classpath ${NONMAPS_ROOT}/src:${JARSDIR}/gwt-user.jar:${JARSDIR}/gwt-dev.jar com.google.gwt.dev.Compiler -optimize 9 -gen ${OBJDIR} -logLevel WARN -style OBF -war ./war -localWorkers 4 com.nonlinearlabs.NonMaps.NonMaps
-  COMMAND touch ${NONMAPS_ROOT}/war/nonmaps/nonmaps.nocache.js
   DEPENDS ${SOURCE_FILES}
   )
 
@@ -29,11 +28,19 @@ add_custom_target(NonMaps ALL
   
 file(WRITE ${OBJDIR}/nonmaps-version.txt ${PLAYGROUND_VERSION})
   
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war
+  DESTINATION NonMaps
+  )
+
+install(DIRECTORY ${NONMAPS_ROOT}/war
+  DESTINATION NonMaps
+  )
+
 install(DIRECTORY ${NONMAPS_ROOT}/src/war
   DESTINATION NonMaps
   )
 
-install(DIRECTORY ${NONMAPS_ROOT}/war/nonmaps
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps
   DESTINATION NonMaps/war
   )
 
