@@ -8,7 +8,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 class NextBank extends PrevNextBank {
 
 	NextBank(BankHeader parent) {
-		super(parent, "Bank_Right.svg", "Bank_Right_Disabled.svg");
+		super(parent, "Bank_Right.svg", "Bank_Right_Active.svg", "Bank_Right_Disabled.svg");
 	}
 
 	@Override
@@ -23,7 +23,7 @@ class NextBank extends PrevNextBank {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 
 		if (!pm.canSelectNextBank())
-			return 1;
+			return drawStates.disabled.ordinal();
 
 		return super.getSelectedPhase();
 	}

@@ -220,14 +220,15 @@ public class Overlay extends OverlayLayout {
 		return addChild(new DragProxy(this, origin, point));
 	}
 
-	void removeDragProxies() {
+	boolean removeDragProxies() {
 		for (OverlayControl c : getChildren()) {
 			if (c instanceof DragProxy) {
 				removeChild(c);
 				removeDragProxies();
-				return;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	public void removeDragProxy(DragProxy c) {

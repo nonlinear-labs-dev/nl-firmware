@@ -9,6 +9,8 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public abstract class SVGImage extends OverlayControl {
 
+	public enum drawStates { normal, active, disabled, drag };
+	
 	private ArrayList<SVGImagePhase> phases = new ArrayList<SVGImagePhase>();
 	private int selectedPhase = 0;
 

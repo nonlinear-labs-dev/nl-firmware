@@ -191,7 +191,8 @@ public class DragProxy extends OverlayControl {
 	@Override
 	public Control mouseUp(final Position eventPoint) {
 		drop(eventPoint);
-		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeDragProxies();
+		if (NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeDragProxies())
+			invalidate(INVALIDATION_FLAG_VISIBILITY_CHANGED);
 		return this;
 	}
 
