@@ -30,7 +30,7 @@ public class UndoTreeWindow extends FloatingWindow {
 
 		if (isHidden()) {
 			super.doLayout(x, y, 0, 0);
-
+ 
 		} else {
 			double margin = Millimeter.toPixels(2);
 			header.doLayout(0, 0, fixDimension.getWidth(), lineHeight);

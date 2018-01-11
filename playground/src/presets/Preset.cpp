@@ -318,5 +318,8 @@ bool Preset::doesQuerySubstringMatch (const Glib::ustring &part) const
 
 void Preset::onLoadStatusChanged()
 {
-  onChange();
+  #warning "testweise auskommentiert - ich halte das fuer obsolet und kontra-produktiv (10.1.2018)"
+  #warning "bitte ausbauen, wenn keine Probleme in diesem Scope auftauchen. Wenn onChange hier"
+  #warning "benoetigt wird, bitte expliziter formulieren, so dass man versteht, warum!?"
+  // onChange();
 }

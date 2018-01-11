@@ -339,15 +339,17 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	private void updateAttributes(Node node) {
-		attributes.clear();
-		NodeList children = node.getChildNodes();
-
-		for (int i = 0; i < children.getLength(); i++) {
-			Node n = children.item(i);
-			String nodesName = n.getNodeName();
-
-			if (nodesName.equals("attribute")) {
-				updateAttribute(n);
+		if (ServerProxy.didChange(node)) {
+			attributes.clear();
+			NodeList children = node.getChildNodes();
+	
+			for (int i = 0; i < children.getLength(); i++) {
+				Node n = children.item(i);
+				String nodesName = n.getNodeName();
+	
+				if (nodesName.equals("attribute")) {
+					updateAttribute(n);
+				}
 			}
 		}
 	}
