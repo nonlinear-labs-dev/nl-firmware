@@ -362,4 +362,18 @@ public class Rect extends Object {
 
 		return getCenterPoint().getDistanceTo(pos);
 	}
+
+	public Position getRightTop() {
+		return new Position(getRight(), getTop());
+	}
+
+	public Position getLeftBottom() {
+		return new Position(getLeft(), getBottom());
+	}
+
+	public Rect getMovedBy(Dimension offset) {
+		Rect a = copy();
+		a.moveBy(offset.getWidth(), offset.getHeight());
+		return a;
+	}
 }

@@ -2,13 +2,13 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -18,15 +18,15 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.Label;
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
-import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
+import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.MultiplePresetSelection;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.RightButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetList;
 
 public class Bank extends LayoutResizingVertical implements Renameable, IBank {
@@ -51,10 +51,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private boolean mouseCaptured = false;
 	private String masterUUID;
 	private String attatchDirection;
-	
+
 	private boolean inSelectedCluster = false;
-	private boolean dockingIndicator = false;
-	
+
 	private String m_saveState = "";
 
 	private enum DropPosition {
@@ -62,11 +61,56 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public enum DropAction {
-		NONE, COPY_PRESET, MOVE_PRESET, INSERT_EDITBUFFER, INSERT_BANK, DROP_PRESETS, ATTACH_RIGHT, ATTACH_BOTTOM
+		NONE, COPY_PRESET, MOVE_PRESET, INSERT_EDITBUFFER, INSERT_BANK, DROP_PRESETS, ATTACH
 	}
 
-	Bank(MapsLayout parent) {
+	private Tape tapes[] = new Tape[4];
+
+	public Bank(PresetManager parent, String uuid) {
 		super(parent);
+		this.uuid = uuid;
+		addChild(header);
+		prevNext = addChild(new PrevNextButtons(this));
+
+		tapes[Tape.Orientation.North.ordinal()] = addChild(new Tape(this, Tape.Orientation.North));
+		tapes[Tape.Orientation.South.ordinal()] = addChild(new Tape(this, Tape.Orientation.South));
+		tapes[Tape.Orientation.East.ordinal()] = addChild(new Tape(this, Tape.Orientation.East));
+		tapes[Tape.Orientation.West.ordinal()] = addChild(new Tape(this, Tape.Orientation.West));
+	}
+
+	@Override
+	public boolean skipChildOnLayout(MapsControl c) {
+		return c instanceof Tape;
+	}
+
+	public Tape getTape(Tape.Orientation o) {
+		return tapes[o.ordinal()];
+	}
+
+	@Override
+	public void doFirstLayoutPass(double levelOfDetail) {
+		super.doFirstLayoutPass(levelOfDetail);
+		NonDimension oldDim = getNonPosition().getDimension();
+
+		double tapeWidth = getAttachArea();
+
+		for (MapsControl c : getChildren()) {
+			c.getNonPosition().moveBy(tapeWidth, tapeWidth);
+		}
+
+		getTape(Tape.Orientation.North).setNonSize(new NonDimension(oldDim.getWidth(), tapeWidth));
+		getTape(Tape.Orientation.North).moveTo(new NonPosition(tapeWidth, 0));
+
+		getTape(Tape.Orientation.South).setNonSize(new NonDimension(oldDim.getWidth(), tapeWidth));
+		getTape(Tape.Orientation.South).moveTo(new NonPosition(tapeWidth, oldDim.getHeight() + tapeWidth));
+
+		getTape(Tape.Orientation.East).setNonSize(new NonDimension(tapeWidth, oldDim.getHeight()));
+		getTape(Tape.Orientation.East).moveTo(new NonPosition(0, tapeWidth));
+
+		getTape(Tape.Orientation.West).setNonSize(new NonDimension(tapeWidth, oldDim.getHeight()));
+		getTape(Tape.Orientation.West).moveTo(new NonPosition(oldDim.getWidth() + tapeWidth, tapeWidth));
+
+		setNonSize(oldDim.getWidth() + tapeWidth * 2, oldDim.getHeight() + tapeWidth * 2);
 	}
 
 	protected void drawDropIndicator(Context2d ctx) {
@@ -91,7 +135,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public double getAttachArea() {
-		return toXPixels(20);
+		return 20;
 	}
 
 	private void drawDropIndicator(Context2d ctx, Rect presetRect) {
@@ -122,7 +166,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		if (currentDropAction != DropAction.NONE) {
 			dragPosition = pos;
-			stopIndicateDocking();
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;
 		}
@@ -131,7 +174,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	@Override
 	public void dragLeave() {
-		unsetIsDockingTarget();
 		dragPosition = null;
 		currentDropAction = DropAction.NONE;
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -139,23 +181,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
-
-		if (currentDropAction == DropAction.ATTACH_BOTTOM) {
-			if (dragProxy.getOrigin() instanceof Bank) {
-				Bank bank = (Bank) dragProxy.getOrigin();
-				bank.dockToABankInDirection(this, "top");
-			}
-			return this;
-		}
-
-		if (currentDropAction == DropAction.ATTACH_RIGHT) {
-			if (dragProxy.getOrigin() instanceof Bank) {
-				Bank bank = (Bank) dragProxy.getOrigin();
-				bank.dockToABankInDirection(this, "left");
-			}
-			return this;
-		}
-
 		if (dragPosition != null) {
 			for (Control c : getChildren()) {
 				if (c instanceof IPreset) {
@@ -265,9 +290,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		IBank bank = (IBank) dragProxy.getOrigin();
 
 		Bank bBank = (Bank) bank;
-		if(bBank.hasSlaves())
+		if (bBank.hasSlaves())
 			return;
-		
+
 		switch (pos) {
 		case ABOVE:
 			getNonMaps().getServerProxy().insertBankAbove(bank, preset);
@@ -313,59 +338,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		}
 	}
 
-	public boolean setIsDockingTarget(String target) {	
-		boolean ret = false;
-		
-		if (target.equalsIgnoreCase("right")) 
-		{
-			if (shouldIndicateWhenDockingTarget(this, "right")) {
-				if (currentDropAction != DropAction.ATTACH_RIGHT) {
-					currentDropAction = DropAction.ATTACH_RIGHT;
-					indicateDocking();
-					ret = true;
-				}
-			}
-		} 
-		else if (target.equals("bottom")) 
-		{
-			if (shouldIndicateWhenDockingTarget(this, "bottom")) {
-				if (currentDropAction != DropAction.ATTACH_BOTTOM) {
-					currentDropAction = DropAction.ATTACH_BOTTOM;
-					indicateDocking();
-					ret = true;
-				}
-			}
-		}
-		return ret;
-	}
-
-	public boolean isAttachDropTarget() {
-		return currentDropAction == DropAction.ATTACH_BOTTOM || currentDropAction == DropAction.ATTACH_RIGHT;
-	}
-	
-	public DropAction getIsDockingTarget() {
-		if(isAttachDropTarget())
-			return currentDropAction;
-		else
-			return DropAction.NONE;
-			
-	}
-
-	public void unsetIsDockingTarget() {
-		if (isAttachDropTarget()) {
-			currentDropAction = DropAction.NONE;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			stopIndicateDocking();
-		}
-	}
-
-	public Bank(PresetManager parent, String uuid) {
-		super(parent);
-		this.uuid = uuid;
-		addChild(header);
-		prevNext = addChild(new PrevNextButtons(this));
-	}
-
 	@Override
 	public <T extends MapsControl> T addChild(T child) {
 		T ret = super.addChild(child);
@@ -400,7 +372,12 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		Rect r = getPixRect();
+		if (isDraggingControl() && !isVisibilityForced())
+			return;
+
+		Rect r = getPixRect().copy();
+		double reduce = toXPixels(getAttachArea());
+		r = r.getReducedBy(2 * reduce);
 		r.drawRoundedRect(ctx, Rect.ROUNDING_TOP, toXPixels(6), toXPixels(1), getColorBankSelect(), null);
 		super.draw(ctx, invalidationMask);
 		drawDropIndicator(ctx);
@@ -433,12 +410,12 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public RGB getColorBankSelect() {
-		
-		 if(isIndirectSelected() || dockingIndicator)
+
+		if (isIndirectSelected())
 			return new RGB(98, 113, 183);
-		 else if(isSelected())
+		else if (isSelected())
 			return new RGB(173, 181, 217);
-		
+
 		else
 			return new RGB(150, 150, 150);
 	}
@@ -459,7 +436,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		return new RGB(125, 125, 125);
 	}
-	
+
 	public boolean isIndirectSelected() {
 		return inSelectedCluster;
 	}
@@ -679,10 +656,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 				return DropAction.INSERT_EDITBUFFER;
 
 			if (origin instanceof IBank) {
-				if (!origin.equals(this))
-				{
+				if (!origin.equals(this)) {
 					Bank bBank = (Bank) origin;
-					if(bBank.hasSlaves() == false)
+					if (bBank.hasSlaves() == false)
 						return DropAction.INSERT_BANK;
 				}
 			}
@@ -840,33 +816,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		}
 	}
 
-	public void dockToABankInDirection(Bank masterBankInSpe, String direction) {
-	
-		if (shouldIndicateWhenDockingTarget(masterBankInSpe, direction)) {
-			NonMaps.theMaps.getServerProxy().dockBank(this, masterBankInSpe, direction);
-		}
-	}
-	
-	public boolean shouldIndicateWhenDockingTarget(Bank target, String direction) {
-
-		if (direction.equals("top") || direction.equals("bottom"))
-			return target.getBottomSlave() == null;
-		else if ((direction.equals("left") || direction.equals("right")))
-			return target.getRightSlave() == null;
-
-		return false;
-	}
-	
 	public void undockBank() {
 		NonMaps.theMaps.getServerProxy().undockBank(this);
-	}
-
-	public void indicateDocking() {
-		dockingIndicator = true;
-	}
-
-	public void stopIndicateDocking() {
-		dockingIndicator = false;
 	}
 
 	public Bank getBottomSlave() {
@@ -877,11 +828,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return slaveRight;
 	}
 
-	public void installRelationshipMasterSlave(Bank master, String direction)
-	{
-		
-		if(direction.equals("top") || direction.equals("bottom"))
-		{
+	public void installRelationshipMasterSlave(Bank master, String direction) {
+
+		if (direction.equals("top") || direction.equals("bottom")) {
 			masterTop = master;
 			masterLeft = null;
 			masterTop.addSlave(this, "bottom");
@@ -889,9 +838,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			masterTop = null;
 			masterLeft = master;
 			masterLeft.addSlave(this, "right");
-		}
-		else
-		{
+		} else {
 			return;
 		}
 	}
@@ -980,35 +927,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			slaveRight.layoutSlaves();
 		}
 	}
-		
-	private boolean canAttachToRight()
-	{
-		Bank curr = masterTop;
-		
-		if(this.getRightSlave() != null)
-			return false;
-		
-		while(curr != null)
-		{
-			if(curr.getRightSlave() != null)
-				return false;
-			if(curr.getAttatchDirection() == "top")
-				curr = curr.getMaster();
-			else
-				curr = null;
-		}
-		
-		curr = slaveBottom;
-		while(curr != null)
-		{
-			if(curr.getRightSlave() != null)
-				return false;
-			
-			curr = curr.getBottomSlave();
-		}
-		return true;
-	}
-	
+
 	public void setInSelectedCluster(boolean inSelectedCluster) {
 		this.inSelectedCluster = inSelectedCluster;
 	}
@@ -1016,7 +935,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	public Header getHeader() {
 		return header;
 	}
-	
+
 	public boolean isInSelectedCluster() {
 		return inSelectedCluster;
 	}
@@ -1024,14 +943,41 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	public boolean hasSlaves() {
 		return getBottomSlave() != null || getRightSlave() != null;
 	}
-	
-	public void setImportExportState(String state)
-	{
+
+	public void setImportExportState(String state) {
 		m_saveState = state;
 	}
-	
-	public String getImportExportState()
-	{
+
+	public String getImportExportState() {
 		return m_saveState;
+	}
+
+	public boolean isTapeActive(Orientation orientation) {
+		boolean hasMaster = masterLeft != null || masterTop != null;
+
+		switch (orientation) {
+		case North:
+			return !hasMaster || isDraggingControl();
+
+		case South:
+			return slaveBottom == null;
+
+		case East:
+			return slaveRight == null;
+
+		case West:
+			return !hasMaster || isDraggingControl();
+		}
+		return false;
+	}
+
+	public Tape[] getTapes() {
+		return tapes;
+	}
+
+	@Override
+	public void beingDragged(double xDiff, double yDiff) {
+		getParent().resetAttachingTapes();
+		super.beingDragged(xDiff, yDiff);
 	}
 }

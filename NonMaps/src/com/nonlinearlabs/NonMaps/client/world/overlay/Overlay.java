@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
@@ -252,6 +253,18 @@ public class Overlay extends OverlayLayout {
 		return false;
 	}
 
+	public boolean isCurrentlyDraggingATypeOf(String className) {
+		for (OverlayControl c : getChildren()) {
+			if (c instanceof DragProxy) {
+				DragProxy p = (DragProxy) c;
+				if (p.getOrigin().getClass().getName().equals(className))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
 	public com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt getBelt() {
 		return belt;
 	}
@@ -364,5 +377,16 @@ public class Overlay extends OverlayLayout {
 			}
 		}
 
+	}
+
+	public LinkedList<DragProxy> getDragProxies() {
+		LinkedList<DragProxy> proxies = new LinkedList<DragProxy>();
+		for (OverlayControl c : getChildren()) {
+			if (c instanceof DragProxy) {
+				DragProxy d = (DragProxy) c;
+				proxies.add(d);
+			}
+		}
+		return proxies;
 	}
 }

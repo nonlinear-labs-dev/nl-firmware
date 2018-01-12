@@ -18,6 +18,11 @@ abstract class LayoutVertical extends MapsLayout {
 
 		for (MapsControl c : getChildren()) {
 			c.doFirstLayoutPass(levelOfDetail);
+
+			if (skipChildOnLayout(c)) {
+				continue;
+			}
+
 			c.moveTo(x, maxY);
 			maxY += c.getNonPosition().getHeight();
 			maxY += padding;
@@ -34,6 +39,10 @@ abstract class LayoutVertical extends MapsLayout {
 
 		for (MapsControl c : getChildren()) {
 			c.doSecondLayoutPass(maxWidth, maxHeight);
+
+			if (skipChildOnLayout(c)) {
+				continue;
+			}
 
 			switch (layoutDirection) {
 
@@ -59,6 +68,10 @@ abstract class LayoutVertical extends MapsLayout {
 			maxY += padding;
 		}
 		return new NonDimension(maxWidth + getWidthMargin(), maxHeight);
+	}
+
+	public boolean skipChildOnLayout(MapsControl c) {
+		return false;
 	}
 
 	public Direction getLayoutDirection() {

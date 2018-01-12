@@ -94,6 +94,20 @@ public class ChildrenOwner<TChild extends Control> {
 		return null;
 	}
 
+	public Control recurseChildren(Rect r, ControlFinder handler) {
+		int numControls = getChildren().size();
+		for (int i = numControls - 1; i >= 0; i--) {
+			Control c = getChildren().get(i);
+
+			Control found = c.recurseChildren(r, handler);
+
+			if (found != null)
+				return found;
+		}
+
+		return null;
+	}
+
 	public void forceVisibility(boolean b) {
 		for (Control c : getChildren()) {
 			c.forceVisibility(b);

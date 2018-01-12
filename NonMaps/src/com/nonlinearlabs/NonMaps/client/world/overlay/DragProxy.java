@@ -1,5 +1,8 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import java.util.HashSet;
+import java.util.TreeMap;
+
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
@@ -29,6 +32,7 @@ public class DragProxy extends OverlayControl {
 	RepeatingCommand autoScrollCommand;
 
 	AutoScrollDirection currentAutoScrollDirection = AutoScrollDirection.None;
+	private Control newReceiver;
 
 	public DragProxy(Overlay parent, Control origin, Position point) {
 		super(parent);
@@ -100,23 +104,70 @@ public class DragProxy extends OverlayControl {
 		double yDiff = newPoint.getY() - oldPoint.getY();
 		NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().moveDragProxies(xDiff, yDiff);
 
-		Control newReceiver = NonMaps.theMaps.getNonLinearWorld().recurseChildren(newPoint, new ControlFinder() {
+		getOrigin().beingDragged(xDiff, yDiff);
+
+		TreeMap<Integer, HashSet<Control>> collectedCadidates = new TreeMap<Integer, HashSet<Control>>();
+
+		ControlFinder finder = new ControlFinder() {
 			@Override
 			public boolean onWayUpFound(Control ctrl) {
-				Control r = ctrl.drag(newPoint, DragProxy.this);
-				if (r != null) {
-					setReceiver(r);
-					return true;
+				if (ctrl != getOrigin()) {
+					int d = 10000 - ctrl.getDepth();
+
+					if (!collectedCadidates.containsKey(d))
+						collectedCadidates.put(d, new HashSet<Control>());
+
+					collectedCadidates.get(d).add(ctrl);
 				}
 
 				return false;
 			}
-		});
+		};
+
+		NonMaps.theMaps.getNonLinearWorld().recurseChildren(newPoint, finder);
+
+		for (DragProxy p : NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
+			NonMaps.theMaps.getNonLinearWorld().recurseChildren(p.getPixRect(), finder);
+		}
+
+		for (HashSet<Control> set : collectedCadidates.values()) {
+			for (Control c : set) {
+				Control r = c.drag(newPoint, DragProxy.this);
+				if (r != null) {
+					setReceiver(r);
+					return this;
+				}
+			}
+		}
+
+		setReceiver(null);
+		return this;
+
+		/*-
+
+		if (newReceiver == null) {
+			for (DragProxy p : NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
+				newReceiver = NonMaps.theMaps.getNonLinearWorld().recurseChildren(p.getPixRect(), new ControlFinder() {
+					@Override
+					public boolean onWayUpFound(Control ctrl) {
+						if (ctrl != getOrigin()) {
+							Control r = ctrl.drag(newPoint, p);
+							if (r != null) {
+								setReceiver(r);
+								return true;
+							}
+						}
+
+						return false;
+					}
+				});
+			}
+		}
 
 		if (newReceiver == null)
 			setReceiver(null);
 
-		return this;
+		return this;-*/
 	}
 
 	public void moveProxy(double xDiff, double yDiff) {
@@ -196,19 +247,14 @@ public class DragProxy extends OverlayControl {
 		return this;
 	}
 
-	public void drop(final Position eventPoint) {
-		NonMaps.theMaps.getNonLinearWorld().recurseChildren(eventPoint, new ControlFinder() {
-			@Override
-			public boolean onWayUpFound(Control ctrl) {
-				Control r = ctrl.drop(eventPoint, DragProxy.this);
-				if (r != null) {
-					setReceiver(null);
-					return true;
-				}
+	public void drop(final Position newPoint) {
+		if (receiver != null) {
+			Control r = receiver.drop(newPoint, this);
 
-				return false;
+			if (r != null) {
+				setReceiver(r);
 			}
-		});
+		}
 	}
 
 	protected void setReceiver(Control r) {

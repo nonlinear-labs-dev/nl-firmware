@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
-import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
@@ -28,6 +26,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonRect;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Tape;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Updater;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
@@ -51,6 +50,8 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 
+	private Tape attachingTapes[] = new Tape[2];
+
 	public MoveSomeBanksLayer getMoveSomeBanks() {
 		return moveSomeBanks;
 	}
@@ -68,7 +69,7 @@ public class PresetManager extends MapsLayout {
 	public double getLevelOfDetailForFullVisibility() {
 		return 1;
 	}
-	
+
 	private NonRect getAllBanksOutline() {
 		NonRect fence = new NonRect(Double.MAX_VALUE / 2, Double.MAX_VALUE / 2, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
@@ -198,8 +199,7 @@ public class PresetManager extends MapsLayout {
 				Bank bank = (Bank) control;
 				Bank masterBank = NonMaps.theMaps.getNonLinearWorld().getPresetManager().findBank(bank.getMasterUUID());
 
-				if(masterBank != null)
-				{
+				if (masterBank != null) {
 					bank.installRelationshipMasterSlave(masterBank, bank.getAttatchDirection());
 				}
 			}
@@ -270,25 +270,21 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
-	private void highlightSlavesOfSelectedBank(Bank master)
-	{
+	private void highlightSlavesOfSelectedBank(Bank master) {
 		Bank rightSlave = master.getRightSlave();
 		Bank bottomSlave = master.getBottomSlave();
-		
-		if(rightSlave != null )
-		{
+
+		if (rightSlave != null) {
 			rightSlave.setInSelectedCluster(true);
 			highlightSlavesOfSelectedBank(rightSlave);
 		}
-		if(bottomSlave != null)
-		{
+		if (bottomSlave != null) {
 			bottomSlave.setInSelectedCluster(true);
 			highlightSlavesOfSelectedBank(bottomSlave);
 		}
 	}
-	
-	public void resetClusterHighlight()
-	{
+
+	public void resetClusterHighlight() {
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
@@ -296,27 +292,24 @@ public class PresetManager extends MapsLayout {
 			}
 		}
 	}
-	
-	public void indicateClusterSelection(String bankUUID)
-	{
+
+	public void indicateClusterSelection(String bankUUID) {
 		resetClusterHighlight();
 		Bank bankObj = findBank(bankUUID);
 
-		if(bankObj != null)
-		{
+		if (bankObj != null) {
 			bankObj.setInSelectedCluster(true);
-			if(bankObj.getBottomSlave() != null || bankObj.getRightSlave() != null)
-			{
+			if (bankObj.getBottomSlave() != null || bankObj.getRightSlave() != null) {
 				highlightSlavesOfSelectedBank(bankObj);
 			}
 		}
 	}
-	
+
 	public void selectBank(String bankUUID, boolean userInteraction) {
 		if (!selectedBank.equals(bankUUID)) {
 			selectedBank = bankUUID;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			
+
 			if (userInteraction)
 				getNonMaps().getServerProxy().selectBank(bankUUID);
 
@@ -355,12 +348,11 @@ public class PresetManager extends MapsLayout {
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
-			Bank dragged = (Bank) dragProxy.getOrigin();	
-			boolean shouldBeOn = indicateAttachTargets(dragged, dragProxy.getPixRect()) != null;
-			dragged.setInSelectedCluster(shouldBeOn || dragged.hasSlaves());
+			Bank dragged = (Bank) dragProxy.getOrigin();
+			dragged.setInSelectedCluster(dragged.hasSlaves());
 			return this;
 		}
-		
+
 		if (dragProxy.getOrigin() instanceof IPreset) {
 			if (!getNonMaps().getNonLinearWorld().getParameterEditor().getPixRect().contains(pos))
 				return this;
@@ -368,133 +360,55 @@ public class PresetManager extends MapsLayout {
 
 		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
 			return this;
-		
+
 		return super.drag(pos, dragProxy);
 	}
 
 	public void updateMultipleRectangle(Position pos) {
 		moveSomeBanks.update(pos);
-		
+
 		multiSelection.clear();
-		
+
 		for (Control c : getChildren()) {
 
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
-				for(Control bc: b.getChildren())
-				{
-					if(bc instanceof Preset)
-					{
+				for (Control bc : b.getChildren()) {
+					if (bc instanceof Preset) {
 						Preset p = (Preset) bc;
-						if(moveSomeBanks.getPixRect().intersects(p.getPixRect()))
-						{
+						if (moveSomeBanks.getPixRect().intersects(p.getPixRect())) {
 							multiSelection.add(p);
 						}
 					}
 				}
 			}
 		}
-		
+
 		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
 	}
 
 	public void startMultipleRectangle(Position pos) {
 		startMultiSelectionEmpty();
-		moveSomeBanks = new MoveSomeBanksLayer(this, pos);	
+		moveSomeBanks = new MoveSomeBanksLayer(this, pos);
 		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
 	}
-	
-	public boolean hasMultipleRectangle()
-	{
+
+	public boolean hasMultipleRectangle() {
 		return moveSomeBanks != null;
 	}
-	
-	public void endMultipleRectangle()
-	{
+
+	public void endMultipleRectangle() {
 		moveSomeBanks = null;
 		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
 	}
 
-	private boolean isAttachTargetToRight(Bank targetBank, Rect dragProxie)
-	{
-		Rect rightDockingRect = targetBank.getPixRect().copy();
-		
-		rightDockingRect.set(rightDockingRect.getRight(), 
-				rightDockingRect.getTop() - getAttachArea(), 
-				getAttachArea(), 
-				rightDockingRect.getHeight());
-		
-		return rightDockingRect.contains(dragProxie.getLeftTop());
-	}
-	
-	private boolean isAttachTargetToBottom(Bank targetBank, Rect dragProxie)
-	{
-		Rect bottomDockingRect = targetBank.getPixRect().copy();
-		
-		bottomDockingRect.set(bottomDockingRect.getLeft(), 
-				bottomDockingRect.getBottom(), 
-				bottomDockingRect.getWidth() / 2, 
-				getAttachArea());
-		
-		
-		return bottomDockingRect.contains(dragProxie.getLeftTop());
-	}
-	
-	private Bank indicateAttachTargets(Bank draggedBank, Rect dragProxie) {
-		Bank ret = null;
-		
-		for (Control control : getChildren()) {
-			if (control instanceof Bank) {
-				Bank targetBank = (Bank) control;
-				
-				if (targetBank != draggedBank && isAttachTargetToRight(targetBank, dragProxie)) {
-					if(targetBank.setIsDockingTarget("right"));
-						ret = targetBank;
-
-				} else if (targetBank != draggedBank && isAttachTargetToBottom(targetBank, dragProxie)) {
-					if(targetBank.setIsDockingTarget("bottom"));
-						ret = targetBank;
-				} else {
-					targetBank.unsetIsDockingTarget();
-				}
-			}
-		}
-		
-		return ret;
-	}
-
-	private double getAttachArea() {
-		return Millimeter.toPixels(5);
-	}
-
-	@Override
-	public void dragLeave() {
-		for (Control c : getChildren()) {
-			if (c instanceof Bank) {
-				Bank b = (Bank) c;
-				b.unsetIsDockingTarget();
-			}
-		}
-	}
-
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
-		
+
 		NonMaps.theMaps.getNonLinearWorld().getPresetManager().resetClusterHighlight();
-		
-		for (Control c : getChildren()) {
-			if (c instanceof Bank) {
-				Bank b = (Bank) c;
-				if (b.isAttachDropTarget()) {
-					Control ret = b.drop(pos, dragProxy);
-					dragLeave();
-					return ret;
-				}
-			}
-		}
 
 		if (dragProxy.getOrigin() instanceof Bank) {
-			
+
 			Bank b = (Bank) dragProxy.getOrigin();
 
 			if (b.getMaster() != null)
@@ -505,7 +419,7 @@ public class PresetManager extends MapsLayout {
 			b.getNonPosition().moveTo(np);
 			b.requestLayout();
 			getNonMaps().getServerProxy().onBankPositionChanged(b);
-			
+
 			return this;
 		} else if (dragProxy.getOrigin() instanceof IPreset) {
 
@@ -925,10 +839,10 @@ public class PresetManager extends MapsLayout {
 		multiSelection = new MultiplePresetSelection(p);
 		return getMultiSelection();
 	}
-	
+
 	private MultiplePresetSelection startMultiSelectionEmpty() {
 		multiSelection = new MultiplePresetSelection();
-		return getMultiSelection();	
+		return getMultiSelection();
 	}
 
 	public void closeMultiSelection() {
@@ -954,7 +868,7 @@ public class PresetManager extends MapsLayout {
 	@Override
 	public Control click(Position eventPoint) {
 		NonMaps.get().getNonLinearWorld().setShiftDown(false);
-		
+
 		if (moveAllBanks != null) {
 			toggleMoveAllBanks();
 			return this;
@@ -976,9 +890,9 @@ public class PresetManager extends MapsLayout {
 		}
 		requestLayout();
 	}
-	
+
 	public void moveAllBanksBy(NonDimension distance) {
-		
+
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
@@ -995,5 +909,24 @@ public class PresetManager extends MapsLayout {
 		return 15;
 	}
 
+	public void setAttachingTapes(Tape one, Tape other) {
+		if (attachingTapes[0] != one) {
+			attachingTapes[0] = one;
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		}
+
+		if (attachingTapes[1] != other) {
+			attachingTapes[1] = other;
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		}
+	}
+
+	public boolean isAttachingTape(Tape inQuestion) {
+		return attachingTapes[0] == inQuestion || attachingTapes[1] == inQuestion;
+	}
+
+	public void resetAttachingTapes() {
+		setAttachingTapes(null, null);
+	}
 
 }
