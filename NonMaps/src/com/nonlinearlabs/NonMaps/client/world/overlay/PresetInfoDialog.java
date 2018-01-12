@@ -88,6 +88,7 @@ public class PresetInfoDialog extends GWTDialog {
 		presetNameAndPositionBox.add(position = new IntegerBox());
 		presetNameAndPositionBox.add(name = new TextBox());
 		position.getElement().addClassName("position-box");
+		name.getElement().addClassName("preset-name-box");
 
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Bank", bankName = new Label());
@@ -314,7 +315,7 @@ public class PresetInfoDialog extends GWTDialog {
 			}
 
 			if (haveFocus != position) {
-				position.setValue(preset.getNumber());
+				position.setText(preset.getPaddedNumber());
 			}
 
 			Bank bank = preset.getParent();

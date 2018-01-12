@@ -90,6 +90,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public int getNumber() {
 		return Integer.parseInt(number.getText());
 	}
+	
+	public String getPaddedNumber() {
+		NumberFormat f = NumberFormat.getFormat("000");
+		String ret = f.format(getNumber());
+		return ret;
+	}
 
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {

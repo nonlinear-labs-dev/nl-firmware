@@ -1598,7 +1598,11 @@ textarea {
 }
 
 .position-box {
-	width: 7%
+	width: 10%
+}
+
+.preset-name-box {
+	width: 72%;
 }
 
 .gwt-TextArea:disabled {
