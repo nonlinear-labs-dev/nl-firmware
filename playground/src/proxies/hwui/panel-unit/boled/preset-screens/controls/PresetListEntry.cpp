@@ -17,6 +17,9 @@ PresetListEntry::PresetListEntry(const Rect &pos) :
 {
   m_number = addControl(new PresetNumberLabel(Rect(0, 0, 21, 16)));
   m_name = addControl(new PresetNameLabel(Rect(21, 0, 105, 16)));
+
+	auto eb = Application::get().getPresetManager()->getEditBuffer();
+	eb->onChange(mem_fun(this, &PresetListEntry::onPresetChanged));
 }
 
 PresetListEntry::~PresetListEntry()
@@ -47,8 +50,8 @@ void PresetListEntry::onPresetChanged()
 {
   if(m_preset)
   {
-    auto isLoaded = m_preset->isLoaded();
-    auto bank = m_preset->getBank();
+		bool isLoaded = m_preset->getUuid() == Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset();
+		auto bank = m_preset->getBank();
     auto num = bank->getPresetPosition(m_preset->getUuid());
     m_number->update(num, m_selected, isLoaded);
     m_name->update(m_preset->getName(), m_selected, isLoaded);

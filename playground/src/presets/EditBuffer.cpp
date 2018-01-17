@@ -318,12 +318,6 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transa
     oldLoadMark->swapWith<0> (m_lastLoadedPresetInfo);
     auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
 
-    if(oldPreset)
-    oldPreset->onLoadStatusChanged();
-
-    if(newPreset)
-    newPreset->onLoadStatusChanged();
-
     onChange ();
   });
 
@@ -358,12 +352,6 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Scope::tTransactionPtr tra
       auto oldPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
       oldLoadMark->swapWith<0> (m_lastLoadedPresetInfo);
       auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
-
-      if(oldPreset)
-      oldPreset->onLoadStatusChanged();
-
-      if(newPreset)
-      newPreset->onLoadStatusChanged();
 
       onChange ();
     });
@@ -413,12 +401,6 @@ void EditBuffer::undoableInitSound(UNDO::Scope::tTransactionPtr transaction)
     swap->swapWith<0> (m_lastLoadedPresetInfo.presetName);
     swap->swapWith<1> (m_lastLoadedPresetInfo.presetUUID);
     auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
-
-    if(oldPreset)
-    oldPreset->onLoadStatusChanged();
-
-    if(newPreset)
-    newPreset->onLoadStatusChanged();
 
     onChange ();
   });
