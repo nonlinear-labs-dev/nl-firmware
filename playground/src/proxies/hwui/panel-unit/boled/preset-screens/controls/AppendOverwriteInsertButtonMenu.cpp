@@ -113,7 +113,7 @@ void AppendOverwriteInsertButtonMenu::overwrite(shared_ptr<PresetBank> bank, sha
   auto scope = pm->getUndoScope().startTransaction("Overwrite preset '%0'", tgtPreset->getName());
   auto transaction = scope->getTransaction();
 
-  bool loaded = tgtPreset->isLoaded();
+  bool loaded = tgtPreset->getUuid() == Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset();
 
   tgtPreset = overwritePreset(transaction, tgtPreset);
 

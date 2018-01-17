@@ -35,7 +35,6 @@ class Preset : public ParameterGroupSet, public AttributesOwner
     void setName (const ustring &name);
     ustring getName () const;
     const Uuid &getUuid () const;
-    bool isLoaded () const;
 
     shared_ptr<const PresetBank> getBank () const;
     shared_ptr<PresetBank> getBank ();

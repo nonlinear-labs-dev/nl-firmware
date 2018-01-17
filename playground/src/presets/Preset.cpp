@@ -250,13 +250,6 @@ size_t Preset::getHash () const
   return hash;
 }
 
-bool Preset::isLoaded () const
-{
-  auto a = Application::get ().getPresetManager ()->getEditBuffer ()->getUUIDOfLastLoadedPreset ();
-  Glib::ustring b = getUuid ();
-  return a == b;
-}
-
 bool Preset::hasDuplicateName () const
 {
   size_t num = 0;
@@ -314,12 +307,4 @@ bool Preset::doesQuerySubstringMatch (const Glib::ustring &part) const
     return true;
 
   return false;
-}
-
-void Preset::onLoadStatusChanged()
-{
-  #warning "testweise auskommentiert - ich halte das fuer obsolet und kontra-produktiv (10.1.2018)"
-  #warning "bitte ausbauen, wenn keine Probleme in diesem Scope auftauchen. Wenn onChange hier"
-  #warning "benoetigt wird, bitte expliziter formulieren, so dass man versteht, warum!?"
-  // onChange();
 }
