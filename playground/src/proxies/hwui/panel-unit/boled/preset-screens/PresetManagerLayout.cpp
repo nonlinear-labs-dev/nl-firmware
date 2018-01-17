@@ -201,19 +201,17 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
         return m_presets->onButton(i, down, modifiers);
 
       case BUTTON_D:
-        if(m_menu)
-        {
-        if (modifiers[SHIFT] == 1)
-        {
-          m_menu->antiToggle();
+        if(m_menu) {
+          if (modifiers[SHIFT] == 1) {
+            m_menu->antiToggle();
+          }
+          else {
+            m_menu->toggle();
+          }
         }
-        else
-        {
-          m_menu->toggle();
-        }
-        }
-        else if(m_autoLoad)
+        else if(m_autoLoad) {
           Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
+        }
 
         return true;
 
