@@ -81,20 +81,18 @@ public class PresetInfoDialog extends GWTDialog {
 	}
 		
 	private void addContent() {
-		HTMLPanel bankNameAndPosition = new HTMLPanel("div", "");
-		bankNameAndPosition.getElement().addClassName("flex-div bankname-and-position");
-		bankNameAndPosition.add(bankName = new Label());
-		bankNameAndPosition.add(position = new IntegerBox());
-		bankName.getElement().addClassName("gwt-TextBox");
-
-		HTMLPanel presetNameBox = new HTMLPanel("div", "");
-		presetNameBox.getElement().addClassName("flex-div name-box");
-		presetNameBox.add(name = new TextBox());
-		name.getElement().addClassName("name");
+		
+		
+		HTMLPanel presetNameAndPositionBox = new HTMLPanel("div", "");
+		presetNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
+		presetNameAndPositionBox.add(position = new IntegerBox());
+		presetNameAndPositionBox.add(name = new TextBox());
+		position.getElement().addClassName("position-box");
+		name.getElement().addClassName("preset-name-box");
 
 		FlexTable panel = new FlexTable();
-		addRow(panel, "Name", presetNameBox);
-		addRow(panel, "Position", bankNameAndPosition);
+		addRow(panel, "Bank", bankName = new Label());
+		addRow(panel, "Position/Name", presetNameAndPositionBox);
 		addRow(panel, "Comment", comment = new TextArea());
 		addRow(panel, "Last Change", storeTime = new Label(""));
 		addRow(panel, "Device Name", deviceName = new Label(""));
@@ -317,11 +315,11 @@ public class PresetInfoDialog extends GWTDialog {
 			}
 
 			if (haveFocus != position) {
-				position.setValue(preset.getNumber());
+				position.setText(preset.getPaddedNumber());
 			}
 
 			Bank bank = preset.getParent();
-			bankName.setText(bank.getOrderNumber() + ": " + bank.getTitleName());
+			bankName.setText(bank.getOrderNumber() + " - " + bank.getTitleName());
 
 			centerIfOutOfView();
 		}

@@ -1593,6 +1593,18 @@ textarea {
 	width: 100%;
 }
 
+.preset-name-and-pos {
+	width: 220px;
+}
+
+.position-box {
+	width: 10%
+}
+
+.preset-name-box {
+	width: 72%;
+}
+
 .gwt-TextArea:disabled {
 	background-color: #202020;
 }
