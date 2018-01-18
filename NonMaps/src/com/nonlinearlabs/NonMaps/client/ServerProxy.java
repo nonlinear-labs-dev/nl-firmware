@@ -838,12 +838,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void dockBanks(Bank one, Orientation onesOrientation, Bank other, NonPosition pos) {
+	public void dockBanks(Bank droppedOnto, Orientation droppedAt, Bank dragged, NonPosition pos) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "dock-banks");
 
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("one", one.getUUID()), new StaticURI.KeyValue("other", other.getUUID()),
-				new StaticURI.KeyValue("onesOrientation", onesOrientation.name()), new StaticURI.KeyValue("x", pos.getX()),
-				new StaticURI.KeyValue("y", pos.getY()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("droppedOntoBank", droppedOnto.getUUID()), new StaticURI.KeyValue(
+				"draggedBank", dragged.getUUID()), new StaticURI.KeyValue("droppedAt", droppedAt.name()), new StaticURI.KeyValue("x",
+				pos.getX()), new StaticURI.KeyValue("y", pos.getY()));
 
 		queueJob(uri, false);
 

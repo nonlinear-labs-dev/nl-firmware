@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset;
 import java.util.HashMap;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -34,7 +33,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private Name name = null;
 	private Number number = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
-	
+
 	public enum FilterState {
 		NO_FILTER, FILTER_MATCHES, FILTERED_OUT
 	};
@@ -177,25 +176,23 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public boolean isLoaded() {
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
-	
+
 	@Override
 	public Control click(Position point) {
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;
-		}
-		else if(NonMaps.get().getNonLinearWorld().isShiftDown())
-		{
+		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
 			getParent().getParent().startMultiSelection(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;
 		}
-				
+
 		if (wasSelectedAtMouseDown) {
 			load();
 		}
-		
+
 		return this;
 	}
 
@@ -342,11 +339,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (ServerProxy.didChange(node)) {
 			attributes.clear();
 			NodeList children = node.getChildNodes();
-	
+
 			for (int i = 0; i < children.getLength(); i++) {
 				Node n = children.item(i);
 				String nodesName = n.getNodeName();
-	
+
 				if (nodesName.equals("attribute")) {
 					updateAttribute(n);
 				}

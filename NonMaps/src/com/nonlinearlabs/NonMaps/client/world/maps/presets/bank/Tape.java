@@ -51,10 +51,13 @@ public class Tape extends MapsControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		getPixRect().fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(255, 0, 0) : new RGB(0, 255, 0));
+		getPixRect().fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
 	}
 
 	public boolean fitsTo(Tape others) {
+		if (getParent().isClusteredWith(others.getParent()))
+			return false;
+
 		return (orientation == Orientation.East && others.orientation == Orientation.West)
 				|| (orientation == Orientation.West && others.orientation == Orientation.East)
 				|| (orientation == Orientation.North && others.orientation == Orientation.South)
@@ -63,17 +66,19 @@ public class Tape extends MapsControl {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		if (dragProxy.getOrigin() instanceof Bank) {
-			Bank other = (Bank) dragProxy.getOrigin();
+		if (isVisible()) {
+			if (dragProxy.getOrigin() instanceof Bank) {
+				Bank other = (Bank) dragProxy.getOrigin();
 
-			if (getParent() != other) {
-				Dimension offset = dragProxy.getPixRect().getLeftTop().getVector(other.getPixRect().getLeftTop());
+				if (getParent() != other) {
+					Dimension offset = dragProxy.getPixRect().getLeftTop().getVector(other.getPixRect().getLeftTop());
 
-				for (Tape others : other.getTapes()) {
-					if (fitsTo(others)) {
-						if (getPixRect().intersects(others.getPixRect().getMovedBy(offset))) {
-							getParent().getParent().setAttachingTapes(this, others);
-							return this;
+					for (Tape others : other.getTapes()) {
+						if (fitsTo(others)) {
+							if (getPixRect().intersects(others.getPixRect().getMovedBy(offset))) {
+								getParent().getParent().setAttachingTapes(this, others);
+								return this;
+							}
 						}
 					}
 				}
@@ -83,12 +88,38 @@ public class Tape extends MapsControl {
 	}
 
 	@Override
+	public int getDragRating(Position newPoint, DragProxy dragProxy) {
+		int rating = super.getDragRating(newPoint, dragProxy);
+		if (dragProxy.getOrigin() instanceof Bank) {
+			Bank other = (Bank) dragProxy.getOrigin();
+
+			if (getParent() != other) {
+				Dimension offset = dragProxy.getPixRect().getLeftTop().getVector(other.getPixRect().getLeftTop());
+
+				for (Tape others : other.getTapes()) {
+					if (fitsTo(others)) {
+						if (getPixRect().intersects(others.getPixRect().getMovedBy(offset))) {
+							return rating * 1000;
+						}
+					}
+				}
+			}
+		}
+		return rating;
+	}
+
+	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
 			Bank other = (Bank) dragProxy.getOrigin();
-			Position pixPos = dragProxy.getPixRect().getPosition();
-			NonPosition nonPos = NonMaps.get().getNonLinearWorld().toNonPosition(pixPos);
+			Bank clusterMaster = other.getClusterMaster();
+			DragProxy dragProxyForClusterMaster = NonMaps.get().getNonLinearWorld().getViewport().getOverlay()
+					.getDragProxyFor(clusterMaster);
+			Position dropPosition = dragProxyForClusterMaster != null ? dragProxyForClusterMaster.getPixRect().getPosition() : pos;
+			NonPosition nonPos = NonMaps.get().getNonLinearWorld().toNonPosition(dropPosition);
 			NonMaps.get().getServerProxy().dockBanks(getParent(), orientation, other, nonPos);
+			other.getClusterMaster().moveTo(nonPos);
+			requestLayout();
 			return this;
 		}
 		return super.drop(pos, dragProxy);

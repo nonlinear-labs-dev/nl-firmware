@@ -304,14 +304,13 @@ BankActions::BankActions(PresetManager &presetManager) :
       auto newPreset = bank->getPreset (desiredPresetPos);
 
       if(!uuid.empty())
-        newPreset->undoableSetUuid(transaction, uuid);
+      newPreset->undoableSetUuid(transaction, uuid);
 
       bank->undoableSelectPreset (transaction, newPreset->getUuid());
       newPreset->undoableSetName(transaction, newName);
       m_presetManager.undoableSelectBank (transaction, bank->getUuid());
     }
   });
-
 
   addAction("append-preset-to-bank", [&] (shared_ptr<NetworkRequest> request) mutable
   {
@@ -375,7 +374,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       auto newPreset = bank->getPreset (desiredPresetPos);
 
       if(!uuid.empty())
-        newPreset->undoableSetUuid(transaction, uuid);
+      newPreset->undoableSetUuid(transaction, uuid);
 
       bank->undoableSelectPreset (transaction, newPreset->getUuid());
       newPreset->undoableSetName(transaction, newName);
@@ -806,36 +805,77 @@ BankActions::BankActions(PresetManager &presetManager) :
     }
   });
 
+  addAction("dock-banks", [&] (shared_ptr<NetworkRequest> request) mutable
+  {
+    const auto droppedOntoBankUuid = request->get("droppedOntoBank");
+    const auto draggedBankUuid = request->get("draggedBank");
+    const auto droppedAt = request->get("droppedAt");
+    const auto x = request->get("x");
+    const auto y = request->get("y");
+
+    if(tBankPtr droppedOntoBank = m_presetManager.findBank(droppedOntoBankUuid))
+    {
+      if(tBankPtr draggedBank = m_presetManager.findBank(draggedBankUuid))
+      {
+        auto scope = presetManager.getUndoScope().startTransaction("Dock Banks '%0' and '%1'", droppedOntoBank->getName(true), draggedBank->getName(true));
+        auto transaction = scope->getTransaction();
+
+        if(droppedAt == "North")
+        {
+          droppedOntoBank->undoableAttachBank(transaction, draggedBank->getUuid(), PresetBank::AttachmentDirection::top);
+          draggedBank->getClusterMaster()->undoableSetPosition(transaction, x, y);
+        }
+        else if(droppedAt == "West")
+        {
+          droppedOntoBank->undoableAttachBank(transaction, draggedBank->getUuid(), PresetBank::AttachmentDirection::left);
+          draggedBank->getClusterMaster()->undoableSetPosition(transaction, x, y);
+        }
+        else if(droppedAt == "South")
+        {
+          draggedBank->undoableAttachBank(transaction, droppedOntoBank->getUuid(), PresetBank::AttachmentDirection::top);
+        }
+        else if(droppedAt == "East")
+        {
+          draggedBank->undoableAttachBank(transaction, droppedOntoBank->getUuid(), PresetBank::AttachmentDirection::left);
+        }
+
+        m_presetManager.sanitizeBankClusterRelations(transaction);
+      }
+    }
+  });
+
   addAction("undock-bank", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     const auto uuid = request->get("uuid");
     const auto x = request->get("x");
     const auto y = request->get("y");
 
-    if(tBankPtr bank = m_presetManager.findBank(uuid))
+    if(auto bank = m_presetManager.findBank(uuid))
     {
-      DebugLevel::warning("undocking-bank: ", uuid, " from ", bank->getAttached().uuid);
-      auto parentBankName = m_presetManager.findBank(bank->getAttached().uuid)->getName(true);
-      auto scope = presetManager.getUndoScope().startTransaction("Detached Bank '%0' from '%1'", bank->getName(true), parentBankName);
-      auto transaction = scope->getTransaction();
-      bank->undoableDetachBank(transaction);
-      bank->undoableSetPosition(transaction, x, y);
+      if(auto attached = m_presetManager.findBank(bank->getAttached().uuid))
+      {
+        auto parentBankName = attached->getName(true);
+        auto scope = presetManager.getUndoScope().startTransaction("Detached Bank '%0' from '%1'", bank->getName(true), parentBankName);
+        auto transaction = scope->getTransaction();
+        bank->undoableDetachBank(transaction);
+        bank->undoableSetPosition(transaction, x, y);
+      }
     }
   });
 
-    addAction("move-all-banks", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("move-all-banks", [&](shared_ptr<NetworkRequest> request) mutable
+  {
+    auto x = atof(request->get("x").c_str());
+    auto y = atof(request->get("y").c_str());
+
+    UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Move all Banks");
+    UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+
+    for(auto bank: m_presetManager.getBanks())
     {
-        auto x = atof(request->get("x").c_str());
-        auto y = atof(request->get("y").c_str());
-
-        UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Move all Banks");
-        UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
-
-        for(auto bank: m_presetManager.getBanks())
-        {
-            bank->undoableMovePosition(transaction, x, y);
-        }
-    });
+      bank->undoableMovePosition(transaction, x, y);
+    }
+  });
 }
 
 BankActions::~BankActions()

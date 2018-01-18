@@ -52,8 +52,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private String masterUUID;
 	private String attatchDirection;
 
-	private boolean inSelectedCluster = false;
-
 	private String m_saveState = "";
 
 	private enum DropPosition {
@@ -61,7 +59,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public enum DropAction {
-		NONE, COPY_PRESET, MOVE_PRESET, INSERT_EDITBUFFER, INSERT_BANK, DROP_PRESETS, ATTACH
+		NONE, COPY_PRESET, MOVE_PRESET, INSERT_EDITBUFFER, INSERT_BANK, DROP_PRESETS
 	}
 
 	private Tape tapes[] = new Tape[4];
@@ -104,11 +102,11 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		getTape(Tape.Orientation.South).setNonSize(new NonDimension(oldDim.getWidth(), tapeWidth));
 		getTape(Tape.Orientation.South).moveTo(new NonPosition(tapeWidth, oldDim.getHeight() + tapeWidth));
 
-		getTape(Tape.Orientation.East).setNonSize(new NonDimension(tapeWidth, oldDim.getHeight()));
-		getTape(Tape.Orientation.East).moveTo(new NonPosition(0, tapeWidth));
-
 		getTape(Tape.Orientation.West).setNonSize(new NonDimension(tapeWidth, oldDim.getHeight()));
-		getTape(Tape.Orientation.West).moveTo(new NonPosition(oldDim.getWidth() + tapeWidth, tapeWidth));
+		getTape(Tape.Orientation.West).moveTo(new NonPosition(0, tapeWidth));
+
+		getTape(Tape.Orientation.East).setNonSize(new NonDimension(tapeWidth, oldDim.getHeight()));
+		getTape(Tape.Orientation.East).moveTo(new NonPosition(oldDim.getWidth() + tapeWidth, tapeWidth));
 
 		setNonSize(oldDim.getWidth() + tapeWidth * 2, oldDim.getHeight() + tapeWidth * 2);
 	}
@@ -135,7 +133,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public double getAttachArea() {
-		return 20;
+		return 15;
 	}
 
 	private void drawDropIndicator(Context2d ctx, Rect presetRect) {
@@ -162,14 +160,25 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		currentDropAction = getDropAction(pos, dragProxy);
+		if (dragProxy.getPixRect().contains(pos)) { // sort out slaves
+			if (!isDraggingControl()) {
+				currentDropAction = getDropAction(pos, dragProxy);
 
-		if (currentDropAction != DropAction.NONE) {
-			dragPosition = pos;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			return this;
+				if (currentDropAction != DropAction.NONE) {
+					dragPosition = pos;
+					invalidate(INVALIDATION_FLAG_UI_CHANGED);
+					return this;
+				}
+			}
 		}
 		return super.drag(pos, dragProxy);
+	}
+
+	@Override
+	public int getDragRating(Position newPoint, DragProxy dragProxy) {
+		if (getPixRect().contains(newPoint))
+			return super.getDragRating(newPoint, dragProxy) * 10000;
+		return 0;
 	}
 
 	@Override
@@ -411,7 +420,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	public RGB getColorBankSelect() {
 
-		if (isIndirectSelected())
+		if (NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxyFor(this) != null)
 			return new RGB(98, 113, 183);
 		else if (isSelected())
 			return new RGB(173, 181, 217);
@@ -435,10 +444,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			return new RGB(255, 255, 255);
 
 		return new RGB(125, 125, 125);
-	}
-
-	public boolean isIndirectSelected() {
-		return inSelectedCluster;
 	}
 
 	public boolean isSelected() {
@@ -928,16 +933,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		}
 	}
 
-	public void setInSelectedCluster(boolean inSelectedCluster) {
-		this.inSelectedCluster = inSelectedCluster;
-	}
-
 	public Header getHeader() {
 		return header;
-	}
-
-	public boolean isInSelectedCluster() {
-		return inSelectedCluster;
 	}
 
 	public boolean hasSlaves() {
@@ -957,16 +954,23 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		switch (orientation) {
 		case North:
-			return !hasMaster || isDraggingControl();
+			return !hasMaster;
 
 		case South:
 			return slaveBottom == null;
 
-		case East:
-			return slaveRight == null;
+		case East: {
+			Bank walker = this;
+			while (walker != null) {
+				if (walker.slaveRight != null)
+					return false;
+				walker = walker.masterTop;
+			}
+			return true;
+		}
 
 		case West:
-			return !hasMaster || isDraggingControl();
+			return !hasMaster;
 		}
 		return false;
 	}
@@ -975,9 +979,34 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return tapes;
 	}
 
+	public Bank getMasterTop() {
+		return masterTop;
+	}
+
+	public Bank getMasterLeft() {
+		return masterLeft;
+	}
+
 	@Override
 	public void beingDragged(double xDiff, double yDiff) {
 		getParent().resetAttachingTapes();
 		super.beingDragged(xDiff, yDiff);
+	}
+
+	public boolean isClusteredWith(Bank parent) {
+		Bank master = getClusterMaster();
+		return master == parent.getClusterMaster();
+	}
+
+	public Bank getClusterMaster() {
+		Bank master = this;
+		while (true) {
+			if (master.masterLeft != null)
+				master = master.masterLeft;
+			else if (master.masterTop != null)
+				master = master.masterTop;
+			else
+				return master;
+		}
 	}
 }

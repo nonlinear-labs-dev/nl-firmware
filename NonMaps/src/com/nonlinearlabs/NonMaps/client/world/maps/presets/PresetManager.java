@@ -270,41 +270,6 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
-	private void highlightSlavesOfSelectedBank(Bank master) {
-		Bank rightSlave = master.getRightSlave();
-		Bank bottomSlave = master.getBottomSlave();
-
-		if (rightSlave != null) {
-			rightSlave.setInSelectedCluster(true);
-			highlightSlavesOfSelectedBank(rightSlave);
-		}
-		if (bottomSlave != null) {
-			bottomSlave.setInSelectedCluster(true);
-			highlightSlavesOfSelectedBank(bottomSlave);
-		}
-	}
-
-	public void resetClusterHighlight() {
-		for (Control c : getChildren()) {
-			if (c instanceof Bank) {
-				Bank b = (Bank) c;
-				b.setInSelectedCluster(false);
-			}
-		}
-	}
-
-	public void indicateClusterSelection(String bankUUID) {
-		resetClusterHighlight();
-		Bank bankObj = findBank(bankUUID);
-
-		if (bankObj != null) {
-			bankObj.setInSelectedCluster(true);
-			if (bankObj.getBottomSlave() != null || bankObj.getRightSlave() != null) {
-				highlightSlavesOfSelectedBank(bankObj);
-			}
-		}
-	}
-
 	public void selectBank(String bankUUID, boolean userInteraction) {
 		if (!selectedBank.equals(bankUUID)) {
 			selectedBank = bankUUID;
@@ -348,8 +313,6 @@ public class PresetManager extends MapsLayout {
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
-			Bank dragged = (Bank) dragProxy.getOrigin();
-			dragged.setInSelectedCluster(dragged.hasSlaves());
 			return this;
 		}
 
@@ -404,9 +367,6 @@ public class PresetManager extends MapsLayout {
 
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
-
-		NonMaps.theMaps.getNonLinearWorld().getPresetManager().resetClusterHighlight();
-
 		if (dragProxy.getOrigin() instanceof Bank) {
 
 			Bank b = (Bank) dragProxy.getOrigin();

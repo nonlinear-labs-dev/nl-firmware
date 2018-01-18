@@ -157,7 +157,6 @@ public class Header extends Label {
 	public Control mouseUp(Position eventPoint) {
 		sendPosChangeToServer = true;
 		requestLayout();
-		NonMaps.theMaps.getNonLinearWorld().getPresetManager().resetClusterHighlight();
 		return super.mouseUp(eventPoint);
 	}
 
@@ -195,8 +194,6 @@ public class Header extends Label {
 	public Control startDragging(Position pos) {
 		Control ret = null;
 
-		NonMaps.theMaps.getNonLinearWorld().getPresetManager().indicateClusterSelection(getParent().getUUID());
-		
 		for (Bank bank : getBanksThatMoveWhenMovingBank(getParent())) {
 			if (bank == getParent()) {
 				ret = getNonMaps().getNonLinearWorld().getViewport().getOverlay().addDragProxy(bank, bank.getPixRect().getPosition());
@@ -204,6 +201,8 @@ public class Header extends Label {
 				getNonMaps().getNonLinearWorld().getViewport().getOverlay().addDragProxy(bank, bank.getPixRect().getPosition());
 			}
 		}
+
+		getParent().undockBank();
 
 		return ret;
 	}
@@ -241,20 +240,31 @@ public class Header extends Label {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
-			if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
-					|| dragProxy.getOrigin() instanceof IBank) {
+		if (dragProxy.getPixRect().contains(pos)) { // sort out slaves
+			if (!getParent().isDraggingControl()) {
+				if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
+					if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
+							|| dragProxy.getOrigin() instanceof IBank) {
 
-				if (dragProxy.getOrigin() != getParent()) {
-					Bank bBank = (Bank) dragProxy.getOrigin() ;
-						if(bBank.hasSlaves() == false)
-							setIsDropTarget(true);
-					return this;
+						if (dragProxy.getOrigin() != getParent()) {
+							Bank bBank = (Bank) dragProxy.getOrigin();
+							if (bBank.hasSlaves() == false)
+								setIsDropTarget(true);
+							return this;
+						}
+					}
 				}
 			}
 		}
 
 		return super.drag(pos, dragProxy);
+	}
+
+	@Override
+	public int getDragRating(Position newPoint, DragProxy dragProxy) {
+		if (getPixRect().contains(newPoint))
+			return super.getDragRating(newPoint, dragProxy) * 100;
+		return 0;
 	}
 
 	private void setIsDropTarget(boolean isDropTarget) {

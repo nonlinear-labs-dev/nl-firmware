@@ -389,4 +389,15 @@ public class Overlay extends OverlayLayout {
 		}
 		return proxies;
 	}
+
+	public DragProxy getDragProxyFor(Control origin) {
+		for (OverlayControl c : getChildren()) {
+			if (c instanceof DragProxy) {
+				DragProxy d = (DragProxy) c;
+				if (d.getOrigin() == origin)
+					return d;
+			}
+		}
+		return null;
+	}
 }

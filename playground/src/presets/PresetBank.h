@@ -107,6 +107,8 @@ class PresetBank : public UpdateDocumentContributor, public AttributesOwner, pub
     void resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transaction);
     bool resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction);
 
+    PresetBank *getClusterMaster();
+
     virtual tUpdateID onChange () override;
 
     // CALLBACKS

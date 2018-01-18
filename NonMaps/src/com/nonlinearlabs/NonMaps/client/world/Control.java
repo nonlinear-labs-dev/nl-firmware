@@ -299,4 +299,8 @@ public abstract class Control {
 	public int getDepth() {
 		return getParent().getDepth() + 1;
 	}
+
+	public int getDragRating(Position newPoint, DragProxy dragProxy) {
+		return getDepth();
+	}
 }
