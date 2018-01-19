@@ -83,6 +83,11 @@ public class NonLinearWorld extends MapsLayout {
 		viewport.init();
 	}
 
+	@Override
+	public int getDepth() {
+		return 0;
+	}
+
 	public DeveloperSettings getSettings() {
 		return settings;
 	}
@@ -612,4 +617,5 @@ public class NonLinearWorld extends MapsLayout {
 	public void setSpaceDown(boolean isSpaceDown) {
 		this.isSpaceDown = isSpaceDown;
 	}
+
 }

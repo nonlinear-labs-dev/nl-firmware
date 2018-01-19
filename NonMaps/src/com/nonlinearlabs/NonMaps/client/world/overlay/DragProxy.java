@@ -1,5 +1,8 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
@@ -16,6 +19,18 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public class DragProxy extends OverlayControl {
 
+	class FoundControl {
+		public FoundControl(DragProxy proxy, Control ctrl, int ranking) {
+			this.proxy = proxy;
+			this.ctrl = ctrl;
+			this.ranking = ranking;
+		}
+
+		Control ctrl = null;
+		int ranking = 0;
+		DragProxy proxy = null;
+	};
+
 	private final Control origin;
 	private Control receiver = null;
 	private Canvas bmp = Canvas.createIfSupported();
@@ -29,6 +44,7 @@ public class DragProxy extends OverlayControl {
 	RepeatingCommand autoScrollCommand;
 
 	AutoScrollDirection currentAutoScrollDirection = AutoScrollDirection.None;
+	private DragProxy triggeredProxy;
 
 	public DragProxy(Overlay parent, Control origin, Position point) {
 		super(parent);
@@ -100,22 +116,42 @@ public class DragProxy extends OverlayControl {
 		double yDiff = newPoint.getY() - oldPoint.getY();
 		NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().moveDragProxies(xDiff, yDiff);
 
-		Control newReceiver = NonMaps.theMaps.getNonLinearWorld().recurseChildren(newPoint, new ControlFinder() {
-			@Override
-			public boolean onWayUpFound(Control ctrl) {
-				Control r = ctrl.drag(newPoint, DragProxy.this);
-				if (r != null) {
-					setReceiver(r);
-					return true;
-				}
+		getOrigin().beingDragged(xDiff, yDiff);
 
-				return false;
+		ArrayList<FoundControl> foundControls = new ArrayList<FoundControl>();
+
+		for (DragProxy p : NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
+			NonMaps.theMaps.getNonLinearWorld().recurseChildren(p.getPixRect(), new ControlFinder() {
+				@Override
+				public boolean onWayUpFound(Control ctrl) {
+					if (ctrl != getOrigin()) {
+						int ranking = ctrl.getDragRating(newPoint, p);
+						if (ranking >= 0)
+							foundControls.add(new FoundControl(p, ctrl, ranking));
+					}
+
+					return false;
+				}
+			});
+		}
+
+		foundControls.sort(new Comparator<FoundControl>() {
+
+			@Override
+			public int compare(FoundControl o1, FoundControl o2) {
+				return o2.ranking - o1.ranking;
 			}
 		});
 
-		if (newReceiver == null)
-			setReceiver(null);
+		for (FoundControl f : foundControls) {
+			Control r = f.ctrl.drag(newPoint, f.proxy);
+			if (r != null) {
+				setReceiver(r, f.proxy);
+				return this;
+			}
+		}
 
+		setReceiver(null, null);
 		return this;
 	}
 
@@ -196,26 +232,22 @@ public class DragProxy extends OverlayControl {
 		return this;
 	}
 
-	public void drop(final Position eventPoint) {
-		NonMaps.theMaps.getNonLinearWorld().recurseChildren(eventPoint, new ControlFinder() {
-			@Override
-			public boolean onWayUpFound(Control ctrl) {
-				Control r = ctrl.drop(eventPoint, DragProxy.this);
-				if (r != null) {
-					setReceiver(null);
-					return true;
-				}
+	public void drop(final Position newPoint) {
+		if (receiver != null) {
+			Control r = receiver.drop(newPoint, triggeredProxy);
 
-				return false;
+			if (r != null) {
+				setReceiver(r, triggeredProxy);
 			}
-		});
+		}
 	}
 
-	protected void setReceiver(Control r) {
+	protected void setReceiver(Control r, DragProxy proxy) {
 		if (receiver != null && receiver != r) {
 			receiver.dragLeave();
 		}
 		receiver = r;
+		this.triggeredProxy = proxy;
 	}
 
 	@Override

@@ -17,8 +17,8 @@ import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
-import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.Uuid;
+import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
@@ -26,6 +26,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager.SearchQueryCombination;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 
@@ -832,8 +833,19 @@ public class ServerProxy {
 
 	public void moveAllBanks(NonDimension distance) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-all-banks");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("x", distance.getWidth()),
-											new StaticURI.KeyValue("y", distance.getHeight()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("x", distance.getWidth()), new StaticURI.KeyValue("y",
+				distance.getHeight()));
 		queueJob(uri, false);
+	}
+
+	public void dockBanks(Bank droppedOnto, Orientation droppedAt, Bank dragged, NonPosition pos) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "dock-banks");
+
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("droppedOntoBank", droppedOnto.getUUID()), new StaticURI.KeyValue(
+				"draggedBank", dragged.getUUID()), new StaticURI.KeyValue("droppedAt", droppedAt.name()), new StaticURI.KeyValue("x",
+				pos.getX()), new StaticURI.KeyValue("y", pos.getY()));
+
+		queueJob(uri, false);
+
 	}
 }

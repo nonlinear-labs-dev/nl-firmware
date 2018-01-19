@@ -79,4 +79,9 @@ public class Dimension {
 		width += dim.width;
 		height += dim.height;
 	}
+
+	public void negate() {
+		width *= -1;
+		height *= -1;
+	}
 }

@@ -128,6 +128,14 @@ public abstract class Control {
 		return null;
 	}
 
+	public Control recurseChildren(Rect r, ControlFinder handler) {
+		if (getPixRect().intersects(r))
+			if (handler.onWayDownFound(this) || handler.onWayUpFound(this))
+				return this;
+
+		return null;
+	}
+
 	public RGB getColorFont() {
 		return parent.getColorFont();
 	}
@@ -283,5 +291,16 @@ public abstract class Control {
 		int ret = pendingInvalidationMask;
 		pendingInvalidationMask = 0;
 		return ret;
+	}
+
+	public void beingDragged(double xDiff, double yDiff) {
+	}
+
+	public int getDepth() {
+		return getParent().getDepth() + 1;
+	}
+
+	public int getDragRating(Position newPoint, DragProxy dragProxy) {
+		return getDepth();
 	}
 }

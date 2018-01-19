@@ -25,7 +25,8 @@
 
 PresetBank::PresetBank(PresetManager *parent) :
     UpdateDocumentContributor(parent),
-m_signalBankChangedPending(false), m_attachment("", AttachmentDirection::none)
+    m_signalBankChangedPending(false),
+    m_attachment("", AttachmentDirection::none)
 {
 }
 
@@ -764,15 +765,15 @@ const Glib::ustring PresetBank::calcStateString() const
   std::string lastModTimeIso = DateTimeInfo::formatTime(m_lastChangedTimestamp, "%FT%T%z");
   std::string lastImportTime = getAttribute("Date of Import File", "-1");
 
-  if (lastExportTimeIso.compare("-1") == 0)
+  if(lastExportTimeIso.compare("-1") == 0)
   {
     return "Not Saved By Export";
   }
-  else if (lastImportTime != "-1" && lastModTimeIso.compare(lastImportTime) < 0)
+  else if(lastImportTime != "-1" && lastModTimeIso.compare(lastImportTime) < 0)
   {
     return "Unchanged since Import";
   }
-  else if (lastModTimeIso.compare(lastExportTimeIso) < 0 || lastModTimeIso == lastExportTimeIso)
+  else if(lastModTimeIso.compare(lastExportTimeIso) < 0 || lastModTimeIso == lastExportTimeIso)
   {
     return "Unchanged since Export";
   }
@@ -876,16 +877,16 @@ const Glib::ustring PresetBank::directionEnumToString(AttachmentDirection direct
   static_assert(AttachmentDirection::top == 1, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
   static_assert(AttachmentDirection::left == 2, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
 
-  switch (direction)
+  switch(direction)
   {
 
-  case top:
-    return "top";
-  case left:
-    return "left";
-  case none:
-  default:
-    return "";
+    case top:
+      return "top";
+    case left:
+      return "left";
+    case none:
+    default:
+      return "";
   }
 }
 
@@ -897,7 +898,7 @@ void PresetBank::resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transacti
 
 bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction)
 {
-  if (std::find(stackedBanks.begin(), stackedBanks.end(), this) != stackedBanks.end())
+  if(std::find(stackedBanks.begin(), stackedBanks.end(), this) != stackedBanks.end())
   {
     return false;
   }
@@ -906,10 +907,18 @@ bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks,
 
   auto master = Application::get().getPresetManager()->findBank(getAttached().uuid);
 
-  if (master != nullptr && !master->resolveCyclicAttachments(stackedBanks, transaction))
+  if(master != nullptr && !master->resolveCyclicAttachments(stackedBanks, transaction))
   {
-    resetAttached (transaction);
+    resetAttached(transaction);
   }
   stackedBanks.pop_back();
   return true;
+}
+
+PresetBank *PresetBank::getClusterMaster()
+{
+  if(auto master = getParent()->findBank(getAttached().uuid))
+    return master->getClusterMaster();
+
+  return this;
 }

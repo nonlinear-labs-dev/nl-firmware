@@ -4,7 +4,7 @@ project(NonMaps)
 message("searching for gwt compiler in: ${JARSDIR}")
 
 set(NONMAPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-set(OBJDIR ${NONMAPS_ROOT}/obj)
+set(OBJDIR ${CMAKE_CURRENT_BINARY_DIR}/obj)
 set(ONLINEHELPDIR ${NONMAPS_ROOT}/online-help)
 set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/compilation-mappings.txt)
 

@@ -121,6 +121,21 @@ public abstract class MapsLayout extends MapsControl implements ILayout<MapsCont
 		return null;
 	}
 
+	public Control recurseChildren(Rect r, ControlFinder handler) {
+		if (getPixRect().intersects(r)) {
+			if (handler.onWayDownFound(this))
+				return this;
+
+			Control c = children.recurseChildren(r, handler);
+			if (c != null)
+				return c;
+
+			if (handler.onWayUpFound(this))
+				return this;
+		}
+		return null;
+	}
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		drawChildren(ctx, invalidationMask);
