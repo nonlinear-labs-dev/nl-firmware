@@ -28,7 +28,7 @@ template<typename T, gsize size>
 
       size_t pull(T* data, size_t count)
       {
-        count = std::min(count, m_writeHead - m_readHead);
+        count = std::min<uint64_t>(count, m_writeHead - m_readHead);
 
         if(count)
         {
