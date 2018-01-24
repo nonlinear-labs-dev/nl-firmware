@@ -42,20 +42,25 @@ namespace FileTools
 
     while (it != fs::recursive_directory_iterator())
     {
-			try {
-				Glib::ustring name(it->path().string());
-				DebugLevel::warning(__FILE__, name);
-				if (fs::is_directory(it->path()) && name.find("/.") != Glib::ustring::npos) {
-					DebugLevel::warning(__FILE__, name);
-					it.disable_recursion_pending();
-				} else if (!fs::is_directory(it->path()) && !filter(*it)) {
-					list.emplace_back(*it);
-				}
-			} catch(Glib::Error err) {
-				DebugLevel::error(err.what(), err.code());
-			} catch (...) {
-				DebugLevel::error("non Glib::Error while traversing Thumbdrive!");
-			}
+	try 
+	{
+		Glib::ustring name(it->path().string());
+		DebugLevel::warning(__FILE__, name);
+		if (fs::is_directory(it->path()) && name.find("/.") != Glib::ustring::npos) 
+		{
+			DebugLevel::warning(__FILE__, name);
+			it.disable_recursion_pending();
+		} else if (!fs::is_directory(it->path()) && !filter(*it)) 
+		{
+			list.emplace_back(*it);
+		}
+	} catch(Glib::Error err) 
+	{
+		DebugLevel::error(err.what(), err.code());
+	} catch (...) 
+	{
+		DebugLevel::error("non Glib::Error while traversing Thumbdrive!");
+	}
       ++it;
     }
 
