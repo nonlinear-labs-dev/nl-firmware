@@ -4,6 +4,7 @@ FileIOSender::FileIOSender(const char *path)
 {
   m_channel = Glib::IOChannel::create_from_file(path, "w+");
   m_channel->set_flags(Glib::IO_FLAG_NONBLOCK);
+  m_channel->set_encoding();
 }
 
 FileIOSender::~FileIOSender()

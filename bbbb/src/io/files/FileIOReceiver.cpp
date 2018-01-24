@@ -4,6 +4,7 @@ FileIOReceiver::FileIOReceiver(const char *path)
 {
   m_channel = Glib::IOChannel::create_from_file(path, "r+");
   m_channel->set_flags(Glib::IO_FLAG_NONBLOCK);
+  m_channel->set_encoding();
   m_watch = m_channel->create_watch(Glib::IOCondition::IO_IN);
   m_watch->connect(sigc::mem_fun(this, &FileIOReceiver::onChunk));
   m_watch->attach();
