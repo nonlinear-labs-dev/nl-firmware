@@ -8,4 +8,5 @@ EXEC_PROGRAM("git"
 message("building C15 firmware version: ${PLAYGROUND_VERSION}")
 
 add_subdirectory(playground)
+add_subdirectory(bbbb)
 add_subdirectory(NonMaps)
