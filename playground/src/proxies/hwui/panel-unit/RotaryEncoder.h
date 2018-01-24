@@ -5,6 +5,8 @@
 #include <tools/Throttler.h>
 #include <chrono>
 
+class UDPReceiver;
+
 class RotaryEncoder
 {
   public:
@@ -31,10 +33,12 @@ class RotaryEncoder
     void readRotary (Glib::RefPtr<Gio::FileInputStream> stream);
     void onRotaryFileRead (Glib::RefPtr<Gio::AsyncResult>& result, Glib::RefPtr<Gio::FileInputStream> stream);
     tIncrement speedUp (tIncrement inc);
+    void applyIncrement(tIncrement currentInc);
 
     Signal<void, tIncrement> m_signalRotaryChanged;
     RefPtr<Gio::Cancellable> m_readersCancel;
     Throttler m_throttler;
 
     int m_accumulatedIncs = 0;
+    std::unique_ptr<UDPReceiver> m_rotaryOverNetwork;
 };

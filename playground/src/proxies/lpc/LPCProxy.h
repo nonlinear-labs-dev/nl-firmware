@@ -16,6 +16,8 @@ class ModulateableParameter;
 class PhysicalControlParameter;
 class Preset;
 class MessageParser;
+class UDPReceiver;
+class UDPSender;
 
 enum LPCSettingIDs
 {
@@ -126,4 +128,7 @@ class LPCProxy
 
     Throttler m_throttledAbsoluteParameterChange;
     gint32 m_throttledAbsoluteParameterValue = 0;
+
+    std::unique_ptr<UDPReceiver> m_fromLpcOverNetwork;
+    std::unique_ptr<UDPSender> m_toLpcOverNetwork;
 };

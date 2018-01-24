@@ -11,6 +11,7 @@
 #include <tools/Signal.h>
 #include <array>
 #include <memory>
+#include <io/network/UDPReceiver.h>
 
 class DebugOLED;
 class Application;
@@ -101,4 +102,6 @@ class HWUI
     bool m_focusAndModeFrozen = false;
 
     FOR_TESTS(shared_ptr<DebugOLED> m_dbgOled);
+
+    std::unique_ptr<UDPReceiver> m_buttonsOverNetwork;
   };

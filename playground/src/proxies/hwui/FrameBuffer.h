@@ -7,6 +7,7 @@
 #include <tools/Uncopyable.h>
 
 class Font;
+class UDPSender;
 
 class FrameBuffer : public Uncopyable
 {
@@ -21,40 +22,13 @@ class FrameBuffer : public Uncopyable
 
     typedef int32_t tCoordinate;
 
-#if _DEVELOPMENT_PC
-    typedef uint32_t tPixel;
 
-    template<uint32_t r, uint32_t g, uint32_t b>
-    struct ToRGB
-    {
-      static constexpr uint32_t value = (0xFF << 24) | (r << 16) | (g << 8) | b;
-    };
-
-    enum Colors : tPixel
-    {
-      Undefined = 0,
-      C43 = ToRGB<43, 32, 21>::value,
-      C77 = ToRGB<77, 60, 10>::value,
-      C103 = ToRGB<103, 81, 12>::value,
-      C128 = ToRGB<128, 102, 16>::value,
-      C179 = ToRGB<179, 142, 21>::value,
-      C204 = ToRGB<204, 162, 24>::value,
-      C255 = ToRGB<255, 203, 31>::value
-    };
-
-    tPixel interpolateColor(float normalized)
-    {
-      uint8_t c = normalized * 0xFF;
-      return (0xFF << 24) | (c << 16) | (c << 8) | c;
-    }
-
-#else
     typedef uint8_t tPixel;
 
     enum Colors
       : tPixel
       {
-        Undefined = 0xFF, C43 = 0x00, C77 = 0x02, C103 = 0x05, C128 = 0x06, C179 = 0x0A, C204 = 0x0B, C255 = 0x0F
+        Undefined = 0xFF, C43 = 0x00, C77 = 0x02, C103 = 0x05, C128 = 0x06, C179 = 0x0A, C204 = 0x0B, C255 = 0x0F, SYNC = 0xFF
     };
 
     tPixel interpolateColor (float normalized)
@@ -62,7 +36,6 @@ class FrameBuffer : public Uncopyable
       return normalized * 0x0F;
     }
 
-#endif
 
     void setColor (const Colors &c);
     void fiddleColor (tPixel p);
@@ -131,14 +104,9 @@ class FrameBuffer : public Uncopyable
     long getIndex(tCoordinate x, tCoordinate y) const;
 
     Colors m_currentColor = C43;
-    int m_fd = -1;
-    size_t m_buffersize = 0;
-
-    tPixel *m_frontBuffer = nullptr;
     vector<tPixel> m_backBuffer;
-    struct fb_var_screeninfo m_varInfo;
-
     std::stack<Rect> m_clips;
     std::stack<Point> m_offsets;
+    std::unique_ptr<UDPSender> m_toOledOverNetwork;
 };
 
