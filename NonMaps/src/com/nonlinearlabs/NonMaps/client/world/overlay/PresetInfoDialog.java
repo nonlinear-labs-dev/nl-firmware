@@ -243,10 +243,9 @@ public class PresetInfoDialog extends GWTDialog {
 								NonMaps.theMaps.getServerProxy().movePresetAbove(theEditPreset, bank.getPreset(targetPos - 1));
 						}
 					}
-
-					updateInfo(theEditPreset);
-
 				}
+				
+				position.setText(theEditPreset.getPaddedNumber());
 			}
 		});
 
