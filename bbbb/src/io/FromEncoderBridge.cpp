@@ -6,7 +6,7 @@
 
 FromEncoderBridge::FromEncoderBridge() :
     Bridge(new UDPSender(Application::get().getOptions()->forwardEncoderMessagesTo()),
-           new FileIOReceiver(Application::get().getOptions()->getEncoderFileName()))
+           new FileIOReceiver(Application::get().getOptions()->getEncoderFileName(), 1))
 {
 }
 

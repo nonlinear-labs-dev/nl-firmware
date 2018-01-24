@@ -4,7 +4,7 @@
 #include "MessageParser.h"
 
 LPCReceiver::LPCReceiver() :
-    super(Application::get().getOptions()->getLPCReceiveFileName()),
+    super(Application::get().getOptions()->getLPCReceiveFileName(), 1),
     m_parser(std::make_unique<MessageParser>())
 {
 }

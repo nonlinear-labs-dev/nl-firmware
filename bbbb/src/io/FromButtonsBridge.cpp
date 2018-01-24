@@ -6,7 +6,7 @@
 
 FromButtonsBridge::FromButtonsBridge() :
     Bridge(new UDPSender(Application::get().getOptions()->forwardButtonMessagesTo()),
-           new FileIOReceiver(Application::get().getOptions()->getButtonsFileName()))
+           new FileIOReceiver(Application::get().getOptions()->getButtonsFileName(), 1))
 {
 }
 

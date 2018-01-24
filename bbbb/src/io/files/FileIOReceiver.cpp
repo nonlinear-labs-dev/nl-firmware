@@ -1,31 +1,39 @@
 #include <io/files/FileIOReceiver.h>
 
-FileIOReceiver::FileIOReceiver(const char *path)
+FileIOReceiver::FileIOReceiver(const char *path, size_t blockSize) :
+    m_cancel(Gio::Cancellable::create()),
+    m_blockSize(blockSize)
 {
-  m_channel = Glib::IOChannel::create_from_file(path, "r+");
-  m_channel->set_flags(Glib::IO_FLAG_NONBLOCK);
-  m_channel->set_encoding();
-  m_watch = m_channel->create_watch(Glib::IOCondition::IO_IN);
-  m_watch->connect(sigc::mem_fun(this, &FileIOReceiver::onChunk));
-  m_watch->attach();
+  auto file = Gio::File::create_for_path(path);
+  file->read_async(sigc::bind(sigc::mem_fun(this, &FileIOReceiver::onFileOpened), file), m_cancel);
 }
 
 FileIOReceiver::~FileIOReceiver()
 {
 }
 
-bool FileIOReceiver::onChunk(Glib::IOCondition condition)
+void FileIOReceiver::onFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::File> buttonsFile)
 {
-  constexpr auto maxLength = 8192;
-  char buffer[maxLength];
-  gsize bytesReceived = 0;
-  m_channel->read(buffer, maxLength, bytesReceived);
-
-  if(bytesReceived)
+  try
   {
-    auto bytes = Glib::Bytes::create(buffer, bytesReceived);
-    onDataReceived(bytes);
+    auto stream = buttonsFile->read_finish(result);
+    readStream(stream);
   }
+  catch(Gio::Error &error)
+  {
+    TRACE("Could not read from button input stream");
+  }
+}
 
-  return true;
+void FileIOReceiver::readStream(Glib::RefPtr<Gio::FileInputStream> stream)
+{
+  stream->read_bytes_async(m_blockSize, sigc::bind(sigc::mem_fun(this, &FileIOReceiver::onButtonsFileRead), stream), m_cancel);
+}
+
+void FileIOReceiver::onButtonsFileRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream)
+{
+  TRACE(__PRETTY_FUNCTION__);
+  Glib::RefPtr<Glib::Bytes> bytes = stream->read_bytes_finish(result);
+  onDataReceived(bytes);
+  readStream(stream);
 }
