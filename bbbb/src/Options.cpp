@@ -66,17 +66,17 @@ bool Options::setLPCReceiveFileName(const Glib::ustring &name)
 
 const char *Options::forwardLPCMessagesTo() const
 {
-  return "192.168.8.3:5001";
+  return "192.168.10.10:5001";
 }
 
 const char *Options::forwardEncoderMessagesTo() const
 {
-  return "192.168.8.3:5002";
+  return "192.168.10.10:5002";
 }
 
 const char *Options::forwardButtonMessagesTo() const
 {
-  return "192.168.8.3:5002";
+  return "192.168.10.10:5003";
 }
 
 int Options::receiveMessagesForLpcOnPort() const

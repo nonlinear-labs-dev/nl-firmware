@@ -16,6 +16,7 @@ class UDPSender : public Sender
 
     Glib::RefPtr<Gio::Socket> m_socket;
     Glib::RefPtr<Gio::SocketSource> m_watch;
+    Glib::RefPtr<Gio::InetSocketAddress> m_address;
 
     RingBuffer<char, 8192> m_buffer;
 };

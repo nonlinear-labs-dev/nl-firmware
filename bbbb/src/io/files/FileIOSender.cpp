@@ -14,7 +14,15 @@ FileIOSender::~FileIOSender()
 void FileIOSender::send(tMessage msg)
 {
   gsize len = 0;
+  
   auto data = reinterpret_cast<const char*>(msg->get_data(len));
+  TRACE(__PRETTY_FUNCTION__ << " --- " << len);
+  gsize bytesWritten = 0;
+  m_channel->write(data, len, bytesWritten);
+  TRACE(__PRETTY_FUNCTION__ << " --- written " << bytesWritten);
+  
+  m_channel->flush();
+  /*
   m_buffer.push(data, len);
 
   if(!m_watch)
@@ -22,7 +30,7 @@ void FileIOSender::send(tMessage msg)
     m_watch = m_channel->create_watch(Glib::IOCondition::IO_OUT);
     m_watch->connect(sigc::mem_fun(this, &FileIOSender::sendChunk));
     m_watch->attach();
-  }
+    }*/
 }
 
 bool FileIOSender::sendChunk(Glib::IOCondition condition)

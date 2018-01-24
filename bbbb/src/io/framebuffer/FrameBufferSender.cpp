@@ -41,26 +41,6 @@ FrameBufferSender::~FrameBufferSender()
 void FrameBufferSender::send(tMessage msg)
 {
   gsize numBytes = 0;
-  auto bytes = msg->get_data(numBytes);
-  constexpr auto messageHeaderLength = 6;
-
-  if(numBytes >= messageHeaderLength)
-  {
-    struct __attribute__((packed)) FBMessage
-    {
-        uint16_t length;
-        uint32_t idx;
-        int8_t data[0];
-    };
-
-    const FBMessage *parsedMessage = reinterpret_cast<const FBMessage*>(bytes);
-
-    if(parsedMessage->length == numBytes)
-    {
-      if(parsedMessage->idx + parsedMessage->length >= m_buffersize)
-        TRACE("frame buffer message corrupted");
-      else
-        memcpy (m_frontBuffer + parsedMessage->idx, parsedMessage->data, parsedMessage->length - messageHeaderLength);
-    }
-  }
+  auto bytes = reinterpret_cast<const int8_t*>(msg->get_data(numBytes));
+  memcpy (m_frontBuffer, bytes, numBytes);
 }

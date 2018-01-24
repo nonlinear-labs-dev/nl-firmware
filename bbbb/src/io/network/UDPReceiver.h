@@ -16,7 +16,6 @@ class UDPReceiver : public Receiver
     bool onDatagram(Glib::IOCondition condition);
 
     Glib::RefPtr<Gio::Socket> m_socket;
-    Glib::RefPtr<Glib::IOChannel> m_channel;
     Glib::RefPtr<Glib::IOSource> m_watch;
 };
 

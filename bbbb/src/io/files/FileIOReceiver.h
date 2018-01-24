@@ -13,7 +13,7 @@ class FileIOReceiver : public Receiver
 
     void onFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::File> buttonsFile);
     void readStream(Glib::RefPtr<Gio::FileInputStream> stream);
-    void onButtonsFileRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream);
+    void onStreamRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream);
 
     Glib::RefPtr<Gio::Cancellable> m_cancel;
     size_t m_blockSize;
