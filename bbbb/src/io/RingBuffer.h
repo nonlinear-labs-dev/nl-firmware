@@ -19,7 +19,7 @@ template<typename T, gsize size>
         {
           auto idx = m_writeHead & mask;
           auto space = size - idx;
-          auto for_now = std::min(space, count);
+          auto for_now = std::min<uint64_t>(space, count);
           std::copy(data, data + for_now, m_buffer.data() + idx);
           m_writeHead += for_now;
           push(data + for_now, count - for_now);
@@ -34,7 +34,7 @@ template<typename T, gsize size>
         {
           auto idx = m_readHead & mask;
           auto space = size - idx;
-          auto for_now = std::min(space, count);
+          auto for_now = std::min<uint64_t>(space, count);
           std::copy(m_buffer.data() + idx, m_buffer.data() + idx + for_now, data);
           m_readHead += for_now;
           return for_now + pull(data + for_now, count - for_now);
