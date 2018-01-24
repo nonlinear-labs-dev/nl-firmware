@@ -106,18 +106,20 @@ BankActions::BankActions(PresetManager &presetManager) :
     tBankPtr srcBank = m_presetManager.findBankWithPreset (presetToMove);
     tBankPtr tgtBank = m_presetManager.findBankWithPreset (presetAnchor);
 
-    if (srcBank && tgtBank)
-    {
-      UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Move preset");
-      auto transaction = scope->getTransaction();
-      tPresetPtr preset = srcBank->undoableExpropriatePreset (transaction, presetToMove);
-      size_t anchorPos = tgtBank->getPresetPosition (presetAnchor) + 1;
-      tgtBank->undoableAdoptPreset(transaction, anchorPos, preset);
-      preset->undoableSelect (transaction);
-      tgtBank->undoableSelect (transaction);
-    }
+      if(presetToMove != presetAnchor) {
+        if (srcBank && tgtBank)
+        {
+          UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Move preset");
+          auto transaction = scope->getTransaction();
+          tPresetPtr preset = srcBank->undoableExpropriatePreset (transaction, presetToMove);
+          size_t anchorPos = tgtBank->getPresetPosition (presetAnchor) + 1;
+          tgtBank->undoableAdoptPreset(transaction, anchorPos, preset);
+          preset->undoableSelect (transaction);
+          tgtBank->undoableSelect (transaction);
+        }
+      }
   });
-
+  
   addAction("move-preset-to", [&] (shared_ptr<NetworkRequest> request)
   {
     Glib::ustring presetToOverwrite = request->get ("presetToOverwrite");
