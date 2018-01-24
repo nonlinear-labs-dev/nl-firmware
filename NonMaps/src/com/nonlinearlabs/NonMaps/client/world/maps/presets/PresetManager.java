@@ -462,6 +462,12 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H) {
 			toggleHiddenBanks();
 			return this;
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
+			if(hasMultiplePresetSelection()) {
+				multiSelection.deletePresets();
+				closeMultiSelection();
+			}
+				
 		}
 		return null;
 	}
@@ -794,7 +800,7 @@ public class PresetManager extends MapsLayout {
 	public boolean hasMultiplePresetSelection() {
 		return multiSelection != null;
 	}
-
+	
 	public MultiplePresetSelection startMultiSelection(Preset p) {
 		multiSelection = new MultiplePresetSelection(p);
 		return getMultiSelection();
