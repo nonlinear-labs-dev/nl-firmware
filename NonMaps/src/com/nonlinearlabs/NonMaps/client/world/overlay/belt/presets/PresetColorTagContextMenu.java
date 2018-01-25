@@ -1,14 +1,22 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
+import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.RGBA;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.NonMaps.client.world.pointer.PointerState;
 
 public class PresetColorTagContextMenu extends ContextMenu {
 	
@@ -42,11 +50,17 @@ public class PresetColorTagContextMenu extends ContextMenu {
 			for(String uuid: pm.getMultiSelection().getSelectedPresets())
 			{
 				Preset p = pm.findPreset(uuid);
-				NonMaps.get().getServerProxy().setPresetAttribute(p, "color", color);
+				if(p.getAttribute("color") == color)
+					NonMaps.get().getServerProxy().setPresetAttribute(p, "color", "none");
+				else
+					NonMaps.get().getServerProxy().setPresetAttribute(p, "color", color);
 			}
 		}
 		else {
-			NonMaps.get().getServerProxy().setPresetAttribute(preset, "color", color);
+			if(preset.getAttribute("color") == color)
+				NonMaps.get().getServerProxy().setPresetAttribute(preset, "color", "none");
+			else
+				NonMaps.get().getServerProxy().setPresetAttribute(preset, "color", color);
 		}
 	}
 	
@@ -65,6 +79,15 @@ public class PresetColorTagContextMenu extends ContextMenu {
 				setColor("green");
 				return this;
 			}
+			
+			@Override
+			public void draw(Context2d ctx, int invalidationMask) {
+				super.draw(ctx, invalidationMask);
+				RGB c = getColor("green");
+
+				ctx.setFillStyle(c.toString());
+				ctx.fillRect(0, 0, 1, 4);
+			}
 		});
 		
 		addChild(new ContextMenuItem((ContextMenu)this, "Blue") {
@@ -72,6 +95,15 @@ public class PresetColorTagContextMenu extends ContextMenu {
 			public Control click(Position eventPoint) {
 				setColor("blue");
 				return this;
+			}
+			
+			@Override
+			public void draw(Context2d ctx, int invalidationMask) {
+				super.draw(ctx, invalidationMask);
+				RGB c = getColor("blue");
+
+				ctx.setFillStyle(c.toString());
+				ctx.fillRect(0, 0, 1, 4);
 			}
 		});
 		
@@ -81,6 +113,15 @@ public class PresetColorTagContextMenu extends ContextMenu {
 				setColor("yellow");
 				return this;
 			}
+			
+			@Override
+			public void draw(Context2d ctx, int invalidationMask) {
+				super.draw(ctx, invalidationMask);
+				RGB c = getColor("yellow");
+
+				ctx.setFillStyle(c.toString());
+				ctx.fillRect(0, 0, 1, 4);
+			}
 		});
 		
 		addChild(new ContextMenuItem((ContextMenu)this, "Orange") {
@@ -88,6 +129,15 @@ public class PresetColorTagContextMenu extends ContextMenu {
 			public Control click(Position eventPoint) {
 				setColor("orange");
 				return this;
+			}
+			
+			@Override
+			public void draw(Context2d ctx, int invalidationMask) {
+				super.draw(ctx, invalidationMask);
+				RGB c = getColor("orange");
+
+				ctx.setFillStyle(c.toString());
+				ctx.fillRect(0, 0, 1, 4);
 			}
 		});
 		
@@ -97,12 +147,38 @@ public class PresetColorTagContextMenu extends ContextMenu {
 				setColor("purple");
 				return this;
 			}
+			
+			@Override
+			public void draw(Context2d ctx, int invalidationMask) {
+				super.draw(ctx, invalidationMask);
+				RGB c = getColor("purple");
+
+				ctx.setFillStyle(c.toString());
+				ctx.fillRect(0, 0, 1, 4);
+			}
 		});
 		
 		addChild(new ContextMenuItem((ContextMenu)this, "Red") {
 			@Override
 			public Control click(Position eventPoint) {
 				setColor("red");
+				return this;
+			}
+			
+			@Override
+			public void draw(Context2d ctx, int invalidationMask) {
+				super.draw(ctx, invalidationMask);
+				RGB c = getColor("red");
+
+				ctx.setFillStyle(c.toString());
+				ctx.fillRect(0, 0, 1, 4);
+			}
+		});
+		
+		addChild(new ContextMenuItem((ContextMenu)this, "Remove") {
+			@Override
+			public Control click(Position eventPoint) {
+				setColor("");
 				return this;
 			}
 		});

@@ -63,7 +63,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		double numberWidth = Millimeter.toPixels(10);
 		double xSpace = Millimeter.toPixels(5);
 
-		color.doLayout(3, -h, 4, h / 2);
+		color.doLayout(3, 0, 4, h / 2);
 		number.doLayout(3, 0, numberWidth, h);
 		name.doLayout(numberWidth + xSpace, 0, w - (numberWidth + xSpace), h);
 	}

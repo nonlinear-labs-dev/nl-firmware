@@ -33,7 +33,7 @@ public class ColorTag extends ZoomReactingControl {
 			case "red":
 				return new RGB(255, 0, 0);
 			default:
-				return new RGB(255, 255, 255);
+				return null;
 		}
 	}
 	
@@ -60,6 +60,8 @@ public class ColorTag extends ZoomReactingControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		RGB color = calcColor();
+		if(color == null)
+			return;
 		Rect pixRect = getPixRect();
 		ctx.setFillStyle(color.toString());
 		Position center = pixRect.getCenterPoint();

@@ -34,13 +34,15 @@ public class PresetColorTag extends OverlayControl {
 			case "red":
 				return new RGB(255, 0, 0);
 			default:
-				return new RGB(255, 255, 255);
+				return null;
 		}
 	}
 		
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		RGB color = calcColor();
+		if(color == null)
+			return;
 		Rect pixRect = getPixRect();
 		ctx.setFillStyle(color.toString());
 		Position center = pixRect.getCenterPoint();
