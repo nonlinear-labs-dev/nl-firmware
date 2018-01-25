@@ -46,7 +46,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public Preset(Bank parent) {
 		super(parent);
 		
-		tag = addChild(new ColorTag(this, this));
+		tag = addChild(new ColorTag(this));
 		number = addChild(new Number(this, ""));
 		name = addChild(new Name(this, ""));
 	}

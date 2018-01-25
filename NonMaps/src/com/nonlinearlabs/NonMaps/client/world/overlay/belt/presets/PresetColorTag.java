@@ -1,19 +1,20 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset;
+package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ZoomReactingControl;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public class ColorTag extends ZoomReactingControl {
+public class PresetColorTag extends OverlayControl {
 
 	private Preset preset = null;
 	
-	public ColorTag(MapsLayout parent) {
+	public PresetColorTag(OverlayLayout parent, Preset p) {
 		super(parent);
-		this.preset = getParent();
+		this.preset = p;
 	}
 	
 	protected RGB calcColor() {
@@ -35,26 +36,6 @@ public class ColorTag extends ZoomReactingControl {
 			default:
 				return new RGB(255, 255, 255);
 		}
-	}
-	
-	@Override
-	public Preset getParent() {
-		return (Preset)super.getParent();
-	}
-	
-	@Override
-	protected double getBasicWidth() {
-		return 3;
-	}
-
-	@Override
-	protected double getBasicHeight() {
-		return 15;
-	}
-
-	@Override
-	protected double getMinHeight() {
-		return 0;
 	}
 		
 	@Override
