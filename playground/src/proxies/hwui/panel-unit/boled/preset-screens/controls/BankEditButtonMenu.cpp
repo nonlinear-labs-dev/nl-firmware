@@ -16,17 +16,13 @@
 #include <device-info/DateTimeInfo.h>
 #include <xml/VersionAttribute.h>
 
-static int s_lastSelectedButton = 0;
+static size_t s_lastSelectedButton = 0;
 
 BankEditButtonMenu::BankEditButtonMenu(const Rect &rect) :
     super(rect)
 {
   Application::get().getClipboard()->onClipboardChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
   Glib::MainContext::get_default()->signal_timeout().connect_seconds(mem_fun(this, &BankEditButtonMenu::interruptToRebuildMenu), 5);
-}
-
-BankEditButtonMenu::~BankEditButtonMenu()
-{
 }
 
 bool BankEditButtonMenu::interruptToRebuildMenu()
@@ -114,19 +110,13 @@ void BankEditButtonMenu::newBank()
 
 BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(std::experimental::filesystem::directory_entry file)
 {
-  FileInfos infos;
-  infos.filePath = file.path().string();
-  infos.fileName = file.path().filename().string();
-  auto lastModified = std::experimental::filesystem::last_write_time(file);
-  infos.millisecondsFromEpoch = std::chrono::duration_cast<std::chrono::milliseconds>(lastModified.time_since_epoch()).count();
-  return infos;
+  return FileInfos{file};
 }
 
 bool BankEditButtonMenu::applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  return fileName.find(".xml") == Glib::ustring::npos || fileName.find(".xml.zip") != Glib::ustring::npos &&
-																															 fileName.find(".xml.tar.gz") != Glib::ustring::npos;
+  return fileName.find(".xml") == Glib::ustring::npos || fileName.find(".xml.zip") != Glib::ustring::npos && fileName.find(".xml.tar.gz") != Glib::ustring::npos;
 }
 
 void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::directory_entry file)
@@ -170,8 +160,6 @@ void BankEditButtonMenu::exportBank()
   {
     boled.setOverlay(new RenameExportLayout(selBank, [](Glib::ustring newExportName, std::shared_ptr<PresetBank> bank)
     {
-      auto& panelunit = Application::get().getHWUI()->getPanelUnit();
-      auto& boled = panelunit.getEditPanel().getBoled();
       auto outPath = BankEditButtonMenu::createValidOutputPath(newExportName);
       boled.resetOverlay();
       boled.setOverlay(new SplashLayout());

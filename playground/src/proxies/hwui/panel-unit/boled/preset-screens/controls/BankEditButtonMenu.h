@@ -12,14 +12,24 @@ class BankEditButtonMenu : public ButtonMenu
 
     struct FileInfos
     {
+        FileInfos(std::experimental::filesystem::directory_entry file) {
+          filePath = file.path().string();
+          fileName = file.path().filename().string();
+          auto lastModified = std::experimental::filesystem::last_write_time(file);
+          millisecondsFromEpoch = std::chrono::duration_cast<std::chrono::milliseconds>(lastModified.time_since_epoch()).count();
+        }
+        FileInfos(std::string name, std::string path, long stamp) : fileName{name}, filePath{path},
+                                                                    millisecondsFromEpoch{stamp} {
+
+        }
         std::string fileName;
         std::string filePath;
         long millisecondsFromEpoch;
     };
 
   public:
-    BankEditButtonMenu(const Rect &rect);
-    virtual ~BankEditButtonMenu();
+    explicit BankEditButtonMenu(const Rect &rect);
+    virtual ~BankEditButtonMenu() = default;
 
     void selectButton(size_t i) override;
     void rebuildMenu();
