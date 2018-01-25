@@ -28,9 +28,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContext
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
-
-	
-	private String color = null;
 	private String uuid = null;
 	private ColorTag tag = null;
 	private Name name = null;
@@ -81,12 +78,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void update(int i, Node preset) {
-		this.color = preset.getAttributes().getNamedItem("color").getNodeValue();
 		this.uuid = preset.getAttributes().getNamedItem("uuid").getNodeValue();
 		String name = preset.getAttributes().getNamedItem("name").getNodeValue();
 		this.number.setText(NumberFormat.getFormat("#000").format(i));
 		this.name.setText(name);
-		this.tag.setColor(this.color);
 		updateAttributes(preset);
 
 		if (isSelected() && getParent().isSelected() && PresetInfoDialog.isShown())

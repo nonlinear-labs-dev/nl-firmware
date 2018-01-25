@@ -10,46 +10,31 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ZoomReactingContro
 public class ColorTag extends ZoomReactingControl {
 
 	private Preset preset = null;
-	private RGB color = null;
-	private String colorString = null;
-	private boolean isVisible = false;
 	
 	public ColorTag(MapsLayout parent, Preset preset) {
 		super(parent);
 		this.preset = preset;
-		colorString = this.preset.getAttribute("color");
-		calcColor();
+		
 	}
 	
-	public void setColor(String col) {
-		colorString = col;
-		calcColor();
-	}
+	protected RGB calcColor() {
 	
-	protected void calcColor() {
-		//green, blue, yellow, orange, purple, red
-		switch(colorString)
+		switch(this.preset.getAttribute("color"))
 		{
 			case "green":
-				color = new RGB(0, 255, 0);
-				break;
+				return new RGB(0, 255, 0);
 			case "blue":
-				color = new RGB(0, 0, 255);
-				break;
+				return new RGB(0, 0, 255);
 			case "yellow":
-				color = new RGB(255, 255, 0);
-				break;
+				return new RGB(255, 255, 0);
 			case "orange":
-				color = new RGB(255, 126, 0);
-				break;
+				return new RGB(255, 126, 0);
 			case "purple":
-				color = new RGB(255, 0, 255);
-				break;
+				return new RGB(255, 0, 255);
 			case "red":
-				color = new RGB(255, 0, 0);
-				break;
+				return new RGB(255, 0, 0);
 			default:
-				color = new RGB(255, 255, 255);
+				return new RGB(255, 255, 255);
 		}
 	}
 	
@@ -69,18 +54,12 @@ public class ColorTag extends ZoomReactingControl {
 	}
 		
 	@Override
-	public boolean isVisible() {
-		return isVisible && super.isVisible();
-	}
-
-	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		if (isVisible) {
-			Rect pixRect = getPixRect();
-			ctx.setFillStyle(color.toString());
-			Position center = pixRect.getCenterPoint();
-			ctx.fillRect(center.getX(), center.getY(), pixRect.getWidth(), pixRect.getHeight());
-		}
+		RGB color = calcColor();
+		Rect pixRect = getPixRect();
+		ctx.setFillStyle(color.toString());
+		Position center = pixRect.getCenterPoint();
+		ctx.fillRect(center.getX(), center.getY(), pixRect.getWidth(), pixRect.getHeight());
 	}
 	
 	@Override
