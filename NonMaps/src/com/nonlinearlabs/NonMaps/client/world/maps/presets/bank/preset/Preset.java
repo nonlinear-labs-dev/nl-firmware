@@ -29,7 +29,10 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 
+	
+	private String color = null;
 	private String uuid = null;
+	private ColorTag tag = null;
 	private Name name = null;
 	private Number number = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
@@ -45,6 +48,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public Preset(Bank parent) {
 		super(parent);
+		
+		tag = addChild(new ColorTag(this, this));
 		number = addChild(new Number(this, ""));
 		name = addChild(new Name(this, ""));
 	}
@@ -76,10 +81,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void update(int i, Node preset) {
+		this.color = preset.getAttributes().getNamedItem("color").getNodeValue();
 		this.uuid = preset.getAttributes().getNamedItem("uuid").getNodeValue();
 		String name = preset.getAttributes().getNamedItem("name").getNodeValue();
 		this.number.setText(NumberFormat.getFormat("#000").format(i));
 		this.name.setText(name);
+		this.tag.setColor(this.color);
 		updateAttributes(preset);
 
 		if (isSelected() && getParent().isSelected() && PresetInfoDialog.isShown())
@@ -98,10 +105,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
+		tag.doFirstLayoutPass(levelOfDetail);
 		number.doFirstLayoutPass(levelOfDetail);
 		name.doFirstLayoutPass(levelOfDetail);
 
-		number.moveTo(1, 0);
+		tag.moveTo(1, 0);
+		number.moveTo(3, 0);
 		name.moveTo(number.getNonPosition().getRight(), 0);
 		setNonSize(name.getNonPosition().getRight() + getWidthMargin(), name.getNonPosition().getHeight() + getHeightMargin());
 
