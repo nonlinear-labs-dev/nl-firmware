@@ -1,8 +1,8 @@
 #include <glib.h>
 #include "FourStateLED.h"
 #include "device-settings/DebugLevel.h"
-
-static const char* s_ledDevFile = "/dev/ribbon_led";
+#include <io/network/WebSocketSession.h>
+#include <Application.h>
 
 FourStateLED::FourStateLED ()
 {
@@ -13,34 +13,23 @@ FourStateLED::~FourStateLED ()
 {
 }
 
-std::ofstream &FourStateLED::getDeviceFile ()
-{
-  static std::ofstream f (s_ledDevFile);
-  return f;
-}
-
 void FourStateLED::setState (char state, bool flush)
 {
   if (m_state != state)
   {
     m_state = state;
 
-    auto &file = getDeviceFile ();
+    auto data = new uint8_t[2];
+    data[0] = getID ();
+    data[1] = (state & 0x03);
 
-    uint8_t id = getID ();
-    uint8_t stateMask = (state & 0x03);
-
-    file << id;
-    file << stateMask;
-
-    if (flush)
-      FourStateLED::flush();
+    auto msg = Glib::Bytes::create(data, 2);
+    Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::RibbonLed, msg);
   }
 }
 
 void FourStateLED::flush()
 {
-  getDeviceFile().flush ();
 }
 
 char FourStateLED::getState () const

@@ -1,12 +1,10 @@
-#include <Application.h>
 #include <io/files/FileIOReceiver.h>
 #include <io/FromEncoderBridge.h>
-#include <io/network/UDPSender.h>
-#include <Options.h>
+#include <io/network/WebSocketSender.h>
 
 FromEncoderBridge::FromEncoderBridge() :
-    Bridge(new UDPSender(Application::get().getOptions()->forwardEncoderMessagesTo()),
-           new FileIOReceiver(Application::get().getOptions()->getEncoderFileName(), 1))
+    Bridge(new WebSocketSender(Domain::Rotary),
+           new FileIOReceiver("/dev/espi_encoder", 1))
 {
 }
 

@@ -1,12 +1,10 @@
-#include <Application.h>
 #include <io/files/FileIOReceiver.h>
 #include <io/FromButtonsBridge.h>
-#include <io/network/UDPSender.h>
-#include <Options.h>
+#include <io/network/WebSocketSender.h>
 
 FromButtonsBridge::FromButtonsBridge() :
-    Bridge(new UDPSender(Application::get().getOptions()->forwardButtonMessagesTo()),
-           new FileIOReceiver(Application::get().getOptions()->getButtonsFileName(), 1))
+    Bridge(new WebSocketSender(Domain::Buttons),
+           new FileIOReceiver("/dev/espi_buttons", 1))
 {
 }
 

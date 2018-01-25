@@ -107,6 +107,5 @@ class FrameBuffer : public Uncopyable
     vector<tPixel> m_backBuffer;
     std::stack<Rect> m_clips;
     std::stack<Point> m_offsets;
-    std::unique_ptr<UDPSender> m_toOledOverNetwork;
 };
 

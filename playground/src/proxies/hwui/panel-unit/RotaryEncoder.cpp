@@ -4,75 +4,27 @@
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/RotaryEncoder.h>
 #include <testing/TestDriver.h>
-#include <io/network/UDPReceiver.h>
-
-static const char* s_rotaryDevFile = "/dev/espi_encoder";
 
 static TestDriver<RotaryEncoder> tester;
 
 RotaryEncoder::RotaryEncoder() :
-    m_readersCancel(Gio::Cancellable::create()),
-    m_throttler(chrono::milliseconds(50)),
-    m_rotaryOverNetwork(new UDPReceiver(5002))
+    m_throttler(chrono::milliseconds(50))
 {
-  open();
-
-  m_rotaryOverNetwork->setCallback([=](auto msg)
-  {
-    gsize numBytes = 0;
-    const char *buffer = (const char *) msg->get_data(numBytes);
-
-    if(numBytes > 0)
-      applyIncrement(buffer[0]);
-  });
+  Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Rotary,
+      sigc::mem_fun(this, &RotaryEncoder::onMessage));
 }
 
 RotaryEncoder::~RotaryEncoder()
 {
 }
 
-void RotaryEncoder::open()
+void RotaryEncoder::onMessage(WebSocketSession::tMessage msg)
 {
-  RefPtr<Gio::File> rotaryFile = Gio::File::create_for_path(s_rotaryDevFile);
-  rotaryFile->read_async(sigc::bind(sigc::mem_fun(this, &RotaryEncoder::onRotaryFileOpened), rotaryFile), m_readersCancel);
-}
-
-void RotaryEncoder::onRotaryFileOpened(Glib::RefPtr<Gio::AsyncResult>& result, RefPtr<Gio::File> rotaryFile)
-{
-  try
-  {
-    DebugLevel::gassy("RotaryEncoder::open file");
-    Glib::RefPtr<Gio::FileInputStream> stream = rotaryFile->read_finish(result);
-    readRotary(stream);
-  }
-  catch(Gio::Error &error)
-  {
-    DebugLevel::warning("Could not read from rotary input stream");
-  }
-}
-
-void RotaryEncoder::readRotary(Glib::RefPtr<Gio::FileInputStream> stream)
-{
-  DebugLevel::gassy("RotaryEncoder::readRotary");
-  stream->read_bytes_async(1, sigc::bind(sigc::mem_fun(this, &RotaryEncoder::onRotaryFileRead), stream), m_readersCancel);
-}
-
-void RotaryEncoder::onRotaryFileRead(Glib::RefPtr<Gio::AsyncResult>& result, Glib::RefPtr<Gio::FileInputStream> stream)
-{
-  Glib::RefPtr<Glib::Bytes> bytes = stream->read_bytes_finish(result);
-
   gsize numBytes = 0;
-  const tIncrement* buffer = (const tIncrement*) bytes->get_data(numBytes);
+  const char *buffer = (const char *) msg->get_data(numBytes);
 
   if(numBytes > 0)
-  {
     applyIncrement(buffer[0]);
-    readRotary(stream);
-  }
-  else
-  {
-    open();
-  }
 }
 
 void RotaryEncoder::applyIncrement(tIncrement currentInc)

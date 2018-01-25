@@ -14,6 +14,5 @@ class FourStateLED: public LED
     static void flush ();
 
   private:
-    static std::ofstream &getDeviceFile();
     char m_state;
 };

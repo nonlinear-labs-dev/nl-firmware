@@ -6,7 +6,8 @@
 #include <sys/mman.h>
 #include <string.h>
 #include <iostream>
-#include <io/network/UDPSender.h>
+#include <io/network/WebSocketSession.h>
+#include <Application.h>
 
 FrameBuffer::StackScopeGuard::StackScopeGuard(FrameBuffer *fb) :
     m_fb(fb)
@@ -63,8 +64,7 @@ FrameBuffer::Offset::~Offset()
     m_fb->m_offsets.pop();
 }
 
-FrameBuffer::FrameBuffer() :
-    m_toOledOverNetwork(new UDPSender("192.168.10.11:6001"))
+FrameBuffer::FrameBuffer()
 {
   initStacks();
   openAndMap();
@@ -218,9 +218,8 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
 
 void FrameBuffer::swapBuffers()
 {
-  auto cp = g_memdup(m_backBuffer.data(), m_backBuffer.size());
-  auto bytes = Glib::Bytes::create(cp, m_backBuffer.size());
-  m_toOledOverNetwork->send(bytes);
+  auto bytes = Glib::Bytes::create(m_backBuffer.data(), m_backBuffer.size());
+  Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::Oled, bytes);
 }
 
 FrameBuffer::Clip FrameBuffer::clip(const Rect &rect)

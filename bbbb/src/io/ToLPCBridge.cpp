@@ -1,11 +1,9 @@
 #include <io/ToLPCBridge.h>
-#include "network/UDPReceiver.h"
-#include "files/LPCSender.h"
-#include "Application.h"
-#include "Options.h"
+#include "network/WebSocketReceiver.h"
+#include "files/FileIOSender.h"
 
 ToLPCBridge::ToLPCBridge() :
-    super(new LPCSender(), new UDPReceiver(Application::get().getOptions()->receiveMessagesForLpcOnPort()))
+    super(new FileIOSender("/dev/lpc_bb_driver"), new WebSocketReceiver(Domain::Lpc))
 {
 }
 

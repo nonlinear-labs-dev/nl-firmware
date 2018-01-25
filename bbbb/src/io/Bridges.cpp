@@ -4,7 +4,8 @@
 #include <io/FromLPCBridge.h>
 #include <io/ToLPCBridge.h>
 #include <io/ToOledsBridge.h>
-#include <list>
+#include <io/ToPanelLEDsBridge.h>
+#include <io/ToRibbonLEDsBridge.h>
 
 Bridges::Bridges()
 {
@@ -13,6 +14,8 @@ Bridges::Bridges()
   m_bridges.emplace_back(new FromButtonsBridge());
   m_bridges.emplace_back(new FromEncoderBridge());
   m_bridges.emplace_back(new ToOledsBridge());
+  m_bridges.emplace_back(new ToPanelLEDsBridge());
+  m_bridges.emplace_back(new ToRibbonLEDsBridge());
 }
 
 Bridges::~Bridges()

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include "Application.h"
+#include <ui/Window.h>
 
 
 void printStackTrace (int i)
@@ -35,7 +36,6 @@ void printStackTrace (int i)
   exit (EXIT_FAILURE);
 }
 
-
 int main (int numArgs, char **argv)
 {
   Gio::init ();
@@ -46,7 +46,7 @@ int main (int numArgs, char **argv)
 
   {
     Application app (numArgs, argv);
-    Application::get ().run ();
+    Application::get ().runWithWindow ();
   }
 
   return EXIT_SUCCESS;

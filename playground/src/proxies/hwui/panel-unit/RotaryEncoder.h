@@ -4,8 +4,7 @@
 #include "proxies/hwui/HWUIEnums.h"
 #include <tools/Throttler.h>
 #include <chrono>
-
-class UDPReceiver;
+#include <io/network/WebSocketSession.h>
 
 class RotaryEncoder
 {
@@ -16,29 +15,24 @@ class RotaryEncoder
         virtual bool onRotary (int inc, ButtonModifiers modifiers) = 0;
     };
 
+    typedef signed char tIncrement;
+
     RotaryEncoder ();
     virtual ~RotaryEncoder ();
 
-    typedef signed char tIncrement;
-
     void fake (tIncrement amount);
-
     sigc::connection onRotaryChanged (function<void (tIncrement)> slot);
 
     static void registerTests ();
 
   private:
+    void onMessage(WebSocketSession::tMessage msg);
     void open ();
-    void onRotaryFileOpened (Glib::RefPtr<Gio::AsyncResult>& result, RefPtr<Gio::File> rotaryFile);
-    void readRotary (Glib::RefPtr<Gio::FileInputStream> stream);
-    void onRotaryFileRead (Glib::RefPtr<Gio::AsyncResult>& result, Glib::RefPtr<Gio::FileInputStream> stream);
     tIncrement speedUp (tIncrement inc);
     void applyIncrement(tIncrement currentInc);
 
     Signal<void, tIncrement> m_signalRotaryChanged;
-    RefPtr<Gio::Cancellable> m_readersCancel;
     Throttler m_throttler;
 
     int m_accumulatedIncs = 0;
-    std::unique_ptr<UDPReceiver> m_rotaryOverNetwork;
 };

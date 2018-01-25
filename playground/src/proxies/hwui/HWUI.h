@@ -9,11 +9,10 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <tools/Expiration.h>
 #include <tools/Signal.h>
+#include <io/network/WebSocketSession.h>
 #include <array>
 #include <memory>
-#include <io/network/UDPReceiver.h>
 
-class DebugOLED;
 class Application;
 class UsageMode;
 
@@ -43,8 +42,6 @@ class HWUI
 
     void testDisplays();
 
-    FOR_TESTS(shared_ptr<DebugOLED> getDebugOled());
-
     ButtonModifiers getButtonModifiers () const;
     bool isResolutionFine () const;
     void unsetFineMode();
@@ -56,10 +53,7 @@ class HWUI
     void deInit();
 
     private:
-    void onButtonsFileOpened (Glib::RefPtr<Gio::AsyncResult>& result, RefPtr<Gio::File> buttonsFile);
-    void readButtons (Glib::RefPtr<Gio::FileInputStream> stream);
-    void onButtonsFileRead (Glib::RefPtr<Gio::AsyncResult>& result, Glib::RefPtr<Gio::FileInputStream> stream);
-
+    void onButtonMessage(WebSocketSession::tMessage msg);
     void onButtonPressed (int buttonID, bool state);
     void onKeyboardLineRead (Glib::RefPtr<Gio::AsyncResult>& res);
 
@@ -80,8 +74,6 @@ class HWUI
     BaseUnit m_baseUnit;
 
     RefPtr<Gio::Cancellable> m_readersCancel;
-
-    const static Glib::ustring s_buttonsDevFile;
     RefPtr<Gio::DataInputStream> m_keyboardInput;
 
     FineButton m_fineButton;
@@ -100,8 +92,4 @@ class HWUI
     Expiration m_switchOffBlockingMainThreadIndicator;
 
     bool m_focusAndModeFrozen = false;
-
-    FOR_TESTS(shared_ptr<DebugOLED> m_dbgOled);
-
-    std::unique_ptr<UDPReceiver> m_buttonsOverNetwork;
   };

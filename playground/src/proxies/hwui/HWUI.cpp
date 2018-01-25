@@ -22,14 +22,12 @@
 #include <tools/Signal.h>
 #include <xml/FileOutStream.h>
 #include <groups/HardwareSourcesGroup.h>
-
-const Glib::ustring HWUI::s_buttonsDevFile = "/dev/espi_buttons";
+#include <io/network/WebSocketSession.h>
 
 HWUI::HWUI() :
-    m_readersCancel(Gio::Cancellable::create()),
     m_blinkCount(0),
     m_focusAndMode(UIFocus::Parameters, UIMode::Select),
-    m_buttonsOverNetwork(new UDPReceiver(5003))
+    m_readersCancel(Gio::Cancellable::create())
 {
   m_buttonStates.fill(false);
 
@@ -38,23 +36,12 @@ HWUI::HWUI() :
   m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
 #endif
 
-  FOR_TESTS(m_dbgOled.reset(new DebugOLED()));
-
-  m_buttonsOverNetwork->setCallback([=](Receiver::tMessage msg)
-  {
-    gsize numBytes = 0;
-    const char *buffer = (const char *) msg->get_data(numBytes);
-
-    if(numBytes > 0)
-      onButtonPressed(buffer[0] & 0x7F, buffer[0] & 0x80);
-  });
+  Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Buttons, sigc::mem_fun(this, &HWUI::onButtonMessage));
 }
 
 HWUI::~HWUI()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_readersCancel->cancel();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void HWUI::deInit()
@@ -62,10 +49,14 @@ void HWUI::deInit()
   Oleds::get().deInit();
 }
 
-FOR_TESTS(shared_ptr<DebugOLED> HWUI::getDebugOled()
+void HWUI::onButtonMessage(WebSocketSession::tMessage msg)
 {
-  return m_dbgOled;
-})
+  gsize numBytes = 0;
+  const char *buffer = (const char *) msg->get_data(numBytes);
+
+  if(numBytes > 0)
+    onButtonPressed(buffer[0] & 0x7F, buffer[0] & 0x80);
+}
 
 void HWUI::init()
 {
@@ -73,9 +64,6 @@ void HWUI::init()
   m_baseUnit.init();
 
   setupFocusAndMode();
-  RefPtr<Gio::File> buttonsFile = Gio::File::create_for_path(s_buttonsDevFile);
-  buttonsFile->read_async(sigc::bind(sigc::mem_fun(this, &HWUI::onButtonsFileOpened), buttonsFile), m_readersCancel);
-
   Oleds::get().syncRedraw();
 }
 
@@ -290,41 +278,6 @@ BaseUnit &HWUI::getBaseUnit()
 const BaseUnit &HWUI::getBaseUnit() const
 {
   return m_baseUnit;
-}
-
-void HWUI::onButtonsFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, RefPtr<Gio::File> buttonsFile)
-{
-  try
-  {
-    DebugLevel::gassy("HWUI::open file");
-    Glib::RefPtr<Gio::FileInputStream> stream = buttonsFile->read_finish(result);
-    readButtons(stream);
-  }
-  catch(Gio::Error &error)
-  {
-    DebugLevel::warning("Could not read from button input stream");
-  }
-}
-
-void HWUI::readButtons(Glib::RefPtr<Gio::FileInputStream> stream)
-{
-  DebugLevel::gassy("HWUI::readButtons");
-  stream->read_bytes_async(1, sigc::bind(sigc::mem_fun(this, &HWUI::onButtonsFileRead), stream), m_readersCancel);
-}
-
-void HWUI::onButtonsFileRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream)
-{
-  Glib::RefPtr<Glib::Bytes> bytes = stream->read_bytes_finish(result);
-
-  gsize numBytes = 0;
-  const char *buffer = (const char *) bytes->get_data(numBytes);
-
-  DebugLevel::gassy("HWUI::onButtonsFileRead");
-
-  if(numBytes > 0)
-    onButtonPressed(buffer[0] & 0x7F, buffer[0] & 0x80);
-
-  readButtons(stream);
 }
 
 void HWUI::onButtonPressed(int buttonID, bool state)

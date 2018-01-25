@@ -11,7 +11,7 @@ class FileIOReceiver : public Receiver
   private:
     bool onChunk(Glib::IOCondition condition);
 
-    void onFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::File> buttonsFile);
+    void onFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::File> file);
     void readStream(Glib::RefPtr<Gio::FileInputStream> stream);
     void onStreamRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream);
 

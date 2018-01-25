@@ -1,10 +1,12 @@
 #include "Application.h"
 #include "io/Bridges.h"
+#include "io/network/WebSocketServer.h"
 #include <fcntl.h>
 #include "Options.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <ui/Window.h>
 
 Application *Application::theApp = nullptr;
 
@@ -14,22 +16,12 @@ char *Application::initStatic(Application *app, char *argv)
   return argv;
 }
 
-void quitApp(int sig)
-{
-  TRACE(sig);
-  Application::get().quit();
-}
-
 Application::Application(int numArgs, char **argv) :
     m_selfPath(initStatic(this, argv[0])),
     m_options(std::make_unique<Options>(numArgs, argv)),
-    m_bridges(std::make_unique<Bridges>()),
-    m_theMainLoop(Glib::MainLoop::create()),
-    m_isQuit(false)
+    m_websocketServer(std::make_unique<WebSocketServer>()),
+    m_bridges(std::make_unique<Bridges>())
 {
-  ::signal(SIGQUIT, quitApp);
-  ::signal(SIGTERM, quitApp);
-  ::signal(SIGINT, quitApp);
 }
 
 Application::~Application()
@@ -48,26 +40,25 @@ Glib::ustring Application::getSelfPath() const
 
 void Application::run()
 {
-  m_theMainLoop->run();
+  auto loop = Glib::MainLoop::create(true);
+  loop->run();
 }
 
-void Application::quit()
+void Application::runWithWindow()
 {
-  m_isQuit = true;
-  m_theMainLoop->quit();
-}
-
-bool Application::isQuit() const
-{
-  return m_isQuit;
-}
-
-Glib::RefPtr<Glib::MainContext> Application::getMainContext()
-{
-  return m_theMainLoop->get_context();
+  int numArgs = 0;
+  char **argv = nullptr;
+  auto app = Gtk::Application::create(numArgs, argv, "com.nonlinearlabs.bbbb");
+  Window window;
+  app->run(window);
 }
 
 Options *Application::getOptions()
 {
   return m_options.get();
+}
+
+WebSocketServer *Application::getWebsocketServer()
+{
+  return m_websocketServer.get();
 }

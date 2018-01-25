@@ -7,6 +7,7 @@ set(LIBS
   glib-2.0
   gio-2.0
   gio-unix-2.0
+  gtkmm-3.0
   libsoup-2.4
 )
 

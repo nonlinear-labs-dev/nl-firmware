@@ -1,9 +1,11 @@
 #pragma once
 
 #include "bbbb.h"
+#include <gtkmm-3.0/gtkmm.h>
 
 class Options;
 class Bridges;
+class WebSocketServer;
 
 class Application
 {
@@ -16,19 +18,18 @@ class Application
     static Application &get();
 
     void run ();
-    void quit();
-    bool isQuit () const;
+    void runWithWindow ();
 
-    Glib::RefPtr<Glib::MainContext> getMainContext();
     Options *getOptions();
+    WebSocketServer *getWebsocketServer();
 
   private:
+    static void activate (GtkApplication* app, Application *pThis);
     static char *initStatic (Application *app, char *argv);
 
     static Application *theApp;
     Glib::ustring m_selfPath;
     std::unique_ptr<Options> m_options;
+    std::unique_ptr<WebSocketServer> m_websocketServer;
     std::unique_ptr<Bridges> m_bridges;
-    Glib::RefPtr<Glib::MainLoop> m_theMainLoop;
-    bool m_isQuit;
 };

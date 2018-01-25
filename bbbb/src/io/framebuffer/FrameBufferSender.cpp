@@ -9,7 +9,7 @@
 
 FrameBufferSender::FrameBufferSender()
 {
-  m_fd = open(Application::get().getOptions()->getFrameBufferFileName(), O_RDWR);
+  m_fd = open("/dev/fb0", O_RDWR);
 
   if(m_fd < 0)
   {

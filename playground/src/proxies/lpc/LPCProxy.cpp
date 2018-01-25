@@ -20,41 +20,38 @@
 #include "device-settings/VelocityCurve.h"
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
-#include <io/network/UDPReceiver.h>
-#include <io/network/UDPSender.h>
-
-const char *s_fileName = "/dev/lpc_bb_driver";
 
 const int c_testTimePerFrequency = 5000;
 
 LPCProxy::LPCProxy() :
-    m_ioCancel(Gio::Cancellable::create()),
     m_queueSendingScheduled(false),
-    m_lpcPollerInstalled(false),
     m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID()),
     m_throttledRelativeParameterChange(std::chrono::milliseconds(1)),
-    m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1)),
-    m_fromLpcOverNetwork(new UDPReceiver(5001)),
-    m_toLpcOverNetwork(new UDPSender("192.168.10.11:6000"))
+    m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
 {
   m_msgParser.reset(new MessageParser());
 
-  open();
+  auto cb = sigc::mem_fun(this, &LPCProxy::onWebSocketMessage);
+  Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Lpc, cb);
+}
 
-  m_fromLpcOverNetwork->setCallback([=](auto msg)
+LPCProxy::~LPCProxy()
+{
+}
+
+void LPCProxy::onWebSocketMessage(WebSocketSession::tMessage msg)
+{
+  gsize numBytes = 0;
+  const uint8_t* buffer = (const uint8_t*) (msg->get_data(numBytes));
+
+  if(numBytes > 0)
   {
-    gsize numBytes = 0;
-    const uint8_t* buffer = (const uint8_t*) (msg->get_data(numBytes));
-
-    if(numBytes > 0)
+    if(m_msgParser->parse(buffer, numBytes) == 0)
     {
-      if(m_msgParser->parse(buffer, numBytes) == 0)
-      {
-        onMessageReceived(std::move(m_msgParser->getMessage()));
-        m_msgParser.reset(new MessageParser());
-      }
+      onMessageReceived(std::move(m_msgParser->getMessage()));
+      m_msgParser.reset(new MessageParser());
     }
-  });
+  }
 }
 
 connection LPCProxy::onRibbonTouched(slot<void, int> s)
@@ -70,115 +67,6 @@ connection LPCProxy::onLPCSoftwareVersionChanged(slot<void, int> s)
 int LPCProxy::getLastTouchedRibbonParameterID() const
 {
   return m_lastTouchedRibbon;
-}
-
-LPCProxy::~LPCProxy()
-{
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-  m_ioCancel->cancel();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-}
-
-void LPCProxy::open()
-{
-  DebugLevel::gassy("Open lpc drivers file");
-
-#ifdef _DEVELOPMENT_PC
-
-  RefPtr<Gio::File> ioFile = Gio::File::create_for_path("/tmp/lpc-dump");
-
-  if(!ioFile->query_exists())
-  {
-    ioFile->create_file(Gio::FILE_CREATE_REPLACE_DESTINATION);
-  }
-
-  ioFile->append_to_async(sigc::bind(sigc::mem_fun(this, &LPCProxy::onOutputStreamOpened), ioFile), m_ioCancel);
-
-#else
-
-  RefPtr < Gio::File > ioFile = Gio::File::create_for_path (s_fileName);
-
-  if (ioFile->query_exists ())
-  {
-    ioFile->read_async (sigc::bind (sigc::mem_fun (this, &LPCProxy::onInputStreamOpened), ioFile), m_ioCancel);
-    ioFile->append_to_async (sigc::bind (sigc::mem_fun (this, &LPCProxy::onOutputStreamOpened), ioFile), m_ioCancel);
-  }
-  else
-  {
-    DebugLevel::warning ("Could not open lpc_bb_driver device file!");
-  }
-
-#endif
-}
-
-void LPCProxy::onInputStreamOpened(Glib::RefPtr<Gio::AsyncResult> &result, RefPtr<Gio::File> ioFile)
-{
-  try
-  {
-    DebugLevel::gassy("LPCProxy::onInputStreamOpened file");
-    m_inStream = Gio::BufferedInputStream::create(ioFile->read_finish(result));
-    readIO(m_inStream, MessageParser::getNumInitialBytesNeeded());
-  }
-  catch(Gio::Error &error)
-  {
-    DebugLevel::warning("Could not read from device file stream");
-  }
-}
-
-void LPCProxy::onOutputStreamOpened(Glib::RefPtr<Gio::AsyncResult> &result, RefPtr<Gio::File> ioFile)
-{
-  try
-  {
-    DebugLevel::gassy("LPCProxy::onOutputStreamOpened file");
-    m_outStream = ioFile->append_to_finish(result);
-  }
-  catch(Gio::Error &error)
-  {
-    DebugLevel::warning("Could not write to device file stream");
-  }
-}
-
-void LPCProxy::readIO(Glib::RefPtr<Gio::InputStream> stream, size_t numBytes)
-{
-  if(Glib::RefPtr<Gio::BufferedInputStream>::cast_dynamic(stream)->get_available() >= numBytes)
-  {
-    auto bytes = stream->read_bytes(numBytes, m_ioCancel);
-    onLPCDataRead(stream, bytes);
-  }
-  else
-  {
-    stream->read_bytes_async(numBytes, sigc::bind(sigc::mem_fun(this, &LPCProxy::onIOFileRead), stream), m_ioCancel, Glib::PRIORITY_HIGH);
-  }
-}
-
-void LPCProxy::onIOFileRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::InputStream> stream)
-{
-  Glib::RefPtr<Glib::Bytes> bytes = stream->read_bytes_finish(result);
-  onLPCDataRead(stream, bytes);
-}
-
-void LPCProxy::onLPCDataRead(Glib::RefPtr<Gio::InputStream> stream, Glib::RefPtr<Glib::Bytes> bytes)
-{
-  gsize numBytes = 0;
-  const uint8_t* buffer = (const uint8_t*) (bytes->get_data(numBytes));
-
-  if(numBytes > 0)
-  {
-    size_t numBytesNeeded = m_msgParser->parse(buffer, numBytes);
-    if(numBytesNeeded == 0)
-    {
-      onMessageReceived(std::move(m_msgParser->getMessage()));
-      m_msgParser.reset(new MessageParser());
-      numBytesNeeded = MessageParser::getNumInitialBytesNeeded();
-    }
-
-    readIO(stream, numBytesNeeded);
-  }
-  else
-  {
-    DebugLevel::warning("read 0 bytes from lpc - reopen device driver file!");
-    open();
-  }
 }
 
 gint16 LPCProxy::separateSignedBitToComplementary(uint16_t v) const
@@ -363,40 +251,27 @@ void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
 
 bool LPCProxy::sendQueue()
 {
-  m_queueSendingScheduled = false;
   writePendingData();
-  return false;
+
+  if(m_queueToLPC.empty())
+  {
+    m_queueSendingScheduled = false;
+    return false;
+  }
+  return true;
 }
 
 void LPCProxy::writePendingData()
 {
-  if(!m_queueToLPC.empty() && m_outStream && !m_writingData)
+  if(!m_queueToLPC.empty())
   {
-    DebugLevel::info("write pending data\n");
-
     tMessageComposerPtr cmp = m_queueToLPC.front();
     m_queueToLPC.pop_front();
 
     auto flushed = cmp->flush();
 
-    try
-    {
-      traceBytes(flushed);
-      m_writingData = true;
-      m_outStream->write_bytes_async(flushed, sigc::mem_fun(this, &LPCProxy::wroteData), m_ioCancel);
-
-      m_toLpcOverNetwork->send(flushed);
-    }
-    catch(Gio::Error error)
-    {
-      DebugLevel::warning("write_async threw Gio::Error =>", error.what());
-      installLPCPoller();
-    }
-    catch(...)
-    {
-      DebugLevel::warning("write_async threw unknown error");
-      installLPCPoller();
-    }
+    traceBytes(flushed);
+    Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::Lpc, flushed);
   }
 }
 
@@ -416,52 +291,6 @@ void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
     *ptr = '\0';
     DebugLevel::gassy((const char *) txt);
   }
-}
-
-void LPCProxy::wroteData(Glib::RefPtr<Gio::AsyncResult> &result)
-{
-  DebugLevel::gassy("wrote pending data");
-
-  try
-  {
-    m_outStream->write_bytes_finish(result);
-  }
-  catch(Gio::Error error)
-  {
-    DebugLevel::warning("wroteData threw Gio::Error =>", error.what());
-    installLPCPoller();
-  }
-  catch(...)
-  {
-    DebugLevel::warning("wroteData threw unknown error");
-    installLPCPoller();
-  }
-
-  m_writingData = false;
-  writePendingData();
-}
-
-void LPCProxy::installLPCPoller()
-{
-  if(Application::get().getSettings()->getSetting<SendPresetAsLPCWriteFallback>()->get())
-  {
-    if(!m_lpcPollerInstalled)
-    {
-      m_lpcPollerInstalled = true;
-
-      DebugLevel::warning("installLPCPoller");
-
-      m_queueToLPC.clear();
-      Application::get().getMainContext()->signal_timeout().connect_once(sigc::mem_fun(this, &LPCProxy::pollLPC), 1000);
-    }
-  }
-}
-
-void LPCProxy::pollLPC()
-{
-  m_lpcPollerInstalled = false;
-  DebugLevel::warning("pollLPC - sendPreset");
-  sendEditBuffer();
 }
 
 void LPCProxy::sendEditBuffer()

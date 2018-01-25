@@ -1,11 +1,9 @@
 #include <io/FromLPCBridge.h>
 #include "files/LPCReceiver.h"
-#include "network/UDPSender.h"
-#include "Application.h"
-#include "Options.h"
+#include "network/WebSocketSender.h"
 
 FromLPCBridge::FromLPCBridge() :
-    Bridge(new UDPSender(Application::get().getOptions()->forwardLPCMessagesTo()), new LPCReceiver())
+    Bridge(new WebSocketSender(Domain::Lpc), new LPCReceiver())
 {
 }
 
