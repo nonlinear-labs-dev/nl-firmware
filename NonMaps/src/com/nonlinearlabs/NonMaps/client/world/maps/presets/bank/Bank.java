@@ -494,8 +494,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl().getPresetList()
 					.scheduleAutoScroll(PresetList.ScrollRequest.Smooth);
 		}
-
-		getParent().onPresetSelectionChanged(findPreset(selectedPreset));
+		
+		if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreMode() == false)
+			getParent().onPresetSelectionChanged(findPreset(selectedPreset));
 	}
 
 	void showEmptyLabel(boolean bankEmpty) {

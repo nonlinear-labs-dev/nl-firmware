@@ -9,6 +9,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.StoreMode;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -176,6 +177,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isSelected() {
+		StoreMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
+		if(sm != null)
+		{
+			return sm.getSelectedPreset() == this;
+		}
 		return uuid.equals(getParent().getSelectedPreset());
 	}
 
@@ -192,6 +198,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
 			getParent().getParent().startMultiSelection(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return this;
+		} else if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreMode()) {
+			selectPreset();
 			return this;
 		}
 
@@ -214,6 +223,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void selectPreset() {
+		StoreMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
+		if(storeMode != null)
+		{
+			storeMode.setSelectedPreset(this);
+		}
 		getParent().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}

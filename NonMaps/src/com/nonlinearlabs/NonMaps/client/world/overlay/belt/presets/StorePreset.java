@@ -35,14 +35,8 @@ class StorePreset extends SVGImage {
 	}
 
 	public void setActive(boolean isActive) {
-		if(isActive)
-			super.selectPhase(drawStates.active.ordinal());
-		else 
-			super.selectPhase(drawStates.disabled.ordinal());
-		
 		this.isActive = isActive;
 		GWT.log("storePresetButton is active: " + isActive);
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	class DraggableButtonPhase extends SVGImagePhase implements EditBufferDraggingButton {
@@ -60,8 +54,9 @@ class StorePreset extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		if(isActive == false)
+		if(isActive == false) {
 			return drawStates.disabled.ordinal();
+		}
 		
 		boolean isCapturing = isCaptureControl() && dragDelay == null;
 		if (isCapturing || isDraggingControl()) {
@@ -111,13 +106,16 @@ class StorePreset extends SVGImage {
 
 	@Override
 	public Control click(Position eventPoint) {
-		if(getPresetManager().getStoreMode()!=null) {
+		if(getPresetManager().isInStoreMode()) {
 			boolean hasSelectedBank = getPresetManager().hasSelectedBank();
 	
 			if (!hasSelectedBank)
 				createNewBank();
 			else
 				storeToBank();
+			
+			getPresetManager().endStoreMode();
+			setActive(false);
 		}
 		return this;
 	}
@@ -137,8 +135,7 @@ class StorePreset extends SVGImage {
 			break;
 
 		case INSERT:
-			if(getPresetManager().getStoreMode().getSelectedPreset() != null)
-				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
+			uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
 			break;
 
 		case OVERWRITE:

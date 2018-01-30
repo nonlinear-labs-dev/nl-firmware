@@ -29,8 +29,8 @@ public class StorePresetArea extends OverlayLayout {
 		double buttonDim = getButtonDimension();
 
 		menu.doLayout(0, 0, w, buttonDim);
-		m_commitButton.doLayout(buttonDim, buttonDim, w, buttonDim);
-		m_modeButton.doLayout(-buttonDim/2, buttonDim, w, buttonDim);
+		m_commitButton.doLayout(buttonDim + buttonDim/2, buttonDim, buttonDim, buttonDim);
+		m_modeButton.doLayout(0, buttonDim, buttonDim, buttonDim);
 	}
 
 	public void update(Node settingsNode, Node presetManagerNode) {

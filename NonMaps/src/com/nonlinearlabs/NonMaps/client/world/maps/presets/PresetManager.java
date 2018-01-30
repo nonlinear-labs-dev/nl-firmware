@@ -73,9 +73,16 @@ public class PresetManager extends MapsLayout {
 	}
 	
 	public void endStoreMode() {
+		selectPreset(storeMode.getInitalSelectedPreset().getUUID());
 		storeMode = null;
 	}
 	
+	private void selectPreset(String uuid) {
+		Bank b = findPreset(uuid).getParent();
+		b.selectPreset(uuid, Initiator.INDIRECT_USER_ACTION);
+		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+	}
+
 	public void store() {
 
 	}

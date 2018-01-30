@@ -63,6 +63,6 @@ public class StoreModeButton extends SVGImage {
 	}
 
 	public void update(Node settingsNode, Node presetManagerNode) {
-		//if(presetManagerNode.get)		
+		
 	}
 }

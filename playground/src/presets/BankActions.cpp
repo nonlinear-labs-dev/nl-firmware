@@ -360,10 +360,10 @@ BankActions::BankActions(PresetManager &presetManager) :
 
   addAction("insert-preset", [&] (shared_ptr<NetworkRequest> request) mutable
   {
-    if (tBankPtr bank = m_presetManager.getSelectedBank())
+    auto selUuid = request->get ("seluuid");
+    if (tBankPtr bank = m_presetManager.findPreset(selUuid)->getBank())
     {
       auto uuid = request->get ("uuid");
-      auto selUuid = request->get ("seluuid");
       auto newName = presetManager.createPresetNameBasedOn (m_presetManager.getEditBuffer()->getName());
 
       auto scope = m_presetManager.getUndoScope().startTransaction ("Insert preset");
