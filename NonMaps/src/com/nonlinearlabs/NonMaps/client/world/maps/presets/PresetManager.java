@@ -8,6 +8,7 @@ import org.eclipse.jdt.internal.compiler.ISourceElementRequestor.ParameterInfo;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -37,6 +38,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
+import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTree;
 import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
 
@@ -451,56 +453,46 @@ public class PresetManager extends MapsLayout {
 
 		if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_RIGHT) {
 			selectNextBank(true);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_LEFT) {
 			selectPreviousBank(true);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DOWN) {
 			selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_UP) {
 			selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER) {
 			loadSelectedPreset();
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_P) {
 			if(getNonMaps().getNonLinearWorld().isCtrlDown()) {
 				toggleHiddenBanks();
 			} else {
 				PresetInfoDialog.toggle();
 			}
-			return this;
 		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
 			if(hasMultiplePresetSelection()) {
 				multiSelection.deletePresets();
 				closeMultiSelection();
 			} else {
 				deletePreset(getSelectedPreset());
-			}
-				
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z) {
-			if(NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-				NonMaps.get().getServerProxy().undo();
-			}
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y) {
-			if(NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-					NonMaps.get().getServerProxy().redo();
-			}
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
-			if(NonMaps.get().getNonLinearWorld().isShiftDown()) {
-				SearchQueryDialog.toggle();
-				return this;
-			}
+			}		
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			NonMaps.get().getServerProxy().undo();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			NonMaps.get().getServerProxy().redo();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F && NonMaps.get().getNonLinearWorld().isShiftDown()) {
+			SearchQueryDialog.toggle();
 		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
 			BankInfoDialog.toggle();
 		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I) {
 			ParameterInfoDialog.toggle();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			Window.open("/NonMaps/war/online-help/index.html", "", "");
 		} else {
 			return null;
 		}
+		
+		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().refreshGlobalMenu();
 		return this;
 	}
 
