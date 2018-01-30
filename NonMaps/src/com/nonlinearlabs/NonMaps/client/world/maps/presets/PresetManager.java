@@ -13,6 +13,7 @@ import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.StoreMode;
 import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -50,10 +51,33 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 
+	private StoreMode storeMode;
+	
 	private Tape attachingTapes[] = new Tape[2];
 
+	public StoreMode getStoreMode() {
+		return storeMode;
+	}
+	
+	public boolean isInStoreMode() {
+		return storeMode != null;
+	}
+	
 	public MoveSomeBanksLayer getMoveSomeBanks() {
 		return moveSomeBanks;
+	}
+	
+	public void startStoreMode() {
+		if(storeMode == null)
+			storeMode = new StoreMode(this);
+	}
+	
+	public void endStoreMode() {
+		storeMode = null;
+	}
+	
+	public void store() {
+
 	}
 
 	public PresetManager(NonLinearWorld parent) {

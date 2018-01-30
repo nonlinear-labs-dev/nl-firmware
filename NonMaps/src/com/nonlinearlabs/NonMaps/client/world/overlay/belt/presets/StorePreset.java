@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -26,6 +27,23 @@ class StorePreset extends SVGImage {
 	Action action = Action.APPEND;
 	String presetToWaitFor = "";
 	RepeatingCommand dragDelay = null;
+	boolean isActive = false;
+
+	
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		if(isActive)
+			super.selectPhase(drawStates.active.ordinal());
+		else 
+			super.selectPhase(drawStates.disabled.ordinal());
+		
+		this.isActive = isActive;
+		GWT.log("storePresetButton is active: " + isActive);
+		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+	}
 
 	class DraggableButtonPhase extends SVGImagePhase implements EditBufferDraggingButton {
 
@@ -37,6 +55,7 @@ class StorePreset extends SVGImage {
 
 	StorePreset(OverlayLayout parent) {
 		super(parent, "Store_Enabled.svg", "Store_Active.svg", "Store_Disabled.svg", "Store_Drag.svg");
+		super.selectPhase(2);
 	}
 
 	@Override
@@ -89,13 +108,14 @@ class StorePreset extends SVGImage {
 
 	@Override
 	public Control click(Position eventPoint) {
-		boolean hasSelectedBank = getPresetManager().hasSelectedBank();
-
-		if (!hasSelectedBank)
-			createNewBank();
-		else
-			storeToBank();
-
+		if(getPresetManager().getStoreMode()!=null) {
+			boolean hasSelectedBank = getPresetManager().hasSelectedBank();
+	
+			if (!hasSelectedBank)
+				createNewBank();
+			else
+				storeToBank();
+		}
 		return this;
 	}
 
@@ -114,7 +134,8 @@ class StorePreset extends SVGImage {
 			break;
 
 		case INSERT:
-			uuid = getNonMaps().getServerProxy().insertPreset();
+			if(getPresetManager().getStoreMode().getSelectedPreset() != null)
+				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
 			break;
 
 		case OVERWRITE:

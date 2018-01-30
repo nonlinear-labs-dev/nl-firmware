@@ -363,12 +363,13 @@ BankActions::BankActions(PresetManager &presetManager) :
     if (tBankPtr bank = m_presetManager.getSelectedBank())
     {
       auto uuid = request->get ("uuid");
+      auto selUuid = request->get ("seluuid");
       auto newName = presetManager.createPresetNameBasedOn (m_presetManager.getEditBuffer()->getName());
 
       auto scope = m_presetManager.getUndoScope().startTransaction ("Insert preset");
       auto transaction = scope->getTransaction();
 
-      int selPreset = bank->getPresetPosition (bank->getSelectedPreset());
+      int selPreset = bank->getPresetPosition (m_presetManager.findPreset(selUuid)->getUuid());
       int desiredPresetPos = selPreset + 1;
       bank->undoableInsertPreset (transaction, desiredPresetPos);
       bank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());

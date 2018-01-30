@@ -372,11 +372,11 @@ public class ServerProxy {
 	public void redo() {
 		queueJob(new StaticURI(new StaticURI.Path("undo", "redo")), false);
 	}
-
-	public String insertPreset() {
+	public String insertPreset(IPreset selPreset) {
+		String uuidOfSelectedPreset = selPreset.getUUID();
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("seluuid", uuidOfSelectedPreset));
 		queueJob(uri, false);
 		return uuid;
 	}
