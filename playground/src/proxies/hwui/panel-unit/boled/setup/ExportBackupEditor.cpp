@@ -1,28 +1,20 @@
 #include <Application.h>
-#include <glib/gstdio.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/HWUI.h>
-#include <proxies/hwui/Oleds.h>
-#include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MultiLineLabel.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
-#include <proxies/hwui/panel-unit/EditPanel.h>
-#include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <serialization/PresetManagerSerializer.h>
 #include <xml/FileOutStream.h>
 #include <xml/VersionAttribute.h>
-#include <xml/XmlWriter.h>
-#include <device-settings/DebugLevel.h>
 #include <tools/SpawnCommandLine.h>
 #include "USBStickAvailableView.h"
-#include <chrono>
 
 static const Rect c_fullRightSidePosition (129, 16, 126, 48);
-static constexpr const char c_tempBackupFile[] = "/nonlinear/nonlinear-c15-banks.xml.zip";
-static constexpr const char c_backupTargetFile[] = "nonlinear-c15-banks.xml.zip";
+static constexpr const char c_tempBackupFile[] = "/nonlinear/nonlinear-c15-banks.xml.tar.gz";
+static constexpr const char c_backupTargetFile[] = "nonlinear-c15-banks.xml.tar.gz";
 
 ExportBackupEditor::ExportBackupEditor () :
     ControlWithChildren (Rect (0, 0, 0, 0))

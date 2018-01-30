@@ -29,7 +29,6 @@
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 
 static const Rect c_fullRightSidePosition(129, 16, 126, 48);
-static constexpr const char *c_backupTargetFile = "/mnt/usb-stick/backup.xml";
 
 ImportBackupEditor::ImportBackupEditor () :
     ControlWithChildren (Rect (0, 0, 0, 0))
@@ -89,7 +88,7 @@ Glib::ustring ImportBackupEditor::generateFileDialogCompliantNameFromPath(std::e
 bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  return fileName.find(".xml.zip") == Glib::ustring::npos;
+  return fileName.find(".xml.zip") == Glib::ustring::npos && fileName.find(".xml.tar.gz") == Glib::ustring::npos;
 }
 
 void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem::directory_entry file)

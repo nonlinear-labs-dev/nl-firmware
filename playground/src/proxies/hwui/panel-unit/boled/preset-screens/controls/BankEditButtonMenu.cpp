@@ -16,17 +16,13 @@
 #include <device-info/DateTimeInfo.h>
 #include <xml/VersionAttribute.h>
 
-static int s_lastSelectedButton = 0;
+static size_t s_lastSelectedButton = 0;
 
 BankEditButtonMenu::BankEditButtonMenu(const Rect &rect) :
     super(rect)
 {
   Application::get().getClipboard()->onClipboardChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
 	Application::get().getPresetManager()->onNumBanksChanged(sigc::hide<0>(mem_fun(this, &BankEditButtonMenu::rebuildMenu)));
-}
-
-BankEditButtonMenu::~BankEditButtonMenu()
-{
 }
 
 void BankEditButtonMenu::rebuildMenu()
@@ -108,18 +104,14 @@ void BankEditButtonMenu::newBank()
 
 BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(std::experimental::filesystem::directory_entry file)
 {
-  FileInfos infos;
-  infos.filePath = file.path().string();
-  infos.fileName = file.path().filename().string();
-  auto lastModified = std::experimental::filesystem::last_write_time(file);
-  infos.millisecondsFromEpoch = std::chrono::duration_cast<std::chrono::milliseconds>(lastModified.time_since_epoch()).count();
-  return infos;
+  return FileInfos{file};
 }
 
 bool BankEditButtonMenu::applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  return fileName.find(".xml") == Glib::ustring::npos ? true : fileName.find(".xml.zip") != Glib::ustring::npos;
+  auto fileIsBackup = fileName.find(".xml.zip") != Glib::ustring::npos || fileName.find(".xml.tar.gz") != Glib::ustring::npos;
+  return !fileIsBackup;
 }
 
 void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::directory_entry file)
