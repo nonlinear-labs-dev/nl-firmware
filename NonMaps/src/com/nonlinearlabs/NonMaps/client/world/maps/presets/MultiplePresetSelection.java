@@ -2,6 +2,9 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets;
 
 import java.util.ArrayList;
 
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class MultiplePresetSelection {
@@ -62,5 +65,9 @@ public class MultiplePresetSelection {
 			ret += a;
 		}
 		return ret;
+	}
+
+	public void deletePresets() {
+		NonMaps.get().getServerProxy().deletePresets(getCSV());
 	}
 }
