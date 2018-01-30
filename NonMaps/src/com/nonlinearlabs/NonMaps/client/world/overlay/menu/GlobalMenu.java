@@ -36,7 +36,7 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Search";
+				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Search - Shift + F";
 			}
 
 			@Override
@@ -54,7 +54,7 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (PresetInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Info";
+				return (PresetInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Info - P";
 			}
 
 			@Override
@@ -70,7 +70,7 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (BankInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Bank Info";
+				return (BankInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Bank Info - B";
 			}
 
 			@Override
@@ -86,7 +86,7 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (ParameterInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Info";
+				return (ParameterInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Info - I";
 			}
 
 			@Override
@@ -101,7 +101,7 @@ public class GlobalMenu extends OverlayLayout {
 		addChild(new MenuEntry(this) {
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ") + "Presets";
+				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ") + "Presets - Control + P";
 			}
 
 			@Override
@@ -117,7 +117,7 @@ public class GlobalMenu extends OverlayLayout {
 			
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor";
+				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor - Control + E";
 			}
 			
 			@Override
@@ -133,7 +133,7 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return "\uE0A3 Open Help";
+				return "\uE0A3 Open Help - Control + H";
 			}
 
 			@Override
@@ -171,7 +171,7 @@ public class GlobalMenu extends OverlayLayout {
 		} else {
 			final int IGNORED_CHILDREN = 1;
 			
-			double myWidth = Millimeter.toPixels(45);
+			double myWidth = Millimeter.toPixels(68);
 			int childCount = getChildren().size() - IGNORED_CHILDREN;
 			double myHeight = childCount * buttonDim;
 			super.doLayout(w - myWidth, top, myWidth, myHeight);
@@ -229,6 +229,10 @@ public class GlobalMenu extends OverlayLayout {
 		requestLayout();
 	}
 
+	public void refresh() {
+		requestLayout();
+	}
+	
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		return this;
