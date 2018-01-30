@@ -470,6 +470,12 @@ public class PresetManager extends MapsLayout {
 				deletePreset(getSelectedPreset());
 			}
 				
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z) {
+			if(NonMaps.get().getNonLinearWorld().isCtrlDown() && !NonMaps.get().getNonLinearWorld().isShiftDown()) {
+				NonMaps.get().getServerProxy().undo();
+			} else if(NonMaps.get().getNonLinearWorld().isCtrlDown() && NonMaps.get().getNonLinearWorld().isShiftDown()) {
+				NonMaps.get().getServerProxy().redo();
+			}
 		}
 		return null;
 	}

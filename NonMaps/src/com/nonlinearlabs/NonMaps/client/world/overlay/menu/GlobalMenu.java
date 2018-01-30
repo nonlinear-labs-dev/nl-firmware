@@ -101,7 +101,7 @@ public class GlobalMenu extends OverlayLayout {
 		addChild(new MenuEntry(this) {
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ") + "Presets";
+				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ") + "Presets - H";
 			}
 
 			@Override
@@ -117,7 +117,7 @@ public class GlobalMenu extends OverlayLayout {
 			
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor";
+				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor - E";
 			}
 			
 			@Override
@@ -171,7 +171,7 @@ public class GlobalMenu extends OverlayLayout {
 		} else {
 			final int IGNORED_CHILDREN = 1;
 			
-			double myWidth = Millimeter.toPixels(45);
+			double myWidth = Millimeter.toPixels(50);
 			int childCount = getChildren().size() - IGNORED_CHILDREN;
 			double myHeight = childCount * buttonDim;
 			super.doLayout(w - myWidth, top, myWidth, myHeight);
