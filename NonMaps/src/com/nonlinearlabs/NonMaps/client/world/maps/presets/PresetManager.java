@@ -466,10 +466,17 @@ public class PresetManager extends MapsLayout {
 			if(hasMultiplePresetSelection()) {
 				multiSelection.deletePresets();
 				closeMultiSelection();
+			} else {
+				deletePreset(getSelectedPreset());
 			}
 				
 		}
 		return null;
+	}
+
+	private void deletePreset(Preset selectedPreset) {
+		ServerProxy sp = NonMaps.get().getServerProxy();
+		sp.deletePreset(selectedPreset);
 	}
 
 	public void selectPreviousPreset(Initiator initiator) {
