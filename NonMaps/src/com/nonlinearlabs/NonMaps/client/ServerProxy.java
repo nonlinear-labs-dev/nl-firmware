@@ -13,6 +13,7 @@ import com.google.gwt.xml.client.NamedNodeMap;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
+import com.nonlinearlabs.NonMaps.client.ServerProxy.DownloadHandler;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
@@ -847,5 +848,9 @@ public class ServerProxy {
 
 		queueJob(uri, false);
 
+	}
+
+	public void getDifferencesOfPresetsToEditbufferAsCsv(String uuid1, DownloadHandler handler) {
+		downloadFile("/presets/get-diff-editbuffer?p1=" + URL.encodeQueryString(uuid1), handler);
 	}
 }
