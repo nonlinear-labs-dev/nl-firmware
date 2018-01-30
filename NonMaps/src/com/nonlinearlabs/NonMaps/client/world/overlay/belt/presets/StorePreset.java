@@ -60,6 +60,9 @@ class StorePreset extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
+		if(isActive == false)
+			return drawStates.disabled.ordinal();
+		
 		boolean isCapturing = isCaptureControl() && dragDelay == null;
 		if (isCapturing || isDraggingControl()) {
 			return drawStates.drag.ordinal();

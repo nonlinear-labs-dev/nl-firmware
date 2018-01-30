@@ -22,6 +22,10 @@ public class StoreModeButton extends SVGImage {
 	
 	@Override
 	public int getSelectedPhase() {
+		if(getPresetManager().isInStoreMode()) {
+			return drawStates.active.ordinal();
+		}
+		
 		return drawStates.normal.ordinal();
 	}
 
@@ -41,7 +45,7 @@ public class StoreModeButton extends SVGImage {
 		
 		GWT.log("Click on storeMode!");
 		
-		if(getPresetManager().getStoreMode() != null) {
+		if(getPresetManager().isInStoreMode()) {
 			getPresetManager().endStoreMode();
 			((StorePresetArea)getParent()).getCommitButton().setActive(false);
 			super.selectPhase(0);
@@ -52,6 +56,9 @@ public class StoreModeButton extends SVGImage {
 			super.selectPhase(2);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}		
+		
+		requestLayout();
+
 		return this;
 	}
 
