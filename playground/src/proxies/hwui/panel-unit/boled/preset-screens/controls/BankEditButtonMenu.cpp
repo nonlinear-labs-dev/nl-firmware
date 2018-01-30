@@ -116,9 +116,8 @@ BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(std::experime
 bool BankEditButtonMenu::applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  auto fileIsBank = fileName.find(".xml") != Glib::ustring::npos;
   auto fileIsBackup = fileName.find(".xml.zip") != Glib::ustring::npos || fileName.find(".xml.tar.gz") != Glib::ustring::npos;
-  return !(fileIsBank && !fileIsBackup);
+  return !fileIsBackup;
 }
 
 void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::directory_entry file)
