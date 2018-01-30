@@ -22,13 +22,7 @@ BankEditButtonMenu::BankEditButtonMenu(const Rect &rect) :
     super(rect)
 {
   Application::get().getClipboard()->onClipboardChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
-  Glib::MainContext::get_default()->signal_timeout().connect_seconds(mem_fun(this, &BankEditButtonMenu::interruptToRebuildMenu), 5);
-}
-
-bool BankEditButtonMenu::interruptToRebuildMenu()
-{
-  rebuildMenu();
-  return true;
+	Application::get().getPresetManager()->onNumBanksChanged(sigc::hide<0>(mem_fun(this, &BankEditButtonMenu::rebuildMenu)));
 }
 
 void BankEditButtonMenu::rebuildMenu()

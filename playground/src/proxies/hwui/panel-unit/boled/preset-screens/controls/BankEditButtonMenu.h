@@ -56,7 +56,6 @@ class BankEditButtonMenu : public ButtonMenu
     static Glib::ustring createValidOutputPath(const Glib::ustring& bankName);
 
     static void writeSelectedBankToFile(PresetManager::tBankPtr selBank, const std::string& outFile);
-    bool interruptToRebuildMenu();
     static FileInfos extractFileInfos(std::experimental::filesystem::directory_entry file);
     static void importBankFromPath(std::experimental::filesystem::directory_entry file);
     static bool applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term);

@@ -95,8 +95,13 @@ void FileOutStream::commit ()
 
     auto oldName = getTmpFileName ();
 
-    if (g_rename (oldName.c_str (), m_filename.c_str ()))
-      DebugLevel::error ("FileOutStream: Could not rename tmp file", oldName, "to target file", m_filename, ":", g_strerror (errno));
+    if (g_rename (oldName.c_str (), m_filename.c_str ())) 
+    {
+      DebugLevel::error("FileOutStream: Could not rename tmp file", oldName, "to target file", m_filename, ":",
+                        g_strerror(errno), " trying with backup option! (FileTools::rename)");
+
+      FileTools::rename(oldName, m_filename);
+    }
   }
 }
 

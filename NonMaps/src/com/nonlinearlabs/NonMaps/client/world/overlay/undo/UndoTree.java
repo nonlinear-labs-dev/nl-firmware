@@ -491,7 +491,7 @@ public class UndoTree extends OverlayLayout implements TransitionDamper.Client {
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
-		scrollOffset.add(0, amount * -10);
+		scrollOffset.add(0, amount * 10);
 		sanitizeScrollPosition();
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		return this;
