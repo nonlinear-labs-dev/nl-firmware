@@ -131,20 +131,20 @@ public class Belt extends OverlayLayout {
 	@Override
 	public Control onKey(final KeyDownEvent event) {
 
-		if (event.getNativeKeyCode() == KeyCodes.KEY_O) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_P && getNonMaps().getNonLinearWorld().isShiftDown()) {
 			if (isPresetView() && !isHidden())
 				toggle();
 			else
 				setPresetView(true);
 			return this;
 
-		} else if (event.getNativeKeyCode() == KeyCodes.KEY_P) {
+		} else if (event.getNativeKeyCode() == KeyCodes.KEY_E  && getNonMaps().getNonLinearWorld().isShiftDown()) {
 			if (isParameterView() && !isHidden())
 				toggle();
 			else
 				setParameterView(true);
 			return this;
-		} else if (event.getNativeKeyCode() == KeyCodes.KEY_S && !event.isAnyModifierKeyDown()) {
+		} else if (event.getNativeKeyCode() == KeyCodes.KEY_N  && getNonMaps().getNonLinearWorld().isShiftDown()) {
 			if (isSoundView() && !isHidden())
 				toggle();
 			else

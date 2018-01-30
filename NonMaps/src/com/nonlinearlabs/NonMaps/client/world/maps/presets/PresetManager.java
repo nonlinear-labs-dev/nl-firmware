@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import org.eclipse.jdt.internal.compiler.ISourceElementRequestor.ParameterInfo;
+
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Document;
@@ -31,9 +33,12 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Updater;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
+import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
+import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTree;
+import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
 
 public class PresetManager extends MapsLayout {
 
@@ -459,8 +464,12 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER) {
 			loadSelectedPreset();
 			return this;
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H) {
-			toggleHiddenBanks();
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_P) {
+			if(getNonMaps().getNonLinearWorld().isCtrlDown()) {
+				toggleHiddenBanks();
+			} else {
+				PresetInfoDialog.toggle();
+			}
 			return this;
 		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
 			if(hasMultiplePresetSelection()) {
@@ -471,13 +480,28 @@ public class PresetManager extends MapsLayout {
 			}
 				
 		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z) {
-			if(NonMaps.get().getNonLinearWorld().isCtrlDown() && !NonMaps.get().getNonLinearWorld().isShiftDown()) {
+			if(NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 				NonMaps.get().getServerProxy().undo();
-			} else if(NonMaps.get().getNonLinearWorld().isCtrlDown() && NonMaps.get().getNonLinearWorld().isShiftDown()) {
-				NonMaps.get().getServerProxy().redo();
 			}
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y) {
+			if(NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+					NonMaps.get().getServerProxy().redo();
+			}
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
+			if(NonMaps.get().getNonLinearWorld().isShiftDown()) {
+				SearchQueryDialog.toggle();
+				return this;
+			}
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
+			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
+			BankInfoDialog.toggle();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I) {
+			ParameterInfoDialog.toggle();
+		} else {
+			return null;
 		}
-		return null;
+		return this;
 	}
 
 	private void deletePreset(Preset selectedPreset) {
