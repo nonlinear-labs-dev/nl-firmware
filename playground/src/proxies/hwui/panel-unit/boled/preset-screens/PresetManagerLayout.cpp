@@ -193,7 +193,6 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
           hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets));
         else
           hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Banks));
-
         break;
 
       case BUTTON_B:
@@ -201,15 +200,19 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
         return m_presets->onButton(i, down, modifiers);
 
       case BUTTON_D:
-        if(m_menu) {
-          if (modifiers[SHIFT] == 1) {
+        if(m_menu)
+        {
+          if (modifiers[SHIFT] == 1)
+          {
             m_menu->antiToggle();
           }
-          else {
+          else
+          {
             m_menu->toggle();
           }
         }
-        else if(m_autoLoad) {
+        else if(m_autoLoad)
+        {
           Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
         }
 
@@ -220,7 +223,6 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
           hwui->undoableSetFocusAndMode(UIMode::Select);
         else
           hwui->undoableSetFocusAndMode(UIMode::Store);
-
         break;
 
       case BUTTON_EDIT:

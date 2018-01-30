@@ -22,16 +22,11 @@ BankEditButtonMenu::BankEditButtonMenu(const Rect &rect) :
     super(rect)
 {
   Application::get().getClipboard()->onClipboardChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
-	Application::get().getPresetManager()->onNumBanksChanged(sigc::hide<0>(mem_fun(this, &BankEditButtonMenu::interruptToRebuildMenu)));
+	Application::get().getPresetManager()->onNumBanksChanged(sigc::hide<0>(mem_fun(this, &BankEditButtonMenu::rebuildMenu)));
 }
 
 BankEditButtonMenu::~BankEditButtonMenu()
 {
-}
-
-void BankEditButtonMenu::interruptToRebuildMenu()
-{
-  rebuildMenu();
 }
 
 void BankEditButtonMenu::rebuildMenu()
