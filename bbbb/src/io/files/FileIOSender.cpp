@@ -2,6 +2,8 @@
 
 FileIOSender::FileIOSender(const char *path)
 {
+  TRACE("open file for writing: " << path);
+
   try
   {
     m_channel = Glib::IOChannel::create_from_file(path, "w+");

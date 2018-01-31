@@ -39,6 +39,8 @@ void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
 
 void WebSocketServer::sendMessage(tMessage msg)
 {
+  TRACE(__PRETTY_FUNCTION__);
+
   m_connections.remove_if([&] (auto &c)
   {
     auto state = soup_websocket_connection_get_state (c.get());
@@ -51,6 +53,7 @@ void WebSocketServer::sendMessage(tMessage msg)
       return true;
     }
 
+    TRACE("connection state: " << state);
     return false;
   });
 }
