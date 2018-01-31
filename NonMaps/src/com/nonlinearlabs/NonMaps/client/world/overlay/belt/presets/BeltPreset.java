@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.SelectMode;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -99,6 +100,13 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	@Override
 	public Control mouseUp(Position eventPoint) {
+		SelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
+		if(storeMode != null)
+		{
+			storeMode.setSelectedPreset(this);
+			return this;
+		}
+		
 		if (mapsPreset.isSelected())
 			mapsPreset.load();
 		else

@@ -13,8 +13,8 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
+import com.nonlinearlabs.NonMaps.client.SelectMode;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.StoreMode;
 import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -37,9 +37,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
-import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTree;
-import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
 
 public class PresetManager extends MapsLayout {
 
@@ -56,16 +53,16 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 
-	private StoreMode storeMode;
+	private SelectMode m_selectMode;
 	
 	private Tape attachingTapes[] = new Tape[2];
 
-	public StoreMode getStoreMode() {
-		return storeMode;
+	public SelectMode getStoreMode() {
+		return m_selectMode;
 	}
 	
 	public boolean isInStoreMode() {
-		return storeMode != null;
+		return m_selectMode != null;
 	}
 	
 	public MoveSomeBanksLayer getMoveSomeBanks() {
@@ -73,13 +70,13 @@ public class PresetManager extends MapsLayout {
 	}
 	
 	public void startStoreMode() {
-		if(storeMode == null)
-			storeMode = new StoreMode(this);
+		if(m_selectMode == null)
+			m_selectMode = new SelectMode(this);
 	}
 	
 	public void endStoreMode() {
-		selectPreset(storeMode.getInitalSelectedPreset().getUUID());
-		storeMode = null;
+		selectPreset(m_selectMode.getInitalSelectedPreset().getUUID());
+		m_selectMode = null;
 	}
 	
 	private void selectPreset(String uuid) {

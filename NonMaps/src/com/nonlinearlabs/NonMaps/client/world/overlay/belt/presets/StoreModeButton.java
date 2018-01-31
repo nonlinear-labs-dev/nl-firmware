@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -24,9 +23,9 @@ public class StoreModeButton extends SVGImage {
 	public int getSelectedPhase() {
 		if(getPresetManager().isInStoreMode()) {
 			return drawStates.active.ordinal();
+		} else {
+			return drawStates.normal.ordinal();
 		}
-		
-		return drawStates.normal.ordinal();
 	}
 
 	@Override
@@ -42,22 +41,15 @@ public class StoreModeButton extends SVGImage {
 	
 	@Override
 	public Control click(Position eventPoint) {
-		
-		GWT.log("Click on storeMode!");
-		
+
 		if(getPresetManager().isInStoreMode()) {
 			getPresetManager().endStoreMode();
-			((StorePresetArea)getParent()).getCommitButton().setActive(false);
-			super.selectPhase(0);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		} else {
 			getPresetManager().startStoreMode();
-			((StorePresetArea)getParent()).getCommitButton().setActive(true);
-			super.selectPhase(2);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}		
 		
 		requestLayout();
+		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
 		return this;
 	}

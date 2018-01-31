@@ -3,12 +3,12 @@ package com.nonlinearlabs.NonMaps.client;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 
-public class StoreMode {
+public class SelectMode {
 	private PresetManager m_parent;
 	private IPreset selectedPreset;
 	private IPreset initialSelectedPreset;
 	
-	public StoreMode(PresetManager parent) {
+	public SelectMode(PresetManager parent) {
 		m_parent = parent;
 		initialSelectedPreset = m_parent.getSelectedPreset();
 		selectedPreset = initialSelectedPreset;
@@ -25,4 +25,13 @@ public class StoreMode {
 	public IPreset getSelectedPreset() {
 		return selectedPreset;
 	}
+
+	public void selecteNextBank() {
+		
+	}
+	
+	public void selectePreviousBank() {
+		
+	}
 }
+
