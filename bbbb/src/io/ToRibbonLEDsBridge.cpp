@@ -3,7 +3,7 @@
 #include "files/FileIOSender.h"
 
 ToRibbonLEDsBridge::ToRibbonLEDsBridge() :
-    super(new FileIOSender("/dev/ribbon_led"), new WebSocketReceiver(Domain::PanelLed))
+    super(new FileIOSender("/dev/ribbon_led"), new WebSocketReceiver(Domain::RibbonLed))
 {
 }
 
