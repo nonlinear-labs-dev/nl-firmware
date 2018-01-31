@@ -366,17 +366,9 @@ BankActions::BankActions(PresetManager &presetManager) :
       {
         int numBanks = static_cast<int>(m_presetManager.getNumBanks());
         int newPos = stoi(request->get("order-number"));
-        newPos = std::max(newPos, 0);
-        newPos = std::min(newPos, numBanks);
-
-        auto oldBankPos = m_presetManager.calcOrderNumber(bank.get());
-
-        auto scope = m_presetManager.getUndoScope().startTransaction("Changed Bank: %0 Order", bank->getName(true));
-        auto movedPos = newPos - oldBankPos;
-        if(movedPos != 0)
-          m_presetManager.undoableMoveBankBy(scope->getTransaction(), bank->getUuid(), movedPos);
-        else
-          bank->onChange();
+        auto scope = m_presetManager.getUndoScope().startTransaction("Changed Order Number of Bank: %0", bank->getName(true));
+        m_presetManager.undoableSetOrderNumber(scope->getTransaction(), bank, newPos);
+        bank->onChange();
       }
   });
 
@@ -800,13 +792,30 @@ BankActions::BankActions(PresetManager &presetManager) :
   addAction("move", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring bankUUID = request->get ("bank");
-    Glib::ustring value = request->get ("by");
+    Glib::ustring value = request->get ("direction");
 
     if (tBankPtr bank = m_presetManager.getSelectedBank())
     {
-      UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Move Bank '%0'", bank->getName(true));
+      PresetManager::moveDirection direction;
+      Glib::ustring inDirectionDescriber = "";
+      if(value == "LeftByOne") {
+        direction = PresetManager::moveDirection::LeftByOne;
+        inDirectionDescriber = " left";
+      }
+      else if(value == "RightByOne") {
+        direction = PresetManager::moveDirection::RightByOne;
+        inDirectionDescriber = " right";
+      }
+      else {
+        assert(false);
+      }
+      UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Move Bank '%0' %1", bank->getName(true), inDirectionDescriber);
       UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
-      m_presetManager.undoableMoveBankBy(transaction, bankUUID, stoi(value));
+
+
+
+
+      m_presetManager.undoableChangeBankOrder(transaction, bankUUID, direction);
     }
   });
 

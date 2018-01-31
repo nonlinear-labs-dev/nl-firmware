@@ -723,9 +723,9 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void moveBy(Bank bank, int by) {
+	public void moveBy(Bank bank, String dir) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("by", by));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("direction", dir));
 		queueJob(uri, false);
 	}
 
