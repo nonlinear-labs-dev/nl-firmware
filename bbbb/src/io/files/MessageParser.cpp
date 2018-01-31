@@ -1,18 +1,7 @@
 #include "MessageParser.h"
 #include <string.h>
 
-MessageParser::NLMessage::NLMessage () :
-    type (0),
-    length (0)
-{
-}
-
-MessageParser::NLMessage::~NLMessage ()
-{
-}
-
-MessageParser::MessageParser () :
-    m_numBytesRead (0)
+MessageParser::MessageParser () 
 {
 }
 
@@ -32,13 +21,17 @@ gsize MessageParser::getNumHeaderBytesMissing () const
 
 gsize MessageParser::parse (gconstpointer buffer, gsize numBytes)
 {
-  if(auto missingForHeader = parseHeader(buffer, numBytes))
-    return missingForHeader;
+  if(!hasReadHeader())
+  {
+    if(auto missingForHeader = parseHeader(buffer, numBytes))
+    {
+      return missingForHeader;
+    }
 
-  if(auto missingForBody = parseBody(buffer, numBytes))
-    return missingForBody;
+    return parseBody(nullptr, 0);
+  }
 
-  return 0;
+  return parseBody(buffer, numBytes);
 }
 
 gsize MessageParser::parseHeader(gconstpointer buffer, gsize numBytes)
@@ -49,16 +42,17 @@ gsize MessageParser::parseHeader(gconstpointer buffer, gsize numBytes)
   gsize headerBytesMissing = getNumHeaderBytesMissing ();
   gsize missingBytesAvail = std::min (headerBytesMissing, numBytes);
 
-  uint8_t *rawMsg = reinterpret_cast<uint8_t*> (&m_msg);
+  uint8_t *rawMsg = reinterpret_cast<uint8_t*> (&m_header);
   memcpy (rawMsg + m_numBytesRead, buffer, missingBytesAvail);
   m_numBytesRead += missingBytesAvail;
 
   if (m_numBytesRead == getNumInitialBytesNeeded ())
   {
-    m_msg.params.resize (m_msg.length, 0);
+    m_params.resize (m_header.length, 0);
   }
 
-  return headerBytesMissing - missingBytesAvail;
+  auto stillMissing = headerBytesMissing - missingBytesAvail;
+  return stillMissing;
 }
 
 gsize MessageParser::parseBody (gconstpointer buffer, gsize numBytes)
@@ -68,16 +62,17 @@ gsize MessageParser::parseBody (gconstpointer buffer, gsize numBytes)
   gsize missingBytesAvail = std::min(missingBytes, numBytes);
 
   gsize posInBody = m_numBytesRead - getNumInitialBytesNeeded ();
-  uint8_t *rawMsgBody = reinterpret_cast<uint8_t*> (m_msg.params.data());
+  uint8_t *rawMsgBody = reinterpret_cast<uint8_t*> (m_params.data());
   memcpy (rawMsgBody + posInBody, buffer, missingBytesAvail);
   m_numBytesRead += missingBytesAvail;
 
-  return missingBytes - missingBytesAvail;
+  auto stillMissing =  missingBytes - missingBytesAvail;
+  return stillMissing;
 }
 
 gsize MessageParser::getNumInitialBytesNeeded ()
 {
-  return sizeof(NLMessage::type) + sizeof(NLMessage::length);
+  return sizeof(NLMessageHeader);
 }
 
 Glib::RefPtr<Glib::Bytes> MessageParser::getMessage () const
@@ -85,9 +80,8 @@ Glib::RefPtr<Glib::Bytes> MessageParser::getMessage () const
   auto len = getMessageLength();
   auto buf = g_new(uint8_t, len);
 
-  memcpy(buf, &m_msg.type, 2);
-  memcpy(buf + 2, &m_msg.length, 2);
-  memcpy(buf + 4, m_msg.params.data(), 2 * m_msg.length);
+  memcpy(buf, &m_header, sizeof(NLMessageHeader));
+  memcpy(buf + sizeof(NLMessageHeader), m_params.data(), 2 * m_header.length);
 
   return Glib::Bytes::create(buf, len);
 }
@@ -95,7 +89,7 @@ Glib::RefPtr<Glib::Bytes> MessageParser::getMessage () const
 gsize MessageParser::getMessageLength() const
 {
   g_assert(hasReadHeader());
-  gsize numBytesInBody = m_msg.length * sizeof(uint16_t);
+  gsize numBytesInBody = m_header.length * sizeof(uint16_t);
   gsize numBytesToReadAtAll = getNumInitialBytesNeeded() + numBytesInBody;
   return numBytesToReadAtAll;
 }

@@ -8,16 +8,6 @@ class MessageParser
     MessageParser();
     virtual ~MessageParser();
 
-    struct NLMessage
-    {
-      NLMessage();
-      ~NLMessage();
-
-      uint16_t type;
-      uint16_t length;
-      std::vector<uint16_t> params;
-    };
-
     Glib::RefPtr<Glib::Bytes> getMessage() const;
     gsize parse(gconstpointer buffer, gsize numBytes);
     bool isFinished() const;
@@ -32,7 +22,14 @@ class MessageParser
     gsize parseHeader(gconstpointer buffer, gsize numBytes);
     gsize parseBody(gconstpointer buffer, gsize numBytes);
 
-    NLMessage m_msg;
-    gsize m_numBytesRead;
+    struct __attribute__ ((packed)) NLMessageHeader
+    {
+      uint16_t type = 0;
+      uint16_t length = 0;
+    } m_header;
+
+    std::vector<uint16_t> m_params;
+    
+    gsize m_numBytesRead = 0;
 };
 

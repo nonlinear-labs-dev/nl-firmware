@@ -18,7 +18,7 @@ void FileIOReceiver::onFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, Glib::
 {
   try
   {
-    readStream(file->read_finish(result));
+    readStream(Gio::BufferedInputStream::create(file->read_finish(result)));
   }
   catch(...)
   {
@@ -31,13 +31,26 @@ void FileIOReceiver::setBlockSize(size_t blockSize)
   m_blockSize = blockSize;
 }
 
-void FileIOReceiver::readStream(Glib::RefPtr<Gio::FileInputStream> stream)
+void FileIOReceiver::readStream(Glib::RefPtr<Gio::InputStream> stream)
 {
-  stream->read_bytes_async(m_blockSize, sigc::bind(sigc::mem_fun(this, &FileIOReceiver::onStreamRead), stream), m_cancel);
+  auto avail = Glib::RefPtr<Gio::BufferedInputStream>::cast_dynamic (stream)->get_available ();
+
+  if (avail >= m_blockSize)
+  {
+    auto bytes = stream->read_bytes (m_blockSize, m_cancel);
+    onDataReceived(bytes);
+    readStream(stream);
+  }
+  else
+  {
+    stream->read_bytes_async (m_blockSize, sigc::bind (sigc::mem_fun (this, &FileIOReceiver::onStreamRead), stream), m_cancel,
+        Glib::PRIORITY_HIGH);
+  }
 }
 
-void FileIOReceiver::onStreamRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream)
+void FileIOReceiver::onStreamRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::InputStream> stream)
 {
-  onDataReceived(stream->read_bytes_finish(result));
+  auto bytes = stream->read_bytes_finish(result);
+  onDataReceived(bytes);
   readStream(stream);
 }

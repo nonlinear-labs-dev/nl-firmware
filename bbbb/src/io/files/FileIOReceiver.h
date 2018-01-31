@@ -15,8 +15,8 @@ class FileIOReceiver : public Receiver
     bool onChunk(Glib::IOCondition condition);
 
     void onFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::File> file);
-    void readStream(Glib::RefPtr<Gio::FileInputStream> stream);
-    void onStreamRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream);
+    void readStream(Glib::RefPtr<Gio::InputStream> stream);
+    void onStreamRead(Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::InputStream> stream);
 
     Glib::RefPtr<Gio::Cancellable> m_cancel;
     size_t m_blockSize;
