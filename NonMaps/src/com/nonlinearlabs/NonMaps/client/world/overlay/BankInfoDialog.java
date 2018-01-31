@@ -45,6 +45,7 @@ public class BankInfoDialog extends GWTDialog {
 	private static float commentBoxHeight = 0;
 	
 	private TextBox name;
+	private TextBox position;
 	private TextArea comment;
 	private Label size;
 	private Label lastChange;
@@ -94,6 +95,7 @@ public class BankInfoDialog extends GWTDialog {
 	private void addContent() {
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Name", name = new TextBox());
+		addRow(panel, "Position", position = new TextBox());
 		addRow(panel, "Comment", comment = new TextArea());
 		addRow(panel, "Size", size = new Label(""));
 		addRow(panel, "State", stateLabel = new Label(""));
@@ -205,11 +207,49 @@ public class BankInfoDialog extends GWTDialog {
 			public void onKeyPress(KeyPressEvent arg0) {
 				if (arg0.getCharCode() == KeyCodes.KEY_ENTER) {
 					name.setFocus(false);
-					comment.setFocus(true);
+					position.setFocus(true);
 				}
 			}
 		});
 
+		position.addKeyPressHandler(new KeyPressHandler() {
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+					position.setFocus(false);
+					comment.setFocus(true);
+				}
+			}
+		});
+		
+		position.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				setFocus(position);
+			}
+		});
+
+		position.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				haveFocus = null;
+
+				if (theBank != null) {
+					int oldNumber = theBank.getOrderNumber();
+					int currentValue = new Integer(position.getValue());
+
+					if (oldNumber != currentValue) {
+						NonMaps.get().getServerProxy().setBankOrderNumber(theBank, currentValue);
+					}
+					
+					updateInfo(theBank);
+				}
+			}
+		});
+		
 		setWidget(panel);
 		setFocus(panel);
 	}
@@ -244,6 +284,7 @@ public class BankInfoDialog extends GWTDialog {
 		if (bank != null) {
 			String bankName = bank.getCurrentName();
 			String commentText = bank.getAttribute("Comment");
+			int bankPos = bank.getOrderNumber();
 
 			if (haveFocus != comment) {
 				if (!commentText.equals(comment.getText())) {
@@ -256,7 +297,18 @@ public class BankInfoDialog extends GWTDialog {
 					name.setText(bankName);
 				}
 			}
-
+			
+			int currentPositionValue = 0;
+			try {
+				currentPositionValue = new Integer(position.getValue());
+			} catch(Exception e) {};
+			
+			if(haveFocus != position) {
+				if(bankPos != currentPositionValue) {
+					position.setText(new Integer(bankPos).toString());
+				}
+			}
+			
 			size.setText(Integer.toString(bank.getPresetCount()));
 
 			try {

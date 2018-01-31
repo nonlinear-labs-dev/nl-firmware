@@ -16,6 +16,7 @@
 #include <tools/PerformanceTimer.h>
 #include <xml/VersionAttribute.h>
 #include <boost/algorithm/string.hpp>
+#include <algorithm>
 
 BankActions::BankActions(PresetManager &presetManager) :
     RPCActionManager("/presets/banks/"),
@@ -357,6 +358,25 @@ BankActions::BankActions(PresetManager &presetManager) :
           tgtBank->undoableSelect (transaction);
         }
       });
+
+  addAction("set-order-number", [&] (shared_ptr<NetworkRequest> request) mutable
+  {
+      auto uuid = request->get("uuid");
+      if(auto bank = m_presetManager.findBank(uuid))
+      {
+        int numBanks = static_cast<int>(m_presetManager.getNumBanks());
+        int newPos = stoi(request->get("order-number"));
+        newPos = std::max(newPos, 0);
+        newPos = std::min(newPos, numBanks);
+
+        auto oldBankPos = m_presetManager.calcOrderNumber(bank.get());
+
+        auto scope = m_presetManager.getUndoScope().startTransaction("Changed Bank: %0 Order", bank->getName(true));
+        auto movedPos = newPos - oldBankPos;
+        if(movedPos != 0)
+          m_presetManager.undoableMoveBankBy(scope->getTransaction(), bank->getUuid(), movedPos);
+      }
+  });
 
   addAction("insert-preset", [&] (shared_ptr<NetworkRequest> request) mutable
   {

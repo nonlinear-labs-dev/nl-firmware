@@ -218,6 +218,14 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
+	public void setBankOrderNumber(Bank bank, int newOrderNumber) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-order-number");
+		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", bank.getUUID());
+		StaticURI.KeyValue order = new StaticURI.KeyValue("order-number", newOrderNumber);
+		StaticURI uri = new StaticURI(path, uuid, order);
+		queueJob(uri, true);
+	}
+	
 	public void dropPresetsAbove(String csv, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
