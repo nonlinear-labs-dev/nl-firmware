@@ -38,13 +38,9 @@ Glib::ustring Application::getSelfPath() const
   return m_selfPath;
 }
 
-void Application::run()
-{
-  auto loop = Glib::MainLoop::create(true);
-  loop->run();
-}
+#ifdef _DEVELOPMENT_PC
 
-void Application::runWithWindow()
+void Application::run()
 {
   int numArgs = 0;
   char **argv = nullptr;
@@ -52,6 +48,16 @@ void Application::runWithWindow()
   Window window;
   app->run(window);
 }
+
+#else
+
+void Application::run()
+{
+  auto loop = Glib::MainLoop::create(true);
+  loop->run();
+}
+
+#endif
 
 Options *Application::getOptions()
 {

@@ -46,7 +46,7 @@ int main (int numArgs, char **argv)
 
   {
     Application app (numArgs, argv);
-    Application::get ().runWithWindow ();
+    Application::get ().run ();
   }
 
   return EXIT_SUCCESS;

@@ -1,3 +1,5 @@
+#ifdef _DEVELOPMENT_PC
+
 #include <Application.h>
 #include <bbbb.h>
 #include <ui/Window.h>
@@ -87,3 +89,5 @@ bool Window::on_draw(const ::Cairo::RefPtr<::Cairo::Context> & cr)
 
   return true;
 }
+
+#endif
