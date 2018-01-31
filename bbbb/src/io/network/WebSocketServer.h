@@ -15,7 +15,7 @@ class WebSocketServer
     using tMessage = Glib::RefPtr<Glib::Bytes>;
 
     void sendMessage(tMessage msg);
-    sigc::connection onMessageReceived(Domain domain, const sigc::slot<void(tMessage)> &cb);
+    sigc::connection onMessageReceived(Domain domain, const sigc::slot<void, tMessage> &cb);
 
   private:
     void connectWebSocket(SoupWebsocketConnection *connection);
@@ -24,7 +24,7 @@ class WebSocketServer
     static void receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketServer *pThis);
 
     using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
-    using tSignal = sigc::signal<void(tMessage)>;
+    using tSignal = sigc::signal<void, tMessage>;
 
     std::unique_ptr<SoupServer, decltype(*g_object_unref)> m_server;
     std::list<tWebSocketPtr> m_connections;

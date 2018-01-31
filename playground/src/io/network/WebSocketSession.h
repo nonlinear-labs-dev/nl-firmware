@@ -22,7 +22,7 @@ class WebSocketSession
     using tMessage = Glib::RefPtr<Glib::Bytes>;
 
     void sendMessage(Domain d, tMessage msg);
-    sigc::connection onMessageReceived(Domain d, const sigc::slot<void(tMessage)> &cb);
+    sigc::connection onMessageReceived(Domain d, const sigc::slot<void ,tMessage> &cb);
 
   private:
     void connect();
@@ -35,7 +35,7 @@ class WebSocketSession
     using tSessionPtr = std::unique_ptr<SoupSession, decltype(*g_object_unref)>;
     using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
     using tMessagePtr = std::unique_ptr<SoupMessage, decltype(*g_object_unref)>;
-    using tSignal = sigc::signal<void(tMessage)>;
+    using tSignal = sigc::signal<void, tMessage>;
 
     tSessionPtr m_soupSession;
     tMessagePtr m_message;

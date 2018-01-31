@@ -18,7 +18,7 @@ WebSocketSession::~WebSocketSession()
 {
 }
 
-sigc::connection WebSocketSession::onMessageReceived(Domain d, const sigc::slot<void(tMessage)> &cb)
+sigc::connection WebSocketSession::onMessageReceived(Domain d, const sigc::slot<void, tMessage> &cb)
 {
   return m_onMessageReceived[d].connect(cb);
 }
