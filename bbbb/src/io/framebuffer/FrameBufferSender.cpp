@@ -9,6 +9,7 @@
 
 FrameBufferSender::FrameBufferSender()
 {
+#ifndef _DEVELOPMENT_PC
   m_fd = open("/dev/fb0", O_RDWR);
 
   if(m_fd < 0)
@@ -32,6 +33,7 @@ FrameBufferSender::FrameBufferSender()
     TRACE("Could not memory map buffer");
     return;
   }
+#endif
 }
 
 FrameBufferSender::~FrameBufferSender()
@@ -40,7 +42,9 @@ FrameBufferSender::~FrameBufferSender()
 
 void FrameBufferSender::send(tMessage msg)
 {
+#ifndef _DEVELOPMENT_PC
   gsize numBytes = 0;
   auto bytes = reinterpret_cast<const int8_t*>(msg->get_data(numBytes));
   memcpy (m_frontBuffer, bytes, numBytes);
+#endif
 }
