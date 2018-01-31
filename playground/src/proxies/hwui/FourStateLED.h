@@ -11,7 +11,7 @@ class FourStateLED: public LED
 
     void setState(char state, bool flush);
     char getState () const;
-    static void flush ();
+    void syncBBBB();
 
   private:
     char m_state;

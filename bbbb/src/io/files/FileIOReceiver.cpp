@@ -26,6 +26,11 @@ void FileIOReceiver::onFileOpened(Glib::RefPtr<Gio::AsyncResult> &result, Glib::
   }
 }
 
+void FileIOReceiver::setBlockSize(size_t blockSize)
+{
+  m_blockSize = blockSize;
+}
+
 void FileIOReceiver::readStream(Glib::RefPtr<Gio::FileInputStream> stream)
 {
   stream->read_bytes_async(m_blockSize, sigc::bind(sigc::mem_fun(this, &FileIOReceiver::onStreamRead), stream), m_cancel);

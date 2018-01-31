@@ -9,6 +9,7 @@ using namespace std::chrono_literals;
 WebSocketSession::WebSocketSession() :
     m_soupSession(soup_session_new(), g_object_unref),
     m_message(nullptr, g_object_unref),
+    m_connection(nullptr, g_object_unref),
     m_retry(std::bind(&WebSocketSession::connect, this))
 {
   connect();
@@ -21,6 +22,11 @@ WebSocketSession::~WebSocketSession()
 sigc::connection WebSocketSession::onMessageReceived(Domain d, const sigc::slot<void, tMessage> &cb)
 {
   return m_onMessageReceived[d].connect(cb);
+}
+
+sigc::connection WebSocketSession::onConnectionEstablished(const sigc::slot<void> &cb)
+{
+  return m_onConnectionEstablished.connect(cb);
 }
 
 void WebSocketSession::connect()
@@ -58,7 +64,8 @@ void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
 {
   g_signal_connect(connection, "message", G_CALLBACK (&WebSocketSession::receiveMessage), this);
   g_object_ref(connection);
-  m_connections.push_back(tWebSocketPtr(connection, g_object_unref));
+  m_connection.reset(connection);
+  m_onConnectionEstablished();
 }
 
 void WebSocketSession::sendMessage(Domain d, tMessage msg)
@@ -75,23 +82,22 @@ void WebSocketSession::sendMessage(Domain d, tMessage msg)
 
 void WebSocketSession::sendMessage(tMessage msg)
 {
-  m_connections.remove_if([&] (auto &c)
+  if(m_connection)
   {
-    auto state = soup_websocket_connection_get_state (c.get());
+    auto state = soup_websocket_connection_get_state (m_connection.get());
 
     if (state == SOUP_WEBSOCKET_STATE_OPEN)
     {
       gsize len = 0;
       auto data = msg->get_data(len);
-      soup_websocket_connection_send_binary(c.get(), data, len);
-      return false;
+      soup_websocket_connection_send_binary(m_connection.get(), data, len);
     }
-
-    return true;
-  });
-
-  if(m_connections.empty())
-    reconnect();
+    else
+    {
+      m_connection.reset();
+      reconnect();
+    }
+  }
 }
 
 void WebSocketSession::receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketSession *pThis)

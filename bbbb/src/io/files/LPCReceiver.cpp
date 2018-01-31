@@ -4,7 +4,7 @@
 #include "MessageParser.h"
 
 LPCReceiver::LPCReceiver() :
-    super("/dev/lpc_bb_driver", 1),
+    super("/dev/lpc_bb_driver", MessageParser::getNumInitialBytesNeeded()),
     m_parser(std::make_unique<MessageParser>())
 {
 }
@@ -17,21 +17,16 @@ void LPCReceiver::onDataReceived(Glib::RefPtr<Glib::Bytes> bytes)
 {
   gsize numBytes = 0;
   auto data = reinterpret_cast<const uint8_t*>(bytes->get_data(numBytes));
-  parseAndForward(data, numBytes);
-}
 
-void LPCReceiver::parseAndForward(const uint8_t *data, gsize numBytes)
-{
-  if(numBytes)
+  if(auto numBytesMissing = m_parser->parse(data, numBytes))
   {
-    auto numBytesRead = m_parser->parse(data, numBytes);
-
-    if(m_parser->isFinished())
-    {
-      super::onDataReceived(m_parser->getMessage());
-      m_parser = std::make_unique<MessageParser>();
-    }
-
-    parseAndForward(data + numBytesRead, numBytes - numBytesRead);
+    setBlockSize(numBytesMissing);
+  }
+  else
+  {
+    g_assert(m_parser->isFinished());
+    super::onDataReceived(m_parser->getMessage());
+    m_parser = std::make_unique<MessageParser>();
+    setBlockSize(MessageParser::getNumInitialBytesNeeded());
   }
 }

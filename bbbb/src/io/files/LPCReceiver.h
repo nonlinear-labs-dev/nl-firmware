@@ -16,9 +16,6 @@ class LPCReceiver : public FileIOReceiver
     void onDataReceived(Glib::RefPtr<Glib::Bytes> bytes) override;
 
   private:
-    void parseAndForward(const uint8_t *data, gsize numBytes);
-
     std::unique_ptr<MessageParser> m_parser;
-
 };
 

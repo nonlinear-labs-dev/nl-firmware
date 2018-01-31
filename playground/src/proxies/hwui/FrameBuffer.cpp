@@ -69,6 +69,8 @@ FrameBuffer::FrameBuffer()
   initStacks();
   openAndMap();
   clear();
+
+  Application::get().getWebSocketSession()->onConnectionEstablished(sigc::mem_fun(this, &FrameBuffer::swapBuffers));
 }
 
 void FrameBuffer::initStacks()

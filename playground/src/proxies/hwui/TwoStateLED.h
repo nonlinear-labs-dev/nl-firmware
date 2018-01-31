@@ -20,6 +20,7 @@ class TwoStateLED: public LED
     void setState(LedState state);
     LedState getState();
     void init ();
+    void syncBBBB();
 
   private:
     void switchLED (bool onOrOff);

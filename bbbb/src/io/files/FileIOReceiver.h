@@ -8,6 +8,9 @@ class FileIOReceiver : public Receiver
     FileIOReceiver(const char *path, size_t blockSize);
     virtual ~FileIOReceiver();
 
+  protected:
+    void setBlockSize(size_t blockSize);
+
   private:
     bool onChunk(Glib::IOCondition condition);
 

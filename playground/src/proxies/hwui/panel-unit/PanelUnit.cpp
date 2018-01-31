@@ -94,6 +94,8 @@ PanelUnit::PanelUnit()
   });
 
   setUsageMode(new PanelUnitParameterEditMode());
+
+  Application::get().getWebSocketSession()->onConnectionEstablished(sigc::mem_fun(this, &PanelUnit::onBBBBConnected));
 }
 
 PanelUnit::~PanelUnit()
@@ -109,11 +111,19 @@ int PanelUnit::choseHWBestSourceForMC(int mcParamId) const
 
   return mcParamId;
 }
+
 void PanelUnit::init()
 {
   for(auto &led : m_leds)
     led->init();
+
   m_editPanel.init();
+}
+
+void PanelUnit::onBBBBConnected()
+{
+  for(auto &led : m_leds)
+    led->syncBBBB();
 }
 
 void PanelUnit::turnLedsOff()

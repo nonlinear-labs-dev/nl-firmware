@@ -32,11 +32,11 @@ gsize MessageParser::getNumHeaderBytesMissing () const
 
 gsize MessageParser::parse (gconstpointer buffer, gsize numBytes)
 {
-  if(auto ret = parseHeader(buffer, numBytes))
-    return ret;
+  if(auto missingForHeader = parseHeader(buffer, numBytes))
+    return missingForHeader;
 
-  if(auto ret = parseBody(buffer, numBytes))
-    return ret;
+  if(auto missingForBody = parseBody(buffer, numBytes))
+    return missingForBody;
 
   return 0;
 }
@@ -58,7 +58,7 @@ gsize MessageParser::parseHeader(gconstpointer buffer, gsize numBytes)
     m_msg.params.resize (m_msg.length, 0);
   }
 
-  return missingBytesAvail;
+  return headerBytesMissing - missingBytesAvail;
 }
 
 gsize MessageParser::parseBody (gconstpointer buffer, gsize numBytes)
@@ -72,7 +72,7 @@ gsize MessageParser::parseBody (gconstpointer buffer, gsize numBytes)
   memcpy (rawMsgBody + posInBody, buffer, missingBytesAvail);
   m_numBytesRead += missingBytesAvail;
 
-  return missingBytesAvail;
+  return missingBytes - missingBytesAvail;
 }
 
 gsize MessageParser::getNumInitialBytesNeeded ()

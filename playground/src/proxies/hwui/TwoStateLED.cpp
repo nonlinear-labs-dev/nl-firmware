@@ -66,3 +66,11 @@ void TwoStateLED::switchLED (bool onOrOff)
   auto msg = Glib::Bytes::create(val, 1);
   Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::PanelLed, msg);
 }
+
+void TwoStateLED::syncBBBB()
+{
+  if(m_state == ON)
+    switchLED(true);
+  else if (m_state == OFF)
+    switchLED(false);
+}

@@ -9,7 +9,7 @@
 class Font;
 class UDPSender;
 
-class FrameBuffer : public Uncopyable
+class FrameBuffer : public Uncopyable, public sigc::trackable
 {
   public:
     virtual ~FrameBuffer ();

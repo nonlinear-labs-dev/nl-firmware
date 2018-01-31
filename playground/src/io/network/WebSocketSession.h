@@ -23,6 +23,7 @@ class WebSocketSession
 
     void sendMessage(Domain d, tMessage msg);
     sigc::connection onMessageReceived(Domain d, const sigc::slot<void ,tMessage> &cb);
+    sigc::connection onConnectionEstablished(const sigc::slot<void> &cb);
 
   private:
     void connect();
@@ -36,11 +37,13 @@ class WebSocketSession
     using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
     using tMessagePtr = std::unique_ptr<SoupMessage, decltype(*g_object_unref)>;
     using tSignal = sigc::signal<void, tMessage>;
+    using tConnectionEstablishedSignal = sigc::signal<void>;
 
     tSessionPtr m_soupSession;
     tMessagePtr m_message;
-    std::list<tWebSocketPtr> m_connections;
+    tWebSocketPtr m_connection;
     std::map<Domain, tSignal> m_onMessageReceived;
+    tConnectionEstablishedSignal m_onConnectionEstablished;
     Expiration m_retry;
 };
 
