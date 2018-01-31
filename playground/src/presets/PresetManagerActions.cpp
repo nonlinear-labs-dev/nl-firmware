@@ -170,7 +170,7 @@ void PresetManagerActions::handleImportBackupFile(UNDO::TransactionCreationScope
   if(!reader.read<PresetManagerSerializer>(std::ref(m_presetManager)))
   {
     transaction->rollBack();
-    http->respond("Invalid File. Please choose correct xml.zip file.");
+    http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
   }
 }
 
@@ -201,7 +201,7 @@ bool PresetManagerActions::handleRequest (const Glib::ustring &path, shared_ptr<
       boled.setOverlay (new SplashLayout ());
 
       auto stream = request->createStream ("application/zip", true);
-      httpRequest->setHeader ("Content-Disposition", "attachment; filename=\"nonlinear-c15-banks.xml.zip\"");
+      httpRequest->setHeader ("Content-Disposition", "attachment; filename=\"nonlinear-c15-banks.xml.tar.gz\"");
       XmlWriter writer (stream);
       auto pm = Application::get ().getPresetManager ();
       PresetManagerSerializer serializer (*pm.get ());
@@ -217,6 +217,22 @@ bool PresetManagerActions::handleRequest (const Glib::ustring &path, shared_ptr<
     {
       auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
       auto preset2 = Application::get().getPresetManager()->findPreset(request->get("p2"));
+
+      if (preset1 && preset2)
+      {
+        httpRequest->respond(Application::get().getPresetManager()->getDiffString(preset1, preset2));
+        httpRequest->setStatusOK();
+        return true;
+      }
+    }
+  }
+
+  if (path.find("/presets/get-diff-editbuffer") == 0)
+  {
+    if (auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+    {
+      auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
+      auto preset2 = Application::get().getPresetManager()->getEditBuffer();
 
       if (preset1 && preset2)
       {

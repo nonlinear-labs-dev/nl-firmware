@@ -269,7 +269,7 @@ void Clipboard::pastePresetOnPreset (const Glib::ustring &presetUuid)
   {
     if (auto targetBank = targetPreset->getBank ())
     {
-      auto scope = getUndoScope ().startTransaction ("Paste Bank");
+      auto scope = getUndoScope ().startTransaction ("Paste Preset");
       auto transaction = scope->getTransaction ();
 
       auto insertPos = targetBank->getPresetPosition (presetUuid) + 1;

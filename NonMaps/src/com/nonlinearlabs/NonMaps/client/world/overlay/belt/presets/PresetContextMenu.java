@@ -97,6 +97,7 @@ public class PresetContextMenu extends ContextMenu {
 			}
 		});
 		
+		
 		if(hasMultipleSelection && pm.getMultiSelection().getNumSelectedPresets() == 2)
 		{
 			addChild(new ContextMenuItem(this, "Compare" ) {
@@ -109,6 +110,15 @@ public class PresetContextMenu extends ContextMenu {
 					CompareDialog.open(p1,p2);
 					return super.click(eventPoint);
 				}
+			});
+		} else if(hasMultipleSelection == false) {
+			addChild(new ContextMenuItem(this, "Compare to Editbuffer") {
+				@Override
+				public Control click(Position eventPoint) {
+					Preset p1 = pm.getSelectedPreset();
+					CompareDialog.open(p1);
+					return super.click(eventPoint);
+				} 
 			});
 		}
 	}

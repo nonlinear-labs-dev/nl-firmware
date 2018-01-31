@@ -45,6 +45,11 @@ public class Overlay extends OverlayLayout {
 		addChild(globalMenu = new GlobalMenu(this));
 	}
 
+	
+	public void refreshGlobalMenu() {
+		globalMenu.refresh();
+	}
+	
 	@Override
 	public Viewport getParent() {
 		return (Viewport) super.getParent();

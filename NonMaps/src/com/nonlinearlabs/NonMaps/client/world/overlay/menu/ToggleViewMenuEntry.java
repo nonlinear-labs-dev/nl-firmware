@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.FloatingWindow;
+import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
 
 public class ToggleViewMenuEntry extends MenuEntry {
 
@@ -16,7 +17,10 @@ public class ToggleViewMenuEntry extends MenuEntry {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		return (window.isShown() ? "\uE0A4 " : "\uE0A3 ") + window.getMenuTitle();
+		if(window instanceof UndoTreeWindow)
+			return (window.isShown() ? "\uE0A4 " : "\uE0A3 ") + window.getMenuTitle() + " - U";
+		else
+			return (window.isShown() ? "\uE0A4 " : "\uE0A3 ") + window.getMenuTitle();
 	}
 
 	@Override
