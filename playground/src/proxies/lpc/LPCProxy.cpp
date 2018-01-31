@@ -41,8 +41,6 @@ LPCProxy::~LPCProxy()
 
 void LPCProxy::onWebSocketMessage(WebSocketSession::tMessage msg)
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__);
-
   gsize numBytes = 0;
   const uint8_t* buffer = (const uint8_t*) (msg->get_data(numBytes));
 

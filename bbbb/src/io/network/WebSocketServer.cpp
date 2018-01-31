@@ -34,6 +34,7 @@ void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
 {
   g_signal_connect(connection, "message", G_CALLBACK (&WebSocketServer::receiveMessage), this);
   g_object_ref(connection);
+  g_object_set(connection, "keepalive-interval", 5, nullptr);
   m_connections.push_back(tWebSocketPtr(connection, g_object_unref));
 }
 
