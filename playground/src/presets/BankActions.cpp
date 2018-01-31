@@ -375,6 +375,8 @@ BankActions::BankActions(PresetManager &presetManager) :
         auto movedPos = newPos - oldBankPos;
         if(movedPos != 0)
           m_presetManager.undoableMoveBankBy(scope->getTransaction(), bank->getUuid(), movedPos);
+        else
+          bank->onChange();
       }
   });
 
