@@ -921,5 +921,4 @@ public class PresetManager extends MapsLayout {
 	public void resetAttachingTapes() {
 		setAttachingTapes(null, null);
 	}
-
 }
