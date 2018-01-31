@@ -244,8 +244,6 @@ public class BankInfoDialog extends GWTDialog {
 					if (oldNumber != currentValue) {
 						NonMaps.get().getServerProxy().setBankOrderNumber(theBank, currentValue);
 					}
-					
-					updateInfo(theBank);
 				}
 			}
 		});
