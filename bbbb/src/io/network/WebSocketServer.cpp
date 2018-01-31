@@ -50,11 +50,11 @@ void WebSocketServer::sendMessage(tMessage msg)
       gsize len = 0;
       auto data = msg->get_data(len);
       soup_websocket_connection_send_binary(c.get(), data, len);
-      return true;
+      return false;
     }
 
     TRACE("connection state: " << state);
-    return false;
+    return true;
   });
 }
 
