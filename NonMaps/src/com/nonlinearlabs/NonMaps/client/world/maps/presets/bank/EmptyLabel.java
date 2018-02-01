@@ -14,9 +14,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 
 final class EmptyLabel extends Label {
-	/**
-	 * 
-	 */
 	private final Bank bank;
 	private boolean dropping = false;
 

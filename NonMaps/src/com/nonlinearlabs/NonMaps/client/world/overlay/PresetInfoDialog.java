@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.Date;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -16,7 +15,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -61,11 +59,10 @@ public class PresetInfoDialog extends GWTDialog {
 		addContent();
 
 		initialSetup();
-		
-		super.pushDialogToFront();	
-		
-		if(commentBoxHeight != 0)
-		{
+
+		super.pushDialogToFront();
+
+		if (commentBoxHeight != 0) {
 			comment.setHeight(commentBoxHeight + "px");
 		}
 	}
@@ -79,10 +76,9 @@ public class PresetInfoDialog extends GWTDialog {
 		panel.setWidget(c, 0, new Label(name));
 		panel.setWidget(c, 1, content);
 	}
-		
+
 	private void addContent() {
-		
-		
+
 		HTMLPanel presetNameAndPositionBox = new HTMLPanel("div", "");
 		presetNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
 		presetNameAndPositionBox.add(position = new IntegerBox());
@@ -99,7 +95,7 @@ public class PresetInfoDialog extends GWTDialog {
 		addRow(panel, "UI Version", softwareVersion = new Label(""));
 
 		position.getElement().addClassName("gwt-TextBox");
-				
+
 		comment.addFocusHandler(new FocusHandler() {
 
 			@Override
@@ -124,44 +120,35 @@ public class PresetInfoDialog extends GWTDialog {
 				}
 			}
 		});
-		
-		comment.addMouseDownHandler(new MouseDownHandler() 
-		{
+
+		comment.addMouseDownHandler(new MouseDownHandler() {
 			private HandlerRegistration mouseMoveUpRegistration;
 			private int lastWidth;
 			private int lastHeight;
 
 			@Override
-			public void onMouseDown(MouseDownEvent event) 
-			{
+			public void onMouseDown(MouseDownEvent event) {
 				lastWidth = getOffsetWidth();
 				lastHeight = getOffsetHeight();
-	
-				if (mouseMoveUpRegistration == null) 
-				{
-					mouseMoveUpRegistration = Event.addNativePreviewHandler(new NativePreviewHandler() 
-					{
+
+				if (mouseMoveUpRegistration == null) {
+					mouseMoveUpRegistration = Event.addNativePreviewHandler(new NativePreviewHandler() {
 						@Override
-						public void onPreviewNativeEvent(NativePreviewEvent event) 
-						{
-							if (event.getTypeInt() == Event.ONMOUSEMOVE || event.getTypeInt() == Event.ONMOUSEUP) 
-							{
+						public void onPreviewNativeEvent(NativePreviewEvent event) {
+							if (event.getTypeInt() == Event.ONMOUSEMOVE || event.getTypeInt() == Event.ONMOUSEUP) {
 								int width = getOffsetWidth();
 								int height = getOffsetHeight();
-								if (width != lastWidth || height != lastHeight) 
-								{
+								if (width != lastWidth || height != lastHeight) {
 									commentBoxHeight = comment.getElement().getClientHeight();
-									
+
 									lastWidth = width;
 									lastHeight = height;
 								}
-	
-								if (event.getTypeInt() == Event.ONMOUSEUP) 
-								{
+
+								if (event.getTypeInt() == Event.ONMOUSEUP) {
 									commentBoxHeight = comment.getElement().getClientHeight();
-									
-									if (mouseMoveUpRegistration != null) 
-									{
+
+									if (mouseMoveUpRegistration != null) {
 										mouseMoveUpRegistration.removeHandler();
 										mouseMoveUpRegistration = null;
 									}
@@ -230,7 +217,7 @@ public class PresetInfoDialog extends GWTDialog {
 					if (newPos != null) {
 						if (!newPos.equals(oldNumber)) {
 							Bank bank = theEditPreset.getParent();
-							int presetCount = bank.getPresetCount();
+							int presetCount = bank.getPresetList().getPresetCount();
 							int targetPos = newPos.intValue();
 							targetPos = Math.max(targetPos, 1);
 							targetPos = Math.min(targetPos, presetCount);
@@ -244,7 +231,7 @@ public class PresetInfoDialog extends GWTDialog {
 						}
 					}
 				}
-				
+
 				position.setText(theEditPreset.getPaddedNumber());
 			}
 		});

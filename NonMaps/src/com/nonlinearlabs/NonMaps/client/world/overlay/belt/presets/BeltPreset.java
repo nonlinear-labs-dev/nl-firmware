@@ -11,11 +11,11 @@ import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
+import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 
 public class BeltPreset extends OverlayLayout implements IPreset {
 
@@ -33,11 +33,11 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		super(parent);
 		setOrigin(mapsPreset);
 
-		color = addChild(new PresetColorTag(this, mapsPreset));
+		color = addChild(new PresetColorTag(this));
 		number = addChild(new PresetNumber(this));
 		name = addChild(new PresetName(this));
-		((Label)name).setFontHeightInMM(4);
-		((Label)number).setFontHeightInMM(4);
+		((Label) name).setFontHeightInMM(4);
+		((Label) number).setFontHeightInMM(4);
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		Preset p = mapsPreset;
 		IPreset newPreset = (IPreset) dragProxy.getOrigin();
 
-		boolean isMove = p.getParent().findPreset(newPreset.getUUID()) != null;
+		boolean isMove = p.getParent().getPresetList().findPreset(newPreset.getUUID()) != null;
 
 		if (isMove)
 			movePreset(p, newPreset);

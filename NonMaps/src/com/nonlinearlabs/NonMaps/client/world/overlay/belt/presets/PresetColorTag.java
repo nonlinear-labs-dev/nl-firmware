@@ -4,44 +4,43 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
-import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public class PresetColorTag extends OverlayControl {
 
-	private Preset preset = null;
-	
-	public PresetColorTag(OverlayLayout parent, Preset p) {
+	public PresetColorTag(BeltPreset parent) {
 		super(parent);
-		this.preset = p;
 	}
-	
+
+	@Override
+	public BeltPreset getParent() {
+		return (BeltPreset) super.getParent();
+	}
+
 	protected RGB calcColor() {
-	
-		switch(this.preset.getAttribute("color"))
-		{
-			case "green":
-				return new RGB(0, 255, 0);
-			case "blue":
-				return new RGB(0, 0, 255);
-			case "yellow":
-				return new RGB(255, 255, 0);
-			case "orange":
-				return new RGB(255, 126, 0);
-			case "purple":
-				return new RGB(255, 0, 255);
-			case "red":
-				return new RGB(255, 0, 0);
-			default:
-				return null;
+
+		switch (getParent().getMapsPreset().getAttribute("color")) {
+		case "green":
+			return new RGB(0, 255, 0);
+		case "blue":
+			return new RGB(0, 0, 255);
+		case "yellow":
+			return new RGB(255, 255, 0);
+		case "orange":
+			return new RGB(255, 126, 0);
+		case "purple":
+			return new RGB(255, 0, 255);
+		case "red":
+			return new RGB(255, 0, 0);
+		default:
+			return null;
 		}
 	}
-		
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		RGB color = calcColor();
-		if(color == null)
+		if (color == null)
 			return;
 		Rect pixRect = getPixRect();
 		ctx.setFillStyle(color.toString());

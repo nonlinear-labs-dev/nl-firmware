@@ -27,7 +27,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Tape.Orientation
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetList;
 
 public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
@@ -36,7 +35,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private String uuid = "";
 	final Header header = new Header(this);
 	private boolean minimized = false;
-	private String selectedPreset = "";
 	private Label emptyLabel = null;
 	private PrevNextButtons prevNext;
 	private int orderNumber = 0;
@@ -63,11 +61,13 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	private Tape tapes[] = new Tape[4];
+	private PresetList presetList = null;
 
 	public Bank(PresetManager parent, String uuid) {
 		super(parent);
 		this.uuid = uuid;
 		addChild(header);
+		addChild(presetList = new PresetList(this));
 		prevNext = addChild(new PrevNextButtons(this));
 
 		tapes[Tape.Orientation.North.ordinal()] = addChild(new Tape(this, Tape.Orientation.North));
@@ -113,7 +113,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	protected void drawDropIndicator(Context2d ctx) {
 		if (dragPosition != null) {
-			for (Control c : getChildren()) {
+			for (Control c : presetList.getChildren()) {
 				if (c instanceof IPreset) {
 					Rect presetRect = c.getPixRect();
 
@@ -191,7 +191,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		if (dragPosition != null) {
-			for (Control c : getChildren()) {
+			for (Control c : presetList.getChildren()) {
 				if (c instanceof IPreset) {
 					Rect presetRect = c.getPixRect();
 
@@ -466,10 +466,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return "Bank";
 	}
 
-	public String getSelectedPreset() {
-		return selectedPreset;
-	}
-
 	public void selectBank(boolean userInteraction) {
 		getParent().selectBank(getUUID(), userInteraction);
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -479,25 +475,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return minimized;
 	}
 
-	public void selectPreset(String uuid, Initiator initiator) {
-		if (selectedPreset.equals(uuid))
-			return;
-
-		selectedPreset = uuid;
-
-		if (initiator == Initiator.EXPLICIT_USER_ACTION)
-			getNonMaps().getServerProxy().selectPreset(uuid);
-
-		requestLayout();
-
-		if (isSelected()) {
-			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl().getPresetList()
-					.scheduleAutoScroll(PresetList.ScrollRequest.Smooth);
-		}
-
-		getParent().onPresetSelectionChanged(findPreset(selectedPreset));
-	}
-
 	void showEmptyLabel(boolean bankEmpty) {
 		if (bankEmpty && emptyLabel == null) {
 			emptyLabel = addChild(new EmptyLabel(this, this, "- empty -"));
@@ -505,113 +482,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			removeChild(emptyLabel);
 			emptyLabel = null;
 		}
-	}
-
-	public Preset findLoadedPreset() {
-		for (Control c : getChildren()) {
-			if (c instanceof Preset) {
-				Preset p = (Preset) c;
-				if (p.isLoaded())
-					return p;
-			}
-		}
-		return null;
-	}
-
-	public boolean isLast(Preset p) {
-		boolean found = false;
-
-		for (Control c : getChildren()) {
-			if (c == p) {
-				found = true;
-			} else if (c instanceof Preset && found)
-				return false;
-		}
-
-		return found;
-	}
-
-	public boolean isFirst(Preset p) {
-		for (Control c : getChildren()) {
-			if (c instanceof Preset) {
-				return c == p;
-			}
-		}
-
-		return false;
-	}
-
-	public boolean doesBankContainLoadedPreset() {
-		for (Control c : getChildren()) {
-			if (c instanceof Preset) {
-				Preset p = (Preset) c;
-				if (p.isLoaded())
-					return true;
-			}
-		}
-		return false;
-	}
-
-	public Preset getPrev(String uuid) {
-		Preset last = null;
-
-		for (Control c : getChildren()) {
-			if (c instanceof Preset) {
-				Preset p = (Preset) c;
-				if (p.getUUID().equals(uuid))
-					return last;
-
-				last = p;
-			}
-		}
-		return null;
-	}
-
-	public Preset getNext(String uuid) {
-		boolean found = false;
-
-		for (Control c : getChildren()) {
-			if (c instanceof Preset) {
-				Preset p = (Preset) c;
-
-				if (found)
-					return p;
-
-				if (p.getUUID().equals(uuid))
-					found = true;
-			}
-		}
-		return null;
-	}
-
-	public void selectPrev(Initiator initiator) {
-		Preset prev = getPrev(selectedPreset);
-
-		if (prev != null)
-			selectPreset(prev.getUUID(), initiator);
-	}
-
-	public void selectNext(Initiator initiator) {
-		Preset next = getNext(selectedPreset);
-
-		if (next != null)
-			selectPreset(next.getUUID(), initiator);
-	}
-
-	public Preset findPreset(String uuid) {
-		for (Control c : getChildren()) {
-			if (c instanceof Preset) {
-				Preset p = (Preset) c;
-
-				if (p.getUUID().equals(uuid))
-					return p;
-			}
-		}
-		return null;
-	}
-
-	public boolean hasSelectedPreset() {
-		return findPreset(selectedPreset) != null;
 	}
 
 	public void setOrderNumber(int i) {
@@ -650,7 +520,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 					return DropAction.NONE;
 				}
 
-				if (findPreset(p.getUUID()) != null) {
+				if (presetList.findPreset(p.getUUID()) != null) {
 					return DropAction.MOVE_PRESET;
 				}
 
@@ -734,7 +604,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 			if (child.getNodeName().equals("preset")) {
 				String uuid = child.getAttributes().getNamedItem("uuid").getNodeValue();
-				Preset p = findPreset(uuid);
+				Preset p = presetList.findPreset(uuid);
 				if (p != null) {
 					p.setFilterState(Preset.FilterState.FILTER_MATCHES);
 					numMatches++;
@@ -750,30 +620,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 				return false;
 
 		return true;
-	}
-
-	public boolean canNext() {
-		Preset p = findPreset(selectedPreset);
-		if (p != null)
-			return !isLast(p);
-		return false;
-	}
-
-	public boolean canPrev() {
-		Preset p = findPreset(selectedPreset);
-		if (p != null)
-			return !isFirst(p);
-		return false;
-	}
-
-	public short getPresetCount() {
-		short numberOfPresets = 0;
-		for (Control c : getChildren()) {
-			if (c instanceof Preset) {
-				numberOfPresets++;
-			}
-		}
-		return numberOfPresets;
 	}
 
 	void updateAttributes(Node node) {
@@ -1008,5 +854,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			else
 				return master;
 		}
+	}
+
+	public PresetList getPresetList() {
+		return presetList;
 	}
 }
