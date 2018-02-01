@@ -921,13 +921,13 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	public void layoutSlaves() {
 		if (slaveBottom != null) {
-			NonPosition posYFin = new NonPosition(getNonPosition().getLeft(), getNonPosition().getBottom() + 15);
+			NonPosition posYFin = new NonPosition(getNonPosition().getLeft(), getNonPosition().getBottom());
 			slaveBottom.moveTo(posYFin);
 			slaveBottom.layoutSlaves();
 		}
 
 		if (slaveRight != null) {
-			NonPosition posXFin = new NonPosition(getNonPosition().getRight() + 15, getNonPosition().getTop());
+			NonPosition posXFin = new NonPosition(getNonPosition().getRight(), getNonPosition().getTop());
 			slaveRight.moveTo(posXFin);
 			slaveRight.layoutSlaves();
 		}
