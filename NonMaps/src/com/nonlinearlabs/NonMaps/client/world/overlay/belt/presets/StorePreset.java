@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -23,21 +22,10 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImagePhase;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 
 class StorePreset extends SVGImage {
-	
+
 	Action action = Action.APPEND;
 	String presetToWaitFor = "";
 	RepeatingCommand dragDelay = null;
-	boolean isActive = false;
-
-	
-	public boolean isActive() {
-		return isActive;
-	}
-
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-		GWT.log("storePresetButton is active: " + isActive);
-	}
 
 	class DraggableButtonPhase extends SVGImagePhase implements EditBufferDraggingButton {
 
@@ -54,10 +42,6 @@ class StorePreset extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		if(isActive == false) {
-			return drawStates.disabled.ordinal();
-		}
-		
 		boolean isCapturing = isCaptureControl() && dragDelay == null;
 		if (isCapturing || isDraggingControl()) {
 			return drawStates.drag.ordinal();
@@ -106,17 +90,17 @@ class StorePreset extends SVGImage {
 
 	@Override
 	public Control click(Position eventPoint) {
-		if(getPresetManager().isInStoreMode()) {
-			boolean hasSelectedBank = getPresetManager().hasSelectedBank();
-	
-			if (!hasSelectedBank)
-				createNewBank();
-			else
-				storeToBank();
-			
-			getPresetManager().endStoreMode();
-			setActive(false);
-		}
+		boolean hasSelectedBank = getPresetManager().hasSelectedBank();
+
+		if (getPresetManager().isInStoreSelectMode())
+			hasSelectedBank = getPresetManager().getStoreMode().getSelectedBank() != null;
+
+		if (!hasSelectedBank)
+			createNewBank();
+		else
+			storeToBank();
+
+		getPresetManager().endStoreSelectMode();
 		return this;
 	}
 
@@ -131,15 +115,27 @@ class StorePreset extends SVGImage {
 
 		switch (action) {
 		case APPEND:
-			uuid = getNonMaps().getServerProxy().appendPreset();
+			if (getPresetManager().isInStoreSelectMode()) {
+				uuid = getNonMaps().getServerProxy().appendEditBuffer(getPresetManager().getStoreMode().getSelectedBank());
+			} else {
+				uuid = getNonMaps().getServerProxy().appendPreset();
+			}
 			break;
 
 		case INSERT:
-			uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
+			if (getPresetManager().isInStoreSelectMode()) {
+				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
+			} else {
+				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getSelectedPreset());
+			}
 			break;
 
 		case OVERWRITE:
-			getNonMaps().getServerProxy().overwritePreset();
+			if (getPresetManager().isInStoreSelectMode()) {
+				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreMode().getSelectedPreset());
+			} else {
+				getNonMaps().getServerProxy().overwritePreset();
+			}
 			break;
 
 		default:

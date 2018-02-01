@@ -75,13 +75,16 @@ public class BankControl extends OverlayLayout implements IBank {
 	public void update(Node pmNode) {
 		if (pmNode != null) {
 			if (ServerProxy.didChange(pmNode)) {
-				presets.update(pmNode);
+				update();
 			}
 		}
 	}
-	
-	public void setHeaderTitleFontHeightInMM(int mm)
-	{
+
+	public void update() {
+		presets.update();
+	}
+
+	public void setHeaderTitleFontHeightInMM(int mm) {
 		header.setFontHeightInMM(mm);
 	}
 
@@ -98,14 +101,18 @@ public class BankControl extends OverlayLayout implements IBank {
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 
-		if(pm.isInStoreMode())
+		if (pm.isInStoreSelectMode())
 			return this;
-		
+
 		if (amount > 0)
 			pm.selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
 		else if (amount < 0)
 			pm.selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
 
 		return this;
+	}
+
+	public boolean isInStoreSelectMode() {
+		return getBankInCharge().isInStoreSelectMode();
 	}
 }

@@ -14,10 +14,7 @@ class NextBank extends PrevNextBank {
 	@Override
 	public Control click(Position eventPoint) {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
-		if(pm.isInStoreMode() == false)
-			pm.selectNextBank(true);
-		else
-			pm.getStoreMode().selecteNextBank();
+		pm.selectNextBank(true);
 		return this;
 	}
 

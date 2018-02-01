@@ -119,7 +119,7 @@ BankActions::BankActions(PresetManager &presetManager) :
         }
       }
   });
-  
+
   addAction("move-preset-to", [&] (shared_ptr<NetworkRequest> request)
   {
     Glib::ustring presetToOverwrite = request->get ("presetToOverwrite");
@@ -344,6 +344,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       [&] (shared_ptr<NetworkRequest> request) mutable
       {
         Glib::ustring bankUuid = request->get ("bank-uuid");
+        Glib::ustring presetUuid = request->get ("uuid");
 
         if (tBankPtr tgtBank = m_presetManager.findBank (bankUuid))
         {
@@ -351,7 +352,7 @@ BankActions::BankActions(PresetManager &presetManager) :
           UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
 
           int desiredPresetPos = tgtBank->getNumPresets();
-          tgtBank->undoableInsertPreset (transaction, desiredPresetPos);
+          tgtBank->undoableAppendPreset(transaction, presetUuid);
           tgtBank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
           tgtBank->undoableSelectPreset (transaction, tgtBank->getPreset (desiredPresetPos)->getUuid());
           tgtBank->undoableSelect (transaction);

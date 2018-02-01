@@ -9,19 +9,18 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class StoreModeButton extends SVGImage {
-	
+
 	public StoreModeButton(OverlayLayout parent) {
 		super(parent, "StoreMode_Enabled.svg", "StoreMode_Active.svg", "StoreMode_Disabled.svg");
-		((StorePresetArea)getParent()).getCommitButton().setActive(false);
 	}
 
 	private PresetManager getPresetManager() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager();
 	}
-	
+
 	@Override
 	public int getSelectedPhase() {
-		if(getPresetManager().isInStoreMode()) {
+		if (getPresetManager().isInStoreSelectMode()) {
 			return drawStates.active.ordinal();
 		} else {
 			return drawStates.normal.ordinal();
@@ -38,23 +37,20 @@ public class StoreModeButton extends SVGImage {
 		requestLayout();
 		return super.mouseUp(eventPoint);
 	}
-	
+
 	@Override
 	public Control click(Position eventPoint) {
 
-		if(getPresetManager().isInStoreMode()) {
-			getPresetManager().endStoreMode();
+		if (getPresetManager().isInStoreSelectMode()) {
+			getPresetManager().endStoreSelectMode();
 		} else {
-			getPresetManager().startStoreMode();
-		}		
-		
-		requestLayout();
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			getPresetManager().startStoreSelectMode();
+		}
 
 		return this;
 	}
 
 	public void update(Node settingsNode, Node presetManagerNode) {
-		
+
 	}
 }

@@ -8,8 +8,8 @@ import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
-import com.nonlinearlabs.NonMaps.client.SelectMode;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -58,7 +58,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public RGB getColorFont() {
 		boolean selected = isSelected();
-		boolean loaded = isLoaded();
+		boolean loaded = isLoaded() && !isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
@@ -90,7 +90,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public int getNumber() {
 		return Integer.parseInt(number.getText());
 	}
-	
+
 	public String getPaddedNumber() {
 		NumberFormat f = NumberFormat.getFormat("000");
 		String ret = f.format(getNumber());
@@ -125,7 +125,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean selected = isSelected();
-		boolean loaded = isLoaded();
+		boolean loaded = isLoaded() && !isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
@@ -177,11 +177,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isSelected() {
-		SelectMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
-		if(sm != null)
-		{
+		StoreSelectMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
+		if (sm != null)
 			return sm.getSelectedPreset() == this;
-		}
+
 		return uuid.equals(getParent().getSelectedPreset());
 	}
 
@@ -189,18 +188,22 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
 
+	public boolean isInStoreSelectMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
+	}
+
 	@Override
 	public Control click(Position point) {
-		if (isInMultiplePresetSelectionMode()) {
+		if (isInStoreSelectMode()) {
+			selectPreset();
+			return this;
+		} else if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;
 		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
 			getParent().getParent().startMultiSelection(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			return this;
-		} else if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreMode()) {
-			selectPreset();
 			return this;
 		}
 
@@ -213,6 +216,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control onContextMenu(Position pos) {
+		if (isInStoreSelectMode())
+			return null;
+
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
 				.getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
@@ -223,29 +229,27 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void selectPreset() {
-		SelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
-		if(storeMode != null)
-		{
+		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
+		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
-		}
-		else
-		{
+		} else {
 			getParent().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
 		}
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		if (isInMultiplePresetSelectionMode()) {
+		if (isInStoreSelectMode())
 			return this;
-		}
+
+		if (isInMultiplePresetSelectionMode())
+			return this;
 
 		wasSelectedAtMouseDown = isSelected();
 
-		if (!wasSelectedAtMouseDown) {
+		if (!wasSelectedAtMouseDown)
 			selectPreset();
-		}
+
 		return this;
 	}
 

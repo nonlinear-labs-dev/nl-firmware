@@ -13,8 +13,8 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
-import com.nonlinearlabs.NonMaps.client.SelectMode;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -53,36 +53,36 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 
-	private SelectMode m_selectMode;
-	
+	private StoreSelectMode m_storeSelectMode;
+
 	private Tape attachingTapes[] = new Tape[2];
 
-	public SelectMode getStoreMode() {
-		return m_selectMode;
+	public StoreSelectMode getStoreMode() {
+		return m_storeSelectMode;
 	}
-	
-	public boolean isInStoreMode() {
-		return m_selectMode != null;
+
+	public boolean isInStoreSelectMode() {
+		return m_storeSelectMode != null;
 	}
-	
+
 	public MoveSomeBanksLayer getMoveSomeBanks() {
 		return moveSomeBanks;
 	}
-	
-	public void startStoreMode() {
-		if(m_selectMode == null)
-			m_selectMode = new SelectMode(this);
+
+	public void startStoreSelectMode() {
+		if (m_storeSelectMode == null) {
+			m_storeSelectMode = new StoreSelectMode(this);
+			m_storeSelectMode.updateUI();
+
+		}
 	}
-	
-	public void endStoreMode() {
-		selectPreset(m_selectMode.getInitalSelectedPreset().getUUID());
-		m_selectMode = null;
-	}
-	
-	private void selectPreset(String uuid) {
-		Bank b = findPreset(uuid).getParent();
-		b.selectPreset(uuid, Initiator.INDIRECT_USER_ACTION);
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+
+	public void endStoreSelectMode() {
+		if (m_storeSelectMode != null) {
+			StoreSelectMode tmp = m_storeSelectMode;
+			m_storeSelectMode = null;
+			tmp.updateUI();
+		}
 	}
 
 	public void store() {
@@ -283,6 +283,9 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public String getSelectedBank() {
+		if (isInStoreSelectMode())
+			return getStoreMode().getSelectedBank().getUUID();
+
 		return selectedBank;
 	}
 
@@ -304,6 +307,11 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void selectBank(String bankUUID, boolean userInteraction) {
+		if (isInStoreSelectMode()) {
+			getStoreMode().setSelectedBank(findBank(bankUUID));
+			return;
+		}
+
 		if (!selectedBank.equals(bankUUID)) {
 			selectedBank = bankUUID;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -441,6 +449,9 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean canNext() {
+		if (isInStoreSelectMode())
+			return m_storeSelectMode.canNext();
+
 		Preset p = findLoadedPreset();
 		if (p != null) {
 			Bank b = p.getParent();
@@ -451,6 +462,9 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean canPrev() {
+		if (isInStoreSelectMode())
+			return m_storeSelectMode.canPrev();
+
 		Preset p = findLoadedPreset();
 		if (p != null) {
 			Bank b = p.getParent();
@@ -488,36 +502,36 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER) {
 			loadSelectedPreset();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_P) {
-			if(getNonMaps().getNonLinearWorld().isCtrlDown()) {
+			if (getNonMaps().getNonLinearWorld().isCtrlDown()) {
 				toggleHiddenBanks();
 			} else {
 				PresetInfoDialog.toggle();
 			}
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
-			if(hasMultiplePresetSelection()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
+			if (hasMultiplePresetSelection()) {
 				multiSelection.deletePresets();
 				closeMultiSelection();
 			} else {
 				deletePreset(getSelectedPreset());
-			}		
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			}
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().undo();
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().redo();
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F && NonMaps.get().getNonLinearWorld().isShiftDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F && NonMaps.get().getNonLinearWorld().isShiftDown()) {
 			SearchQueryDialog.toggle();
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
 			BankInfoDialog.toggle();
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I) {
 			ParameterInfoDialog.toggle();
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/war/online-help/index.html", "", "");
 		} else {
 			return null;
 		}
-		
+
 		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().refreshGlobalMenu();
 		return this;
 	}
@@ -528,12 +542,22 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void selectPreviousPreset(Initiator initiator) {
+		if (isInStoreSelectMode()) {
+			getStoreMode().selectPreviousPreset();
+			return;
+		}
+
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
 			b.selectPrev(initiator);
 	}
 
 	public void selectNextPreset(Initiator initiator) {
+		if (isInStoreSelectMode()) {
+			getStoreMode().selectNextPreset();
+			return;
+		}
+
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
 			b.selectNext(initiator);
@@ -553,20 +577,32 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void selectPreviousBank(boolean userInteraction) {
-		selectBankWithOrdernumberOffset(-1);
+		if (isInStoreSelectMode())
+			getStoreMode().selectePreviousBank();
+		else
+			selectBankWithOrdernumberOffset(-1);
 	}
 
 	public void selectNextBank(boolean userInteraction) {
-		selectBankWithOrdernumberOffset(1);
+		if (isInStoreSelectMode())
+			getStoreMode().selecteNextBank();
+		else
+			selectBankWithOrdernumberOffset(1);
 	}
 
 	public boolean canSelectPreviousBank() {
+		if (isInStoreSelectMode())
+			return getStoreMode().canSelectPreviousBank();
+
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
 		return canSelectBankWithOrdernumberOffset(b, -1);
 	}
 
 	public boolean canSelectNextBank() {
+		if (isInStoreSelectMode())
+			return getStoreMode().canSelectNextBank();
+
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
 		return canSelectBankWithOrdernumberOffset(b, 1);
@@ -855,7 +891,7 @@ public class PresetManager extends MapsLayout {
 	public boolean hasMultiplePresetSelection() {
 		return multiSelection != null;
 	}
-	
+
 	public MultiplePresetSelection startMultiSelection(Preset p) {
 		multiSelection = new MultiplePresetSelection(p);
 		return getMultiSelection();

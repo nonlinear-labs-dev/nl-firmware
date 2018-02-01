@@ -85,6 +85,10 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return tapes[o.ordinal()];
 	}
 
+	public boolean isInStoreSelectMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
+	}
+
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
@@ -419,12 +423,13 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public RGB getColorBankSelect() {
+		if (isInStoreSelectMode())
+			return new RGB(150, 150, 150);
 
 		if (NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxyFor(this) != null)
 			return new RGB(98, 113, 183);
 		else if (isSelected())
 			return new RGB(173, 181, 217);
-
 		else
 			return new RGB(150, 150, 150);
 	}
@@ -494,8 +499,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl().getPresetList()
 					.scheduleAutoScroll(PresetList.ScrollRequest.Smooth);
 		}
-		
-		if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreMode() == false)
+
+		if (NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode() == false)
 			getParent().onPresetSelectionChanged(findPreset(selectedPreset));
 	}
 

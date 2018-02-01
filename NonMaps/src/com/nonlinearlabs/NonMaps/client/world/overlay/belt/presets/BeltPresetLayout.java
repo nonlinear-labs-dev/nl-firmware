@@ -12,7 +12,7 @@ public class BeltPresetLayout extends OverlayLayout {
 	private BankControlArea bank;
 	private LoadButtonArea load;
 	private CurrentPresetNumber currentPreset;
-	private AutoLoadSelectedPreset autoLoad;
+	private DirectLoadButton autoLoad;
 	private AdvancedBankInformation bankInfos;
 
 	public BeltPresetLayout(Belt parent) {
@@ -24,7 +24,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		addChild(load = new LoadButtonArea(this));
 		addChild(bankInfos = new AdvancedBankInformation(this));
 		addChild(currentPreset = new CurrentPresetNumber(this));
-		addChild(autoLoad = new AutoLoadSelectedPreset(this));
+		addChild(autoLoad = new DirectLoadButton(this));
 	}
 
 	@Override

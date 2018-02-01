@@ -8,21 +8,31 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
-class AutoLoadSelectedPreset extends SVGImage {
+class DirectLoadButton extends SVGImage {
 
 	private boolean married;
 
-	AutoLoadSelectedPreset(OverlayLayout parent) {
+	DirectLoadButton(OverlayLayout parent) {
 		super(parent, "Link_Enabled.svg", "Link_Active.svg");
+	}
+
+	public boolean isInStoreSelectMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
 	}
 
 	@Override
 	public int getSelectedPhase() {
+		if (isInStoreSelectMode())
+			return 0;
+
 		return married ? 1 : 0;
 	}
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
+		if (isInStoreSelectMode())
+			return this;
+
 		married = !married;
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		NonMaps.theMaps.getServerProxy().setSetting("AutoLoadSelectedPreset", married ? "on" : "off");
