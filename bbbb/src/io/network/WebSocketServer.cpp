@@ -40,8 +40,6 @@ void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
 
 void WebSocketServer::sendMessage(tMessage msg)
 {
-  TRACE(__PRETTY_FUNCTION__);
-
   m_connections.remove_if([&] (auto &c)
   {
     auto state = soup_websocket_connection_get_state (c.get());
@@ -66,7 +64,6 @@ void WebSocketServer::receiveMessage(SoupWebsocketConnection *self, gint type, G
   gsize len = 0;
   auto data = reinterpret_cast<const uint8_t*>(msg->get_data(len));
   Domain d = (Domain)data[0];
-  TRACE("Received message in domain " << (int)d);
   auto dup = g_memdup(data + 1, len - 1);
   pThis->m_onMessageReceived[d](Glib::Bytes::create(dup, len - 1));
 }
