@@ -66,7 +66,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
-
+		
 		if (filterSate == FilterState.FILTER_MATCHES)
 			return new RGB(230, 240, 255);
 		else if (filterSate == FilterState.FILTERED_OUT)
@@ -189,6 +189,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isLoaded() {
+		if(getParent().isInStoreSelectMode()) {
+				return this == getParent().getParent().getStoreMode().getOriginalPreset();
+		}
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
 

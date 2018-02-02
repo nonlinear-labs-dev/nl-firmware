@@ -11,9 +11,12 @@ public class StoreSelectMode {
 	private Preset selectedPreset;
 	private Bank selectedBank;
 	private String storedPreset = "";
-
+	private final Preset originPreset;
+	
+	
 	public StoreSelectMode(PresetManager parent) {
 		m_parent = parent;
+		originPreset = m_parent.getSelectedPreset();
 		selectedPreset = m_parent.getSelectedPreset();
 		selectedBank = selectedPreset.getParent();
 		NonMaps.get().getServerProxy().setSetting("storemode", "on");
@@ -105,6 +108,10 @@ public class StoreSelectMode {
 				}
 			}
 		}
+	}
+	
+	public Preset getOriginalPreset() {
+		return originPreset;
 	}
 
 	public Bank getSelectedBank() {
