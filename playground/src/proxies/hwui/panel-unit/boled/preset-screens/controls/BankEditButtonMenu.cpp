@@ -228,8 +228,8 @@ void BankEditButtonMenu::moveLeft()
 
   if(auto bank = pm->getSelectedBank())
   {
-    auto scope = bank->getUndoScope().startTransaction("Move bank '%0' up", bank->getName(true));
-    pm->undoableMoveBankBy(scope->getTransaction(), bank->getUuid(), -1);
+    auto scope = bank->getUndoScope().startTransaction("Move bank '%0' left", bank->getName(true));
+    pm->undoableChangeBankOrder(scope->getTransaction(), bank->getUuid(), PresetManager::moveDirection::LeftByOne);
   }
 }
 
@@ -239,8 +239,8 @@ void BankEditButtonMenu::moveRight()
 
   if(auto bank = pm->getSelectedBank())
   {
-    auto scope = bank->getUndoScope().startTransaction("Move bank '%0' down", bank->getName(true));
-    pm->undoableMoveBankBy(scope->getTransaction(), bank->getUuid(), 1);
+    auto scope = bank->getUndoScope().startTransaction("Move bank '%0' right", bank->getName(true));
+    pm->undoableChangeBankOrder(scope->getTransaction(), bank->getUuid(), PresetManager::moveDirection::RightByOne);
   }
 }
 

@@ -18,6 +18,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -34,6 +36,7 @@ public class BankInfoDialog extends GWTDialog {
 	private static float commentBoxHeight = 0;
 
 	private TextBox name;
+	private IntegerBox position;
 	private TextArea comment;
 	private Label size;
 	private Label lastChange;
@@ -48,7 +51,7 @@ public class BankInfoDialog extends GWTDialog {
 	private BankInfoDialog() {
 		RootPanel.get().add(this);
 
-		getElement().addClassName("bank-info-dialog");
+		getElement().addClassName("preset-info-dialog");
 
 		initalShow();
 
@@ -80,8 +83,16 @@ public class BankInfoDialog extends GWTDialog {
 	}
 
 	private void addContent() {
+		
+		HTMLPanel bankNameAndPositionBox = new HTMLPanel("div", "");
+		bankNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
+		bankNameAndPositionBox.add(position = new IntegerBox());
+		bankNameAndPositionBox.add(name = new TextBox());
+		position.getElement().addClassName("position-box");
+		name.getElement().addClassName("preset-name-box");
+		
 		FlexTable panel = new FlexTable();
-		addRow(panel, "Name", name = new TextBox());
+		addRow(panel, "Position/Name", bankNameAndPositionBox);
 		addRow(panel, "Comment", comment = new TextArea());
 		addRow(panel, "Size", size = new Label(""));
 		addRow(panel, "State", stateLabel = new Label(""));
@@ -90,6 +101,8 @@ public class BankInfoDialog extends GWTDialog {
 		addRow(panel, "Import Name", importFileName = new Label(""));
 		addRow(panel, "Export Date", exportFileDate = new Label(""));
 		addRow(panel, "Export Name", exportFileName = new Label(""));
+		
+		position.getElement().addClassName("gwt-TextBox");
 
 		comment.addFocusHandler(new FocusHandler() {
 
@@ -184,11 +197,47 @@ public class BankInfoDialog extends GWTDialog {
 			public void onKeyPress(KeyPressEvent arg0) {
 				if (arg0.getCharCode() == KeyCodes.KEY_ENTER) {
 					name.setFocus(false);
-					comment.setFocus(true);
+					position.setFocus(true);
 				}
 			}
 		});
 
+		position.addKeyPressHandler(new KeyPressHandler() {
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+					position.setFocus(false);
+					comment.setFocus(true);
+				}
+			}
+		});
+		
+		position.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				setFocus(position);
+			}
+		});
+
+		position.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				haveFocus = null;
+
+				if (theBank != null) {
+					int oldNumber = theBank.getOrderNumber();
+					int currentValue = new Integer(position.getValue());
+
+					if (oldNumber != currentValue) {
+						NonMaps.get().getServerProxy().setBankOrderNumber(theBank, currentValue);
+					}
+				}
+			}
+		});
+		
 		setWidget(panel);
 		setFocus(panel);
 	}
@@ -223,6 +272,7 @@ public class BankInfoDialog extends GWTDialog {
 		if (bank != null) {
 			String bankName = bank.getCurrentName();
 			String commentText = bank.getAttribute("Comment");
+			int bankPos = bank.getOrderNumber();
 
 			if (haveFocus != comment) {
 				if (!commentText.equals(comment.getText())) {
@@ -235,9 +285,20 @@ public class BankInfoDialog extends GWTDialog {
 					name.setText(bankName);
 				}
 			}
+			
+			int currentPositionValue = 0;
+			try {
+				currentPositionValue = position.getValue();
+			} catch(Exception e) {}
 
+			if(haveFocus != position) {
+				if(bankPos != currentPositionValue) {
+					position.setText(new Integer(bankPos).toString());
+				}
+			}
+      
 			size.setText(Integer.toString(bank.getPresetList().getPresetCount()));
-
+      
 			try {
 				lastChange.setText(localizeTime(bank.getDateOfLastChange()));
 			} catch (Exception e) {

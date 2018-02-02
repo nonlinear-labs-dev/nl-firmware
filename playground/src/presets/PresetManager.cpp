@@ -192,14 +192,15 @@ void PresetManager::undoableSelectBank(UNDO::Scope::tTransactionPtr transaction,
   }
 }
 
-void PresetManager::undoableMoveBankBy(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, int by)
+void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid,
+                                            moveDirection direction)
 {
   if(auto bank = findBank(uuid))
   {
     if(int oldOrderNumber = calcOrderNumber(bank.get()))
     {
       int oldPos = oldOrderNumber - 1;
-      int newPos = oldPos + ((by > 0) ? 1 : -1);
+      int newPos = oldPos + ((direction == moveDirection::RightByOne) ? 1 : -1);
 
       if(newPos >= 0 && newPos < getNumBanks())
       {
@@ -215,6 +216,29 @@ void PresetManager::undoableMoveBankBy(UNDO::Scope::tTransactionPtr transaction,
     }
   }
 }
+
+void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank, int newOrderNumber)
+{
+  if(int oldOrderNumber = calcOrderNumber(bank.get()))
+  {
+    int oldPos = oldOrderNumber - 1;
+    int newPos = std::min(newOrderNumber - 1, static_cast<int>(getNumBanks() - 1));
+    newPos = std::max(newPos, 0);
+
+    if(newPos >= 0 && newPos < getNumBanks())
+    {
+      transaction->addSimpleCommand([ = ] (UNDO::Command::State)
+      {
+          auto a = getBank(oldPos);
+          auto b = getBank(newPos);
+          m_banks[newPos] = a;
+          m_banks[oldPos] = b;
+          reassignOrderNumbers();
+      });
+    }
+  }
+}
+
 
 void PresetManager::undoableSelectNext()
 {
