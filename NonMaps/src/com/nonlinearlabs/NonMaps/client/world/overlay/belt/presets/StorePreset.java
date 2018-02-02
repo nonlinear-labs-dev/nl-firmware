@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.world.AppendOverwriteInsertPresetDialog.Action;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
@@ -144,6 +145,12 @@ class StorePreset extends SVGImage {
 
 		if (isModified && !uuid.isEmpty())
 			showRename(uuid);
+		
+		StoreSelectMode sm = getPresetManager().getStoreMode();
+		if(sm != null)
+		{
+			sm.setStoredPreset(uuid);
+		}
 	}
 
 	private void showRename(String uuid) {

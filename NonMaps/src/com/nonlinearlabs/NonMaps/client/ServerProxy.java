@@ -185,6 +185,12 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()));
 		queueJob(uri, false);
 	}
+	
+	public void loadPreset(String presetuuid) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "load-preset");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", presetuuid));
+		queueJob(uri, false);
+	}
 
 	public void createNewBankFromPreset(NonPosition nonPosition, IPreset p) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "create-new-bank-from-preset");
