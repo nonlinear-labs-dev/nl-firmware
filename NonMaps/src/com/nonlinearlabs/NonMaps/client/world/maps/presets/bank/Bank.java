@@ -423,9 +423,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public RGB getColorBankSelect() {
-		if (isInStoreSelectMode())
-			return new RGB(150, 150, 150);
-
 		if (NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxyFor(this) != null)
 			return new RGB(98, 113, 183);
 		else if (isSelected())
@@ -452,6 +449,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public boolean isSelected() {
+		if(isInStoreSelectMode()) {
+			return getParent().getStoreMode().getSelectedBank() == this;
+		}
 		return uuid.equals(getParent().getSelectedBank());
 	}
 
