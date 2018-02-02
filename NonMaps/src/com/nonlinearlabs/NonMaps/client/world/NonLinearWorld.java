@@ -597,6 +597,9 @@ public class NonLinearWorld extends MapsLayout {
 
 	@Override
 	public Control onContextMenu(Position pos) {
+		if (getPresetManager().isInStoreSelectMode())
+			return null;
+
 		ContextMenusSetting contextMenuSettings = getViewport().getOverlay().getSetup().getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
 			Overlay o = getViewport().getOverlay();

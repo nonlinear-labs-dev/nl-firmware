@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 import java.util.Iterator;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Animator;
 import com.nonlinearlabs.NonMaps.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
@@ -126,7 +125,7 @@ public class PresetList extends OverlayLayout {
 		ctx.stroke();
 	}
 
-	public void update(Node presetmanager) {
+	public void update() {
 		Bank bank = getParent().getBankInCharge();
 		boolean bankChanged = bank != currentBank;
 

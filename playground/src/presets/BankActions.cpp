@@ -120,7 +120,7 @@ BankActions::BankActions(PresetManager &presetManager) :
         }
       }
   });
-  
+
   addAction("move-preset-to", [&] (shared_ptr<NetworkRequest> request)
   {
     Glib::ustring presetToOverwrite = request->get ("presetToOverwrite");
@@ -345,6 +345,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       [&] (shared_ptr<NetworkRequest> request) mutable
       {
         Glib::ustring bankUuid = request->get ("bank-uuid");
+        Glib::ustring presetUuid = request->get ("uuid");
 
         if (tBankPtr tgtBank = m_presetManager.findBank (bankUuid))
         {
@@ -352,7 +353,7 @@ BankActions::BankActions(PresetManager &presetManager) :
           UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
 
           int desiredPresetPos = tgtBank->getNumPresets();
-          tgtBank->undoableInsertPreset (transaction, desiredPresetPos);
+          tgtBank->undoableAppendPreset(transaction, presetUuid);
           tgtBank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
           tgtBank->undoableSelectPreset (transaction, tgtBank->getPreset (desiredPresetPos)->getUuid());
           tgtBank->undoableSelect (transaction);
@@ -374,7 +375,8 @@ BankActions::BankActions(PresetManager &presetManager) :
 
   addAction("insert-preset", [&] (shared_ptr<NetworkRequest> request) mutable
   {
-    if (tBankPtr bank = m_presetManager.getSelectedBank())
+    auto selUuid = request->get ("seluuid");
+    if (tBankPtr bank = m_presetManager.findPreset(selUuid)->getBank())
     {
       auto uuid = request->get ("uuid");
       auto newName = presetManager.createPresetNameBasedOn (m_presetManager.getEditBuffer()->getName());
@@ -382,7 +384,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       auto scope = m_presetManager.getUndoScope().startTransaction ("Insert preset");
       auto transaction = scope->getTransaction();
 
-      int selPreset = bank->getPresetPosition (bank->getSelectedPreset());
+      int selPreset = bank->getPresetPosition (m_presetManager.findPreset(selUuid)->getUuid());
       int desiredPresetPos = selPreset + 1;
       bank->undoableInsertPreset (transaction, desiredPresetPos);
       bank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());

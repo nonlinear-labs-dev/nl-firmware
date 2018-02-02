@@ -13,7 +13,6 @@ import com.google.gwt.xml.client.NamedNodeMap;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
-import com.nonlinearlabs.NonMaps.client.ServerProxy.DownloadHandler;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
@@ -356,10 +355,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void appendEditBuffer(IBank bank) {
+	public String appendEditBuffer(IBank bank) {
+		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-editbuffer-to-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()), new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
+		return uuid;
 	}
 
 	public void nextPreset() {
@@ -382,10 +383,11 @@ public class ServerProxy {
 		queueJob(new StaticURI(new StaticURI.Path("undo", "redo")), false);
 	}
 
-	public String insertPreset() {
+	public String insertPreset(IPreset selPreset) {
+		String uuidOfSelectedPreset = selPreset.getUUID();
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("seluuid", uuidOfSelectedPreset));
 		queueJob(uri, false);
 		return uuid;
 	}

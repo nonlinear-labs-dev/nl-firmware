@@ -6,13 +6,20 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 public class StorePresetArea extends OverlayLayout {
 
 	private StoreOptionsMenu menu;
-	private StorePreset button;
+	private StoreModeButton m_modeButton;
+	private StorePreset m_commitButton;
 
 	protected StorePresetArea(BeltPresetLayout parent) {
 		super(parent);
 
+		m_commitButton = addChild(new StorePreset(this));
 		menu = addChild(new StoreOptionsMenu(this));
-		button = addChild(new StorePreset(this));
+		m_modeButton = addChild(new StoreModeButton(this));
+
+	}
+	
+	public StorePreset getCommitButton() {
+		return m_commitButton;
 	}
 
 	@Override
@@ -22,11 +29,13 @@ public class StorePresetArea extends OverlayLayout {
 		double buttonDim = getButtonDimension();
 
 		menu.doLayout(0, 0, w, buttonDim);
-		button.doLayout(0, buttonDim, w, buttonDim);
+		m_commitButton.doLayout(buttonDim + buttonDim/2, buttonDim, buttonDim, buttonDim);
+		m_modeButton.doLayout(0, buttonDim, buttonDim, buttonDim);
 	}
 
 	public void update(Node settingsNode, Node presetManagerNode) {
 		menu.update(settingsNode);
-		button.update(settingsNode, presetManagerNode);
+		m_commitButton.update(settingsNode, presetManagerNode);
+		m_modeButton.update(settingsNode, presetManagerNode);
 	}
 }

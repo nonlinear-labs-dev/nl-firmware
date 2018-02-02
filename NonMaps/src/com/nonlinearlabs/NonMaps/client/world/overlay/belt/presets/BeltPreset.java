@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -70,7 +71,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		boolean loaded = mapsPreset.isLoaded();
+		boolean loaded = mapsPreset.isLoaded() && !mapsPreset.isInStoreSelectMode();
 		boolean selected = mapsPreset.isSelected();
 
 		double cp = 1;
@@ -102,6 +103,12 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	@Override
 	public Control mouseUp(Position eventPoint) {
+		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
+		if (storeMode != null) {
+			storeMode.setSelectedPreset(mapsPreset);
+			return this;
+		}
+
 		if (mapsPreset.isSelected())
 			mapsPreset.load();
 		else
@@ -262,6 +269,9 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	@Override
 	public Control onContextMenu(Position pos) {
+		if (mapsPreset.isInStoreSelectMode())
+			return null;
+
 		if (mapsPreset != null) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 			return o.setContextMenu(pos, new PresetContextMenu(o, mapsPreset));
