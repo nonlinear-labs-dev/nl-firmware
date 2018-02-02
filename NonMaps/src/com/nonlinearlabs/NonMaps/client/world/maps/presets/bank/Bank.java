@@ -543,7 +543,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	private Preset findPresetAt(Position pos) {
-		for (Control c : getChildren())
+		for (Control c : presetList.getChildren())
 			if (c instanceof Preset)
 				if (c.getPixRect().contains(pos))
 					return (Preset) c;
@@ -552,7 +552,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public Preset getPreset(int idx) {
-		for (Control c : getChildren()) {
+		for (Control c : presetList.getChildren()) {
 			if (c instanceof Preset) {
 				if (idx <= 0) {
 					return (Preset) c;
@@ -566,7 +566,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	public Preset getLast() {
 		Control last = null;
-		for (Control c : getChildren())
+		for (Control c : presetList.getChildren())
 			if (c instanceof Preset)
 				last = c;
 
@@ -579,7 +579,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public void clearFilter() {
-		for (Control c : getChildren()) {
+		for (Control c : presetList.getChildren()) {
 			if (c instanceof Preset) {
 				Preset p = (Preset) c;
 				p.setFilterState(Preset.FilterState.NO_FILTER);
@@ -590,7 +590,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	public int applyFilter(Node bank) {
 		int numMatches = 0;
 
-		for (Control c : getChildren()) {
+		for (Control c : presetList.getChildren()) {
 			if (c instanceof Preset) {
 				Preset p = (Preset) c;
 				p.setFilterState(Preset.FilterState.FILTERED_OUT);
@@ -615,7 +615,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public boolean isEmpty() {
-		for (Control c : getChildren())
+		for (Control c : getPresetList().getChildren())
 			if (c instanceof Preset)
 				return false;
 

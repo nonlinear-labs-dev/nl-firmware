@@ -36,9 +36,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
-import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTree;
-import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
 
 public class PresetManager extends MapsLayout {
 
@@ -341,7 +338,7 @@ public class PresetManager extends MapsLayout {
 
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
-				for (Control bc : b.getChildren()) {
+				for (Control bc : b.getPresetList().getChildren()) {
 					if (bc instanceof Preset) {
 						Preset p = (Preset) bc;
 						if (moveSomeBanks.getPixRect().intersects(p.getPixRect())) {
@@ -693,7 +690,7 @@ public class PresetManager extends MapsLayout {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
 
-				for (Control f : b.getChildren()) {
+				for (Control f : b.getPresetList().getChildren()) {
 					if (f instanceof Preset) {
 						Preset p = (Preset) f;
 
