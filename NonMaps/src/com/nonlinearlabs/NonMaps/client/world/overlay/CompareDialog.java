@@ -29,14 +29,29 @@ public class CompareDialog extends GWTDialog {
 	
 	static CompareDialog theDialog = null;
 	
+	public static void open(Preset p1)
+	{
+		theDialog = new CompareDialog(p1);
+	}
+	
 	public static void open(Preset p1, Preset p2)
 	{
 		theDialog = new CompareDialog(p1, p2);
 	}
 	
+	private CompareDialog(Preset p1) {
+		preset1 = p1;
+		preset2 = null;
+		init();
+	}
+	
 	private CompareDialog(Preset p1, Preset p2) {
 		preset1 = p1;
 		preset2 = p2;
+		init();
+	}
+	
+	private void init() {
 		RootPanel.get().add(this);
 
 		getElement().addClassName("preset-compare-dialog");
@@ -50,17 +65,14 @@ public class CompareDialog extends GWTDialog {
 
 		addHeader("Preset Comparison");
 		
-		getCsv();
 		
-		addContent();
-
-		initialSetup();
-	}
-	
-	private void initialSetup() {
+		if(preset2 == null)
+			getCsvOfEditBuffer();
+		else
+			getCsv();
 		
 	}
-	
+		
 	private void addRow(FlexTable panel, String groupName, String paraName,String value1,String value2)
 	{
 		padd(value1);
@@ -90,8 +102,11 @@ public class CompareDialog extends GWTDialog {
 		header[0].setText("Group");
 		header[1].setText("Parameter");
 		header[2].setText(preset1.getTitleName() + " - " + preset1.getParent().getTitleName());
-		header[3].setText(preset2.getTitleName() + " - " + preset2.getParent().getTitleName());
-		
+		if(preset2 != null)
+			header[3].setText(preset2.getTitleName() + " - " + preset2.getParent().getTitleName());
+		else
+			header[3].setText("Editbuffer");
+
 		panel = new LayoutPanel();
 		panel.setWidth("600px");
 		panel.setHeight("500px");
@@ -127,6 +142,23 @@ public class CompareDialog extends GWTDialog {
 	private void getCsv()
 	{
 		NonMaps.theMaps.getServerProxy().getDifferencesOf2PresetsAsCsv(preset1.getUUID(), preset2.getUUID(), new DownloadHandler() {
+			@Override
+			public void onFileDownloaded(String text) {
+				csvWithDiffs = text;
+				GWT.log(csvWithDiffs);
+				addContent();
+				
+			}
+			@Override
+			public void onError() {
+				csvWithDiffs = "";
+				GWT.log("no response recieved!");
+			}
+		});
+	}
+	
+	private void getCsvOfEditBuffer() {
+		NonMaps.theMaps.getServerProxy().getDifferencesOfPresetsToEditbufferAsCsv(preset1.getUUID(), new DownloadHandler() {
 			@Override
 			public void onFileDownloaded(String text) {
 				csvWithDiffs = text;

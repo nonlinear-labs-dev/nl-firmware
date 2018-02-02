@@ -53,9 +53,9 @@ class LoadPreset extends SVGImage {
 		if (b != null) {
 			Bank bank = pm.findBank(b);
 			if (bank != null) {
-				String p = bank.getSelectedPreset();
+				String p = bank.getPresetList().getSelectedPreset();
 				if (p != null) {
-					Preset preset = bank.findPreset(p);
+					Preset preset = bank.getPresetList().findPreset(p);
 					if (preset != null) {
 						return preset.equals(pm.findLoadedPreset());
 					}

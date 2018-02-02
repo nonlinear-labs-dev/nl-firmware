@@ -43,6 +43,7 @@ public class NonLinearWorld extends MapsLayout {
 	private boolean firstLayout = true;
 	private boolean isShiftDown = false;
 	private boolean isSpaceDown = false;
+	private boolean isCtrlDown = false;
 
 	private double maxLevelOfDetail = 0;
 
@@ -459,6 +460,7 @@ public class NonLinearWorld extends MapsLayout {
 	public boolean handleKeyPress(final KeyDownEvent event) {
 		isShiftDown = event.isShiftKeyDown();
 		isSpaceDown = event.getNativeKeyCode() == KeyCodes.KEY_SPACE;
+		isCtrlDown = event.isControlKeyDown();
 
 		Control ctrl = recurseChildren(new ControlFinder() {
 
@@ -478,6 +480,7 @@ public class NonLinearWorld extends MapsLayout {
 	public boolean handleKeyUp(final KeyUpEvent event) {
 		isShiftDown = event.isShiftKeyDown();
 		isSpaceDown = event.getNativeKeyCode() == KeyCodes.KEY_SPACE;
+		isCtrlDown = event.isControlKeyDown();
 		return true;
 	}
 
@@ -618,4 +621,7 @@ public class NonLinearWorld extends MapsLayout {
 		this.isSpaceDown = isSpaceDown;
 	}
 
+	public boolean isCtrlDown() {
+		return isCtrlDown;
+	}
 }

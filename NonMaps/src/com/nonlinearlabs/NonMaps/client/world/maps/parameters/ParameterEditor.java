@@ -204,7 +204,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 		int keyCode = event.getNativeEvent().getKeyCode();
 
-		if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_E) {
+		if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_E && getNonMaps().getNonLinearWorld().isCtrlDown()) {
 			toggleVisibility();
 			return this;
 		}

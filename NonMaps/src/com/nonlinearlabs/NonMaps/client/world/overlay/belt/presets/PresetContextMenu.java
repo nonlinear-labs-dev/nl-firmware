@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import java.util.ArrayList;
 
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -11,6 +12,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.CompareDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
+import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 
@@ -97,6 +99,7 @@ public class PresetContextMenu extends ContextMenu {
 			}
 		});
 		
+		
 		if(hasMultipleSelection && pm.getMultiSelection().getNumSelectedPresets() == 2)
 		{
 			addChild(new ContextMenuItem(this, "Compare" ) {
@@ -110,7 +113,24 @@ public class PresetContextMenu extends ContextMenu {
 					return super.click(eventPoint);
 				}
 			});
+		} else if(hasMultipleSelection == false) {
+			addChild(new ContextMenuItem(this, "Compare to Editbuffer") {
+				@Override
+				public Control click(Position eventPoint) {
+					Preset p1 = pm.getSelectedPreset();
+					CompareDialog.open(p1);
+					return super.click(eventPoint);
+				} 
+			});
 		}
+		
+		addChild(new ContextMenuItem(this, "Tag...") {
+			@Override
+			public Control click(Position eventPosition) {
+				Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
+				return o.setContextMenu(this.getPixRect().getPosition(), new PresetColorTagContextMenu(o, preset));
+			}
+		});
 	}
 
 }

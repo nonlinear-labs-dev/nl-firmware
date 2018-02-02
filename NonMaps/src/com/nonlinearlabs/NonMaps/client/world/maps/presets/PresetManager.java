@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -31,9 +32,13 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Updater;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
+import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
+import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
+import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTree;
+import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
 
 public class PresetManager extends MapsLayout {
 
@@ -412,7 +417,7 @@ public class PresetManager extends MapsLayout {
 		if (p != null) {
 			Bank b = p.getParent();
 			if (b != null)
-				return !b.isLast(p);
+				return !b.getPresetList().isLast(p);
 		}
 		return false;
 	}
@@ -422,7 +427,7 @@ public class PresetManager extends MapsLayout {
 		if (p != null) {
 			Bank b = p.getParent();
 			if (b != null)
-				return !b.isFirst(p);
+				return !b.getPresetList().isFirst(p);
 		}
 		return false;
 	}
@@ -431,7 +436,7 @@ public class PresetManager extends MapsLayout {
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
-				Preset p = b.findLoadedPreset();
+				Preset p = b.getPresetList().findLoadedPreset();
 				if (p != null)
 					return p;
 			}
@@ -446,32 +451,47 @@ public class PresetManager extends MapsLayout {
 
 		if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_RIGHT) {
 			selectNextBank(true);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_LEFT) {
 			selectPreviousBank(true);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DOWN) {
 			selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_UP) {
 			selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
-			return this;
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER) {
 			loadSelectedPreset();
-			return this;
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H) {
-			toggleHiddenBanks();
-			return this;
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_P) {
+			if(getNonMaps().getNonLinearWorld().isCtrlDown()) {
+				toggleHiddenBanks();
+			} else {
+				PresetInfoDialog.toggle();
+			}
 		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
 			if(hasMultiplePresetSelection()) {
 				multiSelection.deletePresets();
 				closeMultiSelection();
 			} else {
 				deletePreset(getSelectedPreset());
-			}
-				
+			}		
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			NonMaps.get().getServerProxy().undo();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			NonMaps.get().getServerProxy().redo();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F && NonMaps.get().getNonLinearWorld().isShiftDown()) {
+			SearchQueryDialog.toggle();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
+			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
+			BankInfoDialog.toggle();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I) {
+			ParameterInfoDialog.toggle();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			Window.open("/NonMaps/war/online-help/index.html", "", "");
+		} else {
+			return null;
 		}
-		return null;
+		
+		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().refreshGlobalMenu();
+		return this;
 	}
 
 	private void deletePreset(Preset selectedPreset) {
@@ -482,13 +502,13 @@ public class PresetManager extends MapsLayout {
 	public void selectPreviousPreset(Initiator initiator) {
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			b.selectPrev(initiator);
+			b.getPresetList().selectPrev(initiator);
 	}
 
 	public void selectNextPreset(Initiator initiator) {
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			b.selectNext(initiator);
+			b.getPresetList().selectNext(initiator);
 	}
 
 	public boolean hasSelectedBank() {
@@ -499,7 +519,7 @@ public class PresetManager extends MapsLayout {
 		Bank b = findBank(getSelectedBank());
 
 		if (b != null)
-			return b.hasSelectedPreset();
+			return b.getPresetList().hasSelectedPreset();
 
 		return false;
 	}
@@ -571,7 +591,7 @@ public class PresetManager extends MapsLayout {
 	public Preset findSelectedPreset() {
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			return b.findPreset(b.getSelectedPreset());
+			return b.getPresetList().findPreset(b.getPresetList().getSelectedPreset());
 
 		return null;
 	}
@@ -829,7 +849,7 @@ public class PresetManager extends MapsLayout {
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
-				Preset p = b.findPreset(uuid);
+				Preset p = b.getPresetList().findPreset(uuid);
 				if (p != null)
 					return p;
 			}
@@ -901,5 +921,4 @@ public class PresetManager extends MapsLayout {
 	public void resetAttachingTapes() {
 		setAttachingTapes(null, null);
 	}
-
 }

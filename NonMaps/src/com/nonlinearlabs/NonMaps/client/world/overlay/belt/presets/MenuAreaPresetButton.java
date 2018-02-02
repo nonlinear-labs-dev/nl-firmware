@@ -31,8 +31,8 @@ public class MenuAreaPresetButton extends MenuAreaButton {
 		if (bankUUID != null) {
 			Bank bank = pm.findBank(bankUUID);
 			if (bank != null) {
-				String presetUUID = bank.getSelectedPreset();
-				return bank.findPreset(presetUUID);
+				String presetUUID = bank.getPresetList().getSelectedPreset();
+				return bank.getPresetList().findPreset(presetUUID);
 			}
 		}
 		return null;

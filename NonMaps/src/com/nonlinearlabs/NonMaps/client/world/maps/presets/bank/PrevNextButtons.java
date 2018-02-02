@@ -109,13 +109,13 @@ class PrevNextButtons extends LayoutResizingHorizontal {
 
 		@Override
 		public Control click(Position eventPoint) {
-			getParent().getParent().selectPrev(Initiator.EXPLICIT_USER_ACTION);
+			getParent().getParent().getPresetList().selectPrev(Initiator.EXPLICIT_USER_ACTION);
 			return this;
 		}
 
 		@Override
 		protected boolean isActive() {
-			return getParent().getParent().canPrev();
+			return getParent().getParent().getPresetList().canPrev();
 		}
 
 		@Override
@@ -143,13 +143,13 @@ class PrevNextButtons extends LayoutResizingHorizontal {
 
 		@Override
 		public Control click(Position eventPoint) {
-			getParent().getParent().selectNext(Initiator.EXPLICIT_USER_ACTION);
+			getParent().getParent().getPresetList().selectNext(Initiator.EXPLICIT_USER_ACTION);
 			return this;
 		}
 
 		@Override
 		protected boolean isActive() {
-			return getParent().getParent().canNext();
+			return getParent().getParent().getPresetList().canNext();
 		}
 
 		@Override
