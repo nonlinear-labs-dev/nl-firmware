@@ -1,12 +1,12 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.world.Control;
-import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
@@ -27,7 +27,7 @@ public class Updater {
 			updateBankPosition(bank);
 			updateOrderNumber(bank);
 			this.bank.updateAttributes(bank);
-			this.bank.selectPreset(selectedPreset, Initiator.INDIRECT_USER_ACTION);
+			this.bank.getPresetList().selectPreset(selectedPreset, Initiator.INDIRECT_USER_ACTION);
 			updatePresets(bank, force);
 			updateAttachment(bank);
 			updateDateOfLastChange(bank);
@@ -55,38 +55,42 @@ public class Updater {
 	}
 
 	private boolean isBankEmpty() {
-		for (Control c : bank.getChildren()) {
-			if (c instanceof IPreset)
-				return false;
-		}
-		return true;
+		return bank.getPresetList().getChildren().isEmpty();
 	}
 
 	private void updatePresets(Node bank, boolean force) {
 		NodeList presets = bank.getChildNodes();
 		ArrayList<MapsControl> currentChildren = collectCurrentPresets();
 
-		int presetChild = 0;
+		int presetOrderNumber = 1;
 
 		for (int i = 0; i < presets.getLength(); i++) {
 			Node child = presets.item(i);
 			if (child != null && child.getNodeName().equals("preset")) {
-				Preset presetUI = updatePreset(presetChild++, presets.item(i));
+				Preset presetUI = updatePreset(presetOrderNumber++, presets.item(i));
 				currentChildren.remove(presetUI);
 			}
 		}
 
 		removeObsoletePresets(currentChildren);
+		sortByOrderNumber();
 	}
 
-	private ArrayList<MapsControl> collectCurrentPresets() {
-		ArrayList<MapsControl> currentChildren = new ArrayList<MapsControl>();
+	private void sortByOrderNumber() {
+		Collections.sort(this.bank.getPresetList().getChildren(), new Comparator<MapsControl>() {
 
-		for (MapsControl c : this.bank.getChildren()) {
-			if (c instanceof IPreset)
-				currentChildren.add(c);
-		}
-		return currentChildren;
+			@Override
+			public int compare(MapsControl a, MapsControl b) {
+				Preset pa = (Preset) a;
+				Preset pb = (Preset) b;
+				return pa.getNumber() - pb.getNumber();
+			}
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<MapsControl> collectCurrentPresets() {
+		return (ArrayList<MapsControl>) this.bank.getPresetList().getChildren().clone();
 	}
 
 	private void updateBankName(Node bank) {
@@ -127,7 +131,7 @@ public class Updater {
 		boolean needsLayout = false;
 
 		for (MapsControl control : currentChildren) {
-			this.bank.removeChild(control);
+			this.bank.getPresetList().removeChild(control);
 			needsLayout = true;
 		}
 
@@ -135,23 +139,18 @@ public class Updater {
 			this.bank.requestLayout();
 	}
 
-	private Preset updatePreset(int i, Node preset) {
-		int j = 0;
+	private Preset updatePreset(int presetOrderNumber, Node presetNode) {
+		String uuid = presetNode.getAttributes().getNamedItem("uuid").getNodeValue();
+		Preset presetUI = bank.getPresetList().findPreset(uuid);
 
-		for (Control c : bank.getChildren()) {
-			if (c instanceof Preset) {
-				if (i == j) {
-					Preset p = (Preset) c;
-					p.update(j + 1, preset);
-					return p;
-				}
-				j++;
-			}
+		if (presetUI != null) {
+			presetUI.update(presetOrderNumber, presetNode);
+			return presetUI;
 		}
 
-		Preset presetUI = new Preset(this.bank);
-		this.bank.addChild(presetUI);
-		presetUI.update(j + 1, preset);
+		presetUI = new Preset(this.bank);
+		this.bank.getPresetList().addChild(presetUI);
+		presetUI.update(presetOrderNumber, presetNode);
 		this.bank.requestLayout();
 		return presetUI;
 	}

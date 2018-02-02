@@ -27,6 +27,8 @@ class RPCActionManager;
 class PresetManager : public ContentSection
 {
   public:
+    enum moveDirection { LeftByOne, RightByOne };
+
     typedef function<SaveResult ()> tSaveSubTask;
 
     PresetManager (UpdateDocumentContributor *parent);
@@ -65,7 +67,8 @@ class PresetManager : public ContentSection
     void undoableStoreInitSound (UNDO::Scope::tTransactionPtr transaction);
     void undoableLoadInitSound (UNDO::Scope::tTransactionPtr transaction);
     void undoableResetInitSound (UNDO::Scope::tTransactionPtr transaction);
-    void undoableMoveBankBy (UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, int by);
+    void undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, moveDirection direction);
+    void undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank, int newOrderNumber);
 
     void writeDocument (Writer &writer, tUpdateID knownRevision) const override;
     void searchPresets (Writer &writer, const Glib::ustring &query, const Glib::ustring &mode) const;

@@ -377,7 +377,7 @@ public class PresetManager extends MapsLayout {
 
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
-				for (Control bc : b.getChildren()) {
+				for (Control bc : b.getPresetList().getChildren()) {
 					if (bc instanceof Preset) {
 						Preset p = (Preset) bc;
 						if (moveSomeBanks.getPixRect().intersects(p.getPixRect())) {
@@ -456,7 +456,7 @@ public class PresetManager extends MapsLayout {
 		if (p != null) {
 			Bank b = p.getParent();
 			if (b != null)
-				return !b.isLast(p);
+				return !b.getPresetList().isLast(p);
 		}
 		return false;
 	}
@@ -469,7 +469,7 @@ public class PresetManager extends MapsLayout {
 		if (p != null) {
 			Bank b = p.getParent();
 			if (b != null)
-				return !b.isFirst(p);
+				return !b.getPresetList().isFirst(p);
 		}
 		return false;
 	}
@@ -478,7 +478,7 @@ public class PresetManager extends MapsLayout {
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
-				Preset p = b.findLoadedPreset();
+				Preset p = b.getPresetList().findLoadedPreset();
 				if (p != null)
 					return p;
 			}
@@ -549,7 +549,7 @@ public class PresetManager extends MapsLayout {
 
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			b.selectPrev(initiator);
+			b.getPresetList().selectPrev(initiator);
 	}
 
 	public void selectNextPreset(Initiator initiator) {
@@ -560,7 +560,7 @@ public class PresetManager extends MapsLayout {
 
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			b.selectNext(initiator);
+			b.getPresetList().selectNext(initiator);
 	}
 
 	public boolean hasSelectedBank() {
@@ -571,7 +571,7 @@ public class PresetManager extends MapsLayout {
 		Bank b = findBank(getSelectedBank());
 
 		if (b != null)
-			return b.hasSelectedPreset();
+			return b.getPresetList().hasSelectedPreset();
 
 		return false;
 	}
@@ -655,7 +655,7 @@ public class PresetManager extends MapsLayout {
 	public Preset findSelectedPreset() {
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			return b.findPreset(b.getSelectedPreset());
+			return b.getPresetList().findPreset(b.getPresetList().getSelectedPreset());
 
 		return null;
 	}
@@ -757,7 +757,7 @@ public class PresetManager extends MapsLayout {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
 
-				for (Control f : b.getChildren()) {
+				for (Control f : b.getPresetList().getChildren()) {
 					if (f instanceof Preset) {
 						Preset p = (Preset) f;
 
@@ -913,7 +913,7 @@ public class PresetManager extends MapsLayout {
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
-				Preset p = b.findPreset(uuid);
+				Preset p = b.getPresetList().findPreset(uuid);
 				if (p != null)
 					return p;
 			}

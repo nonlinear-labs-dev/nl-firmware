@@ -62,7 +62,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				addChild(new ContextMenuItem(this, "Move Left") {
 					@Override
 					public Control click(Position eventPoint) {
-						getNonMaps().getServerProxy().moveBy(bank, -1);
+						getNonMaps().getServerProxy().moveBy(bank, "LeftByOne");
 						return super.click(eventPoint);
 					}
 				});
@@ -72,7 +72,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				addChild(new ContextMenuItem(this, "Move Right") {
 					@Override
 					public Control click(Position eventPoint) {
-						getNonMaps().getServerProxy().moveBy(bank, 1);
+						getNonMaps().getServerProxy().moveBy(bank, "RightByOne");
 						return super.click(eventPoint);
 					}
 				});

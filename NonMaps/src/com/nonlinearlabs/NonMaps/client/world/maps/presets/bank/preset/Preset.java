@@ -29,8 +29,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContext
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
-
 	private String uuid = null;
+	private ColorTag tag = null;
 	private Name name = null;
 	private Number number = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
@@ -46,6 +46,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public Preset(Bank parent) {
 		super(parent);
+
+		tag = addChild(new ColorTag(this));
 		number = addChild(new Number(this, ""));
 		name = addChild(new Name(this, ""));
 	}
@@ -99,10 +101,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
+		tag.doFirstLayoutPass(levelOfDetail);
 		number.doFirstLayoutPass(levelOfDetail);
 		name.doFirstLayoutPass(levelOfDetail);
 
-		number.moveTo(1, 0);
+		tag.moveTo(1, 0);
+		number.moveTo(3, 0);
 		name.moveTo(number.getNonPosition().getRight(), 0);
 		setNonSize(name.getNonPosition().getRight() + getWidthMargin(), name.getNonPosition().getHeight() + getHeightMargin());
 
@@ -181,7 +185,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
-		return uuid.equals(getParent().getSelectedPreset());
+		return uuid.equals(getParent().getPresetList().getSelectedPreset());
 	}
 
 	public boolean isLoaded() {
@@ -233,8 +237,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
 		} else {
-			getParent().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+      getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+
 		}
+		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	@Override
@@ -344,7 +350,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void select() {
-		getParent().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+		getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
 	}
 
 	public void load() {

@@ -135,7 +135,7 @@ public class PresetList extends OverlayLayout {
 		if (bank == null) {
 			removeAllPresets();
 		} else {
-			Iterator<MapsControl> source = bank.getChildren().iterator();
+			Iterator<MapsControl> source = bank.getPresetList().getChildren().iterator();
 			Iterator<OverlayControl> target = getChildren().iterator();
 
 			updateExistingPresets(source, target);
