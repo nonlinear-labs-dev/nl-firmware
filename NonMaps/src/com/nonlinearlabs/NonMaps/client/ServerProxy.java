@@ -498,7 +498,7 @@ public class ServerProxy {
 	}
 
 	public void dropPresetOnBank(IPreset p, Bank b) {
-		if (b.findPreset(p.getUUID()) != null)
+		if (b.getPresetList().findPreset(p.getUUID()) != null)
 			movePresetBelow(p, b.getLast());
 		else
 			appendPreset(p, b);
