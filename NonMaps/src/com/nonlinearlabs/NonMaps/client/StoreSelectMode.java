@@ -15,6 +15,7 @@ public class StoreSelectMode {
 		m_parent = parent;
 		selectedPreset = m_parent.getSelectedPreset();
 		selectedBank = selectedPreset.getParent();
+		NonMaps.get().getServerProxy().setSetting("storemode", "on");
 	}
 
 	public void setSelectedPreset(Preset p) {

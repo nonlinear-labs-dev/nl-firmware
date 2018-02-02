@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -20,6 +21,9 @@ class LoadPreset extends SVGImage {
 
 	@Override
 	public Control click(Position eventPoint) {
+		if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode())
+			return this;
+		
 		if (isEnabled) {
 			load();
 			return this;
@@ -27,7 +31,7 @@ class LoadPreset extends SVGImage {
 		return super.click(eventPoint);
 	}
 
-	public void update(Node editBufferNode) {
+	public void update(Node editBufferNode) {	
 		if (editBufferNode != null) {
 			if (isSelectedPresetLoaded()) {
 				String isModifiedStr = editBufferNode.getAttributes().getNamedItem("is-modified").getNodeValue();
@@ -40,6 +44,14 @@ class LoadPreset extends SVGImage {
 	}
 
 	private void setEnabled(boolean b) {
+		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
+		if(pm.isInStoreSelectMode()) {
+			isEnabled = false;
+			selectPhase(isEnabled ? 0 : 1);
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			requestLayout();
+		}
+		
 		if (b != isEnabled) {
 			isEnabled = b;
 			selectPhase(isEnabled ? 0 : 1);
@@ -63,6 +75,14 @@ class LoadPreset extends SVGImage {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public void draw(Context2d ctx, int invalidationMask) {
+		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
+		setEnabled(!pm.isInStoreSelectMode());
+		requestLayout();
+		super.draw(ctx, invalidationMask);
 	}
 
 	public void load() {
