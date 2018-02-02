@@ -25,7 +25,7 @@ public class StoreSelectMode {
 
 	public void setSelectedBank(Bank b) {
 		selectedBank = b;
-		selectedPreset = b.findPreset(b.getSelectedPreset());
+		selectedPreset = b.getPresetList().findPreset(b.getPresetList().getSelectedPreset());
 		updateUI();
 	}
 
@@ -35,7 +35,7 @@ public class StoreSelectMode {
 
 	public boolean canNext() {
 		if (selectedPreset != null)
-			return selectedPreset.getNumber() < selectedPreset.getParent().getPresetCount();
+			return selectedPreset.getNumber() < selectedPreset.getParent().getPresetList().getPresetCount();
 
 		return false;
 	}
