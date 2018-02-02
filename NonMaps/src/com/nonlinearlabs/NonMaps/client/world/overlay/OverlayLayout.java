@@ -8,6 +8,7 @@ import com.nonlinearlabs.NonMaps.client.world.ChildrenOwner;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.ILayout;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.pointer.Gesture;
 
 public abstract class OverlayLayout extends OverlayControl implements ILayout<OverlayControl> {
@@ -116,6 +117,21 @@ public abstract class OverlayLayout extends OverlayControl implements ILayout<Ov
 				return this;
 
 			Control c = children.recurseChildren(pos, handler);
+			if (c != null)
+				return c;
+
+			if (handler.onWayUpFound(this))
+				return this;
+		}
+		return null;
+	}
+
+	public Control recurseChildren(Rect r, ControlFinder handler) {
+		if (getPixRect().intersects(r)) {
+			if (handler.onWayDownFound(this))
+				return this;
+
+			Control c = children.recurseChildren(r, handler);
 			if (c != null)
 				return c;
 

@@ -80,6 +80,22 @@ public class Viewport extends MapsLayout {
 	}
 
 	@Override
+	public Control recurseChildren(Rect r, ControlFinder handler) {
+		if (getPixRect().intersects(r)) {
+			if (handler.onWayDownFound(this))
+				return this;
+
+			Control c = overlay.recurseChildren(r, handler);
+			if (c != null)
+				return c;
+
+			if (handler.onWayUpFound(this))
+				return this;
+		}
+		return null;
+	}
+
+	@Override
 	public Control handleGesture(Gesture g) {
 		Control ret = overlay.handleGesture(g);
 
