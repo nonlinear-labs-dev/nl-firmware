@@ -17,6 +17,7 @@
 #include <xml/XmlReader.h>
 #include <xml/XmlWriter.h>
 #include <boost/algorithm/string.hpp>
+#include <tools/StringTools.h>
 
 PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
     RPCActionManager("/presets/"), m_presetManager(presetManager)
@@ -185,10 +186,24 @@ bool PresetManagerActions::handleRequest (const Glib::ustring &path, shared_ptr<
     {
       Glib::ustring query = request->get ("query");
       Glib::ustring mode = request->get ("combine");
+      Glib::ustring field = request->get("fields");
+
+      std::vector<PresetManager::presetInfoSearchFields> fields;
+
+      auto splitFieldStrings = StringTools::splitStringOnAnyDelimiter(field, ',');
+      std::for_each(splitFieldStrings.begin(), splitFieldStrings.end(), [&](std::string t) {
+          if(t == "name") {
+            fields.push_back(PresetManager::presetInfoSearchFields::name);
+          } else if(t == "comment") {
+            fields.push_back(PresetManager::presetInfoSearchFields::comment);
+          } else if(t == "devicename") {
+            fields.push_back(PresetManager::presetInfoSearchFields::devicename);
+          }
+      });
 
       auto stream = request->createStream ("text/xml", false);
       XmlWriter writer (stream);
-      Application::get ().getPresetManager ()->searchPresets (writer, query, mode);
+      Application::get ().getPresetManager ()->searchPresets (writer, query, mode, fields);
       return true;
     }
   }

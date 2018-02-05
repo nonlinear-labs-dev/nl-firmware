@@ -670,8 +670,8 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void searchPresets(String query, SearchQueryCombination combination, DownloadHandler handler) {
-		downloadFile("/presets/search-preset?combine=" + combination.name() + "&query=" + URL.encodeQueryString(query), handler);
+	public void searchPresets(String query, SearchQueryCombination combination,String fields, DownloadHandler handler) {
+		downloadFile("/presets/search-preset?combine=" + combination.name() + "&query=" + URL.encodeQueryString(query) + "&fields="+fields, handler);
 	}
 
 	public void syncLPCToBBB() {

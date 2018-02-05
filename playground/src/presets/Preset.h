@@ -7,10 +7,12 @@
 #include "http/UpdateDocumentContributor.h"
 #include "PresetSettings.h"
 #include "AttributesOwner.h"
+#include "PresetManager.h"
 
 class Writer;
 class PresetBank;
 class SearchQuery;
+class PresetManager;
 
 class Preset : public ParameterGroupSet, public AttributesOwner
 {
@@ -64,7 +66,6 @@ class Preset : public ParameterGroupSet, public AttributesOwner
 
   private:
     void setUuid (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &id);
-    bool doesQuerySubstringMatch (const Glib::ustring &part) const;
     void updateBankChangeTime();
 
     ustring m_name;

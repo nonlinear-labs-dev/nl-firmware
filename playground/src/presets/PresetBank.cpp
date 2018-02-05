@@ -4,7 +4,6 @@
 #include "device-settings/AutoLoadSelectedPreset.h"
 #include "device-settings/Settings.h"
 #include "Preset.h"
-#include "PresetManager.h"
 #include "xml/Writer.h"
 #include "libundo/undo/Scope.h"
 #include "libundo/undo/SwapData.h"

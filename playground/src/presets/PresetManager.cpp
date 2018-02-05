@@ -460,9 +460,9 @@ void PresetManager::writeDocument(Writer &writer, tUpdateID knownRevision) const
       });
 }
 
-void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode) const
+void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode, std::vector<presetInfoSearchFields> fieldsToSearch) const
 {
-  SearchQuery query(q, mode);
+  SearchQuery query(q, mode, fieldsToSearch);
 
   writer.writeTag("preset-manager", [&]()
   {

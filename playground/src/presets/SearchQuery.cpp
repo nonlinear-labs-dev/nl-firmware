@@ -58,14 +58,15 @@ tStrings splitQuotes (const Glib::ustring &str)
   return trimAll (ret);
 }
 
-SearchQuery::SearchQuery (const Glib::ustring &query, Mode mode) :
+SearchQuery::SearchQuery (const Glib::ustring &query, Mode mode, std::vector<PresetManager::presetInfoSearchFields> fields) :
     m_mode (mode),
-    m_query(splitQuotes(query))
+    m_query(splitQuotes(query)),
+    m_searchFields(fields)
 {
 }
 
-SearchQuery::SearchQuery (const Glib::ustring &query, const Glib::ustring &mode) :
-    SearchQuery (query, fromString (mode))
+SearchQuery::SearchQuery (const Glib::ustring &query, const Glib::ustring &mode, std::vector<PresetManager::presetInfoSearchFields> fields) :
+    SearchQuery (query, fromString (mode), fields)
 {
 }
 
@@ -73,7 +74,11 @@ SearchQuery::~SearchQuery ()
 {
 }
 
-bool SearchQuery::iterate (function<bool (const Glib::ustring &)> cb) const
+std::vector<PresetManager::presetInfoSearchFields> SearchQuery::getFields() const {
+  return m_searchFields;
+}
+
+bool SearchQuery::iterate (function<bool (const Glib::ustring &, std::vector<PresetManager::presetInfoSearchFields> fields)> cb) const
 {
   bool match = false;
 
@@ -83,7 +88,7 @@ bool SearchQuery::iterate (function<bool (const Glib::ustring &)> cb) const
 
     if (!trimmed.empty () && trimmed != "#")
     {
-      match = cb (trimmed.lowercase());
+      match = cb (trimmed.lowercase(), getFields());
 
       if (match && m_mode == Mode::Or)
         return true;

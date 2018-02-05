@@ -299,22 +299,30 @@ Glib::ustring Preset::getUndoTransactionTitle (const Glib::ustring &prefix) cons
 
 bool Preset::matchesQuery (const SearchQuery &query) const
 {
-  return query.iterate ([&](const Glib::ustring &part)
+  return query.iterate ([&](const Glib::ustring &part, std::vector<PresetManager::presetInfoSearchFields> fields)
   {
-    return doesQuerySubstringMatch(part);
+      auto comment = getAttribute("Comment", "");
+      auto name = getName();
+      auto devName = getAttribute("DeviceName", "");
+
+      bool ret = false;
+
+      std::for_each(fields.begin(), fields.end(), [&](PresetManager::presetInfoSearchFields f){
+          switch(f) {
+            case PresetManager::presetInfoSearchFields::name:
+              if (m_name.lowercase().find(part) != Glib::ustring::npos)
+                ret = true;
+              break;
+            case PresetManager::presetInfoSearchFields::comment:
+              if (comment.lowercase().find(part) != std::string::npos)
+                ret = true;
+              break;
+            case PresetManager::presetInfoSearchFields::devicename:
+              if (devName.lowercase().find(part) != std::string::npos)
+                ret = true;
+              break;
+          }
+      });
+      return ret;
   });
-}
-
-bool Preset::doesQuerySubstringMatch (const Glib::ustring &part) const
-{
-  if (m_name.lowercase ().find (part) != Glib::ustring::npos)
-    return true;
-
-  if(AttributesOwner::doesAnyAttributeMatch(part))
-    return true;
-
-  if (m_settings.matchesQuery (part))
-    return true;
-
-  return false;
 }
