@@ -15,6 +15,7 @@ import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.Viewport;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetColorTagContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
@@ -282,14 +283,19 @@ public class Overlay extends OverlayLayout {
 	}
 
 	public ContextMenu setContextMenu(Position pt, ContextMenu ctx) {
-		removeExistingContextMenus();
+		if(ctx instanceof PresetColorTagContextMenu) {		
+			
+		}
+		else {
+			removeExistingContextMenus();
+		}
 		addChild(ctx);
 		ctx.getRelativePosition().moveTo(pt.getX() - getPixRect().getLeft(), pt.getY() - getPixRect().getTop());
 		requestLayout();
 		return ctx;
 	}
 
-	private boolean removeExistingContextMenus() {
+	public boolean removeExistingContextMenus() {
 		boolean any = false;
 		for (OverlayControl c : getChildren()) {
 			if (c instanceof ContextMenu) {

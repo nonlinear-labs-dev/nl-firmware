@@ -41,13 +41,18 @@ public class PresetColorTagContextMenu extends ContextMenu {
 				@Override
 				public Control click(Position eventPoint) {
 					setColor(c);
+					NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 					return super.click(eventPoint);
 				}
 
 				@Override
 				public void draw(Context2d ctx, int invalidationMask) {
 					super.draw(ctx, invalidationMask);
-					Rect r = new Rect(0, 0, 1, 4);
+					Rect r = this.getPixRect().copy();
+					r.setWidth(6);
+					r.setHeight(20);
+					r.setLeft(r.getLeft() - 5);
+					r.setTop(r.getTop() + 8);
 					r.fill(ctx, c.toRGB());
 				}
 			});
