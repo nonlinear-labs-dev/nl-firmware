@@ -36,7 +36,7 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Search - Shift + F";
+				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Search - F";
 			}
 
 			@Override
