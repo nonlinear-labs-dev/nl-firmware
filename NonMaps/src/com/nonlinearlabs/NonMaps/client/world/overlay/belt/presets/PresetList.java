@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 import java.util.Iterator;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Animator;
 import com.nonlinearlabs.NonMaps.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
@@ -76,7 +75,7 @@ public class PresetList extends OverlayLayout {
 	private void drawDropIndicator(Context2d ctx, Rect rect, double yOffset, double heightFactor) {
 		ctx.fillRect(rect.getLeft(), rect.getTop() + rect.getHeight() * yOffset, rect.getWidth(), rect.getHeight() * heightFactor);
 	}
-	
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		try (ClipContext clip = new ClipContext(ctx, this)) {
@@ -108,7 +107,7 @@ public class PresetList extends OverlayLayout {
 			}
 		}
 	}
-	
+
 	public void drawTriangles(Context2d ctx, double top, double lineHeight) {
 		Rect pix = getPixRect();
 		ctx.setStrokeStyle(new RGB(205, 22, 22).toString());
@@ -126,7 +125,7 @@ public class PresetList extends OverlayLayout {
 		ctx.stroke();
 	}
 
-	public void update(Node presetmanager) {
+	public void update() {
 		Bank bank = getParent().getBankInCharge();
 		boolean bankChanged = bank != currentBank;
 
@@ -136,7 +135,7 @@ public class PresetList extends OverlayLayout {
 		if (bank == null) {
 			removeAllPresets();
 		} else {
-			Iterator<MapsControl> source = bank.getChildren().iterator();
+			Iterator<MapsControl> source = bank.getPresetList().getChildren().iterator();
 			Iterator<OverlayControl> target = getChildren().iterator();
 
 			updateExistingPresets(source, target);

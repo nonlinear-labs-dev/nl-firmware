@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.world.AppendOverwriteInsertPresetDialog.Action;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
@@ -22,7 +23,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImagePhase;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 
 class StorePreset extends SVGImage {
-	
+
 	Action action = Action.APPEND;
 	String presetToWaitFor = "";
 	RepeatingCommand dragDelay = null;
@@ -37,6 +38,7 @@ class StorePreset extends SVGImage {
 
 	StorePreset(OverlayLayout parent) {
 		super(parent, "Store_Enabled.svg", "Store_Active.svg", "Store_Disabled.svg", "Store_Drag.svg");
+		super.selectPhase(2);
 	}
 
 	@Override
@@ -91,11 +93,15 @@ class StorePreset extends SVGImage {
 	public Control click(Position eventPoint) {
 		boolean hasSelectedBank = getPresetManager().hasSelectedBank();
 
+		if (getPresetManager().isInStoreSelectMode())
+			hasSelectedBank = getPresetManager().getStoreMode().getSelectedBank() != null;
+
 		if (!hasSelectedBank)
 			createNewBank();
 		else
 			storeToBank();
 
+		getPresetManager().endStoreSelectMode();
 		return this;
 	}
 
@@ -110,15 +116,27 @@ class StorePreset extends SVGImage {
 
 		switch (action) {
 		case APPEND:
-			uuid = getNonMaps().getServerProxy().appendPreset();
+			if (getPresetManager().isInStoreSelectMode()) {
+				uuid = getNonMaps().getServerProxy().appendEditBuffer(getPresetManager().getStoreMode().getSelectedBank());
+			} else {
+				uuid = getNonMaps().getServerProxy().appendPreset();
+			}
 			break;
 
 		case INSERT:
-			uuid = getNonMaps().getServerProxy().insertPreset();
+			if (getPresetManager().isInStoreSelectMode()) {
+				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
+			} else {
+				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getSelectedPreset());
+			}
 			break;
 
 		case OVERWRITE:
-			getNonMaps().getServerProxy().overwritePreset();
+			if (getPresetManager().isInStoreSelectMode()) {
+				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreMode().getSelectedPreset());
+			} else {
+				getNonMaps().getServerProxy().overwritePreset();
+			}
 			break;
 
 		default:
@@ -127,6 +145,12 @@ class StorePreset extends SVGImage {
 
 		if (isModified && !uuid.isEmpty())
 			showRename(uuid);
+		
+		StoreSelectMode sm = getPresetManager().getStoreMode();
+		if(sm != null)
+		{
+			sm.setStoredPreset(uuid);
+		}
 	}
 
 	private void showRename(String uuid) {

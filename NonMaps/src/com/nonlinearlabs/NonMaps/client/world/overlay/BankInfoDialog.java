@@ -2,26 +2,15 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.Date;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.DragEndEvent;
-import com.google.gwt.event.dom.client.DragEndHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.GestureEndEvent;
-import com.google.gwt.event.dom.client.GestureEndHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
@@ -29,6 +18,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -43,15 +34,16 @@ public class BankInfoDialog extends GWTDialog {
 	private static BankInfoDialog theDialog;
 
 	private static float commentBoxHeight = 0;
-	
+
 	private TextBox name;
+	private IntegerBox position;
 	private TextArea comment;
 	private Label size;
 	private Label lastChange;
 	private Label importFileDate;
 	private Label importFileName;
 	private Label stateLabel, exportFileName, exportFileDate;
-	
+
 	Bank theBank;
 
 	private Widget haveFocus = null;
@@ -59,7 +51,7 @@ public class BankInfoDialog extends GWTDialog {
 	private BankInfoDialog() {
 		RootPanel.get().add(this);
 
-		getElement().addClassName("bank-info-dialog");
+		getElement().addClassName("preset-info-dialog");
 
 		initalShow();
 
@@ -69,13 +61,12 @@ public class BankInfoDialog extends GWTDialog {
 
 		addHeader("Bank Info");
 		addContent();
-		
+
 		initialSetup();
-		
-		super.pushDialogToFront();	
-		
-		if(commentBoxHeight != 0)
-		{
+
+		super.pushDialogToFront();
+
+		if (commentBoxHeight != 0) {
 			comment.setHeight(commentBoxHeight + "px");
 		}
 	}
@@ -92,8 +83,16 @@ public class BankInfoDialog extends GWTDialog {
 	}
 
 	private void addContent() {
+		
+		HTMLPanel bankNameAndPositionBox = new HTMLPanel("div", "");
+		bankNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
+		bankNameAndPositionBox.add(position = new IntegerBox());
+		bankNameAndPositionBox.add(name = new TextBox());
+		position.getElement().addClassName("position-box");
+		name.getElement().addClassName("preset-name-box");
+		
 		FlexTable panel = new FlexTable();
-		addRow(panel, "Name", name = new TextBox());
+		addRow(panel, "Position/Name", bankNameAndPositionBox);
 		addRow(panel, "Comment", comment = new TextArea());
 		addRow(panel, "Size", size = new Label(""));
 		addRow(panel, "State", stateLabel = new Label(""));
@@ -102,6 +101,8 @@ public class BankInfoDialog extends GWTDialog {
 		addRow(panel, "Import Name", importFileName = new Label(""));
 		addRow(panel, "Export Date", exportFileDate = new Label(""));
 		addRow(panel, "Export Name", exportFileName = new Label(""));
+		
+		position.getElement().addClassName("gwt-TextBox");
 
 		comment.addFocusHandler(new FocusHandler() {
 
@@ -111,43 +112,34 @@ public class BankInfoDialog extends GWTDialog {
 			}
 		});
 
-		comment.addMouseDownHandler(new MouseDownHandler() 
-		{
+		comment.addMouseDownHandler(new MouseDownHandler() {
 			private HandlerRegistration mouseMoveUpRegistration;
 			private int lastWidth;
 			private int lastHeight;
 
 			@Override
-			public void onMouseDown(MouseDownEvent event) 
-			{
+			public void onMouseDown(MouseDownEvent event) {
 				lastWidth = getOffsetWidth();
 				lastHeight = getOffsetHeight();
-	
-				if (mouseMoveUpRegistration == null) 
-				{
-					mouseMoveUpRegistration = Event.addNativePreviewHandler(new NativePreviewHandler() 
-					{
+
+				if (mouseMoveUpRegistration == null) {
+					mouseMoveUpRegistration = Event.addNativePreviewHandler(new NativePreviewHandler() {
 						@Override
-						public void onPreviewNativeEvent(NativePreviewEvent event) 
-						{
-							if (event.getTypeInt() == Event.ONMOUSEMOVE || event.getTypeInt() == Event.ONMOUSEUP) 
-							{
+						public void onPreviewNativeEvent(NativePreviewEvent event) {
+							if (event.getTypeInt() == Event.ONMOUSEMOVE || event.getTypeInt() == Event.ONMOUSEUP) {
 								int width = getOffsetWidth();
 								int height = getOffsetHeight();
-								if (width != lastWidth || height != lastHeight) 
-								{
+								if (width != lastWidth || height != lastHeight) {
 									commentBoxHeight = comment.getElement().getClientHeight();
-									
+
 									lastWidth = width;
 									lastHeight = height;
 								}
-	
-								if (event.getTypeInt() == Event.ONMOUSEUP) 
-								{
+
+								if (event.getTypeInt() == Event.ONMOUSEUP) {
 									commentBoxHeight = comment.getElement().getClientHeight();
-									
-									if (mouseMoveUpRegistration != null) 
-									{
+
+									if (mouseMoveUpRegistration != null) {
 										mouseMoveUpRegistration.removeHandler();
 										mouseMoveUpRegistration = null;
 									}
@@ -158,7 +150,7 @@ public class BankInfoDialog extends GWTDialog {
 				}
 			}
 		});
-		
+
 		comment.addBlurHandler(new BlurHandler() {
 
 			@Override
@@ -205,11 +197,47 @@ public class BankInfoDialog extends GWTDialog {
 			public void onKeyPress(KeyPressEvent arg0) {
 				if (arg0.getCharCode() == KeyCodes.KEY_ENTER) {
 					name.setFocus(false);
-					comment.setFocus(true);
+					position.setFocus(true);
 				}
 			}
 		});
 
+		position.addKeyPressHandler(new KeyPressHandler() {
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+					position.setFocus(false);
+					comment.setFocus(true);
+				}
+			}
+		});
+		
+		position.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				setFocus(position);
+			}
+		});
+
+		position.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				haveFocus = null;
+
+				if (theBank != null) {
+					int oldNumber = theBank.getOrderNumber();
+					int currentValue = new Integer(position.getValue());
+
+					if (oldNumber != currentValue) {
+						NonMaps.get().getServerProxy().setBankOrderNumber(theBank, currentValue);
+					}
+				}
+			}
+		});
+		
 		setWidget(panel);
 		setFocus(panel);
 	}
@@ -244,6 +272,7 @@ public class BankInfoDialog extends GWTDialog {
 		if (bank != null) {
 			String bankName = bank.getCurrentName();
 			String commentText = bank.getAttribute("Comment");
+			int bankPos = bank.getOrderNumber();
 
 			if (haveFocus != comment) {
 				if (!commentText.equals(comment.getText())) {
@@ -256,9 +285,20 @@ public class BankInfoDialog extends GWTDialog {
 					name.setText(bankName);
 				}
 			}
+			
+			int currentPositionValue = 0;
+			try {
+				currentPositionValue = position.getValue();
+			} catch(Exception e) {}
 
-			size.setText(Integer.toString(bank.getPresetCount()));
-
+			if(haveFocus != position) {
+				if(bankPos != currentPositionValue) {
+					position.setText(new Integer(bankPos).toString());
+				}
+			}
+      
+			size.setText(Integer.toString(bank.getPresetList().getPresetCount()));
+      
 			try {
 				lastChange.setText(localizeTime(bank.getDateOfLastChange()));
 			} catch (Exception e) {
@@ -270,19 +310,19 @@ public class BankInfoDialog extends GWTDialog {
 			} catch (Exception e) {
 				importFileDate.setText("---");
 			}
-			
+
 			try {
 				exportFileDate.setText(localizeTime(bank.getAttribute("Date of Export File")));
 			} catch (Exception e) {
 				exportFileDate.setText("---");
 			}
-			
+
 			try {
 				exportFileName.setText(localizeTime(bank.getAttribute("Name of Export File")));
 			} catch (Exception e) {
 				exportFileName.setText("---");
 			}
-			
+
 			try {
 				stateLabel.setText(bank.getImportExportState());
 			} catch (Exception e) {

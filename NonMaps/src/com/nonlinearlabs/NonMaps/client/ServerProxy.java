@@ -13,7 +13,6 @@ import com.google.gwt.xml.client.NamedNodeMap;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
-import com.nonlinearlabs.NonMaps.client.ServerProxy.DownloadHandler;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
@@ -186,6 +185,12 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()));
 		queueJob(uri, false);
 	}
+	
+	public void loadPreset(String presetuuid) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "load-preset");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", presetuuid));
+		queueJob(uri, false);
+	}
 
 	public void createNewBankFromPreset(NonPosition nonPosition, IPreset p) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "create-new-bank-from-preset");
@@ -219,6 +224,14 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
+	public void setBankOrderNumber(Bank bank, int newOrderNumber) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-order-number");
+		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", bank.getUUID());
+		StaticURI.KeyValue order = new StaticURI.KeyValue("order-number", newOrderNumber);
+		StaticURI uri = new StaticURI(path, uuid, order);
+		queueJob(uri, true);
+	}
+	
 	public void dropPresetsAbove(String csv, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
@@ -348,10 +361,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void appendEditBuffer(IBank bank) {
+	public String appendEditBuffer(IBank bank) {
+		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-editbuffer-to-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()), new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
+		return uuid;
 	}
 
 	public void nextPreset() {
@@ -374,10 +389,11 @@ public class ServerProxy {
 		queueJob(new StaticURI(new StaticURI.Path("undo", "redo")), false);
 	}
 
-	public String insertPreset() {
+	public String insertPreset(IPreset selPreset) {
+		String uuidOfSelectedPreset = selPreset.getUUID();
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("seluuid", uuidOfSelectedPreset));
 		queueJob(uri, false);
 		return uuid;
 	}
@@ -498,7 +514,7 @@ public class ServerProxy {
 	}
 
 	public void dropPresetOnBank(IPreset p, Bank b) {
-		if (b.findPreset(p.getUUID()) != null)
+		if (b.getPresetList().findPreset(p.getUUID()) != null)
 			movePresetBelow(p, b.getLast());
 		else
 			appendPreset(p, b);
@@ -716,9 +732,9 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void moveBy(Bank bank, int by) {
+	public void moveBy(Bank bank, String dir) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("by", by));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("direction", dir));
 		queueJob(uri, false);
 	}
 

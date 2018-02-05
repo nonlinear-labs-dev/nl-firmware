@@ -136,6 +136,9 @@ class BankHeader extends OverlayLayout {
 
 	@Override
 	public Control onContextMenu(Position pos) {
+		if (getParent().isInStoreSelectMode())
+			return null;
+
 		Bank b = getParent().getBankInCharge();
 		if (b != null) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
@@ -143,9 +146,8 @@ class BankHeader extends OverlayLayout {
 		}
 		return super.onContextMenu(pos);
 	}
-	
-	public void setFontHeightInMM(int mm)
-	{
-		((BankTitle)title).setFontHeightInMM(mm);
+
+	public void setFontHeightInMM(int mm) {
+		((BankTitle) title).setFontHeightInMM(mm);
 	}
 }

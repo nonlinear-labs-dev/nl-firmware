@@ -11,7 +11,7 @@ public class AdvancedBankInformation extends Label {
 
 	public AdvancedBankInformation(OverlayLayout parent) {
 		super(parent);
-		super.setFontColor(new RGB(120,120,120));
+		super.setFontColor(new RGB(120, 120, 120));
 		super.setFontHeightInMM(5);
 	}
 
@@ -20,7 +20,7 @@ public class AdvancedBankInformation extends Label {
 		String bankUUID = NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSelectedBank();
 		Bank currentBank = NonMaps.theMaps.getNonLinearWorld().getPresetManager().findBank(bankUUID);
 		if (currentBank != null) {
-			return "[" + currentBank.getPresetCount() + "]";
+			return "[" + currentBank.getPresetList().getPresetCount() + "]";
 		} else {
 			return "";
 		}

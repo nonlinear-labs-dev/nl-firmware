@@ -285,6 +285,10 @@ public class Header extends Label {
 	@Override
 	public Control onContextMenu(Position pos) {
 		Bank bank = getParent();
+
+		if (bank.isInStoreSelectMode())
+			return null;
+
 		bank.getParent().pushBankOntoTop(bank);
 
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()

@@ -9,6 +9,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -28,8 +29,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContext
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
-
 	private String uuid = null;
+	private ColorTag tag = null;
 	private Name name = null;
 	private Number number = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
@@ -45,6 +46,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public Preset(Bank parent) {
 		super(parent);
+
+		tag = addChild(new ColorTag(this));
 		number = addChild(new Number(this, ""));
 		name = addChild(new Name(this, ""));
 	}
@@ -57,13 +60,17 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public RGB getColorFont() {
 		boolean selected = isSelected();
-		boolean loaded = isLoaded();
+		boolean loaded = isLoaded() && !isInStoreSelectMode();
+		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
-
+		
+		if(isOriginPreset)
+			return new RGB(255,255,255);
+		
 		if (filterSate == FilterState.FILTER_MATCHES)
 			return new RGB(230, 240, 255);
 		else if (filterSate == FilterState.FILTERED_OUT)
@@ -71,6 +78,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (!selected && !loaded)
 			return new RGB(179, 179, 179);
+		
+		
 
 		return super.getColorFont();
 	}
@@ -89,7 +98,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public int getNumber() {
 		return Integer.parseInt(number.getText());
 	}
-	
+
 	public String getPaddedNumber() {
 		NumberFormat f = NumberFormat.getFormat("000");
 		String ret = f.format(getNumber());
@@ -98,10 +107,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
+		tag.doFirstLayoutPass(levelOfDetail);
 		number.doFirstLayoutPass(levelOfDetail);
 		name.doFirstLayoutPass(levelOfDetail);
 
-		number.moveTo(1, 0);
+		tag.moveTo(1, 0);
+		number.moveTo(3, 0);
 		name.moveTo(number.getNonPosition().getRight(), 0);
 		setNonSize(name.getNonPosition().getRight() + getWidthMargin(), name.getNonPosition().getHeight() + getHeightMargin());
 
@@ -124,7 +135,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean selected = isSelected();
-		boolean loaded = isLoaded();
+		boolean loaded = isLoaded() && !isInStoreSelectMode();
+		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
@@ -147,7 +159,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				colorContour = new RGB(230, 240, 255);
 			}
 		} else {
-			if (loaded)
+			if (loaded || isOriginPreset)
 				colorFill = RGB.blue();
 			else if (selected)
 				colorFill = new RGB(77, 77, 77);
@@ -176,16 +188,30 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isSelected() {
-		return uuid.equals(getParent().getSelectedPreset());
+		StoreSelectMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
+		if (sm != null)
+			return sm.getSelectedPreset() == this;
+
+		return uuid.equals(getParent().getPresetList().getSelectedPreset());
 	}
 
 	public boolean isLoaded() {
+		if(getParent().isInStoreSelectMode()) {
+				return this == getParent().getParent().getStoreMode().getOriginalPreset();
+		}
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
+	}
+
+	public boolean isInStoreSelectMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
 	}
 
 	@Override
 	public Control click(Position point) {
-		if (isInMultiplePresetSelectionMode()) {
+		if (isInStoreSelectMode()) {
+			selectPreset();
+			return this;
+		} else if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;
@@ -204,6 +230,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control onContextMenu(Position pos) {
+		if (isInStoreSelectMode())
+			return null;
+
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
 				.getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
@@ -214,21 +243,29 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void selectPreset() {
-		getParent().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
+		if (storeMode != null) {
+			storeMode.setSelectedPreset(this);
+		} else {
+      getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+
+		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		if (isInMultiplePresetSelectionMode()) {
+		if (isInStoreSelectMode())
 			return this;
-		}
+
+		if (isInMultiplePresetSelectionMode())
+			return this;
 
 		wasSelectedAtMouseDown = isSelected();
 
-		if (!wasSelectedAtMouseDown) {
+		if (!wasSelectedAtMouseDown)
 			selectPreset();
-		}
+
 		return this;
 	}
 
@@ -323,7 +360,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void select() {
-		getParent().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+		getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
 	}
 
 	public void load() {

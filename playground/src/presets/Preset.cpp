@@ -169,6 +169,16 @@ void Preset::setUuid (UNDO::Scope::tTransactionPtr transaction, const Glib::ustr
   });
 }
 
+/*
+void Preset::setColor(const ustring color) {
+  setAttribute("color", color);
+}
+
+ustring Preset::getColor() const {
+  return getAttribute("color", "none");
+}
+ */
+
 sigc::connection Preset::onPresetChanged (slot<void> s)
 {
   return m_signalPresetChanged.connectAndInit (s);

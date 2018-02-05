@@ -138,13 +138,13 @@ public class Belt extends OverlayLayout {
 				setPresetView(true);
 			return this;
 
-		} else if (event.getNativeKeyCode() == KeyCodes.KEY_E  && getNonMaps().getNonLinearWorld().isShiftDown()) {
+		} else if (event.getNativeKeyCode() == KeyCodes.KEY_E && getNonMaps().getNonLinearWorld().isShiftDown()) {
 			if (isParameterView() && !isHidden())
 				toggle();
 			else
 				setParameterView(true);
 			return this;
-		} else if (event.getNativeKeyCode() == KeyCodes.KEY_N  && getNonMaps().getNonLinearWorld().isShiftDown()) {
+		} else if (event.getNativeKeyCode() == KeyCodes.KEY_N && getNonMaps().getNonLinearWorld().isShiftDown()) {
 			if (isSoundView() && !isHidden())
 				toggle();
 			else
@@ -176,12 +176,12 @@ public class Belt extends OverlayLayout {
 	public BeltSoundLayout getSoundLayout() {
 		return soundLayout;
 	}
-	
+
 	@Override
 	public Control mouseUp(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control click(Position eventPoint) {
 		return this;
@@ -201,10 +201,15 @@ public class Belt extends OverlayLayout {
 	public Control longPress(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		return this;
+	}
+
+	@Override
+	public int getDragRating(Position newPoint, DragProxy dragProxy) {
+		return 10000;
 	}
 
 	@Override

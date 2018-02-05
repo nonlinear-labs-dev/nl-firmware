@@ -16,6 +16,7 @@
 #include <tools/PerformanceTimer.h>
 #include <xml/VersionAttribute.h>
 #include <boost/algorithm/string.hpp>
+#include <algorithm>
 
 BankActions::BankActions(PresetManager &presetManager) :
     RPCActionManager("/presets/banks/"),
@@ -119,7 +120,7 @@ BankActions::BankActions(PresetManager &presetManager) :
         }
       }
   });
-  
+
   addAction("move-preset-to", [&] (shared_ptr<NetworkRequest> request)
   {
     Glib::ustring presetToOverwrite = request->get ("presetToOverwrite");
@@ -344,6 +345,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       [&] (shared_ptr<NetworkRequest> request) mutable
       {
         Glib::ustring bankUuid = request->get ("bank-uuid");
+        Glib::ustring presetUuid = request->get ("uuid");
 
         if (tBankPtr tgtBank = m_presetManager.findBank (bankUuid))
         {
@@ -351,16 +353,30 @@ BankActions::BankActions(PresetManager &presetManager) :
           UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
 
           int desiredPresetPos = tgtBank->getNumPresets();
-          tgtBank->undoableInsertPreset (transaction, desiredPresetPos);
+          tgtBank->undoableAppendPreset(transaction, presetUuid);
           tgtBank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
           tgtBank->undoableSelectPreset (transaction, tgtBank->getPreset (desiredPresetPos)->getUuid());
           tgtBank->undoableSelect (transaction);
         }
       });
 
+  addAction("set-order-number", [&] (shared_ptr<NetworkRequest> request) mutable
+  {
+      auto uuid = request->get("uuid");
+      if(auto bank = m_presetManager.findBank(uuid))
+      {
+        int numBanks = static_cast<int>(m_presetManager.getNumBanks());
+        int newPos = stoi(request->get("order-number"));
+        auto scope = m_presetManager.getUndoScope().startTransaction("Changed Order Number of Bank: %0", bank->getName(true));
+        m_presetManager.undoableSetOrderNumber(scope->getTransaction(), bank, newPos);
+        bank->onChange();
+      }
+  });
+
   addAction("insert-preset", [&] (shared_ptr<NetworkRequest> request) mutable
   {
-    if (tBankPtr bank = m_presetManager.getSelectedBank())
+    auto selUuid = request->get ("seluuid");
+    if (tBankPtr bank = m_presetManager.findPreset(selUuid)->getBank())
     {
       auto uuid = request->get ("uuid");
       auto newName = presetManager.createPresetNameBasedOn (m_presetManager.getEditBuffer()->getName());
@@ -368,7 +384,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       auto scope = m_presetManager.getUndoScope().startTransaction ("Insert preset");
       auto transaction = scope->getTransaction();
 
-      int selPreset = bank->getPresetPosition (bank->getSelectedPreset());
+      int selPreset = bank->getPresetPosition (m_presetManager.findPreset(selUuid)->getUuid());
       int desiredPresetPos = selPreset + 1;
       bank->undoableInsertPreset (transaction, desiredPresetPos);
       bank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
@@ -778,13 +794,30 @@ BankActions::BankActions(PresetManager &presetManager) :
   addAction("move", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring bankUUID = request->get ("bank");
-    Glib::ustring value = request->get ("by");
+    Glib::ustring value = request->get ("direction");
 
     if (tBankPtr bank = m_presetManager.getSelectedBank())
     {
-      UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Move Bank '%0'", bank->getName(true));
+      PresetManager::moveDirection direction;
+      Glib::ustring inDirectionDescriber = "";
+      if(value == "LeftByOne") {
+        direction = PresetManager::moveDirection::LeftByOne;
+        inDirectionDescriber = " left";
+      }
+      else if(value == "RightByOne") {
+        direction = PresetManager::moveDirection::RightByOne;
+        inDirectionDescriber = " right";
+      }
+      else {
+        assert(false);
+      }
+      UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Move Bank '%0' %1", bank->getName(true), inDirectionDescriber);
       UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
-      m_presetManager.undoableMoveBankBy(transaction, bankUUID, stoi(value));
+
+
+
+
+      m_presetManager.undoableChangeBankOrder(transaction, bankUUID, direction);
     }
   });
 

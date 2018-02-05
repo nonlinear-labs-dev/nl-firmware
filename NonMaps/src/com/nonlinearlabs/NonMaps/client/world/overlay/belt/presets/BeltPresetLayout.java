@@ -12,7 +12,7 @@ public class BeltPresetLayout extends OverlayLayout {
 	private BankControlArea bank;
 	private LoadButtonArea load;
 	private CurrentPresetNumber currentPreset;
-	private AutoLoadSelectedPreset autoLoad;
+	private DirectLoadButton autoLoad;
 	private AdvancedBankInformation bankInfos;
 
 	public BeltPresetLayout(Belt parent) {
@@ -24,7 +24,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		addChild(load = new LoadButtonArea(this));
 		addChild(bankInfos = new AdvancedBankInformation(this));
 		addChild(currentPreset = new CurrentPresetNumber(this));
-		addChild(autoLoad = new AutoLoadSelectedPreset(this));
+		addChild(autoLoad = new DirectLoadButton(this));
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		right -= load.getRelativePosition().getWidth() + margin;
 		right -= buttonDim + margin; // auto load button
 
-		double widthNeededForStore = 2 * buttonDim + 2 * margin;
+		double widthNeededForStore = 3 * buttonDim + 2 * margin;
 
 		double availableForCenteredBankControl = 2 * Math.min(right - w / 2, w / 2 - (left + widthNeededForStore));
 		boolean centerBankControl = availableForCenteredBankControl > Millimeter.toPixels(100);
@@ -63,8 +63,8 @@ public class BeltPresetLayout extends OverlayLayout {
 		}
 
 		double horizontalCenterLinePosition = bank.getHorizontalCenterLinePosition();
-		store.doLayout(bank.getRelativePosition().getLeft() - margin - 2 * buttonDim, horizontalCenterLinePosition - 1.5 * buttonDim,
-				2 * buttonDim, 2 * buttonDim);
+		store.doLayout(bank.getRelativePosition().getLeft() - margin - 3 * buttonDim, horizontalCenterLinePosition - 1.5 * buttonDim,
+				3 * buttonDim, 2 * buttonDim);
 
 		double loadLeft = bank.getRelativePosition().getRight() + margin;
 		double maxLoadWidth = w - loadLeft - margin - buttonDim - margin;
