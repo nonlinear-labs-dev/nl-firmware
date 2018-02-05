@@ -61,11 +61,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public RGB getColorFont() {
 		boolean selected = isSelected();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
+		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
+		
+		if(isOriginPreset)
+			return new RGB(255,255,255);
 		
 		if (filterSate == FilterState.FILTER_MATCHES)
 			return new RGB(230, 240, 255);
@@ -74,6 +78,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (!selected && !loaded)
 			return new RGB(179, 179, 179);
+		
+		
 
 		return super.getColorFont();
 	}
@@ -130,6 +136,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean selected = isSelected();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
+		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
@@ -152,7 +159,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				colorContour = new RGB(230, 240, 255);
 			}
 		} else {
-			if (loaded)
+			if (loaded || isOriginPreset)
 				colorFill = RGB.blue();
 			else if (selected)
 				colorFill = new RGB(77, 77, 77);

@@ -73,7 +73,6 @@ public class PresetManager extends MapsLayout {
 		if (m_storeSelectMode == null) {
 			m_storeSelectMode = new StoreSelectMode(this);
 			m_storeSelectMode.updateUI();
-
 		}
 	}
 
