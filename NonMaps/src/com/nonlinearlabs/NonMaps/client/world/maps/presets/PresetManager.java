@@ -518,7 +518,7 @@ public class PresetManager extends MapsLayout {
 			NonMaps.get().getServerProxy().undo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().redo();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F && NonMaps.get().getNonLinearWorld().isShiftDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
 			SearchQueryDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();

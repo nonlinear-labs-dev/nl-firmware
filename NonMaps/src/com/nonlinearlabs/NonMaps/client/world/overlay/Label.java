@@ -91,7 +91,7 @@ public abstract class Label extends OverlayControl {
 		return getPixRect();
 	}
 
-	private void setFont(Context2d ctx, double fontHeightInPixels) {
+	protected void setFont(Context2d ctx, double fontHeightInPixels) {
 		ctx.setFont(fontHeightInPixels + "px nonlinearfont");
 	}
 

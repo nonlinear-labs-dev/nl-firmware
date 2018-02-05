@@ -32,11 +32,11 @@ public class GlobalMenu extends OverlayLayout {
 		addChild(headerText = new GlobalMenuHeaderLabel(this));
 		addChild(header = new MenuHeader(this));
 		addChild(new ToggleViewMenuEntry(this, overlay.getSetup()));
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "F") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Search - Shift + F";
+				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Search";
 			}
 
 			@Override
@@ -50,11 +50,11 @@ public class GlobalMenu extends OverlayLayout {
 
 		addChild(new ToggleViewMenuEntry(this, overlay.getUndoTree()));
 		
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "P") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (PresetInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Info - P";
+				return (PresetInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Info";
 			}
 
 			@Override
@@ -66,11 +66,11 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "B") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (BankInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Bank Info - B";
+				return (BankInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Bank Info";
 			}
 
 			@Override
@@ -82,11 +82,11 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "I") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (ParameterInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Info - I";
+				return (ParameterInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Info";
 			}
 
 			@Override
@@ -98,10 +98,10 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "Ctrl-P") {
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ") + "Presets - Control + P";
+				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ") + "Presets";
 			}
 
 			@Override
@@ -113,11 +113,11 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 		
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "Ctrl-E") {
 			
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor - Control + E";
+				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor";
 			}
 			
 			@Override
@@ -129,11 +129,11 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "Ctrl-H") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return "\uE0A3 Open Help - Control + H";
+				return "\uE0A3 Open Help";
 			}
 
 			@Override
