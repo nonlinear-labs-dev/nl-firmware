@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -42,6 +43,22 @@ public class PresetManager extends MapsLayout {
 
 	public enum SearchQueryCombination {
 		AND, OR
+	}
+	
+	public enum SearchQueryFields {
+		name, comment, devicename
+	}
+
+	
+	private List<SearchQueryFields> fieldsToBeSearched;
+	
+	public List<SearchQueryFields> getFieldsToBeSearched() {
+		return fieldsToBeSearched;
+	}
+
+	public void setFieldsToBeSearched(List<SearchQueryFields> fieldsToBeSearched) {
+		this.fieldsToBeSearched = fieldsToBeSearched;
+		refreshFilter(true);
 	}
 
 	private String selectedBank;
@@ -91,6 +108,8 @@ public class PresetManager extends MapsLayout {
 
 	public PresetManager(NonLinearWorld parent) {
 		super(parent);
+		fieldsToBeSearched = new ArrayList<SearchQueryFields>();
+		fieldsToBeSearched.add(SearchQueryFields.name);
 	}
 
 	@Override
@@ -674,12 +693,33 @@ public class PresetManager extends MapsLayout {
 			refreshFilter(true);
 		}
 	}
+	
 
 	private void refreshFilter(final boolean autoZoom) {
 		if (this.query.isEmpty()) {
 			clearFilter();
 		} else {
-			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, new ServerProxy.DownloadHandler() {
+			String fields = "";
+			
+			for(SearchQueryFields f: fieldsToBeSearched) {
+				
+				if(fields.isEmpty() == false)
+					fields+=",";
+				
+				switch(f) {
+				case name:
+					fields+="name";
+					break;
+				case comment:
+					fields+="comment";
+					break;
+				case devicename:
+					fields+="devicename";
+					break;
+				}
+			}
+			
+			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, fields, new ServerProxy.DownloadHandler() {
 
 				@Override
 				public void onFileDownloaded(String text) {
@@ -984,5 +1024,9 @@ public class PresetManager extends MapsLayout {
 
 	public void resetAttachingTapes() {
 		setAttachingTapes(null, null);
+	}
+
+	public String getFilter() {
+		return query;
 	}
 }
