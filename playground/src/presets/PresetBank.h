@@ -6,17 +6,16 @@
 #include "http/UpdateDocumentContributor.h"
 #include "parameters/Parameter.h"
 #include "tools/Signal.h"
-#include "PresetManager.h"
 #include <atomic>
 #include <map>
 #include <tools/BackgroundJobs.h>
 #include <presets/Preset.h>
 #include <tuple>
-#include "PresetManager.h"
 
 class Preset;
 class Writer;
 class EditBuffer;
+class PresetManager;
 
 class PresetBank : public UpdateDocumentContributor, public AttributesOwner, public enable_shared_from_this<PresetBank>, public sigc::trackable
 {

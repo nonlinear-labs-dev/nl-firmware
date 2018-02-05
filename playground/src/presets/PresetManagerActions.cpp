@@ -188,10 +188,10 @@ bool PresetManagerActions::handleRequest (const Glib::ustring &path, shared_ptr<
       Glib::ustring mode = request->get ("combine");
       Glib::ustring field = request->get("fields");
 
-      auto fieldsToSearch = StringTools::splitStringOnAnyDelimiter(field, ',');
       std::vector<PresetManager::presetInfoSearchFields> fields;
 
-      std::for_each(fieldsToSearch.begin(), fieldsToSearch.end(), [&](std::string t) {
+      auto splitFieldStrings = StringTools::splitStringOnAnyDelimiter(field, ',');
+      std::for_each(splitFieldStrings.begin(), splitFieldStrings.end(), [&](std::string t) {
           if(t == "name") {
             fields.push_back(PresetManager::presetInfoSearchFields::name);
           } else if(t == "comment") {
