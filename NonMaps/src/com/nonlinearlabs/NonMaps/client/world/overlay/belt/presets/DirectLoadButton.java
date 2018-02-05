@@ -15,7 +15,7 @@ class DirectLoadButton extends SVGImage {
 	private boolean married;
 
 	DirectLoadButton(OverlayLayout parent) {
-		super(parent, "Link_Enabled.svg", "Link_Active.svg");
+		super(parent, "Link_Enabled.svg", "Link_Active.svg", "Link_Disabled.svg");
 	}
 
 	public boolean isInStoreSelectMode() {
@@ -27,9 +27,9 @@ class DirectLoadButton extends SVGImage {
 		int ret = 0;
 		
 		if (isInStoreSelectMode())
-			ret = 0;
-
-		ret = married ? 1 : 0;
+			ret = 2;
+		else
+			ret = married ? 1 : 0;
 		
 		return ret;
 	}
