@@ -42,8 +42,8 @@ public class ColorTag extends ZoomReactingControl {
 
 	protected RGB calcColor() {
 		try {
-			Color c = Color.valueOf(getParent().getAttribute("color"));
-			return c.toRGB();
+
+			return Color.valueOf(getParent().getAttribute("color")).toRGB();
 		} catch (Exception e) {
 			return null;
 		}
@@ -56,12 +56,12 @@ public class ColorTag extends ZoomReactingControl {
 
 	@Override
 	protected double getBasicWidth() {
-		return 3;
+		return 6;
 	}
 
 	@Override
 	protected double getBasicHeight() {
-		return 15;
+		return 21;
 	}
 
 	@Override
