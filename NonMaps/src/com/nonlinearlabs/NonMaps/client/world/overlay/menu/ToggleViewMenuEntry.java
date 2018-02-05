@@ -11,16 +11,13 @@ public class ToggleViewMenuEntry extends MenuEntry {
 	private FloatingWindow window;
 
 	public ToggleViewMenuEntry(GlobalMenu menu, FloatingWindow wnd) {
-		super(menu);
+		super(menu, wnd instanceof UndoTreeWindow?"U":"");
 		window = wnd;
 	}
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		if(window instanceof UndoTreeWindow)
-			return (window.isShown() ? "\uE0A4 " : "\uE0A3 ") + window.getMenuTitle() + " - U";
-		else
-			return (window.isShown() ? "\uE0A4 " : "\uE0A3 ") + window.getMenuTitle();
+		return (window.isShown() ? "\uE0A4 " : "\uE0A3 ") + window.getMenuTitle();
 	}
 
 	@Override
