@@ -51,6 +51,10 @@ Glib::ustring DateTimeInfo::getDisplayStringFromIso(const Glib::ustring & iso)
   return formatTime(iso, "%F %R");
 }
 
+Glib::ustring DateTimeInfo::getDisplayStringFromStamp(uint64_t stamp) {
+  return formatTime(stamp, "%F %R");
+}
+
 Glib::ustring DateTimeInfo::getDisplayString () const
 {
   return formatTime("%x %X", Application::get().getSettings()->getSetting<DateTimeAdjustment>()->get());
@@ -76,3 +80,5 @@ Glib::ustring DateTimeInfo::formatTime (const Glib::ustring &iso, const Glib::us
   ss << std::put_time (&t, format.c_str ());
   return ss.str ();
 }
+
+

@@ -15,6 +15,7 @@ class DateTimeInfo : public DeviceInformationItem
     static Glib::ustring formatTime (const Glib::ustring &iso, const Glib::ustring &format);
     static Glib::ustring getIsoStringOfNow();
     static Glib::ustring getDisplayStringFromIso(const Glib::ustring & iso);
+    static Glib::ustring getDisplayStringFromStamp(uint64_t stamp);
 
   private:
     bool onTimeChanged ();

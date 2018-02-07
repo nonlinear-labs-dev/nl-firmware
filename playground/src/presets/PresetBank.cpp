@@ -574,7 +574,7 @@ void PresetBank::writeDocument(Writer &writer, tUpdateID knownRevision) const
             p->writeDocument (writer, knownRevision);
           }
 
-          writer.writeTextElement ("date-of-last-change", DateTimeInfo::formatTime(m_lastChangedTimestamp, "%FT%T%z"));
+          writer.writeTextElement ("date-of-last-change", DateTimeInfo::getDisplayStringFromStamp(m_lastChangedTimestamp));
           writer.writeTextElement ("attached-to", m_attachment.uuid);
           writer.writeTextElement ("attached-direction", directionEnumToString(m_attachment.direction));
           writer.writeTextElement("state", calcStateString());
