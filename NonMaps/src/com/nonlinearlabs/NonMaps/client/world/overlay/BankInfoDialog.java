@@ -98,9 +98,9 @@ public class BankInfoDialog extends GWTDialog {
 		addRow(panel, "State", stateLabel = new Label(""));
 		addRow(panel, "Last Change", lastChange = new Label(""));
 		addRow(panel, "Import Date", importFileDate = new Label(""));
-		addRow(panel, "Import Name", importFileName = new Label(""));
+		addRow(panel, "Import File", importFileName = new Label(""));
 		addRow(panel, "Export Date", exportFileDate = new Label(""));
-		addRow(panel, "Export Name", exportFileName = new Label(""));
+		addRow(panel, "Export File", exportFileName = new Label(""));
 		
 		position.getElement().addClassName("gwt-TextBox");
 
