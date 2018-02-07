@@ -2,26 +2,28 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 
 class MenuArea extends OverlayLayout {
 
 	class MenuAndInfo extends OverlayLayout {
+		
+		OverlayControl btn;
+		OverlayControl info;
 
-		MenuAreaButton btn;
-		MenuAreaInfoButton info;
-
-		public MenuAndInfo(OverlayLayout parent, MenuAreaButton btn, MenuAreaInfoButton info) {
+		public MenuAndInfo(OverlayLayout parent, OverlayControl btn, OverlayControl info) {
 			super(parent);
 
 			this.btn = btn;
 			this.info = info;
-
+			
 			addChild(btn);
 			addChild(info);
 		}
@@ -29,8 +31,9 @@ class MenuArea extends OverlayLayout {
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
-			btn.doLayout(0, 0, w - getSmallButtonWidth(), h);
-			info.doLayout(w - getSmallButtonWidth(), 0, getSmallButtonWidth(), h);
+			double margin = getSmallButtonWidth() / 2.5;
+			btn.doLayout(margin, 0, getSmallButtonWidth(), h);
+			info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
 		}
 	}
 
@@ -77,27 +80,28 @@ class MenuArea extends OverlayLayout {
 			}
 			
 			@Override
-			protected State getState() {
+			public int getSelectedPhase() {
 				if(hasPreset())
-					return PresetInfoDialog.isShown() ? State.Active : State.Enabled;
+					return PresetInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
 				else
-					return State.Disabled;
+					return drawStates.disabled.ordinal();
 			}
 		}));
 
 		banks = addChild(new MenuAndInfo(this, new MenuAreaBankButton(this), new MenuAreaInfoButton(this) {
-
+			
 			@Override
 			public void toggle() {
-				BankInfoDialog.toggle();
+				if(hasBank())
+					BankInfoDialog.toggle();
 			}
 			
 			@Override
-			protected State getState() {
+			public int getSelectedPhase() {
 				if(hasBank())
-					return BankInfoDialog.isShown() ? State.Active : State.Enabled;
+					return BankInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
 				else
-					return State.Disabled;
+					return drawStates.disabled.ordinal();
 			}
 		}));
 
@@ -112,9 +116,10 @@ class MenuArea extends OverlayLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		presets.doLayout(0, 0, w / 2, h / 2);
-		banks.doLayout(0, h / 2, w / 2, h / 2);
-		search.doLayout(w / 2, 0, w / 2, h / 2);
+		double rowWidth = (getSmallButtonWidth() / 2.5) * 2 + getSmallButtonWidth() * 2;
+		presets.doLayout(0, 0, rowWidth, h / 2);
+		banks.doLayout(0, h / 2, rowWidth, h / 2);
+		search.doLayout(presets.getPixRect().getRight() + getSmallButtonWidth() / 2, 0, getSmallButtonWidth(), h / 2);
 	}
 
 	private double getSmallButtonWidth() {

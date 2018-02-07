@@ -1,17 +1,18 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
+import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
-public class MenuAreaPresetButton extends MenuAreaButton {
+public class MenuAreaPresetButton extends SVGImage {
 
 	public MenuAreaPresetButton(MenuArea parent) {
-		super(parent, "Menu_Preset_Disabled_S.svg", "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_L.svg",
-				"Menu_Preset_Enabled_L.svg", "Menu_Preset_Active_L.svg");
+		super(parent, "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_S.svg");
 	}
 
 	@Override
@@ -24,6 +25,10 @@ public class MenuAreaPresetButton extends MenuAreaButton {
 		return super.click(pos);
 	}
 	
+	private Overlay getOverlay() {
+		return NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
+	}
+
 	@Override
 	public Control onContextMenu(Position pos) {
 		Preset p = getPreset();
@@ -49,6 +54,10 @@ public class MenuAreaPresetButton extends MenuAreaButton {
 		return null;
 	}
 
+	private PresetManager getPresetManager() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager();
+	}
+
 	boolean hasPreset() {
 		PresetManager pm = getPresetManager();
 		String bankUUID = pm.getSelectedBank();
@@ -64,7 +73,10 @@ public class MenuAreaPresetButton extends MenuAreaButton {
 	}
 	
 	@Override
-	public State getState() {
-		return hasPreset() ? State.Enabled : State.Disabled;
+	public int getSelectedPhase() {
+		if(hasPreset())
+			return drawStates.normal.ordinal();
+		else
+			return drawStates.disabled.ordinal();
 	}
 }
