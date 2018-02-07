@@ -76,7 +76,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		if (rest >= buttonDim) {
 			double loadAreaLeft = load.getRelativePosition().getLeft();
 			double upDownCenter = load.getPrevNext().getRelativePosition().getCenterPoint().getX();
-			bankInfos.doLayout(loadAreaLeft + upDownCenter - buttonDim / 2, bank.getHorizontalCenterLinePosition() - buttonDim * 3,
+			bankInfos.doLayout(loadAreaLeft + upDownCenter - buttonDim, bank.getHorizontalCenterLinePosition() - buttonDim * 3,
 					buttonDim*2, 2 * buttonDim + margin);
 		} else {
 			bankInfos.doLayout(0, 0, 0, 0);
@@ -88,12 +88,11 @@ public class BeltPresetLayout extends OverlayLayout {
 		double currentPresetLabel = 2 * buttonDim;
 
 		if (rest >= currentPresetLabel) {
-			currentPreset.doLayout(load.getRelativePosition().getRight() + margin, horizontalCenterLinePosition - (buttonDim / 2), rest,
+			currentPreset.doLayout(load.getPixRect().getRight(), horizontalCenterLinePosition - (buttonDim / 2), currentPresetLabel,
 					buttonDim);
 		} else {
 			currentPreset.doLayout(0, 0, 0, 0);
 		}
-
 	}
 
 	public void update(Node settingsNode, Node editBufferNode, Node presetManagerNode) {
