@@ -26,9 +26,33 @@ public class MenuAreaBankButton extends MenuAreaButton {
 		}
 		return o.setContextMenu(pos, new CombinedBankContextMenu(o, null));
 	}
+	
+	@Override
+	public Control onContextMenu(Position pos) {
+		Overlay o = getOverlay();
+		PresetManager pm = getPresetManager();
+
+		String bankUUID = pm.getSelectedBank();
+
+		if (bankUUID != null) {
+			Bank bank = pm.findBank(bankUUID);
+			return o.setContextMenu(pos, new CombinedBankContextMenu(o, bank));
+		}
+		return o.setContextMenu(pos, new CombinedBankContextMenu(o, null));
+	}
+
+	boolean hasBank() {
+		PresetManager pm = getPresetManager();
+		String bankUUID = pm.getSelectedBank();
+
+		if (bankUUID != null) {
+			return pm.findBank(bankUUID) != null;
+		}
+		return false;
+	}
 
 	@Override
-	protected State getState() {
+	public State getState() {
 		return State.Enabled;
 	}
 

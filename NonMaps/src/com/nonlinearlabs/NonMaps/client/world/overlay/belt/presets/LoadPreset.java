@@ -16,8 +16,19 @@ class LoadPreset extends SVGImage {
 	boolean isEnabled = true;
 
 	LoadPreset(OverlayLayout parent) {
-		super(parent, "Load_Enabled.svg", "Load_Disabled.svg");
+		super(parent, "Load_Enabled.svg", "Load_Active.svg", "Load_Disabled.svg");
 	}
+	
+	@Override
+	public int getSelectedPhase() {
+		if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode()) {
+			return drawStates.disabled.ordinal();
+		} else if(isCaptureControl()) {
+			return drawStates.active.ordinal();
+		} else {
+			return drawStates.normal.ordinal();
+		} 
+	};
 
 	@Override
 	public Control click(Position eventPoint) {
@@ -47,14 +58,12 @@ class LoadPreset extends SVGImage {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		if(pm.isInStoreSelectMode()) {
 			isEnabled = false;
-			selectPhase(isEnabled ? 0 : 1);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			requestLayout();
 		}
 		
 		if (b != isEnabled) {
 			isEnabled = b;
-			selectPhase(isEnabled ? 0 : 1);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
 	}

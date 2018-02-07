@@ -23,6 +23,17 @@ public class MenuAreaPresetButton extends MenuAreaButton {
 		}
 		return super.click(pos);
 	}
+	
+	@Override
+	public Control onContextMenu(Position pos) {
+		Preset p = getPreset();
+		if (p != null) {
+			Overlay o = getOverlay();
+			return o.setContextMenu(pos, new PresetContextMenu(o, p));
+		}
+		return super.click(pos);
+	}
+
 
 	Preset getPreset() {
 		PresetManager pm = getPresetManager();
@@ -38,8 +49,22 @@ public class MenuAreaPresetButton extends MenuAreaButton {
 		return null;
 	}
 
+	boolean hasPreset() {
+		PresetManager pm = getPresetManager();
+		String bankUUID = pm.getSelectedBank();
+
+		if (bankUUID != null) {
+			Bank bank = pm.findBank(bankUUID);
+			if (bank != null) {
+				String presetUUID = bank.getPresetList().getSelectedPreset();
+				return bank.getPresetList().findPreset(presetUUID) != null;
+			}
+		}
+		return false;
+	}
+	
 	@Override
-	protected State getState() {
-		return getPreset() != null ? State.Enabled : State.Disabled;
+	public State getState() {
+		return hasPreset() ? State.Enabled : State.Disabled;
 	}
 }

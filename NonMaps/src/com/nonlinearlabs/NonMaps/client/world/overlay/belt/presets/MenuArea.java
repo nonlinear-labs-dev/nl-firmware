@@ -1,6 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
@@ -34,19 +38,50 @@ class MenuArea extends OverlayLayout {
 	private MenuAndInfo banks;
 	private MenuAreaSearchButton search;
 
+	private PresetManager getPresetManager() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager();
+	}
+	
+	boolean hasBank() {
+		PresetManager pm = getPresetManager();
+		String bankUUID = pm.getSelectedBank();
+
+		if (bankUUID != null) {
+			return pm.findBank(bankUUID) != null;
+		}
+		return false;
+	}
+	
+	boolean hasPreset() {
+		PresetManager pm = getPresetManager();
+		String bankUUID = pm.getSelectedBank();
+
+		if (bankUUID != null) {
+			Bank bank = pm.findBank(bankUUID);
+			if (bank != null) {
+				String presetUUID = bank.getPresetList().getSelectedPreset();
+				return bank.getPresetList().findPreset(presetUUID) != null;
+			}
+		}
+		return false;
+	}
+	
 	MenuArea(BeltPresetLayout parent) {
 		super(parent);
 
 		presets = addChild(new MenuAndInfo(this, new MenuAreaPresetButton(this), new MenuAreaInfoButton(this) {
-
+			
 			@Override
 			public void toggle() {
 				PresetInfoDialog.toggle();
 			}
-
+			
 			@Override
 			protected State getState() {
-				return PresetInfoDialog.isShown() ? State.Active : State.Enabled;
+				if(hasPreset())
+					return PresetInfoDialog.isShown() ? State.Active : State.Enabled;
+				else
+					return State.Disabled;
 			}
 		}));
 
@@ -56,10 +91,13 @@ class MenuArea extends OverlayLayout {
 			public void toggle() {
 				BankInfoDialog.toggle();
 			}
-
+			
 			@Override
 			protected State getState() {
-				return BankInfoDialog.isShown() ? State.Active : State.Enabled;
+				if(hasBank())
+					return BankInfoDialog.isShown() ? State.Active : State.Enabled;
+				else
+					return State.Disabled;
 			}
 		}));
 

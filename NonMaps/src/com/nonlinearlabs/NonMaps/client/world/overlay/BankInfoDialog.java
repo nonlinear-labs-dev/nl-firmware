@@ -254,7 +254,7 @@ public class BankInfoDialog extends GWTDialog {
 		if (theDialog != null) {
 			theDialog.commit();
 		} else {
-			if (!NonMaps.theMaps.getNonLinearWorld().getPresetManager().isEmpty())
+			if (NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSelectedBank() != null)
 				theDialog = new BankInfoDialog();
 		}
 	}

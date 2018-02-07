@@ -20,7 +20,9 @@ public class StoreModeButton extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		if (getPresetManager().isInStoreSelectMode()) {
+		if(getPresetManager().isEmpty()) {
+			return drawStates.disabled.ordinal();
+		} else if (getPresetManager().isInStoreSelectMode()) {
 			return drawStates.active.ordinal();
 		} else {
 			return drawStates.normal.ordinal();
@@ -40,13 +42,12 @@ public class StoreModeButton extends SVGImage {
 
 	@Override
 	public Control click(Position eventPoint) {
-
+		
 		if (getPresetManager().isInStoreSelectMode()) {
 			getPresetManager().endStoreSelectMode();
 		} else {
 			getPresetManager().startStoreSelectMode();
 		}
-
 		return this;
 	}
 

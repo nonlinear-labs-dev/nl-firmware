@@ -38,6 +38,11 @@ public class Header extends Label {
 		protected boolean hasPaste() {
 			return true;
 		}
+		
+		@Override
+		protected boolean hasBankCreationRights() {
+			return false;
+		}
 	}
 
 	private boolean sendPosChangeToServer = false;

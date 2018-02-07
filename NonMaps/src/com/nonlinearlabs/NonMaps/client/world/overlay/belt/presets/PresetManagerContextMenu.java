@@ -1,7 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.gargoylesoftware.htmlunit.WebConsole.Logger;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -111,15 +109,15 @@ public class PresetManagerContextMenu extends ContextMenu {
 
 	}
 
-	private void createNewBank(final NonPosition pos) {
-		RenameDialog.open(getNonMaps(), new Renameable() {
+	public static void createNewBank(final NonPosition pos) {
+		RenameDialog.open(NonMaps.get(), new Renameable() {
 
 			String name = "New bank";
 
 			@Override
 			public void setName(String newName) {
 				name = newName;
-				getNonMaps().getServerProxy().newBank(name, pos);
+				NonMaps.get().getServerProxy().newBank(name, pos);
 			}
 
 			@Override

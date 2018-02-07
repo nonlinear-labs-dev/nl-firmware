@@ -70,7 +70,7 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 
-	private StoreSelectMode m_storeSelectMode;
+	private StoreSelectMode m_storeSelectMode = null;
 
 	private Tape attachingTapes[] = new Tape[2];
 
@@ -88,8 +88,10 @@ public class PresetManager extends MapsLayout {
 
 	public void startStoreSelectMode() {
 		if (m_storeSelectMode == null) {
-			m_storeSelectMode = new StoreSelectMode(this);
-			m_storeSelectMode.updateUI();
+			if(isEmpty() == false) {
+				m_storeSelectMode = new StoreSelectMode(this);
+				m_storeSelectMode.updateUI();
+			}
 		}
 	}
 
@@ -531,7 +533,10 @@ public class PresetManager extends MapsLayout {
 				multiSelection.deletePresets();
 				closeMultiSelection();
 			} else {
-				deletePreset(getSelectedPreset());
+				if(getSelectedPreset() != null)
+					deletePreset(getSelectedPreset());
+				else if(getSelectedBank() != null)
+					deleteBank(findBank(getSelectedBank()));
 			}
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().undo();
@@ -555,9 +560,14 @@ public class PresetManager extends MapsLayout {
 		return this;
 	}
 
-	private void deletePreset(Preset selectedPreset) {
+	private void deletePreset(Preset p) {
 		ServerProxy sp = NonMaps.get().getServerProxy();
-		sp.deletePreset(selectedPreset);
+		sp.deletePreset(p);
+	}
+	
+	private void deleteBank(Bank b) {
+		ServerProxy sp = NonMaps.get().getServerProxy();
+		sp.deleteBank(b);
 	}
 
 	public void selectPreviousPreset(Initiator initiator) {
