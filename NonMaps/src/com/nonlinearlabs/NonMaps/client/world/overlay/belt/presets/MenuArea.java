@@ -116,10 +116,10 @@ class MenuArea extends OverlayLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		double rowWidth = (getSmallButtonWidth() / 2.5) * 2 + getSmallButtonWidth() * 2;
+		double rowWidth = (getSmallButtonWidth() / 2.5) * 3 + getSmallButtonWidth() * 2;
 		presets.doLayout(0, 0, rowWidth, h / 2);
 		banks.doLayout(0, h / 2, rowWidth, h / 2);
-		search.doLayout(presets.getPixRect().getRight() + getSmallButtonWidth() / 2, 0, getSmallButtonWidth(), h / 2);
+		search.doLayout(presets.getPixRect().getRight(), 0, getSmallButtonWidth(), h / 2);
 	}
 
 	private double getSmallButtonWidth() {
