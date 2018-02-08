@@ -58,13 +58,13 @@ class LoadPreset extends SVGImage {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		if(pm.isInStoreSelectMode()) {
 			isEnabled = false;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			requestLayout();
 		}
 		
 		if (b != isEnabled) {
 			isEnabled = b;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return;
+
 		}
 	}
 
@@ -86,14 +86,6 @@ class LoadPreset extends SVGImage {
 		return false;
 	}
 	
-	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
-		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
-		setEnabled(!pm.isInStoreSelectMode());
-		requestLayout();
-		super.draw(ctx, invalidationMask);
-	}
-
 	public void load() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		pm.loadSelectedPreset();

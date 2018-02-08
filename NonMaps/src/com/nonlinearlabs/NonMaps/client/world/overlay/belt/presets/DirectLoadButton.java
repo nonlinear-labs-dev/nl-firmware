@@ -40,7 +40,6 @@ class DirectLoadButton extends SVGImage {
 			return this;
 
 		married = !married;
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		NonMaps.theMaps.getServerProxy().setSetting("AutoLoadSelectedPreset", married ? "on" : "off");
 		return this;
 	}
@@ -52,13 +51,13 @@ class DirectLoadButton extends SVGImage {
 			if (married != m) {
 				married = m;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				requestLayout();
 			}
 		}
 	}
 	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		requestLayout();
 		super.draw(ctx, invalidationMask);
 	}
 }
