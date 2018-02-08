@@ -66,7 +66,7 @@ class MenuArea extends OverlayLayout {
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
-			double margin = getSmallButtonWidth() / 2.5;
+			double margin = getSmallButtonWidth() / 3;
 			
 			if(((MenuArea)getParent()).isSmall()) {
 					label.setVisible(false);
@@ -77,7 +77,7 @@ class MenuArea extends OverlayLayout {
 			}
 			else {
 				label.setVisible(true);
-				label.doLayout(margin, 0, getSmallButtonWidth() * 2, h);
+				label.doLayout(margin + margin/2, 0, getSmallButtonWidth() * 1.75, h);
 				btn.doLayout(label.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
 				info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
 				if(search != null)
@@ -199,8 +199,8 @@ class MenuArea extends OverlayLayout {
 	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 2, presets.getPixRect().getTop() + 1, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 3, presets.getPixRect().getHeight() - 4, 6);
-		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 2, banks.getPixRect().getTop() + 1, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 3, banks.getPixRect().getHeight() - 4, 6);
+		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, presets.getPixRect().getTop() + 2, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, presets.getPixRect().getHeight() - 4, 6);
+		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, banks.getPixRect().getTop() + 2, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, banks.getPixRect().getHeight() - 4, 6);
 		super.draw(ctx, invalidationMask);
 	}
 	
