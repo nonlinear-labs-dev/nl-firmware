@@ -14,6 +14,16 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 
 class MenuArea extends OverlayLayout {
 
+	boolean isSmall = true;
+	
+	public boolean isSmall() {
+		return isSmall;
+	}
+
+	public void setSmall(boolean isSmall) {
+		this.isSmall = isSmall;
+	}
+
 	class MenuLabel extends Label {
 
 		String text;
@@ -21,6 +31,7 @@ class MenuArea extends OverlayLayout {
 		public MenuLabel(OverlayLayout parent, String t) {
 			super(parent);
 			text = t;
+			setFontHeightInMM(5);
 		}
 
 		@Override
@@ -35,32 +46,57 @@ class MenuArea extends OverlayLayout {
 		MenuLabel label;
 		OverlayControl btn;
 		OverlayControl info;
+		OverlayControl search;
 
-		public MenuAndInfo(OverlayLayout parent, MenuLabel label, OverlayControl btn, OverlayControl info) {
+		public MenuAndInfo(OverlayLayout parent, MenuLabel label, OverlayControl btn, OverlayControl info, OverlayControl search) {
 			super(parent);
 
 			this.label = label;
 			this.btn = btn;
 			this.info = info;
+			this.search = search;
 			
 			addChild(label);
 			addChild(btn);
 			addChild(info);
+			if(search != null)
+				addChild(search);
 		}
 
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 			double margin = getSmallButtonWidth() / 2.5;
-			label.doLayout(margin, 0, getSmallButtonWidth() * 2, h);
-			btn.doLayout(label.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
-			info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+			
+			if(((MenuArea)getParent()).isSmall()) {
+					label.setVisible(false);
+					btn.doLayout(margin + margin, 0, getSmallButtonWidth(), h);
+					info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+					if(search != null)
+						search.doLayout(info.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+			}
+			else {
+				label.setVisible(true);
+				label.doLayout(margin, 0, getSmallButtonWidth() * 2, h);
+				btn.doLayout(label.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+				info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+				if(search != null)
+					search.doLayout(info.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+			}
+			
+			
+		}	
+		
+		public double getRight() {
+			if(search != null)
+				return search.getPixRect().getRight();
+			else
+				return info.getPixRect().getRight() + getSmallButtonWidth() * 1.5;
 		}
 	}
 
 	private MenuAndInfo presets;
 	private MenuAndInfo banks;
-	private MenuAreaSearchButton search;
 
 	private PresetManager getPresetManager() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager();
@@ -107,7 +143,7 @@ class MenuArea extends OverlayLayout {
 				else
 					return drawStates.disabled.ordinal();
 			}
-		}));
+		}, new MenuAreaSearchButton(this)));
 
 		banks = addChild(new MenuAndInfo(this, new MenuLabel(this, "Bank"), new MenuAreaBankButton(this), new MenuAreaInfoButton(this) {
 			
@@ -124,9 +160,7 @@ class MenuArea extends OverlayLayout {
 				else
 					return drawStates.disabled.ordinal();
 			}
-		}));
-
-		search = addChild(new MenuAreaSearchButton(this));
+		}, null));
 	}
 
 	@Override
@@ -137,22 +171,36 @@ class MenuArea extends OverlayLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		double rowWidth = (getSmallButtonWidth() / 2.5) * 4 + getSmallButtonWidth() * 4;
-		presets.doLayout(0, 0, rowWidth, h / 2);
-		banks.doLayout(0, h / 2, rowWidth, h / 2);
-		search.doLayout(presets.getPixRect().getRight(), 0, getSmallButtonWidth(), h / 2);
+		presets.doLayout(0, 0, presets.getRight(), h / 2);
+		banks.doLayout(0, h / 2, banks.getRight(), h / 2);
 	}
 
 	private double getSmallButtonWidth() {
 		return Millimeter.toPixels(11);
 	}
+	
 
+
+	void roundRect(Context2d ctx, double x, double y, double width, double height, double radius) {
+		  ctx.setFillStyle(new Gray(28).toString());
+		  ctx.beginPath();
+		  ctx.moveTo(x + radius, y);
+		  ctx.lineTo(x + width - radius, y);
+		  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+		  ctx.lineTo(x + width, y + height - radius);
+		  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+		  ctx.lineTo(x + radius, y + height);
+		  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+		  ctx.lineTo(x, y + radius);
+		  ctx.quadraticCurveTo(x, y, x + radius, y);
+		  ctx.closePath();
+		  ctx.fill();
+		}
+	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		ctx.setFillStyle(new Gray(177).toString());
-		ctx.fillRect(presets.getPixRect().getLeft() + getSmallButtonWidth() / 2, presets.getPixRect().getTop() + 1, search.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 3, presets.getPixRect().getHeight() - 4);
-		ctx.fillRect(presets.getPixRect().getLeft() + getSmallButtonWidth() / 2, banks.getPixRect().getTop() + 1, search.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 3, banks.getPixRect().getHeight() - 4);
-
+		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 2, presets.getPixRect().getTop() + 1, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 3, presets.getPixRect().getHeight() - 4, 6);
+		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 2, banks.getPixRect().getTop() + 1, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 3, banks.getPixRect().getHeight() - 4, 6);
 		super.draw(ctx, invalidationMask);
 	}
 	

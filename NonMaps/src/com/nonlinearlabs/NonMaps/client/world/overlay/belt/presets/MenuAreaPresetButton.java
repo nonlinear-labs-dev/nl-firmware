@@ -12,7 +12,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 public class MenuAreaPresetButton extends SVGImage {
 
 	public MenuAreaPresetButton(MenuArea parent) {
-		super(parent, "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_S.svg");
+		super(parent, "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_S.svg", "Menu_A_Enabled.svg", "Menu_A_Active.svg", "Menu_A_Disabled.svg");
 	}
 
 	@Override
@@ -74,9 +74,15 @@ public class MenuAreaPresetButton extends SVGImage {
 	
 	@Override
 	public int getSelectedPhase() {
+		int ret = 0;
+		
 		if(hasPreset())
-			return drawStates.normal.ordinal();
+			ret = drawStates.normal.ordinal();
 		else
-			return drawStates.disabled.ordinal();
+			ret = drawStates.disabled.ordinal();
+		
+		if(((MenuArea)getParent()).isSmall() == false)
+			ret+=3;
+		return ret;
 	}
 }

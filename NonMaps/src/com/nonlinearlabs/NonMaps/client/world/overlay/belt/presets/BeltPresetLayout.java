@@ -41,6 +41,11 @@ public class BeltPresetLayout extends OverlayLayout {
 		double right = w - margin;
 		double left = margin;
 
+		if(w < 1000)
+			menu.setSmall(true);
+		else
+			menu.setSmall(false);
+		
 		menu.doLayout(0, margin, w * 0.25, h - 2 * margin);
 		left += menu.getRelativePosition().getWidth() + margin;
 
