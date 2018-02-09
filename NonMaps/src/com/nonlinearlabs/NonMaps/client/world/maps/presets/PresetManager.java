@@ -548,7 +548,7 @@ public class PresetManager extends MapsLayout {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
 			BankInfoDialog.toggle();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I && NonMaps.get().getNonLinearWorld().isCtrlDown() == false) {
 			ParameterInfoDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/war/online-help/index.html", "", "");
