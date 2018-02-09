@@ -113,13 +113,17 @@ class StorePreset extends SVGImage {
 		String uuid = "";
 		ParameterEditor ed = NonMaps.theMaps.getNonLinearWorld().getParameterEditor();
 		boolean isModified = ed.isModified();
+		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
 
 		switch (action) {
 		case APPEND:
 			if (getPresetManager().isInStoreSelectMode()) {
 				uuid = getNonMaps().getServerProxy().appendEditBuffer(getPresetManager().getStoreMode().getSelectedBank());
 			} else {
-				uuid = getNonMaps().getServerProxy().appendPreset();
+				if(pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
+					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(pm.findBank(pm.getSelectedBank()));
+				else
+					uuid = getNonMaps().getServerProxy().appendPreset();
 			}
 			break;
 
@@ -127,7 +131,10 @@ class StorePreset extends SVGImage {
 			if (getPresetManager().isInStoreSelectMode()) {
 				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
 			} else {
-				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getSelectedPreset());
+				if(pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
+					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(pm.findBank(pm.getSelectedBank()));
+				else
+					uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getSelectedPreset());
 			}
 			break;
 
@@ -135,7 +142,10 @@ class StorePreset extends SVGImage {
 			if (getPresetManager().isInStoreSelectMode()) {
 				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreMode().getSelectedPreset());
 			} else {
-				getNonMaps().getServerProxy().overwritePreset();
+				if(pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
+					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(pm.findBank(pm.getSelectedBank()));
+				else
+					getNonMaps().getServerProxy().overwritePreset();
 			}
 			break;
 
