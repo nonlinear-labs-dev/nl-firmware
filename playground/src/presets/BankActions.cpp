@@ -911,6 +911,63 @@ BankActions::BankActions(PresetManager &presetManager) :
       bank->undoableMovePosition(transaction, x, y);
     }
   });
+
+  addAction("move-preset-to-empty-bank", [&](shared_ptr<NetworkRequest> request) {
+    auto presetUUID = request->get("preset");
+    auto originpreset = m_presetManager.findPreset(presetUUID);
+    auto originBank = originpreset->getBank();
+    auto bankUUID = request->get("bank");
+    auto targetBank = m_presetManager.findBank(bankUUID);
+
+    if(originBank && targetBank) {
+      auto scope = m_presetManager.getUndoScope().startTransaction("Move Preset from " +
+                                                                   originBank->getName(true) + " to " +
+                                                                   targetBank->getName(true));
+      auto transaction = scope->getTransaction();
+
+      tPresetPtr preset = originBank->undoableExpropriatePreset(transaction, originpreset->getUuid());
+      targetBank->undoableAdoptPreset(transaction, preset);
+      preset->undoableSelect(transaction);
+      targetBank->undoableSelect(transaction);
+    }
+  });
+
+  addAction("insert-editbuffer-in-empty-bank", [&](shared_ptr<NetworkRequest> request) {
+    auto bankUUID = request->get("bank");
+    auto bank = m_presetManager.findBank(bankUUID);
+
+    if(bank) {
+      auto scope = m_presetManager.getUndoScope().startTransaction("Insert Editbuffer into " + bank->getName(true));
+      auto transaction = scope->getTransaction();
+
+      bank->undoableInsertPreset (transaction, 0);
+      bank->undoableOverwritePreset (transaction, 0, m_presetManager.getEditBuffer());
+      bank->getPreset (0)->undoableSelect (transaction);
+      bank->undoableSelect (transaction);
+    }
+  });
+
+  addAction("insert-bank-in-empty", [&](shared_ptr<NetworkRequest> request) {
+    auto tgtBank = m_presetManager.findBank(request->get("targetbank"));
+    auto srcBank = m_presetManager.findBank(request->get("originbank"));
+
+    if(tgtBank && srcBank) {
+      if(tgtBank != srcBank)
+        insertBank(srcBank, tgtBank, 0);
+    }
+  });
+
+  addAction("copy-preset-to-empty-bank", [&](shared_ptr<NetworkRequest> request) {
+    auto preset = m_presetManager.findPreset(request->get("preset"));
+    auto bank = m_presetManager.findBank(request->get("bank"));
+
+    if(preset && bank) {
+      auto scope = m_presetManager.getUndoScope().startTransaction("Copy " + preset->getName() + " to " + bank->getName(true));
+      auto transaction = scope->getTransaction();
+      bank->undoableInsertPreset (transaction, 0);
+      bank->undoableOverwritePreset (transaction, 0, preset);
+    }
+  });
 }
 
 BankActions::~BankActions()

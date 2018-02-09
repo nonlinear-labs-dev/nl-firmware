@@ -869,4 +869,31 @@ public class ServerProxy {
 	public void getDifferencesOfPresetsToEditbufferAsCsv(String uuid1, DownloadHandler handler) {
 		downloadFile("/presets/get-diff-editbuffer?p1=" + URL.encodeQueryString(uuid1), handler);
 	}
+
+	public void movePresetToEmptyBank(IPreset p, Bank b) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-preset-to-empty-bank");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset", p.getUUID()), new StaticURI.KeyValue("bank",
+				b.getUUID()));
+		queueJob(uri, false);
+	}
+
+	public void insertEditBufferInEmptyBank(Bank bank) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-editbuffer-in-empty-bank");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()));
+		queueJob(uri, false);
+	}
+
+	public void insertBankInEmptyBank(Bank target, Bank origin) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-in-empty");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("targetbank", target.getUUID()), new StaticURI.KeyValue("originbank",
+				origin.getUUID()));
+		queueJob(uri, false);
+	}
+
+	public void copyPresetInNewBank(IPreset preset, Bank bank) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "copy-preset-to-empty-bank");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset", preset.getUUID()), new StaticURI.KeyValue("bank",
+				bank.getUUID()));
+		queueJob(uri, false);
+	}
 }
