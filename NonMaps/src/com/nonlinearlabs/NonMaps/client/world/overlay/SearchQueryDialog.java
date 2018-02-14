@@ -77,7 +77,7 @@ public class SearchQueryDialog extends GWTDialog {
 			return NonMaps.get().getNonLinearWorld().getPresetManager();
 		}
 
-		private void addIfNotPreset(List<SearchQueryFields> currentFields, SearchQueryFields o) {
+		private void addIfNotPresent(List<SearchQueryFields> currentFields, SearchQueryFields o) {
 			if (currentFields.contains(o) == false)
 				currentFields.add(o);
 		}
@@ -89,10 +89,14 @@ public class SearchQueryDialog extends GWTDialog {
 
 		private void allowFieldInList(List<SearchQueryFields> currentFields, SearchQueryFields o, boolean allow) {
 			if (allow) {
-				addIfNotPreset(currentFields, o);
+				addIfNotPresent(currentFields, o);
 			} else {
 				removeIfPresent(currentFields, o);
 			}
+		}
+
+		public boolean isFieldAllowed(SearchQueryFields field) {
+			return getPresetManager().getFieldsToBeSearched().contains(field);
 		}
 
 		public void onCheckChanged(CheckBox b) {
@@ -170,9 +174,9 @@ public class SearchQueryDialog extends GWTDialog {
 
 		theFieldManager = new SearchFieldManager(name, comment, deviceName);
 
-		name.setValue(true);
-		comment.setValue(false);
-		deviceName.setValue(false);
+		name.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.name));
+		comment.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.comment));
+		deviceName.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.devicename));
 
 		name.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(name, theFieldManager));
 		comment.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(comment, theFieldManager));
