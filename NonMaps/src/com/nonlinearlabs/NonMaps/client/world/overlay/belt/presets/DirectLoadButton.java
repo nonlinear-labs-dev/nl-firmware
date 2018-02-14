@@ -1,12 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
@@ -24,14 +22,12 @@ class DirectLoadButton extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		int ret = 0;
-
 		if (isInStoreSelectMode())
-			ret = 2;
-		else
-			ret = married ? 1 : 0;
+			return drawStates.disabled.ordinal();
+		else if (married)
+			return drawStates.active.ordinal();
 
-		return ret;
+		return drawStates.normal.ordinal();
 	}
 
 	@Override
@@ -54,10 +50,5 @@ class DirectLoadButton extends SVGImage {
 				requestLayout();
 			}
 		}
-	}
-
-	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
-		super.draw(ctx, invalidationMask);
 	}
 }

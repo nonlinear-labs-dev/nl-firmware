@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 
@@ -41,7 +42,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		double right = w - margin;
 		double left = margin;
 
-		if (w < 1000)
+		if (w < 1000 * NonMaps.devicePixelRatio)
 			menu.setSmall(true);
 		else
 			menu.setSmall(false);
@@ -101,7 +102,6 @@ public class BeltPresetLayout extends OverlayLayout {
 	}
 
 	public void update(Node settingsNode, Node editBufferNode, Node presetManagerNode) {
-		load.update(settingsNode, editBufferNode);
 		bank.update(presetManagerNode);
 		autoLoad.update(settingsNode);
 		store.update(settingsNode, presetManagerNode);

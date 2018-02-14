@@ -118,11 +118,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	protected void drawDropIndicator(Context2d ctx) {
 		if (dragPosition != null) {
-			if (getPresetList().getPresetCount() == 0) {
-				drawDropIndicator(ctx, emptyLabel.getPixRect().copy());
-				return;
-			}
-
 			for (Control c : presetList.getChildren()) {
 				if (c instanceof IPreset) {
 					Rect presetRect = c.getPixRect();
@@ -148,11 +143,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	private void drawDropIndicator(Context2d ctx, Rect presetRect) {
 		ctx.setFillStyle("rgba(255, 0, 0, 0.5)");
-
-		if (getPresetList().getPresetCount() == 0) {
-			drawDropIndicator(ctx, presetRect, 0.1, 0.8);
-			return;
-		}
 
 		switch (getDropPosition(presetRect, dragPosition)) {
 		case ABOVE:
@@ -634,11 +624,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public boolean isEmpty() {
-		for (Control c : getPresetList().getChildren())
-			if (c instanceof Preset)
-				return false;
-
-		return true;
+		return getPresetList().getChildren().isEmpty();
 	}
 
 	void updateAttributes(Node node) {

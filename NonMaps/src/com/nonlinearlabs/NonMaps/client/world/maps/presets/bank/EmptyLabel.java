@@ -32,7 +32,7 @@ final class EmptyLabel extends Label {
 		Rect rect = getPixRect();
 
 		if (dropping) {
-			rect.fill(ctx, new RGBA(255, 0, 0, 0.5));
+			rect.fill(ctx, new RGBA(255, 0, 0, 0.75));
 		} else {
 			rect.fill(ctx, new Gray(25));
 		}
@@ -62,6 +62,7 @@ final class EmptyLabel extends Label {
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
+			dropping = true;
 			return this;
 		}
 		return super.drag(pos, dragProxy);

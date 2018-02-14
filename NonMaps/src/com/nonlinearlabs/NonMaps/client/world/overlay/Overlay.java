@@ -282,11 +282,12 @@ public class Overlay extends OverlayLayout {
 	}
 
 	public ContextMenu setContextMenu(Position pt, ContextMenu ctx) {
-		if (ctx instanceof PresetColorTagContextMenu) {
+		boolean isPresetColorTagMenu = ctx instanceof PresetColorTagContextMenu;
 
-		} else {
+		if (!isPresetColorTagMenu) {
 			removeExistingContextMenus();
 		}
+
 		addChild(ctx);
 		ctx.getRelativePosition().moveTo(pt.getX() - getPixRect().getLeft(), pt.getY() - getPixRect().getTop());
 		requestLayout();

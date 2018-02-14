@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
@@ -14,10 +13,6 @@ public class LoadButtonArea extends OverlayLayout {
 
 		addChild(prevNext = new PrevNextPresetButtons(this));
 		addChild(load = new LoadPreset(this));
-	}
-
-	public void update(Node settingsNode, Node editBufferNode) {
-		load.update(editBufferNode);
 	}
 
 	@Override
