@@ -135,4 +135,8 @@ public class StoreSelectMode {
 		NonMaps.get().getServerProxy().loadPreset(getStoredPresetUUID());
 		updateUI();
 	}
+
+	public boolean isOriginalPreset(Preset mapsPreset) {
+		return mapsPreset == originPreset;
+	}
 }

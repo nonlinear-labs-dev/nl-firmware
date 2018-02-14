@@ -81,7 +81,11 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean loaded = mapsPreset.isLoaded() && !mapsPreset.isInStoreSelectMode();
 		boolean selected = mapsPreset.isSelected();
-		boolean isOrignalPreset = isInStoreMode() && mapsPreset.getUUID() == getStoreMode().getOriginalPreset().getUUID();
+		boolean isOrignalPreset = false;
+
+		if (isInStoreMode()) {
+			isOrignalPreset = getStoreMode().isOriginalPreset(mapsPreset);
+		}
 
 		double cp = 1;
 

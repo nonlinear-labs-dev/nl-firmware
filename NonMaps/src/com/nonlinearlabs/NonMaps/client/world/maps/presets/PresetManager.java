@@ -711,20 +711,10 @@ public class PresetManager extends MapsLayout {
 
 			for (SearchQueryFields f : fieldsToBeSearched) {
 
-				if (fields.isEmpty() == false)
+				if (!fields.isEmpty())
 					fields += ",";
 
-				switch (f) {
-				case name:
-					fields += "name";
-					break;
-				case comment:
-					fields += "comment";
-					break;
-				case devicename:
-					fields += "devicename";
-					break;
-				}
+				fields += f.name();
 			}
 
 			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, fields, new ServerProxy.DownloadHandler() {
