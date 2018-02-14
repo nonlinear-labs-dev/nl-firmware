@@ -277,8 +277,8 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	}
 
 	private static native double getDevicePixelRatio() /*-{
-		return $wnd.devicePixelRatio;
-	}-*/;
+														return $wnd.devicePixelRatio;
+														}-*/;
 
 	public void registerScreenResizeListener(ScreenResizeListener listener) {
 		screenResizeListeners.add(listener);

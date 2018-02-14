@@ -12,8 +12,7 @@ public class StoreSelectMode {
 	private Bank selectedBank;
 	private String storedPreset = "";
 	private final Preset originPreset;
-	
-	
+
 	public StoreSelectMode(PresetManager parent) {
 		m_parent = parent;
 		originPreset = m_parent.getSelectedPreset();
@@ -109,7 +108,7 @@ public class StoreSelectMode {
 			}
 		}
 	}
-	
+
 	public Preset getOriginalPreset() {
 		return originPreset;
 	}
@@ -117,20 +116,20 @@ public class StoreSelectMode {
 	public Bank getSelectedBank() {
 		return selectedBank;
 	}
-	
+
 	public void setStoredPreset(String uuid) {
 		storedPreset = uuid;
 	}
-	
+
 	public String getStoredPresetUUID() {
 		return storedPreset;
 	}
 
-	public void updateUI() {	
+	public void updateUI() {
 		NonMaps.get().getNonLinearWorld().invalidate(NonLinearWorld.INVALIDATION_FLAG_UI_CHANGED);
 		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl().update();
 	}
-	
+
 	public void updateUI(Preset instertedPreset) {
 		m_parent.selectBank(getSelectedBank().getUUID(), false);
 		NonMaps.get().getServerProxy().loadPreset(getStoredPresetUUID());
