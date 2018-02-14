@@ -130,12 +130,6 @@ public class StoreSelectMode {
 		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl().update();
 	}
 
-	public void updateUI(Preset instertedPreset) {
-		m_parent.selectBank(getSelectedBank().getUUID(), false);
-		NonMaps.get().getServerProxy().loadPreset(getStoredPresetUUID());
-		updateUI();
-	}
-
 	public boolean isOriginalPreset(Preset mapsPreset) {
 		return mapsPreset == originPreset;
 	}

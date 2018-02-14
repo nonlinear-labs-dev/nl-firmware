@@ -74,12 +74,18 @@ bool Preset::save(RefPtr<Gio::File> bankPath)
 
 shared_ptr<const PresetBank> Preset::getBank() const
 {
-  return static_cast<const PresetBank *>(getParent())->shared_from_this();
+  if(auto b = dynamic_cast<const PresetBank *>(getParent()))
+    return b->shared_from_this();
+
+  return nullptr;
 }
 
 shared_ptr<PresetBank> Preset::getBank()
 {
-  return static_cast<PresetBank *>(getParent())->shared_from_this();
+  if(auto b = dynamic_cast<PresetBank *>(getParent()))
+    return b->shared_from_this();
+
+  return nullptr;
 }
 
 void Preset::setName(const ustring &name)
@@ -132,7 +138,30 @@ void Preset::undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetTyp
 
 void Preset::undoableSetUuid(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid)
 {
-  setUuid(transaction, uuid);
+  bool updateLastLoadedPresetInfo = false;
+
+  if(auto bank = getBank())
+  {
+    auto pm = bank->getParent();
+    auto eb = pm->getEditBuffer();
+    updateLastLoadedPresetInfo = eb->getUUIDOfLastLoadedPreset() == getUuid();
+  }
+
+  auto swapData = UNDO::createSwapData(uuid);
+
+  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
+  {
+    swapData->swapWith (m_uuid);
+    onChange();
+  });
+
+  if(updateLastLoadedPresetInfo)
+  {
+    auto bank = getBank();
+    auto pm = bank->getParent();
+    auto eb = pm->getEditBuffer();
+    eb->undoableSetLoadedPresetInfo(transaction, this);
+  }
 }
 
 UpdateDocumentContributor::tUpdateID Preset::onChange()
@@ -155,18 +184,6 @@ ustring Preset::getName() const
 const Uuid &Preset::getUuid() const
 {
   return m_uuid;
-}
-
-void Preset::setUuid(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &id)
-{
-  Uuid uuid(id);
-  auto swapData = UNDO::createSwapData(uuid);
-
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    swapData->swapWith (m_uuid);
-    onChange();
-  });
 }
 
 sigc::connection Preset::onPresetChanged(slot<void> s)

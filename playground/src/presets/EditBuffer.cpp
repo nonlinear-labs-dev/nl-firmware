@@ -284,7 +284,7 @@ void EditBuffer::undoableLoad(UNDO::Scope::tTransactionPtr transaction, shared_p
   lpc->toggleSuppressParameterChanges(transaction);
 
   copyFrom(transaction, preset.get(), true);
-  undoableSetLoadedPresetInfo(transaction, preset);
+  undoableSetLoadedPresetInfo(transaction, preset.get());
 
   if(PresetBank *bank = dynamic_cast<PresetBank *>(preset->getParent()))
   {
@@ -301,7 +301,7 @@ void EditBuffer::copyFrom(UNDO::Scope::tTransactionPtr transaction, Preset *othe
   resetModifiedIndicator(transaction);
 }
 
-void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transaction, shared_ptr<Preset> preset)
+void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transaction, Preset *preset)
 {
   LastLoadedPresetInfo info;
   info.presetUUID = preset->getUuid();

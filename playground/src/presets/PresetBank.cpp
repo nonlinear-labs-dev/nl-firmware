@@ -314,19 +314,6 @@ void PresetBank::undoableAdoptPreset(UNDO::Scope::tTransactionPtr transaction, s
   });
 }
 
-void PresetBank::undoableAdoptPreset(UNDO::Scope::tTransactionPtr transaction, shared_ptr<Preset> preset) {
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
-      m_presets.push_back(preset);
-      preset->adopt(this);
-      onChange();
-  }, [=](UNDO::Command::State)
-  {
-      m_presets.erase(m_presets.end());
-      onChange();
-  });
-}
-
 void PresetBank::undoableStorePreset(size_t pos, shared_ptr<EditBuffer> editBuffer)
 {
   UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction("Store EditBuffer at position %0", pos + 1);
@@ -345,7 +332,7 @@ void PresetBank::undoableOverwritePreset(UNDO::Scope::tTransactionPtr transactio
 
   if(preset == eb)
   {
-    eb->undoableSetLoadedPresetInfo(transaction, p);
+    eb->undoableSetLoadedPresetInfo(transaction, p.get());
     eb->resetModifiedIndicator(transaction);
   }
 }

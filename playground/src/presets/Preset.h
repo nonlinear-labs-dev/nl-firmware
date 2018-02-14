@@ -65,7 +65,6 @@ class Preset : public ParameterGroupSet, public AttributesOwner
     Preset (UpdateDocumentContributor *parent);
 
   private:
-    void setUuid (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &id);
     void updateBankChangeTime();
 
     ustring m_name;

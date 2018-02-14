@@ -105,18 +105,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
-		tag.doFirstLayoutPass(levelOfDetail);
-		number.doFirstLayoutPass(levelOfDetail);
-		name.doFirstLayoutPass(levelOfDetail);
 
-		tag.moveTo(1, -6);
-		number.moveTo(7, 0);
-		name.moveTo(number.getNonPosition().getRight() - 10, 0);
-		setNonSize(name.getNonPosition().getRight() + getWidthMargin(), name.getNonPosition().getHeight() + getHeightMargin());
+		super.doFirstLayoutPass(levelOfDetail);
 
 		if (getParent().isMinimized()) {
-
 			if (!isSelected()) {
+				tag.getNonPosition().getDimension().setHeight(0);
 				number.getNonPosition().getDimension().setHeight(0);
 				name.getNonPosition().getDimension().setHeight(0);
 				getNonPosition().getDimension().setHeight(0);

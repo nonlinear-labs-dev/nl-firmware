@@ -99,7 +99,6 @@ public class PresetManager extends MapsLayout {
 			StoreSelectMode tmp = m_storeSelectMode;
 			m_storeSelectMode = null;
 			tmp.updateUI();
-			NonMaps.get().getServerProxy().loadPreset(tmp.getStoredPresetUUID());
 		}
 	}
 

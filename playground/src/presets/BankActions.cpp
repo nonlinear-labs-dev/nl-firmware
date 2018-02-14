@@ -401,7 +401,9 @@ BankActions::BankActions(PresetManager &presetManager) :
       auto newPreset = bank->getPreset (desiredPresetPos);
 
       if(!uuid.empty())
-      newPreset->undoableSetUuid(transaction, uuid);
+      {
+        newPreset->undoableSetUuid(transaction, uuid);
+      }
 
       bank->undoableSelectPreset (transaction, newPreset->getUuid());
       newPreset->undoableSetName(transaction, newName);

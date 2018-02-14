@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.menu;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
@@ -14,7 +15,7 @@ public class GlobalMenuHeaderLabel extends Label {
 
 	@Override
 	protected double getFontHeight(Rect pixRect) {
-		return 18;
+		return Millimeter.toPixels(4);
 	}
 
 	@Override
