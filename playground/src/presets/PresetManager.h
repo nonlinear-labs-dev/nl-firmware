@@ -72,7 +72,7 @@ class PresetManager : public ContentSection
     void undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank, int newOrderNumber);
 
     void writeDocument (Writer &writer, tUpdateID knownRevision) const override;
-    void searchPresets (Writer &writer, const Glib::ustring &query, const Glib::ustring &mode, std::vector<presetInfoSearchFields> fieldsToSearch) const;
+    void searchPresets (Writer &writer, const Glib::ustring &query, const Glib::ustring &mode, std::vector<presetInfoSearchFields> &&fieldsToSearch) const;
 
     void load ();
     bool isLoading () const;

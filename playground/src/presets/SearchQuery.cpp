@@ -8,92 +8,93 @@ TestDriver<SearchQuery> driver;
 
 typedef list<Glib::ustring> tStrings;
 
-static SearchQuery::Mode fromString (const Glib::ustring &mode)
+static SearchQuery::Mode fromString(const Glib::ustring &mode)
 {
-  auto l = mode.lowercase ();
+  auto l = mode.lowercase();
 
-  if (l == "and")
+  if(l == "and")
     return SearchQuery::Mode::And;
 
   return SearchQuery::Mode::Or;
 }
 
-tStrings trimAll (const tStrings &a)
+tStrings trimAll(const tStrings &a)
 {
   tStrings r;
 
-  for (auto &s : a)
+  for(auto &s : a)
   {
-    auto c = XmlReader::trim (s);
-    if (!c.empty ())
-      r.push_back (c);
+    auto c = XmlReader::trim(s);
+    if(!c.empty())
+      r.push_back(c);
   }
 
   return r;
 }
 
-tStrings splitQuotes (const Glib::ustring &str)
+tStrings splitQuotes(const Glib::ustring &str)
 {
   tStrings ret;
 
-  auto quotePos = str.find_first_of ('"');
+  auto quotePos = str.find_first_of('"');
 
-  if (quotePos != Glib::ustring::npos)
+  if(quotePos != Glib::ustring::npos)
   {
-    auto nextQuote = str.find_first_of ('"', quotePos + 1);
+    auto nextQuote = str.find_first_of('"', quotePos + 1);
 
-    if (nextQuote != Glib::ustring::npos)
+    if(nextQuote != Glib::ustring::npos)
     {
-      auto sub = str.substr (0, quotePos);
-      boost::algorithm::split (ret, sub, boost::is_any_of (" "));
-      ret.push_back (str.substr (quotePos + 1, nextQuote - quotePos - 1));
+      auto sub = str.substr(0, quotePos);
+      boost::algorithm::split(ret, sub, boost::is_any_of(" "));
+      ret.push_back(str.substr(quotePos + 1, nextQuote - quotePos - 1));
 
-      auto next = splitQuotes (str.substr (nextQuote + 1));
-      ret.insert (ret.end (), next.begin (), next.end ());
-      return trimAll (ret);
+      auto next = splitQuotes(str.substr(nextQuote + 1));
+      ret.insert(ret.end(), next.begin(), next.end());
+      return trimAll(ret);
     }
   }
 
-  boost::algorithm::split (ret, str, boost::is_any_of (" "));
-  return trimAll (ret);
+  boost::algorithm::split(ret, str, boost::is_any_of(" "));
+  return trimAll(ret);
 }
 
-SearchQuery::SearchQuery (const Glib::ustring &query, Mode mode, std::vector<PresetManager::presetInfoSearchFields> fields) :
-    m_mode (mode),
+SearchQuery::SearchQuery(const Glib::ustring &query, Mode mode, std::vector<PresetManager::presetInfoSearchFields> &&fields) :
+    m_mode(mode),
     m_query(splitQuotes(query)),
     m_searchFields(fields)
 {
 }
 
-SearchQuery::SearchQuery (const Glib::ustring &query, const Glib::ustring &mode, std::vector<PresetManager::presetInfoSearchFields> fields) :
-    SearchQuery (query, fromString (mode), fields)
+SearchQuery::SearchQuery(const Glib::ustring &query, const Glib::ustring &mode, std::vector<PresetManager::presetInfoSearchFields> &&fields) :
+    SearchQuery(query, fromString(mode), std::move(fields))
 {
 }
 
-SearchQuery::~SearchQuery ()
+SearchQuery::~SearchQuery()
 {
 }
 
-std::vector<PresetManager::presetInfoSearchFields> SearchQuery::getFields() const {
+std::vector<PresetManager::presetInfoSearchFields> SearchQuery::getFields() const
+{
   return m_searchFields;
 }
 
-bool SearchQuery::iterate (function<bool (const Glib::ustring &, std::vector<PresetManager::presetInfoSearchFields> fields)> cb) const
+bool SearchQuery::iterate(function<bool(const Glib::ustring &, std::vector<PresetManager::presetInfoSearchFields> fields)> cb) const
 {
   bool match = false;
 
-  for (auto &s : m_query)
+  for(auto &s : m_query)
   {
-    auto trimmed = XmlReader::trim (s);
+    auto trimmed = XmlReader::trim(s);
 
-    if (!trimmed.empty () && trimmed != "#")
+    if(!trimmed.empty() && trimmed != "#")
     {
-      match = cb (trimmed.lowercase(), getFields());
+      match = cb(trimmed.lowercase(), getFields());
 
-      if (match && m_mode == Mode::Or)
+      if(match && m_mode == Mode::Or)
         return true;
 
-      if (!match && m_mode == Mode::And)
+      if(!match && m_mode == Mode::And)
         return false;
     }
   }
@@ -101,30 +102,29 @@ bool SearchQuery::iterate (function<bool (const Glib::ustring &, std::vector<Pre
   return match;
 }
 
-void assertStrings (const Glib::ustring &query, tStrings expected)
+void assertStrings(const Glib::ustring &query, tStrings expected)
 {
-  auto s = splitQuotes (query);
+  auto s = splitQuotes(query);
 
-  if (s != expected)
+  if(s != expected)
   {
     std::cout << "got: ";
 
-    for (auto r : s)
+    for(auto r : s)
       std::cout << r << std::endl;
 
     std::cout << "expected: ";
 
-    for (auto r : expected)
+    for(auto r : expected)
       std::cout << r << std::endl;
 
-    g_warn_if_reached()
-    ;
+    g_warn_if_reached();
   }
 }
 
-void SearchQuery::registerTests ()
+void SearchQuery::registerTests()
 {
-  g_test_add_func ("/SearchQuery/quoted", []()
+  g_test_add_func("/SearchQuery/quoted", []()
   {
     assertStrings("", tStrings(
             {}));

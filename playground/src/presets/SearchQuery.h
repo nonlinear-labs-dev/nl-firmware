@@ -11,8 +11,8 @@ class SearchQuery
       And, Or
     };
 
-    SearchQuery (const Glib::ustring &query, Mode mode, std::vector<PresetManager::presetInfoSearchFields> searchFields);
-    SearchQuery (const Glib::ustring &query, const Glib::ustring &mode, std::vector<PresetManager::presetInfoSearchFields> searchFields);
+    SearchQuery (const Glib::ustring &query, Mode mode, std::vector<PresetManager::presetInfoSearchFields> &&searchFields);
+    SearchQuery (const Glib::ustring &query, const Glib::ustring &mode, std::vector<PresetManager::presetInfoSearchFields> &&searchFields);
     virtual ~SearchQuery ();
     bool iterate (function<bool (const Glib::ustring &, std::vector<PresetManager::presetInfoSearchFields> fields)> cb) const;
     std::vector<PresetManager::presetInfoSearchFields> getFields() const;

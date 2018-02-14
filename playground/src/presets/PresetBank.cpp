@@ -602,8 +602,12 @@ void PresetBank::searchPresets(Writer &writer, const SearchQuery &query) const
       Attribute("order-number", getParent()->calcOrderNumber(this)), [&]()
       {
         for (const tPresetPtr p : m_presets)
-        if(p->matchesQuery(query))
-        p->writeDocument (writer, 0);
+        {
+          if(p->matchesQuery(query))
+          {
+            p->writeDocument (writer, 0);
+          }
+        }
       });
 }
 
