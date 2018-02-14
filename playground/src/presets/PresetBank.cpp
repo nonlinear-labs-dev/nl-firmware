@@ -4,7 +4,6 @@
 #include "device-settings/AutoLoadSelectedPreset.h"
 #include "device-settings/Settings.h"
 #include "Preset.h"
-#include "PresetManager.h"
 #include "xml/Writer.h"
 #include "libundo/undo/Scope.h"
 #include "libundo/undo/SwapData.h"
@@ -333,7 +332,7 @@ void PresetBank::undoableOverwritePreset(UNDO::Scope::tTransactionPtr transactio
 
   if(preset == eb)
   {
-    eb->undoableSetLoadedPresetInfo(transaction, p);
+    eb->undoableSetLoadedPresetInfo(transaction, p.get());
     eb->resetModifiedIndicator(transaction);
   }
 }
@@ -575,7 +574,7 @@ void PresetBank::writeDocument(Writer &writer, tUpdateID knownRevision) const
             p->writeDocument (writer, knownRevision);
           }
 
-          writer.writeTextElement ("date-of-last-change", DateTimeInfo::formatTime(m_lastChangedTimestamp, "%FT%T%z"));
+          writer.writeTextElement ("date-of-last-change", DateTimeInfo::getDisplayStringFromStamp(m_lastChangedTimestamp));
           writer.writeTextElement ("attached-to", m_attachment.uuid);
           writer.writeTextElement ("attached-direction", directionEnumToString(m_attachment.direction));
           writer.writeTextElement("state", calcStateString());
@@ -590,8 +589,12 @@ void PresetBank::searchPresets(Writer &writer, const SearchQuery &query) const
       Attribute("order-number", getParent()->calcOrderNumber(this)), [&]()
       {
         for (const tPresetPtr p : m_presets)
-        if(p->matchesQuery(query))
-        p->writeDocument (writer, 0);
+        {
+          if(p->matchesQuery(query))
+          {
+            p->writeDocument (writer, 0);
+          }
+        }
       });
 }
 

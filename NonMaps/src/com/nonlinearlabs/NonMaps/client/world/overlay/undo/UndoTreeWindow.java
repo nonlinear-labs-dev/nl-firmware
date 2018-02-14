@@ -2,8 +2,11 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.undo;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.FloatingWindow;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.FloatingWindowHeader;
@@ -14,11 +17,11 @@ public class UndoTreeWindow extends FloatingWindow {
 	private Dimension fixDimension;
 	private FloatingWindowHeader header;
 	private boolean scheduledScrollingToCurrentUndoStep = true;
+	private static boolean firstTimeOpen = true;
 
 	public UndoTreeWindow(Overlay parent) {
 		super(parent);
-
-		fixDimension = new Dimension(Millimeter.toPixels(50), Millimeter.toPixels(50));
+		fixDimension = new Dimension(NonMaps.mmToPixels(70), NonMaps.mmToPixels(70));
 
 		addChild(header = new FloatingWindowHeader(this));
 		addChild(content = new UndoTree(this));
@@ -30,7 +33,7 @@ public class UndoTreeWindow extends FloatingWindow {
 
 		if (isHidden()) {
 			super.doLayout(x, y, 0, 0);
- 
+
 		} else {
 			double margin = Millimeter.toPixels(2);
 			header.doLayout(0, 0, fixDimension.getWidth(), lineHeight);
@@ -61,6 +64,14 @@ public class UndoTreeWindow extends FloatingWindow {
 
 	@Override
 	public void toggle() {
+		if (isHidden() && firstTimeOpen) {
+			double width = NonMaps.get().getCanvas().getCoordinateSpaceWidth() / 4;
+			double height = NonMaps.get().getCanvas().getCoordinateSpaceHeight() / 2;
+			Tracer.log("undo:" + width + "/" + height);
+			fixDimension = new Dimension(width, height);
+			firstTimeOpen = false;
+		}
+
 		super.toggle();
 
 		if (isShown())

@@ -13,7 +13,7 @@ class DirectLoadButton extends SVGImage {
 	private boolean married;
 
 	DirectLoadButton(OverlayLayout parent) {
-		super(parent, "Link_Enabled.svg", "Link_Active.svg");
+		super(parent, "Link_Enabled.svg", "Link_Active.svg", "Link_Disabled.svg");
 	}
 
 	public boolean isInStoreSelectMode() {
@@ -23,9 +23,11 @@ class DirectLoadButton extends SVGImage {
 	@Override
 	public int getSelectedPhase() {
 		if (isInStoreSelectMode())
-			return 0;
+			return drawStates.disabled.ordinal();
+		else if (married)
+			return drawStates.active.ordinal();
 
-		return married ? 1 : 0;
+		return drawStates.normal.ordinal();
 	}
 
 	@Override
@@ -34,7 +36,6 @@ class DirectLoadButton extends SVGImage {
 			return this;
 
 		married = !married;
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		NonMaps.theMaps.getServerProxy().setSetting("AutoLoadSelectedPreset", married ? "on" : "off");
 		return this;
 	}
@@ -46,6 +47,7 @@ class DirectLoadButton extends SVGImage {
 			if (married != m) {
 				married = m;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				requestLayout();
 			}
 		}
 	}

@@ -9,8 +9,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiato
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-
-
 public class ValueDisplay extends Label {
 
 	public ValueDisplay(BeltParameterLayout parent) {

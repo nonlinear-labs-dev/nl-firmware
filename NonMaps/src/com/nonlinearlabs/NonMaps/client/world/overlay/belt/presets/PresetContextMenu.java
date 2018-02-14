@@ -22,10 +22,10 @@ public class PresetContextMenu extends ContextMenu {
 		super(parent);
 		final PresetManager pm = preset.getParent().getParent();
 		final boolean hasMultipleSelection = pm.hasMultiplePresetSelection();
-		final boolean multipleSelectionAllowed = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled();
-		
-		if(multipleSelectionAllowed)
-		{
+		final boolean multipleSelectionAllowed = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup()
+				.getPresetDragDropSetting().isEnabled();
+
+		if (multipleSelectionAllowed) {
 			addChild(new ContextMenuItem(this, pm.hasMultiplePresetSelection() ? "Finish Multiple Selection" : "Start Multiple Selection") {
 				@Override
 				public Control click(Position eventPoint) {
@@ -98,32 +98,30 @@ public class PresetContextMenu extends ContextMenu {
 				return super.click(eventPoint);
 			}
 		});
-		
-		
-		if(hasMultipleSelection && pm.getMultiSelection().getNumSelectedPresets() == 2)
-		{
-			addChild(new ContextMenuItem(this, "Compare" ) {
+
+		if (hasMultipleSelection && pm.getMultiSelection().getNumSelectedPresets() == 2) {
+			addChild(new ContextMenuItem(this, "Compare") {
 				@Override
 				public Control click(Position eventPoint) {
 
 					ArrayList<String> selPresets = pm.getMultiSelection().getSelectedPresets();
 					Preset p1 = pm.findPreset(selPresets.get(0));
 					Preset p2 = pm.findPreset(selPresets.get(1));
-					CompareDialog.open(p1,p2);
+					CompareDialog.open(p1, p2);
 					return super.click(eventPoint);
 				}
 			});
-		} else if(hasMultipleSelection == false) {
+		} else if (hasMultipleSelection == false) {
 			addChild(new ContextMenuItem(this, "Compare to Editbuffer") {
 				@Override
 				public Control click(Position eventPoint) {
 					Preset p1 = pm.getSelectedPreset();
 					CompareDialog.open(p1);
 					return super.click(eventPoint);
-				} 
+				}
 			});
 		}
-		
+
 		addChild(new ContextMenuItem(this, "Tag...") {
 			@Override
 			public Control click(Position eventPosition) {

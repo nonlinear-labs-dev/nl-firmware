@@ -10,8 +10,8 @@ public class CurrentPresetNumber extends Label {
 
 	public CurrentPresetNumber(OverlayLayout parent) {
 		super(parent);
-		super.setFontColor(new RGB(120,120,120));
-		super.setFontHeightInMM(4.5);	
+		super.setFontColor(new RGB(120, 120, 120));
+		super.setFontHeightInMM(4.5);
 	}
 
 	@Override

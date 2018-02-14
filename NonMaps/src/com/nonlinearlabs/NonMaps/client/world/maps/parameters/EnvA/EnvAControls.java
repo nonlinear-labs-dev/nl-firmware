@@ -16,7 +16,7 @@ class EnvAControls extends ParameterGroupControls {
 			addChild(new EnvACol4(this));
 			addChild(new EnvACol5(this));
 		}
-		
+
 		@Override
 		public double getXMargin() {
 			return 0;

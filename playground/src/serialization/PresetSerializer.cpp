@@ -49,7 +49,7 @@ void PresetSerializer::readTagContent (Reader &reader) const
   {
     reader.onTextElement ("uuid", [&](const Glib::ustring &text, const Attributes &attr)
     {
-      m_preset->setUuid(reader.getTransaction(), text);
+      m_preset->undoableSetUuid(reader.getTransaction(), text);
     });
   }
 

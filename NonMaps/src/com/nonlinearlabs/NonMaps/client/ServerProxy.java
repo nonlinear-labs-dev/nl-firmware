@@ -181,8 +181,12 @@ public class ServerProxy {
 	}
 
 	public void loadPreset(IPreset preset) {
+		loadPreset(preset.getUUID());
+	}
+
+	public void loadPreset(String presetuuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "load-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", presetuuid));
 		queueJob(uri, false);
 	}
 
@@ -225,7 +229,7 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, uuid, order);
 		queueJob(uri, true);
 	}
-	
+
 	public void dropPresetsAbove(String csv, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
@@ -384,12 +388,17 @@ public class ServerProxy {
 	}
 
 	public String insertPreset(IPreset selPreset) {
-		String uuidOfSelectedPreset = selPreset.getUUID();
-		String uuid = Uuid.random();
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("seluuid", uuidOfSelectedPreset));
-		queueJob(uri, false);
-		return uuid;
+		if (selPreset == null) {
+			return appendPreset();
+		} else {
+			String uuidOfSelectedPreset = selPreset.getUUID();
+			String uuid = Uuid.random();
+			StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-preset");
+			StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("seluuid",
+					uuidOfSelectedPreset));
+			queueJob(uri, false);
+			return uuid;
+		}
 	}
 
 	public String appendPreset() {
@@ -664,8 +673,9 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void searchPresets(String query, SearchQueryCombination combination, DownloadHandler handler) {
-		downloadFile("/presets/search-preset?combine=" + combination.name() + "&query=" + URL.encodeQueryString(query), handler);
+	public void searchPresets(String query, SearchQueryCombination combination, String fields, DownloadHandler handler) {
+		downloadFile("/presets/search-preset?combine=" + combination.name() + "&query=" + URL.encodeQueryString(query) + "&fields="
+				+ fields, handler);
 	}
 
 	public void syncLPCToBBB() {

@@ -8,7 +8,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 class PreviousPreset extends SVGImage {
-	
+
 	PreviousPreset(PrevNextPresetButtons parent) {
 		super(parent, "Preset_Up_Enabled.svg", "Preset_Up_Active.svg", "Preset_Up_Disabled.svg");
 	}
@@ -52,7 +52,8 @@ class PreviousPreset extends SVGImage {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 
 		if (!pm.canPrev())
-			return drawStates.disabled.ordinal();;
+			return drawStates.disabled.ordinal();
+		;
 
 		return super.getSelectedPhase();
 	}

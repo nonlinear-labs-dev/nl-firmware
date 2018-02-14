@@ -301,6 +301,6 @@ public abstract class Control {
 	}
 
 	public int getDragRating(Position newPoint, DragProxy dragProxy) {
-		return getDepth();
+		return getParent().getDragRating(newPoint, dragProxy) + 1;
 	}
 }

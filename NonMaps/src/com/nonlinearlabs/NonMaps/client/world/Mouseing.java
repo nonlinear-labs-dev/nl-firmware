@@ -48,12 +48,12 @@ public abstract class Mouseing {
 				}
 			}
 		};
-		
+
 		KeyUpHandler keyUpHandler = new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
 				NonMaps.get().getNonLinearWorld().handleKeyUp(event);
-				
+
 			}
 		};
 

@@ -23,5 +23,5 @@ public class Scrollbar extends OverlayControl {
 
 	public RGB getScrollbarColor() {
 		return new RGB(80, 110, 210);
-		}
+	}
 }

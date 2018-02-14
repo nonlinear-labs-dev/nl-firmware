@@ -32,6 +32,12 @@ class BankHeader extends OverlayLayout {
 		protected boolean hasPaste() {
 			return false;
 		}
+
+		@Override
+		protected boolean hasBankCreationRights() {
+			return false;
+		}
+
 	}
 
 	private OverlayControl prev;

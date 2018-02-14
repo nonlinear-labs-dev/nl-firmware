@@ -23,11 +23,10 @@ public class ContextMenuItem extends OverlayControl {
 		this.enabled = enabled;
 	}
 
-	public String getText()
-	{
+	public String getText() {
 		return text;
 	}
-	
+
 	public ContextMenuItem(ContextMenu parent, String text) {
 		this(parent, text, true);
 	}
@@ -67,7 +66,7 @@ public class ContextMenuItem extends OverlayControl {
 		double fontHeightInPixels = Millimeter.toPixels(4);
 
 		Rect r = getPixRect().copy();
-		double padding = Millimeter.toPixels(1);
+		double padding = getLeftPadding();
 
 		r.applyPadding(0, padding, 0, padding);
 
@@ -87,6 +86,10 @@ public class ContextMenuItem extends OverlayControl {
 		ctx.setFont(fontHeightInPixels + "px nonlinearfont");
 		ctx.setTextBaseline(TextBaseline.MIDDLE);
 		ctx.fillText(text, r.getLeft(), r.getCenterPoint().getY());
+	}
+
+	public double getLeftPadding() {
+		return Millimeter.toPixels(1);
 	}
 
 	@Override

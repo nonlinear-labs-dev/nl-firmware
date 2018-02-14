@@ -61,11 +61,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public RGB getColorFont() {
 		boolean selected = isSelected();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
+		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
+
+		if (isOriginPreset)
+			return new RGB(255, 255, 255);
 
 		if (filterSate == FilterState.FILTER_MATCHES)
 			return new RGB(230, 240, 255);
@@ -101,18 +105,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
-		tag.doFirstLayoutPass(levelOfDetail);
-		number.doFirstLayoutPass(levelOfDetail);
-		name.doFirstLayoutPass(levelOfDetail);
 
-		tag.moveTo(1, 0);
-		number.moveTo(3, 0);
-		name.moveTo(number.getNonPosition().getRight(), 0);
-		setNonSize(name.getNonPosition().getRight() + getWidthMargin(), name.getNonPosition().getHeight() + getHeightMargin());
+		super.doFirstLayoutPass(levelOfDetail);
 
 		if (getParent().isMinimized()) {
-
 			if (!isSelected()) {
+				tag.getNonPosition().getDimension().setHeight(0);
 				number.getNonPosition().getDimension().setHeight(0);
 				name.getNonPosition().getDimension().setHeight(0);
 				getNonPosition().getDimension().setHeight(0);
@@ -130,6 +128,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean selected = isSelected();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
+		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
@@ -152,7 +151,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				colorContour = new RGB(230, 240, 255);
 			}
 		} else {
-			if (loaded)
+			if (loaded || isOriginPreset)
 				colorFill = RGB.blue();
 			else if (selected)
 				colorFill = new RGB(77, 77, 77);
@@ -189,6 +188,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isLoaded() {
+		if (getParent().isInStoreSelectMode()) {
+			return this == getParent().getParent().getStoreMode().getOriginalPreset();
+		}
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
 
@@ -237,7 +239,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
 		} else {
-      getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+			getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
 
 		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);

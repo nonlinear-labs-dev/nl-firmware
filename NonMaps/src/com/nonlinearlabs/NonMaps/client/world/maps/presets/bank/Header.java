@@ -38,6 +38,11 @@ public class Header extends Label {
 		protected boolean hasPaste() {
 			return true;
 		}
+
+		@Override
+		protected boolean hasBankCreationRights() {
+			return false;
+		}
 	}
 
 	private boolean sendPosChangeToServer = false;
@@ -247,10 +252,12 @@ public class Header extends Label {
 							|| dragProxy.getOrigin() instanceof IBank) {
 
 						if (dragProxy.getOrigin() != getParent()) {
-							Bank bBank = (Bank) dragProxy.getOrigin();
-							if (bBank.hasSlaves() == false)
-								setIsDropTarget(true);
-							return this;
+							if (dragProxy.getOrigin() instanceof Bank) {
+								Bank bBank = (Bank) dragProxy.getOrigin();
+								if (bBank.hasSlaves() == false)
+									setIsDropTarget(true);
+								return this;
+							}
 						}
 					}
 				}

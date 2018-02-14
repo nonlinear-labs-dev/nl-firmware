@@ -15,7 +15,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 public class MoveAllBanksLayer extends MapsControl {
 
 	private Position start = null;
-	
+
 	public MoveAllBanksLayer(MapsControl parent) {
 		super(parent);
 	}

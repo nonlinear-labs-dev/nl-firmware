@@ -31,7 +31,7 @@ class EditBuffer : public Preset
     void undoableLoad (UNDO::Scope::tTransactionPtr transaction, shared_ptr<Preset> preset);
     void undoableLoad (shared_ptr<Preset> preset);
     void undoableLoadSelectedPreset ();
-    void undoableSetLoadedPresetInfo (UNDO::Scope::tTransactionPtr transaction, shared_ptr<Preset> preset);
+    void undoableSetLoadedPresetInfo (UNDO::Scope::tTransactionPtr transaction, Preset *preset);
     void undoableUpdateLoadedPresetInfo (UNDO::Scope::tTransactionPtr transaction);
     void undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator);
     void undoableInitSound (UNDO::Scope::tTransactionPtr transaction);

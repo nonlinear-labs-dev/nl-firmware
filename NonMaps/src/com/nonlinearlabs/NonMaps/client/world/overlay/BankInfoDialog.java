@@ -83,14 +83,14 @@ public class BankInfoDialog extends GWTDialog {
 	}
 
 	private void addContent() {
-		
+
 		HTMLPanel bankNameAndPositionBox = new HTMLPanel("div", "");
 		bankNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
 		bankNameAndPositionBox.add(position = new IntegerBox());
 		bankNameAndPositionBox.add(name = new TextBox());
 		position.getElement().addClassName("position-box");
 		name.getElement().addClassName("preset-name-box");
-		
+
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Position/Name", bankNameAndPositionBox);
 		addRow(panel, "Comment", comment = new TextArea());
@@ -98,10 +98,10 @@ public class BankInfoDialog extends GWTDialog {
 		addRow(panel, "State", stateLabel = new Label(""));
 		addRow(panel, "Last Change", lastChange = new Label(""));
 		addRow(panel, "Import Date", importFileDate = new Label(""));
-		addRow(panel, "Import Name", importFileName = new Label(""));
+		addRow(panel, "Import File", importFileName = new Label(""));
 		addRow(panel, "Export Date", exportFileDate = new Label(""));
-		addRow(panel, "Export Name", exportFileName = new Label(""));
-		
+		addRow(panel, "Export File", exportFileName = new Label(""));
+
 		position.getElement().addClassName("gwt-TextBox");
 
 		comment.addFocusHandler(new FocusHandler() {
@@ -203,7 +203,7 @@ public class BankInfoDialog extends GWTDialog {
 		});
 
 		position.addKeyPressHandler(new KeyPressHandler() {
-			
+
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
@@ -212,7 +212,7 @@ public class BankInfoDialog extends GWTDialog {
 				}
 			}
 		});
-		
+
 		position.addFocusHandler(new FocusHandler() {
 
 			@Override
@@ -237,7 +237,7 @@ public class BankInfoDialog extends GWTDialog {
 				}
 			}
 		});
-		
+
 		setWidget(panel);
 		setFocus(panel);
 	}
@@ -254,7 +254,7 @@ public class BankInfoDialog extends GWTDialog {
 		if (theDialog != null) {
 			theDialog.commit();
 		} else {
-			if (!NonMaps.theMaps.getNonLinearWorld().getPresetManager().isEmpty())
+			if (NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSelectedBank() != null)
 				theDialog = new BankInfoDialog();
 		}
 	}
@@ -285,20 +285,21 @@ public class BankInfoDialog extends GWTDialog {
 					name.setText(bankName);
 				}
 			}
-			
+
 			int currentPositionValue = 0;
 			try {
 				currentPositionValue = position.getValue();
-			} catch(Exception e) {}
+			} catch (Exception e) {
+			}
 
-			if(haveFocus != position) {
-				if(bankPos != currentPositionValue) {
+			if (haveFocus != position) {
+				if (bankPos != currentPositionValue) {
 					position.setText(new Integer(bankPos).toString());
 				}
 			}
-      
+
 			size.setText(Integer.toString(bank.getPresetList().getPresetCount()));
-      
+
 			try {
 				lastChange.setText(localizeTime(bank.getDateOfLastChange()));
 			} catch (Exception e) {

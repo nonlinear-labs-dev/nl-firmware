@@ -30,16 +30,16 @@ public class TextUpload {
 	}
 
 	private native void loadFile(NativeEvent evt, TextUploadedHandler receiver) /*-{
-	var files = evt.target.files;
-	if (files != null && files.length > 0) {
-		var file = files[0];
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			var text = reader.result;
-				receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler::onTextUploaded(Ljava/lang/String;Ljava/lang/String;I)(file.name, text, file.lastModified);
-		}
-		reader.readAsText(file);
-	}
-}-*/;
+																				var files = evt.target.files;
+																				if (files != null && files.length > 0) {
+																				var file = files[0];
+																				var reader = new FileReader();
+																				reader.onload = function(e) {
+																				var text = reader.result;
+																				receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler::onTextUploaded(Ljava/lang/String;Ljava/lang/String;I)(file.name, text, file.lastModified);
+																				}
+																				reader.readAsText(file);
+																				}
+																				}-*/;
 
 }

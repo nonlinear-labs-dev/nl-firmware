@@ -3,14 +3,92 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.menu;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public abstract class MenuEntry extends Label {
+public abstract class MenuEntry extends OverlayLayout {
 
-	public MenuEntry(GlobalMenu menu) {
+	private class ShortcutLabel extends Label {
+
+		String text;
+
+		public ShortcutLabel(MenuEntry parent, String text) {
+			super(parent);
+			this.text = text;
+			this.setFontColor(new Gray(150));
+		}
+
+		@Override
+		public MenuEntry getParent() {
+			return (MenuEntry) super.getParent();
+		}
+
+		@Override
+		public String getDrawText(Context2d ctx) {
+			return text;
+		}
+
+		@Override
+		protected TextAlign getAlignment() {
+			return TextAlign.RIGHT;
+		}
+
+		@Override
+		protected Rect getTextRect() {
+			return super.getTextRect().getMovedBy(new Dimension(-Millimeter.toPixels(2), 0));
+		}
+	};
+
+	private class EntryLabel extends Label {
+
+		public EntryLabel(OverlayLayout parent) {
+			super(parent);
+		}
+
+		@Override
+		public String getDrawText(Context2d ctx) {
+			return MenuEntry.this.getDrawText(ctx);
+		}
+
+		@Override
+		protected TextAlign getAlignment() {
+			return TextAlign.LEFT;
+		}
+	}
+
+	private class CheckedLabel extends Label {
+
+		public CheckedLabel(OverlayLayout parent) {
+			super(parent);
+		}
+
+		@Override
+		public String getDrawText(Context2d ctx) {
+			return MenuEntry.this.getCheckText();
+		}
+
+		@Override
+		protected TextAlign getAlignment() {
+			return TextAlign.CENTER;
+		}
+	}
+
+	private CheckedLabel checkmark;
+	private EntryLabel label;
+	private ShortcutLabel shortcutLabel;
+
+	public MenuEntry(GlobalMenu menu, String shortcut) {
 		super(menu);
+		addChild(checkmark = new CheckedLabel(this));
+		addChild(label = new EntryLabel(this));
+		addChild(shortcutLabel = new ShortcutLabel(this, shortcut));
+	}
+
+	public String getCheckText() {
+		return "\uE0A3 ";
 	}
 
 	@Override
@@ -18,21 +96,18 @@ public abstract class MenuEntry extends Label {
 		return (GlobalMenu) super.getParent();
 	}
 
-	protected TextAlign getAlignment() {
-		return TextAlign.LEFT;
+	@Override
+	public void doLayout(double x, double y, double w, double h) {
+		super.doLayout(x, y, w, h);
+		checkmark.doLayout(0, 0, Millimeter.toPixels(10), h);
+
+		double shortcutWidth = Millimeter.toPixels(15);
+		shortcutLabel.doLayout(w - shortcutWidth, 0, shortcutWidth, h);
+
+		label.doLayout(checkmark.getRelativePosition().getRight(), 0, shortcutLabel.getRelativePosition().getLeft()
+				- checkmark.getRelativePosition().getRight(), h);
 	}
 
-	@Override
-	protected Rect getTextRect() {
-		Rect r = super.getTextRect().copy();
-		r.applyPadding(Millimeter.toPixels(2.5), 0, 0, 0);
-		return r;
-	}
-
-	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
-		getPixRect().fill(ctx, Gray.overlayBackground());
-		super.draw(ctx, invalidationMask);
-	}
+	public abstract String getDrawText(Context2d ctx);
 
 }

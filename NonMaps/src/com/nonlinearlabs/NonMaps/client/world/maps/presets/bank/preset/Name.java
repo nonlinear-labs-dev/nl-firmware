@@ -17,7 +17,7 @@ class Name extends Label {
 
 	@Override
 	public double getLeftMargin() {
-		return 5;
+		return 2.5;
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.pointer;
 
-
 class TouchUp extends Up {
 
 	TouchUp(Gesture predecessor) {

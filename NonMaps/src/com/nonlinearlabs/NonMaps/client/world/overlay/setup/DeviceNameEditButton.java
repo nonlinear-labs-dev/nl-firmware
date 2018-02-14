@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-
 public class DeviceNameEditButton extends SetupButton {
 
 	public DeviceNameEditButton(DeviceNameSettings deviceNameSettings) {

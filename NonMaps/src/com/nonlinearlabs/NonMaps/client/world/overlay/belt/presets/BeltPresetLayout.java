@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 
@@ -41,7 +42,12 @@ public class BeltPresetLayout extends OverlayLayout {
 		double right = w - margin;
 		double left = margin;
 
-		menu.doLayout(left, margin, w * 0.25, h - 2 * margin);
+		if (w < 1000 * NonMaps.devicePixelRatio)
+			menu.setSmall(true);
+		else
+			menu.setSmall(false);
+
+		menu.doLayout(0, margin, w * 0.25, h - 2 * margin);
 		left += menu.getRelativePosition().getWidth() + margin;
 
 		load.doLayout(left, margin, w * 0.25, h - 2 * margin);
@@ -68,16 +74,16 @@ public class BeltPresetLayout extends OverlayLayout {
 
 		double loadLeft = bank.getRelativePosition().getRight() + margin;
 		double maxLoadWidth = w - loadLeft - margin - buttonDim - margin;
-		load.doLayout(bank.getRelativePosition().getRight() + margin, horizontalCenterLinePosition - buttonDim - margin / 2 - 3 , maxLoadWidth
-				+ margin, 2 * buttonDim + margin);
+		load.doLayout(bank.getRelativePosition().getRight() + margin, horizontalCenterLinePosition - buttonDim - margin / 2 - 3,
+				maxLoadWidth + margin, 2 * buttonDim + margin);
 
 		double rest = bank.getRelativePosition().getWidth();
 
 		if (rest >= buttonDim) {
 			double loadAreaLeft = load.getRelativePosition().getLeft();
 			double upDownCenter = load.getPrevNext().getRelativePosition().getCenterPoint().getX();
-			bankInfos.doLayout(loadAreaLeft + upDownCenter - buttonDim / 2, bank.getHorizontalCenterLinePosition() - buttonDim * 3,
-					buttonDim*2, 2 * buttonDim + margin);
+			bankInfos.doLayout(loadAreaLeft + upDownCenter - buttonDim, bank.getHorizontalCenterLinePosition() - buttonDim * 3,
+					buttonDim * 2, 2 * buttonDim + margin);
 		} else {
 			bankInfos.doLayout(0, 0, 0, 0);
 		}
@@ -88,16 +94,14 @@ public class BeltPresetLayout extends OverlayLayout {
 		double currentPresetLabel = 2 * buttonDim;
 
 		if (rest >= currentPresetLabel) {
-			currentPreset.doLayout(load.getRelativePosition().getRight() + margin, horizontalCenterLinePosition - (buttonDim / 2), rest,
+			currentPreset.doLayout(load.getPixRect().getRight(), horizontalCenterLinePosition - (buttonDim / 2), currentPresetLabel,
 					buttonDim);
 		} else {
 			currentPreset.doLayout(0, 0, 0, 0);
 		}
-
 	}
 
 	public void update(Node settingsNode, Node editBufferNode, Node presetManagerNode) {
-		load.update(settingsNode, editBufferNode);
 		bank.update(presetManagerNode);
 		autoLoad.update(settingsNode);
 		store.update(settingsNode, presetManagerNode);

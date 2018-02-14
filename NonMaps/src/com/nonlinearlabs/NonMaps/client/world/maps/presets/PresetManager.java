@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -44,6 +45,21 @@ public class PresetManager extends MapsLayout {
 		AND, OR
 	}
 
+	public enum SearchQueryFields {
+		name, comment, devicename
+	}
+
+	private List<SearchQueryFields> fieldsToBeSearched;
+
+	public List<SearchQueryFields> getFieldsToBeSearched() {
+		return fieldsToBeSearched;
+	}
+
+	public void setFieldsToBeSearched(List<SearchQueryFields> fieldsToBeSearched) {
+		this.fieldsToBeSearched = fieldsToBeSearched;
+		refreshFilter(true);
+	}
+
 	private String selectedBank;
 	private String query = "";
 	private SearchQueryCombination combination = SearchQueryCombination.OR;
@@ -53,7 +69,7 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 
-	private StoreSelectMode m_storeSelectMode;
+	private StoreSelectMode m_storeSelectMode = null;
 
 	private Tape attachingTapes[] = new Tape[2];
 
@@ -71,9 +87,10 @@ public class PresetManager extends MapsLayout {
 
 	public void startStoreSelectMode() {
 		if (m_storeSelectMode == null) {
-			m_storeSelectMode = new StoreSelectMode(this);
-			m_storeSelectMode.updateUI();
-
+			if (isEmpty() == false) {
+				m_storeSelectMode = new StoreSelectMode(this);
+				m_storeSelectMode.updateUI();
+			}
 		}
 	}
 
@@ -91,6 +108,8 @@ public class PresetManager extends MapsLayout {
 
 	public PresetManager(NonLinearWorld parent) {
 		super(parent);
+		fieldsToBeSearched = new ArrayList<SearchQueryFields>();
+		fieldsToBeSearched.add(SearchQueryFields.name);
 	}
 
 	@Override
@@ -512,19 +531,22 @@ public class PresetManager extends MapsLayout {
 				multiSelection.deletePresets();
 				closeMultiSelection();
 			} else {
-				deletePreset(getSelectedPreset());
+				if (getSelectedPreset() != null)
+					deletePreset(getSelectedPreset());
+				else if (getSelectedBank() != null)
+					deleteBank(findBank(getSelectedBank()));
 			}
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().undo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().redo();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F && NonMaps.get().getNonLinearWorld().isShiftDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
 			SearchQueryDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
 			BankInfoDialog.toggle();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I && NonMaps.get().getNonLinearWorld().isCtrlDown() == false) {
 			ParameterInfoDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/war/online-help/index.html", "", "");
@@ -536,9 +558,14 @@ public class PresetManager extends MapsLayout {
 		return this;
 	}
 
-	private void deletePreset(Preset selectedPreset) {
+	private void deletePreset(Preset p) {
 		ServerProxy sp = NonMaps.get().getServerProxy();
-		sp.deletePreset(selectedPreset);
+		sp.deletePreset(p);
+	}
+
+	private void deleteBank(Bank b) {
+		ServerProxy sp = NonMaps.get().getServerProxy();
+		sp.deleteBank(b);
 	}
 
 	public void selectPreviousPreset(Initiator initiator) {
@@ -679,7 +706,17 @@ public class PresetManager extends MapsLayout {
 		if (this.query.isEmpty()) {
 			clearFilter();
 		} else {
-			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, new ServerProxy.DownloadHandler() {
+			String fields = "";
+
+			for (SearchQueryFields f : fieldsToBeSearched) {
+
+				if (!fields.isEmpty())
+					fields += ",";
+
+				fields += f.name();
+			}
+
+			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, fields, new ServerProxy.DownloadHandler() {
 
 				@Override
 				public void onFileDownloaded(String text) {
@@ -984,5 +1021,9 @@ public class PresetManager extends MapsLayout {
 
 	public void resetAttachingTapes() {
 		setAttachingTapes(null, null);
+	}
+
+	public String getFilter() {
+		return query;
 	}
 }

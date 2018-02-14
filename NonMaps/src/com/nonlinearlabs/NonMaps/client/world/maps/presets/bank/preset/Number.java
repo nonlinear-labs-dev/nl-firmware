@@ -13,7 +13,7 @@ class Number extends Label {
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
-		setNonSize(35 + getWidthMargin(), getNonPosition().getHeight());
+		setNonSize(31 + getWidthMargin(), getNonPosition().getHeight());
 	}
 
 	@Override
@@ -23,12 +23,12 @@ class Number extends Label {
 
 	@Override
 	public double getLeftMargin() {
-		return 5;
+		return 2.5;
 	}
 
 	@Override
 	public double getRightMargin() {
-		return 5;
+		return 0;
 	}
 
 	@Override

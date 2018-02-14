@@ -47,35 +47,32 @@ class RandomLevelValueEdit extends Label implements QuantizedClippedValue.Change
 	}
 
 	private native void createStringizer(String body) /*-{
-		this.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound.RandomLevelValueEdit::stringizer = new Function(
-				"cpValue", "withUnit", body);
-	}-*/;
+														this.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound.RandomLevelValueEdit::stringizer = new Function(
+														"cpValue", "withUnit", body);
+														}-*/;
 
 	private native String stringize(boolean withUnit, double cpValue) /*-{
-		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound.RandomLevelValueEdit::stringizer;
-		var scaledText = stringizer(cpValue, withUnit);
-		return scaledText;
-	}-*/;
+																		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound.RandomLevelValueEdit::stringizer;
+																		var scaledText = stringizer(cpValue, withUnit);
+																		return scaledText;
+																		}-*/;
 
 	@Override
 	public Control click(Position eventPoint) {
 		Rect leftRect = getPixRect().copy();
-		leftRect.setRight(getPixRect().getLeft()+getPixRect().getWidth()/2);
+		leftRect.setRight(getPixRect().getLeft() + getPixRect().getWidth() / 2);
 		Rect rightRect = getPixRect().copy();
-		rightRect.setLeft(getPixRect().getRight()-getPixRect().getWidth()/2);
-		if(leftRect.contains(eventPoint))
-		{
+		rightRect.setLeft(getPixRect().getRight() - getPixRect().getWidth() / 2);
+		if (leftRect.contains(eventPoint)) {
 			value.dec(Initiator.EXPLICIT_USER_ACTION, false);
 			return this;
-		}
-		else if(rightRect.contains(eventPoint))
-		{
+		} else if (rightRect.contains(eventPoint)) {
 			value.inc(Initiator.EXPLICIT_USER_ACTION, false);
 			return this;
 		}
 		return super.click(eventPoint);
 	}
-	
+
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		changer = value.startUserEdit(Millimeter.toPixels(100));

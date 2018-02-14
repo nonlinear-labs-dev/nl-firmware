@@ -13,14 +13,15 @@ public class AboutList extends OverlayControl {
 
 	private TextSplitter splitter;
 	private String text = "Development:\n\nStephan Schmitt, Daniel Tzschentke, Simone Fabbri, Henry Högelow, Matthias Seeber, Pascal Hürst, Tino Meinert, Gabriel Mulzer, Mike Daliot, Justus Scheil, Nemanja Nikodijevic, Ulrich Wappler, Anton Schmied, Brian Smith, Klaus Strohhäcker, Paul Schulz";
-	
+
 	public AboutList(AboutSettingsPage aboutSettingsPage) {
 		super(aboutSettingsPage);
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25), new Gray(19), Gray.floatingWindowHeaderBorder());
+		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25), new Gray(19),
+				Gray.floatingWindowHeaderBorder());
 
 		Rect r = getPixRect().getReducedBy(Millimeter.toPixels(2));
 

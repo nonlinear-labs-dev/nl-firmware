@@ -40,7 +40,7 @@ class KioskMode extends Setting {
 	protected KioskMode(DeveloperSettings parent) {
 		super(parent, "Kiosk Mode", "Off");
 	}
-	
+
 	private void setValue(boolean val) {
 		getNonMaps().getServerProxy().setSetting("KioskMode", val ? "on" : "off");
 		setCurrentValue(val);

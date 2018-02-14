@@ -8,7 +8,7 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class MenuHeader extends OverlayControl {
-		
+
 	public MenuHeader(GlobalMenu menu) {
 		super(menu);
 	}

@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -12,39 +11,40 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 class LoadPreset extends SVGImage {
 
-	boolean isEnabled = true;
-
 	LoadPreset(OverlayLayout parent) {
-		super(parent, "Load_Enabled.svg", "Load_Disabled.svg");
+		super(parent, "Load_Enabled.svg", "Load_Active.svg", "Load_Disabled.svg");
 	}
 
 	@Override
+	public int getSelectedPhase() {
+		if (!isEnabled()) {
+			return drawStates.disabled.ordinal();
+		} else if (NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode()) {
+			return drawStates.disabled.ordinal();
+		} else if (isCaptureControl()) {
+			return drawStates.active.ordinal();
+		} else {
+			return drawStates.normal.ordinal();
+		}
+	};
+
+	@Override
 	public Control click(Position eventPoint) {
-		if (isEnabled) {
+		if (NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode())
+			return this;
+
+		if (isEnabled()) {
 			load();
 			return this;
 		}
 		return super.click(eventPoint);
 	}
 
-	public void update(Node editBufferNode) {
-		if (editBufferNode != null) {
-			if (isSelectedPresetLoaded()) {
-				String isModifiedStr = editBufferNode.getAttributes().getNamedItem("is-modified").getNodeValue();
-				boolean modified = isModifiedStr != null && isModifiedStr.equals("1");
-				setEnabled(modified);
-				return;
-			}
-			setEnabled(true);
-		}
-	}
+	boolean isEnabled() {
+		if (!isSelectedPresetLoaded())
+			return true;
 
-	private void setEnabled(boolean b) {
-		if (b != isEnabled) {
-			isEnabled = b;
-			selectPhase(isEnabled ? 0 : 1);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
+		return NonMaps.get().getNonLinearWorld().getParameterEditor().isModified();
 	}
 
 	protected boolean isSelectedPresetLoaded() {

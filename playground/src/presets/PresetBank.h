@@ -83,7 +83,6 @@ class PresetBank : public UpdateDocumentContributor, public AttributesOwner, pub
     shared_ptr<Preset> undoableExpropriatePreset (UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
 
     void undoableAdoptPreset (UNDO::Scope::tTransactionPtr transaction, size_t pos, shared_ptr<Preset> preset);
-
     void undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Glib::ustring daddyUuid, AttachmentDirection dir);
     void undoableDetachBank(UNDO::Scope::tTransactionPtr transaction);
 

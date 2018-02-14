@@ -7,13 +7,13 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class MultiplePresetSelection {
 	private ArrayList<String> selectedPresets = new ArrayList<String>();
-	
+
 	public MultiplePresetSelection(Preset p) {
 		add(p);
 	}
-	
+
 	public MultiplePresetSelection() {
-		
+
 	}
 
 	public ArrayList<String> getSelectedPresets() {

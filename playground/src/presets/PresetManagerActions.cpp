@@ -17,11 +17,13 @@
 #include <xml/XmlReader.h>
 #include <xml/XmlWriter.h>
 #include <boost/algorithm/string.hpp>
+#include <tools/StringTools.h>
 
-PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
-    RPCActionManager("/presets/"), m_presetManager(presetManager)
+PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
+    RPCActionManager("/presets/"),
+    m_presetManager(presetManager)
 {
-  addAction ("new-bank", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("new-bank", [&](shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring x = request->get("x");
     Glib::ustring y = request->get("y");
@@ -33,7 +35,7 @@ PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
     presetManager.undoableSelectBank(scope->getTransaction(), bank->getUuid());
   });
 
-  addAction ("new-bank-from-edit-buffer", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("new-bank-from-edit-buffer", [&](shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring x = request->get("x");
     Glib::ustring y = request->get("y");
@@ -50,7 +52,7 @@ PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
     presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
   });
 
-  addAction ("rename-bank",
+  addAction("rename-bank",
       [&](shared_ptr<NetworkRequest> request) mutable
       {
         Glib::ustring uuid = request->get("uuid");
@@ -66,13 +68,13 @@ PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
         }
       });
 
-  addAction ("select-bank", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("select-bank", [&](shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring uuid = request->get("uuid");
     presetManager.undoableSelectBank(uuid);
   });
 
-  addAction ("delete-bank", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("delete-bank", [&](shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring uuid = request->get("uuid");
 
@@ -85,7 +87,7 @@ PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
     }
   });
 
-  addAction ("find-unique-preset-name", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("find-unique-preset-name", [&](shared_ptr<NetworkRequest> request) mutable
   {
     if (auto httpRequest = dynamic_pointer_cast<HTTPRequest> (request))
     {
@@ -95,21 +97,21 @@ PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
     }
   });
 
-  addAction ("store-init", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("store-init", [&](shared_ptr<NetworkRequest> request) mutable
   {
     UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction("Store Init");
     auto transaction = scope->getTransaction();
     presetManager.undoableStoreInitSound(transaction);
   });
 
-  addAction ("reset-init", [&](shared_ptr<NetworkRequest> request) mutable
+  addAction("reset-init", [&](shared_ptr<NetworkRequest> request) mutable
   {
     UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction("Reset Init");
     auto transaction = scope->getTransaction();
     presetManager.undoableResetInitSound(transaction);
   });
 
-  addAction ("import-all-banks", [&] (shared_ptr<NetworkRequest> request) mutable
+  addAction("import-all-banks", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
     {
@@ -155,7 +157,7 @@ PresetManagerActions::PresetManagerActions (PresetManager &presetManager) :
   });
 }
 
-PresetManagerActions::~PresetManagerActions ()
+PresetManagerActions::~PresetManagerActions()
 {
 }
 
@@ -167,58 +169,78 @@ void PresetManagerActions::handleImportBackupFile(UNDO::TransactionCreationScope
   MemoryInStream stream(buffer, true);
   XmlReader reader(stream, transaction);
 
-  if(!reader.read<PresetManagerSerializer>(std::ref(m_presetManager)))
+  if(!reader.read < PresetManagerSerializer > (std::ref(m_presetManager)))
   {
     transaction->rollBack();
     http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
   }
 }
 
-bool PresetManagerActions::handleRequest (const Glib::ustring &path, shared_ptr<NetworkRequest> request)
+bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request)
 {
-  if (super::handleRequest (path, request))
+  if(super::handleRequest(path, request))
     return true;
 
-  if (path.find ("/presets/search-preset") == 0)
+  if(path.find("/presets/search-preset") == 0)
   {
-    if (auto httpRequest = dynamic_pointer_cast<HTTPRequest> (request))
+    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
     {
-      Glib::ustring query = request->get ("query");
-      Glib::ustring mode = request->get ("combine");
+      Glib::ustring query = request->get("query");
+      Glib::ustring mode = request->get("combine");
+      Glib::ustring field = request->get("fields");
 
-      auto stream = request->createStream ("text/xml", false);
-      XmlWriter writer (stream);
-      Application::get ().getPresetManager ()->searchPresets (writer, query, mode);
+      std::vector < PresetManager::presetInfoSearchFields > fields;
+
+      auto splitFieldStrings = StringTools::splitStringOnAnyDelimiter(field, ',');
+      std::for_each(splitFieldStrings.begin(), splitFieldStrings.end(), [&](std::string t)
+      {
+        if(t == "name")
+        {
+          fields.push_back(PresetManager::presetInfoSearchFields::name);
+        }
+        else if(t == "comment")
+        {
+          fields.push_back(PresetManager::presetInfoSearchFields::comment);
+        }
+        else if(t == "devicename")
+        {
+          fields.push_back(PresetManager::presetInfoSearchFields::devicename);
+        }
+      });
+
+      auto stream = request->createStream("text/xml", false);
+      XmlWriter writer(stream);
+      Application::get().getPresetManager()->searchPresets(writer, query, mode, std::move(fields));
       return true;
     }
   }
 
-  if (path.find ("/presets/download-banks") == 0)
+  if(path.find("/presets/download-banks") == 0)
   {
-    if (auto httpRequest = dynamic_pointer_cast<HTTPRequest> (request))
+    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
     {
-      auto &boled = Application::get().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ();
-      boled.setOverlay (new SplashLayout ());
+      auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+      boled.setOverlay(new SplashLayout());
 
-      auto stream = request->createStream ("application/zip", true);
-      httpRequest->setHeader ("Content-Disposition", "attachment; filename=\"nonlinear-c15-banks.xml.tar.gz\"");
-      XmlWriter writer (stream);
-      auto pm = Application::get ().getPresetManager ();
-      PresetManagerSerializer serializer (*pm.get ());
-      serializer.write (writer, VersionAttribute::get ());
+      auto stream = request->createStream("application/zip", true);
+      httpRequest->setHeader("Content-Disposition", "attachment; filename=\"nonlinear-c15-banks.xml.tar.gz\"");
+      XmlWriter writer(stream);
+      auto pm = Application::get().getPresetManager();
+      PresetManagerSerializer serializer(*pm.get());
+      serializer.write(writer, VersionAttribute::get());
       boled.resetOverlay();
       return true;
     }
   }
 
-  if (path.find("/presets/get-diff") == 0)
+  if(path.find("/presets/get-diff") == 0)
   {
-    if (auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
     {
       auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
       auto preset2 = Application::get().getPresetManager()->findPreset(request->get("p2"));
 
-      if (preset1 && preset2)
+      if(preset1 && preset2)
       {
         httpRequest->respond(Application::get().getPresetManager()->getDiffString(preset1, preset2));
         httpRequest->setStatusOK();
@@ -227,14 +249,14 @@ bool PresetManagerActions::handleRequest (const Glib::ustring &path, shared_ptr<
     }
   }
 
-  if (path.find("/presets/get-diff-editbuffer") == 0)
+  if(path.find("/presets/get-diff-editbuffer") == 0)
   {
-    if (auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
     {
       auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
       auto preset2 = Application::get().getPresetManager()->getEditBuffer();
 
-      if (preset1 && preset2)
+      if(preset1 && preset2)
       {
         httpRequest->respond(Application::get().getPresetManager()->getDiffString(preset1, preset2));
         httpRequest->setStatusOK();

@@ -159,20 +159,17 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 		boolean toMuchUp = (top <= 0);
 		boolean toMuchLeft = (left <= 0);
 
-		while(toMuchDown || toMuchRight || toMuchUp || toMuchLeft) {
+		while (toMuchDown || toMuchRight || toMuchUp || toMuchLeft) {
 			if (toMuchDown) {
 				setPopupPosition(getPopupLeft(), Window.getClientHeight() - getOffsetHeight());
 				toMuchDown = false;
-			}
-			else if(toMuchRight) {
+			} else if (toMuchRight) {
 				setPopupPosition(Window.getClientWidth() - getOffsetWidth(), getPopupTop());
 				toMuchRight = false;
-			}
-			else if(toMuchUp) {
+			} else if (toMuchUp) {
 				setPopupPosition(getPopupLeft(), 0);
 				toMuchUp = false;
-			}
-			else if(toMuchLeft) {
+			} else if (toMuchLeft) {
 				setPopupPosition(0, getPopupTop());
 				toMuchLeft = false;
 			}

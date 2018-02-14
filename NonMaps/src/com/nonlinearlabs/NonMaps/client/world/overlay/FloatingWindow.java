@@ -56,12 +56,12 @@ public abstract class FloatingWindow extends OverlayLayout {
 	public Control mouseDown(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control mouseUp(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control click(Position eventPoint) {
 		return this;
@@ -99,7 +99,7 @@ public abstract class FloatingWindow extends OverlayLayout {
 			if (getPixRect().contains(p.getPosition()))
 				getParent().pushToTop(this);
 		}
-		
+
 		return super.handleGesture(g);
 	}
 

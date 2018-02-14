@@ -32,11 +32,16 @@ public class GlobalMenu extends OverlayLayout {
 		addChild(headerText = new GlobalMenuHeaderLabel(this));
 		addChild(header = new MenuHeader(this));
 		addChild(new ToggleViewMenuEntry(this, overlay.getSetup()));
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "F") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Search - Shift + F";
+				return "Preset Search";
+			}
+
+			@Override
+			public String getCheckText() {
+				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
 			}
 
 			@Override
@@ -49,12 +54,17 @@ public class GlobalMenu extends OverlayLayout {
 		});
 
 		addChild(new ToggleViewMenuEntry(this, overlay.getUndoTree()));
-		
-		addChild(new MenuEntry(this) {
+
+		addChild(new MenuEntry(this, "P") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (PresetInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Preset Info - P";
+				return "Preset Info";
+			}
+
+			@Override
+			public String getCheckText() {
+				return (PresetInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
 			}
 
 			@Override
@@ -66,11 +76,16 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "B") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (BankInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Bank Info - B";
+				return "Bank Info";
+			}
+
+			@Override
+			public String getCheckText() {
+				return (BankInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
 			}
 
 			@Override
@@ -82,11 +97,16 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "I") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (ParameterInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Info - I";
+				return "Parameter Info";
+			}
+
+			@Override
+			public String getCheckText() {
+				return (ParameterInfoDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
 			}
 
 			@Override
@@ -98,10 +118,15 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "Ctrl-P") {
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ") + "Presets - Control + P";
+				return "Presets";
+			}
+
+			@Override
+			public String getCheckText() {
+				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ");
 			}
 
 			@Override
@@ -112,14 +137,19 @@ public class GlobalMenu extends OverlayLayout {
 				return this;
 			}
 		});
-		
-		addChild(new MenuEntry(this) {
-			
+
+		addChild(new MenuEntry(this, "Ctrl-E") {
+
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor - Control + E";
+				return "Parameter Editor";
 			}
-			
+
+			@Override
+			public String getCheckText() {
+				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ");
+			}
+
 			@Override
 			public Control mouseDown(Position eventPoint) {
 				getNonMaps().getNonLinearWorld().getParameterEditor().toggleVisibility();
@@ -129,11 +159,11 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		});
 
-		addChild(new MenuEntry(this) {
+		addChild(new MenuEntry(this, "Ctrl-H") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return "\uE0A3 Open Help - Control + H";
+				return "Open Help";
 			}
 
 			@Override
@@ -170,13 +200,13 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		} else {
 			final int IGNORED_CHILDREN = 1;
-			
-			double myWidth = Millimeter.toPixels(68);
+
+			double myWidth = Millimeter.toPixels(65);
 			int childCount = getChildren().size() - IGNORED_CHILDREN;
 			double myHeight = childCount * buttonDim;
 			super.doLayout(w - myWidth, top, myWidth, myHeight);
 			header.doLayout(0, 0, myWidth, buttonDim);
-			headerText.doLayout(0, 0, 70, buttonDim);
+			headerText.doLayout(10, 0, 90, buttonDim);
 			double y = buttonDim;
 
 			for (OverlayControl c : getChildren()) {
@@ -232,7 +262,7 @@ public class GlobalMenu extends OverlayLayout {
 	public void refresh() {
 		requestLayout();
 	}
-	
+
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		return this;

@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -41,14 +42,26 @@ public class PresetColorTagContextMenu extends ContextMenu {
 				@Override
 				public Control click(Position eventPoint) {
 					setColor(c);
+					NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 					return super.click(eventPoint);
 				}
 
 				@Override
 				public void draw(Context2d ctx, int invalidationMask) {
 					super.draw(ctx, invalidationMask);
-					Rect r = new Rect(0, 0, 1, 4);
+					Rect r = this.getPixRect().copy();
+					r.setWidth(getColorTagWidth());
+					r.reduceHeightBy(r.getHeight() / 4);
 					r.fill(ctx, c.toRGB());
+				}
+
+				public double getColorTagWidth() {
+					return Millimeter.toPixels(1.5);
+				}
+
+				@Override
+				public double getLeftPadding() {
+					return super.getLeftPadding() + getColorTagWidth();
 				}
 			});
 		}

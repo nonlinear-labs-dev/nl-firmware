@@ -8,7 +8,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 class NextPreset extends SVGImage {
-	
+
 	NextPreset(PrevNextPresetButtons parent) {
 		super(parent, "Preset_Down_Enabled.svg", "Preset_Down_Active.svg", "Preset_Down_Disabled.svg");
 	}

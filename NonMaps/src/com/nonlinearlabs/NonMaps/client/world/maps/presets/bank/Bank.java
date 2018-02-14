@@ -9,6 +9,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -206,6 +207,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 						DropAction action = getDropAction(pos, dragProxy);
 						DropPosition dropPosition = getDropPosition(presetRect, dragPosition);
 						doDropAction(action, dropPosition, preset, dragProxy);
+						Tracer.log(action.toString() + " " + dropPosition.toString());
 						break;
 					}
 				}
@@ -423,9 +425,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public RGB getColorBankSelect() {
-		if (isInStoreSelectMode())
-			return new RGB(150, 150, 150);
-
 		if (NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxyFor(this) != null)
 			return new RGB(98, 113, 183);
 		else if (isSelected())
@@ -452,6 +451,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public boolean isSelected() {
+		if (isInStoreSelectMode()) {
+			return getParent().getStoreMode().getSelectedBank() == this;
+		}
 		return uuid.equals(getParent().getSelectedBank());
 	}
 
@@ -523,6 +525,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 				if (targetPreset != null && targetPreset.getUUID().equals(p.getUUID())) {
 					return DropAction.NONE;
+				} else if (targetPreset == null) {
+					return DropAction.COPY_PRESET;
 				}
 
 				if (presetList.findPreset(p.getUUID()) != null) {
@@ -620,11 +624,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public boolean isEmpty() {
-		for (Control c : getPresetList().getChildren())
-			if (c instanceof Preset)
-				return false;
-
-		return true;
+		return getPresetList().getChildren().isEmpty();
 	}
 
 	void updateAttributes(Node node) {

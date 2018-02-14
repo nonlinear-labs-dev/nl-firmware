@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import java.util.List;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,9 +28,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonRect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager.SearchQueryFields;
 
 public class SearchQueryDialog extends GWTDialog {
 
@@ -42,6 +44,71 @@ public class SearchQueryDialog extends GWTDialog {
 		@Override
 		public void onMouseDown(MouseDownEvent event) {
 			nameField.setFocus(true);
+		}
+	}
+
+	private class TriggerNewSearchHandlerOnClick implements ValueChangeHandler<Boolean> {
+		CheckBox b;
+		SearchFieldManager sm;
+
+		public TriggerNewSearchHandlerOnClick(CheckBox b, SearchFieldManager sm) {
+			this.b = b;
+			this.sm = sm;
+		}
+
+		@Override
+		public void onValueChange(ValueChangeEvent<Boolean> event) {
+			sm.onCheckChanged(b);
+		}
+	}
+
+	private class SearchFieldManager {
+		CheckBox name;
+		CheckBox comment;
+		CheckBox deviceName;
+
+		public SearchFieldManager(CheckBox n, CheckBox c, CheckBox d) {
+			name = n;
+			comment = c;
+			deviceName = d;
+		}
+
+		private PresetManager getPresetManager() {
+			return NonMaps.get().getNonLinearWorld().getPresetManager();
+		}
+
+		private void addIfNotPresent(List<SearchQueryFields> currentFields, SearchQueryFields o) {
+			if (currentFields.contains(o) == false)
+				currentFields.add(o);
+		}
+
+		private void removeIfPresent(List<SearchQueryFields> currentFields, SearchQueryFields o) {
+			if (currentFields.contains(o))
+				currentFields.remove(o);
+		}
+
+		private void allowFieldInList(List<SearchQueryFields> currentFields, SearchQueryFields o, boolean allow) {
+			if (allow) {
+				addIfNotPresent(currentFields, o);
+			} else {
+				removeIfPresent(currentFields, o);
+			}
+		}
+
+		public boolean isFieldAllowed(SearchQueryFields field) {
+			return getPresetManager().getFieldsToBeSearched().contains(field);
+		}
+
+		public void onCheckChanged(CheckBox b) {
+			List<PresetManager.SearchQueryFields> currentFields = getPresetManager().getFieldsToBeSearched();
+			if (b == name) {
+				allowFieldInList(currentFields, SearchQueryFields.name, b.getValue());
+			} else if (b == comment) {
+				allowFieldInList(currentFields, SearchQueryFields.comment, b.getValue());
+			} else if (b == deviceName) {
+				allowFieldInList(currentFields, SearchQueryFields.devicename, b.getValue());
+			}
+			getPresetManager().setFieldsToBeSearched(currentFields);
 		}
 	}
 
@@ -75,6 +142,7 @@ public class SearchQueryDialog extends GWTDialog {
 		}
 	}
 
+	private SearchFieldManager theFieldManager;
 	private static SearchQueryDialog theDialog;
 	private RepeatingCommand timer;
 	private Label matches;
@@ -92,15 +160,66 @@ public class SearchQueryDialog extends GWTDialog {
 
 		VerticalPanel rootPanel = new VerticalPanel();
 		rootPanel.add(createTextInputPanel());
+		rootPanel.add(createCheckBoxPanel());
+		rootPanel.add(createAndOrPanel());
 		rootPanel.add(createButtonPanel());
 		setWidget(rootPanel);
+	}
+
+	private FlowPanel createCheckBoxPanel() {
+		FlowPanel buttonPanel = new FlowPanel();
+		CheckBox name = new CheckBox("Name");
+		CheckBox comment = new CheckBox("Comment");
+		CheckBox deviceName = new CheckBox("Device Name");
+
+		theFieldManager = new SearchFieldManager(name, comment, deviceName);
+
+		name.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.name));
+		comment.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.comment));
+		deviceName.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.devicename));
+
+		name.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(name, theFieldManager));
+		comment.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(comment, theFieldManager));
+		deviceName.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(deviceName, theFieldManager));
+
+		name.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
+						.setFilter(NonMaps.theMaps.getNonLinearWorld().getPresetManager().getFilter());
+			}
+		});
+
+		comment.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
+						.setFilter(NonMaps.theMaps.getNonLinearWorld().getPresetManager().getFilter());
+			}
+		});
+
+		deviceName.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
+						.setFilter(NonMaps.theMaps.getNonLinearWorld().getPresetManager().getFilter());
+			}
+		});
+
+		buttonPanel.add(name);
+		buttonPanel.add(comment);
+		buttonPanel.add(deviceName);
+
+		return buttonPanel;
 	}
 
 	private FlowPanel createButtonPanel() {
 		FlowPanel buttonPanel = new FlowPanel();
 		CheckBox zoomToAllMatches = new CheckBox("Zoom to all matches");
-		RadioButton and = new RadioButton("AndOr", "AND");
-		RadioButton or = new RadioButton("AndOr", "OR");
+
 		zoomToAllMatches.getElement().addClassName("auto-zoom");
 		Boolean b = Boolean.valueOf(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
 		zoomToAllMatches.setValue(b);
@@ -135,34 +254,9 @@ public class SearchQueryDialog extends GWTDialog {
 			}
 		});
 
-		and.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().setSearchQueryCombination(PresetManager.SearchQueryCombination.AND);
-			}
-		});
-
-		or.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().setSearchQueryCombination(PresetManager.SearchQueryCombination.OR);
-			}
-		});
-
-		and.setValue(
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSearchQueryCombination() == PresetManager.SearchQueryCombination.AND,
-				false);
-		or.setValue(
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSearchQueryCombination() == PresetManager.SearchQueryCombination.OR,
-				false);
-
 		buttonPanel.add(previousMatch);
 		buttonPanel.add(nextMatch);
 		buttonPanel.add(zoomToAllMatches);
-		buttonPanel.add(and);
-		buttonPanel.add(or);
 		return buttonPanel;
 	}
 
@@ -199,6 +293,39 @@ public class SearchQueryDialog extends GWTDialog {
 		panel.add(nameField);
 		panel.add(matches = new Label(""));
 		updateMatches(0);
+		return panel;
+	}
+
+	private FlowPanel createAndOrPanel() {
+		FlowPanel panel = new FlowPanel();
+		RadioButton and = new RadioButton("AndOr", "AND");
+		RadioButton or = new RadioButton("AndOr", "OR");
+
+		and.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager().setSearchQueryCombination(PresetManager.SearchQueryCombination.AND);
+			}
+		});
+
+		or.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager().setSearchQueryCombination(PresetManager.SearchQueryCombination.OR);
+			}
+		});
+
+		and.setValue(
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSearchQueryCombination() == PresetManager.SearchQueryCombination.AND,
+				false);
+		or.setValue(
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSearchQueryCombination() == PresetManager.SearchQueryCombination.OR,
+				false);
+
+		panel.add(and);
+		panel.add(or);
 		return panel;
 	}
 

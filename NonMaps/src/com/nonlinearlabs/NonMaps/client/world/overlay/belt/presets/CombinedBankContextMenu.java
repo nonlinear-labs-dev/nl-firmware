@@ -18,4 +18,9 @@ public class CombinedBankContextMenu extends BankContextMenu {
 	protected boolean hasPaste() {
 		return false;
 	}
+
+	@Override
+	protected boolean hasBankCreationRights() {
+		return true;
+	}
 }

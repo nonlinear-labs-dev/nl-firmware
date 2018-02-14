@@ -64,15 +64,28 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		double numberWidth = Millimeter.toPixels(10);
 		double xSpace = Millimeter.toPixels(5);
 
-		color.doLayout(3, 0, 4, h / 2);
-		number.doLayout(3, 0, numberWidth, h);
+		color.doLayout(2, 0 - h / 2 + h / 5, 7, h - h / 5);
+		number.doLayout(7, 0, numberWidth, h);
 		name.doLayout(numberWidth + xSpace, 0, w - (numberWidth + xSpace), h);
+	}
+
+	private boolean isInStoreMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
+	}
+
+	private StoreSelectMode getStoreMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean loaded = mapsPreset.isLoaded() && !mapsPreset.isInStoreSelectMode();
 		boolean selected = mapsPreset.isSelected();
+		boolean isOrignalPreset = false;
+
+		if (isInStoreMode()) {
+			isOrignalPreset = getStoreMode().isOriginalPreset(mapsPreset);
+		}
 
 		double cp = 1;
 
@@ -80,10 +93,10 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		RGB colorFill = new RGB(25, 25, 25);
 		RGB colorHighlight = new RGB(77, 77, 77);
 
-		if (selected)
+		if (selected && !isOrignalPreset)
 			colorFill = new RGB(77, 77, 77);
 
-		if (loaded)
+		if (loaded || isOrignalPreset)
 			colorFill = RGB.blue();
 
 		Rect r = getPixRect().copy();

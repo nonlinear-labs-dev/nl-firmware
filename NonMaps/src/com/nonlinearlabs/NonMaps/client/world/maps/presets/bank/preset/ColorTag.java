@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
@@ -42,8 +41,8 @@ public class ColorTag extends ZoomReactingControl {
 
 	protected RGB calcColor() {
 		try {
-			Color c = Color.valueOf(getParent().getAttribute("color"));
-			return c.toRGB();
+
+			return Color.valueOf(getParent().getAttribute("color")).toRGB();
 		} catch (Exception e) {
 			return null;
 		}
@@ -56,12 +55,12 @@ public class ColorTag extends ZoomReactingControl {
 
 	@Override
 	protected double getBasicWidth() {
-		return 3;
+		return 6;
 	}
 
 	@Override
 	protected double getBasicHeight() {
-		return 15;
+		return 30;
 	}
 
 	@Override
@@ -74,9 +73,9 @@ public class ColorTag extends ZoomReactingControl {
 		RGB color = calcColor();
 		if (color == null)
 			return;
-		Rect pixRect = getPixRect();
-		ctx.setFillStyle(color.toString());
-		Position center = pixRect.getCenterPoint();
-		ctx.fillRect(center.getX(), center.getY(), pixRect.getWidth(), pixRect.getHeight());
+
+		Rect r = getPixRect().copy();
+		r.reduceHeightBy(r.getHeight() / 3);
+		r.fill(ctx, color);
 	}
 }

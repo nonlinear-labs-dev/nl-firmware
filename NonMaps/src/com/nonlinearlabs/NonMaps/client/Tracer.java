@@ -8,13 +8,13 @@ public class Tracer {
 	static ArrayList<String> history = new ArrayList<String>();
 
 	public native static void registerCrashHandler() /*-{
-		var nativeLog = console.log.bind(console) //store native function
+														var nativeLog = console.log.bind(console) //store native function
 
-		console.log = function(text) { //override
-			nativeLog(text);
-			@com.nonlinearlabs.NonMaps.client.Tracer::addToLog(Ljava/lang/String;)(text);
-		}
-	}-*/;
+														console.log = function(text) { //override
+														nativeLog(text);
+														@com.nonlinearlabs.NonMaps.client.Tracer::addToLog(Ljava/lang/String;)(text);
+														}
+														}-*/;
 
 	static public void log(String txt) {
 		txt = num++ + ": " + txt;
@@ -22,8 +22,8 @@ public class Tracer {
 	}
 
 	private native static void consoleLog(String message) /*-{
-		console.log(message);
-	}-*/;
+															console.log(message);
+															}-*/;
 
 	public static void sendHistoryToServer() {
 		for (String s : history)

@@ -7,13 +7,19 @@ import com.nonlinearlabs.NonMaps.client.Animator;
 import com.nonlinearlabs.NonMaps.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.contextStates.ClipContext;
+import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.IBank;
+import com.nonlinearlabs.NonMaps.client.world.IPreset;
+import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 import com.nonlinearlabs.NonMaps.client.world.pointer.PointerState;
 
 public class PresetList extends OverlayLayout {
@@ -22,6 +28,7 @@ public class PresetList extends OverlayLayout {
 		Jump, Smooth, None
 	}
 
+	private boolean isDropTarget = false;
 	private double scrollPosition = 0;
 	private Animator animation;
 	private ScrollRequest scrollRequest = ScrollRequest.None;
@@ -106,6 +113,44 @@ public class PresetList extends OverlayLayout {
 				}
 			}
 		}
+	}
+
+	@Override
+	public Control drag(Position pos, DragProxy dragProxy) {
+		if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
+				|| dragProxy.getOrigin() instanceof IBank) {
+			setIsDropTarget(true);
+			return this;
+		}
+		return super.drag(pos, dragProxy);
+	}
+
+	@Override
+	public void dragLeave() {
+		setIsDropTarget(false);
+		super.dragLeave();
+	}
+
+	private void setIsDropTarget(boolean isDropTarget) {
+		if (this.isDropTarget != isDropTarget) {
+			this.isDropTarget = isDropTarget;
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		}
+	}
+
+	@Override
+	public Control drop(Position pos, DragProxy dragProxy) {
+		Bank b = getParent().getBankInCharge();
+
+		if (dragProxy.getOrigin() instanceof IPreset)
+			getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b);
+		else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
+			getNonMaps().getServerProxy().dropEditBufferOnBank(b);
+		else if (dragProxy.getOrigin() instanceof IBank)
+			getNonMaps().getServerProxy().dropBankOnBank((IBank) dragProxy.getOrigin(), b);
+
+		setIsDropTarget(false);
+		return this;
 	}
 
 	public void drawTriangles(Context2d ctx, double top, double lineHeight) {

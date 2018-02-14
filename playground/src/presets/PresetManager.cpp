@@ -192,8 +192,7 @@ void PresetManager::undoableSelectBank(UNDO::Scope::tTransactionPtr transaction,
   }
 }
 
-void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid,
-                                            moveDirection direction)
+void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, moveDirection direction)
 {
   if(auto bank = findBank(uuid))
   {
@@ -229,16 +228,15 @@ void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transact
     {
       transaction->addSimpleCommand([ = ] (UNDO::Command::State)
       {
-          auto a = getBank(oldPos);
-          auto b = getBank(newPos);
-          m_banks[newPos] = a;
-          m_banks[oldPos] = b;
-          reassignOrderNumbers();
+        auto a = getBank(oldPos);
+        auto b = getBank(newPos);
+        m_banks[newPos] = a;
+        m_banks[oldPos] = b;
+        reassignOrderNumbers();
       });
     }
   }
 }
-
 
 void PresetManager::undoableSelectNext()
 {
@@ -460,17 +458,20 @@ void PresetManager::writeDocument(Writer &writer, tUpdateID knownRevision) const
       });
 }
 
-void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode) const
+void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
+                                  std::vector<presetInfoSearchFields> &&fieldsToSearch) const
 {
-  SearchQuery query(q, mode);
+  SearchQuery query(q, mode, std::move(fieldsToSearch));
 
   writer.writeTag("preset-manager", [&]()
   {
     writer.writeTag ("banks", [&]()
-        {
-          for (tBankPtr bank : m_banks)
-          bank->searchPresets (writer, query);
-        });
+    {
+      for (tBankPtr bank : m_banks)
+      {
+        bank->searchPresets (writer, query);
+      }
+    });
   });
 }
 
@@ -776,7 +777,7 @@ SaveResult PresetManager::saveBanks(RefPtr<Gio::File> pmFolder)
 
 void PresetManager::deleteOldBanks(const RefPtr<Gio::File> pmFolder)
 {
-  RefPtr<Gio::FileEnumerator> enumerator = pmFolder->enumerate_children();
+  RefPtr < Gio::FileEnumerator > enumerator = pmFolder->enumerate_children();
 
   while(auto file = enumerator->next_file())
   {
@@ -991,12 +992,12 @@ Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset
   auto parameters1 = preset1->getParametersSortedById();
   auto parameters2 = preset2->getParametersSortedById();
 
-  for (auto it_m1 = parameters1.cbegin(), end_m1 = parameters1.cend(), it_m2 = parameters2.cbegin(), end_m2 = parameters2.cend();
+  for(auto it_m1 = parameters1.cbegin(), end_m1 = parameters1.cend(), it_m2 = parameters2.cbegin(), end_m2 = parameters2.cend();
       it_m1 != end_m1 || it_m2 != end_m2;)
   {
-    if (it_m1 != end_m1 && it_m2 != end_m2)
+    if(it_m1 != end_m1 && it_m2 != end_m2)
     {
-      if (it_m1->second->getDisplayString() != it_m2->second->getDisplayString())
+      if(it_m1->second->getDisplayString() != it_m2->second->getDisplayString())
       {
         out += Glib::ustring(it_m1->second->getParentGroup()->getLongName());
         out += ",";
