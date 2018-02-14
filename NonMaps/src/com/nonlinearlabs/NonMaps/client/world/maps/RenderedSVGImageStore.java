@@ -77,12 +77,12 @@ public class RenderedSVGImageStore {
 	}
 
 	private static native String base64Encode(String v) /*-{
-		return btoa(v);
-	}-*/;
+														return btoa(v);
+														}-*/;
 
 	private static native String base64Decode(String v) /*-{
-		return atob(v);
-	}-*/;
+														return atob(v);
+														}-*/;
 
 	public ImageElement render(String name, int width, int height, SVGRenderHandler handler) {
 		for (Iterator<PendingRenderJob> iter = pendingJobs.listIterator(); iter.hasNext();) {

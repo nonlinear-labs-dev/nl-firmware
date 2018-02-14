@@ -21,12 +21,12 @@ public class MenuAreaSearchButton extends SVGImage {
 	private void toggleSearch() {
 		SearchQueryDialog.toggle();
 	}
-	
+
 	@Override
 	public int getSelectedPhase() {
-		if(NonMaps.get().getNonLinearWorld().getPresetManager().isEmpty())
+		if (NonMaps.get().getNonLinearWorld().getPresetManager().isEmpty())
 			return drawStates.disabled.ordinal();
-		
+
 		return SearchQueryDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
 	}
 }

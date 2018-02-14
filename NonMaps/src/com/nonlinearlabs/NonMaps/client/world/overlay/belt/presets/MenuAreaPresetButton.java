@@ -12,7 +12,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 public class MenuAreaPresetButton extends SVGImage {
 
 	public MenuAreaPresetButton(MenuArea parent) {
-		super(parent, "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_S.svg", "Menu_A_Enabled.svg", "Menu_A_Active.svg", "Menu_A_Disabled.svg");
+		super(parent, "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_S.svg", "Menu_A_Enabled.svg",
+				"Menu_A_Active.svg", "Menu_A_Disabled.svg");
 	}
 
 	@Override
@@ -24,7 +25,7 @@ public class MenuAreaPresetButton extends SVGImage {
 		}
 		return super.click(pos);
 	}
-	
+
 	private Overlay getOverlay() {
 		return NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
 	}
@@ -38,7 +39,6 @@ public class MenuAreaPresetButton extends SVGImage {
 		}
 		return super.click(pos);
 	}
-
 
 	Preset getPreset() {
 		PresetManager pm = getPresetManager();
@@ -71,18 +71,18 @@ public class MenuAreaPresetButton extends SVGImage {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int getSelectedPhase() {
 		int ret = 0;
-		
-		if(hasPreset())
+
+		if (hasPreset())
 			ret = drawStates.normal.ordinal();
 		else
 			ret = drawStates.disabled.ordinal();
-		
-		if(((MenuArea)getParent()).isSmall() == false)
-			ret+=3;
+
+		if (((MenuArea) getParent()).isSmall() == false)
+			ret += 3;
 		return ret;
 	}
 }

@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.maps;
 
-
 public abstract class LayoutResizingHorizontal extends LayoutHorizontal {
 
 	public LayoutResizingHorizontal(MapsControl parent) {

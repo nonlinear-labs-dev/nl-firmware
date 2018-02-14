@@ -64,7 +64,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		double numberWidth = Millimeter.toPixels(10);
 		double xSpace = Millimeter.toPixels(5);
 
-		color.doLayout(2, 0 - h/2 + h/5, 7, h - h/5);
+		color.doLayout(2, 0 - h / 2 + h / 5, 7, h - h / 5);
 		number.doLayout(7, 0, numberWidth, h);
 		name.doLayout(numberWidth + xSpace, 0, w - (numberWidth + xSpace), h);
 	}
@@ -72,11 +72,11 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 	private boolean isInStoreMode() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
 	}
-	
+
 	private StoreSelectMode getStoreMode() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
 	}
-	
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean loaded = mapsPreset.isLoaded() && !mapsPreset.isInStoreSelectMode();

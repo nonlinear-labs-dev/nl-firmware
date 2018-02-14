@@ -13,47 +13,47 @@ public class EnvA extends ParameterGroupVertical {
 		addChild(new LabelModuleHeader(this, getName()));
 		addChild(new EnvAControls(this));
 	}
-	
+
 	public RGB getColorSliderHighlight() {
 		return ColorTable.getColorEnvOscAHeaderBackground();
 	}
-	
+
 	public RGB getColorSliderBackground() {
 		return ColorTable.getColorSliderBackground();
 	}
-	
+
 	public RGB getColorModuleBackground() {
 		return ColorTable.getColorEnvOscABackground();
 	}
-	
+
 	public RGB getColorModuleHeaderBackground() {
 		return ColorTable.getColorEnvOscAHeaderBackground();
 	}
-	
+
 	public RGB getColorModuleHeaderFont() {
 		return ColorTable.getColorEnvOscAHeaderFont();
 	}
-	
+
 	public RGB getColorFontValueDisplay() {
 		return ColorTable.getColorEnvOscAHeaderBackground();
 	}
-	
+
 	public RGB getColorFontValueDisplaySelected() {
 		return ColorTable.getColorEnvOscAHeaderBackground();
 	}
-	
+
 	public RGB getColorObjectBackgroundSelected() {
 		return ColorTable.getColorEnvOscASelectedBackground();
 	}
-	
+
 	public RGB getColorObjectContourSelected() {
 		return ColorTable.getColorEnvOscAHeaderBackground();
 	}
-	
+
 	public RGB getColorObjectContour() {
 		return ColorTable.getColorContour();
 	}
-	
+
 	public RGB getColorIndicator() {
 		return ColorTable.getColorIndicator();
 	}

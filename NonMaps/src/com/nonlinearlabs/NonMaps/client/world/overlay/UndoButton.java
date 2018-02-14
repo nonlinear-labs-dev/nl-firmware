@@ -16,7 +16,7 @@ class UndoButton extends UndoRedoButton {
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		return this;
 	}
-	
+
 	public void update() {
 		setEnabled(NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getUndoTree().getTree().getCurrentUndoID() != 0);
 	}

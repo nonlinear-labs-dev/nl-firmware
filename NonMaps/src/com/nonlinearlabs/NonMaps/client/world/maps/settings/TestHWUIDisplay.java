@@ -25,7 +25,7 @@ public class TestHWUIDisplay extends Setting {
 
 	@Override
 	public void setDefault() {
-		
+
 	}
 
 }

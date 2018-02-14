@@ -49,7 +49,7 @@ public class GlobalMenu extends OverlayLayout {
 		});
 
 		addChild(new ToggleViewMenuEntry(this, overlay.getUndoTree()));
-		
+
 		addChild(new MenuEntry(this, "P") {
 
 			@Override
@@ -112,14 +112,15 @@ public class GlobalMenu extends OverlayLayout {
 				return this;
 			}
 		});
-		
+
 		addChild(new MenuEntry(this, "Ctrl-E") {
-			
+
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ") + "Parameter Editor";
+				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ")
+						+ "Parameter Editor";
 			}
-			
+
 			@Override
 			public Control mouseDown(Position eventPoint) {
 				getNonMaps().getNonLinearWorld().getParameterEditor().toggleVisibility();
@@ -170,7 +171,7 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		} else {
 			final int IGNORED_CHILDREN = 1;
-			
+
 			double myWidth = Millimeter.toPixels(68);
 			int childCount = getChildren().size() - IGNORED_CHILDREN;
 			double myHeight = childCount * buttonDim;
@@ -232,7 +233,7 @@ public class GlobalMenu extends OverlayLayout {
 	public void refresh() {
 		requestLayout();
 	}
-	
+
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		return this;

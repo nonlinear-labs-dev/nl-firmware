@@ -12,7 +12,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage.drawStates;
 public class MenuAreaBankButton extends SVGImage {
 
 	public MenuAreaBankButton(MenuArea parent) {
-		super(parent, "Menu_Bank_Enabled_S.svg", "Menu_Bank_Active_S.svg", "Menu_Bank_Disabled_S.svg", "Menu_A_Enabled.svg", "Menu_A_Active.svg", "Menu_A_Disabled.svg");
+		super(parent, "Menu_Bank_Enabled_S.svg", "Menu_Bank_Active_S.svg", "Menu_Bank_Disabled_S.svg", "Menu_A_Enabled.svg",
+				"Menu_A_Active.svg", "Menu_A_Disabled.svg");
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class MenuAreaBankButton extends SVGImage {
 		}
 		return o.setContextMenu(pos, new CombinedBankContextMenu(o, null));
 	}
-	
+
 	private PresetManager getPresetManager() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager();
 	}
@@ -60,10 +61,10 @@ public class MenuAreaBankButton extends SVGImage {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int getSelectedPhase() {
-		if(((MenuArea)getParent()).isSmall() == false)
+		if (((MenuArea) getParent()).isSmall() == false)
 			return drawStates.normal.ordinal() + 3;
 		return drawStates.normal.ordinal();
 	}

@@ -33,7 +33,7 @@ public class UndoTreeWindow extends FloatingWindow {
 
 		if (isHidden()) {
 			super.doLayout(x, y, 0, 0);
- 
+
 		} else {
 			double margin = Millimeter.toPixels(2);
 			header.doLayout(0, 0, fixDimension.getWidth(), lineHeight);
@@ -64,14 +64,14 @@ public class UndoTreeWindow extends FloatingWindow {
 
 	@Override
 	public void toggle() {
-		if(isHidden() && firstTimeOpen) {
+		if (isHidden() && firstTimeOpen) {
 			double width = NonMaps.get().getCanvas().getCoordinateSpaceWidth() / 4;
 			double height = NonMaps.get().getCanvas().getCoordinateSpaceHeight() / 2;
 			Tracer.log("undo:" + width + "/" + height);
 			fixDimension = new Dimension(width, height);
 			firstTimeOpen = false;
 		}
-		
+
 		super.toggle();
 
 		if (isShown())

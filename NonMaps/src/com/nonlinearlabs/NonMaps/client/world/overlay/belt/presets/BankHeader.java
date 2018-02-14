@@ -37,7 +37,7 @@ class BankHeader extends OverlayLayout {
 		protected boolean hasBankCreationRights() {
 			return false;
 		}
-		
+
 	}
 
 	private OverlayControl prev;

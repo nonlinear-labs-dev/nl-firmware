@@ -44,14 +44,13 @@ public class PresetManager extends MapsLayout {
 	public enum SearchQueryCombination {
 		AND, OR
 	}
-	
+
 	public enum SearchQueryFields {
 		name, comment, devicename
 	}
 
-	
 	private List<SearchQueryFields> fieldsToBeSearched;
-	
+
 	public List<SearchQueryFields> getFieldsToBeSearched() {
 		return fieldsToBeSearched;
 	}
@@ -88,7 +87,7 @@ public class PresetManager extends MapsLayout {
 
 	public void startStoreSelectMode() {
 		if (m_storeSelectMode == null) {
-			if(isEmpty() == false) {
+			if (isEmpty() == false) {
 				m_storeSelectMode = new StoreSelectMode(this);
 				m_storeSelectMode.updateUI();
 			}
@@ -533,9 +532,9 @@ public class PresetManager extends MapsLayout {
 				multiSelection.deletePresets();
 				closeMultiSelection();
 			} else {
-				if(getSelectedPreset() != null)
+				if (getSelectedPreset() != null)
 					deletePreset(getSelectedPreset());
-				else if(getSelectedBank() != null)
+				else if (getSelectedBank() != null)
 					deleteBank(findBank(getSelectedBank()));
 			}
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
@@ -564,7 +563,7 @@ public class PresetManager extends MapsLayout {
 		ServerProxy sp = NonMaps.get().getServerProxy();
 		sp.deletePreset(p);
 	}
-	
+
 	private void deleteBank(Bank b) {
 		ServerProxy sp = NonMaps.get().getServerProxy();
 		sp.deleteBank(b);
@@ -703,32 +702,31 @@ public class PresetManager extends MapsLayout {
 			refreshFilter(true);
 		}
 	}
-	
 
 	private void refreshFilter(final boolean autoZoom) {
 		if (this.query.isEmpty()) {
 			clearFilter();
 		} else {
 			String fields = "";
-			
-			for(SearchQueryFields f: fieldsToBeSearched) {
-				
-				if(fields.isEmpty() == false)
-					fields+=",";
-				
-				switch(f) {
+
+			for (SearchQueryFields f : fieldsToBeSearched) {
+
+				if (fields.isEmpty() == false)
+					fields += ",";
+
+				switch (f) {
 				case name:
-					fields+="name";
+					fields += "name";
 					break;
 				case comment:
-					fields+="comment";
+					fields += "comment";
 					break;
 				case devicename:
-					fields+="devicename";
+					fields += "devicename";
 					break;
 				}
 			}
-			
+
 			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, fields, new ServerProxy.DownloadHandler() {
 
 				@Override

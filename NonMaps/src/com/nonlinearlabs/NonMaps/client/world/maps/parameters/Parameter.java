@@ -209,7 +209,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
 		EditParameterSetting s = getWorld().getViewport().getOverlay().getSetup().getEditParameterDragSetting();
 		boolean noDrag = s.getSettingsControl().getChoiceString().equals("Never") || getWorld().isSpaceDown();
-		
+
 		if (isSelected() && !noDrag) {
 
 			double xPix = newPoint.getX() - oldPoint.getX();
@@ -223,8 +223,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 				currentParameterChanger.changeBy(fine, pix);
 
 			return this;
-		}
-		else if(noDrag) {
+		} else if (noDrag) {
 			return getWorld().mouseDrag(oldPoint, newPoint, fine);
 		}
 
@@ -277,15 +276,15 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private native void createStringizer(String body) /*-{
-		this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer = new Function(
-				"cpValue", "withUnit", body);
-	}-*/;
+														this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer = new Function(
+														"cpValue", "withUnit", body);
+														}-*/;
 
 	private native String stringize(boolean withUnit, double cpValue) /*-{
-		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer;
-		var scaledText = stringizer(cpValue, withUnit);
-		return scaledText;
-	}-*/;
+																		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer;
+																		var scaledText = stringizer(cpValue, withUnit);
+																		return scaledText;
+																		}-*/;
 
 	public void addListener(ParameterListener l) {
 		listeners.add(l);

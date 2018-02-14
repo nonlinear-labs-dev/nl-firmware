@@ -15,7 +15,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 class MenuArea extends OverlayLayout {
 
 	boolean isSmall = true;
-	
+
 	public boolean isSmall() {
 		return isSmall;
 	}
@@ -27,7 +27,7 @@ class MenuArea extends OverlayLayout {
 	class MenuLabel extends Label {
 
 		String text;
-		
+
 		public MenuLabel(OverlayLayout parent, String t) {
 			super(parent);
 			text = t;
@@ -38,11 +38,11 @@ class MenuArea extends OverlayLayout {
 		public String getDrawText(Context2d ctx) {
 			return text;
 		}
-		
+
 	}
-	
+
 	class MenuAndInfo extends OverlayLayout {
-		
+
 		MenuLabel label;
 		OverlayControl btn;
 		OverlayControl info;
@@ -55,11 +55,11 @@ class MenuArea extends OverlayLayout {
 			this.btn = btn;
 			this.info = info;
 			this.search = search;
-			
+
 			addChild(label);
 			addChild(btn);
 			addChild(info);
-			if(search != null)
+			if (search != null)
 				addChild(search);
 		}
 
@@ -67,28 +67,26 @@ class MenuArea extends OverlayLayout {
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 			double margin = getSmallButtonWidth() / 3;
-			
-			if(((MenuArea)getParent()).isSmall()) {
-					label.setVisible(false);
-					btn.doLayout(margin + margin, 0, getSmallButtonWidth(), h);
-					info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
-					if(search != null)
-						search.doLayout(info.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
-			}
-			else {
+
+			if (((MenuArea) getParent()).isSmall()) {
+				label.setVisible(false);
+				btn.doLayout(margin + margin, 0, getSmallButtonWidth(), h);
+				info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+				if (search != null)
+					search.doLayout(info.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
+			} else {
 				label.setVisible(true);
-				label.doLayout(margin + margin/2, 0, getSmallButtonWidth() * 1.75, h);
+				label.doLayout(margin + margin / 2, 0, getSmallButtonWidth() * 1.75, h);
 				btn.doLayout(label.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
 				info.doLayout(btn.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
-				if(search != null)
+				if (search != null)
 					search.doLayout(info.getPixRect().getRight() + margin, 0, getSmallButtonWidth(), h);
 			}
-			
-			
-		}	
-		
+
+		}
+
 		public double getRight() {
-			if(search != null)
+			if (search != null)
 				return search.getPixRect().getRight();
 			else
 				return info.getPixRect().getRight() + getSmallButtonWidth() * 1.5;
@@ -101,7 +99,7 @@ class MenuArea extends OverlayLayout {
 	private PresetManager getPresetManager() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager();
 	}
-	
+
 	boolean hasBank() {
 		PresetManager pm = getPresetManager();
 		String bankUUID = pm.getSelectedBank();
@@ -111,7 +109,7 @@ class MenuArea extends OverlayLayout {
 		}
 		return false;
 	}
-	
+
 	boolean hasPreset() {
 		PresetManager pm = getPresetManager();
 		String bankUUID = pm.getSelectedBank();
@@ -125,37 +123,38 @@ class MenuArea extends OverlayLayout {
 		}
 		return false;
 	}
-	
+
 	MenuArea(BeltPresetLayout parent) {
 		super(parent);
 
-		presets = addChild(new MenuAndInfo(this, new MenuLabel(this, "Preset"), new MenuAreaPresetButton(this), new MenuAreaInfoButton(this) {
-			
-			@Override
-			public void toggle() {
-				PresetInfoDialog.toggle();
-			}
-			
-			@Override
-			public int getSelectedPhase() {
-				if(hasPreset())
-					return PresetInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
-				else
-					return drawStates.disabled.ordinal();
-			}
-		}, new MenuAreaSearchButton(this)));
+		presets = addChild(new MenuAndInfo(this, new MenuLabel(this, "Preset"), new MenuAreaPresetButton(this),
+				new MenuAreaInfoButton(this) {
+
+					@Override
+					public void toggle() {
+						PresetInfoDialog.toggle();
+					}
+
+					@Override
+					public int getSelectedPhase() {
+						if (hasPreset())
+							return PresetInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
+						else
+							return drawStates.disabled.ordinal();
+					}
+				}, new MenuAreaSearchButton(this)));
 
 		banks = addChild(new MenuAndInfo(this, new MenuLabel(this, "Bank"), new MenuAreaBankButton(this), new MenuAreaInfoButton(this) {
-			
+
 			@Override
 			public void toggle() {
-				if(hasBank())
+				if (hasBank())
 					BankInfoDialog.toggle();
 			}
-			
+
 			@Override
 			public int getSelectedPhase() {
-				if(hasBank())
+				if (hasBank())
 					return BankInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
 				else
 					return drawStates.disabled.ordinal();
@@ -178,31 +177,30 @@ class MenuArea extends OverlayLayout {
 	private double getSmallButtonWidth() {
 		return Millimeter.toPixels(11);
 	}
-	
-
 
 	void roundRect(Context2d ctx, double x, double y, double width, double height, double radius) {
-		  ctx.setFillStyle(new Gray(28).toString());
-		  ctx.beginPath();
-		  ctx.moveTo(x + radius, y);
-		  ctx.lineTo(x + width - radius, y);
-		  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-		  ctx.lineTo(x + width, y + height - radius);
-		  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-		  ctx.lineTo(x + radius, y + height);
-		  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-		  ctx.lineTo(x, y + radius);
-		  ctx.quadraticCurveTo(x, y, x + radius, y);
-		  ctx.closePath();
-		  ctx.fill();
-		}
-	
+		ctx.setFillStyle(new Gray(28).toString());
+		ctx.beginPath();
+		ctx.moveTo(x + radius, y);
+		ctx.lineTo(x + width - radius, y);
+		ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+		ctx.lineTo(x + width, y + height - radius);
+		ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+		ctx.lineTo(x + radius, y + height);
+		ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+		ctx.lineTo(x, y + radius);
+		ctx.quadraticCurveTo(x, y, x + radius, y);
+		ctx.closePath();
+		ctx.fill();
+	}
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, presets.getPixRect().getTop() + 2, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, presets.getPixRect().getHeight() - 4, 6);
-		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, banks.getPixRect().getTop() + 2, presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, banks.getPixRect().getHeight() - 4, 6);
+		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, presets.getPixRect().getTop() + 2, presets.getPixRect()
+				.getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, presets.getPixRect().getHeight() - 4, 6);
+		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, banks.getPixRect().getTop() + 2, presets.getPixRect()
+				.getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, banks.getPixRect().getHeight() - 4, 6);
 		super.draw(ctx, invalidationMask);
 	}
-	
-	
+
 }

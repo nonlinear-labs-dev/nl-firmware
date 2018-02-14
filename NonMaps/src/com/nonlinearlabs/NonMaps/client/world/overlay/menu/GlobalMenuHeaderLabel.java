@@ -11,17 +11,19 @@ public class GlobalMenuHeaderLabel extends Label {
 	public GlobalMenuHeaderLabel(OverlayLayout parent) {
 		super(parent);
 	}
+
 	@Override
 	protected double getFontHeight(Rect pixRect) {
 		return 18;
 	}
+
 	@Override
 	public String getDrawText(Context2d ctx) {
 		return "View";
 	}
+
 	@Override
-	protected RGB getLineColor()
-	{
+	protected RGB getLineColor() {
 		return new RGB(155, 199, 236);
 	}
 

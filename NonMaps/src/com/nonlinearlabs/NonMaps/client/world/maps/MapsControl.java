@@ -156,7 +156,7 @@ public abstract class MapsControl extends Control {
 	public boolean moveTo(double x, double y) {
 		return getNonPosition().moveTo(x, y);
 	}
-	
+
 	public boolean moveTo(NonPosition pos) {
 		return getNonPosition().moveTo(pos.getX(), pos.getY());
 	}

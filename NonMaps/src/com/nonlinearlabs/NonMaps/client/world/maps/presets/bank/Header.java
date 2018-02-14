@@ -38,7 +38,7 @@ public class Header extends Label {
 		protected boolean hasPaste() {
 			return true;
 		}
-		
+
 		@Override
 		protected boolean hasBankCreationRights() {
 			return false;
@@ -252,7 +252,7 @@ public class Header extends Label {
 							|| dragProxy.getOrigin() instanceof IBank) {
 
 						if (dragProxy.getOrigin() != getParent()) {
-							if(dragProxy.getOrigin() instanceof Bank) {
+							if (dragProxy.getOrigin() instanceof Bank) {
 								Bank bBank = (Bank) dragProxy.getOrigin();
 								if (bBank.hasSlaves() == false)
 									setIsDropTarget(true);

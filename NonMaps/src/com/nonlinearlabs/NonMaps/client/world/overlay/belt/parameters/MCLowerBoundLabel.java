@@ -54,14 +54,14 @@ public class MCLowerBoundLabel extends Label {
 	}
 
 	private native String stringize(boolean withUnit, double value) /*-{
-		var intermediate = Number(value).toPrecision(3);
-		var ret = parseFloat(intermediate);
+																	var intermediate = Number(value).toPrecision(3);
+																	var ret = parseFloat(intermediate);
 
-		if (withUnit)
-			return ret + "%";
+																	if (withUnit)
+																	return ret + "%";
 
-		return ret + "";
-	}-*/;
+																	return ret + "";
+																	}-*/;
 
 	protected Rect getTextRect() {
 		Rect r = super.getTextRect().copy();

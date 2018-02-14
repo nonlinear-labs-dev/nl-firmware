@@ -21,44 +21,44 @@ public abstract class BankContextMenu extends ContextMenu {
 	public BankContextMenu(OverlayLayout parent, final Bank bank) {
 		super(parent);
 
-			if(hasBankCreationRights()) {
-				addChild(new ContextMenuItem(this, "Create New Bank") {
+		if (hasBankCreationRights()) {
+			addChild(new ContextMenuItem(this, "Create New Bank") {
+				@Override
+				public Control click(Position eventPoint) {
+					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+					PresetManagerContextMenu.createNewBank(pos);
+					return super.click(eventPoint);
+				}
+			});
+
+			if (getNonMaps().getNonLinearWorld().getClipboardManager().getClipboardState() != ClipboardContent.empty) {
+				addChild(new ContextMenuItem(this, "Paste") {
 					@Override
 					public Control click(Position eventPoint) {
 						NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
-						PresetManagerContextMenu.createNewBank(pos);
-						return super.click(eventPoint);
-					}
-				});
-
-				if (getNonMaps().getNonLinearWorld().getClipboardManager().getClipboardState() != ClipboardContent.empty) {
-					addChild(new ContextMenuItem(this, "Paste") {
-						@Override
-						public Control click(Position eventPoint) {
-							NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
-							getNonMaps().getServerProxy().pasteOnPresetManager(pos);
-							return super.click(eventPoint);
-						}
-					});
-				}
-
-				addChild(new ContextMenuItem(this, "Import Bank from file...") {
-					@Override
-					public Control click(final Position eventPoint) {
-						new TextUpload(new TextUploadedHandler() {
-							@Override
-							public void onTextUploaded(String fileName, String text, int lastModified) {
-								NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
-								NonMaps.theMaps.getServerProxy().importBank(fileName, text, lastModified, pos);
-							}
-						});
+						getNonMaps().getServerProxy().pasteOnPresetManager(pos);
 						return super.click(eventPoint);
 					}
 				});
 			}
-		
+
+			addChild(new ContextMenuItem(this, "Import Bank from file...") {
+				@Override
+				public Control click(final Position eventPoint) {
+					new TextUpload(new TextUploadedHandler() {
+						@Override
+						public void onTextUploaded(String fileName, String text, int lastModified) {
+							NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+							NonMaps.theMaps.getServerProxy().importBank(fileName, text, lastModified, pos);
+						}
+					});
+					return super.click(eventPoint);
+				}
+			});
+		}
+
 		if (bank != null) {
-			
+
 			String bankInfoText = (BankInfoDialog.isShown() ? "Hide " : "Show ") + " Info";
 			addChild(new ContextMenuItem(this, bankInfoText) {
 				@Override
@@ -151,6 +151,6 @@ public abstract class BankContextMenu extends ContextMenu {
 	protected abstract boolean hasMinimize();
 
 	protected abstract boolean hasPaste();
-	
+
 	protected abstract boolean hasBankCreationRights();
 }

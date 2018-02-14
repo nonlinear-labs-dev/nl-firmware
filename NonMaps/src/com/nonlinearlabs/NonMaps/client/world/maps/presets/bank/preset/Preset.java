@@ -67,10 +67,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
-		
-		if(isOriginPreset)
-			return new RGB(255,255,255);
-		
+
+		if (isOriginPreset)
+			return new RGB(255, 255, 255);
+
 		if (filterSate == FilterState.FILTER_MATCHES)
 			return new RGB(230, 240, 255);
 		else if (filterSate == FilterState.FILTERED_OUT)
@@ -78,8 +78,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (!selected && !loaded)
 			return new RGB(179, 179, 179);
-		
-		
 
 		return super.getColorFont();
 	}
@@ -196,8 +194,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isLoaded() {
-		if(getParent().isInStoreSelectMode()) {
-				return this == getParent().getParent().getStoreMode().getOriginalPreset();
+		if (getParent().isInStoreSelectMode()) {
+			return this == getParent().getParent().getStoreMode().getOriginalPreset();
 		}
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
@@ -247,7 +245,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
 		} else {
-      getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+			getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
 
 		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);

@@ -120,7 +120,7 @@ class StorePreset extends SVGImage {
 			if (getPresetManager().isInStoreSelectMode()) {
 				uuid = getNonMaps().getServerProxy().appendEditBuffer(getPresetManager().getStoreMode().getSelectedBank());
 			} else {
-				if(pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
+				if (pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
 					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(pm.findBank(pm.getSelectedBank()));
 				else
 					uuid = getNonMaps().getServerProxy().appendPreset();
@@ -131,7 +131,7 @@ class StorePreset extends SVGImage {
 			if (getPresetManager().isInStoreSelectMode()) {
 				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
 			} else {
-				if(pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
+				if (pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
 					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(pm.findBank(pm.getSelectedBank()));
 				else
 					uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getSelectedPreset());
@@ -142,7 +142,7 @@ class StorePreset extends SVGImage {
 			if (getPresetManager().isInStoreSelectMode()) {
 				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreMode().getSelectedPreset());
 			} else {
-				if(pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
+				if (pm.findBank(pm.getSelectedBank()).getPresetList().getPresetCount() == 0)
 					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(pm.findBank(pm.getSelectedBank()));
 				else
 					getNonMaps().getServerProxy().overwritePreset();
@@ -155,10 +155,9 @@ class StorePreset extends SVGImage {
 
 		if (isModified && !uuid.isEmpty())
 			showRename(uuid);
-		
+
 		StoreSelectMode sm = getPresetManager().getStoreMode();
-		if(sm != null)
-		{
+		if (sm != null) {
 			sm.setStoredPreset(uuid);
 		}
 	}

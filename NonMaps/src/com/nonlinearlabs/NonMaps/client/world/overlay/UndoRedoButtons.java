@@ -38,12 +38,12 @@ class UndoRedoButtons extends OverlayLayout {
 	public Control mouseDown(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control mouseUp(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control click(Position eventPoint) {
 		return this;
@@ -53,7 +53,7 @@ class UndoRedoButtons extends OverlayLayout {
 	public Control longLeftPress(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control longRightPress(Position eventPoint) {
 		return this;
@@ -63,12 +63,12 @@ class UndoRedoButtons extends OverlayLayout {
 	public Control longPress(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		return this;
 	}
-	
+
 	@Override
 	public Control onContextMenu(Position pos) {
 		return this;

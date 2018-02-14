@@ -46,11 +46,10 @@ public class Overlay extends OverlayLayout {
 		addChild(globalMenu = new GlobalMenu(this));
 	}
 
-	
 	public void refreshGlobalMenu() {
 		globalMenu.refresh();
 	}
-	
+
 	@Override
 	public Viewport getParent() {
 		return (Viewport) super.getParent();
@@ -283,10 +282,9 @@ public class Overlay extends OverlayLayout {
 	}
 
 	public ContextMenu setContextMenu(Position pt, ContextMenu ctx) {
-		if(ctx instanceof PresetColorTagContextMenu) {		
-			
-		}
-		else {
+		if (ctx instanceof PresetColorTagContextMenu) {
+
+		} else {
 			removeExistingContextMenus();
 		}
 		addChild(ctx);

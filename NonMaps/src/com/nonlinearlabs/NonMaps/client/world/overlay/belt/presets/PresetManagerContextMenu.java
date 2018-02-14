@@ -70,7 +70,8 @@ public class PresetManagerContextMenu extends ContextMenu {
 		addChild(new ContextMenuItem(this, "Restore all Banks from Backup File...") {
 			@Override
 			public Control click(Position eventPoint) {
-				boolean confirm = Window.confirm("This will replace all current banks! Please save the banks with your work as files before restoring the backup.");
+				boolean confirm = Window
+						.confirm("This will replace all current banks! Please save the banks with your work as files before restoring the backup.");
 
 				if (confirm == false) {
 					return null;
@@ -142,16 +143,16 @@ public class PresetManagerContextMenu extends ContextMenu {
 	}
 
 	private native void loadBackupFile(NativeEvent evt, ZipUploadedHandler receiver) /*-{
-		var files = evt.target.files;
-		if (files != null && files.length > 0) {
-			var file = files[0];
-			var reader = new FileReader();
+																						var files = evt.target.files;
+																						if (files != null && files.length > 0) {
+																						var file = files[0];
+																						var reader = new FileReader();
 
-			reader.onload = function(e) {
-				var zip = reader.result;
-				receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetManagerContextMenu.ZipUploadedHandler::onZipUploaded(Lcom/google/gwt/core/client/JavaScriptObject;)(zip);
-			}
-			reader.readAsArrayBuffer(file);
-		}
-	}-*/;
+																						reader.onload = function(e) {
+																						var zip = reader.result;
+																						receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetManagerContextMenu.ZipUploadedHandler::onZipUploaded(Lcom/google/gwt/core/client/JavaScriptObject;)(zip);
+																						}
+																						reader.readAsArrayBuffer(file);
+																						}
+																						}-*/;
 }

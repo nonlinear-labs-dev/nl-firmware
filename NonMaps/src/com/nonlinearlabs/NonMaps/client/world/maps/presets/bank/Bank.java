@@ -118,12 +118,11 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	protected void drawDropIndicator(Context2d ctx) {
 		if (dragPosition != null) {
-			if(getPresetList().getPresetCount() == 0)
-			{
+			if (getPresetList().getPresetCount() == 0) {
 				drawDropIndicator(ctx, emptyLabel.getPixRect().copy());
 				return;
 			}
-			
+
 			for (Control c : presetList.getChildren()) {
 				if (c instanceof IPreset) {
 					Rect presetRect = c.getPixRect();
@@ -150,12 +149,11 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private void drawDropIndicator(Context2d ctx, Rect presetRect) {
 		ctx.setFillStyle("rgba(255, 0, 0, 0.5)");
 
-		if(getPresetList().getPresetCount() == 0)
-		{
+		if (getPresetList().getPresetCount() == 0) {
 			drawDropIndicator(ctx, presetRect, 0.1, 0.8);
 			return;
 		}
-		
+
 		switch (getDropPosition(presetRect, dragPosition)) {
 		case ABOVE:
 			drawDropIndicator(ctx, presetRect, -0.1, 0.2);
@@ -209,16 +207,16 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		if (dragPosition != null) {
-			
-			if(getPresetList().getPresetCount() == 0) {
-				if(dragProxy.getOrigin() instanceof IPreset)
-					getNonMaps().getServerProxy().copyPresetInNewBank((IPreset)dragProxy.getOrigin(), this);
-				else if(dragProxy.getOrigin() instanceof Bank)
-					getNonMaps().getServerProxy().insertBankInEmptyBank(this, (Bank)dragProxy.getOrigin());
-				else if(dragProxy.getOrigin() instanceof EditBufferDraggingButton)
+
+			if (getPresetList().getPresetCount() == 0) {
+				if (dragProxy.getOrigin() instanceof IPreset)
+					getNonMaps().getServerProxy().copyPresetInNewBank((IPreset) dragProxy.getOrigin(), this);
+				else if (dragProxy.getOrigin() instanceof Bank)
+					getNonMaps().getServerProxy().insertBankInEmptyBank(this, (Bank) dragProxy.getOrigin());
+				else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
 					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(this);
 			}
-			
+
 			for (Control c : presetList.getChildren()) {
 				if (c instanceof IPreset) {
 					Rect presetRect = c.getPixRect();
@@ -287,7 +285,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().dropPresetsTo(csv, preset);
 			break;
-			
+
 		case NEW:
 			getNonMaps().getServerProxy().dropPresetsOnBank(csv, this);
 		}
@@ -308,7 +306,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().movePresetTo(p, preset);
 			break;
-			
+
 		case NEW:
 			getNonMaps().getServerProxy().movePresetToEmptyBank(p, this);
 			break;
@@ -328,7 +326,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().overwritePresetWithEditBuffer(preset);
 			break;
-			
+
 		case NEW:
 			getNonMaps().getServerProxy().insertEditBufferInEmptyBank(this);
 			break;
@@ -354,7 +352,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().overwritePresetWithBank(bank, preset);
 			break;
-			
+
 		case NEW:
 			getNonMaps().getServerProxy().insertBankInEmptyBank(this, (Bank) bank);
 			break;
@@ -376,7 +374,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().overwritePresetWith(p, preset);
 			break;
-			
+
 		case NEW:
 			getNonMaps().getServerProxy().copyPresetInNewBank(preset, this);
 		}
@@ -389,7 +387,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			return DropPosition.ABOVE;
 		} else if (diffFromTop > rect.getHeight() * 0.75) {
 			return DropPosition.BELOW;
-		} else if(getPresetList().getPresetCount() > 0) {
+		} else if (getPresetList().getPresetCount() > 0) {
 			return DropPosition.COVERING;
 		} else {
 			return DropPosition.NEW;
@@ -494,7 +492,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public boolean isSelected() {
-		if(isInStoreSelectMode()) {
+		if (isInStoreSelectMode()) {
 			return getParent().getStoreMode().getSelectedBank() == this;
 		}
 		return uuid.equals(getParent().getSelectedBank());
@@ -555,7 +553,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 				if (pm.hasMultiplePresetSelection() && pm.getMultiSelection().getNumSelectedPresets() > 1)
 					return DropAction.DROP_PRESETS;
-				
+
 				Preset targetPreset = findPresetAt(pos);
 
 				if (targetPreset == null) {

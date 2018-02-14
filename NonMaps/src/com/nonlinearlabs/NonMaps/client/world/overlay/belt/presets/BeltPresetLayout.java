@@ -41,11 +41,11 @@ public class BeltPresetLayout extends OverlayLayout {
 		double right = w - margin;
 		double left = margin;
 
-		if(w < 1000)
+		if (w < 1000)
 			menu.setSmall(true);
 		else
 			menu.setSmall(false);
-		
+
 		menu.doLayout(0, margin, w * 0.25, h - 2 * margin);
 		left += menu.getRelativePosition().getWidth() + margin;
 
@@ -73,8 +73,8 @@ public class BeltPresetLayout extends OverlayLayout {
 
 		double loadLeft = bank.getRelativePosition().getRight() + margin;
 		double maxLoadWidth = w - loadLeft - margin - buttonDim - margin;
-		load.doLayout(bank.getRelativePosition().getRight() + margin, horizontalCenterLinePosition - buttonDim - margin / 2 - 3 , maxLoadWidth
-				+ margin, 2 * buttonDim + margin);
+		load.doLayout(bank.getRelativePosition().getRight() + margin, horizontalCenterLinePosition - buttonDim - margin / 2 - 3,
+				maxLoadWidth + margin, 2 * buttonDim + margin);
 
 		double rest = bank.getRelativePosition().getWidth();
 
@@ -82,7 +82,7 @@ public class BeltPresetLayout extends OverlayLayout {
 			double loadAreaLeft = load.getRelativePosition().getLeft();
 			double upDownCenter = load.getPrevNext().getRelativePosition().getCenterPoint().getX();
 			bankInfos.doLayout(loadAreaLeft + upDownCenter - buttonDim, bank.getHorizontalCenterLinePosition() - buttonDim * 3,
-					buttonDim*2, 2 * buttonDim + margin);
+					buttonDim * 2, 2 * buttonDim + margin);
 		} else {
 			bankInfos.doLayout(0, 0, 0, 0);
 		}

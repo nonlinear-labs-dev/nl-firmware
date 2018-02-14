@@ -17,7 +17,7 @@ public class StorePresetArea extends OverlayLayout {
 		m_modeButton = addChild(new StoreModeButton(this));
 
 	}
-	
+
 	public StorePreset getCommitButton() {
 		return m_commitButton;
 	}
@@ -29,7 +29,7 @@ public class StorePresetArea extends OverlayLayout {
 		double buttonDim = getButtonDimension();
 
 		menu.doLayout(0 - buttonDim / 6, 0, menu.getPictureWidth(), menu.getPictureHeight());
-		m_commitButton.doLayout(buttonDim + buttonDim/2, buttonDim, buttonDim, buttonDim);
+		m_commitButton.doLayout(buttonDim + buttonDim / 2, buttonDim, buttonDim, buttonDim);
 		m_modeButton.doLayout(0, buttonDim, buttonDim, buttonDim);
 	}
 

@@ -23,14 +23,14 @@ public class ModulationAmount extends QuantizedClippedValue {
 	}
 
 	private native String defaultStringize(boolean withUnit, double value) /*-{
-		var intermediate = Number(value).toPrecision(3);
-		var ret = parseFloat(intermediate);
+																			var intermediate = Number(value).toPrecision(3);
+																			var ret = parseFloat(intermediate);
 
-		if (withUnit)
-			return ret + "%";
+																			if (withUnit)
+																			return ret + "%";
 
-		return ret + "";
-	}-*/;
+																			return ret + "";
+																			}-*/;
 
 	public void setStringizer(String txt) {
 		if (stringizer == null)
@@ -38,13 +38,13 @@ public class ModulationAmount extends QuantizedClippedValue {
 	}
 
 	private native void createStringizer(String body) /*-{
-		this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.ModulationAmount::stringizer = new Function(
-				"cpValue", "withUnit", body);
-	}-*/;
+														this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.ModulationAmount::stringizer = new Function(
+														"cpValue", "withUnit", body);
+														}-*/;
 
 	private native String stringize(boolean withUnit, double cpValue) /*-{
-		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.ModulationAmount::stringizer;
-		var scaledText = stringizer(cpValue, withUnit);
-		return scaledText;
-	}-*/;
+																		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.ModulationAmount::stringizer;
+																		var scaledText = stringizer(cpValue, withUnit);
+																		return scaledText;
+																		}-*/;
 }

@@ -11,13 +11,12 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public abstract class MenuEntry extends Label {
-	
-	
+
 	private class ShortCutShow extends Label {
 
 		String text;
 		MenuEntry daddyentry;
-		
+
 		public ShortCutShow(OverlayLayout parent, MenuEntry daddyentry, String text) {
 			super(parent);
 			this.text = text;
@@ -32,16 +31,16 @@ public abstract class MenuEntry extends Label {
 			this.setPixRect(r);
 			return text;
 		}
-				
+
 		@Override
 		protected TextAlign getAlignment() {
 			return TextAlign.RIGHT;
 		}
-		
+
 	};
-	
+
 	private ShortCutShow shortcutLabel;
-	
+
 	public MenuEntry(GlobalMenu menu, String shortcut) {
 		super(menu);
 		shortcutLabel = new ShortCutShow(this.getParent(), this, shortcut);
@@ -55,7 +54,7 @@ public abstract class MenuEntry extends Label {
 	protected TextAlign getAlignment() {
 		return TextAlign.LEFT;
 	}
-	
+
 	@Override
 	protected Rect getTextRect() {
 		Rect r = super.getTextRect().copy();

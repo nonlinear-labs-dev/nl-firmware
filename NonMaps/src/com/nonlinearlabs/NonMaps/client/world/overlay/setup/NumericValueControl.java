@@ -55,15 +55,15 @@ public abstract class NumericValueControl extends SettingsControl implements Qua
 	}
 
 	private native void createStringizer(String body) /*-{
-		this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer = new Function(
-				"cpValue", "withUnit", body);
-	}-*/;
+														this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer = new Function(
+														"cpValue", "withUnit", body);
+														}-*/;
 
 	private native String stringize(boolean withUnit, double cpValue) /*-{
-		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer;
-		var scaledText = stringizer(cpValue, withUnit);
-		return scaledText;
-	}-*/;
+																		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer;
+																		var scaledText = stringizer(cpValue, withUnit);
+																		return scaledText;
+																		}-*/;
 
 	@Override
 	public Control mouseDown(Position eventPoint) {

@@ -9,8 +9,10 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public abstract class SVGImage extends OverlayControl {
 
-	public enum drawStates { normal, active, disabled, drag };
-	
+	public enum drawStates {
+		normal, active, disabled, drag
+	};
+
 	private ArrayList<SVGImagePhase> phases = new ArrayList<SVGImagePhase>();
 	private int selectedPhase = 0;
 
@@ -57,12 +59,12 @@ public abstract class SVGImage extends OverlayControl {
 	}
 
 	private static native String base64Encode(String v) /*-{
-		return btoa(v);
-	}-*/;
+														return btoa(v);
+														}-*/;
 
 	private static native String base64Decode(String v) /*-{
-		return atob(v);
-	}-*/;
+														return atob(v);
+														}-*/;
 
 	@Override
 	public void calcPixRect(Position parentsReference, double currentZoom) {

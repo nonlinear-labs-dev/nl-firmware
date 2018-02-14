@@ -11,7 +11,7 @@ public class ToggleViewMenuEntry extends MenuEntry {
 	private FloatingWindow window;
 
 	public ToggleViewMenuEntry(GlobalMenu menu, FloatingWindow wnd) {
-		super(menu, wnd instanceof UndoTreeWindow?"U":"");
+		super(menu, wnd instanceof UndoTreeWindow ? "U" : "");
 		window = wnd;
 	}
 

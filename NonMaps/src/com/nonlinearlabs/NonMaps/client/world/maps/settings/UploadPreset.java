@@ -52,17 +52,17 @@ public class UploadPreset extends Setting {
 	}
 
 	private native void loadFile(NativeEvent evt, TextUploadedHandler receiver) /*-{
-		var files = evt.target.files;
-		if (files != null && files.length > 0) {
-			var file = files[0];
-			var reader = new FileReader();
-			reader.onload = function(e) {
-				var text = reader.result;
-				receiver.@com.nonlinearlabs.NonMaps.client.world.maps.settings.UploadPreset.TextUploadedHandler::onTextUploaded(Ljava/lang/String;)(text);
-			}
-			reader.readAsText(file);
-		}
-	}-*/;
+																				var files = evt.target.files;
+																				if (files != null && files.length > 0) {
+																				var file = files[0];
+																				var reader = new FileReader();
+																				reader.onload = function(e) {
+																				var text = reader.result;
+																				receiver.@com.nonlinearlabs.NonMaps.client.world.maps.settings.UploadPreset.TextUploadedHandler::onTextUploaded(Ljava/lang/String;)(text);
+																				}
+																				reader.readAsText(file);
+																				}
+																				}-*/;
 
 	@Override
 	public void setDefault() {

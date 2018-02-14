@@ -56,13 +56,12 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 		addContent();
 
 		update(NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome());
-		
-		super.pushDialogToFront();	
-		
+
+		super.pushDialogToFront();
+
 		GWT.log("ParameterInfo soll : " + infoBoxHeight);
-		
-		if(infoBoxHeight != 0)
-		{
+
+		if (infoBoxHeight != 0) {
 			infoField.setHeight(infoBoxHeight + "px");
 		}
 	}
@@ -117,49 +116,40 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 					update(s);
 			}
 		});
-		
-		infoField.addMouseDownHandler(new MouseDownHandler() 
-		{
+
+		infoField.addMouseDownHandler(new MouseDownHandler() {
 			private HandlerRegistration mouseMoveUpRegistration;
 			private int lastWidth;
 			private int lastHeight;
 
 			@Override
-			public void onMouseDown(MouseDownEvent event) 
-			{
+			public void onMouseDown(MouseDownEvent event) {
 				lastWidth = getOffsetWidth();
 				lastHeight = getOffsetHeight();
-	
-				if (mouseMoveUpRegistration == null) 
-				{
-					mouseMoveUpRegistration = Event.addNativePreviewHandler(new NativePreviewHandler() 
-					{
+
+				if (mouseMoveUpRegistration == null) {
+					mouseMoveUpRegistration = Event.addNativePreviewHandler(new NativePreviewHandler() {
 						@Override
-						public void onPreviewNativeEvent(NativePreviewEvent event) 
-						{
-							if (event.getTypeInt() == Event.ONMOUSEMOVE || event.getTypeInt() == Event.ONMOUSEUP) 
-							{
+						public void onPreviewNativeEvent(NativePreviewEvent event) {
+							if (event.getTypeInt() == Event.ONMOUSEMOVE || event.getTypeInt() == Event.ONMOUSEUP) {
 								int width = getOffsetWidth();
 								int height = getOffsetHeight();
-								if (width != lastWidth || height != lastHeight) 
-								{
+								if (width != lastWidth || height != lastHeight) {
 									infoBoxHeight = infoField.getElement().getClientHeight();
-									
+
 									lastWidth = width;
 									lastHeight = height;
 								}
-	
-								if (event.getTypeInt() == Event.ONMOUSEUP) 
-								{
+
+								if (event.getTypeInt() == Event.ONMOUSEUP) {
 									infoBoxHeight = infoField.getElement().getClientHeight();
-									
-									if (mouseMoveUpRegistration != null) 
-									{
+
+									if (mouseMoveUpRegistration != null) {
 										mouseMoveUpRegistration.removeHandler();
 										mouseMoveUpRegistration = null;
 									}
 								}
-								
+
 								GWT.log("ParameterInfo resized to:" + infoBoxHeight);
 							}
 						}
@@ -167,13 +157,12 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 				}
 			}
 		});
-		
+
 		paramNameEditEditor.addKeyPressHandler(new KeyPressHandler() {
-			
+
 			@Override
 			public void onKeyPress(KeyPressEvent arg0) {
-				if(arg0.getCharCode() == KeyCodes.KEY_ENTER)
-				{
+				if (arg0.getCharCode() == KeyCodes.KEY_ENTER) {
 					paramNameEditEditor.setFocus(false);
 					infoField.setFocus(true);
 				}

@@ -23,11 +23,10 @@ public class ContextMenuItem extends OverlayControl {
 		this.enabled = enabled;
 	}
 
-	public String getText()
-	{
+	public String getText() {
 		return text;
 	}
-	
+
 	public ContextMenuItem(ContextMenu parent, String text) {
 		this(parent, text, true);
 	}

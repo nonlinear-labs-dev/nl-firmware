@@ -67,7 +67,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(mcAmountRadioButton = new MCRadioButton(this, Mode.mcAmount, "MC_Amt_Aktiv.svg", "MC_Amt_Inaktiv.svg"));
 		addChild(mcLowerBoundRadioButton = new MCRadioButton(this, Mode.mcLower, "MC_Low_Aktiv.svg", "MC_Low_Inaktiv.svg"));
 		addChild(mcUpperBoundRadioButton = new MCRadioButton(this, Mode.mcUpper, "MC_High_Aktiv.svg", "MC_High_Inaktiv.svg"));
-		
+
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
 
 		setupValue();

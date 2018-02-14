@@ -27,8 +27,7 @@ public class PresetList extends OverlayLayout {
 	public enum ScrollRequest {
 		Jump, Smooth, None
 	}
-	
-	
+
 	private boolean isDropTarget = false;
 	private double scrollPosition = 0;
 	private Animator animation;
@@ -115,7 +114,7 @@ public class PresetList extends OverlayLayout {
 			}
 		}
 	}
-	
+
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton

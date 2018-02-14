@@ -29,18 +29,16 @@ abstract public class Setting extends LayoutResizingHorizontal {
 		public SettingsLabel(MapsLayout parent, String text) {
 			super(parent, text);
 		}
-		
+
 		@Override
 		protected int getNonWidth() {
 			return 280;
 		}
 	};
-	
+
 	protected Setting(MapsLayout parent, String title, String value) {
 		super(parent);
 
-		
-		
 		this.title = addChild(new SettingsLabel(this, title));
 		this.value = addChild(new ValueButton(this, value));
 	}

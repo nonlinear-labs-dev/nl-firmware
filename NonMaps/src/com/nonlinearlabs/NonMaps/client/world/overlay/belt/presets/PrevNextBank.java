@@ -6,7 +6,7 @@ import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public abstract class PrevNextBank extends SVGImage {
-	
+
 	public PrevNextBank(Control parent, String... imageNames) {
 		super(parent, imageNames);
 	}

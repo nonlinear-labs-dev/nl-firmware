@@ -18,23 +18,23 @@ class LoadPreset extends SVGImage {
 	LoadPreset(OverlayLayout parent) {
 		super(parent, "Load_Enabled.svg", "Load_Active.svg", "Load_Disabled.svg");
 	}
-	
+
 	@Override
 	public int getSelectedPhase() {
-		if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode()) {
+		if (NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode()) {
 			return drawStates.disabled.ordinal();
-		} else if(isCaptureControl()) {
+		} else if (isCaptureControl()) {
 			return drawStates.active.ordinal();
 		} else {
 			return drawStates.normal.ordinal();
-		} 
+		}
 	};
 
 	@Override
 	public Control click(Position eventPoint) {
-		if(NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode())
+		if (NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode())
 			return this;
-		
+
 		if (isEnabled) {
 			load();
 			return this;
@@ -42,7 +42,7 @@ class LoadPreset extends SVGImage {
 		return super.click(eventPoint);
 	}
 
-	public void update(Node editBufferNode) {	
+	public void update(Node editBufferNode) {
 		if (editBufferNode != null) {
 			if (isSelectedPresetLoaded()) {
 				String isModifiedStr = editBufferNode.getAttributes().getNamedItem("is-modified").getNodeValue();
@@ -56,10 +56,10 @@ class LoadPreset extends SVGImage {
 
 	private void setEnabled(boolean b) {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
-		if(pm.isInStoreSelectMode()) {
+		if (pm.isInStoreSelectMode()) {
 			isEnabled = false;
 		}
-		
+
 		if (b != isEnabled) {
 			isEnabled = b;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -85,7 +85,7 @@ class LoadPreset extends SVGImage {
 		}
 		return false;
 	}
-	
+
 	public void load() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		pm.loadSelectedPreset();

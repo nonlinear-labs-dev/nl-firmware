@@ -25,12 +25,12 @@ class DirectLoadButton extends SVGImage {
 	@Override
 	public int getSelectedPhase() {
 		int ret = 0;
-		
+
 		if (isInStoreSelectMode())
 			ret = 2;
 		else
 			ret = married ? 1 : 0;
-		
+
 		return ret;
 	}
 
@@ -55,7 +55,7 @@ class DirectLoadButton extends SVGImage {
 			}
 		}
 	}
-	
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
