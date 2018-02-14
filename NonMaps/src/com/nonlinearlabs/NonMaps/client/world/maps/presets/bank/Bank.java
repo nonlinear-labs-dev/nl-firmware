@@ -54,7 +54,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private String m_saveState = "";
 
 	private enum DropPosition {
-		ABOVE, COVERING, BELOW, NEW
+		ABOVE, COVERING, BELOW
 	}
 
 	public enum DropAction {
@@ -164,7 +164,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			break;
 
 		case COVERING:
-		case NEW:
 			drawDropIndicator(ctx, presetRect, 0.1, 0.8);
 			break;
 		}
@@ -207,16 +206,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		if (dragPosition != null) {
-
-			if (getPresetList().getPresetCount() == 0) {
-				if (dragProxy.getOrigin() instanceof IPreset)
-					getNonMaps().getServerProxy().copyPresetInNewBank((IPreset) dragProxy.getOrigin(), this);
-				else if (dragProxy.getOrigin() instanceof Bank)
-					getNonMaps().getServerProxy().insertBankInEmptyBank(this, (Bank) dragProxy.getOrigin());
-				else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
-					getNonMaps().getServerProxy().insertEditBufferInEmptyBank(this);
-			}
-
 			for (Control c : presetList.getChildren()) {
 				if (c instanceof IPreset) {
 					Rect presetRect = c.getPixRect();
@@ -285,9 +274,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().dropPresetsTo(csv, preset);
 			break;
-
-		case NEW:
-			getNonMaps().getServerProxy().dropPresetsOnBank(csv, this);
 		}
 	}
 
@@ -306,10 +292,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().movePresetTo(p, preset);
 			break;
-
-		case NEW:
-			getNonMaps().getServerProxy().movePresetToEmptyBank(p, this);
-			break;
 		}
 	}
 
@@ -325,10 +307,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		case COVERING:
 			getNonMaps().getServerProxy().overwritePresetWithEditBuffer(preset);
-			break;
-
-		case NEW:
-			getNonMaps().getServerProxy().insertEditBufferInEmptyBank(this);
 			break;
 		}
 	}
@@ -352,10 +330,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().overwritePresetWithBank(bank, preset);
 			break;
-
-		case NEW:
-			getNonMaps().getServerProxy().insertBankInEmptyBank(this, (Bank) bank);
-			break;
 		}
 	}
 
@@ -374,9 +348,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		case COVERING:
 			getNonMaps().getServerProxy().overwritePresetWith(p, preset);
 			break;
-
-		case NEW:
-			getNonMaps().getServerProxy().copyPresetInNewBank(preset, this);
 		}
 	}
 
@@ -387,10 +358,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			return DropPosition.ABOVE;
 		} else if (diffFromTop > rect.getHeight() * 0.75) {
 			return DropPosition.BELOW;
-		} else if (getPresetList().getPresetCount() > 0) {
-			return DropPosition.COVERING;
 		} else {
-			return DropPosition.NEW;
+			return DropPosition.COVERING;
 		}
 	}
 
