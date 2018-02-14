@@ -58,16 +58,18 @@ public abstract class BankContextMenu extends ContextMenu {
 
 		if (bank != null) {
 
-			String bankInfoText = (BankInfoDialog.isShown() ? "Hide " : "Show ") + " Info";
-			addChild(new ContextMenuItem(this, bankInfoText) {
-				@Override
-				public Control click(Position eventPoint) {
-					bank.selectBank(true);
-					BankInfoDialog.toggle();
-					invalidate(INVALIDATION_FLAG_UI_CHANGED);
-					return super.click(eventPoint);
-				}
-			});
+			if (!BankInfoDialog.isShown()) {
+				String bankInfoText = "Bank Info";
+				addChild(new ContextMenuItem(this, bankInfoText) {
+					@Override
+					public Control click(Position eventPoint) {
+						bank.selectBank(true);
+						BankInfoDialog.toggle();
+						invalidate(INVALIDATION_FLAG_UI_CHANGED);
+						return super.click(eventPoint);
+					}
+				});
+			}
 
 			addChild(new ContextMenuItem(this, "Rename") {
 				@Override

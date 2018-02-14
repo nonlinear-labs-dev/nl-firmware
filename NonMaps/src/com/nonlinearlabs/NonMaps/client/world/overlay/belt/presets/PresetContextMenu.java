@@ -2,8 +2,8 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import java.util.ArrayList;
 
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
@@ -39,16 +39,19 @@ public class PresetContextMenu extends ContextMenu {
 		}
 
 		if (!hasMultipleSelection) {
-			String presetInfoText = (PresetInfoDialog.isShown() ? "Hide " : "Show ") + " Info";
-			addChild(new ContextMenuItem(this, presetInfoText) {
-				@Override
-				public Control click(Position eventPoint) {
-					preset.selectPreset();
-					PresetInfoDialog.toggle();
-					invalidate(INVALIDATION_FLAG_UI_CHANGED);
-					return super.click(eventPoint);
-				}
-			});
+
+			if (!PresetInfoDialog.isShown()) {
+				String presetInfoText = "Preset Info";
+				addChild(new ContextMenuItem(this, presetInfoText) {
+					@Override
+					public Control click(Position eventPoint) {
+						preset.selectPreset();
+						PresetInfoDialog.toggle();
+						invalidate(INVALIDATION_FLAG_UI_CHANGED);
+						return super.click(eventPoint);
+					}
+				});
+			}
 
 			addChild(new ContextMenuItem(this, "Rename") {
 				@Override
