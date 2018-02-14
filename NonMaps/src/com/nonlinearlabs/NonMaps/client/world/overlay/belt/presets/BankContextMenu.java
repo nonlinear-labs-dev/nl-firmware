@@ -2,13 +2,12 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
@@ -42,7 +41,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				});
 			}
 
-			addChild(new ContextMenuItem(this, "Import Bank from file...") {
+			addChild(new ContextMenuItem(this, "Import Bank from File...") {
 				@Override
 				public Control click(final Position eventPoint) {
 					new TextUpload(new TextUploadedHandler() {
@@ -136,7 +135,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				});
 			}
 
-			addChild(new ContextMenuItem(this, "Export as file ...") {
+			addChild(new ContextMenuItem(this, "Export as File ...") {
 				@Override
 				public Control click(Position eventPoint) {
 					String bankName = URL.encodePathSegment(bank.getCurrentName());
