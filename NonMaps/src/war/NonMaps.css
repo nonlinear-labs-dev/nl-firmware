@@ -1660,6 +1660,7 @@ input.param-name-edit {
 	height: 15px;
 	width: 15px;
     border-radius: 0;
+    border: 0.25mm solid #202020;
 }
 
 .colortaggingfield-green {
@@ -1692,8 +1693,11 @@ input.param-name-edit {
 
 .colortag-current {
 	vertical-align: middle;
-	outline:  5px solid white;
-	border: 0.25mm solid white;
+	outline-color: white;
+	outline-offset: 3px;
+	outline-width: 2px;
+	outline-style: solid;
+	border-style: none;
 }
 
 .tag-div {
