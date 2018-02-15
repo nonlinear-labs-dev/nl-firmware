@@ -246,17 +246,19 @@ public class Header extends Label {
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getPixRect().contains(pos)) { // sort out slaves
-			if (!getParent().isDraggingControl()) {
-				if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
-					if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
-							|| dragProxy.getOrigin() instanceof IBank) {
+			if (getPixRect().contains(pos)) {
+				if (!getParent().isDraggingControl()) {
+					if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
+						if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
+								|| dragProxy.getOrigin() instanceof IBank) {
 
-						if (dragProxy.getOrigin() != getParent()) {
-							if (dragProxy.getOrigin() instanceof Bank) {
-								Bank bBank = (Bank) dragProxy.getOrigin();
-								if (bBank.hasSlaves() == false)
-									setIsDropTarget(true);
-								return this;
+							if (dragProxy.getOrigin() != getParent()) {
+								if (dragProxy.getOrigin() instanceof Bank) {
+									Bank bBank = (Bank) dragProxy.getOrigin();
+									if (bBank.hasSlaves() == false)
+										setIsDropTarget(true);
+									return this;
+								}
 							}
 						}
 					}
