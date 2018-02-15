@@ -26,6 +26,17 @@ void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributo
   writer.writeTextElement("pedal-mode", to_string(m_mode));
 }
 
+void PedalParameter::writeDifferences(Writer& writer, Parameter* other) const
+{
+  Parameter::writeDifferences(writer, other);
+  PedalParameter *pOther = static_cast<PedalParameter*>(other);
+
+  if(getReturnMode() != pOther->getReturnMode())
+  {
+    writer.writeTextElement("return-mode", "", Attribute("a", (int)getReturnMode()), Attribute("b", (int)pOther->getReturnMode()));
+  }
+}
+
 void PedalParameter::undoableSetPedalMode(UNDO::Scope::tTransactionPtr transaction, PedalModes mode)
 {
   if(mode != STAY && mode != RETURN_TO_ZERO && mode != RETURN_TO_CENTER)
@@ -264,3 +275,9 @@ void PedalParameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)
   undoableSetPedalMode(transaction, PedalModes::STAY);
 }
 
+size_t PedalParameter::getHash() const
+{
+  size_t hash = super::getHash();
+  hash_combine(hash, (int) m_mode);
+  return hash;
+}

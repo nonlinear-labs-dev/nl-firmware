@@ -27,109 +27,120 @@
 
 #include "xml/Writer.h"
 
-ParameterGroupSet::ParameterGroupSet (UpdateDocumentContributor *parent) :
-    UpdateDocumentContributor (parent)
+ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent) :
+    UpdateDocumentContributor(parent)
 {
 }
 
-ParameterGroupSet::~ParameterGroupSet ()
+ParameterGroupSet::~ParameterGroupSet()
 {
-  m_parameterGroups.deleteItems ();
+  m_parameterGroups.deleteItems();
 }
 
-void ParameterGroupSet::init ()
+void ParameterGroupSet::init()
 {
-  appendParameterGroup (new EnvelopeAGroup (this));
-  appendParameterGroup (new EnvelopeBGroup (this));
-  appendParameterGroup (new EnvelopeCGroup (this));
-  appendParameterGroup (new OscillatorAGroup (this));
-  appendParameterGroup (new ShaperAGroup (this));
-  appendParameterGroup (new OscillatorBGroup (this));
-  appendParameterGroup (new ShaperBGroup (this));
-  appendParameterGroup (new FBMixerGroup (this));
-  appendParameterGroup (new CombFilterGroup (this));
-  appendParameterGroup (new SVFilterGroup (this));
-  appendParameterGroup (new OutputMixerGroup (this));
-  appendParameterGroup (new FlangerGroup (this));
-  appendParameterGroup (new CabinetGroup (this));
-  appendParameterGroup (new GapFilterGroup (this));
-  appendParameterGroup (new EchoGroup (this));
-  appendParameterGroup (new ReverbGroup (this));
-  appendParameterGroup (new MasterGroup (this));
-  appendParameterGroup (new UnisonGroup (this));
+  appendParameterGroup(new EnvelopeAGroup(this));
+  appendParameterGroup(new EnvelopeBGroup(this));
+  appendParameterGroup(new EnvelopeCGroup(this));
+  appendParameterGroup(new OscillatorAGroup(this));
+  appendParameterGroup(new ShaperAGroup(this));
+  appendParameterGroup(new OscillatorBGroup(this));
+  appendParameterGroup(new ShaperBGroup(this));
+  appendParameterGroup(new FBMixerGroup(this));
+  appendParameterGroup(new CombFilterGroup(this));
+  appendParameterGroup(new SVFilterGroup(this));
+  appendParameterGroup(new OutputMixerGroup(this));
+  appendParameterGroup(new FlangerGroup(this));
+  appendParameterGroup(new CabinetGroup(this));
+  appendParameterGroup(new GapFilterGroup(this));
+  appendParameterGroup(new EchoGroup(this));
+  appendParameterGroup(new ReverbGroup(this));
+  appendParameterGroup(new MasterGroup(this));
+  appendParameterGroup(new UnisonGroup(this));
 
-  auto macroControls = appendParameterGroup (new MacroControlsGroup (this));
-  auto hwSources = appendParameterGroup (new HardwareSourcesGroup (this));
-  appendParameterGroup (new MacroControlMappingGroup (this, hwSources, macroControls));
+  auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
+  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this));
+  appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
 
-  appendParameterGroup (new ScaleGroup (this));
+  appendParameterGroup(new ScaleGroup(this));
 
   m_idToParameterMap = getParametersSortedById();
 }
 
-ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::getParameterGroupByID (const Glib::ustring &id) const
+ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::getParameterGroupByID(const Glib::ustring &id) const
 {
-  for (auto a : m_parameterGroups)
+  for(auto a : m_parameterGroups)
   {
-    if (a->getID () == id)
+    if(a->getID() == id)
       return a;
   }
 
   return NULL;
 }
 
-ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup (ParameterGroup *p)
+ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup(ParameterGroup *p)
 {
-  p->init ();
-  g_assert (getParameterGroupByID (p->getID ()) == NULL);
-  auto wrapped = tParameterGroupPtr (p);
-  m_parameterGroups.append (wrapped);
+  p->init();
+  g_assert(getParameterGroupByID(p->getID()) == NULL);
+  auto wrapped = tParameterGroupPtr(p);
+  m_parameterGroups.append(wrapped);
   return wrapped;
 }
 
-void ParameterGroupSet::copyFrom (UNDO::Scope::tTransactionPtr transaction, ParameterGroupSet *other)
+void ParameterGroupSet::copyFrom(UNDO::Scope::tTransactionPtr transaction, ParameterGroupSet *other)
 {
-  auto itThis = getParameterGroups ().begin ();
-  auto itOther = other->getParameterGroups ().begin ();
-  auto endThis = getParameterGroups ().end ();
-  auto endOther = other->getParameterGroups ().end ();
+  auto itThis = getParameterGroups().begin();
+  auto itOther = other->getParameterGroups().begin();
+  auto endThis = getParameterGroups().end();
+  auto endOther = other->getParameterGroups().end();
 
-  for (; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
+  for(; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
   {
-    (*itThis)->copyFrom (transaction, *itOther);
+    (*itThis)->copyFrom(transaction, *itOther);
   }
 }
 
-Parameter *ParameterGroupSet::findParameterByID (size_t id) const
+Parameter *ParameterGroupSet::findParameterByID(size_t id) const
 {
   try
   {
     return m_idToParameterMap.at(id);
   }
-  catch (...)
+  catch(...)
   {
     return nullptr;
   }
 }
 
-
-size_t ParameterGroupSet::countParameters () const
+size_t ParameterGroupSet::countParameters() const
 {
   size_t count = 0;
 
-  for (auto group : m_parameterGroups)
-    count += group->countParameters ();
+  for(auto group : m_parameterGroups)
+    count += group->countParameters();
 
   return count;
 }
 
-map<int, Parameter *> ParameterGroupSet::getParametersSortedById () const
+map<int, Parameter *> ParameterGroupSet::getParametersSortedById() const
 {
   map<int, Parameter *> sorted;
 
-  for (auto group : getParameterGroups ())
-    for (auto param : group->getParameters ())
-      sorted[param->getID ()] = param;
+  for(auto group : getParameterGroups())
+    for(auto param : group->getParameters())
+      sorted[param->getID()] = param;
 
   return sorted;
+}
+
+void ParameterGroupSet::writeDiff(Writer &writer, ParameterGroupSet *other) const
+{
+  writer.writeTag("groups", [&]
+  {
+    for(auto group : getParameterGroups())
+    {
+      auto otherGroup = other->getParameterGroupByID(group->getID());
+      group->writeDiff(writer, otherGroup);
+    }
+  });
 }

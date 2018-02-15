@@ -1653,3 +1653,25 @@ input.param-name-edit {
 .flex-4-col .td {
 	size: 25%;
 }
+
+.compare-tree {
+	color: White;
+}
+
+.compare-tree td {
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.indent-1 {
+	padding-left: 1em;
+}
+
+.indent-2 {
+	padding-left: 2em;
+}
+
+.gwt-DialogBox .dialogContent {
+	max-height: 80vh;
+	overflow-y: auto;
+}

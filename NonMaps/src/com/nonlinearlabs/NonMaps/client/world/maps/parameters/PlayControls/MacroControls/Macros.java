@@ -13,6 +13,22 @@ public class Macros extends ParameterGroupVertical {
 			return Integer.toString(ordinal());
 		}
 
+		public String toPrettyString() {
+			switch (this) {
+			case A:
+				return "Ⓐ";
+			case B:
+				return "Ⓑ";
+			case C:
+				return "Ⓒ";
+			case D:
+				return "Ⓓ";
+			case NONE:
+				return "";
+			}
+			return "";
+		}
+
 		public int toInt() {
 			return ordinal();
 		}

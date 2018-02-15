@@ -169,7 +169,7 @@ void PresetManagerActions::handleImportBackupFile(UNDO::TransactionCreationScope
   MemoryInStream stream(buffer, true);
   XmlReader reader(stream, transaction);
 
-  if(!reader.read < PresetManagerSerializer > (std::ref(m_presetManager)))
+  if(!reader.read<PresetManagerSerializer>(std::ref(m_presetManager)))
   {
     transaction->rollBack();
     http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
@@ -183,13 +183,13 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
 
   if(path.find("/presets/search-preset") == 0)
   {
-    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
+    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
     {
       Glib::ustring query = request->get("query");
       Glib::ustring mode = request->get("combine");
       Glib::ustring field = request->get("fields");
 
-      std::vector < PresetManager::presetInfoSearchFields > fields;
+      std::vector<PresetManager::presetInfoSearchFields> fields;
 
       auto splitFieldStrings = StringTools::splitStringOnAnyDelimiter(field, ',');
       std::for_each(splitFieldStrings.begin(), splitFieldStrings.end(), [&](std::string t)
@@ -217,7 +217,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
 
   if(path.find("/presets/download-banks") == 0)
   {
-    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
+    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
       boled.setOverlay(new SplashLayout());
@@ -235,15 +235,16 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
 
   if(path.find("/presets/get-diff") == 0)
   {
-    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
+    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
       auto preset2 = Application::get().getPresetManager()->findPreset(request->get("p2"));
 
       if(preset1 && preset2)
       {
-        httpRequest->respond(Application::get().getPresetManager()->getDiffString(preset1, preset2));
-        httpRequest->setStatusOK();
+        auto stream = request->createStream("text/xml", false);
+        XmlWriter writer(stream);
+        preset1->writeDiff(writer, preset2.get());
         return true;
       }
     }
@@ -251,15 +252,16 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
 
   if(path.find("/presets/get-diff-editbuffer") == 0)
   {
-    if(auto httpRequest = dynamic_pointer_cast < HTTPRequest > (request))
+    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
       auto preset2 = Application::get().getPresetManager()->getEditBuffer();
 
       if(preset1 && preset2)
       {
-        httpRequest->respond(Application::get().getPresetManager()->getDiffString(preset1, preset2));
-        httpRequest->setStatusOK();
+        auto stream = request->createStream("text/xml", false);
+        XmlWriter writer(stream);
+        preset1->writeDiff(writer, preset2.get());
         return true;
       }
     }

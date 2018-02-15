@@ -466,12 +466,12 @@ void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const 
   writer.writeTag("preset-manager", [&]()
   {
     writer.writeTag ("banks", [&]()
-    {
-      for (tBankPtr bank : m_banks)
-      {
-        bank->searchPresets (writer, query);
-      }
-    });
+        {
+          for (tBankPtr bank : m_banks)
+          {
+            bank->searchPresets (writer, query);
+          }
+        });
   });
 }
 

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "../http/UpdateDocumentContributor.h"
+#include "../libundo/undo/Scope.h"
+#include "../playground.h"
+#include "../proxies/hwui/HWUIEnums.h"
+#include "../xml/Writer.h"
 #include "PhysicalControlParameter.h"
 
 class RibbonParameter : public PhysicalControlParameter
@@ -45,11 +50,14 @@ class RibbonParameter : public PhysicalControlParameter
 
   protected:
     void writeDocProperties (Writer &writer, tUpdateID knownRevision) const override;
+    void writeDifferences(Writer& writer, Parameter* other) const override;
+
     virtual void onPresetSentToLpc() const override;
     virtual bool shouldWriteDocProperties (tUpdateID knownRevision) const override;
     virtual bool hasBehavior() const override;
     virtual Glib::ustring getCurrentBehavior() const override;
     virtual void undoableStepBehavior (UNDO::Scope::tTransactionPtr transaction, int direction) override;
+    virtual size_t getHash() const override;
 
   private:
     void ensureExclusiveRoutingIfNeeded ();
@@ -62,3 +70,4 @@ class RibbonParameter : public PhysicalControlParameter
     RibbonReturnMode m_returnMode = STAY;
     tUpdateID m_updateIdWhenModeChanged = 0;
 };
+

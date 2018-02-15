@@ -142,7 +142,30 @@ abstract public class PhysicalControlParameter extends Parameter {
 	}
 
 	public enum ReturnMode {
-		None, Zero, Center
+		None, Center, Zero;
+
+		public String toString() {
+			switch (this) {
+			case None:
+				return "None";
+
+			case Zero:
+				return "Zero";
+
+			case Center:
+				return "Center";
+
+			default:
+				return "";
+			}
+		}
+
+		public static ReturnMode fromInt(int i) {
+			for (ReturnMode m : ReturnMode.values())
+				if (m.ordinal() == i)
+					return m;
+			return ReturnMode.None;
+		}
 	}
 
 	public abstract ReturnMode getReturnMode();

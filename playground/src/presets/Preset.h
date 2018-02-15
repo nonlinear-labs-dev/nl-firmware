@@ -50,6 +50,7 @@ class Preset : public ParameterGroupSet, public AttributesOwner
     sigc::connection onPresetChanged (slot<void> s);
 
     void writeDocument (Writer &writer, tUpdateID knownRevision) const override;
+    void writeDiff(Writer &writer, Preset *other) const;
 
     UpdateDocumentContributor::tUpdateID onChange () override;
 

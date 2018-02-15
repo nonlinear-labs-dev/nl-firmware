@@ -329,3 +329,30 @@ bool Preset::matchesQuery(const SearchQuery &query) const
     return false;
   });
 }
+
+void Preset::writeDiff(Writer &writer, Preset *other) const
+{
+  writer.writeTag("diff", Attribute("a", getName()), Attribute("b", other->getName()),
+      [&]
+      {
+        if(getHash() != other->getHash())
+        {
+          if(getName() != other->getName())
+          {
+            writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
+          }
+
+          if(getAttribute("Comment", "") != other->getAttribute("Comment", ""))
+          {
+            writer.writeTextElement("comment", "", Attribute("a", getAttribute("Comment", "")), Attribute("b", other->getAttribute("Comment", "")));
+          }
+
+          if(getAttribute("color", "") != other->getAttribute("color", ""))
+          {
+            writer.writeTextElement("color", "", Attribute("a", getAttribute("color", "")), Attribute("b", other->getAttribute("color", "")));
+          }
+
+          ParameterGroupSet::writeDiff(writer, other);
+        }
+      });
+}

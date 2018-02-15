@@ -22,6 +22,22 @@ void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContribut
   writer.writeTextElement("ribbon-return-mode", to_string(m_returnMode));
 }
 
+void RibbonParameter::writeDifferences(Writer& writer, Parameter* other) const
+{
+  Parameter::writeDifferences(writer, other);
+  RibbonParameter *pOther = static_cast<RibbonParameter*>(other);
+
+  if(getRibbonTouchBehaviour() != pOther->getRibbonTouchBehaviour())
+  {
+    writer.writeTextElement("behaviour", "", Attribute("a", getRibbonTouchBehaviour()), Attribute("b", pOther->getRibbonTouchBehaviour()));
+  }
+
+  if(getReturnMode() != pOther->getReturnMode())
+  {
+    writer.writeTextElement("return-mode", "", Attribute("a", (int)getReturnMode()), Attribute("b", (int)pOther->getReturnMode()));
+  }
+}
+
 void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction, RibbonParameter::RibbonTouchBehaviour mode)
 {
   if(m_touchBehaviour != mode)
@@ -300,4 +316,12 @@ void RibbonParameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)
   super::loadDefault(transaction);
   undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
   undoableSetRibbonTouchBehaviour(transaction, RibbonTouchBehaviour::ABSOLUTE);
+}
+
+size_t RibbonParameter::getHash() const
+{
+  size_t hash = super::getHash();
+  hash_combine(hash, (int) m_touchBehaviour);
+  hash_combine(hash, (int) m_returnMode);
+  return hash;
 }

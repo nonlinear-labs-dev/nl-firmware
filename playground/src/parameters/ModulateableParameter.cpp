@@ -215,6 +215,22 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   writer.writeTextElement("modSrc", to_string(m_modSource));
 }
 
+void ModulateableParameter::writeDifferences(Writer& writer, Parameter* other) const
+{
+  Parameter::writeDifferences(writer, other);
+  ModulateableParameter *pOther = static_cast<ModulateableParameter*>(other);
+
+  if(getModulationAmount() != pOther->getModulationAmount())
+  {
+    writer.writeTextElement("mc-amount", "", Attribute("a", getModulationAmount()), Attribute("b", pOther->getModulationAmount()));
+  }
+
+  if(getModulationSource() != pOther->getModulationSource())
+  {
+    writer.writeTextElement("mc-select", "", Attribute("a", getModulationSource()), Attribute("b", pOther->getModulationSource()));
+  }
+}
+
 void ModulateableParameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)
 {
   undoableSelectModSource(transaction, 0);
