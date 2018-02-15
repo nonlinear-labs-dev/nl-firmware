@@ -95,7 +95,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		super.doFirstLayoutPass(levelOfDetail);
 		NonDimension oldDim = getNonPosition().getDimension();
 
-		double tapeWidth = getAttachArea();
+		double tapeWidth = getAttachArea() / 2;
 
 		for (MapsControl c : getChildren()) {
 			c.getNonPosition().moveBy(tapeWidth, tapeWidth);

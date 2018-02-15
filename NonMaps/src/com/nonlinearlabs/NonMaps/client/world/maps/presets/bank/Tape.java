@@ -63,6 +63,9 @@ public class Tape extends MapsControl {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
+		if(getParent().isDraggingControl())
+			return;
+		
 		super.draw(ctx, invalidationMask);
 		getPixRect().fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
 	}
