@@ -8,7 +8,9 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
+import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 
 public class Tape extends MapsControl {
 
@@ -34,10 +36,21 @@ public class Tape extends MapsControl {
 
 	@Override
 	public boolean isVisible() {
-		boolean v = super.isVisible();
-		v &= getNonMaps().getNonLinearWorld().getViewport().getOverlay().isCurrentlyDraggingATypeOf(Bank.class.getName());
-		v &= getParent().isTapeActive(orientation);
-		return v;
+		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
+
+		for (DragProxy d : o.getDragProxies()) {
+			Control r = d.getCurrentReceiver();
+			if (r != null) {
+				if (r instanceof PresetManager || r instanceof Tape) {
+					boolean v = super.isVisible();
+					v &= o.isCurrentlyDraggingATypeOf(Bank.class.getName());
+					v &= getParent().isTapeActive(orientation);
+					return v;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public Orientation getOrientation() {
