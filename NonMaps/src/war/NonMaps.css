@@ -1653,3 +1653,49 @@ input.param-name-edit {
 .flex-4-col .td {
 	size: 25%;
 }
+
+.colortaggingfield-template {
+	vertical-align: middle;
+	padding: 0px 0px;
+	height: 15px;
+	width: 15px;
+    border-radius: 0;
+}
+
+.colortaggingfield-green {
+	margin-right: 20px;
+	background-color: rgb(0, 255, 0);
+} 
+.colortaggingfield-blue {
+	margin-right: 20px;
+	background-color: rgb(0, 0, 255);
+} 
+.colortaggingfield-yellow {
+	margin-right: 20px;
+	background-color: rgb(255, 255, 0);
+} 
+.colortaggingfield-orange {
+	margin-right: 20px;
+	background-color: rgb(255, 126, 0);
+}
+.colortaggingfield-purple {
+	margin-right: 20px;
+	background-color: rgb(255, 0, 255);
+} 
+.colortaggingfield-red {
+	margin-right: 20px;
+	background-color: rgb(255, 0, 0);
+} 
+.colortaggingfield-none {
+	background-color: rgb(0, 0, 0, 0);
+}
+
+.colortag-current {
+	vertical-align: middle;
+	outline:  5px solid white;
+	border: 0.25mm solid white;
+}
+
+.tag-div {
+	line-height: 32px;
+}
