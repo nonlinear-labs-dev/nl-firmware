@@ -253,7 +253,6 @@ public class PresetList extends OverlayLayout {
 						currentScrollPreset = null;
 						scrollRequest = ScrollRequest.None;
 					}
-
 					requestLayout();
 				}
 			});
