@@ -284,8 +284,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		MultiplePresetSelection selection = pm.getMultiSelection();
 
 		Control ret = null;
-		double xMargin = 0;
-		double yMargin = 0;
+		double yMargin = getPixRect().getTop() - pos.getY();
 
 		for (String uuid : selection.getSelectedPresets()) {
 			Preset p = pm.findPreset(uuid);
@@ -294,12 +293,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				if (p == this)
 					ret = a;
 
-				double xDiff = pos.getX() - p.getPixRect().getLeft();
+				double xDiff = 0;
 				double yDiff = pos.getY() - p.getPixRect().getTop();
-				a.animatePositionOffset(xDiff + xMargin, yDiff + yMargin);
-
-				xMargin += getPixRect().getHeight() * 1 / 8;
-				yMargin += getPixRect().getHeight() * 7 / 8;
+				a.animatePositionOffset(xDiff, yDiff + yMargin);
+				yMargin += getPixRect().getHeight();
 			}
 		}
 

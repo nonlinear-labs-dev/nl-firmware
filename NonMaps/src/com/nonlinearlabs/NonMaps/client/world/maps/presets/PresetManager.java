@@ -380,12 +380,12 @@ public class PresetManager extends MapsLayout {
 		}
 
 		if (dragProxy.getOrigin() instanceof IPreset) {
-			if (!getNonMaps().getNonLinearWorld().getParameterEditor().getPixRect().contains(pos))
-				return this;
+			return this;
 		}
 
-		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
+		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
 			return this;
+		}
 
 		return super.drag(pos, dragProxy);
 	}
