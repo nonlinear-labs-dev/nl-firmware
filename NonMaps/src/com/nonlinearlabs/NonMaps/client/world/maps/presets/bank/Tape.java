@@ -58,6 +58,12 @@ public class Tape extends MapsControl {
 		if (getParent().isClusteredWith(others.getParent()))
 			return false;
 
+		if (!isVisible())
+			return false;
+
+		if (!others.isVisible())
+			return false;
+
 		return (orientation == Orientation.East && others.orientation == Orientation.West)
 				|| (orientation == Orientation.West && others.orientation == Orientation.East)
 				|| (orientation == Orientation.North && others.orientation == Orientation.South)
