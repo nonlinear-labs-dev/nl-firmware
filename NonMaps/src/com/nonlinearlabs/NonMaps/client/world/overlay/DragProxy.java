@@ -279,4 +279,8 @@ public class DragProxy extends OverlayControl {
 			}
 		});
 	}
+
+	public Control getCurrentReceiver() {
+		return receiver;
+	}
 }
