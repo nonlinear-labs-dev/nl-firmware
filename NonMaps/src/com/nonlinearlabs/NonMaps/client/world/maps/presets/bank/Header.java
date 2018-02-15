@@ -114,8 +114,12 @@ public class Header extends Label {
 				}
 			} else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
 				getNonMaps().getServerProxy().dropEditBufferOnBank(b);
-			else if (dragProxy.getOrigin() instanceof IBank)
-				getNonMaps().getServerProxy().dropBankOnBank((IBank) dragProxy.getOrigin(), b);
+			else if (dragProxy.getOrigin() instanceof IBank) {
+				Bank draggedBank = (Bank)dragProxy.getOrigin();
+				if(!draggedBank.hasSlaves()) {
+					getNonMaps().getServerProxy().dropBankOnBank((IBank) dragProxy.getOrigin(), b);
+				}
+			}
 		}
 
 		setIsDropTarget(false);
@@ -255,15 +259,17 @@ public class Header extends Label {
 							if (dragProxy.getOrigin() != getParent()) {
 								if (dragProxy.getOrigin() instanceof Bank) {
 									Bank bBank = (Bank) dragProxy.getOrigin();
-									if (bBank.hasSlaves() == false)
+									if (bBank.hasSlaves() == false) {
 										setIsDropTarget(true);
-									return this;
+										return this;
+									}
 								}
 								else if(dragProxy.getOrigin() instanceof IPreset) {
 									Preset p = (Preset)dragProxy.getOrigin();
-									if(p.getParent() != getParent())
+									if(p.getParent() != getParent()) {
 										setIsDropTarget(true);
-									return this;
+										return this;
+									}
 								}
 							}
 						}
