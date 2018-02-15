@@ -142,6 +142,9 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
+		if (!getPixRect().contains(pos))
+			return null;
+
 		if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
 				|| dragProxy.getOrigin() instanceof IBank) {
 			Rect r = getPixRect();

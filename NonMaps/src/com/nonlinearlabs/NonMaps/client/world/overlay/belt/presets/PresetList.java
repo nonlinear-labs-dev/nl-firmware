@@ -117,6 +117,9 @@ public class PresetList extends OverlayLayout {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
+		if (!getPixRect().contains(pos))
+			return null;
+
 		if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
 				|| dragProxy.getOrigin() instanceof IBank) {
 			setIsDropTarget(true);
