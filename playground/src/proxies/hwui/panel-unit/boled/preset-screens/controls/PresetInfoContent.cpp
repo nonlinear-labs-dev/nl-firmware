@@ -174,6 +174,6 @@ Glib::ustring PresetInfoContent::localizeIsoTime(Glib::ustring timestamp)
     return "---";
 
   std::stringstream ss;
-  ss << std::put_time(&t, "%x %X");
+  ss << std::put_time(&t, "%Y-%m-%d %H:%M");
   return ss.str();
 }
