@@ -1664,27 +1664,28 @@ input.param-name-edit {
 }
 
 .colortaggingfield-green {
-	margin-right: 20px;
+	margin-left: 8px;
+    margin-right: 18.7px;
 	background-color: rgb(0, 255, 0);
 } 
 .colortaggingfield-blue {
-	margin-right: 20px;
+    margin-right: 18.7px;
 	background-color: rgb(0, 0, 255);
 } 
 .colortaggingfield-yellow {
-	margin-right: 20px;
+    margin-right: 18.7px;
 	background-color: rgb(255, 255, 0);
 } 
 .colortaggingfield-orange {
-	margin-right: 20px;
+    margin-right: 18.7px;
 	background-color: rgb(255, 126, 0);
 }
 .colortaggingfield-purple {
-	margin-right: 20px;
+    margin-right: 18.7px;
 	background-color: rgb(255, 0, 255);
 } 
 .colortaggingfield-red {
-	margin-right: 20px;
+    margin-right: 18.7px;
 	background-color: rgb(255, 0, 0);
 } 
 .colortaggingfield-none {
@@ -1693,7 +1694,7 @@ input.param-name-edit {
 
 .colortag-current {
 	vertical-align: middle;
-	outline-color: white;
+	outline-color: #bbb;
 	outline-offset: 3px;
 	outline-width: 2px;
 	outline-style: solid;
