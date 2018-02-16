@@ -1659,6 +1659,7 @@ input.param-name-edit {
 }
 
 .compare-tree td {
+	color: white;
 	padding-left: 1em;
 	padding-right: 1em;
 }

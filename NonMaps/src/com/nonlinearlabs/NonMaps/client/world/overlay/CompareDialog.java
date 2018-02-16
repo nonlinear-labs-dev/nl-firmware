@@ -1,9 +1,14 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.NamedNodeMap;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
@@ -42,7 +47,7 @@ public class CompareDialog extends GWTDialog {
 
 	private void init() {
 		RootPanel.get().add(this);
-
+		
 		getElement().addClassName("preset-compare-dialog");
 
 		initalShow();
@@ -116,12 +121,33 @@ public class CompareDialog extends GWTDialog {
 	}
 
 	protected void setup() {
-		if (xml != null) {
+		HTMLPanel superPanel = new HTMLPanel("");
+		Button b = new Button("Refresh");
+		b.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				if (preset2 == null)
+					getCsvOfEditBuffer();
+				else
+					getCsv();			
+			}
+		});
+		superPanel.add(b);
+		if (xml != null) {	
+			NamedNodeMap diffNode = xml.getElementsByTagName("diff").item(0).getAttributes();
+			String presetName1 = diffNode.getNamedItem("a").getNodeValue();
+			String presetName2 = diffNode.getNamedItem("b").getNodeValue();
+			
+			if(preset1 == null)
+				presetName1 = "Editbuffer";
+			if(preset2 == null)
+				presetName2 = "Editbuffer";
+			
 			int row = 0;
 			FlexTable table = new FlexTable();
 			table.getElement().addClassName("compare-tree");
-			table.setText(row, 1, "Preset A");
-			table.setText(row, 2, "Preset B");
+			table.setText(row, 1, presetName1);
+			table.setText(row, 2, presetName2);
 			row++;
 			table.setText(row, 1, "---");
 			table.setText(row, 2, "---");
@@ -178,8 +204,8 @@ public class CompareDialog extends GWTDialog {
 					}
 				}
 			}
-
-			setWidget(table);
+			superPanel.add(table);
+			setWidget(superPanel);
 		}
 	}
 
