@@ -197,7 +197,15 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 
       case BUTTON_B:
       case BUTTON_C:
-        return m_presets->onButton(i, down, modifiers);
+        if (down)
+        {
+          installButtonRepeat ([ = ]()
+          {
+            m_presets->onButton(i, down, modifiers);
+          });
+        }
+
+        return true;
 
       case BUTTON_D:
         if(m_menu)
@@ -251,6 +259,10 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
         else if(m_focusAndMode.mode == UIMode::Select)
           pm->getEditBuffer()->undoableLoadSelectedPreset();
     }
+  } else {
+      if(i == BUTTON_B || i==BUTTON_C) {
+        removeButtonRepeat();
+      }
   }
   return super::onButton(i, down, modifiers);
 }
