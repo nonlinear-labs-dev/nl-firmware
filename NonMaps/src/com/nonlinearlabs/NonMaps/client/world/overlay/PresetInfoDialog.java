@@ -59,7 +59,7 @@ public class PresetInfoDialog extends GWTDialog {
 			if(getCurrentPreset().getAttribute("color") == c.toString()) {
 				updateCurrentHighlight(b);
 			} else if(getCurrentPreset().getAttribute("color") == "") {
-				NonMaps.get().getServerProxy().setPresetAttribute(getCurrentPreset(), "color", Color.none.toString());
+				NonMaps.get().getServerProxy().setPresetAttributeHidden(getCurrentPreset(), "color", Color.none.toString());
 				updateCurrentHighlight(b);
 			}
 		}
