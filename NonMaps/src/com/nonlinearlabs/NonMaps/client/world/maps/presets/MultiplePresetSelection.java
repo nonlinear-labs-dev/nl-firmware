@@ -68,4 +68,63 @@ public class MultiplePresetSelection {
 	public void deletePresets() {
 		NonMaps.get().getServerProxy().deletePresets(getCSV());
 	}
+		
+	private PresetManager getPresetManager() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager();
+	}
+	
+	private String getLastUuid() {
+		return selectedPresets.get(selectedPresets.size() - 1);
+	}
+	
+	private boolean isPresetSoloInList(Preset p) {
+		Preset next = p.getParent().getPresetList().getNext(p.getUUID());
+		Preset prev = p.getParent().getPresetList().getPrev(p.getUUID());
+		return contains(next) == false && contains(prev) == false;
+	}
+	
+	public void handleDownKey() {		
+		Preset curr = getPresetManager().findPreset(getLastUuid());
+		if(curr != null) {
+			Preset prev = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getPrev(getLastUuid());
+			Preset next = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getNext(getLastUuid());
+			if(next != null) {
+				if(contains(next)) {
+					remove(curr);
+				}
+				else
+					add(next);
+			}
+		}
+		
+	}
+	
+	public void handleUpKey() {
+		Preset curr = getPresetManager().findPreset(getLastUuid());
+		if(curr != null) {
+			Preset prev = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getPrev(getLastUuid());
+			Preset next = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getNext(getLastUuid());
+			if(prev != null) {
+				if(contains(prev)){
+					remove(curr);
+				}else
+					add(prev);
+			}
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
