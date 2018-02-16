@@ -84,9 +84,9 @@ public class MultiplePresetSelection {
 			if(next != null) {
 				if(contains(next)) {
 					remove(curr);
-				}
-				else
+				} else {
 					add(next);
+				}
 			}
 		}
 		
@@ -97,10 +97,11 @@ public class MultiplePresetSelection {
 		if(curr != null) {
 			Preset prev = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getPrev(getLastUuid());
 			if(prev != null) {
-				if(contains(prev)){
+				if(contains(prev)) {
 					remove(curr);
-				}else
+				} else {
 					add(prev);
+				}
 			}
 		}
 	}
