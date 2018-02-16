@@ -27,10 +27,8 @@ public class ColorTag extends ZoomReactingControl {
 			case red:
 				return new RGB(255, 0, 0);
 			case none:
-				return new RGBA(0, 0, 0, 0);
-
 			default:
-				return null;
+				return new RGBA(0, 0, 0, 0);
 			}
 		}
 	}
