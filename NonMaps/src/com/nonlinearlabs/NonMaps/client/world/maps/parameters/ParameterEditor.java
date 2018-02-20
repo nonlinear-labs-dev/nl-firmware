@@ -40,6 +40,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ShapeA.ShapeA;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ShapeB.ShapeB;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Unison.Unison;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.NonMaps.client.world.overlay.CompareDialog;
 
 public class ParameterEditor extends LayoutResizingVertical {
 
@@ -262,6 +263,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 			return;
 
 		if (ServerProxy.didChange(node)) {
+			updateCompare(node);
+			
 			if (!omitOracles) {
 				Tracer.log("updated parameters from server-sent document");
 
@@ -405,6 +408,12 @@ public class ParameterEditor extends LayoutResizingVertical {
 		}
 	}
 
+	private void updateCompare(Node node) {
+		for(CompareDialog compareDialog: NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getCompareDialogs()) {
+			compareDialog.update();
+		}
+	}
+	
 	private HashMap<Integer, Parameter> parameterMap = new HashMap<Integer, Parameter>();
 
 	public void registerSelectable(Parameter sel) {

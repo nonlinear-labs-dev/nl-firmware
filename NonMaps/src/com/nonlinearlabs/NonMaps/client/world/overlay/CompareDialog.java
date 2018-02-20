@@ -1,8 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -23,14 +25,12 @@ public class CompareDialog extends GWTDialog {
 	Preset preset1, preset2;
 	Document xml;
 
-	static CompareDialog theDialog = null;
-
 	public static void open(Preset p1) {
-		theDialog = new CompareDialog(p1);
+		new CompareDialog(p1);
 	}
 
 	public static void open(Preset p1, Preset p2) {
-		theDialog = new CompareDialog(p1, p2);
+		new CompareDialog(p1, p2);
 	}
 
 	private CompareDialog(Preset p1) {
@@ -46,6 +46,7 @@ public class CompareDialog extends GWTDialog {
 	}
 
 	private void init() {
+		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().addCompareDialog(this);
 		RootPanel.get().add(this);
 		
 		getElement().addClassName("preset-compare-dialog");
@@ -115,24 +116,12 @@ public class CompareDialog extends GWTDialog {
 	@Override
 	protected void commit() {
 		hide();
-		theDialog = null;
+		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeCompareDialog(this);
 		NonMaps.theMaps.captureFocus();
 		NonMaps.theMaps.getNonLinearWorld().requestLayout();
 	}
 
 	protected void setup() {
-		HTMLPanel superPanel = new HTMLPanel("");
-		Button b = new Button("Refresh");
-		b.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				if (preset2 == null)
-					getCsvOfEditBuffer();
-				else
-					getCsv();			
-			}
-		});
-		superPanel.add(b);
 		if (xml != null) {	
 			NamedNodeMap diffNode = xml.getElementsByTagName("diff").item(0).getAttributes();
 			String presetName1 = diffNode.getNamedItem("a").getNodeValue();
@@ -204,8 +193,7 @@ public class CompareDialog extends GWTDialog {
 					}
 				}
 			}
-			superPanel.add(table);
-			setWidget(superPanel);
+			setWidget(table);
 		}
 	}
 
@@ -253,5 +241,20 @@ public class CompareDialog extends GWTDialog {
 			return "Behaviour";
 		}
 		return nodeName;
+	}
+
+	public List<Preset> getPresets() {
+		List<Preset> l = new ArrayList<Preset>();
+		l.add(preset1);
+		if(preset2 != null)
+			l.add(preset2);
+		return l;
+	}
+
+	public void update() {
+		if (preset2 == null)
+			getCsvOfEditBuffer();
+		else
+			getCsv();
 	}
 }
