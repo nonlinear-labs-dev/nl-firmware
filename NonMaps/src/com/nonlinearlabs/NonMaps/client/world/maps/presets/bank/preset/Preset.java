@@ -212,11 +212,22 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;
 		}
+		
+		if (isInStoreSelectMode())
+			return this;
 
+		if (isInMultiplePresetSelectionMode())
+			return this;
+
+		wasSelectedAtMouseDown = isSelected();
+
+		if (!wasSelectedAtMouseDown)
+			selectPreset();
+		
 		if (wasSelectedAtMouseDown) {
 			load();
 		}
-
+		
 		return this;
 	}
 
@@ -243,22 +254,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
-	}
-
-	@Override
-	public Control mouseDown(Position eventPoint) {
-		if (isInStoreSelectMode())
-			return this;
-
-		if (isInMultiplePresetSelectionMode())
-			return this;
-
-		wasSelectedAtMouseDown = isSelected();
-
-		if (!wasSelectedAtMouseDown)
-			selectPreset();
-
-		return this;
 	}
 
 	private boolean isInMultiplePresetSelectionMode() {
