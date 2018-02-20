@@ -21,6 +21,7 @@ public class BankControl extends OverlayLayout implements IBank {
 
 	private BankHeader header;
 	private PresetList presets;
+	private EmptyBeltPreset emptyLabel;
 
 	BankControl(OverlayLayout parent) {
 		super(parent);
@@ -45,6 +46,15 @@ public class BankControl extends OverlayLayout implements IBank {
 		Bank bank = pm.findBank(selectedBankUuid);
 		return bank;
 	}
+	
+	void showEmptyLabel(boolean bankEmpty) {
+		if (bankEmpty && emptyLabel == null) {
+			emptyLabel = addChild(new EmptyBeltPreset(this, getBankInCharge()));
+		} else if (!bankEmpty && emptyLabel != null) {
+			removeChild(emptyLabel);
+			emptyLabel = null;
+		}
+	}
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
@@ -57,9 +67,14 @@ public class BankControl extends OverlayLayout implements IBank {
 		double border = getSpaceBetweenChildren() * 2;
 
 		header.doLayout(border, border, w - 2 * border, headerHeight);
-
+		
 		double listTop = header.getRelativePosition().getBottom() + getSpaceBetweenChildren();
 		presets.doLayout(border, listTop, w - 2 * border, h - listTop - border);
+		
+		double emptyLabelHeight = (h - listTop - border) / 3;
+		
+		if(emptyLabel != null)
+			emptyLabel.doLayout(border / 2 ,listTop / 2 + emptyLabelHeight / 2, w - 2 * border, emptyLabelHeight);
 	}
 
 	@Override
@@ -75,6 +90,7 @@ public class BankControl extends OverlayLayout implements IBank {
 	public void update(Node pmNode) {
 		if (pmNode != null) {
 			if (ServerProxy.didChange(pmNode)) {
+				showEmptyLabel(getBankInCharge().getPresetList().getPresetCount() == 0);
 				update();
 			}
 		}
