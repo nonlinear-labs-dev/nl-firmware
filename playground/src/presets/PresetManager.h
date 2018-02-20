@@ -50,7 +50,6 @@ class PresetManager : public ContentSection
     size_t getNumBanks () const;
     tBankPtr getBank (int pos);
     const tBankPtr getBank (int pos) const;
-    const vector<tBankPtr> &getBanks () const;
 
     int calcOrderNumber (const PresetBank *bank) const;
     int calcBankIndex (const PresetBank *bank) const;
@@ -92,6 +91,8 @@ class PresetManager : public ContentSection
 
     sigc::connection onBankSelection (sigc::slot<void, tBankPtr> slot);
     sigc::connection onNumBanksChanged (sigc::slot<void, int> slot);
+
+    const vector<tBankPtr> & getBanks() const;
 
     Glib::ustring createPresetNameBasedOn (const Glib::ustring &oldName) const;
     void undoableAppendBank (UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, bool autoSelect);

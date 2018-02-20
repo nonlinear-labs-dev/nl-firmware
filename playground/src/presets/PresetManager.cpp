@@ -226,12 +226,15 @@ void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transact
 
     if(newPos >= 0 && newPos < getNumBanks())
     {
+      auto swapData = UNDO::createSwapData (std::make_pair(oldPos, newPos));
       transaction->addSimpleCommand([ = ] (UNDO::Command::State)
       {
-        auto a = getBank(oldPos);
-        auto b = getBank(newPos);
-        m_banks[newPos] = a;
-        m_banks[oldPos] = b;
+        auto posPair = std::make_pair(swapData->get<0>().second, swapData->get<0>().first);
+        swapData->swapWith(posPair);
+
+        tBankPtr bank = m_banks[swapData->get<0>().second];
+        m_banks.erase(m_banks.begin() + swapData->get<0>().second);
+        m_banks.emplace(m_banks.begin() + swapData->get<0>().first, bank);
         reassignOrderNumbers();
       });
     }
