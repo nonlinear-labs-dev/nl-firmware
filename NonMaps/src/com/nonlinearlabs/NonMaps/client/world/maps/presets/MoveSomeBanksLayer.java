@@ -26,9 +26,8 @@ public class MoveSomeBanksLayer extends MapsControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-
-		double twoMM = Millimeter.toPixels(2);
-
+		
+		
 		Rect minRect;
 
 		if (currentPosition.getX() > startPosition.getX()) {
@@ -50,9 +49,7 @@ public class MoveSomeBanksLayer extends MapsControl {
 		}
 
 		setPixRect(minRect);
-
-		minRect.applyPadding(-twoMM, -twoMM, -twoMM, -twoMM);
-		minRect.drawRoundedArea(ctx, twoMM, Millimeter.toPixels(0.1), new RGBA(255, 255, 255, 0.25), new RGB(255, 255, 255));
+		minRect.drawRoundedArea(ctx, 0, Millimeter.toPixels(0.1), new RGBA(255, 255, 255, 0.25), new RGB(255, 255, 255));
 	}
 
 	public void update(Position pos) {
