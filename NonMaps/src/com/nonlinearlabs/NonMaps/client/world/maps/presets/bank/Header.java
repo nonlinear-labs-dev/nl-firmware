@@ -271,6 +271,10 @@ public class Header extends Label {
 										return this;
 									}
 								}
+								else if(dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
+									setIsDropTarget(true);
+									return this;
+								}
 							}
 						}
 					}
