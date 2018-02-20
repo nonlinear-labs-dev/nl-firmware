@@ -18,6 +18,8 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class CompareDialog extends GWTDialog {
 
+	public static int count = 0;
+	
 	Label leftPreset, rightPreset, parameterCaption;
 	Preset preset1, preset2;
 	String csvWithDiffs = "";
@@ -30,10 +32,12 @@ public class CompareDialog extends GWTDialog {
 
 	public static void open(Preset p1) {
 		theDialog = new CompareDialog(p1);
+		count++;
 	}
 
 	public static void open(Preset p1, Preset p2) {
 		theDialog = new CompareDialog(p1, p2);
+		count++;
 	}
 
 	private CompareDialog(Preset p1) {
@@ -203,6 +207,10 @@ public class CompareDialog extends GWTDialog {
 		theDialog = null;
 		NonMaps.theMaps.captureFocus();
 		NonMaps.theMaps.getNonLinearWorld().requestLayout();
+		count--;
+		if(count == 0) {
+			NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
+		}
 	}
 
 }
