@@ -82,6 +82,7 @@ class PresetManager : public ContentSection
     tBankPtr findBank (const Glib::ustring &uuid) const;
     void undoableDeleteSelectedBank (UNDO::Scope::tTransactionPtr transaction);
     tBankPtr getSelectedBank () const;
+    const vector<tBankPtr> & getBanks() const;
 
     void undoableSelectBank (const Glib::ustring &uuid);
     bool undoableSelectBank (UNDO::Scope::tTransactionPtr transaction, int idx);
@@ -91,8 +92,6 @@ class PresetManager : public ContentSection
 
     sigc::connection onBankSelection (sigc::slot<void, tBankPtr> slot);
     sigc::connection onNumBanksChanged (sigc::slot<void, int> slot);
-
-    const vector<tBankPtr> & getBanks() const;
 
     Glib::ustring createPresetNameBasedOn (const Glib::ustring &oldName) const;
     void undoableAppendBank (UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, bool autoSelect);
