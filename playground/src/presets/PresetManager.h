@@ -50,7 +50,7 @@ class PresetManager : public ContentSection
     size_t getNumBanks () const;
     tBankPtr getBank (int pos);
     const tBankPtr getBank (int pos) const;
-    const vector<tBankPtr> &getBanks() const;
+    const vector<tBankPtr> &getBanks () const;
 
     int calcOrderNumber (const PresetBank *bank) const;
     int calcBankIndex (const PresetBank *bank) const;
