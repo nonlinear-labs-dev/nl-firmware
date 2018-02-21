@@ -1,20 +1,21 @@
 #pragma once
 
-#include <sigc++/connection.h>
 #include <functional>
 #include <thread>
 #include "FileTools.h"
 
+template <typename T>
 class BackgroundJob
 {
 public:
-    BackgroundJob(sigc::signal<void()> cb) : m_sigNews(cb) {
+    BackgroundJob(std::function<void (T t)> cb) : callback(cb), m_thread(nullptr) {
     };
 
-    ~BackgroundJob()
+    virtual ~BackgroundJob()
     {
       m_close = true;
-      m_thread.join();
+      if(m_thread.get() != nullptr)
+        m_thread->join();
     }
 
     virtual void start() = 0;
@@ -24,31 +25,28 @@ public:
       m_close = false;
     }
 
-    sigc::connection onGotNews(std::function<void()> cb) // ‘cb’ will be called from bg thread whenever there are news;
-    {
-      cb();
-      return 
-    };
-
 protected:
-    std::thread m_thread;
-    sigc::signal<void()> m_sigNews;
+    std::unique_ptr<std::thread> m_thread;
+    std::function<void (T t)> callback;
     bool m_close;
 };
 
 
-class FileCrawlerJob : public BackgroundJob
+class FileCrawlerJob : public BackgroundJob<FileTools::FileList>
 {
 public:
-    FileCrawlerJob(std::string dir, std::function<bool(std::experimental::filesystem::directory_entry)> filter, sigc::signal<void()> cb) :
-            BackgroundJob(cb), directory(dir), fileFilter(filter), m_thread(start)
+    FileCrawlerJob(std::string dir, std::function<bool(std::experimental::filesystem::directory_entry)> filter, std::function<void(FileTools::FileList fl)> callback) :
+            BackgroundJob(callback), directory(dir), fileFilter(filter)
     {
+      m_thread = std::make_unique<std::thread>([=]() {
+        start();
+      });
     }
 
     void start() override
     {
-      const std::string directory(directory);
-      auto it = std::experimental::filesystem::recursive_directory_iterator(std::experimental::filesystem::path(directory.c_str()));
+      const std::string dir(directory);
+      auto it = std::experimental::filesystem::recursive_directory_iterator(std::experimental::filesystem::path(dir.c_str()));
       while(!m_close && it != std::experimental::filesystem::recursive_directory_iterator())
       {
         try
@@ -62,7 +60,7 @@ public:
           } else if (!std::experimental::filesystem::is_directory(it->path()) && !fileFilter(*it))
           {
             list.emplace_back(*it);
-            onGotNews(m_sigNews);
+            callback(list);
           }
         } catch(Glib::Error err)
         {

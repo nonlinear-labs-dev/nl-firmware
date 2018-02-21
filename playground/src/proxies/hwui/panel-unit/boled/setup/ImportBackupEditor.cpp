@@ -136,7 +136,8 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
 
 void ImportBackupEditor::importBackup()
 {
-  auto matchedFiles = FileTools::getListOfFilesThatMatchFilter("/mnt/usb-stick/", &ImportBackupEditor::filterApplicableFileNames);
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(
-      new FileDialogLayout(std::move(matchedFiles), &ImportBackupEditor::importBackupFileFromPath, "Backup File"));
+          new FileDialogLayout(&ImportBackupEditor::filterApplicableFileNames,
+                               &ImportBackupEditor::importBackupFileFromPath,
+                               "Backup File"));
 }

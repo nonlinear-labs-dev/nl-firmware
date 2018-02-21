@@ -13,13 +13,18 @@
 
 
 
-FileDialogLayout::FileDialogLayout(FileTools::FileList&& files, std::function<void(std::experimental::filesystem::directory_entry)> cb,
+FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
                                    std::string header) :
-    DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()), commitFunction(cb), m_header(header)
-{
-  fileCount = files.size();
+    DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()), commitFunction(cb), m_header(header), crawler("/mnt/usb-stick/", filter, [ = ](FileTools::FileList fl){
+        fileList->setFileList(fl);
+        fileCount = fl.size();
+        updateLabels();
+    })
 
-  fileList = addControl(new FileListControl(std::move(files)));
+{
+  fileCount = 0;
+
+  fileList = addControl(new FileListControl());
   headerLabel = addControl(new InvertedLabel(header, Rect(1, 0, 200, 14)));
   fileList->setPosition(Rect(0, 15, 200, 48));
   positionLabel = addControl(new Label("", Rect(210, 0, 40, 12)));

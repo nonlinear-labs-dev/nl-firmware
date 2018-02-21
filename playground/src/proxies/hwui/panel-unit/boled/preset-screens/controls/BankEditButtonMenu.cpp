@@ -135,10 +135,7 @@ void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::direc
 
 void BankEditButtonMenu::importBank()
 {
-  //Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(new PleaseWaitLayout());
-  //Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().redraw();
-  auto matchedFiles = FileTools::getListOfFilesThatMatchFilter("/mnt/usb-stick/", &BankEditButtonMenu::applicableBackupFilesFilter);
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(new FileDialogLayout(std::move(matchedFiles), &BankEditButtonMenu::importBankFromPath, "Bank File"));
+  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(new FileDialogLayout(&BankEditButtonMenu::applicableBackupFilesFilter, &BankEditButtonMenu::importBankFromPath, "Bank File"));
 }
 
 Glib::ustring BankEditButtonMenu::createValidOutputPath(const Glib::ustring &bankName)
