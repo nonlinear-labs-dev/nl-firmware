@@ -36,26 +36,26 @@ Glib::ustring DateTimeInfo::formatTime(const std::string &format, int64_t diff)
   return ss.str ();
 }
 
-Glib::ustring DateTimeInfo::get () const
+[[deprecated]] Glib::ustring DateTimeInfo::get () const
 {
   return formatTime("%FT%T%z", Application::get().getSettings()->getSetting<DateTimeAdjustment>()->get());
 }
 
-Glib::ustring DateTimeInfo::getIsoStringOfNow()
+[[deprecated]] Glib::ustring DateTimeInfo::getIsoStringOfNow()
 {
   return formatTime("%FT%T%z", 0);
 }
 
-Glib::ustring DateTimeInfo::getDisplayStringFromIso(const Glib::ustring & iso)
+[[deprecated]] Glib::ustring DateTimeInfo::getDisplayStringFromIso(const Glib::ustring & iso)
 {
   return formatTime(iso, "%F %R");
 }
 
-Glib::ustring DateTimeInfo::getDisplayStringFromStamp(uint64_t stamp) {
+[[deprecated]] Glib::ustring DateTimeInfo::getDisplayStringFromStamp(uint64_t stamp) {
   return formatTime(stamp, "%F %R");
 }
 
-Glib::ustring DateTimeInfo::getDisplayString () const
+[[deprecated]] Glib::ustring DateTimeInfo::getDisplayString () const
 {
   return formatTime("%x %X", Application::get().getSettings()->getSetting<DateTimeAdjustment>()->get());
 }

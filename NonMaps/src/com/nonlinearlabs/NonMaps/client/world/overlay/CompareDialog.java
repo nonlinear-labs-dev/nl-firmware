@@ -25,13 +25,22 @@ public class CompareDialog extends GWTDialog {
 	private Document presetBXml;
 	private Button loadPresetA;
 	private Button loadPresetB;
+	Preset preset1, preset2;
+	String csvWithDiffs = "";
+	
+	String preset1PositionText;
+	String preset2PositionText;
+	
+	FlexTable table = null;
 
 	public static void open(Preset p1) {
 		new CompareDialog(p1);
+		NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
 	}
 
 	public static void open(Preset p1, Preset p2) {
 		new CompareDialog(p1, p2);
+		NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
 	}
 
 	private CompareDialog(Preset p) {
@@ -156,10 +165,12 @@ public class CompareDialog extends GWTDialog {
 			Node nameNode = ServerProxy.getChild(root, "name");
 
 			int row = 0;
-			FlexTable table = new FlexTable();
+			table = new FlexTable();
 			table.getElement().addClassName("compare-tree");
-			table.setText(row, 1, positionNode.getAttributes().getNamedItem("a").getNodeValue());
-			table.setText(row, 2, positionNode.getAttributes().getNamedItem("b").getNodeValue());
+			preset1PositionText = positionNode.getAttributes().getNamedItem("a").getNodeValue();
+			preset2PositionText = positionNode.getAttributes().getNamedItem("b").getNodeValue();
+			table.setText(row, 1, preset1PositionText);
+			table.setText(row, 2, preset2PositionText);
 			row++;
 			table.setText(row, 1, nameNode.getAttributes().getNamedItem("a").getNodeValue());
 			table.setText(row, 2, nameNode.getAttributes().getNamedItem("b").getNodeValue());
@@ -233,7 +244,7 @@ public class CompareDialog extends GWTDialog {
 			String a = hashNode.getAttributes().getNamedItem("a").getNodeValue();
 			String b = hashNode.getAttributes().getNamedItem("b").getNodeValue();
 			String ebHash = NonMaps.get().getNonLinearWorld().getParameterEditor().getHash();
-
+			
 			loadPresetA.setEnabled(!(presetAXml == null || a.equals(ebHash)));
 			loadPresetB.setEnabled(!(presetBXml == null || b.equals(ebHash)));
 		}

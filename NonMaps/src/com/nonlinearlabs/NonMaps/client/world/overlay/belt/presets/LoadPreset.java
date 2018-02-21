@@ -14,10 +14,23 @@ class LoadPreset extends SVGImage {
 	LoadPreset(OverlayLayout parent) {
 		super(parent, "Load_Enabled.svg", "Load_Active.svg", "Load_Disabled.svg");
 	}
+	
+	public boolean isSelectedBankEmpty() {
+		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
+		String b = pm.getSelectedBank();
+		if (b != null) {
+			Bank bank = pm.findBank(b);
+			if(bank.getPresetList().getPresetCount() != 0)
+				return false;
+		}
+		return true;
+	}
 
 	@Override
 	public int getSelectedPhase() {
-		if (!isEnabled()) {
+		if(isSelectedBankEmpty()) {
+			return drawStates.disabled.ordinal();
+		} else if (!isEnabled()) {
 			return drawStates.disabled.ordinal();
 		} else if (NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode()) {
 			return drawStates.disabled.ordinal();

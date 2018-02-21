@@ -180,6 +180,11 @@ void PresetManagerLayout::setupPresetStore()
 
 bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 {
+  if(!down)
+  {
+    removeButtonRepeat();
+  }
+
   if(down)
   {
     auto &app = Application::get();
@@ -197,7 +202,12 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 
       case BUTTON_B:
       case BUTTON_C:
-        return m_presets->onButton(i, down, modifiers);
+        installButtonRepeat([ = ]()
+        {
+          m_presets->onButton(i, down, modifiers);
+        });
+
+        return true;
 
       case BUTTON_D:
         if(m_menu)
@@ -252,6 +262,7 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
           pm->getEditBuffer()->undoableLoadSelectedPreset();
     }
   }
+
   return super::onButton(i, down, modifiers);
 }
 

@@ -32,7 +32,7 @@ Rect InfoLayout::getScrollableAreaRect () const
 
 bool InfoLayout::onRotary (int inc, ButtonModifiers modifiers)
 {
-  m_scrollArea->scroll (inc);
+  m_scrollArea->scroll (inc*2);
   return true;
 }
 

@@ -7,6 +7,7 @@ import com.nonlinearlabs.NonMaps.client.Animator;
 import com.nonlinearlabs.NonMaps.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
@@ -214,7 +215,7 @@ public class Belt extends OverlayLayout {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
+		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton || dragProxy.getOrigin() instanceof IPreset)
 			return this;
 
 		return super.drag(pos, dragProxy);
@@ -222,7 +223,7 @@ public class Belt extends OverlayLayout {
 
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
-		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
+		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton || dragProxy.getOrigin() instanceof IPreset)
 			return this;
 
 		return super.drop(pos, dragProxy);
