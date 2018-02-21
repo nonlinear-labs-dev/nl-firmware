@@ -54,7 +54,7 @@ void PresetManagerLayout::setup()
 
   clear();
 
-  if (Application::get().getPresetManager()->getEditBuffer()->hasLocks())
+  if(Application::get().getPresetManager()->getEditBuffer()->hasLocks())
   {
     m_groupLocking = addControl(new InvertedLabel("L", Rect(8, 26, 48, 12)));
     m_groupLocking->setHighlight(true);
@@ -62,7 +62,7 @@ void PresetManagerLayout::setup()
 
   if(m_focusAndMode.focus == UIFocus::Banks)
   {
-      setupBankFocus();
+    setupBankFocus();
   }
   else
   {
@@ -180,6 +180,11 @@ void PresetManagerLayout::setupPresetStore()
 
 bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 {
+  if(!down)
+  {
+    removeButtonRepeat();
+  }
+
   if(down)
   {
     auto &app = Application::get();
@@ -197,12 +202,17 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 
       case BUTTON_B:
       case BUTTON_C:
-        return m_presets->onButton(i, down, modifiers);
+        installButtonRepeat([ = ]()
+        {
+          m_presets->onButton(i, down, modifiers);
+        });
+
+        return true;
 
       case BUTTON_D:
         if(m_menu)
         {
-          if (modifiers[SHIFT] == 1)
+          if(modifiers[SHIFT] == 1)
           {
             m_menu->antiToggle();
           }
@@ -252,6 +262,7 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
           pm->getEditBuffer()->undoableLoadSelectedPreset();
     }
   }
+
   return super::onButton(i, down, modifiers);
 }
 
@@ -278,7 +289,8 @@ bool PresetManagerLayout::animateSelectedPreset(function<void()> cb)
 std::pair<int, int> PresetManagerLayout::getSelectedPosition() const
 {
   if(m_presets)
-    return  m_presets->getSelectedPosition();
+    return m_presets->getSelectedPosition();
 
-  return {};
+  return
+  {};
 }

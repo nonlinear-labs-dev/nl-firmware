@@ -470,12 +470,6 @@ BankActions::BankActions(PresetManager &presetManager) :
             UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction (preset->getUndoTransactionTitle("Delete"));
             UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
             srcBank->undoableDeletePreset (transaction, presetUUID);
-
-            if(srcBank->getNumPresets() == 0)
-            {
-              m_presetManager.undoableDeleteBank(transaction, srcBank);
-            }
-
             m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo (scope->getTransaction());
           }
         }
@@ -497,12 +491,6 @@ BankActions::BankActions(PresetManager &presetManager) :
         if(auto preset = srcBank->getPreset(presetUUID))
         {
           srcBank->undoableDeletePreset (transaction, presetUUID);
-
-          if(srcBank->getNumPresets() == 0)
-          {
-            m_presetManager.undoableDeleteBank(transaction, srcBank);
-          }
-
           m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo (scope->getTransaction());
         }
       }
