@@ -20,18 +20,19 @@ DateTimeEditor::DateTimeEditor () :
   auto y = 12;
   auto w = 20;
 
-  m_labels[Selection::Month] = addControl (new Label ("mm", Rect (margin, y, w, 10)));
-  m_labels[Selection::Day] = addControl (new Label ("dd", Rect (margin + w, y, w, 10)));
-  m_labels[Selection::Year] = addControl (new Label ("yyyy", Rect (margin + 2 * w, y, 2 * w, 10)));
+  m_labels[Selection::Year] = addControl (new Label ("yyyy", Rect (margin, y, 2 * w, 10)));
+  m_labels[Selection::Month] = addControl (new Label ("mm", Rect (margin + 2 * w, y, w, 10)));
+  m_labels[Selection::Day] = addControl (new Label ("dd", Rect (margin + 3 * w, y, w, 10)));
+
 
   m_labels[Selection::Hour] = addControl (new Label ("HH", Rect (margin + 4 * w, y, w, 10)));
   m_labels[Selection::Minute] = addControl (new Label ("MM", Rect (margin + 5 * w, y, w, 10)));
 
   y = 24;
 
-  m_controls[Selection::Month] = addControl (new Label ("", Rect (margin, y, w, 10)));
-  m_controls[Selection::Day] = addControl (new Label ("", Rect (margin + w, y, w, 10)));
-  m_controls[Selection::Year] = addControl (new Label ("", Rect (margin + 2 * w, y, 2 * w, 10)));
+  m_controls[Selection::Year] = addControl (new Label ("", Rect (margin, y, 2 * w, 10)));
+  m_controls[Selection::Month] = addControl (new Label ("", Rect (margin + 2 * w, y, w, 10)));
+  m_controls[Selection::Day] = addControl (new Label ("", Rect (margin + 3 * w, y, w, 10)));
 
   m_controls[Selection::Hour] = addControl (new Label ("", Rect (margin + 4 * w, y, w, 10)));
   m_controls[Selection::Minute] = addControl (new Label ("", Rect (margin + 5 * w, y, w, 10)));
@@ -72,14 +73,14 @@ bool DateTimeEditor::onButton (int i, bool down, ButtonModifiers modifiers)
     if (i == BUTTON_C)
     {
       if (m_selection == 0)
-        m_selection = Selection::Minute;
+        m_selection = Selection::Year;
       else
         m_selection = (Selection) (m_selection - 1);
     }
 
     if (i == BUTTON_D)
     {
-      if (m_selection == Selection::Minute)
+      if (m_selection == Selection::Year)
         m_selection = Selection::Month;
       else
         m_selection = (Selection) (m_selection + 1);
