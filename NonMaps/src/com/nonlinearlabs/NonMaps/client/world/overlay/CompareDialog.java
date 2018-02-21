@@ -1,12 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.Arrays;
-import java.util.Formatter;
 import java.util.List;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.layout.client.Layout.Alignment;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
@@ -16,10 +14,7 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy.DownloadHandler;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
-public class CompareDialog extends GWTDialog {
-
-	public static int count = 0;
-	
+public class CompareDialog extends GWTDialog {	
 	Label leftPreset, rightPreset, parameterCaption;
 	Preset preset1, preset2;
 	String csvWithDiffs = "";
@@ -32,12 +27,12 @@ public class CompareDialog extends GWTDialog {
 
 	public static void open(Preset p1) {
 		theDialog = new CompareDialog(p1);
-		count++;
+		NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
 	}
 
 	public static void open(Preset p1, Preset p2) {
 		theDialog = new CompareDialog(p1, p2);
-		count++;
+		NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
 	}
 
 	private CompareDialog(Preset p1) {
@@ -207,10 +202,6 @@ public class CompareDialog extends GWTDialog {
 		theDialog = null;
 		NonMaps.theMaps.captureFocus();
 		NonMaps.theMaps.getNonLinearWorld().requestLayout();
-		count--;
-		if(count == 0) {
-			NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
-		}
 	}
 
 }
