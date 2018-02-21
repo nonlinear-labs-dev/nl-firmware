@@ -218,27 +218,20 @@ void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transac
 
 void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank, int newOrderNumber)
 {
-  if(int oldOrderNumber = calcOrderNumber(bank.get()))
+  int newPos = std::min<int>(newOrderNumber - 1, getNumBanks() - 1);
+  newPos = std::max(newPos, 0);
+
+  auto swapData = UNDO::createSwapData(newPos);
+
+  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
   {
-    int oldPos = oldOrderNumber - 1;
-    int newPos = std::min(newOrderNumber - 1, static_cast<int>(getNumBanks() - 1));
-    newPos = std::max(newPos, 0);
-
-    if(newPos >= 0 && newPos < getNumBanks())
-    {
-      auto swapData = UNDO::createSwapData (std::make_pair(oldPos, newPos));
-      transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-      {
-        auto posPair = std::make_pair(swapData->get<0>().second, swapData->get<0>().first);
-        swapData->swapWith(posPair);
-
-        tBankPtr bank = m_banks[swapData->get<0>().second];
-        m_banks.erase(m_banks.begin() + swapData->get<0>().second);
-        m_banks.emplace(m_banks.begin() + swapData->get<0>().first, bank);
-        reassignOrderNumbers();
-      });
-    }
-  }
+    auto it = std::find(m_banks.begin(), m_banks.end(), bank);
+    int pos = std::distance(m_banks.begin(), it);
+    swapData->swapWith(pos);
+    m_banks.erase(it);
+    m_banks.emplace(m_banks.begin() + pos, bank);
+    reassignOrderNumbers();
+  });
 }
 
 void PresetManager::undoableSelectNext()
@@ -469,12 +462,12 @@ void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const 
   writer.writeTag("preset-manager", [&]()
   {
     writer.writeTag ("banks", [&]()
-    {
-      for (tBankPtr bank : m_banks)
-      {
-        bank->searchPresets (writer, query);
-      }
-    });
+        {
+          for (tBankPtr bank : m_banks)
+          {
+            bank->searchPresets (writer, query);
+          }
+        });
   });
 }
 
