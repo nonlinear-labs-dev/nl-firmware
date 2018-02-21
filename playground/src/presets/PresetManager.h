@@ -50,6 +50,7 @@ class PresetManager : public ContentSection
     size_t getNumBanks () const;
     tBankPtr getBank (int pos);
     const tBankPtr getBank (int pos) const;
+    const vector<tBankPtr> & getBanks() const;
 
     int calcOrderNumber (const PresetBank *bank) const;
     int calcBankIndex (const PresetBank *bank) const;
@@ -82,7 +83,6 @@ class PresetManager : public ContentSection
     tBankPtr findBank (const Glib::ustring &uuid) const;
     void undoableDeleteSelectedBank (UNDO::Scope::tTransactionPtr transaction);
     tBankPtr getSelectedBank () const;
-    const vector<tBankPtr> & getBanks() const;
 
     void undoableSelectBank (const Glib::ustring &uuid);
     bool undoableSelectBank (UNDO::Scope::tTransactionPtr transaction, int idx);
