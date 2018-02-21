@@ -1,1 +1,1 @@
-The signal for the FM (cutoff frequency modulation) of the State Variable Filter as a crossfade between the outputs of Oscillator & Shaper A and Oscillator & Shaper B.
+Feedback mix factor for the output of the Comb Filter.
