@@ -11,10 +11,10 @@ public:
     BackgroundJob(std::function<void (T t)> cb) : callback(cb), m_thread(nullptr) {
     };
 
-    virtual ~BackgroundJob()
+    ~BackgroundJob()
     {
-      m_close = true;
-      if(m_thread.get() != nullptr)
+      stop();
+      if(m_thread->joinable())
         m_thread->join();
     }
 
@@ -23,6 +23,10 @@ public:
     void stop()
     {
       m_close = false;
+    }
+
+    bool isRunning() {
+      return !m_close;
     }
 
 protected:
@@ -71,11 +75,6 @@ public:
         }
         ++it;
       }
-    }
-
-    FileTools::FileList copyList()
-    {
-      return list;
     }
 
 protected:

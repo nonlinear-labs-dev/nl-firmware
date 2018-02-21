@@ -23,7 +23,6 @@ FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
 
 {
   fileCount = 0;
-
   fileList = addControl(new FileListControl());
   headerLabel = addControl(new InvertedLabel(header, Rect(1, 0, 200, 14)));
   fileList->setPosition(Rect(0, 15, 200, 48));
@@ -33,7 +32,6 @@ FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
 
 FileDialogLayout::~FileDialogLayout()
 {
-
 }
 
 bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
