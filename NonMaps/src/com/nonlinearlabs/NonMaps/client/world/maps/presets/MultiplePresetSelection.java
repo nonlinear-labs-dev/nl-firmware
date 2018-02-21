@@ -74,7 +74,11 @@ public class MultiplePresetSelection {
 	}
 	
 	private String getLastUuid() {
-		return selectedPresets.get(selectedPresets.size() - 1);
+		try {
+			return selectedPresets.get(selectedPresets.size() - 1);
+		} catch(Exception e) {
+			return null;
+		}
 	}
 		
 	public void handleDownKey() {		
