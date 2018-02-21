@@ -1,12 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.Arrays;
-import java.util.Formatter;
 import java.util.List;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.layout.client.Layout.Alignment;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;

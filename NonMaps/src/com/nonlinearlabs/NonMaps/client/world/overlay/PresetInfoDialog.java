@@ -56,12 +56,7 @@ public class PresetInfoDialog extends GWTDialog {
 		b.getElement().addClassName("colortaggingfield-template");
 		
 		if(getCurrentPreset() != null) {
-			if(getCurrentPreset().getAttribute("color") == c.toString()) {
-				updateCurrentHighlight(b);
-			} else if(getCurrentPreset().getAttribute("color") == "") {
-				NonMaps.get().getServerProxy().setPresetAttributeHidden(getCurrentPreset(), "color", Color.none.toString());
-				updateCurrentHighlight(b);
-			}
+			updateCurrentHighlight(b);
 		}
 		
 		b.addClickHandler(new ClickHandler() {
@@ -366,7 +361,6 @@ public class PresetInfoDialog extends GWTDialog {
 			
 			String presetColorString = preset.getAttribute("color");
 			if(presetColorString == "") {
-				NonMaps.get().getServerProxy().setPresetAttributeHidden(preset, "color", Color.none.toString());
 				updateCurrentHighlight(colors[Color.none.ordinal()]);
 			} else {
 				ColorTag.Color c = ColorTag.Color.valueOf(presetColorString);

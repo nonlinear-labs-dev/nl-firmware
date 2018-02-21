@@ -42,7 +42,7 @@ public class ColorTag extends ZoomReactingControl {
 
 			return Color.valueOf(getParent().getAttribute("color")).toRGB();
 		} catch (Exception e) {
-			return null;
+			return Color.valueOf("none").toRGB();
 		}
 	}
 

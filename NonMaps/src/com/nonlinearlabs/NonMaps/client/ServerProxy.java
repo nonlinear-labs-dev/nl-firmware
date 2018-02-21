@@ -721,21 +721,8 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID), new StaticURI.KeyValue("info", text));
 		queueJob(uri, false);
 	}
-
-	public void setPresetAttributeHidden(Preset thePreset, String key, String value) {
-		if(thePreset == null)
-			return;
-		
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-preset-attribute-hidden");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", thePreset.getUUID()), new StaticURI.KeyValue("key", key),
-				new StaticURI.KeyValue("value", value));
-		queueJob(uri, false);
-	}
 	
 	public void setPresetAttribute(Preset thePreset, String key, String value) {
-		if(thePreset == null)
-			return;
-		
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-preset-attribute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", thePreset.getUUID()), new StaticURI.KeyValue("key", key),
 				new StaticURI.KeyValue("value", value));
