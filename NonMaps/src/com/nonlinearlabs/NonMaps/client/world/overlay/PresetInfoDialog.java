@@ -358,14 +358,8 @@ public class PresetInfoDialog extends GWTDialog {
 			Bank bank = preset.getParent();
 			bankName.setText(bank.getOrderNumber() + " - " + bank.getTitleName());
 			
-			
-			String presetColorString = preset.getAttribute("color");
-			if(presetColorString == "") {
-				updateCurrentHighlight(colors[Color.none.ordinal()]);
-			} else {
-				ColorTag.Color c = ColorTag.Color.valueOf(presetColorString);
-				updateCurrentHighlight(colors[c.ordinal()]);
-			}
+			ColorTag.Color c = ColorTag.Color.toEnum(preset.getAttribute("color"));
+			updateCurrentHighlight(colors[c.ordinal()]);
 			
 			centerIfOutOfView();
 		}

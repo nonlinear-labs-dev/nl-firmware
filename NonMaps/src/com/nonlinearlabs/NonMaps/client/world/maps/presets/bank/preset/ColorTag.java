@@ -31,6 +31,13 @@ public class ColorTag extends ZoomReactingControl {
 				return new RGBA(0, 0, 0, 0);
 			}
 		}
+		
+		static public Color toEnum(String s) {
+			if(s == "")
+				return none;
+			else
+				return Color.valueOf(s);
+		}
 	}
 
 	public ColorTag(MapsLayout parent) {
@@ -38,12 +45,7 @@ public class ColorTag extends ZoomReactingControl {
 	}
 
 	protected RGB calcColor() {
-		try {
-
-			return Color.valueOf(getParent().getAttribute("color")).toRGB();
-		} catch (Exception e) {
-			return Color.valueOf("none").toRGB();
-		}
+		return Color.toEnum(getParent().getAttribute("color")).toRGB();
 	}
 
 	@Override
