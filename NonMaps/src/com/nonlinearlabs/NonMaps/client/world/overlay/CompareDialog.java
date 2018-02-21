@@ -1,13 +1,18 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.ServerProxy.DownloadHandler;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PhysicalControlParameter.ReturnMode;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
@@ -15,8 +20,11 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class CompareDialog extends GWTDialog {
 
-	Preset preset1, preset2;
-	Document xml;
+	private Document xml;
+	private Document presetAXml;
+	private Document presetBXml;
+	private Button loadPresetA;
+	private Button loadPresetB;
 
 	static CompareDialog theDialog = null;
 
@@ -28,19 +36,15 @@ public class CompareDialog extends GWTDialog {
 		theDialog = new CompareDialog(p1, p2);
 	}
 
-	private CompareDialog(Preset p1) {
-		preset1 = p1;
-		preset2 = null;
-		init();
+	private CompareDialog(Preset p) {
+		init(p, null);
 	}
 
 	private CompareDialog(Preset p1, Preset p2) {
-		preset1 = p1;
-		preset2 = p2;
-		init();
+		init(p1, p2);
 	}
 
-	private void init() {
+	private void init(Preset p1, Preset p2) {
 		RootPanel.get().add(this);
 
 		getElement().addClassName("preset-compare-dialog");
@@ -53,15 +57,15 @@ public class CompareDialog extends GWTDialog {
 
 		addHeader("Preset Comparison Tree View");
 
-		if (preset2 == null)
-			getCsvOfEditBuffer();
+		if (p2 == null)
+			load(p1);
 		else
-			getCsv();
+			load(p1, p2);
 
 	}
 
-	private void getCsv() {
-		NonMaps.theMaps.getServerProxy().getDifferencesOf2PresetsAsCsv(preset1.getUUID(), preset2.getUUID(), new DownloadHandler() {
+	private void load(Preset p1, Preset p2) {
+		NonMaps.theMaps.getServerProxy().getDifferencesOf2PresetsAsCsv(p1.getUUID(), p2.getUUID(), new DownloadHandler() {
 			@Override
 			public void onFileDownloaded(String text) {
 				xml = XMLParser.parse(text);
@@ -72,10 +76,38 @@ public class CompareDialog extends GWTDialog {
 			public void onError() {
 			}
 		});
+
+		downloadPresets(p1, p2);
 	}
 
-	private void getCsvOfEditBuffer() {
-		NonMaps.theMaps.getServerProxy().getDifferencesOfPresetsToEditbufferAsCsv(preset1.getUUID(), new DownloadHandler() {
+	public void downloadPresets(Preset p1, Preset p2) {
+		NonMaps.theMaps.getServerProxy().downloadPreset(p1 != null ? p1.getUUID() : "", new DownloadHandler() {
+			@Override
+			public void onFileDownloaded(String text) {
+				presetAXml = XMLParser.parse(text);
+				updateLoadButtonStates();
+			}
+
+			@Override
+			public void onError() {
+			}
+		});
+
+		NonMaps.theMaps.getServerProxy().downloadPreset(p2 != null ? p2.getUUID() : "", new DownloadHandler() {
+			@Override
+			public void onFileDownloaded(String text) {
+				presetBXml = XMLParser.parse(text);
+				updateLoadButtonStates();
+			}
+
+			@Override
+			public void onError() {
+			}
+		});
+	}
+
+	private void load(Preset p1) {
+		NonMaps.theMaps.getServerProxy().getDifferencesOfPresetsToEditbufferAsCsv(p1.getUUID(), new DownloadHandler() {
 			@Override
 			public void onFileDownloaded(String text) {
 				xml = XMLParser.parse(text);
@@ -86,6 +118,8 @@ public class CompareDialog extends GWTDialog {
 			public void onError() {
 			}
 		});
+
+		downloadPresets(p1, null);
 	}
 
 	static int lastPopupLeft = -1;
@@ -117,14 +151,20 @@ public class CompareDialog extends GWTDialog {
 
 	protected void setup() {
 		if (xml != null) {
+			Element root = xml.getDocumentElement();
+			Node positionNode = ServerProxy.getChild(root, "position");
+			Node nameNode = ServerProxy.getChild(root, "name");
+
 			int row = 0;
 			FlexTable table = new FlexTable();
 			table.getElement().addClassName("compare-tree");
-			table.setText(row, 1, "Preset A");
-			table.setText(row, 2, "Preset B");
+			table.setText(row, 1, positionNode.getAttributes().getNamedItem("a").getNodeValue());
+			table.setText(row, 2, positionNode.getAttributes().getNamedItem("b").getNodeValue());
 			row++;
-			table.setText(row, 1, "---");
-			table.setText(row, 2, "---");
+			table.setText(row, 1, nameNode.getAttributes().getNamedItem("a").getNodeValue());
+			table.setText(row, 2, nameNode.getAttributes().getNamedItem("b").getNodeValue());
+			row++;
+			addLoadButtons(row, table);
 			row++;
 
 			NodeList groups = xml.getElementsByTagName("group");
@@ -183,6 +223,48 @@ public class CompareDialog extends GWTDialog {
 		}
 	}
 
+	public static void onUpdate() {
+		if (theDialog != null) {
+			theDialog.updateLoadButtonStates();
+		}
+	}
+
+	private void updateLoadButtonStates() {
+		if (xml != null) {
+			Element root = xml.getDocumentElement();
+			Node hashNode = ServerProxy.getChild(root, "hash");
+			String a = hashNode.getAttributes().getNamedItem("a").getNodeValue();
+			String b = hashNode.getAttributes().getNamedItem("b").getNodeValue();
+			String ebHash = NonMaps.get().getNonLinearWorld().getParameterEditor().getHash();
+
+			loadPresetA.setEnabled(!(presetAXml == null/*- || a.equals(ebHash)-*/));
+			loadPresetB.setEnabled(!(presetBXml == null/*- || b.equals(ebHash)-*/));
+		}
+	}
+
+	public void addLoadButtons(int row, FlexTable table) {
+		table.setWidget(row, 1, loadPresetA = new Button("Load"));
+		table.setWidget(row, 2, loadPresetB = new Button("Load"));
+
+		updateLoadButtonStates();
+
+		loadPresetA.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				NonMaps.get().getServerProxy().loadEditBuffer(presetAXml);
+			}
+		});
+
+		loadPresetB.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				NonMaps.get().getServerProxy().loadEditBuffer(presetBXml);
+			}
+		});
+	}
+
 	private String translateChangeValue(String paramName, String nodeName, String nodeValue) {
 		switch (nodeName) {
 		case "mc-select":
@@ -228,4 +310,5 @@ public class CompareDialog extends GWTDialog {
 		}
 		return nodeName;
 	}
+
 }

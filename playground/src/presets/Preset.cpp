@@ -332,10 +332,35 @@ bool Preset::matchesQuery(const SearchQuery &query) const
 
 void Preset::writeDiff(Writer &writer, Preset *other) const
 {
-  writer.writeTag("diff", Attribute("a", getName()), Attribute("b", other->getName()),
+  char txt[256];
+  auto pm = Application::get().getPresetManager();
+
+  Glib::ustring aPositionString = "Edit Buffer";
+  Glib::ustring bPositionString = "Edit Buffer";
+
+  if(auto b = getBank())
+  {
+    sprintf(txt, "%d-%03d", pm->calcOrderNumber(b.get()), b->getPresetPosition(getUuid()) + 1);
+    aPositionString = txt;
+  }
+
+  if(auto b = other->getBank())
+  {
+    sprintf(txt, "%d-%03d", pm->calcOrderNumber(b.get()), b->getPresetPosition(other->getUuid()) + 1);
+    bPositionString = txt;
+  }
+
+  writer.writeTag("diff",
       [&]
       {
-        if(getHash() != other->getHash())
+        auto hash = getHash();
+        auto otherHash = other->getHash();
+
+        writer.writeTextElement("hash", "", Attribute("a", hash), Attribute("b", otherHash));
+        writer.writeTextElement("position", "", Attribute("a", aPositionString), Attribute("b", bPositionString));
+        writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
+
+        if(hash != otherHash)
         {
           if(getName() != other->getName())
           {

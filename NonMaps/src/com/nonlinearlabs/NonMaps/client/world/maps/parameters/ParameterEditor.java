@@ -40,6 +40,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ShapeA.ShapeA;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ShapeB.ShapeB;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Unison.Unison;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.NonMaps.client.world.overlay.CompareDialog;
 
 public class ParameterEditor extends LayoutResizingVertical {
 
@@ -50,6 +51,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 	private SynthParameters synthParamsArea;
 	private static ParameterEditor theEditor = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
+	private String hash = "";
 
 	private class PlayControlsArea extends ResizingHorizontalCenteringLayout {
 
@@ -265,6 +267,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 			if (!omitOracles) {
 				Tracer.log("updated parameters from server-sent document");
 
+				updateHash(node);
 				updateParameterGroups(node);
 				updatePreset(node);
 				updateSelection(node);
@@ -289,6 +292,14 @@ public class ParameterEditor extends LayoutResizingVertical {
 		}
 
 		m_isModified = node.getAttributes().getNamedItem("is-modified").getNodeValue().equals("1");
+	}
+
+	public void updateHash(Node node) {
+		String hash = node.getAttributes().getNamedItem("hash").getNodeValue();
+		if (!hash.equals(this.hash)) {
+			this.hash = hash;
+			CompareDialog.onUpdate();
+		}
 	}
 
 	private void updatePreset(Node node) {
@@ -470,6 +481,10 @@ public class ParameterEditor extends LayoutResizingVertical {
 			return p.getAttribute("Comment");
 
 		return "";
+	}
+
+	public String getHash() {
+		return hash;
 	}
 
 }

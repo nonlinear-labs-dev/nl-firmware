@@ -1627,17 +1627,14 @@ input[disabled], textarea[disabled], select[disabled='disabled']{
 }
 
 
-.dialogContent tr td:nth-child(2) {
-    display: flex;
-    justify-content: stretch;
-}
-
-.dialogContent tr td:nth-child(2) > * {
-    flex-grow: 2;
+.dialogContent tr td {
+	display: table-cell;
+	text-align: center;	
 }
 
 .dialogContent tr td:nth-child(1) {
     min-width:8em;
+    text-align:left;
 }
 
 .gwt-TextArea {

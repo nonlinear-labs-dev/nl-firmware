@@ -10,6 +10,7 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <serialization/PresetManagerSerializer.h>
+#include <serialization/PresetSerializer.h>
 #include <tools/Uuid.h>
 #include <xml/MemoryInStream.h>
 #include <xml/OutStream.h>
@@ -126,6 +127,25 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
 
       boled.resetOverlay();
       soup_buffer_free(buffer);
+    }
+  });
+
+  addAction("load-editbuffer", [&] (shared_ptr<NetworkRequest> request) mutable
+  {
+    if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
+    {
+      UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Load Edit Buffer");
+      auto transaction = scope->getTransaction();
+      auto xml = http->get("xml", "");
+
+      MemoryInStream stream(xml, false);
+      XmlReader reader(stream, transaction);
+
+      if(!reader.read<PresetSerializer>(presetManager.getEditBuffer().get()))
+      {
+        transaction->rollBack();
+        http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
+      }
     }
   });
 
