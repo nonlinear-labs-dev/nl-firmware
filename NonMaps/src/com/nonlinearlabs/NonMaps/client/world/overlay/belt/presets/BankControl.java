@@ -80,7 +80,7 @@ public class BankControl extends OverlayLayout implements IBank {
 	
 	void showEmptyLabel(boolean bankEmpty) {
 		if (bankEmpty && emptyLabel == null) {
-			emptyLabel = addChild(new EmptyBeltPreset(this, getBankInCharge()));
+			emptyLabel = prependChild(new EmptyBeltPreset(this, getBankInCharge()));
 		} else if (!bankEmpty && emptyLabel != null) {
 			removeChild(emptyLabel);
 			emptyLabel = null;
