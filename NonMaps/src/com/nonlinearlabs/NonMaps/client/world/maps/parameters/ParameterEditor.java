@@ -264,10 +264,10 @@ public class ParameterEditor extends LayoutResizingVertical {
 			return;
 
 		if (ServerProxy.didChange(node)) {
-			if (!omitOracles) {
-				Tracer.log("updated parameters from server-sent document");
+			updateHash(node);
+			updateCompare(node);
 
-				updateHash(node);
+			if (!omitOracles) {
 				updateParameterGroups(node);
 				updatePreset(node);
 				updateSelection(node);
@@ -298,7 +298,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 		String hash = node.getAttributes().getNamedItem("hash").getNodeValue();
 		if (!hash.equals(this.hash)) {
 			this.hash = hash;
-			CompareDialog.onUpdate();
 		}
 	}
 
@@ -413,6 +412,12 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 		if (sel != selectedObject) {
 			select(Initiator.INDIRECT_USER_ACTION, sel);
+		}
+	}
+
+	private void updateCompare(Node node) {
+		for (CompareDialog compareDialog : NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getCompareDialogs()) {
+			compareDialog.update();
 		}
 	}
 

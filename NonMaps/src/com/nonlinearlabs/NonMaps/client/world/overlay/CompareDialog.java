@@ -26,14 +26,12 @@ public class CompareDialog extends GWTDialog {
 	private Button loadPresetA;
 	private Button loadPresetB;
 
-	static CompareDialog theDialog = null;
-
 	public static void open(Preset p1) {
-		theDialog = new CompareDialog(p1);
+		new CompareDialog(p1);
 	}
 
 	public static void open(Preset p1, Preset p2) {
-		theDialog = new CompareDialog(p1, p2);
+		new CompareDialog(p1, p2);
 	}
 
 	private CompareDialog(Preset p) {
@@ -45,6 +43,8 @@ public class CompareDialog extends GWTDialog {
 	}
 
 	private void init(Preset p1, Preset p2) {
+		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().addCompareDialog(this);
+
 		RootPanel.get().add(this);
 
 		getElement().addClassName("preset-compare-dialog");
@@ -144,7 +144,7 @@ public class CompareDialog extends GWTDialog {
 	@Override
 	protected void commit() {
 		hide();
-		theDialog = null;
+		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeCompareDialog(this);
 		NonMaps.theMaps.captureFocus();
 		NonMaps.theMaps.getNonLinearWorld().requestLayout();
 	}
@@ -218,15 +218,12 @@ public class CompareDialog extends GWTDialog {
 					}
 				}
 			}
-
 			setWidget(table);
 		}
 	}
 
-	public static void onUpdate() {
-		if (theDialog != null) {
-			theDialog.updateLoadButtonStates();
-		}
+	public void update() {
+		updateLoadButtonStates();
 	}
 
 	private void updateLoadButtonStates() {
@@ -237,8 +234,8 @@ public class CompareDialog extends GWTDialog {
 			String b = hashNode.getAttributes().getNamedItem("b").getNodeValue();
 			String ebHash = NonMaps.get().getNonLinearWorld().getParameterEditor().getHash();
 
-			loadPresetA.setEnabled(!(presetAXml == null/*- || a.equals(ebHash)-*/));
-			loadPresetB.setEnabled(!(presetBXml == null/*- || b.equals(ebHash)-*/));
+			loadPresetA.setEnabled(!(presetAXml == null || a.equals(ebHash)));
+			loadPresetB.setEnabled(!(presetBXml == null || b.equals(ebHash)));
 		}
 	}
 
@@ -310,5 +307,4 @@ public class CompareDialog extends GWTDialog {
 		}
 		return nodeName;
 	}
-
 }
