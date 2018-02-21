@@ -200,34 +200,19 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control click(Position point) {
-		if (isInStoreSelectMode()) {
+		wasSelectedAtMouseDown = isSelected();
+		
+		if (isInStoreSelectMode() || !wasSelectedAtMouseDown) {
 			selectPreset();
-			return this;
 		} else if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			return this;
 		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
 			getParent().getParent().startMultiSelection(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			return this;
-		}
-		
-		if (isInStoreSelectMode())
-			return this;
-
-		if (isInMultiplePresetSelectionMode())
-			return this;
-
-		wasSelectedAtMouseDown = isSelected();
-
-		if (!wasSelectedAtMouseDown)
-			selectPreset();
-		
-		if (wasSelectedAtMouseDown) {
+		} else if(wasSelectedAtMouseDown) {
 			load();
-		}
-		
+		}		
 		return this;
 	}
 
