@@ -787,21 +787,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       preset->undoableSetAttribute(transaction, key, value);
     }
   });
-
-  addAction("set-preset-attribute-hidden", [&] (shared_ptr<NetworkRequest> request) mutable
-  {
-    Glib::ustring presetUUID = request->get ("uuid");
-    Glib::ustring key = request->get ("key");
-    Glib::ustring value = request->get ("value");
-
-    if(auto preset = m_presetManager.findPreset(presetUUID))
-    {
-      UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startCuckooTransaction();
-      UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
-      preset->undoableSetAttribute(transaction, key, value);
-    }
-  });
-
+  
   addAction("set-bank-attribute", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring bankUUID = request->get ("uuid");
