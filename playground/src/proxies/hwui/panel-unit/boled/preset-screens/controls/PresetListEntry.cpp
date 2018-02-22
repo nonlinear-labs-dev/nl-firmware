@@ -19,7 +19,7 @@ PresetListEntry::PresetListEntry(const Rect &pos) :
   m_name = addControl(new PresetNameLabel(Rect(21, 0, 105, 16)));
 
 	auto eb = Application::get().getPresetManager()->getEditBuffer();
-	eb->onChange(mem_fun(this, &PresetListEntry::onPresetChanged));
+	eb->onPresetLoaded(mem_fun(this, &PresetListEntry::onPresetChanged));
 }
 
 PresetListEntry::~PresetListEntry()

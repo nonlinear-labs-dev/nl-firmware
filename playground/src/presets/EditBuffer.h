@@ -53,11 +53,11 @@ class EditBuffer : public Preset
 
     bool hasLocks();
 
-
     // CALLBACKS
     sigc::connection onSelectionChanged (slot<void, Parameter *, Parameter *> s);
     sigc::connection onModificationStateChanged (slot<void, bool> s);
     sigc::connection onChange (slot<void> s);
+    sigc::connection onPresetLoaded (slot<void> s);
 
     void undoableImportReaktorPreset (const Glib::ustring &preset);
     void undoableImportReaktorPreset (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &preset);
@@ -88,6 +88,7 @@ class EditBuffer : public Preset
     Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
     Signal<void, bool> m_signalModificationState;
     Signal<void> m_signalChange;
+    Signal<void> m_signalPresetLoaded;
 
     Parameter *m_selectedParameter = nullptr;
 

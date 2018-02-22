@@ -66,6 +66,11 @@ connection EditBuffer::onChange(slot<void> s)
   return m_signalChange.connect(s);
 }
 
+connection EditBuffer::onPresetLoaded(slot<void> s)
+{
+  return m_signalPresetLoaded.connect(s);
+}
+
 UpdateDocumentContributor::tUpdateID EditBuffer::onChange()
 {
   if(!m_checkModified.isPending())
@@ -318,6 +323,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transa
     oldLoadMark->swapWith<0> (m_lastLoadedPresetInfo);
     auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
 
+    m_signalPresetLoaded.send();
     onChange ();
   });
 
@@ -353,6 +359,7 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Scope::tTransactionPtr tra
       oldLoadMark->swapWith<0> (m_lastLoadedPresetInfo);
       auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
 
+      m_signalPresetLoaded.send();
       onChange ();
     });
   }
@@ -402,6 +409,7 @@ void EditBuffer::undoableInitSound(UNDO::Scope::tTransactionPtr transaction)
     swap->swapWith<1> (m_lastLoadedPresetInfo.presetUUID);
     auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
 
+    m_signalPresetLoaded.send();
     onChange ();
   });
 
