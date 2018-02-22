@@ -20,10 +20,8 @@ public class AboutList extends OverlayControl {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25), new Gray(19),
-				Gray.floatingWindowHeaderBorder());
 
-		Rect r = getPixRect().getReducedBy(Millimeter.toPixels(2));
+		Rect r = getPixRect();
 
 		double lineHeight = Millimeter.toPixels(4);
 		double fontHeight = lineHeight * 0.8;
