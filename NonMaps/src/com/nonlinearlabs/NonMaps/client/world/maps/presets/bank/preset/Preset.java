@@ -41,9 +41,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	private FilterState filterSate = FilterState.NO_FILTER;
 
-	private boolean wasSelectedAtMouseDown = false;
-	private boolean mouseCaptured = false;
-
 	public Preset(Bank parent) {
 		super(parent);
 
@@ -120,7 +117,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
-		name.setNonSize(parentsWidthFromFirstPass - number.getNonPosition().getWidth(), name.getNonPosition().getHeight());
+		name.setNonSize(parentsWidthFromFirstPass - number.getNonPosition().getWidth() - tag.getNonPosition().getWidth(), name
+				.getNonPosition().getHeight());
 		setNonSize(parentsWidthFromFirstPass, Math.ceil(getNonPosition().getHeight()));
 	}
 
@@ -157,7 +155,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				colorFill = new RGB(77, 77, 77);
 		}
 
-		if (mouseCaptured)
+		if (isDraggingControl())
 			colorFill = colorFill.brighter(40);
 
 		Rect r = getPixRect().copy();
@@ -200,23 +198,17 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control click(Position point) {
-		if (isInStoreSelectMode()) {
+		if (isInStoreSelectMode() || !isSelected()) {
 			selectPreset();
-			return this;
 		} else if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			return this;
 		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
 			getParent().getParent().startMultiSelection(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			return this;
-		}
-
-		if (wasSelectedAtMouseDown) {
+		} else if (isSelected()) {
 			load();
 		}
-
 		return this;
 	}
 
@@ -243,22 +235,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
-	}
-
-	@Override
-	public Control mouseDown(Position eventPoint) {
-		if (isInStoreSelectMode())
-			return this;
-
-		if (isInMultiplePresetSelectionMode())
-			return this;
-
-		wasSelectedAtMouseDown = isSelected();
-
-		if (!wasSelectedAtMouseDown)
-			selectPreset();
-
-		return this;
 	}
 
 	private boolean isInMultiplePresetSelectionMode() {
@@ -336,16 +312,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public double getXMargin() {
 		return 3;
-	}
-
-	public void onMouseLost() {
-		mouseCaptured = false;
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
-	}
-
-	public void onMouseCaptured() {
-		mouseCaptured = true;
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	public void select() {

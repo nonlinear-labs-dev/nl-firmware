@@ -27,11 +27,16 @@ public class ColorTag extends ZoomReactingControl {
 			case red:
 				return new RGB(255, 0, 0);
 			case none:
-				return new RGBA(0, 0, 0, 0);
-
 			default:
-				return null;
+				return new RGBA(0, 0, 0, 0);
 			}
+		}
+		
+		static public Color toEnum(String s) {
+			if(s == "")
+				return none;
+			else
+				return Color.valueOf(s);
 		}
 	}
 
@@ -40,12 +45,7 @@ public class ColorTag extends ZoomReactingControl {
 	}
 
 	protected RGB calcColor() {
-		try {
-
-			return Color.valueOf(getParent().getAttribute("color")).toRGB();
-		} catch (Exception e) {
-			return null;
-		}
+		return Color.toEnum(getParent().getAttribute("color")).toRGB();
 	}
 
 	@Override

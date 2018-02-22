@@ -11,51 +11,29 @@ import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 public class MoveSomeBanksLayer extends MapsControl {
 
 	private Position startPosition = null;
-	private Position currentPosition = null;
+	private Rect selectionRect = null;
 
 	public MoveSomeBanksLayer(MapsControl parent, Position pos) {
 		super(parent);
 		startPosition = pos;
-		currentPosition = pos;
-	}
-
-	@Override
-	public void doFirstLayoutPass(double levelOfDetail) {
+		selectionRect = new Rect();
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-
-		double twoMM = Millimeter.toPixels(2);
-
-		Rect minRect;
-
-		if (currentPosition.getX() > startPosition.getX()) {
-			if (currentPosition.getY() > startPosition.getY()) {
-				minRect = new Rect(startPosition.getX(), startPosition.getY(), currentPosition.getX() - startPosition.getX(),
-						currentPosition.getY() - startPosition.getY());
-			} else {
-				minRect = new Rect(startPosition.getX(), currentPosition.getY(), currentPosition.getX() - startPosition.getX(),
-						startPosition.getY() - currentPosition.getY());
-			}
-		} else {
-			if (currentPosition.getY() > startPosition.getY()) {
-				minRect = new Rect(currentPosition.getX(), startPosition.getY(), startPosition.getX() - currentPosition.getX(),
-						currentPosition.getY() - startPosition.getY());
-			} else {
-				minRect = new Rect(currentPosition.getX(), currentPosition.getY(), startPosition.getX() - currentPosition.getX(),
-						startPosition.getY() - currentPosition.getY());
-			}
-		}
-
-		setPixRect(minRect);
-
-		minRect.applyPadding(-twoMM, -twoMM, -twoMM, -twoMM);
-		minRect.drawRoundedArea(ctx, twoMM, Millimeter.toPixels(0.1), new RGBA(255, 255, 255, 0.25), new RGB(255, 255, 255));
+		selectionRect.fillAndStroke(ctx, new RGBA(255, 255, 255, 0.25), Millimeter.toPixels(0.1), new RGB(255, 255, 255));
 	}
 
 	public void update(Position pos) {
-		currentPosition = pos;
+		selectionRect = new Rect(pos, startPosition);
+	}
+
+	public Rect getSelectionRect() {
+		return selectionRect;
+	}
+
+	@Override
+	public void doFirstLayoutPass(double levelOfDetail) {
 	}
 }
