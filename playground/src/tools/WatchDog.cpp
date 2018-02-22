@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <string>
+#include <profiling/Profiler.h>
 
 WatchDog::WatchDog () :
     m_regularTimer (mem_fun (this, &WatchDog::onTimer))
