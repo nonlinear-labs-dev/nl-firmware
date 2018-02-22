@@ -69,7 +69,7 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
   return Application::get().getHWUI()->getPanelUnit().getUsageMode()->onButtonPressed(i, modifiers, down);
 }
 
-void FileDialogLayout::overlayInfo() [[ depricated ]]
+void FileDialogLayout::overlayInfo()
 {
   auto HWUI = Application::get().getHWUI();
   auto& panel = HWUI->getPanelUnit();
