@@ -50,15 +50,13 @@ public class PresetInfoDialog extends GWTDialog {
 	private Button[] colors;
 	private IntegerBox position;
 	
-	private Button addColorButton(ColorTag.Color c) {
+	private Button addColorButton(ColorTag.Color c) {		
 		Button b = new Button();
 		b.getElement().addClassName("colortaggingfield-" + c.name());
 		b.getElement().addClassName("colortaggingfield-template");
 		
 		if(getCurrentPreset() != null) {
-			if(getCurrentPreset().getAttribute("color") == c.toString()) {
-				updateCurrentHighlight(b);
-			} 
+			updateCurrentHighlight(b);
 		}
 		
 		b.addClickHandler(new ClickHandler() {
@@ -143,8 +141,8 @@ public class PresetInfoDialog extends GWTDialog {
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Bank", bankName = new Label());
 		addRow(panel, "Position/Name", presetNameAndPositionBox);
-		addRow(panel, "Color Tag", presetColorBox);
 		addRow(panel, "Comment", comment = new TextArea());
+		addRow(panel, "Color Tag", presetColorBox);
 		addRow(panel, "Last Change", storeTime = new Label(""));
 		addRow(panel, "Device Name", deviceName = new Label(""));
 		addRow(panel, "UI Version", softwareVersion = new Label(""));
@@ -360,9 +358,8 @@ public class PresetInfoDialog extends GWTDialog {
 			Bank bank = preset.getParent();
 			bankName.setText(bank.getOrderNumber() + " - " + bank.getTitleName());
 			
-			ColorTag.Color c = ColorTag.Color.valueOf(preset.getAttribute("color"));
+			ColorTag.Color c = ColorTag.Color.toEnum(preset.getAttribute("color"));
 			updateCurrentHighlight(colors[c.ordinal()]);
-			
 			
 			centerIfOutOfView();
 		}

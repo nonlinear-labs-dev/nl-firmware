@@ -775,7 +775,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       preset->undoableSetAttribute(transaction, key, value);
     }
   });
-
+  
   addAction("set-bank-attribute", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring bankUUID = request->get ("uuid");
