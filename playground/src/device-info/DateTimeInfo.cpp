@@ -46,39 +46,9 @@ Glib::ustring DateTimeInfo::formatTime(const std::string &format, int64_t diff)
   return formatTime("%FT%T%z", 0);
 }
 
-[[deprecated]] Glib::ustring DateTimeInfo::getDisplayStringFromIso(const Glib::ustring & iso)
-{
-  return formatTime(iso, "%F %R");
-}
-
-[[deprecated]] Glib::ustring DateTimeInfo::getDisplayStringFromStamp(uint64_t stamp) {
-  return formatTime(stamp, "%F %R");
-}
 
 [[deprecated]] Glib::ustring DateTimeInfo::getDisplayString () const
 {
   return formatTime("%x %X", Application::get().getSettings()->getSetting<DateTimeAdjustment>()->get());
 }
-
-Glib::ustring DateTimeInfo::formatTime (uint64_t secondsSinceUnixEpoch, const Glib::ustring &format)
-{
-  std::stringstream ss;
-  std::time_t t = secondsSinceUnixEpoch;
-  std::tm tm = *std::localtime (&t);
-  ss << std::put_time (&tm, format.c_str ());
-  return ss.str ();
-}
-
-Glib::ustring DateTimeInfo::formatTime (const Glib::ustring &iso, const Glib::ustring &format)
-{
-  struct tm t;
-
-  if (!strptime (iso.raw ().c_str (), "%Y-%m-%dT%H:%M:%S%z", &t))
-    return "---";
-
-  std::stringstream ss;
-  ss << std::put_time (&t, format.c_str ());
-  return ss.str ();
-}
-
 
