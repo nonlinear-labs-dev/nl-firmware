@@ -248,7 +248,7 @@ namespace NavTree
   struct PedalSettings : InnerNode
   {
       PedalSettings(InnerNode *parent) :
-          InnerNode(parent, "Pedal Settings")
+          InnerNode(parent, "Pedals")
       {
         children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal1ParameterID()));
         children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal2ParameterID()));
