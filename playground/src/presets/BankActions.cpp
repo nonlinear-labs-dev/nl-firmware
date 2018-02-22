@@ -1030,7 +1030,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
         PresetBankSerializer serializer(bank);
         serializer.write(writer, VersionAttribute::get());
 
-        bank->setAttribute("Name of Export File", bank->getName(true) + ".xml (via Browser)");
+        bank->setAttribute("Name of Export File", "(via Browser)");
         bank->setAttribute("Date of Export File", DateTimeInfo::getIsoStringOfNow());
 
       }
