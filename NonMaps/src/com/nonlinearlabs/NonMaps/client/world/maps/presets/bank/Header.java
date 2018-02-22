@@ -115,8 +115,8 @@ public class Header extends Label {
 			} else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
 				getNonMaps().getServerProxy().dropEditBufferOnBank(b);
 			else if (dragProxy.getOrigin() instanceof IBank) {
-				Bank draggedBank = (Bank)dragProxy.getOrigin();
-				if(!draggedBank.hasSlaves()) {
+				Bank draggedBank = (Bank) dragProxy.getOrigin();
+				if (!draggedBank.hasSlaves()) {
 					getNonMaps().getServerProxy().dropBankOnBank((IBank) dragProxy.getOrigin(), b);
 				}
 			}
@@ -249,36 +249,28 @@ public class Header extends Label {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		if (dragProxy.getPixRect().contains(pos)) { // sort out slaves
-			if (getPixRect().contains(pos)) {
-				if (!getParent().isDraggingControl()) {
-					if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
-						if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
-								|| dragProxy.getOrigin() instanceof IBank) {
+		if (!getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled())
+			return null;
 
-							if (dragProxy.getOrigin() != getParent()) {
-								if (dragProxy.getOrigin() instanceof Bank) {
-									Bank bBank = (Bank) dragProxy.getOrigin();
-									if (bBank.hasSlaves() == false) {
-										setIsDropTarget(true);
-										return this;
-									}
-								}
-								else if(dragProxy.getOrigin() instanceof IPreset) {
-									Preset p = (Preset)dragProxy.getOrigin();
-									if(p.getParent() != getParent()) {
-										setIsDropTarget(true);
-										return this;
-									}
-								}
-								else if(dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
-									setIsDropTarget(true);
-									return this;
-								}
-							}
-						}
-					}
+		if (getParent().isDraggingControl())
+			return null;
+
+		if (dragProxy.getPixRect().contains(pos) && getPixRect().contains(pos)) {
+			if (dragProxy.getOrigin() instanceof Bank) {
+				Bank bBank = (Bank) dragProxy.getOrigin();
+				if (bBank.hasSlaves() == false) {
+					setIsDropTarget(true);
+					return this;
 				}
+			} else if (dragProxy.getOrigin() instanceof IPreset) {
+				Preset p = (Preset) dragProxy.getOrigin();
+				if (p.getParent() != getParent()) {
+					setIsDropTarget(true);
+					return this;
+				}
+			} else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
+				setIsDropTarget(true);
+				return this;
 			}
 		}
 
