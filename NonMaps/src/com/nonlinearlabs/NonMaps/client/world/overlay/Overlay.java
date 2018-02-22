@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
@@ -32,6 +33,7 @@ public class Overlay extends OverlayLayout {
 	private boolean initialLayout = true;
 	private GlobalMenu globalMenu;
 	private UndoTreeWindow undo;
+	private List<CompareDialog> compareDialogs;
 
 	public Overlay(Viewport parent) {
 		super(parent);
@@ -44,6 +46,8 @@ public class Overlay extends OverlayLayout {
 		// has to be the last one to add as it refers to previously added
 		// members
 		addChild(globalMenu = new GlobalMenu(this));
+		
+		compareDialogs = new ArrayList<CompareDialog>();
 	}
 
 	public void refreshGlobalMenu() {
@@ -409,5 +413,17 @@ public class Overlay extends OverlayLayout {
 			}
 		}
 		return null;
+	}
+
+	public void addCompareDialog(CompareDialog d) {
+		compareDialogs.add(d);
+	}
+	
+	public void removeCompareDialog(CompareDialog d) {
+		compareDialogs.remove(d);
+	}
+	
+	public List<CompareDialog> getCompareDialogs() {
+		return compareDialogs;
 	}
 }

@@ -1634,10 +1634,20 @@ input[disabled], textarea[disabled], select[disabled='disabled']{
 
 .dialogContent tr td:nth-child(2) > * {
     flex-grow: 2;
+ }
+ 
+.dialogContent tr td:nth-child(1) {
+     min-width:8em;
 }
 
-.dialogContent tr td:nth-child(1) {
+.dialogContent .compare-tree tr td {
+	display: table-cell;
+	text-align: center;	
+}
+
+.dialogContent .compare-tree tr td:nth-child(1) {
     min-width:8em;
+    text-align:left;
 }
 
 .gwt-TextArea {
@@ -1652,6 +1662,29 @@ input.param-name-edit {
 
 .flex-4-col .td {
 	size: 25%;
+}
+
+.compare-tree {
+	color: White;
+}
+
+.compare-tree td {
+	color: white;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.indent-1 {
+	padding-left: 1em;
+}
+
+.indent-2 {
+	padding-left: 2em;
+}
+
+.gwt-DialogBox .dialogContent {
+	max-height: 80vh;
+	overflow-y: auto;
 }
 
 .colortaggingfield-template {
@@ -1703,4 +1736,19 @@ input.param-name-edit {
 
 .tag-div {
 	line-height: 32px;
+}
+
+.load-button-a, .load-button-b {
+	width: 1cm;
+	height: 1cm;
+	background-size: contain;
+	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Enabled.svg)
+}
+
+.load-button-a[disabled], .load-button-b[disabled] {
+	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Disabled.svg)
+}
+
+.load-button-a:active, .load-button-b:active {
+	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Active.svg)
 }

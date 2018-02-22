@@ -652,7 +652,6 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("undo", "erase-branch");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, false);
-
 	}
 
 	public void rebaseUndo(long id) {
@@ -872,5 +871,17 @@ public class ServerProxy {
 
 	public void getDifferencesOfPresetsToEditbufferAsCsv(String uuid1, DownloadHandler handler) {
 		downloadFile("/presets/get-diff-editbuffer?p1=" + URL.encodeQueryString(uuid1), handler);
+	}
+
+	public void downloadPreset(String uuid, DownloadHandler downloadHandler) {
+		downloadFile("/presets/banks/download-preset/?uuid=" + URL.encodeQueryString(uuid), downloadHandler);
+	}
+
+	public void loadEditBuffer(Document xml) {
+		StaticURI.Path path = new StaticURI.Path("presets", "load-editbuffer");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("xml", xml.toString()));
+		final XMLHttpRequest xhr = XMLHttpRequest.create();
+		xhr.open("POST", path.toString());
+		xhr.send(uri.getPostData(false));
 	}
 }

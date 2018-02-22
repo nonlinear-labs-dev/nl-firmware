@@ -1,6 +1,7 @@
 #include "BankActions.h"
 
 #include <serialization/PresetBankSerializer.h>
+#include <serialization/PresetSerializer.h>
 #include "PresetManager.h"
 #include "PresetBank.h"
 #include "EditBuffer.h"
@@ -1033,6 +1034,27 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
         bank->setAttribute("Name of Export File", "(via Browser)");
         bank->setAttribute("Date of Export File", DateTimeInfo::getIsoStringOfNow());
 
+      }
+
+      return true;
+    }
+  }
+
+  if(path.find("/presets/banks/download-preset/") == 0)
+  {
+    PerformanceTimer timer(__PRETTY_FUNCTION__);
+
+    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+    {
+      Glib::ustring uuid = request->get("uuid");
+
+      if(auto preset = uuid.empty() ? m_presetManager.getEditBuffer() : m_presetManager.findPreset(uuid))
+      {
+        auto stream = request->createStream("text/xml", false);
+        httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + preset->getName() + ".xml\"");
+        XmlWriter writer(stream);
+        PresetSerializer serializer(preset.get());
+        serializer.write(writer, VersionAttribute::get());
       }
 
       return true;

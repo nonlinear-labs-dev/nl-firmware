@@ -287,6 +287,28 @@ void Parameter::writeDocument(Writer &writer, tUpdateID knownRevision) const
   });
 }
 
+void Parameter::writeDiff(Writer &writer, Parameter *other) const
+{
+  if(getHash() != other->getHash())
+  {
+    writer.writeTag("parameter", Attribute("name", getLongName()), [&]
+    {
+      writeDifferences(writer, other);
+    });
+  }
+}
+
+void Parameter::writeDifferences(Writer& writer, Parameter* other) const
+{
+  auto myString = getDisplayString();
+  auto otherString = other->getDisplayString();
+
+  if(myString != otherString)
+  {
+    writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
+  }
+}
+
 void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
   writer.writeTextElement("value", to_string(m_value.getRawValue()));

@@ -52,6 +52,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
     virtual void copyFrom (UNDO::Scope::tTransactionPtr transaction, ParameterGroup *other);
 
     void writeDocument (Writer &writer, tUpdateID knownRevision) const override;
+    void writeDiff(Writer &writer, ParameterGroup *other) const;
 
     virtual tUpdateID onChange () override;
 

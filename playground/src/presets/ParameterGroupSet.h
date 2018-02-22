@@ -28,6 +28,8 @@ class ParameterGroupSet : public UpdateDocumentContributor
     map<int, Parameter *> getParametersSortedById() const;
     Parameter *findParameterByID(size_t id) const;
 
+    void writeDiff(Writer &writer, ParameterGroupSet *other) const;
+
   protected:
     void copyFrom(UNDO::Scope::tTransactionPtr transaction, ParameterGroupSet *other);
     virtual tParameterGroupPtr appendParameterGroup(ParameterGroup *p);

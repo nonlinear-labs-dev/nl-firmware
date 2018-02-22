@@ -4,104 +4,104 @@
 #include "presets/ParameterGroupSet.h"
 #include <fstream>
 
-ParameterGroup::ParameterGroup (ParameterGroupSet *parent, const char *id, const char *shortName, const char *longName,
-                                const char *webUIName) :
-    UpdateDocumentContributor (parent),
-    m_id (id),
-    m_shortName (shortName),
-    m_longName (longName),
-    m_webUIName (webUIName ? : m_longName)
+ParameterGroup::ParameterGroup(ParameterGroupSet *parent, const char *id, const char *shortName, const char *longName,
+                               const char *webUIName) :
+    UpdateDocumentContributor(parent),
+    m_id(id),
+    m_shortName(shortName),
+    m_longName(longName),
+    m_webUIName(webUIName ? : m_longName)
 {
 }
 
-ParameterGroup::~ParameterGroup ()
+ParameterGroup::~ParameterGroup()
 {
-  m_parameters.deleteItems ();
+  m_parameters.deleteItems();
 }
 
-Glib::ustring ParameterGroup::getID () const
+Glib::ustring ParameterGroup::getID() const
 {
   return m_id;
 }
 
-size_t ParameterGroup::getHash () const
+size_t ParameterGroup::getHash() const
 {
   size_t hash = 0;
 
-  for (auto p : m_parameters)
-    hash_combine (hash, p->getHash ());
+  for(auto p : m_parameters)
+    hash_combine(hash, p->getHash());
 
   return hash;
 }
 
-Glib::ustring ParameterGroup::getShortName () const
+Glib::ustring ParameterGroup::getShortName() const
 {
   return m_shortName;
 }
 
-Glib::ustring ParameterGroup::getLongName () const
+Glib::ustring ParameterGroup::getLongName() const
 {
   return m_longName;
 }
 
-size_t ParameterGroup::countParameters () const
+size_t ParameterGroup::countParameters() const
 {
   size_t i = 0;
 
-  for (auto a : m_parameters)
+  for(auto a : m_parameters)
     i++;
 
   return i;
 }
 
-ParameterGroup::tParameterPtr ParameterGroup::getParameterByID (gint32 id) const
+ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(gint32 id) const
 {
-  for (auto a : m_parameters)
+  for(auto a : m_parameters)
   {
-    if (a->getID () == id)
+    if(a->getID() == id)
       return a;
   }
 
   return NULL;
 }
 
-map<int, pair<tDisplayValue, Glib::ustring>> &getDefaultValues ()
+map<int, pair<tDisplayValue, Glib::ustring>> &getDefaultValues()
 {
   static map<int, pair<tDisplayValue, Glib::ustring>> m;
 
-  if (m.empty ())
+  if(m.empty())
   {
-    std::ifstream in ("/tmp/paramid-to-default.txt");
+    std::ifstream in("/tmp/paramid-to-default.txt");
 
     char txt[1024];
 
-    while (in.getline (txt, 1024))
+    while(in.getline(txt, 1024))
     {
-      Glib::ustring str (txt);
-      auto cpos = str.find (',');
+      Glib::ustring str(txt);
+      auto cpos = str.find(',');
 
-      if (cpos != Glib::ustring::npos)
+      if(cpos != Glib::ustring::npos)
       {
-        Glib::ustring id = str.substr (0, cpos);
-        Glib::ustring def = str.substr (cpos + 1);
+        Glib::ustring id = str.substr(0, cpos);
+        Glib::ustring def = str.substr(cpos + 1);
 
-        auto slashPos = def.find ('/');
+        auto slashPos = def.find('/');
 
         pair<tDisplayValue, Glib::ustring> e;
         e.second = def;
 
-        if (slashPos != Glib::ustring::npos)
+        if(slashPos != Glib::ustring::npos)
         {
-          Glib::ustring first = def.substr (0, slashPos);
-          Glib::ustring second = def.substr (slashPos + 1);
-          e.first = stod (first) / stod (second);
+          Glib::ustring first = def.substr(0, slashPos);
+          Glib::ustring second = def.substr(slashPos + 1);
+          e.first = stod(first) / stod(second);
         }
         else
         {
-          e.first = stod (def);
+          e.first = stod(def);
         }
 
-        m[stoi (id)] = e;
+        m[stoi(id)] = e;
       }
     }
   }
@@ -109,7 +109,7 @@ map<int, pair<tDisplayValue, Glib::ustring>> &getDefaultValues ()
   return m;
 }
 
-ParameterGroup::tParameterPtr ParameterGroup::appendParameter (Parameter *p)
+ParameterGroup::tParameterPtr ParameterGroup::appendParameter(Parameter *p)
 {
 #if _TESTS
   auto &m = getDefaultValues ();
@@ -127,54 +127,54 @@ ParameterGroup::tParameterPtr ParameterGroup::appendParameter (Parameter *p)
   }
 #endif
 
-  m_parameters.append (p);
+  m_parameters.append(p);
   return p;
 }
 
-sigc::connection ParameterGroup::onGroupChanged (slot<void> slot)
+sigc::connection ParameterGroup::onGroupChanged(slot<void> slot)
 {
   return m_signalGroupChanged.connectAndInit(slot);
 }
 
-ParameterGroup::tUpdateID ParameterGroup::onChange ()
+ParameterGroup::tUpdateID ParameterGroup::onChange()
 {
-  auto ret = super::onChange ();
-  m_signalGroupChanged.send ();
+  auto ret = super::onChange();
+  m_signalGroupChanged.send();
   return ret;
 }
 
-void ParameterGroup::copyFrom (UNDO::Scope::tTransactionPtr transaction, ParameterGroup* other)
+void ParameterGroup::copyFrom(UNDO::Scope::tTransactionPtr transaction, ParameterGroup* other)
 {
-  auto itThis = getParameters ().begin ();
-  auto itOther = other->getParameters ().begin ();
-  auto endThis = getParameters ().end ();
-  auto endOther = other->getParameters ().end ();
+  auto itThis = getParameters().begin();
+  auto itOther = other->getParameters().begin();
+  auto endThis = getParameters().end();
+  auto endOther = other->getParameters().end();
 
-  for (; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
+  for(; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
   {
-    (*itThis)->copyFrom (transaction, *itOther);
+    (*itThis)->copyFrom(transaction, *itOther);
   }
 }
 
-void ParameterGroup::undoableSetDefaultValues (UNDO::Scope::tTransactionPtr transaction, ParameterGroup *other)
+void ParameterGroup::undoableSetDefaultValues(UNDO::Scope::tTransactionPtr transaction, ParameterGroup *other)
 {
-  auto itThis = getParameters ().begin ();
-  auto itOther = other->getParameters ().begin ();
-  auto endThis = getParameters ().end ();
-  auto endOther = other->getParameters ().end ();
+  auto itThis = getParameters().begin();
+  auto itOther = other->getParameters().begin();
+  auto endThis = getParameters().end();
+  auto endOther = other->getParameters().end();
 
-  for (; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
+  for(; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
   {
-    (*itThis)->undoableSetDefaultValue (transaction, *itOther);
+    (*itThis)->undoableSetDefaultValue(transaction, *itOther);
   }
 }
 
-void ParameterGroup::writeDocument (Writer &writer, tUpdateID knownRevision) const
+void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
-  bool changed = knownRevision < getUpdateIDOfLastChange ();
+  bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag ("parameter-group", Attribute ("id", getID ()), Attribute ("short-name", getShortName ()),
-      Attribute ("long-name", m_webUIName), Attribute ("changed", changed), [&]()
+  writer.writeTag("parameter-group", Attribute("id", getID()), Attribute("short-name", getShortName()), Attribute("long-name", m_webUIName),
+      Attribute("changed", changed), [&]()
       {
         if (changed)
         for (const tParameterPtr p : m_parameters)
@@ -182,46 +182,61 @@ void ParameterGroup::writeDocument (Writer &writer, tUpdateID knownRevision) con
       });
 }
 
-void ParameterGroup::undoableClear (UNDO::Scope::tTransactionPtr transaction)
+void ParameterGroup::writeDiff(Writer &writer, ParameterGroup *other) const
 {
-  for (auto p : getParameters ())
+  if(getHash() != other->getHash())
+  {
+    writer.writeTag("group", Attribute("name", getLongName()), [&]
+    {
+      for(auto parameter : getParameters())
+      {
+        auto otherParameter = other->getParameterByID(parameter->getID());
+        parameter->writeDiff(writer, otherParameter);
+      }
+    });
+  }
+}
+
+void ParameterGroup::undoableClear(UNDO::Scope::tTransactionPtr transaction)
+{
+  for(auto p : getParameters())
   {
     if(!p->isLocked())
     {
-      p->loadDefault (transaction);
+      p->loadDefault(transaction);
     }
   }
 }
 
-void ParameterGroup::undoableReset (UNDO::Scope::tTransactionPtr transaction, Initiator initiator)
+void ParameterGroup::undoableReset(UNDO::Scope::tTransactionPtr transaction, Initiator initiator)
 {
-  for (auto p : getParameters ())
-    p->reset (transaction, initiator);
+  for(auto p : getParameters())
+    p->reset(transaction, initiator);
 }
 
-void ParameterGroup::undoableRandomize (UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount)
+void ParameterGroup::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount)
 {
-  for (auto p : getParameters ())
+  for(auto p : getParameters())
   {
     if(!p->isLocked())
     {
-      p->undoableRandomize (transaction, initiator, amount);
+      p->undoableRandomize(transaction, initiator, amount);
     }
   }
 }
 
-void ParameterGroup::undoableSetType (UNDO::Scope::tTransactionPtr transaction, PresetType oldType, PresetType desiredType)
+void ParameterGroup::undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetType oldType, PresetType desiredType)
 {
-  for (auto p : getParameters ())
-    p->undoableSetType (transaction, oldType, desiredType);
+  for(auto p : getParameters())
+    p->undoableSetType(transaction, oldType, desiredType);
 }
 
-void ParameterGroup::check ()
+void ParameterGroup::check()
 {
-  for (auto p : getParameters ())
+  for(auto p : getParameters())
   {
-    p->check ();
-    getUndoScope ().reset ();
+    p->check();
+    getUndoScope().reset();
   }
 }
 
