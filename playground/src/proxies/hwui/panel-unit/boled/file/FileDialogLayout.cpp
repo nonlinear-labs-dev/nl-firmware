@@ -15,9 +15,11 @@
 
 FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
                                    std::string header) :
-    DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()), commitFunction(cb), m_header(header), crawler("/mnt/usb-stick/", filter, [ = ](FileTools::FileList fl){
-        fileList->setFileList(fl);
+    DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()), commitFunction(cb), m_header(header), crawler("/mnt/usb-stick/", filter, [ = ](){
+
+        auto fl = crawler.copyData();
         fileCount = fl.size();
+        fileList->setFileList(fl);
         updateLabels();
     })
 
@@ -32,6 +34,7 @@ FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
 
 FileDialogLayout::~FileDialogLayout()
 {
+  crawler.killMe();
 }
 
 bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
@@ -66,7 +69,7 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
   return Application::get().getHWUI()->getPanelUnit().getUsageMode()->onButtonPressed(i, modifiers, down);
 }
 
-void FileDialogLayout::overlayInfo()
+void FileDialogLayout::overlayInfo() [[ depricated ]]
 {
   auto HWUI = Application::get().getHWUI();
   auto& panel = HWUI->getPanelUnit();

@@ -2,27 +2,39 @@
 
 #include <functional>
 #include <thread>
+#include <assert.h>
 #include "FileTools.h"
 
-template <typename T>
+
+
 class BackgroundJob
 {
+protected:
+    typedef std::function<void (void)> tCallback;
+
 public:
-    BackgroundJob(std::function<void (T t)> cb) : callback(cb), m_thread(nullptr) {
-    };
+    BackgroundJob(tCallback cb) : callback(cb) {
+    }
+
+    virtual void start() {
+      m_thread = std::thread([&](){
+        while(iterate() && !m_close) {
+          callback();
+        }
+      });
+    }
+
+    virtual bool iterate() = 0;
+
+    void killMe() {
+      m_close = true;
+      if(m_thread.joinable())
+        m_thread.join();
+    }
 
     ~BackgroundJob()
     {
-      stop();
-      if(m_thread->joinable())
-        m_thread->join();
-    }
-
-    virtual void start() = 0;
-
-    void stop()
-    {
-      m_close = false;
+      assert(m_close == true);
     }
 
     bool isRunning() {
@@ -30,55 +42,64 @@ public:
     }
 
 protected:
-    std::unique_ptr<std::thread> m_thread;
-    std::function<void (T t)> callback;
-    bool m_close;
+    std::thread m_thread;
+    tCallback callback;
+    bool m_close = false;
 };
 
+namespace fs = std::experimental::filesystem;
 
-class FileCrawlerJob : public BackgroundJob<FileTools::FileList>
+class FileCrawlerJob : public BackgroundJob
 {
+protected:
+    typedef std::function<bool(fs::directory_entry)> tFilterFunction;
+
 public:
-    FileCrawlerJob(std::string dir, std::function<bool(std::experimental::filesystem::directory_entry)> filter, std::function<void(FileTools::FileList fl)> callback) :
-            BackgroundJob(callback), directory(dir), fileFilter(filter)
+    FileCrawlerJob(std::string dir, tFilterFunction filter, tCallback cb) :
+            BackgroundJob(cb), fileFilter(filter)
     {
-      m_thread = std::make_unique<std::thread>([=]() {
-        start();
-      });
+      it = std::experimental::filesystem::recursive_directory_iterator(fs::path(dir.c_str()));
+      start();
     }
 
-    void start() override
+    bool iterate() override
     {
-      const std::string dir(directory);
-      auto it = std::experimental::filesystem::recursive_directory_iterator(std::experimental::filesystem::path(dir.c_str()));
-      while(!m_close && it != std::experimental::filesystem::recursive_directory_iterator())
+      if(it != fs::recursive_directory_iterator())
       {
         try
         {
           Glib::ustring name(it->path().string());
-          DebugLevel::warning(__FILE__, name);
-          if (std::experimental::filesystem::is_directory(it->path()) && name.find("/.") != Glib::ustring::npos)
+          if (fs::is_directory(it->path()) && name.find("/.") != Glib::ustring::npos)
           {
-            DebugLevel::warning(__FILE__, name);
             it.disable_recursion_pending();
-          } else if (!std::experimental::filesystem::is_directory(it->path()) && !fileFilter(*it))
+          } else if (!fs::is_directory(it->path()) && !fileFilter(*it))
           {
+            std::lock_guard<std::mutex> lock(m);
             list.emplace_back(*it);
-            callback(list);
+
           }
-        } catch(Glib::Error err)
+        }
+        catch (...)
         {
-          DebugLevel::error(err.what(), err.code());
-        } catch (...)
-        {
-          DebugLevel::error("non Glib::Error while traversing Thumbdrive!");
+          DebugLevel::error("Error while traversing Thumbdrive!");
         }
         ++it;
+        return true;
+      }
+      else
+      {
+        return false;
       }
     }
 
+    FileTools::FileList copyData() {
+      std::lock_guard<std::mutex> lock(m);
+      return list;
+    }
+
 protected:
+    std::mutex m;
     FileTools::FileList list;
-    std::string directory;
-    std::function<bool(std::experimental::filesystem::directory_entry)> fileFilter;
+    std::function<bool(fs::directory_entry)> fileFilter;
+    fs::recursive_directory_iterator it;
 };

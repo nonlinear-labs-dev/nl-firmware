@@ -88,7 +88,9 @@ Glib::ustring ImportBackupEditor::generateFileDialogCompliantNameFromPath(std::e
 bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  return fileName.find(".xml.zip") == Glib::ustring::npos && fileName.find(".xml.tar.gz") == Glib::ustring::npos;
+  string endA = ".xml.zip";
+  string endB = ".xml.tar.gz";
+  return !(std::equal(endA.rbegin(), endA.rend(), fileName.rbegin()) ||  std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
 }
 
 void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem::directory_entry file)
