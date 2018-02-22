@@ -27,7 +27,7 @@ PedalSelectionControl::PedalSelectionControl (Parameter *param) :
   const int h = 12;
   const int sliderHeight = 2;
   addControl (new SetupLabel (param->getLongName (), Rect (0, 0, 43, h)));
-  addControl (new MiniParameterDotSlider (param, Rect (43, (h - sliderHeight) / 2, 42, sliderHeight)));
+  addControl (new DotSlider (param, Rect (43, (h - sliderHeight) / 2, 40, sliderHeight)));
   addControl (new SmallerParamValueLabel (param, Rect (85, 0, 42, h)));
 }
 
