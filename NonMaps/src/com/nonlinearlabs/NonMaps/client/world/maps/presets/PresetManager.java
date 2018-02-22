@@ -402,7 +402,7 @@ public class PresetManager extends MapsLayout {
 				for (Control bc : b.getPresetList().getChildren()) {
 					if (bc instanceof Preset) {
 						Preset p = (Preset) bc;
-						if (moveSomeBanks.getPixRect().intersects(p.getPixRect())) {
+						if (moveSomeBanks.getSelectionRect().intersects(p.getPixRect())) {
 							multiSelection.add(p);
 						}
 					}
@@ -508,6 +508,22 @@ public class PresetManager extends MapsLayout {
 		return null;
 	}
 
+	public void handleUpKey() {
+		if(getMultiSelection() == null) {
+			selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
+		} else {
+			getMultiSelection().handleUpKey();
+		}
+	}
+	
+	private void handleDownKey() {
+		if(getMultiSelection() == null) {
+			selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
+		} else {
+			getMultiSelection().handleDownKey();
+		}
+	}
+	
 	@Override
 	public Control onKey(final KeyDownEvent event) {
 
@@ -518,9 +534,9 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_LEFT) {
 			selectPreviousBank(true);
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DOWN) {
-			selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
+			handleDownKey();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_UP) {
-			selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
+			handleUpKey();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ENTER) {
 			loadSelectedPreset();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_P) {

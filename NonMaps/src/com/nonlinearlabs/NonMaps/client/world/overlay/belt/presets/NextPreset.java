@@ -5,7 +5,9 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
+import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage.drawStates;
 
 class NextPreset extends SVGImage {
 
@@ -51,6 +53,11 @@ class NextPreset extends SVGImage {
 	public int getSelectedPhase() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 
+		Bank b = pm.findBank(pm.getSelectedBank());
+		if(b != null)
+			if(b.getPresetList().getPresetCount() == 0)
+				return drawStates.disabled.ordinal();
+		
 		if (!pm.canNext())
 			return drawStates.disabled.ordinal();
 

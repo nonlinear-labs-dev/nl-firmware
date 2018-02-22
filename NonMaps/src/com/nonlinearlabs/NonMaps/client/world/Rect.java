@@ -21,6 +21,13 @@ public class Rect extends Object {
 		this(new Position(x, y), new Dimension(w, h));
 	}
 
+	public Rect(Position a, Position b) {
+		pos.setX(Math.min(a.getX(), b.getX()));
+		pos.setY(Math.min(a.getY(), b.getY()));
+		dim.setWidth(Math.abs(a.getX() - b.getX()));
+		dim.setHeight(Math.abs(a.getY() - b.getY()));
+	}
+
 	public Rect getReducedBy(double d) {
 		return new Rect(getLeft() + d / 2, getTop() + d / 2, getWidth() - d, getHeight() - d);
 	}

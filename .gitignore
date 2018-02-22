@@ -7,6 +7,7 @@ playground/src/libundo/docs/Makefile.am
 playground/src/libundo/Makefile.am
 playground/Makefile
 NonMaps/Makefile
+NonMaps/war/*
 NonMaps/jars/gwt-ll.dll
 NonMaps/war/gwt_bree/
 NonMaps/war/*.png

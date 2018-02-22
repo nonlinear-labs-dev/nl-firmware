@@ -95,7 +95,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		super.doFirstLayoutPass(levelOfDetail);
 		NonDimension oldDim = getNonPosition().getDimension();
 
-		double tapeWidth = getAttachArea() / 2;
+		double tapeWidth = getAttachArea();
 
 		for (MapsControl c : getChildren()) {
 			c.getNonPosition().moveBy(tapeWidth, tapeWidth);
@@ -511,9 +511,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 				PresetManager pm = getParent();
 
-				if (pm.hasMultiplePresetSelection() && pm.getMultiSelection().getNumSelectedPresets() > 1)
-					return DropAction.DROP_PRESETS;
-
 				Preset targetPreset = findPresetAt(pos);
 
 				if (targetPreset == null) {
@@ -523,6 +520,15 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 						targetPreset = findPresetAt(new Position(pos.getX(), pos.getY() - toYPixels(getPadding())));
 					}
 				}
+				
+				if (pm.hasMultiplePresetSelection() && pm.getMultiSelection().getNumSelectedPresets() > 1) {
+					if(pm.getMultiSelection().getSelectedPresets().contains(targetPreset.getUUID()) == false)
+						return DropAction.DROP_PRESETS;
+					else
+						return DropAction.NONE;
+				}
+
+				
 
 				if (targetPreset != null && targetPreset.getUUID().equals(p.getUUID())) {
 					return DropAction.NONE;

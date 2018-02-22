@@ -88,6 +88,7 @@ public class StoreOptionsMenu extends SVGImage {
 					break;
 				}
 
+				requestLayout();
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
 		}
