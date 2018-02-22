@@ -402,7 +402,7 @@ public class PresetManager extends MapsLayout {
 				for (Control bc : b.getPresetList().getChildren()) {
 					if (bc instanceof Preset) {
 						Preset p = (Preset) bc;
-						if (moveSomeBanks.getPixRect().intersects(p.getPixRect())) {
+						if (moveSomeBanks.getSelectionRect().intersects(p.getPixRect())) {
 							multiSelection.add(p);
 						}
 					}
