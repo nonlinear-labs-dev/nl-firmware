@@ -68,6 +68,12 @@ public class Tape extends MapsControl {
 			return;
 
 		super.draw(ctx, invalidationMask);
+
+		Rect r = calcTapeRect();
+		r.fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
+	}
+
+	public Rect calcTapeRect() {
 		Rect r = getPixRect().copy();
 
 		switch (orientation) {
@@ -92,8 +98,7 @@ public class Tape extends MapsControl {
 		default:
 			break;
 		}
-
-		r.fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
+		return r;
 	}
 
 	public boolean fitsTo(Tape others) {
