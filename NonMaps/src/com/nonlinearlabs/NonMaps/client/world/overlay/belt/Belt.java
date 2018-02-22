@@ -91,15 +91,15 @@ public class Belt extends OverlayLayout {
 	}
 
 	public boolean isPresetView() {
-		return presetLayout.getOpacity() != 0.0;
+		return presetLayout.getOpacity() != 0.0 && !isHidden();
 	}
 
 	public boolean isParameterView() {
-		return parameterLayout.getOpacity() != 0.0;
+		return parameterLayout.getOpacity() != 0.0 && !isHidden();
 	}
 
 	public boolean isSoundView() {
-		return soundLayout.getOpacity() != 0.0;
+		return soundLayout.getOpacity() != 0.0 && !isHidden();
 	}
 
 	void setPresetView(boolean toggleIfHidden) {
