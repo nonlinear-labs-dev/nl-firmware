@@ -120,7 +120,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
-		name.setNonSize(parentsWidthFromFirstPass - number.getNonPosition().getWidth() - 10, name.getNonPosition().getHeight());
+		name.setNonSize(parentsWidthFromFirstPass - number.getNonPosition().getWidth() - tag.getNonPosition().getWidth(), name
+				.getNonPosition().getHeight());
 		setNonSize(parentsWidthFromFirstPass, Math.ceil(getNonPosition().getHeight()));
 	}
 
