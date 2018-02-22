@@ -8,14 +8,15 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Label.h>
 #include <experimental/filesystem>
+#include <tools/BackgroundJobs.h>
 
 class FileDialogLayout : public DFBLayout
 {
   private:
     typedef std::function<void(std::experimental::filesystem::directory_entry)> tCallBackFunction;
-
+    typedef std::function<bool(std::experimental::filesystem::directory_entry)> tFilterFunction;
  public:
-    FileDialogLayout(FileTools::FileList&& files, tCallBackFunction cb, std::string header);
+    FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header);
     virtual ~FileDialogLayout();
 
     bool onButton(int i, bool down, ButtonModifiers modifiers) override;
@@ -32,6 +33,7 @@ class FileDialogLayout : public DFBLayout
     Label* positionLabel = nullptr;
     InvertedLabel* headerLabel = nullptr;
     tCallBackFunction commitFunction;
+    FileCrawlerJob crawler;
 
     std::string m_header;
 };

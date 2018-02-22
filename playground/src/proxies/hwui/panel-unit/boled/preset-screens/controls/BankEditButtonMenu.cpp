@@ -111,8 +111,8 @@ BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(std::experime
 bool BankEditButtonMenu::applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  auto fileIsBackup = fileName.find(".xml.zip") != Glib::ustring::npos || fileName.find(".xml.tar.gz") != Glib::ustring::npos;
-  return !fileIsBackup;
+  string end = ".xml";
+  return !std::equal(end.rbegin(), end.rend(), fileName.rbegin());
 }
 
 void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::directory_entry file)
@@ -135,10 +135,7 @@ void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::direc
 
 void BankEditButtonMenu::importBank()
 {
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(new PleaseWaitLayout());
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().redraw();
-  auto matchedFiles = FileTools::getListOfFilesThatMatchFilter("/mnt/usb-stick/", &BankEditButtonMenu::applicableBackupFilesFilter);
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(new FileDialogLayout(std::move(matchedFiles), &BankEditButtonMenu::importBankFromPath, "Bank File"));
+  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(new FileDialogLayout(&BankEditButtonMenu::applicableBackupFilesFilter, &BankEditButtonMenu::importBankFromPath, "Bank File"));
 }
 
 Glib::ustring BankEditButtonMenu::createValidOutputPath(const Glib::ustring &bankName)

@@ -14,12 +14,13 @@ class FileListControl : public ControlWithChildren
     Label* middleFile;
     Label* bottomFile;
     Label* bottomFile2;
-    FileTools::FileList fileList;
+    std::unique_ptr<FileTools::FileList> fileList;
     int selectedItem;
 
     std::string getFileNameAtIndex(int index);
   public:
-    FileListControl(FileTools::FileList&& files);
+    FileListControl();
+    void setFileList(FileTools::FileList list);
     virtual ~FileListControl();
     void setSelection(int index);
     void changeSelection(int change);

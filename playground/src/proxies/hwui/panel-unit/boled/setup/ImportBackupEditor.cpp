@@ -88,7 +88,9 @@ Glib::ustring ImportBackupEditor::generateFileDialogCompliantNameFromPath(std::e
 bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  return fileName.find(".xml.zip") == Glib::ustring::npos && fileName.find(".xml.tar.gz") == Glib::ustring::npos;
+  string endA = ".xml.zip";
+  string endB = ".xml.tar.gz";
+  return !(std::equal(endA.rbegin(), endA.rend(), fileName.rbegin()) ||  std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
 }
 
 void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem::directory_entry file)
@@ -136,7 +138,8 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
 
 void ImportBackupEditor::importBackup()
 {
-  auto matchedFiles = FileTools::getListOfFilesThatMatchFilter("/mnt/usb-stick/", &ImportBackupEditor::filterApplicableFileNames);
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(
-      new FileDialogLayout(std::move(matchedFiles), &ImportBackupEditor::importBackupFileFromPath, "Backup File"));
+          new FileDialogLayout(&ImportBackupEditor::filterApplicableFileNames,
+                               &ImportBackupEditor::importBackupFileFromPath,
+                               "Backup File"));
 }
