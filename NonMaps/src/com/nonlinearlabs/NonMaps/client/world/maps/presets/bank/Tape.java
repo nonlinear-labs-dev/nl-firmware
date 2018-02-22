@@ -6,6 +6,7 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
@@ -63,11 +64,36 @@ public class Tape extends MapsControl {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		if(getParent().isDraggingControl())
+		if (getParent().isDraggingControl())
 			return;
-		
+
 		super.draw(ctx, invalidationMask);
-		getPixRect().fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
+		Rect r = getPixRect().copy();
+
+		switch (orientation) {
+		case East:
+			r.setWidth(r.getWidth() / 2);
+			break;
+
+		case North:
+			r.setHeight(r.getHeight() / 2);
+			r.moveBy(0, r.getHeight());
+			break;
+
+		case South:
+			r.setHeight(r.getHeight() / 2);
+			break;
+
+		case West:
+			r.setWidth(r.getWidth() / 2);
+			r.moveBy(r.getWidth(), 0);
+			break;
+
+		default:
+			break;
+		}
+
+		r.fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
 	}
 
 	public boolean fitsTo(Tape others) {
