@@ -68,4 +68,45 @@ public class MultiplePresetSelection {
 	public void deletePresets() {
 		NonMaps.get().getServerProxy().deletePresets(getCSV());
 	}
+		
+	private PresetManager getPresetManager() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager();
+	}
+	
+	private String getLastUuid() {
+		try {
+			return selectedPresets.get(selectedPresets.size() - 1);
+		} catch(Exception e) {
+			return null;
+		}
+	}
+		
+	public void handleDownKey() {		
+		Preset curr = getPresetManager().findPreset(getLastUuid());
+		if(curr != null) {
+			Preset next = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getNext(getLastUuid());
+			if(next != null) {
+				if(contains(next)) {
+					remove(curr);
+				} else {
+					add(next);
+				}
+			}
+		}
+		
+	}
+	
+	public void handleUpKey() {
+		Preset curr = getPresetManager().findPreset(getLastUuid());
+		if(curr != null) {
+			Preset prev = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getPrev(getLastUuid());
+			if(prev != null) {
+				if(contains(prev)) {
+					remove(curr);
+				} else {
+					add(prev);
+				}
+			}
+		}
+	}
 }
