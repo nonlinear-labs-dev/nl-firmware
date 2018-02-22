@@ -329,3 +329,50 @@ bool Preset::matchesQuery(const SearchQuery &query) const
     return false;
   });
 }
+
+void Preset::writeDiff(Writer &writer, Preset *other) const
+{
+  char txt[256];
+  auto pm = Application::get().getPresetManager();
+
+  Glib::ustring aPositionString = "Edit Buffer";
+  Glib::ustring bPositionString = "Edit Buffer";
+
+  if(auto b = getBank())
+  {
+    sprintf(txt, "%d-%03d", pm->calcOrderNumber(b.get()), b->getPresetPosition(getUuid()) + 1);
+    aPositionString = txt;
+  }
+
+  if(auto b = other->getBank())
+  {
+    sprintf(txt, "%d-%03d", pm->calcOrderNumber(b.get()), b->getPresetPosition(other->getUuid()) + 1);
+    bPositionString = txt;
+  }
+
+  writer.writeTag("diff",
+      [&]
+      {
+        auto hash = getHash();
+        auto otherHash = other->getHash();
+
+        writer.writeTextElement("hash", "", Attribute("a", hash), Attribute("b", otherHash));
+        writer.writeTextElement("position", "", Attribute("a", aPositionString), Attribute("b", bPositionString));
+        writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
+
+        if(hash != otherHash)
+        {
+          if(getAttribute("Comment", "") != other->getAttribute("Comment", ""))
+          {
+            writer.writeTextElement("comment", "", Attribute("a", getAttribute("Comment", "")), Attribute("b", other->getAttribute("Comment", "")));
+          }
+
+          if(getAttribute("color", "") != other->getAttribute("color", ""))
+          {
+            writer.writeTextElement("color", "", Attribute("a", getAttribute("color", "")), Attribute("b", other->getAttribute("color", "")));
+          }
+
+          ParameterGroupSet::writeDiff(writer, other);
+        }
+      });
+}

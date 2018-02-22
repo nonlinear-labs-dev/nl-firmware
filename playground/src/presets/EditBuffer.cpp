@@ -235,11 +235,17 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < ParameterGroupSet::getUpdateIDOfLastChange();
 
-  writer.writeTag("edit-buffer", Attribute("selected-parameter", m_selectedParameter ? m_selectedParameter->getID() : 0),
-      Attribute("loaded-preset", m_lastLoadedPresetInfo.presetUUID), Attribute("loaded-presets-name", m_lastLoadedPresetInfo.presetName),
-      Attribute("loaded-presets-bank-name", m_lastLoadedPresetInfo.bankName),
-      Attribute("preset-is-zombie", m_lastLoadedPresetInfo.presetDeleted), Attribute("is-modified", m_isModified),
-      Attribute("changed", changed), [&]()
+  writer.writeTag("edit-buffer",
+      {
+        Attribute("selected-parameter", m_selectedParameter ? m_selectedParameter->getID() : 0),
+        Attribute("loaded-preset", m_lastLoadedPresetInfo.presetUUID),
+        Attribute("loaded-presets-name", m_lastLoadedPresetInfo.presetName),
+        Attribute("loaded-presets-bank-name", m_lastLoadedPresetInfo.bankName),
+        Attribute("preset-is-zombie", m_lastLoadedPresetInfo.presetDeleted),
+        Attribute("is-modified", m_isModified),
+        Attribute("hash", getHash()),
+        Attribute("changed",changed),
+      }, [&]()
       {
         if (changed)
         {
@@ -563,11 +569,11 @@ void EditBuffer::undoableToggleGroupLock(UNDO::Scope::tTransactionPtr transactio
 
 bool EditBuffer::doesAnyParameterHaveALock()
 {
-  for (auto group : getParameterGroups())
+  for(auto group : getParameterGroups())
   {
-    for (auto parameter : group->getParameters())
+    for(auto parameter : group->getParameters())
     {
-      if (parameter->isLocked())
+      if(parameter->isLocked())
         return true;
     }
   }
