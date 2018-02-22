@@ -25,13 +25,9 @@ public class CompareDialog extends GWTDialog {
 	private Document presetBXml;
 	private Button loadPresetA;
 	private Button loadPresetB;
-	Preset preset1, preset2;
-	String csvWithDiffs = "";
-	
-	String preset1PositionText;
-	String preset2PositionText;
-	
-	FlexTable table = null;
+
+	private FlexTable table = null;
+	private String indent = "&#9492 ";
 
 	public static void open(Preset p1) {
 		new CompareDialog(p1);
@@ -163,74 +159,123 @@ public class CompareDialog extends GWTDialog {
 			Element root = xml.getDocumentElement();
 			Node positionNode = ServerProxy.getChild(root, "position");
 			Node nameNode = ServerProxy.getChild(root, "name");
+			Node commentNode = ServerProxy.getChild(root, "comment");
+			Node colorNode = ServerProxy.getChild(root, "color");
 
 			int row = 0;
 			table = new FlexTable();
 			table.getElement().addClassName("compare-tree");
-			preset1PositionText = positionNode.getAttributes().getNamedItem("a").getNodeValue();
-			preset2PositionText = positionNode.getAttributes().getNamedItem("b").getNodeValue();
-			table.setText(row, 1, preset1PositionText);
-			table.setText(row, 2, preset2PositionText);
-			row++;
-			table.setText(row, 1, nameNode.getAttributes().getNamedItem("a").getNodeValue());
-			table.setText(row, 2, nameNode.getAttributes().getNamedItem("b").getNodeValue());
-			row++;
-			addLoadButtons(row, table);
-			row++;
 
-			NodeList groups = xml.getElementsByTagName("group");
-			int numGroups = groups.getLength();
+			row = writeHeader(row, positionNode, nameNode);
 
-			for (int numGroup = 0; numGroup < numGroups; numGroup++) {
-				Node group = groups.item(numGroup);
+			String nameA = nameNode.getAttributes().getNamedItem("a").getNodeValue();
+			String nameB = nameNode.getAttributes().getNamedItem("b").getNodeValue();
 
-				if (group.getNodeType() == Node.ELEMENT_NODE) {
-					table.setText(row, 0, group.getAttributes().getNamedItem("name").getNodeValue());
-					row++;
-
-					NodeList params = group.getChildNodes();
-
-					int numParams = params.getLength();
-
-					for (int numParam = 0; numParam < numParams; numParam++) {
-						Node param = params.item(numParam);
-
-						if (param.getNodeType() == Node.ELEMENT_NODE) {
-
-							String paramName = param.getAttributes().getNamedItem("name").getNodeValue();
-							table.setWidget(row, 0, new HTMLPanel("span", "&#9584; " + paramName));
-							table.getWidget(row, 0).getElement().addClassName("indent-1");
-							row++;
-
-							NodeList changes = param.getChildNodes();
-
-							int numChanges = changes.getLength();
-
-							for (int numChange = 0; numChange < numChanges; numChange++) {
-								Node change = changes.item(numChange);
-
-								if (change.getNodeType() == Node.ELEMENT_NODE) {
-									if (change.getNodeName().equals("value")) {
-										table.setText(row - 1, 1, change.getAttributes().getNamedItem("a").getNodeValue());
-										table.setText(row - 1, 2, change.getAttributes().getNamedItem("b").getNodeValue());
-									} else {
-										table.setWidget(row, 0, new HTMLPanel("span", "&#9584; "
-												+ translateChangeName(change.getNodeName())));
-										table.getWidget(row, 0).getElement().addClassName("indent-2");
-										String aValue = change.getAttributes().getNamedItem("a").getNodeValue();
-										String bValue = change.getAttributes().getNamedItem("b").getNodeValue();
-										table.setText(row, 1, translateChangeValue(paramName, change.getNodeName(), aValue));
-										table.setText(row, 2, translateChangeValue(paramName, change.getNodeName(), bValue));
-										row++;
-									}
-								}
-							}
-						}
-					}
-				}
+			if (!nameA.equals(nameB)) {
+				table.setText(row, 0, "Name");
+				table.setText(row, 1, nameA);
+				table.setText(row, 2, nameB);
+				row++;
 			}
+
+			if (commentNode != null) {
+				table.setText(row, 0, "Comment");
+				table.setText(row, 1, commentNode.getAttributes().getNamedItem("a").getNodeValue());
+				table.setText(row, 2, commentNode.getAttributes().getNamedItem("b").getNodeValue());
+				row++;
+			}
+
+			if (colorNode != null) {
+				table.setText(row, 0, "Color");
+				table.setText(row, 1, colorNode.getAttributes().getNamedItem("a").getNodeValue());
+				table.setText(row, 2, colorNode.getAttributes().getNamedItem("b").getNodeValue());
+				row++;
+			}
+
+			writeParameterGroups(row);
 			setWidget(table);
 		}
+	}
+
+	public void writeParameterGroups(int row) {
+		NodeList groups = xml.getElementsByTagName("group");
+		int numGroups = groups.getLength();
+
+		for (int numGroup = 0; numGroup < numGroups; numGroup++) {
+			Node group = groups.item(numGroup);
+
+			if (group.getNodeType() == Node.ELEMENT_NODE) {
+				row = writeParameterGroup(row, group);
+			}
+		}
+	}
+
+	public int writeParameterGroup(int row, Node group) {
+		table.setText(row, 0, group.getAttributes().getNamedItem("name").getNodeValue());
+		row++;
+
+		NodeList params = group.getChildNodes();
+
+		int numParams = params.getLength();
+
+		for (int numParam = 0; numParam < numParams; numParam++) {
+			Node param = params.item(numParam);
+
+			if (param.getNodeType() == Node.ELEMENT_NODE) {
+				row = writeParameter(row, param);
+			}
+		}
+		return row;
+	}
+
+	public int writeParameter(int row, Node param) {
+		String paramName = param.getAttributes().getNamedItem("name").getNodeValue();
+		table.setWidget(row, 0, new HTMLPanel("span", indent + paramName));
+		table.getWidget(row, 0).getElement().addClassName("indent-1");
+		row++;
+
+		NodeList changes = param.getChildNodes();
+
+		int numChanges = changes.getLength();
+
+		for (int numChange = 0; numChange < numChanges; numChange++) {
+			Node change = changes.item(numChange);
+
+			if (change.getNodeType() == Node.ELEMENT_NODE) {
+				row = writeParameterChange(row, paramName, change);
+			}
+		}
+		return row;
+	}
+
+	public int writeParameterChange(int row, String paramName, Node change) {
+		if (change.getNodeName().equals("value")) {
+			table.setText(row - 1, 1, change.getAttributes().getNamedItem("a").getNodeValue());
+			table.setText(row - 1, 2, change.getAttributes().getNamedItem("b").getNodeValue());
+		} else {
+			table.setWidget(row, 0, new HTMLPanel("span", indent + translateChangeName(change.getNodeName())));
+			table.getWidget(row, 0).getElement().addClassName("indent-2");
+			String aValue = change.getAttributes().getNamedItem("a").getNodeValue();
+			String bValue = change.getAttributes().getNamedItem("b").getNodeValue();
+			table.setText(row, 1, translateChangeValue(paramName, change.getNodeName(), aValue));
+			table.setText(row, 2, translateChangeValue(paramName, change.getNodeName(), bValue));
+			row++;
+		}
+		return row;
+	}
+
+	public int writeHeader(int row, Node positionNode, Node nameNode) {
+		String preset1PositionText = positionNode.getAttributes().getNamedItem("a").getNodeValue();
+		String preset2PositionText = positionNode.getAttributes().getNamedItem("b").getNodeValue();
+		table.setText(row, 1, preset1PositionText);
+		table.setText(row, 2, preset2PositionText);
+		row++;
+		table.setText(row, 1, nameNode.getAttributes().getNamedItem("a").getNodeValue());
+		table.setText(row, 2, nameNode.getAttributes().getNamedItem("b").getNodeValue());
+		row++;
+		addLoadButtons(row, table);
+		row++;
+		return row;
 	}
 
 	public void update() {
@@ -244,15 +289,18 @@ public class CompareDialog extends GWTDialog {
 			String a = hashNode.getAttributes().getNamedItem("a").getNodeValue();
 			String b = hashNode.getAttributes().getNamedItem("b").getNodeValue();
 			String ebHash = NonMaps.get().getNonLinearWorld().getParameterEditor().getHash();
-			
+
 			loadPresetA.setEnabled(!(presetAXml == null || a.equals(ebHash)));
 			loadPresetB.setEnabled(!(presetBXml == null || b.equals(ebHash)));
 		}
 	}
 
 	public void addLoadButtons(int row, FlexTable table) {
-		table.setWidget(row, 1, loadPresetA = new Button("Load"));
-		table.setWidget(row, 2, loadPresetB = new Button("Load"));
+		table.setWidget(row, 1, loadPresetA = new Button(""));
+		table.setWidget(row, 2, loadPresetB = new Button(""));
+
+		loadPresetA.getElement().addClassName("load-button-a");
+		loadPresetB.getElement().addClassName("load-button-b");
 
 		updateLoadButtonStates();
 

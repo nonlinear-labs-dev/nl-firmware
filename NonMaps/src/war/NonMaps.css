@@ -1737,3 +1737,18 @@ input.param-name-edit {
 .tag-div {
 	line-height: 32px;
 }
+
+.load-button-a, .load-button-b {
+	width: 1cm;
+	height: 1cm;
+	background-size: contain;
+	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Enabled.svg)
+}
+
+.load-button-a[disabled], .load-button-b[disabled] {
+	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Disabled.svg)
+}
+
+.load-button-a:active, .load-button-b:active {
+	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Active.svg)
+}

@@ -362,11 +362,6 @@ void Preset::writeDiff(Writer &writer, Preset *other) const
 
         if(hash != otherHash)
         {
-          if(getName() != other->getName())
-          {
-            writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
-          }
-
           if(getAttribute("Comment", "") != other->getAttribute("Comment", ""))
           {
             writer.writeTextElement("comment", "", Attribute("a", getAttribute("Comment", "")), Attribute("b", other->getAttribute("Comment", "")));
