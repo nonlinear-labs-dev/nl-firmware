@@ -216,6 +216,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public Control onContextMenu(Position pos) {
 		if (isInStoreSelectMode())
 			return null;
+		
+		if(isSelected() == false)
+			selectPreset();
 
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
 				.getContextMenuSettings();
