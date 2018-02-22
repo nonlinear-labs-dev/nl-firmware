@@ -49,8 +49,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private Bank slaveBottom = null;
 
 	private boolean mouseCaptured = false;
-	private String masterUUID;
-	private String attatchDirection;
+	private String masterUUID = "";
+	private String attatchDirection = "";
 	private String m_saveState = "";
 
 	private enum DropPosition {
@@ -520,15 +520,13 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 						targetPreset = findPresetAt(new Position(pos.getX(), pos.getY() - toYPixels(getPadding())));
 					}
 				}
-				
+
 				if (pm.hasMultiplePresetSelection() && pm.getMultiSelection().getNumSelectedPresets() > 1) {
-					if(pm.getMultiSelection().getSelectedPresets().contains(targetPreset.getUUID()) == false)
+					if (pm.getMultiSelection().getSelectedPresets().contains(targetPreset.getUUID()) == false)
 						return DropAction.DROP_PRESETS;
 					else
 						return DropAction.NONE;
 				}
-
-				
 
 				if (targetPreset != null && targetPreset.getUUID().equals(p.getUUID())) {
 					return DropAction.NONE;
@@ -691,7 +689,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return slaveRight;
 	}
 
-	public void installRelationshipMasterSlave(Bank master, String direction) {
+	public void installRelationshipMasterSlave(Bank master) {
+		String direction = getAttatchDirection();
 
 		if (direction.equals("top") || direction.equals("bottom")) {
 			masterTop = master;
@@ -752,11 +751,17 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public void setAttatchedTo(String direction) {
-		this.attatchDirection = direction;
+		if (!this.attatchDirection.equals(direction)) {
+			this.attatchDirection = direction;
+			requestLayout();
+		}
 	}
 
 	public void setMasterUUID(String masterUUID) {
-		this.masterUUID = masterUUID;
+		if (!this.masterUUID.equals(masterUUID)) {
+			this.masterUUID = masterUUID;
+			requestLayout();
+		}
 	}
 
 	public String getMasterUUID() {

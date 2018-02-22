@@ -232,7 +232,6 @@ public class PresetManager extends MapsLayout {
 
 		removeObsoleteBanks(currentChildren);
 		installDockingRelations();
-		requestLayout();
 
 		if (BankInfoDialog.isShown())
 			BankInfoDialog.update();
@@ -255,7 +254,7 @@ public class PresetManager extends MapsLayout {
 				Bank masterBank = NonMaps.theMaps.getNonLinearWorld().getPresetManager().findBank(bank.getMasterUUID());
 
 				if (masterBank != null) {
-					bank.installRelationshipMasterSlave(masterBank, bank.getAttatchDirection());
+					bank.installRelationshipMasterSlave(masterBank);
 				}
 			}
 		}
@@ -509,21 +508,21 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void handleUpKey() {
-		if(getMultiSelection() == null) {
+		if (getMultiSelection() == null) {
 			selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
 		} else {
 			getMultiSelection().handleUpKey();
 		}
 	}
-	
+
 	private void handleDownKey() {
-		if(getMultiSelection() == null) {
+		if (getMultiSelection() == null) {
 			selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
 		} else {
 			getMultiSelection().handleDownKey();
 		}
 	}
-	
+
 	@Override
 	public Control onKey(final KeyDownEvent event) {
 

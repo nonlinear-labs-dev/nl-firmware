@@ -10,7 +10,6 @@ import com.nonlinearlabs.NonMaps.client.Animator;
 import com.nonlinearlabs.NonMaps.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.contextStates.ContextState;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
 import com.nonlinearlabs.NonMaps.client.world.maps.IContextMenu;
@@ -219,18 +218,20 @@ public class NonLinearWorld extends MapsLayout {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		try (ContextState state = new ContextState(ctx)) {
-			ctx.save();
-			ctx.setGlobalCompositeOperation(Composite.SOURCE_OVER);
-			ctx.setLineCap(LineCap.BUTT);
-			ctx.translate(-0.5, -0.5);
-			viewport.drawBackground(ctx);
-			drawChildren(ctx, invalidationMask);
-			viewport.draw(ctx, invalidationMask);
+			try (StopWatchState s = new StopWatchState("NonlinearWorld::draw")) {
+				ctx.save();
+				ctx.setGlobalCompositeOperation(Composite.SOURCE_OVER);
+				ctx.setLineCap(LineCap.BUTT);
+				ctx.translate(-0.5, -0.5);
+				viewport.drawBackground(ctx);
+				drawChildren(ctx, invalidationMask);
+				viewport.draw(ctx, invalidationMask);
 
-			if (getPresetManager().hasMultipleRectangle())
-				getPresetManager().getMoveSomeBanks().draw(ctx, invalidationMask);
+				if (getPresetManager().hasMultipleRectangle())
+					getPresetManager().getMoveSomeBanks().draw(ctx, invalidationMask);
 
-			ctx.restore();
+				ctx.restore();
+			}
 		}
 	}
 
@@ -370,8 +371,6 @@ public class NonLinearWorld extends MapsLayout {
 
 			requestLayout();
 			invalidate(INVALIDATION_FLAG_ZOOMED);
-
-			Tracer.log("old zoom was :" + z1 + ", now it is: " + z2);
 		}
 	}
 

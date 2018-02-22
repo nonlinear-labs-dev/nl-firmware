@@ -13,7 +13,6 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Mouseing;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -214,9 +213,7 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		int invalidationMask = nonlinearWorld.getAndResetInvalid();
 
 		if (invalidationMask != 0) {
-			try (StopWatchState s = new StopWatchState("NonMaps::update")) {
-				nonlinearWorld.draw(context, invalidationMask);
-			}
+			nonlinearWorld.draw(context, invalidationMask);
 
 			if (refreshBitmapCaches == null) {
 				refreshBitmapCaches = new ScheduledCommand() {

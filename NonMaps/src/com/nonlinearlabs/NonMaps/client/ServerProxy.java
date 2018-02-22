@@ -14,6 +14,7 @@ import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
+import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -74,28 +75,30 @@ public class ServerProxy {
 	}
 
 	private void applyChanges(String responseText) {
-		Document xml = XMLParser.parse(responseText);
-		Node world = xml.getElementsByTagName("nonlinear-world").item(0);
-		Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
-		Node settingsNode = xml.getElementsByTagName("settings").item(0);
-		Node undoNode = xml.getElementsByTagName("undo").item(0);
-		Node presetManagerNode = xml.getElementsByTagName("preset-manager").item(0);
-		Node deviceInfo = xml.getElementsByTagName("device-information").item(0);
-		Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
+		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
+			Document xml = XMLParser.parse(responseText);
+			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
+			Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
+			Node settingsNode = xml.getElementsByTagName("settings").item(0);
+			Node undoNode = xml.getElementsByTagName("undo").item(0);
+			Node presetManagerNode = xml.getElementsByTagName("preset-manager").item(0);
+			Node deviceInfo = xml.getElementsByTagName("device-information").item(0);
+			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
 
-		boolean omitOracles = omitOracles(world);
-		Tracer.log("ServerProxy.applyChanges -> omitOracles = " + omitOracles);
+			boolean omitOracles = omitOracles(world);
+			Tracer.log("ServerProxy.applyChanges -> omitOracles = " + omitOracles);
 
-		nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
-		nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);
-		nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
-		nonMaps.getNonLinearWorld().getSettings().update(settingsNode, presetManagerNode, deviceInfo);
-		nonMaps.getNonLinearWorld().getViewport().getOverlay()
-				.update(settingsNode, editBufferNode, presetManagerNode, deviceInfo, undoNode);
-		nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
+			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
+			nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);
+			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
+			nonMaps.getNonLinearWorld().getSettings().update(settingsNode, presetManagerNode, deviceInfo);
+			nonMaps.getNonLinearWorld().getViewport().getOverlay()
+					.update(settingsNode, editBufferNode, presetManagerNode, deviceInfo, undoNode);
+			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
-		setPlaygroundSoftwareVersion(deviceInfo);
-		checkSoftwareVersionCompatibility();
+			setPlaygroundSoftwareVersion(deviceInfo);
+			checkSoftwareVersionCompatibility();
+		}
 	}
 
 	private void checkSoftwareVersionCompatibility() {
@@ -721,7 +724,7 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID), new StaticURI.KeyValue("info", text));
 		queueJob(uri, false);
 	}
-	
+
 	public void setPresetAttribute(Preset thePreset, String key, String value) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-preset-attribute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", thePreset.getUUID()), new StaticURI.KeyValue("key", key),
