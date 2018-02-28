@@ -6,7 +6,6 @@ import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.world.Control;
-import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -65,9 +64,9 @@ public class BankControl extends OverlayLayout implements IBank {
 		Rect r = getPixRect();
 		RGB black = new Gray(0);
 		double border = getSpaceBetweenChildren();
-		r.drawRoundedArea(ctx, border, 1, black, black);
-		r = r.getReducedBy(2);
-		r.drawRoundedArea(ctx, border, 1, black, new Gray(102));
+		r.drawRoundedArea(ctx, border, 1, new Gray(102), black);
+		r = r.getReducedBy(8);
+		r.drawRoundedArea(ctx, border, 0, black, black);
 		super.draw(ctx, invalidationMask);
 	}
 

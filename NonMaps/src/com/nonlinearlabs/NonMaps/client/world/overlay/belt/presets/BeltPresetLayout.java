@@ -88,7 +88,7 @@ public class BeltPresetLayout extends OverlayLayout {
 			bankInfos.doLayout(0, 0, 0, 0);
 		}
 
-		autoLoad.doLayout(w - buttonDim - margin, horizontalCenterLinePosition - (buttonDim / 2), buttonDim, buttonDim);
+		autoLoad.doLayout(w - buttonDim * 1.6, horizontalCenterLinePosition - (buttonDim / 2), buttonDim, buttonDim);
 
 		rest = (autoLoad.getRelativePosition().getLeft() - margin) - (load.getRelativePosition().getRight() + margin);
 		double currentPresetLabel = 2 * buttonDim;

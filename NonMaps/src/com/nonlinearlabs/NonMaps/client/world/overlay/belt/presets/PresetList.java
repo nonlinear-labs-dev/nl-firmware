@@ -76,7 +76,7 @@ public class PresetList extends OverlayLayout {
 	}
 
 	private double getChildHeight() {
-		return getRelativePosition().getHeight() / 3.0;
+		return getRelativePosition().getHeight() / 3;
 	}
 
 	private void drawDropIndicator(Context2d ctx, Rect rect, double yOffset, double heightFactor) {

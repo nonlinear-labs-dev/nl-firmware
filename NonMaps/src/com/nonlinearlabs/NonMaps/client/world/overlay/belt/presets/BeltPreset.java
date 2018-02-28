@@ -64,7 +64,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		double numberWidth = Millimeter.toPixels(10);
 		double xSpace = Millimeter.toPixels(5);
 
-		color.doLayout(2, 0 - h / 2 + h / 5, 7, h - h / 5);
+		color.doLayout(2, 0, 7, h);
 		number.doLayout(7, 0, numberWidth, h);
 		name.doLayout(numberWidth + xSpace, 0, w - (numberWidth + xSpace), h);
 	}
@@ -87,11 +87,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 			isOrignalPreset = getStoreMode().isOriginalPreset(mapsPreset);
 		}
 
-		double cp = 1;
-
-		RGB colorContour = new RGB(0, 0, 0);
 		RGB colorFill = new RGB(25, 25, 25);
-		RGB colorHighlight = new RGB(77, 77, 77);
 
 		if (selected && !isOrignalPreset)
 			colorFill = new RGB(77, 77, 77);
@@ -99,12 +95,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		if (loaded || isOrignalPreset)
 			colorFill = RGB.blue();
 
-		Rect r = getPixRect().copy();
-		r.fill(ctx, colorFill);
-		r.stroke(ctx, cp, colorHighlight);
-		r.reduceHeightBy(2 * cp);
-		r.reduceWidthBy(2 * cp);
-		r.stroke(ctx, cp, colorContour);
+		getPixRect().fill(ctx, colorFill);
 
 		super.draw(ctx, invalidationMask);
 	}

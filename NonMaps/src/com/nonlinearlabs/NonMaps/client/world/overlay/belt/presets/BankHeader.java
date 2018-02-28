@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.contextStates.ClipContext;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -59,6 +60,9 @@ class BankHeader extends OverlayLayout {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
+		Rect r = new Rect(prev.getPixRect().getLeft(), prev.getPixRect().getTop(), next.getPixRect().getRight() - prev.getPixRect().getLeft(), next.getPixRect().getBottom() - prev.getPixRect().getTop());
+		r.reduceHeightBy(-2);
+		r.drawRoundedArea(ctx, 0, 1, new Gray(106), new Gray(106));
 		super.draw(ctx, invalidationMask);
 
 		if (isDropTarget)
