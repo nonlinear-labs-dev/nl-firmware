@@ -1,13 +1,11 @@
 #include "TimeTools.h"
 
-#include <bits/types/struct_tm.h>
-#include <bits/types/time_t.h>
 #include <ctime>
 #include <iomanip>
 #include <memory>
 #include <sstream>
 
-#include "../device-settings/DebugLevel.h"
+#include <device-settings/DebugLevel.h>
 
 time_t TimeTools::getRealTimestamp()
 {
