@@ -1,6 +1,8 @@
 #include <device-settings/DeviceName.h>
 #include <device-settings/Settings.h>
 #include <libundo/undo/StringTools.h>
+#include <set>
+#include <tools/TimeTools.h>
 
 DeviceName::DeviceName(Settings &parent) :
     super(parent)
@@ -40,7 +42,7 @@ void DeviceName::sanitize()
 {
   if(m_name.empty())
   {
-    guint16 u = time(nullptr);
+    guint16 u = TimeTools::getAdjustedTimestamp();
 
     try
     {
