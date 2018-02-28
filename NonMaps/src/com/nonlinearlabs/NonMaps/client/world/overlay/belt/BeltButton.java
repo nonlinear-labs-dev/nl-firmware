@@ -23,6 +23,11 @@ abstract public class BeltButton extends SVGImage {
 	public Control click(Position eventPoint) {
 		return this;
 	}
+	
+	@Override
+	public Control onContextMenu(Position pos) {
+		return this;
+	}
 
 	@Override
 	public RGB getColorFont() {
