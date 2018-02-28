@@ -9,16 +9,18 @@
 class TimeTools
 {
   public:
-    static TimeTools& get();
+    static Glib::ustring getAdjustedIso();
+    static time_t getAdjustedTimestamp();
 
-    Glib::ustring getRealIso();
-    Glib::ustring getAdjustedIso();
-
-    time_t getRealTimestamp() const;
-    time_t getAdjustedTimestamp() const;
+    static Glib::ustring getDisplayStringFromIso(const Glib::ustring & iso);
+    static Glib::ustring getDisplayStringFromStamp(time_t stamp);
+    static Glib::ustring getIsoTime(const time_t stamp);
 
   private:
-    TimeTools();
-    virtual ~TimeTools();
-    Glib::ustring getIsoTime(const time_t* stamp);
+    static Glib::ustring formatTime(time_t secondsSinceUnixEpoch, const Glib::ustring &format);
+    static Glib::ustring formatTime(const Glib::ustring &iso, const Glib::ustring &format);
+    static Glib::ustring formatTime(const tm *tm, const Glib::ustring &format);
+
+    static time_t getRealTimestamp();
+    static Glib::ustring getRealIso();
 };

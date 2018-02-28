@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <sstream>
 #include <device-info/DateTimeInfo.h>
+#include <tools/TimeTools.h>
 
 namespace DETAIL
 {
@@ -90,10 +91,10 @@ bool BankInfoContent::fillFromBank(PresetBank *bank)
   infoFields["size"]->setInfo(to_string(bank->getNumPresets()));
   infoFields["comment"]->setInfo(bank->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
   infoFields["state"]->setInfo(bank->calcStateString());
-  infoFields["dateofchange"]->setInfo(DateTimeInfo::formatTime(bank->getLastChangedTimestamp(), "%F %R"));
-  infoFields["importdate"]->setInfo(DateTimeInfo::getDisplayStringFromIso(bank->getAttribute("Date of Import File", "---")));
+  infoFields["dateofchange"]->setInfo(TimeTools::getDisplayStringFromStamp(bank->getLastChangedTimestamp()));
+  infoFields["importdate"]->setInfo(TimeTools::getDisplayStringFromIso(bank->getAttribute("Date of Import File", "---")));
   infoFields["importfile"]->setInfo(bank->getAttribute("Name of Import File", "---"));
-  infoFields["exportdate"]->setInfo(DateTimeInfo::getDisplayStringFromIso(bank->getAttribute("Date of Export File", "---")));
+  infoFields["exportdate"]->setInfo(TimeTools::getDisplayStringFromIso(bank->getAttribute("Date of Export File", "---")));
   infoFields["exportfile"]->setInfo(bank->getAttribute("Name of Export File", "---"));
   return true;
 }

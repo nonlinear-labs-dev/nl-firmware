@@ -16,6 +16,7 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.i18n.shared.TimeZone;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -28,6 +29,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.nonlinearlabs.NonMaps.client.GMTTimeZone;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag;
@@ -49,6 +51,7 @@ public class PresetInfoDialog extends GWTDialog {
 	private TextBox name;
 	private Button[] colors;
 	private IntegerBox position;
+	
 	
 	private Button addColorButton(ColorTag.Color c) {		
 		Button b = new Button();
@@ -370,7 +373,7 @@ public class PresetInfoDialog extends GWTDialog {
 			DateTimeFormat f = DateTimeFormat.getFormat("yyyy-MM-ddTHH:mm:ssZZZZ");
 			Date d = f.parse(iso);
 			DateTimeFormat locale = DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT);
-			return locale.format(d);
+			return locale.format(d, new GMTTimeZone());
 		} catch (Exception e) {
 			return iso;
 		}

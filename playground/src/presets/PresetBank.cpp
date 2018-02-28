@@ -547,7 +547,7 @@ sigc::connection PresetBank::onBankChanged(sigc::slot<void> slot)
 
 UpdateDocumentContributor::tUpdateID PresetBank::onChange()
 {
-  m_lastChangedTimestamp = TimeTools::get().getAdjustedTimestamp();
+  m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp();
 
   if(getParent())
   {
@@ -574,7 +574,7 @@ void PresetBank::writeDocument(Writer &writer, tUpdateID knownRevision) const
             p->writeDocument (writer, knownRevision);
           }
 
-          writer.writeTextElement ("date-of-last-change", DateTimeInfo::getDisplayStringFromStamp(m_lastChangedTimestamp));
+          writer.writeTextElement ("date-of-last-change", TimeTools::getDisplayStringFromStamp(m_lastChangedTimestamp));
           writer.writeTextElement ("attached-to", m_attachment.uuid);
           writer.writeTextElement ("attached-direction", directionEnumToString(m_attachment.direction));
           writer.writeTextElement("state", calcStateString());
@@ -765,7 +765,7 @@ uint64_t PresetBank::getLastChangedTimestamp() const
 const Glib::ustring PresetBank::calcStateString() const
 {
   std::string lastExportTimeIso = getAttribute("Date of Export File", "-1");
-  std::string lastModTimeIso = DateTimeInfo::formatTime(m_lastChangedTimestamp, "%FT%T%z");
+  std::string lastModTimeIso = TimeTools::getIsoTime(m_lastChangedTimestamp);
   std::string lastImportTime = getAttribute("Date of Import File", "-1");
 
   if(lastExportTimeIso.compare("-1") == 0)

@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.nonlinearlabs.NonMaps.client.GMTTimeZone;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
@@ -341,7 +342,7 @@ public class BankInfoDialog extends GWTDialog {
 			DateTimeFormat f = DateTimeFormat.getFormat("yyyy-MM-ddTHH:mm:ssZZZZ");
 			Date d = f.parse(iso);
 			DateTimeFormat locale = DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT);
-			return locale.format(d);
+			return locale.format(d, new GMTTimeZone());
 		} catch (Exception e) {
 			return iso;
 		}

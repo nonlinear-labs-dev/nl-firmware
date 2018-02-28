@@ -16,6 +16,7 @@
 #include <device-info/DateTimeInfo.h>
 #include <xml/VersionAttribute.h>
 #include <proxies/hwui/panel-unit/boled/file/PleaseWaitLayout.h>
+#include <tools/TimeTools.h>
 
 static size_t s_lastSelectedButton = 0;
 
@@ -167,7 +168,7 @@ void BankEditButtonMenu::exportBank()
 void BankEditButtonMenu::writeSelectedBankToFile(PresetManager::tBankPtr selBank, const std::string &outFile)
 {
   SplashLayout::addStatus("Exporting " + selBank->getName(true));
-  selBank->setAttribute("Date of Export File", DateTimeInfo::getIsoStringOfNow());
+  selBank->setAttribute("Date of Export File", TimeTools::getAdjustedIso());
   selBank->setAttribute("Name of Export File", outFile);
   PresetBankSerializer serializer(selBank, false);
   XmlWriter writer(std::make_shared<FileOutStream>(outFile, false));
@@ -209,7 +210,7 @@ void BankEditButtonMenu::deleteBank()
     auto scope = bank->getUndoScope().startTransaction("Delete bank '%0'", bank->getName(true));
     pm->undoableDeleteSelectedBank(scope->getTransaction());
   }
-  
+
   if(pm->getNumBanks() == 0)
   {
     auto hwui = Application::get().getHWUI();

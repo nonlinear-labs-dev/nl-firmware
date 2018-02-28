@@ -18,6 +18,7 @@
 #include <xml/VersionAttribute.h>
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
+#include <tools/TimeTools.h>
 
 BankActions::BankActions(PresetManager &presetManager) :
     RPCActionManager("/presets/banks/"),
@@ -776,7 +777,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       preset->undoableSetAttribute(transaction, key, value);
     }
   });
-  
+
   addAction("set-bank-attribute", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     Glib::ustring bankUUID = request->get ("uuid");
@@ -1032,7 +1033,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
         serializer.write(writer, VersionAttribute::get());
 
         bank->setAttribute("Name of Export File", "(via Browser)");
-        bank->setAttribute("Date of Export File", DateTimeInfo::getIsoStringOfNow());
+        bank->setAttribute("Date of Export File", TimeTools::getAdjustedIso());
 
       }
 
@@ -1087,7 +1088,7 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   newBank->undoableEnsurePresetSelection(transaction);
   newBank->undoableSetAttribute(transaction, "Name of Import File", fileName);
   auto lastModifiedSeconds = stoull(lastModified) / 1000;
-  newBank->undoableSetAttribute(transaction, "Date of Import File", DateTimeInfo::getIsoStringOfNow());
+  newBank->undoableSetAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
   newBank->undoableSetAttribute(transaction, "Name of Export File", "");
   newBank->undoableSetAttribute(transaction, "Date of Export File", "");
   newBank->undoableSelect(transaction);
