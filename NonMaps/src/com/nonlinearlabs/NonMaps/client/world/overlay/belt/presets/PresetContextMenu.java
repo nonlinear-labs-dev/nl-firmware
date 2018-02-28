@@ -56,7 +56,7 @@ public class PresetContextMenu extends ContextMenu {
 			addChild(new ContextMenuItem(this, "Rename") {
 				@Override
 				public Control click(Position eventPoint) {
-					RenameDialog.open(getNonMaps(), preset);
+					RenameDialog.open(preset);
 					return super.click(eventPoint);
 				}
 			});

@@ -246,6 +246,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       [&] (shared_ptr<NetworkRequest> request)
       {
         Glib::ustring presetAnchor = request->get ("anchor");
+        Glib::ustring uuid = request->get ("uuid");
 
         tBankPtr tgtBank = m_presetManager.findBankWithPreset (presetAnchor);
 
@@ -257,7 +258,13 @@ BankActions::BankActions(PresetManager &presetManager) :
           auto transaction = scope->getTransaction();
           tgtBank->undoableInsertPreset (transaction, anchorPos);
           tgtBank->undoableOverwritePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
-          tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
+
+          auto p = tgtBank->getPreset (anchorPos);
+
+          if(!uuid.empty())
+            p->undoableSetUuid(transaction, uuid);
+
+          p->undoableSelect (transaction);
           tgtBank->undoableSelect (transaction);
         }
       });
@@ -266,6 +273,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       [&] (shared_ptr<NetworkRequest> request)
       {
         Glib::ustring presetAnchor = request->get ("anchor");
+        Glib::ustring uuid = request->get ("uuid");
 
         tBankPtr tgtBank = m_presetManager.findBankWithPreset (presetAnchor);
 
@@ -277,7 +285,13 @@ BankActions::BankActions(PresetManager &presetManager) :
           auto transaction = scope->getTransaction();
           tgtBank->undoableInsertPreset (transaction, anchorPos);
           tgtBank->undoableOverwritePreset (transaction, anchorPos, m_presetManager.getEditBuffer());
-          tgtBank->getPreset (anchorPos)->undoableSelect (transaction);
+
+          auto p = tgtBank->getPreset (anchorPos);
+
+          if(!uuid.empty())
+            p->undoableSetUuid(transaction, uuid);
+
+          p->undoableSelect (transaction);
           tgtBank->undoableSelect (transaction);
         }
       });
@@ -318,7 +332,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       auto newPreset = bank->getPreset (desiredPresetPos);
 
       if(!uuid.empty())
-      newPreset->undoableSetUuid(transaction, uuid);
+        newPreset->undoableSetUuid(transaction, uuid);
 
       bank->undoableSelectPreset (transaction, newPreset->getUuid());
       newPreset->undoableSetName(transaction, newName);

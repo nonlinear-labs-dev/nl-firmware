@@ -111,7 +111,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 	}
 
 	public static void createNewBank(final NonPosition pos) {
-		RenameDialog.open(NonMaps.get(), new Renameable() {
+		RenameDialog.open(new Renameable() {
 
 			String name = "New bank";
 

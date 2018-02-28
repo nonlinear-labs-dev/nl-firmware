@@ -10,7 +10,6 @@ public class StoreSelectMode {
 	private PresetManager m_parent;
 	private Preset selectedPreset;
 	private Bank selectedBank;
-	private String storedPreset = "";
 	private final Preset originPreset;
 
 	public StoreSelectMode(PresetManager parent) {
@@ -116,14 +115,6 @@ public class StoreSelectMode {
 
 	public Bank getSelectedBank() {
 		return selectedBank;
-	}
-
-	public void setStoredPreset(String uuid) {
-		storedPreset = uuid;
-	}
-
-	public String getStoredPresetUUID() {
-		return storedPreset;
 	}
 
 	public void updateUI() {

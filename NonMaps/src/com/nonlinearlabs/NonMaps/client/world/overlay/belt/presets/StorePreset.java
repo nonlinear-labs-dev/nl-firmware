@@ -5,18 +5,13 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.world.AppendOverwriteInsertPresetDialog.Action;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImagePhase;
@@ -25,7 +20,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingBut
 class StorePreset extends SVGImage {
 
 	Action action = Action.APPEND;
-	String presetToWaitFor = "";
 	RepeatingCommand dragDelay = null;
 
 	class DraggableButtonPhase extends SVGImagePhase implements EditBufferDraggingButton {
@@ -94,7 +88,7 @@ class StorePreset extends SVGImage {
 		boolean hasSelectedBank = getPresetManager().hasSelectedBank();
 
 		if (getPresetManager().isInStoreSelectMode())
-			hasSelectedBank = getPresetManager().getStoreMode().getSelectedBank() != null;
+			hasSelectedBank = getPresetManager().getStoreSelectMode().getSelectedBank() != null;
 
 		if (!hasSelectedBank)
 			createNewBank();
@@ -110,31 +104,26 @@ class StorePreset extends SVGImage {
 	}
 
 	public void storeToBank() {
-		String uuid = "";
-		ParameterEditor ed = NonMaps.theMaps.getNonLinearWorld().getParameterEditor();
-		boolean isModified = ed.isModified();
-		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
-
 		switch (action) {
 		case APPEND:
 			if (getPresetManager().isInStoreSelectMode()) {
-				uuid = getNonMaps().getServerProxy().appendEditBuffer(getPresetManager().getStoreMode().getSelectedBank());
+				getNonMaps().getServerProxy().appendEditBuffer(getPresetManager().getStoreSelectMode().getSelectedBank());
 			} else {
-				uuid = getNonMaps().getServerProxy().appendPreset();
+				getNonMaps().getServerProxy().appendPreset();
 			}
 			break;
 
 		case INSERT:
 			if (getPresetManager().isInStoreSelectMode()) {
-				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreMode().getSelectedPreset());
+				getNonMaps().getServerProxy().insertPreset(getPresetManager().getStoreSelectMode().getSelectedPreset());
 			} else {
-				uuid = getNonMaps().getServerProxy().insertPreset(getPresetManager().getSelectedPreset());
+				getNonMaps().getServerProxy().insertPreset(getPresetManager().getSelectedPreset());
 			}
 			break;
 
 		case OVERWRITE:
 			if (getPresetManager().isInStoreSelectMode()) {
-				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreMode().getSelectedPreset());
+				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreSelectMode().getSelectedPreset());
 			} else {
 				getNonMaps().getServerProxy().overwritePreset();
 			}
@@ -143,18 +132,6 @@ class StorePreset extends SVGImage {
 		default:
 			break;
 		}
-
-		if (isModified && !uuid.isEmpty())
-			showRename(uuid);
-
-		StoreSelectMode sm = getPresetManager().getStoreMode();
-		if (sm != null) {
-			sm.setStoredPreset(uuid);
-		}
-	}
-
-	private void showRename(String uuid) {
-		presetToWaitFor = uuid;
 	}
 
 	protected void createNewBank() {
@@ -206,14 +183,6 @@ class StorePreset extends SVGImage {
 				}
 
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			}
-		}
-
-		if (!presetToWaitFor.isEmpty() && ServerProxy.didChange(presetManagerNode)) {
-			Preset p = NonMaps.theMaps.getNonLinearWorld().getPresetManager().findPreset(presetToWaitFor);
-			if (p != null) {
-				presetToWaitFor = "";
-				RenameDialog.open(getNonMaps(), p);
 			}
 		}
 	}

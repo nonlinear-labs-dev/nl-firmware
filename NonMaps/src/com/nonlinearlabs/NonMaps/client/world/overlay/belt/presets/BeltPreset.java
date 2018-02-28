@@ -74,7 +74,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 	}
 
 	private StoreSelectMode getStoreMode() {
-		return NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getStoreSelectMode();
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	@Override
 	public Control mouseUp(Position eventPoint) {
-		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
+		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreSelectMode();
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(mapsPreset);
 			return this;

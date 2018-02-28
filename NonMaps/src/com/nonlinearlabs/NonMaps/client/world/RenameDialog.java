@@ -17,6 +17,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class RenameDialog extends DialogBox {
 
@@ -24,13 +27,13 @@ public class RenameDialog extends DialogBox {
 
 	private TextBox nameField;
 	private Renameable renameable;
-	private NonMaps nonMaps;
+	private static String presetToWaitFor = "";
 
-	public static void open(NonMaps nm, Renameable renameable) {
+	public static void open(Renameable renameable) {
 		if (theDialog != null)
 			theDialog.hide();
 
-		theDialog = new RenameDialog(nm, renameable);
+		theDialog = new RenameDialog(renameable);
 
 		RootPanel.get().add(theDialog);
 		theDialog.center();
@@ -45,8 +48,7 @@ public class RenameDialog extends DialogBox {
 		});
 	}
 
-	private RenameDialog(NonMaps nm, Renameable r) {
-		this.nonMaps = nm;
+	private RenameDialog(Renameable r) {
 		renameable = r;
 
 		getElement().addClassName("rename-dialog");
@@ -112,11 +114,33 @@ public class RenameDialog extends DialogBox {
 	private void commit() {
 		renameable.setName(nameField.getText());
 		RenameDialog.this.hide();
-		nonMaps.captureFocus();
+		NonMaps.get().captureFocus();
 	}
 
 	private void cancel() {
 		RenameDialog.this.hide();
-		nonMaps.captureFocus();
+		NonMaps.get().captureFocus();
+	}
+
+	public static void onPresetManagerUpdate(PresetManager presetManager) {
+		if (!presetToWaitFor.isEmpty()) {
+			Preset p = presetManager.findPreset(presetToWaitFor);
+			if (p != null) {
+				presetToWaitFor = "";
+				RenameDialog.open(p);
+			}
+		}
+	}
+
+	public static void awaitNewPreset(String uuid) {
+		ParameterEditor editBuffer = NonMaps.get().getNonLinearWorld().getParameterEditor();
+		boolean isModified = editBuffer.isModified();
+		boolean storedInPlace = editBuffer.getLoadedPresetUUID().equals(uuid);
+
+		if (isModified && !storedInPlace) {
+			presetToWaitFor = uuid;
+		} else {
+			presetToWaitFor = "";
+		}
 	}
 }

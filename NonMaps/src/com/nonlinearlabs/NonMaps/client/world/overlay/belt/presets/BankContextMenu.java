@@ -74,7 +74,7 @@ public abstract class BankContextMenu extends ContextMenu {
 			addChild(new ContextMenuItem(this, "Rename") {
 				@Override
 				public Control click(Position eventPoint) {
-					RenameDialog.open(getNonMaps(), bank);
+					RenameDialog.open(bank);
 					return super.click(eventPoint);
 				}
 			});
