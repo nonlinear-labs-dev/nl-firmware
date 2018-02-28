@@ -1,7 +1,5 @@
 #include "TimeTools.h"
 
-#include <bits/types/struct_tm.h>
-#include <bits/types/time_t.h>
 #include <ctime>
 #include <iomanip>
 #include <memory>
