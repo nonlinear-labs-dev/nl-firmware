@@ -94,7 +94,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		double currentPresetLabel = 2 * buttonDim;
 
 		if (rest >= currentPresetLabel) {
-			currentPreset.doLayout(load.getPixRect().getRight(), horizontalCenterLinePosition - (buttonDim / 2), currentPresetLabel,
+			currentPreset.doLayout(load.getPixRect().getRight(), horizontalCenterLinePosition - (buttonDim / 2), currentPresetLabel * 1.5,
 					buttonDim);
 		} else {
 			currentPreset.doLayout(0, 0, 0, 0);
