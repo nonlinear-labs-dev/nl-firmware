@@ -217,7 +217,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (isInStoreSelectMode())
 			return null;
 		
-		if(isSelected() == false)
+		if(isInMultiplePresetSelectionMode() == false && isSelected() == false)
 			selectPreset();
 
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
