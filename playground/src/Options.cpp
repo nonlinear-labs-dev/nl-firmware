@@ -7,15 +7,21 @@ Options::Options(int &argc, char **&argv)
   setDefaults();
 
   OptionGroup mainGroup("common", "common options");
-  OptionEntry pmPath;
   OptionContext ctx;
 
+  OptionEntry pmPath;
   pmPath.set_flags(OptionEntry::FLAG_FILENAME);
   pmPath.set_long_name("pm-path");
   pmPath.set_short_name('p');
   pmPath.set_description("name of the folder that stores preset-managers banks as XML files");
-
   mainGroup.add_entry_filename(pmPath, sigc::mem_fun(this, &Options::setPMPathName));
+
+  OptionEntry bbbb;
+  bbbb.set_long_name("bbbb");
+  bbbb.set_short_name('b');
+  bbbb.set_description("IP of the device running the BeagleBoneBlackBridge (bbbb)");
+  mainGroup.add_entry(bbbb, m_bbbb);
+
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
@@ -69,6 +75,11 @@ bool Options::setPMPathName(const Glib::ustring &optionName, const Glib::ustring
 Glib::ustring Options::getPresetManagerPath() const
 {
   return m_pmPath;
+}
+
+Glib::ustring Options::getBBBB() const
+{
+  return m_bbbb;
 }
 
 Glib::ustring Options::getSettingsFile() const

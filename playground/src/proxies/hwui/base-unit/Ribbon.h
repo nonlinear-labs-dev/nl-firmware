@@ -13,6 +13,8 @@ class Ribbon
     Ribbon();
     virtual ~Ribbon();
 
+    void syncBBBB();
+
   protected:
     void initLEDs();
     void setLEDState(int ledPos, char state, bool flush);

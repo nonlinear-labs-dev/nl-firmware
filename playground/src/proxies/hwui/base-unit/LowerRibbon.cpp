@@ -60,7 +60,6 @@ void LowerRibbon::onParamValueChanged (const Parameter *param)
   {
     setLEDsForValueBiPolar (paramVal, false);
   }
-  FourStateLED::flush();
 }
 
 void LowerRibbon::indicateBlockingMainThread (bool onOff)
@@ -73,7 +72,6 @@ void LowerRibbon::indicateBlockingMainThread (bool onOff)
     {
       setLEDState (i, (i % 2 == 0) ? 3 : 0, false);
     }
-    FourStateLED::flush();
   }
   else
   {

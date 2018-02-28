@@ -6,10 +6,12 @@
 #include "Application.h"
 #include "device-settings/Settings.h"
 #include "device-settings/BaseUnitUIMode.h"
+#include "io/network/WebSocketSession.h"
 
 BaseUnit::BaseUnit ()
 {
   Application::get ().getSettings ()->getSetting<BaseUnitUIMode> ()->onChange (mem_fun (this, &BaseUnit::respectUsageMode));
+  Application::get().getWebSocketSession()->onConnectionEstablished(sigc::mem_fun(this, &BaseUnit::onBBBBConnected));
 }
 
 BaseUnit::~BaseUnit ()
@@ -19,6 +21,12 @@ BaseUnit::~BaseUnit ()
 void BaseUnit::init ()
 {
 	m_playPanel.getSOLED().init();
+}
+
+void BaseUnit::onBBBBConnected()
+{
+  m_upperRibbon.syncBBBB();
+  m_lowerRibbon.syncBBBB();
 }
 
 void BaseUnit::respectUsageMode (const Setting *s)

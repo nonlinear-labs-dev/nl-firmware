@@ -77,8 +77,6 @@ void UpperRibbon::onParamValueChanged (const Parameter* param)
     setLEDsForValueUniPolar (paramVal, false);
   else
     setLEDsForValueBiPolar (paramVal, false);
-
-  FourStateLED::flush();
 }
 
 int UpperRibbon::posToLedID (int pos) const
