@@ -18,6 +18,7 @@ import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
+import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.Uuid;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
@@ -281,6 +282,7 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
+		RenameDialog.awaitNewPreset(NonMaps.get().getNonLinearWorld().getPresetManager().getSelectedPresetUUID());
 	}
 
 	public void movePresetTo(IPreset p, IPreset actionAnchor) {
@@ -305,21 +307,26 @@ public class ServerProxy {
 	}
 
 	public void insertEditBufferAbove(IPreset actionAnchor) {
+		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-editbuffer-above");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()), new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
+		RenameDialog.awaitNewPreset(uuid);
 	}
 
 	public void insertEditBufferBelow(IPreset actionAnchor) {
+		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-editbuffer-below");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()), new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
+		RenameDialog.awaitNewPreset(uuid);
 	}
 
 	public void overwritePresetWithEditBuffer(IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset-with-editbuffer");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()));
 		queueJob(uri, false);
+		RenameDialog.awaitNewPreset(actionAnchor.getUUID());
 	}
 
 	public void deletePreset(IPreset preset) {
@@ -362,12 +369,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public String appendEditBuffer(IBank bank) {
+	public void appendEditBuffer(IBank bank) {
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-editbuffer-to-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()), new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
-		return uuid;
+		RenameDialog.awaitNewPreset(uuid);
 	}
 
 	public void nextPreset() {
@@ -390,9 +397,9 @@ public class ServerProxy {
 		queueJob(new StaticURI(new StaticURI.Path("undo", "redo")), false);
 	}
 
-	public String insertPreset(IPreset selPreset) {
+	public void insertPreset(IPreset selPreset) {
 		if (selPreset == null) {
-			return appendPreset();
+			appendPreset();
 		} else {
 			String uuidOfSelectedPreset = selPreset.getUUID();
 			String uuid = Uuid.random();
@@ -400,16 +407,16 @@ public class ServerProxy {
 			StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("seluuid",
 					uuidOfSelectedPreset));
 			queueJob(uri, false);
-			return uuid;
+			RenameDialog.awaitNewPreset(uuid);
 		}
 	}
 
-	public String appendPreset() {
+	public void appendPreset() {
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
-		return uuid;
+		RenameDialog.awaitNewPreset(uuid);
 	}
 
 	public void setModulationAmount(final ModulatableParameter modulatableParameter) {

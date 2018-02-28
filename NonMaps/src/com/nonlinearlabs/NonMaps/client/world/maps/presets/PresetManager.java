@@ -22,6 +22,7 @@ import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
+import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
@@ -50,16 +51,6 @@ public class PresetManager extends MapsLayout {
 	}
 
 	private List<SearchQueryFields> fieldsToBeSearched;
-
-	public List<SearchQueryFields> getFieldsToBeSearched() {
-		return fieldsToBeSearched;
-	}
-
-	public void setFieldsToBeSearched(List<SearchQueryFields> fieldsToBeSearched) {
-		this.fieldsToBeSearched = fieldsToBeSearched;
-		refreshFilter(true);
-	}
-
 	private String selectedBank;
 	private String query = "";
 	private SearchQueryCombination combination = SearchQueryCombination.OR;
@@ -68,21 +59,21 @@ public class PresetManager extends MapsLayout {
 	private MultiplePresetSelection multiSelection;
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
-
 	private StoreSelectMode m_storeSelectMode = null;
-
 	private Tape attachingTapes[] = new Tape[2];
 
-	public StoreSelectMode getStoreMode() {
+	public PresetManager(NonLinearWorld parent) {
+		super(parent);
+		fieldsToBeSearched = new ArrayList<SearchQueryFields>();
+		fieldsToBeSearched.add(SearchQueryFields.name);
+	}
+
+	public StoreSelectMode getStoreSelectMode() {
 		return m_storeSelectMode;
 	}
 
 	public boolean isInStoreSelectMode() {
 		return m_storeSelectMode != null;
-	}
-
-	public MoveSomeBanksLayer getMoveSomeBanks() {
-		return moveSomeBanks;
 	}
 
 	public void startStoreSelectMode() {
@@ -102,14 +93,17 @@ public class PresetManager extends MapsLayout {
 		}
 	}
 
-	public void store() {
-
+	public MoveSomeBanksLayer getMoveSomeBanks() {
+		return moveSomeBanks;
 	}
 
-	public PresetManager(NonLinearWorld parent) {
-		super(parent);
-		fieldsToBeSearched = new ArrayList<SearchQueryFields>();
-		fieldsToBeSearched.add(SearchQueryFields.name);
+	public List<SearchQueryFields> getFieldsToBeSearched() {
+		return fieldsToBeSearched;
+	}
+
+	public void setFieldsToBeSearched(List<SearchQueryFields> fieldsToBeSearched) {
+		this.fieldsToBeSearched = fieldsToBeSearched;
+		refreshFilter(true);
 	}
 
 	@Override
@@ -168,6 +162,7 @@ public class PresetManager extends MapsLayout {
 				onPresetSelectionChanged(newPresetSelection);
 			}
 
+			RenameDialog.onPresetManagerUpdate(this);
 		}
 	}
 
@@ -305,7 +300,7 @@ public class PresetManager extends MapsLayout {
 
 	public String getSelectedBank() {
 		if (isInStoreSelectMode())
-			return getStoreMode().getSelectedBank().getUUID();
+			return getStoreSelectMode().getSelectedBank().getUUID();
 
 		return selectedBank;
 	}
@@ -329,7 +324,7 @@ public class PresetManager extends MapsLayout {
 
 	public void selectBank(String bankUUID, boolean userInteraction) {
 		if (isInStoreSelectMode()) {
-			getStoreMode().setSelectedBank(findBank(bankUUID));
+			getStoreSelectMode().setSelectedBank(findBank(bankUUID));
 			return;
 		}
 
@@ -588,7 +583,7 @@ public class PresetManager extends MapsLayout {
 
 	public void selectPreviousPreset(Initiator initiator) {
 		if (isInStoreSelectMode()) {
-			getStoreMode().selectPreviousPreset();
+			getStoreSelectMode().selectPreviousPreset();
 			return;
 		}
 
@@ -599,7 +594,7 @@ public class PresetManager extends MapsLayout {
 
 	public void selectNextPreset(Initiator initiator) {
 		if (isInStoreSelectMode()) {
-			getStoreMode().selectNextPreset();
+			getStoreSelectMode().selectNextPreset();
 			return;
 		}
 
@@ -623,21 +618,21 @@ public class PresetManager extends MapsLayout {
 
 	public void selectPreviousBank(boolean userInteraction) {
 		if (isInStoreSelectMode())
-			getStoreMode().selectePreviousBank();
+			getStoreSelectMode().selectePreviousBank();
 		else
 			selectBankWithOrdernumberOffset(-1);
 	}
 
 	public void selectNextBank(boolean userInteraction) {
 		if (isInStoreSelectMode())
-			getStoreMode().selecteNextBank();
+			getStoreSelectMode().selecteNextBank();
 		else
 			selectBankWithOrdernumberOffset(1);
 	}
 
 	public boolean canSelectPreviousBank() {
 		if (isInStoreSelectMode())
-			return getStoreMode().canSelectPreviousBank();
+			return getStoreSelectMode().canSelectPreviousBank();
 
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
@@ -646,7 +641,7 @@ public class PresetManager extends MapsLayout {
 
 	public boolean canSelectNextBank() {
 		if (isInStoreSelectMode())
-			return getStoreMode().canSelectNextBank();
+			return getStoreSelectMode().canSelectNextBank();
 
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
@@ -1043,5 +1038,13 @@ public class PresetManager extends MapsLayout {
 
 	public String getFilter() {
 		return query;
+	}
+
+	public String getSelectedPresetUUID() {
+		Preset p = getSelectedPreset();
+		if (p != null)
+			return p.getUUID();
+
+		return "";
 	}
 }

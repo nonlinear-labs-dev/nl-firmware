@@ -18,7 +18,7 @@ public class DeviceNameSettings extends SettingsControl implements Renameable {
 		addChild(button = new DeviceNameEditButton(this) {
 			@Override
 			public Control click(Position eventPoint) {
-				RenameDialog.open(NonMaps.theMaps, DeviceNameSettings.this);
+				RenameDialog.open(DeviceNameSettings.this);
 				return this;
 			}
 		});

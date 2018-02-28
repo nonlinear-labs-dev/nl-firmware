@@ -178,7 +178,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isSelected() {
-		StoreSelectMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreMode();
+		StoreSelectMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreSelectMode();
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
@@ -187,7 +187,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public boolean isLoaded() {
 		if (getParent().isInStoreSelectMode()) {
-			return this == getParent().getParent().getStoreMode().getOriginalPreset();
+			return this == getParent().getParent().getStoreSelectMode().getOriginalPreset();
 		}
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
@@ -230,7 +230,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void selectPreset() {
-		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreMode();
+		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreSelectMode();
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
 		} else {

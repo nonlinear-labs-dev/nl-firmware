@@ -453,7 +453,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	public boolean isSelected() {
 		if (isInStoreSelectMode()) {
-			return getParent().getStoreMode().getSelectedBank() == this;
+			return getParent().getStoreSelectMode().getSelectedBank() == this;
 		}
 		return uuid.equals(getParent().getSelectedBank());
 	}

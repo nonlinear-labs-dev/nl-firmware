@@ -17,7 +17,7 @@ public class MacroControlContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, "Rename") {
 			@Override
 			public Control click(Position eventPoint) {
-				RenameDialog.open(getNonMaps(), param);
+				RenameDialog.open(param);
 				return super.click(eventPoint);
 			}
 		});
