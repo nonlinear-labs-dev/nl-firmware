@@ -268,6 +268,8 @@ public class GlobalMenu extends OverlayLayout {
 		return this;
 	}
 
+	
+	
 	@Override
 	public Control doubleClick() {
 		return this;
