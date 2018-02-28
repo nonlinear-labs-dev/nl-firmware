@@ -124,7 +124,11 @@ public class BankControl extends OverlayLayout implements IBank {
 	public void update(Node pmNode) {
 		if (pmNode != null) {
 			if (ServerProxy.didChange(pmNode)) {
-				showEmptyLabel(getBankInCharge().getPresetList().getPresetCount() == 0);
+				Bank b = getBankInCharge();
+				if(b != null)
+					showEmptyLabel(b.getPresetList().getPresetCount() == 0);
+				else
+					showEmptyLabel(true);
 				update();
 			}
 		}

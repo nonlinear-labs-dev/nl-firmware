@@ -18,8 +18,8 @@ class LoadPreset extends SVGImage {
 	public boolean isSelectedBankEmpty() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		String b = pm.getSelectedBank();
-		if (b != null) {
-			Bank bank = pm.findBank(b);
+		Bank bank = pm.findBank(b);
+		if (bank != null) {
 			if(bank.getPresetList().getPresetCount() != 0)
 				return false;
 		}
