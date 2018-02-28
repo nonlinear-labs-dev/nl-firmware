@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.nonlinearlabs.NonMaps.client.GMTTimeZone;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag;
@@ -51,48 +52,6 @@ public class PresetInfoDialog extends GWTDialog {
 	private Button[] colors;
 	private IntegerBox position;
 	
-	private class GMTZone implements TimeZone {
-		@Override
-		public int getDaylightAdjustment(Date date) {
-			return 0;
-		}
-		@Override
-		public String getGMTString(Date date) {
-			return null;
-		}
-		@Override
-		public String getID() {
-			return null;
-		}
-		@Override
-		public String getISOTimeZoneString(Date date) {
-			return null;
-		}
-		@Override
-		public String getLongName(Date date) {
-			return null;
-		}
-		@Override
-		public int getOffset(Date date) {
-			return 0;
-		}
-		@Override
-		public String getRFCTimeZoneString(Date date) {
-			return null;
-		}
-		@Override
-		public String getShortName(Date date) {
-			return null;
-		}
-		@Override
-		public int getStandardOffset() {
-			return 0;
-		}
-		@Override
-		public boolean isDaylightTime(Date date) {
-			return false;
-		}
-	}
 	
 	private Button addColorButton(ColorTag.Color c) {		
 		Button b = new Button();
@@ -414,7 +373,7 @@ public class PresetInfoDialog extends GWTDialog {
 			DateTimeFormat f = DateTimeFormat.getFormat("yyyy-MM-ddTHH:mm:ssZZZZ");
 			Date d = f.parse(iso);
 			DateTimeFormat locale = DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT);
-			return locale.format(d, new GMTZone());
+			return locale.format(d, new GMTTimeZone());
 		} catch (Exception e) {
 			return iso;
 		}
