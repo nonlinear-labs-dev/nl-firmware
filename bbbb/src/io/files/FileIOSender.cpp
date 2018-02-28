@@ -24,10 +24,17 @@ void FileIOSender::send(tMessage msg)
 {
   if(m_channel)
   {
-    gsize len = 0;
-    auto data = reinterpret_cast<const char*>(msg->get_data(len));
-    gsize bytesWritten = 0;
-    m_channel->write(data, len, bytesWritten);
-    m_channel->flush();
+    try
+    {
+      gsize len = 0;
+      auto data = reinterpret_cast<const char*>(msg->get_data(len));
+      gsize bytesWritten = 0;
+      m_channel->write(data, len, bytesWritten);
+      m_channel->flush();
+    }
+    catch(Glib::Error &err)
+    {
+      TRACE("Exception:" << err.what());
+    }
   }
 }
