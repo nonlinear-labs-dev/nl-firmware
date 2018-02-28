@@ -25,11 +25,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.ibm.icu.text.TimeZoneFormat.GMTOffsetPatternType;
+import com.nonlinearlabs.NonMaps.client.GMTTimeZone;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
-import com.nonlinearlabs.NonMaps.client.GMTTimeZone;
 
 public class BankInfoDialog extends GWTDialog {
 

@@ -27,28 +27,13 @@ void DateTimeInfo::writeDocument (Writer &writer, UpdateDocumentContributor::tUp
   writer.writeTextElement ("date-time", get ());
 }
 
-Glib::ustring DateTimeInfo::formatTime(const std::string &format, int64_t diff)
+Glib::ustring DateTimeInfo::get () const
 {
-  std::stringstream ss;
-  std::time_t t = std::time (nullptr) + diff;
-  std::tm tm = *std::localtime (&t);
-  ss << std::put_time (&tm, format.c_str ());
-  return ss.str ();
+  return TimeTools::getAdjustedIso();
 }
 
-[[deprecated]] Glib::ustring DateTimeInfo::get () const
+Glib::ustring DateTimeInfo::getDisplayString() const
 {
-  return formatTime("%FT%T%z", Application::get().getSettings()->getSetting<DateTimeAdjustment>()->get());
-}
-
-[[deprecated]] Glib::ustring DateTimeInfo::getIsoStringOfNow()
-{
-  return formatTime("%FT%T%z", 0);
-}
-
-
-[[deprecated]] Glib::ustring DateTimeInfo::getDisplayString () const
-{
-  return formatTime("%x %X", Application::get().getSettings()->getSetting<DateTimeAdjustment>()->get());
+  return TimeTools::getDisplayStringFromIso(TimeTools::getAdjustedIso());
 }
 

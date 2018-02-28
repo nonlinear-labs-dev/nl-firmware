@@ -12,11 +12,5 @@ class DateTimeInfo : public DeviceInformationItem
   private:
     Glib::ustring get() const override;
     Glib::ustring getDisplayString() const override;
-
-    static Glib::ustring formatTime(uint64_t secondsSinceUnixEpoch, const Glib::ustring &format);
-    static Glib::ustring formatTime(const Glib::ustring &iso, const Glib::ustring &format);
-    static Glib::ustring getIsoStringOfNow();
-
     bool onTimeChanged();
-    static Glib::ustring formatTime(const std::string &format, int64_t diff);
 };
