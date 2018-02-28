@@ -12,5 +12,6 @@ class FileIOSender : public Sender
 
   private:
     Glib::RefPtr<Glib::IOChannel> m_channel;
+    const char *m_path = nullptr;
 };
 

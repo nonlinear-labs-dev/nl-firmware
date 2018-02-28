@@ -1,13 +1,13 @@
 #include <io/files/FileIOSender.h>
 
-FileIOSender::FileIOSender(const char *path)
+FileIOSender::FileIOSender(const char *path) :
+    m_path(path)
 {
   TRACE("open file for writing: " << path);
 
   try
   {
     m_channel = Glib::IOChannel::create_from_file(path, "w+");
-    m_channel->set_flags(Glib::IO_FLAG_NONBLOCK);
     m_channel->set_encoding();
   }
   catch(...)
@@ -34,7 +34,7 @@ void FileIOSender::send(tMessage msg)
     }
     catch(Glib::Error &err)
     {
-      TRACE("Exception:" << err.what());
+      TRACE("Exception: " << m_path << " -> " << err.what());
     }
   }
 }
