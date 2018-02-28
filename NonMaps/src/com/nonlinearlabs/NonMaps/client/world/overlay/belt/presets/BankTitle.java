@@ -11,6 +11,7 @@ class BankTitle extends Label {
 
 	BankTitle(BankHeader parent) {
 		super(parent);
+		super.setFontHeightInMM(6);
 	}
 
 	@Override

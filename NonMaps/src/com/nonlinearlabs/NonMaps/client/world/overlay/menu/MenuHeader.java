@@ -43,6 +43,12 @@ public class MenuHeader extends OverlayControl {
 	}
 
 	@Override
+	public Control onContextMenu(Position pos) {
+		getParent().toggle();
+		return this;
+	}
+	
+	@Override
 	public Control click(Position eventPoint) {
 		getParent().toggle();
 		return this;

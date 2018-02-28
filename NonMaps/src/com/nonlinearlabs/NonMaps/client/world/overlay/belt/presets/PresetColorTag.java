@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
@@ -42,9 +41,9 @@ public class PresetColorTag extends OverlayControl {
 		RGB color = calcColor();
 		if (color == null)
 			return;
-		Rect pixRect = getPixRect();
-		ctx.setFillStyle(color.toString());
-		Position center = pixRect.getCenterPoint();
-		ctx.fillRect(center.getX(), center.getY(), pixRect.getWidth(), pixRect.getHeight());
+		Rect pixRect = getPixRect().copy();
+		double padding = getRelativePosition().getHeight() / 10;
+		pixRect.applyPadding(0, padding, 0, padding);
+		pixRect.fill(ctx, color);
 	}
 }

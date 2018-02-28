@@ -88,13 +88,13 @@ public class BeltPresetLayout extends OverlayLayout {
 			bankInfos.doLayout(0, 0, 0, 0);
 		}
 
-		autoLoad.doLayout(w - buttonDim - margin, horizontalCenterLinePosition - (buttonDim / 2), buttonDim, buttonDim);
+		autoLoad.doLayout(w - buttonDim * 1.6, horizontalCenterLinePosition - (buttonDim / 1.75), buttonDim, buttonDim);
 
 		rest = (autoLoad.getRelativePosition().getLeft() - margin) - (load.getRelativePosition().getRight() + margin);
 		double currentPresetLabel = 2 * buttonDim;
 
 		if (rest >= currentPresetLabel) {
-			currentPreset.doLayout(load.getPixRect().getRight(), horizontalCenterLinePosition - (buttonDim / 2), currentPresetLabel,
+			currentPreset.doLayout(load.getPixRect().getRight(), horizontalCenterLinePosition - (buttonDim / 2), currentPresetLabel * 1.5,
 					buttonDim);
 		} else {
 			currentPreset.doLayout(0, 0, 0, 0);

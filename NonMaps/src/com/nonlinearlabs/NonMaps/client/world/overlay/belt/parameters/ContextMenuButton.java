@@ -13,16 +13,29 @@ public class ContextMenuButton extends SVGImage {
 	public ContextMenuButton(Control parent) {
 		super(parent, "Menu_A_Enabled.svg");
 	}
-
-	@Override
-	public Control mouseDown(Position pos) {
+	
+	
+	private Control open(Position pos) {
 		Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 		Parameter p = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelection();
 		ContextMenu m = p.createContextMenu(o);
+		o.setContextMenu(pos, m);
+		return m;
+	}
 
+	@Override
+	public Control mouseDown(Position pos) {
+		Control m = open(pos);
 		if (m != null)
-			return o.setContextMenu(pos, m);
-
+			return m;
 		return super.mouseDown(pos);
 	}
+	
+	@Override
+	public Control onContextMenu(Position pos) {
+		Control m = open(pos);
+		if (m != null)
+			return m;
+		return super.mouseDown(pos);
+	};
 }

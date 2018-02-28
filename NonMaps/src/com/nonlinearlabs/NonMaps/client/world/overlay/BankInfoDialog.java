@@ -167,6 +167,44 @@ public class BankInfoDialog extends GWTDialog {
 				}
 			}
 		});
+		
+		position.addKeyPressHandler(new KeyPressHandler() {
+
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+					position.setFocus(false);
+					name.setFocus(true);
+				}
+			}
+		});
+		
+		
+
+		position.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				setFocus(position);
+			}
+		});
+
+		position.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				haveFocus = null;
+
+				if (theBank != null) {
+					int oldNumber = theBank.getOrderNumber();
+					int currentValue = new Integer(position.getValue());
+
+					if (oldNumber != currentValue) {
+						NonMaps.get().getServerProxy().setBankOrderNumber(theBank, currentValue);
+					}
+				}
+			}
+		});
 
 		name.addFocusHandler(new FocusHandler() {
 
@@ -198,43 +236,7 @@ public class BankInfoDialog extends GWTDialog {
 			public void onKeyPress(KeyPressEvent arg0) {
 				if (arg0.getCharCode() == KeyCodes.KEY_ENTER) {
 					name.setFocus(false);
-					position.setFocus(true);
-				}
-			}
-		});
-
-		position.addKeyPressHandler(new KeyPressHandler() {
-
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-					position.setFocus(false);
 					comment.setFocus(true);
-				}
-			}
-		});
-
-		position.addFocusHandler(new FocusHandler() {
-
-			@Override
-			public void onFocus(FocusEvent event) {
-				setFocus(position);
-			}
-		});
-
-		position.addBlurHandler(new BlurHandler() {
-
-			@Override
-			public void onBlur(BlurEvent event) {
-				haveFocus = null;
-
-				if (theBank != null) {
-					int oldNumber = theBank.getOrderNumber();
-					int currentValue = new Integer(position.getValue());
-
-					if (oldNumber != currentValue) {
-						NonMaps.get().getServerProxy().setBankOrderNumber(theBank, currentValue);
-					}
 				}
 			}
 		});
