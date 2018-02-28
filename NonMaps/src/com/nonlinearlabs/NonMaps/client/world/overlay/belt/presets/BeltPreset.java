@@ -12,7 +12,6 @@ import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
-import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
@@ -26,8 +25,8 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	private Preset mapsPreset;
 	private OverlayControl color;
-	private OverlayControl number;
-	private OverlayControl name;
+	private PresetNumber number;
+	private PresetName name;
 	private DropPosition dropPosition = DropPosition.NONE;
 
 	protected BeltPreset(PresetList parent, Preset mapsPreset) {
@@ -37,8 +36,8 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		color = addChild(new PresetColorTag(this));
 		number = addChild(new PresetNumber(this));
 		name = addChild(new PresetName(this));
-		((Label) name).setFontHeightInMM(4.5);
-		((Label) number).setFontHeightInMM(4.5);
+		name.setFontHeightInMM(4.5);
+		number.setFontHeightInMM(4.5);
 	}
 
 	@Override
