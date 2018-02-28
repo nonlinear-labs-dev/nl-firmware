@@ -247,7 +247,7 @@ public class PresetInfoDialog extends GWTDialog {
 			public void onKeyPress(KeyPressEvent arg0) {
 				if (arg0.getCharCode() == KeyCodes.KEY_ENTER) {
 					name.setFocus(false);
-					position.setFocus(true);
+					comment.setFocus(true);
 				}
 			}
 		});
@@ -298,7 +298,7 @@ public class PresetInfoDialog extends GWTDialog {
 			public void onKeyPress(KeyPressEvent arg0) {
 				if (arg0.getCharCode() == KeyCodes.KEY_ENTER) {
 					position.setFocus(false);
-					comment.setFocus(true);
+					name.setFocus(true);
 				}
 			}
 		});
