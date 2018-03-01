@@ -45,6 +45,8 @@ class Serializer
 
   protected:
     virtual void writeTagContent(Writer &writer) const = 0;
+
+    virtual void readProlog(Reader &reader) const;
     virtual void readTagContent(Reader &reader) const = 0;
 
   private:

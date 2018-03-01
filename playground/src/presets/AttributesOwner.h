@@ -17,6 +17,8 @@ class AttributesOwner
 
     void setAttribute (const Glib::ustring &key, const Glib::ustring &value);
     void undoableSetAttribute (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &key, const Glib::ustring &value);
+    void undoableClearAttributes (UNDO::Scope::tTransactionPtr transaction);
+
     void copyFrom (UNDO::Scope::tTransactionPtr transaction, AttributesOwner *other);
     size_t getHash () const;
     bool doesAnyAttributeMatch (const Glib::ustring &part) const;
