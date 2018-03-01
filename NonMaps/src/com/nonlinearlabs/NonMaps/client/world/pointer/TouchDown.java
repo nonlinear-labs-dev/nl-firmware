@@ -33,7 +33,7 @@ class TouchDown extends Down {
 	public Gesture onTouchMove(JsArray<Touch> touches) {
 		if (touches.length() == 1) {
 			if (getDistance(this.touches.get(0), new Position(touches.get(0))) > Millimeter.toPixels(5)) {
-				return new TouchMoveStart(this, touches);
+				return new TouchMoveStart(this, this.touches.get(0), touches);
 			}
 
 			return this;

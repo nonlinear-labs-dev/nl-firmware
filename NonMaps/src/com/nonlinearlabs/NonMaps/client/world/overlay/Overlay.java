@@ -46,7 +46,7 @@ public class Overlay extends OverlayLayout {
 		// has to be the last one to add as it refers to previously added
 		// members
 		addChild(globalMenu = new GlobalMenu(this));
-		
+
 		compareDialogs = new ArrayList<CompareDialog>();
 	}
 
@@ -221,13 +221,13 @@ public class Overlay extends OverlayLayout {
 		return ColorTable.getColorIndicator();
 	}
 
-	public DragProxy createDragProxy(Control origin, Position point) {
+	public DragProxy createDragProxy(Control origin) {
 		removeDragProxies();
-		return addDragProxy(origin, point);
+		return addDragProxy(origin);
 	}
 
-	public DragProxy addDragProxy(Control origin, Position point) {
-		return addChild(new DragProxy(this, origin, point));
+	public DragProxy addDragProxy(Control origin) {
+		return addChild(new DragProxy(this, origin));
 	}
 
 	boolean removeDragProxies() {
@@ -418,11 +418,11 @@ public class Overlay extends OverlayLayout {
 	public void addCompareDialog(CompareDialog d) {
 		compareDialogs.add(d);
 	}
-	
+
 	public void removeCompareDialog(CompareDialog d) {
 		compareDialogs.remove(d);
 	}
-	
+
 	public List<CompareDialog> getCompareDialogs() {
 		return compareDialogs;
 	}

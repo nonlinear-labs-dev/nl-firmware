@@ -246,13 +246,18 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
+	public Control mouseDown(Position eventPoint) {
+		return this;
+	}
+
+	@Override
 	public Control startDragging(Position pos) {
 		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
 			if (isInMultiplePresetSelectionMode()) {
 				return startMultipleSelectionDrag(pos);
 			}
 
-			return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this, getPixRect().getPosition());
+			return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this);
 		}
 
 		return super.startDragging(pos);
@@ -274,7 +279,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		for (String uuid : selection.getSelectedPresets()) {
 			Preset p = pm.findPreset(uuid);
 			if (p != null) {
-				DragProxy a = world.getViewport().getOverlay().addDragProxy(p, p.getPixRect().getPosition());
+				DragProxy a = world.getViewport().getOverlay().addDragProxy(p);
 				if (p == this)
 					ret = a;
 
