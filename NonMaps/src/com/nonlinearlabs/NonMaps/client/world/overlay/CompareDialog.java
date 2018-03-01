@@ -28,6 +28,10 @@ public class CompareDialog extends GWTDialog {
 
 	private FlexTable table = null;
 	private String indent = "&#9492 ";
+	private Button refresh;
+
+	private Preset presetA;
+	private Preset presetB;
 
 	public static void open(Preset p1) {
 		new CompareDialog(p1);
@@ -62,30 +66,13 @@ public class CompareDialog extends GWTDialog {
 
 		addHeader("Preset Comparison Tree View");
 
-		if (p2 == null)
-			load(p1);
-		else
-			load(p1, p2);
-
-	}
-
-	private void load(Preset p1, Preset p2) {
-		NonMaps.theMaps.getServerProxy().getDifferencesOf2PresetsAsCsv(p1.getUUID(), p2.getUUID(), new DownloadHandler() {
-			@Override
-			public void onFileDownloaded(String text) {
-				xml = XMLParser.parse(text);
-				setup();
-			}
-
-			@Override
-			public void onError() {
-			}
-		});
-
-		downloadPresets(p1, p2);
+		load(p1, p2);
 	}
 
 	public void downloadPresets(Preset p1, Preset p2) {
+		presetA = p1;
+		presetB = p2;
+
 		NonMaps.theMaps.getServerProxy().downloadPreset(p1 != null ? p1.getUUID() : "", new DownloadHandler() {
 			@Override
 			public void onFileDownloaded(String text) {
@@ -111,8 +98,8 @@ public class CompareDialog extends GWTDialog {
 		});
 	}
 
-	private void load(Preset p1) {
-		NonMaps.theMaps.getServerProxy().getDifferencesOfPresetsToEditbufferAsCsv(p1.getUUID(), new DownloadHandler() {
+	private void load(Preset p1, Preset p2) {
+		NonMaps.theMaps.getServerProxy().getDiff(p1, p2, new DownloadHandler() {
 			@Override
 			public void onFileDownloaded(String text) {
 				xml = XMLParser.parse(text);
@@ -124,7 +111,7 @@ public class CompareDialog extends GWTDialog {
 			}
 		});
 
-		downloadPresets(p1, null);
+		downloadPresets(p1, p2);
 	}
 
 	static int lastPopupLeft = -1;
@@ -167,16 +154,6 @@ public class CompareDialog extends GWTDialog {
 			table.getElement().addClassName("compare-tree");
 
 			row = writeHeader(row, positionNode, nameNode);
-
-			String nameA = nameNode.getAttributes().getNamedItem("a").getNodeValue();
-			String nameB = nameNode.getAttributes().getNamedItem("b").getNodeValue();
-
-			if (!nameA.equals(nameB)) {
-				table.setText(row, 0, "Name");
-				table.setText(row, 1, nameA);
-				table.setText(row, 2, nameB);
-				row++;
-			}
 
 			if (commentNode != null) {
 				table.setText(row, 0, "Comment");
@@ -265,6 +242,18 @@ public class CompareDialog extends GWTDialog {
 	}
 
 	public int writeHeader(int row, Node positionNode, Node nameNode) {
+
+		table.setWidget(row, 0, refresh = new Button("&#x21bb;"));
+		refresh.getElement().addClassName("refresh-button");
+
+		refresh.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				load(presetA, presetB);
+			}
+		});
+
 		String preset1PositionText = positionNode.getAttributes().getNamedItem("a").getNodeValue();
 		String preset2PositionText = positionNode.getAttributes().getNamedItem("b").getNodeValue();
 		table.setText(row, 1, preset1PositionText);
@@ -299,8 +288,8 @@ public class CompareDialog extends GWTDialog {
 		table.setWidget(row, 1, loadPresetA = new Button(""));
 		table.setWidget(row, 2, loadPresetB = new Button(""));
 
-		loadPresetA.getElement().addClassName("load-button-a");
-		loadPresetB.getElement().addClassName("load-button-b");
+		loadPresetA.getElement().addClassName("load-button");
+		loadPresetB.getElement().addClassName("load-button");
 
 		updateLoadButtonStates();
 

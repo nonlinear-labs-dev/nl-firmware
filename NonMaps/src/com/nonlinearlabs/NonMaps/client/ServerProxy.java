@@ -522,8 +522,11 @@ public class ServerProxy {
 		downloadFile("/presets/find-unique-preset-name?based-on=" + URL.encodeQueryString(currentName), handler);
 	}
 
-	public void getDifferencesOf2PresetsAsCsv(String uuid1, String uuid2, DownloadHandler handler) {
-		downloadFile("/presets/get-diff?p1=" + URL.encodeQueryString(uuid1) + "&p2=" + URL.encodeQueryString(uuid2), handler);
+	public void getDiff(Preset presetA, Preset presetB, DownloadHandler handler) {
+		String aUUID = presetA != null ? presetA.getUUID() : "";
+		String bUUID = presetB != null ? presetB.getUUID() : "";
+
+		downloadFile("/presets/get-diff?p1=" + URL.encodeQueryString(aUUID) + "&p2=" + URL.encodeQueryString(bUUID), handler);
 	}
 
 	public void dropPresetOnBank(IPreset p, Bank b) {
@@ -876,10 +879,6 @@ public class ServerProxy {
 
 		queueJob(uri, false);
 
-	}
-
-	public void getDifferencesOfPresetsToEditbufferAsCsv(String uuid1, DownloadHandler handler) {
-		downloadFile("/presets/get-diff-editbuffer?p1=" + URL.encodeQueryString(uuid1), handler);
 	}
 
 	public void downloadPreset(String uuid, DownloadHandler downloadHandler) {
