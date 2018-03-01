@@ -117,7 +117,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double sliderLeft = modulationButtonsLeft + modulationButtonsDim + Millimeter.toPixels(10);
 
 		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDim) / 2, modulationButtonsDim, modulationButtonsDim);
-		mcSourceDisplay.doLayout(undoRedoMargin + 3 * undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
+		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 
@@ -136,7 +136,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
 
-		layouter.push(valueDisplay, modulationButtonWidth, 3 * sliderWidth / 4, 2, 1);
+
+		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth * 0.75, 2, 1);
 
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcLowerBoundRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
@@ -161,7 +162,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight(), 0, lineWidth, h);
 
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
-		contextMenu.doLayout(undoRedoMargin + 3 * undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
+		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
 	}
 
 	protected void showAndHideChildren() {
