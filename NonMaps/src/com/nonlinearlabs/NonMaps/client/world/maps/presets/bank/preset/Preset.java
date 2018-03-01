@@ -23,6 +23,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiato
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.MultiplePresetSelection;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
+import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
@@ -183,6 +184,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
+		Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
+		ContextMenu c = o.getContextMenu();
+
+		if (c instanceof PresetContextMenu) {
+			PresetContextMenu p = (PresetContextMenu) c;
+			if (p.getPreset() == this)
+				return true;
+		}
+
 		return uuid.equals(getParent().getPresetList().getSelectedPreset());
 	}
 
@@ -217,9 +227,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public Control onContextMenu(Position pos) {
 		if (isInStoreSelectMode())
 			return null;
-
-		if (isInMultiplePresetSelectionMode() == false && isSelected() == false)
-			selectPreset();
 
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
 				.getContextMenuSettings();

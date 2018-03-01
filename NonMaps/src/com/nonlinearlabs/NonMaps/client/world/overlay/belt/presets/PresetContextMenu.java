@@ -18,8 +18,11 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 
 public class PresetContextMenu extends ContextMenu {
 
+	private Preset preset;
+
 	public PresetContextMenu(OverlayLayout parent, final Preset preset) {
 		super(parent);
+		this.preset = preset;
 		final PresetManager pm = preset.getParent().getParent();
 		final boolean hasMultipleSelection = pm.hasMultiplePresetSelection();
 		final boolean multipleSelectionAllowed = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup()
@@ -118,8 +121,7 @@ public class PresetContextMenu extends ContextMenu {
 			addChild(new ContextMenuItem(this, "Compare to Editbuffer") {
 				@Override
 				public Control click(Position eventPoint) {
-					Preset p1 = pm.getSelectedPreset();
-					CompareDialog.open(p1);
+					CompareDialog.open(preset);
 					return super.click(eventPoint);
 				}
 			});
@@ -132,6 +134,10 @@ public class PresetContextMenu extends ContextMenu {
 				return o.setContextMenu(this.getPixRect().getPosition(), new PresetColorTagContextMenu(o, preset));
 			}
 		});
+	}
+
+	public Preset getPreset() {
+		return preset;
 	}
 
 }
