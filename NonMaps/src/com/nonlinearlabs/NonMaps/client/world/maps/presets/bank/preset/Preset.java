@@ -10,6 +10,7 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -216,8 +217,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public Control onContextMenu(Position pos) {
 		if (isInStoreSelectMode())
 			return null;
-		
-		if(isInMultiplePresetSelectionMode() == false && isSelected() == false)
+
+		if (isInMultiplePresetSelectionMode() == false && isSelected() == false)
 			selectPreset();
 
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
@@ -257,13 +258,18 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return super.startDragging(pos);
 	}
 
-	public Control startMultipleSelectionDrag(Position pos) {
+	public Control startMultipleSelectionDrag(Position mousePos) {
 		NonLinearWorld world = getNonMaps().getNonLinearWorld();
 		PresetManager pm = world.getPresetManager();
 		MultiplePresetSelection selection = pm.getMultiSelection();
+		selection.add(this);
 
 		Control ret = null;
-		double yMargin = getPixRect().getTop() - pos.getY();
+		double yMargin = getPixRect().getTop() - mousePos.getY();
+		double xMargin = getPixRect().getLeft() - mousePos.getX();
+
+		Tracer.log("yMargin: " + yMargin);
+		Tracer.log("xMargin: " + xMargin);
 
 		for (String uuid : selection.getSelectedPresets()) {
 			Preset p = pm.findPreset(uuid);
@@ -272,9 +278,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				if (p == this)
 					ret = a;
 
-				double xDiff = 0;
-				double yDiff = pos.getY() - p.getPixRect().getTop();
-				a.animatePositionOffset(xDiff, yDiff + yMargin);
+				double xDiff = mousePos.getX() - p.getPixRect().getLeft();
+				double yDiff = mousePos.getY() - p.getPixRect().getTop();
+				a.animatePositionOffset(xDiff + xMargin, yDiff + yMargin);
 				yMargin += getPixRect().getHeight();
 			}
 		}
@@ -368,6 +374,14 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public String getTitleName() {
 		return getCurrentName();
+	}
+
+	@Override
+	public void beingDropped() {
+		super.beingDropped();
+
+		if (isInMultiplePresetSelectionMode())
+			getParent().getParent().closeMultiSelection();
 	}
 
 }

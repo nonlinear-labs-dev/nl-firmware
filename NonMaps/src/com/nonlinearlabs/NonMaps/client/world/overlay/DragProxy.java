@@ -256,6 +256,16 @@ public class DragProxy extends OverlayControl {
 				setReceiver(r, triggeredProxy);
 			}
 		}
+
+		if (triggeredProxy != null) {
+			triggeredProxy.originBeingDropped();
+		}
+	}
+
+	private void originBeingDropped() {
+		if (origin != null)
+			origin.beingDropped();
+
 	}
 
 	protected void setReceiver(Control r, DragProxy proxy) {
