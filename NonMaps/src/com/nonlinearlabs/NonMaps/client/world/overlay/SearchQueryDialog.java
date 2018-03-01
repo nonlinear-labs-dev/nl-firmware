@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,18 +20,22 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonRect;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Spacer;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager.SearchQueryFields;
+import com.nonlinearlabs.NonMaps.client.world.overlay.setup.Divider;
 
 public class SearchQueryDialog extends GWTDialog {
 
@@ -160,10 +165,21 @@ public class SearchQueryDialog extends GWTDialog {
 
 		VerticalPanel rootPanel = new VerticalPanel();
 		rootPanel.add(createTextInputPanel());
-		rootPanel.add(createCheckBoxPanel());
 		rootPanel.add(createAndOrPanel());
+		rootPanel.add(createSpacer());
+		rootPanel.add(createCheckBoxPanel());
+		rootPanel.add(createSpacer());
+		rootPanel.add(createZoomPanel());
+		rootPanel.add(createSpacer());
 		rootPanel.add(createButtonPanel());
 		setWidget(rootPanel);
+	}
+	
+	private FlowPanel createSpacer() {
+		FlowPanel dividerPanel = new FlowPanel();
+		HTML html = new HTML("<hr  style=\"width:98%;border: 0;height: 1px;background: #a5a5a5;background-image: linear-gradient(to right, #a5a5a5,#a5a5a5,#a5a5a5);\" />");
+		dividerPanel.add(html);
+		return dividerPanel;
 	}
 
 	private FlowPanel createCheckBoxPanel() {
@@ -216,17 +232,32 @@ public class SearchQueryDialog extends GWTDialog {
 		return buttonPanel;
 	}
 
-	private FlowPanel createButtonPanel() {
-		FlowPanel buttonPanel = new FlowPanel();
+	private FlowPanel createZoomPanel() {
+		FlowPanel zoomPanel = new FlowPanel();
 		CheckBox zoomToAllMatches = new CheckBox("Zoom to all matches");
-
 		zoomToAllMatches.getElement().addClassName("auto-zoom");
 		Boolean b = Boolean.valueOf(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
 		zoomToAllMatches.setValue(b);
+		
+		zoomToAllMatches.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				NonMaps.theMaps.getNonLinearWorld().getSettings().set("search-auto-zoom", event.getValue().toString());
+
+				if (event.getValue())
+					zoomToAll();
+			}
+		});
+		
+		zoomPanel.add(zoomToAllMatches);
+		return zoomPanel;
+	}
+	
+	private FlowPanel createButtonPanel() {
+		FlowPanel buttonPanel = new FlowPanel();
 		Button nextMatch = new Button("Next");
 		Button previousMatch = new Button("Previous");
-
 		previousMatch.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -242,21 +273,12 @@ public class SearchQueryDialog extends GWTDialog {
 				highlightNextMatch();
 			}
 		});
-
-		zoomToAllMatches.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				NonMaps.theMaps.getNonLinearWorld().getSettings().set("search-auto-zoom", event.getValue().toString());
-
-				if (event.getValue())
-					zoomToAll();
-			}
-		});
-
+		
+		previousMatch.getElement().addClassName("previous-button");
+		nextMatch.getElement().addClassName("next-button");
+		
 		buttonPanel.add(previousMatch);
 		buttonPanel.add(nextMatch);
-		buttonPanel.add(zoomToAllMatches);
 		return buttonPanel;
 	}
 
