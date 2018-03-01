@@ -6,7 +6,6 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
@@ -16,9 +15,9 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.Macro
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.ModulationAmount;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.IncrementalChanger;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
@@ -137,7 +136,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
 
-		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth, 2, 1);
+		layouter.push(valueDisplay, modulationButtonWidth, 3 * sliderWidth / 4, 2, 1);
 
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcLowerBoundRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
