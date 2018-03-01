@@ -851,6 +851,7 @@ sigc::connection PresetManager::onNumBanksChanged(sigc::slot<void, int> slot)
 
 Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedOn) const
 {
+
   const Glib::ustring base = getBaseName(basedOn);
 
   if(base.empty())
