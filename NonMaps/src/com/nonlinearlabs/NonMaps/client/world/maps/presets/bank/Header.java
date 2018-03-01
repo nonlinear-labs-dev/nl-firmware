@@ -263,11 +263,8 @@ public class Header extends Label {
 					return this;
 				}
 			} else if (dragProxy.getOrigin() instanceof IPreset) {
-				Preset p = (Preset) dragProxy.getOrigin();
-				if (p.getParent() != getParent()) {
-					setIsDropTarget(true);
-					return this;
-				}
+				setIsDropTarget(true);
+				return this;
 			} else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
 				setIsDropTarget(true);
 				return this;
