@@ -8,9 +8,9 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/RenamePresetLayout.h>
 
-RenamePresetLayout::RenamePresetLayout (tCommitCB commitCB) :
+RenamePresetLayout::RenamePresetLayout (tCommitCB commitCB, tCancelCB cancelCB) :
     super (),
-    m_commitCB (commitCB)
+    m_commitCB (commitCB), m_cancelCB(cancelCB)
 
 {
   if (auto bank = Application::get ().getPresetManager ()->getSelectedBank ())
@@ -28,8 +28,8 @@ void RenamePresetLayout::commit (const Glib::ustring &newName)
 
 void RenamePresetLayout::cancel ()
 {
-  RenameLayout::cancel ();
-  m_commitCB = {};
+  if(m_cancelCB)
+    m_cancelCB();
 }
 
 Glib::ustring RenamePresetLayout::getInitialText () const
