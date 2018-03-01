@@ -768,8 +768,10 @@ uint64_t PresetBank::getLastChangedTimestamp() const
 
 const Glib::ustring PresetBank::calcStateString() const
 {
+  auto timestampWithTolerance = m_lastChangedTimestamp - 5;
+
   std::string lastExportTimeIso = getAttribute("Date of Export File", "-1");
-  std::string lastModTimeIso = TimeTools::getIsoTime(m_lastChangedTimestamp);
+  std::string lastModTimeIso = TimeTools::getIsoTime(timestampWithTolerance);
   std::string lastImportTime = getAttribute("Date of Import File", "-1");
 
   if(lastImportTime != "-1" && lastModTimeIso <= lastImportTime)
@@ -785,11 +787,6 @@ const Glib::ustring PresetBank::calcStateString() const
     return "Not Saved By Export";
   }
 }
-
-void PresetBank::hackLastChangeTimeForImportOnly() {
-  m_lastChangedTimestamp = m_lastChangedTimestamp - 5;
-}
-
 
 void PresetBank::undoableAssignDefaultPosition(shared_ptr<UNDO::Transaction> transaction)
 {

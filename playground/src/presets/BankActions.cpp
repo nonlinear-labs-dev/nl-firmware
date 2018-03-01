@@ -753,10 +753,9 @@ BankActions::BankActions(PresetManager &presetManager) :
     Glib::ustring x = request->get ("x");
     Glib::ustring y = request->get ("y");
     Glib::ustring fileName = request->get ("fileName");
-    Glib::ustring lastModified = request->get ("lastModified");
 
     MemoryInStream stream (xml, false);
-    auto newBank = importBank(stream, x, y, fileName, lastModified);
+    auto newBank = importBank(stream, x, y, fileName);
   });
 
   addAction("duplicate-bank",
@@ -1090,7 +1089,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
 }
 
 PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::ustring& x, const Glib::ustring& y,
-                                                const Glib::ustring& fileName, const Glib::ustring& lastModified)
+                                                const Glib::ustring& fileName)
 {
 
   UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Import new Bank");
@@ -1117,8 +1116,6 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   newBank->undoableSelect(transaction);
 
   m_presetManager.undoableSelectBank(transaction, newBank->getUuid());
-
-  newBank->hackLastChangeTimeForImportOnly();
 
   return newBank;
 }

@@ -602,7 +602,7 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void importBank(final String fileName, String text, final int lastModified, final NonPosition p) {
+	public void importBank(final String fileName, String text, final NonPosition p) {
 		final Document xml = XMLParser.parse(text);
 		final Node root = xml.getFirstChild();
 		final NamedNodeMap attributes = root.getAttributes();
@@ -615,7 +615,7 @@ public class ServerProxy {
 				public void run() {
 					Element e = (Element) root;
 					e.setAttribute("version", d.getChoice());
-					doImportBank(fileName, xml.toString(), lastModified, p);
+					doImportBank(fileName, xml.toString(), p);
 				}
 			});
 
@@ -631,15 +631,14 @@ public class ServerProxy {
 			} catch (Exception e) {
 			}
 
-			doImportBank(fileName, text, lastModified, p);
+			doImportBank(fileName, text, p);
 		}
 	}
 
-	private void doImportBank(String fileName, String text, int lastModified, NonPosition p) {
+	private void doImportBank(String fileName, String text, NonPosition p) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "import-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("xml", text), new StaticURI.KeyValue("x", p.getX()),
-				new StaticURI.KeyValue("y", p.getY()), new StaticURI.KeyValue("fileName", fileName), new StaticURI.KeyValue("lastModified",
-						lastModified));
+				new StaticURI.KeyValue("y", p.getY()), new StaticURI.KeyValue("fileName", fileName));
 		final XMLHttpRequest xhr = XMLHttpRequest.create();
 		xhr.open("POST", path.toString());
 		xhr.send(uri.getPostData(false));

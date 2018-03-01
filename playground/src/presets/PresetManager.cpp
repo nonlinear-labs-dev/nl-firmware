@@ -100,14 +100,13 @@ void PresetManager::doAutoLoadSelectedPreset()
   }
 }
 
-void PresetManager::importBank(InStream& stream, const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& fileName,
-                               const Glib::ustring& lastModified)
+void PresetManager::importBank(InStream& stream, const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& fileName)
 {
   for(auto actionManager : m_actionManagers)
   {
     if(auto carstenPtr = dynamic_cast<BankActions*>(actionManager.get()))
     {
-      carstenPtr->importBank(stream, x, y, fileName, lastModified);
+      carstenPtr->importBank(stream, x, y, fileName);
       break;
     }
   }

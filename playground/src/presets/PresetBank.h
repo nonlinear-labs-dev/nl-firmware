@@ -63,7 +63,6 @@ class PresetBank : public UpdateDocumentContributor,
     SaveResult save(RefPtr<Gio::File> bankFolder);
     int getHighestIncrementForBaseName(const Glib::ustring &baseName) const;
     const Glib::ustring calcStateString() const;
-    void hackLastChangeTimeForImportOnly();
 
     bool setSelectedPreset(Glib::ustring uuid);
     void assignDefaultPosition();
