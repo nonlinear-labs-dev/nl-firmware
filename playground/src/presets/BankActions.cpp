@@ -1111,12 +1111,15 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
 
   newBank->undoableEnsurePresetSelection(transaction);
   newBank->undoableSetAttribute(transaction, "Name of Import File", fileName);
-  auto lastModifiedSeconds = stoull(lastModified) / 1000;
   newBank->undoableSetAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
   newBank->undoableSetAttribute(transaction, "Name of Export File", "");
   newBank->undoableSetAttribute(transaction, "Date of Export File", "");
   newBank->undoableSelect(transaction);
+
   m_presetManager.undoableSelectBank(transaction, newBank->getUuid());
+
+  newBank->hackLastChangeTimeForImportOnly();
+
   return newBank;
 }
 
