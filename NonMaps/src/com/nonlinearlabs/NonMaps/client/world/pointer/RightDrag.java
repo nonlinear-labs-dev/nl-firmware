@@ -4,8 +4,8 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 
 class RightDrag extends Drag implements Gesture.NeedsFocus, Gesture.HasPosition {
 
-	RightDrag(Gesture predecessor, Position to, boolean fine) {
-		super(predecessor, to, fine);
+	RightDrag(Gesture predecessor, Position from, Position to, boolean fine) {
+		super(predecessor, from, to, fine);
 	}
 
 	@Override
@@ -15,7 +15,7 @@ class RightDrag extends Drag implements Gesture.NeedsFocus, Gesture.HasPosition 
 
 	@Override
 	public Gesture move(boolean fine) {
-		return new RightDrag(this, PointerState.get().getPosition(), fine);
+		return new RightDrag(this, getPosition(), PointerState.get().getPosition(), fine);
 	}
 
 }

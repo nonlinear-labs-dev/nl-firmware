@@ -21,7 +21,7 @@ class TouchLongPress extends LongPress {
 	@Override
 	public Gesture onTouchMove(JsArray<Touch> touches) {
 		if (getDistance(getPosition(), PointerState.get().getPosition()) > getDragHysteresis())
-			return new TouchMoveStart(this, touches);
+			return new TouchMoveStart(this, getPosition(), touches);
 
 		return this;
 	}

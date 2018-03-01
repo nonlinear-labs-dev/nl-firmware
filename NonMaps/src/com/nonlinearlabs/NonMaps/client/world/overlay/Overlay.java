@@ -221,13 +221,13 @@ public class Overlay extends OverlayLayout {
 		return ColorTable.getColorIndicator();
 	}
 
-	public DragProxy createDragProxy(Control origin, Position point) {
+	public DragProxy createDragProxy(Control origin) {
 		removeDragProxies();
-		return addDragProxy(origin, point);
+		return addDragProxy(origin);
 	}
 
-	public DragProxy addDragProxy(Control origin, Position point) {
-		return addChild(new DragProxy(this, origin, point));
+	public DragProxy addDragProxy(Control origin) {
+		return addChild(new DragProxy(this, origin));
 	}
 
 	boolean removeDragProxies() {

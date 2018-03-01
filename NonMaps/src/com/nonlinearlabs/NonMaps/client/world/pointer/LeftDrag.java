@@ -4,8 +4,8 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 
 class LeftDrag extends Drag {
 
-	LeftDrag(Gesture predecessor, Position to, boolean fine) {
-		super(predecessor, to, fine);
+	LeftDrag(Gesture predecessor, Position from, Position to, boolean fine) {
+		super(predecessor, from, to, fine);
 	}
 
 	@Override
@@ -15,7 +15,7 @@ class LeftDrag extends Drag {
 
 	@Override
 	public Gesture move(boolean fine) {
-		return new LeftDrag(this, PointerState.get().getPosition(), fine);
+		return new LeftDrag(this, getPosition(), PointerState.get().getPosition(), fine);
 	}
 
 }

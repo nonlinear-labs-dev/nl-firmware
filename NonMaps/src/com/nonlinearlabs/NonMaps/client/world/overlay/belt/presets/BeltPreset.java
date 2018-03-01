@@ -127,7 +127,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	@Override
 	public Control startDragging(Position pos) {
-		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this, getPixRect().getPosition());
+		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this);
 	}
 
 	@Override

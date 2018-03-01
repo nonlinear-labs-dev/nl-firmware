@@ -205,9 +205,9 @@ public class Header extends Label {
 
 		for (Bank bank : getBanksThatMoveWhenMovingBank(getParent())) {
 			if (bank == getParent()) {
-				ret = getNonMaps().getNonLinearWorld().getViewport().getOverlay().addDragProxy(bank, bank.getPixRect().getPosition());
+				ret = getNonMaps().getNonLinearWorld().getViewport().getOverlay().addDragProxy(bank);
 			} else {
-				getNonMaps().getNonLinearWorld().getViewport().getOverlay().addDragProxy(bank, bank.getPixRect().getPosition());
+				getNonMaps().getNonLinearWorld().getViewport().getOverlay().addDragProxy(bank);
 			}
 		}
 

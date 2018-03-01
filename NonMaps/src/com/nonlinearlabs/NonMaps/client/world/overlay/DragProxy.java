@@ -46,12 +46,11 @@ public class DragProxy extends OverlayControl {
 	AutoScrollDirection currentAutoScrollDirection = AutoScrollDirection.None;
 	private DragProxy triggeredProxy;
 
-	public DragProxy(Overlay parent, Control origin, Position point) {
+	public DragProxy(Overlay parent, Control origin) {
 		super(parent);
 		this.origin = origin;
 
-		getRelativePosition().getPosition().set(point);
-		getRelativePosition().getDimension().set(origin.getPixRect().getDimension());
+		getRelativePosition().set(origin.getPixRect());
 	}
 
 	@Override

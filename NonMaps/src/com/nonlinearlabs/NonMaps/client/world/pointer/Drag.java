@@ -5,18 +5,28 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 
 class Drag extends Gesture implements Gesture.NeedsFocus, Gesture.HasPosition {
 
-	private Position pos;
+	private Position to;
+	private Position from;
 	private boolean fine = false;
 
-	public Drag(Gesture predecessor, Position to, boolean fine) {
+	public Drag(Gesture predecessor, Position from, Position to, boolean fine) {
 		super(predecessor);
-		this.pos = to.copy();
+		this.from = from;
+		this.to = to.copy();
 		this.fine = fine;
 	}
 
 	@Override
 	public Position getPosition() {
-		return pos;
+		return to;
+	}
+
+	public Position getStartPosition() {
+		return from;
+	}
+
+	public Position getEndPosition() {
+		return to;
 	}
 
 	@Override

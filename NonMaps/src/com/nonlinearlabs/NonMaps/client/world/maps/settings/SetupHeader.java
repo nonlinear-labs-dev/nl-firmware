@@ -57,7 +57,7 @@ class SetupHeader extends Label {
 
 	@Override
 	public Control startDragging(Position pos) {
-		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(getParent(), getPixRect().getPosition());
+		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(getParent());
 	}
 
 	@Override
