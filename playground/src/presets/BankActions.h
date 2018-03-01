@@ -28,6 +28,7 @@ class BankActions : public RPCActionManager
     bool loadPresetAtRelativePosition(int offset);
     void insertBank(tBankPtr bank, tBankPtr targetBank, size_t insertPos);
     void insertBank(shared_ptr<NetworkRequest> request, size_t offset);
+    Glib::ustring guessNameBasedOnEditBuffer() const;
 
     PresetManager &m_presetManager;
 };

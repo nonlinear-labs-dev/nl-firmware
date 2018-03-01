@@ -1752,3 +1752,15 @@ input.param-name-edit {
 .load-button-a:active, .load-button-b:active {
 	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Active.svg)
 }
+
+.gwt-Button.next-button {
+    border-radius: 0px 4px 4px 0px;
+    width: 75px;
+}
+
+.gwt-Button.previous-button {
+	margin-right: -3px;
+    border-right-width: 0px;
+    border-radius: 4px 0px 0px 4px;
+    width: 75px;
+}

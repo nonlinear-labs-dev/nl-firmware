@@ -136,6 +136,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
 
+
 		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth * 0.75, 2, 1);
 
 		layouter.push(null, margin, margin, 0, 2);

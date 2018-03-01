@@ -181,15 +181,19 @@ class MenuArea extends OverlayLayout {
 
 	void roundRect(Context2d ctx, double x, double y, double width, double height, double radius) {
 		Rect r = new Rect(x, y, width, height);
-		r.drawRoundedArea(ctx, radius, 1, new Gray(28), null);
+		r.drawRoundedArea(ctx, radius, 1, new Gray(16), null);
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, presets.getPixRect().getTop() + 2, presets.getPixRect()
-				.getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, presets.getPixRect().getHeight() - 4, 6);
-		roundRect(ctx, presets.getPixRect().getLeft() + getSmallButtonWidth() / 3, banks.getPixRect().getTop() + 2, presets.getPixRect()
-				.getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5, banks.getPixRect().getHeight() - 4, 6);
+		double x = presets.getPixRect().getLeft() + getSmallButtonWidth() / 3;
+		double yPreset = presets.getPixRect().getTop() + 3.5;
+		double yBank = banks.getPixRect().getTop() + 3.5;
+		double w = presets.getPixRect().getRight() - presets.getPixRect().getLeft() - getSmallButtonWidth() / 5;
+		double h = presets.getPixRect().getHeight() - 7;
+		double r = 5;
+		roundRect(ctx, x, yPreset, w, h, r);
+		roundRect(ctx, x, yBank, w, h, r);
 		super.draw(ctx, invalidationMask);
 	}
 
