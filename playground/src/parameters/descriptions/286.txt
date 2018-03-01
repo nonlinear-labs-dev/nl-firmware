@@ -1,0 +1,3 @@
+Determines the influence of the "Ribbon 1" Hardware Source on Macro Control B.
+If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.
+Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).

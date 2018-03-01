@@ -1,0 +1,1 @@
+This control is the parameter representation of the "Pedal 3" Hardware Source. If a pedal is connected, it will directly follow the external control.
