@@ -128,7 +128,7 @@ void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::direc
 
     FileInStream stream(fileInfos.filePath, false);
     SplashLayout::addStatus("Importing " + fileInfos.fileName);
-    Application::get().getPresetManager()->importBank(stream, "", "", fileInfos.fileName, std::to_string(fileInfos.millisecondsFromEpoch));
+    Application::get().getPresetManager()->importBank(stream, "", "", fileInfos.fileName);
   }
   hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
   hwui->getPanelUnit().setupFocusAndMode( { UIFocus::Presets, UIMode::Select });

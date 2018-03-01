@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class TextUpload {
 
 	public interface TextUploadedHandler {
-		void onTextUploaded(String fileName, String text, int lastModified);
+		void onTextUploaded(String fileName, String text);
 	}
 
 	public TextUpload(final TextUploadedHandler handler) {
