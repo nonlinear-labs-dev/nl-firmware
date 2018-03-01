@@ -19,6 +19,12 @@ class DirectLoadButton extends SVGImage {
 	public boolean isInStoreSelectMode() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
 	}
+	
+	@Override
+	public void doLayout(double x, double y, double w, double h) {
+		x = x - getButtonDimension() * 1.5;
+		super.doLayout(x, y, w, h);
+	}
 
 	@Override
 	public int getSelectedPhase() {
