@@ -12,7 +12,8 @@ class RenamePresetLayout : public RenameLayout
 
   public:
     typedef function<void (const Glib::ustring &)> tCommitCB;
-    RenamePresetLayout (tCommitCB commitCB);
+    typedef function<void (void)> tCancelCB;
+    RenamePresetLayout (tCommitCB commitCB, tCancelCB cancelCB = nullptr);
 
   protected:
     virtual void commit (const Glib::ustring &newName) override;
@@ -22,4 +23,5 @@ class RenamePresetLayout : public RenameLayout
   private:
     shared_ptr<Preset> m_currentPreset;
     tCommitCB m_commitCB;
+    tCancelCB m_cancelCB;
 };
