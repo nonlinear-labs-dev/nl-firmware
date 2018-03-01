@@ -11,7 +11,6 @@ import com.nonlinearlabs.NonMaps.client.Animator;
 import com.nonlinearlabs.NonMaps.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.contextStates.AlphaContextState;
 import com.nonlinearlabs.NonMaps.client.contextStates.ContextState;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -137,7 +136,6 @@ public class DragProxy extends OverlayControl {
 
 						int ranking = ctrl.getDragRating(newPoint, p);
 						if (ranking >= 0) {
-							Tracer.log("adding control " + ctrl + " with ranking of " + ranking);
 							foundControls.add(new FoundControl(p, ctrl, ranking));
 						}
 					}
@@ -158,11 +156,9 @@ public class DragProxy extends OverlayControl {
 		for (FoundControl f : foundControls) {
 			Control r = f.ctrl.drag(newPoint, f.proxy);
 			if (r != null) {
-				Tracer.log("control " + f.ctrl + " handled the drag");
 				setReceiver(r, f.proxy);
 				return this;
 			} else {
-				Tracer.log("control " + f.ctrl + " didn't care about dragged object");
 			}
 		}
 
@@ -252,7 +248,6 @@ public class DragProxy extends OverlayControl {
 			Control r = receiver.drop(newPoint, triggeredProxy);
 
 			if (r != null) {
-				Tracer.log("control " + r + " handled the drop");
 				setReceiver(r, triggeredProxy);
 			}
 		}
