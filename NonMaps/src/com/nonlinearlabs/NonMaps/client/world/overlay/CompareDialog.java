@@ -64,7 +64,7 @@ public class CompareDialog extends GWTDialog {
 		setGlassEnabled(false);
 		setModal(false);
 
-		addHeader("Preset Comparison Tree View");
+		addHeader("Preset Comparison");
 
 		load(p1, p2);
 	}
