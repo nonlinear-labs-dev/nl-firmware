@@ -55,6 +55,8 @@ public class PresetInfoDialog extends GWTDialog {
 	
 	private Button addColorButton(ColorTag.Color c) {		
 		Button b = new Button();
+		if(c == ColorTag.Color.none)
+			b.setHTML("<div style=\"margin-bottom: 20px;font-size: smaller;\">✕</div>"); 
 		b.getElement().addClassName("colortaggingfield-" + c.name());
 		b.getElement().addClassName("colortaggingfield-template");
 		

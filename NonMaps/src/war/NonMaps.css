@@ -1732,6 +1732,7 @@ input.param-name-edit {
 	outline-width: 2px;
 	outline-style: solid;
 	border-style: none;
+	font-size: initial;
 }
 
 .tag-div {
