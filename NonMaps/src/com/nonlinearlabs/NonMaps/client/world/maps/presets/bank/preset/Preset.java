@@ -225,6 +225,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
+	public boolean canBeDraggedOnSelf() {
+		return true;
+	}
+	
+	@Override
 	public Control onContextMenu(Position pos) {
 		if (isInStoreSelectMode())
 			return null;
