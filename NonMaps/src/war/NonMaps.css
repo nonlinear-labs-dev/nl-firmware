@@ -1770,3 +1770,20 @@ input.param-name-edit {
     border-radius: 4px 0px 0px 4px;
     width: 75px;
 }
+
+.refresh-button {
+	background-image: url(/NonMaps/war/images/PresetComp-Refresh_Enabled.svg);
+	background-position: center;
+  background-size: cover;
+  width: 60px;
+  height: 28px;
+}
+
+button {
+	border-style:none;
+  outline-style: none;
+}
+
+.refresh-button:active {
+	background-image: url(/NonMaps/war/images/PresetComp-Refresh_Active.svg);
+}
