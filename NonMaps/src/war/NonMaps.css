@@ -1699,30 +1699,30 @@ input.param-name-edit {
 .colortaggingfield-green {
 	margin-left: 8px;
     margin-right: 18.7px;
-	background-color: rgb(0, 255, 0);
+	background-color: #52ad45;
 } 
 .colortaggingfield-blue {
     margin-right: 18.7px;
-	background-color: rgb(0, 0, 255);
+	background-color: #4b69d5;
 } 
 .colortaggingfield-yellow {
     margin-right: 18.7px;
-	background-color: rgb(255, 255, 0);
+	background-color: #ccc536;
 } 
 .colortaggingfield-orange {
     margin-right: 18.7px;
-	background-color: rgb(255, 126, 0);
+	background-color: #dd9537;
 }
 .colortaggingfield-purple {
     margin-right: 18.7px;
-	background-color: rgb(255, 0, 255);
+	background-color: #b75fae;
 } 
 .colortaggingfield-red {
     margin-right: 18.7px;
-	background-color: rgb(255, 0, 0);
+	background-color: #cf2b3b;
 } 
 .colortaggingfield-none {
-	background-color: rgb(0, 0, 0, 0);
+	background-color: #909090;
 }
 
 .colortag-current {
