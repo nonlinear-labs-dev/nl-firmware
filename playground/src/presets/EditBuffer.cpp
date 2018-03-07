@@ -329,6 +329,9 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transa
     oldLoadMark->swapWith<0> (m_lastLoadedPresetInfo);
     auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
 
+    setName(m_lastLoadedPresetInfo.presetName);
+    setUuid(m_lastLoadedPresetInfo.presetUUID);
+
     m_signalPresetLoaded.send();
     onChange ();
   });
@@ -347,7 +350,6 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Scope::tTransactionPtr tra
     info.presetDeleted = false;
     info.bankUUID = preset->getBank()->getUuid();
     info.bankName = preset->getBank()->getName(true);
-    setName(info.presetName);
   }
   else
   {
@@ -364,6 +366,9 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Scope::tTransactionPtr tra
       auto oldPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
       oldLoadMark->swapWith<0> (m_lastLoadedPresetInfo);
       auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
+
+      setName(m_lastLoadedPresetInfo.presetName);
+      setUuid(m_lastLoadedPresetInfo.presetUUID);
 
       m_signalPresetLoaded.send();
       onChange ();
