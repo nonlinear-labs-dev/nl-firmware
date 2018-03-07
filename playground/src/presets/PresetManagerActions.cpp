@@ -140,14 +140,20 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
 
       MemoryInStream stream(xml, false);
       XmlReader reader(stream, transaction);
+      auto editBuffer = presetManager.getEditBuffer();
 
-      if(!reader.read<PresetSerializer>(presetManager.getEditBuffer().get()))
+      if(!reader.read<PresetSerializer>(editBuffer.get()))
       {
         transaction->rollBack();
         http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
       }
 
-      m_presetManager.getEditBuffer()->sendToLPC();
+      if(auto preset = m_presetManager.findPreset(editBuffer->getUuid()))
+      {
+        editBuffer->undoableSetLoadedPresetInfo(transaction, preset.get());
+      }
+
+      editBuffer->sendToLPC();
     }
   });
 
@@ -261,8 +267,10 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
     {
       auto pm = Application::get().getPresetManager();
       auto eb = pm->getEditBuffer();
-      auto a = pm->findPreset(request->get("p1"));
-      auto b = pm->findPreset(request->get("p2"));
+      auto aUUID = request->get("p1");
+      auto bUUID = request->get("p2");
+      auto a = pm->findPreset(aUUID);
+      auto b = pm->findPreset(bUUID);
 
       auto preset1 = a ? a : eb;
       auto preset2 = b ? b : eb;
