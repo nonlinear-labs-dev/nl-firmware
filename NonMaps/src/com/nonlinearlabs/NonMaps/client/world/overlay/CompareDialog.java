@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -243,7 +244,7 @@ public class CompareDialog extends GWTDialog {
 
 	public int writeHeader(int row, Node positionNode, Node nameNode) {
 
-		table.setWidget(row, 0, refresh = new Button("&#x21bb;"));
+		table.setWidget(row, 0, refresh = new Button(""));
 		refresh.getElement().addClassName("refresh-button");
 
 		refresh.addClickHandler(new ClickHandler() {
@@ -254,13 +255,14 @@ public class CompareDialog extends GWTDialog {
 			}
 		});
 
-		String preset1PositionText = positionNode.getAttributes().getNamedItem("a").getNodeValue();
-		String preset2PositionText = positionNode.getAttributes().getNamedItem("b").getNodeValue();
-		table.setText(row, 1, preset1PositionText);
-		table.setText(row, 2, preset2PositionText);
-		row++;
-		table.setText(row, 1, nameNode.getAttributes().getNamedItem("a").getNodeValue());
-		table.setText(row, 2, nameNode.getAttributes().getNamedItem("b").getNodeValue());
+		String preset1PositionText = SafeHtmlUtils.htmlEscape(positionNode.getAttributes().getNamedItem("a").getNodeValue());
+		String preset2PositionText = SafeHtmlUtils.htmlEscape(positionNode.getAttributes().getNamedItem("b").getNodeValue());
+
+		String preset1Name = nameNode.getAttributes().getNamedItem("a").getNodeValue();
+		String preset2Name = nameNode.getAttributes().getNamedItem("b").getNodeValue();
+
+		table.setHTML(row, 1, preset1PositionText + "<br>" + SafeHtmlUtils.htmlEscape(preset1Name));
+		table.setHTML(row, 2, preset2PositionText + "<br>" + SafeHtmlUtils.htmlEscape(preset2Name));
 		row++;
 		addLoadButtons(row, table);
 		row++;
