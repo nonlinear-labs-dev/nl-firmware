@@ -299,6 +299,7 @@ void EditBuffer::undoableLoad(UNDO::Scope::tTransactionPtr transaction, shared_p
 
   if(PresetBank *bank = dynamic_cast<PresetBank *>(preset->getParent()))
   {
+    bank->undoableSelectPreset(transaction, preset->getUuid());
     getParent()->undoableSelectBank(transaction, bank->getUuid());
   }
 
@@ -335,8 +336,6 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transa
     m_signalPresetLoaded.send();
     onChange ();
   });
-
-  preset->undoableSelect(transaction);
 }
 
 void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Scope::tTransactionPtr transaction)
