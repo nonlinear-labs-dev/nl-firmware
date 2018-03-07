@@ -14,6 +14,11 @@ Glib::ustring AttributesOwnerSerializer::getTagName()
   return "attributes";
 }
 
+void AttributesOwnerSerializer::readProlog(Reader &reader) const
+{
+  m_owner->undoableClearAttributes(reader.getTransaction());
+}
+
 void AttributesOwnerSerializer::writeTagContent (Writer &writer) const
 {
   for (const auto &a : m_owner->getAttributes ())

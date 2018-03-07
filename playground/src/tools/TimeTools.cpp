@@ -5,7 +5,7 @@
 #include <memory>
 #include <sstream>
 
-#include "../device-settings/DebugLevel.h"
+#include <device-settings/DebugLevel.h>
 
 time_t TimeTools::getRealTimestamp()
 {

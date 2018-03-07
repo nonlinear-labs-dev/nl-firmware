@@ -1699,30 +1699,30 @@ input.param-name-edit {
 .colortaggingfield-green {
 	margin-left: 8px;
     margin-right: 18.7px;
-	background-color: rgb(0, 255, 0);
+	background-color: #52ad45;
 } 
 .colortaggingfield-blue {
     margin-right: 18.7px;
-	background-color: rgb(0, 0, 255);
+	background-color: #4b69d5;
 } 
 .colortaggingfield-yellow {
     margin-right: 18.7px;
-	background-color: rgb(255, 255, 0);
+	background-color: #ccc536;
 } 
 .colortaggingfield-orange {
     margin-right: 18.7px;
-	background-color: rgb(255, 126, 0);
+	background-color: #dd9537;
 }
 .colortaggingfield-purple {
     margin-right: 18.7px;
-	background-color: rgb(255, 0, 255);
+	background-color: #b75fae;
 } 
 .colortaggingfield-red {
     margin-right: 18.7px;
-	background-color: rgb(255, 0, 0);
+	background-color: #cf2b3b;
 } 
 .colortaggingfield-none {
-	background-color: rgb(0, 0, 0, 0);
+	background-color: #909090;
 }
 
 .colortag-current {
@@ -1732,23 +1732,58 @@ input.param-name-edit {
 	outline-width: 2px;
 	outline-style: solid;
 	border-style: none;
+	font-size: initial;
 }
 
 .tag-div {
 	line-height: 32px;
 }
 
-.load-button-a, .load-button-b {
-	width: 1cm;
-	height: 1cm;
+.refresh-button {
+	width: 8mm;
+	height: 8mm;
+}
+
+.load-button {
+	width: 8mm;
+	height: 8mm;
 	background-size: contain;
 	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Enabled.svg)
 }
 
-.load-button-a[disabled], .load-button-b[disabled] {
+.load-button[disabled] {
 	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Disabled.svg)
 }
 
-.load-button-a:active, .load-button-b:active {
+.load-button:active {
 	background-image: url(/NonMaps/war/images/Preset-Comp-Load_Active.svg)
+}
+
+.gwt-Button.next-button {
+    border-radius: 0px 4px 4px 0px;
+    width: 75px;
+}
+
+.gwt-Button.previous-button {
+	margin-right: -3px;
+    border-right-width: 0px;
+    border-radius: 4px 0px 0px 4px;
+    width: 75px;
+}
+
+.refresh-button {
+	background-image: url(/NonMaps/war/images/PresetComp-Refresh_Enabled.svg);
+	background-position: center;
+  background-size: cover;
+  width: 60px;
+  height: 28px;
+}
+
+button {
+	border-style:none;
+  outline-style: none;
+}
+
+.refresh-button:active {
+	background-image: url(/NonMaps/war/images/PresetComp-Refresh_Active.svg);
 }

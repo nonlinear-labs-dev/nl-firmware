@@ -187,6 +187,11 @@ const Uuid &Preset::getUuid() const
   return m_uuid;
 }
 
+void Preset::setUuid(const Uuid &uuid)
+{
+  m_uuid = uuid;
+}
+
 sigc::connection Preset::onPresetChanged(slot<void> s)
 {
   return m_signalPresetChanged.connectAndInit(s);

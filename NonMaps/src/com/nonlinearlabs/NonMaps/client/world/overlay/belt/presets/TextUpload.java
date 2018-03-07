@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class TextUpload {
 
 	public interface TextUploadedHandler {
-		void onTextUploaded(String fileName, String text, int lastModified);
+		void onTextUploaded(String fileName, String text);
 	}
 
 	public TextUpload(final TextUploadedHandler handler) {
@@ -36,7 +36,7 @@ public class TextUpload {
 			var reader = new FileReader();
 			reader.onload = function(e) {
 				var text = reader.result;
-				receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler::onTextUploaded(Ljava/lang/String;Ljava/lang/String;I)(file.name, text, file.lastModified);
+				receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler::onTextUploaded(Ljava/lang/String;Ljava/lang/String;)(file.name, text);
 			}
 			reader.readAsText(file);
 		}

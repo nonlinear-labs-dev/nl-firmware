@@ -97,8 +97,7 @@ class PresetManager : public ContentSection
     void undoableAppendBank (UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, bool autoSelect);
     void doAutoLoadSelectedPreset ();
 
-    void importBank(InStream& stream, const Glib::ustring& x = "", const Glib::ustring& y = "", const Glib::ustring& fileName = "",
-                    const Glib::ustring& lastModified = "");
+    void importBank(InStream& stream, const Glib::ustring& x = "", const Glib::ustring& y = "", const Glib::ustring& fileName = "");
 
     void sanitizeBankClusterRelations(UNDO::Scope::tTransactionPtr transaction);
 

@@ -146,6 +146,8 @@ void AppendOverwriteInsertButtonMenu::pushRenameScreen()
       }
     }
     animate();
+  }, [=](){
+    animate();
   });
 
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(layout);

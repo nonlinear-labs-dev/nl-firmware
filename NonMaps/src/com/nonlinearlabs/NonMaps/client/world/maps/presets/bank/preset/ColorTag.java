@@ -11,21 +11,21 @@ public class ColorTag extends ZoomReactingControl {
 
 	public enum Color {
 		green, blue, yellow, orange, purple, red, none;
-
+		
 		public RGB toRGB() {
 			switch (this) {
 			case green:
-				return new RGB(0, 255, 0);
+				return new RGB(82, 173, 69);
 			case blue:
-				return new RGB(0, 0, 255);
+				return new RGB(75, 105, 213);
 			case yellow:
-				return new RGB(255, 255, 0);
+				return new RGB(204, 197, 54);
 			case orange:
-				return new RGB(255, 126, 0);
+				return new RGB(221, 149, 55);
 			case purple:
-				return new RGB(255, 0, 255);
+				return new RGB(183, 95, 174);
 			case red:
-				return new RGB(255, 0, 0);
+				return new RGB(207, 43, 59);
 			case none:
 			default:
 				return new RGBA(0, 0, 0, 0);

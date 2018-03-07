@@ -80,7 +80,7 @@ class StorePreset extends SVGImage {
 
 	@Override
 	public Control startDragging(Position eventPoint) {
-		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(getPhase(1), getPixRect().getPosition());
+		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(getPhase(1));
 	}
 
 	@Override

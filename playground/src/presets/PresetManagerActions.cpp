@@ -140,14 +140,20 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
 
       MemoryInStream stream(xml, false);
       XmlReader reader(stream, transaction);
+      auto editBuffer = presetManager.getEditBuffer();
 
-      if(!reader.read<PresetSerializer>(presetManager.getEditBuffer().get()))
+      if(!reader.read<PresetSerializer>(editBuffer.get()))
       {
         transaction->rollBack();
         http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
       }
 
-      m_presetManager.getEditBuffer()->sendToLPC();
+      if(auto preset = m_presetManager.findPreset(editBuffer->getUuid()))
+      {
+        editBuffer->undoableSetLoadedPresetInfo(transaction, preset.get());
+      }
+
+      editBuffer->sendToLPC();
     }
   });
 
@@ -259,25 +265,15 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
   {
     if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
-      auto preset2 = Application::get().getPresetManager()->findPreset(request->get("p2"));
+      auto pm = Application::get().getPresetManager();
+      auto eb = pm->getEditBuffer();
+      auto aUUID = request->get("p1");
+      auto bUUID = request->get("p2");
+      auto a = pm->findPreset(aUUID);
+      auto b = pm->findPreset(bUUID);
 
-      if(preset1 && preset2)
-      {
-        auto stream = request->createStream("text/xml", false);
-        XmlWriter writer(stream);
-        preset1->writeDiff(writer, preset2.get());
-        return true;
-      }
-    }
-  }
-
-  if(path.find("/presets/get-diff-editbuffer") == 0)
-  {
-    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      auto preset1 = Application::get().getPresetManager()->findPreset(request->get("p1"));
-      auto preset2 = Application::get().getPresetManager()->getEditBuffer();
+      auto preset1 = a ? a : eb;
+      auto preset2 = b ? b : eb;
 
       if(preset1 && preset2)
       {

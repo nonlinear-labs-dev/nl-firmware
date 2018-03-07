@@ -5,13 +5,13 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 
 class LeftDragStart extends LeftDrag {
 
-	LeftDragStart(Gesture predecessor, Position to, boolean fine) {
-		super(predecessor, to, fine);
+	LeftDragStart(Gesture predecessor, Position from, Position to, boolean fine) {
+		super(predecessor, from, to, fine);
 	}
 
 	@Override
 	public Control applyTo(Control receiver) {
-		Control ret = receiver.startDragging(getPosition());
+		Control ret = receiver.startDragging(getStartPosition());
 
 		if (ret != null) {
 			setReceiver(receiver);

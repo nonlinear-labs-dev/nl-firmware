@@ -13,8 +13,8 @@ class TouchMove extends Drag implements NeedsFocus, HasPosition {
 
 	private ArrayList<Position> touches;
 
-	TouchMove(Gesture predecessor, JsArray<Touch> touches) {
-		super(predecessor, new Position(touches.get(0)), false);
+	TouchMove(Gesture predecessor, Position from, JsArray<Touch> touches) {
+		super(predecessor, from, new Position(touches.get(0)), false);
 		this.touches = new ArrayList<Position>();
 
 		for (int i = 0; i < touches.length(); i++) {
@@ -31,7 +31,7 @@ class TouchMove extends Drag implements NeedsFocus, HasPosition {
 	@Override
 	public Gesture onTouchMove(JsArray<Touch> touches) {
 		if (touches.length() == 1) {
-			return new TouchMove(this, touches);
+			return new TouchMove(this, getPosition(), touches);
 		} else if (touches.length() == 2) {
 			return new TouchPinchStart(this, touches);
 		}

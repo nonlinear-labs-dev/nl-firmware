@@ -46,9 +46,9 @@ public abstract class BankContextMenu extends ContextMenu {
 				public Control click(final Position eventPoint) {
 					new TextUpload(new TextUploadedHandler() {
 						@Override
-						public void onTextUploaded(String fileName, String text, int lastModified) {
+						public void onTextUploaded(String fileName, String text) {
 							NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
-							NonMaps.theMaps.getServerProxy().importBank(fileName, text, lastModified, pos);
+							NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
 						}
 					});
 					return super.click(eventPoint);

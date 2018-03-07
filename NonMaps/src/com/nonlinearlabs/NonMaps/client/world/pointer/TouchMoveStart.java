@@ -5,13 +5,14 @@ import com.google.gwt.dom.client.Touch;
 import com.google.gwt.user.client.Timer;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Position;
 
 class TouchMoveStart extends TouchMove {
 
 	private Timer longPressTimer;
 
-	TouchMoveStart(Gesture predecessor, JsArray<Touch> touches) {
-		super(predecessor, touches);
+	TouchMoveStart(Gesture predecessor, Position from, JsArray<Touch> touches) {
+		super(predecessor, from, touches);
 
 		NonMaps.theMaps.captureMouse();
 
@@ -25,7 +26,7 @@ class TouchMoveStart extends TouchMove {
 
 	@Override
 	public Gesture onTouchMove(JsArray<Touch> touches) {
-		return new TouchMove(this, touches);
+		return new TouchMove(this, getPosition(), touches);
 	}
 
 	public Gesture onLongPress() {
@@ -42,7 +43,7 @@ class TouchMoveStart extends TouchMove {
 
 	@Override
 	public Control applyTo(Control receiver) {
-		Control ret = receiver.startDragging(getPosition());
+		Control ret = receiver.startDragging(getStartPosition());
 
 		if (ret != null) {
 			setReceiver(receiver);

@@ -23,6 +23,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiato
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.MultiplePresetSelection;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
+import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
@@ -183,6 +184,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
+		Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
+		ContextMenu c = o.getContextMenu();
+
+		if (c instanceof PresetContextMenu) {
+			PresetContextMenu p = (PresetContextMenu) c;
+			if (p.getPreset() == this)
+				return true;
+		}
+
 		return uuid.equals(getParent().getPresetList().getSelectedPreset());
 	}
 
@@ -190,6 +200,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (getParent().isInStoreSelectMode()) {
 			return this == getParent().getParent().getStoreSelectMode().getOriginalPreset();
 		}
+		
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
 
@@ -218,9 +229,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (isInStoreSelectMode())
 			return null;
 
-		if (isInMultiplePresetSelectionMode() == false && isSelected() == false)
-			selectPreset();
-
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
 				.getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
@@ -246,13 +254,18 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
+	public Control mouseDown(Position eventPoint) {
+		return this;
+	}
+
+	@Override
 	public Control startDragging(Position pos) {
 		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
 			if (isInMultiplePresetSelectionMode()) {
 				return startMultipleSelectionDrag(pos);
 			}
 
-			return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this, getPixRect().getPosition());
+			return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this);
 		}
 
 		return super.startDragging(pos);
@@ -274,7 +287,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		for (String uuid : selection.getSelectedPresets()) {
 			Preset p = pm.findPreset(uuid);
 			if (p != null) {
-				DragProxy a = world.getViewport().getOverlay().addDragProxy(p, p.getPixRect().getPosition());
+				DragProxy a = world.getViewport().getOverlay().addDragProxy(p);
 				if (p == this)
 					ret = a;
 

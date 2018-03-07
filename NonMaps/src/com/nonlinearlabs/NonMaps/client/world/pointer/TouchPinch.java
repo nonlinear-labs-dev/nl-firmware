@@ -30,7 +30,7 @@ public class TouchPinch extends Gesture implements HasPosition {
 	@Override
 	public Gesture onTouchMove(JsArray<Touch> touches) {
 		if (touches.length() == 1) {
-			return new TouchMoveStart(this, touches);
+			return new TouchMoveStart(this, getPosition(), touches);
 		} else if (touches.length() == 2) {
 			return new TouchPinch(this, touches);
 		}

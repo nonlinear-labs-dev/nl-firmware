@@ -16,7 +16,7 @@ class LeftLongPress extends LongPress {
 	@Override
 	public Gesture move(boolean fine) {
 		if (getDistance(getPosition(), PointerState.get().getPosition()) > getDragHysteresis())
-			return new LeftDragStart(this, PointerState.get().getPosition(), fine);
+			return new LeftDragStart(this, getPosition(), PointerState.get().getPosition(), fine);
 
 		return this;
 	}
