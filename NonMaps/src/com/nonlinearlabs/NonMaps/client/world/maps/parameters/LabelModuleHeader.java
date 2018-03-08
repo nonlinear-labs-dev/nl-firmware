@@ -32,7 +32,7 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			addChild(new ContextMenuItem(this, "Lock all groups") {
+			addChild(new ContextMenuItem(this, "Lock all Groups") {
 				@Override
 				public Control click(Position eventPoint) {
 					lockAll();
@@ -40,7 +40,7 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			addChild(new ContextMenuItem(this, "Unlock all groups") {
+			addChild(new ContextMenuItem(this, "Unlock all Groups") {
 				@Override
 				public Control click(Position eventPoint) {
 					unlockAll();
