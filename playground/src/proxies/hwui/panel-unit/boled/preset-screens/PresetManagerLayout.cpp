@@ -16,9 +16,11 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetEditButtonMenu.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetList.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListSelectStorePosition.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
+
 #include <functional>
 #include <memory>
 #include <vector>
@@ -54,11 +56,7 @@ void PresetManagerLayout::setup()
 
   clear();
 
-  if(Application::get().getPresetManager()->getEditBuffer()->hasLocks())
-  {
-    m_groupLocking = addControl(new InvertedLabel("L", Rect(8, 26, 48, 12)));
-    m_groupLocking->setHighlight(true);
-  }
+  m_groupLocking = addControl(new AnyParameterLockedIndicator(Rect(8, 26, 48, 12)));
 
   if(m_focusAndMode.focus == UIFocus::Banks)
   {
