@@ -492,4 +492,20 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return hash;
 	}
 
+	public boolean isAnyParameterLocked() {
+		Control c = recurseChildren(new ControlFinder() {
+			@Override
+			public boolean onWayDownFound(Control ctrl) {
+				if (ctrl instanceof Parameter) {
+					Parameter p = (Parameter) ctrl;
+					if (p.isLocked()) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+
+		return c != null;
+	}
 }
