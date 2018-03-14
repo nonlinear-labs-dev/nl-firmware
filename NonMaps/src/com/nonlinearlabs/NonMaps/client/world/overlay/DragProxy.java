@@ -138,7 +138,7 @@ public class DragProxy extends OverlayControl {
 							foundControls.add(new FoundControl(p, ctrl, ranking));
 						}
 					} else if(ctrl == getOrigin()) {
-						if(ctrl.canBeDraggedOnSelf()) {
+						if(ctrl.stopDragCompletelyIfDraggedOn()) {
 							foundControls.clear();
 							return true;
 						}

@@ -307,7 +307,7 @@ public abstract class Control {
 	public void beingDropped() {
 	}
 	
-	public boolean canBeDraggedOnSelf() {
+	public boolean stopDragCompletelyIfDraggedOn() {
 		return false;
 	}
 }

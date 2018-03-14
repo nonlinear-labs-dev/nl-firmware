@@ -189,7 +189,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 	}
 	
 	@Override
-	public boolean canBeDraggedOnSelf() {
+	public boolean stopDragCompletelyIfDraggedOn() {
 		return true;
 	}
 

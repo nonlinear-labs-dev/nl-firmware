@@ -225,7 +225,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
-	public boolean canBeDraggedOnSelf() {
+	public boolean stopDragCompletelyIfDraggedOn() {
 		return true;
 	}
 	
