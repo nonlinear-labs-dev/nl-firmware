@@ -15,8 +15,6 @@ import com.nonlinearlabs.NonMaps.client.world.Name;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingVertical;
-import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
-import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Cabinet.Cabinet;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.CombFilter.CombFilter;
@@ -457,14 +455,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 	public Parameter findParameter(int parameterID) {
 		return (Parameter) findSelectable(parameterID);
-	}
-
-	public NonPosition calcBlockDiagramPosition(NonDimension dimension) {
-		double middleX = 0.5 * (synthParamsArea.getNonPosition().getRight() + playControlsArea.getNonPosition().getRight());
-		double left = middleX - 0.5 * dimension.getWidth();
-		double middleY = 0.5 * (synthParamsArea.getNonPosition().getTop() + playControlsArea.getNonPosition().getTop());
-		double top = middleY - 0.5 * dimension.getHeight();
-		return new NonPosition(left + getNonPosition().getLeft(), top + getNonPosition().getTop());
 	}
 
 	public PlayControls getPlayControls() {
