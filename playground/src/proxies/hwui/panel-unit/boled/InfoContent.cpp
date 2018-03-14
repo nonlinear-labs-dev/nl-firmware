@@ -27,10 +27,10 @@ void InfoContent::setDirty()
   notifyDirty(true);
 }
 
-InfoContent::InfoField* InfoContent::addInfoField(std::string lineIdentifier, Label* label, Control* field)
+InfoContent::InfoField* InfoContent::addInfoField(std::string lineIdentifier, Glib::ustring labelText, Control* field)
 {
-  addControl(label);
+  auto label = addControl(new SingleLineContent(labelText));
   addControl(field);
-  infoFields[lineIdentifier] = new InfoField(label, field);
-  return infoFields[lineIdentifier];
+  infoFields[lineIdentifier] = std::make_shared<InfoField>(label, field);
+  return infoFields[lineIdentifier].get();
 }
