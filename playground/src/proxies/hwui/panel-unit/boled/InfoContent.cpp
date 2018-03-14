@@ -34,3 +34,8 @@ InfoContent::InfoField* InfoContent::addInfoField(std::string lineIdentifier, Gl
   infoFields[lineIdentifier] = std::make_shared<InfoField>(label, field);
   return infoFields[lineIdentifier].get();
 }
+
+InfoContent::InfoField* InfoContent::addInfoField(std::string lineIdentifier, Glib::ustring labelText) {
+  return addInfoField(lineIdentifier, labelText, new SingleLineContent());
+}
+

@@ -101,6 +101,8 @@ class InfoContent : public Scrollable, public ControlWithChildren
     virtual void setDirty() override;
 
     InfoField* addInfoField(std::string lineIdentifier, Glib::ustring labelText, Control* field);
-  protected:
+    InfoField* addInfoField(std::string lineIdentifier, Glib::ustring labelText);
+
+protected:
     std::map<std::string, std::shared_ptr<InfoField>> infoFields;
 };

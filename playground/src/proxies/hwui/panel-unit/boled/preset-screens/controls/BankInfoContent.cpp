@@ -30,19 +30,17 @@ namespace DETAIL
     };
 }
 
-static const int divider = 64;
-
 BankInfoContent::BankInfoContent()
 {
   addInfoField("name", "Name", new MultiLineContent());
-  addInfoField("size", "Size", new SingleLineContent());
+  addInfoField("size", "Size");
   addInfoField("comment", "Comment", new MultiLineContent());
-  addInfoField("state", "State", new SingleLineContent());
-  addInfoField("dateofchange", "Last Change",  new SingleLineContent());
-  addInfoField("importdate", "Import Date", new SingleLineContent());
-  addInfoField("importfile", "Import File", new SingleLineContent());
-  addInfoField("exportdate", "Export Date", new SingleLineContent());
-  addInfoField("exportfile", "Export File", new SingleLineContent());
+  addInfoField("state", "State");
+  addInfoField("dateofchange", "Last Change");
+  addInfoField("importdate", "Import Date");
+  addInfoField("importfile", "Import File");
+  addInfoField("exportdate", "Export Date");
+  addInfoField("exportfile", "Export File");
 
 
   Application::get ().getPresetManager ()->onBankSelection (mem_fun (this, &BankInfoContent::onBankSelectionChanged));

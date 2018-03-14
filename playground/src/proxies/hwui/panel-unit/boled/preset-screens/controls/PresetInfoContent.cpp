@@ -34,9 +34,9 @@ PresetInfoContent::PresetInfoContent ()
 {
   addInfoField("name", "Name", new MultiLineContent());
   addInfoField("comment", "Comment", new MultiLineContent());
-  addInfoField("lastchange", "Last Change", new SingleLineContent());
-  addInfoField("devicename", "Device Name", new SingleLineContent());
-  addInfoField("uiversion", "UI Version", new SingleLineContent());
+  addInfoField("lastchange", "Last Change");
+  addInfoField("devicename", "Device Name");
+  addInfoField("uiversion", "UI Version");
 
   Application::get ().getPresetManager ()->onBankSelection (mem_fun (this, &PresetInfoContent::onBankChanged));
 }
