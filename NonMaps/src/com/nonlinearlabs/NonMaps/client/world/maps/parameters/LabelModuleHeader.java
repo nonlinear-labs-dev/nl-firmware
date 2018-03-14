@@ -40,13 +40,15 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			addChild(new ContextMenuItem(this, "Unlock all Groups") {
-				@Override
-				public Control click(Position eventPoint) {
-					unlockAll();
-					return super.click(eventPoint);
-				}
-			});
+			if (NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked()) {
+				addChild(new ContextMenuItem(this, "Unlock all Groups") {
+					@Override
+					public Control click(Position eventPoint) {
+						unlockAll();
+						return super.click(eventPoint);
+					}
+				});
+			}
 		}
 	}
 
