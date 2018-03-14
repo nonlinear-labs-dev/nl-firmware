@@ -956,6 +956,7 @@ public class PresetManager extends MapsLayout {
 		if (hasMultiplePresetSelection()) {
 			multiSelection = null;
 			requestLayout();
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
 	}
 
