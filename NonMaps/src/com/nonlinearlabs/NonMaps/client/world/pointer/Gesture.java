@@ -11,7 +11,7 @@ public abstract class Gesture {
 	Control receiver;
 
 	static double getDragHysteresis() {
-		return Millimeter.toPixels(2.5);
+		return Millimeter.toPixels(1.5);
 	}
 
 	interface NeedsFocus {
