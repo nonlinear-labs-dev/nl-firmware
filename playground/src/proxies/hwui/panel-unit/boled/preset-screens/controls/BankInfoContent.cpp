@@ -14,20 +14,20 @@
 
 namespace DETAIL
 {
-    class BankComment : public MultiLineLabel
-    {
+  class BankComment : public MultiLineLabel
+  {
     public:
-        BankComment(Rect pos) :
-                MultiLineLabel ("---")
-        {
-          setPosition(pos);
-        }
+      BankComment(Rect pos) :
+          MultiLineLabel("---")
+      {
+        setPosition(pos);
+      }
 
-        Oleds::tFont getFont ()
-        {
-          return Oleds::get ().getFont ("Emphase_8_TXT_Regular", 8);
-        }
-    };
+      Oleds::tFont getFont()
+      {
+        return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
+      }
+  };
 }
 
 BankInfoContent::BankInfoContent()
@@ -42,36 +42,35 @@ BankInfoContent::BankInfoContent()
   addInfoField("exportdate", "Export Date");
   addInfoField("exportfile", "Export File");
 
-
-  Application::get ().getPresetManager ()->onBankSelection (mem_fun (this, &BankInfoContent::onBankSelectionChanged));
+  Application::get().getPresetManager()->onBankSelection(mem_fun(this, &BankInfoContent::onBankSelectionChanged));
 
   fillFromBank(Application::get().getPresetManager()->getSelectedBank().get());
 }
 
-BankInfoContent::~BankInfoContent ()
+BankInfoContent::~BankInfoContent()
 {
 }
 
-void BankInfoContent::onBankSelectionChanged (shared_ptr<PresetBank> bank)
+void BankInfoContent::onBankSelectionChanged(shared_ptr<PresetBank> bank)
 {
-  m_bankConnection.disconnect ();
+  m_bankConnection.disconnect();
 
-  if (bank)
-    m_bankConnection = bank->onBankChanged (sigc::bind (mem_fun (this, &BankInfoContent::onBankChanged), bank));
+  if(bank)
+    m_bankConnection = bank->onBankChanged(sigc::bind(mem_fun(this, &BankInfoContent::onBankChanged), bank));
 }
 
-void BankInfoContent::onBankChanged (shared_ptr<PresetBank> bank)
+void BankInfoContent::onBankChanged(shared_ptr<PresetBank> bank)
 {
-  if (bank)
+  if(bank)
   {
-    if(fillFromBank (bank.get ()))
+    if(fillFromBank(bank.get()))
     {
-      fixLayout ();
+      fixLayout();
     }
   }
-  else if (fillDefaults ())
+  else if(fillDefaults())
   {
-    fixLayout ();
+    fixLayout();
   }
 }
 
@@ -89,7 +88,7 @@ bool BankInfoContent::fillFromBank(PresetBank *bank)
   return true;
 }
 
-bool BankInfoContent::fillDefaults ()
+bool BankInfoContent::fillDefaults()
 {
   infoFields["name"]->setInfo("---", FrameBuffer::Colors::C128);
   infoFields["comment"]->setInfo("---", FrameBuffer::Colors::C128);
@@ -103,36 +102,33 @@ bool BankInfoContent::fillDefaults ()
   return true;
 }
 
-void BankInfoContent::setPosition (const Rect &rect)
+void BankInfoContent::setPosition(const Rect &rect)
 {
-  super::setPosition (rect);
-  fixLayout ();
+  super::setPosition(rect);
+  fixLayout();
 }
 
-const Rect &BankInfoContent::getPosition () const
+const Rect &BankInfoContent::getPosition() const
 {
-  return super::getPosition ();
+  return super::getPosition();
 }
 
-void BankInfoContent::setDirty ()
+void BankInfoContent::setDirty()
 {
-  super::setDirty ();
-  notifyDirty (true);
+  super::setDirty();
+  notifyDirty(true);
 }
 
-void BankInfoContent::fixLayout ()
+void BankInfoContent::fixLayout()
 {
-
   int y = 0;
 
-  for(auto info :
-          { infoFields["name"], infoFields["comment"], infoFields["size"], infoFields["state"], infoFields["dateofchange"],
-            infoFields["importdate"], infoFields["importfile"], infoFields["exportdate"], infoFields["exportfile"] })
+  for(auto infoKey : { "name", "comment", "size", "state", "dateofchange", "importdate", "importfile", "exportdate", "exportfile" })
   {
-    y = info->format(y);
+    y = infoFields[infoKey]->format(y);
   }
 
-  Rect r = getPosition ();
-  r.setHeight (y);
-  super::setPosition (r);
+  Rect r = getPosition();
+  r.setHeight(y);
+  super::setPosition(r);
 }

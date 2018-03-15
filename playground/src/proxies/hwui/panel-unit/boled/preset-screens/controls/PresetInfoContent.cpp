@@ -16,21 +16,21 @@ namespace DETAIL
   class PresetComment : public MultiLineLabel
   {
     public:
-      PresetComment () :
-          MultiLineLabel ("---")
+      PresetComment() :
+          MultiLineLabel("---")
       {
       }
 
-      Oleds::tFont getFont ()
+      Oleds::tFont getFont()
       {
-        return Oleds::get ().getFont ("Emphase_8_TXT_Regular", 8);
+        return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
       }
   };
 }
 
 static const int divider = 64;
 
-PresetInfoContent::PresetInfoContent ()
+PresetInfoContent::PresetInfoContent()
 {
   addInfoField("name", "Name", new MultiLineContent());
   addInfoField("comment", "Comment", new MultiLineContent());
@@ -38,72 +38,70 @@ PresetInfoContent::PresetInfoContent ()
   addInfoField("devicename", "Device Name");
   addInfoField("uiversion", "UI Version");
 
-  Application::get ().getPresetManager ()->onBankSelection (mem_fun (this, &PresetInfoContent::onBankChanged));
+  Application::get().getPresetManager()->onBankSelection(mem_fun(this, &PresetInfoContent::onBankChanged));
 }
 
-PresetInfoContent::~PresetInfoContent ()
+PresetInfoContent::~PresetInfoContent()
 {
 }
 
-void PresetInfoContent::onBankChanged (shared_ptr<PresetBank> bank)
+void PresetInfoContent::onBankChanged(shared_ptr<PresetBank> bank)
 {
-  m_bankConnection.disconnect ();
+  m_bankConnection.disconnect();
 
   if(bank)
-    m_bankConnection = bank->onBankChanged (mem_fun (this, &PresetInfoContent::onPresetSelectionChanged));
+    m_bankConnection = bank->onBankChanged(mem_fun(this, &PresetInfoContent::onPresetSelectionChanged));
 }
 
-void PresetInfoContent::onPresetSelectionChanged ()
+void PresetInfoContent::onPresetSelectionChanged()
 {
-  if (auto preset = getCurrentPreset ())
+  if(auto preset = getCurrentPreset())
   {
-    connectToPreset (preset);
+    connectToPreset(preset);
   }
-  else if (fillDefaults ())
+  else if(fillDefaults())
   {
-    fixLayout ();
+    fixLayout();
   }
 }
 
-void PresetInfoContent::connectToPreset (Preset* preset)
+void PresetInfoContent::connectToPreset(Preset* preset)
 {
-  m_presetConnection.disconnect ();
-  m_presetConnection = preset->onPresetChanged (mem_fun (this, &PresetInfoContent::onPresetChanged));
+  m_presetConnection.disconnect();
+  m_presetConnection = preset->onPresetChanged(mem_fun(this, &PresetInfoContent::onPresetChanged));
 }
 
-void PresetInfoContent::onPresetChanged ()
+void PresetInfoContent::onPresetChanged()
 {
-  if (auto preset = getCurrentPreset ())
+  if(auto preset = getCurrentPreset())
   {
-    if (fillFromPreset (preset))
+    if(fillFromPreset(preset))
     {
-      fixLayout ();
+      fixLayout();
     }
   }
 }
 
-Preset *PresetInfoContent::getCurrentPreset ()
+Preset *PresetInfoContent::getCurrentPreset()
 {
-  if (auto bank = Application::get ().getPresetManager ()->getSelectedBank ())
-    return bank->getPreset (bank->getSelectedPreset ()).get ();
+  if(auto bank = Application::get().getPresetManager()->getSelectedBank())
+    return bank->getPreset(bank->getSelectedPreset()).get();
 
   return nullptr;
 }
 
-bool PresetInfoContent::fillFromPreset (const Preset *preset)
+bool PresetInfoContent::fillFromPreset(const Preset *preset)
 {
-  infoFields["name"]->setInfo(preset->getName (), FrameBuffer::Colors::C128);
-  infoFields["comment"]->setInfo(preset->getAttribute ("Comment", "---"), FrameBuffer::Colors::C128);
+  infoFields["name"]->setInfo(preset->getName(), FrameBuffer::Colors::C128);
+  infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
-  infoFields["devicename"]->setInfo(preset->getAttribute ("DeviceName", "---"));
-  infoFields["uiversion"]->setInfo(preset->getAttribute ("SoftwareVersion", "---"));
-
+  infoFields["devicename"]->setInfo(preset->getAttribute("DeviceName", "---"));
+  infoFields["uiversion"]->setInfo(preset->getAttribute("SoftwareVersion", "---"));
   return true;
 }
 
-bool PresetInfoContent::fillDefaults ()
+bool PresetInfoContent::fillDefaults()
 {
-
   infoFields["name"]->setInfo("---", FrameBuffer::Colors::C128);
   infoFields["comment"]->setInfo("---", FrameBuffer::Colors::C128);
   infoFields["lastchange"]->setInfo("---");
@@ -112,14 +110,16 @@ bool PresetInfoContent::fillDefaults ()
   return true;
 }
 
-void PresetInfoContent::fixLayout ()
+void PresetInfoContent::fixLayout()
 {
   int y = 0;
-  for(auto info: {infoFields["name"], infoFields["comment"], infoFields["lastchange"], infoFields["devicename"], infoFields["uiversion"]}) {
-    y = info->format(y);
+
+  for(auto infoKey : { "name", "comment", "lastchange", "devicename", "uiversion" })
+  {
+    y = infoFields[infoKey]->format(y);
   }
 
-  Rect r = getPosition ();
-  r.setHeight (y);
-  super::setPosition (r);
+  Rect r = getPosition();
+  r.setHeight(y);
+  super::setPosition(r);
 }
