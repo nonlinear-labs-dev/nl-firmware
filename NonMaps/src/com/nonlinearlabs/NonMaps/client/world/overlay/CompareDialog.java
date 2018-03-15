@@ -68,7 +68,7 @@ public class CompareDialog extends GWTDialog {
 		if(p2 == null)
 			addHeader("Compare Preset to Edit Buffer");
 		else
-			addHeader("Compare 2 Presets");
+			addHeader("Compare two Presets");
 		
 		load(p1, p2);
 	}
