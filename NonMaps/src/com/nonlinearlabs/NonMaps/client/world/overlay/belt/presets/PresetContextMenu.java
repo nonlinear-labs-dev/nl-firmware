@@ -35,7 +35,7 @@ public class PresetContextMenu extends ContextMenu {
 					if (pm.hasMultiplePresetSelection())
 						pm.closeMultiSelection();
 					else
-						pm.startMultiSelection(preset);
+						pm.startMultiSelection(preset, false);
 					return super.click(eventPoint);
 				}
 			});

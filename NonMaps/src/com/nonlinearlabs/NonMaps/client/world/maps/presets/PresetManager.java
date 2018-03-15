@@ -942,8 +942,11 @@ public class PresetManager extends MapsLayout {
 		return multiSelection != null;
 	}
 
-	public MultiplePresetSelection startMultiSelection(Preset p) {
-		multiSelection = new MultiplePresetSelection(p);
+	public MultiplePresetSelection startMultiSelection(Preset p, boolean shiftModifier) {
+		if(shiftModifier)
+			multiSelection = new ShiftMultiplePresetSelection(p);
+		else
+			multiSelection = new MultiplePresetSelection(p);
 		return getMultiSelection();
 	}
 
