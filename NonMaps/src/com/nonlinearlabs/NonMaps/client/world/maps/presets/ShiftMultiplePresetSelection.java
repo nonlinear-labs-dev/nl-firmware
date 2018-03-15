@@ -11,12 +11,8 @@ public class ShiftMultiplePresetSelection extends MultiplePresetSelection {
 	
 	public void toggle(Preset p) {
 		if(NonMaps.get().getNonLinearWorld().isShiftDown()) {
-			if (contains(p))
-				selectedPresets.remove(p.getUUID());
-			else
-				selectedPresets.add(p.getUUID());
+			super.toggle(p);
 		} else {
-			clear();
 			NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
 			p.select();
 		}
