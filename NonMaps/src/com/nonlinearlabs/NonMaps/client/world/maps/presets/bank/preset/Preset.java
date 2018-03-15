@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
@@ -214,11 +213,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
+			getParent().getParent().startMultiSelection(this, true);
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		} else if (isInStoreSelectMode() || !isSelected()) {
 			selectPreset();
-		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
-			getParent().getParent().startMultiSelection(this);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		} else if (isSelected()) {
 			load();
 		}
