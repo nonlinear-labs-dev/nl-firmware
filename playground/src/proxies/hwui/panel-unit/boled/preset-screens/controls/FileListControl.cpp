@@ -69,13 +69,3 @@ int FileListControl::getSelectedIndex() const
   return selectedItem;
 }
 
-bool FileListControl::redraw(FrameBuffer &fb)
-{
-  ControlWithChildren::redraw(fb);
-
-  fb.setColor(FrameBuffer::Colors::C128);
-  const Rect &r = getPosition();
-  fb.drawRect(r.getLeft() + 1, r.getTop() + 1, r.getWidth(), r.getHeight());
-
-  return true;
-}

@@ -26,5 +26,4 @@ class FileListControl : public ControlWithChildren
     void changeSelection(int change);
     fs::directory_entry getSelection() const;
     int getSelectedIndex() const;
-    bool redraw(FrameBuffer &fb) override;
 };
