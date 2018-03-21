@@ -391,8 +391,10 @@ public class SearchQueryDialog extends GWTDialog {
 		if (theDialog != null) {
 			theDialog.commit();
 		} else {
-			if (!NonMaps.theMaps.getNonLinearWorld().getPresetManager().isEmpty())
+			if (!NonMaps.theMaps.getNonLinearWorld().getPresetManager().isEmpty()) {
 				theDialog = new SearchQueryDialog();
+				theDialog.pushDialogToFront();
+			}
 		}
 	}
 
