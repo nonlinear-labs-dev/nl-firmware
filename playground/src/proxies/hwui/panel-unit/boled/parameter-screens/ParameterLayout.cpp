@@ -111,8 +111,17 @@ bool ParameterSelectLayout2::onButton (int i, bool down, ButtonModifiers modifie
     switch(i)
     {
       case BUTTON_D:
-        if (m_carousel)
-          m_carousel->turn ();
+        if(m_carousel)
+        {
+          if(modifiers[SHIFT] == 1)
+          {
+            m_carousel->antiTurn ();
+          }
+          else
+          {
+            m_carousel->turn ();
+          }
+        }
 
         return true;
 
@@ -152,15 +161,12 @@ bool ParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers
     {
       if (BUTTON_D == i)
       {
-        m_menu->toggle ();
+        if(modifiers[SHIFT] == 1)
+          m_menu->antiToggle();
+        else
+          m_menu->toggle ();
         return true;
       }
-      if (modifiers[SHIFT] == 1 && BUTTON_D == i)
-      {
-        m_menu->antiToggle();
-        return true;
-      }
-
       if (BUTTON_ENTER == i)
       {
         m_menu->doAction ();

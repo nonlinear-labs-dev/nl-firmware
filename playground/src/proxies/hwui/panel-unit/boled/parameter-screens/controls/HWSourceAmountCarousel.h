@@ -15,6 +15,7 @@ class HWSourceAmountCarousel : public Carousel
     virtual ~HWSourceAmountCarousel ();
 
     virtual void turn () override;
+    virtual void antiTurn () override;
     void setHighlight (bool isHighlight) override;
     void highlightSelected ();
 
