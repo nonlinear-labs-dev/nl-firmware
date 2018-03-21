@@ -10,6 +10,7 @@ AnyParameterLockedIndicator::AnyParameterLockedIndicator(const Rect &pos) :
     m_calcHasLocks(1, std::bind(&AnyParameterLockedIndicator::calcHasLocks, this))
 {
   setFontColor (FrameBuffer::C43);
+  setVisible(false);
   Application::get().getPresetManager()->getEditBuffer()->onLocksChanged(sigc::mem_fun(this, &AnyParameterLockedIndicator::update));
   update();
 }
