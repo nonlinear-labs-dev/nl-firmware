@@ -27,7 +27,8 @@ void HWSourceAmountCarousel::turn ()
     p->toggleUiSelectedHardwareSource ();
 }
 
-void HWSourceAmountCarousel::antiTurn() {
+void HWSourceAmountCarousel::antiTurn() 
+{
   if (auto p = dynamic_cast<MacroControlParameter*> (Application::get ().getPresetManager ()->getEditBuffer ()->getSelected ()))
     p->toggleUiSelectedHardwareSource (-1);
 }
