@@ -85,6 +85,24 @@ void ParameterCarousel::setupChildControls (Parameter* selectedParameter, const 
   }
 }
 
+void ParameterCarousel::antiTurn() {
+
+  auto foundCtrl = dynamic_pointer_cast<MiniParameter>(*getControls().rbegin());
+  forEach(ControlOwner::tIfCallback([&] (tControlPtr ctrl) -> bool
+  {
+    if (auto p = dynamic_pointer_cast < MiniParameter > (ctrl))
+    {
+      if(p->isSelected())
+      {
+        Application::get ().getPresetManager ()->getEditBuffer ()->undoableSelectParameter (to_string (foundCtrl->getParameter ()->getID ()));
+        return false;
+      }
+      foundCtrl = p;
+    }
+    return true;
+  }));
+}
+
 void ParameterCarousel::turn ()
 {
   bool found = false;

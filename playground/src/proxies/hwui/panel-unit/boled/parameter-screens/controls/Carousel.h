@@ -15,6 +15,7 @@ class Carousel : public ControlWithChildren
     virtual ~Carousel ();
 
     virtual void turn () = 0;
+    virtual void antiTurn ();
     virtual void setup (Parameter *selectedParameter) = 0;
 
   protected:

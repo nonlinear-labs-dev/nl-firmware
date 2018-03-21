@@ -111,8 +111,17 @@ bool ParameterSelectLayout2::onButton (int i, bool down, ButtonModifiers modifie
     switch(i)
     {
       case BUTTON_D:
-        if (m_carousel)
-          m_carousel->turn ();
+        if(m_carousel)
+        {
+          if(modifiers[SHIFT] == 1)
+          {
+            m_carousel->antiTurn ();
+          }
+          else
+          {
+            m_carousel->turn ();
+          }
+        }
 
         return true;
 

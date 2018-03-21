@@ -42,6 +42,26 @@ void ModulationCarousel::turn ()
   getControls().front()->setHighlight(true);
 }
 
+void ModulationCarousel::antiTurn() {
+
+  auto foundCtrl = *getControls().begin();
+
+  if(foundCtrl->isHighlight()) {
+    foundCtrl->setHighlight(false);
+    getControls().back()->setHighlight(true);
+  }
+
+  for(auto c : getControls())
+  {
+    if(c->isHighlight())
+    {
+      foundCtrl->setHighlight(true);
+      c->setHighlight(false);
+    }
+    foundCtrl = c;
+  }
+}
+
 bool ModulationCarousel::onRotary (int inc, ButtonModifiers modifiers)
 {
   for(auto c : getControls())

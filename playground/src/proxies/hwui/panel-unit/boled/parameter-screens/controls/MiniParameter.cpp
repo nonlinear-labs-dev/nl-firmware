@@ -25,6 +25,11 @@ Parameter * MiniParameter::getParameter ()
   return m_param;
 }
 
+const Parameter * MiniParameter::getParameter () const {
+  return m_param;
+}
+
+
 void MiniParameter::setSelected (bool selected)
 {
   m_label->setSelected (selected);
