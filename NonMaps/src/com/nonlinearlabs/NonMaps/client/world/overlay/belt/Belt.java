@@ -209,11 +209,6 @@ public class Belt extends OverlayLayout {
 	}
 
 	@Override
-	public int getDragRating(Position newPoint, DragProxy dragProxy) {
-		return 10000;
-	}
-
-	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof EditBufferDraggingButton || dragProxy.getOrigin() instanceof IPreset)
 			return this;

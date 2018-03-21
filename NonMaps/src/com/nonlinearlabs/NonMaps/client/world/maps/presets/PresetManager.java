@@ -368,7 +368,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	@Override
-	public Control drag(Position pos, DragProxy dragProxy) {
+	public Control drag(Rect r, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
 			return this;
 		}
@@ -381,7 +381,7 @@ public class PresetManager extends MapsLayout {
 			return this;
 		}
 
-		return super.drag(pos, dragProxy);
+		return super.drag(r, dragProxy);
 	}
 
 	public void updateMultipleRectangle(Position pos) {
@@ -943,7 +943,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public MultiplePresetSelection startMultiSelection(Preset p, boolean shiftModifier) {
-		if(shiftModifier)
+		if (shiftModifier)
 			multiSelection = new ShiftMultiplePresetSelection(p);
 		else
 			multiSelection = new MultiplePresetSelection(p);

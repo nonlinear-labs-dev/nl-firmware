@@ -274,13 +274,6 @@ public class Header extends Label {
 		return super.drag(pos, dragProxy);
 	}
 
-	@Override
-	public int getDragRating(Position newPoint, DragProxy dragProxy) {
-		if (getPixRect().contains(newPoint))
-			return super.getDragRating(newPoint, dragProxy) * 100;
-		return 0;
-	}
-
 	private void setIsDropTarget(boolean isDropTarget) {
 		if (this.isDropTarget != isDropTarget) {
 			this.isDropTarget = isDropTarget;
