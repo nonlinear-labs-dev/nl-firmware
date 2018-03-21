@@ -25,7 +25,8 @@ Parameter * MiniParameter::getParameter ()
   return m_param;
 }
 
-const Parameter * MiniParameter::getParameter () const {
+const Parameter * MiniParameter::getParameter () const
+{
   return m_param;
 }
 
