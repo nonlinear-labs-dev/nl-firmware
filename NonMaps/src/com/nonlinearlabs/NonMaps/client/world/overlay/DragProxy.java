@@ -1,7 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -104,69 +106,88 @@ public class DragProxy extends OverlayControl {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, final Position newPoint, boolean fine) {
-
-		AutoScrollDirection desiredAutoScrollDirection = getDesiredAutoScrollDirection(newPoint);
-
-		if (desiredAutoScrollDirection != currentAutoScrollDirection) {
-			setAutoScrolling(desiredAutoScrollDirection);
-		}
+		doAutoScrolling(newPoint);
 
 		double xDiff = newPoint.getX() - oldPoint.getX();
 		double yDiff = newPoint.getY() - oldPoint.getY();
 		NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().moveDragProxies(xDiff, yDiff);
-
 		getOrigin().beingDragged(xDiff, yDiff);
 
-		ArrayList<FoundControl> foundControls = new ArrayList<FoundControl>();
+		if (tryHandlingByMousePosition(newPoint))
+			return this;
 
-		for (DragProxy p : NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
+		if (tryHandlingByDragProxyRects())
+			return this;
+
+		setReceiver(null, null);
+		return this;
+	}
+
+	private boolean tryHandlingByDragProxyRects() {
+		Set<Control> receivers = new HashSet<Control>();
+
+		for (DragProxy p : NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
 			NonMaps.theMaps.getNonLinearWorld().recurseChildren(p.getPixRect(), new ControlFinder() {
 				@Override
 				public boolean onWayUpFound(Control ctrl) {
-					boolean isDragProxy = ctrl instanceof DragProxy;
-
-					if (ctrl != getOrigin() && !isDragProxy) {
-
-						for (FoundControl a : foundControls) {
-							if (a.ctrl == ctrl) {
-								return false;
-							}
-						}
-
-						int ranking = ctrl.getDragRating(newPoint, p);
-						if (ranking >= 0) {
-							foundControls.add(new FoundControl(p, ctrl, ranking));
-						}
-					} else if(ctrl == getOrigin()) {
-						if(ctrl.stopDragCompletelyIfDraggedOn()) {
-							foundControls.clear();
-							return true;
-						}
+					if (!ctrl.isDraggingControl() && (!(ctrl instanceof DragProxy))) {
+						receivers.add(ctrl);
 					}
 					return false;
 				}
 			});
 		}
 
-		foundControls.sort(new Comparator<FoundControl>() {
+		Control[] candidates = receivers.toArray(new Control[0]);
+		Arrays.sort(candidates, new Comparator<Control>() {
 
 			@Override
-			public int compare(FoundControl o1, FoundControl o2) {
-				return o2.ranking - o1.ranking;
+			public int compare(Control o1, Control o2) {
+				return o2.getDepth() - o1.getDepth();
 			}
 		});
 
-		for (FoundControl f : foundControls) {
-			Control r = f.ctrl.drag(newPoint, f.proxy);
-			if (r != null) {
-				setReceiver(r, f.proxy);
-				return this;
-			} else {
+		for (Control c : candidates) {
+			for (DragProxy p : NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
+				if (c.getPixRect().intersects(p.getPixRect())) {
+					Control r = c.drag(p.getPixRect(), p);
+					if (r != null) {
+						setReceiver(r, p);
+						return true;
+					}
+				}
 			}
 		}
 
-		setReceiver(null, null);
-		return this;
+		return false;
+	}
+
+	public boolean tryHandlingByMousePosition(final Position newPoint) {
+		Control p = NonMaps.theMaps.getNonLinearWorld().recurseChildren(newPoint, new ControlFinder() {
+			@Override
+			public boolean onWayUpFound(Control ctrl) {
+				boolean isDragProxy = ctrl instanceof DragProxy;
+
+				if (ctrl != getOrigin() && !isDragProxy) {
+					Control r = ctrl.drag(newPoint, DragProxy.this);
+					if (r != null) {
+						setReceiver(r, DragProxy.this);
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+
+		return p != null;
+	}
+
+	public void doAutoScrolling(final Position newPoint) {
+		AutoScrollDirection desiredAutoScrollDirection = getDesiredAutoScrollDirection(newPoint);
+
+		if (desiredAutoScrollDirection != currentAutoScrollDirection) {
+			setAutoScrolling(desiredAutoScrollDirection);
+		}
 	}
 
 	public void moveProxy(double xDiff, double yDiff) {
