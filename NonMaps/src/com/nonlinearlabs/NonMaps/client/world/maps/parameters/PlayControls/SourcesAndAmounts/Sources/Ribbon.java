@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
@@ -7,7 +7,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationRoutingP
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PhysicalControlParameter;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings.MacroControlMappings;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.SourcesAndAmounts;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.RibbonContextMenu;
@@ -70,7 +70,7 @@ public abstract class Ribbon extends PhysicalControlParameter {
 
 	private void onRibbonModeChanged() {
 		ParameterEditor eddi = (ParameterEditor) getSelectionRoot();
-		MacroControlMappings mappings = (MacroControlMappings) eddi.findParameterGroup("MCM");
+		SourcesAndAmounts mappings = (SourcesAndAmounts) eddi.findParameterGroup("MCM");
 		mappings.onReturningModeChanged(this);
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}

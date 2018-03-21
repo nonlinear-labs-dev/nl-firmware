@@ -1,12 +1,12 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts;
 
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationRoutingParameter;
 
-class MacroControlMappingCol4 extends MacroControlMappingCol {
+public class AmountsCol4 extends AmountsCol {
 
-	MacroControlMappingCol4(MapsLayout parent) {
+	public AmountsCol4(MapsLayout parent) {
 		super(parent);
 		addChild(new ModulationRoutingParameter(this, 258, 254, 246) {
 			@Override
