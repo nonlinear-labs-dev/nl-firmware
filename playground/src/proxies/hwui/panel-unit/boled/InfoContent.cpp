@@ -59,7 +59,8 @@ void InfoContent::InfoField::setInfo(Glib::ustring text, FrameBuffer::Colors c)
 {
   if(auto label = dynamic_cast<SingleLineContent*>(m_content))
   {
-    label->setText(text, c);
+    label->setFontColor(c);
+    label->setText(text);
   }
   else if(auto multiLineLabel = dynamic_cast<MultiLineContent*>(m_content))
   {
@@ -73,7 +74,7 @@ void InfoContent::InfoField::setInfo(Glib::ustring text, FrameBuffer::Colors c)
 
 void InfoContent::InfoField::setInfo(Glib::ustring text)
 {
-  setInfo(text, FrameBuffer::Colors::C103);
+  setInfo(text, FrameBuffer::Colors::C128);
 }
 
 int InfoContent::InfoField::format(int y)
