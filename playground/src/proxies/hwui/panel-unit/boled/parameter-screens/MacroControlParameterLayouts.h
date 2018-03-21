@@ -20,7 +20,6 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
       MacroControlValue, PlayControlPosition, PlayControlSelection, PlayControlAmount
     };
 
-
     void toggleMode (Mode desiredMode);
     virtual void setMode (Mode desiredMode);
     Mode getMode () const;
@@ -57,6 +56,7 @@ class MacroControlParameterEditLayout2 : public ParameterEditLayout2, public Mac
     MacroControlParameterEditLayout2 ();
 
   protected:
+    virtual void setMode (Mode desiredMode) override;
     virtual bool onButton (int i, bool down, ButtonModifiers modifiers) override;
     virtual ButtonMenu *createMenu (const Rect &rect) override;
 };
