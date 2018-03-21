@@ -161,15 +161,12 @@ bool ParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers
     {
       if (BUTTON_D == i)
       {
-        m_menu->toggle ();
+        if(modifiers[SHIFT] == 1)
+          m_menu->antiToggle();
+        else
+          m_menu->toggle ();
         return true;
       }
-      if (modifiers[SHIFT] == 1 && BUTTON_D == i)
-      {
-        m_menu->antiToggle();
-        return true;
-      }
-
       if (BUTTON_ENTER == i)
       {
         m_menu->doAction ();
