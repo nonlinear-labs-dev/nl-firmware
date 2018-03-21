@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -33,8 +34,10 @@ public class ContextMenuItem extends OverlayControl {
 
 	@Override
 	public Control click(Position eventPoint) {
-		if (isEnabled())
-			getParent().fadeOut();
+		if (isEnabled()) {
+			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
+			o.removeExistingContextMenus();
+		}
 
 		return this;
 	}
