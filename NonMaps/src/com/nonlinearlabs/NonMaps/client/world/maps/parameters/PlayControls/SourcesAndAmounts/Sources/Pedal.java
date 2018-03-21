@@ -1,11 +1,11 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PhysicalControlParameter;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings.MacroControlMappings;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.SourcesAndAmounts;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.PedalContextMenu;
 
@@ -49,7 +49,7 @@ public abstract class Pedal extends PhysicalControlParameter {
 
 	private void onPedalModeChanged() {
 		ParameterEditor eddi = (ParameterEditor) getSelectionRoot();
-		MacroControlMappings mappings = (MacroControlMappings) eddi.findParameterGroup("MCM");
+		SourcesAndAmounts mappings = (SourcesAndAmounts) eddi.findParameterGroup("MCM");
 		mappings.onReturningModeChanged(this);
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}

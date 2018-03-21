@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupControls;

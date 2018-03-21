@@ -9,7 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings.MacroControlMappings;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.SourcesAndAmounts;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
@@ -77,7 +77,7 @@ public class LabelModuleHeader extends LabelSmall {
 		NonMaps.get().getServerProxy().toggleGroupLock(getParent().getID());
 	}
 
-	public LabelModuleHeader(MacroControlMappings parent, String text) {
+	public LabelModuleHeader(SourcesAndAmounts parent, String text) {
 		super(parent, text);
 	}
 

@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
@@ -6,9 +6,9 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationRoutingP
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PhysicalControlParameter;
 
-public class MacroControlMappingCol extends ParameterColumn {
+public class AmountsCol extends ParameterColumn {
 
-	public MacroControlMappingCol(MapsLayout parent) {
+	public AmountsCol(MapsLayout parent) {
 		super(parent);
 	}
 
