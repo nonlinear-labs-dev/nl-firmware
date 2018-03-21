@@ -791,7 +791,7 @@ const Glib::ustring PresetBank::calcStateString() const
 void PresetBank::undoableAssignDefaultPosition(shared_ptr<UNDO::Transaction> transaction)
 {
   auto xy = calcDefaultPosition();
-  undoableMovePosition(transaction, xy.first, xy.second);
+  undoableSetPosition(transaction, std::to_string(xy.first), std::to_string(xy.second));
 }
 
 void PresetBank::assignDefaultPosition()
