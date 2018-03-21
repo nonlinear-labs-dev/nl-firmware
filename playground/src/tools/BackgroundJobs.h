@@ -59,7 +59,6 @@ public:
             BackgroundJob(cb), fileFilter(filter)
     {
       it = std::experimental::filesystem::recursive_directory_iterator(fs::path(dir.c_str()));
-      start();
     }
 
     bool iterate() override

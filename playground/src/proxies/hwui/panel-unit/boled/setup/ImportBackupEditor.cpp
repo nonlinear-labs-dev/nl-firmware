@@ -141,5 +141,5 @@ void ImportBackupEditor::importBackup()
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(
           new FileDialogLayout(&ImportBackupEditor::filterApplicableFileNames,
                                &ImportBackupEditor::importBackupFileFromPath,
-                               "Backup File"));
+                               "Select Backup for Restore"));
 }
