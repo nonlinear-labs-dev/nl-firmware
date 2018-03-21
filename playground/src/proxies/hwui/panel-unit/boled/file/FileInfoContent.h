@@ -3,12 +3,11 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/Scrollable.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MultiLineLabel.h>
 #include <experimental/filesystem>
+#include <proxies/hwui/panel-unit/boled/InfoContent.h>
 
 
-class FileInfoContent : public ControlWithChildren, public Scrollable
+class FileInfoContent : public InfoContent
 {
-  private:
-    using super = ControlWithChildren;
   public:
     FileInfoContent(std::experimental::filesystem::directory_entry file);
     ~FileInfoContent() = default;
@@ -17,9 +16,8 @@ class FileInfoContent : public ControlWithChildren, public Scrollable
     const Rect &getPosition() const override;
     void setDirty() override;
 
-  protected:
-    virtual Rect getScrollableAreaRect() const;
-  private:
+    void fixLayout();
+ private:
     void initializeFileInfosFromFile();
     std::experimental::filesystem::directory_entry m_file;
 };
