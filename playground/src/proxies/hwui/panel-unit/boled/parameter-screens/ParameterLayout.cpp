@@ -142,7 +142,6 @@ ParameterEditLayout2::ParameterEditLayout2 () :
 
 ParameterEditLayout2::~ParameterEditLayout2 ()
 {
-
 }
 
 void ParameterEditLayout2::init ()
@@ -151,6 +150,11 @@ void ParameterEditLayout2::init ()
 
   if ((m_menu = createMenu (Rect (195, 1, 58, 62))))
     addControl (m_menu);
+}
+
+ButtonMenu *ParameterEditLayout2::getMenu ()
+{
+  return m_menu;
 }
 
 bool ParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
