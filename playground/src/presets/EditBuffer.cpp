@@ -38,7 +38,13 @@ EditBuffer::~EditBuffer()
 
 void EditBuffer::resetModifiedIndicator(UNDO::Scope::tTransactionPtr transaction)
 {
-  auto swap = UNDO::createSwapData(false, getHash());
+  resetModifiedIndicator(transaction, getHash());
+
+}
+
+void EditBuffer::resetModifiedIndicator(UNDO::Scope::tTransactionPtr transaction, size_t hash)
+{
+  auto swap = UNDO::createSwapData(false, hash);
 
   transaction->addSimpleCommand([=](UNDO::Command::State)
   {
@@ -317,13 +323,13 @@ void EditBuffer::undoableLoad(UNDO::Scope::tTransactionPtr transaction, shared_p
   }
 
   lpc->toggleSuppressParameterChanges(transaction);
-  resetModifiedIndicator(transaction);
+  resetModifiedIndicator(transaction, preset->getHash());
 }
 
 void EditBuffer::copyFrom(UNDO::Scope::tTransactionPtr transaction, Preset *other, bool ignoreUUIDs)
 {
   super::copyFrom(transaction, other, ignoreUUIDs);
-  resetModifiedIndicator(transaction);
+  resetModifiedIndicator(transaction, other->getHash());
 }
 
 void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transaction, Preset *preset)
