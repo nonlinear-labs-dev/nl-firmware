@@ -44,14 +44,7 @@ void ModulationCarousel::turn ()
 
 void ModulationCarousel::antiTurn() 
 {
-  auto foundCtrl = *getControls().begin();
-
-  if(foundCtrl->isHighlight()) 
-  {
-    foundCtrl->setHighlight(false);
-    getControls().back()->setHighlight(true);
-    return;
-  }
+  auto foundCtrl = *getControls().rbegin();
 
   for(auto c : getControls())
   {
