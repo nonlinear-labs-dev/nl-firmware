@@ -6,8 +6,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationRoutingP
 public class RibbonModulationRoutingButton extends ModulationRoutingButton {
 
 	public RibbonModulationRoutingButton(ModulationRoutingParameter parent) {
-		super(parent, "BB_Buttons_1.8_Control_Through_BiDi_Disabled.svg", "BB_Buttons_1.8_Control_Through_BiDi_Enabled.svg",
-				"BB_Buttons_1.8_Control_Through_BiDi_Active.svg");
-	}
-
+		super(parent, "Control_Through_BiDi_Disabled.svg", "Control_Through_BiDi_Enabled.svg",
+				"Control_Through_BiDi_Active.svg");
+	}	
 }

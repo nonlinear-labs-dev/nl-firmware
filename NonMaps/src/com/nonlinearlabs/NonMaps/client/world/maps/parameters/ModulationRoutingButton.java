@@ -6,10 +6,10 @@ import com.nonlinearlabs.NonMaps.client.world.maps.SVGImage;
 public class ModulationRoutingButton extends SVGImage {
 
 	public ModulationRoutingButton(ModulationRoutingParameter parent) {
-		this(parent, "BB_Buttons_1.8_Control_Through_Disabled.svg", "BB_Buttons_1.8_Control_Through_Enabled.svg",
-				"BB_Buttons_1.8_Control_Through_Active.svg");
+		this(parent, "Control_Through_Disabled.svg", "Control_Through_Enabled.svg",
+				"Control_Through_Active.svg");
 	}
-
+	
 	public ModulationRoutingButton(ModulationRoutingParameter parent, String... images) {
 		super(parent, images);
 	}
