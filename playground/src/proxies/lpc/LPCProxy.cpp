@@ -423,15 +423,6 @@ void LPCProxy::wroteData (Glib::RefPtr<Gio::AsyncResult> &result)
   writePendingData ();
 }
 
-bool LPCProxy::isFlushed() const
-{
-  if(m_queueToLPC.empty())
-  {
-    return !m_outStream->has_pending();
-  }
-  return false;
-}
-
 void LPCProxy::installLPCPoller ()
 {
   if (Application::get ().getSettings ()->getSetting<SendPresetAsLPCWriteFallback> ()->get ())

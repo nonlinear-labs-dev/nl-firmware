@@ -69,8 +69,6 @@ class LPCProxy
     void requestLPCSoftwareVersion();
     int getLPCSoftwareVersion() const;
 
-    bool isFlushed() const;
-
   private:
     void onMessageReceived (const MessageParser::NLMessage &msg);
 
