@@ -20,7 +20,6 @@ class RotaryEncoder
     typedef signed char tIncrement;
 
     void fake (tIncrement amount);
-    void stress();
 
     sigc::connection onRotaryChanged (function<void (tIncrement)> slot);
 
@@ -32,7 +31,6 @@ class RotaryEncoder
     void readRotary (Glib::RefPtr<Gio::FileInputStream> stream);
     void onRotaryFileRead (Glib::RefPtr<Gio::AsyncResult>& result, Glib::RefPtr<Gio::FileInputStream> stream);
     tIncrement speedUp (tIncrement inc);
-    void sendOutIncrements();
 
     Signal<void, tIncrement> m_signalRotaryChanged;
     RefPtr<Gio::Cancellable> m_readersCancel;

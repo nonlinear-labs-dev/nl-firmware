@@ -48,22 +48,6 @@ void RotaryEncoder::readRotary(Glib::RefPtr<Gio::FileInputStream> stream)
   stream->read_bytes_async(1, sigc::bind(sigc::mem_fun(this, &RotaryEncoder::onRotaryFileRead), stream), m_readersCancel);
 }
 
-void RotaryEncoder::sendOutIncrements()
-{
-  m_throttler.doTask([this]()
-  {
-    if (abs(m_accumulatedIncs) > 0)
-    {
-      m_accumulatedIncs = std::min(m_accumulatedIncs, 10);
-      m_accumulatedIncs = std::max(m_accumulatedIncs, -10);
-      auto factor = Application::get().getSettings()->getSetting<EncoderAcceleration>()->get();
-      auto squaredIncs = m_accumulatedIncs * m_accumulatedIncs;
-      m_signalRotaryChanged.send(factor * squaredIncs + m_accumulatedIncs);
-    }
-    m_accumulatedIncs = 0;
-  });
-}
-
 void RotaryEncoder::onRotaryFileRead(Glib::RefPtr<Gio::AsyncResult>& result, Glib::RefPtr<Gio::FileInputStream> stream)
 {
   Glib::RefPtr < Glib::Bytes > bytes = stream->read_bytes_finish(result);
@@ -80,7 +64,20 @@ void RotaryEncoder::onRotaryFileRead(Glib::RefPtr<Gio::AsyncResult>& result, Gli
       m_accumulatedIncs = 0;
 
     m_accumulatedIncs += currentInc;
-    sendOutIncrements();
+
+    m_throttler.doTask([this]()
+    {
+      if (abs(m_accumulatedIncs) > 0)
+      {
+        m_accumulatedIncs = std::min(m_accumulatedIncs, 10);
+        m_accumulatedIncs = std::max(m_accumulatedIncs, -10);
+        auto factor = Application::get().getSettings()->getSetting<EncoderAcceleration>()->get();
+        int sign = m_accumulatedIncs < 0 ? -1 : 1;
+        m_signalRotaryChanged.send (factor * sign * m_accumulatedIncs * m_accumulatedIncs);
+      }
+      m_accumulatedIncs = 0;
+    });
+
     readRotary(stream);
   }
   else
@@ -94,16 +91,6 @@ void RotaryEncoder::fake(tIncrement i)
   m_signalRotaryChanged.send(i);
 }
 
-void RotaryEncoder::stress()
-{
-  m_stress = Glib::MainContext::get_default()->signal_timeout().connect([this]()
-  {
-    m_accumulatedIncs += g_random_int_range(-2, 3);
-    sendOutIncrements();
-    return true;
-  }, 10);
-}
-
 sigc::connection RotaryEncoder::onRotaryChanged(function<void(tIncrement)> slot)
 {
   return m_signalRotaryChanged.connect(slot);
@@ -111,5 +98,4 @@ sigc::connection RotaryEncoder::onRotaryChanged(function<void(tIncrement)> slot)
 
 void RotaryEncoder::registerTests()
 {
-
 }

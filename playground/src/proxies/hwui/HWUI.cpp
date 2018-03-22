@@ -166,10 +166,6 @@ void HWUI::onKeyboardLineRead (Glib::RefPtr<Gio::AsyncResult> &res)
       {
         Application::get().getPresetManager()->stress(1000);
       }
-      else if (line == "stress-rotary")
-      {
-        m_panelUnit.getEditPanel ().getKnob ().stress();
-      }
       else if (line.at (0) == '!')
       {
         onButtonPressed (BUTTON_SHIFT, true);
