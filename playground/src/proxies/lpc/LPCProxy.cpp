@@ -148,6 +148,7 @@ void LPCProxy::onLPCDataRead (Glib::RefPtr<Gio::InputStream> stream, Glib::RefPt
       m_msgParser.reset (new MessageParser ());
 
     size_t numBytesNeeded = m_msgParser->parse (buffer, numBytes);
+
     if (numBytesNeeded == 0)
     {
       onMessageReceived (std::move (m_msgParser->getMessage ()));
@@ -401,7 +402,7 @@ void LPCProxy::traceBytes (const RefPtr<Bytes> bytes) const
 
 void LPCProxy::wroteData (Glib::RefPtr<Gio::AsyncResult> &result)
 {
-  DebugLevel::gassy ("wrote pending data");
+  DebugLevel::info ("wrote pending data");
 
   try
   {
@@ -420,6 +421,15 @@ void LPCProxy::wroteData (Glib::RefPtr<Gio::AsyncResult> &result)
 
   m_writingData = false;
   writePendingData ();
+}
+
+bool LPCProxy::isFlushed() const
+{
+  if(m_queueToLPC.empty())
+  {
+    return !m_outStream->has_pending();
+  }
+  return false;
 }
 
 void LPCProxy::installLPCPoller ()
