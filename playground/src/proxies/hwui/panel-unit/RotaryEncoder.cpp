@@ -57,8 +57,7 @@ void RotaryEncoder::sendOutIncrements()
       m_accumulatedIncs = std::min(m_accumulatedIncs, 10);
       m_accumulatedIncs = std::max(m_accumulatedIncs, -10);
       double factor = Application::get().getSettings()->getSetting<EncoderAcceleration>()->get();
-      int sign = m_accumulatedIncs < 0 ? -1 : 1;
-      m_signalRotaryChanged.send(factor * sign * m_accumulatedIncs * m_accumulatedIncs);
+      m_signalRotaryChanged.send(factor * m_accumulatedIncs);
     }
     m_accumulatedIncs = 0;
   });
