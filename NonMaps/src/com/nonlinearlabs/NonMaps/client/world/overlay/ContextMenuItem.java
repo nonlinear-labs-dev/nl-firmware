@@ -38,14 +38,13 @@ public class ContextMenuItem extends OverlayControl {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 			o.removeExistingContextMenus();
 		}
-
 		return this;
 	}
 
 	public boolean isEnabled() {
 		return enabled;
 	}
-
+	
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
