@@ -153,9 +153,7 @@ public class PresetManager extends MapsLayout {
 				if (child.getNodeName().equals("banks"))
 					updateBanks(child);
 			}
-
-			refreshFilter(false);
-
+			
 			Preset newPresetSelection = getSelectedPreset();
 
 			if (oldPresetSelection != newPresetSelection) {
@@ -714,7 +712,7 @@ public class PresetManager extends MapsLayout {
 			refreshFilter(true);
 		}
 	}
-
+	
 	private void refreshFilter(final boolean autoZoom) {
 		if (this.query.isEmpty()) {
 			clearFilter();
