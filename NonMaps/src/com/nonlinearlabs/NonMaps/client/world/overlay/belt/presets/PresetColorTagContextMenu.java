@@ -43,6 +43,7 @@ public class PresetColorTagContextMenu extends ContextMenu {
 				public Control click(Position eventPoint) {
 					setColor(c);
 					NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
+					endMultiSelection();
 					return super.click(eventPoint);
 				}
 

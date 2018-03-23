@@ -51,6 +51,7 @@ public class PresetContextMenu extends ContextMenu {
 						preset.selectPreset();
 						PresetInfoDialog.toggle();
 						invalidate(INVALIDATION_FLAG_UI_CHANGED);
+						endMultiSelection();
 						return super.click(eventPoint);
 					}
 				});
@@ -60,6 +61,9 @@ public class PresetContextMenu extends ContextMenu {
 				@Override
 				public Control click(Position eventPoint) {
 					RenameDialog.open(preset);
+
+					endMultiSelection();
+
 					return super.click(eventPoint);
 				}
 			});
@@ -68,6 +72,9 @@ public class PresetContextMenu extends ContextMenu {
 				@Override
 				public Control click(Position eventPoint) {
 					getNonMaps().getServerProxy().cutPreset(preset);
+
+					endMultiSelection();
+
 					return super.click(eventPoint);
 				}
 			});
@@ -76,6 +83,9 @@ public class PresetContextMenu extends ContextMenu {
 				@Override
 				public Control click(Position eventPoint) {
 					getNonMaps().getServerProxy().copyPreset(preset);
+
+					endMultiSelection();
+					
 					return super.click(eventPoint);
 				}
 			});
@@ -85,6 +95,9 @@ public class PresetContextMenu extends ContextMenu {
 					@Override
 					public Control click(Position eventPoint) {
 						getNonMaps().getServerProxy().pasteOnPreset(preset);
+						
+						endMultiSelection();
+						
 						return super.click(eventPoint);
 					}
 				});
@@ -114,6 +127,9 @@ public class PresetContextMenu extends ContextMenu {
 					Preset p1 = pm.findPreset(selPresets.get(0));
 					Preset p2 = pm.findPreset(selPresets.get(1));
 					CompareDialog.open(p1, p2);
+					
+					endMultiSelection();
+					
 					return super.click(eventPoint);
 				}
 			});
@@ -122,6 +138,9 @@ public class PresetContextMenu extends ContextMenu {
 				@Override
 				public Control click(Position eventPoint) {
 					CompareDialog.open(preset);
+					
+					endMultiSelection();
+					
 					return super.click(eventPoint);
 				}
 			});

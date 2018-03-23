@@ -126,7 +126,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		boolean selected = isSelected();
+		boolean selected = isSelected() | isContextMenuActiveOnMe();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
 		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
@@ -184,6 +184,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
+		return uuid.equals(getParent().getPresetList().getSelectedPreset());
+	}
+	
+	public boolean isContextMenuActiveOnMe() {
 		Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
 		ContextMenu c = o.getContextMenu();
 
@@ -192,8 +196,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			if (p.getPreset() == this)
 				return true;
 		}
-
-		return uuid.equals(getParent().getPresetList().getSelectedPreset());
+		return false;
 	}
 
 	public boolean isLoaded() {
