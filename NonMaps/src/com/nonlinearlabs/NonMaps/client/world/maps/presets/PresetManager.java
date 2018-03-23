@@ -159,6 +159,9 @@ public class PresetManager extends MapsLayout {
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
 			}
+			
+			if(NonMaps.get().getNonLinearWorld().getParameterEditor().isModified() == false)
+				refreshFilter(false);
 
 			RenameDialog.onPresetManagerUpdate(this);
 		}
