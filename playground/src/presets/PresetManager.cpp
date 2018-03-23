@@ -282,7 +282,6 @@ void PresetManager::undoableSelectPrevious()
 
       theOneBefore = currentBank;
     }
-
     undoableSelectBank(getBank(0)->getUuid());
   }
 }
