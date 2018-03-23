@@ -14,6 +14,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.PresetContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 
 public class PresetContextMenu extends ContextMenu {
@@ -45,72 +46,57 @@ public class PresetContextMenu extends ContextMenu {
 
 			if (!PresetInfoDialog.isShown()) {
 				String presetInfoText = "Preset Info ...";
-				addChild(new ContextMenuItem(this, presetInfoText) {
+				addChild(new PresetContextMenuItem(this, presetInfoText) {
 					@Override
 					public Control click(Position eventPoint) {
 						preset.selectPreset();
 						PresetInfoDialog.toggle();
 						invalidate(INVALIDATION_FLAG_UI_CHANGED);
-						endMultiSelection();
 						return super.click(eventPoint);
 					}
 				});
 			}
 
-			addChild(new ContextMenuItem(this, "Rename ...") {
+			addChild(new PresetContextMenuItem(this, "Rename ...") {
 				@Override
 				public Control click(Position eventPoint) {
 					RenameDialog.open(preset);
-
-					endMultiSelection();
-
 					return super.click(eventPoint);
 				}
 			});
 
-			addChild(new ContextMenuItem(this, "Cut") {
+			addChild(new PresetContextMenuItem(this, "Cut") {
 				@Override
 				public Control click(Position eventPoint) {
 					getNonMaps().getServerProxy().cutPreset(preset);
-
-					endMultiSelection();
-
 					return super.click(eventPoint);
 				}
 			});
 
-			addChild(new ContextMenuItem(this, "Copy") {
+			addChild(new PresetContextMenuItem(this, "Copy") {
 				@Override
 				public Control click(Position eventPoint) {
-					getNonMaps().getServerProxy().copyPreset(preset);
-
-					endMultiSelection();
-					
+					getNonMaps().getServerProxy().copyPreset(preset);				
 					return super.click(eventPoint);
 				}
 			});
 
 			if (getNonMaps().getNonLinearWorld().getClipboardManager().getClipboardState() != ClipboardContent.empty) {
-				addChild(new ContextMenuItem(this, "Paste") {
+				addChild(new PresetContextMenuItem(this, "Paste") {
 					@Override
 					public Control click(Position eventPoint) {
-						getNonMaps().getServerProxy().pasteOnPreset(preset);
-						
-						endMultiSelection();
-						
+						getNonMaps().getServerProxy().pasteOnPreset(preset);						
 						return super.click(eventPoint);
 					}
 				});
 			}
 		}
 
-		addChild(new ContextMenuItem(this, "Delete") {
+		addChild(new PresetContextMenuItem(this, "Delete") {
 			@Override
 			public Control click(Position eventPoint) {
 				if (hasMultipleSelection) {
 					getNonMaps().getServerProxy().deletePresets(pm.getMultiSelection().getCSV());
-					pm.getMultiSelection().clear();
-					pm.closeMultiSelection();
 				} else {
 					getNonMaps().getServerProxy().deletePreset(preset);
 				}
@@ -119,7 +105,7 @@ public class PresetContextMenu extends ContextMenu {
 		});
 
 		if (hasMultipleSelection && pm.getMultiSelection().getNumSelectedPresets() == 2) {
-			addChild(new ContextMenuItem(this, "Compare ...") {
+			addChild(new PresetContextMenuItem(this, "Compare ...") {
 				@Override
 				public Control click(Position eventPoint) {
 
@@ -127,20 +113,15 @@ public class PresetContextMenu extends ContextMenu {
 					Preset p1 = pm.findPreset(selPresets.get(0));
 					Preset p2 = pm.findPreset(selPresets.get(1));
 					CompareDialog.open(p1, p2);
-					
-					endMultiSelection();
-					
+										
 					return super.click(eventPoint);
 				}
 			});
 		} else if (hasMultipleSelection == false) {
-			addChild(new ContextMenuItem(this, "Compare to Editbuffer ...") {
+			addChild(new PresetContextMenuItem(this, "Compare to Editbuffer ...") {
 				@Override
 				public Control click(Position eventPoint) {
-					CompareDialog.open(preset);
-					
-					endMultiSelection();
-					
+					CompareDialog.open(preset);					
 					return super.click(eventPoint);
 				}
 			});

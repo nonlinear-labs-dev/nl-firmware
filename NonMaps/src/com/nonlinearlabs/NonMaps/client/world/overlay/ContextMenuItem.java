@@ -11,7 +11,6 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.pointer.PointerState;
 
 public class ContextMenuItem extends OverlayControl {
@@ -44,14 +43,6 @@ public class ContextMenuItem extends OverlayControl {
 
 	public boolean isEnabled() {
 		return enabled;
-	}
-
-	public void endMultiSelection() {
-		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
-		
-		if (pm.hasMultiplePresetSelection()) {
-			pm.closeMultiSelection();
-		}
 	}
 	
 	@Override

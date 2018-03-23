@@ -126,7 +126,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		boolean selected = isSelected() | isContextMenuActiveOnMe();
+		boolean selected = isSelected() || isContextMenuActiveOnMe();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
 		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
