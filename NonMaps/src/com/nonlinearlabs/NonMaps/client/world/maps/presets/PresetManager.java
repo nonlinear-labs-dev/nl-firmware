@@ -141,6 +141,8 @@ public class PresetManager extends MapsLayout {
 
 	public void update(Node presetManagerNode) {
 
+		boolean shouldUpdateFilter = false;
+		
 		if (ServerProxy.didChange(presetManagerNode)) {
 			readPlaygroundFileVersion(presetManagerNode);
 
@@ -151,7 +153,7 @@ public class PresetManager extends MapsLayout {
 				Node child = children.item(i);
 
 				if (child.getNodeName().equals("banks"))
-					updateBanks(child);
+					shouldUpdateFilter = updateBanks(child) || shouldUpdateFilter;
 			}
 			
 			Preset newPresetSelection = getSelectedPreset();
@@ -160,7 +162,7 @@ public class PresetManager extends MapsLayout {
 				onPresetSelectionChanged(newPresetSelection);
 			}
 			
-			if(NonMaps.get().getNonLinearWorld().getParameterEditor().isModified() == false)
+			if(shouldUpdateFilter)
 				refreshFilter(false);
 
 			RenameDialog.onPresetManagerUpdate(this);
@@ -205,7 +207,9 @@ public class PresetManager extends MapsLayout {
 		}
 	}
 
-	private void updateBanks(Node banks) {
+	private boolean updateBanks(Node banks) {
+		boolean banksChanged = false;
+		
 		clearDockingRelations();
 
 		ArrayList<MapsControl> currentChildren = new ArrayList<MapsControl>();
@@ -222,6 +226,7 @@ public class PresetManager extends MapsLayout {
 			Node bank = bankList.item(i);
 			if (bank.getNodeName().equals("preset-bank")) {
 				Renameable ui = updateBank(bank);
+				banksChanged = ServerProxy.didChange(bank) || banksChanged;
 				currentChildren.remove(ui);
 			}
 		}
@@ -231,6 +236,8 @@ public class PresetManager extends MapsLayout {
 
 		if (BankInfoDialog.isShown())
 			BankInfoDialog.update();
+		
+		return banksChanged;
 	}
 
 	private void clearDockingRelations() {
