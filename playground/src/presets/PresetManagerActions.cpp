@@ -21,6 +21,7 @@
 #include <tools/StringTools.h>
 #include <device-settings/Settings.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
+#include <proxies/lpc/LPCProxy.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
     RPCActionManager("/presets/"),
@@ -140,6 +141,9 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
       auto transaction = scope->getTransaction();
       auto xml = http->get("xml", "");
 
+      auto lpc = Application::get().getLPCProxy();
+      lpc->toggleSuppressParameterChanges(transaction);
+
       MemoryInStream stream(xml, false);
       XmlReader reader(stream, transaction);
       auto editBuffer = presetManager.getEditBuffer();
@@ -158,7 +162,8 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
         presetManager.undoableSelectBank(transaction, preset->getBank()->getUuid());
       }
 
-      editBuffer->undoableSendToLPC(transaction);
+      //editBuffer->undoableSendToLPC(transaction);
+      lpc->toggleSuppressParameterChanges(transaction);
     }
   });
 
