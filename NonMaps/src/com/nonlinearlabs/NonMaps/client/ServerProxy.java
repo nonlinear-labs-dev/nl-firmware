@@ -326,7 +326,9 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset-with-editbuffer");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()));
 		queueJob(uri, false);
-		RenameDialog.awaitNewPreset(actionAnchor.getUUID());
+		
+		if(actionAnchor.getUUID() != nonMaps.getNonLinearWorld().getParameterEditor().getLoadedPresetUUID())	
+			RenameDialog.awaitNewPreset(actionAnchor.getUUID());
 	}
 
 	public void deletePreset(IPreset preset) {
