@@ -496,4 +496,13 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 		return c != null;
 	}
+	
+	public boolean areAllParametersLocked()
+	{
+		for(Parameter p: parameterMap.values()) {
+			if(p.isLocked() == false)
+				return false;
+		}
+		return true;
+	}
 }
