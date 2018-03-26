@@ -314,7 +314,14 @@ BankActions::BankActions(PresetManager &presetManager) :
         {
           if(auto tgtPreset = tgtBank->getPreset (presetToOverwrite))
           {
-            auto name = guessNameBasedOnEditBuffer();
+
+            Glib::ustring name = tgtPreset->getName();
+
+            auto ebUUID = Application::get().getPresetManager()->getEditBuffer()->getUuid();
+
+            if(ebUUID != presetToOverwrite)
+              name = guessNameBasedOnEditBuffer();
+
             size_t anchorPos = tgtBank->getPresetPosition (presetToOverwrite);
             UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0'", tgtPreset->getName());
             auto transaction = scope->getTransaction();
