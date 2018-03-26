@@ -158,7 +158,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
         presetManager.undoableSelectBank(transaction, preset->getBank()->getUuid());
       }
 
-      editBuffer->sendToLPC();
+      editBuffer->undoableSendToLPC(transaction);
     }
   });
 

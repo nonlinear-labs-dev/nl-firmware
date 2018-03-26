@@ -572,6 +572,12 @@ void EditBuffer::sendToLPC()
   Application::get().getLPCProxy()->sendEditBuffer();
 }
 
+void EditBuffer::undoableSendToLPC(UNDO::Scope::tTransactionPtr transaction) {
+  transaction->addSimpleCommand([](UNDO::Command::State s){
+    Application::get().getLPCProxy()->sendEditBuffer();
+  });
+}
+
 void EditBuffer::undoableUnlockAllGroups(UNDO::Scope::tTransactionPtr transaction)
 {
   for(auto group : getParameterGroups())

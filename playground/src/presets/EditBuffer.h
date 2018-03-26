@@ -68,6 +68,7 @@ class EditBuffer : public Preset
     Glib::ustring exportReaktorPreset ();
     bool isModified () const;
     void sendToLPC ();
+    void undoableSendToLPC(UNDO::Scope::tTransactionPtr transaction);
     bool isSelectedPresetLoadedAndUnModified();
 
   private:
