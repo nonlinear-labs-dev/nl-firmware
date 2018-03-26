@@ -5,7 +5,6 @@ import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -106,7 +105,7 @@ public class FloatingWindowHeader extends OverlayLayout {
 	public Control startDragging(Position pos) {
 		return this;
 	}
-	
+		
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
 		getParent().getRelativePosition().moveBy(newPoint.getX() - oldPoint.getX(), newPoint.getY() - oldPoint.getY());
@@ -135,10 +134,10 @@ public class FloatingWindowHeader extends OverlayLayout {
 		Rect relPosition = getParent().getRelativePosition();
 		double left = relPosition.getLeft() ;
 		
-		if (left < minX - relPosition.getWidth() / 2)
+		if (left < (minX - (relPosition.getWidth() / 2)))
 			relPosition.moveTo(minX - relPosition.getWidth() / 2, relPosition.getTop());
 
-		if (left - relPosition.getWidth() / 2 > maxX)
+		if ((left - (relPosition.getWidth() / 2)) > maxX)
 			relPosition.moveTo(maxX + relPosition.getWidth() / 2, relPosition.getTop());
 	}
 
