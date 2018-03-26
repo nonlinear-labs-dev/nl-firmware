@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 import com.google.gwt.event.dom.client.HasAllTouchHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
@@ -193,6 +194,30 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 	protected void onDetach() {
 		NonMaps.theMaps.unregisterScreenResizeListener(this);
 		super.onDetach();
+	}
+	
+	@Override
+	protected void endDragging(MouseUpEvent event)
+	{
+		int marginW = getOffsetWidth() / 2;
+		int marginH = 40;
+
+		
+		int leftMargin = -(getOffsetWidth() - marginW);
+		int lowerMargin = Window.getClientHeight() - marginH;
+		int rightMargin = Window.getClientWidth() - marginW;
+		int upperMargin = 0;
+		
+		if (getAbsoluteLeft() > rightMargin) 
+			setPopupPosition(rightMargin, getPopupTop()); 
+		if (getAbsoluteLeft() < leftMargin) 
+			setPopupPosition(leftMargin, getPopupTop()); 
+		if(getAbsoluteTop() > lowerMargin) 
+			setPopupPosition(getPopupLeft(), lowerMargin);
+		if (getAbsoluteTop() < upperMargin) 
+			setPopupPosition(getPopupLeft(), upperMargin);
+		
+		super.endDragging(event);
 	}
 
 }
