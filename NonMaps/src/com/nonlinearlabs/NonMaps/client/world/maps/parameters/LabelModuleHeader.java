@@ -32,15 +32,21 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			addChild(new ContextMenuItem(this, "Lock all Groups") {
-				@Override
-				public Control click(Position eventPoint) {
-					lockAll();
-					return super.click(eventPoint);
-				}
-			});
+			boolean isAnyParameterLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked();
+			boolean areAllParametersLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().areAllParametersLocked();
+			
+			
+			if(!areAllParametersLocked) {
+				addChild(new ContextMenuItem(this, "Lock all Groups") {
+					@Override
+					public Control click(Position eventPoint) {
+						lockAll();
+						return super.click(eventPoint);
+					}
+				});
+			}
 
-			if (NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked()) {
+			if (isAnyParameterLocked) {
 				addChild(new ContextMenuItem(this, "Unlock all Groups") {
 					@Override
 					public Control click(Position eventPoint) {
