@@ -33,6 +33,7 @@ class RotaryEncoder
 
     Signal<void, tIncrement> m_signalRotaryChanged;
     Throttler m_throttler;
-
     int m_accumulatedIncs = 0;
+
+    sigc::connection m_stress;
 };

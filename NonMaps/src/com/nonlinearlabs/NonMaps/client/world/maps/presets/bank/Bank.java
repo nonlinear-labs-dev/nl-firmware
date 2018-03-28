@@ -165,13 +165,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	@Override
-	public int getDragRating(Position newPoint, DragProxy dragProxy) {
-		if (getPixRect().contains(newPoint))
-			return super.getDragRating(newPoint, dragProxy) * 10000;
-		return 0;
-	}
-
-	@Override
 	public void dragLeave() {
 		dragPosition = null;
 		currentDropAction = DropAction.NONE;
@@ -180,23 +173,21 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		if (dragProxy.getPixRect().contains(pos)) {
-			if (!isDraggingControl()) {
-				for (Control c : presetList.getChildren()) {
-					if (c instanceof IPreset) {
-						Rect presetRect = c.getPixRect();
+		if (!isDraggingControl()) {
+			for (Control c : presetList.getChildren()) {
+				if (c instanceof IPreset) {
+					Rect presetRect = c.getPixRect();
 
-						if (presetRect.contains(pos) || presetRect.contains(new Position(pos.getX(), pos.getY() - toYPixels(getPadding())))
-								|| presetRect.contains(new Position(pos.getX(), pos.getY() + toYPixels(getPadding())))) {
+					if (presetRect.contains(pos) || presetRect.contains(new Position(pos.getX(), pos.getY() - toYPixels(getPadding())))
+							|| presetRect.contains(new Position(pos.getX(), pos.getY() + toYPixels(getPadding())))) {
 
-							currentDropAction = getDropAction(pos, dragProxy);
-							currentDropPreset = (IPreset) c;
+						currentDropAction = getDropAction(pos, dragProxy);
+						currentDropPreset = (IPreset) c;
 
-							if (currentDropAction != DropAction.NONE) {
-								dragPosition = pos;
-								invalidate(INVALIDATION_FLAG_UI_CHANGED);
-								return this;
-							}
+						if (currentDropAction != DropAction.NONE) {
+							dragPosition = pos;
+							invalidate(INVALIDATION_FLAG_UI_CHANGED);
+							return this;
 						}
 					}
 				}

@@ -9,7 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings.MacroControlMappings;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.SourcesAndAmounts;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
@@ -32,15 +32,21 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			addChild(new ContextMenuItem(this, "Lock all Groups") {
-				@Override
-				public Control click(Position eventPoint) {
-					lockAll();
-					return super.click(eventPoint);
-				}
-			});
+			boolean isAnyParameterLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked();
+			boolean areAllParametersLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().areAllParametersLocked();
+			
+			
+			if(!areAllParametersLocked) {
+				addChild(new ContextMenuItem(this, "Lock all Groups") {
+					@Override
+					public Control click(Position eventPoint) {
+						lockAll();
+						return super.click(eventPoint);
+					}
+				});
+			}
 
-			if (NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked()) {
+			if (isAnyParameterLocked) {
 				addChild(new ContextMenuItem(this, "Unlock all Groups") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -77,7 +83,7 @@ public class LabelModuleHeader extends LabelSmall {
 		NonMaps.get().getServerProxy().toggleGroupLock(getParent().getID());
 	}
 
-	public LabelModuleHeader(MacroControlMappings parent, String text) {
+	public LabelModuleHeader(SourcesAndAmounts parent, String text) {
 		super(parent, text);
 	}
 

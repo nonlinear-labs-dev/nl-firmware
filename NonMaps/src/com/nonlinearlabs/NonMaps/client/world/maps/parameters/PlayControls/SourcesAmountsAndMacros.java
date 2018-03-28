@@ -2,19 +2,19 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SpacerLarge;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources.Pedal;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings.MacroControlMappings;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.SourcesAndAmounts;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 
-class MappingAndMacros extends LayoutResizingVertical {
+class SourcesAmountsAndMacros extends LayoutResizingVertical {
 
 	private Macros macros;
-	private MacroControlMappings mcm;
+	private SourcesAndAmounts mcm;
 
-	MappingAndMacros(PlayControls parent) {
+	SourcesAmountsAndMacros(PlayControls parent) {
 		super(parent);
 
-		addChild(mcm = new MacroControlMappings(this));
+		addChild(mcm = new SourcesAndAmounts(this));
 		addChild(new SpacerLarge(parent));
 		macros = addChild(new Macros(this));
 	}

@@ -11,25 +11,26 @@
 #include <proxies/hwui/panel-unit/PanelUnitPresetMode.h>
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
 
-
-
-FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
-                                   std::string header) :
-    DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()), commitFunction(cb), m_header(header), crawler("/mnt/usb-stick/", filter, [ = ](){
-
-        auto fl = crawler.copyData();
-        fileCount = fl.size();
-        fileList->setFileList(fl);
-        updateLabels();
+FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header) :
+    DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()),
+    commitFunction(cb),
+    m_header(header),
+    crawler("/mnt/usb-stick/", filter, [ = ]()
+    {
+      auto fl = crawler.copyData();
+      fileCount = fl.size();
+      fileList->setFileList(fl);
+      updateLabels();
     })
 
 {
   fileCount = 0;
   fileList = addControl(new FileListControl());
-  headerLabel = addControl(new InvertedLabel(header, Rect(1, 0, 200, 14)));
-  fileList->setPosition(Rect(0, 15, 200, 48));
-  positionLabel = addControl(new Label("", Rect(210, 0, 40, 12)));
+  headerLabel = addControl(new InvertedLabel(header, Rect(0, 0, 200, 14)));
+  fileList->setPosition(Rect(0, 14, 200, 50));
+  positionLabel = addControl(new Label("", Rect(200, 0, 56, 14)));
   updateLabels();
+  crawler.start();
 }
 
 FileDialogLayout::~FileDialogLayout()
@@ -42,28 +43,27 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
   auto hwui = Application::get().getHWUI();
   auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
 
-  if (down)
+  if(down)
   {
-    switch (i)
+    switch(i)
     {
-    case BUTTON_ENTER:
-      try
-      {
-        commitFunction(getSelectedFile());
-      }
-      catch (...)
-      {
-        DebugLevel::error(__FILE__, __LINE__);
-      }
-      return true;
-    case BUTTON_PRESET:
-        hwui->undoableSetFocusAndMode(
-      { UIFocus::Banks, UIMode::Select });
-      return true;
-    case BUTTON_INFO:
-      if (fileCount > 0)
-        overlayInfo();
-      return true;
+      case BUTTON_ENTER:
+        try
+        {
+          commitFunction(getSelectedFile());
+        }
+        catch(...)
+        {
+          DebugLevel::error(__FILE__, __LINE__);
+        }
+        return true;
+      case BUTTON_PRESET:
+        hwui->undoableSetFocusAndMode( { UIFocus::Banks, UIMode::Select });
+        return true;
+      case BUTTON_INFO:
+        if(fileCount > 0)
+          overlayInfo();
+        return true;
     }
   }
   return Application::get().getHWUI()->getPanelUnit().getUsageMode()->onButtonPressed(i, modifiers, down);
@@ -86,7 +86,7 @@ bool FileDialogLayout::onRotary(int inc, ButtonModifiers modifiers)
 
 void FileDialogLayout::updateLabels()
 {
-  if (fileCount != 0)
+  if(fileCount != 0)
     positionLabel->setText("[" + std::to_string(fileList->getSelectedIndex() + 1) + "/" + std::to_string(fileCount) + "]");
   else
     positionLabel->setText("[0/0]");
@@ -96,3 +96,13 @@ std::experimental::filesystem::directory_entry FileDialogLayout::getSelectedFile
 {
   return fileList->getSelection();
 }
+
+bool FileDialogLayout::redraw(FrameBuffer &fb)
+{
+  DFBLayout::redraw(fb);
+  fb.setColor(FrameBuffer::Colors::C128);
+  Rect r(0, 0, 200, 64);
+  fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
+  return true;
+}
+

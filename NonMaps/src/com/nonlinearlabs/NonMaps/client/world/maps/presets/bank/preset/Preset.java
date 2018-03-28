@@ -126,7 +126,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		boolean selected = isSelected();
+		boolean selected = isSelected() || isContextMenuActiveOnMe();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
 		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
 
@@ -184,6 +184,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
+		return uuid.equals(getParent().getPresetList().getSelectedPreset());
+	}
+	
+	public boolean isContextMenuActiveOnMe() {
 		Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
 		ContextMenu c = o.getContextMenu();
 
@@ -192,15 +196,14 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			if (p.getPreset() == this)
 				return true;
 		}
-
-		return uuid.equals(getParent().getPresetList().getSelectedPreset());
+		return false;
 	}
 
 	public boolean isLoaded() {
 		if (getParent().isInStoreSelectMode()) {
 			return this == getParent().getParent().getStoreSelectMode().getOriginalPreset();
 		}
-		
+
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
 
@@ -225,11 +228,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
-	public boolean stopDragCompletelyIfDraggedOn() {
-		return true;
-	}
-	
-	@Override
 	public Control onContextMenu(Position pos) {
 		if (isInStoreSelectMode())
 			return null;
@@ -238,10 +236,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				.getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-			
+
 			boolean isInMultiSel = isSelectedInMultiplePresetSelectionMode();
-			
-			if(isInMultiSel || (!isInMultiSel && !isInMultiplePresetSelectionMode()))
+
+			if (isInMultiSel || (!isInMultiSel && !isInMultiplePresetSelectionMode()))
 				return o.setContextMenu(pos, new PresetContextMenu(o, this));
 		}
 		return this;
@@ -257,11 +255,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
-	
+
 	private boolean isSelectedInMultiplePresetSelectionMode() {
 		MultiplePresetSelection mp = getParent().getParent().getMultiSelection();
-		if(mp != null)
-		{
+		if (mp != null) {
 			return mp.getSelectedPresets().contains(this.getUUID());
 		}
 		return false;

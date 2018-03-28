@@ -148,10 +148,12 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		double walkerX = sliderLeft;
 
+		double modAndParamValueYValue = h / 2.3;
+		
 		for (HarmonicLayouter.Result r : layouter.layout(sliderWidth)) {
 			if (r.record.attached != null) {
 				OverlayControl c = (OverlayControl) r.record.attached;
-				c.doLayout(walkerX, 0, r.width, third);
+				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 			}
 			walkerX += r.width;
 		}

@@ -624,7 +624,7 @@ public class NonLinearWorld extends MapsLayout {
 	}
 
 	@Override
-	public int getDragRating(Position newPoint, DragProxy dragProxy) {
-		return -1;
+	public boolean isDraggingControl() {
+		return false;
 	}
 }

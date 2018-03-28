@@ -4,11 +4,12 @@
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/RotaryEncoder.h>
 #include <testing/TestDriver.h>
+#include <proxies/lpc/LPCProxy.h>
 
 static TestDriver<RotaryEncoder> tester;
 
 RotaryEncoder::RotaryEncoder() :
-    m_throttler(chrono::milliseconds(50))
+    m_throttler(chrono::milliseconds(25))
 {
   Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Rotary,
       sigc::mem_fun(this, &RotaryEncoder::onMessage));
@@ -16,6 +17,7 @@ RotaryEncoder::RotaryEncoder() :
 
 RotaryEncoder::~RotaryEncoder()
 {
+  m_stress.disconnect();
 }
 
 void RotaryEncoder::onMessage(WebSocketSession::tMessage msg)
@@ -61,5 +63,4 @@ sigc::connection RotaryEncoder::onRotaryChanged(function<void(tIncrement)> slot)
 
 void RotaryEncoder::registerTests()
 {
-
 }

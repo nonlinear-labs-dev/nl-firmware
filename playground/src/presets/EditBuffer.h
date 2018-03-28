@@ -48,6 +48,8 @@ class EditBuffer : public Preset
     const PresetManager *getParent () const;
 
     void resetModifiedIndicator (UNDO::Scope::tTransactionPtr transaction);
+    void resetModifiedIndicator(UNDO::Scope::tTransactionPtr transaction, size_t hash);
+
     virtual void copyFrom (UNDO::Scope::tTransactionPtr transaction, Preset *other, bool ignoreUUIDs) override;
 
     virtual tUpdateID onChange (uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;

@@ -36,7 +36,8 @@ void ParameterEditButtonMenu::setup()
   else
     addButton("Lock Group", bind(&ParameterEditButtonMenu::toggleGroupLock, this));
 
-  addButton("Lock all", bind(&ParameterEditButtonMenu::lockAll, this));
+  if(eb->getSelected()->getParentGroup()->areAllParametersLocked() == false)
+    addButton("Lock all", bind(&ParameterEditButtonMenu::lockAll, this));
 
   if(eb->hasLocks())
     addButton("Unlock all", bind(&ParameterEditButtonMenu::unlockAll, this));

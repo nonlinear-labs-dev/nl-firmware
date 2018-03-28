@@ -45,8 +45,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 	private String loadedPreset = "";
 	private PlayControls playControls;
 	private boolean m_isModified = false;
-	private PlayControlsArea playControlsArea;
-	private SynthParameters synthParamsArea;
 	private static ParameterEditor theEditor = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
 	private String hash = "";
@@ -194,10 +192,10 @@ public class ParameterEditor extends LayoutResizingVertical {
 			}
 		});
 
-		playControlsArea = addChild(new PlayControlsArea(this));
+		addChild(new PlayControlsArea(this));
 		addChild(new SpacerLarge(this));
 		addChild(new SpacerLarge(this));
-		synthParamsArea = addChild(new SynthParameters(this));
+		addChild(new SynthParameters(this));
 	}
 
 	public Control onKey(final KeyDownEvent event) {
@@ -497,5 +495,14 @@ public class ParameterEditor extends LayoutResizingVertical {
 		});
 
 		return c != null;
+	}
+	
+	public boolean areAllParametersLocked()
+	{
+		for(Parameter p: parameterMap.values()) {
+			if(p.isLocked() == false)
+				return false;
+		}
+		return true;
 	}
 }

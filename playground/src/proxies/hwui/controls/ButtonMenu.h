@@ -19,6 +19,7 @@ class ButtonMenu : public ControlWithChildren
     virtual void selectButton (size_t i);
     size_t getSelectedButton () const;
     void setHighlight(bool isHighlight) override;
+    void highlightSelectedButton();
     void toggle ();
     void antiToggle();
 

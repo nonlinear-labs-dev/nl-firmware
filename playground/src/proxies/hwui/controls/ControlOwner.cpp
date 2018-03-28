@@ -98,7 +98,7 @@ ControlOwner::tControlPtr ControlOwner::first ()
   if (!m_controls.empty ())
     return m_controls.front ();
 
-  return NULL;
+  return nullptr;
 }
 
 bool ControlOwner::isHighlight () const

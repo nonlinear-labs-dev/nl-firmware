@@ -3,7 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources.Pedal;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 
 public class PedalSetting extends Setting {
 

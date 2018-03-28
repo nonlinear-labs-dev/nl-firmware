@@ -169,7 +169,6 @@ void MacroControlParameterLayout2::setMode (Mode desiredMode)
     highlight<HWSourceAmountCarousel> ();
     highlight<SelectedParameterDotSlider> ();
     m_modeOverlay->highlight<SelectedParameterValue> ();
-
     break;
 
   case Mode::PlayControlPosition:
@@ -187,7 +186,6 @@ void MacroControlParameterLayout2::setMode (Mode desiredMode)
     break;
 
   case Mode::PlayControlSelection:
-
     m_modeOverlay->addControl (new SelectedMacroControlsHWSourceSlider (Rect (8, 25, 48, 4)));
     m_modeOverlay->addControl (new SelectedMacroControlsHWSourceValue (Rect (0, BUTTON_VALUE_Y_POSITION, 64, 12)));
     m_modeOverlay->addControl (new SelectedMacroControlsHWSourceName (Rect (64, BUTTON_VALUE_Y_POSITION, 64, 12)))->setHighlight (true);
@@ -263,6 +261,12 @@ MacroControlParameterEditLayout2::MacroControlParameterEditLayout2 () :
 ButtonMenu *MacroControlParameterEditLayout2::createMenu (const Rect &rect)
 {
   return new MacroControlEditButtonMenu (rect);
+}
+
+void MacroControlParameterEditLayout2::setMode (Mode desiredMode)
+{
+  super2::setMode(desiredMode);
+  getMenu()->highlightSelectedButton();
 }
 
 bool MacroControlParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers)

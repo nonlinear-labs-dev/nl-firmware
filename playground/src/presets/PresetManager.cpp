@@ -631,8 +631,6 @@ void PresetManager::load()
 
 void PresetManager::doSaveTask()
 {
-  PerformanceTimer timer(__PRETTY_FUNCTION__, 0);
-
   if(!m_saveTasks.empty())
   {
     auto &firstTask = m_saveTasks.front();

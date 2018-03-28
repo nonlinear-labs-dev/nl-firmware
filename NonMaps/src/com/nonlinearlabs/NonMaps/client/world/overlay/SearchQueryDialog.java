@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import java.util.List;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,11 +11,14 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -26,16 +28,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonRect;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Spacer;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager.SearchQueryFields;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.Divider;
 
 public class SearchQueryDialog extends GWTDialog {
 
@@ -174,7 +174,7 @@ public class SearchQueryDialog extends GWTDialog {
 		rootPanel.add(createButtonPanel());
 		setWidget(rootPanel);
 	}
-	
+		
 	private FlowPanel createSpacer() {
 		FlowPanel dividerPanel = new FlowPanel();
 		HTML html = new HTML("<hr  style=\"width:98%;border: 0;height: 1px;background: #a5a5a5;background-image: linear-gradient(to right, #a5a5a5,#a5a5a5,#a5a5a5);\" />");
@@ -391,8 +391,10 @@ public class SearchQueryDialog extends GWTDialog {
 		if (theDialog != null) {
 			theDialog.commit();
 		} else {
-			if (!NonMaps.theMaps.getNonLinearWorld().getPresetManager().isEmpty())
+			if (!NonMaps.theMaps.getNonLinearWorld().getPresetManager().isEmpty()) {
 				theDialog = new SearchQueryDialog();
+				theDialog.pushDialogToFront();
+			}
 		}
 	}
 
