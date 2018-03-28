@@ -22,6 +22,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <proxies/lpc/LPCProxy.h>
+#include <proxies/lpc/LPCParameterChangeSurpressor.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
     RPCActionManager("/presets/"),
@@ -135,27 +136,13 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
 
   addAction("load-editbuffer", [&] (shared_ptr<NetworkRequest> request) mutable
   {
-    class LPCParameterChangeSupressor {
-    public:
-        LPCParameterChangeSupressor(UNDO::Transaction::tTransactionPtr transaction) : m_transaction(transaction) {
-          lpc->toggleSuppressParameterChanges(transaction);
-
-        };
-        ~LPCParameterChangeSupressor() {
-          lpc->toggleSuppressParameterChanges(m_transaction);
-        }
-    private:
-        auto lpc = Application::get().getLPCProxy();
-        UNDO::Transaction::tTransactionPtr m_transaction;
-    };
-
     if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
     {
       UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Load Edit Buffer");
       auto transaction = scope->getTransaction();
       auto xml = http->get("xml", "");
 
-      LPCParameterChangeSupressor lpcParameterChangeSupressor(transaction);
+      LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
 
       MemoryInStream stream(xml, false);
       XmlReader reader(stream, transaction);
