@@ -13,3 +13,7 @@ Carousel::Carousel (const Rect &pos) :
 Carousel::~Carousel ()
 {
 }
+
+void Carousel::antiTurn() {
+  turn();
+}

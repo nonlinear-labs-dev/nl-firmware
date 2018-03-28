@@ -58,3 +58,8 @@ void ModulationRoutersCarousel::turn ()
     p->toggleUiSelectedModulationRouter (1);
 }
 
+void ModulationRoutersCarousel::antiTurn ()
+{
+  if (auto p = dynamic_cast<PhysicalControlParameter*> (Application::get ().getPresetManager ()->getEditBuffer ()->getSelected ()))
+    p->toggleUiSelectedModulationRouter (-1);
+}

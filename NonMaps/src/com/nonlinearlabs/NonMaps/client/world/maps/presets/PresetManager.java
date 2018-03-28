@@ -141,6 +141,8 @@ public class PresetManager extends MapsLayout {
 
 	public void update(Node presetManagerNode) {
 
+		boolean shouldUpdateFilter = false;
+		
 		if (ServerProxy.didChange(presetManagerNode)) {
 			readPlaygroundFileVersion(presetManagerNode);
 
@@ -151,16 +153,17 @@ public class PresetManager extends MapsLayout {
 				Node child = children.item(i);
 
 				if (child.getNodeName().equals("banks"))
-					updateBanks(child);
+					shouldUpdateFilter = updateBanks(child) || shouldUpdateFilter;
 			}
-
-			refreshFilter(false);
-
+			
 			Preset newPresetSelection = getSelectedPreset();
 
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
 			}
+			
+			if(shouldUpdateFilter)
+				refreshFilter(false);
 
 			RenameDialog.onPresetManagerUpdate(this);
 		}
@@ -204,7 +207,9 @@ public class PresetManager extends MapsLayout {
 		}
 	}
 
-	private void updateBanks(Node banks) {
+	private boolean updateBanks(Node banks) {
+		boolean banksChanged = false;
+		
 		clearDockingRelations();
 
 		ArrayList<MapsControl> currentChildren = new ArrayList<MapsControl>();
@@ -221,6 +226,7 @@ public class PresetManager extends MapsLayout {
 			Node bank = bankList.item(i);
 			if (bank.getNodeName().equals("preset-bank")) {
 				Renameable ui = updateBank(bank);
+				banksChanged = ServerProxy.didChange(bank) || banksChanged;
 				currentChildren.remove(ui);
 			}
 		}
@@ -230,6 +236,8 @@ public class PresetManager extends MapsLayout {
 
 		if (BankInfoDialog.isShown())
 			BankInfoDialog.update();
+		
+		return banksChanged;
 	}
 
 	private void clearDockingRelations() {
@@ -368,7 +376,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	@Override
-	public Control drag(Position pos, DragProxy dragProxy) {
+	public Control drag(Rect r, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
 			return this;
 		}
@@ -381,7 +389,7 @@ public class PresetManager extends MapsLayout {
 			return this;
 		}
 
-		return super.drag(pos, dragProxy);
+		return super.drag(r, dragProxy);
 	}
 
 	public void updateMultipleRectangle(Position pos) {
@@ -714,7 +722,7 @@ public class PresetManager extends MapsLayout {
 			refreshFilter(true);
 		}
 	}
-
+	
 	private void refreshFilter(final boolean autoZoom) {
 		if (this.query.isEmpty()) {
 			clearFilter();
@@ -943,7 +951,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public MultiplePresetSelection startMultiSelection(Preset p, boolean shiftModifier) {
-		if(shiftModifier)
+		if (shiftModifier)
 			multiSelection = new ShiftMultiplePresetSelection(p);
 		else
 			multiSelection = new MultiplePresetSelection(p);

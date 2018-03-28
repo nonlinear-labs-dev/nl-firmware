@@ -236,6 +236,10 @@ public abstract class Control {
 		return null;
 	}
 
+	public Control drag(Rect rect, DragProxy dragProxy) {
+		return null;
+	}
+
 	public void dragLeave() {
 	}
 
@@ -280,7 +284,7 @@ public abstract class Control {
 	}
 
 	public boolean isDraggingControl() {
-		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().isCurrentlyDragging(this);
+		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().isCurrentlyDragging(this) || getParent().isDraggingControl();
 	}
 
 	public void addPendingInvalidations(int mask) {
@@ -300,14 +304,7 @@ public abstract class Control {
 		return getParent().getDepth() + 1;
 	}
 
-	public int getDragRating(Position newPoint, DragProxy dragProxy) {
-		return getParent().getDragRating(newPoint, dragProxy) + 1;
-	}
-
 	public void beingDropped() {
 	}
-	
-	public boolean stopDragCompletelyIfDraggedOn() {
-		return false;
-	}
+
 }

@@ -1,22 +1,24 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupVertical;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PhysicalControlParameter;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources.Pedal;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
-public class MacroControlMappings extends ParameterGroupVertical {
+public class SourcesAndAmounts extends ParameterGroupVertical {
 
-	private MacroControlMappingControls controls;
+	private SourcesAndAmountsControls controls;
 
 	public class MacroControlMappingsGroupContextMenu extends ContextMenu {
 		public MacroControlMappingsGroupContextMenu(OverlayLayout parent) {
@@ -58,7 +60,7 @@ public class MacroControlMappings extends ParameterGroupVertical {
 		}
 	}
 
-	public MacroControlMappings(MapsLayout parent) {
+	public SourcesAndAmounts(MapsLayout parent) {
 		super(parent);
 		addChild(new LabelModuleHeader(this, "Hardware Sources and Amounts") {
 
@@ -79,9 +81,19 @@ public class MacroControlMappings extends ParameterGroupVertical {
 			protected boolean isLocked() {
 				return super.isLocked();
 			}
+
+			@Override
+			public void draw(Context2d ctx, int invalidationMask) {
+				super.draw(ctx, invalidationMask);
+
+				Rect pixRect = getPixRect();
+
+				if (isHWLocked())
+					ctx.fillText("L", pixRect.getLeft() + 16, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			}
 		});
 
-		addChild(controls = new MacroControlMappingControls(this));
+		addChild(controls = new SourcesAndAmountsControls(this));
 	}
 
 	@Override

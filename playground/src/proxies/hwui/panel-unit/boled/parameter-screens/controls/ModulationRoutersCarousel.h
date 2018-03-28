@@ -15,7 +15,7 @@ class ModulationRoutersCarousel : public Carousel
     virtual ~ModulationRoutersCarousel ();
 
     virtual void turn () override;
-
+    virtual void antiTurn () override;
   protected:
     virtual void setup (Parameter *selectedParameter) override;
 

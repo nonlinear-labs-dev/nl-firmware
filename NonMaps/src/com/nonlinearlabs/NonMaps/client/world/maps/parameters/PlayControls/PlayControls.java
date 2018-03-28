@@ -4,17 +4,17 @@ import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources.Pedal;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 
 public class PlayControls extends LayoutResizingHorizontal {
 
-	MappingAndMacros mappingAndMacros;
+	SourcesAmountsAndMacros sourcesAmountsAndMacros;
 
 	public PlayControls(MapsLayout parent) {
 		super(parent);
 
-		mappingAndMacros = addChild(new MappingAndMacros(this));
+		sourcesAmountsAndMacros = addChild(new SourcesAmountsAndMacros(this));
 	}
 
 	@Override
@@ -68,10 +68,10 @@ public class PlayControls extends LayoutResizingHorizontal {
 	}
 
 	public Macros getMacroControls() {
-		return mappingAndMacros.getMacros();
+		return sourcesAmountsAndMacros.getMacros();
 	}
 
 	public Pedal getPedal(int i) {
-		return mappingAndMacros.getPedal(i);
+		return sourcesAmountsAndMacros.getPedal(i);
 	}
 }

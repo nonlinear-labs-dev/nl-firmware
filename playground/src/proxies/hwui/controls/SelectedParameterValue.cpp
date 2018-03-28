@@ -4,47 +4,54 @@
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <proxies/hwui/HWUI.h>
 
-SelectedParameterValue::SelectedParameterValue (const Rect &rect) :
-    super (rect)
+SelectedParameterValue::SelectedParameterValue(const Rect &rect) :
+    super(rect)
 {
-  Application::get ().getPresetManager ()->getEditBuffer ()->onSelectionChanged (
-      sigc::hide<0> (sigc::mem_fun (this, &SelectedParameterValue::onParameterSelected)));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::hide < 0 > (sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)));
 
-  Application::get ().getHWUI ()->onModifiersChanged (sigc::mem_fun (this, &SelectedParameterValue::onModifiersChanged));
+  Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
 }
 
-SelectedParameterValue::~SelectedParameterValue ()
+SelectedParameterValue::~SelectedParameterValue()
 {
 }
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)
 {
-  onParamValueChanged (Application::get ().getPresetManager ()->getEditBuffer ()->getSelected());
+  onParamValueChanged(Application::get().getPresetManager()->getEditBuffer()->getSelected());
 }
 
-void SelectedParameterValue::onParameterSelected (Parameter * parameter)
+void SelectedParameterValue::onParameterSelected(Parameter * parameter)
 {
-  m_paramValueConnection.disconnect ();
+  m_paramValueConnection.disconnect();
 
-  if (parameter)
-    m_paramValueConnection = parameter->onParameterChanged (sigc::mem_fun (this, &SelectedParameterValue::onParamValueChanged));
+  if(parameter)
+    m_paramValueConnection = parameter->onParameterChanged(sigc::mem_fun(this, &SelectedParameterValue::onParamValueChanged));
 }
 
-void SelectedParameterValue::onParamValueChanged (const Parameter* param)
+void SelectedParameterValue::onParamValueChanged(const Parameter* param)
 {
-  auto amount = param->getDisplayString ();
+  setDirty();
+}
 
-  if (Application::get ().getHWUI ()->isModifierSet (ButtonModifier::FINE))
+bool SelectedParameterValue::redraw(FrameBuffer &fb)
+{
+  auto amount = Application::get().getPresetManager()->getEditBuffer()->getSelected()->getDisplayString();
+
+  if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
   {
-    setText (amount + " F", 2);
+    setText(amount + " F", 2);
   }
   else
   {
-    setText (amount);
+    setText(amount);
   }
+
+  return super::redraw(fb);
 }
 
-void SelectedParameterValue::setSuffixFontColor (FrameBuffer &fb) const
+void SelectedParameterValue::setSuffixFontColor(FrameBuffer &fb) const
 {
   fb.setColor(FrameBuffer::C128);
 }

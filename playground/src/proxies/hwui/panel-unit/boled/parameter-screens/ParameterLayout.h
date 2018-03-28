@@ -57,6 +57,8 @@ class ParameterEditLayout2 : public virtual ParameterLayout2
     virtual bool onButton (int i, bool down, ButtonModifiers modifiers) override;
     virtual ButtonMenu *createMenu (const Rect &rect) = 0;
 
+    ButtonMenu *getMenu ();
+
   private:
     ButtonMenu *m_menu = nullptr;
 };

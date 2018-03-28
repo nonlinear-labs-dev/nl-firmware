@@ -122,6 +122,11 @@ void ButtonMenu::bruteForce ()
     addControl (selectedButton)->setHighlight (true);
 }
 
+void ButtonMenu::highlightSelectedButton()
+{
+  bruteForce();
+}
+
 size_t ButtonMenu::getItemToShowAtPlace (size_t place) const
 {
   if (m_items.size () <= m_numButtonPlaces)

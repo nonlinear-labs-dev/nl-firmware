@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationRoutingButton;

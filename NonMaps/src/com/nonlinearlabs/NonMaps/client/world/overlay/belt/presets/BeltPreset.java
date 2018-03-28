@@ -79,7 +79,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean loaded = mapsPreset.isLoaded() && !mapsPreset.isInStoreSelectMode();
-		boolean selected = mapsPreset.isSelected();
+		boolean selected = mapsPreset.isSelected() || mapsPreset.isContextMenuActiveOnMe();
 		boolean isOrignalPreset = false;
 
 		if (isInStoreMode()) {
@@ -186,11 +186,6 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 			movePreset(p, newPreset);
 		else
 			copyPreset(p, newPreset);
-	}
-	
-	@Override
-	public boolean stopDragCompletelyIfDraggedOn() {
-		return true;
 	}
 
 	protected void insertBank(IBank bank) {

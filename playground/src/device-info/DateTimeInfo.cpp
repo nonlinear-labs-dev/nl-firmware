@@ -25,6 +25,7 @@ bool DateTimeInfo::onTimeChanged ()
 void DateTimeInfo::writeDocument (Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   writer.writeTextElement ("date-time", get ());
+  writer.writeTextElement("date-time-display", getDisplayString());
 }
 
 Glib::ustring DateTimeInfo::get () const

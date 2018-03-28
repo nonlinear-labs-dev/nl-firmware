@@ -12,6 +12,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.PresetContextMenuItem;
 
 public class PresetColorTagContextMenu extends ContextMenu {
 
@@ -38,7 +39,7 @@ public class PresetColorTagContextMenu extends ContextMenu {
 		for (ColorTag.Color c : ColorTag.Color.values()) {
 			String name = c.toString();
 			name = name.substring(0, 1).toUpperCase() + name.substring(1);
-			addChild(new ContextMenuItem((ContextMenu) this, name) {
+			addChild(new PresetContextMenuItem((ContextMenu) this, name) {
 				@Override
 				public Control click(Position eventPoint) {
 					setColor(c);

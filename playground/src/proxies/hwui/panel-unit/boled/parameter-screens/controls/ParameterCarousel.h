@@ -16,6 +16,7 @@ class ParameterCarousel : public Carousel
     virtual ~ParameterCarousel ();
 
     virtual void turn () override;
+    virtual void antiTurn () override;
 
   protected:
     virtual void setup (Parameter *selectedParameter) override;

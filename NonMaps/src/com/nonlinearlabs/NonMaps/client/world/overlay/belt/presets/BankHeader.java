@@ -10,6 +10,7 @@ import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
@@ -135,14 +136,25 @@ class BankHeader extends OverlayLayout {
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		Bank b = getParent().getBankInCharge();
+		
+		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+		
 
-		if (dragProxy.getOrigin() instanceof IPreset)
+		
+		if (dragProxy.getOrigin() instanceof IPreset) {
+			if (pm.hasMultiplePresetSelection()) {
+				getNonMaps().getServerProxy().dropPresetsOnBank(pm.getMultiSelection().getCSV(), b);
+				pm.getMultiSelection().clear();
+			} else {
 			getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b);
-		else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
+			}
+		}
+		else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
 			getNonMaps().getServerProxy().dropEditBufferOnBank(b);
-		else if (dragProxy.getOrigin() instanceof IBank)
+		} else if (dragProxy.getOrigin() instanceof IBank) {
 			getNonMaps().getServerProxy().dropBankOnBank((IBank) dragProxy.getOrigin(), b);
-
+		}
+		
 		setIsDropTarget(false);
 		return this;
 	}

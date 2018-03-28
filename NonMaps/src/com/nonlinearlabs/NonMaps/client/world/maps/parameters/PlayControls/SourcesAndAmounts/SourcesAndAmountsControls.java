@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControlMappings;
+package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts;
 
 import com.nonlinearlabs.NonMaps.client.Checksum;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -7,28 +7,33 @@ import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupControls;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PhysicalControlParameter;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources.HardwareSourcesCol1;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.HardwareSources.Pedal;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol1;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol2;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol3;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol4;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.HardwareSourcesCol1;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 
-class MacroControlMappingControls extends ParameterGroupControls {
+class SourcesAndAmountsControls extends ParameterGroupControls {
 
 	private HardwareSourcesCol1 sources;
-	private MacroControlMappingCol1 mappingCol1;
+	private AmountsCol1 mappingCol1;
 
-	MacroControlMappingControls(MapsLayout parent) {
+	SourcesAndAmountsControls(MapsLayout parent) {
 		super(parent);
 
 		addChild(sources = new HardwareSourcesCol1(this));
-		addChild(mappingCol1 = new MacroControlMappingCol1(this));
-		addChild(new MacroControlMappingCol2(this));
-		addChild(new MacroControlMappingCol3(this));
-		addChild(new MacroControlMappingCol4(this));
+		addChild(mappingCol1 = new AmountsCol1(this));
+		addChild(new AmountsCol2(this));
+		addChild(new AmountsCol3(this));
+		addChild(new AmountsCol4(this));
 	}
 
 	public void onReturningModeChanged(PhysicalControlParameter src) {
 		for (MapsControl c : getChildren()) {
-			if (c instanceof MacroControlMappingCol) {
-				MacroControlMappingCol col = (MacroControlMappingCol) c;
+			if (c instanceof AmountsCol) {
+				AmountsCol col = (AmountsCol) c;
 				col.onReturningModeChanged(src);
 			}
 		}

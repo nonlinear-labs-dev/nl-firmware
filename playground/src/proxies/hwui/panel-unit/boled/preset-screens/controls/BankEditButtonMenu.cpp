@@ -24,7 +24,7 @@ BankEditButtonMenu::BankEditButtonMenu(const Rect &rect) :
     super(rect)
 {
   Application::get().getClipboard()->onClipboardChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
-	Application::get().getPresetManager()->onNumBanksChanged(sigc::hide<0>(mem_fun(this, &BankEditButtonMenu::rebuildMenu)));
+  Application::get().getPresetManager()->onNumBanksChanged(sigc::hide < 0 > (mem_fun(this, &BankEditButtonMenu::rebuildMenu)));
 }
 
 void BankEditButtonMenu::rebuildMenu()
@@ -96,7 +96,7 @@ void BankEditButtonMenu::newBank()
   auto scope = pm->getUndoScope().startTransaction("New bank");
   auto transaction = scope->getTransaction();
   auto newBank = pm->addBank(transaction, true);
-	newBank->assignDefaultPosition();
+  newBank->assignDefaultPosition();
 
   Application::get().getHWUI()->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Presets, UIMode::Select));
 
@@ -106,7 +106,7 @@ void BankEditButtonMenu::newBank()
 
 BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(std::experimental::filesystem::directory_entry file)
 {
-  return FileInfos{file};
+  return FileInfos { file };
 }
 
 bool BankEditButtonMenu::applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term)
@@ -136,7 +136,9 @@ void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::direc
 
 void BankEditButtonMenu::importBank()
 {
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(new FileDialogLayout(&BankEditButtonMenu::applicableBackupFilesFilter, &BankEditButtonMenu::importBankFromPath, "Bank File"));
+  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(
+      new FileDialogLayout(&BankEditButtonMenu::applicableBackupFilesFilter,
+          &BankEditButtonMenu::importBankFromPath, "Select Bank for Import"));
 }
 
 Glib::ustring BankEditButtonMenu::createValidOutputPath(const Glib::ustring &bankName)
@@ -245,7 +247,7 @@ void BankEditButtonMenu::moveRight()
 
 void BankEditButtonMenu::correctMenuSelection()
 {
-	if(s_lastSelectedButton >= getNumChildren())
-		s_lastSelectedButton = 0;
+  if(s_lastSelectedButton >= getNumChildren())
+    s_lastSelectedButton = 0;
 }
 

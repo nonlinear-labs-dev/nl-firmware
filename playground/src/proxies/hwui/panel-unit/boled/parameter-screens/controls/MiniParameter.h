@@ -16,6 +16,7 @@ class MiniParameter : public ControlWithChildren
     virtual ~MiniParameter ();
 
     Parameter * getParameter ();
+    const Parameter * getParameter () const;
     void setSelected (bool selected);
     bool isSelected () const;
 

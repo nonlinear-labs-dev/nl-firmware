@@ -64,8 +64,8 @@ public class Tape extends MapsControl {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		if (getParent().isDraggingControl())
-			return;
+		// if (getParent().isDraggingControl())
+		// return;
 
 		super.draw(ctx, invalidationMask);
 
@@ -118,8 +118,8 @@ public class Tape extends MapsControl {
 	}
 
 	@Override
-	public Control drag(Position pos, DragProxy dragProxy) {
-		if (isVisible()) {
+	public Control drag(Rect pos, DragProxy dragProxy) {
+		if (isVisible() && !getParent().isDraggingControl()) {
 			if (dragProxy.getOrigin() instanceof Bank) {
 				Bank other = (Bank) dragProxy.getOrigin();
 
@@ -141,27 +141,6 @@ public class Tape extends MapsControl {
 	}
 
 	@Override
-	public int getDragRating(Position newPoint, DragProxy dragProxy) {
-		int rating = super.getDragRating(newPoint, dragProxy);
-		if (dragProxy.getOrigin() instanceof Bank) {
-			Bank other = (Bank) dragProxy.getOrigin();
-
-			if (getParent() != other) {
-				Dimension offset = dragProxy.getPixRect().getLeftTop().getVector(other.getPixRect().getLeftTop());
-
-				for (Tape others : other.getTapes()) {
-					if (fitsTo(others)) {
-						if (getPixRect().intersects(others.getPixRect().getMovedBy(offset))) {
-							return rating * 1000;
-						}
-					}
-				}
-			}
-		}
-		return rating;
-	}
-
-	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
 			Bank other = (Bank) dragProxy.getOrigin();
@@ -170,6 +149,7 @@ public class Tape extends MapsControl {
 					.getDragProxyFor(clusterMaster);
 			Position dropPosition = dragProxyForClusterMaster != null ? dragProxyForClusterMaster.getPixRect().getPosition() : pos;
 			NonPosition nonPos = NonMaps.get().getNonLinearWorld().toNonPosition(dropPosition);
+			nonPos.snapTo(PresetManager.getSnapGridResolution());
 			NonMaps.get().getServerProxy().dockBanks(getParent(), orientation, other, nonPos);
 			other.getClusterMaster().moveTo(nonPos);
 			requestLayout();

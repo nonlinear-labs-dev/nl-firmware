@@ -234,8 +234,6 @@ bool PresetManagerLayout::onButton(int i, bool down, ButtonModifiers modifiers)
           hwui->undoableSetFocusAndMode(UIMode::Select);
         else
           hwui->undoableSetFocusAndMode(UIMode::Edit);
-
-        setup();
         break;
 
       case BUTTON_PRESET:
