@@ -2,13 +2,14 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 abstract public class BeltButton extends SVGImage {
 
@@ -23,7 +24,7 @@ abstract public class BeltButton extends SVGImage {
 	public Control click(Position eventPoint) {
 		return this;
 	}
-	
+
 	@Override
 	public Control onContextMenu(Position pos) {
 		return this;
@@ -49,6 +50,7 @@ abstract public class BeltButton extends SVGImage {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		if (!isActive() || belt.isHidden()) {
+			Tracer.log("draw belt button - not active or hidden");
 			double corner = Millimeter.toPixels(1);
 
 			Rect r = getPixRect().copy();
