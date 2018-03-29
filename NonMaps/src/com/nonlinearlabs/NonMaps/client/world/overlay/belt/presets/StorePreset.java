@@ -193,7 +193,7 @@ class StorePreset extends SVGImage {
 
 	public Control handleEnterKey() {
 		fire();
-		return null;
+		return this;
 	}
 
 }
