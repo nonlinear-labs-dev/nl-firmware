@@ -10,7 +10,6 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.ServerProxy.DownloadHandler;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 
@@ -104,11 +103,8 @@ public class SVGImagePhase extends OverlayControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		if (face != null) {
-			Tracer.log("draw svg image phase - face exists");
 			Rect r = getPixRect();
 			ctx.drawImage(face, r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
-		} else {
-			Tracer.log("draw svg image phase - no face exists");
 		}
 	}
 
