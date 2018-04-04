@@ -67,7 +67,7 @@ void RotaryEncoder::onRotaryFileRead(Glib::RefPtr<Gio::AsyncResult>& result, Gli
 
     m_throttler.doTask([this]()
     {
-      if (abs(m_accumulatedIncs) > 0)
+      if (abs(m_accumulatedIncs) > 1)
       {
         m_accumulatedIncs = std::min(m_accumulatedIncs, 10);
         m_accumulatedIncs = std::max(m_accumulatedIncs, -10);
