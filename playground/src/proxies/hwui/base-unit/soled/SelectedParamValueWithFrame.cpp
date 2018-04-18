@@ -19,10 +19,17 @@ SelectedParamValueWithFrame::~SelectedParamValueWithFrame ()
 
 bool SelectedParamValueWithFrame::redraw (FrameBuffer &fb)
 {
-  super::redraw (fb);
+  if(m_showParameterName.isPending()) {
+    super::redraw(fb);
+  } else {
+    showName();
+    super::Label::redraw(fb);
+  }
+
   getPosition ().drawRounded (fb);
   return true;
 }
+
 
 shared_ptr<Font> SelectedParamValueWithFrame::getFont () const
 {
@@ -49,7 +56,7 @@ void SelectedParamValueWithFrame::onParamValueChanged (const Parameter* param)
   }
   else
   {
-    super::onParamValueChanged(param);
+    setDirty();
 
     if(param)
     {

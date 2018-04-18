@@ -14,9 +14,9 @@ class SelectedParamValueWithFrame : public SelectedParameterValue
 
     bool redraw (FrameBuffer &fb) override;
 
+
   protected:
     virtual void onModifiersChanged (ButtonModifiers mods) override;
-
   private:
     SelectedParamValueWithFrame (const SelectedParamValueWithFrame& other) = delete;
     SelectedParamValueWithFrame& operator= (const SelectedParamValueWithFrame&) = delete;
