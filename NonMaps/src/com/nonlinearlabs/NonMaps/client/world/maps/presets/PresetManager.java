@@ -39,6 +39,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
+import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
 
 public class PresetManager extends MapsLayout {
 
@@ -571,6 +572,9 @@ public class PresetManager extends MapsLayout {
 			ParameterInfoDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/war/online-help/index.html", "", "");
+		} else if( keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
+			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
+			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
 		} else {
 			return null;
 		}
