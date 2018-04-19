@@ -49,7 +49,7 @@ public class Overlay extends OverlayLayout {
 
 		compareDialogs = new ArrayList<CompareDialog>();
 	}
-
+	
 	public void refreshGlobalMenu() {
 		globalMenu.refresh();
 	}
@@ -320,7 +320,7 @@ public class Overlay extends OverlayLayout {
 		return any;
 	}
 
-	private void collapseGlobalMenu() {
+	public void collapseGlobalMenu() {
 		for (OverlayControl c : getChildren()) {
 			if (c instanceof GlobalMenu) {
 				if (((GlobalMenu) c).getState() == GlobalMenu.State.Expanded) {
