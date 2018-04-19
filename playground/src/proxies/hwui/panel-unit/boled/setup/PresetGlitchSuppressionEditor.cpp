@@ -25,6 +25,6 @@ const vector<ustring> &PresetGlitchSuppressionEditor::getDisplayStrings () const
 
 int PresetGlitchSuppressionEditor::getSelectedIndex () const
 {
-  return (int) Application::get ().getSettings ()->getSetting<PresetGlitchSuppression> ()->get ();
+  return (int) !Application::get ().getSettings ()->getSetting<PresetGlitchSuppression> ()->get ();
 }
 
