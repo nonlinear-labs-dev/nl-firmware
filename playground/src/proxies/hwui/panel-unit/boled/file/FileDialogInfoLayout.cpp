@@ -8,23 +8,27 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/InfoLabel.h>
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
+#include "FileNameHeadlineLabel.h"
+#include "FileInfoCaption.h"
 
 FileDialogInfoLayout::FileDialogInfoLayout(std::experimental::filesystem::directory_entry file, std::string header) :
     InfoLayout(), m_file(file), m_header(header)
 {
 }
 
-void FileDialogInfoLayout::addModuleCaption()
+void FileDialogInfoLayout::addModuleCaption ()
 {
-}
-void FileDialogInfoLayout::addHeadline()
-{
-  addControl(new Label(m_header, Rect(64, 0, 128, 13)));
+  addControl (new FileInfoCaption ("File", Rect (0, 0, 50, 13)));
 }
 
-void FileDialogInfoLayout::addInfoLabel()
+void FileDialogInfoLayout::addHeadline ()
 {
-  addControl(new InfoLabel(Rect(192, 0, 64, 13)));
+  addControl (new FileNameHeadlineLabel (m_header, Rect (50, 0, 156, 13)));
+}
+
+void FileDialogInfoLayout::addInfoLabel ()
+{
+  addControl (new InfoLabel (Rect (206, 0, 50, 13)));
 }
 
 Scrollable* FileDialogInfoLayout::createScrollableContent()
