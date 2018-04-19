@@ -16,7 +16,6 @@ class SelectedParamValueWithFrame : public SelectedParameterValue
 
   protected:
     virtual void onModifiersChanged (ButtonModifiers mods) override;
-
   private:
     SelectedParamValueWithFrame (const SelectedParamValueWithFrame& other) = delete;
     SelectedParamValueWithFrame& operator= (const SelectedParamValueWithFrame&) = delete;
