@@ -110,6 +110,7 @@ void LPCProxy::onOutputStreamOpened (Glib::RefPtr<Gio::AsyncResult> &result, Ref
   {
     DebugLevel::gassy ("LPCProxy::onOutputStreamOpened file");
     m_outStream = ioFile->append_to_finish (result);
+    requestLPCSoftwareVersion();
   }
   catch (Gio::Error &error)
   {
