@@ -19,13 +19,14 @@ SelectedParamValueWithFrame::~SelectedParamValueWithFrame ()
 
 bool SelectedParamValueWithFrame::redraw (FrameBuffer &fb)
 {
-  if(m_showParameterName.isPending()) {
+  if(m_showParameterName.isPending())
+  {
     super::redraw(fb);
-  } else {
-    showName();
+  }
+  else
+  {
     super::Label::redraw(fb);
   }
-
   getPosition ().drawRounded (fb);
   return true;
 }
@@ -57,7 +58,6 @@ void SelectedParamValueWithFrame::onParamValueChanged (const Parameter* param)
   else
   {
     setDirty();
-
     if(param)
     {
       m_showParameterName.refresh(std::chrono::seconds(1));
@@ -68,7 +68,9 @@ void SelectedParamValueWithFrame::onParamValueChanged (const Parameter* param)
 void SelectedParamValueWithFrame::showName()
 {
   if(auto p = Application::get ().getPresetManager ()->getEditBuffer ()->getSelected ())
+  {
     setText(p->getShortName());
+  }
 }
 
 void SelectedParamValueWithFrame::setSuffixFontColor (FrameBuffer &fb) const
@@ -79,7 +81,11 @@ void SelectedParamValueWithFrame::setSuffixFontColor (FrameBuffer &fb) const
 void SelectedParamValueWithFrame::onModifiersChanged (ButtonModifiers mods)
 {
   if(m_ignoreNextModifierChange)
+  {
     m_ignoreNextModifierChange = false;
+  }
   else
+  {
     super::onModifiersChanged(mods);
+  }
 }
