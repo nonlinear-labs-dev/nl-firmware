@@ -350,11 +350,10 @@ BankActions::BankActions(PresetManager &presetManager) :
 
       auto newPreset = bank->getPreset (desiredPresetPos);
 
-      if(!uuid.empty())
-        newPreset->undoableSetUuid(transaction, uuid);
-
+      newPreset->undoableSetUuid(transaction, uuid);
       bank->undoableSelectPreset (transaction, newPreset->getUuid());
       newPreset->undoableSetName(transaction, newName);
+
       m_presetManager.undoableSelectBank (transaction, bank->getUuid());
     }
   });
@@ -388,20 +387,28 @@ BankActions::BankActions(PresetManager &presetManager) :
   addAction("append-editbuffer-to-bank",
       [&] (shared_ptr<NetworkRequest> request) mutable
       {
-        Glib::ustring bankUuid = request->get ("bank-uuid");
-        Glib::ustring presetUuid = request->get ("uuid");
+        auto bankUuid = request->get ("bank-uuid");
 
-        if (tBankPtr tgtBank = m_presetManager.findBank (bankUuid))
+        if (tBankPtr tgtBank = m_presetManager.findBank(bankUuid))
         {
-          UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Append preset to bank '%0'", tgtBank->getName(true));
-          UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+          auto uuid = request->get ("uuid");
+          auto newName = guessNameBasedOnEditBuffer();
+          auto scope = m_presetManager.getUndoScope().startTransaction ("Append preset to bank '%0'", tgtBank->getName(true));
+          auto transaction = scope->getTransaction();
+          auto desiredPresetPos = tgtBank->getNumPresets();
 
-          int desiredPresetPos = tgtBank->getNumPresets();
-          tgtBank->undoableAppendPreset(transaction, presetUuid);
+          tgtBank->undoableInsertPreset (transaction, desiredPresetPos);
           tgtBank->undoableOverwritePreset (transaction, desiredPresetPos, m_presetManager.getEditBuffer());
-          tgtBank->undoableSelectPreset (transaction, tgtBank->getPreset (desiredPresetPos)->getUuid());
-          tgtBank->undoableSelect (transaction);
+
+          auto newPreset = tgtBank->getPreset (desiredPresetPos);
+
+          newPreset->undoableSetUuid(transaction, uuid);
+          tgtBank->undoableSelectPreset (transaction, newPreset->getUuid());
+          newPreset->undoableSetName(transaction, newName);
+
+          m_presetManager.undoableSelectBank (transaction, tgtBank->getUuid());
         }
+
       });
 
   addAction("set-order-number", [&] (shared_ptr<NetworkRequest> request) mutable
