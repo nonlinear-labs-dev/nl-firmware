@@ -3,6 +3,7 @@
 #include <string.h>
 #include <Application.h>
 #include <Options.h>
+#include <netinet/tcp.h>
 
 using namespace std::chrono_literals;
 
@@ -65,6 +66,27 @@ void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
   g_signal_connect(connection, "message", G_CALLBACK (&WebSocketSession::receiveMessage), this);
   g_object_set(connection, "keepalive-interval", 5, nullptr);
   g_object_ref(connection);
+
+  auto stream = soup_websocket_connection_get_io_stream(connection);
+  auto outStream = g_io_stream_get_output_stream(stream);
+
+  GError *error = nullptr;
+  GSocket *socket = nullptr;
+  g_object_get(outStream, "socket", &socket, nullptr);
+
+  auto ret = g_socket_set_option (socket, SOL_TCP, TCP_NODELAY, 1, &error);
+
+  if(error)
+  {
+    DebugLevel::warning(error->message);
+    g_error_free(error);
+  }
+
+  if(!ret)
+  {
+    DebugLevel::warning("setting socket option NODELAY failed");
+  }
+
   m_connection.reset(connection);
   m_onConnectionEstablished();
 }

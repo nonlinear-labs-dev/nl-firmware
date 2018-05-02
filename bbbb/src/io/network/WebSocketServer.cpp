@@ -1,4 +1,6 @@
 #include <io/network/WebSocketServer.h>
+#include <netinet/tcp.h>
+
 
 WebSocketServer::WebSocketServer() :
     m_server(soup_server_new(NULL), g_object_unref)
@@ -35,6 +37,27 @@ void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
   g_signal_connect(connection, "message", G_CALLBACK (&WebSocketServer::receiveMessage), this);
   g_object_ref(connection);
   g_object_set(connection, "keepalive-interval", 5, nullptr);
+
+  auto stream = soup_websocket_connection_get_io_stream(connection);
+  auto outStream = g_io_stream_get_output_stream(stream);
+
+  GError *error = nullptr;
+  GSocket *socket = nullptr;
+  g_object_get(outStream, "socket", &socket, nullptr);
+
+  auto ret = g_socket_set_option (socket, SOL_TCP, TCP_NODELAY, 1, &error);
+
+  if(error)
+  {
+    TRACE(error->message);
+    g_error_free(error);
+  }
+
+  if(!ret)
+  {
+    TRACE("setting socket option NODELAY failed");
+  }
+
   m_connections.push_back(tWebSocketPtr(connection, g_object_unref));
 }
 
