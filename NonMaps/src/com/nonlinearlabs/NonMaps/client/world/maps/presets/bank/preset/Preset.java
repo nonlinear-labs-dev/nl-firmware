@@ -270,6 +270,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
+		getParent().getParent().pushBankOntoTop(getParent());
 		return this;
 	}
 
