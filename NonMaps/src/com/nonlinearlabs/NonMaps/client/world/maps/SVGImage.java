@@ -78,7 +78,9 @@ public abstract class SVGImage extends ZoomReactingControl implements SVGRenderH
 					xOffset = (pix.getWidth() - w) / 2;
 				}
 
-				ctx.drawImage(face, pix.getLeft() + xOffset, pix.getTop() + yOffset, w, h);
+				
+				if(w > 0 && h > 0)
+					ctx.drawImage(face, pix.getLeft() + xOffset, pix.getTop() + yOffset, w, h);
 			}
 		}
 	}

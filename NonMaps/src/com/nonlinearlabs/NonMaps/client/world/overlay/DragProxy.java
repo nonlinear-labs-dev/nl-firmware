@@ -77,7 +77,9 @@ public class DragProxy extends OverlayControl {
 			origin.forceVisibility(false);
 
 			Rect r = getPixRect();
-			ctx.drawImage(bmp.getCanvasElement(), r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
+			
+			if(bmp.getCanvasElement().getWidth() > 0 && bmp.getCanvasElement().getHeight() > 0) //Fixes new bug that whole groups wouldnt be drawn sometimes:  Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.
+				ctx.drawImage(bmp.getCanvasElement(), r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 		}
 	}
 
