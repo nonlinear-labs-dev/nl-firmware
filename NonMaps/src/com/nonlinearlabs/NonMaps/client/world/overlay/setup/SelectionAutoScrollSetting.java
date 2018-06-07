@@ -1,7 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
 
 public class SelectionAutoScrollSetting extends Setting {
 
@@ -9,6 +11,15 @@ public class SelectionAutoScrollSetting extends Setting {
 
 	protected SelectionAutoScrollSetting(GUISettingsPage parent) {
 		super(parent, "Selection Auto Scroll");
+
+		Setup.get().localSettings.selectionAutoScroll.onChange(new Function<Setup.SelectionAutoScroll, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.SelectionAutoScroll t) {
+				choice = t.ordinal();
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -27,22 +38,12 @@ public class SelectionAutoScrollSetting extends Setting {
 			}
 
 			@Override
-			protected void chose(int c, boolean sendToServer) {
+			protected void chose(int c, boolean fire) {
 				choice = c;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-				if (sendToServer)
-					NonMaps.theMaps.getNonLinearWorld().getSettings().set("SelectionAutoScroll", getSettingsValueString(c));
-			}
-
-			protected String getSettingsValueString(int c) {
-				return getChoices()[c].replace(" ", "-").toLowerCase();
-			}
-
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				String str = NonMaps.theMaps.getNonLinearWorld().getSettings().get("SelectionAutoScroll", "parameter-and-preset");
-				fromSettingsString(str);
+				if (fire)
+					LocalSettings.get().setSelectionAutoScroll(Setup.SelectionAutoScroll.values()[choice]);
 			}
 		};
 	}

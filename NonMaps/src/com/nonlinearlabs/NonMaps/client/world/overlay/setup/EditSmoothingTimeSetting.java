@@ -1,8 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
@@ -33,13 +31,6 @@ public class EditSmoothingTimeSetting extends Setting {
 					return this;
 				}
 				return super.click(eventPoint);
-			}
-
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				Node s = ServerProxy.getChild(settingsNode, "EditSmoothingTime");
-				if (s != null)
-					update(s);
 			}
 
 			@Override

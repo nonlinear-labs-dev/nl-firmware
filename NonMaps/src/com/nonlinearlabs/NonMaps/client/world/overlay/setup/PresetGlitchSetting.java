@@ -1,8 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
+import java.util.function.Function;
+
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 
 public class PresetGlitchSetting extends Setting {
 
@@ -10,6 +11,15 @@ public class PresetGlitchSetting extends Setting {
 
 	protected PresetGlitchSetting(DeviceSettingsPage parent) {
 		super(parent, "Preset Glitch Suppression");
+
+		Setup.get().systemSettings.presetGlitchSuppression.onChange(new Function<Setup.BooleanValues, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.BooleanValues t) {
+				choice = t.ordinal();
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -40,11 +50,6 @@ public class PresetGlitchSetting extends Setting {
 				return getChoices()[c].replace(" ", "-").toLowerCase();
 			}
 
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				String str = ServerProxy.getChildText(settingsNode, "PresetGlitchSuppression", "value");
-				fromSettingsString(str);
-			}
 		};
 	}
 }

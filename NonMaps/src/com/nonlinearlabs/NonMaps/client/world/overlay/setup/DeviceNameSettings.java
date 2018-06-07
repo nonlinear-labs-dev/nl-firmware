@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -22,11 +21,6 @@ public class DeviceNameSettings extends SettingsControl implements Renameable {
 				return this;
 			}
 		});
-	}
-
-	@Override
-	public void update(Node settingsNode, Node deviceInfo) {
-		label.update(settingsNode);
 	}
 
 	@Override

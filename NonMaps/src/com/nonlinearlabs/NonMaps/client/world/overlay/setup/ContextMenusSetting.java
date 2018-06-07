@@ -1,7 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
 
 public class ContextMenusSetting extends Setting {
 
@@ -9,6 +11,15 @@ public class ContextMenusSetting extends Setting {
 
 	protected ContextMenusSetting(GUISettingsPage parent) {
 		super(parent, "Context Menus");
+
+		Setup.get().localSettings.contextMenus.onChange(new Function<Setup.BooleanValues, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.BooleanValues t) {
+				choice = t.ordinal();
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -27,22 +38,12 @@ public class ContextMenusSetting extends Setting {
 			}
 
 			@Override
-			protected void chose(int c, boolean sendToServer) {
+			protected void chose(int c, boolean fire) {
 				choice = c;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-				if (sendToServer)
-					getNonMaps().getServerProxy().setSetting("ContextMenus", getSettingsValueString(c));
-			}
-
-			protected String getSettingsValueString(int c) {
-				return getChoices()[c].replace(" ", "-").toLowerCase();
-			}
-
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				String str = ServerProxy.getChildText(settingsNode, "ContextMenus", "value");
-				fromSettingsString(str);
+				if (fire)
+					LocalSettings.get().setContextMenus(Setup.BooleanValues.values()[choice]);
 			}
 		};
 	}

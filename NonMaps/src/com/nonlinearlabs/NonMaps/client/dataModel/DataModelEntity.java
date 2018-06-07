@@ -1,23 +1,29 @@
 package com.nonlinearlabs.NonMaps.client.dataModel;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedList;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public class DataModelEntity<T> {
-	LinkedList<WeakReference<Consumer<T>>> consumers = new LinkedList<WeakReference<Consumer<T>>>();
+public abstract class DataModelEntity<T> {
+	LinkedList<Function<T, Boolean>> consumers = new LinkedList<Function<T, Boolean>>();
 
-	public void onChange(Consumer<T> cb) {
-		consumers.add(new WeakReference<Consumer<T>>(cb));
+	public void onChange(Function<T, Boolean> cb) {
+		consumers.add(cb);
+		cb.apply(getValue());
 	}
 
-	@SuppressWarnings("unchecked")
 	public void notifyChanges() {
-		for (WeakReference<Consumer<T>> p : consumers) {
-			Consumer<T> c = p.get();
-			if (c != null) {
-				c.accept((T) this);
+		T v = getValue();
+
+		consumers.removeIf(new Predicate<Function<T, Boolean>>() {
+
+			@Override
+			public boolean test(Function<T, Boolean> listener) {
+				Boolean needsFurtherUpdates = listener.apply(v);
+				return !needsFurtherUpdates;
 			}
-		}
+		});
 	}
+
+	protected abstract T getValue();
 }

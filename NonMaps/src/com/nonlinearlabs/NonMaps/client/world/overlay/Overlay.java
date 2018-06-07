@@ -279,7 +279,6 @@ public class Overlay extends OverlayLayout {
 	}
 
 	public void update(Node settingsNode, Node editBufferNode, Node presetManagerNode, Node deviceInfo, Node undoNode) {
-		setup.update(settingsNode, deviceInfo);
 		undo.update(undoNode);
 		belt.update(settingsNode, editBufferNode, presetManagerNode);
 		undoRedo.update();

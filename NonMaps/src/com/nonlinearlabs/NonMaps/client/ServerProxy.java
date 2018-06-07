@@ -15,6 +15,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
+import com.nonlinearlabs.NonMaps.client.dataModel.SetupUpdater;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -92,7 +93,6 @@ public class ServerProxy {
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
 			nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);
 			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
-			nonMaps.getNonLinearWorld().getSettings().update(settingsNode, presetManagerNode, deviceInfo);
 			nonMaps.getNonLinearWorld().getViewport().getOverlay()
 					.update(settingsNode, editBufferNode, presetManagerNode, deviceInfo, undoNode);
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
@@ -100,20 +100,8 @@ public class ServerProxy {
 			setPlaygroundSoftwareVersion(deviceInfo);
 			checkSoftwareVersionCompatibility();
 
-			updateDataModelSetup(settingsNode.getFirstChild());
-		}
-	}
-
-	private void updateDataModelSetup(Node setting) {
-		while (setting != null) {
-			if (setting.getNodeType() == Node.ELEMENT_NODE) {
-				if (didChange(setting)) {
-					// get Setup.get()... for node name
-					// update setting
-					// let setting notify listeners
-				}
-			}
-			setting = setting.getNextSibling();
+			SetupUpdater setupUpdater = new SetupUpdater(settingsNode.getFirstChild());
+			setupUpdater.doUpdate();
 		}
 	}
 

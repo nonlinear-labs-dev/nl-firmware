@@ -17,7 +17,7 @@ public class Viewport extends MapsLayout {
 		super(parent);
 	}
 
-	void init() {
+	public void initViewport() {
 		overlay = new Overlay(this);
 	}
 

@@ -138,6 +138,6 @@ public abstract class SettingsMenu extends SettingsControl {
 
 	protected abstract int getChoice();
 
-	protected abstract void chose(int c, boolean sendToServer);
+	protected abstract void chose(int c, boolean fire);
 
 }

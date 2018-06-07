@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
@@ -11,8 +10,12 @@ public abstract class Setting extends OverlayLayout {
 
 	public Setting(Control parent, final String label) {
 		super(parent);
-
 		addChild(this.label = new SetupLabel(this, label));
+	}
+
+	@Override
+	public void init() {
+		super.init();
 		addChild(this.control = createSettingsControl());
 	}
 
@@ -24,10 +27,6 @@ public abstract class Setting extends OverlayLayout {
 		double lineHeight = getButtonDimension();
 		label.doLayout(0, 0, 3 * w / 7, lineHeight);
 		control.doLayout(label.getRelativePosition().getWidth(), 0, 4 * w / 7, lineHeight);
-	}
-
-	public void update(Node settingsNode, Node deviceInfo) {
-		control.update(settingsNode, deviceInfo);
 	}
 
 	public void setLabelText(String txt) {

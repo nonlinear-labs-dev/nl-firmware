@@ -13,14 +13,6 @@ public abstract class SettingsNodeConnectedLabel extends SettingsControl {
 	}
 
 	@Override
-	public void update(Node settingsNode, Node deviceInfo) {
-		String str = getLabelText(settingsNode, deviceInfo);
-
-		if (str != null && !str.isEmpty())
-			label.setText(str);
-	}
-
-	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
 		label.doLayout(0, 0, w, h);

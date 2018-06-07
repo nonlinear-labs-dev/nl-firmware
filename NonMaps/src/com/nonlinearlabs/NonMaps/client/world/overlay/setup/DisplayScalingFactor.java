@@ -1,8 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
+import java.util.function.Function;
+
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 
 public class DisplayScalingFactor extends Setting {
 
@@ -10,6 +12,15 @@ public class DisplayScalingFactor extends Setting {
 
 	protected DisplayScalingFactor(GUISettingsPage guiSettingsPage) {
 		super(guiSettingsPage, "Display Scaling Factor");
+
+		Setup.get().localSettings.displayScaling.onChange(new Function<Setup.DisplayScaling, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.DisplayScaling t) {
+				choice = t.ordinal();
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -41,12 +52,6 @@ public class DisplayScalingFactor extends Setting {
 
 			protected String getSettingsValueString(int c) {
 				return getChoices()[c].replace(" ", "-").toLowerCase();
-			}
-
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				String str = NonMaps.theMaps.getNonLinearWorld().getSettings().get("UI Scaling", "100%");
-				fromSettingsString(str);
 			}
 		};
 	}

@@ -1,7 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.dataModel;
 
 import java.util.HashMap;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class EditBuffer {
 
@@ -14,6 +14,11 @@ public class EditBuffer {
 		public String shortName;
 		public int coarseDenominator = 100;
 		public int fineDenominator = 1000;
+
+		@Override
+		protected Parameter getValue() {
+			return null;
+		}
 	}
 
 	public class UnmodulateableParameter extends Parameter {
@@ -76,7 +81,7 @@ public class EditBuffer {
 			return parameters.get(id);
 		}
 
-		public void onParameterChange(int parameterId, Consumer<Parameter> cb) {
+		public void onParameterChange(int parameterId, Function<Parameter, Boolean> cb) {
 			getParameter(parameterId).onChange(cb);
 		}
 	}
@@ -103,7 +108,7 @@ public class EditBuffer {
 		return parameterGroups.get(id);
 	}
 
-	public void onParameterChange(String groupId, int parameterId, Consumer<Parameter> cb) {
+	public void onParameterChange(String groupId, int parameterId, Function<Parameter, Boolean> cb) {
 		getGroup(groupId).onParameterChange(parameterId, cb);
 	}
 
