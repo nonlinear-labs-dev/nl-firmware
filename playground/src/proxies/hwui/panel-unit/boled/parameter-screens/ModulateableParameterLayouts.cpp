@@ -343,6 +343,8 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       setCarousel(new ModulationCarousel(ModulationCarousel::Mode::LowerBound, Rect(195, 0, 58, 64)));
       break;
   }
+
+  setAllDirty();
 }
 
 ModulateableParameterEditLayout2::ModulateableParameterEditLayout2() :
