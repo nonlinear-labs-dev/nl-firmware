@@ -6,6 +6,7 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.EditParameter;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class EditParameterSetting extends Setting {
 
@@ -14,6 +15,11 @@ public class EditParameterSetting extends Setting {
 	public class EditParameterSettingMenu extends SettingsMenu {
 		private EditParameterSettingMenu(Control parent) {
 			super(parent);
+		}
+
+		@Override
+		public void init() {
+			super.init();
 
 			Setup.get().localSettings.editParameter.onChange(new Function<Setup.EditParameter, Boolean>() {
 
@@ -54,7 +60,7 @@ public class EditParameterSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new EditParameterSettingMenu(this);
 	}
 

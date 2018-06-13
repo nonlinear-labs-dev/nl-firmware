@@ -3,19 +3,17 @@ package com.nonlinearlabs.NonMaps.client.dataModel;
 import java.util.HashMap;
 
 import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.SettingBase;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.ValueSetting;
 
 public class SetupUpdater extends Updater {
 	private Node firstSetting;
-	private final HashMap<String, SettingBase> xmlNodeNameToSetting = createSettingMap();
+	private final HashMap<String, DataModelEntityBase> xmlNodeNameToSetting = createSettingMap();
 
 	public SetupUpdater(Node setting) {
 		firstSetting = setting;
 	}
 
-	private HashMap<String, SettingBase> createSettingMap() {
-		HashMap<String, SettingBase> m = new HashMap<String, SettingBase>();
+	private HashMap<String, DataModelEntityBase> createSettingMap() {
+		HashMap<String, DataModelEntityBase> m = new HashMap<String, DataModelEntityBase>();
 		m.put("AftertouchCurve", Setup.get().systemSettings.aftertouchCurve);
 		m.put("AutoLoadSelectedPreset", Setup.get().systemSettings.autoLoad);
 		m.put("BaseUnitUIMode", Setup.get().systemSettings.baseUnitUIMode);
@@ -58,11 +56,11 @@ public class SetupUpdater extends Updater {
 				Node valueNode = getChild(setting, "value");
 
 				if (didChange(valueNode)) {
-					SettingBase s = findSettingFromTagName(setting.getNodeName());
+					DataModelEntityBase s = findSettingFromTagName(setting.getNodeName());
 					s.fromString(getText(valueNode));
 
-					if (s instanceof ValueSetting) {
-						update((ValueSetting) s, setting);
+					if (s instanceof ValueDataModelEntity) {
+						update((ValueDataModelEntity) s, setting);
 					}
 				}
 			}
@@ -71,21 +69,32 @@ public class SetupUpdater extends Updater {
 
 	}
 
-	private void update(ValueSetting s, Node setting) {
+	private void update(ValueDataModelEntity s, Node setting) {
 		String coarse = getChildText(setting, "coarse-denominator");
 		String fine = getChildText(setting, "fine-denominator");
 		String bipolar = getChildText(setting, "bipolar");
 		String scaling = getChildText(setting, "scaling");
 		String defaultValue = getChildText(setting, "default");
 
-		s.bipolar = bipolar.equals("1");
-		s.coarseDenominator = (int) Double.parseDouble(coarse);
-		s.fineDenominator = (int) Double.parseDouble(fine);
-		s.scaling = scaling;
-		s.defaultValue = Double.parseDouble(defaultValue);
+		if (!bipolar.isEmpty())
+			s.bipolar = bipolar.equals("1");
+
+		if (!coarse.isEmpty())
+			s.coarseDenominator = (int) Double.parseDouble(coarse);
+
+		if (!fine.isEmpty())
+			s.fineDenominator = (int) Double.parseDouble(fine);
+
+		if (!scaling.isEmpty())
+			s.scaling = scaling;
+
+		if (!defaultValue.isEmpty())
+			s.defaultValue = Double.parseDouble(defaultValue);
+
+		s.notifyChanges();
 	}
 
-	private SettingBase findSettingFromTagName(String nodeName) {
+	private DataModelEntityBase findSettingFromTagName(String nodeName) {
 		return xmlNodeNameToSetting.get(nodeName);
 	}
 }

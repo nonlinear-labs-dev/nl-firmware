@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class ContextMenusSetting extends Setting {
 
@@ -11,6 +12,11 @@ public class ContextMenusSetting extends Setting {
 
 	protected ContextMenusSetting(GUISettingsPage parent) {
 		super(parent, "Context Menus");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().localSettings.contextMenus.onChange(new Function<Setup.BooleanValues, Boolean>() {
 
@@ -23,7 +29,7 @@ public class ContextMenusSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

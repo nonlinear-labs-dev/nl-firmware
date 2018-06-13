@@ -4,8 +4,13 @@ import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class DataModelEntity<T> {
+public abstract class DataModelEntity<T> implements DataModelEntityBase {
 	LinkedList<Function<T, Boolean>> consumers = new LinkedList<Function<T, Boolean>>();
+	private T value;
+
+	public DataModelEntity(T def) {
+		value = def;
+	}
 
 	public void onChange(Function<T, Boolean> cb) {
 		consumers.add(cb);
@@ -25,5 +30,14 @@ public abstract class DataModelEntity<T> {
 		});
 	}
 
-	protected abstract T getValue();
+	public void setValue(T v) {
+		if (v != value) {
+			value = v;
+			notifyChanges();
+		}
+	}
+
+	public T getValue() {
+		return value;
+	}
 }

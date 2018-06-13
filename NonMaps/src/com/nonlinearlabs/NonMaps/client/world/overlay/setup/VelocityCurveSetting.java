@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class VelocityCurveSetting extends Setting {
 
@@ -11,6 +12,11 @@ public class VelocityCurveSetting extends Setting {
 
 	protected VelocityCurveSetting(DeviceSettingsPage parent) {
 		super(parent, "Velocity Curve");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().systemSettings.velocityCurve.onChange(new Function<Setup.VelocityCurve, Boolean>() {
 
@@ -23,7 +29,7 @@ public class VelocityCurveSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

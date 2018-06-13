@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class AftertouchCurveSetting extends Setting {
 
@@ -11,6 +12,11 @@ public class AftertouchCurveSetting extends Setting {
 
 	protected AftertouchCurveSetting(DeviceSettingsPage parent) {
 		super(parent, "Aftertouch Curve");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().systemSettings.aftertouchCurve.onChange(new Function<Setup.AftertouchCurve, Boolean>() {
 
@@ -23,7 +29,7 @@ public class AftertouchCurveSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

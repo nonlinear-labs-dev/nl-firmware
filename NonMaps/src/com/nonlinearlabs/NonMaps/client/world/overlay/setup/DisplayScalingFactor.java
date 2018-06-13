@@ -5,6 +5,7 @@ import java.util.function.Function;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class DisplayScalingFactor extends Setting {
 
@@ -12,6 +13,11 @@ public class DisplayScalingFactor extends Setting {
 
 	protected DisplayScalingFactor(GUISettingsPage guiSettingsPage) {
 		super(guiSettingsPage, "Display Scaling Factor");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().localSettings.displayScaling.onChange(new Function<Setup.DisplayScaling, Boolean>() {
 
@@ -24,7 +30,7 @@ public class DisplayScalingFactor extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

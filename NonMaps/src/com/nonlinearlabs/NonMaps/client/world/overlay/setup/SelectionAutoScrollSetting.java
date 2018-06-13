@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class SelectionAutoScrollSetting extends Setting {
 
@@ -11,6 +12,11 @@ public class SelectionAutoScrollSetting extends Setting {
 
 	protected SelectionAutoScrollSetting(GUISettingsPage parent) {
 		super(parent, "Selection Auto Scroll");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().localSettings.selectionAutoScroll.onChange(new Function<Setup.SelectionAutoScroll, Boolean>() {
 
@@ -23,7 +29,7 @@ public class SelectionAutoScrollSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

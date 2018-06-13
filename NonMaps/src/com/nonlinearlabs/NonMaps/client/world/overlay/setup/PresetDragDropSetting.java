@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class PresetDragDropSetting extends Setting {
 
@@ -11,6 +12,11 @@ public class PresetDragDropSetting extends Setting {
 
 	protected PresetDragDropSetting(GUISettingsPage parent) {
 		super(parent, "Preset Drag and Drop");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().localSettings.presetDragDrop.onChange(new Function<Setup.BooleanValues, Boolean>() {
 
@@ -23,7 +29,7 @@ public class PresetDragDropSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

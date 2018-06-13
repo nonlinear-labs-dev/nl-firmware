@@ -261,7 +261,7 @@ namespace AudioEngine
       {
         g_test_add_func("/AudioEngine/performance", []()
         {
-          doPerformanceTest();
+          //doPerformanceTest();
         });
       }
 

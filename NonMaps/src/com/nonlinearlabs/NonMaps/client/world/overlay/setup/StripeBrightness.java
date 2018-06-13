@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class StripeBrightness extends Setting {
 
@@ -11,6 +12,11 @@ public class StripeBrightness extends Setting {
 
 	protected StripeBrightness(GUISettingsPage guiSettingsPage) {
 		super(guiSettingsPage, "Stripe Brightness");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().localSettings.stripeBrightness.onChange(new Function<Setup.StripeBrightness, Boolean>() {
 
@@ -23,7 +29,7 @@ public class StripeBrightness extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

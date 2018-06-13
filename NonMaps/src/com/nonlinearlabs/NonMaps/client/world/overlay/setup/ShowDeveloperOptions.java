@@ -7,6 +7,7 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class ShowDeveloperOptions extends Setting {
 
@@ -14,6 +15,11 @@ public class ShowDeveloperOptions extends Setting {
 
 	protected ShowDeveloperOptions(GUISettingsPage parent) {
 		super(parent, "Show Developer Options");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().localSettings.showDeveloperOptions.onChange(new Function<Setup.BooleanValues, Boolean>() {
 
@@ -27,7 +33,7 @@ public class ShowDeveloperOptions extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

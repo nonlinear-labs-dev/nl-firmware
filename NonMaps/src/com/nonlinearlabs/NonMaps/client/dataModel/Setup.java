@@ -2,6 +2,12 @@ package com.nonlinearlabs.NonMaps.client.dataModel;
 
 public class Setup {
 
+	private static Setup theInstance = new Setup();
+
+	static public Setup get() {
+		return theInstance;
+	}
+
 	public enum AftertouchCurve {
 		soft, normal, hard
 	};
@@ -54,149 +60,82 @@ public class Setup {
 		off, percent_10, percent_25, percent_50
 	}
 
-	public interface SettingBase {
-		public void fromString(String str);
+	private <T extends Enum<T>> EnumDataModelEntity<T> createEnumDataModelEntity(Class<T> c, T def) {
+		return new EnumDataModelEntity<T>(c, def);
 	}
 
-	public abstract class Setting<T> extends DataModelEntity<T> implements SettingBase {
-		public T value;
-
-		public Setting(T def) {
-			value = def;
+	public class StripeBrightnessSetting extends EnumDataModelEntity<StripeBrightness> {
+		public StripeBrightnessSetting() {
+			super(StripeBrightness.class, StripeBrightness.percent_25);
 		}
 
-		public void setValue(T v) {
-			if (v != value) {
-				value = v;
-				notifyChanges();
+		public double toPercent() {
+			switch (getValue()) {
+			case off:
+				return 0;
+
+			case percent_10:
+				return 10;
+
+			case percent_25:
+				return 25;
+
+			case percent_50:
+				return 50;
 			}
-		}
-
-		@Override
-		protected T getValue() {
-			return value;
+			return 0;
 		}
 	}
-
-	class IntegerSetting extends Setting<Integer> {
-
-		public IntegerSetting() {
-			super(0);
-		}
-
-		@Override
-		public void fromString(String str) {
-			setValue(Integer.parseInt(str));
-		}
-	}
-
-	class StringSetting extends Setting<String> {
-		public StringSetting() {
-			super("");
-		}
-
-		@Override
-		public void fromString(String str) {
-			setValue(str);
-		}
-	}
-
-	public class EnumSetting<T extends Enum<T>> extends Setting<T> {
-		Class<T> klass;
-
-		public EnumSetting(Class<T> c, T def) {
-			super(def);
-			klass = c;
-		}
-
-		@Override
-		public void fromString(String str) {
-			str = str.replace("-", "_");
-			setValue(Enum.valueOf(klass, str.toLowerCase()));
-		}
-	}
-
-	public class BooleanSetting extends EnumSetting<BooleanValues> {
-		public BooleanSetting() {
-			super(BooleanValues.class, BooleanValues.off);
-		}
-	}
-
-	public class ValueSetting extends Setting<Double> {
-		public double defaultValue = 0.0;
-		public String scaling = "";
-		public int coarseDenominator = 0;
-		public int fineDenominator = 0;
-		public boolean bipolar = false;
-
-		public ValueSetting() {
-			super(0.0);
-		}
-
-		@Override
-		public void fromString(String str) {
-			setValue(Double.parseDouble(str));
-		}
-	}
-
-	private <T extends Enum<T>> EnumSetting<T> createEnumSettings(Class<T> c, T def) {
-		return new EnumSetting<T>(c, def);
-	}
-
-	private static Setup theInstance = new Setup();
 
 	public class SystemSettings {
-		public EnumSetting<AftertouchCurve> aftertouchCurve = createEnumSettings(AftertouchCurve.class, AftertouchCurve.normal);
-		public BooleanSetting autoLoad = new BooleanSetting();
-		public EnumSetting<BaseUnitUIMode> baseUnitUIMode = createEnumSettings(BaseUnitUIMode.class, BaseUnitUIMode.parameter_edit);
-		public EnumSetting<BenderCurve> benderCurve = createEnumSettings(BenderCurve.class, BenderCurve.normal);
-		public IntegerSetting datetimeAdjustment = new IntegerSetting();
-		public EnumSetting<DebugLevel> debugLevel = createEnumSettings(DebugLevel.class, DebugLevel.warning);
-		public StringSetting deviceName = new StringSetting();
-		public ValueSetting editSmoothingTime = new ValueSetting();
-		public ValueSetting encoderAcceleration = new ValueSetting();
-		public BooleanSetting indicateBlockedUI = new BooleanSetting();
-		public BooleanSetting kioskMode = new BooleanSetting();
-		public IntegerSetting noteShift = new IntegerSetting();
-		public EnumSetting<EditModeRibbonBehaviour> editmodeRibbonBehavior = createEnumSettings(EditModeRibbonBehaviour.class,
-				EditModeRibbonBehaviour.absolute);
-		public StringSetting passPhrase = new StringSetting();
-		public EnumSetting<PedalType> pedal1Type = createEnumSettings(PedalType.class, PedalType.pot_tip_active);
-		public EnumSetting<PedalType> pedal2Type = createEnumSettings(PedalType.class, PedalType.pot_tip_active);
-		public EnumSetting<PedalType> pedal3Type = createEnumSettings(PedalType.class, PedalType.pot_tip_active);
-		public EnumSetting<PedalType> pedal4Type = createEnumSettings(PedalType.class, PedalType.pot_tip_active);
-		public BooleanSetting benderOnPressedKeys = new BooleanSetting();
-		public BooleanSetting presetDragEnabled = new BooleanSetting();
-		public BooleanSetting presetGlitchSuppression = new BooleanSetting();
-		public EnumSetting<PresetStoreMode> presetStoreModeSetting = createEnumSettings(PresetStoreMode.class, PresetStoreMode.append);
-		public ValueSetting randomizeAmount = new ValueSetting();
-		public ValueSetting ribbonRelativeFactor = new ValueSetting();
-		public BooleanSetting sendPresetAsLPCFallback = new BooleanSetting();
-		public BooleanSetting signalFlowIndication = new BooleanSetting();
-		public StringSetting ssid = new StringSetting();
-		public ValueSetting transitionTime = new ValueSetting();
-		public EnumSetting<VelocityCurve> velocityCurve = createEnumSettings(VelocityCurve.class, VelocityCurve.normal);
+		public EnumDataModelEntity<AftertouchCurve> aftertouchCurve = createEnumDataModelEntity(AftertouchCurve.class,
+				AftertouchCurve.normal);
+		public BooleanDataModelEntity autoLoad = new BooleanDataModelEntity();
+		public EnumDataModelEntity<BaseUnitUIMode> baseUnitUIMode = createEnumDataModelEntity(BaseUnitUIMode.class,
+				BaseUnitUIMode.parameter_edit);
+		public EnumDataModelEntity<BenderCurve> benderCurve = createEnumDataModelEntity(BenderCurve.class, BenderCurve.normal);
+		public IntegerDataModelEntity datetimeAdjustment = new IntegerDataModelEntity();
+		public EnumDataModelEntity<DebugLevel> debugLevel = createEnumDataModelEntity(DebugLevel.class, DebugLevel.warning);
+		public StringDataModelEntity deviceName = new StringDataModelEntity();
+		public ValueDataModelEntity editSmoothingTime = new ValueDataModelEntity();
+		public ValueDataModelEntity encoderAcceleration = new ValueDataModelEntity();
+		public BooleanDataModelEntity indicateBlockedUI = new BooleanDataModelEntity();
+		public BooleanDataModelEntity kioskMode = new BooleanDataModelEntity();
+		public IntegerDataModelEntity noteShift = new IntegerDataModelEntity();
+		public EnumDataModelEntity<EditModeRibbonBehaviour> editmodeRibbonBehavior = createEnumDataModelEntity(
+				EditModeRibbonBehaviour.class, EditModeRibbonBehaviour.absolute);
+		public StringDataModelEntity passPhrase = new StringDataModelEntity();
+		public EnumDataModelEntity<PedalType> pedal1Type = createEnumDataModelEntity(PedalType.class, PedalType.pot_tip_active);
+		public EnumDataModelEntity<PedalType> pedal2Type = createEnumDataModelEntity(PedalType.class, PedalType.pot_tip_active);
+		public EnumDataModelEntity<PedalType> pedal3Type = createEnumDataModelEntity(PedalType.class, PedalType.pot_tip_active);
+		public EnumDataModelEntity<PedalType> pedal4Type = createEnumDataModelEntity(PedalType.class, PedalType.pot_tip_active);
+		public BooleanDataModelEntity benderOnPressedKeys = new BooleanDataModelEntity();
+		public BooleanDataModelEntity presetDragEnabled = new BooleanDataModelEntity();
+		public BooleanDataModelEntity presetGlitchSuppression = new BooleanDataModelEntity();
+		public EnumDataModelEntity<PresetStoreMode> presetStoreModeSetting = createEnumDataModelEntity(PresetStoreMode.class,
+				PresetStoreMode.append);
+		public ValueDataModelEntity randomizeAmount = new ValueDataModelEntity();
+		public ValueDataModelEntity ribbonRelativeFactor = new ValueDataModelEntity();
+		public BooleanDataModelEntity sendPresetAsLPCFallback = new BooleanDataModelEntity();
+		public BooleanDataModelEntity signalFlowIndication = new BooleanDataModelEntity();
+		public StringDataModelEntity ssid = new StringDataModelEntity();
+		public ValueDataModelEntity transitionTime = new ValueDataModelEntity();
+		public EnumDataModelEntity<VelocityCurve> velocityCurve = createEnumDataModelEntity(VelocityCurve.class, VelocityCurve.normal);
 	};
 
 	public class LocalSettings {
-		public EnumSetting<SelectionAutoScroll> selectionAutoScroll = createEnumSettings(SelectionAutoScroll.class,
+		public EnumDataModelEntity<SelectionAutoScroll> selectionAutoScroll = createEnumDataModelEntity(SelectionAutoScroll.class,
 				SelectionAutoScroll.parameter_and_preset);
-		public EnumSetting<EditParameter> editParameter = createEnumSettings(EditParameter.class, EditParameter.if_selected);
-		public BooleanSetting contextMenus = new BooleanSetting();
-		public BooleanSetting presetDragDrop = new BooleanSetting();
-		public EnumSetting<DisplayScaling> displayScaling = createEnumSettings(DisplayScaling.class, DisplayScaling.percent_100);
-		public EnumSetting<StripeBrightness> stripeBrightness = createEnumSettings(StripeBrightness.class, StripeBrightness.percent_25);
-		public BooleanSetting bitmapCache = new BooleanSetting();
-		public BooleanSetting showDeveloperOptions = new BooleanSetting();
+		public EnumDataModelEntity<EditParameter> editParameter = createEnumDataModelEntity(EditParameter.class, EditParameter.if_selected);
+		public BooleanDataModelEntity contextMenus = new BooleanDataModelEntity();
+		public BooleanDataModelEntity presetDragDrop = new BooleanDataModelEntity();
+		public EnumDataModelEntity<DisplayScaling> displayScaling = createEnumDataModelEntity(DisplayScaling.class,
+				DisplayScaling.percent_100);
+		public StripeBrightnessSetting stripeBrightness = new StripeBrightnessSetting();
+		public BooleanDataModelEntity bitmapCache = new BooleanDataModelEntity();
+		public BooleanDataModelEntity showDeveloperOptions = new BooleanDataModelEntity();
 	}
 
 	public SystemSettings systemSettings = new SystemSettings();
 	public LocalSettings localSettings = new LocalSettings();
-
-	private Setup() {
-	}
-
-	static public Setup get() {
-		return theInstance;
-	}
 }

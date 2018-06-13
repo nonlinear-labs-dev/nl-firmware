@@ -33,4 +33,15 @@ public class SystemSettings {
 		NonMaps.get().getServerProxy().setSetting("IndicateBlockedUI", v.name());
 
 	}
+
+	public void setDeviceName(String newName) {
+		Setup.get().systemSettings.deviceName.setValue(newName);
+		NonMaps.theMaps.getServerProxy().setSetting("DeviceName", newName);
+	}
+
+	public void setEditSmoothingTime(double v) {
+		Setup.get().systemSettings.editSmoothingTime.setValue(v);
+		NonMaps.theMaps.getServerProxy().setSetting("EditSmoothingTime", Double.toString(v));
+
+	}
 }

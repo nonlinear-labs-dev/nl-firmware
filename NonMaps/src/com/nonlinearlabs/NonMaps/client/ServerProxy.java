@@ -15,6 +15,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
+import com.nonlinearlabs.NonMaps.client.dataModel.DeviceInfoUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.SetupUpdater;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
@@ -102,6 +103,9 @@ public class ServerProxy {
 
 			SetupUpdater setupUpdater = new SetupUpdater(settingsNode.getFirstChild());
 			setupUpdater.doUpdate();
+
+			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
+			deviceInfoUpdater.doUpdate();
 		}
 	}
 
@@ -444,9 +448,13 @@ public class ServerProxy {
 	}
 
 	public void setSetting(final String key, final String value) {
+		setSetting(key, value, true);
+	}
+
+	public void setSetting(final String key, final String value, boolean isOracle) {
 		StaticURI.Path path = new StaticURI.Path("settings", "set-setting");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
-		queueJob(uri, false);
+		queueJob(uri, isOracle);
 	}
 
 	public void resetEditBuffer() {

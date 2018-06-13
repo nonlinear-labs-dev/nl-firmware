@@ -1,10 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.useCases;
 
+import com.nonlinearlabs.NonMaps.client.dataModel.DataModelEntityBase;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.DisplayScaling;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.EditParameter;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.SettingBase;
 
 public class LocalSettings {
 	private static LocalSettings theInstance = new LocalSettings();
@@ -27,7 +27,7 @@ public class LocalSettings {
 		load("ShowDeveloperOptions", Setup.get().localSettings.showDeveloperOptions, Setup.BooleanValues.off.name());
 	}
 
-	private void load(String key, SettingBase setting, String def) {
+	private void load(String key, DataModelEntityBase setting, String def) {
 		String v = storage.load(key, def);
 		v = convertFromLegacy(v);
 		setting.fromString(v);

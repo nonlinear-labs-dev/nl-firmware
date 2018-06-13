@@ -3,13 +3,14 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.EnumSetting;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.PedalType;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.PlayControls;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public class PedalSettings extends SettingsControl {
+public class PedalSettings extends OverlayLayout {
 
 	private int choice = 0;
 
@@ -68,7 +69,7 @@ public class PedalSettings extends SettingsControl {
 			return "Pedal4Type";
 		}
 
-		private EnumSetting<PedalType> getPedalSetting() {
+		private EnumDataModelEntity<PedalType> getPedalSetting() {
 			PlayControls playControls = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getPlayControls();
 			if (playControls.getPedal(0) == getPedal())
 				return Setup.get().systemSettings.pedal1Type;

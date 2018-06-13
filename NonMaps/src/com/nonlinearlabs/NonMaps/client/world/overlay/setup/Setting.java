@@ -1,12 +1,13 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public abstract class Setting extends OverlayLayout {
 
 	private SetupLabel label;
-	private SettingsControl control;
+	private OverlayControl control;
 
 	public Setting(Control parent, final String label) {
 		super(parent);
@@ -19,7 +20,7 @@ public abstract class Setting extends OverlayLayout {
 		addChild(this.control = createSettingsControl());
 	}
 
-	protected abstract SettingsControl createSettingsControl();
+	protected abstract OverlayControl createSettingsControl();
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
@@ -33,7 +34,7 @@ public abstract class Setting extends OverlayLayout {
 		label.setText(txt);
 	}
 
-	public SettingsControl getSettingsControl() {
+	public OverlayControl getSettingsControl() {
 		return control;
 	}
 

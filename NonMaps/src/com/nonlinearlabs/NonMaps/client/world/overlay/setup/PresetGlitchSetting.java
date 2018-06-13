@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class PresetGlitchSetting extends Setting {
 
@@ -11,6 +12,11 @@ public class PresetGlitchSetting extends Setting {
 
 	protected PresetGlitchSetting(DeviceSettingsPage parent) {
 		super(parent, "Preset Glitch Suppression");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().systemSettings.presetGlitchSuppression.onChange(new Function<Setup.BooleanValues, Boolean>() {
 
@@ -23,7 +29,7 @@ public class PresetGlitchSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override

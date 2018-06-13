@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class BenderCurve extends Setting {
 
@@ -11,6 +12,11 @@ public class BenderCurve extends Setting {
 
 	protected BenderCurve(DeviceSettingsPage parent) {
 		super(parent, "Bender Curve");
+	}
+
+	@Override
+	public void init() {
+		super.init();
 
 		Setup.get().systemSettings.benderCurve.onChange(new Function<Setup.BenderCurve, Boolean>() {
 
@@ -23,7 +29,7 @@ public class BenderCurve extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override
