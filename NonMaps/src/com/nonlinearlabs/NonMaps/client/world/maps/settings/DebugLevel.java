@@ -1,8 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.settings;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -41,49 +42,6 @@ public class DebugLevel extends Setting {
 			}
 		}
 
-		public String toString() {
-			switch (ordinal()) {
-			case 0:
-				return "debug";
-
-			case 1:
-				return "silent";
-
-			case 2:
-				return "error";
-
-			case 3:
-				return "warning";
-
-			case 4:
-				return "info";
-
-			case 5:
-				return "gassy";
-
-			default:
-				return "";
-			}
-		}
-
-		static public Items fromString(String str) {
-			if (str != null) {
-				if (str.equals("debug"))
-					return DEBUG;
-				else if (str.equals("silent"))
-					return SILENT;
-				else if (str.equals("error"))
-					return ERROR;
-				else if (str.equals("warning"))
-					return WARNING;
-				else if (str.equals("info"))
-					return INFO;
-				if (str.equals("gassy"))
-					return GASSY;
-			}
-
-			return SILENT;
-		}
 	}
 
 	private class DebugLevelContextMenu extends ContextMenu {
@@ -135,24 +93,25 @@ public class DebugLevel extends Setting {
 
 	DebugLevel(DeveloperSettings parent) {
 		super(parent, "Debug Level", Items.WARNING.toDisplayString());
+
+		Setup.get().systemSettings.debugLevel.onChange(new Function<Setup.DebugLevel, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.DebugLevel t) {
+				setCurrentValue(Items.values()[t.ordinal()].toDisplayString());
+				return true;
+			}
+		});
 	}
 
 	public void setValue(Items value) {
-		NonMaps.theMaps.getServerProxy().setSetting("DebugLevel", value.toString());
-		setCurrentValue(value.toDisplayString());
+		SystemSettings.get().setDebugLevel(Setup.DebugLevel.values()[value.ordinal()]);
 	}
 
 	@Override
 	public ContextMenu createMenu(NonPosition pos) {
 		NonLinearWorld world = getWorld();
 		return world.setContextMenu(new DebugLevelContextMenu(world), pos);
-	}
-
-	public void update(Node settingsNode) {
-		String str = ServerProxy.getChildText(settingsNode, "DebugLevel", "value");
-
-		if (str != null && !str.isEmpty())
-			setCurrentValue(Items.fromString(str).toDisplayString());
 	}
 
 	@Override

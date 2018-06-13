@@ -1,7 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class StripeBrightness extends Setting {
 
@@ -12,7 +15,21 @@ public class StripeBrightness extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	public void init() {
+		super.init();
+
+		Setup.get().localSettings.stripeBrightness.onChange(new Function<Setup.StripeBrightness, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.StripeBrightness t) {
+				choice = t.ordinal();
+				return true;
+			}
+		});
+	}
+
+	@Override
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override
@@ -27,22 +44,12 @@ public class StripeBrightness extends Setting {
 			}
 
 			@Override
-			protected void chose(int c, boolean sendToServer) {
+			protected void chose(int c, boolean fire) {
 				choice = c;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-				if (sendToServer)
-					NonMaps.theMaps.getNonLinearWorld().getSettings().set("StripeBrightness", getSettingsValueString(c));
-			}
-
-			protected String getSettingsValueString(int c) {
-				return getChoices()[c].replace(" ", "-").toLowerCase();
-			}
-
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				String str = NonMaps.theMaps.getNonLinearWorld().getSettings().get("StripeBrightness", "10%");
-				fromSettingsString(str);
+				if (fire)
+					LocalSettings.get().setStripeBrightness(Setup.StripeBrightness.values()[choice]);
 			}
 		};
 	}

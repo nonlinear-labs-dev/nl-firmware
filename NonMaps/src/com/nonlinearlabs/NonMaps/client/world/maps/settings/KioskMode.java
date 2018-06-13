@@ -1,7 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.settings;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -39,11 +42,19 @@ class KioskMode extends Setting {
 
 	protected KioskMode(DeveloperSettings parent) {
 		super(parent, "Kiosk Mode", "Off");
+
+		Setup.get().systemSettings.kioskMode.onChange(new Function<Setup.BooleanValues, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.BooleanValues t) {
+				setCurrentValue(t == Setup.BooleanValues.on);
+				return true;
+			}
+		});
 	}
 
 	private void setValue(boolean val) {
-		getNonMaps().getServerProxy().setSetting("KioskMode", val ? "on" : "off");
-		setCurrentValue(val);
+		SystemSettings.get().setKioskMode(val ? BooleanValues.on : BooleanValues.off);
 	}
 
 	public void setCurrentValue(boolean val) {
@@ -58,13 +69,6 @@ class KioskMode extends Setting {
 	public ContextMenu createMenu(NonPosition pos) {
 		NonLinearWorld world = getWorld();
 		return world.setContextMenu(new EnabledDisabledContextMenu(world), pos);
-	}
-
-	void update(Node settingsNode) {
-		String str = ServerProxy.getChildText(settingsNode, "KioskMode", "value");
-
-		if (str != null && !str.isEmpty())
-			setCurrentValue(str.toLowerCase().equals("on"));
 	}
 
 	@Override

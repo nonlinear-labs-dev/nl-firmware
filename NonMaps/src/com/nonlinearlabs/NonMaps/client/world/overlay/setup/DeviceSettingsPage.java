@@ -18,10 +18,10 @@ public class DeviceSettingsPage extends SetupPage {
 
 		PlayControls playControls = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getPlayControls();
 
-		addChild(new PedalSetting(this, playControls.getPedal(0)));
-		addChild(new PedalSetting(this, playControls.getPedal(1)));
-		addChild(new PedalSetting(this, playControls.getPedal(2)));
-		addChild(new PedalSetting(this, playControls.getPedal(3)));
+		addChild(new PedalSetting(this, playControls.getPedal(0), "Pedal 1"));
+		addChild(new PedalSetting(this, playControls.getPedal(1), "Pedal 2"));
+		addChild(new PedalSetting(this, playControls.getPedal(2), "Pedal 3"));
+		addChild(new PedalSetting(this, playControls.getPedal(3), "Pedal 4"));
 
 		addChild(new Divider(this));
 		addChild(new PresetGlitchSetting(this));

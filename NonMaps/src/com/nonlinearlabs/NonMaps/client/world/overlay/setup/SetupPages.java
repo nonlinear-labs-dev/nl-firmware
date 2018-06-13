@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
@@ -104,11 +103,6 @@ public class SetupPages extends OverlayLayout {
 		this.pageIndex = pageIndex;
 		addChild(pages[this.pageIndex]);
 		requestLayout();
-	}
-
-	public void update(Node settingsNode, Node deviceInfo) {
-		for (SetupPage p : pages)
-			p.update(settingsNode, deviceInfo);
 	}
 
 	public PresetDragDropSetting getPresetDragDropSetting() {

@@ -1,9 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.world;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
@@ -17,7 +17,7 @@ public class Viewport extends MapsLayout {
 		super(parent);
 	}
 
-	void init() {
+	public void initViewport() {
 		overlay = new Overlay(this);
 	}
 
@@ -145,16 +145,7 @@ public class Viewport extends MapsLayout {
 		double arcInc = 2 * Math.PI / numStripes;
 		double arc = -0.15 * 2 * Math.PI;
 
-		double brightness = 10;
-
-		try {
-			String brightnessStr = getParent().getSettings().get("StripeBrightness", "10%");
-			if (brightnessStr.toLowerCase().equals("off"))
-				brightness = 0;
-			else
-				brightness = NumberFormat.getPercentFormat().parse(brightnessStr);
-		} catch (Exception e) {
-		}
+		double brightness = Setup.get().localSettings.stripeBrightness.toPercent();
 
 		if (brightness > 0) {
 			ctx.setStrokeStyle(new Gray((int) (255 * brightness / 100)).toString());

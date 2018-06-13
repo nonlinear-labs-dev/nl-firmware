@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -33,10 +32,6 @@ public class Setup extends FloatingWindow {
 			content.doLayout(margin, lineHeight, w - 2 * margin, heightInLines * lineHeight - margin);
 			super.doLayout(x, y, w, (heightInLines + 1) * lineHeight);
 		}
-	}
-
-	public void update(Node settingsNode, Node deviceInfo) {
-		content.update(settingsNode, deviceInfo);
 	}
 
 	public PresetDragDropSetting getPresetDragDropSetting() {
