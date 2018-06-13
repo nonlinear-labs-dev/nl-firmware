@@ -155,10 +155,10 @@ public class ColorTable {
 		return new RGB(44, 45, 46);
 	}
 
-	public static RGB getColorAUXHeaderBackground() {
+	//public static RGB getColorAUXHeaderBackground() {
 		// return new RGB(157, 161, 166);
-		return new RGB(155, 159, 163);
-	}
+		//return new RGB(155, 159, 163);
+	//}
 
 	public static RGB getColorAUXSelectedBackground() {
 		return new RGB(85, 87, 89);
@@ -197,5 +197,4 @@ public class ColorTable {
 	public static RGB getMacroControlTargetColor() {
 		return new RGB(204, 14, 43);
 	}
-
 }

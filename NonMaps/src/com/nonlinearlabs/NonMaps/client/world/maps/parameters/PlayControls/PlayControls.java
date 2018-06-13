@@ -19,7 +19,7 @@ public class PlayControls extends LayoutResizingHorizontal {
 
 	@Override
 	public RGB getColorSliderHighlight() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
@@ -34,17 +34,17 @@ public class PlayControls extends LayoutResizingHorizontal {
 
 	@Override
 	public RGB getColorModuleHeaderBackground() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
 	public RGB getColorFontValueDisplay() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
 	public RGB getColorFontValueDisplaySelected() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class PlayControls extends LayoutResizingHorizontal {
 
 	@Override
 	public RGB getColorObjectContourSelected() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override

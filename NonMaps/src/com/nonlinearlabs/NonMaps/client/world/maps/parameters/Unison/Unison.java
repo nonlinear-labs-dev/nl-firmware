@@ -11,7 +11,12 @@ public class Unison extends ParameterGroupVertical {
 
 	public Unison(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this, getName()) {
+			@Override
+			public RGB getColorFont() {
+				return new RGB(190, 190, 190);
+			}
+		});
 		addChild(new UnisonControls(this));
 	}
 
@@ -22,7 +27,7 @@ public class Unison extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorSliderHighlight() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
@@ -37,17 +42,17 @@ public class Unison extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorModuleHeaderBackground() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
 	public RGB getColorFontValueDisplay() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
 	public RGB getColorFontValueDisplaySelected() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
@@ -57,7 +62,7 @@ public class Unison extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorObjectContourSelected() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return new RGB(155, 159, 163);
 	}
 
 	@Override
