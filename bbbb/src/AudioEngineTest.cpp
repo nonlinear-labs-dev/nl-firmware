@@ -309,6 +309,8 @@ namespace AudioEngine
 
   static void doAudioEnginePerformanceTest()
   {
+    return;
+
     int numVoiceGroupsUsed = 20;
 
     for(int vg = 0; vg < numVoiceGroupsUsed; vg++)
