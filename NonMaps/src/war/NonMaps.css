@@ -8,6 +8,16 @@
 	src: url('./SourceSansProLW25-Regular.otf');
 }
 
+@font-face {
+	font-family: 'Source Sans Pro LW25';
+	src: url('./SourceSansProLW25-Regular.otf');
+}
+
+@font-face {
+	font-family: 'Source Sans Pro';
+	src: url('./SourceSansProLW25-Regular.otf');
+}
+
 html, body {
 	background-color: #000000;
 	font-family: nonlinearfont;
@@ -1415,11 +1425,9 @@ input[type="radio"] {
 
 input[type="radio"]+label {
 	display: inline-block;
-	margin: 5px 5px 5px 0px;
 	vertical-align: middle;
 	background: url("radiobox-unchecked.png") left center no-repeat;
 	cursor: pointer;
-	padding-left: 20px;
 	color: #bbb;
 }
 

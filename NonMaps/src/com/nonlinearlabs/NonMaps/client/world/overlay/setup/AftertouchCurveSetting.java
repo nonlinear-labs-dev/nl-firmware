@@ -2,8 +2,9 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.AftertouchCurve;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class AftertouchCurveSetting extends Setting {
@@ -44,18 +45,14 @@ public class AftertouchCurveSetting extends Setting {
 			}
 
 			@Override
-			protected void chose(int c, boolean sendToServer) {
+			protected void chose(int c, boolean fire) {
 				choice = c;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-				if (sendToServer)
-					NonMaps.theMaps.getServerProxy().setSetting("AftertouchCurve", getSettingsValueString(c));
-			}
+				if (fire)
+					SystemSettings.get().setAftertouchCurve(AftertouchCurve.values()[choice]);
 
-			protected String getSettingsValueString(int c) {
-				return getChoices()[c].replace(" ", "-").toLowerCase();
 			}
-
 		};
 	}
 }

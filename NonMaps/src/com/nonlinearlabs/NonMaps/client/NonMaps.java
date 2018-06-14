@@ -20,6 +20,7 @@ import com.nonlinearlabs.NonMaps.client.world.Mouseing;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.maps.CachingMapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonRect;
+import com.nonlinearlabs.NonMaps.client.world.overlay.html.SetupDialog;
 
 public class NonMaps extends Mouseing implements EntryPoint {
 	public interface ScreenResizeListener {
@@ -101,6 +102,8 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		setupTimer();
 
 		server.startPolling();
+
+		SetupDialog.create();
 	}
 
 	public static NonMaps get() {

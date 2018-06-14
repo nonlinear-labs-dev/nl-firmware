@@ -2,8 +2,8 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class BenderCurve extends Setting {
@@ -44,16 +44,12 @@ public class BenderCurve extends Setting {
 			}
 
 			@Override
-			protected void chose(int c, boolean sendToServer) {
+			protected void chose(int c, boolean fire) {
 				choice = c;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-				if (sendToServer)
-					NonMaps.theMaps.getServerProxy().setSetting("BenderCurve", getSettingsValueString(c));
-			}
-
-			protected String getSettingsValueString(int c) {
-				return getChoices()[c].replace(" ", "-").toLowerCase();
+				if (fire)
+					SystemSettings.get().setBenderCurve(com.nonlinearlabs.NonMaps.client.dataModel.Setup.BenderCurve.values()[choice]);
 			}
 
 		};
