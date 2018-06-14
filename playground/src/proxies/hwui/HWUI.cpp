@@ -513,7 +513,6 @@ FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
   bool isCurrentParameter = (m_focusAndMode.focus == UIFocus::Parameters);
   bool isDesiredParameter = (in.focus == UIFocus::Parameters);
 
-  bool switchFromParameterToPresetManager = (isCurrentParameter && isDesiredPresetManager);
   bool switchFromPresetManagerToParameter = (isCurrentPresetManager && isDesiredParameter);
 
   if(switchFromPresetManagerToParameter)
