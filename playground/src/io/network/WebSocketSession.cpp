@@ -5,26 +5,30 @@
 #include <netinet/tcp.h>
 using namespace std::chrono_literals;
 
+
+
 WebSocketSession::WebSocketSession() :
     m_soupSession(soup_session_new(), g_object_unref),
     m_message(nullptr, g_object_unref),
     m_connection(nullptr, g_object_unref),
-    defaultContextQueue(std::make_unique<ContextBoundMessageQueue>(Glib::MainContext::get_default())),
-    m_contextThread([this](){
-      auto m = Glib::MainContext::create();
-      this->backgroundContextQueue = std::make_unique<ContextBoundMessageQueue>(m);
-      this->messageLoop = Glib::MainLoop::create(m);
-      g_main_context_push_thread_default(m->gobj());
-      backgroundContextQueue->pushMessage(std::bind(&WebSocketSession::connect, this));
-      this->messageLoop->run();
-    })
+    m_defaultContextQueue(std::make_unique<ContextBoundMessageQueue>(Glib::MainContext::get_default())),
+    m_contextThread(std::bind(&WebSocketSession::backgroundThread, this))
 {
 }
 
 WebSocketSession::~WebSocketSession()
 {
-  messageLoop->quit();
+  m_messageLoop->quit();
   m_contextThread.join();
+}
+
+void WebSocketSession::backgroundThread() {
+  auto m = Glib::MainContext::create();
+  this->m_backgroundContextQueue = std::make_unique<ContextBoundMessageQueue>(m);
+  this->m_messageLoop = Glib::MainLoop::create(m);
+  g_main_context_push_thread_default(m->gobj());
+  m_backgroundContextQueue->pushMessage(std::bind(&WebSocketSession::connect, this));
+  this->m_messageLoop->run();
 }
 
 sigc::connection WebSocketSession::onMessageReceived(Domain d, const sigc::slot<void, tMessage> &cb)
@@ -64,7 +68,7 @@ void WebSocketSession::onWebSocketConnected(SoupSession *session, GAsyncResult *
 
 void WebSocketSession::reconnect()
 {
-  auto sigTimeOut = this->messageLoop->get_context()->signal_timeout();
+  auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
   sigTimeOut.connect_seconds_once(std::bind(&WebSocketSession::connect, this), 2);
 }
 
@@ -112,7 +116,7 @@ void WebSocketSession::sendMessage(Domain d, tMessage msg)
 
 void WebSocketSession::sendMessage(tMessage msg)
 {
-  backgroundContextQueue->pushMessage([=]() {
+  m_backgroundContextQueue->pushMessage([=]() {
     if (m_connection) {
       auto state = soup_websocket_connection_get_state(m_connection.get());
 
@@ -139,7 +143,7 @@ void WebSocketSession::receiveMessage(SoupWebsocketConnection *self, gint type, 
 
   auto byteMessage = Glib::Bytes::create(dup, len - 1);
 
-  pThis->defaultContextQueue->pushMessage([=](){
+  pThis->m_defaultContextQueue->pushMessage([=](){
     pThis->m_onMessageReceived[d](byteMessage);
   });
 }

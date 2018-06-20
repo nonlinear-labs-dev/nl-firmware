@@ -34,6 +34,7 @@ class WebSocketSession
     static void receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketSession *pThis);
     void sendMessage(tMessage msg);
     void reconnect();
+    void backgroundThread();
 
     using tSessionPtr = std::unique_ptr<SoupSession, decltype(*g_object_unref)>;
     using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
@@ -48,9 +49,9 @@ class WebSocketSession
 
     tConnectionEstablishedSignal m_onConnectionEstablished;
 
-    std::unique_ptr<ContextBoundMessageQueue> backgroundContextQueue;
-    std::unique_ptr<ContextBoundMessageQueue> defaultContextQueue;
-    Glib::RefPtr<Glib::MainLoop> messageLoop;
+    std::unique_ptr<ContextBoundMessageQueue> m_backgroundContextQueue;
+    std::unique_ptr<ContextBoundMessageQueue> m_defaultContextQueue;
+    Glib::RefPtr<Glib::MainLoop> m_messageLoop;
     std::thread m_contextThread;
 };
 
