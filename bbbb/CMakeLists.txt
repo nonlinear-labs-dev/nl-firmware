@@ -12,6 +12,10 @@ set(LIBS
   libsoup-2.4
 )
 
+IF(CONTROLS)
+    ADD_DEFINITIONS(-D_WINDOW_CONTROLS)
+ENDIF(CONTROLS)
+
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
