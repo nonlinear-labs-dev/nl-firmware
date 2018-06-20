@@ -6,6 +6,8 @@
 #include <memory>
 #include <list>
 #include <tools/Expiration.h>
+#include <thread>
+#include <tools/ContextBoundMessageQueue.h>
 
 class WebSocketSession
 {
@@ -32,6 +34,7 @@ class WebSocketSession
     static void receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketSession *pThis);
     void sendMessage(tMessage msg);
     void reconnect();
+    void backgroundThread();
 
     using tSessionPtr = std::unique_ptr<SoupSession, decltype(*g_object_unref)>;
     using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
@@ -43,7 +46,12 @@ class WebSocketSession
     tMessagePtr m_message;
     tWebSocketPtr m_connection;
     std::map<Domain, tSignal> m_onMessageReceived;
+
     tConnectionEstablishedSignal m_onConnectionEstablished;
-    Expiration m_retry;
+
+    std::unique_ptr<ContextBoundMessageQueue> m_backgroundContextQueue;
+    std::unique_ptr<ContextBoundMessageQueue> m_defaultContextQueue;
+    Glib::RefPtr<Glib::MainLoop> m_messageLoop;
+    std::thread m_contextThread;
 };
 
