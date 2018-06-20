@@ -119,7 +119,11 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	public RGB getColorFont() {
-		return new RGBA(super.getColorSliderHighlight(), 0.9);
+		return new RGBA(getFontColor(), 0.9);
+	}
+
+	private RGB getFontColor() {
+		return super.getColorSliderHighlight();
 	}
 
 	@Override
