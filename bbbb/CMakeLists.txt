@@ -3,6 +3,8 @@ project(bbbb)
 
 set(LIBS
   glibmm-2.4
+  gdkmm-3.0
+  gtkmm-3.0
   giomm-2.4
   glib-2.0
   gio-2.0
@@ -31,7 +33,7 @@ endforeach(lib)
 
 include_directories(src)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
   
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp) 
   

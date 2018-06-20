@@ -11,7 +11,12 @@ public class Scale extends ParameterGroupVertical {
 
 	public Scale(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this, getName()) {
+			@Override
+			public RGB getColorFont() {
+				return RGB.lighterGray();
+			}
+		});
 		addChild(new ScaleControls(this));
 	}
 
@@ -23,7 +28,7 @@ public class Scale extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorSliderHighlight() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return RGB.lightGray();
 	}
 
 	@Override
@@ -38,17 +43,17 @@ public class Scale extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorModuleHeaderBackground() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return RGB.lightGray();
 	}
 
 	@Override
 	public RGB getColorFontValueDisplay() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return RGB.lightGray();
 	}
 
 	@Override
 	public RGB getColorFontValueDisplaySelected() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return RGB.lightGray();
 	}
 
 	@Override
@@ -58,7 +63,7 @@ public class Scale extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorObjectContourSelected() {
-		return ColorTable.getColorAUXHeaderBackground();
+		return RGB.lightGray();
 	}
 
 	@Override
