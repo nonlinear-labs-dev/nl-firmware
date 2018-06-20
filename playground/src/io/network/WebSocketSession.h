@@ -6,6 +6,8 @@
 #include <memory>
 #include <list>
 #include <tools/Expiration.h>
+#include <thread>
+#include <tools/ContextBoundMessageQueue.h>
 
 class WebSocketSession
 {
@@ -43,7 +45,12 @@ class WebSocketSession
     tMessagePtr m_message;
     tWebSocketPtr m_connection;
     std::map<Domain, tSignal> m_onMessageReceived;
+
     tConnectionEstablishedSignal m_onConnectionEstablished;
-    Expiration m_retry;
+
+    std::unique_ptr<ContextBoundMessageQueue> backgroundContextQueue;
+    std::unique_ptr<ContextBoundMessageQueue> defaultContextQueue;
+    Glib::RefPtr<Glib::MainLoop> messageLoop;
+    std::thread m_contextThread;
 };
 
