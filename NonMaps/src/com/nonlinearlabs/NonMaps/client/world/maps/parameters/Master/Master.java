@@ -28,7 +28,7 @@ public class Master extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorSliderHighlight() {
-		return new RGB(155, 159, 163);
+		return RGB.lightGray();
 	}
 
 	@Override
@@ -43,17 +43,17 @@ public class Master extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorModuleHeaderBackground() {
-		return new RGB(155, 159, 163);
+		return RGB.lightGray();
 	}
 
 	@Override
 	public RGB getColorFontValueDisplay() {
-		return new RGB(155, 159, 163);
+		return RGB.lightGray();
 	}
 
 	@Override
 	public RGB getColorFontValueDisplaySelected() {
-		return new RGB(155, 159, 163);
+		return RGB.lightGray();
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class Master extends ParameterGroupVertical {
 
 	@Override
 	public RGB getColorObjectContourSelected() {
-		return new RGB(155, 159, 163);
+		return RGB.lightGray();
 	}
 
 	@Override
