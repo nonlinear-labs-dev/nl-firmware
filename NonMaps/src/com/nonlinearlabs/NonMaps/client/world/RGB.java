@@ -44,6 +44,10 @@ public class RGB {
 		return new RGB(155, 159, 163);
 	}
 
+	public static RGB lighterGray() {
+		return new RGB(190, 190, 190);
+	}
+
 	public static RGB floatingWindowHeaderBorder() {
 		return new RGB(118, 130, 154);
 	}

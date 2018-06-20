@@ -96,7 +96,7 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 		
 			@Override
 			public RGB getColorFont() {
-				return new RGB(190, 190, 190);
+				return RGB.lighterGray();
 			}
 		});
 
