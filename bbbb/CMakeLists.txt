@@ -63,7 +63,7 @@ filter_items(SOURCE_FILES "/ui/")
 
 add_executable(bbbb ${SOURCE_FILES})
 
-TARGET_LINK_LIBRARIES(bbbb pthread boost_system)
+TARGET_LINK_LIBRARIES(bbbb pthread)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})
