@@ -1,3 +1,20 @@
+# Remove strings matching given regular expression from a list.
+# @param(in,out) aItems Reference of a list variable to filter.
+# @param aRegEx Value of regular expression to match.
+function (filter_items aItems aRegEx)
+    # For each item in our list
+    foreach (item ${${aItems}})
+        # Check if our items matches our regular expression
+        if ("${item}" MATCHES ${aRegEx})
+            # Remove current item from our list
+            list (REMOVE_ITEM ${aItems} ${item})
+        endif ("${item}" MATCHES ${aRegEx})
+    endforeach(item)
+    # Provide output parameter
+    set(${aItems} ${${aItems}} PARENT_SCOPE)
+endfunction (filter_items)
+
+
 cmake_minimum_required(VERSION 3.0)
 project(bbbb)
 
@@ -38,7 +55,9 @@ include_directories(src)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
   
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp) 
-  
+filter_items(SOURCE_FILES "ui")
+
+
 add_executable(bbbb ${SOURCE_FILES})
 
 TARGET_LINK_LIBRARIES(bbbb pthread boost_system)
