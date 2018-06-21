@@ -38,6 +38,11 @@ void RibbonParameter::writeDifferences(Writer& writer, Parameter* other) const
   }
 }
 
+void RibbonParameter::loadFromPreset (UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value)
+{
+  Parameter::loadFromPreset(transaction, value);
+}
+
 void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction, RibbonParameter::RibbonTouchBehaviour mode)
 {
   if(m_touchBehaviour != mode)
