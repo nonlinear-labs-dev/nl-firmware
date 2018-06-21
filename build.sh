@@ -1,7 +1,5 @@
 #!/bin/bash
 
-GWT_VERSION=2.8.2
-
 if [ $# -lt 1 ]; then
 	printf "Usage:"
 	printf " $0 <PATH_TO_BUILDROOT>\n"
@@ -14,7 +12,7 @@ BUILD_DIR=${BASE_DIR}/output/build/playground-HEAD
 STAGING_DIR=${BASE_DIR}/output/staging
 HOST_DIR=${BASE_DIR}/output/host
 
-GWT_COMPILER_DIR=${HOST_DIR}/$(ls ${HOST_DIR} | grep gwt | sort | tail -n1)
+GWT_COMPILER_DIR=${HOST_DIR}/$(ls ${HOST_DIR} | grep gwt | sort -n | tail -n1)
 
 if [[ -z $GWT_COMPILER_DIR ]];
 then
