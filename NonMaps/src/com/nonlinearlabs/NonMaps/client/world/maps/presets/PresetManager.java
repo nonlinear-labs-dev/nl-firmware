@@ -146,8 +146,9 @@ public class PresetManager extends MapsLayout {
 			readPlaygroundFileVersion(presetManagerNode);
 
 			Preset oldPresetSelection = getSelectedPreset();
+			Preset oldLoadedPreset = findLoadedPreset();
 			NodeList children = presetManagerNode.getChildNodes();
-
+			
 			for (int i = 0; i < children.getLength(); i++) {
 				Node child = children.item(i);
 
@@ -156,9 +157,14 @@ public class PresetManager extends MapsLayout {
 			}
 			
 			Preset newPresetSelection = getSelectedPreset();
-
+			Preset newLoadedPreset = findLoadedPreset();
+			
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
+			}
+			
+			if(oldLoadedPreset != newLoadedPreset) {
+				onPresetLoadStatusChanged(newLoadedPreset);
 			}
 			
 			if(shouldUpdateFilter)
@@ -187,6 +193,11 @@ public class PresetManager extends MapsLayout {
 
 		if (hasMultiplePresetSelection())
 			closeMultiSelection();
+	}
+	
+	public void onPresetLoadStatusChanged(Preset newEditBuffer) {
+		if(PresetInfoDialog.isShown())
+			PresetInfoDialog.editBufferInfoPage.updateInfo(PresetInfoDialog.getEditBuffer());
 	}
 
 	private void scrollToSelectedPreset() {
@@ -698,8 +709,10 @@ public class PresetManager extends MapsLayout {
 	public void loadSelectedPreset() {
 		Preset p = findSelectedPreset();
 
-		if (p != null)
+		if (p != null) {
 			getNonMaps().getServerProxy().loadPreset(p);
+			onPresetLoadStatusChanged(p);
+		}
 	}
 
 	public Preset findSelectedPreset() {

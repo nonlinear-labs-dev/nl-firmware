@@ -41,7 +41,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class PresetInfoDialog extends GWTDialog {
 
-	private static PresetInfoDialog theDialog;
+	public static PresetInfoDialog theDialog;
 	private static float commentBoxHeight = 0;
 	private TextArea comment;
 	private Label deviceName;
@@ -55,9 +55,8 @@ public class PresetInfoDialog extends GWTDialog {
 	private Button[] colors;
 	private IntegerBox position;
 	
-	private EditBufferInfoWidget editBufferInfoPage = null;
-	
-	
+	public static EditBufferInfoWidget editBufferInfoPage = null;
+		
 	private Button addColorButton(ColorTag.Color c) {		
 		Button b = new Button();
 		if(c == ColorTag.Color.none)
@@ -128,7 +127,7 @@ public class PresetInfoDialog extends GWTDialog {
 		panel.setWidget(c, 1, content);
 	}
 	
-	Preset getEditBuffer() {
+	public static Preset getEditBuffer() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadedPreset();
 	}
 
@@ -355,7 +354,6 @@ public class PresetInfoDialog extends GWTDialog {
 	public static void update(Preset preset) {
 		if (theDialog != null) {	
 			theDialog.updateInfo(preset);
-			theDialog.editBufferInfoPage.updateInfo(theDialog.getEditBuffer());
 		}
 	}
 
