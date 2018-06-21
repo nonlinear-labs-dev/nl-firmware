@@ -3,8 +3,6 @@ project(bbbb)
 
 set(LIBS
   glibmm-2.4
-  gdkmm-3.0
-  gtkmm-3.0
   giomm-2.4
   glib-2.0
   gio-2.0
@@ -15,7 +13,7 @@ set(LIBS
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
-  set(LIBS ${LIBS} gtkmm-3.0)
+  set(LIBS ${LIBS} gtkmm-3.0 gdkmm-3.0)
 ENDIF(DEV_PC)
 
 function(addLib name)
