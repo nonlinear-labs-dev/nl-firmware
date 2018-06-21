@@ -1791,3 +1791,26 @@ button {
 .refresh-button:active {
 	background-image: url(/NonMaps/war/images/PresetComp-Refresh_Active.svg);
 }
+
+.gwt-TabPanelBottom {
+    border-color: #ccc;
+    border-style: solid;
+    border-width: 0.5px 1px 1px;
+    overflow: hidden;
+    padding: 6px;
+}
+
+.gwt-TabBarItem {
+	border-style: solid;
+    border-width: 1px 1px 0px 1px;
+}
+
+.gwt-TabBar {
+    background: #202020;
+    padding-top: 6px;
+}
+
+.tab-1 {
+	border-style: solid;
+    border-width: 1px 1px 0px 1px;
+}
