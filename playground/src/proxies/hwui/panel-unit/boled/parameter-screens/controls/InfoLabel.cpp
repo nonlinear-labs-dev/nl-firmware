@@ -1,8 +1,8 @@
 #include "InfoLabel.h"
 #include <proxies/hwui/Oleds.h>
 
-InfoLabel::InfoLabel (const Rect &pos) :
-  super ("Info", pos)
+InfoLabel::InfoLabel (const Rect &pos, const Glib::ustring& text) :
+  super ("Info " + text, pos)
 {
 }
 

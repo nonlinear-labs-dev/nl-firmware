@@ -26,11 +26,11 @@ class RenameLayout : public DFBLayout
 
     virtual void cancel ();
 
-  private:
+    shared_ptr<TextEditUsageMode> m_textUsageMode;
+private:
     virtual void onTextChanged(const ustring &text);
     void replaceUsageMode();
     void addLetters();
     void addControlKeys();
 
-    shared_ptr<TextEditUsageMode> m_textUsageMode;
 };

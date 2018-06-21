@@ -752,6 +752,13 @@ public class ServerProxy {
 				new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
 	}
+	
+	public void setEditBufferAttribute(String key, String value) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-editbuffer-attribute");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("key", key),
+				new StaticURI.KeyValue("value", value));
+		queueJob(uri, false);
+	}
 
 	public void setModulationAmountAndValue(ModulatableParameter param, double newModAmount, double newValue) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modamount-and-value");
@@ -904,5 +911,11 @@ public class ServerProxy {
 		final XMLHttpRequest xhr = XMLHttpRequest.create();
 		xhr.open("POST", path.toString());
 		xhr.send(uri.getPostData(false));
+	}
+
+	public void renameEditBuffer(String text) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "rename-editbuffer");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("name", text));
+		queueJob(uri, false);
 	}
 }

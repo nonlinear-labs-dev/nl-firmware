@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
@@ -39,7 +38,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
 
 public class PresetManager extends MapsLayout {
 
@@ -1062,5 +1060,9 @@ public class PresetManager extends MapsLayout {
 			return p.getUUID();
 
 		return "";
+	}
+
+	public Preset getLoadedPreset() {
+		return findLoadedPreset();
 	}
 }

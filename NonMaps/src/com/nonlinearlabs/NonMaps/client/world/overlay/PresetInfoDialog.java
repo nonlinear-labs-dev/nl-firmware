@@ -26,14 +26,17 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.nonlinearlabs.NonMaps.client.GMTTimeZone;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.EditBuffer;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag.Color;
+import com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog.EditBufferInfoWidget;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class PresetInfoDialog extends GWTDialog {
@@ -51,6 +54,8 @@ public class PresetInfoDialog extends GWTDialog {
 	private TextBox name;
 	private Button[] colors;
 	private IntegerBox position;
+	
+	private EditBufferInfoWidget editBufferInfoPage = null;
 	
 	
 	private Button addColorButton(ColorTag.Color c) {		
@@ -74,13 +79,14 @@ public class PresetInfoDialog extends GWTDialog {
 		return b;
 	}
 	
+
 	public void updateCurrentHighlight(Button current) {
 		for(Button b: colors) {
 			if(b != current)
 				b.getElement().removeClassName("colortag-current");
 			else
 				b.getElement().addClassName("colortag-current");
-		}
+		}		
 	}
 	
 	public Preset getCurrentPreset() {
@@ -121,9 +127,16 @@ public class PresetInfoDialog extends GWTDialog {
 		panel.setWidget(c, 0, new Label(name));
 		panel.setWidget(c, 1, content);
 	}
+	
+	Preset getEditBuffer() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadedPreset();
+	}
 
-	private void addContent() {
-
+	EditBufferInfoWidget createEditBufferTab() {
+		return EditBufferInfoWidget.get();
+	}
+	
+	Widget createPresetInfoTab() {
 		HTMLPanel presetNameAndPositionBox = new HTMLPanel("div", "");
 		presetNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
 		presetNameAndPositionBox.add(position = new IntegerBox());
@@ -304,8 +317,18 @@ public class PresetInfoDialog extends GWTDialog {
 				}
 			}
 		});
-
-		setWidget(panel);
+		
+		return panel;
+	}
+	
+	private void addContent() {
+		editBufferInfoPage = createEditBufferTab();
+		editBufferInfoPage.updateInfo(getEditBuffer());
+		TabPanel p = new TabPanel();
+		p.add(createPresetInfoTab(), "Preset");
+		p.add(editBufferInfoPage.panel, "EditBuffer");
+		p.selectTab(0);
+		setWidget(p);
 	}
 
 	@Override
@@ -330,8 +353,10 @@ public class PresetInfoDialog extends GWTDialog {
 	}
 
 	public static void update(Preset preset) {
-		if (theDialog != null)
+		if (theDialog != null) {	
 			theDialog.updateInfo(preset);
+			theDialog.editBufferInfoPage.updateInfo(theDialog.getEditBuffer());
+		}
 	}
 
 	private void updateInfo(Preset preset) {
@@ -369,7 +394,7 @@ public class PresetInfoDialog extends GWTDialog {
 			centerIfOutOfView();
 		}
 	}
-
+	
 	private String localizeTime(String iso) {
 		try {
 			DateTimeFormat f = DateTimeFormat.getFormat("yyyy-MM-ddTHH:mm:ssZZZZ");
