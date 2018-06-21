@@ -146,7 +146,7 @@ public class PresetManager extends MapsLayout {
 			readPlaygroundFileVersion(presetManagerNode);
 
 			Preset oldPresetSelection = getSelectedPreset();
-			Preset oldLoadedPreset = findLoadedPreset();
+			Preset oldLoadedPreset = getLoadedPreset();
 			NodeList children = presetManagerNode.getChildNodes();
 			
 			for (int i = 0; i < children.getLength(); i++) {
@@ -157,7 +157,7 @@ public class PresetManager extends MapsLayout {
 			}
 			
 			Preset newPresetSelection = getSelectedPreset();
-			Preset newLoadedPreset = findLoadedPreset();
+			Preset newLoadedPreset = getLoadedPreset();
 			
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
