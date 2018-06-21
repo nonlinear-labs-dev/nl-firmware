@@ -113,8 +113,8 @@ public abstract class NumericValueControl extends OverlayLayout implements Quant
 	}
 
 	public void update(ValueDataModelEntity e) {
-		if (stringizer == null && e.scaling != null && e.scaling.length() > 0) {
-			createStringizer(e.scaling);
+		if (stringizer == null && e.metaData.scaling.getValue().length() > 0) {
+			createStringizer(e.metaData.scaling.getValue());
 			value.update(e);
 		} else if (stringizer != null) {
 			value.setRawValue(Initiator.INDIRECT_USER_ACTION, e.getValue());

@@ -3,9 +3,11 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import com.nonlinearlabs.NonMaps.client.dataModel.EditBuffer;
+import com.nonlinearlabs.NonMaps.client.dataModel.PedalParameter;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettings.Pedal;
 
 public class DeviceSettingsProvider {
 	public static DeviceSettingsProvider theInstance = new DeviceSettingsProvider();
@@ -16,7 +18,6 @@ public class DeviceSettingsProvider {
 
 	private LinkedList<Function<DeviceSettings, Boolean>> clients = new LinkedList<Function<DeviceSettings, Boolean>>();
 	private DeviceSettings settings = new DeviceSettings();
-	private JavaScriptObject editSmoothingTimeStringizer;
 
 	private DeviceSettingsProvider() {
 		Setup.get().systemSettings.velocityCurve.onChange(t -> {
@@ -69,34 +70,27 @@ public class DeviceSettingsProvider {
 
 		Setup.get().systemSettings.editSmoothingTime.onChange(t -> {
 			settings.editSmoothingTime.sliderPosition = t;
+			settings.editSmoothingTime.displayValue = Stringizers.get().stringize(
+					Setup.get().systemSettings.editSmoothingTime.metaData.scaling.getValue(), t);
+			notifyClients();
+			return true;
+		});
 
-			if (editSmoothingTimeStringizer == null) {
-				String body = Setup.get().systemSettings.editSmoothingTime.scaling;
+		connectToPedal(254, settings.pedal1);
+		connectToPedal(259, settings.pedal2);
+		connectToPedal(264, settings.pedal3);
+		connectToPedal(269, settings.pedal4);
+	}
 
-				if (body != null && body.length() > 0) {
-					createEditSmoothingTimeStringizer(body);
-				}
-			}
-
-			if (editSmoothingTimeStringizer != null) {
-				settings.editSmoothingTime.displayValue = stringizeEditSmoothingTime(t);
-			}
-
+	public void connectToPedal(int id, Pedal target) {
+		PedalParameter srcPedal = (PedalParameter) EditBuffer.get().getGroup("CS").findParameter(id);
+		srcPedal.value.onChange(v -> {
+			target.sliderPosition = v;
+			target.displayValue = Stringizers.get().stringize(srcPedal.value.metaData.scaling.getValue(), v);
 			notifyClients();
 			return true;
 		});
 	}
-
-	protected native void createEditSmoothingTimeStringizer(String body) /*-{
-		this.@com.nonlinearlabs.NonMaps.client.presenters.DeviceSettingsProvider::editSmoothingTimeStringizer = new Function(
-				"cpValue", "withUnit", body);
-	}-*/;
-
-	private native String stringizeEditSmoothingTime(double cpValue) /*-{
-		var stringizer = this.@com.nonlinearlabs.NonMaps.client.presenters.DeviceSettingsProvider::editSmoothingTimeStringizer;
-		var scaledText = stringizer(cpValue, true);
-		return scaledText;
-	}-*/;
 
 	protected void notifyClients() {
 		clients.removeIf(listener -> !listener.apply(settings));

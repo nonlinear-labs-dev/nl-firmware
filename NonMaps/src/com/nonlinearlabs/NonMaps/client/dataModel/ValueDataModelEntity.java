@@ -1,18 +1,17 @@
 package com.nonlinearlabs.NonMaps.client.dataModel;
 
-public class ValueDataModelEntity extends DataModelEntity<Double> {
-	public double defaultValue = 0.0;
-	public String scaling = "";
-	public int coarseDenominator = 0;
-	public int fineDenominator = 0;
-	public boolean bipolar = false;
+public class ValueDataModelEntity extends DoubleDataModelEntity {
 
-	public ValueDataModelEntity() {
-		super(0.0);
+	public class ValueMetaData {
+		public DoubleDataModelEntity defaultValue = new DoubleDataModelEntity();
+		public StringDataModelEntity scaling = new StringDataModelEntity();
+		public IntegerDataModelEntity coarseDenominator = new IntegerDataModelEntity();
+		public IntegerDataModelEntity fineDenominator = new IntegerDataModelEntity();
+		public BooleanDataModelEntity bipolar = new BooleanDataModelEntity();
 	}
 
-	@Override
-	public void fromString(String str) {
-		setValue(Double.parseDouble(str));
+	public ValueMetaData metaData = new ValueMetaData();
+
+	public ValueDataModelEntity() {
 	}
 }

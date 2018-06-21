@@ -25,6 +25,7 @@ import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettings;
 import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettingsProvider;
 import com.nonlinearlabs.NonMaps.client.presenters.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.presenters.LocalSettingsProvider;
+import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
 import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 
 public class Setup extends Composite {
@@ -60,13 +61,20 @@ public class Setup extends Composite {
 	InputElement editSmoothingTimeSlider;
 
 	Range editSmoothingTimeRange;
+	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
 
 	public Setup() {
 		initWidget(ourUiBinder.createAndBindUi(this));
 
+		pedal1Range = Range.wrap(pedal1Slider);
+		pedal2Range = Range.wrap(pedal2Slider);
+		pedal3Range = Range.wrap(pedal3Slider);
+		pedal4Range = Range.wrap(pedal4Slider);
+
 		setupTexts();
 		connectEventHandlers();
 		connectUpdate();
+
 	}
 
 	public void setupTexts() {
@@ -129,6 +137,10 @@ public class Setup extends Composite {
 		editSmoothingTimeRange = Range.wrap(editSmoothingTimeSlider);
 		editSmoothingTimeRange.addValueChangeHandler(e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
 
+		pedal1Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 254, e.getValue().doubleValue(), true));
+		pedal2Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 259, e.getValue().doubleValue(), true));
+		pedal3Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 264, e.getValue().doubleValue(), true));
+		pedal4Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 269, e.getValue().doubleValue(), true));
 	}
 
 	public void connectUpdate() {
@@ -157,14 +169,22 @@ public class Setup extends Composite {
 		velocityCurve.setSelectedIndex(t.velocityCurve.selected);
 		aftertouchCurve.setSelectedIndex(t.aftertouchCurve.selected);
 		benderCurve.setSelectedIndex(t.benderCurve.selected);
-		pedal1Type.setSelectedIndex(t.pedal1.selected);
-		pedal2Type.setSelectedIndex(t.pedal2.selected);
-		pedal3Type.setSelectedIndex(t.pedal3.selected);
-		pedal4Type.setSelectedIndex(t.pedal4.selected);
+
+		applyPedalValues(t.pedal1, pedal1Type, pedal1Range, pedal1DisplayString);
+		applyPedalValues(t.pedal2, pedal2Type, pedal2Range, pedal2DisplayString);
+		applyPedalValues(t.pedal3, pedal3Type, pedal3Range, pedal3DisplayString);
+		applyPedalValues(t.pedal4, pedal4Type, pedal4Range, pedal4DisplayString);
+
 		presetGlitchSurpressionOn.setValue(t.presetGlitchSurpession.value);
 		presetGlitchSurpressionOff.setValue(!t.presetGlitchSurpession.value);
 		editSmoothingTimeRange.setValue(t.editSmoothingTime.sliderPosition);
 		editSmoothingTimeDisplayString.setText(t.editSmoothingTime.displayValue);
+	}
+
+	public void applyPedalValues(DeviceSettings.Pedal src, ListBox type, Range slider, Label text) {
+		type.setSelectedIndex(src.selected);
+		slider.setValue(src.sliderPosition);
+		text.setText(src.displayValue);
 	}
 
 	private void applyPresenter(LocalSettings t) {

@@ -1,6 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.dataModel;
 
-class IntegerDataModelEntity extends DataModelEntity<Integer> {
+public class IntegerDataModelEntity extends DataModelEntity<Integer> {
 
 	public IntegerDataModelEntity() {
 		super(0);

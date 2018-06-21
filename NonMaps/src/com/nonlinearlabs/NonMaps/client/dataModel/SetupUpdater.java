@@ -60,40 +60,17 @@ public class SetupUpdater extends Updater {
 					if (s != null) {
 						s.fromString(getText(valueNode));
 
-						if (s instanceof ValueDataModelEntity) {
-							update((ValueDataModelEntity) s, setting);
-						}
+
+					if (s instanceof DoubleDataModelEntity) {
+						ValueUpdater u = new ValueUpdater((ValueDataModelEntity) s);
+						u.update(setting);
+
 					}
 				}
 			}
 			setting = setting.getNextSibling();
 		}
 
-	}
-
-	private void update(ValueDataModelEntity s, Node setting) {
-		String coarse = getChildText(setting, "coarse-denominator");
-		String fine = getChildText(setting, "fine-denominator");
-		String bipolar = getChildText(setting, "bipolar");
-		String scaling = getChildText(setting, "scaling");
-		String defaultValue = getChildText(setting, "default");
-
-		if (!bipolar.isEmpty())
-			s.bipolar = bipolar.equals("1");
-
-		if (!coarse.isEmpty())
-			s.coarseDenominator = (int) Double.parseDouble(coarse);
-
-		if (!fine.isEmpty())
-			s.fineDenominator = (int) Double.parseDouble(fine);
-
-		if (!scaling.isEmpty())
-			s.scaling = scaling;
-
-		if (!defaultValue.isEmpty())
-			s.defaultValue = Double.parseDouble(defaultValue);
-
-		s.notifyChanges();
 	}
 
 	private DataModelEntityBase findSettingFromTagName(String nodeName) {

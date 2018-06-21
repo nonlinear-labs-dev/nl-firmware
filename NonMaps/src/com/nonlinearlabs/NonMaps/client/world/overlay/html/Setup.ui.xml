@@ -65,7 +65,7 @@
 						</div>
 						<div class="w25p">
 							<input type="range" ui:field="pedal1Slider" class="slider-b"
-								min="0" max="100" value="90"></input>
+								min="0" max="1" step="0.001"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">
@@ -83,7 +83,7 @@
 						</div>
 						<div class="w25p">
 							<input type="range" ui:field="pedal2Slider" class="slider-b"
-								min="0" max="100" value="90"></input>
+								min="0" max="1" step="0.001"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">
@@ -101,7 +101,7 @@
 						</div>
 						<div class="w25p">
 							<input type="range" ui:field="pedal3Slider" class="slider-b"
-								min="0" max="100" value="90"></input>
+								min="0" max="1" step="0.001"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">
@@ -119,7 +119,7 @@
 						</div>
 						<div class="w25p">
 							<input type="range" ui:field="pedal4Slider" class="slider-b"
-								min="0" max="100" value="90"></input>
+								min="0" max="1" step="0.001"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">

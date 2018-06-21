@@ -22,6 +22,11 @@ abstract public class PhysicalControlParameter extends Parameter {
 	}
 
 	@Override
+	public String getParameterGroupID() {
+		return "CS";
+	}
+
+	@Override
 	protected QuantizedClippedValue createValue(ChangeListener changeListener) {
 		return new QuantizedClippedValue(changeListener) {
 

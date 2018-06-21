@@ -17,6 +17,7 @@ import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
 import com.nonlinearlabs.NonMaps.client.dataModel.DeviceInfoUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.EditBufferUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.SetupUpdater;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
@@ -114,6 +115,9 @@ public class ServerProxy {
 
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
 			deviceInfoUpdater.doUpdate();
+
+			EditBufferUpdater ebu = new EditBufferUpdater(editBufferNode);
+			ebu.doUpdate();
 		}
 	}
 
@@ -158,10 +162,13 @@ public class ServerProxy {
 	}
 
 	public void onParameterChanged(Parameter pl) {
+		setParameter(pl.getParameterID(), pl.getValue().getQuantizedClipped(), pl.isOracle());
+	}
+
+	public void setParameter(int id, double v, boolean oracle) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", pl.getParameterID()), new StaticURI.KeyValue("value", pl
-				.getValue().getQuantizedClipped()));
-		queueJob(uri, pl.isOracle());
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id), new StaticURI.KeyValue("value", v));
+		queueJob(uri, oracle);
 	}
 
 	public void selectPreset(String uuid) {

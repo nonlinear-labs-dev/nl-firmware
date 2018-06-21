@@ -195,8 +195,8 @@ public class QuantizedClippedValue extends ClippedValue {
 	}
 
 	public void update(ValueDataModelEntity e) {
-		coarseDenominator = e.coarseDenominator;
-		fineDenominator = e.fineDenominator;
+		coarseDenominator = e.metaData.coarseDenominator.getValue();
+		fineDenominator = e.metaData.fineDenominator.getValue();
 		super.update(e);
 	}
 

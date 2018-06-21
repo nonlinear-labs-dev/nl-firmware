@@ -114,12 +114,12 @@ public class Setup {
 		public BooleanDataModelEntity presetGlitchSuppression = new BooleanDataModelEntity();
 		public EnumDataModelEntity<PresetStoreMode> presetStoreModeSetting = createEnumDataModelEntity(PresetStoreMode.class,
 				PresetStoreMode.append);
-		public ValueDataModelEntity randomizeAmount = new ValueDataModelEntity();
-		public ValueDataModelEntity ribbonRelativeFactor = new ValueDataModelEntity();
+		public DoubleDataModelEntity randomizeAmount = new ValueDataModelEntity();
+		public DoubleDataModelEntity ribbonRelativeFactor = new ValueDataModelEntity();
 		public BooleanDataModelEntity sendPresetAsLPCFallback = new BooleanDataModelEntity();
 		public BooleanDataModelEntity signalFlowIndication = new BooleanDataModelEntity();
 		public StringDataModelEntity ssid = new StringDataModelEntity();
-		public ValueDataModelEntity transitionTime = new ValueDataModelEntity();
+		public DoubleDataModelEntity transitionTime = new ValueDataModelEntity();
 		public EnumDataModelEntity<VelocityCurve> velocityCurve = createEnumDataModelEntity(VelocityCurve.class, VelocityCurve.normal);
 		public BooleanDataModelEntity benderRampBypass = new BooleanDataModelEntity();
 
