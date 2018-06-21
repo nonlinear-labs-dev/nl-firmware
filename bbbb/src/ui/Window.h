@@ -22,15 +22,12 @@ class Window : public Gtk::Window
     WebSocketServer::tMessage m_frameBuffer;
 
     Gtk::VBox m_box;
-#ifdef _DEVELOPMENT_PC
     Gtk::VBox m_ribbonBox;
     PlayPanel m_playPanel;
     PanelUnit m_editPanel;
     Ribbon m_ribbonUp;
     LowerRibbon m_ribbonDown;
-#else
     Boled m_boled;
-#endif
 };
 
 #endif
