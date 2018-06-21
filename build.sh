@@ -14,7 +14,13 @@ BUILD_DIR=${BASE_DIR}/output/build/playground-HEAD
 STAGING_DIR=${BASE_DIR}/output/staging
 HOST_DIR=${BASE_DIR}/output/host
 
-GWT_COMPILER_DIR=${HOST_DIR}/gwt-${GWT_VERSION}
+GWT_COMPILER_DIR=${HOST_DIR}/$(ls ${HOST_DIR} | grep gwt | sort | tail -n1)
+
+if [[ -z $GWT_COMPILER_DIR ]];
+then
+	echo "no GWT Compiler found!"
+	exit 2
+fi
 
 mkdir -p build
 cd build
