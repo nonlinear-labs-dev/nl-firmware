@@ -224,10 +224,10 @@ public class GlobalMenu extends OverlayLayout {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		double lineWidth = Millimeter.toPixels(1);
+		double lineWidth = Millimeter.toPixels(1.1);
 		
 		createBackgroundAreaPath(ctx);
-		ctx.setStrokeStyle(RGB.black().toString());
+		ctx.setStrokeStyle(RGB.blue().toString());
 		ctx.setLineWidth(lineWidth);
 		ctx.stroke();
 
