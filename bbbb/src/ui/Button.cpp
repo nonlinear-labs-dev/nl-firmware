@@ -63,4 +63,3 @@ void Button::on_released()
   auto b = Application::get().getBridges()->getBridge<FromButtonsBridge>();
   b->sendKey(m_buttonId, false);
 }
-

@@ -6,7 +6,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#ifdef _DEVELOPMENT_PC
 #include <ui/Window.h>
+#endif
 
 Application *Application::theApp = nullptr;
 

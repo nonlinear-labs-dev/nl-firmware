@@ -4,7 +4,9 @@
 #include <iostream>
 #include <chrono>
 #include "Application.h"
+#ifdef _DEVELOPMENT_PC
 #include <ui/Window.h>
+#endif
 
 
 void printStackTrace (int i)
