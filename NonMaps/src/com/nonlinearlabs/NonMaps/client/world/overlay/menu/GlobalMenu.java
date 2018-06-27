@@ -217,6 +217,10 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		}
 	}
+	
+	private RGB getBackgroundFillColor() {
+		return new RGB(34,34,42);
+	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
@@ -229,7 +233,7 @@ public class GlobalMenu extends OverlayLayout {
 		ctx.setLineWidth(lineWidth);
 		ctx.stroke();
 
-		ctx.setFillStyle(RGB.floatingWindowHeaderBackground().toString());
+		ctx.setFillStyle(getBackgroundFillColor().toString());
 		ctx.fill();
 
 		createBackgroundAreaPath(ctx);
