@@ -72,8 +72,13 @@ public class ContextMenuItem extends OverlayControl {
 
 		r.applyPadding(0, padding, 0, padding);
 
-		if (PointerState.get().isCurrentReceiver(this))
-			r.fill(ctx, new Gray(51));
+		if (PointerState.get().isCurrentReceiver(this)) {
+			Rect f = r.copy();
+			double extra = Millimeter.toPixels(2);
+			f.setLeft(getPixRect().getLeft() - extra);
+			f.setRight(getPixRect().getRight() + extra);
+			f.fill(ctx, new Gray(51));
+		}
 
 		r.applyPadding(padding, 0, padding, 0);
 
