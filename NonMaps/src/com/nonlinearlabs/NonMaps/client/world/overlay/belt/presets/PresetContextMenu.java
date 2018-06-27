@@ -43,7 +43,6 @@ public class PresetContextMenu extends ContextMenu {
 		}
 
 		if (!hasMultipleSelection) {
-
 			if (!PresetInfoDialog.isShown()) {
 				String presetInfoText = "Preset Info ...";
 				addChild(new PresetContextMenuItem(this, presetInfoText) {
