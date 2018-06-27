@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog.EditBufferInfoWidget;
 import com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog.PresetInfoWidget;
@@ -13,7 +14,7 @@ public class PresetInfoDialog extends GWTDialog {
 	private Preset thePreset;
 	public static EditBufferInfoWidget editBufferInfoPage = null;
 	public static PresetInfoWidget presetInfoPage = null;
-		
+	public static Node _editBufferNode = null;
 
 	
 	public Preset getCurrentPreset() {
@@ -48,7 +49,10 @@ public class PresetInfoDialog extends GWTDialog {
 	private void addContent() {
 		editBufferInfoPage = createEditBufferTab();
 		presetInfoPage = createPresetInfoTab();
-		editBufferInfoPage.updateInfo(getEditBuffer());
+		if(_editBufferNode != null)
+			editBufferInfoPage.updateFromNode(_editBufferNode);
+		else
+			editBufferInfoPage.updateInfo(getEditBuffer());
 		presetInfoPage.updateInfo(getCurrentPreset());
 		
 		TabPanel p = new TabPanel();
@@ -113,5 +117,16 @@ public class PresetInfoDialog extends GWTDialog {
 
 	public static void update() {
 		update(NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSelectedPreset());
+	}
+
+	public void updateEditBuffer(Node editBufferNode) {
+		editBufferInfoPage.updateFromNode(editBufferNode);		
+	}
+
+	public static void setLastUpdateNode(Node editBufferNode) {
+		_editBufferNode = editBufferNode;
+		
+		if(editBufferInfoPage != null)
+			editBufferInfoPage.setLastUpdateNode(_editBufferNode);
 	}
 }

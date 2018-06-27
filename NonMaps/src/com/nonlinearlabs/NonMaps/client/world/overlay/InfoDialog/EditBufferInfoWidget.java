@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
@@ -23,9 +24,9 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag.
 
 public class EditBufferInfoWidget {
 	private static EditBufferInfoWidget instance;
+	private static Node editbufferNode = null;
 	private TextArea comment;
 	private Label deviceName;
-	private Label softwareVersion;
 	private TextBox name;
 	private Button[] colors;
 	private Widget haveFocus = null;
@@ -35,6 +36,10 @@ public class EditBufferInfoWidget {
 	static public EditBufferInfoWidget get() {
 		if(instance == null)
 			instance = new EditBufferInfoWidget();
+		
+		if(editbufferNode != null)
+			instance.updateFromNode(editbufferNode);
+		
 		return instance;
 	}
 	
@@ -71,7 +76,6 @@ public class EditBufferInfoWidget {
 		if (eb != null) {
 			String presetName = eb.getCurrentName();
 			deviceName.setText(eb.getAttribute("DeviceName"));
-			softwareVersion.setText(eb.getAttribute("SoftwareVersion"));
 			String commentText = eb.getAttribute("Comment");
 
 			if (haveFocus != comment) {
@@ -115,7 +119,6 @@ public class EditBufferInfoWidget {
 		addRow(panel, "Comment", comment = new TextArea());
 		addRow(panel, "Color Tag", editBufferColorBox);
 		addRow(panel, "Device Name", deviceName = new Label(""));
-		addRow(panel, "UI Version", softwareVersion = new Label(""));
 
 		comment.addFocusHandler(new FocusHandler() {
 
@@ -176,5 +179,56 @@ public class EditBufferInfoWidget {
 		int c = panel.getRowCount();
 		panel.setWidget(c, 0, new Label(name));
 		panel.setWidget(c, 1, content);
+	}
+
+	public void setLastUpdateNode(Node ebNode) {
+		if(ebNode != null)
+			editbufferNode = ebNode;
+	}
+	
+	public void updateFromNode(Node editBufferNode) {
+		if(editBufferNode == null)
+			return;
+		
+		setLastUpdateNode(editBufferNode);
+		
+		Node preset = editBufferNode.getChildNodes().item(0).getNextSibling();
+		String name = preset.getAttributes().getNamedItem("name").toString();;
+		String color = "";
+		String devName = "";
+		String comment = "";
+		
+		Node child = preset.getFirstChild();
+		while(child != null)
+		{
+			if(child.getNodeName() != "#text")
+			{
+				String nodeName = child.getAttributes().item(0).toString();
+				switch(nodeName) {
+					case "Comment":
+						comment = child.getChildNodes().item(0).toString();
+						break;
+					case "DeviceName":
+						devName = child.getChildNodes().item(0).toString();
+						break;
+					case "color":
+						color = child.getChildNodes().item(0).toString();
+						break;
+					default:
+						break;
+				}
+			}
+			child = child.getNextSibling();
+		}
+		
+		if(this.name != haveFocus) {
+			this.name.setText(name);
+		}
+		if(this.comment != haveFocus) {
+			this.comment.setText(comment);
+		}
+		this.deviceName.setText(devName);
+		ColorTag.Color c = ColorTag.Color.toEnum(color.toString());
+		updateCurrentHighlight(colors[c.ordinal()]);
 	}
 }
