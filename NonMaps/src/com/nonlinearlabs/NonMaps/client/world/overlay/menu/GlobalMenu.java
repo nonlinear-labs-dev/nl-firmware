@@ -221,7 +221,9 @@ public class GlobalMenu extends OverlayLayout {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		double lineWidth = Millimeter.toPixels(1);
+		
 
+		
 		createBackgroundAreaPath(ctx);
 		ctx.setStrokeStyle(RGB.black().toString());
 		ctx.setLineWidth(lineWidth);
@@ -230,14 +232,16 @@ public class GlobalMenu extends OverlayLayout {
 		ctx.setFillStyle(RGB.floatingWindowHeaderBackground().toString());
 		ctx.fill();
 
-		super.draw(ctx, invalidationMask);
-
 		createBackgroundAreaPath(ctx);
 		ctx.setStrokeStyle(RGB.floatingWindowHeaderBorder().toString());
 		ctx.setLineWidth(lineWidth / 4);
 		ctx.stroke();
-	}
+		
+		super.draw(ctx, invalidationMask);
 
+
+	}
+	
 	private void createBackgroundAreaPath(Context2d ctx) {
 		Rect r = getPixRect();
 		double corner = Millimeter.toPixels(1);

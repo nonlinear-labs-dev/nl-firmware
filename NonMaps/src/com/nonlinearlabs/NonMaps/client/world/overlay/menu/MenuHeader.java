@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
@@ -23,6 +24,7 @@ public class MenuHeader extends OverlayControl {
 		Rect r = getPixRect();
 		double buttonDim = r.getHeight();
 		ctx.setStrokeStyle(getColorFont().toString());
+		ctx.setFillStyle(RGB.red().toString());
 		ctx.setLineWidth(Millimeter.toPixels(0.5));
 
 		double lineWidth = buttonDim / 2;
@@ -52,6 +54,12 @@ public class MenuHeader extends OverlayControl {
 	public Control click(Position eventPoint) {
 		getParent().toggle();
 		return this;
+	}
+	
+	@Override
+	public RGB getColorFont() {
+		return super.getColorFont();
+		//return new RGB();
 	}
 
 	@Override
