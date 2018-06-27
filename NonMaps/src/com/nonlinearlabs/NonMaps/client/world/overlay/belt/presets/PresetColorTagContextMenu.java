@@ -69,11 +69,6 @@ public class PresetColorTagContextMenu extends ContextMenu {
 				public double getLeftPadding() {
 					return super.getLeftPadding() + getColorTagWidth();
 				}
-				
-				@Override
-				public boolean isColorTagItem() {
-					return true;
-				}
 			});
 		}
 	}

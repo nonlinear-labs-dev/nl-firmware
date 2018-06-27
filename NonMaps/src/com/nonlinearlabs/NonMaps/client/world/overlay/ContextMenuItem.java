@@ -11,7 +11,6 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetColorTagContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.pointer.PointerState;
 
 public class ContextMenuItem extends OverlayControl {
@@ -74,15 +73,10 @@ public class ContextMenuItem extends OverlayControl {
 		r.applyPadding(0, padding, 0, padding);
 
 		if (PointerState.get().isCurrentReceiver(this)) {
-			Rect f = r.copy();
 			double extra = Millimeter.toPixels(2);
+			Rect f = getPixRect().copy();
 			f.setLeft(getPixRect().getLeft() - extra);
 			f.setRight(getPixRect().getRight() + extra);
-			if(isColorTagItem()) {
-				f.setBottom(f.getBottom() + extra);
-				f.setHeight(f.getHeight() + extra * 2.6);
-				f.setTop(f.getTop() - extra * 1.6);
-			}
 			f.fill(ctx, new Gray(51));
 		}
 
@@ -117,9 +111,4 @@ public class ContextMenuItem extends OverlayControl {
 	public double getDesiredHeight() {
 		return Millimeter.toPixels(10);
 	}
-
-	public boolean isColorTagItem() {
-		return false;
-	}
-
 }
