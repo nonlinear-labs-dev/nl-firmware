@@ -80,8 +80,8 @@ public class ContextMenuItem extends OverlayControl {
 			f.setRight(getPixRect().getRight() + extra);
 			if(isColorTagItem()) {
 				f.setBottom(f.getBottom() + extra);
-				f.setHeight(f.getHeight() + extra * 2.5);
-				f.setTop(f.getTop() - extra * 1.5);
+				f.setHeight(f.getHeight() + extra * 2.6);
+				f.setTop(f.getTop() - extra * 1.6);
 			}
 			f.fill(ctx, new Gray(51));
 		}
