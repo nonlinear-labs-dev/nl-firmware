@@ -43,6 +43,17 @@ public class CurrentPresetNumber extends Label {
 		if (i == 0)
 			return getLineColor();
 
-		return new RGB(250, 250, 250);
+		return new RGB(0, 0, 0);
+	}
+
+	@Override
+	public void drawSplit(int idx, Context2d ctx, String split, double x, double y) {
+		if (idx == 1) {
+			double fontHeight = getFontHeight(getPixRect());
+			Rect r = new Rect(x + Millimeter.toPixels(1), getPixRect().getCenterPoint().getY() + getVerticalFontDisplacement() - fontHeight
+					/ 2, Millimeter.toPixels(3), fontHeight);
+			r.fill(ctx, new RGB(255, 255, 255));
+		}
+		super.drawSplit(idx, ctx, split, x, y);
 	}
 }

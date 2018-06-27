@@ -15,7 +15,7 @@ public class EditBufferUpdater extends Updater {
 
 	private void processGroup(Node c) {
 		String groupId = getAttributeValue(c, "id");
-		ParameterGroup target = EditBuffer.get().getGroup(groupId);
+		ParameterGroupModel target = EditBufferModel.get().getGroup(groupId);
 		ParameterGroupUpdater updater = new ParameterGroupUpdater(c, target);
 		updater.doUpdate();
 	}

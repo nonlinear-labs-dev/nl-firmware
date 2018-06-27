@@ -154,7 +154,7 @@
 						</div>
 						<div class="w40p">
 							<input type="range" ui:field="editSmoothingTimeSlider"
-								class="slider-b" min="0" max="1" step="0.001" value="0"></input>
+								class="slider-a" min="0" max="1" step="0.001" value="0"></input>
 						</div>
 					</div>
 

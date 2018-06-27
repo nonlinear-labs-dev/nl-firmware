@@ -1,28 +1,8 @@
-@font-face {
-	font-family: 'nonlinearfont';
-	src: url('./SourceSansProLW25-Regular.otf');
-}
-
-@font-face {
-	font-family: 'regularfont';
-	src: url('./SourceSansProLW25-Regular.otf');
-}
-
-@font-face {
-	font-family: 'Source Sans Pro LW25';
-	src: url('./SourceSansProLW25-Regular.otf');
-}
-
-@font-face {
-	font-family: 'Source Sans Pro';
-	src: url('./SourceSansProLW25-Regular.otf');
-}
 
 html, body {
 	background-color: #000000;
 	font-family: nonlinearfont;
-	-webkit-font-smoothing: antialiased;
-	position: absolute;
+	position: absolute; 
 	width: 100%;
 	height: 100%;
 	left: 0%;
@@ -30,6 +10,10 @@ html, body {
 	margin: 0px;
 	padding: 0px;
 	overflow: hidden;
+}
+
+html * {
+	box-sizing: border-box;
 }
 
 h1 {
@@ -53,17 +37,11 @@ h1 {
 	margin: 5px;
 }
 
-/**
- * The file contains styles for GWT widgets in the Clean theme.
- */
-@font-face {
-	font-family: 'regularfont';
-	src: url('./SourceSansProLW25-Regular.otf');
-}
 
 body, table td, select, button {
-	font-family: regularfont, Arial Unicode MS, Arial, sans-serif;
+	font-family: 'Source Sans Pro';
 	font-size: 14px;
+	font-weight: 300;
 }
 
 pre {
@@ -228,7 +206,6 @@ select {
 	background: transparent;
 	padding: 0px;
 	cursor: default;
-	font-family: regularfont, Arial Unicode MS, Arial, sans-serif;
 	color: #bbb;
 	text-align: center;
 	font-size: 120%;
@@ -248,17 +225,17 @@ select {
 
 .gwt-DialogBox {
 	width: auto;
-	background-color: #16161e;
-	border: 0.25mm solid #76829a;
-	border-radius: 2mm;
-	padding: 4px;
-	box-shadow: black 0 0 0 0.5mm;
+	background-color: #000;
+	border: 2px solid #76829a;
+	border-radius: 6px;
+	padding: 2px;
+	/*box-shadow: black 0 0 0 0.5mm;*/
 }
 
 .gwt-DialogBox .dialogMiddleCenter {
-	padding: 6px;
+	padding: 0px;
 	background: #202020;
-	border: 0.25mm solid rgb(102, 102, 102);
+	border: none;
 	border-radius: 1mm;
 }
 /* .gwt-DialogBox .dialogBottomCenter {
@@ -390,7 +367,6 @@ select {
 
 .gwt-MenuBar .gwt-MenuItem {
 	cursor: default;
-	font-family: Arial Unicode MS, Arial, sans-serif;
 }
 
 .gwt-MenuBar .gwt-MenuItem-selected {
@@ -1096,7 +1072,6 @@ select {
 	padding: 5px 7px;
 	margin: 3px;
 	font-size: 100%;
-	font-family: regularfont, Arial Unicode MS, Arial, sans-serif;
 }
 
 .gwt-TextArea-readonly {
@@ -1107,9 +1082,7 @@ select {
 	padding: 5px 7px;
 	border: 1px solid #575757;
 	border-top: 1px solid #575757;
-	/*   font-size: small; */
 	font-size: 14px;
-	font-family: regularfont, Arial Unicode MS, Arial, sans-serif;
 	color: #c2c2c2;
 	background: #141414;
 	border-radius: 3px;
@@ -1404,20 +1377,8 @@ input[type="checkbox"] {
 	display: none;
 }
 
-input[type="checkbox"]+label {
-	display: inline-block;
-	margin: 5px 5px 5px 4px;
-	vertical-align: middle;
-	background: url("checkbox-unchecked.png") left center no-repeat;
-	background-origin: padding-box;
-	cursor: pointer;
-	padding-left: 25px;
-	color: #bbb;
-}
 
-input[type="checkbox"]:checked+label {
-	background: url("checkbox-checked.png") left center no-repeat;
-}
+
 
 input[type="radio"] {
 	display: none;
@@ -1472,17 +1433,24 @@ input[type="radio"]:checked+label {
 	height: 100%;
 }
 
+
 .dialog-header>button {
 	flex-grow: 0;
-	width: 6mm;
-	height: 6mm;
-	background-repeat: no-repeat;
-	background-size: contain;
+
 	border: none;
-	background-image: url(dialog-close.png);
+	width: 26px;
+	height: 26px;
+	vertical-align: middle;
+	background: url(close.png) no-repeat;
+	cursor: pointer;
 	position: absolute;
-	right: 2px;
-	top: 4px;
+	top: 0.4em;
+	right: 0.4em;
+}
+
+.dialog-header>button:active {
+    background: url(close.png) -26px top no-repeat;
+    border: none;
 }
 
 .dialog-header>.headline {
@@ -1499,6 +1467,7 @@ input[type="radio"]:checked+label {
 
 textarea {
 	padding: 0.5em;
+
 	margin: 0;
 	border: 1px solid #575757;
 	border-top: 1px solid #575757;

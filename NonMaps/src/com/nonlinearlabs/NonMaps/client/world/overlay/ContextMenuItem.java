@@ -44,7 +44,7 @@ public class ContextMenuItem extends OverlayControl {
 	public boolean isEnabled() {
 		return enabled;
 	}
-	
+
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -90,7 +90,7 @@ public class ContextMenuItem extends OverlayControl {
 			c = new RGBA(c, 0.5);
 		}
 		ctx.setFillStyle(c.toString());
-		ctx.setFont(fontHeightInPixels + "px nonlinearfont");
+		ctx.setFont(fontHeightInPixels + "px 'Source Sans Pro LW25'");
 		ctx.setTextBaseline(TextBaseline.MIDDLE);
 		ctx.fillText(text, r.getLeft(), r.getCenterPoint().getY());
 	}

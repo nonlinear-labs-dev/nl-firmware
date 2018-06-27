@@ -44,7 +44,7 @@ public class Label extends LabelLarge {
 
 	@Override
 	protected String getFontName() {
-		return "regularfont";
+		return "'Source Sans Pro LW25'";
 	}
 
 	@Override

@@ -74,5 +74,6 @@ public class LocalSettingsProvider {
 
 	public void register(Function<LocalSettings, Boolean> cb) {
 		clients.add(cb);
+		cb.apply(settings);
 	}
 }

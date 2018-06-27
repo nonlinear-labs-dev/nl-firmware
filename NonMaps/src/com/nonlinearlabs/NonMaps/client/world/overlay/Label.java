@@ -12,7 +12,7 @@ import com.nonlinearlabs.NonMaps.client.world.TextCropper;
 
 public abstract class Label extends OverlayControl {
 
-	protected double fontHeightInPx = 0;
+	protected double fontHeightInMM = 0;
 	RGB m_linecolor;
 
 	protected RGB getLineColor() {
@@ -20,12 +20,12 @@ public abstract class Label extends OverlayControl {
 	}
 
 	public void setFontHeightInMM(double fontHeightInMM) {
-		this.fontHeightInPx = Millimeter.toPixels(fontHeightInMM);
+		this.fontHeightInMM = fontHeightInMM;
 	}
 
 	public Label(OverlayLayout parent) {
 		super(parent);
-		fontHeightInPx = Millimeter.toPixels(4);
+		this.fontHeightInMM = 4;
 	}
 
 	public abstract String getDrawText(Context2d ctx);
@@ -100,7 +100,7 @@ public abstract class Label extends OverlayControl {
 	}
 
 	protected void setFont(Context2d ctx, double fontHeightInPixels) {
-		ctx.setFont(fontHeightInPixels + "px nonlinearfont");
+		ctx.setFont(fontHeightInPixels + "px 'Source Sans Pro LW25'");
 	}
 
 	protected TextAlign getAlignment() {
@@ -108,7 +108,7 @@ public abstract class Label extends OverlayControl {
 	}
 
 	protected double getFontHeight(Rect pixRect) {
-		return fontHeightInPx;
+		return Millimeter.toPixels(fontHeightInMM);
 	}
 
 	protected double getVerticalFontDisplacement() {

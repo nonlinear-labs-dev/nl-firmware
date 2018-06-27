@@ -3,7 +3,7 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.EditBuffer;
+import com.nonlinearlabs.NonMaps.client.dataModel.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.PedalParameter;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
@@ -69,9 +69,10 @@ public class DeviceSettingsProvider {
 		});
 
 		Setup.get().systemSettings.editSmoothingTime.onChange(t -> {
-			settings.editSmoothingTime.sliderPosition = t;
+			double v = t.value.getValue();
+			settings.editSmoothingTime.sliderPosition = v;
 			settings.editSmoothingTime.displayValue = Stringizers.get().stringize(
-					Setup.get().systemSettings.editSmoothingTime.metaData.scaling.getValue(), t);
+					Setup.get().systemSettings.editSmoothingTime.metaData.scaling.getValue(), v);
 			notifyClients();
 			return true;
 		});
@@ -83,10 +84,11 @@ public class DeviceSettingsProvider {
 	}
 
 	public void connectToPedal(int id, Pedal target) {
-		PedalParameter srcPedal = (PedalParameter) EditBuffer.get().getGroup("CS").findParameter(id);
-		srcPedal.value.onChange(v -> {
-			target.sliderPosition = v;
+		PedalParameter srcPedal = (PedalParameter) EditBufferModel.get().findParameter(id);
+		srcPedal.value.onChange(t -> {
+			double v = t.value.getValue();
 			target.displayValue = Stringizers.get().stringize(srcPedal.value.metaData.scaling.getValue(), v);
+			target.sliderPosition = v;
 			notifyClients();
 			return true;
 		});
@@ -98,5 +100,6 @@ public class DeviceSettingsProvider {
 
 	public void register(Function<DeviceSettings, Boolean> cb) {
 		clients.add(cb);
+		cb.apply(settings);
 	}
 }

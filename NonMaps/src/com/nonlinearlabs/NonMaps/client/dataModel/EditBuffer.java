@@ -15,6 +15,7 @@ public class EditBuffer {
 	}
 
 	private HashMap<String, ParameterGroup> parameterGroups = new HashMap<String, ParameterGroup>();
+	private HashMap<String, BasicParameterModel> parameters = new HashMap<String, BasicParameterModel>();
 
 	public StringDataModelEntity selectedParameter = new StringDataModelEntity();
 	public StringDataModelEntity loadedPreset = new StringDataModelEntity();
@@ -42,8 +43,8 @@ public class EditBuffer {
 		return g;
 	}
 
-	public void onParameterChange(String groupId, int parameterId, Function<Double, Boolean> cb) {
-		getGroup(groupId).findParameter(parameterId).value.onChange(cb);
+	public void onParameterChange(int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
+		parameters.get(parameterId).value.onChange(cb);
 	}
 
 }

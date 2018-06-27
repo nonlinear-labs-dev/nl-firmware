@@ -13,6 +13,8 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.DisplayScaling;
 import com.nonlinearlabs.NonMaps.client.localStorage.WebStorage;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
@@ -62,6 +64,7 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	@Override
 	public void onModuleLoad() {
 		LocalSettings.get().setStorage(new WebStorage());
+		Setup.get().localSettings.displayScaling.onChange(s -> setScaling(s));
 
 		Tracer.registerCrashHandler();
 
@@ -106,6 +109,28 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		SetupDialog.create();
 	}
 
+	private boolean setScaling(DisplayScaling s) {
+		switch (s) {
+		case percent_100:
+			setPixelFactor(1.0);
+			break;
+		case percent_125:
+			setPixelFactor(1.25);
+			break;
+		case percent_150:
+			setPixelFactor(1.5);
+			break;
+		case percent_50:
+			setPixelFactor(0.5);
+			break;
+		case percent_75:
+			setPixelFactor(0.75);
+			break;
+		}
+
+		return true;
+	}
+
 	public static NonMaps get() {
 		return theMaps;
 	}
@@ -125,7 +150,9 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	public void setPixelFactor(double f) {
 		if (pixelFactor != f) {
 			pixelFactor = f;
-			nonlinearWorld.requestLayout();
+
+			if (nonlinearWorld != null)
+				nonlinearWorld.requestLayout();
 		}
 	}
 

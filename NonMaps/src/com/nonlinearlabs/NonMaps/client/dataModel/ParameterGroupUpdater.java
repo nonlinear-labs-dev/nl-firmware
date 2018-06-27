@@ -4,9 +4,9 @@ import com.google.gwt.xml.client.Node;
 
 public class ParameterGroupUpdater extends Updater {
 	private Node root;
-	private ParameterGroup target;
+	private ParameterGroupModel target;
 
-	public ParameterGroupUpdater(Node c, ParameterGroup target) {
+	public ParameterGroupUpdater(Node c, ParameterGroupModel target) {
 		root = c;
 		this.target = target;
 	}
@@ -19,7 +19,7 @@ public class ParameterGroupUpdater extends Updater {
 
 	private void processParameter(Node c) {
 		String id = getAttributeValue(c, "id");
-		BasicParameter p = target.findParameter(Integer.parseInt(id));
+		BasicParameterModel p = EditBufferModel.get().findParameter(Integer.parseInt(id));
 
 		if (p != null) {
 			ParameterUpdater updater = new ParameterUpdater(c, p);

@@ -1,9 +1,7 @@
-package com.nonlinearlabs.NonMaps.client.world.maps.parameters.value;
+package com.nonlinearlabs.NonMaps.client.dataModel.value;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
-import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
 class Value {
@@ -73,10 +71,10 @@ class Value {
 	protected void onEditingFinished() {
 
 	}
-
-	public void update(ValueDataModelEntity e) {
-		this.isBipolar = e.metaData.bipolar.getValue() == BooleanValues.on;
-		this.defaultValue = e.metaData.defaultValue.getValue();
-		setRawValue(Initiator.INDIRECT_USER_ACTION, e.getValue().value.getValue());
-	}
+	/*-
+	 public void update(ValueDataModelEntity e) {
+	 this.isBipolar = e.metaData.bipolar.getValue() == BooleanValues.on;
+	 this.defaultValue = e.metaData.defaultValue.getValue();
+	 setRawValue(Initiator.INDIRECT_USER_ACTION, e.getValue());
+	 }-*/
 }

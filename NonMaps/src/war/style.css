@@ -10,7 +10,7 @@
 	color: #434343;
 	background-color: #fdfdfd;
 	height: 100%;
-	overflow-y: scroll;
+	overflow-y: hidden;
 	overflow-x: hidden;
 	margin: 0;
 	padding: 0;
@@ -299,14 +299,14 @@ caption {
 	min-width: 21em;
 	max-width: 100%;
 /* 	height: 12em; */
-	margin: 0.5em;
-	padding: 0.3em;
+	margin: 0em;
+	padding: 0em;
 	position: relative;
 	display: inline-block;
 	background-color: #000;
-	box-shadow: 0px 0px 0px 2px #000;
-	border: 2px solid #7695b6;
-	border-radius: 8px;
+	box-shadow: none;
+	border: none;
+	border-radius: 5px;
 }
 
 .tabcontent {
@@ -611,7 +611,7 @@ input {
 input[type="checkbox"] {
     display:none;
 }
-input[type="checkbox"] + label span {
+.gwt-CheckBox > label span {
     display: inline-block;
     width: 20px;
     height: 20px;
@@ -620,7 +620,8 @@ input[type="checkbox"] + label span {
     background: url(checkbox.png) 0px top no-repeat;
     cursor: pointer;
 }
-input[type="checkbox"]:checked + label span {
+
+.gwt-CheckBox > input[type="checkbox"]:checked + label span {
     background:url(checkbox.png) -20px top no-repeat;
 }
 input[type="checkbox"] + label {
@@ -839,7 +840,7 @@ input[type="range"]::-moz-range-thumb {
 
 .slider-b::-moz-range-thumb {
 	width: 3px;
-    height: 6px;
+    height: 8px;
     background: #fff;
    	border-radius: 0px;
    	border: 1px solid #000;
@@ -869,7 +870,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .slider-b::-webkit-slider-thumb {
 	width: 3px;
-    height: 6px;
+    height: 8px;
     background: #fff;
    	border-radius: 0px;
 }

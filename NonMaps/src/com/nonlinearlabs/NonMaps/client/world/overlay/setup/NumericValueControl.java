@@ -117,7 +117,7 @@ public abstract class NumericValueControl extends OverlayLayout implements Quant
 			createStringizer(e.metaData.scaling.getValue());
 			value.update(e);
 		} else if (stringizer != null) {
-			value.setRawValue(Initiator.INDIRECT_USER_ACTION, e.getValue());
+			value.setRawValue(Initiator.INDIRECT_USER_ACTION, e.value.getValue());
 		}
 	}
 

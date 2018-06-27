@@ -22,7 +22,9 @@ public class ModulationRoutingParameter extends Parameter {
 
 		getSelectionRoot().registerSelectable(this);
 
-		Scheduler.get().scheduleFinally(new ScheduledCommand() {
+		Scheduler s = Scheduler.get();
+
+		s.scheduleFinally(new ScheduledCommand() {
 
 			@Override
 			public void execute() {

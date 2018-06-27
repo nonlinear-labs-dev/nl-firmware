@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 import java.util.function.Function;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -20,11 +21,11 @@ public class EditSmoothingTimeSetting extends Setting {
 	public void init() {
 		super.init();
 
-		Setup.get().systemSettings.editSmoothingTime.onChange(new Function<Double, Boolean>() {
+		Setup.get().systemSettings.editSmoothingTime.onChange(new Function<ValueDataModelEntity, Boolean>() {
 
 			@Override
-			public Boolean apply(Double t) {
-				((NumericValueControl) getSettingsControl()).update(Setup.get().systemSettings.editSmoothingTime);
+			public Boolean apply(ValueDataModelEntity t) {
+				((NumericValueControl) getSettingsControl()).update(t.getValue());
 				return true;
 			}
 		});

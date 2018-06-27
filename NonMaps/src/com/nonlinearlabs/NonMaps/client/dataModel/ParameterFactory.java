@@ -18,7 +18,7 @@ public class ParameterFactory {
 
 	}
 
-	public BasicParameter create(int id) {
+	public BasicParameterModel create(int id) {
 		if (modulateableParameters.contains(id))
 			return new ModulateableParameter();
 
@@ -34,6 +34,6 @@ public class ParameterFactory {
 		if (macroControls.contains(id))
 			return new MacroControlParameter();
 
-		return new BasicParameter();
+		return new BasicParameterModel();
 	}
 }

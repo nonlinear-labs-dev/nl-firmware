@@ -48,7 +48,7 @@ public class SystemSettings {
 	}
 
 	public void setEditSmoothingTime(double v) {
-		Setup.get().systemSettings.editSmoothingTime.setValue(v);
+		Setup.get().systemSettings.editSmoothingTime.value.setValue(v);
 		NonMaps.theMaps.getServerProxy().setSetting("EditSmoothingTime", Double.toString(v));
 	}
 

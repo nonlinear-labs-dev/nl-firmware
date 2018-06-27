@@ -17,8 +17,10 @@ public class ValueUpdater extends Updater {
 		String scaling = getChildText(node, "scaling");
 		String defaultValue = getChildText(node, "default");
 
-		if (!bipolar.isEmpty())
-			target.metaData.bipolar.setValue(bipolar.equals("1") ? BooleanValues.on : BooleanValues.off);
+		if (!bipolar.isEmpty()) {
+			BooleanDataModelEntity bp = target.metaData.bipolar;
+			bp.setValue(bipolar.equals("1") ? BooleanValues.on : BooleanValues.off);
+		}
 
 		if (!coarse.isEmpty())
 			target.metaData.coarseDenominator.setValue((int) Double.parseDouble(coarse));
@@ -33,7 +35,7 @@ public class ValueUpdater extends Updater {
 			target.metaData.defaultValue.setValue(Double.parseDouble(defaultValue));
 
 		String value = getChildText(node, "value");
-		target.setValue(Double.parseDouble(value));
+		target.value.setValue(Double.parseDouble(value));
 
 		target.notifyChanges();
 	}

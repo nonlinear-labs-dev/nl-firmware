@@ -137,7 +137,7 @@ public class LabelSmall extends ZoomReactingControl {
 	}
 
 	protected String getFontName() {
-		return "nonlinearfont";
+		return "'Source Sans Pro LW25'";
 	}
 
 	protected TextAlign getTextAlignment() {

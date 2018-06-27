@@ -2,9 +2,9 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
 import java.util.function.Function;
 
-import com.google.gwt.i18n.client.NumberFormat;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.DisplayScaling;
+import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class DisplayScalingFactor extends Setting {
@@ -49,15 +49,8 @@ public class DisplayScalingFactor extends Setting {
 				choice = c;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-				Number percent = NumberFormat.getPercentFormat().parse(getCurrentChoiceString());
-				getNonMaps().setPixelFactor(percent.doubleValue() / 100);
-
 				if (sendToServer)
-					NonMaps.theMaps.getNonLinearWorld().getSettings().set("UI Scaling", getSettingsValueString(c));
-			}
-
-			protected String getSettingsValueString(int c) {
-				return getChoices()[c].replace(" ", "-").toLowerCase();
+					LocalSettings.get().setDisplayScaling(DisplayScaling.values()[choice]);
 			}
 		};
 	}
