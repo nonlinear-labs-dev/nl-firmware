@@ -38,7 +38,7 @@ public abstract class MenuEntry extends OverlayLayout {
 
 		@Override
 		protected Rect getTextRect() {
-			return super.getTextRect().getMovedBy(new Dimension(-Millimeter.toPixels(2), 0));
+			return super.getTextRect().getMovedBy(new Dimension(-Millimeter.toPixels(3), 0));
 		}
 	};
 
