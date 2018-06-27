@@ -9,7 +9,7 @@ class FourStateLED: public LED
     FourStateLED();
     virtual ~FourStateLED();
 
-    void setState(char state, bool flush);
+    void setState(char state);
     char getState () const;
     void syncBBBB();
 
