@@ -207,7 +207,7 @@ public class GlobalMenu extends OverlayLayout {
 			super.doLayout(w - myWidth, top, myWidth, myHeight);
 			header.doLayout(myWidth - buttonDim, 0, buttonDim, buttonDim);
 			headerText.doLayout(0, 0, myWidth, buttonDim);
-			double y = buttonDim;
+			double y = buttonDim - top / 2;
 
 			for (OverlayControl c : getChildren()) {
 				if (c instanceof MenuEntry) {
