@@ -1,17 +1,12 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.menu;
-
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.RGB;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
+import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
-public class MenuHeader extends OverlayControl {
-
+public class MenuHeader extends SVGImage {
+	
 	public MenuHeader(GlobalMenu menu) {
-		super(menu);
+		super(menu, "View_Menu_Icon.svg");
 	}
 
 	@Override
@@ -20,56 +15,14 @@ public class MenuHeader extends OverlayControl {
 	}
 
 	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
-		Rect r = getPixRect();
-		double buttonDim = r.getHeight();
-		ctx.setStrokeStyle(getColorFont().toString());
-		ctx.setFillStyle(RGB.red().toString());
-		ctx.setLineWidth(Millimeter.toPixels(0.5));
-
-		double lineWidth = buttonDim / 2;
-		double margin = lineWidth / 2;
-		double yMargin = lineWidth / 4;
-		double heightPerStroke = (r.getHeight() - 2 * yMargin) / 4;
-		double h = heightPerStroke + yMargin;
-
-		ctx.beginPath();
-
-		for (int i = 0; i < 3; i++) {
-			ctx.moveTo(r.getRight() - buttonDim + margin, r.getTop() + h);
-			ctx.lineTo(r.getRight() - margin, r.getTop() + h);
-			h += heightPerStroke;
-		}
-
-		ctx.stroke();
-	}
-
-	@Override
 	public Control onContextMenu(Position pos) {
 		getParent().toggle();
 		return this;
 	}
-	
+
 	@Override
 	public Control click(Position eventPoint) {
 		getParent().toggle();
 		return this;
 	}
-	
-	@Override
-	public RGB getColorFont() {
-		return super.getColorFont();
-		//return new RGB();
-	}
-
-	@Override
-	public Control doubleClick() {
-		return this;
-	}
-
-	@Override
-	public Control mouseDown(Position eventPoint) {
-		return this;
-	}
-
 }
