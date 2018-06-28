@@ -205,9 +205,9 @@ public class GlobalMenu extends OverlayLayout {
 			int childCount = getChildren().size() - IGNORED_CHILDREN;
 			double myHeight = childCount * buttonDim;
 			super.doLayout(w - myWidth, top, myWidth, myHeight);
-			header.doLayout(0, 0, myWidth, buttonDim);
-			headerText.doLayout(10, 0, 90, buttonDim);
-			double y = buttonDim;
+			header.doLayout(myWidth - buttonDim, 0, buttonDim, buttonDim);
+			headerText.doLayout(0, 0, myWidth, buttonDim);
+			double y = buttonDim - top / 2;
 
 			for (OverlayControl c : getChildren()) {
 				if (c instanceof MenuEntry) {
@@ -217,29 +217,56 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		}
 	}
+	
+	private RGB getBackgroundFillColor() {
+		return new RGB(34,34,42);
+	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		double lineWidth = Millimeter.toPixels(1);
-
+		double lineWidth = Millimeter.toPixels(1.1);
+		
 		createBackgroundAreaPath(ctx);
-		ctx.setStrokeStyle(RGB.black().toString());
+		ctx.setStrokeStyle(RGB.blue().toString());
 		ctx.setLineWidth(lineWidth);
 		ctx.stroke();
 
-		ctx.setFillStyle(RGB.floatingWindowHeaderBackground().toString());
+		ctx.setFillStyle(getBackgroundFillColor().toString());
 		ctx.fill();
-
-		super.draw(ctx, invalidationMask);
 
 		createBackgroundAreaPath(ctx);
 		ctx.setStrokeStyle(RGB.floatingWindowHeaderBorder().toString());
 		ctx.setLineWidth(lineWidth / 4);
 		ctx.stroke();
+		
+		super.draw(ctx, invalidationMask);
+		
+		createHeaderAreaPath(ctx);
+		ctx.setFillStyle(RGB.black().toString());
+		ctx.setLineWidth(0);
+		ctx.fill();
+		
+		headerText.draw(ctx, invalidationMask);
+		header.draw(ctx, invalidationMask);
 	}
 
+	private void createHeaderAreaPath(Context2d ctx) {
+		Rect r = getPixRect().copy();
+		r.setTop(header.getPixRect().getTop());
+		r.setBottom(header.getPixRect().getBottom());
+		double corner = Millimeter.toPixels(1);
+		ctx.beginPath();
+		ctx.moveTo(r.getRight(), r.getTop());
+		ctx.lineTo(r.getLeft() + corner, r.getTop());
+		ctx.arcTo(r.getLeft(), r.getTop(), r.getLeft(), r.getTop() + corner, corner);
+		ctx.lineTo(r.getLeft(), r.getBottom() - corner);
+		ctx.arcTo(r.getLeft(), r.getBottom(), r.getLeft() + corner, r.getBottom(), corner);
+		ctx.lineTo(r.getRight(), r.getBottom());
+		ctx.lineTo(r.getRight(), r.getTop());
+	}
+	
 	private void createBackgroundAreaPath(Context2d ctx) {
-		Rect r = getPixRect();
+		Rect r = getPixRect().copy();
 		double corner = Millimeter.toPixels(1);
 		ctx.beginPath();
 		ctx.moveTo(r.getRight(), r.getTop());
@@ -268,8 +295,6 @@ public class GlobalMenu extends OverlayLayout {
 		return this;
 	}
 
-	
-	
 	@Override
 	public Control doubleClick() {
 		return this;
