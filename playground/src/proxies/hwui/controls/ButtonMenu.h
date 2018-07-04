@@ -22,6 +22,7 @@ class ButtonMenu : public ControlWithChildren
     void highlightSelectedButton();
     void toggle ();
     void antiToggle();
+    void sanitizeIndex();
 
     void doAction();
 

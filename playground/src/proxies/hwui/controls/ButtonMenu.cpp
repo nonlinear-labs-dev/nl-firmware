@@ -62,6 +62,11 @@ void ButtonMenu::antiToggle()
   bruteForce();
 }
 
+void ButtonMenu::sanitizeIndex() {
+  m_selected = std::min(m_items.size() - 1, m_selected);
+  m_selected = std::max(0, (int)m_selected);
+}
+
 size_t ButtonMenu::addButton (const Glib::ustring &caption, Action action)
 {
   m_items.push_back ({caption, action});
@@ -77,6 +82,7 @@ void ButtonMenu::clearActions()
 void ButtonMenu::doAction()
 {
   m_items[m_selected].action();
+  bruteForce ();
 }
 
 void ButtonMenu::bruteForce ()
