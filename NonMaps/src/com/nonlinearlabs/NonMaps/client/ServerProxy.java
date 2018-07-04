@@ -177,7 +177,7 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, x, y, name);
 		queueJob(uri, false);
 	}
-
+	
 	public void newBankFromEditBuffer(NonPosition nonPosition) {
 		StaticURI.Path path = new StaticURI.Path("presets", "new-bank-from-edit-buffer");
 		StaticURI.KeyValue x = new StaticURI.KeyValue("x", nonPosition.getX());
@@ -908,6 +908,12 @@ public class ServerProxy {
 
 	}
 
+	public void resetScaling() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "reset-scale");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+	
 	public void downloadPreset(String uuid, DownloadHandler downloadHandler) {
 		downloadFile("/presets/banks/download-preset/?uuid=" + URL.encodeQueryString(uuid), downloadHandler);
 	}

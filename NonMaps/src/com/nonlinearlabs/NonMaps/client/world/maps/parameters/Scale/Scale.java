@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.Scale;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
@@ -9,6 +10,8 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupVert
 
 public class Scale extends ParameterGroupVertical {
 
+	private ScaleControls m_scaleControls;
+	
 	public Scale(MapsLayout parent) {
 		super(parent);
 		addChild(new LabelModuleHeader(this, getName()) {
@@ -17,7 +20,7 @@ public class Scale extends ParameterGroupVertical {
 				return RGB.lighterGray();
 			}
 		});
-		addChild(new ScaleControls(this));
+		m_scaleControls = addChild(new ScaleControls(this));
 	}
 
 	@Override
@@ -76,6 +79,16 @@ public class Scale extends ParameterGroupVertical {
 		return ColorTable.getColorIndicator();
 	}
 
+	public boolean anyValueNotDefault() {
+		boolean notDefault = false;
+		for(ScaleParameter param: m_scaleControls.getParameters()) {
+			double value = param.getValue().getRawValue();
+			double defaultValue = param.getDefaultValue();
+			notDefault |= value != defaultValue;		
+		}
+		return notDefault;
+	}
+	
 	@Override
 	public String getID() {
 		return "Scale";

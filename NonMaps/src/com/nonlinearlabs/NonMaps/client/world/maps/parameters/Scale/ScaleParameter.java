@@ -5,6 +5,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSou
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHighPriority;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue;
 
 abstract public class ScaleParameter extends ModulationSourceHighPriority {
 
@@ -13,6 +14,10 @@ abstract public class ScaleParameter extends ModulationSourceHighPriority {
 		addChild(new LabelModulationSource(this, getName()));
 		addChild(new SliderHorizontal(this));
 		addChild(new ValueDisplaySmall(this));
+	}
+
+	public double getDefaultValue() {
+		return 0.0;
 	}
 
 }

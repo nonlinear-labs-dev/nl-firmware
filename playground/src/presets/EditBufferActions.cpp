@@ -10,6 +10,10 @@
 #include <proxies/lpc/LPCProxy.h>
 #include <boost/algorithm/string.hpp>
 
+
+//NonMember helperFunctions pre:
+IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(std::shared_ptr<EditBuffer> editBuffer);
+
 EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer) :
     super("/presets/param-editor/")
 {
@@ -61,6 +65,21 @@ EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer) :
     {
       param->undoableSetGivenName (newName);
     }
+  });
+
+  addAction("reset-scale", [ = ] (shared_ptr<NetworkRequest> request) mutable {
+    auto transaction = editBuffer->getUndoScope().startTransaction("Reset Scale Group")->getTransaction();
+    for(auto scaleParam: getScaleParameters(editBuffer)) {
+      //Why do i have to take care of that? Does it have anything to do with the use inside the loop?
+      if(transaction->isClosed())
+        transaction->reopen();
+
+      scaleParam->reset(transaction, Initiator::EXPLICIT_WEBUI);
+    }
+
+    if(!transaction->isClosed())
+      transaction->close();
+
   });
 
   addAction("set-macrocontrol-info", [ = ] (shared_ptr<NetworkRequest> request) mutable
@@ -205,3 +224,7 @@ EditBufferActions::~EditBufferActions()
 {
 }
 
+IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(std::shared_ptr<EditBuffer> editBuffer) {
+  auto paramGroup = editBuffer->getParameterGroupByID("Scale");
+  return paramGroup->getParameters();
+}

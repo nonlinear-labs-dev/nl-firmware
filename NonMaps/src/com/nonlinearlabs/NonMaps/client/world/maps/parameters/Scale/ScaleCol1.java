@@ -3,7 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.Scale;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 
-class ScaleCol1 extends ParameterColumn {
+class ScaleCol1 extends ScaleCol {
 
 	ScaleCol1(MapsLayout parent) {
 		super(parent);
