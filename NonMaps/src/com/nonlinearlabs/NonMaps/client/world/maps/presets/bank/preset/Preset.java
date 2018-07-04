@@ -359,6 +359,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public void load() {
 		getNonMaps().getServerProxy().loadPreset(this);
+		getParent().getParent().onPresetLoadStatusChanged(this);
 	}
 
 	public void setFilterState(FilterState state) {

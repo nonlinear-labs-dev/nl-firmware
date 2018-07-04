@@ -10,9 +10,11 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetInfoContent.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNameHeadlineLabel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/EditPresetInfoLayout.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/EditBufferInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetInfoLayout.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
+#include "EditBufferInfoLayout.h"
 
 PresetInfoLayout::PresetInfoLayout () :
     super ()
@@ -35,7 +37,7 @@ void PresetInfoLayout::addHeadline ()
 
 void PresetInfoLayout::addInfoLabel ()
 {
-  addControl (new InfoLabel (Rect (192, 0, 64, 13)));
+  addControl (new InfoLabel (Rect (192, 0, 64, 13), "1/2"));
 }
 
 Scrollable * PresetInfoLayout::createScrollableContent ()
@@ -43,14 +45,22 @@ Scrollable * PresetInfoLayout::createScrollableContent ()
   return new PresetInfoContent ();
 }
 
-bool PresetInfoLayout::onButton (int i, bool down, ButtonModifiers modifiers)
+bool PresetInfoLayout::onButton (int button, bool down, ButtonModifiers modifiers)
 {
-  if (i == BUTTON_EDIT && down)
-  {
-    auto layout = new EditPresetInfoLayout ();
-    Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ().setOverlay (layout);
-    return true;
-  }
 
-  return super::onButton (i, down, modifiers);
+  Layout* l;
+
+  if(down) {
+    switch (button) {
+      case BUTTON_EDIT:
+        l = new EditPresetInfoLayout();
+        Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(l);
+        return true;
+      case BUTTON_INFO:
+        l = new EditBufferInfoLayout();
+        Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(l);
+        return true;
+    }
+  }
+  return super::onButton(button, down, modifiers);
 }

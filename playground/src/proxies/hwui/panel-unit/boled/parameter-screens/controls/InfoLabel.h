@@ -8,7 +8,7 @@ class InfoLabel : public Label
     typedef Label super;
 
   public:
-    InfoLabel (const Rect &pos);
+    InfoLabel (const Rect &pos, const Glib::ustring& text = "");
 
     virtual shared_ptr<Font> getFont() const override;
     virtual int getFontHeight() const override;

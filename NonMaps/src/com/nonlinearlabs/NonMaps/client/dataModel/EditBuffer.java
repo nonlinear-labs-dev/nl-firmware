@@ -3,6 +3,8 @@ package com.nonlinearlabs.NonMaps.client.dataModel;
 import java.util.HashMap;
 import java.util.function.Function;
 
+import com.nonlinearlabs.NonMaps.client.NonMaps;
+
 public class EditBuffer {
 
 	public class Parameter extends DataModelEntity<Parameter> {
@@ -138,6 +140,7 @@ public class EditBuffer {
 	public String comment;
 	public String deviceName;
 	public String storeTime;
+	public String name;
 
 	static public EditBuffer get() {
 		return theInstance;
