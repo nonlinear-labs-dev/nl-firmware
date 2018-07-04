@@ -51,7 +51,7 @@ public class EditParameterSetting extends Setting {
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
 			if (fire)
-				LocalSettings.get().setEditParameter(EditParameter.values()[choice]);
+				LocalSettings.get().setEditParameter(EditParameter.values()[c]);
 		}
 	}
 
