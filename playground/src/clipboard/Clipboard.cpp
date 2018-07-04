@@ -1,10 +1,12 @@
 #include "Clipboard.h"
+#include "HiddenMultiBank.h"
 #include <presets/PresetManager.h>
 #include <presets/Preset.h>
 #include <presets/PresetBank.h>
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
 #include <Application.h>
+#include <tools/StringTools.h>
 
 Clipboard::Clipboard (UpdateDocumentContributor *parent) :
     ContentSection (parent),
@@ -25,6 +27,18 @@ Clipboard::Clipboard (UpdateDocumentContributor *parent) :
   m_actions.addAction ("copy-preset", [=](shared_ptr<NetworkRequest> request)
   {
     copyPreset(request->get ("preset"));
+    request->okAndComplete();
+  });
+
+  m_actions.addAction ("copy-presets", [=](shared_ptr<NetworkRequest> request)
+  {
+    copyPresets(request->get ("csv"));
+    request->okAndComplete();
+  });
+
+  m_actions.addAction ("cut-presets", [=](shared_ptr<NetworkRequest> request)
+  {
+    cutPresets(request->get ("csv"));
     request->okAndComplete();
   });
 
@@ -85,6 +99,10 @@ bool Clipboard::containsBank () const
   return dynamic_pointer_cast<PresetBank> (m_content) != nullptr;
 }
 
+bool Clipboard::containsMultiplePresets() const {
+  return dynamic_pointer_cast<HiddenMultiBank>(m_content) != nullptr;
+}
+
 bool Clipboard::containsPreset () const
 {
   return dynamic_pointer_cast<Preset> (m_content) != nullptr;
@@ -122,6 +140,27 @@ void Clipboard::copyBank (const Glib::ustring &bankUuid)
   }
 }
 
+bool Clipboard::copyPresets(const Glib::ustring &csv) {
+
+  auto uuids = StringTools::splitStringOnAnyDelimiter(csv, ';');
+  auto pm = Application::get ().getPresetManager ();
+  auto scope = getUndoScope().startTrashTransaction();
+
+  std::vector<std::shared_ptr<Preset>> presets;
+
+  for(auto uuid: uuids) {
+    presets.push_back(Preset::createPreset(nullptr));
+    if(auto preset = pm->findPreset(uuid))
+     static_pointer_cast<Preset> (presets.back())->copyFrom (scope->getTransaction (), preset.get (), false);
+  }
+
+  auto x = std::make_shared<HiddenMultiBank>(nullptr);
+  x->m_presets = presets;
+  m_content = x;
+
+  return true;
+}
+
 bool Clipboard::copyPreset (const Glib::ustring &presetUuid)
 {
   auto pm = Application::get ().getPresetManager ();
@@ -143,12 +182,19 @@ void Clipboard::cutPreset (const Glib::ustring &presetUuid)
     m_currentContentWasCut = true;
 }
 
+void Clipboard::cutPresets(const Glib::ustring &csv) {
+  if(copyPresets(csv))
+    m_currentContentWasCut = true;
+}
+
 void Clipboard::pasteOnBank (const Glib::ustring &bankUuid)
 {
   if (containsPreset ())
     pastePresetOnBank (bankUuid);
   else if (containsBank ())
     pasteBankOnBank (bankUuid);
+  else if(containsMultiplePresets())
+    pastePresetsOnBank(bankUuid);
 }
 
 void Clipboard::pasteOnPreset (const Glib::ustring &presetUuid)
@@ -207,6 +253,23 @@ void Clipboard::pasteBankOnBank (const Glib::ustring &bankUuid)
       }
 
       doCut (transaction);
+    }
+  }
+}
+
+void Clipboard::pastePresetsOnBank(const Glib::ustring &bankUuid)
+{
+  if(containsMultiplePresets()) {
+    auto pm = Application::get().getPresetManager();
+    if(auto target = pm->findBank(bankUuid)) {
+      auto scope = getUndoScope().startTransaction("Paste Multiple Presets");
+      auto transaction = scope->getTransaction();
+      auto source = dynamic_pointer_cast<HiddenMultiBank>(m_content);
+
+      for(auto pastePreset: source->m_presets) {
+        auto inssertPos = target->getNumPresets();
+        target->undoableInsertPreset(transaction, inssertPos);
+      }
     }
   }
 }
