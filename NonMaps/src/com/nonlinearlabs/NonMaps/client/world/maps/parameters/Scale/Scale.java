@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.Scale;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;

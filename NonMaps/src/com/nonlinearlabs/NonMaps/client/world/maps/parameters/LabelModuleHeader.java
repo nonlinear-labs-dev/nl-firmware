@@ -65,7 +65,7 @@ public class LabelModuleHeader extends LabelSmall {
 		public ScaleGroupContextMenu(OverlayLayout parent, Scale scaleGroup) {
 			super(parent);
 			if(scaleGroup.anyValueNotDefault()) {
-				addChild(new ContextMenuItem(this, "Reset Scaling") {
+				addChild(new ContextMenuItem(this, "Reset") {
 					@Override
 					public Control click(Position eventPoint) {
 						resetScaling();
