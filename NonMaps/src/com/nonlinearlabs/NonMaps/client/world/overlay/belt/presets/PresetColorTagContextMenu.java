@@ -10,7 +10,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
-import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetContextMenuItem;
 
@@ -49,15 +48,21 @@ public class PresetColorTagContextMenu extends ContextMenu {
 
 				@Override
 				public void draw(Context2d ctx, int invalidationMask) {
-					super.draw(ctx, invalidationMask);
+					super.draw(ctx, invalidationMask);	
 					Rect r = this.getPixRect().copy();
 					r.setWidth(getColorTagWidth());
-					r.reduceHeightBy(r.getHeight() / 4);
+					r.reduceHeightBy(r.getHeight() / 1.9);
+					r.moveBy(-3, 0);
 					r.fill(ctx, c.toRGB());
 				}
 
 				public double getColorTagWidth() {
-					return Millimeter.toPixels(1.5);
+					return Millimeter.toPixels(3.2);
+				}
+				
+				@Override
+				public double getDesiredHeight() {
+					return Millimeter.toPixels(10);
 				}
 
 				@Override

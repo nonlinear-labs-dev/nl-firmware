@@ -54,11 +54,11 @@ void LowerRibbon::onParamValueChanged (const Parameter *param)
 
   if (!bipol)
   {
-    setLEDsForValueUniPolar (paramVal, false);
+    setLEDsForValueUniPolar (paramVal);
   }
   else
   {
-    setLEDsForValueBiPolar (paramVal, false);
+    setLEDsForValueBiPolar (paramVal);
   }
 }
 
@@ -70,7 +70,7 @@ void LowerRibbon::indicateBlockingMainThread (bool onOff)
   {
     for (int i = 0; i < NUM_LEDS_PER_RIBBON; i++)
     {
-      setLEDState (i, (i % 2 == 0) ? 3 : 0, false);
+      setLEDState (i, (i % 2 == 0) ? 3 : 0);
     }
   }
   else

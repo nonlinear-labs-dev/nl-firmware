@@ -1,23 +1,34 @@
 #include <io/network/WebSocketSession.h>
 #include <device-settings/DebugLevel.h>
-#include <string.h>
 #include <Application.h>
 #include <Options.h>
 #include <netinet/tcp.h>
-
 using namespace std::chrono_literals;
+
+
 
 WebSocketSession::WebSocketSession() :
     m_soupSession(soup_session_new(), g_object_unref),
     m_message(nullptr, g_object_unref),
     m_connection(nullptr, g_object_unref),
-    m_retry(std::bind(&WebSocketSession::connect, this))
+    m_defaultContextQueue(std::make_unique<ContextBoundMessageQueue>(Glib::MainContext::get_default())),
+    m_contextThread(std::bind(&WebSocketSession::backgroundThread, this))
 {
-  connect();
 }
 
 WebSocketSession::~WebSocketSession()
 {
+  m_messageLoop->quit();
+  m_contextThread.join();
+}
+
+void WebSocketSession::backgroundThread() {
+  auto m = Glib::MainContext::create();
+  this->m_backgroundContextQueue = std::make_unique<ContextBoundMessageQueue>(m);
+  this->m_messageLoop = Glib::MainLoop::create(m);
+  g_main_context_push_thread_default(m->gobj());
+  m_backgroundContextQueue->pushMessage(std::bind(&WebSocketSession::connect, this));
+  this->m_messageLoop->run();
 }
 
 sigc::connection WebSocketSession::onMessageReceived(Domain d, const sigc::slot<void, tMessage> &cb)
@@ -57,8 +68,8 @@ void WebSocketSession::onWebSocketConnected(SoupSession *session, GAsyncResult *
 
 void WebSocketSession::reconnect()
 {
-  if(!m_retry.isPending())
-    m_retry.refresh(2s);
+  auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
+  sigTimeOut.connect_seconds_once(std::bind(&WebSocketSession::connect, this), 2);
 }
 
 void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
@@ -105,22 +116,20 @@ void WebSocketSession::sendMessage(Domain d, tMessage msg)
 
 void WebSocketSession::sendMessage(tMessage msg)
 {
-  if(m_connection)
-  {
-    auto state = soup_websocket_connection_get_state (m_connection.get());
+  m_backgroundContextQueue->pushMessage([=]() {
+    if (m_connection) {
+      auto state = soup_websocket_connection_get_state(m_connection.get());
 
-    if (state == SOUP_WEBSOCKET_STATE_OPEN)
-    {
-      gsize len = 0;
-      auto data = msg->get_data(len);
-      soup_websocket_connection_send_binary(m_connection.get(), data, len);
+      if (state == SOUP_WEBSOCKET_STATE_OPEN) {
+        gsize len = 0;
+        auto data = msg->get_data(len);
+        soup_websocket_connection_send_binary(m_connection.get(), data, len);
+      } else {
+        m_connection.reset();
+        reconnect();
+      }
     }
-    else
-    {
-      m_connection.reset();
-      reconnect();
-    }
-  }
+  });
 }
 
 void WebSocketSession::receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketSession *pThis)
@@ -131,5 +140,10 @@ void WebSocketSession::receiveMessage(SoupWebsocketConnection *self, gint type, 
   Domain d = (Domain)(data[0]);
 
   auto dup = g_memdup(data + 1, len - 1);
-  pThis->m_onMessageReceived[d](Glib::Bytes::create(dup, len - 1));
+
+  auto byteMessage = Glib::Bytes::create(dup, len - 1);
+
+  pThis->m_defaultContextQueue->pushMessage([=](){
+    pThis->m_onMessageReceived[d](byteMessage);
+  });
 }

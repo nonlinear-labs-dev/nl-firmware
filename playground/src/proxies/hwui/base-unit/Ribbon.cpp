@@ -12,7 +12,7 @@ Ribbon::Ribbon()
 
 Ribbon::~Ribbon()
 {
-  resetLEDs(true);
+  resetLEDs();
 }
 
 void Ribbon::syncBBBB()
@@ -31,14 +31,18 @@ void Ribbon::initLEDs()
     m_leds[i].setID(id);
   }
 
-  resetLEDs(true);
+  resetLEDs();
 }
 
-void Ribbon::setLEDState(int ledPos, char state, bool flush)
+void Ribbon::setLEDState(int ledPos, char state)
 {
-  m_leds[ledPos].setState(state, flush);
+  m_leds[ledPos].setState(state);
+  // debugTrace();
+}
 
-#if _DEVELOPMENT_PC && 0
+void Ribbon::debugTrace()
+{
+#if _DEVELOPMENT_PC && 1
   Glib::ustring dbg;
 
   for(int i = 0; i < NUM_LEDS_PER_RIBBON; i++)
@@ -58,20 +62,22 @@ void Ribbon::setLEDState(int ledPos, char state, bool flush)
 #endif
 }
 
-void Ribbon::resetLEDs(bool flush)
+void Ribbon::resetLEDs()
 {
   for(int i = 0; i < NUM_LEDS_PER_RIBBON; i++)
-    setLEDState(i, 0, flush);
+    setLEDState(i, 0);
+
+  // debugTrace();
 }
 
-void Ribbon::setLEDsForValueUniPolar(tDisplayValue paramVal, bool flush)
+void Ribbon::setLEDsForValueUniPolar(tDisplayValue paramVal)
 {
   int numRepresentableStates = NUM_LEDS_PER_RIBBON * 3 + 1;
   int paramValIdx = lround(paramVal * numRepresentableStates);
-  setLEDsUniPolar(paramValIdx, flush);
+  setLEDsUniPolar(paramValIdx);
 }
 
-void Ribbon::setLEDsUniPolar(int paramValIdx, bool flush)
+void Ribbon::setLEDsUniPolar(int paramValIdx)
 {
   int incomingParamVal = paramValIdx;
 
@@ -90,48 +96,52 @@ void Ribbon::setLEDsUniPolar(int paramValIdx, bool flush)
     if(i == 0 && incomingParamVal > 0)
       brightness = std::max(brightness, 1);
 
-    setLEDState(i, brightness, flush);
+    setLEDState(i, brightness);
   }
 }
 
-void Ribbon::setLEDsForValueBiPolar(tDisplayValue paramVal, bool flush)
+char Ribbon::handleCenter(tDisplayValue v) const
 {
-  resetLEDs(false);
+  if(v == 0.0)
+    return 0;
 
-  if(paramVal != 0.0)
-  {
-    int numRepresentableStates = (3 * (NUM_LEDS_PER_RIBBON - 1) / 2);
-    int paramValIdx = lround(paramVal * numRepresentableStates);
-    setLEDsBiPolar(paramValIdx, (paramVal >= 0) ? 1 : -1, flush);
-  }
-
-  setLEDState(NUM_LEDS_PER_RIBBON / 2, 3, flush);
+  return 3;
 }
 
-void Ribbon::setLEDsBiPolar(int paramValIdx, int direction, bool flush)
+char Ribbon::getLEDStateForBipolarValue(int led, tDisplayValue v) const
 {
-  resetLEDs(flush);
+  constexpr auto center = NUM_LEDS_PER_RIBBON / 2;
 
-  int idx = (NUM_LEDS_PER_RIBBON - 1) / 2 + direction;
+  if(led == center)
+    return handleCenter(v);
 
-  paramValIdx = abs(paramValIdx);
+  bool ledIsOnLeftHalf = led < center;
+  bool valueIsOnLeftHalf = v < 0.0;
 
-  for(int i = 0; i < NUM_LEDS_PER_RIBBON / 2; i++)
+  if(ledIsOnLeftHalf != valueIsOnLeftHalf)
+    return 0;
+
+  constexpr auto valueStepPerLed = 1.0 / center;
+  constexpr auto valueStepPerLedBrightnessStep = valueStepPerLed / 3;
+  const auto relativeAbsoluteDistanceToMiddle = std::abs(led - center) / (double) center;
+  const auto absoluteValue = std::abs(v);
+
+  if(relativeAbsoluteDistanceToMiddle <= absoluteValue)
+    return 3;
+
+  if(relativeAbsoluteDistanceToMiddle <= absoluteValue + valueStepPerLedBrightnessStep)
+    return 2;
+
+  if(relativeAbsoluteDistanceToMiddle <= absoluteValue + 2 * valueStepPerLedBrightnessStep)
+    return 1;
+
+  return 0;
+}
+
+void Ribbon::setLEDsForValueBiPolar(tDisplayValue paramValue)
+{
+  for(int i = 0; i < NUM_LEDS_PER_RIBBON; i++)
   {
-    int brightness = 0;
-
-    for(int b = 0; b < 3; b++)
-    {
-      if(paramValIdx > 0)
-        brightness++;
-
-      paramValIdx -= 1;
-    }
-
-    if(i == 0)
-      brightness = std::max(brightness, 1);
-
-    setLEDState(idx, brightness, flush);
-    idx += direction;
+    setLEDState(i, getLEDStateForBipolarValue(i, paramValue));
   }
 }

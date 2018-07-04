@@ -47,6 +47,8 @@ class RibbonParameter : public PhysicalControlParameter
     void boundToMacroControl(tControlPositionValue v);
 
     virtual DFBLayout *createLayout (FocusAndMode focusAndMode) const override;
+    virtual void loadFromPreset (UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value) override;
+
 
   protected:
     void writeDocProperties (Writer &writer, tUpdateID knownRevision) const override;
