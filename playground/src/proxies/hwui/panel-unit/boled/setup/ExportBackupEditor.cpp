@@ -12,6 +12,7 @@
 #include <tools/SpawnCommandLine.h>
 #include <tools/TimeTools.h>
 #include <algorithm>
+#include <tools/StringTools.h>
 #include "USBStickAvailableView.h"
 
 static const Rect c_fullRightSidePosition (129, 16, 126, 48);
@@ -73,7 +74,7 @@ void ExportBackupEditor::exportBanks ()
 
   auto humanDate = std::to_string(TimeTools::getDisplayStringFromStamp(timeStamp));
 
-  humanDate.replace(humanDate.find(" "), 1, "-");
+  humanDate = StringTools::replaceAll(humanDate, " ", "-");
 
   auto targetNameWithStamp(std::string("/mnt/usb-stick/") + humanDate.c_str() + c_backupTargetFile);
 
