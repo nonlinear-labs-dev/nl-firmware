@@ -4,7 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupVertical;
 
 public class Scale extends ParameterGroupVertical {
@@ -13,7 +12,7 @@ public class Scale extends ParameterGroupVertical {
 	
 	public Scale(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()) {
+		addChild(new ScaleLabelModuleHeader(this, getName()) {
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();

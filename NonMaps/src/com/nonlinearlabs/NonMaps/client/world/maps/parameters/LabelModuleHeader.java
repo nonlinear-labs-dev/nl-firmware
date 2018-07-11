@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Name;
@@ -11,7 +10,6 @@ import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.SourcesAndAmounts.SourcesAndAmounts;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Scale.Scale;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
@@ -60,22 +58,6 @@ public class LabelModuleHeader extends LabelSmall {
 		}
 	}
 
-	public class ScaleGroupContextMenu extends ParameterGroupContextMenu {
-
-		public ScaleGroupContextMenu(OverlayLayout parent, Scale scaleGroup) {
-			super(parent);
-			if(scaleGroup.anyValueNotDefault()) {
-				addChild(new ContextMenuItem(this, "Reset") {
-					@Override
-					public Control click(Position eventPoint) {
-						resetScaling();
-						return super.click(eventPoint);
-					}
-				});
-			}
-		}
-		
-	}
 	
 	protected ParameterGroupVertical m_parentGroup;
 	
@@ -168,13 +150,7 @@ public class LabelModuleHeader extends LabelSmall {
 				.getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-			ContextMenu c = null;
-			if(m_parentGroup instanceof Scale) {
-				c = new ScaleGroupContextMenu(o, (Scale) m_parentGroup);
-			} else {
-				c = new ParameterGroupContextMenu(o);
-			}
-			return o.setContextMenu(pos, c);
+			return o.setContextMenu(pos, new ParameterGroupContextMenu(o));
 		}
 		return super.onContextMenu(pos);
 	}
