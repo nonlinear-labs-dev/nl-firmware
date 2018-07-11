@@ -19,7 +19,7 @@ class Clipboard : public ContentSection
     void cutPreset(const Glib::ustring &presetUuid);
     bool copyPreset(const Glib::ustring &presetUuid);
     void copyBank(const Glib::ustring &bankUuid);
-    bool copyPresets(const Glib::ustring &csv);
+    void copyPresets(const Glib::ustring &csv);
 
     void pasteOnBank(const Glib::ustring &bankUuid);
     void pasteOnPreset(const Glib::ustring &presetUuid);

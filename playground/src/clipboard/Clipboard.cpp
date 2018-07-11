@@ -129,7 +129,7 @@ void Clipboard::copyBank (const Glib::ustring &bankUuid)
   }
 }
 
-bool Clipboard::copyPresets(const Glib::ustring &csv) {
+void Clipboard::copyPresets(const Glib::ustring &csv) {
 
   auto pm = Application::get ().getPresetManager ();
   auto scope = getUndoScope ().startTrashTransaction ();
@@ -145,7 +145,6 @@ bool Clipboard::copyPresets(const Glib::ustring &csv) {
       bank->undoableCopyAndPrependPreset(scope->getTransaction(), preset);
     }
   }
-  return true;
 }
 
 bool Clipboard::copyPreset (const Glib::ustring &presetUuid)
