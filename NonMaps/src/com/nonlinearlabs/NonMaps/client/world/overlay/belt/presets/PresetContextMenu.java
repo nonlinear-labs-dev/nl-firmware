@@ -91,14 +91,6 @@ public class PresetContextMenu extends ContextMenu {
 			}
 		}
 		else {
-			addChild(new PresetContextMenuItem(this, "Cut") {
-				@Override
-				public Control click(Position eventPoint) {
-					getNonMaps().getServerProxy().cutPresets(pm.getMultiSelection().getCSV());
-					return super.click(eventPoint);
-				}
-			});
-
 			addChild(new PresetContextMenuItem(this, "Copy") {
 				@Override
 				public Control click(Position eventPoint) {

@@ -35,12 +35,6 @@ Clipboard::Clipboard (UpdateDocumentContributor *parent) :
     request->okAndComplete();
   });
 
-  m_actions.addAction ("cut-presets", [=](shared_ptr<NetworkRequest> request)
-  {
-    cutPresets(request->get ("csv"));
-    request->okAndComplete();
-  });
-
   m_actions.addAction ("paste-on-background", [=](shared_ptr<NetworkRequest> request)
   {
     auto x = request->get("x");
@@ -173,11 +167,6 @@ bool Clipboard::copyPreset (const Glib::ustring &presetUuid)
 void Clipboard::cutPreset (const Glib::ustring &presetUuid)
 {
   if (copyPreset (presetUuid))
-    m_currentContentWasCut = true;
-}
-
-void Clipboard::cutPresets(const Glib::ustring &csv) {
-  if(copyPresets(csv))
     m_currentContentWasCut = true;
 }
 

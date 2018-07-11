@@ -815,13 +815,7 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets-csv", csv));
 		queueJob(uri, false);
 	}
-	
-	public void cutPresets(String csv) {
-		StaticURI.Path path = new StaticURI.Path("clipboard", "cut-presets");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets-csv", csv));
-		queueJob(uri, false);
-	}
-	
+		
 	public void cutPreset(Preset preset) {
 		StaticURI.Path path = new StaticURI.Path("clipboard", "cut-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset", preset.getUUID()));
