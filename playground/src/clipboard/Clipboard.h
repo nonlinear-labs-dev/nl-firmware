@@ -3,6 +3,7 @@
 #include <http/ContentSection.h>
 #include <http/RPCActionManager.h>
 #include <tools/Signal.h>
+#include <libundo/undo/Scope.h>
 
 class Clipboard : public ContentSection
 {
@@ -24,6 +25,7 @@ class Clipboard : public ContentSection
     void pasteOnBank(const Glib::ustring &bankUuid);
     void pasteOnPreset(const Glib::ustring &presetUuid);
 
+    bool containsMultiplePresets() const;
     bool containsBank() const;
     bool containsPreset() const;
     bool hasContent() const;
@@ -35,10 +37,15 @@ class Clipboard : public ContentSection
   private:
     void pastePresetOnBank(const Glib::ustring &bankUuid);
     void pastePresetOnPreset(const Glib::ustring &presetUuid);
-    void pasteBankOnBackground(const Glib::ustring &x, const Glib::ustring &y);
     void pastePresetOnBackground(const Glib::ustring &x, const Glib::ustring &y);
-    void pasteBankOnBank(const Glib::ustring &bankUuid);
-    void pasteBankOnPreset(const Glib::ustring &presetUuid);
+
+    void pasteBankOnBank(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &bankUuid);
+    void pasteBankOnPreset(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &presetUuid);
+    void pasteBankOnBackground(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &x, const Glib::ustring &y);
+
+    void pasteMultiplePresetsOnBackground(const Glib::ustring& x, const Glib::ustring &y);
+    void pasteMultiplePresetsOnBank(const Glib::ustring &bankUuid);
+    void pasteMultiplePresetsOnPreset(const Glib::ustring &presetUuid);
 
     void doCut(std::shared_ptr<UNDO::Transaction> transaction);
 

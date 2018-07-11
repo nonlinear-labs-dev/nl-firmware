@@ -1,4 +1,5 @@
 #include "Clipboard.h"
+#include "MultiplePresetSelection.h"
 #include <presets/PresetManager.h>
 #include <presets/Preset.h>
 #include <presets/PresetBank.h>
@@ -41,9 +42,11 @@ Clipboard::Clipboard (UpdateDocumentContributor *parent) :
     auto y = request->get("y");
 
     if(containsBank())
-      pasteBankOnBackground(x, y);
+      pasteBankOnBackground(getUndoScope().startTransaction ("Paste Bank"), x, y);
     else if(containsPreset())
       pastePresetOnBackground(x, y);
+    else if(containsMultiplePresets())
+      pasteMultiplePresetsOnBackground(x, y);
 
     request->okAndComplete();
   });
@@ -51,9 +54,11 @@ Clipboard::Clipboard (UpdateDocumentContributor *parent) :
   m_actions.addAction ("paste-on-bank", [=](shared_ptr<NetworkRequest> request)
   {
     if(containsBank())
-    pasteBankOnBank(request->get ("bank"));
+    pasteBankOnBank(getUndoScope().startTransaction ("Paste Bank"), request->get ("bank"));
     else if(containsPreset())
     pastePresetOnBank(request->get ("bank"));
+    else if(containsMultiplePresets())
+      pasteMultiplePresetsOnBank(request->get("bank"));
 
     request->okAndComplete();
   });
@@ -61,10 +66,11 @@ Clipboard::Clipboard (UpdateDocumentContributor *parent) :
   m_actions.addAction ("paste-on-preset", [=](shared_ptr<NetworkRequest> request)
   {
     if(containsBank())
-    pasteBankOnPreset(request->get ("preset"));
+      pasteBankOnPreset(getUndoScope().startTransaction ("Paste Bank"), request->get ("preset"));
     else if(containsPreset())
-    pastePresetOnPreset(request->get ("preset"));
-
+      pastePresetOnPreset(request->get ("preset"));
+    else if(containsMultiplePresets())
+      pasteMultiplePresetsOnPreset(request->get("preset"));
     request->okAndComplete();
   });
 }
@@ -85,6 +91,11 @@ void Clipboard::handleHTTPRequest (shared_ptr<NetworkRequest> request, const Gli
 Glib::ustring Clipboard::getPrefix () const
 {
   return "clipboard";
+}
+
+bool Clipboard::containsMultiplePresets() const
+{
+  return dynamic_pointer_cast<MultiplePresetSelection>(m_content) != nullptr;
 }
 
 bool Clipboard::containsBank () const
@@ -112,6 +123,7 @@ void Clipboard::writeDocument (Writer &writer, UpdateDocumentContributor::tUpdat
     {
       writer.writeTextElement("contains-bank", to_string(containsBank()));
       writer.writeTextElement("contains-preset", to_string(containsPreset()));
+      writer.writeTextElement("contains-multiple-presets", to_string(containsMultiplePresets()));
     }
   });
 }
@@ -134,15 +146,15 @@ void Clipboard::copyPresets(const Glib::ustring &csv) {
   auto pm = Application::get ().getPresetManager ();
   auto scope = getUndoScope ().startTrashTransaction ();
   m_currentContentWasCut = false;
-  m_content.reset (new PresetBank (pm.get ()));
+  m_content.reset (new MultiplePresetSelection (getParent()));
 
   auto uuids = StringTools::splitStringOnAnyDelimiter(csv, ',');
 
-  auto bank = static_pointer_cast<PresetBank>(m_content);
+  auto mulPresetSelection = static_pointer_cast<MultiplePresetSelection>(m_content);
 
   for(auto uuid: uuids) {
     if(auto preset = pm->findPreset(uuid)) {
-      bank->undoableCopyAndPrependPreset(scope->getTransaction(), preset);
+      mulPresetSelection->addPreset(scope->getTransaction(), preset);
     }
   }
   onChange (UpdateDocumentContributor::ChangeFlags::Generic);
@@ -174,7 +186,9 @@ void Clipboard::pasteOnBank (const Glib::ustring &bankUuid)
   if (containsPreset ())
     pastePresetOnBank (bankUuid);
   else if (containsBank ())
-    pasteBankOnBank (bankUuid);
+    pasteBankOnBank (getUndoScope ().startTransaction ("Paste Bank"), bankUuid);
+  else if(containsMultiplePresets())
+    pasteMultiplePresetsOnBank(bankUuid);
 }
 
 void Clipboard::pasteOnPreset (const Glib::ustring &presetUuid)
@@ -182,12 +196,13 @@ void Clipboard::pasteOnPreset (const Glib::ustring &presetUuid)
   if (containsPreset ())
     pastePresetOnPreset (presetUuid);
   else if (containsBank ())
-    pasteBankOnPreset (presetUuid);
+    pasteBankOnPreset (getUndoScope().startTransaction ("Paste Bank"), presetUuid);
+  else if (containsMultiplePresets())
+    pasteMultiplePresetsOnPreset(presetUuid);
 }
 
-void Clipboard::pasteBankOnBackground (const Glib::ustring &x, const Glib::ustring &y)
+void Clipboard::pasteBankOnBackground (UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &x, const Glib::ustring &y)
 {
-  auto scope = getUndoScope ().startTransaction ("Paste Bank");
   auto pm = Application::get ().getPresetManager ();
   auto transaction = scope->getTransaction ();
   auto newBank = pm->addBank (transaction, true);
@@ -195,6 +210,40 @@ void Clipboard::pasteBankOnBackground (const Glib::ustring &x, const Glib::ustri
   newBank->undoableSetPosition (transaction, x, y);
 
   doCut (transaction);
+}
+
+std::shared_ptr<PresetBank> multiplePresetsToBank(UNDO::Scope::tTransactionPtr transaction, const MultiplePresetSelection& mulPresets)
+{
+  auto b = std::make_shared<PresetBank>(Application::get().getPresetManager().get());
+  for(auto preset: mulPresets.getPresets())
+  {
+    b->undoableCopyAndPrependPreset(transaction, preset);
+  }
+  return b;
+}
+
+void Clipboard::pasteMultiplePresetsOnBackground(const Glib::ustring& x, const Glib::ustring &y)
+{
+  auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
+  auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
+  m_content = multiplePresetsToBank(scope->getTransaction(), *mulSelection.get());
+  pasteBankOnBackground(scope, x, y);
+}
+
+void Clipboard::pasteMultiplePresetsOnBank(const Glib::ustring &bankUuid)
+{
+  auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
+  auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
+  m_content = multiplePresetsToBank(scope->getTransaction(), *mulSelection.get());
+  pasteBankOnBank(scope, bankUuid);
+}
+
+void Clipboard::pasteMultiplePresetsOnPreset(const Glib::ustring &presetUuid)
+{
+  auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
+  auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
+  m_content = multiplePresetsToBank(scope->getTransaction(), *mulSelection.get());
+  pasteBankOnPreset(scope, presetUuid);
 }
 
 void Clipboard::pastePresetOnBackground (const Glib::ustring &x, const Glib::ustring &y)
@@ -211,7 +260,7 @@ void Clipboard::pastePresetOnBackground (const Glib::ustring &x, const Glib::ust
   doCut (transaction);
 }
 
-void Clipboard::pasteBankOnBank (const Glib::ustring &bankUuid)
+void Clipboard::pasteBankOnBank (UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &bankUuid)
 {
   auto pm = Application::get ().getPresetManager ();
 
@@ -221,7 +270,7 @@ void Clipboard::pasteBankOnBank (const Glib::ustring &bankUuid)
 
     if (size_t numPresets = source->getNumPresets ())
     {
-      auto scope = getUndoScope ().startTransaction ("Paste Bank");
+
       auto transaction = scope->getTransaction ();
       auto insertPos = target->getNumPresets ();
 
@@ -258,7 +307,7 @@ void Clipboard::pastePresetOnBank (const Glib::ustring &bankUuid)
   }
 }
 
-void Clipboard::pasteBankOnPreset (const Glib::ustring &presetUuid)
+void Clipboard::pasteBankOnPreset (UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &presetUuid)
 {
   auto pm = Application::get ().getPresetManager ();
 
@@ -270,7 +319,6 @@ void Clipboard::pasteBankOnPreset (const Glib::ustring &presetUuid)
 
       if (size_t numPresets = source->getNumPresets ())
       {
-        auto scope = getUndoScope ().startTransaction ("Paste Bank");
         auto transaction = scope->getTransaction ();
         auto insertPos = targetBank->getPresetPosition (presetUuid);
 
