@@ -146,18 +146,16 @@ bool Clipboard::copyPresets(const Glib::ustring &csv) {
   auto pm = Application::get ().getPresetManager ();
   auto scope = getUndoScope().startTrashTransaction();
 
-  std::vector<std::shared_ptr<Preset>> presets;
+  auto bank = std::make_shared<HiddenMultiBank>(nullptr);
 
   for(auto uuid: uuids) {
-    presets.push_back(Preset::createPreset(nullptr));
-    if(auto preset = pm->findPreset(uuid))
-     static_pointer_cast<Preset> (presets.back())->copyFrom (scope->getTransaction (), preset.get (), false);
+    if(auto preset = pm->findPreset(uuid)) {
+      bank->m_presets.push_back(Preset::createPreset(nullptr));
+      static_pointer_cast<Preset>(bank->m_presets.back())->copyFrom(scope->getTransaction(), preset.get(), false);
+    }
   }
 
-  auto x = std::make_shared<HiddenMultiBank>(nullptr);
-  x->m_presets = presets;
-  m_content = x;
-
+  m_content = bank;
   return true;
 }
 
