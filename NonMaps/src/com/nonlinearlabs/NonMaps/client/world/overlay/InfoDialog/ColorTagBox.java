@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog;
 
-import com.gargoylesoftware.htmlunit.javascript.host.Console;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

@@ -164,7 +164,7 @@ public class EditBufferInfoWidget {
 			Node child = preset.getFirstChild();
 			while(child != null)
 			{
-				if(child.getNodeName() != "#text")
+				if(child.getNodeType() == Node.ELEMENT_NODE)
 				{
 					String nodeName = child.getAttributes().item(0).toString();
 					switch(nodeName) {
