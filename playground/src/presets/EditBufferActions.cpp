@@ -68,17 +68,12 @@ EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer) :
   });
 
   addAction("reset-scale", [ = ] (shared_ptr<NetworkRequest> request) mutable {
-    auto transaction = editBuffer->getUndoScope().startTransaction("Reset Scale Group")->getTransaction();
-    for(auto scaleParam: getScaleParameters(editBuffer)) {
-      //Why do i have to take care of that? Does it have anything to do with the use inside the loop?
-      if(transaction->isClosed())
-        transaction->reopen();
+    auto scope = editBuffer->getUndoScope().startTransaction("Reset Scale Group");
 
+    for(auto scaleParam: getScaleParameters(editBuffer)) {
+      auto transaction = scope->getTransaction();
       scaleParam->reset(transaction, Initiator::EXPLICIT_WEBUI);
     }
-
-    if(!transaction->isClosed())
-      transaction->close();
 
   });
 
