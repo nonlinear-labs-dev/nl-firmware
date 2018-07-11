@@ -145,7 +145,6 @@ bool Clipboard::copyPresets(const Glib::ustring &csv) {
       bank->undoableCopyAndPrependPreset(scope->getTransaction(), preset);
     }
   }
-  onChange (UpdateDocumentContributor::ChangeFlags::Generic);
   return true;
 }
 
