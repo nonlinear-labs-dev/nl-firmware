@@ -4,8 +4,6 @@ import java.util.Date;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -13,7 +11,6 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IntegerBox;
@@ -38,8 +35,14 @@ public class PresetInfoWidget {
 	private Label storeTime;
 	private Label bankName;
 	private IntegerBox position;
-	private Button[] colors;
 	private Widget haveFocus = null;
+	
+	private ColorTagBox colorBox = new ColorTagBox() {
+		@Override
+		public void onBoxClick(Color c) {
+			NonMaps.get().getServerProxy().setPresetAttribute(PresetInfoWidget.get().getCurrentPreset(), "color", c.toString());	
+		}
+	};
 	
 	public Widget panel = null;
 
@@ -63,33 +66,7 @@ public class PresetInfoWidget {
 			return iso;
 		}
 	}
-	
-	private Button addColorButton(ColorTag.Color c) {		
-		Button b = new Button();
-		if(c == ColorTag.Color.none)
-			b.setHTML("<div style=\"font-size: smaller;\">✕</div>"); 
-		b.getElement().addClassName("colortaggingfield-" + c.name());
-		b.getElement().addClassName("colortaggingfield-template");
-				
-		b.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				NonMaps.get().getServerProxy().setPresetAttribute(getCurrentPreset(), "color", c.toString());
-				updateCurrentHighlight(b);
-			}
-		});
-		return b;
-	}
-	
-	public void updateCurrentHighlight(Button current) {
-		for(Button b: colors) {
-			if(b != current)
-				b.getElement().removeClassName("colortag-current");
-			else
-				b.getElement().addClassName("colortag-current");
-		}		
-	}
-	
+		
 	public void updateInfo(Preset preset) {
 		if (preset != null) {
 			String presetName = preset.getCurrentName();
@@ -117,15 +94,12 @@ public class PresetInfoWidget {
 			Bank bank = preset.getParent();
 			bankName.setText(bank.getOrderNumber() + " - " + bank.getTitleName());
 			
-			ColorTag.Color c = ColorTag.Color.toEnum(preset.getAttribute("color"));
-			updateCurrentHighlight(colors[c.ordinal()]);
+			colorBox.updateCurrentHighlight(ColorTag.Color.toEnum(preset.getAttribute("color")));
 			
 		}
 	}
 	
 	protected PresetInfoWidget() {
-		
-		colors = new Button[7];
 		
 		HTMLPanel presetNameAndPositionBox = new HTMLPanel("div", "");
 		presetNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
@@ -133,24 +107,13 @@ public class PresetInfoWidget {
 		presetNameAndPositionBox.add(name = new TextBox());
 		position.getElement().addClassName("position-box");
 		name.getElement().addClassName("preset-name-box");
-
-		HTMLPanel presetColorBox = new HTMLPanel("div", "");
-		presetColorBox.getElement().addClassName("tag-div");
-		presetColorBox.add(colors[Color.green.ordinal()] = addColorButton(Color.green));
-		presetColorBox.add(colors[Color.blue.ordinal()] = addColorButton(Color.blue));
-		presetColorBox.add(colors[Color.yellow.ordinal()] = addColorButton(Color.yellow));
-		presetColorBox.add(colors[Color.orange.ordinal()] = addColorButton(Color.orange));
-		presetColorBox.add(colors[Color.purple.ordinal()] = addColorButton(Color.purple));
-		presetColorBox.add(colors[Color.red.ordinal()] = addColorButton(Color.red));
-		presetColorBox.add(colors[Color.none.ordinal()] = addColorButton(Color.none));
-
 		
 		
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Bank", bankName = new Label());
 		addRow(panel, "Position/Name", presetNameAndPositionBox);
 		addRow(panel, "Comment", comment = new TextArea());
-		addRow(panel, "Color Tag", presetColorBox);
+		addRow(panel, "Color Tag", colorBox.getHTML());
 		addRow(panel, "Last Change", storeTime = new Label(""));
 		addRow(panel, "Device Name", deviceName = new Label(""));
 		addRow(panel, "UI Version", softwareVersion = new Label(""));
