@@ -26,7 +26,6 @@ class Clipboard : public ContentSection
     void pasteOnPreset(const Glib::ustring &presetUuid);
 
     bool containsBank() const;
-    bool containsMultiplePresets() const;
     bool containsPreset() const;
     bool hasContent() const;
 
@@ -36,13 +35,11 @@ class Clipboard : public ContentSection
 
   private:
     void pastePresetOnBank(const Glib::ustring &bankUuid);
-    void pastePresetsOnBank(const Glib::ustring &bankUuid);
     void pastePresetOnPreset(const Glib::ustring &presetUuid);
     void pasteBankOnBackground(const Glib::ustring &x, const Glib::ustring &y);
     void pastePresetOnBackground(const Glib::ustring &x, const Glib::ustring &y);
     void pasteBankOnBank(const Glib::ustring &bankUuid);
     void pasteBankOnPreset(const Glib::ustring &presetUuid);
-    void pastePresetsOnPreset(const Glib::ustring &presetUuid);
 
     void doCut(std::shared_ptr<UNDO::Transaction> transaction);
 
