@@ -77,7 +77,7 @@ class PresetBank : public UpdateDocumentContributor,
     void undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, int pos);
     void undoableSelect(UNDO::Scope::tTransactionPtr transaction);
 
-    void undoableCopyAndAppendPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset);
+    void undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset);
     void undoableAppendPreset(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
     void undoableDeletePreset(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &uuid);
     void undoableOverwritePreset(UNDO::Scope::tTransactionPtr transaction, size_t pos, tPresetPtr preset);

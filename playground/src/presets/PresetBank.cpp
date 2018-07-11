@@ -357,7 +357,7 @@ void PresetBank::undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, 
   });
 }
 
-void PresetBank::undoableCopyAndAppendPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset)
+void PresetBank::undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset)
 {
   if(preset) {
     tPresetPtr newPreset(preset);

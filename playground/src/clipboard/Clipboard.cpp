@@ -142,7 +142,7 @@ bool Clipboard::copyPresets(const Glib::ustring &csv) {
 
   for(auto uuid: uuids) {
     if(auto preset = pm->findPreset(uuid)) {
-      bank->undoableCopyAndAppendPreset(scope->getTransaction(), preset);
+      bank->undoableCopyAndPrependPreset(scope->getTransaction(), preset);
     }
   }
   onChange (UpdateDocumentContributor::ChangeFlags::Generic);
