@@ -10,11 +10,14 @@
 #include <xml/FileOutStream.h>
 #include <xml/VersionAttribute.h>
 #include <tools/SpawnCommandLine.h>
+#include <tools/TimeTools.h>
+#include <algorithm>
+#include <tools/StringTools.h>
 #include "USBStickAvailableView.h"
 
 static const Rect c_fullRightSidePosition (129, 16, 126, 48);
 static constexpr const char c_tempBackupFile[] = "/nonlinear/nonlinear-c15-banks.xml.tar.gz";
-static constexpr const char c_backupTargetFile[] = "nonlinear-c15-banks.xml.tar.gz";
+static constexpr const char c_backupTargetFile[] = "-c15-banks.xml.tar.gz";
 
 ExportBackupEditor::ExportBackupEditor () :
     ControlWithChildren (Rect (0, 0, 0, 0))
@@ -69,7 +72,11 @@ void ExportBackupEditor::exportBanks ()
 
   auto timeStamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-  auto targetNameWithStamp(std::string("/mnt/usb-stick/") + std::to_string(timeStamp) + c_backupTargetFile);
+  auto humanDate = std::to_string(TimeTools::getDisplayStringFromStamp(timeStamp));
+
+  humanDate = StringTools::replaceAll(humanDate, " ", "-");
+
+  auto targetNameWithStamp(std::string("/mnt/usb-stick/") + humanDate.c_str() + c_backupTargetFile);
 
   auto moveCommand(std::string("mv ") + c_tempBackupFile + " " + targetNameWithStamp);
   SpawnCommandLine cmd(moveCommand);

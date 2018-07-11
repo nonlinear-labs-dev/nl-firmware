@@ -2,13 +2,13 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/FileListControl.h>
 
 FileListControl::FileListControl() :
-    selectedItem(0), ControlWithChildren(Rect(0, 0, 200, 48))
+    selectedItem(0), ControlWithChildren(Rect(0, 0, 256, 48))
 {
   fileList = std::make_unique<FileTools::FileList>();
-  upperFile = addControl(new Label("", Rect(0, 0, 200, 12)));
-  middleFile = addControl(new Label("", Rect(0, 12, 200, 12)));
-  bottomFile = addControl(new Label("", Rect(0, 24, 200, 12)));
-  bottomFile2 = addControl(new Label("", Rect(0, 36, 200, 12)));
+  upperFile = addControl(new Label("", Rect(0, 0, 256, 12)));
+  middleFile = addControl(new Label("", Rect(0, 12, 256, 12)));
+  bottomFile = addControl(new Label("", Rect(0, 24, 256, 12)));
+  bottomFile2 = addControl(new Label("", Rect(0, 36, 256, 12)));
 
   middleFile->setHighlight(true);
 

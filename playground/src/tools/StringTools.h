@@ -1,7 +1,8 @@
 #pragma once
-#include <string>
-#include <vector>
+
+#include <glibmm/ustring.h>
 
 namespace StringTools {
-    std::vector<std::string> splitStringOnAnyDelimiter(const std::string& s, char delimiter);
+    std::vector<Glib::ustring> splitStringOnAnyDelimiter(const Glib::ustring& s, char delimiter);
+    Glib::ustring replaceAll(const Glib::ustring& in, const Glib::ustring& pattern, const Glib::ustring& replace);
 };
