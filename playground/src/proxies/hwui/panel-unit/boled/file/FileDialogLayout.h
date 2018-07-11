@@ -25,7 +25,6 @@ class FileDialogLayout : public DFBLayout
     std::experimental::filesystem::directory_entry getSelectedFile();
 
  private:
-    bool redraw(FrameBuffer &fb);
     void updateLabels();
     void overlayInfo();
 

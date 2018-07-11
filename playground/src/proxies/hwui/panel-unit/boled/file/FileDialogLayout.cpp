@@ -26,9 +26,9 @@ FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
 {
   fileCount = 0;
   fileList = addControl(new FileListControl());
-  headerLabel = addControl(new InvertedLabel(header, Rect(0, 0, 200, 14)));
-  fileList->setPosition(Rect(0, 14, 200, 50));
-  positionLabel = addControl(new Label("", Rect(200, 0, 56, 14)));
+  headerLabel = addControl(new InvertedLabel(header, Rect(0, 0, 256, 14)));
+  fileList->setPosition(Rect(0, 14, 256, 50));
+  positionLabel = addControl(new InvertedLabel("", Rect(200, 0, 56, 14)));
   updateLabels();
   crawler.start();
 }
@@ -59,6 +59,14 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
         return true;
       case BUTTON_PRESET:
         hwui->undoableSetFocusAndMode( { UIFocus::Banks, UIMode::Select });
+        return true;
+      case BUTTON_INC:
+        fileList->changeSelection(1);
+        updateLabels();
+        return true;
+      case BUTTON_DEC:
+        fileList->changeSelection(-1);
+        updateLabels();
         return true;
       case BUTTON_INFO:
         if(fileCount > 0)
@@ -95,14 +103,5 @@ void FileDialogLayout::updateLabels()
 std::experimental::filesystem::directory_entry FileDialogLayout::getSelectedFile()
 {
   return fileList->getSelection();
-}
-
-bool FileDialogLayout::redraw(FrameBuffer &fb)
-{
-  DFBLayout::redraw(fb);
-  fb.setColor(FrameBuffer::Colors::C128);
-  Rect r(0, 0, 200, 64);
-  fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
-  return true;
 }
 
