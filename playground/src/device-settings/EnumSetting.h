@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Settings.h"
 #include "Setting.h"
 
-class Settings;
 
 template<typename TEnum>
   class EnumSetting : public Setting

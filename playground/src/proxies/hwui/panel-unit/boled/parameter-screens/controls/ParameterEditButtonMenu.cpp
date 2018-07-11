@@ -45,6 +45,7 @@ void ParameterEditButtonMenu::setup()
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged));
 
   sanitizeIndex();
+  sanitizeLastAction();
 
   selectButton(s_lastAction);
 }
@@ -72,6 +73,11 @@ void ParameterEditButtonMenu::onGroupChanged()
     m_allParametersLocked = allParametersLocked;
     setup();
   }
+}
+
+void ParameterEditButtonMenu::sanitizeLastAction()
+{
+  s_lastAction = sanitizeIndex(s_lastAction);
 }
 
 void ParameterEditButtonMenu::selectButton(size_t i)

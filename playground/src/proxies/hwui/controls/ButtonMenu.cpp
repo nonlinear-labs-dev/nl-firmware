@@ -63,8 +63,13 @@ void ButtonMenu::antiToggle()
 }
 
 void ButtonMenu::sanitizeIndex() {
-  m_selected = std::min(m_items.size() - 1, m_selected);
-  m_selected = std::max(0, (int)m_selected);
+  m_selected = (size_t)sanitizeIndex((int)m_selected);
+}
+
+int ButtonMenu::sanitizeIndex(int index) {
+  index = std::min((int)m_items.size() - 1, index);
+  index = std::max(0, index);
+  return index;
 }
 
 size_t ButtonMenu::addButton (const Glib::ustring &caption, Action action)

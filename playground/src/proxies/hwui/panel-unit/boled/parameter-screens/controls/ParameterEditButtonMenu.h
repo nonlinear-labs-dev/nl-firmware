@@ -24,6 +24,8 @@ class ParameterEditButtonMenu : public ButtonMenu
     void onParameterSelectionChanged(Parameter *oldParameter, Parameter *newParameter);
     void onGroupChanged();
 
+    void sanitizeLastAction();
+
     ParameterGroup *m_currentGroup = nullptr;
     bool m_allParametersLocked = false;
     sigc::connection m_connection;
