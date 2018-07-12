@@ -90,6 +90,15 @@ public class PresetContextMenu extends ContextMenu {
 				});
 			}
 		}
+		else {
+			addChild(new PresetContextMenuItem(this, "Copy") {
+				@Override
+				public Control click(Position eventPoint) {
+					getNonMaps().getServerProxy().copyPresets(pm.getMultiSelection().getCSV());				
+					return super.click(eventPoint);
+				}
+			});
+		}
 
 		addChild(new PresetContextMenuItem(this, "Delete") {
 			@Override

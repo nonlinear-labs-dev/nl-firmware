@@ -1,3 +1,4 @@
+
 #include <vector>
 #include "StringTools.h"
 
@@ -23,3 +24,4 @@ namespace StringTools {
       return ret;
     }
 }
+

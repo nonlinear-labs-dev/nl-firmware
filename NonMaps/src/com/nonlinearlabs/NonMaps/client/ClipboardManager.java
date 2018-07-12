@@ -6,7 +6,7 @@ import com.google.gwt.xml.client.NodeList;
 public final class ClipboardManager {
 
 	public enum ClipboardContent {
-		empty, bank, preset
+		empty, bank, preset, mulpreset
 	};
 
 	private ClipboardContent clipboardState;
@@ -39,6 +39,10 @@ public final class ClipboardManager {
 					}
 					if (child.getNodeName().equals("contains-preset")) {
 						clipboardState = ClipboardContent.preset;
+						return;
+					}
+					if (child.getNodeName().equals("contains-multiple-presets")) {
+						clipboardState = ClipboardContent.mulpreset;
 						return;
 					}
 				}

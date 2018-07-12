@@ -357,6 +357,25 @@ void PresetBank::undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, 
   });
 }
 
+void PresetBank::undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset)
+{
+  if(preset) {
+    auto newPreset = createPreset();
+    newPreset->copyFrom(transaction, preset.get(), true);
+
+    auto swapData = UNDO::createSwapData(newPreset);
+    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
+                                  {
+                                    insertPreset (m_presets.begin(), swapData->get<0>());
+                                    onChange();
+                                  }, [ = ] (UNDO::Command::State) mutable
+                                  {
+                                    m_presets.erase (m_presets.begin ());
+                                    onChange();
+                                  });
+  }
+}
+
 void PresetBank::undoableAppendPreset(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid)
 {
   auto pos = getNumPresets();
