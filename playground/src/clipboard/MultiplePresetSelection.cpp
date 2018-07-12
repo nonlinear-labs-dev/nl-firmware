@@ -9,7 +9,9 @@ MultiplePresetSelection::MultiplePresetSelection(UpdateDocumentContributor *pare
 void MultiplePresetSelection::addPreset(UNDO::Scope::tTransactionPtr transaction, PresetBank::tPresetPtr presetToCopy)
 {
   if(presetToCopy) {
-    PresetBank::tPresetPtr newPreset(presetToCopy);
+    auto newPreset = Preset::createPreset(this);
+    newPreset->copyFrom(transaction, presetToCopy.get(), true);
+
     auto swapData = UNDO::createSwapData(newPreset);
     transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
     {
