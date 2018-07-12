@@ -212,13 +212,16 @@ void Clipboard::pasteBankOnBackground (UNDO::Scope::tTransactionScopePtr scope, 
   doCut (transaction);
 }
 
-std::shared_ptr<PresetBank> multiplePresetsToBank(UNDO::Scope::tTransactionPtr transaction, const MultiplePresetSelection& mulPresets)
+std::shared_ptr<PresetBank> multiplePresetsToBank(const MultiplePresetSelection& mulPresets)
 {
+  auto scope = Application::get().getClipboard()->getUndoScope().startTrashTransaction();
+  auto transaction = scope->getTransaction();
   auto b = std::make_shared<PresetBank>(Application::get().getPresetManager().get());
   for(auto preset: mulPresets.getPresets())
   {
     b->undoableCopyAndPrependPreset(transaction, preset);
   }
+  b->undoableEnsurePresetSelection(transaction);
   return b;
 }
 
@@ -226,7 +229,7 @@ void Clipboard::pasteMultiplePresetsOnBackground(const Glib::ustring& x, const G
 {
   auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
   auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
-  m_content = multiplePresetsToBank(scope->getTransaction(), *mulSelection.get());
+  m_content = multiplePresetsToBank(*mulSelection.get());
   pasteBankOnBackground(scope, x, y);
 }
 
@@ -234,7 +237,7 @@ void Clipboard::pasteMultiplePresetsOnBank(const Glib::ustring &bankUuid)
 {
   auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
   auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
-  m_content = multiplePresetsToBank(scope->getTransaction(), *mulSelection.get());
+  m_content = multiplePresetsToBank(*mulSelection.get());
   pasteBankOnBank(scope, bankUuid);
 }
 
@@ -242,7 +245,7 @@ void Clipboard::pasteMultiplePresetsOnPreset(const Glib::ustring &presetUuid)
 {
   auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
   auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
-  m_content = multiplePresetsToBank(scope->getTransaction(), *mulSelection.get());
+  m_content = multiplePresetsToBank(*mulSelection.get());
   pasteBankOnPreset(scope, presetUuid);
 }
 
