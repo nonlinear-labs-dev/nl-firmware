@@ -22,7 +22,10 @@ fi
 
 mkdir -p build
 cd build
-cmake	-DCMAKE_TOOLCHAIN_FILE="${HOST_DIR}/share/buildroot/toolchainfile.cmake" \
+${HOST_DIR}/usr/bin/cmake \
+	-DPKG_CONFIG_USE_CMAKE_PREFIX_PATH=${HOST_DIR} \
+	-DCMAKE_PREFIX_PATH=${HOST_DIR} \
+	-DCMAKE_TOOLCHAIN_FILE="${HOST_DIR}/usr/share/buildroot/toolchainfile.cmake" \
 	-DCMAKE_COLOR_MAKEFILE=OFF \
 	-DBUILD_DOC=OFF \
 	-DBUILD_DOCS=OFF \
