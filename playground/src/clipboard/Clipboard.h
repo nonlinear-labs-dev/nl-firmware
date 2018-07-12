@@ -41,11 +41,13 @@ class Clipboard : public ContentSection
     void pastePresetOnPreset(const Glib::ustring &presetUuid);
     void pastePresetOnBackground(const Glib::ustring &x, const Glib::ustring &y);
 
-    void pasteBankOnBank(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &bankUuid);
-    void pasteBankOnPreset(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &presetUuid);
-    void pasteBankOnBackground(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &x, const Glib::ustring &y);
+    void pasteBankOnBank(const Glib::ustring& transactionName, const Glib::ustring &bankUuid);
+    void pasteBankOnPreset(const Glib::ustring& transactionName, const Glib::ustring &presetUuid);
+    void pasteBankOnBackground(const Glib::ustring& transactionName, const Glib::ustring &x, const Glib::ustring &y);
+    void pasteBankOnBank(const Glib::ustring& transactionName, const Glib::ustring &bankUuid, std::shared_ptr<UpdateDocumentContributor> content);
+    void pasteBankOnPreset(const Glib::ustring& transactionName, const Glib::ustring &presetUuid, std::shared_ptr<UpdateDocumentContributor> content);
+    void pasteBankOnBackground(const Glib::ustring& transactionName, const Glib::ustring &x, const Glib::ustring &y, std::shared_ptr<UpdateDocumentContributor> content);
 
-    std::shared_ptr<MultiplePresetSelection> prepareForMulSelPaste();
     void pasteMultiplePresetsOnBackground(const Glib::ustring& x, const Glib::ustring &y);
     void pasteMultiplePresetsOnBank(const Glib::ustring &bankUuid);
     void pasteMultiplePresetsOnPreset(const Glib::ustring &presetUuid);
