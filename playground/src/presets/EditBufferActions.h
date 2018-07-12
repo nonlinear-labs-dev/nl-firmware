@@ -3,13 +3,16 @@
 #include "http/RPCActionManager.h"
 
 class EditBuffer;
+class Parameter;
 
 class EditBufferActions : public RPCActionManager
 {
   private:
+
     typedef RPCActionManager super;
 
   public:
+    typedef Parameter* tParameterPtr;
     EditBufferActions (shared_ptr<EditBuffer> editBuffer);
     virtual ~EditBufferActions ();
 

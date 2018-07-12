@@ -136,14 +136,17 @@ public class LabelModuleHeader extends LabelSmall {
 		return 1;
 	}
 
+	public void resetScaling() {
+		NonMaps.get().getServerProxy().resetScaling();
+	}
+	
 	@Override
 	public Control onContextMenu(Position pos) {
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
 				.getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-			ContextMenu c = new ParameterGroupContextMenu(o);
-			return o.setContextMenu(pos, c);
+			return o.setContextMenu(pos, new ParameterGroupContextMenu(o));
 		}
 		return super.onContextMenu(pos);
 	}
