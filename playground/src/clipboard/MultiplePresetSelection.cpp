@@ -17,7 +17,7 @@ void MultiplePresetSelection::addPreset(UNDO::Scope::tTransactionPtr transaction
       onChange();
     }, [ = ] (UNDO::Command::State) mutable
     {
-      m_presets.erase (m_presets.end());
+      m_presets.pop_back();
       onChange();
     });
   }

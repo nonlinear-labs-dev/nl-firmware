@@ -360,7 +360,8 @@ void PresetBank::undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, 
 void PresetBank::undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset)
 {
   if(preset) {
-    tPresetPtr newPreset(preset);
+    auto newPreset = createPreset();
+    newPreset->copyFrom(transaction, preset.get(), true);
 
     auto swapData = UNDO::createSwapData(newPreset);
     transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
