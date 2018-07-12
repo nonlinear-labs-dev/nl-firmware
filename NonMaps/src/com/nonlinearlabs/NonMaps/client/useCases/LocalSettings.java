@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.useCases;
 
+import com.google.gwt.user.client.Window;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.DataModelEntityBase;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
@@ -83,6 +85,15 @@ public class LocalSettings {
 	}
 
 	public void showDeveloperOptions(BooleanValues v) {
+		boolean show = v == BooleanValues.on;
+
+		if (show) {
+			Window.alert("For developers only!");
+		} else {
+			Window.alert("Changes of the developer options will be discarded.");
+			NonMaps.theMaps.getNonLinearWorld().getSettings().setToDefaults();
+		}
+
 		Setup.get().localSettings.showDeveloperOptions.setValue(v);
 		storage.store("ShowDeveloperOptions", v.name());
 	}

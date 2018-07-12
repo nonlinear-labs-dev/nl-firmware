@@ -1377,25 +1377,6 @@ input[type="checkbox"] {
 	display: none;
 }
 
-
-
-
-input[type="radio"] {
-	display: none;
-}
-
-input[type="radio"]+label {
-	display: inline-block;
-	vertical-align: middle;
-	background: url("radiobox-unchecked.png") left center no-repeat;
-	cursor: pointer;
-	color: #bbb;
-}
-
-input[type="radio"]:checked+label {
-	background: url("radiobox-checked.png") left top no-repeat;
-}
-
 .serverResponseLabelError {
 	color: red;
 }

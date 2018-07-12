@@ -6,10 +6,9 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.FloatingWindow;
+import com.nonlinearlabs.NonMaps.client.world.overlay.FloatingWindowHeader;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.FloatingWindowHeader;
 
 public class UndoTreeWindow extends FloatingWindow {
 

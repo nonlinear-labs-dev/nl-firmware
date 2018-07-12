@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.overlay.html;
+package com.nonlinearlabs.NonMaps.client.world.overlay.html.setup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TextArea;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.AftertouchCurve;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BenderCurve;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
@@ -21,12 +22,15 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Setup.PedalType;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.SelectionAutoScroll;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.StripeBrightness;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.VelocityCurve;
+import com.nonlinearlabs.NonMaps.client.presenters.DeviceInformation;
+import com.nonlinearlabs.NonMaps.client.presenters.DeviceInformationProvider;
 import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettings;
 import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettingsProvider;
 import com.nonlinearlabs.NonMaps.client.presenters.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
 import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.html.Range;
 
 public class Setup extends Composite {
 	interface SetupUiBinder extends UiBinder<HTMLPanel, Setup> {
@@ -45,7 +49,8 @@ public class Setup extends Composite {
 			editParameter, scalingFactor, stripeBrightness;
 
 	@UiField
-	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString;
+	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString, editSmoothingTimeDisplayString, freeMemory,
+			uiVersion, rtVersion, osVersion, dateTime;
 
 	@UiField
 	InputElement pedal1Slider, pedal2Slider, pedal3Slider, pedal4Slider;
@@ -55,10 +60,13 @@ public class Setup extends Composite {
 			presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff;
 
 	@UiField
-	Label editSmoothingTimeDisplayString;
+	InputElement editSmoothingTimeSlider;
 
 	@UiField
-	InputElement editSmoothingTimeSlider;
+	TextArea deviceName;
+
+	@UiField
+	Button saveDeviceName;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -75,6 +83,7 @@ public class Setup extends Composite {
 		connectEventHandlers();
 		connectUpdate();
 
+		switchPage(deviceSettingsButton, deviceSettings);
 	}
 
 	public void setupTexts() {
@@ -117,7 +126,7 @@ public class Setup extends Composite {
 				.getSelectedIndex()]));
 		editParameter.addChangeHandler(e -> locals.setEditParameter(EditParameter.values()[editParameter.getSelectedIndex()]));
 		scalingFactor.addChangeHandler(e -> locals.setDisplayScaling(DisplayScaling.values()[scalingFactor.getSelectedIndex()]));
-		stripeBrightness.addChangeHandler(e -> locals.setStripeBrightness(StripeBrightness.values()[scalingFactor.getSelectedIndex()]));
+		stripeBrightness.addChangeHandler(e -> locals.setStripeBrightness(StripeBrightness.values()[stripeBrightness.getSelectedIndex()]));
 
 		presetGlitchSurpressionOn.addClickHandler(e -> settings.setPresetGlitchSurpression(BooleanValues.on));
 		presetGlitchSurpressionOff.addClickHandler(e -> settings.setPresetGlitchSurpression(BooleanValues.off));
@@ -141,6 +150,8 @@ public class Setup extends Composite {
 		pedal2Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 259, e.getValue().doubleValue(), true));
 		pedal3Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 264, e.getValue().doubleValue(), true));
 		pedal4Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 269, e.getValue().doubleValue(), true));
+
+		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
 	}
 
 	public void connectUpdate() {
@@ -150,6 +161,11 @@ public class Setup extends Composite {
 		});
 
 		LocalSettingsProvider.get().register(t -> {
+			applyPresenter(t);
+			return true;
+		});
+
+		DeviceInformationProvider.get().register(t -> {
 			applyPresenter(t);
 			return true;
 		});
@@ -179,6 +195,8 @@ public class Setup extends Composite {
 		presetGlitchSurpressionOff.setValue(!t.presetGlitchSurpession.value);
 		editSmoothingTimeRange.setValue(t.editSmoothingTime.sliderPosition);
 		editSmoothingTimeDisplayString.setText(t.editSmoothingTime.displayValue);
+
+		deviceName.setText(t.deviceName);
 	}
 
 	public void applyPedalValues(DeviceSettings.Pedal src, ListBox type, Range slider, Label text) {
@@ -200,6 +218,14 @@ public class Setup extends Composite {
 		bitmapCacheOff.setValue(!t.bitmapCache.value);
 		developerOptionsOn.setValue(t.showDeveloperOptions.value);
 		developerOptionsOff.setValue(!t.showDeveloperOptions.value);
+	}
+
+	private void applyPresenter(DeviceInformation t) {
+		freeMemory.setText(t.freeDiscSpace);
+		uiVersion.setText(t.uiVersion);
+		rtVersion.setText(t.rtVersion);
+		osVersion.setText(t.osVersion);
+		dateTime.setText(t.dateTime);
 	}
 
 	public void switchPage(Button btn, DivElement page) {

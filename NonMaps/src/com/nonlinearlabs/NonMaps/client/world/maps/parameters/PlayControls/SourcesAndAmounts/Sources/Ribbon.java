@@ -3,6 +3,8 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.Sour
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationRoutingParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
@@ -11,7 +13,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.Sourc
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.RibbonContextMenu;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public abstract class Ribbon extends PhysicalControlParameter {
 
@@ -23,9 +24,9 @@ public abstract class Ribbon extends PhysicalControlParameter {
 
 	@Override
 	public RibbonContextMenu createContextMenu(Overlay o) {
-		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
-				.getContextMenuSettings();
-		if (contextMenuSettings.isEnabled()) {
+		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+
+		if (showContextMenus) {
 			return new RibbonContextMenu(o, this);
 		}
 		return null;

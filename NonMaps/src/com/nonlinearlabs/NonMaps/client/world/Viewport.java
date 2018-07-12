@@ -15,6 +15,11 @@ public class Viewport extends MapsLayout {
 
 	Viewport(NonLinearWorld parent) {
 		super(parent);
+
+		Setup.get().localSettings.stripeBrightness.onChange(v -> {
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return true;
+		});
 	}
 
 	public void initViewport() {

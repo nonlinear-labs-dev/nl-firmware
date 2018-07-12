@@ -14,7 +14,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
+import com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch.PresetSearchDialog;
+import com.nonlinearlabs.NonMaps.client.world.overlay.html.setup.SetupDialog;
 
 public class GlobalMenu extends OverlayLayout {
 
@@ -31,7 +32,28 @@ public class GlobalMenu extends OverlayLayout {
 
 		addChild(headerText = new GlobalMenuHeaderLabel(this));
 		addChild(header = new MenuHeader(this));
-		addChild(new ToggleViewMenuEntry(this, overlay.getSetup()));
+
+		addChild(new MenuEntry(this, "") {
+
+			@Override
+			public String getDrawText(Context2d ctx) {
+				return "Setup";
+			}
+
+			@Override
+			public String getCheckText() {
+				return (SetupDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
+			}
+
+			@Override
+			public Control mouseDown(Position eventPoint) {
+				SetupDialog.toggle();
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				getParent().toggle();
+				return this;
+			}
+		});
+
 		addChild(new MenuEntry(this, "F") {
 
 			@Override
@@ -41,12 +63,12 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getCheckText() {
-				return (SearchQueryDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
+				return (PresetSearchDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
 			}
 
 			@Override
 			public Control mouseDown(Position eventPoint) {
-				SearchQueryDialog.toggle();
+				PresetSearchDialog.toggle();
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				getParent().toggle();
 				return this;

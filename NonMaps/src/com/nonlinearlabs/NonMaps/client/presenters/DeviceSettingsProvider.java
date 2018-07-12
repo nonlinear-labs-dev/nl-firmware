@@ -77,6 +77,12 @@ public class DeviceSettingsProvider {
 			return true;
 		});
 
+		Setup.get().systemSettings.deviceName.onChange(t -> {
+			settings.deviceName = t;
+			notifyClients();
+			return true;
+		});
+
 		connectToPedal(254, settings.pedal1);
 		connectToPedal(259, settings.pedal2);
 		connectToPedal(264, settings.pedal3);

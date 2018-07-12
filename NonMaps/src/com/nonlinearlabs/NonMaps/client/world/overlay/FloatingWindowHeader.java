@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
+package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
@@ -9,9 +9,6 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.overlay.FloatingWindow;
-import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
-import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public class FloatingWindowHeader extends OverlayLayout {
 

@@ -2,6 +2,8 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.Sour
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
@@ -15,7 +17,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class SourcesAndAmounts extends ParameterGroupVertical {
 
@@ -67,10 +68,9 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 
 			@Override
 			public Control onContextMenu(Position pos) {
-				ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
-						.getContextMenuSettings();
+				boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 
-				if (contextMenuSettings.isEnabled()) {
+				if (showContextMenus) {
 					Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 					ContextMenu c = new MacroControlMappingsGroupContextMenu(o);
 					return o.setContextMenu(pos, c);
@@ -92,8 +92,7 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 				if (isHWLocked())
 					ctx.fillText("L", pixRect.getLeft() + 16, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 			}
-			
-		
+
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();

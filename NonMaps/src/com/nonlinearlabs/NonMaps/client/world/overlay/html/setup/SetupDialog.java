@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.overlay.html;
+package com.nonlinearlabs.NonMaps.client.world.overlay.html.setup;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.overlay.GWTDialog;
@@ -7,8 +7,9 @@ public class SetupDialog extends GWTDialog {
 
 	static int lastPopupLeft = -1;
 	static int lastPopupTop = -1;
+	static SetupDialog theSetup;
 
-	public SetupDialog() {
+	private SetupDialog() {
 		super();
 		add(new Setup());
 		setAnimationEnabled(true);
@@ -16,11 +17,30 @@ public class SetupDialog extends GWTDialog {
 		setModal(false);
 	}
 
-	public static void create() {
-		SetupDialog b = new SetupDialog();
-		b.setModal(false);
-		b.addHeader("Setup");
-		b.initalShow();
+	public static void showDialog() {
+		if (theSetup == null) {
+			theSetup = new SetupDialog();
+			theSetup.setModal(false);
+			theSetup.addHeader("Setup");
+			theSetup.initalShow();
+		}
+	}
+
+	public static void hideDialog() {
+		if (theSetup != null) {
+			theSetup.commit();
+		}
+	}
+
+	public static void toggle() {
+		if (theSetup != null)
+			hideDialog();
+		else
+			showDialog();
+	}
+
+	public static boolean isShown() {
+		return theSetup != null;
 	}
 
 	@Override
@@ -42,6 +62,7 @@ public class SetupDialog extends GWTDialog {
 	@Override
 	protected void commit() {
 		hide();
+		theSetup = null;
 		NonMaps.theMaps.captureFocus();
 		NonMaps.theMaps.getNonLinearWorld().requestLayout();
 	}

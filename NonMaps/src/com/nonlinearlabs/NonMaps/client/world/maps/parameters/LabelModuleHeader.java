@@ -2,6 +2,8 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Name;
@@ -14,7 +16,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class LabelModuleHeader extends LabelSmall {
 
@@ -34,9 +35,8 @@ public class LabelModuleHeader extends LabelSmall {
 
 			boolean isAnyParameterLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked();
 			boolean areAllParametersLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().areAllParametersLocked();
-			
-			
-			if(!areAllParametersLocked) {
+
+			if (!areAllParametersLocked) {
 				addChild(new ContextMenuItem(this, "Lock all Groups") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -142,9 +142,9 @@ public class LabelModuleHeader extends LabelSmall {
 	
 	@Override
 	public Control onContextMenu(Position pos) {
-		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
-				.getContextMenuSettings();
-		if (contextMenuSettings.isEnabled()) {
+		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+
+		if (showContextMenus) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 			return o.setContextMenu(pos, new ParameterGroupContextMenu(o));
 		}

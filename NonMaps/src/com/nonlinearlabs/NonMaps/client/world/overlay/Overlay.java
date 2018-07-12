@@ -18,7 +18,6 @@ import com.nonlinearlabs.NonMaps.client.world.Viewport;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetColorTagContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.world.overlay.undo.UndoTreeWindow;
 import com.nonlinearlabs.NonMaps.client.world.pointer.Down;
 import com.nonlinearlabs.NonMaps.client.world.pointer.Gesture;
@@ -29,7 +28,6 @@ public class Overlay extends OverlayLayout {
 	private GlobalButtons buttons = null;
 	private UndoRedoButtons undoRedo = null;
 	private boolean layoutRequested = false;
-	private Setup setup;
 	private boolean initialLayout = true;
 	private GlobalMenu globalMenu;
 	private UndoTreeWindow undo;
@@ -40,7 +38,6 @@ public class Overlay extends OverlayLayout {
 		addChild(belt = new Belt(this, parent.getNonMaps()));
 		addChild(buttons = new GlobalButtons(this, belt));
 		addChild(undoRedo = new UndoRedoButtons(this, belt));
-		addChild(setup = new Setup(this));
 		addChild(undo = new UndoTreeWindow(this));
 
 		// has to be the last one to add as it refers to previously added
@@ -49,7 +46,7 @@ public class Overlay extends OverlayLayout {
 
 		compareDialogs = new ArrayList<CompareDialog>();
 	}
-	
+
 	public void refreshGlobalMenu() {
 		globalMenu.refresh();
 	}
@@ -372,10 +369,6 @@ public class Overlay extends OverlayLayout {
 			}
 		}
 		return false;
-	}
-
-	public Setup getSetup() {
-		return setup;
 	}
 
 	public FloatingWindow getPresetSearch() {

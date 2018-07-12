@@ -12,6 +12,8 @@ import com.nonlinearlabs.NonMaps.client.ClipboardManager;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.contextStates.ContextState;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.maps.IContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
@@ -25,7 +27,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.settings.DeveloperSettings;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetManagerContextMenu;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
 public class NonLinearWorld extends MapsLayout {
@@ -599,8 +600,8 @@ public class NonLinearWorld extends MapsLayout {
 		if (getPresetManager().isInStoreSelectMode())
 			return null;
 
-		ContextMenusSetting contextMenuSettings = getViewport().getOverlay().getSetup().getContextMenuSettings();
-		if (contextMenuSettings.isEnabled()) {
+		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+		if (showContextMenus) {
 			Overlay o = getViewport().getOverlay();
 			return o.setContextMenu(pos, new PresetManagerContextMenu(o));
 		}

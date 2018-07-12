@@ -1,44 +1,33 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
-import java.util.List;
-
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.maps.NonRect;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager.SearchQueryFields;
 
 public class SearchQueryDialog extends GWTDialog {
 
+	@Override
+	protected void setLastPopupPos(int popupLeft, int popupTop) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected int getLastPopupPosTop() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected int getLastPopupPosLeft() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected void commit() {
+		// TODO Auto-generated method stub
+
+	}
+
+	/*-
 	private class NameFieldMouseUpHandler implements MouseDownHandler {
 		TextBox nameField;
 
@@ -446,4 +435,5 @@ public class SearchQueryDialog extends GWTDialog {
 	protected int getLastPopupPosLeft() {
 		return lastPopupLeft;
 	}
+	-*/
 }

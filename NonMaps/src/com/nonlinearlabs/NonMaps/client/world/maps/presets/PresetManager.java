@@ -1,21 +1,20 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
+
 import java.util.List;
+
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
-import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -36,25 +35,14 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContextMenu;
+import com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
 public class PresetManager extends MapsLayout {
 
-	public enum SearchQueryCombination {
-		AND, OR
-	}
-
-	public enum SearchQueryFields {
-		name, comment, devicename
-	}
-
-	private List<SearchQueryFields> fieldsToBeSearched;
 	private String selectedBank;
-	private String query = "";
-	private SearchQueryCombination combination = SearchQueryCombination.OR;
-	private Preset currentFilterMatch = null;
+
 	private int currentFileVersion = 0;
 	private MultiplePresetSelection multiSelection;
 	private MoveAllBanksLayer moveAllBanks;
@@ -74,8 +62,16 @@ public class PresetManager extends MapsLayout {
 
 	public PresetManager(NonLinearWorld parent) {
 		super(parent);
-		fieldsToBeSearched = new ArrayList<SearchQueryFields>();
-		fieldsToBeSearched.add(SearchQueryFields.name);
+
+		PresetSearch.get().zoomToMatches.onChange(b -> {
+			zoomToAllFilterMatches();
+			return true;
+		});
+
+		PresetSearch.get().results.onChange(b -> {
+			zoomToAllFilterMatches();
+			return true;
+		});
 	}
 
 	public StoreSelectMode getStoreSelectMode() {
@@ -105,15 +101,6 @@ public class PresetManager extends MapsLayout {
 
 	public MoveSomeBanksLayer getMoveSomeBanks() {
 		return moveSomeBanks;
-	}
-
-	public List<SearchQueryFields> getFieldsToBeSearched() {
-		return fieldsToBeSearched;
-	}
-
-	public void setFieldsToBeSearched(List<SearchQueryFields> fieldsToBeSearched) {
-		this.fieldsToBeSearched = fieldsToBeSearched;
-		refreshFilter(true);
 	}
 
 	@Override
@@ -150,9 +137,6 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void update(Node presetManagerNode) {
-
-		boolean shouldUpdateFilter = false;
-		
 		if (ServerProxy.didChange(presetManagerNode)) {
 			readPlaygroundFileVersion(presetManagerNode);
 
@@ -164,15 +148,16 @@ public class PresetManager extends MapsLayout {
 				Node child = children.item(i);
 
 				if (child.getNodeName().equals("banks"))
-					shouldUpdateFilter = updateBanks(child) || shouldUpdateFilter;
+					updateBanks(child);
 			}
-			
+
 			Preset newPresetSelection = getSelectedPreset();
 			Preset newLoadedPreset = getLoadedPreset();
 			
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
 			}
+
 			
 			if(oldLoadedPreset != newLoadedPreset) {
 				onPresetLoadStatusChanged(newLoadedPreset);
@@ -230,7 +215,7 @@ public class PresetManager extends MapsLayout {
 
 	private boolean updateBanks(Node banks) {
 		boolean banksChanged = false;
-		
+
 		clearDockingRelations();
 
 		ArrayList<MapsControl> currentChildren = new ArrayList<MapsControl>();
@@ -257,7 +242,7 @@ public class PresetManager extends MapsLayout {
 
 		if (BankInfoDialog.isShown())
 			BankInfoDialog.update();
-		
+
 		return banksChanged;
 	}
 
@@ -575,7 +560,7 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().redo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
-			SearchQueryDialog.toggle();
+			PresetSearchDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
@@ -584,7 +569,7 @@ public class PresetManager extends MapsLayout {
 			ParameterInfoDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/war/online-help/index.html", "", "");
-		} else if( keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
 		} else {
@@ -726,106 +711,6 @@ public class PresetManager extends MapsLayout {
 		return null;
 	}
 
-	public void setFilter(String query) {
-		if (!this.query.equals(query)) {
-			Tracer.log("PresetManager.setFilter " + query);
-			this.query = query;
-			refreshFilter(true);
-		}
-	}
-
-	public void setSearchQueryCombination(SearchQueryCombination c) {
-		if (combination != c) {
-			this.combination = c;
-			refreshFilter(true);
-		}
-	}
-	
-	private void refreshFilter(final boolean autoZoom) {
-		if (this.query.isEmpty()) {
-			clearFilter();
-		} else {
-			String fields = "";
-
-			for (SearchQueryFields f : fieldsToBeSearched) {
-
-				if (!fields.isEmpty())
-					fields += ",";
-
-				fields += f.name();
-			}
-
-			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, fields, new ServerProxy.DownloadHandler() {
-
-				@Override
-				public void onFileDownloaded(String text) {
-					Document xml = XMLParser.parse(text);
-					Node presetManager = xml.getElementsByTagName("preset-manager").item(0);
-					int numMatches = applyFilter(presetManager, autoZoom);
-					SearchQueryDialog.setMatches(numMatches);
-				}
-
-				@Override
-				public void onError() {
-				}
-			});
-		}
-
-		if (currentFilterMatch != null)
-			if (currentFilterMatch.getFilterState() != Preset.FilterState.FILTER_MATCHES)
-				currentFilterMatch = null;
-	}
-
-	public void clearFilter() {
-		for (Control c : getChildren()) {
-			if (c instanceof Bank) {
-				Bank b = (Bank) c;
-				b.clearFilter();
-			}
-		}
-
-		query = "";
-		currentFilterMatch = null;
-		SearchQueryDialog.setMatches(0);
-	}
-
-	private int applyFilter(Node presetManager, boolean autoZoom) {
-		int numMatches = 0;
-		Node banksNode = findBanksNode(presetManager);
-		NodeList banks = banksNode.getChildNodes();
-
-		for (int i = 0; i < banks.getLength(); i++) {
-			Node child = banks.item(i);
-
-			if (child.getNodeName().equals("preset-bank"))
-				numMatches += applyBankFilter(child);
-		}
-
-		if (autoZoom)
-			zoomToAllFilterMatches();
-
-		return numMatches;
-	}
-
-	private int applyBankFilter(Node bank) {
-		String uuid = bank.getAttributes().getNamedItem("uuid").getNodeValue();
-		Bank bankUI = findBank(uuid);
-		return bankUI.applyFilter(bank);
-	}
-
-	private Node findBanksNode(Node presetManager) {
-		NodeList banks = presetManager.getChildNodes();
-
-		for (int i = 0; i < banks.getLength(); i++) {
-			Node child = banks.item(i);
-
-			if (child.getNodeName().equals("banks"))
-				return child;
-		}
-
-		return null;
-	}
-
 	public LinkedList<Preset> collectMatchingPresets() {
 		LinkedList<Preset> ret = new LinkedList<Preset>();
 
@@ -837,7 +722,7 @@ public class PresetManager extends MapsLayout {
 					if (f instanceof Preset) {
 						Preset p = (Preset) f;
 
-						if (p.getFilterState() == Preset.FilterState.FILTER_MATCHES) {
+						if (p.isInCurrentFilterSet()) {
 							ret.add(p);
 						}
 					}
@@ -847,49 +732,8 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
-	private void setCurrentFilterMatch(Preset p) {
-		if (currentFilterMatch != p) {
-			currentFilterMatch = p;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
-	}
-
-	public boolean isCurrentFilterMatch(Preset p) {
-		return (currentFilterMatch == p);
-	}
-
-	public void highlightNextFilterMatch() {
-		LinkedList<Preset> matches = collectMatchingPresets();
-		highlightNextInList(matches);
-	}
-
-	private void highlightNextInList(LinkedList<Preset> matches) {
-		for (Preset p : matches) {
-			if (currentFilterMatch == null) {
-				setCurrentFilterMatch(p);
-				break;
-			} else if (p == currentFilterMatch) {
-				currentFilterMatch = null;
-			}
-		}
-
-		if (currentFilterMatch == null && !matches.isEmpty()) {
-			setCurrentFilterMatch(matches.getFirst());
-		}
-	}
-
-	public void highlightPreviousFilterMatch() {
-		LinkedList<Preset> matches = collectMatchingPresets();
-		Collections.reverse(matches);
-		highlightNextInList(matches);
-	}
-
 	public void zoomToAllFilterMatches() {
-		Boolean setting = Boolean.parseBoolean(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
-
-		if (setting) {
-			currentFilterMatch = null;
-
+		if (PresetSearch.get().zoomToMatches.isTrue() && PresetSearch.get().searchActive.isTrue()) {
 			double minX = Double.MAX_VALUE;
 			double minY = Double.MAX_VALUE;
 			double maxX = -Double.MAX_VALUE;
@@ -950,10 +794,6 @@ public class PresetManager extends MapsLayout {
 
 	public Preset getSelectedPreset() {
 		return findSelectedPreset();
-	}
-
-	public SearchQueryCombination getSearchQueryCombination() {
-		return combination;
 	}
 
 	public boolean getPresetsVisible() {
@@ -1064,10 +904,6 @@ public class PresetManager extends MapsLayout {
 
 	public void resetAttachingTapes() {
 		setAttachingTapes(null, null);
-	}
-
-	public String getFilter() {
-		return query;
 	}
 
 	public String getSelectedPresetUUID() {

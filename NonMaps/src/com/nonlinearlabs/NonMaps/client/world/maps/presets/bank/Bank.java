@@ -10,6 +10,8 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -510,8 +512,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	protected DropAction getDropAction(Position pos, DragProxy draggedElement) {
 
-		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting()
-				.isEnabled()) {
+		if (Setup.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
 
 			Control origin = draggedElement.getOrigin();
 
@@ -599,42 +600,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	@Override
 	public Control doubleClick() {
 		return this;
-	}
-
-	public void clearFilter() {
-		for (Control c : presetList.getChildren()) {
-			if (c instanceof Preset) {
-				Preset p = (Preset) c;
-				p.setFilterState(Preset.FilterState.NO_FILTER);
-			}
-		}
-	}
-
-	public int applyFilter(Node bank) {
-		int numMatches = 0;
-
-		for (Control c : presetList.getChildren()) {
-			if (c instanceof Preset) {
-				Preset p = (Preset) c;
-				p.setFilterState(Preset.FilterState.FILTERED_OUT);
-			}
-		}
-
-		NodeList banks = bank.getChildNodes();
-
-		for (int i = 0; i < banks.getLength(); i++) {
-			Node child = banks.item(i);
-
-			if (child.getNodeName().equals("preset")) {
-				String uuid = child.getAttributes().getNamedItem("uuid").getNodeValue();
-				Preset p = presetList.findPreset(uuid);
-				if (p != null) {
-					p.setFilterState(Preset.FilterState.FILTER_MATCHES);
-					numMatches++;
-				}
-			}
-		}
-		return numMatches;
 	}
 
 	public boolean isEmpty() {

@@ -8,7 +8,7 @@ public abstract class DataModelEntity<T> extends Notifier<T> implements DataMode
 	}
 
 	public boolean setValue(T v) {
-		if (v != value) {
+		if (!v.equals(value)) {
 			value = v;
 			notifyChanges();
 			return true;
