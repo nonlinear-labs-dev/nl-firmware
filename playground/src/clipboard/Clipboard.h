@@ -4,6 +4,8 @@
 #include <http/RPCActionManager.h>
 #include <tools/Signal.h>
 #include <libundo/undo/Scope.h>
+#include <presets/PresetBank.h>
+#include "MultiplePresetSelection.h"
 
 class Clipboard : public ContentSection
 {
@@ -43,6 +45,7 @@ class Clipboard : public ContentSection
     void pasteBankOnPreset(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &presetUuid);
     void pasteBankOnBackground(UNDO::Scope::tTransactionScopePtr scope, const Glib::ustring &x, const Glib::ustring &y);
 
+    std::shared_ptr<MultiplePresetSelection> prepareForMulSelPaste();
     void pasteMultiplePresetsOnBackground(const Glib::ustring& x, const Glib::ustring &y);
     void pasteMultiplePresetsOnBank(const Glib::ustring &bankUuid);
     void pasteMultiplePresetsOnPreset(const Glib::ustring &presetUuid);

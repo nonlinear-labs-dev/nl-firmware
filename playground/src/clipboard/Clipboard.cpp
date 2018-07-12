@@ -228,25 +228,35 @@ std::shared_ptr<PresetBank> multiplePresetsToBank(const MultiplePresetSelection&
 void Clipboard::pasteMultiplePresetsOnBackground(const Glib::ustring& x, const Glib::ustring &y)
 {
   auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
-  auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
-  m_content = multiplePresetsToBank(*mulSelection.get());
+  auto multiSelection = prepareForMulSelPaste();
   pasteBankOnBackground(scope, x, y);
+  m_content = multiSelection;
 }
 
 void Clipboard::pasteMultiplePresetsOnBank(const Glib::ustring &bankUuid)
 {
   auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
-  auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
-  m_content = multiplePresetsToBank(*mulSelection.get());
+  auto multiSelection = prepareForMulSelPaste();
   pasteBankOnBank(scope, bankUuid);
+  m_content = multiSelection;
 }
+
+std::shared_ptr<MultiplePresetSelection> Clipboard::prepareForMulSelPaste() {
+  auto multiSelection = std::make_shared<MultiplePresetSelection>(this);
+
+  for(auto preset: dynamic_pointer_cast<MultiplePresetSelection>(m_content)->getPresets())
+    multiSelection->addPreset(getUndoScope().startTrashTransaction()->getTransaction(), preset);
+
+  m_content = multiplePresetsToBank(*multiSelection.get());
+  return multiSelection;
+};
 
 void Clipboard::pasteMultiplePresetsOnPreset(const Glib::ustring &presetUuid)
 {
   auto scope = getUndoScope().startTransaction ("Paste Multiple Presets");
-  auto mulSelection = dynamic_pointer_cast<MultiplePresetSelection>(m_content);
-  m_content = multiplePresetsToBank(*mulSelection.get());
+  auto multiSelection = prepareForMulSelPaste();
   pasteBankOnPreset(scope, presetUuid);
+  m_content = multiSelection;
 }
 
 void Clipboard::pastePresetOnBackground (const Glib::ustring &x, const Glib::ustring &y)
