@@ -74,20 +74,6 @@ foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
 
-
-
-ADD_CUSTOM_COMMAND(
- OUTPUT PlaygroundVersion
- COMMAND /bin/sh /src/device-info/update-info.sh
- WORKING_DIRECTORY ${CMAKE_ROOT}
- COMMENT "Creates/updates Git Revision Files"
-)
-
-add_custom_target(
-        PlaygroundVersion ALL
-        DEPENDS PlaygroundVersion
-)
-
 set (git_cmd "git")
 set (git_arg "rev-parse")
 set (git_arg2 "--abbrev-ref")
