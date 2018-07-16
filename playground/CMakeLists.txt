@@ -96,10 +96,15 @@ set_property(
 )
 
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
+file(GLOB VERSION_INFOS resources/version-infos/*)
 
 install(FILES ${PARAMETER_DESCRIPTIONS}
   DESTINATION resources/parameter-descriptions
   )
+
+install(FILES ${VERSION_INFOS}
+        DESTINATION resources/version-infos
+        )
 
 install(DIRECTORY resources
   USE_SOURCE_PERMISSIONS
