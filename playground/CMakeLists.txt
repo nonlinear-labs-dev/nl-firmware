@@ -88,12 +88,47 @@ add_custom_target(
         DEPENDS PlaygroundVersion
 )
 
-set_property(
-  SOURCE src/device-info/SoftwareVersion.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_FLAGS
-  "-DLAST_COMMIT_TIME=\"${PLAYGROUND_VERSION}\""
-)
+set (git_cmd "git")
+set (git_arg "rev-parse")
+set (git_arg2 "--abbrev-ref")
+set (git_arg3 "HEAD")
+
+execute_process(COMMAND ${git_cmd} ${git_arg} ${git_arg2} ${git_arg3}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        RESULT_VARIABLE git_result
+        OUTPUT_VARIABLE git_ver)
+
+set(BRANCH_NAME ${git_ver})
+
+set (git_cmd "git")
+set (git_arg "rev-list")
+set (git_arg2 "HEAD")
+set (git_arg3 "--count")
+
+execute_process(COMMAND ${git_cmd} ${git_arg} ${git_arg2} ${git_arg3}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        RESULT_VARIABLE git_result
+        OUTPUT_VARIABLE git_ver)
+
+set(COMMIT_COUNT ${git_ver})
+
+set (git_cmd "git")
+set (git_arg "rev-parse")
+set (git_arg2 "--short")
+set (git_arg3 "HEAD")
+
+execute_process(COMMAND ${git_cmd} ${git_arg} ${git_arg2} ${git_arg3}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        RESULT_VARIABLE git_result
+        OUTPUT_VARIABLE git_ver)
+
+set(HEAD_REF ${git_ver})
+
+string(STRIP ${COMMIT_COUNT} COMMIT_COUNT)
+string(STRIP ${HEAD_REF} HEAD_REF)
+string(STRIP ${BRANCH_NAME} BRANCH_NAME)
+
+target_compile_definitions(playground PRIVATE -DHEAD_REF=${HEAD_REF} -DCOMMIT_COUNT=${COMMIT_COUNT} -DBRANCH_NAME=${BRANCH_NAME} -DLAST_COMMIT_TIME=${PLAYGROUND_VERSION})
 
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
