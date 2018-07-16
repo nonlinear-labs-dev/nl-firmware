@@ -13,8 +13,11 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class ScaleLabelModuleHeader extends LabelModuleHeader {
 
+	ParameterGroupVertical m_parentGroup;
+	
 	public ScaleLabelModuleHeader(ParameterGroupVertical parent, Name name) {
 		super(parent, name);
+		m_parentGroup = parent;
 	}
 	
 	public class ScaleGroupContextMenu extends ParameterGroupContextMenu {

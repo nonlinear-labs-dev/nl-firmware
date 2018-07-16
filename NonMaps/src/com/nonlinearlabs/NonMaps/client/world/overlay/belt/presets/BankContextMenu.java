@@ -24,7 +24,7 @@ public abstract class BankContextMenu extends ContextMenu {
 			addChild(new ContextMenuItem(this, "Create New Bank") {
 				@Override
 				public Control click(Position eventPoint) {
-					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
 					PresetManagerContextMenu.createNewBank(pos);
 					return super.click(eventPoint);
 				}
@@ -34,7 +34,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				addChild(new ContextMenuItem(this, "Paste") {
 					@Override
 					public Control click(Position eventPoint) {
-						NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+						NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
 						getNonMaps().getServerProxy().pasteOnPresetManager(pos);
 						return super.click(eventPoint);
 					}
@@ -47,7 +47,7 @@ public abstract class BankContextMenu extends ContextMenu {
 					new TextUpload(new TextUploadedHandler() {
 						@Override
 						public void onTextUploaded(String fileName, String text) {
-							NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+							NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
 							NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
 						}
 					});
