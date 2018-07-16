@@ -52,7 +52,7 @@ endforeach(lib)
 include_directories(src)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
-  
+
 ADD_CUSTOM_TARGET(
 	invalidate_version_file ALL
 	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_SOURCE_DIR}/src/device-info/SoftwareVersion.cpp
@@ -73,6 +73,20 @@ endfunction(linkLib)
 foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
+
+
+
+ADD_CUSTOM_COMMAND(
+ OUTPUT PlaygroundVersion
+ COMMAND /bin/sh /src/device-info/update-info.sh
+ WORKING_DIRECTORY ${CMAKE_ROOT}
+ COMMENT "Creates/updates Git Revision Files"
+)
+
+add_custom_target(
+        PlaygroundVersion ALL
+        DEPENDS PlaygroundVersion
+)
 
 set_property(
   SOURCE src/device-info/SoftwareVersion.cpp
