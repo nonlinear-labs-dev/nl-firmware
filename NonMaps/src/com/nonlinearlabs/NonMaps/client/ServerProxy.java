@@ -944,4 +944,10 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("name", text));
 		queueJob(uri, false);
 	}
+
+	public void sortBankNumbers() {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "sort-bank-numbers");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
 }

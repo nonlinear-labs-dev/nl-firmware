@@ -807,6 +807,12 @@ const Glib::ustring PresetBank::calcStateString() const
   }
 }
 
+const bool PresetBank::isInCluster() const {
+  bool attached = m_attachment.direction == AttachmentDirection::none;
+  bool isParent = Application::get().getPresetManager()->findBank(getAttached().uuid) != nullptr;
+  return attached || isParent;
+}
+
 void PresetBank::undoableAssignDefaultPosition(shared_ptr<UNDO::Transaction> transaction)
 {
   auto xy = calcDefaultPosition();
@@ -939,12 +945,66 @@ bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks,
   return true;
 }
 
-PresetBank *PresetBank::getClusterMaster()
+PresetBank* PresetBank::getClusterMaster()
 {
   if(auto master = getParent()->findBank(getAttached().uuid))
     return master->getClusterMaster();
 
   return this;
+}
+
+PresetBank *PresetBank::getBottomSlave() {
+  auto pm = Application::get().getPresetManager();
+  for(auto& bank: pm->getBanks()) {
+    if(bank->getClusterMaster() == this)
+      if(bank->getClusterMaster()->getAttached().direction == AttachmentDirection::top)
+        return bank.get();
+  }
+  return nullptr;
+}
+
+PresetBank *PresetBank::getRightSlave() {
+  auto pm = Application::get().getPresetManager();
+  for(auto& bank: pm->getBanks()) {
+    if(bank->getClusterMaster() == this)
+      if(bank->getClusterMaster()->getAttached().direction == AttachmentDirection::left)
+        return bank.get();
+  }
+  return nullptr;
+}
+
+std::vector<PresetBank*> PresetBank::getClusterAsSortedVector()
+{
+  bool finished = false;
+  std::vector<PresetBank*> cluster;
+  PresetBank* current = this;
+  PresetBank* nodeToRight = nullptr;
+
+  cluster.push_back(this);
+  while(!finished)
+  {
+    nodeToRight = nullptr;
+
+    while(current->getBottomSlave())
+    {
+      cluster.push_back(current);
+
+      if(auto rightSlave = current->getRightSlave())
+        nodeToRight = rightSlave;
+
+      current = current->getBottomSlave();
+    }
+
+    if(!nodeToRight)
+    {
+      finished = true;
+    }
+    else
+    {
+      current = nodeToRight;
+    }
+  }
+  return cluster;
 }
 
 void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid) {
@@ -988,3 +1048,4 @@ PresetBank *PresetBank::getSlaveBottom() {
     }
     return nullptr;
 }
+
