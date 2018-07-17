@@ -91,7 +91,7 @@ void ButtonMenu::doAction()
 
 void ButtonMenu::bruteForce ()
 {
-  if (auto p = findControlOfType<ButtonMenuButton> ())
+  while (auto p = findControlOfType<ButtonMenuButton> ())
     remove (p.get ());
 
   const int buttonHeight = 13;
