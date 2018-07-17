@@ -54,7 +54,7 @@ int BankSorter::reasignOrderNumberInCluster(UNDO::Scope::tTransactionPtr transac
                                             int startWith)
 {
   for(auto bank: master->getClusterAsSortedVector()) {
-    getPM()->undoableSetOrderNumber(transaction, (PresetManager::tBankPtr)bank, startWith++);
+    getPM()->undoableSetOrderNumber(transaction, bank, startWith++);
   }
 
   return startWith;

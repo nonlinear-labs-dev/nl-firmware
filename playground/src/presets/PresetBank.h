@@ -66,7 +66,7 @@ class PresetBank : public UpdateDocumentContributor,
     const Glib::ustring calcStateString() const;
 
     const bool isInCluster() const;
-    std::vector<PresetBank*> getClusterAsSortedVector();
+    std::vector<PresetManager::tBankPtr>  getClusterAsSortedVector();
 
     bool setSelectedPreset(Glib::ustring uuid);
     void assignDefaultPosition();

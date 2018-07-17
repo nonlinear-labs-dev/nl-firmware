@@ -1,12 +1,13 @@
 #pragma once
 
 #include <libundo/undo/Scope.h>
+#include "PresetManager.h"
 
 class PresetBank;
 
 class BankSorter {
 public:
-    typedef std::shared_ptr<PresetBank> tPresetBankPtr;
+    typedef PresetManager::tBankPtr tPresetBankPtr;
     static void sort();
 private:
     static shared_ptr<PresetManager> getPM();

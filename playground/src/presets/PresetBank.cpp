@@ -973,21 +973,20 @@ PresetBank *PresetBank::getRightSlave() {
   return nullptr;
 }
 
-std::vector<PresetBank*> PresetBank::getClusterAsSortedVector()
+std::vector<PresetManager::tBankPtr> PresetBank::getClusterAsSortedVector()
 {
   bool finished = false;
-  std::vector<PresetBank*> cluster;
+  std::vector<PresetManager::tBankPtr> cluster;
   PresetBank* current = this;
   PresetBank* nodeToRight = nullptr;
 
-  cluster.push_back(this);
   while(!finished)
   {
     nodeToRight = nullptr;
 
-    while(current->getBottomSlave())
+    while(current)
     {
-      cluster.push_back(current);
+      cluster.push_back(getParent()->findBank(current->getUuid())); //urgh
 
       if(auto rightSlave = current->getRightSlave())
         nodeToRight = rightSlave;
