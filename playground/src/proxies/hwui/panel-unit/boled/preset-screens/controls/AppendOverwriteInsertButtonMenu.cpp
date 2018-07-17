@@ -14,8 +14,19 @@ AppendOverwriteInsertButtonMenu::AppendOverwriteInsertButtonMenu(PresetManagerLa
     super(rect),
     m_parent(parent)
 {
+  Application::get().getPresetManager()->onNumBanksChanged(sigc::hide < 0 > (mem_fun(this, &AppendOverwriteInsertButtonMenu::buildMenu)));
+}
+
+
+void AppendOverwriteInsertButtonMenu::buildMenu()
+{
+  clear();
+  clearActions();
+
+  auto pm = Application::get().getPresetManager();
   addButton("Append", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
-  addButton("Overwrite", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
+  if(pm->getSelectedBank() && pm->getSelectedBank()->getNumPresets() != 0)
+    addButton("Overwrite", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
   addButton("Insert", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
 
   auto setting = Application::get().getSettings()->getSetting<PresetStoreModeSetting>()->get();
@@ -85,6 +96,23 @@ void AppendOverwriteInsertButtonMenu::executeAction()
       pushRenameScreen();
     }
   }
+  else {
+    createBankAndStore();
+  }
+}
+
+void AppendOverwriteInsertButtonMenu::createBankAndStore()
+{
+  auto pm = Application::get().getPresetManager();
+  auto& scope = pm->getUndoScope();
+  auto transactionScope = scope.startTransaction("Create Bank and Store Preset");
+  auto transaction = transactionScope->getTransaction();
+  pm->addBank(transaction, true);
+  auto bank = pm->getSelectedBank();
+  auto preset = Preset::createPreset(bank.get());
+  bank->undoableCopyAndPrependPreset(transaction, pm->getEditBuffer ());
+  bank->undoableEnsurePresetSelection(transaction);
+  Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
 }
 
 void AppendOverwriteInsertButtonMenu::append(shared_ptr<PresetBank> bank, bool modified)
@@ -158,6 +186,8 @@ shared_ptr<Preset> AppendOverwriteInsertButtonMenu::overwritePreset(shared_ptr<P
   auto scope = Application::get().getUndoScope()->startTransaction("Overwrite preset '%0'", preset->getName());
   return overwritePreset(scope->getTransaction(), preset);
 }
+
+
 
 shared_ptr<Preset> AppendOverwriteInsertButtonMenu::overwritePreset(AppendOverwriteInsertButtonMenu::tTransactionPtr transaction,
                                                                     shared_ptr<Preset> preset)
