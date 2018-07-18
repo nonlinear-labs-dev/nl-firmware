@@ -120,6 +120,7 @@ class PresetBank : public UpdateDocumentContributor,
     PresetBank *getMasterLeft();
     PresetBank *getSlaveRight();
     PresetBank *getSlaveBottom();
+    PresetBank *getDirectClusterMaster();
 
     virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 

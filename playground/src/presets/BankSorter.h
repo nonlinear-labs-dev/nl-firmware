@@ -12,6 +12,5 @@ public:
 private:
     static shared_ptr<PresetManager> getPM();
     static vector<tPresetBankPtr> getClusterMastersSortedByX();
-    static int reasignOrderNumberForCluster(UNDO::Scope::tTransactionPtr transaction, vector<tPresetBankPtr> vector, int number);
-    static int reasignOrderNumberInCluster(UNDO::Scope::tTransactionPtr transaction, tPresetBankPtr master, int startWith);
+    static vector<tPresetBankPtr> getFreeBanksSortedByX();
 };

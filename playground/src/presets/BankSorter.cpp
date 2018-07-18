@@ -7,10 +7,19 @@ void BankSorter::sort()
 {
   auto scope = getPM()->getUndoScope().startTransaction("Sort Bank Numbers");
   auto transaction = scope->getTransaction();
-  int orderNumber = 0;
   auto clusters = getClusterMastersSortedByX();
-  orderNumber = reasignOrderNumberForCluster(transaction, clusters, orderNumber);
+  auto freeBanks = getFreeBanksSortedByX();
 
+  vector<tPresetBankPtr> newBankOrder;
+  for(auto clusterMaster: clusters) {
+    for(auto bank: clusterMaster->getClusterAsSortedVector()) {
+      newBankOrder.push_back(bank);
+    }
+  }
+  for(auto bank: freeBanks) {
+    newBankOrder.push_back(bank);
+  }
+  getPM()->undoableSetBanks(transaction, newBankOrder);
 }
 
 std::shared_ptr<PresetManager> BankSorter::getPM() {
@@ -22,7 +31,7 @@ vector<BankSorter::tPresetBankPtr> BankSorter::getClusterMastersSortedByX() {
   for(auto bank: getPM()->getBanks()) {
     if(bank->isInCluster()) {
       if(auto master = bank->getClusterMaster()) {
-        if(master.get() != bank.get()) {
+        if(master != bank) {
           if(std::find(clusterMaster.begin(), clusterMaster.end(), master) == clusterMaster.end())  {
             clusterMaster.push_back(master);
           }
@@ -33,30 +42,27 @@ vector<BankSorter::tPresetBankPtr> BankSorter::getClusterMastersSortedByX() {
 
   std::sort(clusterMaster.begin(), clusterMaster.end(), [](const std::shared_ptr<PresetBank> lhs,
                                                            const std::shared_ptr<PresetBank> rhs) {
-    return lhs->getX() < rhs->getX();
+    return lhs->getX() > rhs->getX();
   });
 
   return clusterMaster;
 }
 
-int BankSorter::reasignOrderNumberForCluster(UNDO::Scope::tTransactionPtr transaction,
-                                             vector<tPresetBankPtr> vector,
-                                             int startFrom) {
-  int ret = startFrom;
-  for(auto clusterMaster: vector) {
-    ret = reasignOrderNumberInCluster(transaction, clusterMaster, startFrom);
-  }
-  return ret;
-}
-
-int BankSorter::reasignOrderNumberInCluster(UNDO::Scope::tTransactionPtr transaction,
-                                            tPresetBankPtr master,
-                                            int startWith)
-{
-  for(auto bank: master->getClusterAsSortedVector()) {
-    getPM()->undoableSetOrderNumber(transaction, bank, startWith++);
+vector<BankSorter::tPresetBankPtr> BankSorter::getFreeBanksSortedByX() {
+  std::vector<tPresetBankPtr> banks;
+  for(auto bank: getPM()->getBanks()) {
+    if(!bank->isInCluster()) {
+        if(std::find(banks.begin(), banks.end(), bank) == banks.end())  {
+          banks.push_back(bank);
+        }
+    }
   }
 
-  return startWith;
+  std::sort(banks.begin(), banks.end(), [](const std::shared_ptr<PresetBank> lhs,
+                                                           const std::shared_ptr<PresetBank> rhs) {
+    return lhs->getX() > rhs->getX();
+  });
+
+  return banks;
 }
 

@@ -808,8 +808,13 @@ const Glib::ustring PresetBank::calcStateString() const
 }
 
 const bool PresetBank::isInCluster() const {
-  bool attached = m_attachment.direction == AttachmentDirection::none;
-  bool isParent = Application::get().getPresetManager()->findBank(getAttached().uuid) != nullptr;
+  bool attached = m_attachment.direction != AttachmentDirection::none;
+  bool isParent = [this](){
+    for(auto& bank: getParent()->getBanks())
+      if(bank->getDirectClusterMaster() == this)
+        return true;
+    return false;
+  }();
   return attached || isParent;
 }
 
@@ -948,7 +953,16 @@ bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks,
 PresetBank* PresetBank::getClusterMaster()
 {
   if(auto master = getParent()->findBank(getAttached().uuid))
-    return master->getClusterMaster();
+    if(master.get() != this)
+      return master->getClusterMaster();
+
+  return this;
+}
+
+PresetBank* PresetBank::getDirectClusterMaster()
+{
+  if(auto master = getParent()->findBank(getAttached().uuid))
+    return master.get();
 
   return this;
 }
@@ -994,14 +1008,10 @@ std::vector<PresetManager::tBankPtr> PresetBank::getClusterAsSortedVector()
       current = current->getBottomSlave();
     }
 
-    if(!nodeToRight)
-    {
-      finished = true;
-    }
-    else
-    {
+    if(nodeToRight)
       current = nodeToRight;
-    }
+    else
+      finished = true;
   }
   return cluster;
 }
