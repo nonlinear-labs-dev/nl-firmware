@@ -8,12 +8,16 @@ class PresetBank;
 class BankSorter {
 public:
     typedef PresetManager::tBankPtr tPresetBankPtr;
+    typedef vector<tPresetBankPtr> BankVector;
     static void sort();
 private:
     static shared_ptr<PresetManager> getPM();
-    static vector<tPresetBankPtr> getClusterMastersSortedByX();
-    static vector<tPresetBankPtr> getFreeBanksSortedByX();
-    static vector<tPresetBankPtr> concatVectorsAccordingToRule(const vector<tPresetBankPtr> &clusters,
-                                                               const vector<tPresetBankPtr> &freeBanks);
-    static vector<tPresetBankPtr> getClusterVectorsFromClusterMasters(vector<tPresetBankPtr> clusterMasters);
+    static BankVector getClusterMastersSortedByX();
+    static BankVector getFreeBanksSortedByX();
+    static BankVector concatVectorsAccordingToRule(BankVector clusters, const BankVector &freeBanks);
+    static BankVector getClusterVectorsFromClusterMasters(BankVector clusterMasters);
+    static bool compareByXPosition(const tPresetBankPtr &lhs, const tPresetBankPtr &rhs);
+    static bool isValidMasterBank(const PresetManager::tBankPtr &bank, const tPresetBankPtr &master);
+    static bool doesNotContain(BankVector &clusterMasters, const tPresetBankPtr &master);
+    static void reassignOrderNumbers(const UNDO::TransactionCreationScope::tTransactionPtr &transaction, BankVector &newBankOrder);
 };

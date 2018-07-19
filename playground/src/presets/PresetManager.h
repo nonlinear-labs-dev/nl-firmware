@@ -51,6 +51,7 @@ class PresetManager : public ContentSection
     tBankPtr getBank (int pos);
     const tBankPtr getBank (int pos) const;
     const vector<tBankPtr> &getBanks () const;
+    const vector<tBankPtr> getBanksIf (std::function<bool(const tBankPtr&)> predicate) const;
 
     int calcOrderNumber (const PresetBank *bank) const;
     int calcBankIndex (const PresetBank *bank) const;
