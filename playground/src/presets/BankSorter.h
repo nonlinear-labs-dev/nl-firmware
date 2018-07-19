@@ -13,4 +13,7 @@ private:
     static shared_ptr<PresetManager> getPM();
     static vector<tPresetBankPtr> getClusterMastersSortedByX();
     static vector<tPresetBankPtr> getFreeBanksSortedByX();
+    static vector<tPresetBankPtr> concatVectorsAccordingToRule(const vector<tPresetBankPtr> &clusters,
+                                                               const vector<tPresetBankPtr> &freeBanks);
+    static vector<tPresetBankPtr> getClusterVectorsFromClusterMasters(vector<tPresetBankPtr> clusterMasters);
 };
