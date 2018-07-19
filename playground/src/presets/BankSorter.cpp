@@ -9,9 +9,9 @@ void BankSorter::sort()
   auto transaction = scope->getTransaction();
   auto newBankOrder = concatVectorsAccordingToRule(getClusterVectorsFromClusterMasters(getClusterMastersSortedByX()), getFreeBanksSortedByX());
 
-  auto index = getPM()->getNumBanks() - 1;
+  int index = getPM()->getNumBanks() - 1;
   for(auto it = newBankOrder.rbegin(); it < newBankOrder.rend(); it++) {
-    getPM()->undoableSetOrderNumber(transaction, *it, (int)index--);
+    getPM()->undoableSetOrderNumber(transaction, *it, index--);
   }
 }
 
@@ -48,7 +48,7 @@ vector<BankSorter::tPresetBankPtr> BankSorter::getClusterMastersSortedByX() {
 
   std::sort(clusterMasters.begin(), clusterMasters.end(), [](const std::shared_ptr<PresetBank> lhs,
                                                            const std::shared_ptr<PresetBank> rhs) {
-    return lhs->getX() > rhs->getX();
+    return stoi(lhs->getX()) < stoi(rhs->getX());
   });
 
   return clusterMasters;
@@ -64,9 +64,15 @@ vector<BankSorter::tPresetBankPtr> BankSorter::getFreeBanksSortedByX() {
     }
   }
 
+  vector<PresetBank*> debugBank;
+  for(auto bank: banks) {
+    debugBank.push_back(bank.get());
+  }
+
+
   std::sort(banks.begin(), banks.end(), [](const std::shared_ptr<PresetBank> lhs,
                                            const std::shared_ptr<PresetBank> rhs) {
-    return lhs->getX() > rhs->getX();
+    return stoi(lhs->getX()) < stoi(rhs->getX());
   });
 
   return banks;

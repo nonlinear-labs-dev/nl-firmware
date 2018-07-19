@@ -102,7 +102,7 @@ public class ServerProxy {
 			if(PresetInfoDialog.isShown()) {
 				PresetInfoDialog.theDialog.updateEditBuffer(editBufferNode);
 			} else {
-				PresetInfoDialog.theDialog.setLastUpdateNode(editBufferNode);
+				PresetInfoDialog.setLastUpdateNode(editBufferNode);
 			}
 
 			setPlaygroundSoftwareVersion(deviceInfo);
