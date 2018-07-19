@@ -101,19 +101,23 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		for (MapsControl c : getChildren()) {
 			c.getNonPosition().moveBy(tapeWidth, tapeWidth);
 		}
+		
+		tapeWidth *= 2;
+		double tapePosWidth = getAttachArea();
 
 		getTape(Tape.Orientation.North).setNonSize(new NonDimension(oldDim.getWidth(), tapeWidth));
-		getTape(Tape.Orientation.North).moveTo(new NonPosition(tapeWidth, 0));
+		getTape(Tape.Orientation.North).moveTo(new NonPosition(tapePosWidth, 0));
 
 		getTape(Tape.Orientation.South).setNonSize(new NonDimension(oldDim.getWidth(), tapeWidth));
-		getTape(Tape.Orientation.South).moveTo(new NonPosition(tapeWidth, oldDim.getHeight() + tapeWidth));
+		getTape(Tape.Orientation.South).moveTo(new NonPosition(tapePosWidth, oldDim.getHeight() + tapeWidth));
 
 		getTape(Tape.Orientation.West).setNonSize(new NonDimension(tapeWidth, oldDim.getHeight()));
-		getTape(Tape.Orientation.West).moveTo(new NonPosition(0, tapeWidth));
+		getTape(Tape.Orientation.West).moveTo(new NonPosition(0, tapePosWidth));
 
 		getTape(Tape.Orientation.East).setNonSize(new NonDimension(tapeWidth, oldDim.getHeight()));
-		getTape(Tape.Orientation.East).moveTo(new NonPosition(oldDim.getWidth() + tapeWidth, tapeWidth));
+		getTape(Tape.Orientation.East).moveTo(new NonPosition(oldDim.getWidth() + tapeWidth, tapePosWidth));
 
+		tapeWidth = tapeWidth / 2;
 		setNonSize(oldDim.getWidth() + tapeWidth * 2, oldDim.getHeight() + tapeWidth * 2);
 	}
 
