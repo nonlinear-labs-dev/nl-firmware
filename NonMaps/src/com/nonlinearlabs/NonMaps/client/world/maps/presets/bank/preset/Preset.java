@@ -151,7 +151,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			if (getParent().getParent().isCurrentFilterMatch(this)) {
 				colorContour = new RGB(230, 240, 255);
 			}
-		} else {
+		}
+		else if(RenameDialog.isPresetBeingRenamed(this)) {
+			colorFill = new RGB(77,77,77);
+		}
+		else {
 			if (loaded || isOriginPreset)
 				colorFill = RGB.blue();
 			else if (selected)
