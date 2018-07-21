@@ -3,6 +3,7 @@
 #include <functional>
 #include <thread>
 #include <assert.h>
+#include <mutex>
 #include "FileTools.h"
 
 
