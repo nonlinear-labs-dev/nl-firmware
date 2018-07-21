@@ -272,7 +272,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       m_modeOverlay->addControl(new MCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
 
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 0, 58, 64)));
+      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 1, 58, 64)));
 
       m_modeOverlay->highlight<SelectedParamsMacroControlSlider>();
       m_modeOverlay->highlight<MCPositionLabel>();
@@ -288,7 +288,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(60, 27, 13, 1)));
       m_modeOverlay->addControl(new SelectedParamsMacroControlSlider(Rect(8, 25, 48, 4)));
 
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 0, 58, 64)));
+      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 1, 58, 64)));
 
       m_modeOverlay->highlight<ModulationSourceLabel>();
       highlight<MCSelectButton>();
@@ -303,7 +303,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(60, 27, 13, 1)));
       m_modeOverlay->addControl(new SelectedParamsMacroControlSlider(Rect(8, 25, 48, 4)));
 
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 0, 58, 64)));
+      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 1, 58, 64)));
 
       m_modeOverlay->highlight<MCAmountLabel>();
       highlight<MCAmountButton>();
@@ -317,7 +317,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(60, 27, 13, 1)));
       m_modeOverlay->addControl(new SelectedParamsMacroControlSlider(Rect(8, 25, 48, 4)));
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::UpperBound, Rect(195, 0, 58, 64)));
+      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::UpperBound, Rect(195, 1, 58, 64)));
       break;
 
     case Mode::CarouselParameterValue:
@@ -328,7 +328,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(60, 27, 13, 1)));
       m_modeOverlay->addControl(new SelectedParamsMacroControlSlider(Rect(8, 25, 48, 4)));
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::ParameterValue, Rect(195, 0, 58, 64)));
+      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::ParameterValue, Rect(195, 1, 58, 64)));
 
       break;
 
@@ -340,7 +340,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(60, 27, 13, 1)));
       m_modeOverlay->addControl(new SelectedParamsMacroControlSlider(Rect(8, 25, 48, 4)));
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::LowerBound, Rect(195, 0, 58, 64)));
+      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::LowerBound, Rect(195, 1, 58, 64)));
       break;
   }
 
