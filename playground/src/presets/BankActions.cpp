@@ -1114,7 +1114,7 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
 
   UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();
-  PresetManager::tBankPtr newBank = m_presetManager.addBank(transaction, x, y);
+  PresetManager::tBankPtr newBank = m_presetManager.addBank(transaction, x, y, false);
 
   XmlReader reader(stream, transaction);
   reader.read<PresetBankSerializer>(newBank, true);
@@ -1133,9 +1133,6 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   newBank->undoableSetAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
   newBank->undoableSetAttribute(transaction, "Name of Export File", "");
   newBank->undoableSetAttribute(transaction, "Date of Export File", "");
-  newBank->undoableSelect(transaction);
-
-  m_presetManager.undoableSelectBank(transaction, newBank->getUuid());
 
   return newBank;
 }

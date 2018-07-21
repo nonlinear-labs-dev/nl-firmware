@@ -238,7 +238,7 @@ void PresetBank::undoableEnsurePresetSelection(UNDO::Scope::tTransactionPtr tran
 
   if(!getPreset(selPresetUUID) && getNumPresets() > 0)
   {
-    undoableSelectPreset(transaction, getPreset(0)->getUuid());
+    undoableSetSelectedPresetUUID(transaction, getPreset(0)->getUuid());
   }
 }
 
@@ -945,4 +945,14 @@ PresetBank *PresetBank::getClusterMaster()
     return master->getClusterMaster();
 
   return this;
+}
+
+void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid) {
+  auto swapData = UNDO::createSwapData(Glib::ustring(uuid));
+
+  transaction->addSimpleCommand([=] (UNDO::Command::State) mutable
+                                {
+                                    swapData->swapWith(m_selectedPresetUUID);
+                                    onChange();
+                                });
 }

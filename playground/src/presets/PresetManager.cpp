@@ -311,7 +311,12 @@ PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr tran
 
 PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y)
 {
-  auto newBank = addBank(transaction, true);
+  return addBank(transaction, x, y, true);
+}
+
+PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y, bool autoSelect)
+{
+  auto newBank = addBank(transaction, autoSelect);
   newBank->undoableSetPosition(transaction, x, y);
   return newBank;
 }
