@@ -345,15 +345,15 @@ public class ServerProxy {
 			RenameDialog.awaitNewPreset(actionAnchor.getUUID());
 	}
 
-	public void deletePreset(IPreset preset) {
+	public void deletePreset(IPreset preset, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()), new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
-	public void deletePresets(String csv) {
+	public void deletePresets(String csv, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-presets");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv), new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
