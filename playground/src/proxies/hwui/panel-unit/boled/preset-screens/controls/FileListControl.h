@@ -13,7 +13,6 @@ class FileListControl : public ControlWithChildren
     Label* upperFile;
     Label* middleFile;
     Label* bottomFile;
-    Label* bottomFile2;
     std::unique_ptr<FileTools::FileList> fileList;
     int selectedItem;
 
