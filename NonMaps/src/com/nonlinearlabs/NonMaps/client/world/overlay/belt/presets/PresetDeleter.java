@@ -1,7 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -28,18 +26,20 @@ public class PresetDeleter extends GWTDialog {
     }
 
     protected PresetDeleter() {
-        HTMLPanel x = new HTMLPanel("diver");
+
+        setText("Delete Presets");
+        HTMLPanel x = new HTMLPanel("");
         x.add(new Label("Do you also want to delete the Bank?"));
         x.add(m_no =new Button("No"));
+        m_no.setFocus(true);
         x.add(m_yes = new Button("Yes"));
         x.add(m_cancel = new Button("Cancel"));
         add(x);
 
-
-
         m_no.addClickHandler(event -> delete(false));
         m_yes.addClickHandler(event -> delete(true));
         m_cancel.addClickHandler(event -> cancel());
+        setPopupPosition(getLastPopupPosLeft() - 150, getLastPopupPosTop() - 100);
         show();
     }
 
@@ -72,12 +72,12 @@ public class PresetDeleter extends GWTDialog {
 
     @Override
     protected int getLastPopupPosTop() {
-        return 0;
+        return NonMaps.get().getCanvas().getCanvasElement().getHeight() / 2;
     }
 
     @Override
     protected int getLastPopupPosLeft() {
-        return 0;
+        return NonMaps.get().getCanvas().getCanvasElement().getWidth() / 2;
     }
 
     @Override
