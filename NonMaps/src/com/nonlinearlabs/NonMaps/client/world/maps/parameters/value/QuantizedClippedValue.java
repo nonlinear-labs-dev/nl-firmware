@@ -96,7 +96,7 @@ public class QuantizedClippedValue extends ClippedValue {
 		this.fineDenominator = (int) fineDenominator;
 	}
 
-	private double getQuantizedClippedValue(boolean fine) {
+	public double getQuantizedClippedValue(boolean fine) {
 		return getQuantizedValue(getClippedValue(), fine);
 	}
 
