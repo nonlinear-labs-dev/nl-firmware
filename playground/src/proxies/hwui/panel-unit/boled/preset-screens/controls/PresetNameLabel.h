@@ -23,5 +23,9 @@ class PresetNameLabel : public PresetLabel
     int getXOffset () const override;
     int getRightMargin() const override;
     Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const override;
+
+    ustring shortenStringOld(shared_ptr<Font> font, ustring &text) const;
+
+    ustring preserveEndShorten(shared_ptr<Font> font, const ustring &text) const;
 };
 
