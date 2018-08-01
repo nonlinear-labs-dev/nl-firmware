@@ -30,7 +30,7 @@ public class PresetContextMenu extends ContextMenu {
 				.getPresetDragDropSetting().isEnabled();
 
 		if (multipleSelectionAllowed) {
-			addChild(new ContextMenuItem(this, pm.hasMultiplePresetSelection() ? "Finish Multiple Selection" : "Start Multiple Selection") {
+			addChild(new ContextMenuItem(this, pm.hasMultiplePresetSelection() ? "Disable Multiple Selection" : "Enable Multiple Selection") {
 				@Override
 				public Control click(Position eventPoint) {
 					if (pm.hasMultiplePresetSelection())
