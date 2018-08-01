@@ -28,7 +28,7 @@ void LockedIndicator::onParameterSelected(Parameter * newOne)
 void LockedIndicator::onParameterGroupChanged()
 {
   auto group = Application::get().getPresetManager()->getEditBuffer()->getSelected()->getParentGroup();
-  setText(group->areAllParametersLocked() ? "L" : "");
+  setText(group->areAllParametersLocked() ? "\ue20a" : "");
 }
 
 void LockedIndicator::setFontColor(FrameBuffer &fb) const
