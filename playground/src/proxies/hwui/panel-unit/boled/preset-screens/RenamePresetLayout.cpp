@@ -18,6 +18,7 @@ RenamePresetLayout::RenamePresetLayout (tCommitCB commitCB, tCancelCB cancelCB) 
     const auto &uuid = bank->getSelectedPreset ();
     m_currentPreset = bank->getPreset (uuid);
   }
+
 }
 
 void RenamePresetLayout::commit (const Glib::ustring &newName)
@@ -35,7 +36,7 @@ void RenamePresetLayout::cancel ()
 Glib::ustring RenamePresetLayout::getInitialText () const
 {
   if (m_currentPreset)
-    return m_currentPreset->getName ();
+    return m_currentPreset->getName();
 
   return "";
 }

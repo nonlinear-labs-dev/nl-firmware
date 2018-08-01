@@ -89,7 +89,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 
 void AppendOverwriteInsertButtonMenu::append(shared_ptr<PresetBank> bank, bool modified)
 {
-  appendPreset(bank, modified);
+  appendPreset(std::move(bank), modified);
 
   if(modified)
     pushRenameScreen();
@@ -123,6 +123,7 @@ void AppendOverwriteInsertButtonMenu::overwrite(shared_ptr<PresetBank> bank, sha
   }
   else if(modified)
   {
+    pm->getSelectedPreset()->guessName(transaction);
     pushRenameScreen();
   }
   else

@@ -191,7 +191,6 @@ BankActions::BankActions(PresetManager &presetManager) :
       else
       {
         auto tgtPreset = m_presetManager.findPreset (presetToOverwrite);
-
         if (srcPreset != tgtPreset)
         {
           UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0' with '%1'",
@@ -320,6 +319,42 @@ BankActions::BankActions(PresetManager &presetManager) :
   addAction("overwrite-preset-with-editbuffer",
       [&] (shared_ptr<NetworkRequest> request)
       {
+        /*
+         * Glib::ustring presetToOverwrite = request->get ("presetToOverwrite");
+    Glib::ustring overwriteWith = request->get ("overwriteWith");
+
+    if(auto srcPreset = overwriteWith.empty() ? m_presetManager.getEditBuffer() : m_presetManager.findPreset (overwriteWith))
+    {
+      if(presetToOverwrite.empty())
+      {
+        UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset");
+        auto transaction = scope->getTransaction();
+
+        if(auto p = presetManager.getSelectedPreset())
+        {
+          p->getBank()->undoableOverwritePreset(transaction, p.get(), srcPreset.get());
+        }
+        else if(auto bank = presetManager.getSelectedBank())
+        {
+          bank->undoableInsertPreset(transaction, 0);
+          bank->undoableOverwritePreset(transaction, 0, srcPreset);
+        }
+      }
+      else
+      {
+        auto tgtPreset = m_presetManager.findPreset (presetToOverwrite);
+
+        if (srcPreset != tgtPreset)
+        {
+          UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0' with '%1'",
+              tgtPreset->getName(), srcPreset->getName());
+          tgtPreset->getBank()->undoableOverwritePreset(scope->getTransaction(), tgtPreset.get(), srcPreset.get());
+          tgtPreset->undoableSelect (scope->getTransaction());
+        }
+      }
+    }
+         */
+
         Glib::ustring presetToOverwrite = request->get ("presetToOverwrite");
 
         if (tBankPtr tgtBank = m_presetManager.findBankWithPreset (presetToOverwrite))
