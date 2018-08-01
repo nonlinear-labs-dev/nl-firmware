@@ -24,6 +24,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 
 PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode) :
     super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()),
@@ -90,6 +91,7 @@ void PresetManagerLayout::setupBankEdit()
 {
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
+  addControl(new UndoIndicator(Rect(25, 15, 5, 3)));
   m_menu = addControl(new BankEditButtonMenu(Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   m_presets->setBankFocus();
@@ -99,6 +101,7 @@ void PresetManagerLayout::setupBankSelect()
 {
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
+  addControl(new UndoIndicator(Rect(25, 15, 5, 3)));
   m_autoLoad = addControl(new Button("Direct Load", BUTTON_D));
   addControl(new AnyParameterLockedIndicator(Rect(8, 26, 48, 12)));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
@@ -111,6 +114,7 @@ void PresetManagerLayout::setupBankStore()
 {
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
+  addControl(new UndoIndicator(Rect(25, 15, 5, 3)));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true));
   m_presets->setBankFocus();
@@ -142,6 +146,7 @@ void PresetManagerLayout::setupPresetEdit()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
+  addControl(new UndoIndicator(Rect(25, 15, 5, 3)));
 
   if(selectedBank && !selectedBank->getPresets().empty())
   {
@@ -160,6 +165,7 @@ void PresetManagerLayout::setupPresetSelect()
   m_autoLoad = addControl(new Button("Direct Load", BUTTON_D));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   addControl(new AnyParameterLockedIndicator(Rect(8, 26, 48, 12)));
+  addControl(new UndoIndicator(Rect(25, 15, 5, 3)));
   Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->onChange(
       sigc::mem_fun(this, &PresetManagerLayout::updateAutoLoadButton));
 }
@@ -168,6 +174,7 @@ void PresetManagerLayout::setupPresetStore()
 {
   m_bankAndPresetNumberLabel = addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
+  addControl(new UndoIndicator(Rect(25, 15, 5, 3)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
 }
