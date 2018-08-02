@@ -551,7 +551,7 @@ PresetManager::tPresetPtr PresetManager::findPreset(const Glib::ustring &presetU
     if(auto p = bank->getPreset(presetUUID))
       return p;
 
-  return NULL;
+  return nullptr;
 }
 
 PresetManager::tBankPtr PresetManager::getSelectedBank() const
@@ -587,6 +587,17 @@ PresetManager::tBankPtr PresetManager::findBank(const Glib::ustring &uuid) const
 bool PresetManager::isLoading() const
 {
   return m_loading.isLocked();
+}
+
+PresetManager::tPresetPtr PresetManager::getLoadedPreset() {
+  auto eb = getEditBuffer();
+  for(auto b: m_banks) {
+    for(auto p: b->getPresets()) {
+      if(eb->getUUIDOfLastLoadedPreset() == p->getUuid())
+        return p;
+    }
+  }
+  return nullptr;
 }
 
 void PresetManager::load()
@@ -625,6 +636,7 @@ void PresetManager::load()
     hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
     onChange();
     m_lastSavedMetdaDataUpdateID = getUpdateIDOfLastChange();
+    m_lastLoadID = getUpdateIDOfLastChange();
   }
 }
 
@@ -907,6 +919,7 @@ void PresetManager::undoableStoreInitSound(UNDO::Scope::tTransactionPtr transact
 void PresetManager::undoableLoadInitSound(UNDO::Scope::tTransactionPtr transaction)
 {
   m_editBuffer->copyFrom(transaction, m_initSound.get(), true);
+  m_lastLoadID = transaction->getUpdateIDOfLastChange();
 }
 
 void PresetManager::undoableResetInitSound(UNDO::Scope::tTransactionPtr transaction)
@@ -1007,4 +1020,12 @@ Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset
   }
 
   return out;
+}
+
+PresetManager::tUpdateID PresetManager::getUpdateIDOfLastLoad() const {
+  return m_lastLoadID;
+}
+
+void PresetManager::onPresetLoaded() {
+  m_lastLoadID = getUpdateIDOfLastChange();
 }

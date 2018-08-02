@@ -1,4 +1,7 @@
 #include "ParameterLayout.h"
+#include "ParameterRecallLayout.h"
+#include "StaticKnubbelSlider.h"
+#include "StaticBarSlider.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -9,6 +12,19 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/controls/Button.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
+
+Parameter* getOriginalParameter(Parameter* currentParam) {
+  auto pm = Application::get().getPresetManager();
+  auto uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
+  if(auto originalPreset = pm->findPreset(uuid)) {
+    if(auto originalParameter = originalPreset->getParameterByID(currentParam->getID())) {
+      return originalParameter;
+    }
+  }
+  return nullptr;
+}
 
 ParameterLayout2::ParameterLayout2 () :
     super (Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -30,6 +46,13 @@ Parameter * ParameterLayout2::getCurrentEditParameter () const
 
 bool ParameterLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
 {
+  if(i == BUTTON_SHIFT) {
+    if(down) {
+      handlePresetValueRecall();
+    }
+    return true;
+  }
+
   if (down)
   {
     switch (i)
@@ -71,6 +94,20 @@ bool ParameterLayout2::onRotary (int inc, ButtonModifiers modifiers)
   }
 
   return super::onRotary (inc, modifiers);
+}
+
+void ParameterLayout2::handlePresetValueRecall() {
+  if(isCurrentParamDiffFromLoaded()) {
+    getOLEDProxy().setOverlay(new ParameterRecallLayout2());
+  }
+}
+
+bool ParameterLayout2::isCurrentParamDiffFromLoaded() const {
+  if(auto currentParam = getCurrentEditParameter()) {
+    if(auto originPreset = Application::get().getPresetManager()->getLoadedPreset())
+      return currentParam->getControlPositionValue() != originPreset->getParameterByID(currentParam->getID())->getControlPositionValue();
+  }
+  return false;
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2 () :
@@ -187,3 +224,75 @@ bool ParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers
 
   return super::onButton (i, down, modifiers);
 }
+
+ParameterRecallLayout2::ParameterRecallLayout2() : super() {
+  addControl(new Button("Recall", BUTTON_A));
+
+  if (auto p = getCurrentParameter ())
+  {
+    if(auto originalParam = getOriginalParameter(getCurrentParameter())) {
+      if (p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
+        addControl (new StaticKnubbelSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+
+      else
+        addControl (new StaticBarSlider (originalParam ,Rect (BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+
+      addControl (new Label (getOriginalParameter(getCurrentParameter())->getDisplayString(), Rect (90, 33, 76, 12)));
+    }
+
+    highlight<StaticKnubbelSlider>();
+    highlight<StaticBarSlider>();
+    highlight<Label>();
+    findControlOfType<Button>()->setHighlight(false);
+  }
+
+}
+
+void ParameterRecallLayout2::init() {
+  highlight<StaticKnubbelSlider>();
+  highlight<StaticBarSlider>();
+  highlight<Label>();
+  setAllDirty();
+}
+
+bool ParameterRecallLayout2::onButton (int i, bool down, ButtonModifiers modifiers) {
+  auto up = !down;
+  if(down) {
+    if(i == BUTTON_A) {
+      doRecall();
+      return true;
+    } else {
+      getOLEDProxy().resetOverlay();
+    }
+  }
+  else if(up) {
+    if(i == BUTTON_SHIFT) {
+      getOLEDProxy().resetOverlay();
+      return true;
+    }
+  }
+  return super::onButton(i, down, modifiers);
+}
+
+bool ParameterRecallLayout2::onRotary (int inc, ButtonModifiers modifiers) {
+  getOLEDProxy().resetOverlay();
+  return true;
+}
+
+
+void ParameterRecallLayout2::doRecall() {
+  auto& scope = Application::get().getPresetManager()->getUndoScope();
+  auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getCurrentParameter()->getLongName());
+  auto transaction = transactionScope->getTransaction();
+  if(auto curr = getCurrentParameter()) {
+    if(auto original = getOriginalParameter(curr)) {
+      curr->setCPFromHwui(transaction, original->getControlPositionValue());
+      getOLEDProxy().resetOverlay();
+    }
+  }
+}
+
+ButtonMenu *ParameterRecallLayout2::createMenu (const Rect &rect) {
+  return nullptr;
+}
+

@@ -34,6 +34,8 @@ class Preset : public ParameterGroupSet, public AttributesOwner
     void undoableSetUuid (UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
     void undoableSetType (UNDO::Scope::tTransactionPtr transaction, PresetType newtype);
 
+    Parameter* getParameterByID(gint32 ID) const;
+
     void setName (const ustring &name);
     ustring getName () const;
 

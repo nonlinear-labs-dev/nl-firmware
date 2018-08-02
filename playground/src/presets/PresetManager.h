@@ -76,6 +76,7 @@ class PresetManager : public ContentSection
 
     void load ();
     bool isLoading () const;
+    tPresetPtr getLoadedPreset();
 
     tBankPtr findBankWithPreset (const Glib::ustring &presetUUID);
     tPresetPtr findPreset (const Glib::ustring &presetUUID);
@@ -102,7 +103,8 @@ class PresetManager : public ContentSection
     void sanitizeBankClusterRelations(UNDO::Scope::tTransactionPtr transaction);
 
     Glib::ustring getDiffString(tPresetPtr preset1, tPresetPtr preset2);
-
+    tUpdateID getUpdateIDOfLastLoad() const;
+    void onPresetLoaded();
   protected:
     void onTransactionAdded ();
     virtual tUpdateID onChange (uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
@@ -173,6 +175,7 @@ class PresetManager : public ContentSection
     Expiration m_saveJob;
     tUpdateID m_lastSavedMetdaDataUpdateID = 0;
     tUpdateID m_lastSavedInitSoundUpdateID = 0;
+    tUpdateID m_lastLoadID = 0;
 
     Throttler m_autoLoadThrottler;
     RecursionGuard m_loading;

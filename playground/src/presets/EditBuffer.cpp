@@ -333,6 +333,7 @@ void EditBuffer::undoableLoad(UNDO::Scope::tTransactionPtr transaction, shared_p
 
   lpc->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, preset->getHash());
+  getParent()->onPresetLoaded();
 }
 
 void EditBuffer::copyFrom(UNDO::Scope::tTransactionPtr transaction, Preset *other, bool ignoreUUIDs)
