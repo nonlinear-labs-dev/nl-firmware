@@ -25,12 +25,36 @@ public class Belt extends OverlayLayout {
 	private BeltSoundLayout soundLayout;
 	private Animator animator;
 
+	public enum BeltTab {
+		Parameter, Sound, Preset
+	}
+
 	public Belt(Overlay parent, NonMaps nonMaps) {
 		super(parent);
 		addChild(soundLayout = new BeltSoundLayout(this));
 		addChild(parameterLayout = new BeltParameterLayout(this));
 		addChild(presetLayout = new BeltPresetLayout(this));
 		setParameterView(false);
+	}
+
+	public void openTab(BeltTab tab) {
+		switch(tab) {
+			case Parameter:
+				parameterLayout.fadeIn();
+				presetLayout.fadeOut();
+				soundLayout.fadeOut();
+				break;
+			case Sound:
+				soundLayout.fadeIn();
+				parameterLayout.fadeOut();
+				presetLayout.fadeOut();
+				break;
+			case Preset:
+				soundLayout.fadeOut();
+				parameterLayout.fadeOut();
+				presetLayout.fadeIn();
+				break;
+		}
 	}
 
 	public Parameter getSelectedParameter() {
