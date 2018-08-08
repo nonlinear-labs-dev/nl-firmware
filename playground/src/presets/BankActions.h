@@ -30,5 +30,7 @@ class BankActions : public RPCActionManager
     Glib::ustring guessNameBasedOnEditBuffer() const;
 
     PresetManager &m_presetManager;
+
+    void insertBankInCluster(tBankPtr bankToInsert, tBankPtr bankAtInsert, const ustring directionSeenFromBankInCluster);
 };
 
