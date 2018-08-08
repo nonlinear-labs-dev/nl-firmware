@@ -17,7 +17,7 @@ private:
     static BankVector concatVectorsAccordingToRule(BankVector clusters, const BankVector &freeBanks);
     static BankVector getClusterVectorsFromClusterMasters(BankVector clusterMasters);
     static bool compareByXPosition(const tPresetBankPtr &lhs, const tPresetBankPtr &rhs);
-    static bool isValidMasterBank(const PresetManager::tBankPtr &bank, const tPresetBankPtr &master);
-    static bool doesNotContain(BankVector &clusterMasters, const tPresetBankPtr &master);
+    static bool isValidMasterBank(PresetBank* bank, PresetBank* master);
+    static bool doesNotContain(BankVector &clusterMasters, tPresetBankPtr master);
     static void reassignOrderNumbers(const UNDO::TransactionCreationScope::tTransactionPtr &transaction, BankVector &newBankOrder);
 };

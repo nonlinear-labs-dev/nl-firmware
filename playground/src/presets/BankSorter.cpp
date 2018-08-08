@@ -35,9 +35,9 @@ BankSorter::BankVector BankSorter::getClusterMastersSortedByX() {
   for(auto bank: getPM()->getBanksIf([](auto bank){return bank->isInCluster();}))
   {
     if(auto master = bank->getClusterMaster()) {
-      if(isValidMasterBank(bank, master)) {
-        if(doesNotContain(clusterMasters, master))  {
-          clusterMasters.push_back(master);
+      if(isValidMasterBank(bank.get(), master)) {
+        if(doesNotContain(clusterMasters, master->shared_from_this()))  {
+          clusterMasters.push_back(master->shared_from_this());
         }
       }
     }
@@ -60,7 +60,7 @@ BankSorter::BankVector BankSorter::getFreeBanksSortedByX() {
   return banks;
 }
 
-BankSorter::BankVector BankSorter::getClusterVectorsFromClusterMasters(vector<tPresetBankPtr> clusterMasters) {
+BankSorter::BankVector BankSorter::getClusterVectorsFromClusterMasters(BankSorter::BankVector clusterMasters) {
   BankVector ret;
   for(auto clusterMaster: clusterMasters) {
     for(auto bank: clusterMaster->getClusterAsSortedVector()) {
@@ -71,11 +71,11 @@ BankSorter::BankVector BankSorter::getClusterVectorsFromClusterMasters(vector<tP
 }
 
 bool BankSorter::doesNotContain(BankVector &clusterMasters,
-                                const PresetBank::tPresetBankPtr &master) {
+                                BankSorter::tPresetBankPtr master) {
   return find(clusterMasters.begin(), clusterMasters.end(), master) == clusterMasters.end();
 }
 
-bool BankSorter::isValidMasterBank(const PresetManager::tBankPtr &bank, const PresetBank::tPresetBankPtr &master) {
+bool BankSorter::isValidMasterBank(PresetBank* bank, PresetBank* master) {
   return master != bank;
 }
 
