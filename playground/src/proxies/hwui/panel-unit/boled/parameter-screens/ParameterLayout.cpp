@@ -1,5 +1,4 @@
 #include "ParameterLayout.h"
-#include "ParameterRecallLayout.h"
 #include "StaticKnubbelSlider.h"
 #include "StaticBarSlider.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
@@ -227,6 +226,9 @@ bool ParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers
 
 ParameterRecallLayout2::ParameterRecallLayout2() : super() {
   addControl(new Button("Recall", BUTTON_A));
+  addControl(new Button("", BUTTON_B));
+  addControl(new Button("", BUTTON_C));
+  addControl(new Button("", BUTTON_D));
 
   if (auto p = getCurrentParameter ())
   {
@@ -239,11 +241,6 @@ ParameterRecallLayout2::ParameterRecallLayout2() : super() {
 
       addControl (new Label (getOriginalParameter(getCurrentParameter())->getDisplayString(), Rect (90, 33, 76, 12)));
     }
-
-    highlight<StaticKnubbelSlider>();
-    highlight<StaticBarSlider>();
-    highlight<Label>();
-    findControlOfType<Button>()->setHighlight(false);
   }
 
 }
@@ -252,7 +249,7 @@ void ParameterRecallLayout2::init() {
   highlight<StaticKnubbelSlider>();
   highlight<StaticBarSlider>();
   highlight<Label>();
-  setAllDirty();
+  lowlight<Button>();
 }
 
 bool ParameterRecallLayout2::onButton (int i, bool down, ButtonModifiers modifiers) {

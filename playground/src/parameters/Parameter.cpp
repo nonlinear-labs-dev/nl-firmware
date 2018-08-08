@@ -401,6 +401,10 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
     case 155:
     case 113:
     case 136:
+    case 243:
+    case 246:
+    case 244:
+    case 245:
       return VisualizationStyle::Dot;
   }
   return VisualizationStyle::Bar;
