@@ -556,7 +556,7 @@ PresetManager::tPresetPtr PresetManager::findPreset(const Glib::ustring &presetU
     if(auto p = bank->getPreset(presetUUID))
       return p;
 
-  return NULL;
+  return nullptr;
 }
 
 PresetManager::tBankPtr PresetManager::getSelectedBank() const
@@ -592,6 +592,10 @@ PresetManager::tBankPtr PresetManager::findBank(const Glib::ustring &uuid) const
 bool PresetManager::isLoading() const
 {
   return m_loading.isLocked();
+}
+
+PresetManager::tPresetPtr PresetManager::getLoadedPreset() {
+    return findPreset(m_editBuffer->getUUIDOfLastLoadedPreset());
 }
 
 void PresetManager::load()

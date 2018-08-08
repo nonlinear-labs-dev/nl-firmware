@@ -112,6 +112,10 @@ class PresetBank : public UpdateDocumentContributor,
     bool resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction);
 
     PresetBank *getClusterMaster();
+    PresetBank *getMasterTop();
+    PresetBank *getMasterLeft();
+    PresetBank *getSlaveRight();
+    PresetBank *getSlaveBottom();
 
     virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 

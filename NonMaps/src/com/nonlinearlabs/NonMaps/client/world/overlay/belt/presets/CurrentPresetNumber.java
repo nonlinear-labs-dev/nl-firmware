@@ -13,14 +13,14 @@ public class CurrentPresetNumber extends Label {
 	public CurrentPresetNumber(OverlayLayout parent) {
 		super(parent);
 		super.setFontColor(new RGB(120, 120, 120));
-		super.setFontHeightInMM(4.5);
+		super.setFontHeightInMM(5);
 	}
 
 	@Override
 	public String getDrawText(Context2d ctx) {
 		String text = NonMaps.theMaps.getNonLinearWorld().getPresetManager().getLoadedPresetNumberString();
 		if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isAnyParameterLocked())
-			text += "\t L";
+			text += "\t \ue20a";
 
 		return text;
 	}
@@ -39,20 +39,15 @@ public class CurrentPresetNumber extends Label {
 	}
 
 	@Override
+	public RGB getColorFont() {
+		return new RGB(255,255,255);
+	}
+
+	@Override
 	protected RGB getColorFontForSplit(int i) {
 		if (i == 0)
 			return getLineColor();
 
-		return new RGB(0, 0, 0);
-	}
-
-	@Override
-	public void drawSplit(int idx, Context2d ctx, String split, double x, double y) {
-		if (idx == 1) {
-			Rect r = new Rect(x + Millimeter.toPixels(1), getPixRect().getCenterPoint().getY() + getVerticalFontDisplacement()
-					- fontHeightInPx / 2, Millimeter.toPixels(3), fontHeightInPx);
-			r.fill(ctx, new RGB(255, 255, 255));
-		}
-		super.drawSplit(idx, ctx, split, x, y);
+		return new RGB(250,250,250);
 	}
 }

@@ -956,3 +956,35 @@ void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr tran
                                     onChange();
                                 });
 }
+
+PresetBank *PresetBank::getMasterTop() {
+    if(getAttached().direction == AttachmentDirection::top) {
+        return getParent()->findBank(getAttached().uuid).get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getMasterLeft() {
+    if(getAttached().direction == AttachmentDirection::left) {
+        return getParent()->findBank(getAttached().uuid).get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getSlaveRight() {
+    for(auto bank: getParent()->getBanks()) {
+        if(auto masterLeft = bank->getMasterLeft())
+            if(masterLeft == this)
+                return bank.get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getSlaveBottom() {
+    for(auto bank: getParent()->getBanks()) {
+        if(auto masterLeft = bank->getMasterTop())
+            if(masterLeft == this)
+                return bank.get();
+    }
+    return nullptr;
+}
