@@ -311,7 +311,12 @@ PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr tran
 
 PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y)
 {
-  auto newBank = addBank(transaction, true);
+  return addBank(transaction, x, y, true);
+}
+
+PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y, bool autoSelect)
+{
+  auto newBank = addBank(transaction, autoSelect);
   newBank->undoableSetPosition(transaction, x, y);
   return newBank;
 }
@@ -551,7 +556,7 @@ PresetManager::tPresetPtr PresetManager::findPreset(const Glib::ustring &presetU
     if(auto p = bank->getPreset(presetUUID))
       return p;
 
-  return NULL;
+  return nullptr;
 }
 
 PresetManager::tBankPtr PresetManager::getSelectedBank() const
@@ -587,6 +592,10 @@ PresetManager::tBankPtr PresetManager::findBank(const Glib::ustring &uuid) const
 bool PresetManager::isLoading() const
 {
   return m_loading.isLocked();
+}
+
+PresetManager::tPresetPtr PresetManager::getLoadedPreset() {
+    return findPreset(m_editBuffer->getUUIDOfLastLoadedPreset());
 }
 
 void PresetManager::load()

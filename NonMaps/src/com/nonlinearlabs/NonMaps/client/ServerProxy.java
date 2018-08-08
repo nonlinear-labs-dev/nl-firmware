@@ -510,7 +510,14 @@ public class ServerProxy {
 		return n.getAttributes().getNamedItem("changed").getNodeValue().equals("1");
 	}
 
-	public interface DownloadHandler {
+    public void insertBankInCluster(Bank other, Orientation orientation, Bank parent) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-in-cluster");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-to-insert", other.getUUID()), new StaticURI.KeyValue("bank-inserted-at",
+				parent.getUUID()), new StaticURI.KeyValue("orientation", orientation.name()));
+		queueJob(uri, false);
+    }
+
+    public interface DownloadHandler {
 		void onFileDownloaded(String text);
 
 		void onError();

@@ -191,7 +191,6 @@ BankActions::BankActions(PresetManager &presetManager) :
       else
       {
         auto tgtPreset = m_presetManager.findPreset (presetToOverwrite);
-
         if (srcPreset != tgtPreset)
         {
           UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0' with '%1'",
@@ -885,6 +884,18 @@ BankActions::BankActions(PresetManager &presetManager) :
     }
   });
 
+  addAction("insert-bank-in-cluster", [&](shared_ptr<NetworkRequest> request)mutable {
+      const auto insertedUUID = request->get("bank-to-insert");
+      const auto insertedAtUUID = request->get("bank-inserted-at");
+      const auto orientation = request->get("orientation");
+
+      if(auto bankToInsert = m_presetManager.findBank(insertedUUID)) {
+          if(auto bankAtInsertPosition = m_presetManager.findBank(insertedAtUUID)) {
+              insertBankInCluster(bankToInsert, bankAtInsertPosition, orientation);
+          }
+      }
+  });
+
   addAction("dock-banks",
       [&] (shared_ptr<NetworkRequest> request) mutable
       {
@@ -1114,7 +1125,7 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
 
   UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();
-  PresetManager::tBankPtr newBank = m_presetManager.addBank(transaction, x, y);
+  PresetManager::tBankPtr newBank = m_presetManager.addBank(transaction, x, y, false);
 
   XmlReader reader(stream, transaction);
   reader.read<PresetBankSerializer>(newBank, true);
@@ -1133,9 +1144,6 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   newBank->undoableSetAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
   newBank->undoableSetAttribute(transaction, "Name of Export File", "");
   newBank->undoableSetAttribute(transaction, "Date of Export File", "");
-  newBank->undoableSelect(transaction);
-
-  m_presetManager.undoableSelectBank(transaction, newBank->getUuid());
 
   return newBank;
 }
@@ -1149,4 +1157,34 @@ Glib::ustring BankActions::guessNameBasedOnEditBuffer() const
     return m_presetManager.createPresetNameBasedOn (ebName);
 
   return ebName;
+}
+
+void BankActions::insertBankInCluster(BankActions::tBankPtr bankToInsert, BankActions::tBankPtr bankAtInsert,
+                                      const ustring directionSeenFromBankInCluster) {
+    auto scope = m_presetManager.getUndoScope().startTransaction("Insert Bank %0 into Cluster", bankToInsert->getName(true));
+    auto transaction = scope->getTransaction();
+    if(directionSeenFromBankInCluster == "North") {
+        if(auto topMaster = bankAtInsert->getMasterTop()) {
+            bankToInsert->undoableAttachBank(transaction, topMaster->getUuid(), PresetBank::AttachmentDirection::top);
+        }
+        bankAtInsert->undoableAttachBank(transaction, bankToInsert->getUuid(), PresetBank::AttachmentDirection::top);
+    }
+    else if(directionSeenFromBankInCluster == "South") {
+        if(auto bottomSlave = bankAtInsert->getSlaveBottom()) {
+            bottomSlave->undoableAttachBank(transaction, bankToInsert->getUuid(), PresetBank::AttachmentDirection::top);
+        }
+        bankToInsert->undoableAttachBank(transaction, bankAtInsert->getUuid(), PresetBank::AttachmentDirection::top);
+    }
+    else if(directionSeenFromBankInCluster == "East") {
+        if(auto rightSlave = bankAtInsert->getSlaveRight()) {
+            rightSlave->undoableAttachBank(transaction, bankToInsert->getUuid(), PresetBank::AttachmentDirection::left);
+        }
+        bankToInsert->undoableAttachBank(transaction, bankAtInsert->getUuid(), PresetBank::AttachmentDirection::left);
+    }
+    else if(directionSeenFromBankInCluster == "West") {
+        if(auto leftMaster = bankAtInsert->getMasterLeft()) {
+            bankToInsert->undoableAttachBank(transaction, leftMaster->getUuid(), PresetBank::AttachmentDirection::left);
+        }
+        bankAtInsert->undoableAttachBank(transaction, bankToInsert->getUuid(), PresetBank::AttachmentDirection::left);
+    }
 }

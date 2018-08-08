@@ -12,10 +12,11 @@ public class TextUpload {
 		void onTextUploaded(String fileName, String text);
 	}
 
-	public TextUpload(final TextUploadedHandler handler) {
+	public TextUpload(final TextUploadedHandler handler, String acceptedFiles) {
 		final FileUpload upload = new FileUpload();
 
 		upload.setName("uploadFormElement");
+		upload.getElement().setAttribute("accept", acceptedFiles);
 		upload.addChangeHandler(new ChangeHandler() {
 
 			@Override

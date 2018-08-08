@@ -75,7 +75,7 @@ void WebSocketSession::reconnect()
 void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
 {
   g_signal_connect(connection, "message", G_CALLBACK (&WebSocketSession::receiveMessage), this);
-  g_object_set(connection, "keepalive-interval", 5, nullptr);
+  //g_object_set(connection, "keepalive-interval", 5, nullptr);
   g_object_ref(connection);
 
   auto stream = soup_websocket_connection_get_io_stream(connection);
