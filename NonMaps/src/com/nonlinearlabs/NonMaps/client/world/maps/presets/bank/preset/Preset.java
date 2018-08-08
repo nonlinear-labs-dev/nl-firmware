@@ -146,10 +146,13 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (filterSate == FilterState.FILTER_MATCHES) {
 
-			colorFill = new RGB(50, 65, 110);
+			if(loaded)
+				colorFill = RGB.blue();
+			else
+				colorFill = new RGB(50, 65, 110);
 
 			if (getParent().getParent().isCurrentFilterMatch(this)) {
-				colorContour = new RGB(230, 240, 255);
+					colorContour = new RGB(230, 240, 255);
 			}
 		}
 		else if(RenameDialog.isPresetBeingRenamed(this)) {
@@ -179,7 +182,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		} else if (filterSate == FilterState.FILTER_MATCHES) {
 
 			if (getParent().getParent().isCurrentFilterMatch(this)) {
-				r.stroke(ctx, 2 * cp, new RGB(230, 240, 255));
+					r.stroke(ctx, 2 * cp, new RGB(230, 240, 255));
 			}
 		}
 	}
