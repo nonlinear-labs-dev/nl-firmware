@@ -509,8 +509,6 @@ void HWUI::testDisplays()
 FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
 {
   bool isCurrentPresetManager = (m_focusAndMode.focus == UIFocus::Banks) || (m_focusAndMode.focus == UIFocus::Presets);
-  bool isDesiredPresetManager = (in.focus == UIFocus::Banks) || (in.focus == UIFocus::Presets);
-  bool isCurrentParameter = (m_focusAndMode.focus == UIFocus::Parameters);
   bool isDesiredParameter = (in.focus == UIFocus::Parameters);
 
   bool switchFromPresetManagerToParameter = (isCurrentPresetManager && isDesiredParameter);
@@ -518,11 +516,6 @@ FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
   if(switchFromPresetManagerToParameter)
     if(m_focusAndMode.mode == UIMode::Edit)
       in.mode = UIMode::Select;
-
-  if(isDesiredPresetManager)
-    if(in.mode == UIMode::Store && Application::get().getPresetManager()->getNumBanks() == 0)
-      return
-      { in.focus, UIMode::Select};
 
   return in;
 }
