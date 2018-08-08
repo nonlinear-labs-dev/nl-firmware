@@ -42,6 +42,11 @@ public class SystemSettings {
 	public void setEditSmoothingTime(double v) {
 		Setup.get().systemSettings.editSmoothingTime.setValue(v);
 		NonMaps.theMaps.getServerProxy().setSetting("EditSmoothingTime", Double.toString(v));
-
 	}
+
+	public void setPitchBenderRaw(BooleanValues v) {
+		Setup.get().systemSettings.benderRampBypass.setValue(v);
+		NonMaps.get().getServerProxy().setBenderRampBypass(v);
+	}
+
 }

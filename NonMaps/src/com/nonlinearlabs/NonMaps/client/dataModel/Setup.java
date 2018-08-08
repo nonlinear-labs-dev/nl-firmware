@@ -121,6 +121,8 @@ public class Setup {
 		public StringDataModelEntity ssid = new StringDataModelEntity();
 		public ValueDataModelEntity transitionTime = new ValueDataModelEntity();
 		public EnumDataModelEntity<VelocityCurve> velocityCurve = createEnumDataModelEntity(VelocityCurve.class, VelocityCurve.normal);
+		public BooleanDataModelEntity benderRampBypass = new BooleanDataModelEntity();
+
 	};
 
 	public class LocalSettings {
