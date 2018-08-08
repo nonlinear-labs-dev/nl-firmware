@@ -10,6 +10,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MultiLineLabel.h>
 #include <proxies/hwui/panel-unit/PanelUnitPresetMode.h>
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
+#include <proxies/hwui/controls/Button.h>
 
 FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header) :
     DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()),
@@ -25,9 +26,11 @@ FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
 
 {
   fileCount = 0;
+  addControl(new Button("Cancel", BUTTON_A));
+  addControl(new Button("Select", BUTTON_D));
   fileList = addControl(new FileListControl());
   headerLabel = addControl(new InvertedLabel(header, Rect(0, 0, 256, 14)));
-  fileList->setPosition(Rect(0, 14, 256, 50));
+  fileList->setPosition(Rect(0, 14, 256, 36));
   positionLabel = addControl(new InvertedLabel("", Rect(200, 0, 56, 14)));
   updateLabels();
   crawler.start();
@@ -47,6 +50,7 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
   {
     switch(i)
     {
+      case BUTTON_D:
       case BUTTON_ENTER:
         try
         {
@@ -71,6 +75,9 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
       case BUTTON_INFO:
         if(fileCount > 0)
           overlayInfo();
+        return true;
+      case BUTTON_A:
+        hwui->undoableSetFocusAndMode(UIMode::Select);
         return true;
     }
   }

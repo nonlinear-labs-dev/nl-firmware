@@ -31,6 +31,7 @@ class FileDialogLayout : public DFBLayout
     int fileCount = 0;
     FileListControl* fileList = nullptr;
     Label* positionLabel = nullptr;
+
     InvertedLabel* headerLabel = nullptr;
     tCallBackFunction commitFunction;
     FileCrawlerJob crawler;
