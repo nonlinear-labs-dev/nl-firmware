@@ -33,6 +33,13 @@ class ControlOwner : public Uncopyable
           highlight(c);
     }
 
+    template<typename T> void lowlight ()
+    {
+        for (auto c : getControls())
+            if(auto cc = dynamic_pointer_cast<T>(c))
+                cc->setHighlight(false);
+    }
+
     template<typename T> shared_ptr<T> findControlOfType ()
     {
       for (auto c : getControls())

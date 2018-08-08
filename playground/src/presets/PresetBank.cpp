@@ -238,7 +238,7 @@ void PresetBank::undoableEnsurePresetSelection(UNDO::Scope::tTransactionPtr tran
 
   if(!getPreset(selPresetUUID) && getNumPresets() > 0)
   {
-    undoableSelectPreset(transaction, getPreset(0)->getUuid());
+    undoableSetSelectedPresetUUID(transaction, getPreset(0)->getUuid());
   }
 }
 
@@ -945,4 +945,46 @@ PresetBank *PresetBank::getClusterMaster()
     return master->getClusterMaster();
 
   return this;
+}
+
+void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid) {
+  auto swapData = UNDO::createSwapData(Glib::ustring(uuid));
+
+  transaction->addSimpleCommand([=] (UNDO::Command::State) mutable
+                                {
+                                    swapData->swapWith(m_selectedPresetUUID);
+                                    onChange();
+                                });
+}
+
+PresetBank *PresetBank::getMasterTop() {
+    if(getAttached().direction == AttachmentDirection::top) {
+        return getParent()->findBank(getAttached().uuid).get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getMasterLeft() {
+    if(getAttached().direction == AttachmentDirection::left) {
+        return getParent()->findBank(getAttached().uuid).get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getSlaveRight() {
+    for(auto bank: getParent()->getBanks()) {
+        if(auto masterLeft = bank->getMasterLeft())
+            if(masterLeft == this)
+                return bank.get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getSlaveBottom() {
+    for(auto bank: getParent()->getBanks()) {
+        if(auto masterLeft = bank->getMasterTop())
+            if(masterLeft == this)
+                return bank.get();
+    }
+    return nullptr;
 }

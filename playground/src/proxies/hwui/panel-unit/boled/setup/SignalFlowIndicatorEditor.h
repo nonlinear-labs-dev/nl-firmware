@@ -1,28 +1,20 @@
 #pragma once
 
-#include <proxies/hwui/panel-unit/boled/setup/SetupEditor.h>
-#include <proxies/hwui/panel-unit/boled/setup/SetupLabel.h>
+#include "MenuEditor.h"
 
 class Setting;
 
-class SignalFlowIndicatorEditor: public SetupLabel, public SetupEditor {
+class SignalFlowIndicatorEditor: public MenuEditor {
 private:
-  typedef SetupLabel super;
+    typedef MenuEditor super;
 
 public:
-  SignalFlowIndicatorEditor ();
-  virtual ~SignalFlowIndicatorEditor ();
+    SignalFlowIndicatorEditor ();
+    virtual ~SignalFlowIndicatorEditor () = default;
 
-  virtual Font::Justification getJustification () const override;
+    void incSetting (int inc) override;
+    const vector<ustring> &getDisplayStrings () const override;
+    int getSelectedIndex () const override;
 
-private:
-  bool redraw (FrameBuffer &fb) override;
-  void setBackgroundColor (FrameBuffer &fb) const override;
-  void onSettingChanged (const Setting *s);
-  bool onButton (int i, bool down, ButtonModifiers modifiers) override;
-  bool onRotary (int inc, ButtonModifiers modifiers) override;
-  void setFontColor (FrameBuffer &fb) const override;
-
-  SetupLabel *m_label = nullptr;
 };
 

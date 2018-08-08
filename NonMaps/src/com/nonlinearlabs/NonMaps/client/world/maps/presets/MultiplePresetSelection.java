@@ -3,6 +3,8 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets;
 import java.util.ArrayList;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class MultiplePresetSelection {
@@ -66,7 +68,7 @@ public class MultiplePresetSelection {
 	}
 
 	public void deletePresets() {
-		NonMaps.get().getServerProxy().deletePresets(getCSV());
+		NonMaps.get().getServerProxy().deletePresets(getCSV(), false);
 	}
 		
 	protected PresetManager getPresetManager() {
@@ -108,5 +110,26 @@ public class MultiplePresetSelection {
 				}
 			}
 		}
+	}
+
+	public boolean selectionContainsSolePresets() {
+		for(String s: getSelectedPresets()) {
+			Preset p = getPresetManager().findPreset(s);
+			if(p != null) {
+				if(allPresetsOfBankInMulSelection(p.getParent()))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean allPresetsOfBankInMulSelection(Bank b) {
+		for(MapsControl p: b.getPresetList().getChildren()) {
+			if(p instanceof Preset) {
+				if(!selectedPresets.contains(((Preset) p).getUUID()))
+					return false;
+			}
+		}
+		return true;
 	}
 }

@@ -52,7 +52,7 @@ void HWUI::deInit()
 void HWUI::onButtonMessage(WebSocketSession::tMessage msg)
 {
   gsize numBytes = 0;
-  const char *buffer = (const char *) msg->get_data(numBytes);
+  auto buffer = (const char *) msg->get_data(numBytes);
 
   if(numBytes > 0)
     onButtonPressed(buffer[0] & 0x7F, buffer[0] & 0x80);

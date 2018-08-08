@@ -594,7 +594,7 @@ public class PresetManager extends MapsLayout {
 
 	private void deletePreset(Preset p) {
 		ServerProxy sp = NonMaps.get().getServerProxy();
-		sp.deletePreset(p);
+		sp.deletePreset(p, false);
 	}
 
 	private void deleteBank(Bank b) {
