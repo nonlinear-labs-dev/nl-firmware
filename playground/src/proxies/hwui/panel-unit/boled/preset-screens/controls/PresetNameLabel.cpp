@@ -40,6 +40,10 @@ Font::Justification PresetNameLabel::getJustification () const
 
 Glib::ustring PresetNameLabel::shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const
 {
+  return preserveEndShorten(font, text);
+}
+
+Glib::ustring PresetNameLabel::shortenStringOld(shared_ptr<Font> font, Glib::ustring& text) const {
   auto width = getPosition().getWidth() - getXOffset() - getRightMargin();
   auto c = text;
 
@@ -49,6 +53,54 @@ Glib::ustring PresetNameLabel::shortenStringIfNeccessary (shared_ptr<Font> font,
   }
 
   return c;
+}
+
+Glib::ustring PresetNameLabel::preserveEndShorten(shared_ptr<Font> font, const Glib::ustring &text) const {
+  auto maxWidth = getPosition().getWidth() - getXOffset() - getRightMargin();
+  auto c = text;
+
+  if(maxWidth == 0)
+    return "";
+
+  auto roughTwoThirds = (text.length() / 3) * 2;
+  if(auto pos = text.find_last_of(' ')) {
+    if(pos < text.length() && pos >= roughTwoThirds) {
+      auto partAfterSpace = c.substr(pos + 1, c.length() - 1);
+      Glib::ustring front = "";
+      for(int i = 0;
+          (font->getStringWidth(to_string(front + partAfterSpace + "...")) < maxWidth);
+          i++)
+      {
+        front += text[i];
+      }
+      return front + ".." + partAfterSpace;
+    }
+  }
+  return shortenStringOld(font, c);
+
+  /*
+   * if(max == 0)
+			return "";
+		if((min + 1) == max)
+			return text.substring(0, min) + "..";
+
+		int roughTwoThirds = (text.length() / 3) * 2;
+
+		int lastSpace = text.lastIndexOf(" ");
+		if(lastSpace >= roughTwoThirds) {
+			String partAfterSpace = text.substring(lastSpace + 1);
+			String front = "";
+			for(int i = 0;
+				i < max - 2 - partAfterSpace.length() && ctx.measureText(front + partAfterSpace + "---").getWidth() < maxWidth;
+				i++)
+			{
+				front += text.charAt(i);
+			}
+			return front + ".." + partAfterSpace;
+		} else {
+			return binarySearchLength(text, min, max, ctx, maxWidth);
+		}
+   */
 }
 
 int PresetNameLabel::getXOffset () const
