@@ -214,6 +214,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control click(Position point) {
+		return this;
+	}
+
+	private Control clickBehaviour() {
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -272,7 +276,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		getParent().getParent().pushBankOntoTop(getParent());
-		return this;
+		return clickBehaviour();
 	}
 
 	@Override

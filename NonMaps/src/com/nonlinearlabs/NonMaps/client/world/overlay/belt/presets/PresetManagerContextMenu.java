@@ -47,13 +47,10 @@ public class PresetManagerContextMenu extends ContextMenu {
 		addChild(new ContextMenuItem(this, "Import Bank from File...") {
 			@Override
 			public Control click(final Position eventPoint) {
-				new TextUpload(new TextUploadedHandler() {
-					@Override
-					public void onTextUploaded(String fileName, String text) {
-						NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
-						NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
-					}
-				});
+				new TextUpload((fileName, text) -> {
+					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+					NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
+				}, ".xml");
 				return super.click(eventPoint);
 			}
 		});
@@ -78,6 +75,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 				}
 				final FileUpload upload = new FileUpload();
 				upload.setName("uploadFormElement");
+				upload.getElement().setAttribute("accept", ".xml.tar.gz");
 				upload.addChangeHandler(new ChangeHandler() {
 
 					@Override

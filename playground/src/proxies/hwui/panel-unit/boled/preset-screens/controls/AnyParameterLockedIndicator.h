@@ -14,6 +14,7 @@ class AnyParameterLockedIndicator : public InvertedLabel
   public:
     AnyParameterLockedIndicator (const Rect &pos);
     virtual ~AnyParameterLockedIndicator ();
+    bool redraw(FrameBuffer &fb) override;
 
   private:
     void calcHasLocks();
