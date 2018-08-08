@@ -345,15 +345,15 @@ public class ServerProxy {
 			RenameDialog.awaitNewPreset(actionAnchor.getUUID());
 	}
 
-	public void deletePreset(IPreset preset) {
+	public void deletePreset(IPreset preset, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()), new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
-	public void deletePresets(String csv) {
+	public void deletePresets(String csv, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-presets");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv), new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
@@ -510,7 +510,14 @@ public class ServerProxy {
 		return n.getAttributes().getNamedItem("changed").getNodeValue().equals("1");
 	}
 
-	public interface DownloadHandler {
+    public void insertBankInCluster(Bank other, Orientation orientation, Bank parent) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-in-cluster");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-to-insert", other.getUUID()), new StaticURI.KeyValue("bank-inserted-at",
+				parent.getUUID()), new StaticURI.KeyValue("orientation", orientation.name()));
+		queueJob(uri, false);
+    }
+
+    public interface DownloadHandler {
 		void onFileDownloaded(String text);
 
 		void onError();

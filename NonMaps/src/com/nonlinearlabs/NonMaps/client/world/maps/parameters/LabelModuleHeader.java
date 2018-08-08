@@ -99,7 +99,7 @@ public class LabelModuleHeader extends LabelSmall {
 		super.draw(ctx, invalidationMask);
 
 		if (isLocked())
-			ctx.fillText("L", pixRect.getRight() - 16, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			ctx.fillText("\ue20a", pixRect.getRight() - ctx.measureText("\ue20a").getWidth() * 1.25, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 	}
 
 	@Override

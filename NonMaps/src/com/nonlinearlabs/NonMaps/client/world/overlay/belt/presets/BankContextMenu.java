@@ -50,7 +50,7 @@ public abstract class BankContextMenu extends ContextMenu {
 							NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
 							NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
 						}
-					});
+					}, ".xml");
 					return super.click(eventPoint);
 				}
 			});

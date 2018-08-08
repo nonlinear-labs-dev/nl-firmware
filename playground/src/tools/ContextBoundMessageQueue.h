@@ -1,6 +1,7 @@
 #pragma once
 #include <glibmm/main.h>
 #include <queue>
+#include <functional>
 
 class ContextBoundMessageQueue {
 public:

@@ -21,7 +21,13 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public class DragProxy extends OverlayControl {
 
-	class FoundControl {
+	private Position lastMousePos;
+
+    public Position getMousePosition() {
+    	return lastMousePos;
+    }
+
+    class FoundControl {
 		public FoundControl(DragProxy proxy, Control ctrl, int ranking) {
 			this.proxy = proxy;
 			this.ctrl = ctrl;
@@ -108,6 +114,7 @@ public class DragProxy extends OverlayControl {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, final Position newPoint, boolean fine) {
+		lastMousePos = newPoint;
 		doAutoScrolling(newPoint);
 
 		double xDiff = newPoint.getX() - oldPoint.getX();
