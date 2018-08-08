@@ -2,14 +2,7 @@
 #include "UndoIndicator.h"
 #include <http/UndoScope.h>
 
-UndoIndicator::UndoIndicator(const Rect &pos) : Label("\ue20b",
-                                                      [=]() {
-                                                          auto rect = pos;
-                                                          rect.setWidth(8);
-                                                          rect.setHeight(7);
-                                                          return rect;
-                                                      }())
-                                                              {
+UndoIndicator::UndoIndicator(const Rect &pos) : Label("\ue20b", Rect(pos.getLeft(), pos.getTop(), 8, 7)) {
     Application::get().getUndoScope()->onUndoScopeChanged(mem_fun(this, &UndoIndicator::setDirty));
 
 }
