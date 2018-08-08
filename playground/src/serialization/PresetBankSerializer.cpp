@@ -30,6 +30,8 @@ void PresetBankSerializer::writeTagContent (Writer &writer) const
 
 void PresetBankSerializer::readTagContent (Reader &reader) const
 {
+  SplashLayout::addStatus("Reading bank " + m_bank->getName(true));
+
   super::readTagContent (reader);
 
   reader.onTag (PresetSerializer::getTagName(), [&] (const Attributes & attr) mutable
