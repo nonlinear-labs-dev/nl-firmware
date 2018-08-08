@@ -191,7 +191,6 @@ BankActions::BankActions(PresetManager &presetManager) :
       else
       {
         auto tgtPreset = m_presetManager.findPreset (presetToOverwrite);
-
         if (srcPreset != tgtPreset)
         {
           UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Overwrite preset '%0' with '%1'",

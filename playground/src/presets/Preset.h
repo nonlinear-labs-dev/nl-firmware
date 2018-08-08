@@ -45,6 +45,7 @@ class Preset : public ParameterGroupSet, public AttributesOwner
 
     virtual void copyFrom (UNDO::Scope::tTransactionPtr transaction, Preset *other, bool ignoreUUIDs);
     void guessName (UNDO::Scope::tTransactionPtr transaction);
+    const Glib::ustring getGuessedName() const;
 
     bool matchesQuery(const SearchQuery &query) const;
 

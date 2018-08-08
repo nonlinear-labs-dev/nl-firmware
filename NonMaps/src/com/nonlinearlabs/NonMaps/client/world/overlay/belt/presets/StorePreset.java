@@ -129,7 +129,7 @@ class StorePreset extends SVGImage {
 			if (getPresetManager().isInStoreSelectMode()) {
 				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreSelectMode().getSelectedPreset());
 			} else {
-				getNonMaps().getServerProxy().overwritePreset();
+				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getSelectedPreset());
 			}
 			break;
 
