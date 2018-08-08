@@ -19,6 +19,7 @@
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
 #include <tools/TimeTools.h>
+#include <proxies/hwui/HWUI.h>
 
 BankActions::BankActions(PresetManager &presetManager) :
     RPCActionManager("/presets/banks/"),
@@ -1153,6 +1154,9 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   newBank->undoableSetAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
   newBank->undoableSetAttribute(transaction, "Name of Export File", "");
   newBank->undoableSetAttribute(transaction, "Date of Export File", "");
+
+  m_presetManager.undoableSelectBank(transaction, newBank->getUuid());
+  Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
 
   return newBank;
 }
