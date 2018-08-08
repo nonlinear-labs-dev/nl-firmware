@@ -59,6 +59,7 @@
 #include <chrono>
 #include <list>
 #include <memory>
+#include "UISoftwareVersionEditor.h"
 
 namespace NavTree
 {
@@ -361,10 +362,10 @@ namespace NavTree
       }
   };
 
-  struct UISoftwareVersion : Leaf
+  struct UISoftwareVersion : EditableLeaf
   {
       UISoftwareVersion(InnerNode *parent) :
-          Leaf(parent, "UI Software Version")
+        EditableLeaf(parent, "UI Software Version")
       {
       }
 
@@ -372,6 +373,11 @@ namespace NavTree
       {
         auto info = Application::get().getDeviceInformation()->getItem<::SoftwareVersion>().get();
         return new DeviceInfoItemView(info);
+      }
+
+      virtual Control *createEditor() override
+      {
+        return new UISoftwareVersionEditor();
       }
   };
 

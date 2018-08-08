@@ -47,9 +47,10 @@ void MenuEditor::updateOnSettingChanged ()
 
   for (auto c : getControls ())
   {
-    auto e = dynamic_pointer_cast<MenuEditorEntry> (c);
-    e->assign (entries, assignIndex, assignIndex == selectedIndex);
-    assignIndex++;
+    if(auto e = dynamic_pointer_cast<MenuEditorEntry> (c)) {
+      e->assign (entries, assignIndex, assignIndex == selectedIndex);
+      assignIndex++;
+    }
   }
 }
 
