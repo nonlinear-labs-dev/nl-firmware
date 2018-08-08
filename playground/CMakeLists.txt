@@ -114,7 +114,19 @@ string(STRIP ${COMMIT_COUNT} COMMIT_COUNT)
 string(STRIP ${HEAD_REF} HEAD_REF)
 string(STRIP ${BRANCH_NAME} BRANCH_NAME)
 
-target_compile_definitions(playground PRIVATE -DHEAD_REF=${HEAD_REF} -DCOMMIT_COUNT=${COMMIT_COUNT} -DBRANCH_NAME=${BRANCH_NAME} -DLAST_COMMIT_TIME=${PLAYGROUND_VERSION})
+set_property(
+  SOURCE src/device-info/SoftwareVersion.cpp
+  APPEND_STRING
+  PROPERTY COMPILE_FLAGS
+  "-DLAST_COMMIT_TIME=\"${PLAYGROUND_VERSION}\""
+)
+
+set_property(
+  SOURCE src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp
+  APPEND_STRING
+  PROPERTY COMPILE_FLAGS
+  "-DHEAD_REF=\"${HEAD_REF}\" -DCOMMIT_COUNT=\"${COMMIT_COUNT}\" -DBRANCH_NAME=\"${BRANCH_NAME}\" -DLAST_COMMIT_TIME=\"${PLAYGROUND_VERSION}\""
+)
 
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
