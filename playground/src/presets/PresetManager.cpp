@@ -590,14 +590,7 @@ bool PresetManager::isLoading() const
 }
 
 PresetManager::tPresetPtr PresetManager::getLoadedPreset() {
-  auto eb = getEditBuffer();
-  for(auto b: m_banks) {
-    for(auto p: b->getPresets()) {
-      if(eb->getUUIDOfLastLoadedPreset() == p->getUuid())
-        return p;
-    }
-  }
-  return nullptr;
+    return findPreset(m_editBuffer->getUUIDOfLastLoadedPreset());
 }
 
 void PresetManager::load()

@@ -104,8 +104,8 @@ void ParameterLayout2::handlePresetValueRecall() {
 
 bool ParameterLayout2::isCurrentParamDiffFromLoaded() const {
   if(auto currentParam = getCurrentEditParameter()) {
-    if(auto originPreset = Application::get().getPresetManager()->getLoadedPreset())
-      return currentParam->getControlPositionValue() != originPreset->findParameterByID(currentParam->getID())->getControlPositionValue();
+    if(auto originalParameter = getOriginalParameter(currentParam))
+      return currentParam->getControlPositionValue() != originalParameter->getControlPositionValue();
   }
   return false;
 }
@@ -257,21 +257,16 @@ void ParameterRecallLayout2::init() {
 
 bool ParameterRecallLayout2::onButton (int i, bool down, ButtonModifiers modifiers) {
   auto up = !down;
-  if(down) {
-    if(i == BUTTON_A) {
+
+  if(down && i == BUTTON_A) {
       doRecall();
       return true;
-    } else {
-      getOLEDProxy().resetOverlay();
-    }
   }
-  else if(up) {
-    if(i == BUTTON_SHIFT) {
-      getOLEDProxy().resetOverlay();
-      return true;
-    }
+  else if(up && BUTTON_SHIFT == i) {
+          getOLEDProxy().resetOverlay();
+          return true;
   }
-  return super::onButton(i, down, modifiers);
+  return false;
 }
 
 bool ParameterRecallLayout2::onRotary (int inc, ButtonModifiers modifiers) {

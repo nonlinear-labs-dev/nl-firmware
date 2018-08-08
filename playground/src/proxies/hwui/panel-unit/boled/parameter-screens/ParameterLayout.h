@@ -80,7 +80,5 @@ protected:
     bool onRotary (int inc, ButtonModifiers modifiers) override;
     ButtonMenu *createMenu (const Rect &rect);
 private:
-    ButtonMenu *m_menu = nullptr;
-    bool m_ignoreOnce = true;
     void doRecall();
 };
