@@ -76,6 +76,7 @@ class PresetManager : public ContentSection
 
     void load ();
     bool isLoading () const;
+    tPresetPtr getLoadedPreset();
 
     tBankPtr findBankWithPreset (const Glib::ustring &presetUUID);
     tPresetPtr findPreset (const Glib::ustring &presetUUID);
@@ -102,7 +103,6 @@ class PresetManager : public ContentSection
     void sanitizeBankClusterRelations(UNDO::Scope::tTransactionPtr transaction);
 
     Glib::ustring getDiffString(tPresetPtr preset1, tPresetPtr preset2);
-
   protected:
     void onTransactionAdded ();
     virtual tUpdateID onChange (uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
