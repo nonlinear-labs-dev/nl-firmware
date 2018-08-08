@@ -250,6 +250,11 @@ void Preset::guessName(UNDO::Scope::tTransactionPtr transaction)
   undoableSetName(transaction, newName);
 }
 
+const Glib::ustring Preset::getGuessedName() const
+{
+  return getBank()->getParent()->createPresetNameBasedOn(getName().empty() ? "New Preset" : getName());
+}
+
 PresetSettings &Preset::getSettings()
 {
   return m_settings;

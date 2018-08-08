@@ -17,16 +17,24 @@ public class ChildrenOwner<TChild extends Control> {
 
 	public <T extends TChild> T addChild(T child) {
 		m_children.add(child);
+		initChild(child);
 		return child;
+	}
+
+	public void initChild(Control child) {
+		if (!child.isInitialized())
+			child.init();
 	}
 
 	public <T extends TChild> T prependChild(T child) {
 		m_children.add(0, child);
+		initChild(child);
 		return child;
 	}
 
 	public <T extends TChild> T insertChild(int idx, T child) {
 		m_children.add(idx, child);
+		initChild(child);
 		return child;
 	}
 

@@ -25,13 +25,13 @@ class FileDialogLayout : public DFBLayout
     std::experimental::filesystem::directory_entry getSelectedFile();
 
  private:
-    bool redraw(FrameBuffer &fb);
     void updateLabels();
     void overlayInfo();
 
     int fileCount = 0;
     FileListControl* fileList = nullptr;
     Label* positionLabel = nullptr;
+
     InvertedLabel* headerLabel = nullptr;
     tCallBackFunction commitFunction;
     FileCrawlerJob crawler;

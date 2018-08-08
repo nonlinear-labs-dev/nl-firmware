@@ -2,6 +2,8 @@
 
 #include <proxies/hwui/panel-unit/boled/parameter-screens/UnmodulatebaleParameterLayouts.h>
 
+class Button;
+
 class ScaleParameterSelectLayout : public UnmodulateableParameterSelectLayout2
 {
     typedef UnmodulateableParameterSelectLayout2 super;
@@ -16,6 +18,7 @@ class ScaleParameterSelectLayout : public UnmodulateableParameterSelectLayout2
     bool onButton (int i, bool down, ButtonModifiers modifiers) override;
     void reset();
     void selectParameter (int inc);
+    Button* m_resetButton;
 };
 
 class ScaleParameterEditLayout : public UnmodulateableParameterEditLayout2

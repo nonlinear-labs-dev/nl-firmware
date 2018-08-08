@@ -22,17 +22,6 @@ public class MacroControlContextMenu extends ParameterContextMenu {
 			}
 		});
 
-		String infoText = "Parameter Info ...";
-
-		addChild(new ContextMenuItem(this, infoText) {
-			@Override
-			public Control click(Position eventPoint) {
-				ParameterInfoDialog.toggle();
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return super.click(eventPoint);
-			}
-		});
-
 		addChild(new ContextMenuItem(this, "Mod Reset") {
 			@Override
 			public Control click(Position eventPoint) {

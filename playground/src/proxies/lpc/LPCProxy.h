@@ -9,6 +9,7 @@
 #include <parameters/value/QuantizedValue.h>
 #include <memory>
 #include <tools/Throttler.h>
+#include <io/network/WebSocketSession.h>
 
 class Application;
 class Parameter;
@@ -39,13 +40,15 @@ enum LPCSettingIDs
   PEDAL_4_TYPE = 29,                        // ... SwitchOpening = 3
 
   AFTERTOUCH_CURVE = 30,                    // SOFT = 0, NORMAL = 1, HARD = 2
-  BENDER_CURVE = 31,                    // ZERO = 0, NARROW = 1, WIDE = 2
+  BENDER_CURVE = 31,                        // ZERO = 0, NARROW = 1, WIDE = 2
 
   PITCHBEND_ON_PRESSED_KEYS = 32,           // OFF = 0, ON = 1
 
   EDIT_SMOOTHING_TIME = 33,                 // ==> tTcdRange(0, 16000)
 
-  PRESET_GLITCH_SUPPRESSION = 34            // OFF = 0, ON = 1
+  PRESET_GLITCH_SUPPRESSION = 34,           // OFF = 0, ON = 1
+
+  BENDER_RAMP_BYPASS = 35                   // OFF = 0, ON = 1
 };
 
 class LPCProxy
@@ -70,21 +73,12 @@ class LPCProxy
     int getLPCSoftwareVersion() const;
 
   private:
+    void onWebSocketMessage(WebSocketSession::tMessage msg);
     void onMessageReceived (const MessageParser::NLMessage &msg);
-
-    void onInputStreamOpened (Glib::RefPtr<Gio::AsyncResult>& result, RefPtr<Gio::File> ioFile);
-    void onOutputStreamOpened (Glib::RefPtr<Gio::AsyncResult>& result, RefPtr<Gio::File> ioFile);
-
-    void readIO (Glib::RefPtr<Gio::InputStream> stream, size_t numBytes);
-    void onIOFileRead (Glib::RefPtr<Gio::AsyncResult>& result, Glib::RefPtr<Gio::InputStream> stream);
-    void open ();
 
     typedef shared_ptr<MessageComposer> tMessageComposerPtr;
     void queueToLPC (tMessageComposerPtr cmp);
     void writePendingData ();
-    void wroteData (Glib::RefPtr<Gio::AsyncResult>& result);
-    void installLPCPoller ();
-    void pollLPC ();
     bool sendQueue ();
 
     gint16 separateSignedBitToComplementary (uint16_t v) const;
@@ -99,23 +93,16 @@ class LPCProxy
     void onAssertionMessageReceived (const MessageParser::NLMessage &msg);
     void onNotificationMessageReceived (const MessageParser::NLMessage &msg);
     void deliverPendingLPCMessages ();
-    void onLPCDataRead (Glib::RefPtr<Gio::InputStream> stream, Glib::RefPtr<Glib::Bytes> bytes);
-
-    Glib::RefPtr<Gio::InputStream> m_inStream;
-    Glib::RefPtr<Gio::FileOutputStream> m_outStream;
 
     bool m_suppressParamChanges = false;
-    RefPtr<Gio::Cancellable> m_ioCancel;
     atomic<bool> m_queueSendingScheduled;
     shared_ptr<MessageParser> m_msgParser;
 
     list<tMessageComposerPtr> m_queueToLPC;
-    bool m_lpcPollerInstalled;
 
     int m_lastTouchedRibbon;
     Signal<void, int> m_signalRibbonTouched;
 
-    bool m_writingData = false;
     unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
     int m_lpcSoftwareVersion = 0;

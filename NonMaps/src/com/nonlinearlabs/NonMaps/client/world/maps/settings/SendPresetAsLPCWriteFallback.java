@@ -1,7 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.settings;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -39,11 +42,19 @@ class SendPresetAsLPCWriteFallback extends Setting {
 
 	SendPresetAsLPCWriteFallback(DeveloperSettings parent) {
 		super(parent, "LPC write fallback", "Off");
+
+		Setup.get().systemSettings.sendPresetAsLPCFallback.onChange(new Function<Setup.BooleanValues, Boolean>() {
+
+			@Override
+			public Boolean apply(BooleanValues t) {
+				setCurrentValue(t == BooleanValues.on);
+				return true;
+			}
+		});
 	}
 
 	private void setValue(boolean val) {
-		getNonMaps().getServerProxy().setSetting("SendPresetAsLPCWriteFallback", val ? "on" : "off");
-		setCurrentValue(val);
+		SystemSettings.get().setSendPresetAsLPCWriteFallback(val ? BooleanValues.on : BooleanValues.off);
 	}
 
 	public void setCurrentValue(boolean val) {
@@ -58,13 +69,6 @@ class SendPresetAsLPCWriteFallback extends Setting {
 	public ContextMenu createMenu(NonPosition pos) {
 		NonLinearWorld world = getWorld();
 		return world.setContextMenu(new EnabledDisabledContextMenu(world), pos);
-	}
-
-	void update(Node settingsNode) {
-		String str = ServerProxy.getChildText(settingsNode, "SendPresetAsLPCWriteFallback", "value");
-
-		if (str != null && !str.isEmpty())
-			setCurrentValue(str.toLowerCase().equals("on"));
 	}
 
 	@Override

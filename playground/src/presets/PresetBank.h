@@ -77,6 +77,7 @@ class PresetBank : public UpdateDocumentContributor,
     void undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, int pos);
     void undoableSelect(UNDO::Scope::tTransactionPtr transaction);
 
+    void undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset);
     void undoableAppendPreset(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
     void undoableDeletePreset(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &uuid);
     void undoableOverwritePreset(UNDO::Scope::tTransactionPtr transaction, size_t pos, tPresetPtr preset);
@@ -94,7 +95,7 @@ class PresetBank : public UpdateDocumentContributor,
     void copyFrom(UNDO::Scope::tTransactionPtr transaction, shared_ptr<PresetBank> other, bool ignoreUUIDs);
 
     void undoableIncPresetSelection(int inc, ButtonModifiers modifiers);
-
+    void undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
     void undoableSort(UNDO::Scope::tTransactionPtr transaction, bool asc);
 
     void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -111,6 +112,10 @@ class PresetBank : public UpdateDocumentContributor,
     bool resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction);
 
     PresetBank *getClusterMaster();
+    PresetBank *getMasterTop();
+    PresetBank *getMasterLeft();
+    PresetBank *getSlaveRight();
+    PresetBank *getSlaveBottom();
 
     virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
@@ -160,4 +165,5 @@ class PresetBank : public UpdateDocumentContributor,
     friend class PresetBankSerializer;
     friend class PresetOrderSerializer;
     friend class PresetBankMetadataSerializer;
+
 };

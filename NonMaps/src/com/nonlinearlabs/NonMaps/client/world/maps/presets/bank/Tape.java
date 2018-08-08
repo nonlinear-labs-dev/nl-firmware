@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -64,13 +65,8 @@ public class Tape extends MapsControl {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		// if (getParent().isDraggingControl())
-		// return;
-
 		super.draw(ctx, invalidationMask);
-
-		Rect r = calcTapeRect();
-		r.fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
+		calcTapeRect().fill(ctx, getParent().getParent().isAttachingTape(this) ? new RGB(173, 181, 217) : new RGB(98, 113, 183));
 	}
 
 	public Rect calcTapeRect() {

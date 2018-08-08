@@ -12,8 +12,9 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public abstract class SettingsMenu extends SettingsControl {
+public abstract class SettingsMenu extends OverlayLayout {
 
 	Label label;
 
@@ -138,6 +139,6 @@ public abstract class SettingsMenu extends SettingsControl {
 
 	protected abstract int getChoice();
 
-	protected abstract void chose(int c, boolean sendToServer);
+	protected abstract void chose(int c, boolean fire);
 
 }

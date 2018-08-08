@@ -20,13 +20,12 @@ class TwoStateLED: public LED
     void setState(LedState state);
     LedState getState();
     void init ();
+    void syncBBBB();
 
   private:
-    std::ofstream &getDeviceFile();
     void switchLED (bool onOrOff);
     void onBlinkUpdate (int blinkCount);
 
-    
     LedState m_state;
     sigc::connection m_blinkTimer;
 };

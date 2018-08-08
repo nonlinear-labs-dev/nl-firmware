@@ -80,7 +80,7 @@ public class NonLinearWorld extends MapsLayout {
 	}
 
 	public void init() {
-		viewport.init();
+		viewport.initViewport();
 	}
 
 	@Override

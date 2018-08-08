@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include <proxies/hwui/HWUIEnums.h>
+#include <map>
 
 class OLEDProxy;
 class Font;
@@ -31,6 +32,6 @@ class Oleds
     typedef pair<Glib::ustring, int> tKey;
 
     list<OLEDProxy*> m_proxies;
-    map<tKey, tFont> m_fonts;
+    std::map<tKey, tFont> m_fonts;
 };
 

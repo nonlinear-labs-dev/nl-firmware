@@ -3,6 +3,9 @@
 #include <http/ContentSection.h>
 #include <http/RPCActionManager.h>
 #include <tools/Signal.h>
+#include <libundo/undo/Scope.h>
+#include <presets/PresetBank.h>
+#include "MultiplePresetSelection.h"
 
 class Clipboard : public ContentSection
 {
@@ -19,10 +22,12 @@ class Clipboard : public ContentSection
     void cutPreset(const Glib::ustring &presetUuid);
     bool copyPreset(const Glib::ustring &presetUuid);
     void copyBank(const Glib::ustring &bankUuid);
+    void copyPresets(const Glib::ustring &csv);
 
     void pasteOnBank(const Glib::ustring &bankUuid);
     void pasteOnPreset(const Glib::ustring &presetUuid);
 
+    bool containsMultiplePresets() const;
     bool containsBank() const;
     bool containsPreset() const;
     bool hasContent() const;
@@ -34,10 +39,18 @@ class Clipboard : public ContentSection
   private:
     void pastePresetOnBank(const Glib::ustring &bankUuid);
     void pastePresetOnPreset(const Glib::ustring &presetUuid);
-    void pasteBankOnBackground(const Glib::ustring &x, const Glib::ustring &y);
     void pastePresetOnBackground(const Glib::ustring &x, const Glib::ustring &y);
-    void pasteBankOnBank(const Glib::ustring &bankUuid);
-    void pasteBankOnPreset(const Glib::ustring &presetUuid);
+
+    void pasteBankOnBank(const Glib::ustring& transactionName, const Glib::ustring &bankUuid);
+    void pasteBankOnPreset(const Glib::ustring& transactionName, const Glib::ustring &presetUuid);
+    void pasteBankOnBackground(const Glib::ustring& transactionName, const Glib::ustring &x, const Glib::ustring &y);
+    void pasteBankOnBank(const Glib::ustring& transactionName, const Glib::ustring &bankUuid, std::shared_ptr<UpdateDocumentContributor> content);
+    void pasteBankOnPreset(const Glib::ustring& transactionName, const Glib::ustring &presetUuid, std::shared_ptr<UpdateDocumentContributor> content);
+    void pasteBankOnBackground(const Glib::ustring& transactionName, const Glib::ustring &x, const Glib::ustring &y, std::shared_ptr<UpdateDocumentContributor> content);
+
+    void pasteMultiplePresetsOnBackground(const Glib::ustring& x, const Glib::ustring &y);
+    void pasteMultiplePresetsOnBank(const Glib::ustring &bankUuid);
+    void pasteMultiplePresetsOnPreset(const Glib::ustring &presetUuid);
 
     void doCut(std::shared_ptr<UNDO::Transaction> transaction);
 

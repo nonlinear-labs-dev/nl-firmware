@@ -1,8 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
+import java.util.function.Function;
+
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class BenderCurve extends Setting {
 
@@ -13,7 +15,21 @@ public class BenderCurve extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	public void init() {
+		super.init();
+
+		Setup.get().systemSettings.benderCurve.onChange(new Function<Setup.BenderCurve, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.BenderCurve t) {
+				choice = t.ordinal();
+				return true;
+			}
+		});
+	}
+
+	@Override
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override
@@ -40,11 +56,6 @@ public class BenderCurve extends Setting {
 				return getChoices()[c].replace(" ", "-").toLowerCase();
 			}
 
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				String str = ServerProxy.getChildText(settingsNode, "BenderCurve", "value");
-				fromSettingsString(str);
-			}
 		};
 	}
 }

@@ -5,6 +5,7 @@
 #include "PresetBankSerializer.h"
 #include "PresetSerializer.h"
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <tools/TimeTools.h>
 
 PresetBankSerializer::PresetBankSerializer (shared_ptr<PresetBank> bank, bool ignoreUUIDs) :
 super (bank, ignoreUUIDs)
@@ -15,8 +16,9 @@ void PresetBankSerializer::writeTagContent (Writer &writer) const
 {
   SplashLayout::addStatus("Writing bank " + m_bank->getName(true));
 
-  super::writeTagContent (writer);
+  writer.writeTextElement("bank-serialize-date", TimeTools::getAdjustedIso());
 
+  super::writeTagContent (writer);
   size_t numPresets = m_bank->getNumPresets();
 
   for (size_t i = 0; i < numPresets; i++)
@@ -28,6 +30,8 @@ void PresetBankSerializer::writeTagContent (Writer &writer) const
 
 void PresetBankSerializer::readTagContent (Reader &reader) const
 {
+  SplashLayout::addStatus("Reading bank " + m_bank->getName(true));
+
   super::readTagContent (reader);
 
   reader.onTag (PresetSerializer::getTagName(), [&] (const Attributes & attr) mutable

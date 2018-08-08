@@ -15,6 +15,7 @@ public abstract class Control {
 	private boolean forceVisibility = false;
 	private boolean visible = true;
 	private int pendingInvalidationMask = 0;
+	private boolean initialized = false;
 
 	public static int INVALIDATION_FLAG_UI_CHANGED = 1 << 0;
 	public static int INVALIDATION_FLAG_SCROLLED = 1 << 1;
@@ -26,6 +27,14 @@ public abstract class Control {
 	public Control(Control parent) {
 		super();
 		setParent(parent);
+	}
+
+	public void init() {
+		initialized = true;
+	}
+
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	public void getStateHash(Checksum crc) {

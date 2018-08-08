@@ -1,14 +1,34 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.EditParameter;
+import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class EditParameterSetting extends Setting {
+
+	private int choice = 0;
 
 	public class EditParameterSettingMenu extends SettingsMenu {
 		private EditParameterSettingMenu(Control parent) {
 			super(parent);
+		}
+
+		@Override
+		public void init() {
+			super.init();
+
+			Setup.get().localSettings.editParameter.onChange(new Function<Setup.EditParameter, Boolean>() {
+
+				@Override
+				public Boolean apply(Setup.EditParameter t) {
+					choice = t.ordinal();
+					return true;
+				}
+			});
 		}
 
 		@Override
@@ -19,12 +39,7 @@ public class EditParameterSetting extends Setting {
 
 		@Override
 		protected int getChoice() {
-			String choice = NonMaps.theMaps.getNonLinearWorld().getSettings().get("ParameterDrag", getSettingsValueString(0));
-			int ret = settingsStringToIndex(choice);
-			if (ret >= 0)
-				return ret;
-
-			return 0;
+			return choice;
 		}
 
 		public String getChoiceString() {
@@ -32,19 +47,11 @@ public class EditParameterSetting extends Setting {
 		}
 
 		@Override
-		protected void chose(int c, boolean sendToServer) {
+		protected void chose(int c, boolean fire) {
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-			if (sendToServer)
-				NonMaps.theMaps.getNonLinearWorld().getSettings().set("ParameterDrag", getSettingsValueString(c));
-		}
-
-		protected String getSettingsValueString(int c) {
-			return getChoices()[c].replace(" ", "-").toLowerCase();
-		}
-
-		@Override
-		public void update(Node settingsNode, Node deviceInfo) {
+			if (fire)
+				LocalSettings.get().setEditParameter(EditParameter.values()[c]);
 		}
 	}
 
@@ -53,7 +60,7 @@ public class EditParameterSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	protected OverlayControl createSettingsControl() {
 		return new EditParameterSettingMenu(this);
 	}
 

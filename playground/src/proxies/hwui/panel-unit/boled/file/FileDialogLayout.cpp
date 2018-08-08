@@ -10,6 +10,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MultiLineLabel.h>
 #include <proxies/hwui/panel-unit/PanelUnitPresetMode.h>
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
+#include <proxies/hwui/controls/Button.h>
 
 FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header) :
     DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()),
@@ -25,10 +26,12 @@ FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
 
 {
   fileCount = 0;
+  addControl(new Button("Cancel", BUTTON_A));
+  addControl(new Button("Select", BUTTON_D));
   fileList = addControl(new FileListControl());
-  headerLabel = addControl(new InvertedLabel(header, Rect(0, 0, 200, 14)));
-  fileList->setPosition(Rect(0, 14, 200, 50));
-  positionLabel = addControl(new Label("", Rect(200, 0, 56, 14)));
+  headerLabel = addControl(new InvertedLabel(header, Rect(0, 0, 256, 14)));
+  fileList->setPosition(Rect(0, 14, 256, 36));
+  positionLabel = addControl(new InvertedLabel("", Rect(200, 0, 56, 14)));
   updateLabels();
   crawler.start();
 }
@@ -47,6 +50,7 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
   {
     switch(i)
     {
+      case BUTTON_D:
       case BUTTON_ENTER:
         try
         {
@@ -60,9 +64,20 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
       case BUTTON_PRESET:
         hwui->undoableSetFocusAndMode( { UIFocus::Banks, UIMode::Select });
         return true;
+      case BUTTON_INC:
+        fileList->changeSelection(1);
+        updateLabels();
+        return true;
+      case BUTTON_DEC:
+        fileList->changeSelection(-1);
+        updateLabels();
+        return true;
       case BUTTON_INFO:
         if(fileCount > 0)
           overlayInfo();
+        return true;
+      case BUTTON_A:
+        hwui->undoableSetFocusAndMode(UIMode::Select);
         return true;
     }
   }
@@ -95,14 +110,5 @@ void FileDialogLayout::updateLabels()
 std::experimental::filesystem::directory_entry FileDialogLayout::getSelectedFile()
 {
   return fileList->getSelection();
-}
-
-bool FileDialogLayout::redraw(FrameBuffer &fb)
-{
-  DFBLayout::redraw(fb);
-  fb.setColor(FrameBuffer::Colors::C128);
-  Rect r(0, 0, 200, 64);
-  fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
-  return true;
 }
 

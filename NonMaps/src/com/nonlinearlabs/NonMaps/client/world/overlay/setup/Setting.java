@@ -1,22 +1,26 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public abstract class Setting extends OverlayLayout {
 
 	private SetupLabel label;
-	private SettingsControl control;
+	private OverlayControl control;
 
 	public Setting(Control parent, final String label) {
 		super(parent);
-
 		addChild(this.label = new SetupLabel(this, label));
+	}
+
+	@Override
+	public void init() {
+		super.init();
 		addChild(this.control = createSettingsControl());
 	}
 
-	protected abstract SettingsControl createSettingsControl();
+	protected abstract OverlayControl createSettingsControl();
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
@@ -26,15 +30,11 @@ public abstract class Setting extends OverlayLayout {
 		control.doLayout(label.getRelativePosition().getWidth(), 0, 4 * w / 7, lineHeight);
 	}
 
-	public void update(Node settingsNode, Node deviceInfo) {
-		control.update(settingsNode, deviceInfo);
-	}
-
 	public void setLabelText(String txt) {
 		label.setText(txt);
 	}
 
-	public SettingsControl getSettingsControl() {
+	public OverlayControl getSettingsControl() {
 		return control;
 	}
 

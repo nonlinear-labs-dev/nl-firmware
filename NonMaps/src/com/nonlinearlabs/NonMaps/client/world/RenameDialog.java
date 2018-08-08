@@ -21,6 +21,8 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
+import static com.nonlinearlabs.NonMaps.client.world.Control.INVALIDATION_FLAG_UI_CHANGED;
+
 public class RenameDialog extends DialogBox {
 
 	private static RenameDialog theDialog;
@@ -44,7 +46,7 @@ public class RenameDialog extends DialogBox {
 			@Override
 			public void onClose(CloseEvent<PopupPanel> event) {
 				theDialog = null;
-				NonMaps.get().captureFocus();
+				NonMaps.get().captureFocus(); //T
 			}
 		});
 	}
@@ -98,7 +100,15 @@ public class RenameDialog extends DialogBox {
 		});
 	}
 
-	@Override
+    public static boolean isPresetBeingRenamed(Preset preset) {
+		if(theDialog != null) {
+			Preset p = (Preset)theDialog.renameable;
+			return preset == p;
+		}
+		return false;
+    }
+
+    @Override
 	protected void onPreviewNativeEvent(NativePreviewEvent event) {
 		super.onPreviewNativeEvent(event);
 		switch (event.getTypeInt()) {
@@ -119,8 +129,10 @@ public class RenameDialog extends DialogBox {
 	}
 
 	private void cancel() {
+
 		RenameDialog.this.hide();
 		NonMaps.get().captureFocus();
+		NonMaps.get().getNonLinearWorld().invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	public static void onPresetManagerUpdate(PresetManager presetManager) {

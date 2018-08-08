@@ -7,6 +7,8 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ScaleParameterLayout.h>
 
+void toggleHightlight(Control* c);
+
 void ScaleParameterSelectLayout::init ()
 {
   super::init ();
@@ -14,7 +16,7 @@ void ScaleParameterSelectLayout::init ()
 
 void ScaleParameterSelectLayout::addButtons ()
 {
-  addControl (new Button ("Reset", BUTTON_A));
+  m_resetButton = addControl (new Button ("Reset", BUTTON_A));
   addControl (new Button ("<", BUTTON_B));
   addControl (new Button (">", BUTTON_C));
 }
@@ -29,7 +31,7 @@ bool ScaleParameterSelectLayout::onButton (int i, bool down, ButtonModifiers mod
     switch (i)
     {
       case BUTTON_A:
-        reset ();
+        toggleHightlight(m_resetButton);
         return true;
 
       case BUTTON_B:
@@ -39,6 +41,13 @@ bool ScaleParameterSelectLayout::onButton (int i, bool down, ButtonModifiers mod
       case BUTTON_C:
         selectParameter (+1);
         return true;
+
+      case BUTTON_ENTER:
+        if(m_resetButton->isHighlight()) {
+          reset();
+          m_resetButton->setHighlight(false);
+          return true;
+        }
     }
   }
   return false;
@@ -67,5 +76,9 @@ void ScaleParameterSelectLayout::selectParameter (int inc)
     id += range;
 
   eb->undoableSelectParameter (id);
+}
+
+void toggleHightlight(Control* c) {
+  c->setHighlight(!c->isHighlight());
 }
 

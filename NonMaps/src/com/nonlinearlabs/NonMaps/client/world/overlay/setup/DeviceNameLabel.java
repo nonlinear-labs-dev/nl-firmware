@@ -1,7 +1,8 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 
 public class DeviceNameLabel extends SetupLabel {
 
@@ -9,10 +10,17 @@ public class DeviceNameLabel extends SetupLabel {
 		super(deviceNameSettings, "---");
 	}
 
-	public void update(Node settingsNode) {
-		String str = ServerProxy.getChildText(settingsNode, "DeviceName", "value");
+	@Override
+	public void init() {
+		super.init();
 
-		if (str != null && !str.isEmpty())
-			setText(str);
+		Setup.get().systemSettings.deviceName.onChange(new Function<String, Boolean>() {
+
+			@Override
+			public Boolean apply(String v) {
+				setText(v);
+				return true;
+			}
+		});
 	}
 }

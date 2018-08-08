@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Settings.h"
 #include "Setting.h"
-
+#include "Settings.h"
 
 template<typename TEnum>
   class EnumSetting : public Setting
@@ -66,16 +65,20 @@ template<typename TEnum>
         {
           dir--;
           e++;
-          if (e >= numEntries)
-            e = 0;
+          if (e >= numEntries) {
+            e = numEntries - 1;
+            break;
+          }
         }
 
         while (dir < 0)
         {
           dir++;
           e--;
-          if (e < 0)
-            e = numEntries - 1;
+          if (e < 0) {
+            e = 0;
+            break;
+          }
         }
 
         set ((tEnum) e);

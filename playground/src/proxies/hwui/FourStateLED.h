@@ -9,11 +9,10 @@ class FourStateLED: public LED
     FourStateLED();
     virtual ~FourStateLED();
 
-    void setState(char state, bool flush);
+    void setState(char state);
     char getState () const;
-    static void flush ();
+    void syncBBBB();
 
   private:
-    static std::ofstream &getDeviceFile();
     char m_state;
 };

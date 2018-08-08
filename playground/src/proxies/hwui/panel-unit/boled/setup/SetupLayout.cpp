@@ -59,6 +59,7 @@
 #include <chrono>
 #include <list>
 #include <memory>
+#include "UISoftwareVersionEditor.h"
 
 namespace NavTree
 {
@@ -361,10 +362,10 @@ namespace NavTree
       }
   };
 
-  struct UISoftwareVersion : Leaf
+  struct UISoftwareVersion : EditableLeaf
   {
       UISoftwareVersion(InnerNode *parent) :
-          Leaf(parent, "UI Software Version")
+        EditableLeaf(parent, "UI Software Version")
       {
       }
 
@@ -372,6 +373,11 @@ namespace NavTree
       {
         auto info = Application::get().getDeviceInformation()->getItem<::SoftwareVersion>().get();
         return new DeviceInfoItemView(info);
+      }
+
+      virtual Control *createEditor() override
+      {
+        return new UISoftwareVersionEditor();
       }
   };
 
@@ -423,6 +429,14 @@ namespace NavTree
       }
   };
 
+    struct WebUIAdress : Leaf {
+        struct AddressLabel: public SetupLabel {
+            AddressLabel() : SetupLabel("192.168.8.2", Rect(0,0,0,0)) {}
+        };
+        WebUIAdress(InnerNode *parent) : Leaf(parent, "Website Address:") {}
+        virtual Control *createView() override { return new AddressLabel(); }
+    };
+
   struct SystemInfo : InnerNode
   {
       SystemInfo(InnerNode *parent) :
@@ -431,6 +445,7 @@ namespace NavTree
         children.emplace_back(new DeviceName(this));
         children.emplace_back(new SSID(this));
         children.emplace_back(new Passphrase(this));
+        children.emplace_back(new WebUIAdress(this));
         children.emplace_back(new FreeInternalMemory(this));
         children.emplace_back(new UISoftwareVersion(this));
         children.emplace_back(new RTSoftwareVersion(this));

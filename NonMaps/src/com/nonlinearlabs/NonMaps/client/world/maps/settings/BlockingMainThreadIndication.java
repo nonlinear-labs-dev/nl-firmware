@@ -1,8 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.settings;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.maps.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
@@ -13,6 +15,15 @@ class BlockingMainThreadIndication extends Setting {
 
 	BlockingMainThreadIndication(DeveloperSettings parent) {
 		super(parent, "Indicate blocked UI on Lower Ribbon", "Off");
+
+		Setup.get().systemSettings.indicateBlockedUI.onChange(new Function<Setup.BooleanValues, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.BooleanValues t) {
+				setCurrentValue(t == Setup.BooleanValues.on);
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -22,7 +33,7 @@ class BlockingMainThreadIndication extends Setting {
 
 			@Override
 			public void setValue(Items item) {
-				NonMaps.get().getServerProxy().setSetting("IndicateBlockedUI", item.toString().toLowerCase());
+				SystemSettings.get().setBlockingMainThreadIndication(item == Items.ON ? BooleanValues.on : BooleanValues.off);
 			}
 		}, world), pos);
 	}
@@ -30,13 +41,6 @@ class BlockingMainThreadIndication extends Setting {
 	@Override
 	public void setDefault() {
 		setCurrentValue(Items.OFF.toString());
-	}
-
-	public void update(Node settingsNode) {
-		String str = ServerProxy.getChildText(settingsNode, "IndicateBlockedUI", "value");
-
-		if (str != null && !str.isEmpty())
-			setCurrentValue(str.toLowerCase().equals("on"));
 	}
 
 	public void setCurrentValue(boolean val) {

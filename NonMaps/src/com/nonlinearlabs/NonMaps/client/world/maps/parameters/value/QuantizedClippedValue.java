@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.value;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
 public class QuantizedClippedValue extends ClippedValue {
@@ -95,7 +96,7 @@ public class QuantizedClippedValue extends ClippedValue {
 		this.fineDenominator = (int) fineDenominator;
 	}
 
-	private double getQuantizedClippedValue(boolean fine) {
+	public double getQuantizedClippedValue(boolean fine) {
 		return getQuantizedValue(getClippedValue(), fine);
 	}
 
@@ -191,6 +192,12 @@ public class QuantizedClippedValue extends ClippedValue {
 
 	private void onFineQuantizedChanged(Initiator initiator, double oldFine, double newFine) {
 		listener.onQuantizedValueChanged(initiator, oldFine, newFine);
+	}
+
+	public void update(ValueDataModelEntity e) {
+		coarseDenominator = e.coarseDenominator;
+		fineDenominator = e.fineDenominator;
+		super.update(e);
 	}
 
 }

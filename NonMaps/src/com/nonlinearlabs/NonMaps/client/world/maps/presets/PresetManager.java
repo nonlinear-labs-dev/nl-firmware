@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
@@ -39,7 +38,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.menu.GlobalMenu;
 
 public class PresetManager extends MapsLayout {
 
@@ -148,8 +146,9 @@ public class PresetManager extends MapsLayout {
 			readPlaygroundFileVersion(presetManagerNode);
 
 			Preset oldPresetSelection = getSelectedPreset();
+			Preset oldLoadedPreset = getLoadedPreset();
 			NodeList children = presetManagerNode.getChildNodes();
-
+			
 			for (int i = 0; i < children.getLength(); i++) {
 				Node child = children.item(i);
 
@@ -158,9 +157,14 @@ public class PresetManager extends MapsLayout {
 			}
 			
 			Preset newPresetSelection = getSelectedPreset();
-
+			Preset newLoadedPreset = getLoadedPreset();
+			
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
+			}
+			
+			if(oldLoadedPreset != newLoadedPreset) {
+				onPresetLoadStatusChanged(newLoadedPreset);
 			}
 			
 			if(shouldUpdateFilter)
@@ -189,6 +193,11 @@ public class PresetManager extends MapsLayout {
 
 		if (hasMultiplePresetSelection())
 			closeMultiSelection();
+	}
+	
+	public void onPresetLoadStatusChanged(Preset newEditBuffer) {
+		if(PresetInfoDialog.isShown())
+			PresetInfoDialog.editBufferInfoPage.updateInfo(PresetInfoDialog.getEditBuffer());
 	}
 
 	private void scrollToSelectedPreset() {
@@ -585,7 +594,7 @@ public class PresetManager extends MapsLayout {
 
 	private void deletePreset(Preset p) {
 		ServerProxy sp = NonMaps.get().getServerProxy();
-		sp.deletePreset(p);
+		sp.deletePreset(p, false);
 	}
 
 	private void deleteBank(Bank b) {
@@ -700,8 +709,10 @@ public class PresetManager extends MapsLayout {
 	public void loadSelectedPreset() {
 		Preset p = findSelectedPreset();
 
-		if (p != null)
+		if (p != null) {
 			getNonMaps().getServerProxy().loadPreset(p);
+			onPresetLoadStatusChanged(p);
+		}
 	}
 
 	public Preset findSelectedPreset() {
@@ -1062,5 +1073,9 @@ public class PresetManager extends MapsLayout {
 			return p.getUUID();
 
 		return "";
+	}
+
+	public Preset getLoadedPreset() {
+		return findLoadedPreset();
 	}
 }

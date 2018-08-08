@@ -1,15 +1,8 @@
 #pragma once
 
+#include <glibmm/ustring.h>
+
 namespace StringTools {
-    std::vector<std::string> splitStringOnAnyDelimiter(const std::string& s, char delimiter)
-    {
-        std::vector<std::string> strings;
-        std::string token;
-        std::istringstream tokenStream(s);
-        while (std::getline(tokenStream, token, delimiter))
-        {
-          strings.push_back(token);
-        }
-        return strings;
-    }
+    std::vector<Glib::ustring> splitStringOnAnyDelimiter(const Glib::ustring& s, char delimiter);
+    Glib::ustring replaceAll(const Glib::ustring& in, const Glib::ustring& pattern, const Glib::ustring& replace);
 };

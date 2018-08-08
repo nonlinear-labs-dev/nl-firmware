@@ -22,217 +22,213 @@
 #include <tools/Signal.h>
 #include <xml/FileOutStream.h>
 #include <groups/HardwareSourcesGroup.h>
+#include <io/network/WebSocketSession.h>
 
-const Glib::ustring HWUI::s_buttonsDevFile = "/dev/espi_buttons";
-
-HWUI::HWUI () :
-    m_readersCancel (Gio::Cancellable::create ()),
-    m_blinkCount (0),
-    m_focusAndMode (UIFocus::Parameters, UIMode::Select)
+HWUI::HWUI() :
+    m_blinkCount(0),
+    m_focusAndMode(UIFocus::Parameters, UIMode::Select),
+    m_readersCancel(Gio::Cancellable::create())
 {
   m_buttonStates.fill(false);
 
 #ifdef _DEVELOPMENT_PC
-  m_keyboardInput = Gio::DataInputStream::create (Gio::UnixInputStream::create (0, true));
-  m_keyboardInput->read_line_async (mem_fun (this, &HWUI::onKeyboardLineRead), m_readersCancel);
+  m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
+  m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
 #endif
 
-  FOR_TESTS(m_dbgOled.reset (new DebugOLED ()));
+  Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Buttons, sigc::mem_fun(this, &HWUI::onButtonMessage));
 }
 
-HWUI::~HWUI ()
+HWUI::~HWUI()
 {
-  DebugLevel::warning (__PRETTY_FUNCTION__, __LINE__);
-  m_readersCancel->cancel ();
-  DebugLevel::warning (__PRETTY_FUNCTION__, __LINE__);
+  m_readersCancel->cancel();
 }
 
-void HWUI::deInit ()
+void HWUI::deInit()
 {
-  Oleds::get ().deInit ();
+  Oleds::get().deInit();
 }
 
-FOR_TESTS(shared_ptr<DebugOLED> HWUI::getDebugOled ()
+void HWUI::onButtonMessage(WebSocketSession::tMessage msg)
 {
-  return m_dbgOled;
-})
+  gsize numBytes = 0;
+  auto buffer = (const char *) msg->get_data(numBytes);
 
-void HWUI::init ()
-{
-  m_panelUnit.init ();
-  m_baseUnit.init ();
-
-  setupFocusAndMode ();
-  RefPtr<Gio::File> buttonsFile = Gio::File::create_for_path (s_buttonsDevFile);
-  buttonsFile->read_async (sigc::bind (sigc::mem_fun (this, &HWUI::onButtonsFileOpened), buttonsFile), m_readersCancel);
-
-  Oleds::get ().syncRedraw ();
+  if(numBytes > 0)
+    onButtonPressed(buffer[0] & 0x7F, buffer[0] & 0x80);
 }
 
-void HWUI::indicateBlockingMainThread ()
+void HWUI::init()
 {
-  m_switchOffBlockingMainThreadIndicator.setCallback ([ = ]()
+  m_panelUnit.init();
+  m_baseUnit.init();
+
+  setupFocusAndMode();
+  Oleds::get().syncRedraw();
+}
+
+void HWUI::indicateBlockingMainThread()
+{
+  m_switchOffBlockingMainThreadIndicator.setCallback([ = ]()
   {
     m_baseUnit.indicateBlockingMainThread(false);
   });
 
-  m_switchOffBlockingMainThreadIndicator.refresh (std::chrono::seconds (5));
-  m_baseUnit.indicateBlockingMainThread (true);
+  m_switchOffBlockingMainThreadIndicator.refresh(std::chrono::seconds(5));
+  m_baseUnit.indicateBlockingMainThread(true);
 }
 
-void HWUI::setupFocusAndMode ()
+void HWUI::setupFocusAndMode()
 {
-  m_panelUnit.setupFocusAndMode (m_focusAndMode);
-  m_baseUnit.setupFocusAndMode (m_focusAndMode);
+  m_panelUnit.setupFocusAndMode(m_focusAndMode);
+  m_baseUnit.setupFocusAndMode(m_focusAndMode);
 }
 
-void HWUI::onKeyboardLineRead (Glib::RefPtr<Gio::AsyncResult> &res)
+void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
 {
   std::string line;
 
-  if (m_keyboardInput->read_line_finish (res, line))
+  if(m_keyboardInput->read_line_finish(res, line))
   {
-    if (!line.empty ())
+    if(!line.empty())
     {
-      if (line == "t")
+      if(line == "t")
       {
-        onButtonPressed (BUTTON_SETUP, true);
+        onButtonPressed(BUTTON_SETUP, true);
       }
-      else if (line == "!t")
+      else if(line == "!t")
       {
-        onButtonPressed (BUTTON_SETUP, false);
+        onButtonPressed(BUTTON_SETUP, false);
       }
-      else if (line == "s")
+      else if(line == "s")
       {
-        onButtonPressed (BUTTON_SHIFT, true);
+        onButtonPressed(BUTTON_SHIFT, true);
       }
-      else if (line == "!s")
+      else if(line == "!s")
       {
-        onButtonPressed (BUTTON_SHIFT, false);
+        onButtonPressed(BUTTON_SHIFT, false);
       }
-      else if (line == "a")
+      else if(line == "a")
       {
-        onButtonPressed (BUTTON_A, true);
+        onButtonPressed(BUTTON_A, true);
       }
-      else if (line == "!a")
+      else if(line == "!a")
       {
-        onButtonPressed (BUTTON_A, false);
+        onButtonPressed(BUTTON_A, false);
       }
-      else if (line == "b")
+      else if(line == "b")
       {
-        onButtonPressed (BUTTON_B, true);
+        onButtonPressed(BUTTON_B, true);
       }
-      else if (line == "!b")
+      else if(line == "!b")
       {
-        onButtonPressed (BUTTON_B, false);
+        onButtonPressed(BUTTON_B, false);
       }
-      else if (line == "c")
+      else if(line == "c")
       {
-        onButtonPressed (BUTTON_C, true);
+        onButtonPressed(BUTTON_C, true);
       }
-      else if (line == "!c")
+      else if(line == "!c")
       {
-        onButtonPressed (BUTTON_C, false);
+        onButtonPressed(BUTTON_C, false);
       }
-      else if (line == "d")
+      else if(line == "d")
       {
-        onButtonPressed (BUTTON_D, true);
+        onButtonPressed(BUTTON_D, true);
       }
-      else if (line == "!d")
+      else if(line == "!d")
       {
-        onButtonPressed (BUTTON_D, false);
+        onButtonPressed(BUTTON_D, false);
       }
-      else if (line == "e")
+      else if(line == "e")
       {
-        onButtonPressed (BUTTON_ENTER, true);
+        onButtonPressed(BUTTON_ENTER, true);
       }
-      else if (line == "!e")
+      else if(line == "!e")
       {
-        onButtonPressed (BUTTON_ENTER, false);
+        onButtonPressed(BUTTON_ENTER, false);
       }
-      else if (line == "i")
+      else if(line == "i")
       {
-        onButtonPressed (BUTTON_INFO, true);
-        onButtonPressed (BUTTON_INFO, false);
+        onButtonPressed(BUTTON_INFO, true);
+        onButtonPressed(BUTTON_INFO, false);
       }
-      else if (line == "!666")
+      else if(line == "!666")
       {
-        onButtonPressed (BUTTON_UNDO, true);
-        onButtonPressed (BUTTON_REDO, true);
-        onButtonPressed (BUTTON_UNDO, false);
-        onButtonPressed (BUTTON_REDO, false);
+        onButtonPressed(BUTTON_UNDO, true);
+        onButtonPressed(BUTTON_REDO, true);
+        onButtonPressed(BUTTON_UNDO, false);
+        onButtonPressed(BUTTON_REDO, false);
       }
-      else if (line == "stress-undo")
+      else if(line == "stress-undo")
       {
         Application::get().getPresetManager()->stress(1000);
       }
-      else if (line.at (0) == '!')
+      else if(line.at(0) == '!')
       {
-        onButtonPressed (BUTTON_SHIFT, true);
-        m_panelUnit.getEditPanel ().getKnob ().fake (1);
-        onButtonPressed (BUTTON_SHIFT, false);
+        onButtonPressed(BUTTON_SHIFT, true);
+        m_panelUnit.getEditPanel().getKnob().fake(1);
+        onButtonPressed(BUTTON_SHIFT, false);
       }
-      else if (line.at (0) == '@')
+      else if(line.at(0) == '@')
       {
-        onButtonPressed (BUTTON_SHIFT, true);
-        m_panelUnit.getEditPanel ().getKnob ().fake (-1);
-        onButtonPressed (BUTTON_SHIFT, false);
+        onButtonPressed(BUTTON_SHIFT, true);
+        m_panelUnit.getEditPanel().getKnob().fake(-1);
+        onButtonPressed(BUTTON_SHIFT, false);
       }
-      else if (line.at (0) == '+')
+      else if(line.at(0) == '+')
       {
-        float f = line.size ();
+        float f = line.size();
         float sign = f < 0 ? -1 : 1;
-        f = powf (f, 1.5f) * sign;
-        signed char c = static_cast<signed char> (roundf (f));
-        m_panelUnit.getEditPanel ().getKnob ().fake (c);
+        f = powf(f, 1.5f) * sign;
+        signed char c = static_cast<signed char>(roundf(f));
+        m_panelUnit.getEditPanel().getKnob().fake(c);
       }
-      else if (line.at (0) == '-')
+      else if(line.at(0) == '-')
       {
-        float f = line.size ();
+        float f = line.size();
         f = -f;
         float sign = f < 0 ? -1 : 1;
-        f = powf (fabsf (f), 1.5f) * sign;
-        signed char c = static_cast<signed char> (roundf (f));
-        m_panelUnit.getEditPanel ().getKnob ().fake (c);
+        f = powf(fabsf(f), 1.5f) * sign;
+        signed char c = static_cast<signed char>(roundf(f));
+        m_panelUnit.getEditPanel().getKnob().fake(c);
       }
-      else if (line.find ("z") == 0)
+      else if(line.find("z") == 0)
       {
-        auto p = Application::get ().getPresetManager ()->getEditBuffer ()->getSelected ();
-        p = Application::get ().getPresetManager ()->getEditBuffer ()->findParameterByID (
-            HardwareSourcesGroup::getUpperRibbonParameterID ());
+        auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+        p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(HardwareSourcesGroup::getUpperRibbonParameterID());
 
-        if (auto h = dynamic_cast<PhysicalControlParameter *> (p))
+        if(auto h = dynamic_cast<PhysicalControlParameter *>(p))
         {
-          h->onChangeFromLpc (h->getControlPositionValue () + line.size () * 0.1);
+          h->onChangeFromLpc(h->getControlPositionValue() + line.size() * 0.1);
         }
         else
         {
-          auto changer = p->getValue ().startUserEdit (Initiator::EXPLICIT_LPC);
-          changer->changeBy (1.0 / p->getValue ().getCoarseDenominator ());
+          auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_LPC);
+          changer->changeBy(1.0 / p->getValue().getCoarseDenominator());
         }
       }
-      else if (line.find ("x") == 0)
+      else if(line.find("x") == 0)
       {
-        auto p = Application::get ().getPresetManager ()->getEditBuffer ()->getSelected ();
-        p = Application::get ().getPresetManager ()->getEditBuffer ()->findParameterByID (
-            HardwareSourcesGroup::getUpperRibbonParameterID ());
+        auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+        p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(HardwareSourcesGroup::getUpperRibbonParameterID());
 
-        if (auto h = dynamic_cast<PhysicalControlParameter*> (p))
+        if(auto h = dynamic_cast<PhysicalControlParameter*>(p))
         {
-          h->onChangeFromLpc (h->getControlPositionValue () - line.size () * 0.1);
+          h->onChangeFromLpc(h->getControlPositionValue() - line.size() * 0.1);
         }
         else
         {
-          auto changer = p->getValue ().startUserEdit (Initiator::EXPLICIT_LPC);
-          changer->changeBy (-1.0 / p->getValue ().getCoarseDenominator ());
+          auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_LPC);
+          changer->changeBy(-1.0 / p->getValue().getCoarseDenominator());
         }
       }
       else
       {
         try
         {
-          int i = stoi (line);
-          if (i < m_buttonStates.size())
+          int i = stoi(line);
+          if(i < m_buttonStates.size())
           {
             if(line.back() == 'u')
             {
@@ -253,93 +249,58 @@ void HWUI::onKeyboardLineRead (Glib::RefPtr<Gio::AsyncResult> &res)
             DebugLevel::error("Number bigger than ", m_buttonStates.size(), __PRETTY_FUNCTION__, __LINE__);
           }
         }
-        catch (...)
+        catch(...)
         {
-          DebugLevel::error ("Exception caught in", __PRETTY_FUNCTION__, __LINE__);
+          DebugLevel::error("Exception caught in", __PRETTY_FUNCTION__, __LINE__);
         }
       }
     }
   }
 
-  m_keyboardInput->read_line_async (mem_fun (this, &HWUI::onKeyboardLineRead), m_readersCancel);
+  m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
 }
 
-PanelUnit &HWUI::getPanelUnit ()
+PanelUnit &HWUI::getPanelUnit()
 {
   return m_panelUnit;
 }
 
-const PanelUnit &HWUI::getPanelUnit () const
+const PanelUnit &HWUI::getPanelUnit() const
 {
   return m_panelUnit;
 }
 
-BaseUnit &HWUI::getBaseUnit ()
+BaseUnit &HWUI::getBaseUnit()
 {
   return m_baseUnit;
 }
 
-const BaseUnit &HWUI::getBaseUnit () const
+const BaseUnit &HWUI::getBaseUnit() const
 {
   return m_baseUnit;
 }
 
-void HWUI::onButtonsFileOpened (Glib::RefPtr<Gio::AsyncResult> &result, RefPtr<Gio::File> buttonsFile)
-{
-  try
-  {
-    DebugLevel::gassy ("HWUI::open file");
-    Glib::RefPtr<Gio::FileInputStream> stream = buttonsFile->read_finish (result);
-    readButtons (stream);
-  }
-  catch (Gio::Error &error)
-  {
-    DebugLevel::warning ("Could not read from button input stream");
-  }
-}
-
-void HWUI::readButtons (Glib::RefPtr<Gio::FileInputStream> stream)
-{
-  DebugLevel::gassy ("HWUI::readButtons");
-  stream->read_bytes_async (1, sigc::bind (sigc::mem_fun (this, &HWUI::onButtonsFileRead), stream), m_readersCancel);
-}
-
-void HWUI::onButtonsFileRead (Glib::RefPtr<Gio::AsyncResult> &result, Glib::RefPtr<Gio::FileInputStream> stream)
-{
-  Glib::RefPtr<Glib::Bytes> bytes = stream->read_bytes_finish (result);
-
-  gsize numBytes = 0;
-  const char *buffer = (const char *) bytes->get_data (numBytes);
-
-  DebugLevel::gassy ("HWUI::onButtonsFileRead");
-
-  if (numBytes > 0)
-    onButtonPressed (buffer[0] & 0x7F, buffer[0] & 0x80);
-
-  readButtons (stream);
-}
-
-void HWUI::onButtonPressed (int buttonID, bool state)
+void HWUI::onButtonPressed(int buttonID, bool state)
 {
   m_buttonStates[buttonID] = state;
 
-  setModifiers (buttonID, state);
+  setModifiers(buttonID, state);
 
-  if (!detectAffengriff (buttonID, state))
+  if(!detectAffengriff(buttonID, state))
   {
-    if (!m_baseUnit.onButtonPressed(buttonID, m_modifiers, state))
+    if(!m_baseUnit.onButtonPressed(buttonID, m_modifiers, state))
     {
-      if (!m_panelUnit.onButtonPressed(buttonID, m_modifiers, state))
+      if(!m_panelUnit.onButtonPressed(buttonID, m_modifiers, state))
       {
-        if (buttonID == BUTTON_SETUP && state)
+        if(buttonID == BUTTON_SETUP && state)
         {
-          if (m_focusAndMode.focus == UIFocus::Setup)
+          if(m_focusAndMode.focus == UIFocus::Setup)
           {
-            undoableSetFocusAndMode (UIFocus::Parameters);
+            undoableSetFocusAndMode(UIFocus::Parameters);
           }
           else
           {
-            undoableSetFocusAndMode ( { UIFocus::Setup, UIMode::Select });
+            undoableSetFocusAndMode( { UIFocus::Setup, UIMode::Select });
           }
         }
       }
@@ -347,11 +308,11 @@ void HWUI::onButtonPressed (int buttonID, bool state)
   }
 }
 
-void HWUI::setModifiers (int buttonID, bool state)
+void HWUI::setModifiers(int buttonID, bool state)
 {
-  if (buttonID == BUTTON_SHIFT)
+  if(buttonID == BUTTON_SHIFT)
   {
-    if (state)
+    if(state)
     {
       addModifier(ButtonModifier::SHIFT);
     }
@@ -361,15 +322,15 @@ void HWUI::setModifiers (int buttonID, bool state)
     }
   }
 
-  if (buttonID == BUTTON_FINE)
+  if(buttonID == BUTTON_FINE)
   {
-    if (isFineAllowed())
+    if(isFineAllowed())
     {
       m_fineButton.setShiftedWhilePressDown(isModifierSet(ButtonModifier::SHIFT));
       m_fineButton.setButtonState(state);
     }
   }
-  if (m_fineButton.getModifierState())
+  if(m_fineButton.getModifierState())
   {
     addModifier(ButtonModifier::FINE);
   }
@@ -385,19 +346,19 @@ bool HWUI::isFineAllowed()
   return uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound;
 }
 
-bool HWUI::detectAffengriff (int buttonID, bool state)
+bool HWUI::detectAffengriff(int buttonID, bool state)
 {
-  if (!state)
+  if(!state)
   {
     m_affengriffState = 0;
     return false;
   }
 
-  if (m_affengriffState == 0 && (buttonID == BUTTON_SHIFT))
+  if(m_affengriffState == 0 && (buttonID == BUTTON_SHIFT))
   {
     m_affengriffState = 1;
   }
-  else if (m_affengriffState == 1 && (buttonID == BUTTON_SETUP))
+  else if(m_affengriffState == 1 && (buttonID == BUTTON_SETUP))
   {
     m_affengriffState = 2;
   }
@@ -408,141 +369,141 @@ bool HWUI::detectAffengriff (int buttonID, bool state)
   return false;
 }
 
-void HWUI::unsetFineMode ()
+void HWUI::unsetFineMode()
 {
-  if (m_fineButton.onlyTemporary())
+  if(m_fineButton.onlyTemporary())
   {
     m_fineButton.setState(TOGGLED_OFF);
     removeModifier(ButtonModifier::FINE);
   }
 }
 
-ButtonModifiers HWUI::getButtonModifiers () const
+ButtonModifiers HWUI::getButtonModifiers() const
 {
   return m_modifiers;
 }
 
-bool HWUI::isModifierSet (ButtonModifier m) const
+bool HWUI::isModifierSet(ButtonModifier m) const
 {
   return m_modifiers[m];
 }
 
-bool HWUI::isResolutionFine () const
+bool HWUI::isResolutionFine() const
 {
-  return isModifierSet (ButtonModifier::FINE);
+  return isModifierSet(ButtonModifier::FINE);
 }
 
-void HWUI::setModifiers (ButtonModifiers m)
+void HWUI::setModifiers(ButtonModifiers m)
 {
-  if (m != m_modifiers)
+  if(m != m_modifiers)
   {
     m_modifiers = m;
-    m_modifersChanged.send (m_modifiers);
+    m_modifersChanged.send(m_modifiers);
   }
 }
 
-void HWUI::addModifier (ButtonModifier i)
+void HWUI::addModifier(ButtonModifier i)
 {
   auto cp = m_modifiers;
-  cp.set (i);
-  setModifiers (cp);
+  cp.set(i);
+  setModifiers(cp);
 }
 
-void HWUI::removeModifier (ButtonModifier i)
+void HWUI::removeModifier(ButtonModifier i)
 {
   auto cp = m_modifiers;
-  cp.reset (i);
-  setModifiers (cp);
+  cp.reset(i);
+  setModifiers(cp);
 }
 
-sigc::connection HWUI::onModifiersChanged (slot<void, ButtonModifiers> cb)
+sigc::connection HWUI::onModifiersChanged(slot<void, ButtonModifiers> cb)
 {
-  return m_modifersChanged.connectAndInit (cb, m_modifiers);
+  return m_modifersChanged.connectAndInit(cb, m_modifiers);
 }
 
-sigc::connection HWUI::connectToBlinkTimer (slot<void, int> cb)
+sigc::connection HWUI::connectToBlinkTimer(slot<void, int> cb)
 {
-  if (m_blinkTimer.size () == 0)
+  if(m_blinkTimer.size() == 0)
   {
-    m_blinkTimerConnection.disconnect ();
-    m_blinkTimerConnection = Application::get ().getMainContext ()->signal_timeout ().connect (mem_fun (this, &HWUI::onBlinkTimeout), 500);
+    m_blinkTimerConnection.disconnect();
+    m_blinkTimerConnection = Application::get().getMainContext()->signal_timeout().connect(mem_fun(this, &HWUI::onBlinkTimeout), 500);
     m_blinkCount = 1;
   }
 
-  return m_blinkTimer.connectAndInit (cb, m_blinkCount);
+  return m_blinkTimer.connectAndInit(cb, m_blinkCount);
 }
 
-bool HWUI::onBlinkTimeout ()
+bool HWUI::onBlinkTimeout()
 {
-  m_blinkTimer.send (++m_blinkCount);
+  m_blinkTimer.send(++m_blinkCount);
   return true;
 }
 
-void HWUI::undoableSetFocusAndMode (UNDO::Scope::tTransactionPtr transaction, FocusAndMode focusAndMode)
+void HWUI::undoableSetFocusAndMode(UNDO::Scope::tTransactionPtr transaction, FocusAndMode focusAndMode)
 {
-  if (Application::get ().getPresetManager ()->isLoading ())
+  if(Application::get().getPresetManager()->isLoading())
     return;
 
   if(m_focusAndModeFrozen)
     return;
 
-  if (focusAndMode.focus == UIFocus::Unchanged)
+  if(focusAndMode.focus == UIFocus::Unchanged)
     focusAndMode.focus = m_focusAndMode.focus;
 
-  if (focusAndMode.mode == UIMode::Unchanged)
+  if(focusAndMode.mode == UIMode::Unchanged)
     focusAndMode.mode = m_focusAndMode.mode;
 
-  if (focusAndMode.focus != m_focusAndMode.focus)
-    if (focusAndMode.mode == UIMode::Unchanged)
+  if(focusAndMode.focus != m_focusAndMode.focus)
+    if(focusAndMode.mode == UIMode::Unchanged)
       focusAndMode.mode = UIMode::Select;
 
-  auto swapData = UNDO::createSwapData (restrictFocusAndMode(focusAndMode));
+  auto swapData = UNDO::createSwapData(restrictFocusAndMode(focusAndMode));
 
-  transaction->addSimpleCommand ([ = ] (UNDO::Command::State)
+  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
   {
     swapData->swapWith (m_focusAndMode);
     setupFocusAndMode();
   });
 }
 
-FocusAndMode HWUI::getFocusAndMode () const
+FocusAndMode HWUI::getFocusAndMode() const
 {
   return m_focusAndMode;
 }
 
-void HWUI::setFocusAndMode (FocusAndMode focusAndMode)
+void HWUI::setFocusAndMode(FocusAndMode focusAndMode)
 {
   if(m_focusAndModeFrozen)
     return;
 
-  focusAndMode.fixUnchanged (m_focusAndMode);
+  focusAndMode.fixUnchanged(m_focusAndMode);
   m_focusAndMode = restrictFocusAndMode(focusAndMode);
-  setupFocusAndMode ();
+  setupFocusAndMode();
 }
 
-void HWUI::undoableSetFocusAndMode (FocusAndMode focusAndMode)
+void HWUI::undoableSetFocusAndMode(FocusAndMode focusAndMode)
 {
-  auto scope = Application::get ().getUndoScope ()->startCuckooTransaction ();
-  undoableSetFocusAndMode (scope->getTransaction (), focusAndMode);
+  auto scope = Application::get().getUndoScope()->startCuckooTransaction();
+  undoableSetFocusAndMode(scope->getTransaction(), focusAndMode);
 }
 
-void HWUI::freezeFocusAndMode ()
+void HWUI::freezeFocusAndMode()
 {
   m_focusAndModeFrozen = true;
 }
 
-void HWUI::thawFocusAndMode ()
+void HWUI::thawFocusAndMode()
 {
   m_focusAndModeFrozen = false;
 }
 
-void HWUI::testDisplays ()
+void HWUI::testDisplays()
 {
-  auto &b = getPanelUnit ().getEditPanel ().getBoled ();
-  b.setOverlay (new TestLayout (b));
+  auto &b = getPanelUnit().getEditPanel().getBoled();
+  b.setOverlay(new TestLayout(b));
 
-  auto &s = getBaseUnit ().getPlayPanel ().getSOLED ();
-  s.setOverlay (new TestLayout (s));
+  auto &s = getBaseUnit().getPlayPanel().getSOLED();
+  s.setOverlay(new TestLayout(s));
 }
 
 FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
@@ -552,21 +513,16 @@ FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
   bool isCurrentParameter = (m_focusAndMode.focus == UIFocus::Parameters);
   bool isDesiredParameter = (in.focus == UIFocus::Parameters);
 
-  bool switchFromParameterToPresetManager = (isCurrentParameter && isDesiredPresetManager);
   bool switchFromPresetManagerToParameter = (isCurrentPresetManager && isDesiredParameter);
 
-  if(switchFromParameterToPresetManager || switchFromPresetManagerToParameter)
-  {
+  if(switchFromPresetManagerToParameter)
     if(m_focusAndMode.mode == UIMode::Edit)
-    {
-      // ticket: BOLED: "Edit"-Mode (immer) beenden, wenn zwischen  Preset/Bank-Screen und Parameter-Screen gewechselt wird.
       in.mode = UIMode::Select;
-    }
-  }
 
   if(isDesiredPresetManager)
     if(in.mode == UIMode::Store && Application::get().getPresetManager()->getNumBanks() == 0)
-      return {in.focus, UIMode::Select};
+      return
+      { in.focus, UIMode::Select};
 
   return in;
 }

@@ -5,12 +5,14 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public abstract class NumericValueControl extends SettingsControl implements QuantizedClippedValue.ChangeListener {
+public abstract class NumericValueControl extends OverlayLayout implements QuantizedClippedValue.ChangeListener {
 
 	protected CenteredSetupLabel middle;
 	protected QuantizedClippedValue value = new QuantizedClippedValue(this);
@@ -55,15 +57,15 @@ public abstract class NumericValueControl extends SettingsControl implements Qua
 	}
 
 	private native void createStringizer(String body) /*-{
-														this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer = new Function(
-														"cpValue", "withUnit", body);
-														}-*/;
+		this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer = new Function(
+				"cpValue", "withUnit", body);
+	}-*/;
 
 	private native String stringize(boolean withUnit, double cpValue) /*-{
-																		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer;
-																		var scaledText = stringizer(cpValue, withUnit);
-																		return scaledText;
-																		}-*/;
+		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.overlay.setup.NumericValueControl::stringizer;
+		var scaledText = stringizer(cpValue, withUnit);
+		return scaledText;
+	}-*/;
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
@@ -108,6 +110,15 @@ public abstract class NumericValueControl extends SettingsControl implements Qua
 	@Override
 	public Control mouseUp(Position eventPoint) {
 		return this;
+	}
+
+	public void update(ValueDataModelEntity e) {
+		if (stringizer == null && e.scaling != null && e.scaling.length() > 0) {
+			createStringizer(e.scaling);
+			value.update(e);
+		} else if (stringizer != null) {
+			value.setRawValue(Initiator.INDIRECT_USER_ACTION, e.getValue());
+		}
 	}
 
 }

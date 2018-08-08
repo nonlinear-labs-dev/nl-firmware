@@ -13,17 +13,23 @@ class Ribbon
     Ribbon();
     virtual ~Ribbon();
 
+    void syncBBBB();
+
   protected:
     void initLEDs();
-    void setLEDState(int ledPos, char state, bool flush);
-    void resetLEDs(bool flush);
-    void setLEDsForValueUniPolar (tDisplayValue paramVal, bool flush);
-    void setLEDsUniPolar (int paramValIdx, bool flush);
-    void setLEDsForValueBiPolar (tDisplayValue paramVal, bool flush);
-    void setLEDsBiPolar (int paramValIdx, int direction, bool flush);
+    void setLEDState(int ledPos, char state);
+    void resetLEDs();
+    void setLEDsForValueUniPolar (tDisplayValue paramVal);
+    void setLEDsUniPolar (int paramValIdx);
+    void setLEDsForValueBiPolar (tDisplayValue paramVal);
 
     virtual int posToLedID(int pos) const = 0;
 
+    void debugTrace();
+
   private:
+    char getLEDStateForBipolarValue(int led, tDisplayValue v) const;
+    char handleCenter(tDisplayValue v) const;
+
     FourStateLED m_leds[NUM_LEDS_PER_RIBBON];
 };

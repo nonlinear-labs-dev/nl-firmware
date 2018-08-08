@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -20,6 +21,16 @@ public class PresetContextMenuItem extends ContextMenuItem {
 	public Control click(Position eventPoint) {
 		endMultiplePresetSelection();
 		return super.click(eventPoint);
+	}
+	
+	@Override
+	public double getDesiredHeight() {
+		return Millimeter.toPixels(10);
+	}
+	
+	@Override
+	public double getDesiredWidth() {
+		return Millimeter.toPixels(17);
 	}
 	
 }
