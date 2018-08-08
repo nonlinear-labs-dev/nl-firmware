@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
@@ -8,6 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.CompareDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
@@ -103,10 +105,19 @@ public class PresetContextMenu extends ContextMenu {
 		addChild(new PresetContextMenuItem(this, "Delete") {
 			@Override
 			public Control click(Position eventPoint) {
+
 				if (hasMultipleSelection) {
-					getNonMaps().getServerProxy().deletePresets(pm.getMultiSelection().getCSV());
+					String csv = pm.getMultiSelection().getCSV();
+					if(pm.getMultiSelection().selectionContainsSolePresets()) {
+						PresetDeleter.open(csv);
+					} else {
+						NonMaps.get().getServerProxy().deletePresets(csv, false);
+					}
 				} else {
-					getNonMaps().getServerProxy().deletePreset(preset);
+					if(preset.getParent().getPresetList().getPresetCount() == 1)
+						PresetDeleter.open(preset);
+					else
+						NonMaps.get().getServerProxy().deletePreset(preset, false);
 				}
 				return super.click(eventPoint);
 			}

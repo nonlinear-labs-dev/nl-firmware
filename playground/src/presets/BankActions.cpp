@@ -477,11 +477,11 @@ BankActions::BankActions(PresetManager &presetManager) :
             bool autoLoad = Application::get().getSettings ()->getSetting<AutoLoadSelectedPreset> ()->get ();
 
             if(autoLoad)
-            scope = m_presetManager.getUndoScope().startTransaction (preset->getUndoTransactionTitle("Load"));
+              scope = m_presetManager.getUndoScope().startTransaction (preset->getUndoTransactionTitle("Load"));
             else
-            scope = m_presetManager.getUndoScope().startContinuousTransaction (&presetManager, chrono::hours(1), preset->getUndoTransactionTitle("Select"));
+              scope = m_presetManager.getUndoScope().startContinuousTransaction (&presetManager, chrono::hours(1), preset->getUndoTransactionTitle("Select"));
 
-            UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+            auto transaction = scope->getTransaction();
             m_presetManager.undoableSelectBank (transaction, bank->getUuid());
             bank->undoableSelectPreset (transaction, presetUUID);
           }
@@ -491,15 +491,19 @@ BankActions::BankActions(PresetManager &presetManager) :
   addAction("delete-preset",
       [&] (shared_ptr<NetworkRequest> request) mutable
       {
-        Glib::ustring presetUUID = request->get ("uuid");
+        auto presetUUID = request->get ("uuid");
+        auto withBank = request->get("delete-bank");
 
         if (tBankPtr srcBank = m_presetManager.findBankWithPreset (presetUUID))
         {
           if(auto preset = srcBank->getPreset(presetUUID))
           {
-            UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction (preset->getUndoTransactionTitle("Delete"));
-            UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+            auto scope = m_presetManager.getUndoScope().startTransaction (preset->getUndoTransactionTitle("Delete"));
+            auto transaction = scope->getTransaction();
             srcBank->undoableDeletePreset (transaction, presetUUID);
+            if(withBank == "true") {
+              m_presetManager.undoableDeleteBank(transaction, srcBank);
+            }
             m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo (scope->getTransaction());
           }
         }
@@ -507,21 +511,27 @@ BankActions::BankActions(PresetManager &presetManager) :
 
   addAction("delete-presets", [&] (shared_ptr<NetworkRequest> request) mutable
   {
-    UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction ("Delete Presets");
-    UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+    auto scope = m_presetManager.getUndoScope().startTransaction ("Delete Presets");
+    auto transaction = scope->getTransaction();
 
     vector<string> strs;
-    Glib::ustring csv = request->get ("presets");
+    auto csv = request->get ("presets");
+    auto withBank = request->get("delete-bank");
     boost::split(strs, csv, boost::is_any_of(","));
 
     for(auto presetUUID : strs)
     {
-      if (tBankPtr srcBank = m_presetManager.findBankWithPreset (presetUUID))
+      if (auto srcBank = m_presetManager.findBankWithPreset (presetUUID))
       {
         if(auto preset = srcBank->getPreset(presetUUID))
         {
           srcBank->undoableDeletePreset (transaction, presetUUID);
           m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo (scope->getTransaction());
+        }
+        if(withBank == "true") {
+          if(srcBank->getNumPresets() == 0) {
+            m_presetManager.undoableDeleteBank(transaction, srcBank);
+          }
         }
       }
     }
@@ -529,14 +539,14 @@ BankActions::BankActions(PresetManager &presetManager) :
 
   addAction("load-preset", [&] (shared_ptr<NetworkRequest> request) mutable
   {
-    Glib::ustring uuid = request->get ("uuid");
+    auto uuid = request->get ("uuid");
 
-    if (tBankPtr bank = m_presetManager.findBankWithPreset (uuid))
+    if (auto bank = m_presetManager.findBankWithPreset (uuid))
     {
-      if (PresetBank::tPresetPtr preset = bank->getPreset (uuid))
+      if (auto preset = bank->getPreset (uuid))
       {
-        UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction (preset->getUndoTransactionTitle("Load"));
-        UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
+        auto scope = m_presetManager.getUndoScope().startTransaction (preset->getUndoTransactionTitle("Load"));
+        auto transaction = scope->getTransaction();
         m_presetManager.getEditBuffer()->undoableLoad (transaction, preset);
         preset->undoableSelect (transaction);
       }
@@ -546,17 +556,16 @@ BankActions::BankActions(PresetManager &presetManager) :
   addAction("set-position",
       [&] (shared_ptr<NetworkRequest> request) mutable
       {
-        Glib::ustring uuid = request->get ("uuid");
-        Glib::ustring x = request->get ("x");
-        Glib::ustring y = request->get ("y");
+        auto uuid = request->get ("uuid");
+        auto x = request->get ("x");
+        auto y = request->get ("y");
 
-        if (tBankPtr bank = m_presetManager.findBank (uuid))
+        if (auto bank = m_presetManager.findBank (uuid))
         {
           if(bank->getX() != x || bank->getY() != y)
           {
-            UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Move preset bank '%0'", bank->getName(true));
-            UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
-
+            auto scope = presetManager.getUndoScope().startTransaction ("Move preset bank '%0'", bank->getName(true));
+            auto transaction = scope->getTransaction();
             bank->undoableSetPosition (transaction, x, y);
             //  m_presetManager.undoableSelectBank (transaction, bank->getUuid(), false);
           }
