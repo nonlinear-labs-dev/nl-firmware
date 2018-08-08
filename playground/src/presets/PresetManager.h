@@ -59,6 +59,7 @@ class PresetManager : public ContentSection
 
     // undo transactions
     tBankPtr addBank (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y);
+    tBankPtr addBank (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y, bool autoSelect);
     tBankPtr addBank (UNDO::Scope::tTransactionPtr transaction, bool autoSelect);
 
     void undoableClear ();
