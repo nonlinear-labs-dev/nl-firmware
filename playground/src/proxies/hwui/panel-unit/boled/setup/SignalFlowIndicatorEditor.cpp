@@ -9,7 +9,7 @@
 #include <proxies/hwui/UsageMode.h>
 
 SignalFlowIndicatorEditor::SignalFlowIndicatorEditor () :
-    super (Rect (0, 0, 0, 0))
+    super ()
 {
   Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->onChange (
       mem_fun (this, &SignalFlowIndicatorEditor::onSettingChanged));
@@ -20,42 +20,19 @@ SignalFlowIndicatorEditor::~SignalFlowIndicatorEditor ()
 {
 }
 
-Font::Justification SignalFlowIndicatorEditor::getJustification () const
+void SignalFlowIndicatorEditor::incSetting (int inc)
 {
-  return Font::Justification::Left;
+  Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->inc(inc);
 }
 
-bool SignalFlowIndicatorEditor::redraw (FrameBuffer &fb)
+const vector<ustring> &SignalFlowIndicatorEditor::getDisplayStrings () const
 {
-  super::redraw(fb);
-  fb.setColor (FrameBuffer::C179);
-  fb.drawRect (getPosition());
-  return true;
+  return Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->enumToDisplayString();
 }
 
-void SignalFlowIndicatorEditor::setBackgroundColor (FrameBuffer &fb) const
-{
-  fb.setColor (FrameBuffer::C103);
-}
 
-void SignalFlowIndicatorEditor::setFontColor (FrameBuffer &fb) const
+int SignalFlowIndicatorEditor::getSelectedIndex () const
 {
-  fb.setColor(FrameBuffer::C255);
-}
-
-void SignalFlowIndicatorEditor::onSettingChanged (const Setting *s)
-{
-  if (auto p = dynamic_cast<const SignalFlowIndicationSetting*>(s))
-    setText (p->getDisplayString (), 0);
-}
-
-bool SignalFlowIndicatorEditor::onButton (int i, bool down, ButtonModifiers modifiers)
-{
-  return false;
-}
-
-bool SignalFlowIndicatorEditor::onRotary (int inc, ButtonModifiers modifiers)
-{
-  Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->toggle();
-  return true;
+  auto enabled = Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->get ();
+  return enabled ? 0 : 1;
 }
