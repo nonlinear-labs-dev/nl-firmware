@@ -16,10 +16,6 @@ SignalFlowIndicatorEditor::SignalFlowIndicatorEditor () :
 
 }
 
-SignalFlowIndicatorEditor::~SignalFlowIndicatorEditor ()
-{
-}
-
 void SignalFlowIndicatorEditor::incSetting (int inc)
 {
   Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->inc(inc);

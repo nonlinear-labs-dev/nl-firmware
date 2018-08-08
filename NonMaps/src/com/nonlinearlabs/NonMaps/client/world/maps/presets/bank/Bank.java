@@ -85,15 +85,15 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public boolean hasSlaveInDirection(Orientation orientation) {
-		switch(orientation) {
-			case North:
-				return getMasterTop() != null;
-			case South:
-				return getBottomSlave() != null;
-			case East:
-				return getRightSlave() != null;
-			case West:
-				return getMasterLeft() != null;
+		switch (orientation) {
+		case North:
+			return getMasterTop() != null;
+		case South:
+			return getBottomSlave() != null;
+		case East:
+			return getRightSlave() != null;
+		case West:
+			return getMasterLeft() != null;
 		}
 		return false;
 	}
@@ -121,7 +121,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		for (MapsControl c : getChildren()) {
 			c.getNonPosition().moveBy(tapeSize, tapeSize);
 		}
-		
+
 		tapeSize *= 2;
 		double tapePosWidth = getAttachArea();
 
@@ -139,17 +139,17 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		Tape west = getTape(Orientation.West);
 		west.setNonSize(new NonDimension(tapeSize, oldDim.getHeight()));
-		west.moveTo(new NonPosition(0- tapeSize / 2, 0 + tapeSize / 2));
+		west.moveTo(new NonPosition(0 - tapeSize / 2, 0 + tapeSize / 2));
 
-    insertTapes[Orientation.North.ordinal()].setNonSize(new NonDimension(oldDim.getWidth(), tapeWidth * 1.05));
-		insertTapes[Orientation.South.ordinal()].setNonSize(new NonDimension(oldDim.getWidth(), tapeWidth * 1.05));
-		insertTapes[Orientation.East.ordinal()].setNonSize(new NonDimension(tapeWidth * 1.05, oldDim.getHeight()));
-		insertTapes[Orientation.West.ordinal()].setNonSize(new NonDimension(tapeWidth * 1.05, oldDim.getHeight()));
+		insertTapes[Orientation.North.ordinal()].setNonSize(new NonDimension(oldDim.getWidth(), tapeSize * 1.05));
+		insertTapes[Orientation.South.ordinal()].setNonSize(new NonDimension(oldDim.getWidth(), tapeSize * 1.05));
+		insertTapes[Orientation.East.ordinal()].setNonSize(new NonDimension(tapeSize * 1.05, oldDim.getHeight()));
+		insertTapes[Orientation.West.ordinal()].setNonSize(new NonDimension(tapeSize * 1.05, oldDim.getHeight()));
 
-		insertTapes[Orientation.North.ordinal()].moveTo(new NonPosition(tapeWidth, 0));
-		insertTapes[Orientation.South.ordinal()].moveTo(new NonPosition(tapeWidth, oldDim.getHeight() + tapeWidth));
-		insertTapes[Orientation.East.ordinal()].moveTo(new NonPosition(oldDim.getWidth() + tapeWidth, tapeWidth));
-		insertTapes[Orientation.West.ordinal()].moveTo(new NonPosition(0, tapeWidth));
+		insertTapes[Orientation.North.ordinal()].moveTo(new NonPosition(tapeSize, 0));
+		insertTapes[Orientation.South.ordinal()].moveTo(new NonPosition(tapeSize, oldDim.getHeight() + tapeSize));
+		insertTapes[Orientation.East.ordinal()].moveTo(new NonPosition(oldDim.getWidth() + tapeSize, tapeSize));
+		insertTapes[Orientation.West.ordinal()].moveTo(new NonPosition(0, tapeSize));
 
 		tapeSize = tapeSize / 2;
 		setNonSize(oldDim.getWidth() + tapeSize * 2.1, oldDim.getHeight() + tapeSize * 2.1);
@@ -164,7 +164,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		Rect r = getPixRect().copy();
 		double reduce = toXPixels(getAttachArea());
-		r = r.getReducedBy(2*reduce);
+		r = r.getReducedBy(2 * reduce);
 		r.drawRoundedRect(ctx, Rect.ROUNDING_TOP, toXPixels(6), toXPixels(3), null, getColorBankSelect());
 
 		drawDropIndicator(ctx);
