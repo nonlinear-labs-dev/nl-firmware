@@ -9,13 +9,15 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 
 ParameterLayout2::ParameterLayout2 () :
     super (Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
   addControl (new ModuleCaption (Rect (0, 0, 64, 13)));
   addControl (new ParameterNameLabel (Rect (72, 8, 112, 11)));
-  addControl (new LockedIndicator (Rect (68, 0, 4, 13)));
+  addControl (new LockedIndicator (Rect (68, 1, 10, 11)));
+  addControl(new UndoIndicator(Rect(25, 15, 10, 5)));
 }
 
 Parameter * ParameterLayout2::getCurrentParameter () const
