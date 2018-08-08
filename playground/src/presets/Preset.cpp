@@ -137,11 +137,6 @@ void Preset::undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetTyp
   }
 }
 
-Parameter* Preset::getParameterByID(gint32 ID) const {
-  return getParametersSortedById().at(ID);
-}
-
-
 void Preset::undoableSetUuid(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid)
 {
   bool updateLastLoadedPresetInfo = false;

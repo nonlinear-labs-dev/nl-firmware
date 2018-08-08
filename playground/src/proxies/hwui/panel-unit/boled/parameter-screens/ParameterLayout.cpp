@@ -19,7 +19,7 @@ Parameter* getOriginalParameter(Parameter* currentParam) {
   auto pm = Application::get().getPresetManager();
   auto uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
   if(auto originalPreset = pm->findPreset(uuid)) {
-    if(auto originalParameter = originalPreset->getParameterByID(currentParam->getID())) {
+    if(auto originalParameter = originalPreset->findParameterByID(currentParam->getID())) {
       return originalParameter;
     }
   }
@@ -105,7 +105,7 @@ void ParameterLayout2::handlePresetValueRecall() {
 bool ParameterLayout2::isCurrentParamDiffFromLoaded() const {
   if(auto currentParam = getCurrentEditParameter()) {
     if(auto originPreset = Application::get().getPresetManager()->getLoadedPreset())
-      return currentParam->getControlPositionValue() != originPreset->getParameterByID(currentParam->getID())->getControlPositionValue();
+      return currentParam->getControlPositionValue() != originPreset->findParameterByID(currentParam->getID())->getControlPositionValue();
   }
   return false;
 }
