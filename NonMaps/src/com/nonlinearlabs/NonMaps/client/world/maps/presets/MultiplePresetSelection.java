@@ -116,7 +116,7 @@ public class MultiplePresetSelection {
 		for(String s: getSelectedPresets()) {
 			Preset p = getPresetManager().findPreset(s);
 			if(p != null) {
-				if(p.getParent().getPresetList().getPresetCount() == 1 || allPresetsOfBankInMulSelection(p.getParent()))
+				if(allPresetsOfBankInMulSelection(p.getParent()))
 					return true;
 			}
 		}
