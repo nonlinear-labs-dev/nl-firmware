@@ -104,7 +104,8 @@ public class Header extends Label {
 		if (b == dragProxy.getOrigin())
 			return null;
 
-		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
+		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting()
+				.isEnabled()) {
 			if (dragProxy.getOrigin() instanceof IPreset) {
 				if (pm.hasMultiplePresetSelection()) {
 					getNonMaps().getServerProxy().dropPresetsOnBank(pm.getMultiSelection().getCSV(), b);
@@ -249,7 +250,8 @@ public class Header extends Label {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		if (!getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled())
+		if (!getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting()
+				.isEnabled())
 			return null;
 
 		if (getParent().isDraggingControl())
@@ -298,8 +300,8 @@ public class Header extends Label {
 
 		bank.getParent().pushBankOntoTop(bank);
 
-		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
-				.getContextMenuSettings();
+		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay()
+				.getSetup().getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 			return o.setContextMenu(pos, new MapsBankContextMenu(o, getParent()));

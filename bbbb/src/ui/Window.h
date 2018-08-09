@@ -4,7 +4,6 @@
 
 #include <gtkmm-3.0/gtkmm.h>
 #include <io/network/WebSocketServer.h>
-#include "Boled.h"
 #include "PanelUnit.h"
 #include "PlayPanel.h"
 #include "Ribbon.h"
@@ -27,7 +26,6 @@ class Window : public Gtk::Window
     PanelUnit m_editPanel;
     Ribbon m_ribbonUp;
     LowerRibbon m_ribbonDown;
-    Boled m_boled;
 };
 
 #endif

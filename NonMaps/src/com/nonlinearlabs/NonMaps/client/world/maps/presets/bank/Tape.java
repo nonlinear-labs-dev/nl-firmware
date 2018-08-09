@@ -87,7 +87,7 @@ public class Tape extends MapsControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		calcTapeRect().fill(ctx, getTapeColor());
+		getPixRect().fill(ctx, getTapeColor());
 	}
 
 	private RGB getTapeColor() {
@@ -97,34 +97,6 @@ public class Tape extends MapsControl {
 			activeColor = new RGB(250, 250, 250);
 
 		return getParent().getParent().isAttachingTape(this) ? activeColor : new RGB(98, 113, 183);
-	}
-
-	public Rect calcTapeRect() {
-		Rect r = getPixRect().copy();
-
-		switch (orientation) {
-		case East:
-			r.setWidth(r.getWidth() / 2);
-			break;
-
-		case North:
-			r.setHeight(r.getHeight() / 2);
-			r.moveBy(0, r.getHeight());
-			break;
-
-		case South:
-			r.setHeight(r.getHeight() / 2);
-			break;
-
-		case West:
-			r.setWidth(r.getWidth() / 2);
-			r.moveBy(r.getWidth(), 0);
-			break;
-
-		default:
-			break;
-		}
-		return r;
 	}
 
 	public boolean fitsTo(Tape others) {

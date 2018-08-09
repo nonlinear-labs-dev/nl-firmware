@@ -23,7 +23,6 @@ Window::Window()
   m_box.pack_start(m_playPanel, true, true);
   m_box.pack_end(m_editPanel, false, false);
   m_box.pack_start(m_ribbonBox, false, false);
-  m_box.pack_start(m_boled, true, true);
   add(m_box);
   show_all_children(true);
 }
@@ -35,7 +34,6 @@ Window::~Window()
 void Window::onFrameBufferMessageReceived(WebSocketServer::tMessage msg)
 {
   m_playPanel.setFrameBuffer(msg);
-  m_boled.setBuffer(msg);
 }
 
 void Window::onPanelLEDsMessageReceived(WebSocketServer::tMessage msg)
