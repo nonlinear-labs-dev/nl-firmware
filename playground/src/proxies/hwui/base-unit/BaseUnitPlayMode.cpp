@@ -54,7 +54,7 @@ void BaseUnitPlayMode::setupBaseUnitUIModeButton ()
   setupButtonConnection (BUTTON_MODE, [ = ] (gint32 buttonID, ButtonModifiers modifiers, bool state)
   {
     if (state)
-    Application::get ().getSettings ()->getSetting<BaseUnitUIMode> ()->inc ();
+    Application::get ().getSettings ()->getSetting<BaseUnitUIMode> ()->inc (1, true);
 
     return true;
   });
