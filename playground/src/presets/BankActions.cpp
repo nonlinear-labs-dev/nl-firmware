@@ -399,7 +399,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       }
     }
   });
-  
+
   addAction("set-order-number", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     auto uuid = request->get("uuid");
@@ -1155,7 +1155,6 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   newBank->undoableSetAttribute(transaction, "Name of Export File", "");
   newBank->undoableSetAttribute(transaction, "Date of Export File", "");
 
-  m_presetManager.undoableSelectBank(transaction, newBank->getUuid());
   Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
 
   return newBank;
