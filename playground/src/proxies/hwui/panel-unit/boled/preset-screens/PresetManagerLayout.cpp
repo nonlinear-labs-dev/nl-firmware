@@ -103,7 +103,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
   addControl(new UndoIndicator(Rect(25, 15, 10, 5)));
   m_autoLoad = addControl(new Button("Direct Load", BUTTON_D));
-  addControl(new AnyParameterLockedIndicator(Rect(8, 26, 48, 12)));
+  addControl(new AnyParameterLockedIndicator(Rect(8, 26, 48, 13)));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   m_presets->setBankFocus();
   Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->onChange(
@@ -164,7 +164,7 @@ void PresetManagerLayout::setupPresetSelect()
   m_numPresetsInBank = addControl(new NumPresetsInBankLabel(Rect(192, 1, 64, 14)));
   m_autoLoad = addControl(new Button("Direct Load", BUTTON_D));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
-  addControl(new AnyParameterLockedIndicator(Rect(8, 26, 48, 12)));
+  addControl(new AnyParameterLockedIndicator(Rect(8, 26, 48, 13)));
   addControl(new UndoIndicator(Rect(25, 15, 10, 5)));
   Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->onChange(
       sigc::mem_fun(this, &PresetManagerLayout::updateAutoLoadButton));

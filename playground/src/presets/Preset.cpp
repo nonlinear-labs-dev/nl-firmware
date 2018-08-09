@@ -351,13 +351,13 @@ void Preset::writeDiff(Writer &writer, Preset *other) const
 
   if(auto b = getBank())
   {
-    sprintf(txt, "%d-%03d", pm->calcOrderNumber(b.get()), b->getPresetPosition(getUuid()) + 1);
+    sprintf(txt, "%d-%03z", pm->calcOrderNumber(b.get()), b->getPresetPosition(getUuid()) + 1);
     aPositionString = txt;
   }
 
   if(auto b = other->getBank())
   {
-    sprintf(txt, "%d-%03d", pm->calcOrderNumber(b.get()), b->getPresetPosition(other->getUuid()) + 1);
+    sprintf(txt, "%d-%03z", pm->calcOrderNumber(b.get()), b->getPresetPosition(other->getUuid()) + 1);
     bPositionString = txt;
   }
 

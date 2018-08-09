@@ -799,6 +799,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		if (slaveBottom != null) {
 			NonPosition posYFin = new NonPosition(getNonPosition().getLeft(),
 					getNonPosition().getBottom() - getAttachArea() / 2);
+			posYFin.snapTo(PresetManager.getSnapGridResolution());
 			slaveBottom.moveTo(posYFin);
 			slaveBottom.layoutSlaves();
 		}

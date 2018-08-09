@@ -1175,6 +1175,13 @@ void BankActions::insertBankInCluster(BankActions::tBankPtr bankToInsert, BankAc
                                       const ustring directionSeenFromBankInCluster) {
     auto scope = m_presetManager.getUndoScope().startTransaction("Insert Bank %0 into Cluster", bankToInsert->getName(true));
     auto transaction = scope->getTransaction();
+
+  if(auto slaveBottom = bankToInsert->getSlaveBottom())
+    slaveBottom->resetAttached(transaction);
+
+  if(auto slaveRight = bankToInsert->getSlaveRight())
+    slaveRight->resetAttached(transaction);
+
     if(directionSeenFromBankInCluster == "North") {
         if(auto topMaster = bankAtInsert->getMasterTop()) {
             bankToInsert->undoableAttachBank(transaction, topMaster->getUuid(), PresetBank::AttachmentDirection::top);

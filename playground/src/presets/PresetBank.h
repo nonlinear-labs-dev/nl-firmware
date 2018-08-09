@@ -110,6 +110,7 @@ class PresetBank : public UpdateDocumentContributor,
 
     void resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transaction);
     bool resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction);
+    void resetAttached(UNDO::Scope::tTransactionPtr transaction);
 
     PresetBank *getClusterMaster();
     PresetBank *getMasterTop();
@@ -123,7 +124,6 @@ class PresetBank : public UpdateDocumentContributor,
     sigc::connection onBankChanged(sigc::slot<void> slot);
 
   private:
-    void resetAttached(UNDO::Scope::tTransactionPtr transaction);
     Glib::ustring generateHumanReadablePresetName(size_t pos) const;
     void setName(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &name);
     void setX(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x);
