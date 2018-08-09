@@ -63,7 +63,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	private Tape tapes[] = new Tape[4];
-	private InsertTape insertTapes[] = new InsertTape[4];
 	private PresetList presetList = null;
 
 	public Bank(PresetManager parent, String uuid) {
@@ -77,11 +76,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		tapes[Tape.Orientation.South.ordinal()] = addChild(new Tape(this, Tape.Orientation.South));
 		tapes[Tape.Orientation.East.ordinal()] = addChild(new Tape(this, Tape.Orientation.East));
 		tapes[Tape.Orientation.West.ordinal()] = addChild(new Tape(this, Tape.Orientation.West));
-		insertTapes[Orientation.North.ordinal()] = addChild(new InsertTape(this, Orientation.North));
-		insertTapes[Orientation.South.ordinal()] = addChild(new InsertTape(this, Orientation.South));
-		insertTapes[Orientation.East.ordinal()] = addChild(new InsertTape(this, Orientation.East));
-		insertTapes[Orientation.West.ordinal()] = addChild(new InsertTape(this, Orientation.West));
-
 	}
 
 	public boolean hasSlaveInDirection(Orientation orientation) {
@@ -100,7 +94,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	@Override
 	public boolean skipChildOnLayout(MapsControl c) {
-		return c instanceof Tape || c instanceof InsertTape;
+		return c instanceof Tape;
 	}
 
 	public Tape getTape(Tape.Orientation o) {
@@ -140,17 +134,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		Tape west = getTape(Orientation.West);
 		west.setNonSize(new NonDimension(tapeSize, oldDim.getHeight()));
 		west.moveTo(new NonPosition(0 - tapeSize / 2, 0 + tapeSize / 2));
-
-		insertTapes[Orientation.North.ordinal()].setNonSize(new NonDimension(oldDim.getWidth(), tapeSize * 1.05));
-		insertTapes[Orientation.South.ordinal()].setNonSize(new NonDimension(oldDim.getWidth(), tapeSize * 1.05));
-		insertTapes[Orientation.East.ordinal()].setNonSize(new NonDimension(tapeSize * 1.05, oldDim.getHeight()));
-		insertTapes[Orientation.West.ordinal()].setNonSize(new NonDimension(tapeSize * 1.05, oldDim.getHeight()));
-
-		insertTapes[Orientation.North.ordinal()].moveTo(new NonPosition(tapeSize, 0));
-		insertTapes[Orientation.South.ordinal()].moveTo(new NonPosition(tapeSize, oldDim.getHeight() + tapeSize));
-		insertTapes[Orientation.East.ordinal()].moveTo(new NonPosition(oldDim.getWidth() + tapeSize, tapeSize));
-		insertTapes[Orientation.West.ordinal()].moveTo(new NonPosition(0, tapeSize));
-
+		
 		tapeSize = tapeSize / 2;
 		setNonSize(oldDim.getWidth() + tapeSize * 2.1, oldDim.getHeight() + tapeSize * 2.1);
 	}
