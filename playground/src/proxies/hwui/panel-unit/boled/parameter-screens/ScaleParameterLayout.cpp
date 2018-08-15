@@ -1,5 +1,6 @@
 #include <Application.h>
 #include <groups/ParameterGroup.h>
+#include <groups/ScaleGroup.h>
 #include <http/UndoScope.h>
 #include <parameters/Parameter.h>
 #include <presets/EditBuffer.h>
@@ -12,6 +13,9 @@ void toggleHightlight(Control* c);
 void ScaleParameterSelectLayout::init ()
 {
   super::init ();
+
+  auto eb = Application::get ().getPresetManager ()->getEditBuffer ();
+  eb->getParameterGroupByID("Scale")->onGroupChanged(sigc::mem_fun(this, &ScaleParameterSelectLayout::updateResetButton));
 }
 
 void ScaleParameterSelectLayout::addButtons ()
@@ -19,6 +23,14 @@ void ScaleParameterSelectLayout::addButtons ()
   m_resetButton = addControl (new Button ("Reset", BUTTON_A));
   addControl (new Button ("<", BUTTON_B));
   addControl (new Button (">", BUTTON_C));
+}
+
+void ScaleParameterSelectLayout::updateResetButton()
+{
+  auto eb = Application::get ().getPresetManager ()->getEditBuffer ();
+  auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID("Scale"));
+  auto changed = scaleGroup->isAnyOffsetChanged();
+  m_resetButton->setText(changed ? "Reset" : "");
 }
 
 bool ScaleParameterSelectLayout::onButton (int i, bool down, ButtonModifiers modifiers)
