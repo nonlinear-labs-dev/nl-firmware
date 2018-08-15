@@ -505,7 +505,7 @@ const Glib::ustring &PresetBank::getY() const
 Glib::ustring PresetBank::getName(bool withFallback) const
 {
   if(withFallback && m_name.empty())
-    return "<untitled preset bank>";
+    return "<untitled bank>";
 
   return m_name;
 }
