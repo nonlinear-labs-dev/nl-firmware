@@ -24,7 +24,7 @@ void FourStateLED::setState(char state)
 
 void FourStateLED::syncBBBB()
 {
-  auto data = new uint8_t[2];
+  uint8_t data[2];
   data[0] = getID();
   data[1] = (m_state & 0x03);
 

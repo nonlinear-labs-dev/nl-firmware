@@ -107,7 +107,7 @@ void WebSocketSession::sendMessage(Domain d, tMessage msg)
   gsize len = 0;
   if(auto data = reinterpret_cast<const int8_t*>(msg->get_data(len)))
   {
-    auto cp = new int8_t[len + 1];
+    int8_t cp[len + 1];
     cp[0] = (int8_t)d;
     std::copy(data, data + len, cp + 1);
     sendMessage(Glib::Bytes::create(cp, len + 1));
@@ -138,10 +138,7 @@ void WebSocketSession::receiveMessage(SoupWebsocketConnection *self, gint type, 
   gsize len = 0;
   auto data = reinterpret_cast<const uint8_t*>(msg->get_data(len));
   Domain d = (Domain)(data[0]);
-
-  auto dup = g_memdup(data + 1, len - 1);
-
-  auto byteMessage = Glib::Bytes::create(dup, len - 1);
+  auto byteMessage = Glib::Bytes::create(data + 1, len - 1);
 
   pThis->m_defaultContextQueue->pushMessage([=](){
     pThis->m_onMessageReceived[d](byteMessage);
