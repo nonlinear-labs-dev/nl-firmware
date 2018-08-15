@@ -1,18 +1,24 @@
 #include <Application.h>
+#include <tools/PerformanceTimer.h>
 #include "BankSorter.h"
 #include "PresetManager.h"
 #include "PresetBank.h"
+#include "ClusterEnforcement.h"
+
+bool inSameCluster(const std::shared_ptr<PresetBank>& lhs, const std::shared_ptr<PresetBank>& rhs) {
+  return lhs->getClusterMaster() == rhs->getClusterMaster();
+}
 
 void BankSorter::sort()
 {
+  PerformanceTimer t("Sort Banks");
+
   auto scope = getPM()->getUndoScope().startTransaction("Sort Bank Numbers");
   auto transaction = scope->getTransaction();
 
-  auto clusterBanks = getClusterVectorsFromClusterMasters(getClusterMastersSortedByX());
-  auto freeBanks = getFreeBanksSortedByX();
-  auto newBankOrder = concatVectorsAccordingToRule(clusterBanks, freeBanks);
-
-  Application::get().getPresetManager()->undoableSetBanks(transaction, newBankOrder);
+  ClusterEnforcement ce;
+  auto newBanks = ce.sortBanks(getPM()->getBanks());
+  Application::get().getPresetManager()->undoableSetBanks(transaction, newBanks);
 }
 
 BankSorter::BankVector BankSorter::concatVectorsAccordingToRule(BankVector clusters,

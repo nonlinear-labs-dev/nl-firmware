@@ -808,14 +808,14 @@ const Glib::ustring PresetBank::calcStateString() const
 }
 
 const bool PresetBank::isInCluster() const {
-  bool attached = m_attachment.direction != AttachmentDirection::none;
-  bool isParent = [this](){
-    for(auto& bank: getParent()->getBanks())
-      if(bank->getDirectClusterMaster() == this && bank.get() != this)
-        return true;
-    return false;
-  }();
-  return attached || isParent;
+  if(m_attachment.direction != AttachmentDirection::none)
+    return true;
+
+  for(auto& bank: getParent()->getBanks())
+    if(bank->getAttached().uuid == getUuid())
+      return true;
+
+  return false;
 }
 
 void PresetBank::undoableAssignDefaultPosition(shared_ptr<UNDO::Transaction> transaction)
@@ -986,6 +986,17 @@ PresetBank *PresetBank::getRightSlave() {
   }
   return nullptr;
 }
+
+
+
+const size_t PresetBank::getClusterDepth() const {
+  if(auto master = getParent()->findBank(getAttached().uuid))
+    if(master.get() != this)
+      return 1 + master->getClusterDepth();
+
+  return 0;
+}
+
 
 std::vector<PresetManager::tBankPtr> PresetBank::getClusterAsSortedVector()
 {

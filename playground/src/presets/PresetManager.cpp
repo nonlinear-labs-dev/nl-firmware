@@ -598,7 +598,7 @@ PresetManager::tBankPtr PresetManager::findBank(const Glib::ustring &uuid) const
       return bank;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool PresetManager::isLoading() const

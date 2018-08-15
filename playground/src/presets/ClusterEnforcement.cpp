@@ -43,6 +43,7 @@ void ClusterEnforcement::buildClusterStructure()
       {
         auto clusterRoot = std::make_shared<TreeNode>();
         clusterRoot->bank = bank;
+        clusterRoot->master = nullptr;
         addCluster(clusterRoot);
       }
       else if (auto masterNode = findTreeNode(bank->getAttached().uuid))
@@ -59,6 +60,9 @@ void ClusterEnforcement::buildClusterStructure()
 
     if (waitingList.size() == anotherWaitingList.size())
     {
+      for(const auto& master: m_clusters) {
+        master->assignMaster(master);
+      }
       break;
     }
 
@@ -210,4 +214,44 @@ void ClusterEnforcement::connectToClusterStructure(tTreeNodePtr masterNode, tTre
   }
 
   m_uuidToTreeNode[myNode->bank->getUuid()] = myNode;
+}
+
+bool inCluster(const ClusterEnforcement::tTreeNodePtr& node) {
+  return node->top || node->bottom || node->left || node->right;
+}
+
+vector<shared_ptr<PresetBank>> ClusterEnforcement::sortBanks(vector<shared_ptr<PresetBank>> in) {
+
+  buildClusterStructure();
+
+  std::vector<tTreeNodePtr> treeNodes;
+  for(auto x: m_uuidToTreeNode)
+    treeNodes.push_back(x.second);
+
+  std::sort(treeNodes.begin(), treeNodes.end(), [&](const tTreeNodePtr& lhs, const tTreeNodePtr& rhs) {
+      auto lhsInCluster = inCluster(lhs);
+      auto rhsInCluster = inCluster(rhs);
+
+      if(lhsInCluster && !rhsInCluster)
+        return true;
+      else if(!lhsInCluster && rhsInCluster)
+        return false;
+      else if(lhsInCluster && rhsInCluster) {
+        if(lhs->master == rhs->master) {
+          return lhs->getClusterDepth() < rhs->getClusterDepth();
+        }
+        else {
+          return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
+        }
+      }
+      else
+        return stoi(lhs->bank->getX()) < stoi(rhs->bank->getX());
+  });
+
+  auto ret = vector<shared_ptr<PresetBank>>();
+
+  for(const auto& x: treeNodes)
+    ret.push_back(x->bank);
+
+  return ret;
 }

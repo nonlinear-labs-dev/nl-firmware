@@ -130,6 +130,8 @@ class PresetBank : public UpdateDocumentContributor,
 
     PresetBank* getBottomSlave();
     PresetBank* getRightSlave();
+    const size_t getClusterDepth() const;
+
   private:
     Glib::ustring generateHumanReadablePresetName(size_t pos) const;
     void setName(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &name);
