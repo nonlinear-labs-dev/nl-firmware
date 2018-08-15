@@ -12,6 +12,7 @@ import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImagePhase;
@@ -126,13 +127,14 @@ class StorePreset extends SVGImage {
 			break;
 
 		case OVERWRITE:
-			if (getPresetManager().isInStoreSelectMode()) {
+			if (getPresetManager().isInStoreSelectMode() &&	getPresetManager().getStoreSelectMode().getSelectedPreset() != null) {
 				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreSelectMode().getSelectedPreset());
-			} else {
+			} else if(getPresetManager().getSelectedPreset() != null) {
 				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getSelectedPreset());
+			} else {
+				getNonMaps().getServerProxy().overwritePreset();
 			}
 			break;
-
 		default:
 			break;
 		}
