@@ -68,7 +68,9 @@ public class Tape extends MapsControl {
 
 				if (r instanceof PresetManager || r instanceof Tape) {
 					boolean visible = super.isVisible();
-					return visible && getParent().hasSlaveInDirection(getOrientation());
+					return visible && 
+							o.isCurrentlyDraggingATypeOf(Bank.class.getName()) &&
+							getParent().hasSlaveInDirection(getOrientation());
 				}
 			}
 		}
