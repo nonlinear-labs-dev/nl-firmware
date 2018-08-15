@@ -37,6 +37,7 @@ class PresetManager : public ContentSection
 
     void init ();
     void stress(int numTransactions);
+    void stressLoad(int numTransactions);
     void reload ();
 
     virtual Glib::ustring getPrefix () const override;
