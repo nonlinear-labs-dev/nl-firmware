@@ -19,5 +19,4 @@ private:
     static bool compareByXPosition(const tPresetBankPtr &lhs, const tPresetBankPtr &rhs);
     static bool isValidMasterBank(PresetBank* bank, PresetBank* master);
     static bool doesNotContain(BankVector &clusterMasters, tPresetBankPtr master);
-    static void reassignOrderNumbers(const UNDO::TransactionCreationScope::tTransactionPtr &transaction, BankVector &newBankOrder);
 };

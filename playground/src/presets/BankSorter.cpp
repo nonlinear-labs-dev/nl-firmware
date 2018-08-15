@@ -7,16 +7,12 @@ void BankSorter::sort()
 {
   auto scope = getPM()->getUndoScope().startTransaction("Sort Bank Numbers");
   auto transaction = scope->getTransaction();
-  auto newBankOrder = concatVectorsAccordingToRule(getClusterVectorsFromClusterMasters(getClusterMastersSortedByX()), getFreeBanksSortedByX());
-  reassignOrderNumbers(transaction, newBankOrder);
-}
 
-void BankSorter::reassignOrderNumbers(const UNDO::TransactionCreationScope::tTransactionPtr &transaction,
-                                      BankVector &newBankOrder) {
-  auto index = getPM()->getNumBanks() - 1;
-  for(auto it = newBankOrder.rbegin(); it < newBankOrder.rend(); it++) {
-    getPM()->undoableSetOrderNumber(transaction, *it, static_cast<int>(index--));
-  }
+  auto clusterBanks = getClusterVectorsFromClusterMasters(getClusterMastersSortedByX());
+  auto freeBanks = getFreeBanksSortedByX();
+  auto newBankOrder = concatVectorsAccordingToRule(clusterBanks, freeBanks);
+
+  Application::get().getPresetManager()->undoableSetBanks(transaction, newBankOrder);
 }
 
 BankSorter::BankVector BankSorter::concatVectorsAccordingToRule(BankVector clusters,
@@ -50,9 +46,11 @@ BankSorter::BankVector BankSorter::getClusterMastersSortedByX() {
 BankSorter::BankVector BankSorter::getFreeBanksSortedByX() {
   BankVector banks;
 
-  for(auto bank: getPM()->getBanksIf([](auto bank){return !bank->isInCluster();})) {
-    if(doesNotContain(banks, bank))  {
-      banks.push_back(bank);
+  for(auto bank: getPM()->getBanks()) {
+    if(!bank->isInCluster()) {
+      if(doesNotContain(banks, bank)) {
+        banks.push_back(bank);
+      }
     }
   }
   std::sort(banks.begin(), banks.end(), compareByXPosition);

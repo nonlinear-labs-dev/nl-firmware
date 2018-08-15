@@ -811,7 +811,7 @@ const bool PresetBank::isInCluster() const {
   bool attached = m_attachment.direction != AttachmentDirection::none;
   bool isParent = [this](){
     for(auto& bank: getParent()->getBanks())
-      if(bank->getDirectClusterMaster() == this)
+      if(bank->getDirectClusterMaster() == this && bank.get() != this)
         return true;
     return false;
   }();
@@ -970,8 +970,8 @@ PresetBank* PresetBank::getDirectClusterMaster()
 PresetBank *PresetBank::getBottomSlave() {
   auto pm = Application::get().getPresetManager();
   for(auto& bank: pm->getBanks()) {
-    if(bank->getClusterMaster() == this)
-      if(getAttached().direction == AttachmentDirection::top)
+    if(bank->getDirectClusterMaster() == this)
+      if(bank->getAttached().direction == AttachmentDirection::top)
         return bank.get();
   }
   return nullptr;
@@ -980,8 +980,8 @@ PresetBank *PresetBank::getBottomSlave() {
 PresetBank *PresetBank::getRightSlave() {
   auto pm = Application::get().getPresetManager();
   for(auto& bank: pm->getBanks()) {
-    if(bank->getClusterMaster() == this)
-      if(getAttached().direction == AttachmentDirection::left)
+    if(bank->getDirectClusterMaster() == this)
+      if(bank->getAttached().direction == AttachmentDirection::left)
         return bank.get();
   }
   return nullptr;
@@ -1001,6 +1001,7 @@ std::vector<PresetManager::tBankPtr> PresetBank::getClusterAsSortedVector()
     while(current)
     {
       cluster.push_back(current->shared_from_this());
+
       if(auto rightSlave = current->getRightSlave())
         nodeToRight = rightSlave;
 

@@ -236,18 +236,11 @@ void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transact
 void PresetManager::undoableSetBanks(UNDO::Scope::tTransactionPtr transaction, std::vector<tBankPtr> newBankOrder) {
   auto swapData = UNDO::createSwapData(newBankOrder);
 
-
-
   sanitizeBankClusterRelations(transaction);
   transaction->addSimpleCommand([ = ] (UNDO::Command::State)
                                 {
                                   swapData->swapWith(m_banks);
-                                  for(auto bank : swapData->get<0>()) {
-                                    bank->onChange();
-                                  }
                                   reassignOrderNumbers();
-                                  sanitizeBankClusterRelations(transaction);
-
                                 });
 }
 

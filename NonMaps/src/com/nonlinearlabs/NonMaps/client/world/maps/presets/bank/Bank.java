@@ -130,7 +130,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		Tape west = getTape(Orientation.West);
 		west.setNonSize(new NonDimension(tapeSize, oldDim.getHeight()));
-		west.moveTo(new NonPosition(0- tapeSize / 2, 0 + tapeSize / 2));
+		west.moveTo(new NonPosition(0, tapeSize));
 
 		setNonSize(oldDim.getWidth() + tapeSize * 2, oldDim.getHeight() + tapeSize * 2);
 	}
