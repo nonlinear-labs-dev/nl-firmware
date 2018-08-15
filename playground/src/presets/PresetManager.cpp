@@ -1016,6 +1016,29 @@ void PresetManager::stress(int numTransactions)
   }, 20);
 }
 
+void PresetManager::stressLoad(int numTransactions)
+{
+  Glib::MainContext::get_default()->signal_timeout().connect_once([=]()
+  {
+    int numSteps = numTransactions;
+    auto transactionScope = getUndoScope().startTransaction("Stressing by Preset loading");
+    auto transaction = transactionScope->getTransaction();
+
+    while(numSteps > 0)
+    {
+      for(auto b : getBanks())
+      {
+        for(auto p : b->getPresets())
+        {
+          m_editBuffer->undoableLoad(transaction, p);
+          numSteps--;
+        }
+      }
+    }
+
+  }, 20);
+}
+
 Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset2)
 {
   Glib::ustring out;

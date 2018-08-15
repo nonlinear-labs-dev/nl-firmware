@@ -24,7 +24,7 @@ final class EmptyLabel extends Label {
 
 	@Override
 	protected int getNonWidth() {
-		return 228;
+		return 232;
 	}
 
 	@Override

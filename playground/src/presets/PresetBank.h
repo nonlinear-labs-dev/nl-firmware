@@ -23,7 +23,7 @@ class PresetBank : public UpdateDocumentContributor,
     public sigc::trackable
 {
   public:
-    PresetBank(PresetManager *parent);
+    explicit PresetBank(PresetManager *parent);
     virtual ~PresetBank();
 
     PresetManager *getParent();
@@ -40,7 +40,7 @@ class PresetBank : public UpdateDocumentContributor,
 
     struct Attachment
     {
-        Attachment(Glib::ustring uuid, AttachmentDirection direction) :
+        Attachment(const Glib::ustring& uuid, AttachmentDirection direction) :
             uuid(uuid),
             direction(direction)
         {
@@ -114,6 +114,7 @@ class PresetBank : public UpdateDocumentContributor,
 
     void resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transaction);
     bool resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction);
+    void resetAttached(UNDO::Scope::tTransactionPtr transaction);
 
     PresetBank *getClusterMaster();
     PresetBank *getMasterTop();
@@ -127,12 +128,9 @@ class PresetBank : public UpdateDocumentContributor,
     // CALLBACKS
     sigc::connection onBankChanged(sigc::slot<void> slot);
 
-    PresetBank *getBottomSlave();
-    PresetBank *getRightSlave();
-
-
-      private:
-    void resetAttached(UNDO::Scope::tTransactionPtr transaction);
+    PresetBank* getBottomSlave();
+    PresetBank* getRightSlave();
+  private:
     Glib::ustring generateHumanReadablePresetName(size_t pos) const;
     void setName(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &name);
     void setX(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x);

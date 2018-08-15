@@ -15,7 +15,7 @@ PresetGlitchSuppressionEditor::~PresetGlitchSuppressionEditor ()
 
 void PresetGlitchSuppressionEditor::incSetting (int inc)
 {
-  Application::get ().getSettings ()->getSetting<PresetGlitchSuppression> ()->inc (inc);
+  Application::get().getSettings()->getSetting<PresetGlitchSuppression>()->inc(inc, false);
 }
 
 const vector<ustring> &PresetGlitchSuppressionEditor::getDisplayStrings () const

@@ -1,6 +1,5 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
-#include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/Settings.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnitBanksMode.h>

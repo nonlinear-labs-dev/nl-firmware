@@ -16,6 +16,7 @@ import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
 import com.nonlinearlabs.NonMaps.client.dataModel.DeviceInfoUpdater;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.SetupUpdater;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
@@ -98,8 +99,8 @@ public class ServerProxy {
 			nonMaps.getNonLinearWorld().getViewport().getOverlay()
 					.update(settingsNode, editBufferNode, presetManagerNode, deviceInfo, undoNode);
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
-			
-			if(PresetInfoDialog.isShown()) {
+
+			if (PresetInfoDialog.isShown()) {
 				PresetInfoDialog.theDialog.updateEditBuffer(editBufferNode);
 			} else {
 				PresetInfoDialog.setLastUpdateNode(editBufferNode);
@@ -177,7 +178,7 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, x, y, name);
 		queueJob(uri, false);
 	}
-	
+
 	public void newBankFromEditBuffer(NonPosition nonPosition) {
 		StaticURI.Path path = new StaticURI.Path("presets", "new-bank-from-edit-buffer");
 		StaticURI.KeyValue x = new StaticURI.KeyValue("x", nonPosition.getX());
@@ -347,13 +348,15 @@ public class ServerProxy {
 
 	public void deletePreset(IPreset preset, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()), new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()), new StaticURI.KeyValue("delete-bank",
+				withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
 	public void deletePresets(String csv, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-presets");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv), new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv), new StaticURI.KeyValue("delete-bank", withBank ? "true"
+				: "false"));
 		queueJob(uri, false);
 	}
 
@@ -510,14 +513,14 @@ public class ServerProxy {
 		return n.getAttributes().getNamedItem("changed").getNodeValue().equals("1");
 	}
 
-    public void insertBankInCluster(Bank other, Orientation orientation, Bank parent) {
+	public void insertBankInCluster(Bank other, Orientation orientation, Bank parent) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-in-cluster");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-to-insert", other.getUUID()), new StaticURI.KeyValue("bank-inserted-at",
-				parent.getUUID()), new StaticURI.KeyValue("orientation", orientation.name()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-to-insert", other.getUUID()), new StaticURI.KeyValue(
+				"bank-inserted-at", parent.getUUID()), new StaticURI.KeyValue("orientation", orientation.name()));
 		queueJob(uri, false);
-    }
+	}
 
-    public interface DownloadHandler {
+	public interface DownloadHandler {
 		void onFileDownloaded(String text);
 
 		void onError();
@@ -766,11 +769,10 @@ public class ServerProxy {
 				new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
 	}
-	
+
 	public void setEditBufferAttribute(String key, String value) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-editbuffer-attribute");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("key", key),
-				new StaticURI.KeyValue("value", value));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
 	}
 
@@ -822,7 +824,7 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets-csv", csv));
 		queueJob(uri, false);
 	}
-		
+
 	public void cutPreset(Preset preset) {
 		StaticURI.Path path = new StaticURI.Path("clipboard", "cut-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset", preset.getUUID()));
@@ -926,7 +928,7 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
-	
+
 	public void downloadPreset(String uuid, DownloadHandler downloadHandler) {
 		downloadFile("/presets/banks/download-preset/?uuid=" + URL.encodeQueryString(uuid), downloadHandler);
 	}
@@ -949,5 +951,9 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "sort-bank-numbers");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
+	}
+
+	public void setBenderRampBypass(BooleanValues val) {
+		setSetting("bender-ramp-bypass", val.toString());
 	}
 }

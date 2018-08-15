@@ -216,11 +216,9 @@ void BankEditButtonMenu::deleteBank()
   if(pm->getNumBanks() == 0)
   {
     auto hwui = Application::get().getHWUI();
-    hwui->setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Select));
+    hwui->setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Edit));
     hwui->getPanelUnit().getEditPanel().getBoled().invalidate();
   }
-
-  rebuildMenu();
 }
 
 void BankEditButtonMenu::moveLeft()

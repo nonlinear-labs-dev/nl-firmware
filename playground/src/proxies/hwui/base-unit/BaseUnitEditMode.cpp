@@ -5,7 +5,7 @@
 #include "proxies/lpc/LPCProxy.h"
 #include "groups/HardwareSourcesGroup.h"
 
-BaseUnitEditMode::BaseUnitEditMode () 
+BaseUnitEditMode::BaseUnitEditMode ()
 {
 }
 
@@ -27,5 +27,5 @@ void BaseUnitEditMode::toggleTouchBehaviour ()
 
 void BaseUnitEditMode::toggleParameterEditModeRibbonBehaviour ()
 {
-  Application::get ().getSettings ()->getSetting<ParameterEditModeRibbonBehaviour>()->inc();
+  Application::get().getSettings()->getSetting<ParameterEditModeRibbonBehaviour>()->inc(1, true);
 }

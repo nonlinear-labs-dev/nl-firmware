@@ -40,7 +40,7 @@ void BaseUnitPresetsAndBanksMode::setup ()
   {
     if (state)
     {
-      Application::get ().getSettings ()->getSetting<BaseUnitUIMode> ()->inc ();
+      Application::get ().getSettings ()->getSetting<BaseUnitUIMode> ()->inc (1, true);
     }
 
     return true;

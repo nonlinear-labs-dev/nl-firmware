@@ -61,7 +61,7 @@ void TwoStateLED::onBlinkUpdate (int blinkCount)
 
 void TwoStateLED::switchLED (bool onOrOff)
 {
-  uint8_t *val = new uint8_t[1];
+  uint8_t val[1];
   *val = ((onOrOff ? 1 : 0) << 7) | (getID () & 0x7F);
   auto msg = Glib::Bytes::create(val, 1);
   Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::PanelLed, msg);

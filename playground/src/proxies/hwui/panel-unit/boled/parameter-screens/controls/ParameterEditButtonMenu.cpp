@@ -43,6 +43,10 @@ void ParameterEditButtonMenu::setup()
     addButton("Unlock all", bind(&ParameterEditButtonMenu::unlockAll, this));
 
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged));
+
+  sanitizeIndex();
+  sanitizeLastAction();
+
   selectButton(s_lastAction);
 }
 
@@ -56,6 +60,7 @@ void ParameterEditButtonMenu::onParameterSelectionChanged(Parameter *oldParamete
 
     m_connection.disconnect();
     m_connection = m_currentGroup->onGroupChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onGroupChanged));
+    setup();
   }
 }
 
@@ -66,8 +71,13 @@ void ParameterEditButtonMenu::onGroupChanged()
   if(m_allParametersLocked != allParametersLocked)
   {
     m_allParametersLocked = allParametersLocked;
-    setItemTitle(0, m_allParametersLocked ? "Unlock Group" : "Lock Group");
+    setup();
   }
+}
+
+void ParameterEditButtonMenu::sanitizeLastAction()
+{
+  s_lastAction = sanitizeIndex(s_lastAction);
 }
 
 void ParameterEditButtonMenu::selectButton(size_t i)
@@ -90,6 +100,7 @@ void ParameterEditButtonMenu::toggleGroupLock()
     auto scope = Application::get().getUndoScope()->startTransaction("Lock Group");
     eb->getSelected()->getParentGroup()->undoableLock(scope->getTransaction());
   }
+  setup();
 }
 
 void ParameterEditButtonMenu::unlockAll()
@@ -97,6 +108,7 @@ void ParameterEditButtonMenu::unlockAll()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto scope = Application::get().getUndoScope()->startTransaction("Unlock all");
   eb->undoableUnlockAllGroups(scope->getTransaction());
+  setup();
 }
 
 void ParameterEditButtonMenu::lockAll()
@@ -104,4 +116,5 @@ void ParameterEditButtonMenu::lockAll()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto scope = Application::get().getUndoScope()->startTransaction("Lock all");
   eb->undoableLockAllGroups(scope->getTransaction());
+  setup();
 }

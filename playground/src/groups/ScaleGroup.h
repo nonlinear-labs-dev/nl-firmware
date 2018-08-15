@@ -12,6 +12,7 @@ class ScaleGroup : public ParameterGroup
     virtual ~ScaleGroup ();
 
     void init ();
+    bool isAnyOffsetChanged() const;
     static int getScaleBaseParameterID ();
 
   private:

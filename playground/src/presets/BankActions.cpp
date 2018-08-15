@@ -20,6 +20,7 @@
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
 #include <tools/TimeTools.h>
+#include <proxies/hwui/HWUI.h>
 
 BankActions::BankActions(PresetManager &presetManager) :
     RPCActionManager("/presets/banks/"),
@@ -399,7 +400,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       }
     }
   });
-  
+
   addAction("set-order-number", [&] (shared_ptr<NetworkRequest> request) mutable
   {
     auto uuid = request->get("uuid");
@@ -1159,6 +1160,8 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
   newBank->undoableSetAttribute(transaction, "Name of Export File", "");
   newBank->undoableSetAttribute(transaction, "Date of Export File", "");
 
+  Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+
   return newBank;
 }
 
@@ -1177,6 +1180,13 @@ void BankActions::insertBankInCluster(BankActions::tBankPtr bankToInsert, BankAc
                                       const ustring directionSeenFromBankInCluster) {
     auto scope = m_presetManager.getUndoScope().startTransaction("Insert Bank %0 into Cluster", bankToInsert->getName(true));
     auto transaction = scope->getTransaction();
+
+  if(auto slaveBottom = bankToInsert->getSlaveBottom())
+    slaveBottom->resetAttached(transaction);
+
+  if(auto slaveRight = bankToInsert->getSlaveRight())
+    slaveRight->resetAttached(transaction);
+
     if(directionSeenFromBankInCluster == "North") {
         if(auto topMaster = bankAtInsert->getMasterTop()) {
             bankToInsert->undoableAttachBank(transaction, topMaster->getUuid(), PresetBank::AttachmentDirection::top);

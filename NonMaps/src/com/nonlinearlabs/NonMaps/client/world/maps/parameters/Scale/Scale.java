@@ -9,7 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupVert
 public class Scale extends ParameterGroupVertical {
 
 	private ScaleControls m_scaleControls;
-	
+
 	public Scale(MapsLayout parent) {
 		super(parent);
 		addChild(new ScaleLabelModuleHeader(this, getName()) {
@@ -79,14 +79,16 @@ public class Scale extends ParameterGroupVertical {
 
 	public boolean anyValueNotDefault() {
 		boolean notDefault = false;
-		for(ScaleParameter param: m_scaleControls.getParameters()) {
-			double value = param.getValue().getRawValue();
-			double defaultValue = param.getDefaultValue();
-			notDefault |= value != defaultValue;		
+		for (ScaleParameter param : m_scaleControls.getParameters()) {
+			if (param.getParameterID() != 312) {
+				double value = param.getValue().getRawValue();
+				double defaultValue = param.getDefaultValue();
+				notDefault |= value != defaultValue;
+			}
 		}
 		return notDefault;
 	}
-	
+
 	@Override
 	public String getID() {
 		return "Scale";

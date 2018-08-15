@@ -14,6 +14,16 @@ ScaleGroup::~ScaleGroup ()
 {
 }
 
+bool ScaleGroup::isAnyOffsetChanged() const
+{
+  for(auto p : getParameters())
+    if(p->getID() != getScaleBaseParameterID())
+      if(p->getControlPositionValue() != p->getDefaultValue())
+        return true;
+
+  return false;
+}
+
 int ScaleGroup::getScaleBaseParameterID()
 {
   return 312;

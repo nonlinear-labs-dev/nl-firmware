@@ -15,7 +15,7 @@ AftertouchEditor::~AftertouchEditor ()
 
 void AftertouchEditor::incSetting (int inc)
 {
-  Application::get ().getSettings ()->getSetting<AftertouchCurve> ()->inc (inc);
+  Application::get().getSettings()->getSetting<AftertouchCurve>()->inc(inc, false);
 }
 
 const vector<ustring> &AftertouchEditor::getDisplayStrings () const

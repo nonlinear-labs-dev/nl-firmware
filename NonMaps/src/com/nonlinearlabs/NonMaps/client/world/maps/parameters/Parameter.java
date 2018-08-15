@@ -34,7 +34,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private class ValueChangeListener implements QuantizedClippedValue.ChangeListener {
 		@Override
 		public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
-		}
+		} 
 
 		@Override
 		public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {

@@ -114,14 +114,17 @@ void Parameter::loadFromPreset(UNDO::Scope::tTransactionPtr transaction, const t
 
 void Parameter::setIndirect(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value)
 {
-  auto swapData = UNDO::createSwapData(value);
-
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
+  if(value != m_value.getRawValue())
   {
-    tDisplayValue newVal = m_value.getRawValue();
-    swapData->swapWith (newVal);
-    m_value.setRawValue (Initiator::INDIRECT, newVal);
-  });
+    auto swapData = UNDO::createSwapData(value);
+
+    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
+    {
+      tDisplayValue newVal = m_value.getRawValue();
+      swapData->swapWith (newVal);
+      m_value.setRawValue (Initiator::INDIRECT, newVal);
+    });
+  }
 }
 
 void Parameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)

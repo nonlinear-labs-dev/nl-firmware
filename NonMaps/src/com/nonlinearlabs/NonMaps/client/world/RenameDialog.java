@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world;
 
+import static com.nonlinearlabs.NonMaps.client.world.Control.INVALIDATION_FLAG_UI_CHANGED;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -20,8 +22,6 @@ import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
-
-import static com.nonlinearlabs.NonMaps.client.world.Control.INVALIDATION_FLAG_UI_CHANGED;
 
 public class RenameDialog extends DialogBox {
 
@@ -46,7 +46,7 @@ public class RenameDialog extends DialogBox {
 			@Override
 			public void onClose(CloseEvent<PopupPanel> event) {
 				theDialog = null;
-				NonMaps.get().captureFocus(); //T
+				NonMaps.get().captureFocus();
 			}
 		});
 	}
@@ -100,15 +100,15 @@ public class RenameDialog extends DialogBox {
 		});
 	}
 
-    public static boolean isPresetBeingRenamed(Preset preset) {
-		if(theDialog != null) {
-			Preset p = (Preset)theDialog.renameable;
+	public static boolean isPresetBeingRenamed(Preset preset) {
+		if (theDialog != null && theDialog.renameable instanceof Preset) {
+			Preset p = (Preset) theDialog.renameable;
 			return preset == p;
 		}
 		return false;
-    }
+	}
 
-    @Override
+	@Override
 	protected void onPreviewNativeEvent(NativePreviewEvent event) {
 		super.onPreviewNativeEvent(event);
 		switch (event.getTypeInt()) {

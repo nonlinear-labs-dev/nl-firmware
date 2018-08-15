@@ -127,8 +127,8 @@ public class PresetList extends LayoutResizingVertical {
 		requestLayout();
 
 		if (getParent().isSelected()) {
-			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl().getPresetList()
-					.scheduleAutoScroll(ScrollRequest.Smooth);
+			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl()
+					.getPresetList().scheduleAutoScroll(ScrollRequest.Smooth);
 		}
 
 		getParent().getParent().onPresetSelectionChanged(findPreset(selectedPreset));

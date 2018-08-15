@@ -36,7 +36,6 @@ public class SetupUpdater extends Updater {
 		m.put("PresetDragDropEnabled", Setup.get().systemSettings.presetDragEnabled);
 		m.put("PresetGlitchSuppression", Setup.get().systemSettings.presetGlitchSuppression);
 		m.put("PresetStoreModeSetting", Setup.get().systemSettings.presetStoreModeSetting);
-		m.put("RandomizeAmount", Setup.get().systemSettings.randomizeAmount);
 		m.put("RibbonRelFactor", Setup.get().systemSettings.ribbonRelativeFactor);
 		m.put("SendPresetAsLPCWriteFallback", Setup.get().systemSettings.sendPresetAsLPCFallback);
 		m.put("SignalFlowIndication", Setup.get().systemSettings.signalFlowIndication);
@@ -44,6 +43,7 @@ public class SetupUpdater extends Updater {
 		m.put("TransitionTime", Setup.get().systemSettings.transitionTime);
 		m.put("VelocityCurve", Setup.get().systemSettings.velocityCurve);
 		m.put("RandomizeAmount", Setup.get().systemSettings.randomizeAmount);
+		m.put("BenderRampBypass", Setup.get().systemSettings.benderRampBypass);
 
 		return m;
 	}
@@ -57,10 +57,12 @@ public class SetupUpdater extends Updater {
 
 				if (didChange(valueNode)) {
 					DataModelEntityBase s = findSettingFromTagName(setting.getNodeName());
-					s.fromString(getText(valueNode));
+					if (s != null) {
+						s.fromString(getText(valueNode));
 
-					if (s instanceof ValueDataModelEntity) {
-						update((ValueDataModelEntity) s, setting);
+						if (s instanceof ValueDataModelEntity) {
+							update((ValueDataModelEntity) s, setting);
+						}
 					}
 				}
 			}

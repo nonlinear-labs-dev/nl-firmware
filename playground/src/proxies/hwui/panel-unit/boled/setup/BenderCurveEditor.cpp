@@ -15,7 +15,7 @@ BenderCurveEditor::~BenderCurveEditor ()
 
 void BenderCurveEditor::incSetting (int inc)
 {
-  Application::get ().getSettings ()->getSetting<BenderCurve> ()->inc (inc);
+  Application::get().getSettings()->getSetting<BenderCurve>()->inc(inc, false);
 }
 
 const vector<ustring> &BenderCurveEditor::getDisplayStrings () const

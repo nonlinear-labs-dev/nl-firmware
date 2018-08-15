@@ -200,15 +200,18 @@ PresetManagerActions::~PresetManagerActions()
 void PresetManagerActions::handleImportBackupFile(UNDO::TransactionCreationScope::tTransactionPtr transaction, SoupBuffer* buffer,
                                                   shared_ptr<HTTPRequest> http)
 {
-  m_presetManager.undoableClear(transaction);
-
-  MemoryInStream stream(buffer, true);
-  XmlReader reader(stream, transaction);
-
-  if(!reader.read<PresetManagerSerializer>(std::ref(m_presetManager)))
+  if(auto lock = m_presetManager.m_loading.lock())
   {
-    transaction->rollBack();
-    http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
+    m_presetManager.undoableClear(transaction);
+
+    MemoryInStream stream(buffer, true);
+    XmlReader reader(stream, transaction);
+
+    if(!reader.read<PresetManagerSerializer>(std::ref(m_presetManager)))
+    {
+      transaction->rollBack();
+      http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
+    }
   }
 }
 

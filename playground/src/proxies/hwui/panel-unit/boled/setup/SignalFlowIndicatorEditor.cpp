@@ -18,7 +18,7 @@ SignalFlowIndicatorEditor::SignalFlowIndicatorEditor () :
 
 void SignalFlowIndicatorEditor::incSetting (int inc)
 {
-  Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->inc(inc);
+  Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->inc(inc, false);
 }
 
 const vector<ustring> &SignalFlowIndicatorEditor::getDisplayStrings () const

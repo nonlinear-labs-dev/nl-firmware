@@ -22,6 +22,7 @@ class Setting : public UpdateDocumentContributor
     void writeDocument (Writer &writer, tUpdateID knownRevision) const override;
 
     virtual void sendToLPC () const;
+    virtual bool persistent() const;
 
   protected:
     void notify();

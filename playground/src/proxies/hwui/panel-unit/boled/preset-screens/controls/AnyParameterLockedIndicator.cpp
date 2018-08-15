@@ -35,7 +35,7 @@ bool AnyParameterLockedIndicator::redraw(FrameBuffer &fb)
 {
   auto r = getPosition ();
   fb.setColor (FrameBuffer::Colors::C255);
-  fb.fillRect (r.getX (), r.getY (), r.getWidth (), r.getHeight () + 1);
+  fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
   Label::redraw(fb);
   return true;
 }
