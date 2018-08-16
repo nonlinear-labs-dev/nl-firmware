@@ -8,8 +8,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 
-import java.util.concurrent.locks.Lock;
-
 public class BeltSoundLayout extends OverlayLayout {
 
 	private TransitionTimeArea transitionTime;
@@ -27,23 +25,26 @@ public class BeltSoundLayout extends OverlayLayout {
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
+
 		super.doLayout(x, y, w, h);
+
+		int numAreas = 4;
+
 		double margin = getButtonDimension();
-		double margins = (getChildren().size() + 1) * margin;
-		double widthPerElement = (w - margins) / (getChildren().size());
+		double margins = (numAreas + 1) * margin;
+
+		double widthPerArea = (w - margins) / (numAreas);
 		double xPos = margin;
 		double height = h;
 		double yPos = (h - height) / 2;
 
-
-
 		for (OverlayControl c : getChildren()) {
-			if(c instanceof LockSymbol) {
+			if (c instanceof LockSymbol) {
 				c.doLayout(5, 5, 30, 40);
 				continue;
 			}
-			c.doLayout(xPos, yPos, widthPerElement, height);
-			xPos += widthPerElement + margin;
+			c.doLayout(xPos, yPos, widthPerArea, height);
+			xPos += widthPerArea + margin;
 		}
 	}
 
@@ -61,7 +62,7 @@ public class BeltSoundLayout extends OverlayLayout {
 
 		@Override
 		public String getDrawText(Context2d ctx) {
-			if(NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked())
+			if (NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked())
 				return "\ue20a";
 			return "";
 		}
