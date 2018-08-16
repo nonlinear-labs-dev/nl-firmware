@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
@@ -34,7 +35,16 @@ public class BeltSoundLayout extends OverlayLayout {
 		double margins = (numAreas + 1) * margin;
 
 		double widthPerArea = (w - margins) / (numAreas);
+		double maxWidthPerArea = Millimeter.toPixels(80);
+
 		double xPos = margin;
+
+		if (widthPerArea > maxWidthPerArea) {
+			double rest = numAreas * (widthPerArea - maxWidthPerArea);
+			widthPerArea = maxWidthPerArea;
+			xPos += rest / 2;
+		}
+
 		double height = h;
 		double yPos = (h - height) / 2;
 
