@@ -29,10 +29,6 @@ PresetBank::PresetBank(PresetManager *parent) :
 {
 }
 
-PresetBank::~PresetBank()
-{
-}
-
 PresetManager *PresetBank::getParent()
 {
   return static_cast<PresetManager *>(UpdateDocumentContributor::getParent());
@@ -807,17 +803,6 @@ const Glib::ustring PresetBank::calcStateString() const
   }
 }
 
-const bool PresetBank::isInCluster() const {
-  if(m_attachment.direction != AttachmentDirection::none)
-    return true;
-
-  for(auto& bank: getParent()->getBanks())
-    if(bank->getAttached().uuid == getUuid())
-      return true;
-
-  return false;
-}
-
 void PresetBank::undoableAssignDefaultPosition(shared_ptr<UNDO::Transaction> transaction)
 {
   auto xy = calcDefaultPosition();
@@ -865,9 +850,6 @@ void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Gl
     swapData->swapWith (m_attachment);
     onChange();
   });
-
-  DebugLevel::warning("undoableAttach after Swap: ", m_attachment.uuid, "dir", directionEnumToString(m_attachment.direction));
-
 }
 void PresetBank::undoableDetachBank(UNDO::Scope::tTransactionPtr transaction)
 {
@@ -911,10 +893,13 @@ const Glib::ustring PresetBank::directionEnumToString(AttachmentDirection direct
   static_assert(AttachmentDirection::none == 0, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
   static_assert(AttachmentDirection::top == 1, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
   static_assert(AttachmentDirection::left == 2, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
+  static_assert(AttachmentDirection::count == 3, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
 
   switch(direction)
   {
-
+    case count:
+      assert(false);
+      break;
     case top:
       return "top";
     case left:
@@ -957,74 +942,6 @@ PresetBank* PresetBank::getClusterMaster()
       return master->getClusterMaster();
 
   return this;
-}
-
-PresetBank* PresetBank::getDirectClusterMaster()
-{
-  if(auto master = getParent()->findBank(getAttached().uuid))
-    return master.get();
-
-  return this;
-}
-
-PresetBank *PresetBank::getBottomSlave() {
-  auto pm = Application::get().getPresetManager();
-  for(auto& bank: pm->getBanks()) {
-    if(bank->getDirectClusterMaster() == this)
-      if(bank->getAttached().direction == AttachmentDirection::top)
-        return bank.get();
-  }
-  return nullptr;
-}
-
-PresetBank *PresetBank::getRightSlave() {
-  auto pm = Application::get().getPresetManager();
-  for(auto& bank: pm->getBanks()) {
-    if(bank->getDirectClusterMaster() == this)
-      if(bank->getAttached().direction == AttachmentDirection::left)
-        return bank.get();
-  }
-  return nullptr;
-}
-
-
-
-const size_t PresetBank::getClusterDepth() const {
-  if(auto master = getParent()->findBank(getAttached().uuid))
-    if(master.get() != this)
-      return 1 + master->getClusterDepth();
-
-  return 0;
-}
-
-
-std::vector<PresetManager::tBankPtr> PresetBank::getClusterAsSortedVector()
-{
-  bool finished = false;
-  std::vector<PresetManager::tBankPtr> cluster;
-  PresetBank* current = this;
-  PresetBank* nodeToRight = nullptr;
-
-  while(!finished)
-  {
-    nodeToRight = nullptr;
-
-    while(current)
-    {
-      cluster.push_back(current->shared_from_this());
-
-      if(auto rightSlave = current->getRightSlave())
-        nodeToRight = rightSlave;
-
-      current = current->getBottomSlave();
-    }
-
-    if(nodeToRight)
-      current = nodeToRight;
-    else
-      finished = true;
-  }
-  return cluster;
 }
 
 void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid) {

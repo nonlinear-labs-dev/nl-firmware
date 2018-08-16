@@ -24,7 +24,7 @@ class PresetBank : public UpdateDocumentContributor,
 {
   public:
     explicit PresetBank(PresetManager *parent);
-    virtual ~PresetBank();
+    ~PresetBank() override = default;
 
     PresetManager *getParent();
     const PresetManager *getParent() const;
@@ -34,7 +34,7 @@ class PresetBank : public UpdateDocumentContributor,
 
     enum AttachmentDirection
     {
-      none = 0, top = 1, left = 2
+      none, top, left, count
     };
     const Glib::ustring directionEnumToString(AttachmentDirection direction) const;
 
@@ -64,9 +64,6 @@ class PresetBank : public UpdateDocumentContributor,
     SaveResult save(RefPtr<Gio::File> bankFolder);
     int getHighestIncrementForBaseName(const Glib::ustring &baseName) const;
     const Glib::ustring calcStateString() const;
-
-    const bool isInCluster() const;
-    std::vector<PresetManager::tBankPtr>  getClusterAsSortedVector();
 
     bool setSelectedPreset(Glib::ustring uuid);
     void assignDefaultPosition();
@@ -121,16 +118,11 @@ class PresetBank : public UpdateDocumentContributor,
     PresetBank *getMasterLeft();
     PresetBank *getSlaveRight();
     PresetBank *getSlaveBottom();
-    PresetBank *getDirectClusterMaster();
 
-    virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+    tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
     // CALLBACKS
     sigc::connection onBankChanged(sigc::slot<void> slot);
-
-    PresetBank* getBottomSlave();
-    PresetBank* getRightSlave();
-    const size_t getClusterDepth() const;
 
   private:
     Glib::ustring generateHumanReadablePresetName(size_t pos) const;

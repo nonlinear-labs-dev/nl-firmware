@@ -220,13 +220,34 @@ bool inCluster(const ClusterEnforcement::tTreeNodePtr& node) {
   return node->top || node->bottom || node->left || node->right;
 }
 
-vector<shared_ptr<PresetBank>> ClusterEnforcement::sortBanks(vector<shared_ptr<PresetBank>> in) {
+vector<ClusterEnforcement::tTreeNodePtr> prepareNodeVector(const std::map<Glib::ustring, ClusterEnforcement::tTreeNodePtr>& nodeMap) {
+    vector<ClusterEnforcement::tTreeNodePtr> ret;
+    for(auto x: nodeMap)
+        ret.push_back(x.second);
+    return ret;
+}
+
+bool handleBothBanksInCluster(const ClusterEnforcement::tTreeNodePtr& lhs,
+                              const ClusterEnforcement::tTreeNodePtr& rhs) {
+    if(lhs->master == rhs->master)
+        return lhs->getClusterDepth() < rhs->getClusterDepth();
+    else
+        return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
+}
+
+vector<shared_ptr<PresetBank>> buildVectorFromNodeVector(const vector<ClusterEnforcement::tTreeNodePtr>& nodeVec) {
+    auto ret = vector<shared_ptr<PresetBank>>();
+    for(const auto& x: nodeVec)
+        ret.push_back(x->bank);
+    return ret;
+}
+
+
+
+vector<shared_ptr<PresetBank>> ClusterEnforcement::sortBanks() {
 
   buildClusterStructure();
-
-  std::vector<tTreeNodePtr> treeNodes;
-  for(auto x: m_uuidToTreeNode)
-    treeNodes.push_back(x.second);
+  auto treeNodes = prepareNodeVector(m_uuidToTreeNode);
 
   std::sort(treeNodes.begin(), treeNodes.end(), [&](const tTreeNodePtr& lhs, const tTreeNodePtr& rhs) {
       auto lhsInCluster = inCluster(lhs);
@@ -236,22 +257,12 @@ vector<shared_ptr<PresetBank>> ClusterEnforcement::sortBanks(vector<shared_ptr<P
         return true;
       else if(!lhsInCluster && rhsInCluster)
         return false;
-      else if(lhsInCluster && rhsInCluster) {
-        if(lhs->master == rhs->master) {
-          return lhs->getClusterDepth() < rhs->getClusterDepth();
-        }
-        else {
-          return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
-        }
-      }
+      else if(lhsInCluster && rhsInCluster)
+          return handleBothBanksInCluster(lhs, rhs);
       else
         return stoi(lhs->bank->getX()) < stoi(rhs->bank->getX());
   });
 
-  auto ret = vector<shared_ptr<PresetBank>>();
+  return buildVectorFromNodeVector(treeNodes);
 
-  for(const auto& x: treeNodes)
-    ret.push_back(x->bank);
-
-  return ret;
 }

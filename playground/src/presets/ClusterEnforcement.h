@@ -42,8 +42,7 @@ class ClusterEnforcement
     virtual ~ClusterEnforcement();
     void enforceClusterRuleOfOne(UNDO::Scope::tTransactionPtr transaction);
     void sanitizeBankThatWillBeDeleted(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank);
-
-    vector<shared_ptr<PresetBank>> sortBanks(vector<shared_ptr<PresetBank>> in);
+    vector<shared_ptr<PresetBank>> sortBanks();
 
 private:
     std::shared_ptr<PresetManager> m_presetManager;
