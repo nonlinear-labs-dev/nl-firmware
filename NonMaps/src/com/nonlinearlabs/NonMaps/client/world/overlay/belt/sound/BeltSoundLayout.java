@@ -46,10 +46,6 @@ public class BeltSoundLayout extends OverlayLayout {
 		double yPos = (h - height) / 2;
 
 		for (OverlayControl c : getChildren()) {
-			if (c instanceof LockSymbol) {
-				c.doLayout(5, 5, 30, 40);
-				continue;
-			}
 			c.doLayout(xPos, yPos, widthPerArea, height);
 			xPos += widthPerArea + margin;
 		}
