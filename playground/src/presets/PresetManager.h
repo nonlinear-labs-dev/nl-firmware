@@ -72,6 +72,7 @@ class PresetManager : public ContentSection
     void undoableResetInitSound (UNDO::Scope::tTransactionPtr transaction);
     void undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, moveDirection direction);
     void undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank, int newOrderNumber);
+    void undoableSetBanks(UNDO::Scope::tTransactionPtr transaction, std::vector<tBankPtr> newBankOrder);
 
     void writeDocument (Writer &writer, tUpdateID knownRevision) const override;
     void searchPresets (Writer &writer, const Glib::ustring &query, const Glib::ustring &mode, std::vector<presetInfoSearchFields> &&fieldsToSearch) const;

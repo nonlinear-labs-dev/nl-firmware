@@ -29,10 +29,6 @@ PresetBank::PresetBank(PresetManager *parent) :
 {
 }
 
-PresetBank::~PresetBank()
-{
-}
-
 PresetManager *PresetBank::getParent()
 {
   return static_cast<PresetManager *>(UpdateDocumentContributor::getParent());
@@ -854,9 +850,6 @@ void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Gl
     swapData->swapWith (m_attachment);
     onChange();
   });
-
-  DebugLevel::warning("undoableAttach after Swap: ", m_attachment.uuid, "dir", directionEnumToString(m_attachment.direction));
-
 }
 void PresetBank::undoableDetachBank(UNDO::Scope::tTransactionPtr transaction)
 {
@@ -900,10 +893,13 @@ const Glib::ustring PresetBank::directionEnumToString(AttachmentDirection direct
   static_assert(AttachmentDirection::none == 0, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
   static_assert(AttachmentDirection::top == 1, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
   static_assert(AttachmentDirection::left == 2, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
+  static_assert(AttachmentDirection::count == 3, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
 
   switch(direction)
   {
-
+    case count:
+      g_warn_if_reached();
+      break;
     case top:
       return "top";
     case left:
@@ -939,10 +935,11 @@ bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks,
   return true;
 }
 
-PresetBank *PresetBank::getClusterMaster()
+PresetBank* PresetBank::getClusterMaster()
 {
   if(auto master = getParent()->findBank(getAttached().uuid))
-    return master->getClusterMaster();
+    if(master.get() != this)
+      return master->getClusterMaster();
 
   return this;
 }
@@ -988,3 +985,4 @@ PresetBank *PresetBank::getSlaveBottom() {
     }
     return nullptr;
 }
+

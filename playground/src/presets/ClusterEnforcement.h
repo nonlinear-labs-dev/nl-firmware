@@ -5,17 +5,36 @@
 
 class ClusterEnforcement
 {
-  private:
+  public:
     typedef shared_ptr<PresetBank> tBankPtr;
     struct TreeNode;
     typedef std::shared_ptr<TreeNode> tTreeNodePtr;
     struct TreeNode
     {
+        tTreeNodePtr master = nullptr;
         tTreeNodePtr right;
         tTreeNodePtr bottom;
         tTreeNodePtr left;
         tTreeNodePtr top;
         tBankPtr bank;
+
+        void assignMaster(const tTreeNodePtr& master) {
+            this->master = master;
+
+            if(right)
+                right->assignMaster(master);
+            if(bottom)
+                bottom->assignMaster(master);
+        }
+
+        size_t getClusterDepth() {
+            if(left)
+                return 1 + left->getClusterDepth();
+            if(top)
+                return 1 + top->getClusterDepth();
+
+            return 0;
+        }
     };
     typedef std::shared_ptr<TreeNode> tCluster;
   public:
@@ -23,7 +42,10 @@ class ClusterEnforcement
     virtual ~ClusterEnforcement();
     void enforceClusterRuleOfOne(UNDO::Scope::tTransactionPtr transaction);
     void sanitizeBankThatWillBeDeleted(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank);
-  private:
+    vector<shared_ptr<PresetBank>> sortBanks();
+
+    static void sortBankNumbers();
+private:
     std::shared_ptr<PresetManager> m_presetManager;
     std::vector<tCluster> m_clusters;
     std::map<Glib::ustring, tTreeNodePtr> m_uuidToTreeNode;

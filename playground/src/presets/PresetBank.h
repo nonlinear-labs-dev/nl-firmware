@@ -24,16 +24,17 @@ class PresetBank : public UpdateDocumentContributor,
 {
   public:
     explicit PresetBank(PresetManager *parent);
-    virtual ~PresetBank();
+    ~PresetBank() override = default;
 
     PresetManager *getParent();
     const PresetManager *getParent() const;
 
     typedef shared_ptr<Preset> tPresetPtr;
+    typedef shared_ptr<PresetBank> tPresetBankPtr;
 
     enum AttachmentDirection
     {
-      none = 0, top = 1, left = 2
+      none, top, left, count
     };
     const Glib::ustring directionEnumToString(AttachmentDirection direction) const;
 
@@ -118,7 +119,7 @@ class PresetBank : public UpdateDocumentContributor,
     PresetBank *getSlaveRight();
     PresetBank *getSlaveBottom();
 
-    virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+    tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
     // CALLBACKS
     sigc::connection onBankChanged(sigc::slot<void> slot);
