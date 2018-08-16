@@ -14,8 +14,6 @@ MiniParameter::MiniParameter(Parameter *param, const Rect &pos)
     addControl(new MiniParameterDotSlider(param, Rect(0, 10, 56, 2)));
   else
     addControl(new MiniParameterBarSlider(param, Rect(0, 10, 56, 2)));
-
-  param->onMiniParameterHighlightChanged(sigc::mem_fun(m_label, &MiniParameterLabel::setHighlight));
 }
 
 MiniParameter::~MiniParameter()
