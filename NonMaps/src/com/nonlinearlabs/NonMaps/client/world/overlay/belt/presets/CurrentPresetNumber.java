@@ -4,7 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
@@ -19,6 +18,7 @@ public class CurrentPresetNumber extends Label {
 	@Override
 	public String getDrawText(Context2d ctx) {
 		String text = NonMaps.theMaps.getNonLinearWorld().getPresetManager().getLoadedPresetNumberString();
+
 		if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isAnyParameterLocked())
 			text += "\t \ue20a";
 
@@ -26,7 +26,7 @@ public class CurrentPresetNumber extends Label {
 	}
 
 	public double getDesiredWidth() {
-		return Millimeter.toPixels(25);
+		return Millimeter.toPixels(35);
 	}
 
 	public double getDesiredHeight() {
@@ -40,7 +40,7 @@ public class CurrentPresetNumber extends Label {
 
 	@Override
 	public RGB getColorFont() {
-		return new RGB(255,255,255);
+		return new RGB(255, 255, 255);
 	}
 
 	@Override
@@ -48,6 +48,6 @@ public class CurrentPresetNumber extends Label {
 		if (i == 0)
 			return getLineColor();
 
-		return new RGB(250,250,250);
+		return new RGB(250, 250, 250);
 	}
 }

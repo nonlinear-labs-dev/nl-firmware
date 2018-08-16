@@ -25,7 +25,8 @@ public class PresetBeltLayouterM extends PresetBeltLayouter {
 		layout.autoLoad.doLayout(right - autoLoadWidth, 0, autoLoadWidth, h);
 		right -= autoLoadWidth + margin;
 
-		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth, currentPresetHeight);
+		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth,
+				currentPresetHeight);
 		right -= currentPresetWidth + margin;
 
 		layout.load.doLayout(right - LoadButtonArea.getFixedWidth(), 0, h);
@@ -36,6 +37,12 @@ public class PresetBeltLayouterM extends PresetBeltLayouter {
 			return false;
 
 		layout.bank.doLayout(left, 0, bankWidth, h);
+
+		right = layout.bank.getRelativePosition().getRight() + margin;
+
+		layout.load.getRelativePosition().moveTo(right + margin, layout.load.getRelativePosition().getTop());
+		right += layout.load.getRelativePosition().getWidth() + margin;
+		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 
 		return true;
 	}
