@@ -44,6 +44,7 @@ class ClusterEnforcement
     void sanitizeBankThatWillBeDeleted(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank);
     vector<shared_ptr<PresetBank>> sortBanks();
 
+    static void sortBankNumbers();
 private:
     std::shared_ptr<PresetManager> m_presetManager;
     std::vector<tCluster> m_clusters;

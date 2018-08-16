@@ -919,16 +919,6 @@ auto PresetManager::getBanks() const -> const vector<tBankPtr> &
   return m_banks;
 }
 
-auto PresetManager::getBanksIf (std::function<bool(const tBankPtr&)> predicate) const -> const vector<tBankPtr> {
-  std::vector<tBankPtr> ret;
-  for(auto b: m_banks) {
-    if(predicate(b)) {
-      ret.push_back(b);
-    }
-  }
-  return ret;
-}
-
 void PresetManager::undoableStoreInitSound(UNDO::Scope::tTransactionPtr transaction)
 {
   m_initSound->copyFrom(transaction, m_editBuffer.get(), true);

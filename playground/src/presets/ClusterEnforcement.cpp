@@ -1,4 +1,5 @@
 #include <presets/ClusterEnforcement.h>
+#include <tools/PerformanceTimer.h>
 
 ClusterEnforcement::ClusterEnforcement()
 {
@@ -242,7 +243,16 @@ vector<shared_ptr<PresetBank>> buildVectorFromNodeVector(const vector<ClusterEnf
     return ret;
 }
 
+void ClusterEnforcement::sortBankNumbers() {
+  PerformanceTimer t("Sort Banks");
 
+  auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Sort Bank Numbers");
+  auto transaction = scope->getTransaction();
+
+  ClusterEnforcement ce;
+  auto newBanks = ce.sortBanks();
+  Application::get().getPresetManager()->undoableSetBanks(transaction, newBanks);
+}
 
 vector<shared_ptr<PresetBank>> ClusterEnforcement::sortBanks() {
 

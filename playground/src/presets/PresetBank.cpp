@@ -898,7 +898,7 @@ const Glib::ustring PresetBank::directionEnumToString(AttachmentDirection direct
   switch(direction)
   {
     case count:
-      assert(false);
+      g_warn_if_reached();
       break;
     case top:
       return "top";
