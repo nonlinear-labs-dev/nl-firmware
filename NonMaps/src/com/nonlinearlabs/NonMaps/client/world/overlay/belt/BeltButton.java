@@ -10,7 +10,7 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
-abstract public class BeltButton extends SVGImage {
+abstract public class BeltButton extends SVGImage implements IActivatable {
 
 	protected Belt belt = null;
 
