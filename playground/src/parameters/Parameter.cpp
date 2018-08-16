@@ -272,6 +272,11 @@ Glib::ustring Parameter::getMiniParameterEditorName() const
   return getShortName();
 }
 
+void Parameter::onMiniParameterHighlightChanged(slot<void, bool> cb)
+{
+  // normally we do not care about our connected mini parameters, but the scale parameter does
+}
+
 Glib::ustring Parameter::getGroupAndParameterName() const
 {
   return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName());

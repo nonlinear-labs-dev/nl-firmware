@@ -1,4 +1,5 @@
 #include <groups/ParameterGroup.h>
+#include <groups/ScaleGroup.h>
 #include <libundo/undo/StringTools.h>
 #include <parameters/ScaleParameter.h>
 #include <proxies/hwui/HWUIEnums.h>
@@ -6,6 +7,15 @@
 #include <xml/Writer.h>
 #include "scale-converters/dimension/NoteDimension.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
+
+ScaleParameter::ScaleParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
+                               tControlPositionValue def, tControlPositionValue coarseDenominator,
+                               tControlPositionValue fineDenominator)
+    : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+    , m_scaleGroupChangedThrottler(std::chrono::milliseconds(10))
+{
+  group->onGroupChanged(sigc::mem_fun(this, &ScaleParameter::onParentGroupChanged));
+}
 
 DFBLayout *ScaleParameter::createLayout(FocusAndMode focusAndMode) const
 {
@@ -28,6 +38,22 @@ DFBLayout *ScaleParameter::createLayout(FocusAndMode focusAndMode) const
 Glib::ustring ScaleParameter::getMiniParameterEditorName() const
 {
   return "Scale...";
+}
+
+void ScaleParameter::onMiniParameterHighlightChanged(slot<void, bool> cb)
+{
+  auto group = static_cast<const ScaleGroup *>(getParentGroup());
+  auto anyOffsetChanged = group->isAnyOffsetChanged();
+  m_miniParamHighlight.connectAndInit(cb, anyOffsetChanged);
+}
+
+void ScaleParameter::onParentGroupChanged()
+{
+  m_scaleGroupChangedThrottler.doTask([=]() {
+    auto group = static_cast<const ScaleGroup *>(getParentGroup());
+    auto anyOffsetChanged = group->isAnyOffsetChanged();
+    m_miniParamHighlight.send(anyOffsetChanged);
+  });
 }
 
 void ScaleParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
@@ -61,4 +87,3 @@ Glib::ustring ScaleParameter::getLongName() const
   }
   return super::getLongName();
 }
-
