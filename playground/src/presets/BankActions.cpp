@@ -8,6 +8,7 @@
 #include "http/SoupOutStream.h"
 #include <http/HTTPRequest.h>
 #include "xml/XmlWriter.h"
+#include "ClusterEnforcement.h"
 #include <xml/MemoryInStream.h>
 #include <xml/XmlReader.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
@@ -980,7 +981,7 @@ BankActions::BankActions(PresetManager &presetManager) :
   });
 
   addAction("sort-bank-numbers", [&](auto request) mutable {
-    BankSorter::sort();
+    ClusterEnforcement::sortBankNumbers();
   });
 }
 
