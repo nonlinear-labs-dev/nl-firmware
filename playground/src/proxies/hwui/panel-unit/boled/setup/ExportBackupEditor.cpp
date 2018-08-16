@@ -71,18 +71,16 @@ void ExportBackupEditor::exportBanks ()
 {
   Application::get ().stopWatchDog ();
   writeBackupFileXML ();
-  const auto humanDate = StringTools::replaceAll(StringTools::replaceAll(
-          std::to_string(
-                  TimeTools::getDisplayStringFromStamp(
-                          std::chrono::duration_cast<std::chrono::seconds>(
-                                  std::chrono::system_clock::now().time_since_epoch()
-                          ).count())
-          ), " ", "-"), ":", "-");
 
-  auto targetNameWithStamp(std::string("/mnt/usb-stick/") + humanDate.c_str() + c_backupTargetFile);
+  const auto timeSinceEpoch = std::chrono::system_clock::now().time_since_epoch();
+  const auto timeStamp = std::chrono::duration_cast<std::chrono::seconds>(timeSinceEpoch).count();
+  const auto humanReadableTime = TimeTools::getDisplayStringFromStamp(timeStamp);
+  const auto timeStringWithoutWhiteSpaces = StringTools::replaceAll(std::to_string(humanReadableTime), " ", "-");
+  const auto finalDateString = StringTools::replaceAll(timeStringWithoutWhiteSpaces, ":", "-");
+  const auto targetNameWithStamp(std::string("/mnt/usb-stick/") + finalDateString.c_str() + c_backupTargetFile);
 
-  auto from = std::experimental::filesystem::path(c_tempBackupFile);
-  auto to = std::experimental::filesystem::path(targetNameWithStamp.c_str());
+  const auto from = std::experimental::filesystem::path(c_tempBackupFile);
+  const auto to = std::experimental::filesystem::path(targetNameWithStamp.c_str());
 
   try {
     std::experimental::filesystem::copy(from, to);
