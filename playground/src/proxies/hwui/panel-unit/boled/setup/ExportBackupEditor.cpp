@@ -16,7 +16,6 @@
 #include <tools/StringTools.h>
 #include "USBStickAvailableView.h"
 #include <device-settings/DebugLevel.h>
-#include <experimental/bits/fs_ops.h>
 
 static const Rect c_fullRightSidePosition (129, 16, 126, 48);
 static constexpr const char c_tempBackupFile[] = "/nonlinear/nonlinear-c15-banks.xml.tar.gz";
