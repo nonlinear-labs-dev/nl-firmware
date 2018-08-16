@@ -1,5 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterDotSlider.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ScaleGroupMiniParameterBarSlider.h>
+#include <groups/ScaleGroup.h>
 #include "MiniParameter.h"
 #include "parameters/Parameter.h"
 #include "MiniParameterLabel.h"
@@ -10,10 +12,17 @@ MiniParameter::MiniParameter(Parameter *param, const Rect &pos)
 {
   m_label = addControl(new MiniParameterLabel(param->getMiniParameterEditorName(), Rect(0, 0, 56, 9)));
 
-  if(param->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-    addControl(new MiniParameterDotSlider(param, Rect(0, 10, 56, 2)));
+  if(param->getID() == ScaleGroup::getScaleBaseParameterID())
+  {
+    addControl(new ScaleGroupMiniParameterBarSlider(param, Rect(0, 10, 56, 2)));
+  }
   else
-    addControl(new MiniParameterBarSlider(param, Rect(0, 10, 56, 2)));
+  {
+    if(param->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
+      addControl(new MiniParameterDotSlider(param, Rect(0, 10, 56, 2)));
+    else
+      addControl(new MiniParameterBarSlider(param, Rect(0, 10, 56, 2)));
+  }
 }
 
 MiniParameter::~MiniParameter()

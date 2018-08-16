@@ -13,8 +13,9 @@ class BarSlider : public Slider
     virtual ~BarSlider ();
 
     bool redraw (FrameBuffer &fb) override;
+    virtual tDisplayValue getDrawValue() const;
 
-  protected:
+   protected:
     virtual bool drawCenterMark () const;
 
   private:
