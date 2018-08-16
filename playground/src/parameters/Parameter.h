@@ -105,8 +105,6 @@ class Parameter : public UpdateDocumentContributor,
   virtual Glib::ustring getGroupAndParameterName() const;
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const;
 
-  virtual void onMiniParameterHighlightChanged(slot<void, bool> cb);
-
   virtual void onUnselected();
   virtual void onSelected();
 
