@@ -4,7 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.BeltButton;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.IActivatable;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterBeltButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.PresetBeltButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.SoundBeltButton;
@@ -53,9 +53,9 @@ class GlobalButtons extends OverlayLayout {
 
 	public double getLeftOfActiveButton() {
 		for (OverlayControl c : getChildren()) {
-			BeltButton b = (BeltButton) c;
+			IActivatable b = (IActivatable) c;
 			if (b.isActive())
-				return b.getPixRect().getLeft();
+				return c.getPixRect().getLeft();
 		}
 
 		return getPixRect().getLeft();
@@ -63,9 +63,9 @@ class GlobalButtons extends OverlayLayout {
 
 	public double getRightOfActiveButton() {
 		for (OverlayControl c : getChildren()) {
-			BeltButton b = (BeltButton) c;
+			IActivatable b = (IActivatable) c;
 			if (b.isActive())
-				return b.getPixRect().getRight();
+				return c.getPixRect().getRight();
 		}
 
 		return getPixRect().getRight();
@@ -73,18 +73,18 @@ class GlobalButtons extends OverlayLayout {
 
 	public void drawInactiveButton(Context2d ctx, int invalidationMask) {
 		for (OverlayControl c : getChildren()) {
-			BeltButton b = (BeltButton) c;
+			IActivatable b = (IActivatable) c;
 			if (!b.isActive() || belt.isHidden())
-				b.draw(ctx, invalidationMask);
+				c.draw(ctx, invalidationMask);
 		}
 	}
 
 	public void drawActiveButton(Context2d ctx, int invalidationMask) {
 		if (!belt.isHidden()) {
 			for (OverlayControl c : getChildren()) {
-				BeltButton b = (BeltButton) c;
+				IActivatable b = (IActivatable) c;
 				if (b.isActive())
-					b.draw(ctx, invalidationMask);
+					c.draw(ctx, invalidationMask);
 			}
 		}
 	}
