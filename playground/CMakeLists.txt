@@ -13,7 +13,7 @@ set(LIBS
   avahi-gobject
   avahi-core
   avahi-client
-  freetype2 
+  freetype2
   )
 
 OPTION(DEV_PC
@@ -24,6 +24,9 @@ OPTION(PROFILING
   "Enable built in profiler"
   OFF)
 
+IF(NOT DEFINED SYSTEMD_CONFIGURATION_FILES_DIR)
+  set(SYSTEMD_CONFIGURATION_FILES_DIR "${CMAKE_INSTALL_PREFIX}/etc/systemd/system")
+ENDIF()
 
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
@@ -37,7 +40,7 @@ ENDIF(PROFILING)
 
 function(addLib name)
   pkg_check_modules(${name} REQUIRED ${name})
-  include_directories(${${name}_INCLUDE_DIRS}) 
+  include_directories(${${name}_INCLUDE_DIRS})
   link_directories(${${name}_LIBRARY_DIRS})
 endfunction(addLib)
 
@@ -58,8 +61,8 @@ ADD_CUSTOM_TARGET(
 	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_SOURCE_DIR}/src/device-info/SoftwareVersion.cpp
 )
 
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp) 
-  
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+
 add_executable(playground ${SOURCE_FILES})
 
 TARGET_LINK_LIBRARIES(playground pthread)
@@ -128,24 +131,32 @@ set_property(
   "-DHEAD_REF=\"${HEAD_REF}\" -DCOMMIT_COUNT=\"${COMMIT_COUNT}\" -DBRANCH_NAME=\"${BRANCH_NAME}\" -DLAST_COMMIT_TIME=\"${PLAYGROUND_VERSION}\""
 )
 
+configure_file(${CMAKE_SOURCE_DIR}/playground/systemd/playground.service.in
+	${PROJECT_BINARY_DIR}/systemd/playground.service @ONLY
+	)
+
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
 
+install(FILES ${PROJECT_BINARY_DIR}/systemd/playground.service
+  DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init
+  )
+
 install(FILES ${PARAMETER_DESCRIPTIONS}
-  DESTINATION resources/parameter-descriptions
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/parameter-descriptions
   )
 
 install(FILES ${VERSION_INFOS}
-        DESTINATION resources/version-infos
-        )
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/version-infos
+  )
 
 install(DIRECTORY resources
   USE_SOURCE_PERMISSIONS
-  DESTINATION ./
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
   )
 
 install(TARGETS playground
-  DESTINATION ./
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
   )
 
 ADD_CUSTOM_TARGET(

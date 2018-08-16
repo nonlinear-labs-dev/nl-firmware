@@ -36,7 +36,7 @@ ${HOST_DIR}/usr/bin/cmake \
 	-DBUILD_TESTING=OFF \
 	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_INSTALL_PREFIX="${TARGET_DIR}/nonlinear/playground" \
+	-DCMAKE_INSTALL_PREFIX="${TARGET_DIR}" \
 	-DJARSDIR="${GWT_COMPILER_DIR}" \
 	.. && \
 make -j8 && \

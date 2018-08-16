@@ -8,9 +8,9 @@ set(OBJDIR ${CMAKE_CURRENT_BINARY_DIR}/obj)
 set(ONLINEHELPDIR ${NONMAPS_ROOT}/online-help)
 set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/compilation-mappings.txt)
 
-file(GLOB_RECURSE SOURCE_FILES 
+file(GLOB_RECURSE SOURCE_FILES
   ${NONMAPS_ROOT}/src/*.java)
-  
+
 file (GLOB IMAGES ${NONMAPS_ROOT}/src/com/nonlinearlabs/NonMaps/client/world/overlay/images/*)
 file (COPY ${IMAGES} DESTINATION ./war/images)
 
@@ -25,42 +25,42 @@ add_custom_command(OUTPUT ${OUTFILE}
 add_custom_target(NonMaps ALL
   SOURCES ${OUTFILE}
   )
-  
+
 file(WRITE ${OBJDIR}/nonmaps-version.txt ${PLAYGROUND_VERSION})
-  
+
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war
-  DESTINATION NonMaps
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps
   )
 
 install(DIRECTORY ${NONMAPS_ROOT}/war
-  DESTINATION NonMaps
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps
   )
 
 install(DIRECTORY ${NONMAPS_ROOT}/src/war
-  DESTINATION NonMaps
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps
   )
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps
-  DESTINATION NonMaps/war
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps/war
   )
 
 install(DIRECTORY ${ONLINEHELPDIR}
-  DESTINATION NonMaps/war
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps/war
   )
 
 install(FILES ${IMAGES}
-  DESTINATION NonMaps/war/images
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps/war/images
   )
-  
+
 install(FILES ${MAPS_IMAGES}
-  DESTINATION NonMaps/war/images
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps/war/images
   )
 
 install(DIRECTORY war
-  DESTINATION NonMaps
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps
   )
-  
+
 install(FILES ${OBJDIR}/nonmaps-version.txt
-  DESTINATION NonMaps/war
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps/war
   )
 
