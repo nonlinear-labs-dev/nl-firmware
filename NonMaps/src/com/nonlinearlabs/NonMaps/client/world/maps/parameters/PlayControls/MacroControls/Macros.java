@@ -17,13 +17,13 @@ public class Macros extends ParameterGroupVertical {
 		public String toPrettyString() {
 			switch (this) {
 			case A:
-				return "Ⓐ";
+				return "\uE000";
 			case B:
-				return "Ⓑ";
+				return "\uE001";
 			case C:
-				return "Ⓒ";
+				return "\uE002";
 			case D:
-				return "Ⓓ";
+				return "\uE003";
 			case NONE:
 				return "";
 			}
@@ -52,7 +52,7 @@ public class Macros extends ParameterGroupVertical {
 			public RGB getColorFont() {
 				return RGB.lighterGray();
 			}
-		});		
+		});
 		controls = addChild(new MacrosControls(this));
 	}
 

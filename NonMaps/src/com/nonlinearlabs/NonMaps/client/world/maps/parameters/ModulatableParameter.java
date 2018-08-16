@@ -149,16 +149,16 @@ public abstract class ModulatableParameter extends Parameter {
 	protected String getModSourceString() {
 		switch (getModulationSource()) {
 		case A:
-			return "\u24b6";
+			return "\uE000";
 
 		case B:
-			return "\u24b7";
+			return "\uE001";
 
 		case C:
-			return "\u24b8";
+			return "\uE002";
 
 		case D:
-			return "\u24b9";
+			return "\uE003";
 
 		default:
 		}
