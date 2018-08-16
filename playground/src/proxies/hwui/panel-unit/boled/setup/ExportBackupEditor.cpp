@@ -72,13 +72,13 @@ void ExportBackupEditor::exportBanks ()
 {
   Application::get ().stopWatchDog ();
   writeBackupFileXML ();
-  const auto humanDate = StringTools::replaceAll(
+  const auto humanDate = StringTools::replaceAll(StringTools::replaceAll(
           std::to_string(
                   TimeTools::getDisplayStringFromStamp(
                           std::chrono::duration_cast<std::chrono::seconds>(
                                   std::chrono::system_clock::now().time_since_epoch()
                           ).count())
-          ), " ", "-");
+          ), " ", "-"), ":", "-");
 
   auto targetNameWithStamp(std::string("/mnt/usb-stick/") + humanDate.c_str() + c_backupTargetFile);
 
