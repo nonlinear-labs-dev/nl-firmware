@@ -131,7 +131,7 @@ set_property(
   "-DHEAD_REF=\"${HEAD_REF}\" -DCOMMIT_COUNT=\"${COMMIT_COUNT}\" -DBRANCH_NAME=\"${BRANCH_NAME}\" -DLAST_COMMIT_TIME=\"${PLAYGROUND_VERSION}\""
 )
 
-configure_file(${CMAKE_SOURCE_DIR}/playground/systemd/playground.service.in
+configure_file(${PROJECT_SOURCE_DIR}/systemd/playground.service.in
 	${PROJECT_BINARY_DIR}/systemd/playground.service @ONLY
 	)
 
