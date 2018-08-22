@@ -146,12 +146,19 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (filterSate == FilterState.FILTER_MATCHES) {
 
-			colorFill = new RGB(50, 65, 110);
+			if(loaded)
+				colorFill = RGB.blue();
+			else
+				colorFill = new RGB(50, 65, 110);
 
 			if (getParent().getParent().isCurrentFilterMatch(this)) {
-				colorContour = new RGB(230, 240, 255);
+					colorContour = new RGB(230, 240, 255);
 			}
-		} else {
+		}
+		else if(RenameDialog.isPresetBeingRenamed(this)) {
+			colorFill = new RGB(77,77,77);
+		}
+		else {
 			if (loaded || isOriginPreset)
 				colorFill = RGB.blue();
 			else if (selected)
@@ -175,7 +182,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		} else if (filterSate == FilterState.FILTER_MATCHES) {
 
 			if (getParent().getParent().isCurrentFilterMatch(this)) {
-				r.stroke(ctx, 2 * cp, new RGB(230, 240, 255));
+					r.stroke(ctx, 2 * cp, new RGB(230, 240, 255));
 			}
 		}
 	}
@@ -214,6 +221,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control click(Position point) {
+		return this;
+	}
+
+	private Control clickBehaviour() {
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -271,7 +282,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		return this;
+		getParent().getParent().pushBankOntoTop(getParent());
+		return clickBehaviour();
 	}
 
 	@Override
@@ -358,6 +370,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public void load() {
 		getNonMaps().getServerProxy().loadPreset(this);
+		getParent().getParent().onPresetLoadStatusChanged(this);
 	}
 
 	public void setFilterState(FilterState state) {

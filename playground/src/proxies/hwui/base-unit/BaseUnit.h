@@ -7,7 +7,7 @@
 
 class Application;
 
-class BaseUnit: public HardwareUserInterfaceUnit
+class BaseUnit: public HardwareUserInterfaceUnit, public sigc::trackable
 {
   private:
     typedef HardwareUserInterfaceUnit super;
@@ -26,6 +26,7 @@ class BaseUnit: public HardwareUserInterfaceUnit
 
   private:
     void respectUsageMode (const Setting *s);
+    void onBBBBConnected();
 
     PlayPanel m_playPanel;
     UpperRibbon m_upperRibbon;

@@ -17,7 +17,7 @@ PedalEditor::~PedalEditor ()
 
 void PedalEditor::incSetting (int inc)
 {
-  m_mode->inc (inc);
+  m_mode->inc(inc, false);
 }
 
 const vector<ustring> &PedalEditor::getDisplayStrings () const

@@ -1,18 +1,31 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
+import java.util.function.Function;
+
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.PedalType;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.PlayControls;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public class PedalSettings extends SettingsControl {
+public class PedalSettings extends OverlayLayout {
 
 	private int choice = 0;
 
 	private class Menu extends SettingsMenu {
 		private Menu(PedalSettings parent) {
 			super(parent);
+
+			getPedalSetting().onChange(new Function<Setup.PedalType, Boolean>() {
+
+				@Override
+				public Boolean apply(PedalType t) {
+					choice = t.ordinal();
+					return true;
+				}
+			});
 		}
 
 		@Override
@@ -47,20 +60,27 @@ public class PedalSettings extends SettingsControl {
 		private String getPedalSettingName() {
 			PlayControls playControls = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getPlayControls();
 			if (playControls.getPedal(0) == getPedal())
-				return "Pedal1Mode";
+				return "Pedal1Type";
 			else if (playControls.getPedal(1) == getPedal())
-				return "Pedal2Mode";
+				return "Pedal2Type";
 			else if (playControls.getPedal(2) == getPedal())
-				return "Pedal3Mode";
+				return "Pedal3Type";
 
-			return "Pedal4Mode";
+			return "Pedal4Type";
 		}
 
-		@Override
-		public void update(Node settingsNode, Node deviceInfo) {
-			String str = ServerProxy.getChildText(settingsNode, getPedalSettingName(), "value");
-			fromSettingsString(str);
+		private EnumDataModelEntity<PedalType> getPedalSetting() {
+			PlayControls playControls = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getPlayControls();
+			if (playControls.getPedal(0) == getPedal())
+				return Setup.get().systemSettings.pedal1Type;
+			else if (playControls.getPedal(1) == getPedal())
+				return Setup.get().systemSettings.pedal2Type;
+			else if (playControls.getPedal(2) == getPedal())
+				return Setup.get().systemSettings.pedal3Type;
+
+			return Setup.get().systemSettings.pedal4Type;
 		}
+
 	}
 
 	private PedalSliderWithValue slider;
@@ -75,11 +95,6 @@ public class PedalSettings extends SettingsControl {
 	@Override
 	public PedalSetting getParent() {
 		return (PedalSetting) super.getParent();
-	}
-
-	@Override
-	public void update(Node settingsNode, Node deviceInfo) {
-
 	}
 
 	@Override

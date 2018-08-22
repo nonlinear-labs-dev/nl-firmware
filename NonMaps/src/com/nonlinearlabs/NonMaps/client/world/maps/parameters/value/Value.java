@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.value;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
 class Value {
@@ -70,5 +71,11 @@ class Value {
 
 	protected void onEditingFinished() {
 
+	}
+
+	public void update(ValueDataModelEntity e) {
+		this.isBipolar = e.bipolar;
+		this.defaultValue = e.defaultValue;
+		setRawValue(Initiator.INDIRECT_USER_ACTION, e.getValue());
 	}
 }

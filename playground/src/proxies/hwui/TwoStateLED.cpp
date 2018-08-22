@@ -7,8 +7,6 @@
 #include "proxies/hwui/debug-oled/DebugLeds.h"
 #include "proxies/hwui/debug-oled/DebugOLED.h"
 
-static const char* s_ledDevFile = "/dev/espi_led";
-
 TwoStateLED::TwoStateLED (int id) :
     m_state (OFF)
 {
@@ -17,12 +15,6 @@ TwoStateLED::TwoStateLED (int id) :
 
 TwoStateLED::~TwoStateLED ()
 {
-}
-
-std::ofstream &TwoStateLED::getDeviceFile ()
-{
-  static std::ofstream f (s_ledDevFile);
-  return f;
 }
 
 void TwoStateLED::init()
@@ -69,10 +61,16 @@ void TwoStateLED::onBlinkUpdate (int blinkCount)
 
 void TwoStateLED::switchLED (bool onOrOff)
 {
-  char val = ((onOrOff ? 1 : 0) << 7) | (getID () & 0x7F);
-  getDeviceFile () << val;
-  getDeviceFile ().flush ();
+  uint8_t val[1];
+  *val = ((onOrOff ? 1 : 0) << 7) | (getID () & 0x7F);
+  auto msg = Glib::Bytes::create(val, 1);
+  Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::PanelLed, msg);
+}
 
-  FOR_TESTS(auto l = dynamic_pointer_cast<DebugLeds>(Application::get ().getHWUI()->getDebugOled()->getLayout()));
-  FOR_TESTS(l->setLedState(getID(), onOrOff));
+void TwoStateLED::syncBBBB()
+{
+  if(m_state == ON)
+    switchLED(true);
+  else if (m_state == OFF)
+    switchLED(false);
 }

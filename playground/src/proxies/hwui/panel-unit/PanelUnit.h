@@ -10,7 +10,7 @@ class Application;
 class Parameter;
 class TwoStateLED;
 
-class PanelUnit : public HardwareUserInterfaceUnit
+class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
 {
   private:
     typedef HardwareUserInterfaceUnit super;
@@ -38,6 +38,7 @@ class PanelUnit : public HardwareUserInterfaceUnit
   private:
     void installUsageMode (FocusAndMode focusAndMode);
     int choseHWBestSourceForMC(int mcParamId) const;
+    void onBBBBConnected();
 
     EditPanel m_editPanel;
     vector<tLed> m_leds;

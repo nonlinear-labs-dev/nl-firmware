@@ -23,23 +23,24 @@ class PresetBank : public UpdateDocumentContributor,
     public sigc::trackable
 {
   public:
-    PresetBank(PresetManager *parent);
-    virtual ~PresetBank();
+    explicit PresetBank(PresetManager *parent);
+    ~PresetBank() override = default;
 
     PresetManager *getParent();
     const PresetManager *getParent() const;
 
     typedef shared_ptr<Preset> tPresetPtr;
+    typedef shared_ptr<PresetBank> tPresetBankPtr;
 
     enum AttachmentDirection
     {
-      none = 0, top = 1, left = 2
+      none, top, left, count
     };
     const Glib::ustring directionEnumToString(AttachmentDirection direction) const;
 
     struct Attachment
     {
-        Attachment(Glib::ustring uuid, AttachmentDirection direction) :
+        Attachment(const Glib::ustring& uuid, AttachmentDirection direction) :
             uuid(uuid),
             direction(direction)
         {
@@ -77,6 +78,7 @@ class PresetBank : public UpdateDocumentContributor,
     void undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, int pos);
     void undoableSelect(UNDO::Scope::tTransactionPtr transaction);
 
+    void undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset);
     void undoableAppendPreset(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
     void undoableDeletePreset(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &uuid);
     void undoableOverwritePreset(UNDO::Scope::tTransactionPtr transaction, size_t pos, tPresetPtr preset);
@@ -94,7 +96,7 @@ class PresetBank : public UpdateDocumentContributor,
     void copyFrom(UNDO::Scope::tTransactionPtr transaction, shared_ptr<PresetBank> other, bool ignoreUUIDs);
 
     void undoableIncPresetSelection(int inc, ButtonModifiers modifiers);
-
+    void undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid);
     void undoableSort(UNDO::Scope::tTransactionPtr transaction, bool asc);
 
     void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -109,16 +111,20 @@ class PresetBank : public UpdateDocumentContributor,
 
     void resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transaction);
     bool resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction);
+    void resetAttached(UNDO::Scope::tTransactionPtr transaction);
 
     PresetBank *getClusterMaster();
+    PresetBank *getMasterTop();
+    PresetBank *getMasterLeft();
+    PresetBank *getSlaveRight();
+    PresetBank *getSlaveBottom();
 
-    virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+    tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
     // CALLBACKS
     sigc::connection onBankChanged(sigc::slot<void> slot);
 
   private:
-    void resetAttached(UNDO::Scope::tTransactionPtr transaction);
     Glib::ustring generateHumanReadablePresetName(size_t pos) const;
     void setName(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &name);
     void setX(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x);
@@ -160,4 +166,5 @@ class PresetBank : public UpdateDocumentContributor,
     friend class PresetBankSerializer;
     friend class PresetOrderSerializer;
     friend class PresetBankMetadataSerializer;
+
 };

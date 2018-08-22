@@ -29,10 +29,6 @@ PresetBank::PresetBank(PresetManager *parent) :
 {
 }
 
-PresetBank::~PresetBank()
-{
-}
-
 PresetManager *PresetBank::getParent()
 {
   return static_cast<PresetManager *>(UpdateDocumentContributor::getParent());
@@ -238,7 +234,7 @@ void PresetBank::undoableEnsurePresetSelection(UNDO::Scope::tTransactionPtr tran
 
   if(!getPreset(selPresetUUID) && getNumPresets() > 0)
   {
-    undoableSelectPreset(transaction, getPreset(0)->getUuid());
+    undoableSetSelectedPresetUUID(transaction, getPreset(0)->getUuid());
   }
 }
 
@@ -355,6 +351,25 @@ void PresetBank::undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, 
     m_presets.erase (m_presets.begin () + pos);
     onChange();
   });
+}
+
+void PresetBank::undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset)
+{
+  if(preset) {
+    auto newPreset = createPreset();
+    newPreset->copyFrom(transaction, preset.get(), true);
+
+    auto swapData = UNDO::createSwapData(newPreset);
+    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
+                                  {
+                                    insertPreset (m_presets.begin(), swapData->get<0>());
+                                    onChange();
+                                  }, [ = ] (UNDO::Command::State) mutable
+                                  {
+                                    m_presets.erase (m_presets.begin ());
+                                    onChange();
+                                  });
+  }
 }
 
 void PresetBank::undoableAppendPreset(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid)
@@ -486,7 +501,7 @@ const Glib::ustring &PresetBank::getY() const
 Glib::ustring PresetBank::getName(bool withFallback) const
 {
   if(withFallback && m_name.empty())
-    return "<untitled preset bank>";
+    return "<untitled bank>";
 
   return m_name;
 }
@@ -835,9 +850,6 @@ void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Gl
     swapData->swapWith (m_attachment);
     onChange();
   });
-
-  DebugLevel::warning("undoableAttach after Swap: ", m_attachment.uuid, "dir", directionEnumToString(m_attachment.direction));
-
 }
 void PresetBank::undoableDetachBank(UNDO::Scope::tTransactionPtr transaction)
 {
@@ -881,10 +893,13 @@ const Glib::ustring PresetBank::directionEnumToString(AttachmentDirection direct
   static_assert(AttachmentDirection::none == 0, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
   static_assert(AttachmentDirection::top == 1, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
   static_assert(AttachmentDirection::left == 2, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
+  static_assert(AttachmentDirection::count == 3, "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
 
   switch(direction)
   {
-
+    case count:
+      g_warn_if_reached();
+      break;
     case top:
       return "top";
     case left:
@@ -920,10 +935,54 @@ bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks,
   return true;
 }
 
-PresetBank *PresetBank::getClusterMaster()
+PresetBank* PresetBank::getClusterMaster()
 {
   if(auto master = getParent()->findBank(getAttached().uuid))
-    return master->getClusterMaster();
+    if(master.get() != this)
+      return master->getClusterMaster();
 
   return this;
 }
+
+void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid) {
+  auto swapData = UNDO::createSwapData(Glib::ustring(uuid));
+
+  transaction->addSimpleCommand([=] (UNDO::Command::State) mutable
+                                {
+                                    swapData->swapWith(m_selectedPresetUUID);
+                                    onChange();
+                                });
+}
+
+PresetBank *PresetBank::getMasterTop() {
+    if(getAttached().direction == AttachmentDirection::top) {
+        return getParent()->findBank(getAttached().uuid).get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getMasterLeft() {
+    if(getAttached().direction == AttachmentDirection::left) {
+        return getParent()->findBank(getAttached().uuid).get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getSlaveRight() {
+    for(auto bank: getParent()->getBanks()) {
+        if(auto masterLeft = bank->getMasterLeft())
+            if(masterLeft == this)
+                return bank.get();
+    }
+    return nullptr;
+}
+
+PresetBank *PresetBank::getSlaveBottom() {
+    for(auto bank: getParent()->getBanks()) {
+        if(auto masterLeft = bank->getMasterTop())
+            if(masterLeft == this)
+                return bank.get();
+    }
+    return nullptr;
+}
+

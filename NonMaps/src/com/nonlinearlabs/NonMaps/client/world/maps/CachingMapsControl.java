@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.NonMaps.client.Checksum;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -149,8 +150,10 @@ public class CachingMapsControl extends MapsLayout {
 				scheduleBackgroundRefresh(newHash, invalidationMask);
 			}
 		}
-
-		ctx.drawImage(bmp.getCanvasElement(), r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
+		
+		
+		if(bmp.getCanvasElement().getWidth() > 0 && bmp.getCanvasElement().getHeight() > 0) //Fixes new bug that whole groups wouldnt be drawn sometimes:  Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.
+			ctx.drawImage(bmp.getCanvasElement(), r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 	}
 
 	private long bgRedrawHash = 0;
@@ -167,7 +170,6 @@ public class CachingMapsControl extends MapsLayout {
 		long start = new Date().getTime();
 
 		Iterator<CachingMapsControl> it = bgRedrawControls.iterator();
-		int numControlsRedrawn = 0;
 
 		while (it.hasNext()) {
 			CachingMapsControl c = it.next();
@@ -175,7 +177,6 @@ public class CachingMapsControl extends MapsLayout {
 			c.bgRedrawinvalidationMask = 0;
 			c.invalidate(INVALIDATION_FLAG_BITMAP_CACHE_REFRESHED);
 			it.remove();
-			numControlsRedrawn++;
 
 			long now = new Date().getTime();
 			if (now - start >= maxMS)

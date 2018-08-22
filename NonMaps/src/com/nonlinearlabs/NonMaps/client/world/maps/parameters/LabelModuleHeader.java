@@ -99,7 +99,7 @@ public class LabelModuleHeader extends LabelSmall {
 		super.draw(ctx, invalidationMask);
 
 		if (isLocked())
-			ctx.fillText("L", pixRect.getRight() - 16, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			ctx.fillText("\ue20a", pixRect.getRight() - ctx.measureText("\ue20a").getWidth() * 1.25, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 	}
 
 	@Override
@@ -119,7 +119,11 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	public RGB getColorFont() {
-		return new RGBA(super.getColorSliderHighlight(), 0.9);
+		return new RGBA(getFontColor(), 0.9);
+	}
+
+	private RGB getFontColor() {
+		return super.getColorSliderHighlight();
 	}
 
 	@Override
@@ -132,14 +136,17 @@ public class LabelModuleHeader extends LabelSmall {
 		return 1;
 	}
 
+	public void resetScaling() {
+		NonMaps.get().getServerProxy().resetScaling();
+	}
+	
 	@Override
 	public Control onContextMenu(Position pos) {
 		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
 				.getContextMenuSettings();
 		if (contextMenuSettings.isEnabled()) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-			ContextMenu c = new ParameterGroupContextMenu(o);
-			return o.setContextMenu(pos, c);
+			return o.setContextMenu(pos, new ParameterGroupContextMenu(o));
 		}
 		return super.onContextMenu(pos);
 	}

@@ -55,6 +55,10 @@ void Control::setVisible (bool b)
 
 bool Control::isDirty () const
 {
+  if(m_isDirty)
+  {
+    return m_isDirty;
+  }
   return m_isDirty;
 }
 

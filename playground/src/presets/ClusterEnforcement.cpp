@@ -1,4 +1,5 @@
 #include <presets/ClusterEnforcement.h>
+#include <tools/PerformanceTimer.h>
 
 ClusterEnforcement::ClusterEnforcement()
 {
@@ -43,6 +44,7 @@ void ClusterEnforcement::buildClusterStructure()
       {
         auto clusterRoot = std::make_shared<TreeNode>();
         clusterRoot->bank = bank;
+        clusterRoot->master = nullptr;
         addCluster(clusterRoot);
       }
       else if (auto masterNode = findTreeNode(bank->getAttached().uuid))
@@ -59,6 +61,9 @@ void ClusterEnforcement::buildClusterStructure()
 
     if (waitingList.size() == anotherWaitingList.size())
     {
+      for(const auto& master: m_clusters) {
+        master->assignMaster(master);
+      }
       break;
     }
 
@@ -210,4 +215,64 @@ void ClusterEnforcement::connectToClusterStructure(tTreeNodePtr masterNode, tTre
   }
 
   m_uuidToTreeNode[myNode->bank->getUuid()] = myNode;
+}
+
+bool inCluster(const ClusterEnforcement::tTreeNodePtr& node) {
+  return node->top || node->bottom || node->left || node->right;
+}
+
+vector<ClusterEnforcement::tTreeNodePtr> prepareNodeVector(const std::map<Glib::ustring, ClusterEnforcement::tTreeNodePtr>& nodeMap) {
+    vector<ClusterEnforcement::tTreeNodePtr> ret;
+    for(auto x: nodeMap)
+        ret.push_back(x.second);
+    return ret;
+}
+
+bool handleBothBanksInCluster(const ClusterEnforcement::tTreeNodePtr& lhs,
+                              const ClusterEnforcement::tTreeNodePtr& rhs) {
+    if(lhs->master == rhs->master)
+        return lhs->getClusterDepth() < rhs->getClusterDepth();
+    else
+        return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
+}
+
+vector<shared_ptr<PresetBank>> buildVectorFromNodeVector(const vector<ClusterEnforcement::tTreeNodePtr>& nodeVec) {
+    auto ret = vector<shared_ptr<PresetBank>>();
+    for(const auto& x: nodeVec)
+        ret.push_back(x->bank);
+    return ret;
+}
+
+void ClusterEnforcement::sortBankNumbers() {
+  PerformanceTimer t("Sort Banks");
+
+  auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Sort Bank Numbers");
+  auto transaction = scope->getTransaction();
+
+  ClusterEnforcement ce;
+  auto newBanks = ce.sortBanks();
+  Application::get().getPresetManager()->undoableSetBanks(transaction, newBanks);
+}
+
+vector<shared_ptr<PresetBank>> ClusterEnforcement::sortBanks() {
+
+  buildClusterStructure();
+  auto treeNodes = prepareNodeVector(m_uuidToTreeNode);
+
+  std::sort(treeNodes.begin(), treeNodes.end(), [&](const tTreeNodePtr& lhs, const tTreeNodePtr& rhs) {
+      auto lhsInCluster = inCluster(lhs);
+      auto rhsInCluster = inCluster(rhs);
+
+      if(lhsInCluster && !rhsInCluster)
+        return true;
+      else if(!lhsInCluster && rhsInCluster)
+        return false;
+      else if(lhsInCluster && rhsInCluster)
+          return handleBothBanksInCluster(lhs, rhs);
+      else
+        return stoi(lhs->bank->getX()) < stoi(rhs->bank->getX());
+  });
+
+  return buildVectorFromNodeVector(treeNodes);
+
 }

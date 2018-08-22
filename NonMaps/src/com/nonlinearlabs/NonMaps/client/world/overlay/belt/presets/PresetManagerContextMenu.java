@@ -23,11 +23,11 @@ public class PresetManagerContextMenu extends ContextMenu {
 
 	public PresetManagerContextMenu(OverlayLayout parent) {
 		super(parent);
-
+		
 		addChild(new ContextMenuItem(this, "Create New Bank") {
 			@Override
 			public Control click(Position eventPoint) {
-				NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+				NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
 				createNewBank(pos);
 				return super.click(eventPoint);
 			}
@@ -37,7 +37,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 			addChild(new ContextMenuItem(this, "Paste") {
 				@Override
 				public Control click(Position eventPoint) {
-					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
+					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
 					getNonMaps().getServerProxy().pasteOnPresetManager(pos);
 					return super.click(eventPoint);
 				}
@@ -47,13 +47,12 @@ public class PresetManagerContextMenu extends ContextMenu {
 		addChild(new ContextMenuItem(this, "Import Bank from File...") {
 			@Override
 			public Control click(final Position eventPoint) {
-				new TextUpload(new TextUploadedHandler() {
-					@Override
-					public void onTextUploaded(String fileName, String text) {
-						NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(eventPoint);
-						NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
-					}
-				});
+
+				new TextUpload((fileName, text) -> {
+					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
+					NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
+				}, ".xml");
+        
 				return super.click(eventPoint);
 			}
 		});
@@ -78,6 +77,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 				}
 				final FileUpload upload = new FileUpload();
 				upload.setName("uploadFormElement");
+				upload.getElement().setAttribute("accept", ".xml.tar.gz");
 				upload.addChangeHandler(new ChangeHandler() {
 
 					@Override
@@ -104,6 +104,14 @@ public class PresetManagerContextMenu extends ContextMenu {
 			@Override
 			public Control click(Position eventPoint) {
 				getNonMaps().getNonLinearWorld().getPresetManager().toggleMoveAllBanks();
+				return super.click(eventPoint);
+			}
+		});
+		
+		addChild(new ContextMenuItem(this, "Sort Bank Numbers") {
+			@Override
+			public Control click(Position eventPoint) {
+				getNonMaps().getServerProxy().sortBankNumbers();
 				return super.click(eventPoint);
 			}
 		});

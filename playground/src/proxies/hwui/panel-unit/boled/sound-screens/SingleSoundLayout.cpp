@@ -23,6 +23,7 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/UsageMode.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LockedIndicator.h>
 
 SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
     super (Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ())
@@ -31,6 +32,7 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
 
   m_initButton = addControl (new Button ("Init", BUTTON_A));
 
+  addControl (new LockedIndicator (Rect (68, 1, 10, 11)));
   m_randomizeLabel = addControl (new LabelRegular8 ("Amount", Rect (67, 12, 58, 11)));
   m_randomizeSlider = addControl (new RandomizeAmountSlider (Rect (67, 28, 58, 4)));
   m_randomizeAmount = addControl (new RandomizeAmountLabel (Rect (67, 36, 58, 12)));

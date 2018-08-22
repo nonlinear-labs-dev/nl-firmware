@@ -22,13 +22,22 @@ AnyParameterLockedIndicator::~AnyParameterLockedIndicator()
 void AnyParameterLockedIndicator::calcHasLocks()
 {
   auto hasLocks = Application::get().getPresetManager()->getEditBuffer()->hasLocks();
-  setText(hasLocks ? "L" : "");
+  setText(hasLocks ? "\ue20a" : "");
   setVisible(hasLocks);
 }
 
 void AnyParameterLockedIndicator::update()
 {
   m_calcHasLocks.trigger();
+}
+
+bool AnyParameterLockedIndicator::redraw(FrameBuffer &fb)
+{
+  auto r = getPosition ();
+  fb.setColor (FrameBuffer::Colors::C255);
+  fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+  Label::redraw(fb);
+  return true;
 }
 
 

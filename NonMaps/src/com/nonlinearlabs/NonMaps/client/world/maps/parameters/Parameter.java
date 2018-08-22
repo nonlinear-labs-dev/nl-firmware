@@ -24,6 +24,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.ChangeListener;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.ParameterContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.EditParameterSetting;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
@@ -33,7 +34,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private class ValueChangeListener implements QuantizedClippedValue.ChangeListener {
 		@Override
 		public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
-		}
+		} 
 
 		@Override
 		public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
@@ -378,11 +379,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public ContextMenu createContextMenu(Overlay o) {
-		return null;
+		return new ParameterContextMenu(o, this);
 	}
 
 	public boolean hasContextMenu() {
-		return false;
+		return true;
 	}
 
 	public boolean dimHandleAtDefaultValue() {

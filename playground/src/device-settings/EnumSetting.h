@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Setting.h"
-
-class Settings;
+#include "Settings.h"
 
 template<typename TEnum>
   class EnumSetting : public Setting
@@ -13,29 +12,29 @@ template<typename TEnum>
     public:
       typedef TEnum tEnum;
 
-      EnumSetting (Settings &settings, tEnum def) :
-          super (settings),
-          m_mode (def)
+      EnumSetting(Settings &settings, tEnum def) :
+          super(settings),
+          m_mode(def)
       {
       }
 
-      virtual bool set (tEnum m)
+      virtual bool set(tEnum m)
       {
-        if (m_mode != m)
+        if(m_mode != m)
         {
           m_mode = m;
-          notify ();
+          notify();
           return true;
         }
         return false;
       }
 
-      Settings *getSettings ()
+      Settings *getSettings()
       {
-        return static_cast<Settings*> (getParent ());
+        return static_cast<Settings*>(getParent());
       }
 
-      tEnum get () const
+      tEnum get() const
       {
         if(auto overlay = m_overlay.lock())
           return *overlay;
@@ -43,58 +42,73 @@ template<typename TEnum>
         return m_mode;
       }
 
-      void load (const Glib::ustring &text)
+      void load(const Glib::ustring &text)
       {
         int i = 0;
-        for (const auto &it : enumToString ())
+        for(const auto &it : enumToString())
         {
-          if (text == it)
+          if(text == it)
           {
-            set ((tEnum) i);
+            set((tEnum) i);
             return;
           }
           i++;
         }
       }
 
-      void inc (int dir = 1)
+      void inc(int dir, bool wrap)
       {
-        int numEntries = enumToString ().size ();
+        int numEntries = enumToString().size();
         int e = (int) m_mode;
 
-        while (dir > 0)
+        while(dir > 0)
         {
           dir--;
           e++;
-          if (e >= numEntries)
-            e = 0;
+
+          if(e >= numEntries)
+          {
+            if(wrap)
+              e = 0;
+            else
+              e = numEntries - 1;
+
+            break;
+          }
         }
 
-        while (dir < 0)
+        while(dir < 0)
         {
           dir++;
           e--;
-          if (e < 0)
-            e = numEntries - 1;
+          if(e < 0)
+          {
+            if(wrap)
+              e = numEntries - 1;
+            else
+              e = 0;
+
+            break;
+          }
         }
 
-        set ((tEnum) e);
+        set((tEnum) e);
       }
 
-      Glib::ustring save () const
+      Glib::ustring save() const
       {
-        int idx = static_cast<int> (get ());
-        return enumToString ()[idx];
+        int idx = static_cast<int>(get());
+        return enumToString()[idx];
       }
 
-      Glib::ustring getDisplayString () const
+      Glib::ustring getDisplayString() const
       {
-        int idx = static_cast<int> (get ());
-        return enumToDisplayString ()[idx];
+        int idx = static_cast<int>(get());
+        return enumToDisplayString()[idx];
       }
 
-      virtual const vector<Glib::ustring> &enumToString () const = 0;
-      virtual const vector<Glib::ustring> &enumToDisplayString () const = 0;
+      virtual const vector<Glib::ustring> &enumToString() const = 0;
+      virtual const vector<Glib::ustring> &enumToDisplayString() const = 0;
 
       std::shared_ptr<tEnum> scopedOverlay(tEnum value)
       {
@@ -104,8 +118,8 @@ template<typename TEnum>
       }
 
     private:
-      EnumSetting (const EnumSetting& other);
-      EnumSetting& operator= (const EnumSetting&);
+      EnumSetting(const EnumSetting& other);
+      EnumSetting& operator=(const EnumSetting&);
 
       tEnum m_mode;
       std::weak_ptr<tEnum> m_overlay;

@@ -45,7 +45,7 @@ void PresetNumberLabel::update(int presetNumber, bool selected, bool loaded)
   {
     auto pos = presetNumber + 1;
     char txt[256];
-    g_sprintf(txt, "%03zu", pos);
+    g_sprintf(txt, "%03d", pos);
     setText(txt, selected, loaded);
   }
 }

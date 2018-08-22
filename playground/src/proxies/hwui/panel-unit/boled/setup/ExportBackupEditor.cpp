@@ -10,17 +10,22 @@
 #include <xml/FileOutStream.h>
 #include <xml/VersionAttribute.h>
 #include <tools/SpawnCommandLine.h>
+#include <tools/TimeTools.h>
+#include <algorithm>
+#include <experimental/filesystem>
+#include <tools/StringTools.h>
 #include "USBStickAvailableView.h"
+#include <device-settings/DebugLevel.h>
 
 static const Rect c_fullRightSidePosition (129, 16, 126, 48);
 static constexpr const char c_tempBackupFile[] = "/nonlinear/nonlinear-c15-banks.xml.tar.gz";
-static constexpr const char c_backupTargetFile[] = "nonlinear-c15-banks.xml.tar.gz";
+static constexpr const char c_backupTargetFile[] = "-c15-banks.xml.tar.gz";
 
 ExportBackupEditor::ExportBackupEditor () :
     ControlWithChildren (Rect (0, 0, 0, 0))
 {
   if (USBStickAvailableView::usbIsReady())
-  installState (Initial);
+    installState (Initial);
   else
     installState (NotReady);
 }
@@ -67,12 +72,22 @@ void ExportBackupEditor::exportBanks ()
   Application::get ().stopWatchDog ();
   writeBackupFileXML ();
 
-  auto timeStamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+  const auto timeSinceEpoch = std::chrono::system_clock::now().time_since_epoch();
+  const auto timeStamp = std::chrono::duration_cast<std::chrono::seconds>(timeSinceEpoch).count();
+  const auto humanReadableTime = TimeTools::getDisplayStringFromStamp(timeStamp);
+  const auto timeStringWithoutWhiteSpaces = StringTools::replaceAll(std::to_string(humanReadableTime), " ", "-");
+  const auto finalDateString = StringTools::replaceAll(timeStringWithoutWhiteSpaces, ":", "-");
+  const auto targetNameWithStamp(std::string("/mnt/usb-stick/") + finalDateString.c_str() + c_backupTargetFile);
 
-  auto targetNameWithStamp(std::string("/mnt/usb-stick/") + std::to_string(timeStamp) + c_backupTargetFile);
+  const auto from = std::experimental::filesystem::path(c_tempBackupFile);
+  const auto to = std::experimental::filesystem::path(targetNameWithStamp.c_str());
 
-  auto moveCommand(std::string("mv ") + c_tempBackupFile + " " + targetNameWithStamp);
-  SpawnCommandLine cmd(moveCommand);
+  try {
+    std::experimental::filesystem::copy(from, to);
+    std::experimental::filesystem::remove(from);
+  } catch (std::experimental::filesystem::filesystem_error& e) {
+    std::cout << e.what() << '\n';
+  }
 
   Application::get ().runWatchDog ();
   installState (Finished);

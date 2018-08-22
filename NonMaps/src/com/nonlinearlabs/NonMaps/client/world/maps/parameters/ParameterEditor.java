@@ -37,6 +37,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Scale.Scale;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ShapeA.ShapeA;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ShapeB.ShapeB;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Unison.Unison;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.CompareDialog;
 
@@ -277,6 +278,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 		if (loadedPreset != null && !loadedPreset.equals(this.loadedPreset)) {
 			this.loadedPreset = loadedPreset;
 			AppendOverwriteInsertPresetDialog.close();
+			PresetManager m = NonMaps.get().getNonLinearWorld().getPresetManager();
+			m.onPresetLoadStatusChanged(m.findPreset(loadedPreset));
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
 
@@ -355,11 +358,10 @@ public class ParameterEditor extends LayoutResizingVertical {
 			String shortGroupName = parameterGroupNode.getAttributes().getNamedItem("short-name").getNodeValue();
 			String groupID = parameterGroupNode.getAttributes().getNamedItem("id").getNodeValue();
 
-			try {
-				findParameterGroup(groupID).setName(new Name(longGroupName, shortGroupName));
-			} catch (Exception e) {
-				Tracer.log("exception -> findParameterGroup" + groupID);
-			}
+			ParameterGroupIface grp = findParameterGroup(groupID);
+
+			if (grp != null)
+				grp.setName(new Name(longGroupName, shortGroupName));
 
 			NodeList parameters = parameterGroupNode.getChildNodes();
 
@@ -496,11 +498,10 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 		return c != null;
 	}
-	
-	public boolean areAllParametersLocked()
-	{
-		for(Parameter p: parameterMap.values()) {
-			if(p.isLocked() == false)
+
+	public boolean areAllParametersLocked() {
+		for (Parameter p : parameterMap.values()) {
+			if (p.isLocked() == false)
 				return false;
 		}
 		return true;

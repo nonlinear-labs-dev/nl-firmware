@@ -18,6 +18,8 @@ class AppendOverwriteInsertButtonMenu : public ButtonMenu
     virtual ~AppendOverwriteInsertButtonMenu ();
 
     void selectButton (size_t i) override;
+    void buildMenu();
+    void createBankAndStore();
 
   private:
     typedef UNDO::Scope::tTransactionPtr tTransactionPtr;

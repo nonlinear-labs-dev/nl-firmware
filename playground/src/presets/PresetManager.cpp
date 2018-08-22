@@ -233,6 +233,18 @@ void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transact
   });
 }
 
+void PresetManager::undoableSetBanks(UNDO::Scope::tTransactionPtr transaction, std::vector<tBankPtr> newBankOrder) {
+  auto swapData = UNDO::createSwapData(newBankOrder);
+
+  sanitizeBankClusterRelations(transaction);
+  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
+                                {
+                                  swapData->swapWith(m_banks);
+                                  reassignOrderNumbers();
+                                });
+}
+
+
 void PresetManager::undoableSelectNext()
 {
   auto selected = getSelectedBank();
@@ -311,7 +323,12 @@ PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr tran
 
 PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y)
 {
-  auto newBank = addBank(transaction, true);
+  return addBank(transaction, x, y, true);
+}
+
+PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y, bool autoSelect)
+{
+  auto newBank = addBank(transaction, autoSelect);
   newBank->undoableSetPosition(transaction, x, y);
   return newBank;
 }
@@ -551,7 +568,7 @@ PresetManager::tPresetPtr PresetManager::findPreset(const Glib::ustring &presetU
     if(auto p = bank->getPreset(presetUUID))
       return p;
 
-  return NULL;
+  return nullptr;
 }
 
 PresetManager::tBankPtr PresetManager::getSelectedBank() const
@@ -581,12 +598,16 @@ PresetManager::tBankPtr PresetManager::findBank(const Glib::ustring &uuid) const
       return bank;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool PresetManager::isLoading() const
 {
   return m_loading.isLocked();
+}
+
+PresetManager::tPresetPtr PresetManager::getLoadedPreset() {
+    return findPreset(m_editBuffer->getUUIDOfLastLoadedPreset());
 }
 
 void PresetManager::load()
@@ -973,6 +994,29 @@ void PresetManager::stress(int numTransactions)
     if(numTransactions > 0)
     {
       stress(numTransactions - 1);
+    }
+
+  }, 20);
+}
+
+void PresetManager::stressLoad(int numTransactions)
+{
+  Glib::MainContext::get_default()->signal_timeout().connect_once([=]()
+  {
+    int numSteps = numTransactions;
+    auto transactionScope = getUndoScope().startTransaction("Stressing by Preset loading");
+    auto transaction = transactionScope->getTransaction();
+
+    while(numSteps > 0)
+    {
+      for(auto b : getBanks())
+      {
+        for(auto p : b->getPresets())
+        {
+          m_editBuffer->undoableLoad(transaction, p);
+          numSteps--;
+        }
+      }
     }
 
   }, 20);

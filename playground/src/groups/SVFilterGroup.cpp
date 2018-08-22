@@ -12,7 +12,7 @@
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
 SVFilterGroup::SVFilterGroup (ParameterGroupSet *parent) :
-    ParameterGroup (parent, "SVF", "SV Filter", "State Variable Filter", "State Variable Filter")
+    ParameterGroup (parent, "SVF", "S.V. Filter", "State Variable Filter", "State Variable Filter")
 {
 }
 

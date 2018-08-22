@@ -14,6 +14,7 @@ class UndoScope;
 class Settings;
 class EmbeddedPC;
 class Clipboard;
+class WebSocketSession;
 
 class Application
 {
@@ -41,6 +42,8 @@ class Application
     shared_ptr<DeviceInformation> getDeviceInformation();
     shared_ptr<Clipboard> getClipboard();
 
+    WebSocketSession *getWebSocketSession();
+
     void quit();
     bool isQuit () const;
 
@@ -55,6 +58,7 @@ class Application
     Glib::ustring m_selfPath;
     shared_ptr<Options> m_options;
     RefPtr<MainLoop> m_theMainLoop;
+    unique_ptr<WebSocketSession> m_websocketSession;
     shared_ptr<HTTPServer> m_http;
     shared_ptr<Settings> m_settings;
     shared_ptr<UndoScope> m_undoScope;

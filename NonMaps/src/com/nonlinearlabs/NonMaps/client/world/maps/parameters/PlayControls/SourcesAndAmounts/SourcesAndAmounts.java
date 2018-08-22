@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModuleHeader;
@@ -90,6 +91,12 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 
 				if (isHWLocked())
 					ctx.fillText("L", pixRect.getLeft() + 16, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			}
+			
+		
+			@Override
+			public RGB getColorFont() {
+				return RGB.lighterGray();
 			}
 		});
 

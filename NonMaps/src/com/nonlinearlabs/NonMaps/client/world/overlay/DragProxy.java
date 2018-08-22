@@ -21,7 +21,13 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public class DragProxy extends OverlayControl {
 
-	class FoundControl {
+	private Position lastMousePos;
+
+    public Position getMousePosition() {
+    	return lastMousePos;
+    }
+
+    class FoundControl {
 		public FoundControl(DragProxy proxy, Control ctrl, int ranking) {
 			this.proxy = proxy;
 			this.ctrl = ctrl;
@@ -77,7 +83,9 @@ public class DragProxy extends OverlayControl {
 			origin.forceVisibility(false);
 
 			Rect r = getPixRect();
-			ctx.drawImage(bmp.getCanvasElement(), r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
+			
+			if(bmp.getCanvasElement().getWidth() > 0 && bmp.getCanvasElement().getHeight() > 0) //Fixes new bug that whole groups wouldnt be drawn sometimes:  Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The image argument is a canvas element with a width or height of 0.
+				ctx.drawImage(bmp.getCanvasElement(), r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 		}
 	}
 
@@ -106,6 +114,7 @@ public class DragProxy extends OverlayControl {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, final Position newPoint, boolean fine) {
+		lastMousePos = newPoint;
 		doAutoScrolling(newPoint);
 
 		double xDiff = newPoint.getX() - oldPoint.getX();

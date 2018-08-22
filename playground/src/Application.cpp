@@ -18,6 +18,7 @@
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
+#include <io/network/WebSocketSession.h>
 
 Application *Application::theApp = nullptr;
 
@@ -37,6 +38,7 @@ Application::Application(int numArgs, char **argv) :
     m_selfPath(initStatic(this, argv[0])),
     m_options(new Options(numArgs, argv)),
     m_theMainLoop(MainLoop::create()),
+    m_websocketSession(std::make_unique<WebSocketSession>()),
     m_http(new HTTPServer()),
     m_settings(new Settings(m_http->getUpdateDocumentMaster())),
     m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster())),
@@ -213,6 +215,11 @@ shared_ptr<UndoScope> Application::getUndoScope()
 shared_ptr<DeviceInformation> Application::getDeviceInformation()
 {
   return m_deviceInformation;
+}
+
+WebSocketSession *Application::getWebSocketSession()
+{
+  return m_websocketSession.get();
 }
 
 bool Application::heartbeat()

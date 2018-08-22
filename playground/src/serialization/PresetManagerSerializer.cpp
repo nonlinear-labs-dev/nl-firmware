@@ -7,6 +7,7 @@
 #include <serialization/PresetManagerSerializer.h>
 #include <xml/Reader.h>
 #include <xml/Writer.h>
+#include <tools/TimeTools.h>
 
 
 PresetManagerSerializer::PresetManagerSerializer(PresetManager &pm) :
@@ -21,6 +22,7 @@ Glib::ustring PresetManagerSerializer::getTagName()
 
 void PresetManagerSerializer::writeTagContent(Writer &writer) const
 {
+  writer.writeTextElement("serialize-date", TimeTools::getAdjustedIso());
   writer.writeTextElement("selected-bank-uuid", m_pm.m_selectedBankUUID);
 
   size_t numBanks = m_pm.getNumBanks();
@@ -58,5 +60,7 @@ void PresetManagerSerializer::readTagContent(Reader &reader) const
   {
     return new EditBufferSerializer(m_pm.getEditBuffer());
   });
+
+
 }
 

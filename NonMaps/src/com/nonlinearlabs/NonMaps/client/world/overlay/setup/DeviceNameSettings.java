@@ -1,13 +1,13 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public class DeviceNameSettings extends SettingsControl implements Renameable {
+public class DeviceNameSettings extends OverlayLayout implements Renameable {
 
 	private DeviceNameLabel label;
 	private DeviceNameEditButton button;
@@ -22,11 +22,6 @@ public class DeviceNameSettings extends SettingsControl implements Renameable {
 				return this;
 			}
 		});
-	}
-
-	@Override
-	public void update(Node settingsNode, Node deviceInfo) {
-		label.update(settingsNode);
 	}
 
 	@Override
@@ -51,7 +46,7 @@ public class DeviceNameSettings extends SettingsControl implements Renameable {
 
 	@Override
 	public void setName(String newName) {
-		NonMaps.theMaps.getServerProxy().setSetting("DeviceName", newName);
+		SystemSettings.get().setDeviceName(newName);
 	}
 
 	@Override

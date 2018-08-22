@@ -9,6 +9,7 @@ import com.nonlinearlabs.NonMaps.client.contextStates.ContextState;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public class ContextMenu extends OverlayLayout {
@@ -45,6 +46,7 @@ public class ContextMenu extends OverlayLayout {
 	public void draw(Context2d ctx, int invalidationMask) {
 		try (ContextState fade = new AlphaContextState(ctx, opacity)) {
 			Rect r = getPixRect();
+			r.drawRoundedArea(ctx, Millimeter.toPixels(1),  Millimeter.toPixels(0.7), RGB.black(), RGB.black());
 			r.drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25), new Gray(77), new Gray(128));
 			super.draw(ctx, invalidationMask);
 		}

@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world;
 
+import static com.nonlinearlabs.NonMaps.client.world.Control.INVALIDATION_FLAG_UI_CHANGED;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -98,6 +100,14 @@ public class RenameDialog extends DialogBox {
 		});
 	}
 
+	public static boolean isPresetBeingRenamed(Preset preset) {
+		if (theDialog != null && theDialog.renameable instanceof Preset) {
+			Preset p = (Preset) theDialog.renameable;
+			return preset == p;
+		}
+		return false;
+	}
+
 	@Override
 	protected void onPreviewNativeEvent(NativePreviewEvent event) {
 		super.onPreviewNativeEvent(event);
@@ -119,8 +129,10 @@ public class RenameDialog extends DialogBox {
 	}
 
 	private void cancel() {
+
 		RenameDialog.this.hide();
 		NonMaps.get().captureFocus();
+		NonMaps.get().getNonLinearWorld().invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	public static void onPresetManagerUpdate(PresetManager presetManager) {

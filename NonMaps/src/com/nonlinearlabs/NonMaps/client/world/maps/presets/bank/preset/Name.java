@@ -25,4 +25,9 @@ class Name extends Label {
 		return 2.5;
 	}
 
+	@Override
+	protected double getBasicWidth() {
+		return super.getBasicWidth() + 10; // + 10 to match the grid
+	}
+
 }

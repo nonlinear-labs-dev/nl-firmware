@@ -37,6 +37,7 @@ class PresetManager : public ContentSection
 
     void init ();
     void stress(int numTransactions);
+    void stressLoad(int numTransactions);
     void reload ();
 
     virtual Glib::ustring getPrefix () const override;
@@ -59,6 +60,7 @@ class PresetManager : public ContentSection
 
     // undo transactions
     tBankPtr addBank (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y);
+    tBankPtr addBank (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y, bool autoSelect);
     tBankPtr addBank (UNDO::Scope::tTransactionPtr transaction, bool autoSelect);
 
     void undoableClear ();
@@ -70,12 +72,14 @@ class PresetManager : public ContentSection
     void undoableResetInitSound (UNDO::Scope::tTransactionPtr transaction);
     void undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, moveDirection direction);
     void undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank, int newOrderNumber);
+    void undoableSetBanks(UNDO::Scope::tTransactionPtr transaction, std::vector<tBankPtr> newBankOrder);
 
     void writeDocument (Writer &writer, tUpdateID knownRevision) const override;
     void searchPresets (Writer &writer, const Glib::ustring &query, const Glib::ustring &mode, std::vector<presetInfoSearchFields> &&fieldsToSearch) const;
 
     void load ();
     bool isLoading () const;
+    tPresetPtr getLoadedPreset();
 
     tBankPtr findBankWithPreset (const Glib::ustring &presetUUID);
     tPresetPtr findPreset (const Glib::ustring &presetUUID);
@@ -102,7 +106,6 @@ class PresetManager : public ContentSection
     void sanitizeBankClusterRelations(UNDO::Scope::tTransactionPtr transaction);
 
     Glib::ustring getDiffString(tPresetPtr preset1, tPresetPtr preset2);
-
   protected:
     void onTransactionAdded ();
     virtual tUpdateID onChange (uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;

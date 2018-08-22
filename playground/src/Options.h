@@ -13,6 +13,7 @@ class Options
     Glib::ustring getSettingsFile() const;
     Glib::ustring getKioskModeFile() const;
     Glib::ustring getHardwareTestsFolder() const;
+    Glib::ustring getBBBB() const;
 
   private:
     void setDefaults();
@@ -22,4 +23,5 @@ class Options
     Glib::ustring m_pmPath;
     Glib::ustring m_settingsFile;
     Glib::ustring m_kioskModeFile;
+    Glib::ustring m_bbbb = "127.0.0.1";
 };

@@ -1,8 +1,13 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
+import java.util.function.Function;
+
 import com.google.gwt.user.client.Window;
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class ShowDeveloperOptions extends Setting {
 
@@ -13,7 +18,22 @@ public class ShowDeveloperOptions extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	public void init() {
+		super.init();
+
+		Setup.get().localSettings.showDeveloperOptions.onChange(new Function<Setup.BooleanValues, Boolean>() {
+
+			@Override
+			public Boolean apply(Setup.BooleanValues t) {
+				choice = t.ordinal();
+				NonMaps.theMaps.getNonLinearWorld().getSettings().setVisible(t == BooleanValues.on);
+				return true;
+			}
+		});
+	}
+
+	@Override
+	protected OverlayControl createSettingsControl() {
 		return new SettingsMenu(this) {
 
 			@Override
@@ -28,9 +48,9 @@ public class ShowDeveloperOptions extends Setting {
 			}
 
 			@Override
-			protected void chose(int c, boolean sendToServer) {
+			protected void chose(int c, boolean fire) {
 				if (choice != c) {
-					if (sendToServer) {
+					if (fire) {
 						showAlerts(c);
 					}
 				}
@@ -38,12 +58,10 @@ public class ShowDeveloperOptions extends Setting {
 				choice = c;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 
-				if (sendToServer)
-					NonMaps.theMaps.getNonLinearWorld().getSettings().set("ShowDeveloperOptions", getSettingsValueString(c));
+				if (fire)
+					LocalSettings.get().showDeveloperOptions(Setup.BooleanValues.values()[choice]);
 
-				setDeveloperOptionsVisibility();
-
-				if (choice == 1 && sendToServer)
+				if (choice == 1 && fire)
 					NonMaps.theMaps.getNonLinearWorld().getSettings().setToDefaults();
 			}
 
@@ -53,22 +71,6 @@ public class ShowDeveloperOptions extends Setting {
 				} else if (c == 1) {
 					Window.alert("Changes of the developer options will be discarded.");
 				}
-			}
-
-			protected String getSettingsValueString(int c) {
-				return getChoices()[c].replace(" ", "-").toLowerCase();
-			}
-
-			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				String str = setDeveloperOptionsVisibility();
-				fromSettingsString(str);
-			}
-
-			private String setDeveloperOptionsVisibility() {
-				String str = NonMaps.theMaps.getNonLinearWorld().getSettings().get("ShowDeveloperOptions", "off");
-				NonMaps.theMaps.getNonLinearWorld().getSettings().setVisible(str.equals("on"));
-				return str;
 			}
 		};
 	}

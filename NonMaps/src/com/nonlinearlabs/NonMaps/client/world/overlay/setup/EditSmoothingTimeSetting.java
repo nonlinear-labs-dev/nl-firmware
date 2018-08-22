@@ -1,12 +1,14 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
-import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class EditSmoothingTimeSetting extends Setting {
 
@@ -15,7 +17,21 @@ public class EditSmoothingTimeSetting extends Setting {
 	}
 
 	@Override
-	protected SettingsControl createSettingsControl() {
+	public void init() {
+		super.init();
+
+		Setup.get().systemSettings.editSmoothingTime.onChange(new Function<Double, Boolean>() {
+
+			@Override
+			public Boolean apply(Double t) {
+				((NumericValueControl) getSettingsControl()).update(Setup.get().systemSettings.editSmoothingTime);
+				return true;
+			}
+		});
+	}
+
+	@Override
+	protected OverlayControl createSettingsControl() {
 		return new NumericValueControl(this, "0 ms") {
 
 			@Override
@@ -36,15 +52,8 @@ public class EditSmoothingTimeSetting extends Setting {
 			}
 
 			@Override
-			public void update(Node settingsNode, Node deviceInfo) {
-				Node s = ServerProxy.getChild(settingsNode, "EditSmoothingTime");
-				if (s != null)
-					update(s);
-			}
-
-			@Override
 			protected void sendToServer(double v) {
-				NonMaps.theMaps.getServerProxy().setSetting("EditSmoothingTime", Double.toString(v));
+				SystemSettings.get().setEditSmoothingTime(v);
 			}
 		};
 	}

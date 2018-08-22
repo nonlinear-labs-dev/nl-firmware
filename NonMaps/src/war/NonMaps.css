@@ -1524,7 +1524,7 @@ textarea {
 
 .search-query {
 	background:
-		url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><text x="95%" y="50%" text-anchor="end" height="100%" alignment-baseline="central" font-size="100%" fill="#c2c2c2">⌫</text></svg>');
+		url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9Ijk1JSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0iZW5kIiBoZWlnaHQ9IjEwMCUiIGFsaWdubWVudC1iYXNlbGluZT0iY2VudHJhbCIgZm9udC1zaXplPSIxMDAlIiBmaWxsPSIjYzJjMmMyIj7ijKs8L3RleHQ+PC9zdmc+');
 	padding-right: 2.5em;
 }
 
@@ -1790,4 +1790,27 @@ button {
 
 .refresh-button:active {
 	background-image: url(/NonMaps/war/images/PresetComp-Refresh_Active.svg);
+}
+
+.gwt-TabPanelBottom {
+    border-color: #ccc;
+    border-style: solid;
+    border-width: 0.5px 1px 1px;
+    overflow: hidden;
+    padding: 6px;
+}
+
+.gwt-TabBarItem {
+	border-style: solid;
+    border-width: 1px 1px 0px 1px;
+}
+
+.gwt-TabBar {
+    background: #202020;
+    padding-top: 6px;
+}
+
+.tab-1 {
+	border-style: solid;
+    border-width: 1px 1px 0px 1px;
 }

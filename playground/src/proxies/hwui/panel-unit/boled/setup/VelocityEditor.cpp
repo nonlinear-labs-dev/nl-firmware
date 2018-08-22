@@ -15,7 +15,7 @@ VelocityEditor::~VelocityEditor ()
 
 void VelocityEditor::incSetting (int inc)
 {
-  Application::get ().getSettings ()->getSetting<VelocityCurve> ()->inc (inc);
+  Application::get().getSettings()->getSetting<VelocityCurve>()->inc(inc, false);
 }
 
 const vector<ustring> &VelocityEditor::getDisplayStrings () const

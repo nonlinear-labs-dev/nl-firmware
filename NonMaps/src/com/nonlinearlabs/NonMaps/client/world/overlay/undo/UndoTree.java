@@ -510,7 +510,7 @@ public class UndoTree extends OverlayLayout implements TransitionDamper.Client {
 			UndoTransactionContextMenu m = new UndoTransactionContextMenu(o, a);
 			return o.setContextMenu(pos, m);
 		}
-		return super.onContextMenu(pos);
+		return this;
 	}
 
 	@Override

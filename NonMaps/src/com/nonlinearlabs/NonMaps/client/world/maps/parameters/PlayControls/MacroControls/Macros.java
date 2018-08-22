@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls;
 
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupVertical;
@@ -16,13 +17,13 @@ public class Macros extends ParameterGroupVertical {
 		public String toPrettyString() {
 			switch (this) {
 			case A:
-				return "Ⓐ";
+				return "\uE000";
 			case B:
-				return "Ⓑ";
+				return "\uE001";
 			case C:
-				return "Ⓒ";
+				return "\uE002";
 			case D:
-				return "Ⓓ";
+				return "\uE003";
 			case NONE:
 				return "";
 			}
@@ -46,7 +47,12 @@ public class Macros extends ParameterGroupVertical {
 
 	public Macros(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this, getName()) {
+			@Override
+			public RGB getColorFont() {
+				return RGB.lighterGray();
+			}
+		});
 		controls = addChild(new MacrosControls(this));
 	}
 
