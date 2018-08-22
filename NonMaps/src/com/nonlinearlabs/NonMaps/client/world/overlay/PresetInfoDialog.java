@@ -91,11 +91,6 @@ public class PresetInfoDialog extends GWTDialog {
 			editBufferTab.getElement().addClassName("selected");
 		});
 
-		/*-TabLayoutPanel p = new TabLayoutPanel(1, Unit.CM);
-		p.add(presetInfoPage.panel, "Preset");
-		p.add(editBufferInfoPage.panel, "EditBuffer");
-		p.selectTab(0);
-		-*/
 		setWidget(pane);
 	}
 
