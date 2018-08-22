@@ -50,13 +50,15 @@ class DirectLoadButton extends SVGImage {
 	}
 
 	public void update(Node settingsNode) {
-		String str = ServerProxy.getChildText(settingsNode, "AutoLoadSelectedPreset", "value");
-		if (str != null && !str.isEmpty()) {
-			boolean m = str.toLowerCase().equals("on");
-			if (married != m) {
-				married = m;
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				requestLayout();
+		if (ServerProxy.didChange(settingsNode)) {
+			String str = ServerProxy.getChildText(settingsNode, "AutoLoadSelectedPreset", "value");
+			if (str != null && !str.isEmpty()) {
+				boolean m = str.toLowerCase().equals("on");
+				if (married != m) {
+					married = m;
+					invalidate(INVALIDATION_FLAG_UI_CHANGED);
+					requestLayout();
+				}
 			}
 		}
 	}
