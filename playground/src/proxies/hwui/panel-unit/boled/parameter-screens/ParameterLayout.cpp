@@ -19,8 +19,8 @@ ParameterLayout2::ParameterLayout2 () :
     super (Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
   addControl (new ModuleCaption (Rect (0, 0, 64, 13)));
-  addControl (new ParameterNameLabel (Rect (72, 8, 108, 11)));
-  m_lock = addControl (new LockedIndicator (Rect (66, 1, 8, 11)));
+  addControl (new ParameterNameLabel (Rect (72, 8, 112, 11)));
+  addControl (new LockedIndicator (Rect (66, 1, 10, 11)));
   addControl(new UndoIndicator(Rect(5, 14, 10, 5)));
 }
 
@@ -64,11 +64,6 @@ bool ParameterLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
       return true;
     }
   }
-
-  if(m_lock)
-    remove(m_lock);
-
-  m_lock = addControl (new LockedIndicator (Rect (66, 1, 8, 11)));
 
   return super::onButton (i, down, modifiers);
 }

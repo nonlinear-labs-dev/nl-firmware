@@ -10,6 +10,8 @@ ParameterNameLabel::ParameterNameLabel (const Rect &pos) :
 {
   Application::get().getPresetManager ()->getEditBuffer ()->onSelectionChanged (
       sigc::hide < 0 > (sigc::mem_fun (this, &ParameterNameLabel::onParameterSelected)));
+
+  Label::setSuffixFontColor
 }
 
 ParameterNameLabel::~ParameterNameLabel ()
@@ -40,7 +42,8 @@ shared_ptr<Font> ParameterNameLabel::getFont () const
 
 void ParameterNameLabel::onParameterChanged (const Parameter *param)
 {
-  setText (param->getLongName() + (param->isChangedFromLoaded() ? "*" : ""));
+  const auto changed = param->isChangedFromLoaded();
+  setText (param->getLongName() + (changed ? "*" : ""), changed ? 1 : 0);
 }
 
 
