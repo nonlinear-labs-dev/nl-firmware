@@ -1,36 +1,13 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
-import java.util.Date;
-
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.IntegerBox;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog.EditBufferInfoWidget;
 import com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog.PresetInfoWidget;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
 public class PresetInfoDialog extends GWTDialog {
 
@@ -40,11 +17,10 @@ public class PresetInfoDialog extends GWTDialog {
 	public static PresetInfoWidget presetInfoPage = null;
 	public static Node _editBufferNode = null;
 
-	
 	public Preset getCurrentPreset() {
 		return thePreset;
 	}
-	
+
 	private PresetInfoDialog() {
 		RootPanel.get().add(this);
 
@@ -57,7 +33,7 @@ public class PresetInfoDialog extends GWTDialog {
 		addContent();
 		super.pushDialogToFront();
 	}
-	
+
 	public static Preset getEditBuffer() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadedPreset();
 	}
@@ -65,26 +41,57 @@ public class PresetInfoDialog extends GWTDialog {
 	EditBufferInfoWidget createEditBufferTab() {
 		return EditBufferInfoWidget.get();
 	}
-	
+
 	PresetInfoWidget createPresetInfoTab() {
 		return PresetInfoWidget.get();
 	}
-	
+
 	private void addContent() {
 		editBufferInfoPage = createEditBufferTab();
 		presetInfoPage = createPresetInfoTab();
-		if(_editBufferNode != null)
+		if (_editBufferNode != null)
 			editBufferInfoPage.updateFromNode(_editBufferNode);
 		else
 			editBufferInfoPage.updateInfo(getEditBuffer());
 		presetInfoPage.updateInfo(getCurrentPreset());
-		
-		TabPanel p = new TabPanel();
-		p.add(presetInfoPage.panel, "Preset");
-		p.getElement().addClassName("tab-1");
-		p.add(editBufferInfoPage.panel, "EditBuffer");
-		p.selectTab(0);
-		setWidget(p);
+
+		HTMLPanel pane = new HTMLPanel("div", "");
+		pane.getElement().addClassName("preset-info-edit-buffer-dialog-pane");
+		HTMLPanel tabs = new HTMLPanel("div", "");
+		tabs.getElement().addClassName("tabs");
+		Button presetTab = new Button("Preset");
+		presetTab.getElement().addClassName("preset tab");
+		Button editBufferTab = new Button("EditBuffer");
+		editBufferTab.getElement().addClassName("edit-buffer tab");
+		HTMLPanel content = new HTMLPanel("div", "");
+		content.getElement().addClassName("content");
+		HTMLPanel tabRest = new HTMLPanel("div", "");
+		tabRest.getElement().addClassName("tab-rest");
+
+		pane.add(tabs);
+		pane.add(content);
+		tabs.add(presetTab);
+		tabs.add(editBufferTab);
+		tabs.add(tabRest);
+
+		content.add(presetInfoPage.panel);
+		presetTab.getElement().addClassName("selected");
+
+		presetTab.addClickHandler(a -> {
+			content.remove(0);
+			content.add(presetInfoPage.panel);
+			presetTab.getElement().addClassName("selected");
+			editBufferTab.getElement().removeClassName("selected");
+		});
+
+		editBufferTab.addClickHandler(a -> {
+			content.remove(0);
+			content.add(editBufferInfoPage.panel);
+			presetTab.getElement().removeClassName("selected");
+			editBufferTab.getElement().addClassName("selected");
+		});
+
+		setWidget(pane);
 	}
 
 	@Override
@@ -109,7 +116,7 @@ public class PresetInfoDialog extends GWTDialog {
 	}
 
 	public static void update(Preset preset) {
-		if (theDialog != null) {	
+		if (theDialog != null) {
 			theDialog.updateInfo(preset);
 		}
 	}
@@ -119,7 +126,7 @@ public class PresetInfoDialog extends GWTDialog {
 		presetInfoPage.updateInfo(preset);
 		centerIfOutOfView();
 	}
-	
+
 	static int lastPopupLeft = -1;
 	static int lastPopupTop = -1;
 
@@ -144,13 +151,13 @@ public class PresetInfoDialog extends GWTDialog {
 	}
 
 	public void updateEditBuffer(Node editBufferNode) {
-		editBufferInfoPage.updateFromNode(editBufferNode);		
+		editBufferInfoPage.updateFromNode(editBufferNode);
 	}
 
 	public static void setLastUpdateNode(Node editBufferNode) {
 		_editBufferNode = editBufferNode;
-		
-		if(editBufferInfoPage != null)
+
+		if (editBufferInfoPage != null)
 			editBufferInfoPage.setLastUpdateNode(_editBufferNode);
 	}
 }
