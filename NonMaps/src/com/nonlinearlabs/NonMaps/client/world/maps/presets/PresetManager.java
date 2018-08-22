@@ -405,8 +405,6 @@ public class PresetManager extends MapsLayout {
 	public void updateMultipleRectangle(Position pos) {
 		moveSomeBanks.update(pos);
 
-		multiSelection.clear();
-
 		for (Control c : getChildren()) {
 
 			if (c instanceof Bank) {
@@ -426,7 +424,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void startMultipleRectangle(Position pos) {
-		startMultiSelectionEmpty();
+		if(multiSelection == null)
+			startMultiSelectionEmpty();
 		moveSomeBanks = new MoveSomeBanksLayer(this, pos);
 		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
 	}
