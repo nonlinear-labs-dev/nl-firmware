@@ -40,7 +40,7 @@ shared_ptr<Font> ParameterNameLabel::getFont () const
 
 void ParameterNameLabel::onParameterChanged (const Parameter *param)
 {
-  setText (param->getLongName());
+  setText (param->getLongName() + (param->isChangedFromLoaded() ? "*" : ""));
 }
 
 
