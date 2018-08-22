@@ -908,6 +908,7 @@ const Glib::ustring PresetBank::directionEnumToString(AttachmentDirection direct
     default:
       return "";
   }
+  return "";
 }
 
 void PresetBank::resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transaction)

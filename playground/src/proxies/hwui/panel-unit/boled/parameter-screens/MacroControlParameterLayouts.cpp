@@ -231,7 +231,7 @@ Carousel *MacroControlParameterSelectLayout2::createCarousel (const Rect &rect)
 
 bool MacroControlParameterSelectLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
 {
-  if(BUTTON_D == i && getMode() == Mode::MacroControlValue)
+  if(down && BUTTON_D == i && getMode() == Mode::MacroControlValue)
   {
     toggleMode (Mode::PlayControlAmount);
     return true;

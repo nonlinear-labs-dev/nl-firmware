@@ -27,6 +27,11 @@ ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2()
   highlight<SelectedParameterValue>();
 }
 
+Carousel *ModulationRouterParameterSelectLayout2::createCarousel (const Rect &rect) {
+  return nullptr;
+}
+
+
 bool ModulationRouterParameterSelectLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 {
   if(down)

@@ -119,9 +119,10 @@ ParameterSelectLayout2::ParameterSelectLayout2 () :
 void ParameterSelectLayout2::init ()
 {
   super::init ();
-
-  setCarousel(createCarousel (Rect (195, 0, 58, 64)));
-  m_carousel->setHighlight (true);
+  if(auto c = createCarousel (Rect (195, 0, 58, 64))) {
+      setCarousel(c);
+      m_carousel->setHighlight (true);
+  }
 }
 
 Carousel *ParameterSelectLayout2::createCarousel (const Rect &rect)
