@@ -14,7 +14,7 @@ class PanelUnit : public Gtk::HBox
     void setLed(int idx, bool state);
 
   private:
-    std::array<ButtonPanel, 4> m_panels;
+    ButtonPanel* m_panels[4];
 };
 
 #endif

@@ -4,6 +4,7 @@
 
 #include <gtkmm-3.0/gtkmm.h>
 #include "Button.h"
+#include <array>
 
 class ButtonColumn : public Gtk::VBox
 {
@@ -14,7 +15,7 @@ class ButtonColumn : public Gtk::VBox
     void setLed(int idx, bool state);
 
   private:
-    std::array<Button, 4> m_buttons;
+    Button* m_buttons[4];
 };
 
 #endif

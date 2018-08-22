@@ -14,7 +14,7 @@ class ButtonPanel : public Gtk::HBox
     void setLed(int idx, bool state);
 
   private:
-    std::array<ButtonColumn, 6> m_columns;
+    ButtonColumn* m_columns[6];
 };
 
 #endif
