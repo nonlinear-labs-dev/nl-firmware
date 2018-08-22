@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.tools.Pair;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -122,15 +123,15 @@ public class Tape extends MapsControl {
 		return false;
 	}
 
-	public Orientation getOrientation() {
+	private Orientation getOrientation() {
 		return orientation;
 	}
 
-	public void setOrientation(Orientation orientation) {
+	private void setOrientation(Orientation orientation) {
 		this.orientation = orientation;
 	}
 
-	public Bank getBankInOrientation(Orientation o) {
+	private Bank getBankInOrientation(Orientation o) {
 		switch(o) {
 			case North:
 				return getParent().getMasterTop();
@@ -151,72 +152,88 @@ public class Tape extends MapsControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		Rect r = getPixRect().copy();
 		if(isInsertTape()) {
-			ctx.beginPath();
-			Position begin = new Position();
-			Position end = new Position();
-			Rect bankRect = getPixRect().copy();
-			Bank b = getBankInOrientation(getOrientation());
-			Rect bRect = b.getPixRect().copy();
-			switch(getOrientation()) {
-				case North:
-					begin.setX(getMidPoint(bankRect.getLeft(), bRect.getLeft()));
-					begin.setY(getMidPoint(bankRect.getTop(), bRect.getBottom()));
-					end.setX(getMidPoint(bankRect.getRight(), bRect.getRight()));
-					end.setY(getMidPoint(bankRect.getTop(), bRect.getBottom()));
-					break;
-				case South:
-					begin.setX(getMidPoint(bankRect.getLeft(), bRect.getLeft()));
-					begin.setY(getMidPoint(bankRect.getBottom(), bRect.getTop()));
-					end.setX(getMidPoint(bankRect.getRight(), bankRect.getRight()));
-					end.setY(getMidPoint(bankRect.getBottom(), bRect.getTop()));
-					break;
-				case East:
-					begin.setX(getMidPoint(bankRect.getRight(), bRect.getLeft()));
-					begin.setY(getMidPoint(bankRect.getTop(), bRect.getTop()));
-					end.setX(getMidPoint(bankRect.getRight(), bRect.getLeft()));
-					end.setY(Math.max(bankRect.getBottom(), bRect.getBottom()));
-					break;
-				case West:
-					begin.setX(getMidPoint(bankRect.getLeft(), bRect.getRight()));
-					begin.setY(getMidPoint(bankRect.getTop(), bRect.getTop()));
-					end.setX(getMidPoint(bankRect.getLeft(), bRect.getRight()));
-					end.setY(Math.max(bankRect.getBottom(), bRect.getBottom()));
-					break;
-			}
-			if(isCurrentlyDraggedOverMe()) {
-				if(getOrientation() == Orientation.North || getOrientation() == Orientation.South)
-					ctx.setLineWidth(getPixRect().getHeight());
-				else
-					ctx.setLineWidth(getPixRect().getWidth());
-			} else {
-				if(getOrientation() == Orientation.North || getOrientation() == Orientation.South)
-					ctx.setLineWidth(getPixRect().getHeight() / 5);
-				else
-					ctx.setLineWidth(getPixRect().getWidth() / 5);
-			}
-			ctx.moveTo(begin.getX(), begin.getY());
-
-			ctx.setStrokeStyle(getInsertColor().toString());
-
-			ctx.lineTo(end.getX(), end.getY());
-			ctx.stroke();
-			return;
-		} else if(isInsertTape()) {
-			if(getOrientation() == Orientation.East) {
-				r.setLeft(r.getRight());
-				r.setWidth(r.getWidth() / 2);
-			} else if(getOrientation() == Orientation.South) {
-				r.setTop(r.getBottom());
-				r.setHeight(r.getHeight() / 2);
-			} else {
-				return;
-			}
+			drawInsertTape(ctx);
 		} else {
+			Rect r = getPixRect().copy();
 			getPixRect().fill(ctx, getTapeColor());
+			r.fill(ctx, getTapeColor());
 		}
-		r.fill(ctx, getTapeColor());
+	}
+
+	private void drawInsertTape(Context2d ctx) {
+		ctx.beginPath();
+
+		boolean orientationNorthOrSouth = getOrientation() == Orientation.North || getOrientation() == Orientation.South;
+
+		calculateLineWidth(ctx, orientationNorthOrSouth);
+
+		drawInsertIndicatorLine(ctx);
+		ctx.stroke();
+	}
+
+	private void calculateLineWidth(Context2d ctx, boolean orientationNorthOrSouth) {
+		if(isCurrentlyDraggedOverMe()) {
+			if(orientationNorthOrSouth)
+				ctx.setLineWidth(getPixRect().getHeight());
+			else
+				ctx.setLineWidth(getPixRect().getWidth());
+		} else {
+			if(orientationNorthOrSouth)
+				ctx.setLineWidth(getPixRect().getHeight() / 5);
+			else
+				ctx.setLineWidth(getPixRect().getWidth() / 5);
+		}
+	}
+
+	private void drawInsertIndicatorLine(Context2d ctx) {
+		Bank b = getBankInOrientation(getOrientation());
+		if(b == null)
+			return;
+		Rect bRect = b.getPixRect().copy();
+		Pair<Position, Position> p = calculateInsertLinePosition(bRect);
+		Position begin = p.first;
+		Position end = p.second;
+
+		ctx.moveTo(begin.getX(), begin.getY());
+		ctx.setStrokeStyle(getInsertColor().toString());
+		ctx.lineTo(end.getX(), end.getY());
+	}
+
+	private Pair<Position, Position> calculateInsertLinePosition(Rect other) {
+		final Rect my = getPixRect();
+		switch(getOrientation()) {
+			case North:
+				return new Pair<>(
+						new Position(getMidPoint(my.getLeft(), other.getLeft()),
+								     getMidPoint(my.getTop(), other.getBottom())),
+						new Position(getMidPoint(my.getRight(), other.getRight()),
+									 getMidPoint(my.getTop(), other.getBottom()))
+				);
+			case South:
+				return new Pair<>(
+						new Position(getMidPoint(my.getLeft(), other.getLeft()),
+								getMidPoint(my.getBottom(), other.getTop())),
+						new Position(getMidPoint(my.getRight(), other.getRight()),
+								getMidPoint(my.getBottom(), other.getTop()))
+				);
+			case East:
+				return new Pair<>(
+						new Position(getMidPoint(my.getRight(), other.getLeft()),
+								getMidPoint(my.getTop(), other.getTop())),
+						new Position(getMidPoint(my.getRight(), other.getLeft()),
+								getMidPoint(my.getBottom(), other.getBottom()))
+				);
+			case West:
+				return new Pair<>(
+						new Position(getMidPoint(my.getLeft(), other.getRight()),
+								getMidPoint(my.getTop(), other.getTop())),
+						new Position(getMidPoint(my.getLeft(), other.getRight()),
+								getMidPoint(my.getBottom(), other.getBottom()))
+				);
+			default:
+				return new Pair<>(new Position(), new Position());
+		}
 	}
 
 	private RGB getInsertColor() {
@@ -229,7 +246,7 @@ public class Tape extends MapsControl {
 		return getParent().getParent().isAttachingTape(this) ? activeColor : new RGB(51, 83, 171);
 	}
 
-	public boolean fitsTo(Tape others) {
+	private boolean fitsTo(Tape others) {
 		if (getParent().isClusteredWith(others.getParent()))
 			return false;
 
@@ -239,13 +256,17 @@ public class Tape extends MapsControl {
 		if (!others.isVisible())
 			return false;
 
-		return (orientation == Orientation.East && others.orientation == Orientation.West)
-				|| (orientation == Orientation.West && others.orientation == Orientation.East)
-				|| (orientation == Orientation.North && others.orientation == Orientation.South)
-				|| (orientation == Orientation.South && others.orientation == Orientation.North);
+		return isInvertedOrientation(others.orientation);
 	}
 
-	public boolean fitsTo(Bank other) {
+	private boolean isInvertedOrientation(Orientation other) {
+		return (orientation == Orientation.East && other == Orientation.West)
+				|| (orientation == Orientation.West && other == Orientation.East)
+				|| (orientation == Orientation.North && other == Orientation.South)
+				|| (orientation == Orientation.South && other == Orientation.North);
+	}
+
+	private boolean fitsTo(Bank other) {
 		if (getParent().isClusteredWith(other))
 			return false;
 
@@ -313,21 +334,7 @@ public class Tape extends MapsControl {
 		return b == prospectBank;
 	}
 
-	private Orientation invert(Orientation o) {
-		switch (o) {
-			case North:
-				return Orientation.South;
-			case South:
-				return Orientation.North;
-			case East:
-				return Orientation.West;
-			case West:
-				return Orientation.East;
-		}
-		return null;
-	}
-
-	public Control insertTapeDrag(Rect pos, DragProxy dragProxy) {
+	private Control insertTapeDrag(Rect pos, DragProxy dragProxy) {
 		if (isVisible() && !getParent().isDraggingControl()) {
 			if (dragProxy.getOrigin() instanceof Bank) {
 				Bank other = (Bank) dragProxy.getOrigin();
@@ -346,7 +353,7 @@ public class Tape extends MapsControl {
 		return super.drag(pos, dragProxy);
 	}
 
-	public Control insertTapeDrop(Position pos, DragProxy dragProxy) {
+	private Control insertTapeDrop(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
 			Bank other = (Bank) dragProxy.getOrigin();
 			if (shouldInsert(other)) {
