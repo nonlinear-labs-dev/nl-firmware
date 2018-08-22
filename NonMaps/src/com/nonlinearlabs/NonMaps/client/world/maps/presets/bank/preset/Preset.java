@@ -219,23 +219,36 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
 	}
 
+	private boolean wasJustSelected = false;
+
+	@Override
+	public Control mouseDown(Position eventPoint) {
+		if(!isInMultiplePresetSelectionMode() && !isSelected()) {
+			selectPreset();
+			wasJustSelected = true;
+		}
+		getParent().getParent().pushBankOntoTop(getParent());
+		return this;
+	}
+
 	@Override
 	public Control click(Position point) {
-		return this;
+		return clickBehaviour();
 	}
 
 	private Control clickBehaviour() {
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		} else if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
+		} else if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
 			getParent().getParent().startMultiSelection(this, true);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		} else if (isInStoreSelectMode() || !isSelected()) {
 			selectPreset();
-		} else if (isSelected()) {
+		} else if (isSelected() && !wasJustSelected) {
 			load();
 		}
+		wasJustSelected = false;
 		return this;
 	}
 
@@ -278,12 +291,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	private boolean isInMultiplePresetSelectionMode() {
 		return getParent().getParent().hasMultiplePresetSelection();
-	}
-
-	@Override
-	public Control mouseDown(Position eventPoint) {
-		getParent().getParent().pushBankOntoTop(getParent());
-		return clickBehaviour();
 	}
 
 	@Override
