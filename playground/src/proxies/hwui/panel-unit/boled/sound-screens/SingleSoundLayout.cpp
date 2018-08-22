@@ -24,6 +24,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/UsageMode.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LockedIndicator.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 
 SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
     super (Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ())
@@ -32,7 +33,6 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
 
   m_initButton = addControl (new Button ("Init", BUTTON_A));
 
-  addControl (new LockedIndicator (Rect (68, 1, 10, 11)));
   m_randomizeLabel = addControl (new LabelRegular8 ("Amount", Rect (67, 12, 58, 11)));
   m_randomizeSlider = addControl (new RandomizeAmountSlider (Rect (67, 28, 58, 4)));
   m_randomizeAmount = addControl (new RandomizeAmountLabel (Rect (67, 36, 58, 12)));
@@ -43,13 +43,14 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
   m_transitionTimeAmount = addControl (new TransitionTimeLabel (Rect (131, 36, 58, 12)));
   m_transitionTimeButton = addControl (new Button ("Transition", BUTTON_C));
 
-  m_convertMenu = addControl (new SingleSoundMenu (Rect (195, 1, 58, 63)));
+  m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
   m_initMenu = addControl (new SingleSoundEditMenu (Rect (195, 1, 58, 63)));
   m_edit = addControl (new InvertedLabel ("Edit", Rect (8, 26, 48, 12)));
   m_edit->setHighlight (true);
 
   m_edit->setVisible (false);
   m_initMenu->setVisible (false);
+  m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
 }
 
 SingleSoundLayout::~SingleSoundLayout ()
@@ -81,9 +82,7 @@ bool SingleSoundLayout::onButton (int i, bool down, ButtonModifiers modifiers)
 
     if (i == BUTTON_D)
     {
-      if (m_selectedColumn == Column::Convert)
-        m_convertMenu->toggle ();
-      else if (m_selectedColumn == Column::Edit)
+      if (m_selectedColumn == Column::Edit)
         m_initMenu->toggle ();
       else
         toggleColumn (Column::Convert);
@@ -144,7 +143,6 @@ void SingleSoundLayout::setup ()
 
   m_edit->setVisible (inEditMode);
   m_initMenu->setVisible (inEditMode);
-  m_convertMenu->setVisible (!inEditMode);
 
   m_initButton->blind(inEditMode);
   m_randomButton->blind(inEditMode);
@@ -174,8 +172,6 @@ void SingleSoundLayout::setup ()
       break;
 
     case Column::Convert:
-      m_convertMenu->setHighlight (true);
-      m_convertMenu->selectButton (0);
       break;
 
     case Column::Edit:

@@ -1,25 +1,24 @@
 #pragma once
 
 #include <tools/DelayedJob.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LockedIndicator.h>
 #include "InvertedLabel.h"
 
 class Application;
 class Parameter;
 
-class AnyParameterLockedIndicator : public InvertedLabel
+class AnyParameterLockedIndicator : public LockedIndicator
 {
-  private:
-    typedef InvertedLabel super;
-
   public:
     AnyParameterLockedIndicator (const Rect &pos);
-    virtual ~AnyParameterLockedIndicator ();
-    bool redraw(FrameBuffer &fb) override;
+    virtual ~AnyParameterLockedIndicator () = default;
 
   private:
-    void calcHasLocks();
-    void update ();
+    void onParameterSelected(Parameter * newOne);
+    void onParameterGroupChanged();
 
-    DelayedJob m_calcHasLocks;
+
+    sigc::connection m_groupConnection;
+
 };
 
