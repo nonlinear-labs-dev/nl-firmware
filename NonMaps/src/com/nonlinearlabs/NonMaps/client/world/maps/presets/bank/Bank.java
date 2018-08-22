@@ -116,21 +116,9 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			c.getNonPosition().moveBy(tapeSize, tapeSize);
 		}
 
-		Tape north = getTape(Orientation.North);
-		north.setNonSize(new NonDimension(oldDim.getWidth(), tapeSize));
-		north.moveTo(new NonPosition(tapeSize, 0));
-
-		Tape south = getTape(Orientation.South);
-		south.setNonSize(new NonDimension(oldDim.getWidth(), tapeSize));
-		south.moveTo(new NonPosition(tapeSize, oldDim.getHeight() + tapeSize));
-
-		Tape east = getTape(Orientation.East);
-		east.setNonSize(new NonDimension(tapeSize, oldDim.getHeight()));
-		east.moveTo(new NonPosition(oldDim.getWidth() + tapeSize, 0 + tapeSize));
-
-		Tape west = getTape(Orientation.West);
-		west.setNonSize(new NonDimension(tapeSize, oldDim.getHeight()));
-		west.moveTo(new NonPosition(0, tapeSize));
+		for(Tape t: tapes) {
+			t.layout(oldDim);
+		}
 
 		setNonSize(oldDim.getWidth() + tapeSize * 2, oldDim.getHeight() + tapeSize * 2);
 	}
@@ -175,7 +163,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public double getAttachArea() {
-		return 20;
+		return 10;
 	}
 
 	private void drawDropIndicator(Context2d ctx, Rect presetRect) {
@@ -535,7 +523,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 				}
 
 				if (pm.hasMultiplePresetSelection() && pm.getMultiSelection().getNumSelectedPresets() > 1) {
-					if (pm.getMultiSelection().getSelectedPresets().contains(targetPreset.getUUID()) == false)
+					if (!pm.getMultiSelection().getSelectedPresets().contains(targetPreset.getUUID()))
 						return DropAction.DROP_PRESETS;
 					else
 						return DropAction.NONE;
@@ -560,7 +548,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			if (origin instanceof IBank) {
 				if (!origin.equals(this)) {
 					Bank bBank = (Bank) origin;
-					if (bBank.hasSlaves() == false)
+					if (!bBank.hasSlaves())
 						return DropAction.INSERT_BANK;
 				}
 			}
@@ -798,14 +786,14 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	public void layoutSlaves() {
 		if (slaveBottom != null) {
 			NonPosition posYFin = new NonPosition(getNonPosition().getLeft(),
-					getNonPosition().getBottom() - getAttachArea() / 2);
+					getNonPosition().getBottom() + getAttachArea());
 			posYFin.snapTo(PresetManager.getSnapGridResolution());
 			slaveBottom.moveTo(posYFin);
 			slaveBottom.layoutSlaves();
 		}
 
 		if (slaveRight != null) {
-			NonPosition posXFin = new NonPosition(getNonPosition().getRight() - getAttachArea() / 2,
+			NonPosition posXFin = new NonPosition(getNonPosition().getRight() + getAttachArea(),
 					getNonPosition().getTop());
 			posXFin.snapTo(PresetManager.getSnapGridResolution());
 			slaveRight.moveTo(posXFin);

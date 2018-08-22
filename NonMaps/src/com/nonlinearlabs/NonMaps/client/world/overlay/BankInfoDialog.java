@@ -167,7 +167,7 @@ public class BankInfoDialog extends GWTDialog {
 				}
 			}
 		});
-		
+
 		position.addKeyPressHandler(new KeyPressHandler() {
 
 			@Override
@@ -178,8 +178,6 @@ public class BankInfoDialog extends GWTDialog {
 				}
 			}
 		});
-		
-		
 
 		position.addFocusHandler(new FocusHandler() {
 
@@ -289,13 +287,9 @@ public class BankInfoDialog extends GWTDialog {
 				}
 			}
 
-			int currentPositionValue = 0;
-			try {
-				currentPositionValue = position.getValue();
-			} catch (Exception e) {
-			}
+			Integer currentPositionValue = position.getValue();
 
-			if (haveFocus != position) {
+			if (haveFocus != position && currentPositionValue != null) {
 				if (bankPos != currentPositionValue) {
 					position.setText(new Integer(bankPos).toString());
 				}

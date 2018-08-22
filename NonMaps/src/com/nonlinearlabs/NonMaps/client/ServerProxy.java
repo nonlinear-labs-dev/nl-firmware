@@ -502,11 +502,17 @@ public class ServerProxy {
 	}
 
 	public static String getText(Node n) {
-		try {
-			return n.getChildNodes().item(0).getNodeValue();
-		} catch (Exception e) {
-			return "";
+		if (n != null) {
+			NodeList nodes = n.getChildNodes();
+			if (nodes != null) {
+				Node child = nodes.item(0);
+				if (child != null) {
+					return child.getNodeValue();
+				}
+			}
 		}
+
+		return "";
 	}
 
 	public static boolean didChange(Node n) {

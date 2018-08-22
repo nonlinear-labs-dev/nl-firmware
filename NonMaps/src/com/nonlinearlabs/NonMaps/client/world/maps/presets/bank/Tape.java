@@ -2,12 +2,14 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.tools.Pair;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
+import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
@@ -59,6 +61,49 @@ public class Tape extends MapsControl {
 		return false;
 	}
 
+	private boolean isInsertTape() {
+		return getParent().hasSlaveInDirection(getOrientation());
+	}
+
+	private boolean isCurrentlyDraggedOverMe() {
+		if(!isInsertTape())
+			return false;
+
+		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
+		for (DragProxy d : o.getDragProxies()) {
+			Control r = d.getCurrentReceiver();
+			if (r == this)
+				if(getPixRect().contains(d.getMousePosition()) && prospectBank != null)
+					return true;
+		}
+		return false;
+	}
+
+	public void layout(NonDimension oldDim) {
+
+		double tapeSize = getParent().getAttachArea();
+
+		switch(getOrientation()) {
+
+			case North:
+				setNonSize(new NonDimension(oldDim.getWidth(), tapeSize));
+				moveTo(new NonPosition(tapeSize, 0));
+				break;
+			case South:
+				setNonSize(new NonDimension(oldDim.getWidth(), tapeSize));
+				moveTo(new NonPosition(tapeSize, oldDim.getHeight() + tapeSize));
+				break;
+			case East:
+				setNonSize(new NonDimension(tapeSize, oldDim.getHeight()));
+				moveTo(new NonPosition(oldDim.getWidth() + tapeSize, 0 + tapeSize));
+				break;
+			case West:
+				setNonSize(new NonDimension(tapeSize, oldDim.getHeight()));
+				moveTo(new NonPosition(0, tapeSize));
+				break;
+		}
+	}
+
 	private boolean isActiveInsertTape() {
 		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
 
@@ -78,30 +123,130 @@ public class Tape extends MapsControl {
 		return false;
 	}
 
-	public Orientation getOrientation() {
+	private Orientation getOrientation() {
 		return orientation;
 	}
 
-	public void setOrientation(Orientation orientation) {
+	private void setOrientation(Orientation orientation) {
 		this.orientation = orientation;
+	}
+
+	private Bank getBankInOrientation(Orientation o) {
+		switch(o) {
+			case North:
+				return getParent().getMasterTop();
+			case South:
+				return getParent().getBottomSlave();
+			case East:
+				return getParent().getRightSlave();
+			case West:
+				return getParent().getMasterLeft();
+		}
+		return null;
+	}
+
+	private double getMidPoint(double v, double v2) {
+		return (v + v2) / 2.0;
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		getPixRect().fill(ctx, getTapeColor());
+		if(isInsertTape()) {
+			drawInsertTape(ctx);
+		} else {
+			Rect r = getPixRect().copy();
+			getPixRect().fill(ctx, getTapeColor());
+			r.fill(ctx, getTapeColor());
+		}
+	}
+
+	private void drawInsertTape(Context2d ctx) {
+		ctx.beginPath();
+
+		boolean orientationNorthOrSouth = getOrientation() == Orientation.North || getOrientation() == Orientation.South;
+
+		calculateLineWidth(ctx, orientationNorthOrSouth);
+
+		drawInsertIndicatorLine(ctx);
+		ctx.stroke();
+	}
+
+	private void calculateLineWidth(Context2d ctx, boolean orientationNorthOrSouth) {
+		if(isCurrentlyDraggedOverMe()) {
+			if(orientationNorthOrSouth)
+				ctx.setLineWidth(getPixRect().getHeight());
+			else
+				ctx.setLineWidth(getPixRect().getWidth());
+		} else {
+			if(orientationNorthOrSouth)
+				ctx.setLineWidth(getPixRect().getHeight() / 5);
+			else
+				ctx.setLineWidth(getPixRect().getWidth() / 5);
+		}
+	}
+
+	private void drawInsertIndicatorLine(Context2d ctx) {
+		Bank b = getBankInOrientation(getOrientation());
+		if(b == null)
+			return;
+		Rect bRect = b.getPixRect().copy();
+		Pair<Position, Position> p = calculateInsertLinePosition(bRect);
+		Position begin = p.first;
+		Position end = p.second;
+
+		ctx.moveTo(begin.getX(), begin.getY());
+		ctx.setStrokeStyle(getInsertColor().toString());
+		ctx.lineTo(end.getX(), end.getY());
+	}
+
+	private Pair<Position, Position> calculateInsertLinePosition(Rect other) {
+		final Rect my = getPixRect();
+		switch(getOrientation()) {
+			case North:
+				return new Pair<>(
+						new Position(getMidPoint(my.getLeft(), other.getLeft()),
+								     getMidPoint(my.getTop(), other.getBottom())),
+						new Position(getMidPoint(my.getRight(), other.getRight()),
+									 getMidPoint(my.getTop(), other.getBottom()))
+				);
+			case South:
+				return new Pair<>(
+						new Position(getMidPoint(my.getLeft(), other.getLeft()),
+								getMidPoint(my.getBottom(), other.getTop())),
+						new Position(getMidPoint(my.getRight(), other.getRight()),
+								getMidPoint(my.getBottom(), other.getTop()))
+				);
+			case East:
+				return new Pair<>(
+						new Position(getMidPoint(my.getRight(), other.getLeft()),
+								getMidPoint(my.getTop(), other.getTop())),
+						new Position(getMidPoint(my.getRight(), other.getLeft()),
+								getMidPoint(my.getBottom(), other.getBottom()))
+				);
+			case West:
+				return new Pair<>(
+						new Position(getMidPoint(my.getLeft(), other.getRight()),
+								getMidPoint(my.getTop(), other.getTop())),
+						new Position(getMidPoint(my.getLeft(), other.getRight()),
+								getMidPoint(my.getBottom(), other.getBottom()))
+				);
+			default:
+				return new Pair<>(new Position(), new Position());
+		}
+	}
+
+	private RGB getInsertColor() {
+		return new RGB(250, 250, 250);
 	}
 
 	private RGB getTapeColor() {
-		RGB activeColor = new RGB(173, 181, 217);
+		RGB activeColor = new RGB(172, 185, 198);
 
-		if (prospectBank != null)
-			activeColor = new RGB(250, 250, 250);
-
-		return getParent().getParent().isAttachingTape(this) ? activeColor : new RGB(98, 113, 183);
+		return getParent().getParent().isAttachingTape(this) ? activeColor : new RGB(51, 83, 171);
 	}
 
-	public boolean fitsTo(Tape others) {
+	private boolean fitsTo(Tape others) {
 		if (getParent().isClusteredWith(others.getParent()))
 			return false;
 
@@ -111,13 +256,17 @@ public class Tape extends MapsControl {
 		if (!others.isVisible())
 			return false;
 
-		return (orientation == Orientation.East && others.orientation == Orientation.West)
-				|| (orientation == Orientation.West && others.orientation == Orientation.East)
-				|| (orientation == Orientation.North && others.orientation == Orientation.South)
-				|| (orientation == Orientation.South && others.orientation == Orientation.North);
+		return isInvertedOrientation(others.orientation);
 	}
 
-	public boolean fitsTo(Bank other) {
+	private boolean isInvertedOrientation(Orientation other) {
+		return (orientation == Orientation.East && other == Orientation.West)
+				|| (orientation == Orientation.West && other == Orientation.East)
+				|| (orientation == Orientation.North && other == Orientation.South)
+				|| (orientation == Orientation.South && other == Orientation.North);
+	}
+
+	private boolean fitsTo(Bank other) {
 		if (getParent().isClusteredWith(other))
 			return false;
 
@@ -129,7 +278,7 @@ public class Tape extends MapsControl {
 
 	@Override
 	public Control drag(Rect pos, DragProxy dragProxy) {
-		if (isActiveInsertTape())
+		if (isInsertTape())
 			return insertTapeDrag(pos, dragProxy);
 
 		if (isVisible() && !getParent().isDraggingControl()) {
@@ -185,18 +334,15 @@ public class Tape extends MapsControl {
 		return b == prospectBank;
 	}
 
-	public Control insertTapeDrag(Rect pos, DragProxy dragProxy) {
+	private Control insertTapeDrag(Rect pos, DragProxy dragProxy) {
 		if (isVisible() && !getParent().isDraggingControl()) {
 			if (dragProxy.getOrigin() instanceof Bank) {
 				Bank other = (Bank) dragProxy.getOrigin();
-				Position mouse = dragProxy.getMousePosition();
 
-				if (getPixRect().contains(mouse)) {
+				if(getPixRect().contains(dragProxy.getMousePosition())) {
 					if (getParent() != other) {
 						if (fitsTo(other)) {
-							// Display attaching!
 							setShouldInsert(other);
-							getParent().getParent().setAttachingTapes(this, null);
 							return this;
 						}
 					}
@@ -207,7 +353,7 @@ public class Tape extends MapsControl {
 		return super.drag(pos, dragProxy);
 	}
 
-	public Control insertTapeDrop(Position pos, DragProxy dragProxy) {
+	private Control insertTapeDrop(Position pos, DragProxy dragProxy) {
 		if (dragProxy.getOrigin() instanceof Bank) {
 			Bank other = (Bank) dragProxy.getOrigin();
 			if (shouldInsert(other)) {

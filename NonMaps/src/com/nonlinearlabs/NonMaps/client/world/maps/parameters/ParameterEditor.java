@@ -358,11 +358,10 @@ public class ParameterEditor extends LayoutResizingVertical {
 			String shortGroupName = parameterGroupNode.getAttributes().getNamedItem("short-name").getNodeValue();
 			String groupID = parameterGroupNode.getAttributes().getNamedItem("id").getNodeValue();
 
-			try {
-				findParameterGroup(groupID).setName(new Name(longGroupName, shortGroupName));
-			} catch (Exception e) {
-				Tracer.log("exception -> findParameterGroup" + groupID);
-			}
+			ParameterGroupIface grp = findParameterGroup(groupID);
+
+			if (grp != null)
+				grp.setName(new Name(longGroupName, shortGroupName));
 
 			NodeList parameters = parameterGroupNode.getChildNodes();
 
@@ -499,11 +498,10 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 		return c != null;
 	}
-	
-	public boolean areAllParametersLocked()
-	{
-		for(Parameter p: parameterMap.values()) {
-			if(p.isLocked() == false)
+
+	public boolean areAllParametersLocked() {
+		for (Parameter p : parameterMap.values()) {
+			if (p.isLocked() == false)
 				return false;
 		}
 		return true;
