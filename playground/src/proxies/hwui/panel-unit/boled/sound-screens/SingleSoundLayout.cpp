@@ -43,7 +43,6 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
   m_transitionTimeAmount = addControl (new TransitionTimeLabel (Rect (131, 36, 58, 12)));
   m_transitionTimeButton = addControl (new Button ("Transition", BUTTON_C));
 
-  m_convertMenu = addControl (new SingleSoundMenu (Rect (195, 1, 58, 63)));
   m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
   m_initMenu = addControl (new SingleSoundEditMenu (Rect (195, 1, 58, 63)));
   m_edit = addControl (new InvertedLabel ("Edit", Rect (8, 26, 48, 12)));
@@ -51,8 +50,7 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
 
   m_edit->setVisible (false);
   m_initMenu->setVisible (false);
-
-  addParamLockedIndicator();
+  m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
 }
 
 SingleSoundLayout::~SingleSoundLayout ()
@@ -84,9 +82,7 @@ bool SingleSoundLayout::onButton (int i, bool down, ButtonModifiers modifiers)
 
     if (i == BUTTON_D)
     {
-      if (m_selectedColumn == Column::Convert)
-        m_convertMenu->toggle ();
-      else if (m_selectedColumn == Column::Edit)
+      if (m_selectedColumn == Column::Edit)
         m_initMenu->toggle ();
       else
         toggleColumn (Column::Convert);
@@ -126,7 +122,6 @@ bool SingleSoundLayout::onButton (int i, bool down, ButtonModifiers modifiers)
     }
   }
 
-  addParamLockedIndicator();
   return super::onButton (i, down, modifiers);
 }
 
@@ -148,7 +143,6 @@ void SingleSoundLayout::setup ()
 
   m_edit->setVisible (inEditMode);
   m_initMenu->setVisible (inEditMode);
-  m_convertMenu->setVisible (!inEditMode);
 
   m_initButton->blind(inEditMode);
   m_randomButton->blind(inEditMode);
@@ -178,8 +172,6 @@ void SingleSoundLayout::setup ()
       break;
 
     case Column::Convert:
-      m_convertMenu->setHighlight (true);
-      m_convertMenu->selectButton (0);
       break;
 
     case Column::Edit:
@@ -188,7 +180,6 @@ void SingleSoundLayout::setup ()
       break;
 
   }
-  addParamLockedIndicator();
 }
 
 void SingleSoundLayout::setDefault ()
@@ -206,7 +197,6 @@ bool SingleSoundLayout::onRotary (int inc, ButtonModifiers modifiers)
   else if (m_selectedColumn == Column::TranstionTime)
     Application::get ().getSettings ()->getSetting<TransitionTime> ()->incDec (inc, modifiers);
 
-  addParamLockedIndicator();
   return DFBLayout::onRotary (inc, modifiers);
 }
 
@@ -230,11 +220,6 @@ void SingleSoundLayout::action ()
       m_initMenu->doAction();
       break;
   }
-}
-
-void SingleSoundLayout::addParamLockedIndicator() {
-  remove(m_paramLocked);
-  m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
 }
 
 void SingleSoundLayout::initSound ()

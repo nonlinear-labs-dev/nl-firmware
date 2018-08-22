@@ -32,8 +32,6 @@ class SingleSoundLayout : public DFBLayout
     void setDefault ();
     void initSound ();
 
-    void addParamLockedIndicator();
-
     Button *m_initButton = nullptr;
 
     Control *m_randomizeLabel = nullptr;
@@ -47,7 +45,6 @@ class SingleSoundLayout : public DFBLayout
     Button *m_transitionTimeButton = nullptr;
     AnyParameterLockedIndicator* m_paramLocked = nullptr;
 
-    SingleSoundMenu *m_convertMenu = nullptr;
     SingleSoundEditMenu *m_initMenu = nullptr;
 
     Control *m_edit = nullptr;
