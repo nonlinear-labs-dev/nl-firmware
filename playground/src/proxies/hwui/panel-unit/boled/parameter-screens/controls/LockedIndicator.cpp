@@ -43,6 +43,6 @@ shared_ptr<Font> LockedIndicator::getFont() const
 
 int LockedIndicator::getFontHeight() const
 {
-  return 8;
+  return 6;
 }
 

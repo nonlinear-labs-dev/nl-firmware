@@ -24,6 +24,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/UsageMode.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LockedIndicator.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 
 SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
     super (Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ())
@@ -32,7 +33,6 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
 
   m_initButton = addControl (new Button ("Init", BUTTON_A));
 
-  addControl (new LockedIndicator (Rect (68, 1, 10, 11)));
   m_randomizeLabel = addControl (new LabelRegular8 ("Amount", Rect (67, 12, 58, 11)));
   m_randomizeSlider = addControl (new RandomizeAmountSlider (Rect (67, 28, 58, 4)));
   m_randomizeAmount = addControl (new RandomizeAmountLabel (Rect (67, 36, 58, 12)));
@@ -44,12 +44,15 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
   m_transitionTimeButton = addControl (new Button ("Transition", BUTTON_C));
 
   m_convertMenu = addControl (new SingleSoundMenu (Rect (195, 1, 58, 63)));
+  m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
   m_initMenu = addControl (new SingleSoundEditMenu (Rect (195, 1, 58, 63)));
   m_edit = addControl (new InvertedLabel ("Edit", Rect (8, 26, 48, 12)));
   m_edit->setHighlight (true);
 
   m_edit->setVisible (false);
   m_initMenu->setVisible (false);
+
+  addParamLockedIndicator();
 }
 
 SingleSoundLayout::~SingleSoundLayout ()
@@ -123,6 +126,7 @@ bool SingleSoundLayout::onButton (int i, bool down, ButtonModifiers modifiers)
     }
   }
 
+  addParamLockedIndicator();
   return super::onButton (i, down, modifiers);
 }
 
@@ -184,6 +188,7 @@ void SingleSoundLayout::setup ()
       break;
 
   }
+  addParamLockedIndicator();
 }
 
 void SingleSoundLayout::setDefault ()
@@ -201,6 +206,7 @@ bool SingleSoundLayout::onRotary (int inc, ButtonModifiers modifiers)
   else if (m_selectedColumn == Column::TranstionTime)
     Application::get ().getSettings ()->getSetting<TransitionTime> ()->incDec (inc, modifiers);
 
+  addParamLockedIndicator();
   return DFBLayout::onRotary (inc, modifiers);
 }
 
@@ -224,6 +230,11 @@ void SingleSoundLayout::action ()
       m_initMenu->doAction();
       break;
   }
+}
+
+void SingleSoundLayout::addParamLockedIndicator() {
+  remove(m_paramLocked);
+  m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
 }
 
 void SingleSoundLayout::initSound ()

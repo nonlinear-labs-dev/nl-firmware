@@ -260,6 +260,15 @@ void ParameterGroup::undoableToggleLock(UNDO::Scope::tTransactionPtr transaction
     undoableLock(transaction);
 }
 
+bool ParameterGroup::isAnyParameterLocked() const
+{
+  for(auto p : getParameters())
+    if(p->isLocked())
+      return true;
+
+  return true;
+}
+
 bool ParameterGroup::areAllParametersLocked() const
 {
   for(auto p : getParameters())

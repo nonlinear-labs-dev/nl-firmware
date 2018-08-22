@@ -5,39 +5,25 @@
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 
-AnyParameterLockedIndicator::AnyParameterLockedIndicator(const Rect &pos) :
-    super(pos),
-    m_calcHasLocks(1, std::bind(&AnyParameterLockedIndicator::calcHasLocks, this))
-{
-  setFontColor (FrameBuffer::C43);
-  setVisible(false);
-  Application::get().getPresetManager()->getEditBuffer()->onLocksChanged(sigc::mem_fun(this, &AnyParameterLockedIndicator::update));
-  update();
-}
-
-AnyParameterLockedIndicator::~AnyParameterLockedIndicator()
+AnyParameterLockedIndicator::AnyParameterLockedIndicator(const Rect &pos) : LockedIndicator(Rect(pos.getX(), pos.getY(), pos.getWidth(), pos.getHeight()))
 {
 }
 
-void AnyParameterLockedIndicator::calcHasLocks()
+void AnyParameterLockedIndicator::onParameterSelected(Parameter * newOne)
 {
-  auto hasLocks = Application::get().getPresetManager()->getEditBuffer()->hasLocks();
-  setText(hasLocks ? "\ue20a" : "");
-  setVisible(hasLocks);
+    if(newOne) {
+        m_groupConnection.disconnect();
+        m_groupConnection = newOne->getParentGroup()->onGroupChanged(sigc::mem_fun(this, &AnyParameterLockedIndicator::onParameterGroupChanged));
+    }
 }
 
-void AnyParameterLockedIndicator::update()
-{
-  m_calcHasLocks.trigger();
+void AnyParameterLockedIndicator::onParameterGroupChanged() {
+    auto anyParamLocked = false;
+    for(auto g: Application::get().getPresetManager()->getEditBuffer()->getParameterGroups())
+        if(g->isAnyParameterLocked()) {
+            anyParamLocked = true;
+            break;
+        }
+    setText(anyParamLocked ? "\ue20a" : "");
 }
-
-bool AnyParameterLockedIndicator::redraw(FrameBuffer &fb)
-{
-  auto r = getPosition ();
-  fb.setColor (FrameBuffer::Colors::C255);
-  fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-  Label::redraw(fb);
-  return true;
-}
-
 

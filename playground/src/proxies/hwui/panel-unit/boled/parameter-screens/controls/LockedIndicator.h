@@ -14,7 +14,7 @@ class LockedIndicator : public Label
     LockedIndicator (const Rect &pos);
     virtual ~LockedIndicator ();
 
-  private:
+  protected:
     virtual void setFontColor (FrameBuffer &fb) const override;
     virtual shared_ptr<Font> getFont () const override;
     virtual int getFontHeight () const override;

@@ -41,6 +41,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
     void undoableUnlock(UNDO::Scope::tTransactionPtr transaction);
     void undoableToggleLock(UNDO::Scope::tTransactionPtr transaction);
     bool areAllParametersLocked() const;
+    bool isAnyParameterLocked() const;
 
     virtual void undoableRandomize (UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount);
     void undoableSetDefaultValues (UNDO::Scope::tTransactionPtr transaction, ParameterGroup *values);

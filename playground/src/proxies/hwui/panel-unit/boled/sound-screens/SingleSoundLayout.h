@@ -2,6 +2,7 @@
 
 #include <proxies/hwui/DFBLayout.h>
 #include <proxies/hwui/HWUIEnums.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 
 class SingleSoundEditMenu;
 class SingleSoundMenu;
@@ -31,6 +32,8 @@ class SingleSoundLayout : public DFBLayout
     void setDefault ();
     void initSound ();
 
+    void addParamLockedIndicator();
+
     Button *m_initButton = nullptr;
 
     Control *m_randomizeLabel = nullptr;
@@ -42,6 +45,7 @@ class SingleSoundLayout : public DFBLayout
     Control *m_transitionTimeSlider = nullptr;
     Control *m_transitionTimeAmount = nullptr;
     Button *m_transitionTimeButton = nullptr;
+    AnyParameterLockedIndicator* m_paramLocked = nullptr;
 
     SingleSoundMenu *m_convertMenu = nullptr;
     SingleSoundEditMenu *m_initMenu = nullptr;

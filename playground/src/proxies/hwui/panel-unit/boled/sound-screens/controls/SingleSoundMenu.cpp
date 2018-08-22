@@ -10,7 +10,7 @@
 SingleSoundMenu::SingleSoundMenu(const Rect &rect) :
     super(rect)
 {
-  addControl(new LabelRegular8("Convert to:", Rect(0, 16, 64, 12)));
+  addControl(new LabelRegular8("Convert to:", Rect(0, 18, 64, 12)));
   addButton("Morph", [=]()
   {
     selectButton(-1);
