@@ -92,6 +92,8 @@ public class BankInfoDialog extends GWTDialog {
 		position.getElement().addClassName("position-box");
 		name.getElement().addClassName("preset-name-box");
 
+		position.setText("1");
+
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Position/Name", bankNameAndPositionBox);
 		addRow(panel, "Comment", comment = new TextArea());
@@ -289,7 +291,7 @@ public class BankInfoDialog extends GWTDialog {
 
 			Integer currentPositionValue = position.getValue();
 
-			if (haveFocus != position && currentPositionValue != null) {
+			if (haveFocus != position) {
 				if (bankPos != currentPositionValue) {
 					position.setText(new Integer(bankPos).toString());
 				}
