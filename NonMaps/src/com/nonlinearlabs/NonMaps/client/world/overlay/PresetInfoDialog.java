@@ -12,13 +12,12 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog.PresetInfoWidge
 public class PresetInfoDialog extends GWTDialog {
 
 	public static PresetInfoDialog theDialog;
-	private Preset thePreset;
 	public static EditBufferInfoWidget editBufferInfoPage = null;
 	public static PresetInfoWidget presetInfoPage = null;
 	public static Node _editBufferNode = null;
 
 	public Preset getCurrentPreset() {
-		return thePreset;
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getSelectedPreset();
 	}
 
 	private PresetInfoDialog() {
@@ -53,6 +52,7 @@ public class PresetInfoDialog extends GWTDialog {
 			editBufferInfoPage.updateFromNode(_editBufferNode);
 		else
 			editBufferInfoPage.updateInfo(getEditBuffer());
+
 		presetInfoPage.updateInfo(getCurrentPreset());
 
 		HTMLPanel pane = new HTMLPanel("div", "");
