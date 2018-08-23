@@ -17,12 +17,7 @@ public class CurrentPresetNumber extends Label {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		String text = NonMaps.theMaps.getNonLinearWorld().getPresetManager().getLoadedPresetNumberString();
-
-		if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isAnyParameterLocked())
-			text += "\t \ue20a";
-
-		return text;
+		return NonMaps.theMaps.getNonLinearWorld().getPresetManager().getLoadedPresetNumberString();
 	}
 
 	public double getDesiredWidth() {

@@ -67,6 +67,13 @@ void ExportBackupEditor::installState (State s)
   }
 }
 
+void ExportBackupEditor::writeBackupToStream(std::shared_ptr<OutStream> stream) {
+  XmlWriter writer (std::move(stream));
+  auto pm = Application::get ().getPresetManager ();
+  PresetManagerSerializer serializer (*pm.get ());
+  serializer.write (writer, VersionAttribute::get ());
+}
+
 void ExportBackupEditor::exportBanks ()
 {
   Application::get ().stopWatchDog ();
@@ -93,6 +100,8 @@ void ExportBackupEditor::exportBanks ()
   installState (Finished);
 }
 
+
+
 void ExportBackupEditor::writeBackupFileXML ()
 {
   auto &app = Application::get ();
@@ -100,10 +109,7 @@ void ExportBackupEditor::writeBackupFileXML ()
   boled.setOverlay (new SplashLayout ());
 
   auto stream = std::make_shared<FileOutStream> (c_tempBackupFile, true);
-  XmlWriter writer (stream);
-  auto pm = Application::get ().getPresetManager ();
-  PresetManagerSerializer serializer (*pm.get ());
-  serializer.write (writer, VersionAttribute::get ());
+  writeBackupToStream(stream);
 
   boled.resetOverlay();
 }

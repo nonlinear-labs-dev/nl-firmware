@@ -44,6 +44,7 @@ public class PresetBeltLayouterM extends PresetBeltLayouter {
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 
+		super.layoutLockSymbol(w);
 		return true;
 	}
 }

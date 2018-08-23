@@ -35,7 +35,7 @@ FileOutStream::FileOutStream (const Glib::ustring &fileName, bool zip) :
 
   if (zip)
   {
-    auto compressor = g_zlib_compressor_new (GZlibCompressorFormat::G_ZLIB_COMPRESSOR_FORMAT_GZIP, 5);
+    auto compressor = g_zlib_compressor_new (GZlibCompressorFormat::G_ZLIB_COMPRESSOR_FORMAT_GZIP, 6);
     auto converter = g_converter_output_stream_new (buffered, G_CONVERTER(compressor));
     m_stream = g_data_output_stream_new (G_OUTPUT_STREAM(converter));
     g_object_unref (converter);
