@@ -13,7 +13,7 @@ SoupOutStream::SoupOutStream (SoupMessage *msg, const Glib::ustring &contentType
   soup_message_body_set_accumulate (msg->response_body, FALSE);
 
   if (zip)
-    m_zip = Gio::ZlibCompressor::create (Gio::ZLIB_COMPRESSOR_FORMAT_GZIP, 9);
+    m_zip = Gio::ZlibCompressor::create (Gio::ZLIB_COMPRESSOR_FORMAT_GZIP, 6);
 }
 
 void SoupOutStream::flush ()
