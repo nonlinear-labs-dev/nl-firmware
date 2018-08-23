@@ -61,6 +61,16 @@ public class PresetManager extends MapsLayout {
 	private StoreSelectMode m_storeSelectMode = null;
 	private Tape attachingTapes[] = new Tape[2];
 
+	public List<Bank> getBanks() {
+		List<Bank> ret = new ArrayList<>();
+		for (Control c : getChildren()) {
+			if (c instanceof Bank) {
+				ret.add((Bank)c);
+			}
+		}
+		return ret;
+	}
+
 	public PresetManager(NonLinearWorld parent) {
 		super(parent);
 		fieldsToBeSearched = new ArrayList<SearchQueryFields>();
