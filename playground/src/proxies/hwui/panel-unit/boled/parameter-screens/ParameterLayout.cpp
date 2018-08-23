@@ -59,8 +59,8 @@ bool ParameterLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
       Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Info);
       return true;
 
-    default:
     case BUTTON_DEFAULT:
+    default:
       setDefault ();
       return true;
     }

@@ -35,7 +35,6 @@ class Label : public Control
 
 private:
     virtual void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart);
-private:
     Label (const Label& other);
     Label& operator= (const Label&);
 
