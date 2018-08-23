@@ -231,15 +231,14 @@ vector<ClusterEnforcement::tTreeNodePtr> prepareNodeVector(const std::map<Glib::
 bool handleBothBanksInCluster(const ClusterEnforcement::tTreeNodePtr& lhs,
                               const ClusterEnforcement::tTreeNodePtr& rhs) {
     if(lhs->master == rhs->master) {
-      auto lhsCol = lhs->getColumn();
-      auto rhsCol = rhs->getColumn();
-      auto lhsRow = lhs->getRow();
-      auto rhsRow = rhs->getRow();
+      const auto lhsCol = lhs->getColumn();
+      const auto rhsCol = rhs->getColumn();
 
       if(lhsCol == rhsCol)
-        return lhsRow < rhsRow;
+        return lhs->getRow() < rhs->getRow();
+      else
+        return lhsCol < rhsCol;
 
-      return lhsCol < rhsCol;
     } else {
       return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
     }
