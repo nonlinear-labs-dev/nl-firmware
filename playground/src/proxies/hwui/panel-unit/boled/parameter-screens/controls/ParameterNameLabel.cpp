@@ -90,37 +90,13 @@ shared_ptr<Font> ParameterNameLabel::getFont () const
   return Oleds::get().getFont ("Emphase_9_Bold", getFontHeight ());
 }
 
-void ParameterNameLabel::drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart)
-{
-  auto pos = getPosition ();
-  auto font = getFont ();
-  int offset = (pos.getHeight () - getFontHeight ()) / 2;
-
-  int firstPartWidth = font->getStringWidth (firstPart);
-
-  fb.setColor(FrameBuffer::C103);
-
-  auto left = pos.getX () + getXOffset () + firstPartWidth;
-
-  switch (getJustification ())
-  {
-    case Font::Justification::Center:
-      font->draw (secondPart, left + (pos.getWidth () - fullWidth) / 2, pos.getBottom () - offset + getYOffset ());
-      break;
-
-    case Font::Justification::Left:
-      font->draw (secondPart, left, pos.getBottom () - offset + getYOffset ());
-      break;
-
-    case Font::Justification::Right:
-      font->draw (secondPart, left + (pos.getWidth () - fullWidth), pos.getBottom () - offset + getYOffset ());
-      break;
-  }
-}
-
 int ParameterNameLabel::getFontHeight () const
 {
   return 9;
+}
+
+void ParameterNameLabel::setSuffixFontColor(FrameBuffer &fb) const {
+  fb.setColor(FrameBuffer::C103);
 }
 
 

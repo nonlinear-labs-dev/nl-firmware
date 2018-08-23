@@ -14,6 +14,9 @@ class ParameterNameLabel : public Label
     ParameterNameLabel (const Rect &pos);
     virtual ~ParameterNameLabel ();
 
+  protected:
+    virtual void setSuffixFontColor (FrameBuffer &fb) const;
+
   private:
     ParameterNameLabel (const ParameterNameLabel& other);
     ParameterNameLabel& operator= (const ParameterNameLabel&);
@@ -24,8 +27,6 @@ class ParameterNameLabel : public Label
     virtual void setFontColor (FrameBuffer &fb) const override;
     virtual shared_ptr<Font> getFont () const override;
     virtual int getFontHeight () const override;
-
-  virtual void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart) override;
 
 
   sigc::connection m_connection;
