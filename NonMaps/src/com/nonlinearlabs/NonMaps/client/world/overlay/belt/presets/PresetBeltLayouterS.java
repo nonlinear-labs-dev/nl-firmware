@@ -33,6 +33,7 @@ public class PresetBeltLayouterS extends PresetBeltLayouter {
 
 		layout.bank.doLayout(left, 0, bankWidth, h);
 
+		super.layoutLockSymbol(w);
 		return true;
 	}
 }
