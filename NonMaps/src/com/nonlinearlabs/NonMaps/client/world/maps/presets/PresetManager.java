@@ -38,6 +38,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SearchQueryDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContextMenu;
 
 public class PresetManager extends MapsLayout {
 
@@ -567,15 +568,8 @@ public class PresetManager extends MapsLayout {
 				PresetInfoDialog.toggle();
 			}
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
-			if (hasMultiplePresetSelection()) {
-				multiSelection.deletePresets();
-				closeMultiSelection();
-			} else {
-				if (getSelectedPreset() != null)
-					deletePreset(getSelectedPreset());
-				else if (getSelectedBank() != null)
-					deleteBank(findBank(getSelectedBank()));
-			}
+			PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+			PresetContextMenu.deletePresetWithBankModal(pm.hasMultiplePresetSelection(), pm, getSelectedPreset());
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().undo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
