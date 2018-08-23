@@ -19,7 +19,7 @@ ParameterLayout2::ParameterLayout2 () :
     super (Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
   addControl (new ModuleCaption (Rect (0, 0, 64, 13)));
-  addControl (new ParameterNameLabel (Rect (72, 8, 112, 11)));
+  addControl (new ParameterNameLabel (Rect (BIG_SLIDER_X, 8, 107, 11)));
   addControl (new LockedIndicator (Rect (66, 1, 10, 11)));
   addControl(new UndoIndicator(Rect(5, 14, 10, 5)));
 }
@@ -59,6 +59,7 @@ bool ParameterLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
       Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Info);
       return true;
 
+    default:
     case BUTTON_DEFAULT:
       setDefault ();
       return true;

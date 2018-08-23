@@ -33,11 +33,11 @@ class Label : public Control
     virtual int getYOffset () const;
     virtual int getRightMargin() const;
 
-  private:
+    virtual void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart);
+private:
     Label (const Label& other);
     Label& operator= (const Label&);
 
-    void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart);
 
     Glib::ustring m_text;
     int m_suffixLength = 0;

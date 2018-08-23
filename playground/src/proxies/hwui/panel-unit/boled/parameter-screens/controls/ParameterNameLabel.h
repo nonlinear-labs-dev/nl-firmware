@@ -25,7 +25,9 @@ class ParameterNameLabel : public Label
     virtual int getFontHeight () const override;
     
     void onParameterChanged(const Parameter *param);
-    
-    sigc::connection m_connection;
+    virtual void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart) override;
+
+
+  sigc::connection m_connection;
 };
 
