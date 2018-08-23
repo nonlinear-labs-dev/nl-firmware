@@ -2,6 +2,7 @@
 #include <playground.h>
 #include <boost/tokenizer.hpp>
 #include <parameters/names/ParameterDB.h>
+#include <tools/StringTools.h>
 #include "RowStream.h"
 
 ParameterDB &ParameterDB::get()
@@ -47,16 +48,12 @@ std::vector<std::string> ParameterDB::textRowToVector(const std::string &row) co
 
 std::string sanitize(const std::string &in)
 {
-  if(in == "Ⓐ")
-    return u8"\ue000";
-  else if(in == "Ⓑ")
-    return u8"\ue001";
-  else if(in == "Ⓒ")
-    return u8"\ue002";
-  else if(in == "Ⓓ")
-    return u8"\ue003";
-
-  return in;
+  auto f = u8"\ue000";
+  auto mod = StringTools::replaceAll(in, "Ⓐ", f);
+  mod = StringTools::replaceAll(mod, "Ⓑ", u8"\ue001");
+  mod = StringTools::replaceAll(mod, "Ⓒ", u8"\ue002");
+  mod = StringTools::replaceAll(mod, "Ⓓ", u8"\ue003");
+  return mod;
 }
 
 void ParameterDB::importParsedRow(vector<std::string> && items)
