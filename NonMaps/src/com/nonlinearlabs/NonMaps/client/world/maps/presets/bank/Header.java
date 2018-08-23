@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.contextStates.ClipContext;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
@@ -21,6 +22,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.BankContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
+import com.nonlinearlabs.NonMaps.client.world.pointer.DoubleClickWaiter;
 
 public class Header extends Label {
 
@@ -49,6 +51,7 @@ public class Header extends Label {
 	private boolean mouseCaptured = false;
 	private boolean isDropTarget = false;
 	private String bankName = "";
+	private DoubleClickWaiter doubleClickWaiter;
 
 	public Header(Bank parent) {
 		super(parent, "");
@@ -164,15 +167,43 @@ public class Header extends Label {
 	}
 
 	@Override
+	public Control mouseDown(Position eventPoint) {
+		Tracer.log("down");
+		Bank parent = getParent();
+		parent.getParent().pushBankOntoTop(parent);
+		return this;
+	}
+
+	@Override
 	public Control mouseUp(Position eventPoint) {
+		Tracer.log("up");
 		sendPosChangeToServer = true;
 		requestLayout();
-		return super.mouseUp(eventPoint);
+		return this;
 	}
 
 	@Override
 	public Control click(Position point) {
-		getParent().getParent().selectBank(getParent().getUUID(), true);
+		if (doubleClickWaiter != null)
+			doubleClickWaiter.cancel();
+
+		doubleClickWaiter = new DoubleClickWaiter(point, (c) -> {
+			Tracer.log("click");
+			getParent().getParent().selectBank(getParent().getUUID(), true);
+		});
+
+		return this;
+	}
+
+	@Override
+	public Control doubleClick() {
+		if (doubleClickWaiter != null)
+			doubleClickWaiter.cancel();
+
+		doubleClickWaiter = null;
+
+		Tracer.log("double");
+		getParent().toggleMinMax();
 		return this;
 	}
 
@@ -191,13 +222,6 @@ public class Header extends Label {
 	@Override
 	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
 		setNonSize(parentsWidthFromFirstPass, getNonPosition().getHeight());
-	}
-
-	@Override
-	public Control mouseDown(Position eventPoint) {
-		Bank parent = getParent();
-		parent.getParent().pushBankOntoTop(parent);
-		return this;
 	}
 
 	@Override
