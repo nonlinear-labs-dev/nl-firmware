@@ -193,4 +193,8 @@ void ButtonMenu::setItemTitle(size_t i, const Glib::ustring &caption)
   }
 }
 
+const size_t ButtonMenu::getItemCount() const {
+  return m_items.size();
+}
+
 

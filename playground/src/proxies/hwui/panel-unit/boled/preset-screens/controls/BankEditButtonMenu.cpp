@@ -245,7 +245,7 @@ void BankEditButtonMenu::moveRight()
 
 void BankEditButtonMenu::correctMenuSelection()
 {
-  if(s_lastSelectedButton >= getNumChildren())
+  if(s_lastSelectedButton >= getItemCount())
     s_lastSelectedButton = 0;
 }
 
