@@ -23,6 +23,7 @@
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <proxies/lpc/LPCParameterChangeSurpressor.h>
+#include <tools/TimeTools.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
@@ -262,8 +263,11 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
       auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
       boled.setOverlay(new SplashLayout());
 
+      const auto time = TimeTools::getDisplayStringFromStamp(TimeTools::getAdjustedTimestamp());
+      const auto timeWithoutWhitespaces = StringTools::replaceAll(time, " ", "-");
+      const auto timeSanitized = StringTools::replaceAll(timeWithoutWhitespaces, ":", "-");
       auto stream = request->createStream("application/zip", true);
-      httpRequest->setHeader("Content-Disposition", "attachment; filename=\"nonlinear-c15-banks.xml.tar.gz\"");
+      httpRequest->setHeader("Content-Disposition", "attachment; filename=\""+ timeSanitized +"-nonlinear-c15-banks.xml.tar.gz\"");
       ExportBackupEditor::writeBackupToStream(stream);
 
       boled.resetOverlay();
