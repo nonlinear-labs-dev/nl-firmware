@@ -1523,8 +1523,7 @@ textarea {
 }
 
 .search-query {
-	background:
-		url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9Ijk1JSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0iZW5kIiBoZWlnaHQ9IjEwMCUiIGFsaWdubWVudC1iYXNlbGluZT0iY2VudHJhbCIgZm9udC1zaXplPSIxMDAlIiBmaWxsPSIjYzJjMmMyIj7ijKs8L3RleHQ+PC9zdmc+');
+	background-image: url("data:image/svg+xml,%0A%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='95%25' y='50%25' text-anchor='end' height='100%25' alignment-baseline='central' font-size='100%25' style='fill:%23c2c2c2'%3E⌫%3C/text%3E%3C/svg%3E");
 	padding-right: 2.5em;
 }
 
