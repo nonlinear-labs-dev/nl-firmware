@@ -89,7 +89,7 @@ bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem
 {
   auto fileName = term.path().filename().string();
   string endA = ".xml.zip";
-  string endB = ".tar.gz";
+  string endB = ".xml.tar.gz";
   return !(std::equal(endA.rbegin(), endA.rend(), fileName.rbegin()) ||  std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
 }
 
