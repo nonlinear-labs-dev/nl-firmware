@@ -3,9 +3,11 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 import java.util.LinkedList;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.LockSymbol;
 
 public class BeltPresetLayout extends OverlayLayout {
 
@@ -15,6 +17,7 @@ public class BeltPresetLayout extends OverlayLayout {
 	LoadButtonArea load;
 	CurrentPresetNumber currentPreset;
 	DirectLoadButton autoLoad;
+	LockSymbol lock;
 
 	private LinkedList<PresetBeltLayouter> layouters = new LinkedList<PresetBeltLayouter>();
 
@@ -27,6 +30,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		addChild(load = new LoadButtonArea(this));
 		addChild(currentPreset = new CurrentPresetNumber(this));
 		addChild(autoLoad = new DirectLoadButton(this));
+		addChild(lock = new LockSymbol(this));
 
 		layouters.add(new PresetBeltLayouterXXL(this));
 		layouters.add(new PresetBeltLayouterXL(this));

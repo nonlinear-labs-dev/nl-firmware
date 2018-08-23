@@ -21,6 +21,7 @@ public class PresetBeltLayouterXXS extends PresetBeltLayouter {
 		layout.bank.doLayout(margin, 0, w - margin - loadButtonsWidth - margin - margin, h);
 		layout.load.doLayout(w - margin - loadButtonsWidth, 0, h);
 
+		super.layoutLockSymbol(w);
 		return true;
 	}
 }
