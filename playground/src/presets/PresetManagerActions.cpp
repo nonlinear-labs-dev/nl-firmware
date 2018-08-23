@@ -23,6 +23,7 @@
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <proxies/lpc/LPCParameterChangeSurpressor.h>
+#include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
     RPCActionManager("/presets/"),
@@ -263,10 +264,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
 
       auto stream = request->createStream("application/zip", true);
       httpRequest->setHeader("Content-Disposition", "attachment; filename=\"nonlinear-c15-banks.xml.tar.gz\"");
-      XmlWriter writer(stream);
-      auto pm = Application::get().getPresetManager();
-      PresetManagerSerializer serializer(*pm.get());
-      serializer.write(writer, VersionAttribute::get());
+      ExportBackupEditor::writeBackupToStream(stream);
+
       boled.resetOverlay();
       return true;
     }
