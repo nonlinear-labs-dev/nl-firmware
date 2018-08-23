@@ -43,21 +43,23 @@ void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter) {
   setText (name, changed ? 1 : 0);
 }
 
-ustring &ParameterNameLabel::truncateMCName(const bool changed, ustring &name) const {
-  if(getFont()->getStringWidth(name) > getWidth()) {
-    if(changed)
-      name = removeLastChar(name);
+const Glib::ustring &ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const {
+  Glib::ustring ret = name;
 
-    while(getFont()->getStringWidth(ustring(name + ".." + (changed ? "*" : ""))) > getWidth()) {
-      name = removeLastChar(name);
+  if(getFont()->getStringWidth(ret + ".." + (changed ? "*" : "")) > getWidth()) {
+    if(changed)
+      ret = removeLastChar(ret);
+
+    while(getFont()->getStringWidth(ustring(ret + ".." + (changed ? "*" : ""))) > getWidth()) {
+      ret = removeLastChar(ret);
     }
 
-    name += "..";
+    ret += "..";
 
     if(changed)
-      name = addStar(name);
+      ret = addStar(ret);
   }
-  return name;
+  return ret;
 }
 
 void ParameterNameLabel::handleParameterName(const Parameter *pParameter) {
