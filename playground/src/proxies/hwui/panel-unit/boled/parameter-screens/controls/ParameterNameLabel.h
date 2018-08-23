@@ -19,15 +19,21 @@ class ParameterNameLabel : public Label
     ParameterNameLabel& operator= (const ParameterNameLabel&);
 
     void onParameterSelected(Parameter * param);
+    void onParameterChanged (const Parameter *param);
 
     virtual void setFontColor (FrameBuffer &fb) const override;
     virtual shared_ptr<Font> getFont () const override;
     virtual int getFontHeight () const override;
-    
-    void onParameterChanged(const Parameter *param);
-    virtual void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart) override;
+
+  virtual void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart) override;
 
 
   sigc::connection m_connection;
+
+  void handleMCParameterName(const Parameter *pParameter);
+
+  void handleParameterName(const Parameter *pParameter);
+
+  ustring &truncateMCName(const bool changed, ustring &name) const;
 };
 
