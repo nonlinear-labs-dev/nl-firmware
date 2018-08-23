@@ -44,7 +44,7 @@ void Label::setSuffixFontColor (FrameBuffer &fb) const
 
 bool Label::setText (const Glib::ustring &text, int suffixLength)
 {
-  if (m_text != text || m_suffixLength != suffixLength)
+  if (m_text.raw() != text.raw() || m_suffixLength != suffixLength)
   {
     m_text = text;
     m_suffixLength = suffixLength;
