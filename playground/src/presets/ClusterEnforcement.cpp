@@ -230,10 +230,19 @@ vector<ClusterEnforcement::tTreeNodePtr> prepareNodeVector(const std::map<Glib::
 
 bool handleBothBanksInCluster(const ClusterEnforcement::tTreeNodePtr& lhs,
                               const ClusterEnforcement::tTreeNodePtr& rhs) {
-    if(lhs->master == rhs->master)
-        return lhs->getClusterDepth() < rhs->getClusterDepth();
-    else
-        return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
+    if(lhs->master == rhs->master) {
+      auto lhsCol = lhs->getColumn();
+      auto rhsCol = rhs->getColumn();
+      auto lhsRow = lhs->getRow();
+      auto rhsRow = rhs->getRow();
+
+      if(lhsCol == rhsCol)
+        return lhsRow < rhsRow;
+
+      return lhsCol < rhsCol;
+    } else {
+      return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
+    }
 }
 
 vector<shared_ptr<PresetBank>> buildVectorFromNodeVector(const vector<ClusterEnforcement::tTreeNodePtr>& nodeVec) {
