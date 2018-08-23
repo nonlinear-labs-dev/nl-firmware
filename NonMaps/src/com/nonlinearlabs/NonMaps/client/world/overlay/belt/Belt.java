@@ -38,22 +38,22 @@ public class Belt extends OverlayLayout {
 	}
 
 	public void openTab(BeltTab tab) {
-		switch(tab) {
-			case Parameter:
-				parameterLayout.fadeIn();
-				presetLayout.fadeOut();
-				soundLayout.fadeOut();
-				break;
-			case Sound:
-				soundLayout.fadeIn();
-				parameterLayout.fadeOut();
-				presetLayout.fadeOut();
-				break;
-			case Preset:
-				soundLayout.fadeOut();
-				parameterLayout.fadeOut();
-				presetLayout.fadeIn();
-				break;
+		switch (tab) {
+		case Parameter:
+			parameterLayout.fadeIn();
+			presetLayout.fadeOut();
+			soundLayout.fadeOut();
+			break;
+		case Sound:
+			soundLayout.fadeIn();
+			parameterLayout.fadeOut();
+			presetLayout.fadeOut();
+			break;
+		case Preset:
+			soundLayout.fadeOut();
+			parameterLayout.fadeOut();
+			presetLayout.fadeIn();
+			break;
 		}
 	}
 
@@ -81,7 +81,7 @@ public class Belt extends OverlayLayout {
 		return new RGB(51, 51, 51);
 	}
 
-	void toggle() {
+	public void toggle() {
 		if (desiredHeight == 1) {
 			desiredHeight = 2;
 		} else {
