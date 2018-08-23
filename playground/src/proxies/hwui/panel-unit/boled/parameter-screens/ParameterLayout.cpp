@@ -15,23 +15,12 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 
-Parameter* getOriginalParameter(Parameter* currentParam) {
-  auto pm = Application::get().getPresetManager();
-  auto uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
-  if(auto originalPreset = pm->findPreset(uuid)) {
-    if(auto originalParameter = originalPreset->findParameterByID(currentParam->getID())) {
-      return originalParameter;
-    }
-  }
-  return nullptr;
-}
-
 ParameterLayout2::ParameterLayout2 () :
     super (Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
   addControl (new ModuleCaption (Rect (0, 0, 64, 13)));
-  addControl (new ParameterNameLabel (Rect (72, 8, 112, 11)));
-  addControl (new LockedIndicator (Rect (68, 1, 10, 11)));
+  addControl (new ParameterNameLabel (Rect (BIG_SLIDER_X, 8, 107, 11)));
+  addControl (new LockedIndicator (Rect (66, 1, 10, 11)));
   addControl(new UndoIndicator(Rect(5, 14, 10, 5)));
 }
 
@@ -71,6 +60,7 @@ bool ParameterLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
       return true;
 
     case BUTTON_DEFAULT:
+    default:
       setDefault ();
       return true;
     }
@@ -98,17 +88,9 @@ bool ParameterLayout2::onRotary (int inc, ButtonModifiers modifiers)
 }
 
 void ParameterLayout2::handlePresetValueRecall() {
-  if(isCurrentParamDiffFromLoaded()) {
+  if(getCurrentEditParameter()->isChangedFromLoaded()) {
     getOLEDProxy().setOverlay(new ParameterRecallLayout2());
   }
-}
-
-bool ParameterLayout2::isCurrentParamDiffFromLoaded() const {
-  if(auto currentParam = getCurrentEditParameter()) {
-    if(auto originalParameter = getOriginalParameter(currentParam))
-      return currentParam->getControlPositionValue() != originalParameter->getControlPositionValue();
-  }
-  return false;
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2 () :
@@ -235,14 +217,14 @@ ParameterRecallLayout2::ParameterRecallLayout2() : super() {
 
   if (auto p = getCurrentParameter ())
   {
-    if(auto originalParam = getOriginalParameter(getCurrentParameter())) {
+    if(auto originalParam = p->getOriginalParameter()) {
       if (p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
         addControl (new StaticKnubbelSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
 
       else
         addControl (new StaticBarSlider (originalParam ,Rect (BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
 
-      addControl (new Label (getOriginalParameter(getCurrentParameter())->getDisplayString(), Rect (90, 33, 76, 12)));
+      addControl (new Label (originalParam->getDisplayString(), Rect (90, 33, 76, 12)));
     }
   }
 
@@ -280,7 +262,7 @@ void ParameterRecallLayout2::doRecall() {
   auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getCurrentParameter()->getLongName());
   auto transaction = transactionScope->getTransaction();
   if(auto curr = getCurrentParameter()) {
-    if(auto original = getOriginalParameter(curr)) {
+    if(auto original = curr->getOriginalParameter()) {
       curr->setCPFromHwui(transaction, original->getControlPositionValue());
       getOLEDProxy().resetOverlay();
     }
