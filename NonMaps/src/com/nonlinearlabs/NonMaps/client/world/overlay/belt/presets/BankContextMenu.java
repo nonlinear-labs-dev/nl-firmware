@@ -159,7 +159,7 @@ public abstract class BankContextMenu extends ContextMenu {
 		}
 	}
 
-	private void createNewBank() {
+	private NonPosition calcualteBankPosition() {
 		List<Bank> banks = NonMaps.get().getNonLinearWorld().getPresetManager().getBanks();
 
 		NonPosition np = new NonPosition();
@@ -172,9 +172,14 @@ public abstract class BankContextMenu extends ContextMenu {
 				if(currentX > rightMostX)
 					rightMost = b;
 			}
-			np = new NonPosition(rightMost.getNonPosition().getLeft() + 300, rightMost.getNonPosition().getTop());
+			return new NonPosition(rightMost.getNonPosition().getLeft() + 300, rightMost.getNonPosition().getTop());
 		}
-		PresetManagerContextMenu.createNewBank(np);
+		return new NonPosition(0,0);
+	}
+
+	private void createNewBank() {
+		NonPosition bankPosition = calcualteBankPosition();
+		PresetManagerContextMenu.createNewBank(bankPosition);
 	}
 
 	protected abstract boolean hasMinimize();
