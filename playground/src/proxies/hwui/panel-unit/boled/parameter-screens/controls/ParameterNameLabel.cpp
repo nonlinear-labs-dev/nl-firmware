@@ -38,7 +38,7 @@ Glib::ustring addStar(const Glib::ustring& s) {
 
 void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter) {
   const auto changed = pParameter->isChangedFromLoaded();
-  auto name = pParameter->getLongName() + (changed ? "*" : "");
+  auto name = pParameter->getLongName();
   name = truncateMCName(changed, name);
   setText (name, changed ? 1 : 0);
 }
@@ -47,8 +47,6 @@ const Glib::ustring &ParameterNameLabel::truncateMCName(const bool changed, cons
   Glib::ustring ret = name;
 
   if(getFont()->getStringWidth(ret + ".." + (changed ? "*" : "")) > getWidth()) {
-    if(changed)
-      ret = removeLastChar(ret);
 
     while(getFont()->getStringWidth(ustring(ret + ".." + (changed ? "*" : ""))) > getWidth()) {
       ret = removeLastChar(ret);
@@ -56,9 +54,11 @@ const Glib::ustring &ParameterNameLabel::truncateMCName(const bool changed, cons
 
     ret += "..";
 
-    if(changed)
-      ret = addStar(ret);
   }
+
+  if(changed)
+    ret = addStar(ret);
+
   return ret;
 }
 
