@@ -168,7 +168,7 @@ public abstract class BankContextMenu extends ContextMenu {
 			for(Bank b : banks)
 			{
 				double currentX = b.getNonPosition().getLeft();
-				double rightMostX = rightMost.getNonPosition().getTop();
+				double rightMostX = rightMost.getNonPosition().getLeft();
 				if(currentX > rightMostX)
 					rightMost = b;
 			}
