@@ -60,9 +60,11 @@ bool ParameterLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
       return true;
 
     case BUTTON_DEFAULT:
-    default:
       setDefault ();
       return true;
+
+    default:
+      break;
     }
   }
 
