@@ -105,20 +105,7 @@ public class PresetContextMenu extends ContextMenu {
 		addChild(new PresetContextMenuItem(this, "Delete") {
 			@Override
 			public Control click(Position eventPoint) {
-
-				if (hasMultipleSelection) {
-					String csv = pm.getMultiSelection().getCSV();
-					if(pm.getMultiSelection().selectionContainsSolePresets()) {
-						PresetDeleter.open(csv);
-					} else {
-						NonMaps.get().getServerProxy().deletePresets(csv, false);
-					}
-				} else {
-					if(preset.getParent().getPresetList().getPresetCount() == 1)
-						PresetDeleter.open(preset);
-					else
-						NonMaps.get().getServerProxy().deletePreset(preset, false);
-				}
+				deletePresetWithBankModal(hasMultipleSelection, pm, preset);
 				return super.click(eventPoint);
 			}
 		});
@@ -153,6 +140,22 @@ public class PresetContextMenu extends ContextMenu {
 				return o.setContextMenu(this.getPixRect().getPosition(), new PresetColorTagContextMenu(o, preset));
 			}
 		});
+	}
+
+	public static void deletePresetWithBankModal(boolean hasMultipleSelection, PresetManager pm, Preset preset) {
+		if (hasMultipleSelection) {
+			String csv = pm.getMultiSelection().getCSV();
+			if(pm.getMultiSelection().selectionContainsSolePresets()) {
+				PresetDeleter.open(csv);
+			} else {
+				NonMaps.get().getServerProxy().deletePresets(csv, false);
+			}
+		} else {
+			if(preset.getParent().getPresetList().getPresetCount() == 1)
+				PresetDeleter.open(preset);
+			else
+				NonMaps.get().getServerProxy().deletePreset(preset, false);
+		}
 	}
 
 	public Preset getPreset() {

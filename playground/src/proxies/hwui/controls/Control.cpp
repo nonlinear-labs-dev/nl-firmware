@@ -96,3 +96,8 @@ int Control::getHeight() const
 {
   return m_rect.getHeight();
 }
+
+int Control::getWidth() const
+{
+  return m_rect.getWidth();
+}

@@ -43,13 +43,12 @@ SingleSoundLayout::SingleSoundLayout (FocusAndMode focusAndMode) :
   m_transitionTimeAmount = addControl (new TransitionTimeLabel (Rect (131, 36, 58, 12)));
   m_transitionTimeButton = addControl (new Button ("Transition", BUTTON_C));
 
+  toggleEditMenu(false);
+
   m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
-  m_initMenu = addControl (new SingleSoundEditMenu (Rect (195, 1, 58, 63)));
   m_edit = addControl (new InvertedLabel ("Edit", Rect (8, 26, 48, 12)));
   m_edit->setHighlight (true);
-
   m_edit->setVisible (false);
-  m_initMenu->setVisible (false);
   m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
 }
 
@@ -83,9 +82,8 @@ bool SingleSoundLayout::onButton (int i, bool down, ButtonModifiers modifiers)
     if (i == BUTTON_D)
     {
       if (m_selectedColumn == Column::Edit)
-        m_initMenu->toggle ();
-      else
-        toggleColumn (Column::Convert);
+        if(m_initMenu != nullptr)
+          m_initMenu->toggle ();
       return true;
     }
     else if (i == BUTTON_ENTER)
@@ -135,14 +133,31 @@ void SingleSoundLayout::toggleColumn (Column c)
   setup ();
 }
 
+void SingleSoundLayout::toggleEditMenu(bool inEdit) {
+  remove(m_initMenu);
+  m_initMenu = nullptr;
+  remove(m_emptyButton);
+  m_emptyButton = nullptr;
+
+  if(inEdit) {
+    m_initMenu = addControl (new SingleSoundEditMenu (Rect (195, 0, 58, 64)));
+    m_initMenu->setVisible (true);
+  } else {
+    m_emptyButton = addControl(new Button("", BUTTON_D));
+    m_emptyButton->setVisible(true);
+  }
+
+}
+
 void SingleSoundLayout::setup ()
 {
   setHighlight (false);
 
   bool inEditMode = m_selectedColumn == Column::Edit;
 
+  toggleEditMenu(inEditMode);
+
   m_edit->setVisible (inEditMode);
-  m_initMenu->setVisible (inEditMode);
 
   m_initButton->blind(inEditMode);
   m_randomButton->blind(inEditMode);
@@ -171,12 +186,11 @@ void SingleSoundLayout::setup ()
       m_transitionTimeButton->setHighlight (true);
       break;
 
-    case Column::Convert:
-      break;
-
     case Column::Edit:
-      m_initMenu->setHighlight (true);
-      m_initMenu->selectButton (0);
+      if(m_initMenu != nullptr) {
+        m_initMenu->setHighlight (true);
+        m_initMenu->selectButton (0);
+      }
       break;
 
   }
@@ -212,12 +226,12 @@ void SingleSoundLayout::action ()
       randomize ();
       break;
 
-    case Column::Convert:
-      // missing feature
-      break;
-
     case Column::Edit:
-      m_initMenu->doAction();
+      if(m_initMenu != nullptr)
+        m_initMenu->doAction();
+      break;
+    case Column::None:
+    case Column::TranstionTime:
       break;
   }
 }

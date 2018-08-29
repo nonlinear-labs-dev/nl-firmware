@@ -18,17 +18,16 @@ class ParameterLayout2 : public DFBLayout
     constexpr static int BUTTON_VALUE_Y_POSITION = 34;
     constexpr static int BIG_SLIDER_X = 77;
     constexpr static int BIG_SLIDER_WIDTH = 102;
-
   protected:
     virtual Parameter * getCurrentParameter () const;
     virtual Parameter * getCurrentEditParameter () const;
     virtual bool onButton (int i, bool down, ButtonModifiers modifiers) override;
     virtual bool onRotary (int inc, ButtonModifiers modifiers) override;
     virtual void setDefault ();
-
+    Control* m_lock = nullptr;
     void handlePresetValueRecall();
 
-    bool isCurrentParamDiffFromLoaded() const;
+
 };
 
 class ParameterSelectLayout2 : public virtual ParameterLayout2

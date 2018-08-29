@@ -7,6 +7,8 @@ import com.nonlinearlabs.NonMaps.client.contextStates.ClipContext;
 import com.nonlinearlabs.NonMaps.client.world.*;
 import com.nonlinearlabs.NonMaps.client.world.maps.Label;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
@@ -126,10 +128,24 @@ public class Header extends Label {
 	private RGB getBackgroundColor() {
 		RGB r = getParent().getColorBankSelect();
 
-		if (mouseCaptured || getParent().isMouseCaptured())
+		if (isOpenInContextMenu() || mouseCaptured || getParent().isMouseCaptured())
 			r = r.brighter(40);
 
 		return r;
+	}
+
+	private boolean isOpenInContextMenu() {
+		Bank bank = getParent();
+
+		for(ContextMenu cmenu: NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getContextMenus()) {
+			if(cmenu instanceof BankContextMenu) {
+				BankContextMenu bMenu = (BankContextMenu)cmenu;
+				Bank contextMenuBank = bMenu.getBank();
+				if(bank == contextMenuBank)
+					return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

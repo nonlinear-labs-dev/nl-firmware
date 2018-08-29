@@ -12,6 +12,7 @@
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
 #include "device-settings/DebugLevel.h"
+#include <glib.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -66,9 +67,11 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
 
 void ModulateableParameter::setModulationAmount(UNDO::Scope::tTransactionPtr transaction, const tDisplayValue &amount)
 {
-  if(m_modulationAmount != amount)
+  auto clampedAmount = CLAMP(amount, -1.0, 1.0);
+
+  if(m_modulationAmount != clampedAmount)
   {
-    auto swapData = UNDO::createSwapData(amount);
+    auto swapData = UNDO::createSwapData(clampedAmount);
 
     transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
     {
@@ -312,7 +315,7 @@ DFBLayout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const
   g_return_val_if_reached(nullptr);
 }
 
-std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::getModulationRange() const
+std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::getModulationRange(bool clipped) const
 {
   double modLeft = 0;
   double modRight = 0;
@@ -334,12 +337,18 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
 
     modRight = modLeft + modAmount;
   }
+
+  if(clipped)
+  {
+    modLeft = getValue().getScaleConverter()->getControlPositionRange().clip(modLeft);
+    modRight = getValue().getScaleConverter()->getControlPositionRange().clip(modRight);
+  }
   return std::make_pair(modLeft, modRight);
 }
 
 std::pair<Glib::ustring, Glib::ustring> ModulateableParameter::getModRangeAsDisplayValues() const
 {
-  auto range = getModulationRange();
+  auto range = getModulationRange(false);
 
   auto first = modulationValueToDisplayString(range.first);
   auto second = modulationValueToDisplayString(range.second);
@@ -354,8 +363,14 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
   }
 
   auto scaleConverter = getValue().getScaleConverter();
-  auto displayValue = scaleConverter->controlPositionToDisplay(v);
-  return scaleConverter->getDimension().stringize(displayValue);
+  auto clipped = scaleConverter->getControlPositionRange().clip(v);
+  auto displayValue = scaleConverter->controlPositionToDisplay(clipped);
+  auto ret = scaleConverter->getDimension().stringize(displayValue);
+
+  if(clipped != v)
+    ret = "! " + ret;
+
+  return ret;
 }
 
 void ModulateableParameter::registerTests()

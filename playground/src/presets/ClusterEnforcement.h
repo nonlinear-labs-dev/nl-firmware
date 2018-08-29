@@ -9,8 +9,10 @@ class ClusterEnforcement
     typedef shared_ptr<PresetBank> tBankPtr;
     struct TreeNode;
     typedef std::shared_ptr<TreeNode> tTreeNodePtr;
-    struct TreeNode
+
+    class TreeNode : public std::enable_shared_from_this<TreeNode>
     {
+    public:
         tTreeNodePtr master = nullptr;
         tTreeNodePtr right;
         tTreeNodePtr bottom;
@@ -35,6 +37,25 @@ class ClusterEnforcement
 
             return 0;
         }
+
+      size_t getColumn() {
+        if(left)
+          return 1 + left->getColumn();
+        if(top)
+          return 0 + top->getColumn();
+
+        return 0;
+      }
+
+      size_t getRow() {
+        if(left)
+          return 0 + left->getRow();
+        if(top)
+          return 1 + top->getRow();
+
+        return 0;
+      }
+
     };
     typedef std::shared_ptr<TreeNode> tCluster;
   public:
@@ -59,7 +80,6 @@ private:
     void connectToClusterStructure(tTreeNodePtr masterNode, tTreeNodePtr myNode);
     void ruleDelete(UNDO::Scope::tTransactionPtr transaction, tTreeNodePtr bottom, tTreeNodePtr right, Glib::ustring newMasterUuid,
                     PresetBank::AttachmentDirection dir);
-
 
     std::vector<tBankPtr> getClusterMasters();
 };

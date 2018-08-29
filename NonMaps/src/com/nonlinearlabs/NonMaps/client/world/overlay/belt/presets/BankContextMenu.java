@@ -20,9 +20,17 @@ import java.util.List;
 
 public abstract class BankContextMenu extends ContextMenu {
 
+	protected Bank m_bank = null;
+
+	@Override
+	public void fadeOut() {
+		m_bank = null;
+		super.fadeOut();
+	}
+
 	public BankContextMenu(OverlayLayout parent, final Bank bank) {
 		super(parent);
-
+		m_bank = bank;
 		if (hasBankCreationRights()) {
 			addChild(new ContextMenuItem(this, "Create New Bank") {
 				@Override
@@ -157,6 +165,10 @@ public abstract class BankContextMenu extends ContextMenu {
 				}
 			});
 		}
+	}
+
+	public Bank getBank() {
+		return m_bank;
 	}
 
 	private NonPosition calcualteBankPosition() {
