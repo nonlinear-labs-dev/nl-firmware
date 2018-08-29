@@ -1,21 +1,12 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
-import java.util.ArrayList;
-
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.contextStates.ClipContext;
-import com.nonlinearlabs.NonMaps.client.world.Control;
-import com.nonlinearlabs.NonMaps.client.world.IBank;
-import com.nonlinearlabs.NonMaps.client.world.IPreset;
-import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.RGB;
-import com.nonlinearlabs.NonMaps.client.world.RGBA;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
+import com.nonlinearlabs.NonMaps.client.world.*;
 import com.nonlinearlabs.NonMaps.client.world.maps.Label;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
@@ -23,6 +14,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingBut
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.BankContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 import com.nonlinearlabs.NonMaps.client.world.pointer.DoubleClickWaiter;
+
+import java.util.ArrayList;
 
 public class Header extends Label {
 
@@ -69,7 +62,7 @@ public class Header extends Label {
 		}
 	}
 
-	protected void drawTooth(Context2d ctx) {
+	private void drawTooth(Context2d ctx) {
 		try (ClipContext clipper = new ClipContext(ctx, this)) {
 			drawClipped(ctx);
 		}
@@ -128,13 +121,6 @@ public class Header extends Label {
 
 		setIsDropTarget(false);
 		return this;
-	}
-
-	public void dropPresets(PresetManager pm, Bank b) {
-		for (String uuid : pm.getMultiSelection().getSelectedPresets()) {
-			Preset p = pm.findPreset(uuid);
-			getNonMaps().getServerProxy().dropPresetOnBank(p, b);
-		}
 	}
 
 	private RGB getBackgroundColor() {
@@ -242,7 +228,7 @@ public class Header extends Label {
 	}
 
 	private ArrayList<Bank> getBanksThatMoveWhenMovingBank(Bank parent) {
-		ArrayList<Bank> ret = new ArrayList<Bank>();
+		ArrayList<Bank> ret = new ArrayList<>();
 		parent.collectCluster(ret);
 		return ret;
 	}
@@ -284,7 +270,7 @@ public class Header extends Label {
 		if (dragProxy.getPixRect().contains(pos) && getPixRect().contains(pos)) {
 			if (dragProxy.getOrigin() instanceof Bank) {
 				Bank bBank = (Bank) dragProxy.getOrigin();
-				if (bBank.hasSlaves() == false) {
+				if (!bBank.hasSlaves()) {
 					setIsDropTarget(true);
 					return this;
 				}
