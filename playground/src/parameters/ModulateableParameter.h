@@ -56,7 +56,7 @@ class ModulateableParameter : public Parameter
     virtual DFBLayout *createLayout (FocusAndMode focusAndMode) const override;
     void *getAmountCookie ();
 
-    std::pair<tControlPositionValue, tControlPositionValue> getModulationRange() const;
+    std::pair<tControlPositionValue, tControlPositionValue> getModulationRange(bool clipped) const;
 
   protected:
     void writeDocProperties (Writer &writer, tUpdateID knownRevision) const override;
