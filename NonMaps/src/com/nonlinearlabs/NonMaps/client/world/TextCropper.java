@@ -15,16 +15,13 @@ public class TextCropper {
 	}
 
 	private static String customAlgorithmAlaJustus(String text, int min, int textLen, Context2d ctx, double maxWidth) {
-		Tracer.log( text + " length: " + textLen + " maxWidth:" + maxWidth);
 		String edgeCaseString = edgeCases(min, textLen, text);
 		if(edgeCaseString != null) {
-			Tracer.log("edge:" + edgeCaseString);
 			return edgeCaseString;
 		}
 
 		String spaceSplitString = spaceBasedCropping(text, textLen,ctx , maxWidth * 0.95	);
 		if(spaceSplitString != null) {
-			Tracer.log("space:" + spaceSplitString);
 			return spaceSplitString;
 		}
 
@@ -41,7 +38,6 @@ public class TextCropper {
 		}
 
 		String ret = front.toString() + ".." + back.toString();
-		Tracer.log("front + .. + back: " + ret);
 		return ret;
 	}
 
