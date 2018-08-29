@@ -85,7 +85,8 @@ bool PresetsLayout::updateNameAndNumber ()
     {
       auto bankNumber = pm->calcOrderNumber (bank.get ());
       auto presetPosition = bank->getPresetPosition (presetUUID);
-      auto presetNumberString = formatBankAndPresetNumber (bankNumber, presetPosition, eb->isModified ());
+      auto modified = eb->isModified () &&  eb->getUUIDOfLastLoadedPreset() == presetUUID;
+      auto presetNumberString = formatBankAndPresetNumber (bankNumber, presetPosition, modified);
       m_number->setText (presetNumberString);
       m_name->setText (preset->getName ());
       return true;
