@@ -15,12 +15,13 @@ const int c_letterHeight = 12;
 RenameLayout::RenameLayout () :
     super (Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ())
 {
+  auto &panelUnit = Application::get ().getHWUI ()->getPanelUnit ();
+  m_oldUsageMode = panelUnit.getUsageMode();
 }
 
 RenameLayout::~RenameLayout ()
 {
-  auto foucs = Application::get().getHWUI()->getFocusAndMode().focus;
-  Application::get ().getHWUI ()->getPanelUnit ().setupFocusAndMode(FocusAndMode(foucs, UIMode::Edit));
+  Application::get().getHWUI()->getPanelUnit().restoreUsageMode(m_oldUsageMode);
 }
 
 void RenameLayout::init ()
@@ -43,7 +44,6 @@ void RenameLayout::init ()
 void RenameLayout::replaceUsageMode ()
 {
   auto &panelUnit = Application::get ().getHWUI ()->getPanelUnit ();
-
   panelUnit.setUsageMode (new TextEditUsageMode (getInitialText ()));
   auto newUsageMode = panelUnit.getUsageMode ();
   m_textUsageMode = dynamic_pointer_cast<TextEditUsageMode> (newUsageMode);
