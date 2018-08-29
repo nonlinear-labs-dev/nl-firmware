@@ -10,15 +10,11 @@ class Parameter;
 class AnyParameterLockedIndicator : public LockedIndicator
 {
   public:
-    AnyParameterLockedIndicator (const Rect &pos);
-    virtual ~AnyParameterLockedIndicator () = default;
+  explicit AnyParameterLockedIndicator (const Rect &pos);
+
+  ~AnyParameterLockedIndicator () override = default;
 
   private:
-    void onParameterSelected(Parameter * newOne);
     void onParameterGroupChanged();
-
-
-    sigc::connection m_groupConnection;
-
 };
 

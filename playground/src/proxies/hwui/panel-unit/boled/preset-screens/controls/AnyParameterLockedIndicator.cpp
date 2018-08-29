@@ -7,14 +7,11 @@
 
 AnyParameterLockedIndicator::AnyParameterLockedIndicator(const Rect &pos) : LockedIndicator(Rect(pos.getX(), pos.getY(), pos.getWidth(), pos.getHeight()))
 {
-}
+  Application::get().getPresetManager()->getEditBuffer()->onLocksChanged(
+      sigc::mem_fun(this, &AnyParameterLockedIndicator::onParameterGroupChanged)
+  );
 
-void AnyParameterLockedIndicator::onParameterSelected(Parameter * newOne)
-{
-    if(newOne) {
-        m_groupConnection.disconnect();
-        m_groupConnection = newOne->getParentGroup()->onGroupChanged(sigc::mem_fun(this, &AnyParameterLockedIndicator::onParameterGroupChanged));
-    }
+  onParameterGroupChanged();
 }
 
 void AnyParameterLockedIndicator::onParameterGroupChanged() {
