@@ -11,6 +11,10 @@ ParameterNameLabel::ParameterNameLabel (const Rect &pos) :
 {
   Application::get().getPresetManager ()->getEditBuffer ()->onSelectionChanged (
       sigc::hide < 0 > (sigc::mem_fun (this, &ParameterNameLabel::onParameterSelected)));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
+
 }
 
 ParameterNameLabel::~ParameterNameLabel ()
@@ -103,6 +107,11 @@ int ParameterNameLabel::getFontHeight () const
 
 void ParameterNameLabel::setSuffixFontColor(FrameBuffer &fb) const {
   fb.setColor(FrameBuffer::C103);
+}
+
+void ParameterNameLabel::onPresetLoaded() {
+  const auto param = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+  onParameterChanged(param);
 }
 
 

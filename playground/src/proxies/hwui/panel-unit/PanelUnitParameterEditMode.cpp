@@ -358,7 +358,6 @@ bool PanelUnitParameterEditMode::setParameterSelection(gint32 audioID, bool stat
     if(Parameter * p = editBuffer->findParameterByID(audioID))
     {
       DebugLevel::gassy("selecting param");
-      auto old = editBuffer->getSelected();
       editBuffer->undoableSelectParameter(p);
     }
   }
