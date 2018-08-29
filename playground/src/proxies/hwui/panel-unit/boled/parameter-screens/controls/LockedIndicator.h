@@ -20,7 +20,8 @@ class LockedIndicator : public Label
     virtual int getFontHeight () const override;
 
     void onParameterSelected (Parameter * newOne);
-    void onParameterGroupChanged ();
+
+  virtual void onParameterGroupChanged ();
 
     sigc::connection m_groupConnection;
 };
