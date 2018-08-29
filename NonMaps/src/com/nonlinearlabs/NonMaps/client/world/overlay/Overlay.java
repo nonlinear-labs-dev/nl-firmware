@@ -297,6 +297,17 @@ public class Overlay extends OverlayLayout {
 		return ctx;
 	}
 
+	public List<ContextMenu> getContextMenus() {
+		List<ContextMenu> ret = new ArrayList<>();
+		for (OverlayControl c : getChildren()) {
+			if (c instanceof ContextMenu) {
+				ContextMenu m = (ContextMenu) c;
+				ret.add(m);
+			}
+		}
+		return ret;
+	}
+
 	public ContextMenu getContextMenu() {
 		for (OverlayControl c : getChildren()) {
 			if (c instanceof ContextMenu) {

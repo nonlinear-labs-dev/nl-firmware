@@ -22,6 +22,12 @@ public abstract class BankContextMenu extends ContextMenu {
 
 	protected Bank m_bank = null;
 
+	@Override
+	public void fadeOut() {
+		m_bank = null;
+		super.fadeOut();
+	}
+
 	public BankContextMenu(OverlayLayout parent, final Bank bank) {
 		super(parent);
 		m_bank = bank;
