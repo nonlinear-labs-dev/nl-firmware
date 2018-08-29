@@ -22,9 +22,10 @@ class SingleSoundLayout : public DFBLayout
   private:
     enum class Column
     {
-      None, Init, Randomize, TranstionTime, Convert, Edit
+      None, Init, Randomize, TranstionTime, Edit
     };
 
+    void toggleEditMenu(bool inEdit);
     void toggleColumn (Column c);
     void setup ();
     void randomize ();
@@ -38,6 +39,7 @@ class SingleSoundLayout : public DFBLayout
     Control *m_randomizeSlider = nullptr;
     Control *m_randomizeAmount = nullptr;
     Button *m_randomButton = nullptr;
+    Button* m_emptyButton = nullptr;
 
     Control *m_transitionTimeLabel = nullptr;
     Control *m_transitionTimeSlider = nullptr;
