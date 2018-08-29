@@ -19,6 +19,8 @@ RenameLayout::RenameLayout () :
 
 RenameLayout::~RenameLayout ()
 {
+  auto foucs = Application::get().getHWUI()->getFocusAndMode().focus;
+  Application::get ().getHWUI ()->getPanelUnit ().setupFocusAndMode(FocusAndMode(foucs, UIMode::Edit));
 }
 
 void RenameLayout::init ()
