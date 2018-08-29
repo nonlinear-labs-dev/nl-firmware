@@ -21,7 +21,7 @@ ParameterLayout2::ParameterLayout2 () :
   addControl (new ModuleCaption (Rect (0, 0, 64, 13)));
   addControl (new ParameterNameLabel (Rect (BIG_SLIDER_X, 8, 107, 11)));
   addControl (new LockedIndicator (Rect (66, 1, 10, 11)));
-  addControl(new UndoIndicator(Rect(5, 14, 10, 5)));
+  addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
 }
 
 Parameter * ParameterLayout2::getCurrentParameter () const
