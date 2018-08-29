@@ -348,7 +348,7 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
 
 std::pair<Glib::ustring, Glib::ustring> ModulateableParameter::getModRangeAsDisplayValues() const
 {
-  auto range = getModulationRange(true);
+  auto range = getModulationRange(false);
 
   auto first = modulationValueToDisplayString(range.first);
   auto second = modulationValueToDisplayString(range.second);
@@ -363,8 +363,14 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
   }
 
   auto scaleConverter = getValue().getScaleConverter();
-  auto displayValue = scaleConverter->controlPositionToDisplay(v);
-  return scaleConverter->getDimension().stringize(displayValue);
+  auto clipped = scaleConverter->getControlPositionRange().clip(v);
+  auto displayValue = scaleConverter->controlPositionToDisplay(clipped);
+  auto ret = scaleConverter->getDimension().stringize(displayValue);
+
+  if(clipped != v)
+    ret = "! " + ret;
+
+  return ret;
 }
 
 void ModulateableParameter::registerTests()
