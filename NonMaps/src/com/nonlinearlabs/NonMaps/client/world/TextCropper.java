@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 
 public class TextCropper {
 	public static String crop(String text, Context2d ctx, double maxWidth) {
@@ -13,45 +14,64 @@ public class TextCropper {
 		return customAlgorithmAlaJustus(text, min, max, ctx, maxWidth);
 	}
 
-	private static String customAlgorithmAlaJustus(String text, int min, int max, Context2d ctx, double maxWidth) {
-		if (max == 0)
+	private static String customAlgorithmAlaJustus(String text, int min, int textLen, Context2d ctx, double maxWidth) {
+		Tracer.log( text + " length: " + textLen + " maxWidth:" + maxWidth);
+		String edgeCaseString = edgeCases(min, textLen, text);
+		if(edgeCaseString != null) {
+			Tracer.log("edge:" + edgeCaseString);
+			return edgeCaseString;
+		}
+
+		String spaceSplitString = spaceBasedCropping(text, textLen,ctx , maxWidth * 0.95	);
+		if(spaceSplitString != null) {
+			Tracer.log("space:" + spaceSplitString);
+			return spaceSplitString;
+		}
+
+		final String padding = "..";
+		StringBuilder front = new StringBuilder();
+		int i = 0;
+		while(ctx.measureText(front.toString() + padding).getWidth() < maxWidth / 2) {
+			front.append(text.charAt(i++));
+		}
+		StringBuilder back = new StringBuilder();
+		i = text.length() - 1;
+		while(ctx.measureText(back.toString() + padding).getWidth() < maxWidth / 2) {
+			back.insert(0, text.charAt(i--));
+		}
+
+		String ret = front.toString() + ".." + back.toString();
+		Tracer.log("front + .. + back: " + ret);
+		return ret;
+	}
+
+	private static String edgeCases(int min, int max, String text) {
+		if(max == 0)
 			return "";
+		if(text.length() < min)
+			return text;
 		if ((min + 1) == max)
 			return text.substring(0, min) + "..";
-		int roughTwoThirds = (text.length() / 3) * 2;
+
+		return null;
+	}
+
+	private static String spaceBasedCropping(String text, int max, Context2d ctx, double maxWidth) {
+
 		int lastSpace = text.lastIndexOf(" ");
-		if (lastSpace >= roughTwoThirds) {
+
+		if (lastSpace >= (text.length() / 3) * 2) {
 			String partAfterSpace = text.substring(lastSpace + 1);
+
+			if(ctx.measureText(partAfterSpace).getWidth() >= maxWidth / 2)
+				return null;
+
 			StringBuilder front = new StringBuilder();
-			for (int i = 0;
-				 i < max - 2 - partAfterSpace.length() && ctx.measureText(front + partAfterSpace + "---").getWidth() < maxWidth;
-				 i++) {
+			for (int i = 0; ctx.measureText(front + partAfterSpace + "..").getWidth() < maxWidth; i++) {
 				front.append(text.charAt(i));
 			}
 			return front + ".." + partAfterSpace;
-		} else {
-			return binarySearchLength(text, min, max, ctx, maxWidth);
 		}
+		return null;
 	}
-
-
-		private static String binarySearchLength(String text, int min, int max, Context2d ctx, double maxWidth) {
-		if (max == 0)
-			return "";
-
-		if ((min + 1) == max)
-			return text.substring(0, min) + "..";
-
-		int halfIdx = min + (max - min) / 2;
-		String half = text.substring(0, halfIdx);
-		String toMeasure = half + "..";
-
-		if (ctx.measureText(toMeasure).getWidth() <= maxWidth)
-			min = halfIdx;
-		else
-			max = halfIdx;
-
-		return binarySearchLength(text, min, max, ctx, maxWidth);
-	}
-
 }
