@@ -149,11 +149,14 @@ public class Header extends Label {
 
 	private boolean isOpenInContextMenu() {
 		Bank bank = getParent();
-		ContextMenu cmenu = NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getContextMenu();
-		if(cmenu instanceof BankContextMenu) {
-			BankContextMenu bMenu = (BankContextMenu)cmenu;
-			Bank contextMenuBank = bMenu.getBank();
-			return bank == contextMenuBank;
+
+		for(ContextMenu cmenu: NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getContextMenus()) {
+			if(cmenu instanceof BankContextMenu) {
+				BankContextMenu bMenu = (BankContextMenu)cmenu;
+				Bank contextMenuBank = bMenu.getBank();
+				if(bank == contextMenuBank)
+					return true;
+			}
 		}
 		return false;
 	}
