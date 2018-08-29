@@ -19,6 +19,7 @@ class PresetsLayout : public DFBLayout
   private:
     void onBankSelected (shared_ptr<PresetBank> bank);
     void onBankChanged ();
+    void onPresetLoaded();
     void onAutoLoadSettingChanged (const Setting *s);
     void onEditBufferModified (bool b);
     void update ();
