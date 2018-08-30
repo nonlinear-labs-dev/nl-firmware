@@ -37,7 +37,7 @@ Font::Justification PresetNameLabel::getJustification () const
 
 Glib::ustring PresetNameLabel::shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const
 {
-  return TextCropper::shortenStringIfNeccessary(font, text, *this, getXOffset() + getRightMargin());
+  return TextCropper::shortenStringIfNeccessary(font, text, getPosition().getWidth() - getXOffset() - getRightMargin());
 }
 
 int PresetNameLabel::getXOffset () const

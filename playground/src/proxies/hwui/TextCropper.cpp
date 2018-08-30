@@ -1,18 +1,31 @@
 #include <proxies/hwui/controls/Control.h>
 #include <utility>
+#include <testing/TestDriver.h>
+#include <proxies/hwui/controls/Label.h>
 #include "TextCropper.h"
+#include "Oleds.h"
 
 
-Glib::ustring TextCropper::shortenStringIfNeccessary(shared_ptr<Font> font, const Glib::ustring &text, const Control &control,
-                                                     int extraMargin)
+static TestDriver<TextCropper> tests{};
+
+void TextCropper::registerTests()
 {
-  return preserveEndShorten(font, text, control, extraMargin);
+  g_test_add_func ("/TextCropper/simple", []()
+                 {
+                   g_assert(
+                       TextCropper::shortenStringIfNeccessary(Oleds::get ().getFont ("Emphase_9_Regular", 8), "Fo", 5) ==
+                       "Fo");
+                 });
+};
+
+Glib::ustring TextCropper::shortenStringIfNeccessary(shared_ptr<Font> font, const Glib::ustring &text, double maxWidth)
+{
+  return preserveEndShorten(font, text, maxWidth);
 }
 
-ustring TextCropper::preserveEndShorten(const shared_ptr<Font> &font, const ustring &text, const Control &control, int extraMargin) {
+ustring TextCropper::preserveEndShorten(const shared_ptr<Font> &font, const ustring &text, double maxWidth) {
   const auto textLen = text.length();
   const auto min = 0;
-  const auto maxWidth = control.getPosition().getWidth() - extraMargin;
   auto edgeCaseString = edgeCases(min, textLen, text);
   if(!edgeCaseString.empty()) {
     return edgeCaseString;
@@ -26,7 +39,7 @@ ustring TextCropper::preserveEndShorten(const shared_ptr<Font> &font, const ustr
   return rigidSplit(font,text,maxWidth);
 }
 
-Glib::ustring TextCropper::rigidSplit(const shared_ptr<Font> &font, const ustring &text, const int maxWidth) {
+Glib::ustring TextCropper::rigidSplit(const shared_ptr<Font> &font, const ustring &text, const double maxWidth) {
 
   ustring front;
   ustring back;

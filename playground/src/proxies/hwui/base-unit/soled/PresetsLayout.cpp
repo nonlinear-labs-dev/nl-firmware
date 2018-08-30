@@ -21,7 +21,7 @@ public:
   ShortenLabel(const ustring &text, const Rect &pos) : Label(text, pos) {}
 protected:
   Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const override {
-    return TextCropper::shortenStringIfNeccessary(font, text, *this, 0);
+    return TextCropper::shortenStringIfNeccessary(font, text, getPosition().getWidth());
   }
 };
 
