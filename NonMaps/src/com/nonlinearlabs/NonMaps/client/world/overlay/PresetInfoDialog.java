@@ -37,11 +37,11 @@ public class PresetInfoDialog extends GWTDialog {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadedPreset();
 	}
 
-	EditBufferInfoWidget createEditBufferTab() {
+	private EditBufferInfoWidget createEditBufferTab() {
 		return EditBufferInfoWidget.get();
 	}
 
-	PresetInfoWidget createPresetInfoTab() {
+	private PresetInfoWidget createPresetInfoTab() {
 		return PresetInfoWidget.get();
 	}
 
@@ -53,7 +53,7 @@ public class PresetInfoDialog extends GWTDialog {
 		else
 			editBufferInfoPage.updateInfo(getEditBuffer());
 
-		presetInfoPage.updateInfo(getCurrentPreset());
+		presetInfoPage.updateInfo(getCurrentPreset(), false);
 
 		HTMLPanel pane = new HTMLPanel("div", "");
 		pane.getElement().addClassName("preset-info-edit-buffer-dialog-pane");
@@ -123,12 +123,12 @@ public class PresetInfoDialog extends GWTDialog {
 
 	private void updateInfo(Preset preset) {
 		editBufferInfoPage.updateInfo(getEditBuffer());
-		presetInfoPage.updateInfo(preset);
+		presetInfoPage.updateInfo(preset, true);
 		centerIfOutOfView();
 	}
 
-	static int lastPopupLeft = -1;
-	static int lastPopupTop = -1;
+	private static int lastPopupLeft = -1;
+	private static int lastPopupTop = -1;
 
 	@Override
 	protected void setLastPopupPos(int popupLeft, int popupTop) {
