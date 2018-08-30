@@ -210,6 +210,16 @@ public class Header extends Label {
 	}
 
 	@Override
+	public double getLeftMargin() {
+		return 2;
+	}
+
+	@Override
+	public double getRightMargin() {
+		return 2;
+	}
+
+	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
 
