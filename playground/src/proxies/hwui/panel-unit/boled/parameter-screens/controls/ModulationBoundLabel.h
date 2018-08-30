@@ -11,8 +11,8 @@ class ModulationBoundLabel : public LabelRegular8
     typedef LabelRegular8 super;
 
   public:
-    ModulationBoundLabel (const Rect &r);
-    virtual ~ModulationBoundLabel ();
+  explicit ModulationBoundLabel (const Rect &r);
+  ~ModulationBoundLabel () override;
 
   protected:
     virtual void updateText(MacroControlParameter *mcParam, ModulateableParameter *modulatedParam) = 0;
@@ -24,8 +24,10 @@ class ModulationBoundLabel : public LabelRegular8
     void onMCParameterChanged (const Parameter *mcParam);
     void onButtonModifiersChanged(ButtonModifiers mod);
     void updateText();
+    void setSuffixFontColor (FrameBuffer &fb) const override;
 
-    ModulateableParameter::ModulationSource m_mc = ModulateableParameter::NONE;
+
+  ModulateableParameter::ModulationSource m_mc = ModulateableParameter::NONE;
     sigc::connection m_paramConnection;
     sigc::connection m_mcConnection;
 

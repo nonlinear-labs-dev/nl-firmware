@@ -81,3 +81,7 @@ ModulateableParameter *ModulationBoundLabel::getModulatedParameter ()
   return m_modulatedParam;
 }
 
+void ModulationBoundLabel::setSuffixFontColor(FrameBuffer &fb) const {
+  fb.setColor(FrameBuffer::C103);
+}
+
