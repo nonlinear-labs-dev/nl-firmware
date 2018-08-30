@@ -38,7 +38,8 @@ void BanksLayout::onBankSelected(shared_ptr<PresetBank> bank)
 {
   m_bank = bank;
   m_bankconnection.disconnect();
-  m_bankconnection = bank->onBankChanged(sigc::mem_fun(this, &BanksLayout::onBankChanged));
+  if(bank)
+    m_bankconnection = bank->onBankChanged(sigc::mem_fun(this, &BanksLayout::onBankChanged));
 
   updateFromBank(bank);
 }
