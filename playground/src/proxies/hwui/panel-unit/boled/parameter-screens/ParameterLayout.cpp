@@ -212,50 +212,63 @@ bool ParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers
 }
 
 ParameterRecallLayout2::ParameterRecallLayout2() : super() {
-  addControl(new Button("Recall", BUTTON_A));
-  addControl(new Button("", BUTTON_B));
-  addControl(new Button("", BUTTON_C));
-  addControl(new Button("", BUTTON_D));
+  m_buttonA = addControl(new Button("", BUTTON_A));
+  m_buttonB = addControl(new Button("", BUTTON_B));
+  m_buttonC = addControl(new Button("", BUTTON_C));
+  m_buttonD = addControl(new Button("", BUTTON_D));
 
-  if (auto p = getCurrentParameter ())
-  {
-    if(auto originalParam = p->getOriginalParameter()) {
+  if (auto p = getCurrentParameter ()) {
+    if (auto originalParam = p->getOriginalParameter()) {
       if (p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-        addControl (new StaticKnubbelSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-
+        m_slider = addControl(new StaticKnubbelSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
       else
-        addControl (new StaticBarSlider (originalParam ,Rect (BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        m_slider = addControl(new StaticBarSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
 
-      addControl (new Label (originalParam->getDisplayString(), Rect (90, 33, 76, 12)));
+      m_leftValue = addControl(new Label(p->getDisplayString(), Rect (67, 35, 58, 11)));
+      m_rightValue = addControl(new Label(originalParam->getDisplayString(), Rect(131, 35, 58, 11)));
     }
   }
 
+  m_recallValue = getCurrentParameter()->getControlPositionValue();
+
+  Application::get().getPresetManager()->getEditBuffer()->onChange(sigc::mem_fun(this, &ParameterRecallLayout2::onParameterChanged));
+
+  updateUI(false);
 }
 
 void ParameterRecallLayout2::init() {
-  highlight<StaticKnubbelSlider>();
-  highlight<StaticBarSlider>();
-  highlight<Label>();
-  lowlight<Button>();
 }
 
 bool ParameterRecallLayout2::onButton (int i, bool down, ButtonModifiers modifiers) {
   auto up = !down;
 
-  if(down && i == BUTTON_A) {
+  if (m_paramLikeInPreset) {
+    if (down && i == BUTTON_B) {
+      undoRecall();
+      return true;
+    } else if(i == BUTTON_B)
+      return true;
+  } else {
+    if (down && i == BUTTON_C) {
       doRecall();
       return true;
+    } else if(i == BUTTON_C)
+      return true;
   }
-  else if(up && BUTTON_SHIFT == i) {
-          getOLEDProxy().resetOverlay();
-          return true;
+
+  if(up) {
+    if(i == BUTTON_C || i == BUTTON_B)
+      return true;
   }
+
+
+  getOLEDProxy().resetOverlay();
   return false;
 }
 
 bool ParameterRecallLayout2::onRotary (int inc, ButtonModifiers modifiers) {
   getOLEDProxy().resetOverlay();
-  return true;
+  return false;
 }
 
 
@@ -265,13 +278,58 @@ void ParameterRecallLayout2::doRecall() {
   auto transaction = transactionScope->getTransaction();
   if(auto curr = getCurrentParameter()) {
     if(auto original = curr->getOriginalParameter()) {
+      m_recallString = curr->getDisplayString();
+      m_recallValue = curr->getControlPositionValue();
       curr->setCPFromHwui(transaction, original->getControlPositionValue());
-      getOLEDProxy().resetOverlay();
+      updateUI(true);
     }
+  }
+}
+
+void ParameterRecallLayout2::undoRecall() {
+  auto& scope = Application::get().getPresetManager()->getUndoScope();
+  auto transactionScope = scope.startTransaction("Recall %0 value from Editbuffer", getCurrentParameter()->getLongName());
+  auto transaction = transactionScope->getTransaction();
+  if(auto curr = getCurrentParameter()) {
+    curr->setCPFromHwui(transaction, m_recallValue);
+    updateUI(false);
   }
 }
 
 ButtonMenu *ParameterRecallLayout2::createMenu (const Rect &rect) {
   return nullptr;
+}
+
+void ParameterRecallLayout2::updateUI(bool paramLikeInPreset) {
+
+  m_paramLikeInPreset = paramLikeInPreset;
+
+  if (auto p = getCurrentParameter ()) {
+    if (auto originalParam = p->getOriginalParameter()) {
+
+      if(paramLikeInPreset) {
+        m_rightValue->setText(p->getDisplayString());
+        m_leftValue->setText(m_recallString);
+        m_slider->setValue(p->getControlPositionValue(), p->isBiPolar());
+        m_rightValue->setHighlight(true);
+        m_leftValue->setHighlight(false);
+        m_buttonB->setText("Recall");
+        m_buttonC->setText("");
+      } else {
+        m_leftValue->setText(p->getDisplayString());
+        m_rightValue->setText(originalParam->getDisplayString());
+        m_slider->setValue(m_recallValue, p->isBiPolar());
+        m_leftValue->setHighlight(true);
+        m_rightValue->setHighlight(false);
+        m_buttonC->setText("Recall");
+        m_buttonB->setText("");
+      }
+    }
+
+  }
+}
+
+void ParameterRecallLayout2::onParameterChanged() {
+  updateUI(!getCurrentEditParameter()->isChangedFromLoaded());
 }
 

@@ -225,7 +225,7 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void renamePreset(String uuid, String newName) {
+	public void renamePreset(String uuid, String newName) {	
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "rename-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("name", newName));
 		queueJob(uri, false);

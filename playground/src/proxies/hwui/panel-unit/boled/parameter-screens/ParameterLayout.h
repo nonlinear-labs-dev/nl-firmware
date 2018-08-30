@@ -7,6 +7,9 @@ class Carousel;
 class Rect;
 class ButtonMenu;
 class Parameter;
+class Slider;
+class Label;
+class Button;
 
 class ParameterLayout2 : public DFBLayout
 {
@@ -69,15 +72,30 @@ class ParameterEditLayout2 : public virtual ParameterLayout2
 class ParameterRecallLayout2 : public virtual ParameterLayout2
 {
 public:
-    typedef ParameterLayout2 super;
-    ParameterRecallLayout2();
-    ~ParameterRecallLayout2() = default;
+  typedef ParameterLayout2 super;
+  ParameterRecallLayout2();
+  ~ParameterRecallLayout2() = default;
 
 protected:
-    void init() override;
-    bool onButton (int i, bool down, ButtonModifiers modifiers) override;
-    bool onRotary (int inc, ButtonModifiers modifiers) override;
-    ButtonMenu *createMenu (const Rect &rect);
+  void init() override;
+  bool onButton (int i, bool down, ButtonModifiers modifiers) override;
+  bool onRotary (int inc, ButtonModifiers modifiers) override;
+  ButtonMenu *createMenu (const Rect &rect);
 private:
-    void doRecall();
+  void doRecall();
+  void undoRecall();
+  void updateUI(bool paramLikeInPreset);
+  void onParameterChanged();
+
+  Slider *m_slider;
+  Label *m_leftValue;
+  Label *m_rightValue;
+  Button *m_buttonC;
+  Button *m_buttonB;
+  tControlPositionValue m_recallValue;
+  Button *m_buttonA;
+  bool m_paramLikeInPreset;
+  Button *m_buttonD;
+  ustring m_recallString;
+
 };
