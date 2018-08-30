@@ -36,11 +36,20 @@ BanksLayout::~BanksLayout ()
 
 void BanksLayout::onBankSelected(shared_ptr<PresetBank> bank)
 {
+  m_bank = bank;
+  m_bankconnection.disconnect();
+  if(bank)
+    m_bankconnection = bank->onBankChanged(sigc::mem_fun(this, &BanksLayout::onBankChanged));
+
+  updateFromBank(bank);
+}
+
+void BanksLayout::updateFromBank(const shared_ptr<PresetBank> &bank) const {
   if(bank)
   {
     auto order = Application::get().getPresetManager()->calcOrderNumber (bank.get());
     auto numBanks = Application::get().getPresetManager()->getNumBanks();
-    auto str = Glib::ustring::format(order);
+    auto str = ustring::format(order);
     m_number->setText(str);
     m_name->setText(bank->getName(true));
   }
@@ -55,4 +64,8 @@ void BanksLayout::onAutoLoadSettingChanged(const Setting *s)
 {
   bool on = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get();
   m_directLoad->setMode(on ? DirectLoadIndicator::Mode::DirectLoad : DirectLoadIndicator::Mode::Off);
+}
+
+void BanksLayout::onBankChanged() {
+  updateFromBank(m_bank);
 }
