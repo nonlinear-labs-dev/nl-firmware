@@ -116,7 +116,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			c.getNonPosition().moveBy(tapeSize, tapeSize);
 		}
 
-		for(Tape t: tapes) {
+		for (Tape t : tapes) {
 			t.layout(oldDim);
 		}
 
@@ -163,6 +163,10 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public double getAttachArea() {
+		return 30;
+	}
+
+	public double getVisibleAttachArea() {
 		return 10;
 	}
 
@@ -786,15 +790,15 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	public void layoutSlaves() {
 		if (slaveBottom != null) {
 			NonPosition posYFin = new NonPosition(getNonPosition().getLeft(),
-					getNonPosition().getBottom() + getAttachArea());
+					getNonPosition().getBottom() + getVisibleAttachArea() - getAttachArea());
 			posYFin.snapTo(PresetManager.getSnapGridResolution());
 			slaveBottom.moveTo(posYFin);
 			slaveBottom.layoutSlaves();
 		}
 
 		if (slaveRight != null) {
-			NonPosition posXFin = new NonPosition(getNonPosition().getRight() + getAttachArea(),
-					getNonPosition().getTop());
+			NonPosition posXFin = new NonPosition(
+					getNonPosition().getRight() + getVisibleAttachArea() - getAttachArea(), getNonPosition().getTop());
 			posXFin.snapTo(PresetManager.getSnapGridResolution());
 			slaveRight.moveTo(posXFin);
 			slaveRight.layoutSlaves();
