@@ -266,7 +266,7 @@ bool ParameterGroup::isAnyParameterLocked() const
     if(p->isLocked())
       return true;
 
-  return true;
+  return false;
 }
 
 bool ParameterGroup::areAllParametersLocked() const
