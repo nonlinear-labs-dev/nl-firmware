@@ -27,10 +27,18 @@ PresetsLayout::PresetsLayout () :
   addControl(new DottedLine(Rect(31, headlineHeight, 96, 1)));
 
   auto pm = Application::get ().getPresetManager ();
-  pm->onBankSelection (sigc::mem_fun (this, &PresetsLayout::onBankSelected));
+
+  pm->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &PresetsLayout::onPresetLoaded));
+  pm->getEditBuffer ()->onModificationStateChanged (
+      sigc::mem_fun (this, &PresetsLayout::onEditBufferModified));
+
+  pm->onBankSelection (
+      sigc::mem_fun (this, &PresetsLayout::onBankSelected));
+
   Application::get ().getSettings ()->getSetting<AutoLoadSelectedPreset> ()->onChange (
       sigc::mem_fun (this, &PresetsLayout::onAutoLoadSettingChanged));
-  pm->getEditBuffer ()->onModificationStateChanged (sigc::mem_fun (this, &PresetsLayout::onEditBufferModified));
+
 }
 
 PresetsLayout::~PresetsLayout ()
@@ -48,6 +56,10 @@ void PresetsLayout::onBankSelected (shared_ptr<PresetBank> bank)
 void PresetsLayout::onBankChanged ()
 {
   update ();
+}
+
+void PresetsLayout::onPresetLoaded() {
+  update();
 }
 
 void PresetsLayout::onAutoLoadSettingChanged (const Setting *s)
