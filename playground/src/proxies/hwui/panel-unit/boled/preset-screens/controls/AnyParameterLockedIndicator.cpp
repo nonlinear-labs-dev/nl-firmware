@@ -10,17 +10,16 @@ AnyParameterLockedIndicator::AnyParameterLockedIndicator(const Rect &pos) : Lock
   Application::get().getPresetManager()->getEditBuffer()->onLocksChanged(
       sigc::mem_fun(this, &AnyParameterLockedIndicator::onParameterGroupChanged)
   );
-
-  onParameterGroupChanged();
 }
 
 void AnyParameterLockedIndicator::onParameterGroupChanged() {
     auto anyParamLocked = false;
-    for(auto g: Application::get().getPresetManager()->getEditBuffer()->getParameterGroups())
-        if(g->isAnyParameterLocked()) {
-            anyParamLocked = true;
-            break;
-        }
+    for(auto g: Application::get().getPresetManager()->getEditBuffer()->getParameterGroups()) {
+      if(g->isAnyParameterLocked()) {
+        anyParamLocked = true;
+        break;
+      }
+    }
     setText(anyParamLocked ? "\ue20a" : "");
 }
 
