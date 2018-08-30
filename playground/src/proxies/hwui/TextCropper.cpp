@@ -20,9 +20,9 @@ void TextCropper::registerTests()
     testShortenStringIfNeccessary("Fo", 5, "..");
     testShortenStringIfNeccessary("Fo", 20, "Fo");
     testShortenStringIfNeccessary("Fooo", 20, "Fooo");
-    testShortenStringIfNeccessary("Foooo", 20, "Foo..");
+    testShortenStringIfNeccessary("Foooo", 20, "F..o");
     testShortenStringIfNeccessary("Foooo 2", 20, "F..2");
-    testShortenStringIfNeccessary("Foooo2", 20, "Fo..2");
+    testShortenStringIfNeccessary("Foooo2", 20, "F..2");
     testShortenStringIfNeccessary("ANANAS SANANA", 20, "A..A");
     testShortenStringIfNeccessary("ANANAS SANANA", 40, "AN..NA");
     testShortenStringIfNeccessary("ANANASSANANA 2", 60, "ANANASS..2");
@@ -51,15 +51,6 @@ ustring TextCropper::preserveEndShorten(const shared_ptr<Font> &font, const ustr
 
   if(font->getStringWidth("..") > maxWidth)
     return "..";
-
-  if(text.find(" ") == Glib::ustring::npos)
-  {
-    Glib::ustring ret;
-    for(int i = 0; i < text.length() && (font->getStringWidth(ret + "..") < maxWidth); i++) {
-      ret += text.at(static_cast<ustring::size_type>(i));
-    }
-    return ret + "..";
-  }
 
   auto spaceSplitString = spaceBasedCropping(text, font, maxWidth * 0.95);
   if(!spaceSplitString.empty())
