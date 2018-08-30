@@ -1,3 +1,4 @@
+#include <proxies/hwui/TextCropper.h>
 #include "BankNameLabel.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
@@ -28,15 +29,11 @@ void BankNameLabel::updateLabel(shared_ptr<PresetBank> newBank)
 
 Glib::ustring BankNameLabel::shortenStringIfNeccessary(shared_ptr<Font> font, const Glib::ustring &text) const
 {
+
   auto c = text;
   auto availableWidth = getPosition().getWidth() - 2 * getXOffset();
 
-  for(size_t len = text.length(); len > 0 && (font->getStringWidth(c) > availableWidth); len--)
-  {
-    c = text.substr(0, len) + "..";
-  }
-
-  return c;
+  return TextCropper::shortenStringIfNeccessary(font, text, availableWidth);
 }
 
 void BankNameLabel::setBackgroundColor(FrameBuffer &fb) const
