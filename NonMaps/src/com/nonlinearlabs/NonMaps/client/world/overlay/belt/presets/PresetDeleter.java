@@ -4,13 +4,14 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.GWTDialog;
 
 public class PresetDeleter extends GWTDialog {
 
 
-    static PresetDeleter instance = null;
+    public static PresetDeleter instance = null;
     private Button m_no, m_yes, m_cancel;
     private Preset thePreset;
     private String presetCSV;
@@ -62,6 +63,13 @@ public class PresetDeleter extends GWTDialog {
         commit();
     }
 
+    public boolean isPresetInSelection(Preset p) {
+        if(thePreset == p)
+            return true;
+
+        return presetCSV.contains(p.getUUID());
+    }
+
     private void cancel() {
         commit();
     }
@@ -82,6 +90,9 @@ public class PresetDeleter extends GWTDialog {
 
     @Override
     protected void commit() {
+        thePreset = null;
+        presetCSV = "";
+        NonMaps.get().getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
         hide();
     }
 }

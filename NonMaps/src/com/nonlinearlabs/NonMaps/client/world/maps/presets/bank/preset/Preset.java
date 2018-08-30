@@ -29,6 +29,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContextMenu;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetDeleter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
@@ -191,6 +192,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		StoreSelectMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreSelectMode();
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
+
+		if(PresetDeleter.instance != null)
+			if(PresetDeleter.instance.isPresetInSelection(this))
+				return true;
 
 		return uuid.equals(getParent().getPresetList().getSelectedPreset());
 	}
