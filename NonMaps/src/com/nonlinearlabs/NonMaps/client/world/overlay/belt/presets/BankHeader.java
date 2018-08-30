@@ -99,7 +99,7 @@ class BankHeader extends OverlayLayout {
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
 
-		double border = getSpaceBetweenChildren();
+		double border = getSpaceBetweenChildren() * 1.5;
 		prev.doLayout(0, 0, h, h);
 		next.doLayout(w - h, 0, h, h);
 		double titleLeft = prev.getRelativePosition().getRight() + 0.5 + border;
