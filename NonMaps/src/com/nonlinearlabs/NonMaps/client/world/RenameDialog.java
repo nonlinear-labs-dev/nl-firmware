@@ -73,30 +73,18 @@ public class RenameDialog extends DialogBox {
 		panel.add(nameField);
 
 		Button ok = new Button("OK");
-		ok.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				commit();
-			}
-		});
+		ok.addClickHandler(event -> commit());
 
 		Button cancel = new Button("Cancel");
-		cancel.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				cancel();
-			}
-		});
+		cancel.addClickHandler(event -> cancel());
 
 		panel.add(ok);
 		panel.add(cancel);
 		setWidget(panel);
 
-		Scheduler.get().scheduleFinally(new Command() {
-			public void execute() {
-				nameField.selectAll();
-				nameField.setFocus(true);
-			}
+		Scheduler.get().scheduleFinally((Command) () -> {
+			nameField.selectAll();
+			nameField.setFocus(true);
 		});
 	}
 
