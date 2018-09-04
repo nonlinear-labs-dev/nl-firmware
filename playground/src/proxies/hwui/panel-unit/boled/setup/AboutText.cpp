@@ -6,9 +6,9 @@ AboutText::AboutText () :
     super ("")
 {
   setText("Development:\nStephan Schmitt, Daniel Tzschentke, Simone Fabbri, "
-      "Henry Högelow, Matthias Seeber, Pascal Hürst, Tino Meinert, "
-      "Justus Scheil, Gabriel Mulzer, Mike Daliot, Nemanja Nikodijevic, "
-      "Ulrich Wappler, Anton Schmied, Brian Smith, Klaus Strohhäcker, Paul Schulz",
+      "Henry Högelow, Matthias Seeber, Pascal Hürst, Justus Scheil, "
+      "Klaus Strohhäcker, Tino Meinert, Anton Schmied, Gabriel Mulzer, "
+      "Nemanja Nikodijevic, Mike Daliot, Ulrich Wappler",
       FrameBuffer::Colors::C255);
 }
 
