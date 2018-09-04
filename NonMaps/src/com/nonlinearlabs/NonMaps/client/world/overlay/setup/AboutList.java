@@ -12,7 +12,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.TextSplitter;
 public class AboutList extends OverlayControl {
 
 	private TextSplitter splitter;
-	private String text = "Development:\n\nStephan Schmitt, Daniel Tzschentke, Simone Fabbri, Henry Högelow, Matthias Seeber, Pascal Hürst, Tino Meinert, Gabriel Mulzer, Mike Daliot, Justus Scheil, Nemanja Nikodijevic, Ulrich Wappler, Anton Schmied, Brian Smith, Klaus Strohhäcker, Paul Schulz";
+	private String text = "Development:\n\nStephan Schmitt, Daniel Tzschentke, Simone Fabbri, Henry Högelow, Matthias Seeber, Pascal Hürst, Justus Scheil, Klaus Strohhäcker, Tino Meinert, Anton Schmied, Gabriel Mulzer, Nemanja Nikodijevic, Mike Daliot, Ulrich Wappler";
 
 	public AboutList(AboutSettingsPage aboutSettingsPage) {
 		super(aboutSettingsPage);
