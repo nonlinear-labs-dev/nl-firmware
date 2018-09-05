@@ -148,12 +148,10 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 					if (presetRect.contains(dragPosition)) {
 						drawDropIndicator(ctx, presetRect);
 						return;
-					} else if (presetRect.contains(
-							new Position(dragPosition.getX(), dragPosition.getY() + toYPixels(getPadding())))) {
+					} else if (presetRect.contains(new Position(dragPosition.getX(), dragPosition.getY() + toYPixels(getPadding())))) {
 						drawDropIndicator(ctx, presetRect);
 						return;
-					} else if (presetRect.contains(
-							new Position(dragPosition.getX(), dragPosition.getY() - toYPixels(getPadding())))) {
+					} else if (presetRect.contains(new Position(dragPosition.getX(), dragPosition.getY() - toYPixels(getPadding())))) {
 						drawDropIndicator(ctx, presetRect);
 						return;
 					}
@@ -167,7 +165,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	public double getVisibleAttachArea() {
-		return 10;
+		return 20;
 	}
 
 	private void drawDropIndicator(Context2d ctx, Rect presetRect) {
@@ -189,8 +187,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	}
 
 	private void drawDropIndicator(Context2d ctx, Rect rect, double yOffset, double heightFactor) {
-		ctx.fillRect(rect.getLeft(), rect.getTop() + rect.getHeight() * yOffset, rect.getWidth(),
-				rect.getHeight() * heightFactor);
+		ctx.fillRect(rect.getLeft(), rect.getTop() + rect.getHeight() * yOffset, rect.getWidth(), rect.getHeight() * heightFactor);
 	}
 
 	@Override
@@ -207,8 +204,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 				if (c instanceof IPreset) {
 					Rect presetRect = c.getPixRect();
 
-					if (presetRect.contains(pos)
-							|| presetRect.contains(new Position(pos.getX(), pos.getY() - toYPixels(getPadding())))
+					if (presetRect.contains(pos) || presetRect.contains(new Position(pos.getX(), pos.getY() - toYPixels(getPadding())))
 							|| presetRect.contains(new Position(pos.getX(), pos.getY() + toYPixels(getPadding())))) {
 
 						currentDropAction = getDropAction(pos, dragProxy);
@@ -506,8 +502,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	protected DropAction getDropAction(Position pos, DragProxy draggedElement) {
 
-		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting()
-				.isEnabled()) {
+		if (getNonMaps().getNonLinearWorld().getViewport().getOverlay().getSetup().getPresetDragDropSetting().isEnabled()) {
 
 			Control origin = draggedElement.getOrigin();
 
@@ -789,16 +784,16 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	public void layoutSlaves() {
 		if (slaveBottom != null) {
-			NonPosition posYFin = new NonPosition(getNonPosition().getLeft(),
-					getNonPosition().getBottom() + getVisibleAttachArea() - getAttachArea());
+			NonPosition posYFin = new NonPosition(getNonPosition().getLeft(), getNonPosition().getBottom() + getVisibleAttachArea()
+					- getAttachArea());
 			posYFin.snapTo(PresetManager.getSnapGridResolution());
 			slaveBottom.moveTo(posYFin);
 			slaveBottom.layoutSlaves();
 		}
 
 		if (slaveRight != null) {
-			NonPosition posXFin = new NonPosition(
-					getNonPosition().getRight() + getVisibleAttachArea() - getAttachArea(), getNonPosition().getTop());
+			NonPosition posXFin = new NonPosition(getNonPosition().getRight() + getVisibleAttachArea() - getAttachArea(), getNonPosition()
+					.getTop());
 			posXFin.snapTo(PresetManager.getSnapGridResolution());
 			slaveRight.moveTo(posXFin);
 			slaveRight.layoutSlaves();
