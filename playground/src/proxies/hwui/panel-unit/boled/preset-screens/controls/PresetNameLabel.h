@@ -23,14 +23,5 @@ class PresetNameLabel : public PresetLabel
     int getXOffset () const override;
     int getRightMargin() const override;
     Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const override;
-
-  Glib::ustring preserveEndShorten(shared_ptr<Font> font, const ustring &text) const;
-
-  Glib::ustring edgeCases(int min, const ustring::size_type len, const ustring &ustring) const;
-
-  Glib::ustring
-  spaceBasedCropping(const ustring &text, shared_ptr<Font> font, double maxWidth) const;
-
-  Glib::ustring rigidSplit(const shared_ptr<Font> &font, const ustring &text, int maxWidth) const;
 };
 

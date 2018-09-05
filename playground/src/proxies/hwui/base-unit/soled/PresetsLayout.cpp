@@ -12,8 +12,18 @@
 #include <presets/PresetBank.h>
 #include <device-settings/Settings.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
+#include <proxies/hwui/TextCropper.h>
 #include "SoledHeader.h"
 #include "DirectLoadIndicator.h"
+
+class ShortenLabel : public Label {
+public:
+  ShortenLabel(const ustring &text, const Rect &pos) : Label(text, pos) {}
+protected:
+  Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const override {
+    return TextCropper::shortenStringIfNeccessary(font, text, getPosition().getWidth());
+  }
+};
 
 PresetsLayout::PresetsLayout () :
     super (Application::get ().getHWUI ()->getBaseUnit ().getPlayPanel ().getSOLED ())
@@ -22,7 +32,7 @@ PresetsLayout::PresetsLayout () :
 
   addControl (new SoledHeader ("Preset", Rect (0, 0, 31, headlineHeight + 1)));
   m_number = addControl (new LabelRegular8 ("", Rect (32, 1, 64, headlineHeight - 1)));
-  m_name = addControl (new Label ("", Rect (0, headlineHeight + 2, 128, 32 - headlineHeight - 2)));
+  m_name = addControl (new ShortenLabel ("", Rect (0, headlineHeight + 2, 128, 32 - headlineHeight - 2)));
   m_directLoad = addControl (new DirectLoadIndicator (Rect (96, 0, 32, headlineHeight)));
   addControl(new DottedLine(Rect(31, headlineHeight, 96, 1)));
 

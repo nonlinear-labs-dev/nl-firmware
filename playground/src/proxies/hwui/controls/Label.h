@@ -17,12 +17,11 @@ class Label : public Control
     virtual bool setText (const Glib::ustring &text, int suffixLength = 0);
     virtual Glib::ustring getText () const;
 
+    virtual shared_ptr<Font> getFont () const;
     void setFontColor (FrameBuffer::Colors fontColor);
-
   protected:
     virtual Font::Justification getJustification () const;
     virtual int getFontHeight () const;
-    virtual shared_ptr<Font> getFont () const;
 
     virtual Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const;
 
