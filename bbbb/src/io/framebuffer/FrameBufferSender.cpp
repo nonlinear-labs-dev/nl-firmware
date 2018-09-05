@@ -46,5 +46,6 @@ void FrameBufferSender::send(tMessage msg)
   gsize numBytes = 0;
   auto bytes = reinterpret_cast<const int8_t*>(msg->get_data(numBytes));
   memcpy (m_frontBuffer, bytes, numBytes);
+  msync(m_frontBuffer, numBytes, MS_ASYNC);
 #endif
 }
