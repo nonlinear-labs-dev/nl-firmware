@@ -9,3 +9,7 @@ StaticKnubbelSlider::StaticKnubbelSlider(Parameter *parameter, Rect pos)
 void StaticKnubbelSlider::onParamValueChanged (const Parameter* param)
 {
 }
+
+void StaticKnubbelSlider::setValueExplicit(tControlPositionValue value) {
+  setValue(value, getParameter()->isBiPolar());
+}

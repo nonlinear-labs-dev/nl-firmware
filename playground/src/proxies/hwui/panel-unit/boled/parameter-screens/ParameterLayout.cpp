@@ -15,103 +15,108 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 
-ParameterLayout2::ParameterLayout2 () :
-    super (Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
+ParameterLayout2::ParameterLayout2() :
+    super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
-  addControl (new ModuleCaption (Rect (0, 0, 64, 13)));
-  addControl (new ParameterNameLabel (Rect (BIG_SLIDER_X, 8, 107, 11)));
-  addControl (new LockedIndicator (Rect (66, 1, 10, 11)));
+  addControl(new ModuleCaption(Rect(0, 0, 64, 13)));
+  addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X, 8, 107, 11)));
+  addControl(new LockedIndicator(Rect(66, 1, 10, 11)));
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
 }
 
-Parameter * ParameterLayout2::getCurrentParameter () const
+Parameter * ParameterLayout2::getCurrentParameter() const
 {
-  return Application::get ().getPresetManager ()->getEditBuffer ()->getSelected ();
+  return Application::get().getPresetManager()->getEditBuffer()->getSelected();
 }
 
-Parameter * ParameterLayout2::getCurrentEditParameter () const
+Parameter * ParameterLayout2::getCurrentEditParameter() const
 {
-  return getCurrentParameter ();
+  return getCurrentParameter();
 }
 
-bool ParameterLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
+bool ParameterLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  if(i == BUTTON_SHIFT) {
-    if(down) {
+  if(i == BUTTON_SHIFT)
+  {
+    if(down)
+    {
       handlePresetValueRecall();
     }
     return true;
   }
 
-  if (down)
+  if(down)
   {
-    switch (i)
+    switch(i)
     {
-    case BUTTON_PRESET:
-      Application::get ().getHWUI ()->undoableSetFocusAndMode (FocusAndMode (UIFocus::Presets, UIMode::Select));
-      return true;
+      case BUTTON_PRESET:
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+        return true;
 
-    case BUTTON_STORE:
-      Application::get ().getHWUI ()->undoableSetFocusAndMode (FocusAndMode (UIFocus::Presets, UIMode::Store));
-      return true;
+      case BUTTON_STORE:
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
+        return true;
 
-    case BUTTON_INFO:
-      Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Info);
-      return true;
+      case BUTTON_INFO:
+        Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Info);
+        return true;
 
-    case BUTTON_DEFAULT:
-      setDefault ();
-      return true;
+      case BUTTON_DEFAULT:
+        setDefault();
+        return true;
 
-    default:
-      break;
+      default:
+        break;
     }
   }
 
-  return super::onButton (i, down, modifiers);
+  return super::onButton(i, down, modifiers);
 }
 
-void ParameterLayout2::setDefault ()
+void ParameterLayout2::setDefault()
 {
-  if (auto p = getCurrentEditParameter ())
-    p->setDefaultFromHwui ();
+  if(auto p = getCurrentEditParameter())
+    p->setDefaultFromHwui();
 }
 
-bool ParameterLayout2::onRotary (int inc, ButtonModifiers modifiers)
+bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
-  if (auto p = getCurrentEditParameter ())
+  if(auto p = getCurrentEditParameter())
   {
-    auto scope = p->getUndoScope ().startContinuousTransaction (p, "Set '%0'", p->getGroupAndParameterName ());
-    p->stepCPFromHwui (scope->getTransaction (), inc, modifiers);
+    auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+    p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
     return true;
   }
 
-  return super::onRotary (inc, modifiers);
+  return super::onRotary(inc, modifiers);
 }
 
-void ParameterLayout2::handlePresetValueRecall() {
-  if(getCurrentEditParameter()->isChangedFromLoaded()) {
+void ParameterLayout2::handlePresetValueRecall()
+{
+  if(getCurrentEditParameter()->isChangedFromLoaded())
+  {
     getOLEDProxy().setOverlay(new ParameterRecallLayout2());
   }
 }
 
-ParameterSelectLayout2::ParameterSelectLayout2 () :
-    super ()
+ParameterSelectLayout2::ParameterSelectLayout2() :
+    super()
 {
 }
 
-void ParameterSelectLayout2::init ()
+void ParameterSelectLayout2::init()
 {
-  super::init ();
-  if(auto c = createCarousel (Rect (195, 0, 58, 64))) {
-      setCarousel(c);
-      m_carousel->setHighlight (true);
+  super::init();
+  if(auto c = createCarousel(Rect(195, 0, 58, 64)))
+  {
+    setCarousel(c);
+    m_carousel->setHighlight(true);
   }
 }
 
-Carousel *ParameterSelectLayout2::createCarousel (const Rect &rect)
+Carousel *ParameterSelectLayout2::createCarousel(const Rect &rect)
 {
-  return new ParameterCarousel (rect);
+  return new ParameterCarousel(rect);
 }
 
 void ParameterSelectLayout2::setCarousel(Carousel *c)
@@ -119,7 +124,7 @@ void ParameterSelectLayout2::setCarousel(Carousel *c)
   if(m_carousel)
     remove(m_carousel);
 
-  m_carousel = addControl (c);
+  m_carousel = addControl(c);
 }
 
 Carousel *ParameterSelectLayout2::getCarousel()
@@ -127,9 +132,9 @@ Carousel *ParameterSelectLayout2::getCarousel()
   return m_carousel;
 }
 
-bool ParameterSelectLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
+bool ParameterSelectLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  if (down)
+  if(down)
   {
     switch(i)
     {
@@ -138,140 +143,211 @@ bool ParameterSelectLayout2::onButton (int i, bool down, ButtonModifiers modifie
         {
           if(modifiers[SHIFT] == 1)
           {
-            m_carousel->antiTurn ();
+            m_carousel->antiTurn();
           }
           else
           {
-            m_carousel->turn ();
+            m_carousel->turn();
           }
         }
 
         return true;
 
       case BUTTON_EDIT:
-        Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Edit);
+        Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Edit);
         return true;
     }
   }
 
-  return super::onButton (i, down, modifiers);
+  return super::onButton(i, down, modifiers);
 }
 
-ParameterEditLayout2::ParameterEditLayout2 () :
-    super ()
+ParameterEditLayout2::ParameterEditLayout2() :
+    super()
 {
-  addControl (new InvertedLabel ("Edit", Rect (8, 26, 48, 12)))->setHighlight (true);
+  addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
 }
 
-ParameterEditLayout2::~ParameterEditLayout2 ()
+ParameterEditLayout2::~ParameterEditLayout2()
 {
 }
 
-void ParameterEditLayout2::init ()
+void ParameterEditLayout2::init()
 {
-  super::init ();
+  super::init();
 
-  if ((m_menu = createMenu (Rect (195, 1, 58, 62))))
-    addControl (m_menu);
+  if((m_menu = createMenu(Rect(195, 1, 58, 62))))
+    addControl(m_menu);
 }
 
-ButtonMenu *ParameterEditLayout2::getMenu ()
+ButtonMenu *ParameterEditLayout2::getMenu()
 {
   return m_menu;
 }
 
-bool ParameterEditLayout2::onButton (int i, bool down, ButtonModifiers modifiers)
+bool ParameterEditLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  if (down)
+  if(down)
   {
-    if (m_menu)
+    if(m_menu)
     {
-      if (BUTTON_D == i)
+      if(BUTTON_D == i)
       {
         if(modifiers[SHIFT] == 1)
           m_menu->antiToggle();
         else
-          m_menu->toggle ();
+          m_menu->toggle();
         return true;
       }
-      if (BUTTON_ENTER == i)
+      if(BUTTON_ENTER == i)
       {
-        m_menu->doAction ();
+        m_menu->doAction();
         return true;
       }
     }
 
-    if (BUTTON_EDIT == i)
+    if(BUTTON_EDIT == i)
     {
-      Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Select);
+      Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select);
       return true;
     }
   }
 
-  return super::onButton (i, down, modifiers);
+  return super::onButton(i, down, modifiers);
 }
 
-ParameterRecallLayout2::ParameterRecallLayout2() : super() {
-  addControl(new Button("Recall", BUTTON_A));
-  addControl(new Button("", BUTTON_B));
-  addControl(new Button("", BUTTON_C));
-  addControl(new Button("", BUTTON_D));
+ParameterRecallLayout2::ParameterRecallLayout2() :
+    super()
+{
+  m_buttonA = addControl(new Button("", BUTTON_A));
+  m_buttonB = addControl(new Button("", BUTTON_B));
+  m_buttonC = addControl(new Button("", BUTTON_C));
+  m_buttonD = addControl(new Button("", BUTTON_D));
 
-  if (auto p = getCurrentParameter ())
+  if(auto p = getCurrentParameter())
   {
-    if(auto originalParam = p->getOriginalParameter()) {
-      if (p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-        addControl (new StaticKnubbelSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-
+    if(auto originalParam = p->getOriginalParameter())
+    {
+      if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
+        m_slider = addControl(new StaticKnubbelSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
       else
-        addControl (new StaticBarSlider (originalParam ,Rect (BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        m_slider = addControl(new StaticBarSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
 
-      addControl (new Label (originalParam->getDisplayString(), Rect (90, 33, 76, 12)));
+      m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
+      m_rightValue = addControl(new Label(originalParam->getDisplayString(), Rect(131, 35, 58, 11)));
     }
   }
 
+  m_recallValue = getCurrentParameter()->getControlPositionValue();
+
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged));
+
+  updateUI(false);
 }
 
-void ParameterRecallLayout2::init() {
-  highlight<StaticKnubbelSlider>();
-  highlight<StaticBarSlider>();
-  highlight<Label>();
-  lowlight<Button>();
+void ParameterRecallLayout2::init()
+{
 }
 
-bool ParameterRecallLayout2::onButton (int i, bool down, ButtonModifiers modifiers) {
+bool ParameterRecallLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
+{
   auto up = !down;
 
-  if(down && i == BUTTON_A) {
-      doRecall();
-      return true;
-  }
-  else if(up && BUTTON_SHIFT == i) {
-          getOLEDProxy().resetOverlay();
-          return true;
-  }
+  if(down && m_paramLikeInPreset && i == BUTTON_B)
+    undoRecall();
+  else if(down && !m_paramLikeInPreset && i == BUTTON_C)
+    doRecall();
+
+  if(i == BUTTON_C || i == BUTTON_B)
+    return true;
+
+  getOLEDProxy().resetOverlay();
   return false;
 }
 
-bool ParameterRecallLayout2::onRotary (int inc, ButtonModifiers modifiers) {
+bool ParameterRecallLayout2::onRotary(int inc, ButtonModifiers modifiers)
+{
   getOLEDProxy().resetOverlay();
-  return true;
+  return false;
 }
 
-
-void ParameterRecallLayout2::doRecall() {
+void ParameterRecallLayout2::doRecall()
+{
   auto& scope = Application::get().getPresetManager()->getUndoScope();
   auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getCurrentParameter()->getLongName());
   auto transaction = transactionScope->getTransaction();
-  if(auto curr = getCurrentParameter()) {
-    if(auto original = curr->getOriginalParameter()) {
+  if(auto curr = getCurrentParameter())
+  {
+    if(auto original = curr->getOriginalParameter())
+    {
+      m_recallString = curr->getDisplayString();
+      m_recallValue = curr->getControlPositionValue();
       curr->setCPFromHwui(transaction, original->getControlPositionValue());
-      getOLEDProxy().resetOverlay();
+      updateUI(true);
     }
   }
 }
 
-ButtonMenu *ParameterRecallLayout2::createMenu (const Rect &rect) {
+void ParameterRecallLayout2::undoRecall()
+{
+  auto& scope = Application::get().getPresetManager()->getUndoScope();
+  auto transactionScope = scope.startTransaction("Recall %0 value from Editbuffer", getCurrentParameter()->getLongName());
+  auto transaction = transactionScope->getTransaction();
+  if(auto curr = getCurrentParameter())
+  {
+    curr->setCPFromHwui(transaction, m_recallValue);
+    updateUI(false);
+  }
+}
+
+ButtonMenu *ParameterRecallLayout2::createMenu(const Rect &rect)
+{
   return nullptr;
+}
+
+void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
+{
+  m_paramLikeInPreset = paramLikeInPreset;
+
+  if(auto p = getCurrentParameter())
+  {
+    if(auto originalParam = p->getOriginalParameter())
+    {
+      if(paramLikeInPreset)
+      {
+        m_rightValue->setText(p->getDisplayString());
+        m_leftValue->setText(m_recallString);
+        m_slider->setValue(p->getControlPositionValue(), p->isBiPolar());
+        m_rightValue->setHighlight(true);
+        m_leftValue->setHighlight(false);
+        m_buttonB->setText("Recall");
+        m_buttonC->setText("");
+      }
+      else
+      {
+        m_leftValue->setText(p->getDisplayString());
+        m_rightValue->setText(originalParam->getDisplayString());
+        m_slider->setValue(m_recallValue, p->isBiPolar());
+        m_leftValue->setHighlight(true);
+        m_rightValue->setHighlight(false);
+        m_buttonC->setText("Recall");
+        m_buttonB->setText("");
+      }
+    }
+  }
+}
+
+void ParameterRecallLayout2::onParameterSelectionChanged(Parameter *oldParam, Parameter *newParam)
+{
+  m_paramConnection.disconnect();
+
+  if(newParam)
+    m_paramConnection = newParam->onParameterChanged(sigc::mem_fun(this, &ParameterRecallLayout2::onParameterChanged));
+}
+
+void ParameterRecallLayout2::onParameterChanged(const Parameter *)
+{
+  updateUI(!getCurrentEditParameter()->isChangedFromLoaded());
 }
 
