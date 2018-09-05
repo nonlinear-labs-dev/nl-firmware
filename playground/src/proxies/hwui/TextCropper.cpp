@@ -17,6 +17,10 @@ void TextCropper::registerTests()
       g_assert_cmpstr(shortened.c_str(), ==, expected.c_str());
     };
 
+    testShortenStringIfNeccessary("", 5, "");
+    testShortenStringIfNeccessary("", 0, "");
+    testShortenStringIfNeccessary("", 100000, "");
+
     testShortenStringIfNeccessary("Fo", 5, "..");
     testShortenStringIfNeccessary("Fo", 20, "Fo");
     testShortenStringIfNeccessary("Fooo", 20, "Fooo");
@@ -25,10 +29,11 @@ void TextCropper::registerTests()
     testShortenStringIfNeccessary("Foooo2", 20, "F..2");
     testShortenStringIfNeccessary("ANANAS SANANA", 20, "A..A");
     testShortenStringIfNeccessary("ANANAS SANANA", 40, "AN..NA");
+    testShortenStringIfNeccessary("ANANAS SANANA 4", 40, "ANAN..4");
+    testShortenStringIfNeccessary("ANANAS SANANA 4 5", 40, "ANAN..5");
     testShortenStringIfNeccessary("ANANASSANANA 2", 60, "ANANASS..2");
     testShortenStringIfNeccessary("HALLOHALLOHALLOHALLOHALLO 78", 128, "HALLOHALLOHALLOHAL..78");
-
-
+    testShortenStringIfNeccessary("HALLO HALLO HALLO HALLO HALLO 78", 128, "HALLO HALLO HALLO H..78");
   });
 };
 
