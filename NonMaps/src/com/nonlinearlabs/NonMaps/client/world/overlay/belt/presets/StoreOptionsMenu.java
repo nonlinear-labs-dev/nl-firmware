@@ -76,7 +76,16 @@ public class StoreOptionsMenu extends SVGImage {
 
 	private Control openContextMenu(Position pos) {
 		Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-		return o.setContextMenu(pos, new StoreOptionsContextMenu(o));
+
+		if(o.getContextMenu() instanceof StoreOptionsContextMenu) {
+			o.removeExistingContextMenus();
+			return this;
+		}
+
+		pos = getPixRect().getLeftTop();
+		StoreOptionsContextMenu socm = new StoreOptionsContextMenu(o);
+		pos.moveBy(0, -socm.getDesiredHeight());
+		return o.setContextMenu(pos, socm);
 	}
 
 	public void update(Node settingsNode) {
