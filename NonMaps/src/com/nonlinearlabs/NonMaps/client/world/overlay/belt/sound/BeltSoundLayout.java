@@ -17,8 +17,7 @@ public class BeltSoundLayout extends OverlayLayout {
 		addChild(new InitSoundArea(this));
 		addChild(randomize = new RandomizeSoundArea(this));
 		addChild(transitionTime = new TransitionTimeArea(this));
-		addChild(new ConvertSoundArea(this));
-		lock = addChild(new LockSymbol(this));
+		addChild(lock = new LockSymbol(this));
 	}
 
 	@Override
@@ -26,13 +25,13 @@ public class BeltSoundLayout extends OverlayLayout {
 
 		super.doLayout(x, y, w, h);
 
-		int numAreas = 4;
+		int numAreas = 3;
 
 		double margin = getButtonDimension();
 		double margins = (numAreas + 1) * margin;
 
 		double widthPerArea = (w - margins) / (numAreas);
-		double maxWidthPerArea = Millimeter.toPixels(80);
+		double maxWidthPerArea = Millimeter.toPixels(90);
 
 		double xPos = margin;
 
