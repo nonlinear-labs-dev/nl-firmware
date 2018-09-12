@@ -52,7 +52,7 @@ public class BankInfoDialog extends GWTDialog {
 	private BankInfoDialog() {
 		RootPanel.get().add(this);
 
-		getElement().addClassName("preset-info-dialog");
+		getElement().addClassName("bank-info-dialog");
 
 		initalShow();
 

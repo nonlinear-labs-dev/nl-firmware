@@ -246,7 +246,6 @@ select {
 }
 
 .gwt-DialogBox .dialogMiddleCenter {
-	padding: 6px;
 	background: #202020;
 	border: 0.25mm solid rgb(102, 102, 102);
 	border-radius: 1mm;
