@@ -1867,4 +1867,26 @@ button {
 	height: 0;
 }
 
+.preset-info-dialog td:nth-of-type(2) {
+    display:  flex;
+}
 
+.preset-info-dialog table {
+    width: 100%;
+}
+
+.preset-info-dialog td:nth-of-type(2) > * {
+    flex-grow: 1;
+}
+
+.preset-info-dialog .content {
+    min-width: 30em;
+}
+
+.preset-info-dialog .tag-div {
+    display: flex;
+    align-items:  center;
+    justify-content:  space-between;
+    padding-left:  1em;
+    padding-right: 1em;
+}
