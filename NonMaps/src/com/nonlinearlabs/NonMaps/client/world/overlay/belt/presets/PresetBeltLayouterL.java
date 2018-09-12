@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public class PresetBeltLayouterL extends PresetBeltLayouter {
@@ -42,7 +41,7 @@ public class PresetBeltLayouterL extends PresetBeltLayouter {
 		layout.bank.doLayout(left, 0, bankWidth, h);
 		right = layout.bank.getRelativePosition().getRight() + margin;
 
-		layout.load.getRelativePosition().moveTo(right + margin, layout.load.getRelativePosition().getTop());
+		layout.load.getRelativePosition().moveTo(right, layout.load.getRelativePosition().getTop());
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 

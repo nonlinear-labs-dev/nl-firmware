@@ -40,7 +40,7 @@ public class PresetBeltLayouterM extends PresetBeltLayouter {
 
 		right = layout.bank.getRelativePosition().getRight() + margin;
 
-		layout.load.getRelativePosition().moveTo(right + margin, layout.load.getRelativePosition().getTop());
+		layout.load.getRelativePosition().moveTo(right, layout.load.getRelativePosition().getTop());
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 
