@@ -133,7 +133,7 @@ public class PresetContextMenu extends ContextMenu {
 			});
 		}
 
-		addChild(new ContextMenuItem(this, "Color Tag >") {
+		addChild(new ContextMenuItem(this, "Color Tag  \uE01A") {
 			@Override
 			public Control click(Position eventPosition) {
 				Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
