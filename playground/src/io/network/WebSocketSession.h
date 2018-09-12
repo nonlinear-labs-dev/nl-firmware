@@ -21,6 +21,8 @@ class WebSocketSession
     WebSocketSession();
     virtual ~WebSocketSession();
 
+    void startListening();
+
     using tMessage = Glib::RefPtr<Glib::Bytes>;
 
     void sendMessage(Domain d, tMessage msg);
@@ -53,5 +55,6 @@ class WebSocketSession
     std::unique_ptr<ContextBoundMessageQueue> m_defaultContextQueue;
     Glib::RefPtr<Glib::MainLoop> m_messageLoop;
     std::thread m_contextThread;
+    bool m_isListenening = false;
 };
 

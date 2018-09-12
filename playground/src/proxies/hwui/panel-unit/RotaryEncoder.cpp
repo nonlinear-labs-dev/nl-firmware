@@ -8,8 +8,8 @@
 
 static TestDriver<RotaryEncoder> tester;
 
-RotaryEncoder::RotaryEncoder() :
-    m_throttler(chrono::milliseconds(25))
+RotaryEncoder::RotaryEncoder()
+    : m_throttler(chrono::milliseconds(10))
 {
   Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Rotary,
       sigc::mem_fun(this, &RotaryEncoder::onMessage));

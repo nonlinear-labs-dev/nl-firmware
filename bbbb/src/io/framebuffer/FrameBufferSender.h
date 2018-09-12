@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tools/Throttler.h>
 #include <io/Sender.h>
 #include <stddef.h>
 #include <linux/fb.h>
@@ -18,6 +19,8 @@ class FrameBufferSender : public Sender
 
   private:
     using tPixel = uint8_t;
+
+    Throttler m_throttler;
     int m_fd = -1;
     size_t m_buffersize = 0;
     tPixel *m_frontBuffer = nullptr;

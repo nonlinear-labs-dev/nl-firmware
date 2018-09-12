@@ -64,6 +64,8 @@ Application::Application(int numArgs, char **argv) :
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
   runWatchDog();
 
+  m_websocketSession->startListening();
+
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);
 
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);

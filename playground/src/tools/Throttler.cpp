@@ -17,6 +17,11 @@ void Throttler::doTask (Throttler::Task && task)
   }
 }
 
+bool Throttler::isPending() const
+{
+  return m_expiration.isPending();
+}
+
 void Throttler::delayedCallback()
 {
   Task t;

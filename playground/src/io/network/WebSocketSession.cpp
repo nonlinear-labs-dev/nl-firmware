@@ -3,16 +3,15 @@
 #include <Application.h>
 #include <Options.h>
 #include <netinet/tcp.h>
+
 using namespace std::chrono_literals;
 
-
-
-WebSocketSession::WebSocketSession() :
-    m_soupSession(soup_session_new(), g_object_unref),
-    m_message(nullptr, g_object_unref),
-    m_connection(nullptr, g_object_unref),
-    m_defaultContextQueue(std::make_unique<ContextBoundMessageQueue>(Glib::MainContext::get_default())),
-    m_contextThread(std::bind(&WebSocketSession::backgroundThread, this))
+WebSocketSession::WebSocketSession()
+    : m_soupSession(soup_session_new(), g_object_unref)
+    , m_message(nullptr, g_object_unref)
+    , m_connection(nullptr, g_object_unref)
+    , m_defaultContextQueue(std::make_unique<ContextBoundMessageQueue>(Glib::MainContext::get_default()))
+    , m_contextThread(std::bind(&WebSocketSession::backgroundThread, this))
 {
 }
 
@@ -22,7 +21,13 @@ WebSocketSession::~WebSocketSession()
   m_contextThread.join();
 }
 
-void WebSocketSession::backgroundThread() {
+void WebSocketSession::startListening()
+{
+  m_isListenening = true;
+}
+
+void WebSocketSession::backgroundThread()
+{
   auto m = Glib::MainContext::create();
   this->m_backgroundContextQueue = std::make_unique<ContextBoundMessageQueue>(m);
   this->m_messageLoop = Glib::MainLoop::create(m);
@@ -74,8 +79,7 @@ void WebSocketSession::reconnect()
 
 void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
 {
-  g_signal_connect(connection, "message", G_CALLBACK (&WebSocketSession::receiveMessage), this);
-  //g_object_set(connection, "keepalive-interval", 5, nullptr);
+  g_signal_connect(connection, "message", G_CALLBACK(&WebSocketSession::receiveMessage), this);
   g_object_ref(connection);
 
   auto stream = soup_websocket_connection_get_io_stream(connection);
@@ -85,7 +89,7 @@ void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
   GSocket *socket = nullptr;
   g_object_get(outStream, "socket", &socket, nullptr);
 
-  auto ret = g_socket_set_option (socket, SOL_TCP, TCP_NODELAY, 1, &error);
+  auto ret = g_socket_set_option(socket, SOL_TCP, TCP_NODELAY, 1, &error);
 
   if(error)
   {
@@ -105,10 +109,10 @@ void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
 void WebSocketSession::sendMessage(Domain d, tMessage msg)
 {
   gsize len = 0;
-  if(auto data = reinterpret_cast<const int8_t*>(msg->get_data(len)))
+  if(auto data = reinterpret_cast<const int8_t *>(msg->get_data(len)))
   {
     int8_t cp[len + 1];
-    cp[0] = (int8_t)d;
+    cp[0] = (int8_t) d;
     std::copy(data, data + len, cp + 1);
     sendMessage(Glib::Bytes::create(cp, len + 1));
   }
@@ -117,14 +121,18 @@ void WebSocketSession::sendMessage(Domain d, tMessage msg)
 void WebSocketSession::sendMessage(tMessage msg)
 {
   m_backgroundContextQueue->pushMessage([=]() {
-    if (m_connection) {
+    if(m_connection)
+    {
       auto state = soup_websocket_connection_get_state(m_connection.get());
 
-      if (state == SOUP_WEBSOCKET_STATE_OPEN) {
+      if(state == SOUP_WEBSOCKET_STATE_OPEN)
+      {
         gsize len = 0;
         auto data = msg->get_data(len);
         soup_websocket_connection_send_binary(m_connection.get(), data, len);
-      } else {
+      }
+      else
+      {
         m_connection.reset();
         reconnect();
       }
@@ -132,15 +140,17 @@ void WebSocketSession::sendMessage(tMessage msg)
   });
 }
 
-void WebSocketSession::receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketSession *pThis)
+void WebSocketSession::receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message,
+                                      WebSocketSession *pThis)
 {
-  tMessage msg = Glib::wrap(message);
-  gsize len = 0;
-  auto data = reinterpret_cast<const uint8_t*>(msg->get_data(len));
-  Domain d = (Domain)(data[0]);
-  auto byteMessage = Glib::Bytes::create(data + 1, len - 1);
+  if(pThis->m_isListenening)
+  {
+    tMessage msg = Glib::wrap(message);
+    gsize len = 0;
+    auto data = reinterpret_cast<const uint8_t *>(msg->get_data(len));
+    Domain d = (Domain)(data[0]);
+    auto byteMessage = Glib::Bytes::create(data + 1, len - 1);
 
-  pThis->m_defaultContextQueue->pushMessage([=](){
-    pThis->m_onMessageReceived[d](byteMessage);
-  });
+    pThis->m_defaultContextQueue->pushMessage([=]() { pThis->m_onMessageReceived[d](byteMessage); });
+  }
 }

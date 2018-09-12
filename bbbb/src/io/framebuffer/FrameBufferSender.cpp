@@ -8,6 +8,7 @@
 #include <string.h>
 
 FrameBufferSender::FrameBufferSender()
+    : m_throttler(std::chrono::milliseconds(10))
 {
 #ifndef _DEVELOPMENT_PC
   m_fd = open("/dev/fb0", O_RDWR);
@@ -43,9 +44,11 @@ FrameBufferSender::~FrameBufferSender()
 void FrameBufferSender::send(tMessage msg)
 {
 #ifndef _DEVELOPMENT_PC
-  gsize numBytes = 0;
-  auto bytes = reinterpret_cast<const int8_t*>(msg->get_data(numBytes));
-  memcpy (m_frontBuffer, bytes, numBytes);
-  msync(m_frontBuffer, numBytes, MS_ASYNC);
+  m_throttler.doTask([=]() {
+    gsize numBytes = 0;
+    auto bytes = reinterpret_cast<const int8_t*>(msg->get_data(numBytes));
+    memcpy(m_frontBuffer, bytes, numBytes);
+    msync(m_frontBuffer, numBytes, MS_ASYNC);
+  });
 #endif
 }

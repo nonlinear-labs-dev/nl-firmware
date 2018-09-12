@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include <proxies/hwui/HWUIEnums.h>
+#include <tools/Throttler.h>
 #include <map>
 
 class OLEDProxy;
@@ -18,6 +19,7 @@ class Oleds
 
     void registerProxy(OLEDProxy *proxy);
     void syncRedraw();
+    void setDirty();
 
     tFont getFont (const Glib::ustring &name, int height);
     void deInit();
@@ -27,11 +29,10 @@ class Oleds
     Oleds (const Oleds& other);
     Oleds& operator= (const Oleds&);
 
-    bool regularRedraw ();
-
     typedef pair<Glib::ustring, int> tKey;
 
     list<OLEDProxy*> m_proxies;
     std::map<tKey, tFont> m_fonts;
+    Throttler m_throttler;
 };
 
