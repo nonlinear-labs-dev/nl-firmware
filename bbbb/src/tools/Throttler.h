@@ -1,19 +1,19 @@
 #pragma once
 
-#include "playground.h"
+#include "bbbb.h"
 #include "Expiration.h"
+#include <functional>
 
 class Throttler
 {
   public:
-    using Task = function<void () >;
+   using Task = std::function<void()>;
 
-    Throttler (Expiration::Duration maxDelay);
+   Throttler(Expiration::Duration maxDelay);
 
-    void doTask(Task&& task);
-    bool isPending() const;
+   void doTask(Task&& task);
 
-   private:
+  private:
     void delayedCallback();
 
     Expiration m_expiration;

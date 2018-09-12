@@ -11,12 +11,12 @@
 #include <proxies/hwui/buttons.h>
 #include "ButtonRepeat.h"
 
-DFBLayout::DFBLayout (OLEDProxy &oled) :
-    m_oled (oled)
+DFBLayout::DFBLayout(OLEDProxy &oled)
+    : m_oled(oled)
 {
 }
 
-DFBLayout::~DFBLayout ()
+DFBLayout::~DFBLayout()
 {
 }
 
@@ -25,42 +25,41 @@ OLEDProxy &DFBLayout::getOLEDProxy()
   return m_oled;
 }
 
-bool DFBLayout::redrawLayout ()
+bool DFBLayout::redrawLayout()
 {
-  bool doRedraw = m_clear || isDirty ();
+  bool doRedraw = m_clear || isDirty();
 
-  if (m_clear)
+  if(m_clear)
   {
     m_clear = false;
-    m_oled.clear ();
+    m_oled.clear();
   }
 
-  if (doRedraw)
-    return redraw (getFrameBuffer ());
+  if(doRedraw)
+    return redraw(getFrameBuffer());
 
   return doRedraw;
 }
 
-FrameBuffer &DFBLayout::getFrameBuffer ()
+FrameBuffer &DFBLayout::getFrameBuffer()
 {
-  return FrameBuffer::get ();
+  return FrameBuffer::get();
 }
 
-bool DFBLayout::onButton (int i, bool down, ButtonModifiers modifiers)
+bool DFBLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  if (i == BUTTON_INC || i == BUTTON_DEC)
+  if(i == BUTTON_INC || i == BUTTON_DEC)
   {
-    if (down)
+    if(down)
     {
-      installButtonRepeat ([ = ]()
-      {
-        int direction = (i == BUTTON_INC) ? 1 : - 1;
-        onRotary (direction, modifiers);
+      installButtonRepeat([=]() {
+        int direction = (i == BUTTON_INC) ? 1 : -1;
+        onRotary(direction, modifiers);
       });
     }
     else
     {
-      removeButtonRepeat ();
+      removeButtonRepeat();
     }
 
     return true;
@@ -69,28 +68,29 @@ bool DFBLayout::onButton (int i, bool down, ButtonModifiers modifiers)
   return false;
 }
 
-bool DFBLayout::onRotary (int inc, ButtonModifiers modifiers)
+bool DFBLayout::onRotary(int inc, ButtonModifiers modifiers)
 {
   return false;
 }
 
-void DFBLayout::setDirty ()
+void DFBLayout::setDirty()
 {
-  ControlOwner::setAllDirty ();
+  ControlOwner::setAllDirty();
   m_clear = true;
+  Oleds::get().setDirty();
 }
 
-void DFBLayout::installButtonRepeat (function<void ()> cb)
+void DFBLayout::installButtonRepeat(function<void()> cb)
 {
-  m_buttonRepeat.reset (new ButtonRepeat (cb));
+  m_buttonRepeat.reset(new ButtonRepeat(cb));
 }
 
-void DFBLayout::removeButtonRepeat ()
+void DFBLayout::removeButtonRepeat()
 {
-  m_buttonRepeat.reset ();
+  m_buttonRepeat.reset();
 }
 
-bool DFBLayout::isResolutionFine () const
+bool DFBLayout::isResolutionFine() const
 {
-  return Application::get ().getHWUI ()->isResolutionFine ();
+  return Application::get().getHWUI()->isResolutionFine();
 }

@@ -1,9 +1,8 @@
 #include "Throttler.h"
 
-
-Throttler::Throttler (Expiration::Duration maxDelay) :
-  m_maxDelay (maxDelay),
-  m_expiration (bind (&Throttler::delayedCallback, this))
+Throttler::Throttler(Expiration::Duration maxDelay)
+    : m_maxDelay(maxDelay)
+    , m_expiration(std::bind(&Throttler::delayedCallback, this))
 {
 }
 
@@ -15,11 +14,6 @@ void Throttler::doTask (Throttler::Task && task)
   {
     m_expiration.refresh (std::chrono::milliseconds (1));
   }
-}
-
-bool Throttler::isPending() const
-{
-  return m_expiration.isPending();
 }
 
 void Throttler::delayedCallback()
