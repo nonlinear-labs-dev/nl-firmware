@@ -32,7 +32,7 @@ public class MenuAreaBankButton extends SVGImage {
 			Bank bank = pm.findBank(bankUUID);
 			CombinedBankContextMenu cm = new CombinedBankContextMenu(o, bank);
 			Position p = getPixRect().getLeftTop();
-			p.moveBy(0, -cm.getDesiredHeight());
+			p.moveBy(3, -cm.getDesiredHeight() + 4);
 			return o.setContextMenu(p, cm);
 		}
 		return o.setContextMenu(getPixRect().getLeftTop(), new CombinedBankContextMenu(o, null));

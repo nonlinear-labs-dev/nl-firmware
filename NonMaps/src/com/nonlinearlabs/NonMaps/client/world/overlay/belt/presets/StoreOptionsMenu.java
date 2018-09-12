@@ -84,7 +84,7 @@ public class StoreOptionsMenu extends SVGImage {
 
 		pos = getPixRect().getLeftTop();
 		StoreOptionsContextMenu socm = new StoreOptionsContextMenu(o);
-		pos.moveBy(0, -socm.getDesiredHeight());
+		pos.moveBy(0, -socm.getDesiredHeight() - 2);
 		return o.setContextMenu(pos, socm);
 	}
 

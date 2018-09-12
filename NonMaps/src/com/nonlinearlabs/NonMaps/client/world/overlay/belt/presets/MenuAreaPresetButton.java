@@ -29,7 +29,7 @@ public class MenuAreaPresetButton extends SVGImage {
 		if (p != null) {
 			Position po = getPixRect().getLeftTop();
 			PresetContextMenu pm = new PresetContextMenu(o, p);
-			po.moveBy(0, -pm.getDesiredHeight());
+			po.moveBy(3, -pm.getDesiredHeight() + 4);
 			return o.setContextMenu(po, pm);
 		}
 		return super.click(pos);
