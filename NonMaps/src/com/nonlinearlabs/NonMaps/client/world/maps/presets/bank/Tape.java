@@ -39,7 +39,21 @@ public class Tape extends MapsControl {
 
 	@Override
 	public boolean isVisible() {
-		return isActiveEmptyTape() || isActiveInsertTape();
+		return (isActiveEmptyTape() || isActiveInsertTape());
+	}
+
+	private boolean currentDraggedBankNotInCluster() {
+		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
+
+		if(o.isCurrentlyDraggingATypeOf(Bank.class.getName())) {
+			for (DragProxy d : o.getDragProxies()) {
+				if(d.getOrigin() instanceof Bank) {
+					Bank b = (Bank) d.getOrigin();
+					return !b.hasSlaves() && b.getMaster() != null;
+				}
+			}
+		}
+		return false;
 	}
 
 	private boolean isActiveEmptyTape() {
@@ -112,8 +126,11 @@ public class Tape extends MapsControl {
 
 				if (r instanceof PresetManager || r instanceof Tape) {
 					boolean visible = super.isVisible();
+					Bank b = (Bank) d.getOrigin();
+					boolean bankIsNotInCluster = !b.isInCluster();
+
 					return visible && o.isCurrentlyDraggingATypeOf(Bank.class.getName())
-							&& getParent().hasSlaveInDirection(getOrientation());
+							&& getParent().hasSlaveInDirection(getOrientation()) && bankIsNotInCluster;
 				}
 			}
 		}
