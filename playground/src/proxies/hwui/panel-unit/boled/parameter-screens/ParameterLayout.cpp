@@ -252,11 +252,9 @@ void ParameterRecallLayout2::init()
 
 bool ParameterRecallLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  auto up = !down;
-
-  if(down && m_paramLikeInPreset && i == BUTTON_B)
+  if(down && m_paramLikeInPreset && i == BUTTON_C)
     undoRecall();
-  else if(down && !m_paramLikeInPreset && i == BUTTON_C)
+  else if(down && !m_paramLikeInPreset && i == BUTTON_B)
     doRecall();
 
   if(i == BUTTON_C || i == BUTTON_B)
@@ -316,23 +314,23 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
     {
       if(paramLikeInPreset)
       {
-        m_rightValue->setText(p->getDisplayString());
-        m_leftValue->setText(m_recallString);
+        m_leftValue->setText(p->getDisplayString());
+        m_rightValue->setText(m_recallString);
         m_slider->setValue(p->getControlPositionValue(), p->isBiPolar());
-        m_rightValue->setHighlight(true);
-        m_leftValue->setHighlight(false);
-        m_buttonB->setText("Recall");
-        m_buttonC->setText("");
+        m_rightValue->setHighlight(false);
+        m_leftValue->setHighlight(true);
+        m_buttonB->setText("");
+        m_buttonC->setText("Recall");
       }
       else
       {
-        m_leftValue->setText(p->getDisplayString());
-        m_rightValue->setText(originalParam->getDisplayString());
+        m_leftValue->setText(originalParam->getDisplayString());
+        m_rightValue->setText(p->getDisplayString());
         m_slider->setValue(m_recallValue, p->isBiPolar());
-        m_leftValue->setHighlight(true);
-        m_rightValue->setHighlight(false);
-        m_buttonC->setText("Recall");
-        m_buttonB->setText("");
+        m_leftValue->setHighlight(false);
+        m_rightValue->setHighlight(true);
+        m_buttonC->setText("");
+        m_buttonB->setText("Recall");
       }
     }
   }
