@@ -262,6 +262,11 @@ bool ParameterRecallLayout2::onButton(int i, bool down, ButtonModifiers modifier
   if(i == BUTTON_C || i == BUTTON_B)
     return true;
 
+  if(i == BUTTON_INC || i == BUTTON_DEC) {
+    getOLEDProxy().resetOverlay();
+    return super::onButton(i, down, modifiers);
+  }
+
   getOLEDProxy().resetOverlay();
   return false;
 }
@@ -269,7 +274,7 @@ bool ParameterRecallLayout2::onButton(int i, bool down, ButtonModifiers modifier
 bool ParameterRecallLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   getOLEDProxy().resetOverlay();
-  return false;
+  return super::onRotary(inc, modifiers);
 }
 
 void ParameterRecallLayout2::doRecall()
