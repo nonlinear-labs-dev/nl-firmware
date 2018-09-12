@@ -9,10 +9,9 @@
 	
 	<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../style.css" type="text/css" />
-	<link rel="stylesheet" href="../style_enhance.css" type="text/css" />
 	<link rel="stylesheet" href="../fonts/source-sans-pro.css" type="text/css" />
 	
-	<script src="../../jq/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script src="../jq/jquery-1.7.1.min.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -38,25 +37,25 @@
 			
 			<h5>Links to Subchapters</h5>
 			<p>
-				<a href="#selection">4.1 Selection</a><br />
-				<a href="#editparam">4.2 Editing a parameter</a><br />
-				<a href="#editmod">4.3 Editing the Modulation of a Parameter</a><br />
-				<a href="#mccontrols">4.4 Macro Controls</a><br />
-				<a href="#hwsources">4.5 Hardware Sources</a><br />
-				<a href="#presets">4.6 Presets</a><br />
-				<a href="#iteminfo">4.7 Item Info</a><br />
-				<a href="#overviews">4.8 Overviews</a><br />
-				<a href="#undo">4.9 The Undo Mechanism</a><br />
-				<a href="#rename">4.10 The Rename Mechanism</a><br />
-				<a href="#soundman">4.11 Sound Manipulation</a><br />
-				<a href="#setup">4.12 Setup</a><br />
-				<a href="#backups">4.13 Backups</a><br />
-				<a href="#basefunct">4.14 Base Unit functionality</a><br />
-				<a href="#guifunct">4.15 Graphical UI exclusive functionality</a>
+				<a href="#idx_selection">4.1&nbsp;&nbsp;&nbsp;Selection</a><br />
+				<a href="#idx_editparam">4.2&nbsp;&nbsp;&nbsp;Editing a parameter</a><br />
+				<a href="#idx_editmod">4.3&nbsp;&nbsp;&nbsp;Editing the Modulation of a Parameter</a><br />
+				<a href="#idx_mccontrols">4.4&nbsp;&nbsp;&nbsp;Macro Controls</a><br />
+				<a href="#idx_hwsrc">4.5&nbsp;&nbsp;&nbsp;Hardware Sources</a><br />
+				<a href="#idx_presets">4.6&nbsp;&nbsp;&nbsp;Presets</a><br />
+				<a href="#idx_continfo">4.7&nbsp;&nbsp;&nbsp;Contextual Info</a><br />
+				<a href="#idx_overviews">4.8&nbsp;&nbsp;&nbsp;Overviews</a><br />
+				<a href="#idx_undo">4.9&nbsp;&nbsp;&nbsp;The Undo Mechanism</a><br />
+				<a href="#idx_rename">4.10 The Rename Mechanism</a><br />
+				<a href="#idx_soundman">4.11 Sound Manipulation</a><br />
+				<a href="#idx_setup">4.12 Setup Navigation</a><br />
+				<a href="#idx_backups">4.13 Backups</a><br />
+				<a href="#idx_basefunct">4.14 Base Unit functionality</a><br />
+				<a href="#idx_guifunct">4.15 Graphical UI exclusive functionality</a>
 			</p>
 			
-			<span id="baseunit-1"></span>
-			<p>As described, the C15 provides two different user interfaces. The Hardware User Interface consists of both Base Unit and Panel Unit, providing haptic („hands on“) control.<br /><span id="gui"></span>
+			<span id="idx_baseunit-1"></span>
+			<p>As described, the C15 provides two different user interfaces. The Hardware User Interface consists of both Base Unit and Panel Unit, providing haptic („hands on“) control.<br /><span id="idx_gui"></span>
 The Graphical User Interface is available on external devices via Wi-Fi connection and provides a detailed parameter and preset representation. Multiple devices can be connected in parallel, each focussing on different aspects.</p>
 
 			<img class="img-frame" src="images/interfaces.png" alt="interfaces">
@@ -69,72 +68,74 @@ The Graphical User Interface is available on external devices via Wi-Fi connecti
 		
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="selection"></div>
+		<div id="idx_selection"></div>
 		<div class="txt-block">
 
 			<h3>4.1 Selection</h3>
 			
 			<p>The C15 architecture was designed to o er quick access to all items and aspects, providing one central area representing the current focus. This main principle (of focussing on one item at a time for further editing) affects each interaction on any available user interface. As mentioned, the current focus will be shared with all involved devices.</p>
 			
+			<span id="idx_parampanel-1"></span>
 			<h5 class="action">Selection <b>[Panel Unit]</b></h5>
 			
-			<img class="img-frame-alt" src="images/panelunit.png" alt="panel unit">
-			<p>Parameter Panels provide Parameter Selection Buttons. A lid LED indicates the current focus.</p>
+			<img class="img-frame-alt-3" src="images/panelunit.png" alt="panel unit">
+			<p>Parameter Panels provide Parameter Selection Buttons. A lit LED indicates the current focus.</p>
 
-			<img class="img-frame" src="images/parameter-panel-led.png" alt="panel-led">
+			<img class="img-frame-alt-3" src="images/parameter-panel-led.svg" alt="panel-led">
 			
 			<p>Multiple parameters can be provided by one Parameter Selection Button (indicated by circles below LED).</p>
 
-			<img class="img-frame" src="images/pb-mp-sb4.png" alt="button boled sb4">
+			<img class="img-frame-alt-3" src="images/pb-mp-sb4.png" alt="button boled sb4">
 			
 			<p>The Parameter Selection Button or Soft Button 4 will cycle through the stack.</p>
 			
-			<img class="img-frame-alt" src="images/mcs.png" alt="macros">
+			<img class="img-frame-alt-3" src="images/mcs.svg" alt="macros">
 			
 			<p>Macro Controls appear as a distinct group and can be selected. Pressing a Selection Button twice will redirect to the Hardware Sources.</p>
 
-			<img class="img-frame" src="images/midpanel.png" alt="midpanel">
+			<img class="img-frame-alt-3" src="images/midpanel.png" alt="midpanel">
 			
 			<p>The Panel Unit Display will provide a corresponding screen for the selected item. Buttons of the Edit Panel provide access to all item aspects.</p>
 
 
 			<h5 class="action">Selection <b><b>[Graphical UI]</b></b></h5>
 			
-			<img class="img-frame" src="images/webgui-a.png" alt="webgui">
+			<img class="img-frame-alt-3" src="images/webgui-a.png" alt="webgui">
 			
 			<p>All parameters are shown in the main area and can be selected by clicking.</p>
 			
-			<img class="img-frame" src="images/env-a.png" alt="envelope a">
+			<img class="img-frame-alt-3" src="images/env-a.png" alt="envelope a">
 			
 			<p>A highlighted element background indicates the current selection. The mouse wheel or pinch gestures on the main area background will zoom into the provided map. On different zoom levels, different details emerge. High priority parameters are always visible.</p>
 			
-			<img class="img-frame-alt" src="images/modmatrix.png" alt="modmatrix">
+			<img class="img-frame-alt-3" src="images/modmatrix-b.png" alt="modmatrix">
 			
 			<p>Macro Controls and Hardware Sources appear as separate groups in the main area, providing all related aspects.</p>
-
-			<img class="img-frame-alt" src="images/tabs.png" alt="tabs">
 			
-			<p>The expandable Tab area shows and provides all item-related aspects. Parameter edits can be realized in the Parameter Tab.<br />
-The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. Further (menu-related) items and access to them will be explained in the chapters 7.7 to 7.12)7.2 Editing a Parameter</p>
+			<span id="idx_tabs"></span>
+			<img class="img-frame-alt-3" src="images/tabs.png" alt="tabs">
+			
+			<p>The expandable Tab area shows and provides all item-related aspects. Parameter edits can be realized in the Parameter Tab.</p>
+			<p>The chapters 4.2 to 4.6 refer to a selected parameter- or preset-related item. Further (menu- or interface-related) items and access to them will be explained in the chapters 4.7 to 4.15.</p>
 
 		</div><!-- end txt -->
 		
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="editparam"></div>
+		<div id="idx_editparam"></div>
 		<div class="txt-block">
 
-			<span id="coarse"></span>
+			<span id="idx_coarse"></span>
 			<h3>4.2 Editing a parameter</h3>
 			
 			<h5 class="action">Adjust Control Position, coarse <b><b>[Base Unit]</b></b></h5>
 			<img class="img-frame" src="images/SOLED_07.2-1.png" alt="soled">
-			<p>The Mode Button can put Ribbon 1 in Edit Mode. Display and touch strip of Ribbon 1 will represent the currently selected parameter, while Ribbon 2 still operates in Play Mode.</p>
+			<p>The <span id="idx_modebtn-1"></span> Mode button can put Ribbon 1 in Edit Mode. Display and touch strip of Ribbon 1 will represent the currently selected parameter, while Ribbon 2 still operates in Play Mode.</p>
 			
-			<span id="decpos"></span>
+			<span id="idx_decpos"></span>
 			<h5 class="action">Adjust Control Position, coarse <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-enc-dec.png" alt="encoder">
-			<p>Use the Encoder to adjust the currently selected parameter. The Dec and Inc Buttons can be used for stepwise adjustments.</p>
+			<p>Use the Encoder to adjust the currently selected parameter. The Dec and Inc buttons can be used for stepwise adjustments.</p>
 		
 			<h5 class="action">Adjust Control Position, coarse <b><b>[Graphical UI]</b></b></h5>
 			<img class="img-frame-alt" src="images/07.2-4.png" alt="gui adjust">
@@ -142,58 +143,63 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 			<img class="img-frame-alt-2" src="images/t-km.png" alt="K M" width="115">
 			<p>If the external device features a keyboard, K and M keys can be used for stepwise adjustments (K for incremental, M for decremental adjustments)</p>
 			
-			<span id="fine"></span>
+			<span id="idx_fine"></span>
 			<h5 class="action">Adjust Control Position, fine <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-fine.png" alt="fine">
-			<p>The Fine Button toggles high resolution mode for adjustments. An F indicator will appear in the Parameter Screen.</p>
-		
+			<p>The Fine button toggles high resolution mode for adjustments. An "F" indicator will appear in the Parameter screen. Usually, the Fine mode will be deactivated when focussing on another parameter. However, the Fine mode can be toggled permanently as well by holding the Shift key while pressing the Fine button. Now, the Fine mode remains activated until the Fine button is pressed again.</p>
+
+			<span id="idx_shift-1"></span>
 			<h5 class="action">Adjust Control Position, fine <b>[Graphical UI]</b></h5>
 			<img class="img-frame-alt-2" src="images/t-shift.png" alt="shift" width="110">
 			<p>While holding down the Shift key, parameter adjustments will be made in high resolution mode.</p>
 			<img class="img-frame" src="images/07.2-9.png" alt="hires">
 			<p>On the slider in the Parameter Tab, a pinch gesture (holding one finger while dragging another) will allow for adjustments in high resolution.</p>
-			<span id="def"></span>
+			<span id="idx_def"></span>
 			<h5 class="action">Reset Control Position <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-def.png" alt="default">
-			<p>Press the Default Button to recall the parameter’s default value.</p>
+			<p>Press the Default button to recall the parameter’s default value.</p>
 
 			<h5 class="action">Reset Control Position <b>[Graphical UI]</b></h5>
 			<p>Double click on element in the main area (if GUI settings allow for it) or the slider in the Parameter Tab in order to recall the currently selected parameter’s default value.</p>
 			
-			<span id="decmin"></span>
+			<span id="idx_decmin"></span>
 			<h5 class="action">Control Position edges <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-dec-inc-shift.png" alt="default">
-			<p>Hold the Shift Button and press Dec Button for minimal, Inc Button for maximal value.</p>
+			<p>Hold the Shift button and press Dec button for minimal, Inc button for maximal value.</p>
 		
 		</div><!-- end txt -->
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="editmod"></div>
+		<div id="idx_editmod"></div>
 		<div class="txt-block">
 
 			<h3>4.3 Editing the Modulation of a Parameter</h3>
 			
 			<h5 class="action">Focus on modulation aspects <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-sb-param.png" alt="soft buttons">
-			<p>By default, the parameter’s control position is in focus. Soft Buttons 1 to 4 provide focus navigation, pressing a button twice will return to the default focus. (If a Macro Control is assigned, Soft Buttons 1, 2 and 4 are available.) Modulation aspects are indicated in the Panel Unit Display.</p>
+			<p>By default, the parameter's control position is in focus and Soft Button 4 can be used to cycle through the stack if there is one. Soft Button 2 can be used to make a Macro Control assignment to the parameter. If a <span id="idx_mc-1"></span> Macro Control is assigned, Soft Buttons 1 and 3 are also available. When focussing on a modulation aspect, Soft Button 4 is also available in order to access every modulation aspect. Furthermore, the Panel Unit Display now shows all modulation aspects. Pressing Soft Button 1, 2 or 3 twice will set the focus back to the parameter's control position.</p>
 			
 			<h5 class="action">Focus on modulation aspects <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.3-2.png" alt="tabmod">
-			<p>In the parameter tab, the modulation icon can be clicked in order to toggle the focus on modulation aspects (if a Macro Control is assigned, all aspects are available). The horizontal slider represents the aspect in focus (or the control position by default). Elements in the main area and the selected parameter shown in the Parameter tab indicate their modulation aspects.</p>
+			<p>In the Parameter Tab, the modulation icon can be clicked in order to toggle the focus on modulation aspects (if a Macro Control is assigned, all aspects are available). The horizontal slider represents the aspect in focus (or the control position by default). Elements in the main area and the selected parameter shown in the Parameter Tab indicate their modulation aspects.</p>
 			
+			<p class="note">In chapter 4.4, the Fast Mapping method is explained. It provides a quick way of assigning target parameters to a Macro Control.</p>
+
 			<h5 class="action">MC selector <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.3-3.png" alt="mc select">
 			<p>Press Soft Button 2 in order to focus on MC selector and change the assignment like adjusting a parameter. Either none (-) or Macro Control (A, B, C, D) can be assigned.</p>
 			
 			<h5 class="action">MC selector <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.3-4.png" alt="mc select ui">
-			<p>Change the current MC assignment by pressing any of the four provided assign- ment icons (A, B, C, D) clicking twice on an icon will clear the assignment. This aspect will not be in focus / on the slider.</p>
+			<p>Change the current MC assignment by pressing any of the four provided assignment icons (A, B, C, D). Clicking twice on an icon will clear the assignment. This aspect will not be in focus on the slider.</p>
 			
 			<h5 class="action">MC position <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.3-5.png" alt="mc pos">
-			<p>Press So  Button 1 in order to focus on MC position and adjust it like a parameter.</p>
-			<div class="note">This will cause a modulation and may a ect other parameters as well.</div>
+			<p>Press Soft Button 1 in order to focus on MC position and adjust it like a parameter.</p>
+			<div class="note">This will cause a modulation and may affect other parameters as well.</div>
+			
+			<span id="idx_mcrange"></span>
 			
 			<h5 class="action">MC position <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.3-6.png" alt="mc pos ui">
@@ -201,7 +207,7 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 
 			<h5 class="action">MC amount <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.3-7.png" alt="mc amt">
-			<p>Press So  Button 3 in order to focus on MC amount and adjust it like a parameter. The modulation range will be indicated separately, next to the slider.</p>
+			<p>Press Soft Button 3 in order to focus on MC amount and adjust it like a parameter. The modulation range will be indicated separately, next to the slider.</p>
 
 			<h5 class="action">MC amount <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.3-8.png" alt="mc amt ui">
@@ -209,7 +215,7 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 			
 			<h5 class="action">Modulation range aspects <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.3-9.png" alt="mc range">
-			<p>Pressing So  Button 4 moves the focus to the rightmost stack of modulation range aspects and cycles it. The selected aspect can be adjusted like a parameter. Provided aspects are the modulation range upper limit, the (current) control position and the modulation range lower limit.</p>
+			<p>Pressing Soft Button 4 moves the focus to the rightmost stack of modulation range aspects and cycles it. The selected aspect can be adjusted like a parameter. Provided aspects are the modulation range upper limit, the (current) control position and the modulation range lower limit.</p>
 			<div class="note mb2" >These aspects are logically interconnected. Changing one aspect will affect another.</div>
 			
 			<h5 class="action">Modulation range aspects <b>[Graphical UI]</b></h5>
@@ -221,7 +227,7 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 				
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="mccontrols"></div>
+		<div id="idx_mccontrols"></div>
 		<div class="txt-block">
 
 			<h3>4.4 Macro Controls</h3>
@@ -229,14 +235,15 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 			<p>The most common practice of using Macro Controls would be the modulation mechanism during user performance, accessible via the Hardware Sources.</p>
 
 			<h4>4.4.1 Editing a Macro Control</h4>
-
+			
+			<span id="idx_ribplay"></span>
 			<h5 class="action">Ribbons in Play Mode <b><b>[Base Unit]</b></b></h5>
 			<img class="img-frame" src="images/SOLED_07.4.1-1.png" alt="rib play">
-			<p>In Play Mode, Ribbons assigned to Macro Controls will be operable. Use Mode Button to switch modes.</p>
+			<p>In Play Mode, Ribbons assigned to Macro Controls will be operable. Use <span id="idx_modebtn-2"></span> the Mode button to switch modes.</p>
 
 			<h5 class="action">Adjust Macro Control position <b><b>[Base Unit]</b></b></h5>
 			<img class="img-frame" src="images/SOLED_07.4.1-4.png" alt="adjust mc pos">
-			<p>In Edit Mode, Ribbon 1 can be used to edit the selected Macro Control. Use Mode Button to switch modes.</p>
+			<p>In Edit Mode, Ribbon 1 can be used to edit the selected Macro Control. Use Mode button to switch modes.</p>
 
 			<h5 class="action">Adjust Macro Control position <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-fine-def-dec-enc.png" alt="adjust mc pos panel">
@@ -246,40 +253,45 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 			<img class="img-frame" src="images/07.4.1-6.png" alt="adjust mc pos panel">
 			<p>In the Parameter Tab, all parameter aspects of the selected Macro Control are provided. Adjust Macro Control position like a parameter.</p>
 			
+			<span id="idx_fastmap"></span>
+			
 			<h5 class="action">Fast Mapping <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/fastmap.png" alt="adjust mc pos panel">
-			<p>When the selection button of a potential target parameter is pressed while the selection button of a Macro Control is held, the assignment can easily be switched on or off. This only works for target parameters on top of the stack.</p>
-
-
+			<p>When the Selection Button of a potential target parameter is pressed while the Selection Button of a Macro Control is held, the assignment can easily be switched on or off. This only works for target parameters on top of the stack.</p>
+			<p class="note">This method only handles the actual mapping of target parameters to a Macro Control. Modulation Amounts have to be adjusted by focussing on each parameter. However, the Modulation Amounts are preserved and will recall the last value they were adjusted to.</p>
+			
+			<span id="idx_mc-3"></span>
 			<h4>4.4.2 Macro Control Properties</h4>
 
 			<h5 class="action">Focus on Macro Control properties <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.4.2-1.png" alt="focus mc prop">
-			<p>Press the Edit Button in order to focus on properties, provided by a stack on the right. The stack can be cycled with Soft Button 4. When pressing the Enter Button, the selected property will be available in focus.</p>
+			<p>Press the Edit button in order to focus on properties, provided by a stack on the right. The stack can be cycled with Soft Button 4. When pressing the Enter button, the selected property will be available in focus.</p>
 
 			<h5 class="action">Focus on Macro Control properties <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.4.2-2.png" alt="focus mc prop ui">
 			<p>In the Parameter Tab, a menu icon can be clicked. In the main area, a right click on a Macro Control element will also invoke a context menu providing access to Macro Control properties.</p>
 			
-			<span id="mcinfo"></span>
+			<span id="idx_mceditinfo"></span>
 			<h5 class="action">Rename and edit Macro Control Info<b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.4.2-3.png" alt="rename mc">
-			<p>The Rename Screen provides a mechanism in order to edit the label or info text of a selected Macro Control. Soft Button 1 cancels the process, Soft Button 4 confirms and applies the process. (See chapter 07.9 for further details)</p>
+			<p>The Rename Screen provides a mechanism in order to edit the label or info text of a selected Macro Control. Soft Button 1 cancels the process, Soft Button 4 confirms and applies the process.<br />(See chapter <a href="#idx_rename">4.10 The Rename Mechanism</a> for further details)</p>
 
 			<h5 class="action">Rename and edit Macro Control Info<b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.4.2-4.png" alt="rename mc ui">
+			<img class="img-frame-alt-3" src="images/rename-macro.png" alt="rename mc ui">
 			<p>A rename dialog appears and the label can be edited with mouse and keyboard.</p>
-			<img class="img-frame" src="images/07.4.2-5.png" alt="rename mc ui">
+			<img class="img-frame-alt-3" src="images/macro-info.png" alt="mc info ui">
 			<p>The info window appears and the info text can be edited with mouse and keyboard.</p>
 
+			<span id="idx_resetmod"></span>
 			<h5 class="action">„Mod Reset“ (clear target assignments)</h5>
+			<img class="img-frame-alt-3" src="images/BOLED_07.4.2-1-reset.png" alt="mod reset">
 			<p>Assignments to target parameters of a selected Macro Control will be reset.</p>
 			
-			<span id="smoothmc"></span>
+			<span id="idx_smoothmc"></span>
 			<h5 class="action">Adjust Macro Control smoothing time</h5>
 			<p>Not yet implemented.</p>
 
-			<span id="hwsrcmc"></span>
+			<span id="idx_hwsrcmc"></span>
 			<h4>4.4.3 Assigning a Macro Control to Hardware Sources</h4>
 
 			<h5 class="action">Focus on assignment aspects <b>[Panel Unit]</b></h5>
@@ -302,7 +314,8 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 			<h5 class="action">HW Source selection stack <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.4.3-6.png" alt="source stack">
 			<p>Pressing Soft Button 4 moves the focus to the rightmost stack of Hardware Sources and cycles it. The eight sliders indicate the amounts of each Hardware Source on the selected Macro Control. The selected element of the stack represents the corresponding amount an can be adjusted like a parameter.</p>
-			
+		
+			<span id="idx_modmat"></span>
 			<h5 class="action">Access to assignment aspects <b>[Graphical UI]</b></h5>
 			<img class="img-frame-alt" src="images/07.4.3-2.png" alt="assign asp">
 			<p>The top-center parameter group „Hardware Sources and Amounts“ provides access to all Hardware Sources and their amounts on Macro Controls, represented as a modulation matrix. Items of intereset can be selected and adjusted like a parameter.</p>
@@ -311,7 +324,7 @@ The chapters 7.2 to 7.6 refer to a selected parameter- or preset-related item. F
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="hwsrc"></div>
+		<div id="idx_hwsrc"></div>
 		<div class="txt-block">
 
 			<h3>4.5 Hardware Sources</h3>
@@ -326,7 +339,7 @@ However, Hardware Sources are available and usable like ordinary parameters. Kee
 
 			<h5 class="action">Adjust Hardware Source position <b>[Base Unit]</b></h5>
 			<img class="img-frame" src="images/SOLED_07.5.1-2.png" alt="adjust source base">
-			<p>In Edit Mode, Ribbon 1 can be used to edit the selected Hardware Source. Use Mode Button to switch modes.</p>
+			<p>In Edit Mode, Ribbon 1 can be used to edit the selected Hardware Source. Use <span id="idx_modebtn-3"></span>the Mode button to switch modes.</p>
 
 			<h5 class="action">Adjust Hardware Source position <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.5.1-3.png" alt="adjust source">
@@ -340,15 +353,16 @@ However, Hardware Sources are available and usable like ordinary parameters. Kee
 
 			<h4>4.5.2  Hardware Source Properties</h4>
 
-			<span id="hwreturn"></span>
+			<span id="idx_hwreturn"></span>
 			<h5 class="action">Focus on Hardware Source properties <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.5.2-1.png" alt="focus source prop">
-			<p>For pedals and ribbons, the return behavior can be edited. Pressing the Edit Button when a Hardware Source is selected will redirect to the edit screen. Use Soft Buttons to select one of the provided aspects.</p>
+			<p>For pedals and ribbons, the return behavior can be edited. Pressing the Edit button when a Hardware Source is selected will redirect to the edit screen. Use Soft Buttons to select one of the provided aspects.</p>
 
 			<h5 class="action">Focus on Hardware Source properties <b>[Graphical UI]</b></h5>
 			<img class="img-frame-alt" src="images/07.5.2-2.png" alt="focus source prop ui">
 			<p>In the main area, a right click on a Hardware Source element will invoke a context menu providing access to the properties.</p>
-
+			
+			<span id="idx_return"></span>
 			<h5 class="action">Edit Return Behaviour <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.5.2-3.png" alt="edit return">
 			<p>Edit the return behavior like adjusting a parameter. Returning behavior allows Hardware Source amounts to Macro Controls to be continuous.</p>
@@ -357,7 +371,7 @@ However, Hardware Sources are available and usable like ordinary parameters. Kee
 			<img class="img-frame" src="images/07.5.2-4.png" alt="edit return ui">
 			<p>The context menu provides available return behaviors to select. Returning behavior allows Hardware Source amounts to Macro Controls to be continuous.</p>
 
-			<span id="hwsrcmap"></span>
+			<span id="idx_hwsrcmap"></span>
 			<h4>4.5.3 Mapping a Hardware Source to Macro Controls</h4>
 
 			<h5 class="action">Focus on assignment aspects <b>[Panel Unit]</b></h5>
@@ -387,7 +401,7 @@ However, Hardware Sources are available and usable like ordinary parameters. Kee
 		
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->		
 	
-		<div id="presets"></div>
+		<div id="idx_presets"></div>
 		<div class="txt-block">
 
 			<h3>4.6 Presets</h3>
@@ -396,11 +410,11 @@ However, Hardware Sources are available and usable like ordinary parameters. Kee
 
 			<h5 class="action">Preset Navigation <b>[Base Unit]</b></h5>
 			<img class="img-frame" src="images/SOLED_07.6.1-1-mode-preset.png" alt="preset nav base">
-			<p>The Base Unit Control Panel can be set in Preset mode by the Mode Button. Using + and – buttons will navigate through the current bank. Both ribbons will remain in Play mode.</p>
+			<p>The Base Unit Control Panel can be set in Preset mode by the <span id="idx_modebtn-4"></span>Mode button. Using + and – buttons will navigate through the current bank. Both ribbons will remain in Play mode.</p>
 
 			<h5 class="action">Preset Navigation <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.6.1-2.png" alt="preset nav">
-			<p>Press the Preset button in order to focus on the Preset screen. The Encoder as well as the Inc and Dec Buttons will navigate through the current Bank. Soft Buttons 2 and 3 navigate banks. The selection is indicated by a rectangle.</p>
+			<p>Press the Preset button in order to focus on the Preset screen. The Encoder as well as the Inc and Dec buttons will navigate through the current Bank. Soft Buttons 2 and 3 navigate banks. The selection is indicated by a rectangle.</p>
 
 			<h5 class="action">Preset Navigation <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.6.1-3.png" alt="preset nav ui">
@@ -411,63 +425,70 @@ The arrow keys can be used to navigate presets (up, down) and banks (left, right
 
 			<h5 class="action">Loading a Preset <b>[Base Unit]</b></h5>
 			<img class="img-frame" src="images/SOLED_07.6.1-1-funct.png" alt="preset nav base">
-			<p>On the Base Unit press the Funct Button in order to load the selected preset.</p>
+			<p>On the Base Unit press the Funct button in order to load the selected preset.</p>
 
 			<h5 class="action">Loading a Preset <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-enter-preset.png" alt="enter">
-			<p>On the Panel Unit press the Enter Button in order to load the selected preset.</p>
+			<p>On the Panel Unit press the Enter button in order to load the selected preset.</p>
 
 			<h5 class="action">Loading a Preset <b>[Graphical UI]</b></h5>
-			<img class="img-frame-alt" src="images/07.6.1-Load-Icon.png" alt="load">
+			<img class="img-frame-alt" src="images/load-btn-web.png" alt="load btn ui">
 			<p>On the Graphical UI the Preset tab provides a Load icon in order to load the currently selected preset. Or click on a bank element twice.</p>
 
-			<span id="dirload"></span>
+			<span id="idx_dirload"></span>
 			<h5 class="action">DirectLoad <b>[Base Unit]</b></h5>
 			<img class="img-frame" src="images/SOLED_07.6.1-1-dirload.png" alt="dir load base">
-			<p>On the Base Unit hold the Funct Button for a second to toggle the Direct Load option.</p>
+			<p>On the Base Unit hold the Funct button for a second to toggle the Direct Load option.</p>
 
 			<h5 class="action">DirectLoad <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-sb4-preset.png" alt="dir load">
 			<p>On the Panel Unit press the Soft Button 4 in order to toggle the Direct Load option.</p>
 
 			<h5 class="action">Direct Load <b>[Graphical UI]</b></h5>
-			<img class="img-frame-alt" src="images/07.6.1-Dir-Load-Icon.png" alt="dir load ui">
+			<img class="img-frame-alt" src="images/dir-load-btn-web.png" alt="dir load ui">
 			<p>On the Graphical UI press the Direct Load icon in the Preset tab in order to toggle the Direct Load option.</p>
 
-			<h5 class="action">Bank Navigation <b>[Base Unit]</b></h5><span id="banknav"></span><span id="bankmode-1"></span>
+			<h5 class="action">Bank Navigation <b>[Base Unit]</b></h5><span id="idx_banknav"></span><span id="idx_bankmode-1"></span>
 			<img class="img-frame-alt" src="images/SOLED_07.6.1-1-mode-bank.png" alt="bank nav base">
-			<p>On the Base Unit Switch to Bank mode by the Mode Button.<br />Using the + and – buttons will navigate banks.</p>
+			<p>On the Base Unit Switch to Bank mode by the <span id="idx_modebtn-5"></span> Mode button.<br />Using the + and – buttons will navigate banks.</p>
 
 			<h5 class="action">Bank Navigation <b>[Panel Unit]</b></h5>
 			<img class="img-frame-alt" src="images/mp-sb1-preset.png" alt="bank nav">
 			<p>On the Panel Unit press Soft Button 1 in order to focus on banks and navigate them instead. Soft Buttons 2 and 3 will navigate presets now.</p>
 
 			<h5 class="action">Bank Navigation <b>[Graphical UI]</b></h5>
-			<img class="img-frame-alt" src="images/07.6.1-Preset-Nav.png" alt="preset nav">
-			<p>In the main area of the graphical UI the bank selection updates when loading a preset. In the Preset tab, banks can be navigated by the corresponding navigation icons. (The arrow keys can be used as well, as described.)</p>
-<div class="note">The Direct Load option will be indicated on each interface and loads a selected preset directly. The Panel Unit Display and the Graphical User Interface also show the preset count of a selected bank (in brackets) and the current bank-preset-number.</div>
+			<img class="img-frame-alt" src="images/preset-bank-nav-web.png" alt="preset nav">
+			<p>In the main area the bank selection updates when clicking/touching on a preset of a floating bank, loading the preset and its parent bank will be selected. A click or touch gesture on a floating bank header selects the bank as well and the last selected preset of this bank will be loaded.</p>
+			
+<p class="note">The Direct Load option will be indicated on each interface and loads a selected preset directly. The Panel Unit Display and the Graphical User Interface also show the preset count of a selected bank (in brackets) and the current bank-preset-number.</p>
 
 
 			<h4>4.6.2 Storing a Preset</h4>
 
-			<h5 class="action">Store Screen Navigation <b>[Panel Unit]</b></h5>
-			<img class="img-frame" src="images/BOLED_07.6.2-1.png" alt="store nav">
-			<p>Press the Store button in order to focus on the Store screen. The store position can be adjusted by preset and bank navigation (as described in chapter 7.6.1).</p>
+			<h5 class="action">Store Select <b>[Panel Unit]</b></h5>
+			<img class="img-frame" src="images/BOLED_store-select-scr.png" alt="store select">
+			<p>Press the Store button in order to focus on the Store screen and start the Store Select mode. The store position and bank can be adjusted by preset and bank navigation (as described in chapter 4.6.1). The process can be canceled by pressing the Store button again, pressing the Enter button on the other hand will complete the Store process, storing the preset at the desired location according to the Store method (see below).</p>
 
 			<h5 class="action">Store Screen Navigation <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.6.2-2.png" alt="store nav ui">
-			<p>Clicking on the Store icon in the Preset tab invokes the Store dialog. The preset name, number and comment text can be edited. OK and Cancel buttons are provided in order to finish the process. The Store icon can also be dragged on the desired bank in order to store the preset there.</p>
-
+			<p>The Preset tab provides a Store icon. Clicking on or touching it will store the preset in the currently selected bank at the current position, according to the Store method (see below). The additional Select button will start the Store Select mode and a bank and position can be chosen (without loading any preset), then the preset can be stored at the desired location (disabling the Store Select mode), according to the Store method (see below). Another way of storing a preset in a particular bank or position is simply dragging and dropping the Store icon to the desired location (the Store Select mode and Store method can be ignored in this case).</p>
+			
+			<span id="idx_storemet"></span>
 			<h5 class="action">Store Method <b>[Panel Unit]</b></h5>
-			<img class="img-frame" src="images/07.6.2-4.png" alt="store method">
-			<p>The Store method can be selected in the Store dialog.</p>
+			<img class="img-frame" src="images/BOLED_store-select-scr.png" alt="store select">
+			<p>Soft Button 4 provides three available Store methods in the rightmost stack and cycles it. Pressing the Enter button applies the process, pressing the Store button again dismisses it.</p>
+
+			<h5 class="action">Store Method <b>[Graphical UI]</b></h5>
+			<img class="img-frame" src="images/store-method.png" alt="store select">
+			<p>The Store method can be selected in the Preset tab, above the store icon.</p>
+
 
 			<h5 class="action">Preset Naming <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.6.2-5.png" alt="preset name">
-			<p>If the preset is considered „new“, the Rename screen will appear, requesting a name for the preset.</p>
+			<p>If the preset is considered "new", the Rename screen (window) will appear, requesting a name for the preset.</p>
 
 			<h5 class="action">Store Methods</h5>
-			<p>The store position will be finally influenced by the chosen store method, which can be one of the following three:</p>
+			<p class="mb05i">The store position will be finally influenced by the chosen store method, which can be one of the following three:</p>
 			
 				<table><tbody>
 					<tr>
@@ -475,63 +496,94 @@ The arrow keys can be used to navigate presets (up, down) and banks (left, right
 						<td>The preset will be stored at the end of the currently selected bank.</td>
 					</tr>
 					<tr>
-						<td class="bg-light"><strong>Overwrite</strong></td>
-						<td>The preset will be stored at the current position in the currently selected bank, overwriting the existing preset.</td>
-					</tr>
-					<tr>
 						<td class="bg-light"><strong>Insert</strong></td>
 						<td>The preset will be stored behind the current position in the currently selected bank.</td>
 					</tr>
+					<tr>
+						<td class="bg-light"><strong>Overwrite</strong></td>
+						<td>The preset will be stored at the current position in the currently selected bank, overwriting the existing preset.</td>
+					</tr>
 				</tbody></table>
+			
+			<div class="mb2"></div>
 			
 			<h4>4.6.3 Editing Presets and Banks</h4>
 			
-			<h5 class="action">Preset Edit Mode <b>[Panel Unit]</b></h5>
-			<img class="img-frame" src="images/BOLED_07.6.3-1-edit-preset.png" alt="preset edit">
-			<p>When the Preset screen is in focus, pressing the Edit button invokes a menu, represented in the rightmost stack. Cycle the stack by pressing Soft Button 4 in order to select a menu entry and press the Enter button in order to focus on an aspect. Press the Edit button again to return to the Preset screen.</p>
-
-			<h5 class="action">Preset Edit Mode <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.6.3-2abc.png" alt="preset edit ui">
-
-			<p>In the Preset tab, a Preset menu button is provided. Clicking on this button or right-clicking (tapping and holding) on a preset element in a bank invokes the context menu, providing access to all aspects.</p>
-
-			<h5 class="action">Preset Rename <b>[Graphical UI]</b></h5>
-			<img class="img-frame-alt" src="images/07.6.3-4.png" alt="preset rename">
-			<img class="img-frame-alt" src="images/07.6.3-5.png" alt="preset rename">
-			<p>The preset info window will appear, showing all related information on the preset. Name, position and comment text of the preset can be edited.
-A Rename dialog will appear, so the preset name can be changed.</p>
-
-			<div class="mt2"></div>
+			<p class="mb05i">Common Preset editing actions are listed in the table below:</p>
 			
-			<h5 class="action">Preset Edit Menu <b>[Panel Unit] and [Graphical UI]</b></h5>
-				
-				<table><tbody>
+			<table class="mb2"><tbody>
 					<tr>
 						<td class="bg-light"><strong>Cut</strong></td>
-						<td>The selected preset will be moved into the temporary buffer (being deleted at the current position).</td>
+						<td>The selected preset will be moved into the clipboard (being deleted at the current position).</td>
 					</tr>
 					<tr>
 						<td class="bg-light"><strong>Copy</strong></td>
-						<td>The selected preset will be copied into a temporary buffer, ready to be pasted at any time.</td>
+						<td>The selected preset will be copied into the clipboard, ready to be pasted at any time.</td>
 					</tr>
 					<tr>
 						<td class="bg-light"><strong>Paste</strong></td>
-						<td>The selected preset will be copied into a temporary buffer, ready to be pasted at any time.</td>
+						<td>Once a preset was copied or cut into the clipboard, this option will become available. The copied preset will be inserted behind the currently selected preset.</td>
 					</tr>
 					<tr>
 						<td class="bg-light"><strong>Delete</strong></td>
 						<td>The selected preset will be deleted from the bank.</td>
 					</tr>
 				</tbody></table>
-					
+
+
+			<h5 class="action">Preset Edit Mode [Panel Unit]</h5>
+			<img class="img-frame" src="images/BOLED_07.6.3-1-edit-preset.png" alt="preset edit">
+			<p>When the Preset screen is in focus, pressing the Edit button invokes a menu, represented in the rightmost stack. Cycle the stack by pressing Soft Button 4 in order to select a menu entry and press the Enter button in order to focus on an aspect. Press the Edit button again to return to the Preset screen.</p>
+
+			<h5 class="action">Preset Context Menus <b>[Graphical UI]</b></h5>
+			<img class="img-frame" src="images/07.6.3-2abc.png" alt="preset edit ui">
+
+			<p>In the Preset tab, a Preset menu button is provided. Clicking on this button or right-clicking (tapping and holding) on a preset element in a bank invokes the context menu, providing access to all aspects.</p>
+
+			<div class="mt2"></div>
+			<p>Common Bank editing actions are listed in the table below:</p>
+
+			<table class="mb2"><tbody>
+				<tr>
+					<td class="bg-light"><strong>New</strong></td>
+					<td>A new bank will be created.</td>
+				</tr>
+				<tr>
+					<td class="bg-light"><strong>Rename</strong></td>
+					<td>The selected bank can be renamed (see below for details).</td>
+				</tr>
+				<tr>
+					<td class="bg-light"><strong>Copy</strong></td>
+					<td>The selected bank will be copied into the clipboard, ready to be pasted.</td>
+				</tr>
+				<tr>
+					<td class="bg-light"><strong>Paste</strong></td>
+					<td>Once a bank was copied into the clipboard, this option will become available.<br /><i class="yellow">The copied bank will be appended as a new bank. This mechanism is not fully developed yet. For more information, refer to the separate "Known Issues" document.</i></td>
+				</tr>
+				<tr>
+					<td class="bg-light"><strong>Delete</strong></td>
+					<td>The selected bank will be deleted.</td>
+				</tr>
+				<tr>
+					<td class="bg-light"><strong>Move left/right</strong></td>
+					<td>The bank number (position in the bank list) can be altered by moving it left (decreasing the position) or right (increasing the position).</td>
+				</tr>
+				<tr>
+					<td class="bg-light"><strong>Import/Export</strong></td>
+					<td>Single Banks can be transferred from an to external devices. See chapter 4.6.4 for more details.</td>
+				</tr>
+			</tbody></table>
+
+
+<p class="note">The graphical user interface provides another way of moving a bank via the Bank Info window, where the bank number (position in the bank list) can be adjusted directly. See chapter 4.7 for more details.</p>					
 			
-			<div class="mt2"></div><span id="bankedit"></span>
+			<div class="mt2"></div><span id="idx_bankedit"></span>
 
 			<h5 class="action">Bank Edit Mode <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.6.3-6-edit-bank.png" alt="bank edit">
 			<p>When the Bank screen is in focus, pressing the Edit button invokes a menu, represented in the rightmost stack. Cycle the stack by pressing Soft Button 4 in order to select a menu entry and press the Enter button in order to focus on an aspect. Press the Edit button again to return to the Preset screen.</p>
 
-			<h5 class="action">Bank Edit Mode <b>[Graphical UI]</b></h5>
+			<h5 class="action">Bank Context Menu <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.6.3-7abcd.png" alt="bank edit ui abcd">
 			<p>The Gaphical User Interface provides two menus for editing banks. There is a global menu (invoked by a right-click / tap-and-hold gesture on the background) and a local menu for the current bank (provided by a bank menu icon in the Preset tab or by a right-click / tap-and-hold gesture on the bank header).</p>
 
@@ -540,77 +592,109 @@ A Rename dialog will appear, so the preset name can be changed.</p>
 			<p>A new, empty bank will be created and appended to the bank list after choosing a name in the Rename screen.</p>
 
 			<h5 class="action">New bank <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.6.3-9.png" alt="new bank ui">
+			<img class="img-frame" src="images/rename-new-bank.png" alt="ren new bank ui">
 			<p>A dialog appears, requesting a name for the new bank. After confirming, a new empty bank will be appended to the bank list.</p>
 
 			<h5 class="action">Rename bank <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.6.3-10.png" alt="rename bank">
-			<p>The Rename screen will appear, so the current bank name can be changed. See chapter 7.9 for further details.</p>
+			<p>The Rename screen will appear, so the current bank name can be changed. (See chapter: <a href="#idx_rename">4.10 The Rename Mechanism</a> for further details).</p>
 
 			<h5 class="action">Rename bank <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.6.3-11.png" alt="rename bank ui">
-			<p>The Rename screen will appear, so the current bank name can be changed. See chapter 7.9 for further details.</p>
+			<img class="img-frame-alt-3" src="images/rename-bank.png" alt="rename bank ui">
+			<p>The Rename screen will appear, so the current bank name can be changed. (See chapter: <a href="#idx_rename">4.10 The Rename Mechanism</a> for further details).</p>
 
 			<div class="mt2"></div>
 			
+			<span id="idx_bankeditmenu"></span>
 			<h5 class="action">Bank Edit Menu <b>[Panel Unit] and [Graphical UI]</b></h5>
 			
-				<table><tbody>
-					<tr>
-						<td class="bg-light"><strong>Copy</strong></td>
-						<td>The selected bank will be copied into a temporary buffer, ready to be pasted.</td>
-					</tr>
-					<tr>
-						<td class="bg-light"><strong>Paste</strong></td>
-						<td>The copied bank will be appended as a new bank.</td>
-					</tr>
-					<tr>
-						<td class="bg-light"><strong>Delete</strong></td>
-						<td>The selected bank will be deleted.</td>
-					</tr>
-					<tr>
-						<td class="bg-light"><strong>Move left/right</strong></td>
-						<td>The bank number (position in the bank list) can be altered by moving it left (decreasing it) or right (increasing it).</td>
-					</tr>
-				</tbody></table>
 				
 			<div class="mt2"></div>
+			
+		
+			<span id="idx_impexp"></span>
 
-			<h5 class="action">Import and Export (on USB stick) <b>[Panel Unit]</b></h5>
-			<img class="img-frame" src="images/BOLED_07.6.3-12.png" alt="import export bank">
+			<h4>4.6.4 Importing/Exporting Banks</h4>
+			<p>The C15 provides two ways of transferring (importing, exporting) single banks in order to manage big preset collections.</p>
+			
+			<h5 class="action">Import and Export on USB stick [Panel Unit]</h5>
+			<img class="img-frame" src="images/BOLED_im-export-stick.png" alt="import export stick">
 			<p>When a USB stick is connected, the selected bank can be exported to it by using the Export option. Any bank present on the USB stick can be selected and imported by using the Import option.</p>
 
-			<h5 class="action">Import and Export (on USB stick) <b>[Graphical UI]</b></h5>
-			<p>The local menu provides the option to save the current bank as a file, which will be downloaded on the external device. The global menu includes an option to import a particular bank from a file present on the external device, which can be selected and uploaded.</p>
+			<h5 class="action">Import and Export on USB stick <b>[Graphical UI]</b></h5>
+			<img class="img-frame" src="images/menu_im-export-bank.png" alt="import export stick ui">
 
-			<div class="note">On the graphical user interface, more edits on banks are possible.<br />See chapter 7.14 for further details.</div>
-			
+			<p>The bank menu provides an option to save the current bank as a file, which will be downloaded on the external device. The menu also includes an option to import a particular bank from a file present on the external device, which can be selected and uploaded. Other Bank context menus (as explained in chapter 4.15) will also o er import and export options.</p>
+
+<div class="note">The process of transferring multiple banks can be further simplified by the C15 backup capabilities. See chapter 4.13 for more details.
+</div>
+
 			<div class="mt2"></div>
+
+			<span id="idx_paramlock"></span>
+
+			<h4>4.6.5 Locking</h4>
+			<p>In some situations, it may be useful to load only specific parts of a preset while leaving other parts as they are. This can be achieved by using the Lock mechanism, which can lock particular parameter groups and prevent the contained parameters from being overwritten by a preset recall or sound manipulations.</p>
+			
+			<div class="note">Currently, only whole groups can be locked, but a parameter-specific Lock mechanism is intended for the future.</div>
+
+			<h5 class="action">Locking a Parameter Group [Panel Unit]</h5>
+		
+			<img class="img-frame" src="images/BOLED_group-lock-menu.png" alt="group lock menu">
+			<p>In the Parameter screen showing the currently selected parameter, the Edit button provides the lock menu. Individual lock options can be selected by pressing Soft Button 4.</p>
+
+			<img class="img-frame" src="images/BOLED_group-lock_B.png" alt="group lock B">
+			<img class="img-frame" src="images/BOLED_group-lock_A.png" alt="group lock A">
+			<p>Depending on the lock status of the associated group, the lock options provide locking the specific group/all groups, or unlocking the specific group/all groups. When one or more groups are locked, the Preset screen also shows the lock symbol.</p>
+
+			<h5 class="action">Locking a Parameter Group [Graphical UI]</h5>
+		
+			<img class="img-frame" src="images/group-lock-menu.png" alt="group lock menu ui">
+			<p>A right click or long touch gesture on a particular group header invokes the lock menu. Depending on the lock status of the associated group, the lock options provide locking the specific group/all groups, or unlocking the specific group/all groups.</p>
+
+			<img class="img-frame" src="images/group-lock.png" alt="group lock ui">
+			<p>When one or more groups are locked, the Preset tab also shows the lock symbol.</p>
+
+			<h5 class="yellow"><i>Locking – a practical example:</i></h5>
+			<p>Let’s consider a situation where the user wants to use certain groups of preset A as a template for other presets (B, C, …), which shall have those group settings as well.<br />Useful scenarios may be the Hardware Sources and their Amounts on Macro Controls, or the whole effect chain. In a few steps, the particular groups of preset A can be copied to the other presets:</p>
+
+			<ol>
+				<li>Load preset A (the template preset)</li>
+				<li>Activate lock on the corresponding groups (that shall be transferred to the other presets)</li>
+				<li>Load preset B (the locked groups still remain as defined by preset A)</li>
+				<li>Save preset B (making the template transfer persistent)</li>
+				<li>Load and then save preset C (repeating the process, the locked groups still remain as defined by preset A), et cetera</li>
+			</ol>
+			
+			<div class="mb2"></div>
+			
+			<p class="note">As described, the Lock mechanism is effective for preset recalls and sound manipulations (see chapter 4.11). Editing and modulating parameters of locked groups is still possible, though.
+			</p>
 
 		</div><!-- end txt -->
 		
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="iteminfo"></div>
+		<div id="idx_continfo"></div>
 		<div class="txt-block">
 
-			<h3>4.7 Item Info</h3>
+			<h3>4.7 Contextual Info</h3>
 
 			<h5 class="action">Parameter Info <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.7-1.png" alt="param info">
 			<p>When a parameter is selected, the Info button invokes the Info screen, showing the current parameter’s description.</p>
 
 			<h5 class="action">Parameter Info <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.7-2.png" alt="param info ui">
+			<img class="img-frame" src="images/param-info.png" alt="param info ui">
 			<p>In the Parameter tab, an Info icon is provided, toggling an Info window showing the description of the currently selected parameter. The window will update when selecting another parameter.</p>
 
-			<h5 class="action">Macro Control Info <b>[Panel Unit]</b></h5>
+			<h5 class="action"><span id="idx_mcinfo"></span> Macro Control Info <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.7-3.png" alt="macro info">
 			<p>When a Macro Control is selected, the Info button invokes the Info screen, showing the description of the currently selected Macro Control.
 When pressing the Edit button, the user-definable info text can be edited in the Rename screen.</p>
 
 			<h5 class="action">Macro Control Info <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.7-4.png" alt="macro info">
+			<img class="img-frame" src="images/macro-info.png" alt="macro info">
 			<p>The Info icon in the Parameter tab works accordingly when selecting a Macro Control, context menus for the main area elements are also provided. The provided Info window allows for edits on the user-definable info text.</p>
 
 			<h5 class="action">Hardware Source/Amount Info <b>[Panel Unit]</b></h5>
@@ -618,69 +702,76 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<p>When the focus is on a Hardware Source or to a Hardware Amount on a Macro Control, the Info button provides the Info screen according to the item in focus.</p>
 
 			<h5 class="action">Hardware Source/Amount Info <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.7-6.png" alt="hw source info">
+			<img class="img-frame" src="images/hw-amount-info.png" alt="hw source info">
 			<p>The Info window will display the description of a selected Hardware Source or Amount as described for ordinary parameters.</p>
 
 			<h5 class="action">Preset Info <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.7-7.png" alt="preset info">
 			<p>When in the Preset screen, the Info button invokes the Info screen for the currently selected preset. The screen can be scrolled by the Encoder or Inc, Dec buttons. When pressing the Edit button, the comment text can be edited in the Rename screen.</p>
 
+			<span id="idx_presetinfo"></span>
 			<h5 class="action">Preset Info <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.7-8.png" alt="preset info ui">
+			<img class="img-frame" src="images/preset-info.png" alt="preset info ui">
 			<p>The preset info window can be made visible when clicking on the Info icon in the Preset tab or by a right click on a preset within a bank, selecting the „show info“ option. The window can be left visible and will update when loading other presets.</p>
 			
-			<h5 class="action">Bank Info <b>[Panel Unit]</b></h5><span id="bankinfo"></span>
+			<p class="note">In the graphical user interface, the Preset Info Window allows for editing the preset number (position in the bank), name, comment and color tag.</p>
+			
+			<h5 class="action">Bank Info <b>[Panel Unit]</b></h5><span id="idx_bankinfo"></span>
+			<p>Banks contain a collection of metadata, some of which can be edited. The metadata collection includes: the bank number (position in the bank list), the bank name, a comment text, the bank size (number of contained presets), a state (indicating if unsaved changes ocured since the last export) as well as information about the last change (date), import (date, filename) and export (date, filename).</p>
 			<img class="img-frame" src="images/BOLED_07.7-9.png" alt="bank info">
-			<p>When in the Bank screen, the Info button invokes the Info screen for the currently selected bank. The screen can be scrolled by the Encoder or Inc, Dec buttons. When pressing the Edit button, the comment text can be edited in the Rename screen.</p>
+			<p>When in the Bank screen (available when pressing Soft Button 1 while in the Preset Screen), the Info button invokes the Info screen for the currently selected bank. The screen can be scrolled by the Encoder or Inc, Dec buttons. When pressing the Edit button, the comment text can be edited in the Rename screen.</p>
 
 			<h5 class="action">Bank Info <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.7-10.png" alt="bank info ui">
-			<p>The bank info window can be made visible when selecting „show info“ in the context menu provided by the bank menu icon. The window can be left visible and will update when selecting other banks.</p>
+			<img class="img-frame" src="images/bank-info.png" alt="bank info ui">
+			<p>The bank info window can be made visible when clicking on the Bank Info icon in the Preset tab or by selecting „show info“ in the context menu provided by the bank menu icon or in other bank context menus. The window can be left visible and will update when selecting other banks. In addition, the global View menu also provides a visibility option for the Bank Info window.</p>
+			
+			<p class="note">In the graphical user interface, the Bank Info Window allows for editing the bank number (position in the bank list), name and comment text.</p>
 
 		</div><!-- end txt -->	
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="overviews"></div>
+		<div id="idx_overviews"></div>
 		<div class="txt-block">
 
+			<span id="idx_parampanel-2"></span>
+			<span id="idx_active"></span>
 			<h3>4.8 Overviews</h3>
 			
-			<p>There are different Overviews provided on the Panel Unit, enabling the user to quickly get an impression of the inner workings of a particular sound, just by a brief glance at the parameter panels. Whithout listening to the sound or studying parameter values, certain assumptions on signal flow and modulation assignments can be easily made.</p>
+			<p>There are different Overviews provided on the <span id="idx_panelunit-3"></span> Panel Unit, enabling the user to quickly get an impression of the inner workings of a particular sound, just by a brief glance at the parameter panels. Whithout listening to the sound or studying parameter values, certain assumptions on signal flow and modulation assignments can be easily made.</p>
 			
-			<span id="active"></span>
-			<h5 class="action">Active Overview <b>[Panel Unit]</b></h5>
-			<img class="img-frame" src="images/mp-info-shift.png" alt="active ovw">
-			<p>At any time, when the Preset screen is in focus, active overview will be provided. Signal-flow related parameters that are not zero ('active') will have lit LEDs (see chapter 8.4 for further details). When Macro Controls are mapped to at least one parameter, they will show lit LEDs as well.</p>
+			<h5 class="action"><span id="idx_mcactive"></span> Active Overview <b>[Panel Unit]</b></h5>
+			<p>At any time, when the Preset screen is in focus, active overview will be provided. Signal-flow related parameters that are not zero ('active') will have lit LEDs. See chapter <a href="../synth-engine/parameter-ref/parameter-ref.html">9. Parameter Reference</a> and notice the <a href="../synth-engine/parameter-ref/legend.html">"Active Indicator" symbol (4)</a>.<br />When Macro Controls are mapped to at least one parameter, they will show lit LEDs as well.</p>
 			
 			<h5 class="action">MC Target Overview <b>[Panel Unit]</b></h5>
-			<img class="img-frame" src="images/mc-target-panel.png" alt="mc target ovw">
+			<img class="img-frame" src="images/mc-target-overview.gif" alt="mc target ovw">
 			<p>When a Macro Control is selected. all assigned target parameters will show their assignment by blinking LEDs.</p>
 
 			<h5 class="action">MC Target Overview <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.7-10.png" alt="mc target ovw ui">
+			<img class="img-frame" src="images/mc-target-overview.png" alt="mc target ovw ui">
 			<p>When a Macro Control is selected, it will be surrounded by a red rectangle. All assigned target parameters show their assignment by surrounding red rectangles as well.</p>
 			
-			<span id="flow"></span>
-			<h5 class="action">Flow Overview <b>[Panel UI]</b></h5>
-			<img class="img-frame" src="images/flow-overview.png" alt="flow overview">
-			<p>When selecting a parameter of a particular group, blinking LEDs on the Panel Unit show where the output signal of this group is applied further in the signal chain. (If, for example, a parameter of the Feedback Mixer is selected, the PM FB and FB Mix parameters of the Oscillators and Shapers will have blinking LEDs, if they are unequal to zero.)</p>
-
+			<span id="idx_flow"></span>
+			<h5 class="action">Signal Flow Overview <b>[Panel Unit]</b></h5>
+			<img class="img-frame" src="images/flow-overview.gif" alt="flow ovw">
+			<p>When selecting a parameter of a particular group, blinking LEDs on the Panel Unit show where the output signal of this group is applied further in the signal chain. (If, for example, a parameter of the Feedback Mixer is selected, the PM FB and FB Mix parameters of the Oscillators and Shapers will have blinking LEDs, if they are unequal to zero - indicating that the output signal of the Feedback Mixer is applied in these particular sections).</p>
+			<p class="note">The Signal Flow indicator is optional and can be disabled in the Setup Menu. See chapter <a href="../setup-c15/setup-system.html">6. C15 Setup (System Settings)</a> for more details.</p>
 		</div><!-- end txt -->	
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="undo"></div>
+		<div id="idx_undo"></div>
 		<div class="txt-block">
 
 			<h3>4.9 The Undo Mechanism</h3>
-
+			
 			<h5 class="action">Simple undo/redo <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-undo-redo.png" alt="unredo">
 			<p>The current, active branch can be navigated by using the Undo and Redo buttons in the Edit Panel, recalling the corresponding state immediately.</p>
 
 			<h5 class="action">Simple undo/redo <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.8-2.png" alt="unredo ui">
+			<img class="img-frame" src="images/undo-redo-tast.png" alt="unredo key">
 			<p>The current, active branch can be navigated by using the Undo and Redo icons above the tab area, recalling the corresponding state immediately.</p>
 
 			<h5 class="action">Focus on undo history <b>[Panel Unit]</b></h5>
@@ -688,8 +779,8 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<p>Pressing both Undo and Redo buttons at once will invoke the Undo screen, providing full navigation of the undo tree.</p>
 
 			<h5 class="action">Focus on undo history <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.8-4-htmlhelp.png" alt="undo hist ui">
-			<p>The undo history window can be scrolled by drag gestures on the background or the scrollbar, or by using the mouse wheel. A simple click on an element will recall the corresponding state. As all branches of the tree are visible in this window, the branch navigation is fully integrated.<br />A right-click (or tap and hold) on an element provides a context menu for further options. The „hide“ option will hide the selected branch, the other options follow below.</p>
+			<img class="img-frame" src="images/menu-show-undo.png" alt="undo hist ui">
+			<p>In the View menu, the undo history window can be shown or hidden.<br />It provides full access on undo-related aspects.</p>
 
 			<h5 class="action">Navigate current branch <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.8-5.png" alt="navigate current branch">
@@ -701,15 +792,17 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<p>If a branch splits at the current position, pointy brackets are visible on the entry. Use the Soft Buttons 1 and 3 to switch between branches. Recalling an entry of an inactive branch will make it active.</p>
 			
 			<h5 class="action">Navigate current branch/branches <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.8-6.png" alt="navigate cur branches ui">
-			<p>The undo history window can be scrolled by drag gestures on the background or the scrollbar, or by using the mouse wheel. A simple click on an element will recall the corresponding state. As all branches of the tree are visible in this window, the branch navigation is fully integrated.<br />A right-click (or tap and hold) on an element provides a context menu for further options. The „hide“ option will hide the selected branch, the other options follow below.</p>
+			<img class="img-frame" src="images/undo-hist-window.png" alt="navigate cur branches ui">
+			<p>The undo history window can be scrolled by drag gestures on the background or the scrollbar, or by using the mouse wheel. A simple click on an element will recall the corresponding state.<br />As all branches of the tree are visible in this window, the branch navigation is fully integrated.
+A right-click (or tap and hold) on an element provides a context menu for further options. The „hide“ option will hide the selected branch, the other options follow below.
+</p>
 
 			<h5 class="action">Delete (inactive) branch <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.8-8.png" alt="delete branch">
 			<p>When the selected element is on an inactive branch, the „delete from here“ option will be provided. Confirming this option will delete the whole branch. Pressing Soft Button 4 will delete the whole branch.</p>
 			
 			<h5 class="action">Delete (inactive) branch <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.8-9.png" alt="delete branch ui">
+			<img class="img-frame" src="images/undo-hist-delete.png" alt="delete branch ui">
 			<p>When the selected element is on an inactive branch, the „delete from here“ option will be provided. Confirming this option will delete the whole branch.</p>
 
 			<h5 class="action">Make element the new root <b>[Panel Unit]</b></h5>
@@ -717,14 +810,14 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<p>When navigating the current, active branch, press the Edit button in order to get the „make root“ option. All entries and branches prior to the current position will be deleted by pressing Soft Button 4.</p>
 
 			<h5 class="action">Make element the new root <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.8-11.png" alt="new root ui">
+			<img class="img-frame" src="images/undo-hist-makeroot.png" alt="new root ui">
 			<p>When the selected element is on the current, active branch, the „make this the new root“ option will be provided. Confirming this option will delete all elements and branches prior to the selected element.</p>
 
 		</div><!-- end txt -->
 		
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="rename"></div>
+		<div id="idx_rename"></div>
 		<div class="txt-block">
 			
 			<h3>4.10 The Rename Mechanism</h3>
@@ -740,20 +833,21 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<h5 class="action">Get rename option <b>[Graphical UI]</b></h5>
 			<img class="img-frame" src="images/07.9-2.png" alt="rename opt ui">
 			<p>As previously described, renaming options will be provided when invoking a context menu for corresponding items.</p>
-
+			
+			<span id="idx_renscreen"></span>
 			<h5 class="action">The rename screen <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/paneltast.png" alt="rename scr">
 			<p>When the rename screen is shown, the two Parameter Selection Panels on the left or on the right side of the display can be used as a keyboard, as indicated by the keyboard layout in the screen.<br />The cursor can be moved by using the Encoder, or the Inc, Dec buttons. Soft Button 1 will cancel the process, Soft Button 4 will apply the process.</p>
 
 			<h5 class="action">The rename screen <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.9-4.png" alt="rename scr ui">
+			<img class="img-frame-alt-3" src="images/rename-preset-bank-macro.png" alt="rename scr ui">
 			<p>When a rename option was called, a dialog or a window will appear, containing an entry or textbox element. Mouse and keyboard on the external device can be used to rename the corresponding item. Dialogs provide OK and Cancel buttons in order to finish the process accordingly.</p>
 
 		</div><!-- end txt -->
 		
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="soundman"></div>
+		<div id="idx_soundman"></div>
 		<div class="txt-block">
 
 			<h3>4.11 Sound Manipulation</h3>
@@ -771,7 +865,7 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<img class="img-frame" src="images/07.10-2.png" alt="focus snd 2">
 			<p>The Sound tab provides options to further manipulate the current sound or sound transition.</p>
 			
-			<span id="initsnd"></span>
+			<span id="idx_initsnd"></span>
 			<h5 class="action">Init Sound <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.10-3-init-sound.png" alt="init snd">
 			<p>Press Soft Button 1 to select and then the Enter button to recall the init sound. Every parameter will load its default value.</p>
@@ -780,6 +874,7 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<img class="img-frame-alt" src="images/07.10-4.png" alt="init snd ui">
 			<p>When clicking on the „Init Sound“ icon, every parameter will load its default value.</p>
 			
+			<span id="idx_resetinit"></span>
 			<h5 class="action">Reset Init <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.10-5-reset-init.png" alt="reset snd">
 			<p>Press the Edit button to invoke a menu stack on the right, navigate with Soft Button 4 and press Enter in order to reset the init sound. The factory default settings will be applied to all parameters.</p>
@@ -788,7 +883,7 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<img class="img-frame-alt" src="images/07.10-6.png" alt="reset snd ui">
 			<p>When clicking on the „Reset Init“ icon, the default value of every parameter will be reset to the factory settings.</p>
 			
-			<span id="defset"></span>
+			<span id="idx_defset"></span>
 			<h5 class="action">Store Init <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.10-7-store-init.png" alt="store init">
 			<p>The menu stack also provides an option in order to store the current sound as the new default settings for all parameters.</p>
@@ -797,6 +892,7 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<img class="img-frame-alt" src="images/07.10-8.png" alt="store init ui">
 			<p>When clicking on the „Store Init“ icon, the default value of every parameter will be overwritten by the corresponding current value.</p>
 			
+			<span id="idx_rand"></span>
 			<h5 class="action">Randomize <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.10-9-rand.png" alt="rand">
 			<p>Press Soft Button 2 in order to focus on the sound randomization. The amount of the randomization can be adjusted like editing a parameter. Press the Enter button in order to randomize all parameters.</p>
@@ -805,7 +901,7 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<img class="img-frame-alt" src="images/07.10-10.png" alt="rand">
 			<p>When clicking on the „Randomize Sound“ icon, all parameters will be randomized according to the randomization amount, shown below. Use drag gestures on the amount value in order to change the amount like adjusting a parameter.</p>
 			
-			<span id="smoothpara"></span>
+			<span id="idx_smoothpara"></span>
 			<h5 class="action">Transition Time <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.10-11-transition.png" alt="trans time">
 			<p>Press Soft Button 3 in order to focus on the transition time and adjust it like editing a parameter. The transition time will be effective when recalling presets, defining the smoothing time of the parameters, approaching their new values.</p>
@@ -814,16 +910,20 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<img class="img-frame-alt" src="images/07.10-12.png" alt="trans time">
 			<p>Change the transition time by using drag gestures on the „Transition Time“ value, like adjusting a parameter. The transition time will be effective when recalling presets, defining the smoothing time of the parameters, approaching their new values.</p>
 
+			<h5 class="action">Sound Manipulation and Locking</h5>
+			<img class="img-frame-alt" src="images/sound-tab-lock.png" alt="sound lock">
+			<p>As described in chapter 4.6.5, parameters of locked groups are not affected by sound manipulations. For example, randomizing all parameters may not be a good idea when considering the Master, Unison and Scale groups, as the random change can have too much of an impact, leading to unwanted, bad sounding or even harmful results (should the Master Volume increase considerably). So we recommend to lock these three groups before using the randomize function.</p>
+
 		</div><!-- end txt -->
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="setup"></div>
+		<div id="idx_setup"></div>
 		<div class="txt-block">
 			
-			<h3>4.12 Setup</h3>
+			<h3>4.12 Setup Navigation</h3>
 			
-			<p>This section explains the navigation to and within the setup menu. Refer to chapter 9 for a detailed reference.</p>
+			<p>This section explains the navigation to and within the setup menu.<br />Refer to <a href="../setup-c15/setup-system.html">chapter 6 </a>for a detailed reference.</p>
 
 			<h5 class="action">Focus on setup menu <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/mp-setup.png" alt="focus setup">
@@ -844,56 +944,57 @@ When pressing the Edit button, the user-definable info text can be edited in the
 			<h5 class="action">Escape a submenu/property <b>[Panel Unit]</b></h5>
 			<img class="img-frame" src="images/BOLED_07.11-6.png" alt="escape sub">
 			<p>Soft Buttons 3 and 4 can be used to navigate back to the next higher level. When a property is in focus, the Enter button has the same effect.</p>
-
+			
+			<span id="idx_setupwin"></span>
 			<h5 class="action">Escape a submenu/property <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.11-2.png" alt="escape sub ui">
-			<p>The topright main menu provides the „Show/Hide Setup“ option, toggling the visibility of the Setup window.
+			<img class="img-frame" src="images/setup-dev-set.png" alt="escape sub ui">
+			<p>The topright View menu provides the „Show/Hide Setup“ option, toggling the visibility of the Setup window.
 The menu content is organized in tabs which can be focussed. In each tab, the corresponding properties are provided and can be adjusted (some properties have context menus, some can be adjusted by drag gestures, like a parameter).</p>
 
 		</div><!-- end txt -->	
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="backups"></div>
+		<span id="idx_backups"></span>
 		<div class="txt-block">
 			
-			<span id="backups"></span>
 			<h3>4.13 Backups</h3>
 
-			<p>As previously mentioned, single banks can be imported and exported from and to either a connected USB stick or the connected external device. In addition, the transfer of all banks at once is also provided, which allows for fast and easy backups.</p>
+			<p>As previously mentioned, singla banks can be imported and exported from an to either a connected USB stick or the conected external device. In addition, the transfer of all banks at once is also provided, which allows for fast and easy backups.</p>
 			
-			<h5 class="action">Exporting and Restoring Backups (on USB stick) <b>[Panel Unit]</b></h5>
-			<img class="img-frame" src="images/BOLED_07.13-1.png" alt="export USB">
+			<h5 class="action">Saving and Restoring Backups (on USB stick) <b>[Panel Unit]</b></h5>
+			<img class="img-frame" src="images/BOLED_menu-save-restore.png" alt="save restore USB">
 			<p>In the Setup menu, the Backup submenu can be found, providing a Restore and an Export option. When a USB stick is connected, pressing the Enter button will allow for exporting or restoring of backups.</p>
 			
-			<h5 class="action">Exporting and Restoring Backups (on external device) <b>[Graphical UI]</b></h5>
-			<img class="img-frame" src="images/07.13-2_bkp-glob-menu.png" alt="adjust prop">
-			<p>The global menu provides options for exporting and restoring backups. When „Export all Banks as Backup File“ is selected, all banks will be copied into a single file which then will be downloaded on the external device. When „Import all Banks from Backup File“ is selected, a backup file present on the external device can be chosen and uploaded.</p>
+			<h5 class="action">Saving and Restoring Backups on external device <b>[GUI only]</b></h5>
+			<img class="img-frame" src="images/bg-menu-save-restore.png" alt="bg menu save restore">
+			<p>The background menu of the Graphical User Interface provides options for saving and restoring backups. When „Save all Banks as Backup File“ is selected, all banks will be copied into a single file which then will be downloaded on the external device. When „Restore all Banks from Backup File“ is selected, a backup file present on the external device can be chosen and uploaded. You will find the downloaded file at a location depending on your browser settings.</p>
 
-<p class="note">Please keep in mind that when restoring from a backup file, all banks currently present on the C15 will be lost. We recommend to export a backup before restoring in order to maintain all present data.</p>
+<p class="note">Please keep in mind that when restoring from a backup file, all banks currently present on the C15 will be lost. We recommend to save a backup file before restoring in order to maintain all preset data.</p>
 
 		</div><!-- end txt -->
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="basefunct"></div>
+		<div id="idx_basefunct"></div>
 		<div class="txt-block">
 			
-			<span id="baseunit-2"></span>
+			<span id="idx_baseunit-2"></span>
 			<h3>4.14 Base Unit functionality</h3>
 
 			<p>Here is a quick recap of the Base Unit functionality, compiling all available features into a single overview.</p>
 			<img class="img-frame" src="images/SOLED_07.6.1-1-mode.png" alt="bu panel mode">
-			<p>The Mode button cycles four distinct operation modes, which are explained in the
+			<p>The <span id="idx_modebtn-6"></span>Mode button cycles four distinct operation modes, which are explained in the
 following. The functionality of the remaining buttons depends on the current mode.</p>
-			<span id="ediplaymode"></span>
+			<span id="idx_ediplaymode"></span><span id="idx_noteshift"></span> 
 			<img class="img-frame" src="images/SOLED_07.12-2-transpose.png" alt="bu panel play">
 			<p>In <em>Play mode</em>, both Ribbons function as ordinary Hardware Sources. If they are assigned to a Macro Control, they will be operable.
-The +/- buttons can be used for transposing the whole instrument (note shift). Pressing a single button will perform an octave shift, pressing one button while holding the other will perform a semitone shift. <span id="absolute"></span>The Funct button switches between absolute and relative behavior for the most recently used Ribbon (indicated by a pointy bracket).</p>
+The +/- buttons can be used for transposing the whole instrument (note shift). Pressing a single button will perform an octave shift, pressing one button while holding the other will perform a semitone shift. <span id="idx_absolute"></span>The Funct button switches between absolute and relative behavior for the most recently used Ribbon (indicated by a pointy bracket).</p>
 			<img class="img-frame" src="images/SOLED_07.12-3.png" alt="bu panel edit">
 			<p>In <em>Edit Mode</em>, Ribbon 1 will operate as an additional parameter editor for the current parameter focus. The remaining functionality remains as described for the Play mode.</p>
-			<img class="img-frame" src="images/SOLED_07.12-4.png" alt="bu panel bank"><span id="bankmode-2"></span>
+			<img class="img-frame" src="images/SOLED_07.12-4.png" alt="bu panel bank"><span id="idx_bankmode-2"></span>
 			<p>In <em>Bank Mode</em>, both Ribbons remain operable as Hardware Sources. The +/- but- tons can be used to navigate banks. The Funct button will serve as a direct load switch (when held for a second). The last selected preset of the corresponding bank will be loaded.</p>
+			<span id="idx_premode"></span>
 			<img class="img-frame" src="images/SOLED_07.12-5.png" alt="bu panel preset">
 			<p>In <em>Preset Mode</em>, both Ribbons remain operable as Hardware Sources. The +/- but- tons can be used to navigate presets.
 The Funct button will serve as a Load button (when pressed) or as a direct load switch (when held for a second).</p>
@@ -902,118 +1003,242 @@ The Funct button will serve as a Load button (when pressed) or as a direct load 
 
 <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->			
 
-		<div id="guifunct"></div>
+		<div id="idx_guifunct"></div>
 		<div class="txt-block">
 			
 			<h3>4.15 Graphical UI exclusive functionality</h3>
 			
-			<p>There are some more features of the Graphical User Interface, which are not available on both Base and Panel unit.</p>
-
+			<p>There are some more features of the Graphical User Interface, which are not available on both Base and Panel unit. Other features are available on both User Interfaces, but are organized in different ways.</p>
+			
+			<span id="idx_presetsearch"></span>
 			<h5 class="action">Preset Search</h5>
-			<img class="img-frame" src="images/07.13-1-htmlhelp.png" alt="preet search 1">
-			<img class="img-frame" src="images/07.13-2.png" alt="preet search 2">
-			<p>All available presets can be searched for keywords, the search results will be highlighted until the search is cancelled.
-Preset names and comment texts will be evaluated when searching. This means, that the success of a search strongly depends on the level of documentation.
-The most sophisticated way of tagging and searching for presets would be using hashtags for important keywords.</p>
+			<img class="img-frame" src="images/07.13-1-htmlhelp.png" alt="preset search 1">
+			<img class="img-frame" src="images/preset-search-a.png" alt="preset search 2">
+			<p>All available presets can be searched for keywords, the search results will be highlighted until the search is cancelled. Search keywords can be logically combined by setting the locical operator (AND: every keyword has to match, OR: any keyword that matches).<br />The search algorithm can further be specified to include preset names, preset comments and the device names where presets originated from (as the selectable options show in the Search window).<br />The “Zoom to all matches” option will set the zoom level of the main area, so that every match is instantly visible. The success of a search strongly depends on the level of documentation (meaningful preset names and descriptive comments).<br />Bank information (comments) are not included in the search. Using hashtags for specific keywords can be a sophisticated method of preset search and documentation. The most sophisticated way of tagging and searching for presets would be using hashtags for important keywords.</p>
 
+			<span id="idx_presetdrag"></span>
 			<h5 class="action">Preset Drag and Drop</h5>
 			<img class="img-frame" src="images/07.15-3.png" alt="preset-dnd">
-			<p>A selected preset can be dragged on other positions in a bank, into other banks or on the background. When it is dropped, it will move to the new position (if the bank remains the same), or it will be copied to the new position (creating a new bank if it was dropped on the background).<br />If a preset is dropped directly on another preset (as indicated by a red background), the other preset will be replaced. In a similar manner, banks can be dragged as well in order to change their position in the main area, or to copy their contents into other banks.</p>
-			
+			<p>A selected preset can be dragged on other positions in a bank, into other banks or on the background. When it is dropped, it will move to the new position (if the bank remains the same), or it will be copied to the new position (creating a new bank if it was dropped on the background).<br />
+If a preset is dropped directly on another preset (as indicated by a red background), the other preset will be replaced. In a similar manner, banks can be dragged as well in order to change their position in the main area, or to copy their contents into other banks.</p>
+
+			<span id="idx_presetselect"></span>
 			<h5 class="action">Multiple Preset Selection</h5>
-			<img class="img-frame" src="images/07.15-4.png" alt="preset-select">
-			<p>Bank context menus (invoked by a right-click or tapping and holding on a bank in the main area) provide an option to start and finish the selection of multiple presets. During multiple selection, presets of any bank can be added or removed from the selection (but they will not be loaded). <br />All selected presets can then be deleted (see context menu) or dragged into any bank at any position or on the background, creating a new bank containing copies of the selected presets. The selection of multiple presets can be finished in the context menu or by a click on the background.</p>
+			<img class="img-frame" src="images/multi-select.png" alt="preset-select">
+			<img class="img-frame-alt-2" src="images/t-shift.png" alt="shift" width="110">
+			<p>Bank context menus (invoked by a right-click or tapping and holding on a bank in the main area) provide an option to start and finish the selection of multiple presets. Alternatively, the Shift key can be used to hold the Multiple Selection mode.<br />During multiple selection, presets of any bank can be added or removed from the selection (but they will not be loaded). All selected presets can then be deleted (see context menu) or dragged into any bank at any position or on the background, creating a new bank containing copies of the selected presets.<br />The selection of multiple presets can be finished in the context menu or by a click on the background. In the future, there will be a copy option for multiple presets as well.</p>
 
 <p class="note">Note that Preset Drag and Drop and Multiple Preset Selection are only available, if the GUI Settings (explained in the following) allow for context menus and drag and drop.</p>
-			
+
+<span id="idx_presetcomp"></span>
+
+			<h5 class="action">Preset Compare</h5>
+
+			<p>Two presets can be compared against each other, examining their individual differences. This may be useful for distinguishing several versions of a preset that are only slightly different. Two compare methods are available, as shown in the following:</p>
+			<img class="img-frame" src="images/menu-preset-compare.png" alt="menu preset compare">
+			<p>By using the multiple preset selection mechanism and selecting two presets, a context menu entry "Compare ..." will be available when right-clicking on the selection. The two presets will be compared against each other.</p>
+			<img class="img-frame" src="images/menu-preset-eb-compare.png" alt="menu preset eb compare">
+			<p>A right-click on any preset will provide a "Compare to Editbuffer ..." option. The preset will be compared to a copy of the Editbuffer (the current parameter settings).</p>
+			<img class="img-frame" src="images/preset-compare.png" alt="preset compare">
+			<p>When starting the compare mechanism by either method, the Compare window will appear, showing every parameter or aspect that differs between the two presets. Equal parameters or aspects are not visible. Any of the two presets can be loaded, as provided by a Load icon in the header section of the window (so, both Presets can be tested and played without closing the Compare window).<br />When comparing a preset to the Editbuffer, subsequent adjustments to parameters that change the Editbuffer will not be recognized by the Compare window automatically. The Refresh button can be used in order to get a new copy of the current Editbuffer, ensuring that the comparison is up-to-date.</p>
+
+			<span id="idx_movmindockbanks"></span>
 			<h5 class="action">Move all Banks</h5>
-			<img class="img-frame" src="images/07.15-5.png" alt="move-all banks">
+			<img class="img-frame" src="images/move-all-banks.png" alt="move-all banks">
 			<p>There is a shortcut to move all banks at the same time, provided by the global context menu (provided by a right-click or tapping and holding on the background). If the „Move all Banks“ option is selected, a white rectangle will appear, surrounding all banks. Drag gestures now allow for moving all banks to another place in the main area. To stop, re-select the option or click on the background.</p>
-						
+
 			<h5 class="action">Minimize Banks</h5>
-			<img class="img-frame" src="images/07.15-6.png" alt="min-all banks">
+			<img class="img-frame" src="images/mini-banks.png" alt="min-all banks">
 			<p>The local bank context menu provides an option to minimize a bank. When a bank is minimized, it will consume only a small space, but still provides access to all contained presets (the access is only sequential, though).</p>
 									
 			<h5 class="action">Docking Banks</h5>
-			<img class="img-frame" src="images/07.15-7.png" alt="dock banks">
-			<p>When dragging banks manually to certain positions in the main area, they might not align very well. In order to create an alignment, a bank can be docked to another by placing it close to the right or bottom. Docked banks also behave as a group, when selecting the left- or topmost bank, as drag gestures will then move all docked banks at once. Undocking banks can be achieved by selecting a certain bank that is not left- or topmost and dragging it to a remote position.</p>
-
-			<h5 class="action">Preset and Bank Visibility</h5><span id="bankvis"></span>
-			<img class="img-frame" src="images/07.15-8.png" alt="bank vis">
-			<p>The main menu provides an option to show or hide all available banks. This option provides a possibility to „clean up“ the main area, only focussing on parameters. Of course, all banks are still available in the Preset tab and the Hardware Interface.</p>
+			<img class="img-frame" src="images/dock-bank.png" alt="dock banks">
+			<p>When dragging banks manually to certain positions in the main area, they might not align very well. In order to create an alignment, a bank can be docked to another by dragging it close to other banks. The bank outlines change, indicating possible docking targets (top, right, bottom, left) for the dragged bank. When banks are docked together, they also behave as a group that can be dragged as a whole or docked to larger bank clusters. The top- or leftmost bank of a cluster behaves as the master and will move the whole cluster when dragging it, while the other banks can be dragged away from the cluster in order to split the group back into individual parts.</p>
 			
-			<h5 class="action">Parameter Visibility</h5><span id="paramvis"></span>
-			<img class="img-frame" src="images/07.15-9.png" alt="paramvis">
-			<p>Similarly, the parameters in the main area can be shown or hidden, as provided by the main menu. When all parameters are hidden, the focus can be put on just the presets and banks. Of course, all parameters can still be edited in the Parameter tab (although they cannot be selected anymore) or on the Hardware User Interface (still providing complete access).</p>
+			<span id="idx_viewmenu"></span>
+			<h5 class="action">The View Menu</h5>
+			<img class="img-frame" src="images/view-menu.png" alt="view menu">
+			<p>The View menu (available in the top-right corner, indicated by a menu icon) provides quick access to crucial components of the Graphical User Interface. The following components can be made visible or invisble (GUI shortcuts to the components are shown as well):</p>
 
-			<span id="guiset"></span>
+<h6>Setup</h6>
+<p>When clicking this option, the Setup menu opens in a new window. For more information about the Setup menu, refer to <a href="../setup-c15/setup-system.html">chapter 6</a>.</p>
+
+<h6>Preset Search</h6>
+<p>As described, presets can be searched for keywords. Click on this option to start a search task, opening the Search window.</p>
+
+<h6>Undo History</h6>
+<p>All user actions are tracked and can be undone, as provided by Undo and Redo icons above the Preset tab. In order to have a complete overview or browse through the history, the Undo History window can be used, showing all tracked actions in a tree-like structure.</p>
+
+<h6>Preset Info</h6>
+<p>Every preset contains metadata, such as a comment text or the creation date, for example. All the preset-relevant information is provided by the Preset Info window.</p>
+
+<h6>Bank Info</h6>
+<p>Similarly, banks also contain metadata which will be provided by the Bank Info window.</p>
+
+<h6>Parameter Info</h6>
+<p>In addition, specific parameter information will be provided by the Parameter Info window.</p>
+
+<h6>Presets</h6>
+<p>All the floating banks in the main area can also be shown or hidden, shifting the focus to the parameters. Nevertheless, all banks still are available in the Preset tab.</p>
+
+<h6>Parameter Editor</h6>
+<p>All parameters in the main area can also be shown or hidden, shifting the focus to presets and banks. The Parameter tab still provides the opportunity to edit a selected parameter. However, parameters cannot be selected anymore (the Hardware User Interface still provides complete access).</p>
+
+<h6>Open Help</h6>
+<p>The C15 User Manual is also available as a separate HTML document, which will open in a new browser tab.<//p>
+
+			<span id="idx_contmenu"></span>
+			<h6 class="action">Context Menus</h6>
+			<p>There are several context menus available providing different functionalities (according to the context). They all can be closed by pressing the Escape key.</p>
+			
+			<h6 class="mb05">Background Context Menu</h6>
+			<img class="img-frame-alt" src="images/bg-menu.png" alt="bg menu">
+			<p>The Background context menu appears when right-clicking on the background. Alternatively, a long touch gesture can be used to invoke the menu. The menu provides global functionality such as creating a new bank, importing a bank (from the external device), saving or restoring backups and moving all banks at once.</p>
+
+			<h6 class="mb05">Preset Context Menu</h6>
+			<img class="img-frame-alt" src="images/preset-menu.png" alt="preset menu">
+			<p>There are a two ways to invoke the Preset context menu. In the Preset tab, a menu icon is provided for presets. In addition, a right click (or long touch gesture) on a preset (in the Preset tab or in the main area) can also be used. The menu provides preset-specific functionalities such as handling multiple preset selection, an option to show the Preset Info window, a rename option, cut/copy/paste/delete options for selected presets, the compare option and a fast way to change the color tag of selected presets.</p>
+
+			<span id="idx_bankcontmenu"></span>
+			<h6 class="mb05">Bank Context Menu</h6>
+			<img class="img-frame-alt" src="images/bank-menu.png" alt="bank menu">
+			<p>The Bank context menu can be invoked by the Bank menu icon in the Preset tab, or by a right click (or long touch gesture) on any bank header (in the Preset tab or in the main area). Depending on where the Bank context menu was invoked, different functionalities will be provided. In general, the following options are provided: create a new bank, import/export a bank (from/to the external device), an option to show the Bank Info window, a rename option, copy/paste/delete options, move left/right options and the minimize/maximize option.</p>
+
+			<h6 class="mb05">Parameter Context Menu</h6>
+			<p>Finally, some parameters and all parameter group headers also provide a context menu in order to adjust parameter-specific behaviors. Similar to the other context menus, they can be invoked by right-clicking on an element, or by using a long touch gesture. </p>
+			<img class="img-frame" src="images/hw-source-menu.png" alt="hw-source menu">
+			<p>In the Hardware Sources and Amounts group, the return behavior of pedals and ribbons can be set.</p>
+			<img class="img-frame" src="images/mc-menu.png" alt="mc menu">
+			<p>Macro Controls provide options for renaming, viewing the Parameter Info window (showing their user-definable info text) and resetting (clearing all mappings to target parameters).</p>
+			<img class="img-frame" src="images/group-menu.png" alt="group menu">
+			<p>Each group header additionally provides local (affecting the specific group) and global (affecting all groups) locking options.<//p>
+
+			<span id="idx_guiset"></span>
 			<h5 class="action">GUI Settings</h5>
 			<img class="img-frame" src="images/07.13-7.png" alt="gui set">
 			<p>There are some options concerning only the Graphical User Interface. They are provided in the Setup menu, which can be called via the top right Main menu icon. These settings are not available on the Hardware Interface.</p>
 			
+			<span id="idx_selas"></span>
 			<p><strong>Selection Auto Scroll</strong><br />
 Determine if selected items should be automatically scrolled to. Available options are none, parameters, presets and both (presets and parameters).</p>
 	        
+	        <span id="idx_editparam-2"></span>
 	        <p><strong>Edit Parameter</strong><br />
 Determine if parameters can be directly adjusted in the main area. Available options are always, if (the parameter is) selected and never. In the Parameter tab, edits are always possible.</p>
 			
-			<span id="context"></span>
+			<span id="idx_context"></span>
 			<p><strong>Context Menus</strong><br />
 Determine if context menus are available in the main area. They can be invoked by a right click or tapping and holding. Available options are on and off.</p>
 			
 			<p><strong>Preset Drag and Drop</strong><br />
 			Determine if presets can be moved in the main area by drag and drop gestures. Available options are on and off.</p>
 			
-			<span id="dispscale"></span>
+			<span id="idx_dispscale"></span>
 			<p><strong>Display Scaling Factor</strong><br />
 			Should the Graphical User Interface appear too small or big for the device screen resolution, this option can compensate. Available scaling factors are 50%, 75%, 100%, 125% and 150%.</p>
-			
+
+			<span id="idx_strpbrt"></span>
 			<p><strong>Stripe Brightness</strong><br />
 The main area background features a radial arrangement of lines pointing to the center position. They can help keeping track of the current position. Available options are o , 10%, 25% and 50%.</p>
 			
-			<span id="bmpcache"></span>
+			<span id="idx_bmpcache"></span>
 			<p><strong>Bitmap Cache</strong><br />
 Determine how objects of the Graphical User Interface should be redrawn. Avail- able options are o  and on. If the bitmap cache is activated, CPU consumption on the device will decrease, but more RAM will be required. If the cache is deactivated, CPU consumption will rise but RAM usage will decrease. The e ect of this settings strongly depends on the external device.</p>
 
-			<span id="devopt"></span>
+			<span id="idx_devopt"></span>
 			<p><strong>Show Developer Options</strong><br />
 There are some more options (beyond the usual interaction with the C15) that are not relevant for the user, but can be important for developers (when testing a device or running diagnostics of possible malfunctions).Therefore, the Developer Options can remain hidden in usual circumstances. If they are displayed, they can be found way above the parameters in the main area. We recommend to simply ignore these options.</p>
 			
 			<div class="mb3"></div>
+
+<span id="idx_shortcuts"></span>
 			
-			<span id="hotk"></span>
-			<h5 class="action">Available Hot Keys</h5>
-
-			<img class="img-frame-alt-2" src="images/t-pfeil.png" alt="pil" width="170">
-			<p>The arrow keys can be used to navigate presets and banks. Presets of a bank can be navigated by using up and down arrow keys, banks can be navigated by using left and right arrow keys.</p>
-			<div class="mb2"></div>
+			<h5 class="action">GUI Shortcuts</h5>
 			
-			<span id="deckey"></span>
-			<img class="img-frame-alt-2" src="images/t-km.png" alt="km" width="115">
-			<p>Parameters can be adjusted by using the K and M keys, working like the Inc and Dec buttons. The M key will decrement, the K key will increment the control position.</p>
 			<div class="mb2"></div>
+
+			<table class="sc-table"><tbody>
+				
+			<tr><th colspan="2">Toolbars</th></tr>
+			<tr><td class="yellow fw400">Shift + P</td><td>show/hide Preset Tab</td></tr>
+			<tr><td class="yellow fw400">Shift + E</td><td>show/hide Parameter Tab</td></tr>
+			<tr><td class="yellow fw400">Shift + N</td><td>show/hide Sound Tab</td></tr>
 			
-			<span id="finekey"></span>
-			<img class="img-frame-alt-2" src="images/t-shift.png" alt="shift" width="110">
-			<p>The Shift key holds the Fine mode while being pressed.</p> 
-			<div class="mb2"></div>
+			<tr><th colspan="2">Windows</th></tr>
+			<tr><td class="yellow fw400">I</td><td>show/hide Parameter Info window</td></tr>
+			<tr><td class="yellow fw400">P</td><td>show/hide Preset Info window</td></tr>
+			<tr><td class="yellow fw400">B</td><td>show/hide Bank Info window</td></tr>
+			<tr><td class="yellow fw400">U</td><td>show/hide Undo History window</td></tr>
+			
+			<tr><th colspan="2">Context Menus</th></tr>
+			<tr><td class="yellow fw400">Ctrl + Click or<br />Right Mousebuton or<br />Long Touch</td>
+			<td>open the local context menu</td></tr>
+			
+			
+			<tr><th colspan="2">Banks/Presets</th></tr>
+			<tr><td class="yellow fw400">Right Arrow</td><td>select next Bank</td></tr>
+			<tr><td class="yellow fw400">Left Arrow</td><td>select previous Bank</td></tr>
+			<tr><td class="yellow fw400">Down Arrow</td><td>select next Preset</td></tr>
+			<tr><td class="yellow fw400">Up Arrow</td><td>select previous Preset</td></tr>
+			<tr><td class="yellow fw400">Enter</td><td>load/reload selected Preset</td></tr>
+			<tr><td class="yellow fw400">Del</td><td>delete the selected Preset(s)</td></tr>
+			<tr><td class="yellow fw400">D</td><td>enable/disable Direct Load (and open the Preset toolbar)</td></tr>
+			<tr><td class="yellow fw400">Shift + Click on Preset</td><td>start Multiple Selection</td></tr>
+			<tr><td class="yellow fw400">Click on background</td><td>finish Multiple Selection (and restore the previous selection)</td></tr>
+			<tr><td class="yellow fw400">Shift + Mouse frame</td><td>select multiple Presets</td></tr>
+				
+			<tr><th colspan="2">Preset Store</th></tr>
+			<tr><td class="yellow fw400">S</td><td>activate Store Select mode (and open the Preset tab)</td></tr>
+			<tr><td class="yellow fw400">Enter</td><td>apply Store (and disable the Store Select mode)</td></tr>
+			<tr><td class="yellow fw400">Ctrl + S</td><td>store Preset at current position (depending on Append/Insert/Overwrite)</td></tr>
+			
+			<tr><th colspan="2">Rename</th></tr>
+			<tr><td class="yellow fw400">R</td><td>open the Rename window</td></tr>
+			<tr><td class="yellow fw400">Enter</td><td>Apply (and close the window)</td></tr>
+			<tr><td class="yellow fw400">Esc</td><td>Cancel (and close the window)</td></tr>
+			
+			<tr><th colspan="2">Parameter Editing</th></tr>
+			<tr><td class="yellow fw400">K</td><td>increment value, coarse</td></tr>
+			<tr><td class="yellow fw400">Shift + K</td><td>increment value, fine</td></tr>
+			<tr><td class="yellow fw400">M</td><td>decrement value, coarse</td></tr>
+			<tr><td class="yellow fw400">Shift + M</td><td>decrement value, fine</td></tr>
+			<tr><td class="yellow fw400">Double Click</td><td>set to Default value</td></tr>
+			
+			<tr><th colspan="2">Search</th></tr>
+			<tr><td class="yellow fw400">F</td><td>open Preset Search dialog</td></tr>
+			<tr><td class="yellow fw400">Esc</td><td>finish Search (and close the dialog)</td></tr>
+			
+			<tr><th colspan="2">Undo/Redo</th></tr>
+			<tr><td class="yellow fw400">Ctrl + Z</td><td>Undo</td></tr>
+			<tr><td class="yellow fw400">Ctrl + Y</td><td>Redo</td></tr>
+			
+			<tr><th colspan="2">Help</th></tr>
+			<tr><td class="yellow fw400">Ctrl + H</td><td>open HTML Help (in new browser tab)</td></tr>
+			
+			<tr><th colspan="2">Panning</th></tr>
+			<tr><td class="yellow fw400">Space + Drag</td><td>temporarily disable parameter editing and preset/bank dragging in order to allow panning gestures on them</td></tr>
+			
+			<tr><th colspan="2">Zooming</th></tr>
+			<tr><td class="yellow fw400">Double Click on background</td><td>1st time: zoom to standard position and scale<br />
+														2nd time: back to last zoom position and scale</td></tr>
+			<tr><td class="yellow fw400">Double Click on group header</td><td>1st time: zoom group to fullscreen<br />
+														2nd time: back to last zoom position and scale</td></tr>
+			
+			</tbody></table>
 
-			<img class="img-frame-alt-2" src="images/t-pos.png" alt="pos" width="170">
-			<p>The three available tabs of the Graphical User Interface can be navigated by using the P (Parameter tab), O (Preset tab) and S (Sound tab) keys. When a certain tab is visible, pressing the corresponding key will hide the tab area.</p>
-
-			<img class="img-frame-alt-2" src="images/t-h.png" alt="h" width="60">		
-			<p>The H key determines if banks are visible in the main area.</p>
-			<div class="mb2"></div>
-
-			<img class="img-frame-alt-2" src="images/t-return.png" alt="return" width="70">
-			<p>The Return key will load the currently selected preset.</p>
-			<div class="mb2"></div>
-
-			<img class="img-frame-alt-2" src="images/t-esc.png" alt="esc" width="110">		
-			<p>The Escape key will cancel open dialog windows.</p>
-			<div class="mb2"></div>
+<div class="mb2"></div>
 
 		</div><!-- end txt -->
+
+<!--
+	<div id="idx_mainmenu"></div>
+		<div class="txt-block mb3">
+			
+			<h5 class="action">Main Menu (GUI)</h5>
+			<p>The main menu in the top right corner of the Graphical User Interface provides access to several setup windows and functions as ...</p>
+			<img src="images/mainmenu.png" alt="mainmenu">
+		</div>
+-->
 
 	</div><!-- end main-content -->
 
