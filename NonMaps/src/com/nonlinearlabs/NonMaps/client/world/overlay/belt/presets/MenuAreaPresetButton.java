@@ -19,9 +19,18 @@ public class MenuAreaPresetButton extends SVGImage {
 	@Override
 	public Control mouseDown(Position pos) {
 		Preset p = getPreset();
+		Overlay o = getOverlay();
+
+		if(o.getContextMenu() instanceof PresetContextMenu) {
+			o.removeExistingContextMenus();
+			return this;
+		}
+
 		if (p != null) {
-			Overlay o = getOverlay();
-			return o.setContextMenu(pos, new PresetContextMenu(o, p));
+			Position po = getPixRect().getLeftTop();
+			PresetContextMenu pm = new PresetContextMenu(o, p);
+			po.moveBy(3, -pm.getDesiredHeight() + 4);
+			return o.setContextMenu(po, pm);
 		}
 		return super.click(pos);
 	}
@@ -32,12 +41,7 @@ public class MenuAreaPresetButton extends SVGImage {
 
 	@Override
 	public Control onContextMenu(Position pos) {
-		Preset p = getPreset();
-		if (p != null) {
-			Overlay o = getOverlay();
-			return o.setContextMenu(pos, new PresetContextMenu(o, p));
-		}
-		return super.click(pos);
+		return mouseDown(pos);
 	}
 
 	Preset getPreset() {

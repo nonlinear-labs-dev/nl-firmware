@@ -18,29 +18,35 @@ public class StoreOptionsMenu extends SVGImage {
 		public StoreOptionsContextMenu(OverlayLayout parent) {
 			super(parent);
 
-			addChild(new ContextMenuItem(this, "Append") {
-				@Override
-				public Control click(Position eventPoint) {
-					NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "append");
-					return super.click(eventPoint);
-				}
-			});
 
-			addChild(new ContextMenuItem(this, "Insert") {
-				@Override
-				public Control click(Position eventPoint) {
-					NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "insert");
-					return super.click(eventPoint);
-				}
-			});
+			if(!currentSetting.equals("Append")) {
+				addChild(new ContextMenuItem(this, "Append") {
+					@Override
+					public Control click(Position eventPoint) {
+						NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "append");
+						return super.click(eventPoint);
+					}
+				});
+			}
 
-			addChild(new ContextMenuItem(this, "Overwrite") {
-				@Override
-				public Control click(Position eventPoint) {
-					NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "overwrite");
-					return super.click(eventPoint);
-				}
-			});
+			if(!currentSetting.equals("Insert")) {
+				addChild(new ContextMenuItem(this, "Insert") {
+					@Override
+					public Control click(Position eventPoint) {
+						NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "insert");
+						return super.click(eventPoint);
+					}
+				});
+			}
+			if(!currentSetting.equals("Overwrite")) {
+				addChild(new ContextMenuItem(this, "Overwrite") {
+					@Override
+					public Control click(Position eventPoint) {
+						NonMaps.get().getServerProxy().setSetting("PresetStoreModeSetting", "overwrite");
+						return super.click(eventPoint);
+					}
+				});
+			}
 		}
 	}
 
@@ -76,7 +82,16 @@ public class StoreOptionsMenu extends SVGImage {
 
 	private Control openContextMenu(Position pos) {
 		Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-		return o.setContextMenu(pos, new StoreOptionsContextMenu(o));
+
+		if(o.getContextMenu() instanceof StoreOptionsContextMenu) {
+			o.removeExistingContextMenus();
+			return this;
+		}
+
+		pos = getPixRect().getLeftTop();
+		StoreOptionsContextMenu socm = new StoreOptionsContextMenu(o);
+		pos.moveBy(0, -socm.getDesiredHeight() - 2);
+		return o.setContextMenu(pos, socm);
 	}
 
 	public void update(Node settingsNode) {
