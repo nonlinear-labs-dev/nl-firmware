@@ -4,6 +4,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundControl.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundControl.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 
 ModulationCarousel::ModulationCarousel (Mode mode, const Rect &pos) :
     super (pos)
@@ -14,8 +15,7 @@ ModulationCarousel::ModulationCarousel (Mode mode, const Rect &pos) :
 }
 
 ModulationCarousel::~ModulationCarousel ()
-{
-}
+= default;
 
 void ModulationCarousel::setup (Parameter *p)
 {
@@ -25,7 +25,7 @@ void ModulationCarousel::turn ()
 {
   bool found = false;
 
-  for(auto c : getControls())
+  for(const auto &c : getControls())
   {
     if(found)
     {
@@ -46,7 +46,7 @@ void ModulationCarousel::antiTurn()
 {
   auto foundCtrl = *getControls().rbegin();
 
-  for(auto c : getControls())
+  for(const auto &c : getControls())
   {
     if(c->isHighlight())
     {
@@ -60,10 +60,21 @@ void ModulationCarousel::antiTurn()
 
 bool ModulationCarousel::onRotary (int inc, ButtonModifiers modifiers)
 {
-  for(auto c : getControls())
+  for(const auto &c : getControls())
     if(c->isHighlight())
       if(auto a = dynamic_pointer_cast<RotaryEncoder::Receiver>(c))
         return a->onRotary(inc, modifiers);
 
   return false;
+}
+
+void ModulationCarousel::setDefault() {
+  for(const auto &c : getControls()) {
+    if(c->isHighlight()) {
+      if(auto a = dynamic_pointer_cast<Defaultable>(c)) {
+        a->setDefault();
+        return;
+      }
+    }
+  }
 }
