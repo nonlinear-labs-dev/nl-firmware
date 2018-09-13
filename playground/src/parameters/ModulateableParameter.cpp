@@ -190,7 +190,7 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
 
 void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionPtr transaction, int inc)
 {
-  int src = (int) getModulationSource();
+  auto src = (int) getModulationSource();
   src += inc;
 
   while(src < 0)
@@ -199,16 +199,24 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionP
   while(src >= NUM_CHOICES)
     src -= NUM_CHOICES;
 
-  setModulationSource(transaction, (ModulationSource) src);
+  setModulationSource(std::move(transaction), (ModulationSource) src);
 }
 
 void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction, int inc, ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
-  double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
-  int rasterized = round(controlVal * denominator);
-  controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
-  setModulationAmount(transaction, controlVal);
+
+  if(modifiers[ButtonModifier::SHIFT]) {
+    if(inc < 0)
+      controlVal = ScaleConverter::getControlPositionRangeBipolar().clip(-100);
+    else
+      controlVal = ScaleConverter::getControlPositionRangeBipolar().clip(100);
+  } else {
+    double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
+    int rasterized = round(controlVal * denominator);
+    controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
+  }
+  setModulationAmount(std::move(transaction), controlVal);
 }
 
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
@@ -221,7 +229,7 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
 void ModulateableParameter::writeDifferences(Writer& writer, Parameter* other) const
 {
   Parameter::writeDifferences(writer, other);
-  ModulateableParameter *pOther = static_cast<ModulateableParameter*>(other);
+  auto *pOther = static_cast<ModulateableParameter*>(other);
 
   if(getModulationAmount() != pOther->getModulationAmount())
   {
