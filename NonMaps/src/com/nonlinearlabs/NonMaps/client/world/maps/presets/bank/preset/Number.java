@@ -30,9 +30,4 @@ class Number extends Label {
 	public double getRightMargin() {
 		return 0;
 	}
-
-	@Override
-	protected String getFontName() {
-		return "regularfont";
-	}
 }
