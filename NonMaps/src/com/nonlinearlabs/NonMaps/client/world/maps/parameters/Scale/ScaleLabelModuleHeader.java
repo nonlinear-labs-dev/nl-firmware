@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.Scale;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Name;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -11,7 +12,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterGroupVert
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 
 public class ScaleLabelModuleHeader extends LabelModuleHeader {
 
@@ -37,9 +37,7 @@ public class ScaleLabelModuleHeader extends LabelModuleHeader {
 
 	@Override
 	public Control onContextMenu(Position pos) {
-		ContextMenusSetting contextMenuSettings = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getSetup()
-				.getContextMenuSettings();
-		if (contextMenuSettings.isEnabled()) {
+		if (Setup.get().localSettings.contextMenus.isTrue()) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 			return o.setContextMenu(pos, new ScaleGroupContextMenu(o, (Scale) getParent()));
 		}
@@ -56,7 +54,8 @@ public class ScaleLabelModuleHeader extends LabelModuleHeader {
 			double fontHeightInUnits = getFontHeight();
 			double fontHeightInPixels = toYPixels(fontHeightInUnits) * 0.7;
 			ctx.setFont(fontHeightInPixels + "px " + getFontName());
-			ctx.fillText("\ue170", pixRect.getLeft() + toXPixels(15), pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			ctx.fillText("\ue170", pixRect.getLeft() + toXPixels(15),
+					pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 		}
 	}
 

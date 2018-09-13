@@ -1,10 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
+import java.util.ArrayList;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.contextStates.ClipContext;
-import com.nonlinearlabs.NonMaps.client.world.*;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -16,19 +17,13 @@ import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.Label;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.BankContextMenu;
-
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
 import com.nonlinearlabs.NonMaps.client.world.pointer.DoubleClickWaiter;
-
-import java.util.ArrayList;
-
 
 public class Header extends Label {
 
@@ -113,7 +108,6 @@ public class Header extends Label {
 		if (b == dragProxy.getOrigin())
 			return null;
 
-
 		if (Setup.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
 
 			if (dragProxy.getOrigin() instanceof IPreset) {
@@ -149,11 +143,11 @@ public class Header extends Label {
 	private boolean isOpenInContextMenu() {
 		Bank bank = getParent();
 
-		for(ContextMenu cmenu: NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getContextMenus()) {
-			if(cmenu instanceof BankContextMenu) {
-				BankContextMenu bMenu = (BankContextMenu)cmenu;
+		for (ContextMenu cmenu : NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getContextMenus()) {
+			if (cmenu instanceof BankContextMenu) {
+				BankContextMenu bMenu = (BankContextMenu) cmenu;
 				Bank contextMenuBank = bMenu.getBank();
-				if(bank == contextMenuBank)
+				if (bank == contextMenuBank)
 					return true;
 			}
 		}
@@ -346,7 +340,6 @@ public class Header extends Label {
 			return null;
 
 		bank.getParent().pushBankOntoTop(bank);
-
 
 		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 

@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
@@ -50,8 +51,9 @@ public class CurrentPresetNumber extends Label {
 	public void drawSplit(int idx, Context2d ctx, String split, double x, double y) {
 		if (idx == 1) {
 			double fontHeight = getFontHeight(getPixRect());
-			Rect r = new Rect(x + Millimeter.toPixels(1), getPixRect().getCenterPoint().getY() + getVerticalFontDisplacement() - fontHeight
-					/ 2, Millimeter.toPixels(3), fontHeight);
+			Rect r = new Rect(x + Millimeter.toPixels(1),
+					getPixRect().getCenterPoint().getY() + getVerticalFontDisplacement() - fontHeight / 2,
+					Millimeter.toPixels(3), fontHeight);
 			r.fill(ctx, new RGB(255, 255, 255));
 		}
 		super.drawSplit(idx, ctx, split, x, y);

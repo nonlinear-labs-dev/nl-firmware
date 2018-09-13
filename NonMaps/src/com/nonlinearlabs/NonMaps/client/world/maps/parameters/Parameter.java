@@ -29,9 +29,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.ParameterContextMenu;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.EditParameterSetting;
-
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
 public abstract class Parameter extends LayoutResizingVertical {
@@ -39,7 +36,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private class ValueChangeListener implements QuantizedClippedValue.ChangeListener {
 		@Override
 		public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
-		} 
+		}
 
 		@Override
 		public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
@@ -99,12 +96,14 @@ public abstract class Parameter extends LayoutResizingVertical {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 
-		getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), 0, getParameterBackgroundColor(), null);
+		getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), 0, getParameterBackgroundColor(),
+				null);
 
 		super.draw(ctx, invalidationMask);
 
 		if (isSelected())
-			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, getColorSliderHighlight());
+			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
+					getColorSliderHighlight());
 	}
 
 	private RGB getParameterBackgroundColor() {
@@ -211,7 +210,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-		boolean noDrag = (Setup.get().localSettings.editParameter.getValue() == EditParameter.never) || getWorld().isSpaceDown();
+		boolean noDrag = (Setup.get().localSettings.editParameter.getValue() == EditParameter.never)
+				|| getWorld().isSpaceDown();
 
 		if (isSelected() && !noDrag) {
 
@@ -357,7 +357,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	public void onValueChanged(Initiator initiator, double diff) {
 		if (initiator == Initiator.EXPLICIT_USER_ACTION) {
-			EditBuffer.get().setParameterValue(getParameterGroupID(), getParameterID(), getValue().getQuantizedClipped(), isOracle());
+			EditBuffer.get().setParameterValue(getParameterGroupID(), getParameterID(),
+					getValue().getQuantizedClipped(), isOracle());
 		}
 
 		notifyListeners();

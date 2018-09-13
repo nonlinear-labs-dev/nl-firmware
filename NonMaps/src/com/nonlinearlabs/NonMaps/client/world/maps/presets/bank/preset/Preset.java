@@ -33,8 +33,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetDeleter;
-import com.nonlinearlabs.NonMaps.client.world.overlay.setup.ContextMenusSetting;
-
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 	private String uuid = null;
@@ -153,8 +151,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
-		name.setNonSize(parentsWidthFromFirstPass - number.getNonPosition().getWidth() - tag.getNonPosition().getWidth(), name
-				.getNonPosition().getHeight());
+		name.setNonSize(
+				parentsWidthFromFirstPass - number.getNonPosition().getWidth() - tag.getNonPosition().getWidth(),
+				name.getNonPosition().getHeight());
 		setNonSize(parentsWidthFromFirstPass, Math.ceil(getNonPosition().getHeight()));
 	}
 
@@ -179,21 +178,18 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (filterActive && isInFilterSet) {
 
-			if(loaded)
+			if (loaded)
 				colorFill = RGB.blue();
 			else
 				colorFill = new RGB(50, 65, 110);
 
-
-			if (getParent().getParent().isCurrentFilterMatch(this)) {
-					colorContour = new RGB(230, 240, 255);
+			if (isCurrentFilterMatch) {
+				colorContour = new RGB(230, 240, 255);
 
 			}
-		}
-		else if(RenameDialog.isPresetBeingRenamed(this)) {
-			colorFill = new RGB(77,77,77);
-		}
-		else {
+		} else if (RenameDialog.isPresetBeingRenamed(this)) {
+			colorFill = new RGB(77, 77, 77);
+		} else {
 			if (loaded || isOriginPreset)
 				colorFill = RGB.blue();
 			else if (selected)
@@ -212,14 +208,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		super.draw(ctx, invalidationMask);
 
-		if (filterSate == FilterState.FILTERED_OUT) {
+		if (isInFilterSet) {
 			r.fill(ctx, new RGBA(0, 0, 0, 0.75));
-		} else if (filterSate == FilterState.FILTER_MATCHES) {
-
-			if (getParent().getParent().isCurrentFilterMatch(this)) {
-					r.stroke(ctx, 2 * cp, new RGB(230, 240, 255));
-
-			}
+		} else if (isCurrentFilterMatch) {
+			r.stroke(ctx, 2 * cp, new RGB(230, 240, 255));
 		}
 	}
 
@@ -228,8 +220,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
-		if(PresetDeleter.instance != null)
-			if(PresetDeleter.instance.isPresetInSelection(this))
+		if (PresetDeleter.instance != null)
+			if (PresetDeleter.instance.isPresetInSelection(this))
 				return true;
 
 		return uuid.equals(getParent().getPresetList().getSelectedPreset());
@@ -263,7 +255,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		if(!isInMultiplePresetSelectionMode() && !isSelected()) {
+		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
 			selectPreset();
 			wasJustSelected = true;
 		}

@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import java.util.List;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -54,7 +53,7 @@ public class PresetManager extends MapsLayout {
 		List<Bank> ret = new ArrayList<>();
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
-				ret.add((Bank)c);
+				ret.add((Bank) c);
 			}
 		}
 		return ret;
@@ -143,7 +142,7 @@ public class PresetManager extends MapsLayout {
 			Preset oldPresetSelection = getSelectedPreset();
 			Preset oldLoadedPreset = getLoadedPreset();
 			NodeList children = presetManagerNode.getChildNodes();
-			
+
 			for (int i = 0; i < children.getLength(); i++) {
 				Node child = children.item(i);
 
@@ -153,18 +152,14 @@ public class PresetManager extends MapsLayout {
 
 			Preset newPresetSelection = getSelectedPreset();
 			Preset newLoadedPreset = getLoadedPreset();
-			
+
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
 			}
 
-			
-			if(oldLoadedPreset != newLoadedPreset) {
+			if (oldLoadedPreset != newLoadedPreset) {
 				onPresetLoadStatusChanged(newLoadedPreset);
 			}
-			
-			if(shouldUpdateFilter)
-				refreshFilter(false);
 
 			RenameDialog.onPresetManagerUpdate(this);
 		}
@@ -184,15 +179,16 @@ public class PresetManager extends MapsLayout {
 		if (PresetInfoDialog.isShown())
 			PresetInfoDialog.update(newPresetSelection);
 
-		if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "preset", "parameter-and-preset"))
+		if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "preset",
+				"parameter-and-preset"))
 			scrollToSelectedPreset();
 
 		if (hasMultiplePresetSelection())
 			closeMultiSelection();
 	}
-	
+
 	public void onPresetLoadStatusChanged(Preset newEditBuffer) {
-		if(PresetInfoDialog.isShown())
+		if (PresetInfoDialog.isShown())
 			PresetInfoDialog.editBufferInfoPage.updateInfo(PresetInfoDialog.getEditBuffer());
 	}
 
@@ -420,7 +416,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void startMultipleRectangle(Position pos) {
-		if(multiSelection == null)
+		if (multiSelection == null)
 			startMultiSelectionEmpty();
 		moveSomeBanks = new MoveSomeBanksLayer(this, pos);
 		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
@@ -464,7 +460,8 @@ public class PresetManager extends MapsLayout {
 			}
 
 			if (hasMultiplePresetSelection()) {
-				getNonMaps().getServerProxy().createNewBankFromPresets(toNonPosition(pos), getMultiSelection().getCSV());
+				getNonMaps().getServerProxy().createNewBankFromPresets(toNonPosition(pos),
+						getMultiSelection().getCSV());
 
 			} else {
 				getNonMaps().getServerProxy().createNewBankFromPreset(toNonPosition(pos), p);
@@ -555,9 +552,11 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
 			PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
 			PresetContextMenu.deletePresetWithBankModal(pm.hasMultiplePresetSelection(), pm, getSelectedPreset());
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().undo();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().redo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
 			PresetSearchDialog.toggle();
@@ -565,9 +564,11 @@ public class PresetManager extends MapsLayout {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
 			BankInfoDialog.toggle();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I && NonMaps.get().getNonLinearWorld().isCtrlDown() == false) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown() == false) {
 			ParameterInfoDialog.toggle();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/war/online-help/index.html", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
@@ -748,10 +749,12 @@ public class PresetManager extends MapsLayout {
 				presetsHeight = p.getNonPosition().getHeight();
 			}
 
-			if (minX != Double.MAX_VALUE && minY != Double.MAX_VALUE && maxX != Double.MAX_VALUE && maxY != Double.MAX_VALUE) {
+			if (minX != Double.MAX_VALUE && minY != Double.MAX_VALUE && maxX != Double.MAX_VALUE
+					&& maxY != Double.MAX_VALUE) {
 				NonPosition leftTop = toNonPosition(new Position(minX, minY));
 				NonPosition rightBottom = toNonPosition(new Position(maxX, maxY));
-				NonDimension dim = new NonDimension(rightBottom.getX() - leftTop.getX(), rightBottom.getY() - leftTop.getY());
+				NonDimension dim = new NonDimension(rightBottom.getX() - leftTop.getX(),
+						rightBottom.getY() - leftTop.getY());
 				NonRect r = new NonRect(leftTop, dim);
 
 				double minHeight = 7 * presetsHeight;

@@ -60,17 +60,16 @@ public class SetupUpdater extends Updater {
 					if (s != null) {
 						s.fromString(getText(valueNode));
 
+						if (s instanceof ValueDataModelEntity) {
+							ValueUpdater u = new ValueUpdater((ValueDataModelEntity) s);
+							u.update(setting);
 
-					if (s instanceof ValueDataModelEntity) {
-						ValueUpdater u = new ValueUpdater((ValueDataModelEntity) s);
-						u.update(setting);
-
+						}
 					}
 				}
 			}
 			setting = setting.getNextSibling();
 		}
-
 	}
 
 	private DataModelEntityBase findSettingFromTagName(String nodeName) {
