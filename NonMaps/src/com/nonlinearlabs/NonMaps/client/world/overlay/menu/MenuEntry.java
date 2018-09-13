@@ -100,7 +100,7 @@ public abstract class MenuEntry extends OverlayLayout {
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
 		double checkMarkWidth = Millimeter.toPixels(9);
-		checkmark.doLayout(checkMarkWidth / 2, 1, checkMarkWidth, h);
+		checkmark.doLayout(checkMarkWidth / 2.8, 1, checkMarkWidth, h);
 
 		double shortcutWidth = Millimeter.toPixels(20);
 		shortcutLabel.doLayout(w - shortcutWidth, 0, shortcutWidth, h);

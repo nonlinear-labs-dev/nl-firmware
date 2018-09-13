@@ -209,10 +209,10 @@ public class GlobalMenu extends OverlayLayout {
 		double top = Millimeter.toPixels(2);
 
 		if (state == State.Collapsed) {
-			double myWidth = buttonDim;
-			double myHeight = buttonDim;
+			double myWidth = buttonDim * 0.9;
+			double myHeight = buttonDim * 0.9;
 			super.doLayout(w - myWidth, top, myWidth, myHeight);
-			header.doLayout(0, 0, buttonDim, buttonDim);
+			header.doLayout(0, 0, myWidth, myHeight);
 			headerText.doLayout(0, 0, 0, 0);
 
 			for (OverlayControl c : getChildren()) {
@@ -223,12 +223,14 @@ public class GlobalMenu extends OverlayLayout {
 		} else {
 			final int IGNORED_CHILDREN = 1;
 
+			double headerSize = getButtonDimension() * 0.9;
+
 			double myWidth = Millimeter.toPixels(65);
 			int childCount = getChildren().size() - IGNORED_CHILDREN;
 			double myHeight = childCount * buttonDim;
 			super.doLayout(w - myWidth, top, myWidth, myHeight);
-			header.doLayout(myWidth - buttonDim, 0, buttonDim, buttonDim);
-			headerText.doLayout(0, 0, myWidth, buttonDim);
+			header.doLayout(myWidth - headerSize, 0, headerSize, headerSize);
+			headerText.doLayout(0, 0, myWidth, headerSize);
 			double y = buttonDim - top / 2;
 
 			for (OverlayControl c : getChildren()) {

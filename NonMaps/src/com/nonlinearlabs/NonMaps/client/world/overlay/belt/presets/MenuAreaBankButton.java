@@ -23,11 +23,19 @@ public class MenuAreaBankButton extends SVGImage {
 
 		String bankUUID = pm.getSelectedBank();
 
+		if(o.getContextMenu() instanceof CombinedBankContextMenu) {
+			o.removeExistingContextMenus();
+			return this;
+		}
+
 		if (bankUUID != null) {
 			Bank bank = pm.findBank(bankUUID);
-			return o.setContextMenu(pos, new CombinedBankContextMenu(o, bank));
+			CombinedBankContextMenu cm = new CombinedBankContextMenu(o, bank);
+			Position p = getPixRect().getLeftTop();
+			p.moveBy(3, -cm.getDesiredHeight() + 4);
+			return o.setContextMenu(p, cm);
 		}
-		return o.setContextMenu(pos, new CombinedBankContextMenu(o, null));
+		return o.setContextMenu(getPixRect().getLeftTop(), new CombinedBankContextMenu(o, null));
 	}
 
 	private PresetManager getPresetManager() {
@@ -40,16 +48,7 @@ public class MenuAreaBankButton extends SVGImage {
 
 	@Override
 	public Control onContextMenu(Position pos) {
-		Overlay o = getOverlay();
-		PresetManager pm = getPresetManager();
-
-		String bankUUID = pm.getSelectedBank();
-
-		if (bankUUID != null) {
-			Bank bank = pm.findBank(bankUUID);
-			return o.setContextMenu(pos, new CombinedBankContextMenu(o, bank));
-		}
-		return o.setContextMenu(pos, new CombinedBankContextMenu(o, null));
+		return mouseDown(pos);
 	}
 
 	boolean hasBank() {

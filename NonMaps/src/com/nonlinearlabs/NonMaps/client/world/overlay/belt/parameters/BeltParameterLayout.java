@@ -4,12 +4,11 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.dataModel.EditBuffer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.*;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SelectionListener;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.ModulationAmount;
@@ -192,8 +191,16 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));
 
 		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.hasContextMenu();
+		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.hasContextMenu() && existsMoreThanOneItemInContextMenu(p);
 		contextMenu.setVisible(ctxMenuVisible);
+	}
+
+	private boolean existsMoreThanOneItemInContextMenu(Parameter p) {
+		return (p instanceof ModulatableParameter ||
+				p instanceof PhysicalControlParameter ||
+				p instanceof MacroControlParameter) &&
+				!p.getName().getLongName().equals("Bender") &&
+				!p.getName().getLongName().equals("Aftertouch");
 	}
 
 	protected void toggleMcEditMode(Mode m) {

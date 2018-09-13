@@ -56,6 +56,10 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private String attatchDirection = "";
 	private String m_saveState = "";
 
+	public boolean isInCluster() {
+		return masterLeft != null || masterTop != null || slaveBottom != null || slaveRight != null;
+	}
+
 	private enum DropPosition {
 		ABOVE, COVERING, BELOW
 	}

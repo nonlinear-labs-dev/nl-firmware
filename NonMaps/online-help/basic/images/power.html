@@ -5,7 +5,7 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - Power Connector and Button</title>
+	<title>NONLINEAR LABS - C15 - Power Connector, Button, LED</title>
 	
 	<link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../../style.css" type="text/css" />
@@ -23,13 +23,43 @@
 	</div><!-- end nav-bc -->
 		
 	<div id="main-content">	
-				
+		
+		<span id="power"></span>
 		<div class="txt-block center-txt">
-			<h4>Power Connector and Button</h4>
+			<h4>Power Connector, LED and Button</h4>
 			<p class="mt1">back to <a href="../basic.html#baseunit-link">Overview</a></p>
-			<img src="power.svg"></img>
+			<img src="power.svg" alt="power">
 		</div><!-- end txt -->
+										
+		<div class="txt-block mt1">
+			<p>The C15 comes with its own external power adapter, which can be connected to the corresponding appliance inlet.<br />A small LED next to the inlet indicates the power, boot and shut-down states of the C15 as follows:<br /></p>
+			
+			<table style="width: 100%;" class="mb2"><tbody>
+				<tr>
+					<td class="bg-light"><strong>LED Status</strong></td>
+					<td class="bg-light"><strong>Meaning</strong></td>
+				</tr>
+				<tr>
+					<td>Steady Lit</td>
+					<td>On/Normal Operation</td>
+				</tr>
+				<tr>
+					<td>Slow Blinking</td>
+					<td>Booting</td>
+				</tr>
+				<tr>
+					<td>Fast Blinking</td>
+					<td>Shutting Down</td>
+				</tr>
+				<tr>
+					<td>Flashing every 2 seconds</td>
+					<td>Standby Mode</td>
+				</tr>
+			</tbody></table>
 
+A flickering LED indicates an irregular operation mode. It means the supply voltage is too low. 
+		</div><!-- end txt -->
+						
 									
 	</div><!-- end main-content -->
 

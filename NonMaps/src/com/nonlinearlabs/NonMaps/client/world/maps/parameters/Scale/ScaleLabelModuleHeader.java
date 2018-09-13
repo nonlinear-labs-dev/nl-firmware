@@ -52,7 +52,7 @@ public class ScaleLabelModuleHeader extends LabelModuleHeader {
 
 		if (hasChangedOffsets()) {
 			double fontHeightInUnits = getFontHeight();
-			double fontHeightInPixels = toYPixels(fontHeightInUnits) * 0.7;
+			double fontHeightInPixels = toYPixels(fontHeightInUnits) * 0.595;
 			ctx.setFont(fontHeightInPixels + "px " + getFontName());
 			ctx.fillText("\ue170", pixRect.getLeft() + toXPixels(15),
 					pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));

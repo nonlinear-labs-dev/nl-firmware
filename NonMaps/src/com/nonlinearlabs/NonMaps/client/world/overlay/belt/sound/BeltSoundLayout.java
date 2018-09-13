@@ -49,7 +49,7 @@ public class BeltSoundLayout extends OverlayLayout {
 		}
 
 		double lockSymbolSizeInPixel = Millimeter.toPixels(lock.getLockSizeInMM() + 1);
-		lock.doLayout(w - lockSymbolSizeInPixel, 0, lockSymbolSizeInPixel, lockSymbolSizeInPixel);
+		lock.doLayout(w - lockSymbolSizeInPixel * 1.25, lockSymbolSizeInPixel * 0.25, lockSymbolSizeInPixel, lockSymbolSizeInPixel);
 	}
 
 	public void update(Node settings) {

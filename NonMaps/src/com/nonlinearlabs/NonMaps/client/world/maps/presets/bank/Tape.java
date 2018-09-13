@@ -39,7 +39,7 @@ public class Tape extends MapsControl {
 
 	@Override
 	public boolean isVisible() {
-		return isActiveEmptyTape() || isActiveInsertTape();
+		return (isActiveEmptyTape() || isActiveInsertTape());
 	}
 
 	private boolean isActiveEmptyTape() {
@@ -112,8 +112,11 @@ public class Tape extends MapsControl {
 
 				if (r instanceof PresetManager || r instanceof Tape) {
 					boolean visible = super.isVisible();
+					Bank b = (Bank) d.getOrigin();
+					boolean bankIsNotInCluster = !b.isInCluster();
+
 					return visible && o.isCurrentlyDraggingATypeOf(Bank.class.getName())
-							&& getParent().hasSlaveInDirection(getOrientation());
+							&& getParent().hasSlaveInDirection(getOrientation()) && bankIsNotInCluster;
 				}
 			}
 		}
@@ -132,42 +135,12 @@ public class Tape extends MapsControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		if (isInsertTape()) {
-			drawInsertTape(ctx);
-		} else {
-			Rect r = getPixRect().copy();
-
-			switch (orientation) {
-			case East:
-				r.setWidth(r.getWidth() / 2);
-				break;
-
-			case North:
-				r.setHeight(r.getHeight() / 2);
-				r.setTop(r.getTop() + r.getHeight());
-				break;
-
-			case South:
-				r.setHeight(r.getHeight() / 2);
-				break;
-
-			case West:
-				r.setWidth(r.getWidth() / 2);
-				r.setLeft(r.getLeft() + r.getWidth());
-				break;
-
-			default:
-				break;
-
-			}
-
-			r.fill(ctx, getTapeColor());
-		}
+		Rect r = getPixRect().copy();
+		prepareRectForDraw(r);
+		r.fill(ctx, isInsertTape() ? getInsertColor() : getTapeColor());
 	}
 
-	private void drawInsertTape(Context2d ctx) {
-		Rect r = getPixRect().copy();
-
+	private void prepareRectForDraw(Rect r) {
 		switch (orientation) {
 		case East:
 			r.setWidth(r.getWidth() / 2);
@@ -191,8 +164,6 @@ public class Tape extends MapsControl {
 			break;
 
 		}
-
-		r.fill(ctx, getInsertColor());
 	}
 
 	private RGB getInsertColor() {
