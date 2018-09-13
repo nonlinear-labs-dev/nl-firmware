@@ -5,11 +5,10 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - 5.3-x Parameter Legend</title>
+	<title>NONLINEAR LABS - C15 - 9. Parameter Reference - Legend</title>
 	
 	<link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../../style.css" type="text/css" />
-	<link rel="stylesheet" href="../../style_enhance.css" type="text/css" />
 	<link rel="stylesheet" href="../../fonts/source-sans-pro.css" type="text/css" />
 	
 </head>
@@ -20,17 +19,18 @@
 	</div><!-- end header -->
 	
 	<div class="nav-bc">
-			<p><a href="../../index.html">Contents</a><a href="../synth-engine.html">5. Synthesis Engine</a><a href="parameter-ref.html">5.4 Parameter Reference</a><b>Parameter Legend</b></p>
+			<p><a href="../../index.html">Contents</a><a href="parameter-ref.html">9. Parameter Reference</a><b>Parameter Legend</b></p>
 	</div><!-- end nav-bc -->
 		
 	<div id="main-content">	
 		<div class="txt-block">
 			
+			<span id="legend"></span>
 			<h4 class="center-txt">Legend to signs and symbols</h4>
 			<p class="center-txt"><a href="parameter-ref.html">back to Parameter Reference</a></p>
 
 			<div class="mb2"></div>
-			<img class="img-frame" src="images/legend.svg" align="legend"/>
+			<img class="img-frame" src="images/legend.svg" alt="legend"/>
 			<div class="mb2"></div>
 			
 			<p>
@@ -44,13 +44,12 @@
 			<b class="blue">4. Active Indicator</b><br />This symbol indicates if a parameter is influencing the signal flow of the synth, as indicated by its LED.<br /><br />
 
 			<b class="blue">5. Modulation Indicator</b><br />A modulation segment is shown, if a parameter can be modulated.<br /><br />
-			<span id="def"></span>							
+			<span id="idx_def-2"></span>							
 			<b class="blue">6. Factory Default Value</b><br /><br />
 
 			<b class="blue">7. "inf" Indicator</b><br />For some parameters at the lower or upper end of their range the value will get infinite and will be replaced by “-inf” or “inf”. <br /><br />
 
 			<b class="blue">8. Value Graph (min to max)</b><br /><br />
-			<span id="coarse"></span>
 			<b class="blue">9. Scaling Type</b><br />See the <a href="#scaletable">Scaling Types table</a> below for reference.<br /><br />
 			
 			<b class="blue">10. Resolution, coarse (fine)</b>
@@ -60,7 +59,7 @@
 <!-- Units Table -->
 
 <div id="unitstable" class="pt3"></div>
-<span id="bipo"></span>
+<span id="idx_bipo-2"></span>
 
 	<table class="ref-table">
 	<caption>Units</caption>
@@ -106,17 +105,19 @@
 	
 <!-- Scaling Table -->
 
-<div id="scaletable" class="pt3"></div><span id="comb"></span>
-
+<div id="scaletable" class="pt3"></div><span id="idx_scale"></span>
+	
+	<span id="idx_scaling"></span>
 	<table class="ref-table">		
 	<caption>Scaling Types</caption>
 		<tbody>
+			
 			<tr>
-				<td>linear</td>
+				<td><span id="idx_linscale"></span>linear</td>
 				<td>Most parameters have a continuous, linear scaling type. This type is suitable when the displayed value is directly proportional to the control position and precision remains constant for the whole value range.</td>
 			</tr>
 			<tr>
-				<td>exponential</td>
+				<td><span id="exposcale"></span>exponential</td>
 				<td>Envelope times and the Comb Filter Decay time have an exponential scaling type, covering a wide value range with decreasing precision. The displayed value doesn't rise by a constant value, but rather by a factor (20 per quarter).</td>
 			</tr>
 			<tr>

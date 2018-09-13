@@ -5,11 +5,10 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - 5.4 Using Hardware Sources</title>
+	<title>NONLINEAR LABS - C15 - 5. Synthesis Engine - 5.3 Using Hardware Sources</title>
 	
 	<link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../../style.css" type="text/css" />
-	<link rel="stylesheet" href="../../style_enhance.css" type="text/css" />
 	<link rel="stylesheet" href="../../fonts/source-sans-pro.css" type="text/css" />
 
 	<script src="../../jq/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -23,26 +22,28 @@
 	</div><!-- end header -->
 	
 	<div class="nav-bc">
-			<p><a href="../../index.html">Contents</a><a href="../synth-engine.html">5. Synthesis Engine</a><b>5.4 Using Hardware Sources</b></p>
+			<p><a href="../../index.html">Contents</a><a href="../synth-engine.html">5. Synthesis Engine</a><b>5.3 Using Hardware Sources</b></p>
 	</div><!-- end nav-bc -->
 	
 	<div class="nav">
-			<p class="navleft"><a href="../parameter-ref/parameter-ref.html">5.3 Parameter Reference</a></p>
-			<p class="navright"><a href="../tutorials/tutorials.html">5.5 Tutorials</a></p>
+			<p class="navleft"><a href="../structure/structure.html">5.2 Structure and Components</a></p>
+			<p class="navright"><a href="../../setup-c15/setup-system.html">6. Setup</a></p>
 	</div><!-- end nav -->
 	
 	<div id="main-content">	
 
 		<div class="txt-block">		
-	
-			<h3>5.4 Using Hardware Sources</h3>
+			
+			<span id="idx_hwsrc"></span>
+			<h3>5.3 Using Hardware Sources</h3>
 			
 			<h5>General Aspects</h5>
 			<p>The eight Hardware Sources of the C15 can be seen as special controllers, which are designed for live performance. While playing a certain sound, the Hardware Sources can be used for modulations, changing the sound character.<br />Four different types of Hardware Sources are provided, each type having its individual aspects (four Pedals, two Ribbons, one Bender, one Aftertouch). As for the (external) Pedals, their aspects strongly depend on the type of pedal that is used. The following section contemplates all relevant aspects of Hardware Sources and external controllers in general.</p>
 
 			<h5>Continuity</h5>
-			<p>Controllers can essentially behave in two different manners. There are switches (like a „Sustain Pedal“) and there are continuous controllers (like a „Volume Pedal“). Although continuous behavior may be preferred in must use cases and can be seen as a general recommendation, switches can also be used when integrating external pedals (providing only two states: on and off). All four integrated Hardware Sources are continuous.</p>
+			<p>Controllers can essentially behave in two different manners. There are switches (like a „Sustain Pedal“) and there are continuous controllers (like a „Volume Pedal“). Although continuous behavior may be preferred in most use cases and can be seen as a general recommendation, switches can also be used when integrating external pedals (providing only two states: on and off). All four integrated Hardware Sources are continuous.</p>
 			
+			<span id="idx_dirpol"></span>
 			<h5>Directionality and Polarity</h5>
 			<p>Controllers with a switch behavior can behave in two different manners as well. There are opener switches (like a „Sustain Pedal“) and there are closer switches (like a „Mute Pedal“ or „Damping Pedal“). The difference between these two types is the direction they are taking: opener switches go from minimum to maximum, closer switches operate in a reversed manner. Commonly (but misleadingly) this is referred to as „Pedal Polarity“. However, regardless of the direction of a controller, it can be integrated and directions can be manipulated by modulation amounts.<br />Continuous controllers, on the other hand, can be unipolar (the usual case, providing one direction of possible movement: up or down) or bipolar (like a „Pitch Bender“, providing two directions of movement: up and down).</p>
 			
@@ -55,6 +56,7 @@
 			<h5>Additional Settings</h5>
 			<p>There are more settings provided for each Hardware Source in the Setup menu, depending on the type of source. The Bender and Aftertouch provide a curve, weighting the movements, whereas the Ribbons provide a „Relative Factor“, amplifying movements on the Ribbons when using relative mode.</p>
 			
+			<span id="idx_opmode"></span>
 			<h5>Operation Modes</h5>
 			<p>Except for the Ribbons, all Hardware Sources operate in absolute mode. Ribbons on the other hand, can operate in both absolute and relative mode (the relative mode can amplify drag gestures on the Ribbon).</p>
 			
@@ -64,7 +66,7 @@
 		</div><!-- end txt -->
 		
 		<div class="txt-block-wide" style="overflow: auto;">
-			<small>
+			<div class="small">
 			<table class="mb2 center-txt"><tbody>
 				<tr>
 					<td class="bg-light"><strong>Source</strong></td>
@@ -157,22 +159,26 @@
 					<td>absolute/<br />relative</td>
 				</tr>
 			</tbody></table>
-		</small>
+		</div>
 	</div><!-- end txt wide -->
 		
 	<div class="txt-block">
-
-			<h5>Pedal Integration</h5>
-			<p>For now, the safe and recommended method of integrating external pedals is to turn the device off beforehand. After all pedals are plugged in the provided sockets, the C15 can be switched on again. The booting process will recognize the pedals' circuit architectures and integrate them accordingly.<br />There is a Setup menu provided as well, in which the pin assignment of each pedal can be set manually. However, this menu should only be used if the pin assignment of a pedal is known, as wrong assignments can easily lead to overheating, possibly causing permanent damage on the device. Besides, the menu is still in development and proper functionality is not guaranteed for now.</p>
-			
-			<img class="img-frame" src="images/pedal-setup.svg" alt="pedal-setup"><div class="mb2"></div>
-			
-			<h5 class="mt2">Modulation Aspects</h5>
-			<p>As already mentioned, the modulation amount of a certain Hardware Source on a Macro Control depends on the source's Return Behavior (only returning sources allow for a continuous amount).<br />Furthermore, when a non-returning Ribbon is assigned to a Macro Control, the assignment will be bidirectional. In other words, the Ribbon will move the Macro Control and vice versa.<br /><br />Considering the Hardware Sources, their current settings and the modulation amounts on Macro Controls alltogether, they can be referred to as a „Modulation Template“. All included settings will be stored and recalled with presets, but for different use cases (like different pedals on another device), the template may not work properly. We plan to further investigate on template functionalities (like import and export functions) and may offer solutions in the near future.<br />For the sound design (and included factory presets) so far, the following template appeared to be meaningful, and it can be found in most of the presets:</p>
-			
-			<img class="img-frame-alt" src="images/08.5-3-nll-template.png" alt="nll-template">
-			
-			<p>The template defines two non-returning, continuous Pedals (1 and 2) for Macro Controls A and B, which are used to modulate different sound aspects like phase modulation intensities, filter frequencies, resonances or effect amounts, for example. Similarly, the two Ribbons are mapped on the two Macro Controls as well.<br />In addition, Macro Control C is assigned to the Bender and primarily used for bending pitches. The remaining Macro Control D is assigned to a returning, continuous Pedal (4), which serves as a Sustain or Damper Pedal (depending on the sound).</p>
+		<span id="idx_pedint"></span>
+		<h5>Pedal Integration</h5>
+		<p>For now, the safe and recommended method of integrating external pedals is to turn the device off beforehand. After all pedals are plugged in the provided sockets, the C15 can be switched on again. The booting process will recognize the pedals' circuit architectures and integrate them accordingly.<br />There is a Setup menu provided as well, in which the pin assignment of each pedal can be set manually. However, this menu should only be used if the pin assignment of a pedal is known, as wrong assignments can easily lead to overheating, possibly causing permanent damage on the device. Besides, the menu is still in development and proper functionality is not guaranteed for now.</p>
+		
+		<img class="img-frame" src="images/pedal-setup.svg" alt="pedal-setup"><div class="mb2"></div>
+		
+		<h5 class="mt2">Modulation Aspects</h5>
+		<p>As already mentioned, the modulation amount of a certain Hardware Source on a Macro Control depends on the source's Return Behavior (only returning sources allow for a continuous amount).<br />Furthermore, when a non-returning Ribbon is assigned to a Macro Control, the assignment will be bidirectional. In other words, the Ribbon will move the Macro Control and vice versa.<br />For better understanding, have a look at this interactive</p>
+	</div><!-- end txt -->
+	
+	<div class="txt-block">
+		<p>Considering the Hardware Sources, their current settings and the modulation amounts on Macro Controls alltogether, they can be referred to as a „Modulation Template“. All included settings will be stored and recalled with presets, but for different use cases (like different pedals on another device), the template may not work properly. We plan to further investigate on template functionalities (like import and export functions) and may offer solutions in the near future.<br />For the sound design (and included factory presets) so far, the following template appeared to be meaningful, and it can be found in most of the presets:</p>
+		
+		<img class="img-frame-alt" src="images/08.5-3-nll-template.png" alt="nll-template"><div class="mb2"></div>
+		
+		<p>The template defines two non-returning, continuous Pedals (1 and 2) for Macro Controls A and B, which are used to modulate different sound aspects like phase modulation intensities, filter frequencies, resonances or effect amounts, for example. Similarly, the two Ribbons are mapped on the two Macro Controls as well.<br />In addition, Macro Control C is assigned to the Bender and primarily used for bending pitches. The remaining Macro Control D is assigned to a returning, continuous Pedal (4), which serves as a Sustain or Damper Pedal (depending on the sound).</p>
 			
 		</div><!-- end txt -->
 		

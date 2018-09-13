@@ -5,11 +5,10 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - 5.2 Structure and Components</title>
+	<title>NONLINEAR LABS - C15 - 5. Synthesis Engine - 5.2 Structure and Components</title>
 	
 	<link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../../style.css" type="text/css" />
-	<link rel="stylesheet" href="../../style_enhance.css" type="text/css" />
 	<link rel="stylesheet" href="../../fonts/source-sans-pro.css" type="text/css" />
 	
 </head>
@@ -26,27 +25,49 @@
 	
 	<div class="nav">
 			<p class="navleft"><a href="../concept/concept.html">5.1 Concept</a></p>
-			<p class="navright"><a href="../parameter-ref/parameter-ref.html">5.3 Parameter Reference</a></p>
+			<p class="navright"><a href="../hw-sources/hwsources.html">5.3 Using Hardware Sources</a></p>
 	</div><!-- end nav -->
 	
 	<div id="main-content">	
 
-		<div class="txt-block">
-
+		<div class="txt-block mb2">
+			
+			<span id="idx_sigflow"></span>
 			<h3>5.2 Structure and Components</h3>
 			
 			<div id="block-medium"></div>
 			<h5>Signal Flow</h5>
 			
-			<div class="nospace"><p>The overall signal flow of the synthesis engine can be simplified as follows:</p></div>
-
-			<img class="img-frame" src="images/block-x-simple.svg" alt="block x simple">
+			<div class="nospace"><p>The overall signal flow of the synthesis engine is illustrated in the following diagram. (For more details click the magnifier symbol.)</p></div>
 			
-			<p>Branches A and B produce signals which are passed to the filter section. A mix from the branches and filters is defined and passed to the effect section and finally to the output. A second mix from the filters and effects is defined for the Feedback bus.<br />
-All components before the effects are polyphonic and single-channel. The effect section is monophonic and dual-channel (stereo).<br />
-There is a symmetric approach for the Oscillators, Shapers and Envelopes. Envelope A, Oscillator A and Shaper A are quasi-identical to Envelope B, Oscillator B and Shaper B. Envelope C is for modulation purposes.<br />For the main output, soft clipping is implemented (using a sine curve).</p>
+		</div><!-- end txt -->
 
-			<p>The following links provide further informations about particular components or click in the blue frames in the signal flow diagram below.</p>
+		<div class="dia-2 mb2">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1590 820" preserveAspectRatio="xMinYMin meet" >
+				<image width="1590" height="820" href="images/block-simple.svg"></image>
+					<a class="rollover" href="images/envelopes.html"><rect class="bbb" x="50" y="160" width="160" height="380" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/osc.html"><rect class="bbb"x="330" y="200" height="300" width="160" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/shaper.html"><rect class="bbb"x="500" y="200" height="300" width="160" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/fbmix.html"><rect class="bbb"x="1160" y="90" height="120" width="210" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/comb.html"><rect class="bbb"x="1020" y="290" width="160" height="120" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/svf.html"><rect class="bbb"x="1250" y="290" width="160" height="120" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/outmix.html"><rect class="bbb"x="1030" y="480" height="120" width="280" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/flanger.html"><rect class="bbb"x="880" y="660" width="120" height="100" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/cabinet.html"><rect class="bbb"x="1010" y="660" width="120" height="100" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/gapfilter.html"><rect class="bbb"x="1140" y="660" width="120" height="100" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/echo.html"><rect class="bbb"x="1270" y="660" width="120" height="100" rx="6" ry="6" /></a>
+					<a class="rollover" href="images/block-detail.html"><rect class="bbb"x="43" y="27" width="70" height="64" rx="6" ry="6" /></a>
+			</svg>
+		</div><!-- end dia -->
+
+		<div class="txt-block mt2">
+			<p>
+			Two Oscillators and Shapers produce signals which are passed to the Comb Filter, to the State Variable Filter, and to the Output Mixer. The filter output signals are also connected to this mixer. The resulting mix is passed to the effect section and finally to the output. A second mix from the filters and effects is defined for the Feedback bus.<br />
+			<br />
+			There is a symmetric approach for the Oscillators, Shapers and Envelopes. Envelope A, Oscillator A and Shaper A (also called "branch A") are quasi-identical to Envelope B, Oscillator B and Shaper B ("branch B"). Envelope C can be mapped to the filters, pitches, and feedback amounts.<br />
+			<br />
+			The following links provide further information about particular components. You can also click in the blue frames in the diagram above.</p>
+			<p>
 				<a href="images/envelopes.html">Envelopes</a><br />
 				<a href="images/osc.html">Oscillators</a><br />
 				<a href="images/shaper.html">Shaper</a><br />
@@ -59,31 +80,11 @@ There is a symmetric approach for the Oscillators, Shapers and Envelopes. Envelo
 				<a href="images/gapfilter.html">Gap Filter</a><br />
 				<a href="images/echo.html">Echo</a><br />
 				<a href="images/reverb.html">Reverb</a><br />
-				<a href="images/other.html">Other Parameter Groups</a><br />
-				<a href="images/block-detail.html">Detailed Block Diagram</a><br /><br /></p>
+				<a href="images/other.html">Other Parameter Groups</a><br /><br />
+			</p>
 		</div><!-- end txt -->
 		
 		
-		<div class="mb2">
-			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1590 820" preserveAspectRatio="xMinYMin meet" >
-				<image width="1590" height="820" xlink:href="images/block-simple.svg"></image>
-					<a class="rollover" xlink:href="images/envelopes.html"><rect class="bbb" x="50" y="160" width="160" height="380" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/osc.html"><rect class="bbb"x="330" y="200" height="300" width="160" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/shaper.html"><rect class="bbb"x="500" y="200" height="300" width="160" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/fbmix.html"><rect class="bbb"x="1160" y="90" height="120" width="210" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/comb.html"><rect class="bbb"x="1020" y="290" width="160" height="120" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/svf.html"><rect class="bbb"x="1250" y="290" width="160" height="120" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/outmix.html"><rect class="bbb"x="1030" y="480" height="120" width="280" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/flanger.html"><rect class="bbb"x="880" y="660" width="120" height="100" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/cabinet.html"><rect class="bbb"x="1010" y="660" width="120" height="100" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/gapfilter.html"><rect class="bbb"x="1140" y="660" width="120" height="100" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/echo.html"><rect class="bbb"x="1270" y="660" width="120" height="100" rx="6" ry="6" /></a>
-					<a class="rollover" xlink:href="images/block-detail.html"><rect class="bbb"x="43" y="27" width="70" height="64" rx="6" ry="6" /></a>
-			</svg>
-		</div>
-
-
-
 		<div class="txt-block mb1">
 		</div><!-- end txt -->
 
