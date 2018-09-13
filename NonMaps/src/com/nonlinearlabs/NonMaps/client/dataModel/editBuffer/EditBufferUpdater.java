@@ -1,6 +1,7 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
 public class EditBufferUpdater extends Updater {
 	private Node rootNode;

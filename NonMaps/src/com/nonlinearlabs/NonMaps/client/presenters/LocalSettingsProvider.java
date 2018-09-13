@@ -3,8 +3,8 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 
 public class LocalSettingsProvider {
 	public static LocalSettingsProvider theInstance = new LocalSettingsProvider();
@@ -17,7 +17,7 @@ public class LocalSettingsProvider {
 	private LocalSettings settings = new LocalSettings();
 
 	private LocalSettingsProvider() {
-		com.nonlinearlabs.NonMaps.client.dataModel.Setup.LocalSettings s = Setup.get().localSettings;
+		com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.LocalSettings s = Setup.get().localSettings;
 
 		s.selectionAutoScroll.onChange(t -> {
 			settings.selectionAutoScroll.selected = t.ordinal();

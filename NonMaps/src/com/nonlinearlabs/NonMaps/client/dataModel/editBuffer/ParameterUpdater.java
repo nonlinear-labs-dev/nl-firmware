@@ -1,6 +1,8 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueUpdater;
 
 public class ParameterUpdater extends Updater {
 

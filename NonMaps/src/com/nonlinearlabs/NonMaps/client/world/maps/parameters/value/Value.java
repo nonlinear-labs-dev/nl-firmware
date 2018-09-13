@@ -2,8 +2,8 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.value;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
 class Value {

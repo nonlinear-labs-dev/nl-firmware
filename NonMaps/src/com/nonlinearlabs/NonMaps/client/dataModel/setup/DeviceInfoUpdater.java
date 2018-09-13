@@ -1,8 +1,10 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.setup;
 
 import java.util.HashMap;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.dataModel.DataModelEntityBase;
+import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
 public class DeviceInfoUpdater extends Updater {
 	private Node deviceInformation;

@@ -1,4 +1,8 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.Notifier;
+import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 
 public class BasicParameterModel extends Notifier<BasicParameterModel> {
 

@@ -1,4 +1,6 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
 
 public class PedalParameter extends PhysicalControlParameter {
 	public enum Modes {

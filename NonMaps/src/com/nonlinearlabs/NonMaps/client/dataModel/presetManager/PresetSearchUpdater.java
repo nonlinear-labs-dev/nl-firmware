@@ -1,10 +1,11 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.presetManager;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
 public class PresetSearchUpdater extends Updater {
 

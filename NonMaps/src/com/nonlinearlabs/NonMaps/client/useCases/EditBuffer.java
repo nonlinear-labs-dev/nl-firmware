@@ -1,7 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.useCases;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.dataModel.BasicParameterModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 
 public class EditBuffer {
 	private static EditBuffer theInstance = new EditBuffer();
@@ -12,7 +12,7 @@ public class EditBuffer {
 
 	public void setParameterValue(String groupId, int id, double newValue, boolean oracle) {
 
-		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.EditBufferModel.get().findParameter(id);
+		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get().findParameter(id);
 		if (p != null)
 			p.value.value.setValue(newValue);
 
@@ -20,7 +20,7 @@ public class EditBuffer {
 	}
 
 	public void selectParameter(int id) {
-		if (com.nonlinearlabs.NonMaps.client.dataModel.EditBufferModel.get().selectedParameter.setValue(id))
+		if (com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get().selectedParameter.setValue(id))
 			NonMaps.get().getServerProxy().selectParameter(id);
 	}
 
@@ -39,7 +39,7 @@ public class EditBuffer {
 	}
 
 	public IncrementalChanger startUserEdit(int parameterID, double pixels) {
-		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.EditBufferModel.get().findParameter(parameterID);
+		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get().findParameter(parameterID);
 
 		return null;
 	}

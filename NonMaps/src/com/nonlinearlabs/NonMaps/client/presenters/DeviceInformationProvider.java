@@ -3,7 +3,7 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.DeviceInfomation;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInfomation;
 
 public class DeviceInformationProvider {
 	public static DeviceInformationProvider theInstance = new DeviceInformationProvider();

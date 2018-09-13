@@ -3,10 +3,10 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.EditBufferModel;
-import com.nonlinearlabs.NonMaps.client.dataModel.PedalParameter;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.PedalParameter;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettings.Pedal;
 
 public class DeviceSettingsProvider {

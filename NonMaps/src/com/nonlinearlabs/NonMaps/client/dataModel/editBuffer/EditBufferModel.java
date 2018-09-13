@@ -1,7 +1,13 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
 import java.util.HashMap;
 import java.util.function.Function;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.DateDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 
 public class EditBufferModel {
 

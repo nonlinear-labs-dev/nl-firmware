@@ -1,4 +1,9 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.DoubleDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
 
 public class ModulateableParameter extends BasicParameterModel {
 	public enum ModSource {

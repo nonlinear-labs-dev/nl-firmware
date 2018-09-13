@@ -2,7 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.settings;
 
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;

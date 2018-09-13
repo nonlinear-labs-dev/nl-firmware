@@ -1460,8 +1460,6 @@ textarea {
 	display: block;
 	min-width: 230px;
 	max-width: 350px;
-	min-height: 3.1em;
-	max-height: 350px;
 }
 
 .modal-dialog {

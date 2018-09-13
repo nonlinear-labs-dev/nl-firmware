@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
 import java.util.Arrays;
 import java.util.HashSet;

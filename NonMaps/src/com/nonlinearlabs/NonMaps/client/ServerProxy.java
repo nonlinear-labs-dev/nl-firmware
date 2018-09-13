@@ -15,11 +15,11 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
-import com.nonlinearlabs.NonMaps.client.dataModel.DeviceInfoUpdater;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
-import com.nonlinearlabs.NonMaps.client.dataModel.EditBufferUpdater;
-import com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch.SearchQueryCombination;
-import com.nonlinearlabs.NonMaps.client.dataModel.SetupUpdater;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferUpdater;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInfoUpdater;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.SetupUpdater;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IBank;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
@@ -97,8 +97,8 @@ public class ServerProxy {
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
 			nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);
 			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
-			nonMaps.getNonLinearWorld().getViewport().getOverlay()
-					.update(settingsNode, editBufferNode, presetManagerNode, deviceInfo, undoNode);
+			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
+					presetManagerNode, deviceInfo, undoNode);
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
 			if (PresetInfoDialog.isShown()) {
@@ -110,7 +110,7 @@ public class ServerProxy {
 			setPlaygroundSoftwareVersion(deviceInfo);
 			checkSoftwareVersionCompatibility();
 
-			SetupUpdater setupUpdater = new SetupUpdater(settingsNode.getFirstChild());
+			SetupUpdater setupUpdater = new SetupUpdater(settingsNode);
 			setupUpdater.doUpdate();
 
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
@@ -122,10 +122,11 @@ public class ServerProxy {
 	}
 
 	private void checkSoftwareVersionCompatibility() {
-		if (playgroundVersion != null && !playgroundVersion.isEmpty() && nonmapsVersion != null && !nonmapsVersion.isEmpty()) {
+		if (playgroundVersion != null && !playgroundVersion.isEmpty() && nonmapsVersion != null
+				&& !nonmapsVersion.isEmpty()) {
 			if (!playgroundVersion.equals(nonmapsVersion)) {
-				boolean reload = Window.confirm("WebUI has to be reloaded. The C15 software version is " + this.playgroundVersion
-						+ " while the WebUI version is " + nonmapsVersion + ".");
+				boolean reload = Window.confirm("WebUI has to be reloaded. The C15 software version is "
+						+ this.playgroundVersion + " while the WebUI version is " + nonmapsVersion + ".");
 
 				if (reload) {
 					nonmapsVersion = null;
@@ -200,7 +201,8 @@ public class ServerProxy {
 
 	public void renameBank(String uuid, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "rename-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("name", newName));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid),
+				new StaticURI.KeyValue("name", newName));
 		queueJob(uri, false);
 	}
 
@@ -236,9 +238,10 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void renamePreset(String uuid, String newName) {	
+	public void renamePreset(String uuid, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "rename-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("name", newName));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid),
+				new StaticURI.KeyValue("name", newName));
 		queueJob(uri, false);
 	}
 
@@ -285,22 +288,22 @@ public class ServerProxy {
 
 	public void movePresetAbove(IPreset p, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-preset-above");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToMove", p.getUUID()), new StaticURI.KeyValue("anchor",
-				actionAnchor.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToMove", p.getUUID()),
+				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void movePresetBelow(IPreset p, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-preset-below");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToMove", p.getUUID()), new StaticURI.KeyValue("anchor",
-				actionAnchor.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToMove", p.getUUID()),
+				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void overwritePresetWith(IPreset p, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()), new StaticURI.KeyValue(
-				"overwriteWith", p.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()),
+				new StaticURI.KeyValue("overwriteWith", p.getUUID()));
 		queueJob(uri, false);
 	}
 
@@ -313,29 +316,30 @@ public class ServerProxy {
 
 	public void movePresetTo(IPreset p, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-preset-to");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()), new StaticURI.KeyValue(
-				"overwriteWith", p.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()),
+				new StaticURI.KeyValue("overwriteWith", p.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertPresetCopyAbove(IPreset p, IPreset preset) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "copy-preset-above");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToCopy", p.getUUID()), new StaticURI.KeyValue("anchor",
-				preset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToCopy", p.getUUID()),
+				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertPresetCopyBelow(IPreset p, IPreset actionAnchor) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "copy-preset-below");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToCopy", p.getUUID()), new StaticURI.KeyValue("anchor",
-				actionAnchor.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToCopy", p.getUUID()),
+				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertEditBufferAbove(IPreset actionAnchor) {
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-editbuffer-above");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()), new StaticURI.KeyValue("uuid", uuid));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()),
+				new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
 		RenameDialog.awaitNewPreset(uuid);
 	}
@@ -343,7 +347,8 @@ public class ServerProxy {
 	public void insertEditBufferBelow(IPreset actionAnchor) {
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-editbuffer-below");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()), new StaticURI.KeyValue("uuid", uuid));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()),
+				new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
 		RenameDialog.awaitNewPreset(uuid);
 	}
@@ -359,15 +364,15 @@ public class ServerProxy {
 
 	public void deletePreset(IPreset preset, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()), new StaticURI.KeyValue("delete-bank",
-				withBank ? "true" : "false"));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()),
+				new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
 	public void deletePresets(String csv, boolean withBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-presets");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv), new StaticURI.KeyValue("delete-bank", withBank ? "true"
-				: "false"));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
+				new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
@@ -378,31 +383,33 @@ public class ServerProxy {
 	}
 
 	public void loadParameterDescription(final Parameter selectedParameter, final ParameterInfoDialog client) {
-		downloadFile("/resources/parameter-descriptions/" + selectedParameter.getParameterID() + ".txt", new DownloadHandler() {
+		downloadFile("/resources/parameter-descriptions/" + selectedParameter.getParameterID() + ".txt",
+				new DownloadHandler() {
 
-			@Override
-			public void onFileDownloaded(String text) {
-				client.setDescription(text);
-			}
+					@Override
+					public void onFileDownloaded(String text) {
+						client.setDescription(text);
+					}
 
-			@Override
-			public void onError() {
-				client.setDescription("");
-			}
-		});
+					@Override
+					public void onError() {
+						client.setDescription("");
+					}
+				});
 	}
 
 	public void appendPreset(IPreset srcPreset, Bank targetBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-preset-to-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", targetBank.getUUID()), new StaticURI.KeyValue(
-				"preset-uuid", srcPreset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", targetBank.getUUID()),
+				new StaticURI.KeyValue("preset-uuid", srcPreset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void appendEditBuffer(IBank bank) {
 		String uuid = Uuid.random();
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()), new StaticURI.KeyValue("uuid", uuid));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()),
+				new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
 		RenameDialog.awaitNewPreset(uuid);
 	}
@@ -434,8 +441,8 @@ public class ServerProxy {
 			String uuidOfSelectedPreset = selPreset.getUUID();
 			String uuid = Uuid.random();
 			StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-preset");
-			StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid), new StaticURI.KeyValue("seluuid",
-					uuidOfSelectedPreset));
+			StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid),
+					new StaticURI.KeyValue("seluuid", uuidOfSelectedPreset));
 			queueJob(uri, false);
 			RenameDialog.awaitNewPreset(uuid);
 		}
@@ -451,14 +458,15 @@ public class ServerProxy {
 
 	public void setModulationAmount(final ModulatableParameter modulatableParameter) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", modulatableParameter.getModulationAmount()
-				.getQuantizedClipped()));
+		StaticURI uri = new StaticURI(path,
+				new StaticURI.KeyValue("amount", modulatableParameter.getModulationAmount().getQuantizedClipped()));
 		queueJob(uri, true);
 	}
 
 	public void setModulationSource(ModulatableParameter modulatableParameter) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", modulatableParameter.getModulationSource().toInt()));
+		StaticURI uri = new StaticURI(path,
+				new StaticURI.KeyValue("source", modulatableParameter.getModulationSource().toInt()));
 		queueJob(uri, true);
 	}
 
@@ -532,8 +540,9 @@ public class ServerProxy {
 
 	public void insertBankInCluster(Bank other, Orientation orientation, Bank parent) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-in-cluster");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-to-insert", other.getUUID()), new StaticURI.KeyValue(
-				"bank-inserted-at", parent.getUUID()), new StaticURI.KeyValue("orientation", orientation.name()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-to-insert", other.getUUID()),
+				new StaticURI.KeyValue("bank-inserted-at", parent.getUUID()),
+				new StaticURI.KeyValue("orientation", orientation.name()));
 		queueJob(uri, false);
 	}
 
@@ -573,7 +582,8 @@ public class ServerProxy {
 		String aUUID = presetA != null ? presetA.getUUID() : "";
 		String bUUID = presetB != null ? presetB.getUUID() : "";
 
-		downloadFile("/presets/get-diff?p1=" + URL.encodeQueryString(aUUID) + "&p2=" + URL.encodeQueryString(bUUID), handler);
+		downloadFile("/presets/get-diff?p1=" + URL.encodeQueryString(aUUID) + "&p2=" + URL.encodeQueryString(bUUID),
+				handler);
 	}
 
 	public void dropPresetOnBank(IPreset p, Bank b) {
@@ -585,7 +595,8 @@ public class ServerProxy {
 
 	public void dropPresetsOnBank(String csv, Bank targetBank) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-on-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", targetBank.getUUID()), new StaticURI.KeyValue("presets", csv));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", targetBank.getUUID()),
+				new StaticURI.KeyValue("presets", csv));
 		queueJob(uri, false);
 	}
 
@@ -595,36 +606,36 @@ public class ServerProxy {
 
 	public void dropBankOnBank(IBank dragged, IBank b) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-bank-on-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("receiver", b.getUUID()), new StaticURI.KeyValue("bank",
-				dragged.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("receiver", b.getUUID()),
+				new StaticURI.KeyValue("bank", dragged.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertBankAbove(IBank bank, IPreset preset) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-above");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("anchor",
-				preset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
+				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertBankBelow(IBank bank, IPreset preset) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-below");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("anchor",
-				preset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
+				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void overwritePresetWithBank(IBank bank, IPreset preset) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset-with-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("anchor",
-				preset.getUUID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
+				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void renameMacroControl(MacroControlParameter param, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-mc");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()), new StaticURI.KeyValue("new-name",
-				newName));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()),
+				new StaticURI.KeyValue("new-name", newName));
 		queueJob(uri, false);
 	}
 
@@ -636,13 +647,15 @@ public class ServerProxy {
 
 	public void setRibbonReturnMode(int ribbonsParameterId, String mode) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-ribbon-return-mode");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId), new StaticURI.KeyValue("mode", mode));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId),
+				new StaticURI.KeyValue("mode", mode));
 		queueJob(uri, false);
 	}
 
 	public void setPedalMode(int pedalParameterId, String mode) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-pedal-mode");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", pedalParameterId), new StaticURI.KeyValue("mode", mode));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", pedalParameterId),
+				new StaticURI.KeyValue("mode", mode));
 		queueJob(uri, false);
 	}
 
@@ -696,8 +709,8 @@ public class ServerProxy {
 
 	public void setBankAttribute(Bank theBank, String key, String value) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-bank-attribute");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()), new StaticURI.KeyValue("key", key),
-				new StaticURI.KeyValue("value", value));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()),
+				new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
 	}
 
@@ -727,13 +740,15 @@ public class ServerProxy {
 
 	public void sortBank(Bank bank, boolean asc) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "sort-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", bank.getUUID()), new StaticURI.KeyValue("asc", asc));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", bank.getUUID()),
+				new StaticURI.KeyValue("asc", asc));
 		queueJob(uri, false);
 	}
 
-	public void searchPresets(String query, SearchQueryCombination combination, String fields, DownloadHandler handler) {
-		downloadFile("/presets/search-preset?combine=" + combination.name() + "&query=" + URL.encodeQueryString(query) + "&fields="
-				+ fields, handler);
+	public void searchPresets(String query, SearchQueryCombination combination, String fields,
+			DownloadHandler handler) {
+		downloadFile("/presets/search-preset?combine=" + combination.name() + "&query=" + URL.encodeQueryString(query)
+				+ "&fields=" + fields, handler);
 	}
 
 	public void syncLPCToBBB() {
@@ -776,14 +791,15 @@ public class ServerProxy {
 
 	public void setMacroControlInfo(int parameterID, String text) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-macrocontrol-info");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID), new StaticURI.KeyValue("info", text));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID),
+				new StaticURI.KeyValue("info", text));
 		queueJob(uri, false);
 	}
 
 	public void setPresetAttribute(Preset thePreset, String key, String value) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-preset-attribute");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", thePreset.getUUID()), new StaticURI.KeyValue("key", key),
-				new StaticURI.KeyValue("value", value));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", thePreset.getUUID()),
+				new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
 	}
 
@@ -795,14 +811,15 @@ public class ServerProxy {
 
 	public void setModulationAmountAndValue(ModulatableParameter param, double newModAmount, double newValue) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modamount-and-value");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()), new StaticURI.KeyValue("mod-amount",
-				newModAmount), new StaticURI.KeyValue("value", newValue));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()),
+				new StaticURI.KeyValue("mod-amount", newModAmount), new StaticURI.KeyValue("value", newValue));
 		queueJob(uri, false);
 	}
 
 	public void moveBy(Bank bank, String dir) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()), new StaticURI.KeyValue("direction", dir));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
+				new StaticURI.KeyValue("direction", dir));
 		queueJob(uri, false);
 	}
 
@@ -832,7 +849,8 @@ public class ServerProxy {
 
 	public void pasteOnPresetManager(NonPosition pos) {
 		StaticURI.Path path = new StaticURI.Path("clipboard", "paste-on-background");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("x", pos.getX()), new StaticURI.KeyValue("y", pos.getY()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("x", pos.getX()),
+				new StaticURI.KeyValue("y", pos.getY()));
 		queueJob(uri, false);
 	}
 
@@ -874,7 +892,8 @@ public class ServerProxy {
 			if (!csv.isEmpty())
 				csv += ",";
 
-			csv += curr.getUUID() + "," + curr.getNonPosition().getPosition().getX() + "," + curr.getNonPosition().getPosition().getY();
+			csv += curr.getUUID() + "," + curr.getNonPosition().getPosition().getX() + ","
+					+ curr.getNonPosition().getPosition().getY();
 		}
 
 		StaticURI.Path path = new StaticURI.Path("presets", "move-cluster");
@@ -884,16 +903,18 @@ public class ServerProxy {
 
 	public void undockBank(Bank slave) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "undock-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()), new StaticURI.KeyValue("x", slave
-				.getNonPosition().getPosition().getX()), new StaticURI.KeyValue("y", slave.getNonPosition().getPosition().getY()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
+				new StaticURI.KeyValue("x", slave.getNonPosition().getPosition().getX()),
+				new StaticURI.KeyValue("y", slave.getNonPosition().getPosition().getY()));
 		queueJob(uri, false);
 	}
 
 	public void dockBank(Bank slave, Bank master, String direction) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "dock-bank");
 
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()), new StaticURI.KeyValue("master-uuid",
-				master.getUUID()), new StaticURI.KeyValue("direction", direction));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
+				new StaticURI.KeyValue("master-uuid", master.getUUID()),
+				new StaticURI.KeyValue("direction", direction));
 
 		queueJob(uri, false);
 	}
@@ -924,17 +945,18 @@ public class ServerProxy {
 
 	public void moveAllBanks(NonDimension distance) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-all-banks");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("x", distance.getWidth()), new StaticURI.KeyValue("y",
-				distance.getHeight()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("x", distance.getWidth()),
+				new StaticURI.KeyValue("y", distance.getHeight()));
 		queueJob(uri, false);
 	}
 
 	public void dockBanks(Bank droppedOnto, Orientation droppedAt, Bank dragged, NonPosition pos) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "dock-banks");
 
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("droppedOntoBank", droppedOnto.getUUID()), new StaticURI.KeyValue(
-				"draggedBank", dragged.getUUID()), new StaticURI.KeyValue("droppedAt", droppedAt.name()), new StaticURI.KeyValue("x",
-				pos.getX()), new StaticURI.KeyValue("y", pos.getY()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("droppedOntoBank", droppedOnto.getUUID()),
+				new StaticURI.KeyValue("draggedBank", dragged.getUUID()),
+				new StaticURI.KeyValue("droppedAt", droppedAt.name()), new StaticURI.KeyValue("x", pos.getX()),
+				new StaticURI.KeyValue("y", pos.getY()));
 
 		queueJob(uri, false);
 

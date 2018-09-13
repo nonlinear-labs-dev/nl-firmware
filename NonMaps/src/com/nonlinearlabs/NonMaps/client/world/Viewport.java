@@ -3,7 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;

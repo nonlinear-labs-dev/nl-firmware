@@ -3,10 +3,10 @@ package com.nonlinearlabs.NonMaps.client.useCases;
 import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.DataModelEntityBase;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.DisplayScaling;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.EditParameter;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.DisplayScaling;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
 
 public class LocalSettings {
 	private static LocalSettings theInstance = new LocalSettings();
@@ -74,7 +74,7 @@ public class LocalSettings {
 		storage.store("UI Scaling", v.name());
 	}
 
-	public void setStripeBrightness(com.nonlinearlabs.NonMaps.client.dataModel.Setup.StripeBrightness v) {
+	public void setStripeBrightness(com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.StripeBrightness v) {
 		Setup.get().localSettings.stripeBrightness.setValue(v);
 		storage.store("StripeBrightness", v.name());
 	}

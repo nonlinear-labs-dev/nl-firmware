@@ -739,8 +739,8 @@ textarea {
 textarea + button.reset {
   width: 20px;
   height: 27px;
-  min-width: 20px;
-  margin-left: -28px;
+  min-width: 25px;
+  margin-left: -30px;
   border:none;
   outline:none;
  	background:
@@ -1327,4 +1327,8 @@ input[type="range"]::-moz-range-track {
 	min-width: fit-content;
 	min-width: -moz-fit-content;
 	min-width: -webkit-fit-content;
+}
+
+.padd-left {
+	padding-left: 0.5em;
 }
