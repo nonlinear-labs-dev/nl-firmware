@@ -41,6 +41,7 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         range.second = range.second * 2 - 1;
       }
 
+      auto minCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMin();
       auto maxCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMax();
       auto wasClipped = range.second >= maxCP;
 
@@ -50,6 +51,15 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
       auto denominator = fine ? fineDenominator : coarseDenominator;
       auto newRight = (round(range.second * denominator) + inc) / denominator;
+
+      if(modifiers[ButtonModifier::SHIFT]) {
+        if(inc < 0) {
+          newRight = minCP;
+        } else {
+          newRight = maxCP;
+        }
+      }
+
       auto isClipped = newRight >= maxCP;
 
       if(wasClipped && isClipped)

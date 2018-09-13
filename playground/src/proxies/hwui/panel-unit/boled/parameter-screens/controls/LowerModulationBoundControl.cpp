@@ -66,6 +66,7 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       }
 
       auto minCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMin();
+      auto maxCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMax();
       auto wasClipped = range.first <= minCP;
 
       auto srcValue = mcParam->getControlPositionValue();
@@ -75,6 +76,15 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
       auto denominator = fine ? fineDenominator : coarseDenominator;
       auto newLeft = (round(range.first * denominator) + inc) / denominator;
+
+      if(modifiers[ButtonModifier::SHIFT]) {
+        if(inc < 0) {
+          newLeft = minCP;
+        } else {
+          newLeft = maxCP;
+        }
+      }
+
       auto isClipped = newLeft <= minCP;
 
       if(wasClipped && isClipped)
