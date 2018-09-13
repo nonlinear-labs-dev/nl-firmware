@@ -16,7 +16,7 @@ public class PresetBeltLayouter {
 
 	protected void layoutLockSymbol(double w) {
 		double lockSymbolSizeInPixel = Millimeter.toPixels(layout.lock.getLockSizeInMM() + 1);
-		layout.lock.doLayout(w - lockSymbolSizeInPixel, 0, lockSymbolSizeInPixel, lockSymbolSizeInPixel);
+		layout.lock.doLayout(w - lockSymbolSizeInPixel * 1.25, lockSymbolSizeInPixel * 0.25, lockSymbolSizeInPixel, lockSymbolSizeInPixel);
 	}
 
 	protected void hide(OverlayControl ctrl) {
