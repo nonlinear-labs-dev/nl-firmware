@@ -31,6 +31,8 @@ public class BankUpdater extends Updater {
 			PresetUpdater updater = new PresetUpdater();
 			updater.update(p, preset);
 		}
+
+		// todo: inform clients about removed / added presets
 	}
 
 }
