@@ -866,6 +866,10 @@ sigc::connection PresetManager::onNumBanksChanged(sigc::slot<void, int> slot)
   return m_sigNumBanksChanged.connectAndInit(slot, getNumBanks());
 }
 
+sigc::connection PresetManager::onRestored(sigc::slot<void> slot) {
+  return m_sigRestored.connectAndInit(slot);
+}
+
 Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedOn) const
 {
 
@@ -1051,4 +1055,9 @@ Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset
   }
 
   return out;
+}
+
+void PresetManager::onRestore() {
+  UpdateDocumentContributor::onRestore();
+  m_sigRestored.send();
 }
