@@ -110,9 +110,10 @@ public class Tape extends MapsControl {
 			Control r = d.getCurrentReceiver();
 			if (r != null) {
 
-				if (r instanceof PresetManager || r instanceof Tape) {
-					boolean visible = super.isVisible();
+				if ((r instanceof PresetManager || r instanceof Tape) && d.getOrigin() instanceof Bank) {
 					Bank b = (Bank) d.getOrigin();
+
+					boolean visible = super.isVisible();
 					boolean bankIsNotInCluster = !b.isInCluster();
 
 					return visible && o.isCurrentlyDraggingATypeOf(Bank.class.getName())
