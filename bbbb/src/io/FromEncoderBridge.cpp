@@ -8,14 +8,6 @@ FromEncoderBridge::FromEncoderBridge()
     : Bridge(new WebSocketSender(getDomain()), new FileIOReceiver("/dev/espi_encoder", 1))
     , m_throttler(std::chrono::milliseconds(5))
 {
-  Glib::MainContext::get_default()->signal_timeout().connect(
-      [=]() {
-        static bool upDown = true;
-        sendRotary(upDown ? 1 : -1);
-        upDown = !upDown;
-        return true;
-      },
-      20);
 }
 
 FromEncoderBridge::~FromEncoderBridge()
