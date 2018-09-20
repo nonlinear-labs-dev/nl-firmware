@@ -42,8 +42,6 @@ void Oleds::registerProxy(OLEDProxy *proxy)
 
 void Oleds::syncRedraw()
 {
-  PerformanceTimer::printCurrentTime(__PRETTY_FUNCTION__);
-
   bool needsSwap = false;
 
   for(auto proxy : m_proxies)

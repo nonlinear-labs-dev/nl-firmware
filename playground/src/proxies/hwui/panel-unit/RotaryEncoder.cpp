@@ -35,8 +35,6 @@ void RotaryEncoder::onMessage(WebSocketSession::tMessage msg)
 
 void RotaryEncoder::onTimeStampedMessage(WebSocketSession::tMessage msg)
 {
-  PerformanceTimer::printCurrentTime(__PRETTY_FUNCTION__);
-
   gsize numBytes = 0;
   const char *buffer = (const char *) msg->get_data(numBytes);
   g_assert(numBytes == 9);
@@ -44,7 +42,6 @@ void RotaryEncoder::onTimeStampedMessage(WebSocketSession::tMessage msg)
   if(m_oldestPendingTimestamp == 0)
   {
     memcpy(&m_oldestPendingTimestamp, buffer, 8);
-    PerformanceTimer::printCurrentTime("encoder event was generated at", m_oldestPendingTimestamp);
   }
 
   applyIncrement(buffer[8]);
