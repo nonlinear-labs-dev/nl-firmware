@@ -32,29 +32,29 @@ enum Buttons
   BUTTON_MODE = 123
 };
 
-PlayPanel::PlayPanel() :
-    m_setup(BUTTON_SETUP, "Setup"),
-    m_sound(BUTTON_SOUND, "Sound"),
-    m_preset(BUTTON_PRESET, "Preset"),
-    m_store(BUTTON_STORE, "Store"),
-    m_a(BUTTON_A, "A"),
-    m_b(BUTTON_B, "B"),
-    m_c(BUTTON_C, "C"),
-    m_d(BUTTON_D, "D"),
-    m_info(BUTTON_INFO, "Info"),
-    m_fine(BUTTON_FINE, "Fine"),
-    m_shift(BUTTON_SHIFT, "Shift"),
-    m_default(BUTTON_DEFAULT, "Default"),
-    m_inc(BUTTON_INC, "Inc"),
-    m_dec(BUTTON_DEC, "Dec"),
-    m_enter(BUTTON_ENTER, "Enter"),
-    m_undo(BUTTON_UNDO, "Undo"),
-    m_edit(BUTTON_EDIT, "Edit"),
-    m_redo(BUTTON_REDO, "Redo"),
-    m_minus(BUTTON_MINUS, "Minus"),
-    m_plus(BUTTON_PLUS, "Plus"),
-    m_function(BUTTON_FUNCTION, "Func"),
-    m_mode(BUTTON_MODE, "Mode")
+PlayPanel::PlayPanel()
+    : m_setup(BUTTON_SETUP, "Setup")
+    , m_sound(BUTTON_SOUND, "Sound")
+    , m_preset(BUTTON_PRESET, "Preset")
+    , m_store(BUTTON_STORE, "Store")
+    , m_a(BUTTON_A, "A")
+    , m_b(BUTTON_B, "B")
+    , m_c(BUTTON_C, "C")
+    , m_d(BUTTON_D, "D")
+    , m_info(BUTTON_INFO, "Info")
+    , m_fine(BUTTON_FINE, "Fine")
+    , m_shift(BUTTON_SHIFT, "Shift")
+    , m_default(BUTTON_DEFAULT, "Default")
+    , m_inc(BUTTON_INC, "Inc")
+    , m_dec(BUTTON_DEC, "Dec")
+    , m_enter(BUTTON_ENTER, "Enter")
+    , m_undo(BUTTON_UNDO, "Undo")
+    , m_edit(BUTTON_EDIT, "Edit")
+    , m_redo(BUTTON_REDO, "Redo")
+    , m_minus(BUTTON_MINUS, "Minus")
+    , m_plus(BUTTON_PLUS, "Plus")
+    , m_function(BUTTON_FUNCTION, "Func")
+    , m_mode(BUTTON_MODE, "Mode")
 {
   m_buttons.add(m_setup);
   m_buttons.add(m_sound);
@@ -102,10 +102,8 @@ void PlayPanel::setFrameBuffer(WebSocketServer::tMessage msg)
 
 bool PlayPanel::onRotary(Gtk::ScrollType s, double v)
 {
-  TRACE(__PRETTY_FUNCTION__ << " " << (int)s);
   auto b = Application::get().getBridges()->getBridge<FromEncoderBridge>();
   b->sendRotary(v);
   m_rotary.set_value(0);
   return false;
 }
-

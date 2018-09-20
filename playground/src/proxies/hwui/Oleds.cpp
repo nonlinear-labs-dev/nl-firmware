@@ -3,6 +3,7 @@
 #include "Application.h"
 #include <proxies/hwui/Font.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <tools/PerformanceTimer.h>
 
 Oleds &Oleds::get()
 {
@@ -41,6 +42,8 @@ void Oleds::registerProxy(OLEDProxy *proxy)
 
 void Oleds::syncRedraw()
 {
+  PerformanceTimer::printCurrentTime(__PRETTY_FUNCTION__);
+
   bool needsSwap = false;
 
   for(auto proxy : m_proxies)
