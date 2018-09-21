@@ -5,14 +5,10 @@
 #include "proxies/lpc/MessageComposer.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
-#include "xml/Writer.h"
-#include <math.h>
 #include "testing/TestDriver.h"
 #include "http/UpdateDocumentMaster.h"
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
-#include "device-settings/DebugLevel.h"
-#include <glib.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -52,15 +48,15 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
   if(getModulationSource() == NONE)
     return 0;
 
-  gint16 scaled = round(m_modulationAmount * getModulationAmountFineDenominator());
-  gint16 abs = (scaled < 0) ? -scaled : scaled;
+  auto scaled = static_cast<gint16>(round(m_modulationAmount * getModulationAmountFineDenominator()));
+  auto abs = (scaled < 0) ? -scaled : scaled;
   gint16 src = getModulationSource();
 
   g_assert(src > 0);
   src--;
 
-  gint16 sign = (scaled < 0) ? 1 : 0;
-  uint16_t toSend = (src << 14) | (sign << 13) | (abs);
+  gint16 sign = static_cast<gint16>((scaled < 0) ? 1 : 0);
+  uint16_t toSend = static_cast<uint16_t>((src << 14) | (sign << 13) | (abs));
 
   return toSend;
 }
@@ -205,16 +201,14 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionP
 void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction, int inc, ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
+  auto bipolarRange = ScaleConverter::getControlPositionRangeBipolar();
 
   if(modifiers[ButtonModifier::SHIFT]) {
-    if(inc < 0)
-      controlVal = ScaleConverter::getControlPositionRangeBipolar().clip(-100);
-    else
-      controlVal = ScaleConverter::getControlPositionRangeBipolar().clip(100);
+    controlVal = inc < 0 ? bipolarRange.getMin() : bipolarRange.getMax();
   } else {
     double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
-    int rasterized = round(controlVal * denominator);
-    controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
+    auto rasterized = static_cast<int>(round(controlVal * denominator));
+    controlVal = bipolarRange.clip((rasterized + inc) / denominator);
   }
   setModulationAmount(std::move(transaction), controlVal);
 }
