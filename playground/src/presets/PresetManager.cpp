@@ -49,7 +49,8 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent) :
     m_editBuffer(EditBuffer::createEditBuffer(this)),
     m_initSound(EditBuffer::createEditBuffer(this)),
     m_saveJob(bind(mem_fun(this, &PresetManager::doSaveTask))),
-    m_autoLoadThrottler(std::chrono::milliseconds(500))
+    m_autoLoadThrottler(std::chrono::milliseconds(500)),
+    m_storeModeData(nullptr)
 {
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
   m_actionManagers.emplace_back(new BankActions(*this));

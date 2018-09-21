@@ -12,6 +12,7 @@
 #include <xml/Writer.h>
 #include <xml/InStream.h>
 #include <list>
+#include <presets/StoreModeData.h>
 #include <vector>
 
 class Preset;
@@ -182,4 +183,6 @@ class PresetManager : public ContentSection
 
     list<tSaveSubTask> m_saveTasks;
     bool m_saveRequestDuringSave = false;
+public:
+  std::unique_ptr<StoreModeData> m_storeModeData;
 };

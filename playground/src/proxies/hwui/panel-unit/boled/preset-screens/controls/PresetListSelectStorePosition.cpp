@@ -6,11 +6,16 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListContent.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListHeader.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListSelectStorePosition.h>
+#include <presets/StoreModeData.h>
 #include <algorithm>
 
 PresetListSelectStorePosition::PresetListSelectStorePosition(const Rect &pos, bool showBankArrows) :
     super(pos, showBankArrows)
 {
+  auto& pod = Application::get().getPresetManager()->m_storeModeData;
+  assert(pod != nullptr);
+  m_bankPosition = &pod->bankPos;
+  m_presetPosition = &pod->presetPos;
   initBankAndPreset();
 }
 
@@ -20,22 +25,14 @@ PresetListSelectStorePosition::~PresetListSelectStorePosition()
 
 void PresetListSelectStorePosition::initBankAndPreset()
 {
-  auto pm = Application::get().getPresetManager();
-
-  if(auto bank = pm->getSelectedBank())
-  {
-    m_bankPosition = pm->calcBankIndex(bank.get());
-    m_selectedPreset = bank->getSelectedPreset();
-    m_presetPosition = bank->getPresetPosition(m_selectedPreset);
-    onChange();
-  }
+  onChange();
 }
 
 void PresetListSelectStorePosition::onChange()
 {
   m_bankConnection.disconnect();
 
-  if(auto bank = Application::get().getPresetManager()->getBank(m_bankPosition))
+  if(auto bank = Application::get().getPresetManager()->getBank(*m_bankPosition))
   {
     m_bankConnection = bank->onBankChanged(mem_fun(this, &PresetListSelectStorePosition::onBankChanged));
   }
@@ -43,16 +40,16 @@ void PresetListSelectStorePosition::onChange()
 
 void PresetListSelectStorePosition::onBankChanged()
 {
-  if(auto bank = Application::get().getPresetManager()->getBank(m_bankPosition))
+  if(auto bank = Application::get().getPresetManager()->getBank(*m_bankPosition))
   {
     if(m_selectedPreset != bank->getSelectedPreset())
     {
       m_selectedPreset = bank->getSelectedPreset();
-      m_presetPosition = bank->getPresetPosition(m_selectedPreset);
+      *m_presetPosition = bank->getPresetPosition(m_selectedPreset);
     }
 
     sanitizePresetPosition(bank);
-    m_content->setup(bank, m_presetPosition);
+    m_content->setup(bank, *m_presetPosition);
     m_header->setup(bank);
   }
 }
@@ -60,7 +57,7 @@ void PresetListSelectStorePosition::onBankChanged()
 std::pair<int, int> PresetListSelectStorePosition::getSelectedPosition() const
 {
   return
-  { m_bankPosition, m_presetPosition};
+  { *m_bankPosition, *m_presetPosition};
 }
 
 bool PresetListSelectStorePosition::onButton(int i, bool down, ButtonModifiers modifiers)
@@ -113,9 +110,9 @@ void PresetListSelectStorePosition::movePresetSelection(int moveBy)
 
   sanitizeBankPosition(pm);
 
-  if(auto bank = pm->getBank(m_bankPosition))
+  if(auto bank = pm->getBank(*m_bankPosition))
   {
-    m_presetPosition += moveBy;
+    *m_presetPosition += moveBy;
     sanitizePresetPosition(bank);
   }
 
@@ -127,12 +124,12 @@ void PresetListSelectStorePosition::sanitizeBankPosition(std::shared_ptr<PresetM
 {
   if(auto numBanks = pm->getNumBanks())
   {
-    m_bankPosition = std::min<int>(m_bankPosition, numBanks - 1);
-    m_bankPosition = std::max<int>(m_bankPosition, 0);
+    *m_bankPosition = std::min<int>(*m_bankPosition, numBanks - 1);
+    *m_bankPosition = std::max<int>(*m_bankPosition, 0);
     return;
   }
 
-  m_bankPosition = invalidIndex;
+  *m_bankPosition = invalidIndex;
 }
 
 void PresetListSelectStorePosition::sanitizePresetPosition(std::shared_ptr<PresetBank> bank)
@@ -141,22 +138,22 @@ void PresetListSelectStorePosition::sanitizePresetPosition(std::shared_ptr<Prese
   {
     if(auto numPresets = bank->getNumPresets())
     {
-      m_presetPosition = std::min<int>(m_presetPosition, numPresets - 1);
-      m_presetPosition = std::max<int>(m_presetPosition, 0);
+      *m_presetPosition = std::min<int>(*m_presetPosition, numPresets - 1);
+      *m_presetPosition = std::max<int>(*m_presetPosition, 0);
       return;
     }
   }
 
-  m_presetPosition = invalidIndex;
+  *m_presetPosition = invalidIndex;
 }
 
 void PresetListSelectStorePosition::moveBankSelection(int moveBy)
 {
   auto pm = Application::get().getPresetManager();
-  m_bankPosition += moveBy;
+  *m_bankPosition += moveBy;
 
   sanitizeBankPosition(pm);
-  sanitizePresetPosition(pm->getBank(m_bankPosition));
+  sanitizePresetPosition(pm->getBank(*m_bankPosition));
 
   onChange();
   setDirty();

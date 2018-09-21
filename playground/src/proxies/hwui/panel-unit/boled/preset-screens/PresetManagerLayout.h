@@ -14,6 +14,7 @@ class Setting;
 class AutoLoadSelectedPreset;
 class ButtonMenu;
 class Button;
+class StoreModeData;
 
 class PresetManagerLayout : public DFBLayout
 {
@@ -53,5 +54,6 @@ class PresetManagerLayout : public DFBLayout
     BankAndPresetNumberLabel *m_bankAndPresetNumberLabel = nullptr;
     PresetListBase *m_presets = nullptr;
     FocusAndMode m_focusAndMode;
+    StoreModeData* getStoreModeData();
 };
 
