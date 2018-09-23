@@ -81,10 +81,8 @@ void WebSocketServer::sendMessage(tMessage msg)
 
 void WebSocketServer::receiveMessage(SoupWebsocketConnection *, gint, GBytes *message, WebSocketServer *pThis)
 {
-  tMessage msg = Glib::wrap(message);
-
   gsize len = 0;
-  auto data = reinterpret_cast<const uint8_t *>(msg->get_data(len));
+  auto data = reinterpret_cast<const uint8_t *>(g_bytes_get_data(message, &len));
   Domain d = static_cast<Domain>(data[0]);
   pThis->m_onMessageReceived[d](Glib::Bytes::create(data + 1, len - 1));
 }
