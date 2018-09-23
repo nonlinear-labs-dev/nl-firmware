@@ -3,6 +3,7 @@
 #include <io/network/WebSocketSender.h>
 #include <Application.h>
 #include <Options.h>
+#include <string.h>
 
 FromEncoderBridge::FromEncoderBridge()
     : Bridge(new WebSocketSender(getDomain()), new FileIOReceiver("/dev/espi_encoder", 1))
