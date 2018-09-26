@@ -5,13 +5,14 @@
 #include <proxies/hwui/panel-unit/RotaryEncoder.h>
 #include <testing/TestDriver.h>
 #include <proxies/lpc/LPCProxy.h>
+#include <proxies/hwui/Oleds.h>
 #include <tools/PerformanceTimer.h>
 #include <string.h>
 
 static TestDriver<RotaryEncoder> tester;
 
 RotaryEncoder::RotaryEncoder()
-    : m_throttler(chrono::milliseconds(10))
+    : m_throttler(chrono::milliseconds(2))
 {
   Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Rotary,
                                                               sigc::mem_fun(this, &RotaryEncoder::onMessage));
@@ -40,13 +41,14 @@ void RotaryEncoder::onTimeStampedMessage(WebSocketSession::tMessage msg)
   const char *buffer = (const char *) msg->get_data(numBytes);
   g_assert(numBytes == 9);
 
-  if(m_oldestPendingTimestamp == 0)
+  bool wasDirty = Oleds::get().isDirty();
+  applyIncrement(buffer[8]);
+  bool isDirty = Oleds::get().isDirty();
+
+  if(!wasDirty && isDirty && m_oldestPendingTimestamp == 0)
   {
     memcpy(&m_oldestPendingTimestamp, buffer, 8);
-    PerformanceTimer::printCurrentTime(("received timestamp " + to_string(m_oldestPendingTimestamp)).c_str());
   }
-
-  applyIncrement(buffer[8]);
 }
 
 void RotaryEncoder::applyIncrement(tIncrement currentInc)
@@ -57,10 +59,10 @@ void RotaryEncoder::applyIncrement(tIncrement currentInc)
     m_accumulatedIncs = 0;
 
   m_accumulatedIncs += currentInc;
+
   m_throttler.doTask([this]() {
     if(abs(m_accumulatedIncs) > 1)
     {
-      PerformanceTimer::printCurrentTime("apply encoder acceleration");
       m_accumulatedIncs = std::min(m_accumulatedIncs, 10);
       m_accumulatedIncs = std::max(m_accumulatedIncs, -10);
       double factor = Application::get().getSettings()->getSetting<EncoderAcceleration>()->get();

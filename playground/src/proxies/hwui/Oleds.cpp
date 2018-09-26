@@ -22,10 +22,13 @@ Oleds::~Oleds()
 
 void Oleds::setDirty()
 {
-  PerformanceTimer::printCurrentTime("setDirty");
-
   if(!m_throttler.isPending())
     m_throttler.doTask(std::bind(&Oleds::syncRedraw, this));
+}
+
+bool Oleds::isDirty() const
+{
+  return m_throttler.isPending();
 }
 
 void Oleds::deInit()
@@ -44,14 +47,10 @@ void Oleds::registerProxy(OLEDProxy *proxy)
 
 void Oleds::syncRedraw()
 {
-  PerformanceTimer::printCurrentTime("syncRedraw");
-  bool needsSwap = false;
-
   for(auto proxy : m_proxies)
-    needsSwap |= proxy->redraw();
+    proxy->redraw();
 
-  if(needsSwap)
-    FrameBuffer::get().swapBuffers();
+  FrameBuffer::get().swapBuffers();
 }
 
 Oleds::tFont Oleds::getFont(const Glib::ustring &name, int height)

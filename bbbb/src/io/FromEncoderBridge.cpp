@@ -7,7 +7,6 @@
 
 FromEncoderBridge::FromEncoderBridge()
     : Bridge(new WebSocketSender(getDomain()), new FileIOReceiver("/dev/espi_encoder", 1))
-    , m_throttler(std::chrono::milliseconds(5))
 {
 }
 
@@ -29,55 +28,28 @@ void FromEncoderBridge::transmit(Receiver::tMessage msg)
 
 void FromEncoderBridge::sendRotary(int8_t inc)
 {
-  printCurrentTime(__PRETTY_FUNCTION__);
-
-  if((inc < 0) != (m_accumulated < 0))
-    m_accumulated = 0;
-
-  m_accumulated += inc;
-
   if(Application::get().getOptions()->doTimeStamps())
-  {
-    scheduleTimestampedEvent();
-  }
+    scheduleTimestampedEvent(inc);
   else
-  {
-    scheduleSimpleEvent();
-  }
+    scheduleSimpleEvent(inc);
 }
 
-void FromEncoderBridge::scheduleTimestampedEvent()
+void FromEncoderBridge::scheduleTimestampedEvent(int8_t inc)
 {
   if(m_firstPendingEventTime == std::chrono::system_clock::time_point::min())
-  {
     m_firstPendingEventTime = std::chrono::system_clock::now();
-    int64_t ms
-        = std::chrono::duration_cast<std::chrono::milliseconds>(m_firstPendingEventTime.time_since_epoch()).count();
-    printCurrentTime(Glib::ustring::format(__PRETTY_FUNCTION__, " store id '", ms, "'").c_str());
-  }
 
-  m_throttler.doTask([this]() {
-    if(auto acc = std::exchange(m_accumulated, 0))
-    {
-      auto timeStamp = std::exchange(m_firstPendingEventTime, std::chrono::system_clock::time_point::min());
-      int64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeStamp.time_since_epoch()).count();
-      uint8_t data[9];
-      memcpy(data, &ms, 8);
-      memcpy(data + 8, &acc, 1);
-      auto msg = Glib::Bytes::create(data, 9);
-      m_sender->send(msg);
-      printCurrentTime(Glib::ustring::format(__PRETTY_FUNCTION__, " send throttled id '", ms, "'").c_str());
-    }
-  });
+  auto timeStamp = std::exchange(m_firstPendingEventTime, std::chrono::system_clock::time_point::min());
+  int64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeStamp.time_since_epoch()).count();
+  uint8_t data[9];
+  memcpy(data, &ms, 8);
+  memcpy(data + 8, &inc, 1);
+  auto msg = Glib::Bytes::create(data, 9);
+  m_sender->send(msg);
 }
 
-void FromEncoderBridge::scheduleSimpleEvent()
+void FromEncoderBridge::scheduleSimpleEvent(int8_t inc)
 {
-  m_throttler.doTask([this]() {
-    if(auto acc = std::exchange(m_accumulated, 0))
-    {
-      auto msg = Glib::Bytes::create(&acc, 1);
-      m_sender->send(msg);
-    }
-  });
+  auto msg = Glib::Bytes::create(&inc, 1);
+  m_sender->send(msg);
 }

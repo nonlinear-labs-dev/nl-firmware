@@ -15,11 +15,9 @@ class FromEncoderBridge : public Bridge
  private:
   void transmit(Receiver::tMessage msg) override;
 
-  void scheduleSimpleEvent();
-  void scheduleTimestampedEvent();
+  void scheduleSimpleEvent(int8_t inc);
+  void scheduleTimestampedEvent(int8_t inc);
 
-  int m_accumulated = 0;
   std::chrono::system_clock::time_point m_firstPendingEventTime;
-  Throttler m_throttler;
   static Domain getDomain();
 };
