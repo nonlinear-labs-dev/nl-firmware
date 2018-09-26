@@ -10,7 +10,7 @@ MiniParameter::MiniParameter(Parameter *param, const Rect &pos)
     : super(pos)
     , m_param(param)
 {
-  m_label = addControl(new MiniParameterLabel(param->getMiniParameterEditorName(), Rect(0, 0, 56, 9)));
+  m_label = addControl(new MiniParameterLabel(param, param->getMiniParameterEditorName(), Rect(0, 0, 56, 9)));
 
   if(param->getID() == ScaleGroup::getScaleBaseParameterID())
   {
