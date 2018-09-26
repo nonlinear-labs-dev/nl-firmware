@@ -5,14 +5,10 @@
 #include "proxies/lpc/MessageComposer.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
-#include "xml/Writer.h"
-#include <math.h>
 #include "testing/TestDriver.h"
 #include "http/UpdateDocumentMaster.h"
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
-#include "device-settings/DebugLevel.h"
-#include <glib.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -52,15 +48,15 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
   if(getModulationSource() == NONE)
     return 0;
 
-  gint16 scaled = round(m_modulationAmount * getModulationAmountFineDenominator());
-  gint16 abs = (scaled < 0) ? -scaled : scaled;
+  auto scaled = static_cast<gint16>(round(m_modulationAmount * getModulationAmountFineDenominator()));
+  auto abs = (scaled < 0) ? -scaled : scaled;
   gint16 src = getModulationSource();
 
   g_assert(src > 0);
   src--;
 
-  gint16 sign = (scaled < 0) ? 1 : 0;
-  uint16_t toSend = (src << 14) | (sign << 13) | (abs);
+  gint16 sign = static_cast<gint16>((scaled < 0) ? 1 : 0);
+  uint16_t toSend = static_cast<uint16_t>((src << 14) | (sign << 13) | (abs));
 
   return toSend;
 }
@@ -190,7 +186,7 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
 
 void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionPtr transaction, int inc)
 {
-  int src = (int) getModulationSource();
+  auto src = (int) getModulationSource();
   src += inc;
 
   while(src < 0)
@@ -199,16 +195,22 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionP
   while(src >= NUM_CHOICES)
     src -= NUM_CHOICES;
 
-  setModulationSource(transaction, (ModulationSource) src);
+  setModulationSource(std::move(transaction), (ModulationSource) src);
 }
 
 void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction, int inc, ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
-  double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
-  int rasterized = round(controlVal * denominator);
-  controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
-  setModulationAmount(transaction, controlVal);
+  auto bipolarRange = ScaleConverter::getControlPositionRangeBipolar();
+
+  if(modifiers[ButtonModifier::SHIFT]) {
+    controlVal = inc < 0 ? bipolarRange.getMin() : bipolarRange.getMax();
+  } else {
+    double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
+    auto rasterized = static_cast<int>(round(controlVal * denominator));
+    controlVal = bipolarRange.clip((rasterized + inc) / denominator);
+  }
+  setModulationAmount(std::move(transaction), controlVal);
 }
 
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
@@ -221,7 +223,7 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
 void ModulateableParameter::writeDifferences(Writer& writer, Parameter* other) const
 {
   Parameter::writeDifferences(writer, other);
-  ModulateableParameter *pOther = static_cast<ModulateableParameter*>(other);
+  auto *pOther = static_cast<ModulateableParameter*>(other);
 
   if(getModulationAmount() != pOther->getModulationAmount())
   {
