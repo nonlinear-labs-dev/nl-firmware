@@ -9,11 +9,10 @@
 #include <presets/StoreModeData.h>
 #include <algorithm>
 
-PresetListSelectStorePosition::PresetListSelectStorePosition(const Rect &pos, bool showBankArrows) :
+PresetListSelectStorePosition::PresetListSelectStorePosition(const Rect &pos, bool showBankArrows,
+                                                             StoreModeData *pod) :
     super(pos, showBankArrows)
 {
-  auto& pod = Application::get().getPresetManager()->m_storeModeData;
-  assert(pod != nullptr);
   m_bankPosition = &pod->bankPos;
   m_presetPosition = &pod->presetPos;
   initBankAndPreset();

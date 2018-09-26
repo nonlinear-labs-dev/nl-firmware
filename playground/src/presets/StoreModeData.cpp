@@ -4,11 +4,12 @@
 #include "PresetBank.h"
 
 StoreModeData::StoreModeData() {
-  auto pm = Application::get().getPresetManager();
+  if(auto pm = Application::get().getPresetManager()) {
+    if(auto banks = pm->getBanks(); !banks.empty())
+      bankPos = static_cast<int>(std::find(banks.begin(), banks.end(), pm->getSelectedBank()) - banks.begin());
 
-  if(auto bank = pm->getSelectedBank()) {
-    bankPos = pm->calcBankIndex(bank.get());
-    auto selected = bank->getSelectedPreset();
-    presetPos = static_cast<int>(bank->getPresetPosition(selected));
+    if(auto presets = pm->getSelectedBank()->getPresets(); !presets.empty())
+      presetPos = static_cast<int>(pm->getSelectedBank()->getPresetPosition(pm->getSelectedBank()->getSelectedPreset()));
   }
+
 }

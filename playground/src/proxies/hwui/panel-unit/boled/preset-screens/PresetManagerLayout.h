@@ -4,6 +4,7 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/InvertedLabel.h>
 #include <functional>
+#include <presets/StoreModeData.h>
 
 class BankAndPresetNumberLabel;
 
@@ -14,7 +15,6 @@ class Setting;
 class AutoLoadSelectedPreset;
 class ButtonMenu;
 class Button;
-class StoreModeData;
 
 class PresetManagerLayout : public DFBLayout
 {
@@ -33,6 +33,7 @@ class PresetManagerLayout : public DFBLayout
     bool animateSelectedPreset(function<void()> cb);
 
     std::pair<int, int> getSelectedPosition() const;
+    std::unique_ptr<StoreModeData>& getStoreModePtr();
 
   private:
     void updateAutoLoadButton(const Setting *setting);
@@ -55,5 +56,7 @@ class PresetManagerLayout : public DFBLayout
     PresetListBase *m_presets = nullptr;
     FocusAndMode m_focusAndMode;
     StoreModeData* getStoreModeData();
+    void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
+
 };
 

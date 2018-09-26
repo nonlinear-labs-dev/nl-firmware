@@ -6,14 +6,14 @@
 
 class PresetBank;
 class Preset;
-
-
+class StoreModeData;
 
 class PresetListSelectStorePosition : public PresetListBase
 {
     using super = PresetListBase;
   public:
-    PresetListSelectStorePosition(const Rect &pos, bool showBankArrows);
+    PresetListSelectStorePosition(const Rect &pos, bool showBankArrows,
+                                      StoreModeData *pod);
     virtual ~PresetListSelectStorePosition();
 
     virtual bool onButton(int i, bool down, ButtonModifiers modifiers) override;
