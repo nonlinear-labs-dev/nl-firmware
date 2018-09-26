@@ -8,6 +8,11 @@
 #include <iostream>
 #include <io/network/WebSocketSession.h>
 #include <Application.h>
+#include <Options.h>
+#include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/panel-unit/PanelUnit.h>
+#include <proxies/hwui/panel-unit/RotaryEncoder.h>
+#include <tools/PerformanceTimer.h>
 
 FrameBuffer::StackScopeGuard::StackScopeGuard(FrameBuffer *fb)
     : m_fb(fb)
@@ -219,8 +224,21 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
 
 void FrameBuffer::swapBuffers()
 {
-  auto bytes = Glib::Bytes::create(m_backBuffer.data(), m_backBuffer.size());
-  Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::Oled, bytes);
+  if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
+  {
+    auto ts = Application::get().getHWUI()->getPanelUnit().getEditPanel().getKnob().resetOldestPendingTimestamp();
+    auto bufferLen = 8 + m_backBuffer.size();
+    uint8_t buffer[bufferLen];
+    memcpy(buffer + 0, &ts, 8);
+    memcpy(buffer + 8, m_backBuffer.data(), m_backBuffer.size());
+    auto bytes = Glib::Bytes::create(buffer, bufferLen);
+    Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::TimeStampedOled, bytes);
+  }
+  else
+  {
+    auto bytes = Glib::Bytes::create(m_backBuffer.data(), m_backBuffer.size());
+    Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::Oled, bytes);
+  }
 }
 
 FrameBuffer::Clip FrameBuffer::clip(const Rect &rect)

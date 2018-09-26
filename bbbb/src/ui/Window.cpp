@@ -13,8 +13,12 @@ Window::Window()
   set_default_size(framebufferDimX, framebufferDimY * 2);
   set_size_request(framebufferDimX, framebufferDimY * 2);
 
-  Application::get().getWebsocketServer()->onMessageReceived(Domain::Oled, sigc::mem_fun(this, &Window::onFrameBufferMessageReceived));
-  Application::get().getWebsocketServer()->onMessageReceived(Domain::PanelLed, sigc::mem_fun(this, &Window::onPanelLEDsMessageReceived));
+  Application::get().getWebsocketServer()->onMessageReceived(
+      Domain::Oled, sigc::mem_fun(this, &Window::onFrameBufferMessageReceived));
+  Application::get().getWebsocketServer()->onMessageReceived(
+      Domain::TimeStampedOled, sigc::mem_fun(this, &Window::onTimeStampedFrameBufferMessageReceived));
+  Application::get().getWebsocketServer()->onMessageReceived(Domain::PanelLed,
+                                                             sigc::mem_fun(this, &Window::onPanelLEDsMessageReceived));
   m_ribbonUp.set_vexpand(false);
   m_ribbonDown.set_vexpand(false);
   m_ribbonBox.pack_start(m_ribbonUp, false, false);
@@ -37,6 +41,13 @@ void Window::onFrameBufferMessageReceived(WebSocketServer::tMessage msg)
   m_playPanel.setFrameBuffer(msg);
 }
 
+void Window::onTimeStampedFrameBufferMessageReceived(WebSocketServer::tMessage msg)
+{
+  gsize len = 0;
+  const int8_t *data = reinterpret_cast<const int8_t *>(msg->get_data(len));
+  onFrameBufferMessageReceived(Glib::Bytes::create(data + 8, len - 8));
+}
+
 void Window::onPanelLEDsMessageReceived(WebSocketServer::tMessage msg)
 {
   gsize len = 0;
@@ -45,6 +56,5 @@ void Window::onPanelLEDsMessageReceived(WebSocketServer::tMessage msg)
   auto val = data[0] >> 7;
   m_editPanel.setLed(idx, val);
 }
-
 
 #endif
