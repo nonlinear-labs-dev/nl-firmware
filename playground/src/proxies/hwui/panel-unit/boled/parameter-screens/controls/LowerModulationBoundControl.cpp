@@ -107,3 +107,14 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
   }
   return false;
 }
+
+void LowerModulationBoundControl::setDefault() {
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+
+  if(auto modulatedParam = dynamic_cast<ModulateableParameter*>(editBuffer->getSelected())) {
+    auto &undoScope = modulatedParam->getUndoScope();
+    auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set Default'%0'",
+                                                      modulatedParam->getGroupAndParameterName());
+    modulatedParam->undoableSetModAmount(scope->getTransaction(), 0);
+  }
+}

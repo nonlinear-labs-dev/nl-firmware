@@ -21,7 +21,17 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
     virtual void copyFrom (Layout *other) override;
     void installMcAmountScreen();
 
-  protected:
+  enum class Mode
+  {
+    ParameterValue,
+    MacroControlPosition,
+    MacroControlSelection,
+    MacroControlAmount,
+    CarouselUpperBound,
+    CarouselParameterValue,
+    CarouselLowerBound
+  };
+protected:
     virtual void init () override;
     virtual bool onButton (int i, bool down, ButtonModifiers modifiers) override;
     virtual bool onRotary (int inc, ButtonModifiers modifiers) override;
@@ -30,18 +40,8 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
     virtual bool switchToNormalMode() override;
 
   private:
-    enum class Mode
-    {
-      ParameterValue,
-      MacroControlPosition,
-      MacroControlSelection,
-      MacroControlAmount,
-      CarouselUpperBound,
-      CarouselParameterValue,
-      CarouselLowerBound
-    };
 
-    void setMode(Mode desiredMode);
+  void setMode(Mode desiredMode);
     void toggleMode (Mode desiredMode);
     bool hasModulationSource () const;
 

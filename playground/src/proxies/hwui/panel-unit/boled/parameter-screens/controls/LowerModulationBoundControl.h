@@ -2,16 +2,18 @@
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
 #include <proxies/hwui/panel-unit/RotaryEncoder.h>
+#include "Defaultable.h"
 
-class LowerModulationBoundControl : public ControlWithChildren, public RotaryEncoder::Receiver
+class LowerModulationBoundControl : public ControlWithChildren, public RotaryEncoder::Receiver, public Defaultable
 {
     typedef ControlWithChildren super;
 
   public:
-    LowerModulationBoundControl (const Rect &r);
-    virtual ~LowerModulationBoundControl ();
+  explicit LowerModulationBoundControl (const Rect &r);
+  ~LowerModulationBoundControl () override;
 
     bool onRotary (int inc, ButtonModifiers modifiers) override;
+    void setDefault() override;
 
   private:
     void onSelectionChanged (Parameter *, Parameter *newParam);

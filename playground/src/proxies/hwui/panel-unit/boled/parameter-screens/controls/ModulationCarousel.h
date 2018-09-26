@@ -15,12 +15,15 @@ class ModulationCarousel : public Carousel, public RotaryEncoder::Receiver
     };
 
     ModulationCarousel (Mode mode, const Rect &pos);
-    virtual ~ModulationCarousel ();
+
+  ~ModulationCarousel () override;
 
     bool onRotary (int inc, ButtonModifiers modifiers) override;
 
     void setup (Parameter *selectedParameter) override;
     void turn () override;
     void antiTurn() override;
+
+  void setDefault();
 };
 

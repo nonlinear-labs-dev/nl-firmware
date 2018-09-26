@@ -16,8 +16,7 @@ CurrentModulatedValueLabel::CurrentModulatedValueLabel (const Rect &r) :
 }
 
 CurrentModulatedValueLabel::~CurrentModulatedValueLabel ()
-{
-}
+= default;
 
 void CurrentModulatedValueLabel::updateText (MacroControlParameter *mcParam, ModulateableParameter *modulatedParam)
 {
@@ -36,4 +35,11 @@ bool CurrentModulatedValueLabel::onRotary (int inc, ButtonModifiers modifiers)
     return true;
   }
   return false;
+}
+
+void CurrentModulatedValueLabel::setDefault() {
+  if(auto param = getModulatedParameter()) {
+    auto scope = param->getUndoScope().startTransaction("Set Default '%0'", param->getGroupAndParameterName());
+    param->setCPFromHwui(scope->getTransaction(), param->getDefaultValue());
+  }
 }
