@@ -92,17 +92,26 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 
   if(focusAndMode.focus == UIFocus::Banks)
   {
-    while(inc < 0)
-    {
-      pm->undoableSelectPrevious();
-      inc++;
+    if(modifiers[SHIFT]) {
+      if(inc < 0) {
+        pm->undoableSelectFirstBank();
+      } else {
+        pm->undoableSelectLastBank();
+      }
+    } else {
+      while(inc < 0)
+      {
+        pm->undoableSelectPrevious();
+        inc++;
+      }
+
+      while(inc > 0)
+      {
+        pm->undoableSelectNext();
+        inc--;
+      }
     }
 
-    while(inc > 0)
-    {
-      pm->undoableSelectNext();
-      inc--;
-    }
   }
   else if(auto bank = pm->getSelectedBank())
   {
