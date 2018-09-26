@@ -298,6 +298,17 @@ void PresetManager::undoableSelectPrevious()
   }
 }
 
+void PresetManager::undoableSelectFirstBank() {
+  if(getNumBanks() > 0)
+    undoableSelectBank(getBank(0)->getUuid());
+}
+
+void PresetManager::undoableSelectLastBank() {
+  if(auto bankCount = getNumBanks()) {
+    undoableSelectBank(getBank(bankCount - 1)->getUuid());
+  }
+}
+
 PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, bool autoSelect)
 {
   vector<tBankPtr> banks = m_banks;
