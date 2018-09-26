@@ -31,13 +31,31 @@ void PanelUnitPresetMode::bruteForceUpdateLeds ()
     array<TwoStateLED::LedState, numLeds> states;
     states.fill(TwoStateLED::OFF);
 
-    getMappings().forEachButton ([&](int buttonId, const list<int> parameters)
-        {
-          setStateForButton(buttonId, parameters, states);
-        });
+    if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
+      getMappings().forEachButton ([&](int buttonId, const list<int> parameters)
+      {
+          letChangedButtonsBlink(buttonId, parameters, states);
+      });
+    else
+      getMappings().forEachButton ([&](int buttonId, const list<int> parameters)
+      {
+         setStateForButton(buttonId, parameters, states);
+      });
 
     applyStateToLeds(states);
   });
+}
+
+void PanelUnitPresetMode::letChangedButtonsBlink(int buttonId, const list<int> parameters, array<TwoStateLED::LedState, numLeds>& states) {
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto currentParams = getMappings().findParameters(buttonId);
+  auto ebParameters = editBuffer->getParametersSortedById();
+
+  bool anyChanged = false;
+  for(auto paramID : currentParams) {
+    anyChanged |= ebParameters[paramID]->isChangedFromLoaded();
+  }
+  states[buttonId] = anyChanged ? TwoStateLED::BLINK : TwoStateLED::OFF;
 }
 
 void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parameters, array<TwoStateLED::LedState, numLeds>& states)
