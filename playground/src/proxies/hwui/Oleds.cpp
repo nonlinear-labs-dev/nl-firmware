@@ -22,6 +22,8 @@ Oleds::~Oleds()
 
 void Oleds::setDirty()
 {
+  PerformanceTimer::printCurrentTime("setDirty");
+
   if(!m_throttler.isPending())
     m_throttler.doTask(std::bind(&Oleds::syncRedraw, this));
 }
@@ -42,6 +44,7 @@ void Oleds::registerProxy(OLEDProxy *proxy)
 
 void Oleds::syncRedraw()
 {
+  PerformanceTimer::printCurrentTime("syncRedraw");
   bool needsSwap = false;
 
   for(auto proxy : m_proxies)

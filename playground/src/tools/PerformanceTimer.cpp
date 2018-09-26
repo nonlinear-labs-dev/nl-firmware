@@ -13,7 +13,7 @@ void PerformanceTimer::printCurrentTime(const char *name)
 
 void PerformanceTimer::printCurrentTime(const char *name, int64_t ms)
 {
-  auto s = ms / 1000;
+  /* auto s = ms / 1000;
   ms -= s * 1000;
 
   auto m = s / 60;
@@ -29,7 +29,7 @@ void PerformanceTimer::printCurrentTime(const char *name, int64_t ms)
   d -= y * 360;
 
   char txt[256];
-  sprintf(txt, "%ld:%ld:%02ld:%02ld:%02ld:%03ld", y, d, h, m, s, ms);
+  sprintf(txt, "%ld:%ld:%02ld:%02ld:%02ld:%03ld", y, d, h, m, s, ms);*/
 
-  std::cout << "Performance time stamp at " << name << ": " << txt << std::endl;
+  std::cout << "Performance time stamp at " << name << ": " << ms << std::endl;
 }

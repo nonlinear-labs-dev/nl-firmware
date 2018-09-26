@@ -224,6 +224,8 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
 
 void FrameBuffer::swapBuffers()
 {
+  PerformanceTimer::printCurrentTime("swapBuffers");
+
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
   {
     auto ts = Application::get().getHWUI()->getPanelUnit().getEditPanel().getKnob().resetOldestPendingTimestamp();

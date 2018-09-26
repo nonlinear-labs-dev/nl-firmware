@@ -43,6 +43,7 @@ void RotaryEncoder::onTimeStampedMessage(WebSocketSession::tMessage msg)
   if(m_oldestPendingTimestamp == 0)
   {
     memcpy(&m_oldestPendingTimestamp, buffer, 8);
+    PerformanceTimer::printCurrentTime(("received timestamp " + to_string(m_oldestPendingTimestamp)).c_str());
   }
 
   applyIncrement(buffer[8]);
@@ -59,6 +60,7 @@ void RotaryEncoder::applyIncrement(tIncrement currentInc)
   m_throttler.doTask([this]() {
     if(abs(m_accumulatedIncs) > 1)
     {
+      PerformanceTimer::printCurrentTime("apply encoder acceleration");
       m_accumulatedIncs = std::min(m_accumulatedIncs, 10);
       m_accumulatedIncs = std::max(m_accumulatedIncs, -10);
       double factor = Application::get().getSettings()->getSetting<EncoderAcceleration>()->get();

@@ -22,6 +22,8 @@ ToOledsBridge::~ToOledsBridge()
 
 void ToOledsBridge::handleTimeStampedFramebuffer(Receiver::tMessage msg)
 {
+  printCurrentTime(__PRETTY_FUNCTION__);
+
   gsize numBytes = 0;
   auto bytes = reinterpret_cast<const int8_t*>(msg->get_data(numBytes));
   int64_t ms = 0;
@@ -29,12 +31,14 @@ void ToOledsBridge::handleTimeStampedFramebuffer(Receiver::tMessage msg)
   auto fb = Glib::Bytes::create(bytes + 8, numBytes - 8);
   m_sender->send(fb);
 
+  printCurrentTime(Glib::ustring::format(__PRETTY_FUNCTION__, " received id '", ms, "'").c_str());
+
   if(ms)
   {
     auto now = std::chrono::system_clock::now();
     int64_t nowMS = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     auto diff = nowMS - ms;
-
+    printCurrentTime(Glib::ustring::format(__PRETTY_FUNCTION__, " store timestamp with diff ", diff).c_str());
     m_timeStamps.push_back({ now, diff });
   }
 }

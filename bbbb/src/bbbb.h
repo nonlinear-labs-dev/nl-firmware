@@ -25,3 +25,6 @@ enum class Domain : uint8_t
   TimeStampedRotary = 7,
   TimeStampedOled = 8,
 };
+
+void printCurrentTime(const char *s);
+void printCurrentTime(const char *s, int64_t ms);
