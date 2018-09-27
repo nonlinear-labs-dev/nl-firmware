@@ -15,7 +15,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <clipboard/Clipboard.h>
 
-int PresetEditButtonMenu::s_lastSelection = PresetEditButtonMenu::Actions::Copy;
+int PresetEditButtonMenu::s_lastSelection = PresetEditButtonMenu::Actions::Rename;
 
 PresetEditButtonMenu::PresetEditButtonMenu(const Rect &rect) :
     super(rect)
