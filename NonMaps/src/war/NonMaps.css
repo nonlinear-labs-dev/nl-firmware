@@ -1936,7 +1936,7 @@ button {
 	border-bottom-right-radius: 0;
 	margin: 0;
 	border-bottom: 1px solid rgb(99, 99, 99);
-	background-color: #202020;
+	background-color: #1d1d1d;
 }
 
 .preset-info-dialog .tab.selected {
@@ -1964,46 +1964,36 @@ button {
 	border-top: none;
 }
 
-.preset-info-dialog .dialog-header>.headline {
-	height: 0;
+
+
+.preset-info-dialog td:nth-of-type(2) {
+    display:  flex;
 }
 
-.preset-info-dialog
- 
-td
-:nth-of-type
- 
-(2)
-{
-display
-:
- 
-flex
-;
-
-
+ .preset-info-dialog table {
+    width: 100%;
 }
-.preset-info-dialog table {
-	width: 365px;
+ .preset-info-dialog td:nth-of-type(2) > * {
+    flex-grow: 1;
+}
+ .preset-info-dialog .content {
+    min-width: 30em;
+}
+ .preset-info-dialog .tag-div {
+    display: table-cell;
+    align-items:  center;
+    justify-content:  space-between;
+    padding-left:  1em;
+    padding-right: 1em;
 }
 
-.preset-info-dialog td:nth-of-type (2) >* {
-	flex-grow: 1;
+.bank-info-dialog td:nth-of-type(2) {
+    display:  flex;
 }
 
-.preset-info-dialog .content.gwt-Label {
-	width: 97px;
+.bank-info-dialog table {
+    width: 100%;
 }
-
-.preset-info-dialog .content {
-	word-wrap: break-word;
-}
-
-.preset-info-dialog .tag-div {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	/*padding-left: 1em;*/
-	min-width: 256px;
-	padding-right: 1em;
+ .bank-info-dialog td:nth-of-type(2) > * {
+    flex-grow: 1;
 }
