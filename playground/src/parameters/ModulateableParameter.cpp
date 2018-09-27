@@ -225,7 +225,8 @@ void ModulateableParameter::writeDifferences(Writer& writer, Parameter* other) c
 
   if(getModulationAmount() != pOther->getModulationAmount())
   {
-    writer.writeTextElement("mc-amount", "", Attribute("a", getModulationAmount()), Attribute("b", pOther->getModulationAmount()));
+    writer.writeTextElement("mc-amount", "", Attribute("a", to_string(int(getModulationAmount() * 100)) + "%"),
+                            Attribute("b", to_string(int(pOther->getModulationAmount() * 100)) + "%"));
   }
 
   if(getModulationSource() != pOther->getModulationSource())
