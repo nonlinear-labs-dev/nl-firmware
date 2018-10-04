@@ -41,6 +41,7 @@
 #include <sstream>
 #include <string>
 #include <presets/ClusterEnforcement.h>
+#include "BankChangeBlocker.h"
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -208,6 +209,7 @@ void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transac
           auto b = getBank(newPos);
           m_banks[newPos] = a;
           m_banks[oldPos] = b;
+
           reassignOrderNumbers();
         });
       }
@@ -902,7 +904,11 @@ Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedO
 void PresetManager::reassignOrderNumbers()
 {
   for(tBankPtr b : m_banks)
+  {
+    BankChangeBlocker blocker(b);
     b->onChange();
+  }
+
 
   m_sigNumBanksChanged.send(getNumBanks());
 }
