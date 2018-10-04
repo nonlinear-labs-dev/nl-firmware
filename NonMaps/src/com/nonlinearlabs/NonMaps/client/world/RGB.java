@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world;
 
-import com.nonlinearlabs.NonMaps.client.Tracer;
 
 public class RGB {
 
@@ -12,7 +11,7 @@ public class RGB {
 		if(isHex(color))
 			fromHex(color);
 		else
-			fromString(color);
+			assert(false);
 	}
 		
 	public RGB(int r, int g, int b) {
@@ -36,17 +35,8 @@ public class RGB {
 	private void fromHex(String color) {
 		String noHashtag = color.substring(1);
 		this.r = clip(Integer.valueOf( noHashtag.substring( 0, 1 ), 16 ));
-		Tracer.log(r + "from" + noHashtag.substring(0, 1));
 		this.g = clip(Integer.valueOf( noHashtag.substring( 2, 3 ), 16 ));
-		Tracer.log(g + "from" + noHashtag.substring(2, 3));
         this.b = clip(Integer.valueOf( noHashtag.substring( 4, 5 ), 16 ));
-		Tracer.log(b + "from" + noHashtag.substring(4, 5));
-	}
-	
-	private void fromString(String color) {
-		this.r = 0;
-		this.g = 0;
-		this.b = 0;
 	}
 	
 	public RGB brighter(int amount) {

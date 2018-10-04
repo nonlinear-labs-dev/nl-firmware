@@ -23,14 +23,4 @@ public class DialogColorFactory {
 	public static RGB getTextField() {
 		return new RGB("#202020");
 	}
-	
-	/*
-	Hintergrund: #000000 - ok
-	Editfelder: #141414 - ok
-	Inaktive Tabs: Setup: #1d1d1d - ok
-	Inaktiver Tab: Preset Info: #202020 -->> #1d1d1d
-	Aktiver Tab / Textfläche: Setup / Preset Info: #282828 -->> #202020
-	Textfläche: Parameter Info / Search / Bank Info: #202020 - ok
-	Textfläche: Undo History: #1a1a1a -->> #202020
-	*/
 }
