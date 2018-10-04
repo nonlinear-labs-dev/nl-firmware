@@ -445,6 +445,7 @@ void EditBuffer::undoableInitSound(UNDO::Scope::tTransactionPtr transaction)
     swap->swapWith<0>(m_lastLoadedPresetInfo.presetName);
     swap->swapWith<1>(m_lastLoadedPresetInfo.presetUUID);
     swap->swapWith<2>(m_loadedPreset);
+
     m_signalPresetLoaded.send();
     onChange();
   });
