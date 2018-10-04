@@ -21,6 +21,7 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <device-info/DateTimeInfo.h>
 #include <tools/TimeTools.h>
+#include "BankChangeBlocker.h"
 
 PresetBank::PresetBank(PresetManager *parent) :
     UpdateDocumentContributor(parent),
@@ -566,7 +567,8 @@ sigc::connection PresetBank::onBankChanged(sigc::slot<void> slot)
 
 UpdateDocumentContributor::tUpdateID PresetBank::onChange(uint64_t flags)
 {
-  m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp();
+  if(m_lastChangeTimestampBlocked == 0)
+    m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp();
 
   if(getParent())
   {
@@ -844,6 +846,9 @@ std::pair<double, double> PresetBank::calcDefaultPosition() const
 
 void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Glib::ustring masterUuid, AttachmentDirection dir)
 {
+  if(getAttached().direction == dir)
+    return;
+
   auto swapData = UNDO::createSwapData(Attachment(masterUuid, dir));
   transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
   {
@@ -985,5 +990,13 @@ PresetBank *PresetBank::getSlaveBottom() {
                 return bank.get();
     }
     return nullptr;
+}
+
+void PresetBank::removeChangeBlocker(BankChangeBlocker *blocker) {
+  m_lastChangeTimestampBlocked--;
+}
+
+void PresetBank::addChangeBlocker(BankChangeBlocker *blocker) {
+  m_lastChangeTimestampBlocked++;
 }
 
