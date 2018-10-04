@@ -156,7 +156,7 @@ class PresetBank : public UpdateDocumentContributor,
 
     Signal<void> m_signalBankChanged;
     vector<tPresetPtr> m_presets;
-    bool m_lastChangeTimestampBlocked = false;
+    int m_lastChangeTimestampBlocked = 0;
 
     Uuid m_uuid;
     Glib::ustring m_selectedPresetUUID;

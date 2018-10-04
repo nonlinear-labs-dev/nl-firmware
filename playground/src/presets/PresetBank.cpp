@@ -567,7 +567,7 @@ sigc::connection PresetBank::onBankChanged(sigc::slot<void> slot)
 
 UpdateDocumentContributor::tUpdateID PresetBank::onChange(uint64_t flags)
 {
-  if(!m_lastChangeTimestampBlocked)
+  if(m_lastChangeTimestampBlocked == 0)
     m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp();
 
   if(getParent())
@@ -995,10 +995,10 @@ PresetBank *PresetBank::getSlaveBottom() {
 }
 
 void PresetBank::removeChangeBlocker(BankChangeBlocker *blocker) {
-  m_lastChangeTimestampBlocked = false;
+  m_lastChangeTimestampBlocked--;
 }
 
 void PresetBank::addChangeBlocker(BankChangeBlocker *blocker) {
-  m_lastChangeTimestampBlocked = true;
+  m_lastChangeTimestampBlocked++;
 }
 
