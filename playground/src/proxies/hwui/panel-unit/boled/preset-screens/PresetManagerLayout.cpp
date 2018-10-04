@@ -324,11 +324,7 @@ std::unique_ptr<StoreModeData>& PresetManagerLayout::getStoreModePtr() {
 
 StoreModeData* PresetManagerLayout::getStoreModeData() {
 
-  auto& sData = getStoreModePtr();
-
-  if(sData != nullptr)
-    return sData.get();
-  return nullptr;
+  return getStoreModePtr().get();
 }
 
 void PresetManagerLayout::setStoreModeData(std::unique_ptr<StoreModeData> ptr) {
