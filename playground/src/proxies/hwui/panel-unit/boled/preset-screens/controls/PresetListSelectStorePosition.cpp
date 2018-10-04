@@ -11,10 +11,9 @@
 
 PresetListSelectStorePosition::PresetListSelectStorePosition(const Rect &pos, bool showBankArrows,
                                                              StoreModeData *pod) :
-    super(pos, showBankArrows)
+    super(pos, showBankArrows),
+    m_storeModeData(pod)
 {
-  m_bankPosition = &pod->bankPos;
-  m_presetPosition = &pod->presetPos;
   initBankAndPreset();
 }
 
@@ -31,7 +30,7 @@ void PresetListSelectStorePosition::onChange()
 {
   m_bankConnection.disconnect();
 
-  if(auto bank = Application::get().getPresetManager()->getBank(*m_bankPosition))
+  if(auto bank = Application::get().getPresetManager()->getBank(m_storeModeData->bankPos))
   {
     m_bankConnection = bank->onBankChanged(mem_fun(this, &PresetListSelectStorePosition::onBankChanged));
   }
@@ -39,16 +38,16 @@ void PresetListSelectStorePosition::onChange()
 
 void PresetListSelectStorePosition::onBankChanged()
 {
-  if(auto bank = Application::get().getPresetManager()->getBank(*m_bankPosition))
+  if(auto bank = Application::get().getPresetManager()->getBank(m_storeModeData->bankPos))
   {
     if(m_selectedPreset != bank->getSelectedPreset())
     {
       m_selectedPreset = bank->getSelectedPreset();
-      *m_presetPosition = bank->getPresetPosition(m_selectedPreset);
+      m_storeModeData->presetPos = static_cast<int>(bank->getPresetPosition(m_selectedPreset));
     }
 
     sanitizePresetPosition(bank);
-    m_content->setup(bank, *m_presetPosition);
+    m_content->setup(bank, m_storeModeData->presetPos);
     m_header->setup(bank);
   }
 }
@@ -56,7 +55,7 @@ void PresetListSelectStorePosition::onBankChanged()
 std::pair<int, int> PresetListSelectStorePosition::getSelectedPosition() const
 {
   return
-  { *m_bankPosition, *m_presetPosition};
+  { m_storeModeData->bankPos, m_storeModeData->presetPos};
 }
 
 bool PresetListSelectStorePosition::onButton(int i, bool down, ButtonModifiers modifiers)
@@ -109,9 +108,9 @@ void PresetListSelectStorePosition::movePresetSelection(int moveBy)
 
   sanitizeBankPosition(pm);
 
-  if(auto bank = pm->getBank(*m_bankPosition))
+  if(auto bank = pm->getBank(m_storeModeData->bankPos))
   {
-    *m_presetPosition += moveBy;
+    m_storeModeData->presetPos += moveBy;
     sanitizePresetPosition(bank);
   }
 
@@ -123,12 +122,12 @@ void PresetListSelectStorePosition::sanitizeBankPosition(std::shared_ptr<PresetM
 {
   if(auto numBanks = pm->getNumBanks())
   {
-    *m_bankPosition = std::min<int>(*m_bankPosition, numBanks - 1);
-    *m_bankPosition = std::max<int>(*m_bankPosition, 0);
+    m_storeModeData->bankPos = std::min<int>(m_storeModeData->bankPos, numBanks - 1);
+    m_storeModeData->bankPos = std::max<int>(m_storeModeData->bankPos, 0);
     return;
   }
 
-  *m_bankPosition = invalidIndex;
+  m_storeModeData->bankPos = invalidIndex;
 }
 
 void PresetListSelectStorePosition::sanitizePresetPosition(std::shared_ptr<PresetBank> bank)
@@ -137,22 +136,22 @@ void PresetListSelectStorePosition::sanitizePresetPosition(std::shared_ptr<Prese
   {
     if(auto numPresets = bank->getNumPresets())
     {
-      *m_presetPosition = std::min<int>(*m_presetPosition, numPresets - 1);
-      *m_presetPosition = std::max<int>(*m_presetPosition, 0);
+      m_storeModeData->presetPos = std::min<int>(m_storeModeData->presetPos, numPresets - 1);
+      m_storeModeData->presetPos = std::max<int>(m_storeModeData->presetPos, 0);
       return;
     }
   }
 
-  *m_presetPosition = invalidIndex;
+  m_storeModeData->presetPos = invalidIndex;
 }
 
 void PresetListSelectStorePosition::moveBankSelection(int moveBy)
 {
   auto pm = Application::get().getPresetManager();
-  *m_bankPosition += moveBy;
+  m_storeModeData->bankPos += moveBy;
 
   sanitizeBankPosition(pm);
-  sanitizePresetPosition(pm->getBank(*m_bankPosition));
+  sanitizePresetPosition(pm->getBank(m_storeModeData->bankPos));
 
   onChange();
   setDirty();

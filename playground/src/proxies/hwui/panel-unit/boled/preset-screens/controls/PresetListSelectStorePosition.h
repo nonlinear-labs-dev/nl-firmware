@@ -30,9 +30,8 @@ class PresetListSelectStorePosition : public PresetListBase
 
     static constexpr int invalidIndex = -1;
 
-    int* m_presetPosition;
-    int* m_bankPosition;
     Glib::ustring m_selectedPreset;
     sigc::connection m_bankConnection;
+    StoreModeData* m_storeModeData;
 };
 
