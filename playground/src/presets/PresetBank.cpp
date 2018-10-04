@@ -846,10 +846,8 @@ std::pair<double, double> PresetBank::calcDefaultPosition() const
 
 void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Glib::ustring masterUuid, AttachmentDirection dir)
 {
-  std::unique_ptr<BankChangeBlocker> blocker = nullptr;
-
-  if(getAttached().direction == AttachmentDirection::none && dir == AttachmentDirection::none)
-    blocker = std::make_unique<BankChangeBlocker>(shared_from_this());
+  if(getAttached().direction == dir)
+    return;
 
   auto swapData = UNDO::createSwapData(Attachment(masterUuid, dir));
   transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
