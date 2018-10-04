@@ -1619,16 +1619,16 @@ select[disabled='disabled'] {
   margin-right: 1em;
 }
 
-.dialogContent tr td:nth-child (2) {
+.dialogContent tr td:nth-child(2) {
   display: flex;
   justify-content: stretch;
 }
 
-.dialogContent tr td:nth-child (2)>* {
+.dialogContent tr td:nth-child(2)>* {
   flex-grow: 2;
 }
 
-.dialogContent tr td:nth-child (1) {
+.dialogContent tr td:nth-child(1) {
   min-width: 8 em;
 }
 
@@ -1637,9 +1637,14 @@ select[disabled='disabled'] {
   text-align: center;
 }
 
-.dialogContent .compare-tree tr td:nth-child (1) {
+
+.dialogContent .compare-tree tr td:nth-child(1) {
   min-width: 8 em;
   text-align: left;
+}
+
+.dialogContent .compare-tree tr:nth-child(1) td:nth-child(1) {
+  text-align: center;
 }
 
 .gwt-TextArea {
