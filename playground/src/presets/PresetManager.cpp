@@ -45,12 +45,12 @@
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
-PresetManager::PresetManager(UpdateDocumentContributor *parent) :
-    ContentSection(parent),
-    m_editBuffer(EditBuffer::createEditBuffer(this)),
-    m_initSound(EditBuffer::createEditBuffer(this)),
-    m_saveJob(bind(mem_fun(this, &PresetManager::doSaveTask))),
-    m_autoLoadThrottler(std::chrono::milliseconds(500))
+PresetManager::PresetManager(UpdateDocumentContributor *parent)
+    : ContentSection(parent)
+    , m_editBuffer(EditBuffer::createEditBuffer(this))
+    , m_initSound(EditBuffer::createEditBuffer(this))
+    , m_saveJob(bind(mem_fun(this, &PresetManager::doSaveTask)))
+    , m_autoLoadThrottler(std::chrono::milliseconds(500))
 {
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
   m_actionManagers.emplace_back(new BankActions(*this));
@@ -101,11 +101,12 @@ void PresetManager::doAutoLoadSelectedPreset()
   }
 }
 
-void PresetManager::importBank(InStream& stream, const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& fileName)
+void PresetManager::importBank(InStream &stream, const Glib::ustring &x, const Glib::ustring &y,
+                               const Glib::ustring &fileName)
 {
   for(auto actionManager : m_actionManagers)
   {
-    if(auto carstenPtr = dynamic_cast<BankActions*>(actionManager.get()))
+    if(auto carstenPtr = dynamic_cast<BankActions *>(actionManager.get()))
     {
       carstenPtr->importBank(stream, x, y, fileName);
       break;
@@ -115,9 +116,8 @@ void PresetManager::importBank(InStream& stream, const Glib::ustring& x, const G
 
 void PresetManager::scheduleAutoLoadSelectedPreset()
 {
-  m_autoLoadThrottler.doTask([ = ]()
-  {
-    if (auto b = getSelectedBank())
+  m_autoLoadThrottler.doTask([=]() {
+    if(auto b = getSelectedBank())
     {
       auto presetUUID = b->getSelectedPreset();
       auto eb = getEditBuffer();
@@ -125,25 +125,25 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
 
       if(!canOmitLoad)
       {
-        if (auto p = b->getPreset (presetUUID))
+        if(auto p = b->getPreset(presetUUID))
         {
-          if (auto currentUndo = getUndoScope().getUndoTransaction())
+          if(auto currentUndo = getUndoScope().getUndoTransaction())
           {
-            if (!currentUndo->isClosed())
+            if(!currentUndo->isClosed())
             {
-              eb->undoableLoad (currentUndo, p);
+              eb->undoableLoad(currentUndo, p);
             }
             else
             {
               currentUndo->reopen();
-              eb->undoableLoad (currentUndo, p);
+              eb->undoableLoad(currentUndo, p);
               currentUndo->close();
             }
             return;
           }
 
-          UNDO::Scope::tTransactionScopePtr scope = getUndoScope ().startTransaction (p->getUndoTransactionTitle ("Load"));
-          eb->undoableLoad (scope->getTransaction(), p);
+          UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction(p->getUndoTransactionTitle("Load"));
+          eb->undoableLoad(scope->getTransaction(), p);
         }
       }
     }
@@ -152,8 +152,8 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
 
 void PresetManager::undoableSelectBank(const Glib::ustring &uuid)
 {
-  UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startContinuousTransaction(&m_selectedBankUUID, "Select bank '%0'",
-      findBank(uuid)->getName(true));
+  UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startContinuousTransaction(
+      &m_selectedBankUUID, "Select bank '%0'", findBank(uuid)->getName(true));
   undoableSelectBank(scope->getTransaction(), uuid);
 }
 
@@ -173,11 +173,10 @@ void PresetManager::undoableSelectBank(UNDO::Scope::tTransactionPtr transaction,
 
   if(m_selectedBankUUID != uuid)
   {
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
-      swapData->swapWith (m_selectedBankUUID);
-      onChange ();
-      m_sigBankSelection.send (getSelectedBank());
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_selectedBankUUID);
+      onChange();
+      m_sigBankSelection.send(getSelectedBank());
     });
 
     if(auto selBank = getSelectedBank())
@@ -192,7 +191,8 @@ void PresetManager::undoableSelectBank(UNDO::Scope::tTransactionPtr transaction,
   }
 }
 
-void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, moveDirection direction)
+void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid,
+                                            moveDirection direction)
 {
   if(auto bank = findBank(uuid))
   {
@@ -203,8 +203,7 @@ void PresetManager::undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transac
 
       if(newPos >= 0 && newPos < getNumBanks())
       {
-        transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-        {
+        transaction->addSimpleCommand([=](UNDO::Command::State) {
           auto a = getBank(oldPos);
           auto b = getBank(newPos);
           m_banks[newPos] = a;
@@ -224,8 +223,7 @@ void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transact
 
   auto swapData = UNDO::createSwapData(newPos);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
     auto it = std::find(m_banks.begin(), m_banks.end(), bank);
     int pos = std::distance(m_banks.begin(), it);
     swapData->swapWith(pos);
@@ -235,17 +233,16 @@ void PresetManager::undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transact
   });
 }
 
-void PresetManager::undoableSetBanks(UNDO::Scope::tTransactionPtr transaction, std::vector<tBankPtr> newBankOrder) {
+void PresetManager::undoableSetBanks(UNDO::Scope::tTransactionPtr transaction, std::vector<tBankPtr> newBankOrder)
+{
   auto swapData = UNDO::createSwapData(newBankOrder);
 
   sanitizeBankClusterRelations(transaction);
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-                                {
-                                  swapData->swapWith(m_banks);
-                                  reassignOrderNumbers();
-                                });
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
+    swapData->swapWith(m_banks);
+    reassignOrderNumbers();
+  });
 }
-
 
 void PresetManager::undoableSelectNext()
 {
@@ -319,9 +316,8 @@ PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr tran
 
   auto swapData = UNDO::createSwapData(banks);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    swapData->swapWith (m_banks);
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swapData->swapWith(m_banks);
     reassignOrderNumbers();
     signalPresetManagerChanged();
   });
@@ -334,12 +330,14 @@ PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr tran
   return newBank;
 }
 
-PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y)
+PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x,
+                                               const Glib::ustring &y)
 {
   return addBank(transaction, x, y, true);
 }
 
-PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y, bool autoSelect)
+PresetManager::tBankPtr PresetManager::addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x,
+                                               const Glib::ustring &y, bool autoSelect)
 {
   auto newBank = addBank(transaction, autoSelect);
   newBank->undoableSetPosition(transaction, x, y);
@@ -367,20 +365,19 @@ void PresetManager::undoableDeleteBank(UNDO::Scope::tTransactionPtr transaction,
     if(bank->getUuid() == m_selectedBankUUID)
       undoableSelectSibling(transaction, idx);
 
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
-      swap->swapWith (m_banks[idx]);
-      m_banks.erase (m_banks.begin () + idx);
-      reassignOrderNumbers();
-      signalPresetManagerChanged();
-    }, [ = ] (UNDO::Command::State) mutable
-    {
-      m_banks.insert (m_banks.begin() + idx, tBankPtr());
-      swap->swapWith (m_banks[idx]);
-      m_banks[idx]->onRestore();
-      reassignOrderNumbers();
-      signalPresetManagerChanged();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable {
+          swap->swapWith(m_banks[idx]);
+          m_banks.erase(m_banks.begin() + idx);
+          reassignOrderNumbers();
+          signalPresetManagerChanged();
+        },
+        [=](UNDO::Command::State) mutable {
+          m_banks.insert(m_banks.begin() + idx, tBankPtr());
+          swap->swapWith(m_banks[idx]);
+          reassignOrderNumbers();
+          signalPresetManagerChanged();
+        });
 
     getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
   }
@@ -418,9 +415,8 @@ void PresetManager::clearBanks(UNDO::Scope::tTransactionPtr transaction)
 {
   auto swapData = UNDO::createSwapData(vector<tBankPtr>());
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    swapData->swapWith (m_banks);
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swapData->swapWith(m_banks);
     reassignOrderNumbers();
     signalPresetManagerChanged();
   });
@@ -466,20 +462,18 @@ void PresetManager::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("preset-manager", Attribute("changed", changed), Attribute("file-version", VersionAttribute::getCurrentFileVersion()),
-      [&]()
-      {
-        if (changed)
-        {
-          m_editBuffer->writeDocument (writer, knownRevision);
+  writer.writeTag("preset-manager", Attribute("changed", changed),
+                  Attribute("file-version", VersionAttribute::getCurrentFileVersion()), [&]() {
+                    if(changed)
+                    {
+                      m_editBuffer->writeDocument(writer, knownRevision);
 
-          writer.writeTag ("banks", Attribute ("selected-bank", m_selectedBankUUID), [&]()
-              {
-                for (tBankPtr bank : m_banks)
-                bank->writeDocument (writer, knownRevision);
-              });
-        }
-      });
+                      writer.writeTag("banks", Attribute("selected-bank", m_selectedBankUUID), [&]() {
+                        for(tBankPtr bank : m_banks)
+                          bank->writeDocument(writer, knownRevision);
+                      });
+                    }
+                  });
 }
 
 void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
@@ -487,15 +481,13 @@ void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const 
 {
   SearchQuery query(q, mode, std::move(fieldsToSearch));
 
-  writer.writeTag("preset-manager", [&]()
-  {
-    writer.writeTag ("banks", [&]()
-        {
-          for (tBankPtr bank : m_banks)
-          {
-            bank->searchPresets (writer, query);
-          }
-        });
+  writer.writeTag("preset-manager", [&]() {
+    writer.writeTag("banks", [&]() {
+      for(tBankPtr bank : m_banks)
+      {
+        bank->searchPresets(writer, query);
+      }
+    });
   });
 }
 
@@ -503,29 +495,27 @@ void PresetManager::recurseIsoDepthTransactions(Writer &writer, const tTransacti
 {
   tTransactionList children;
 
-  writer.writeTag("div", XmlClass("undo-tree-layer"), [&]()
-  {
-    for (UNDO::Scope::tTransactionPtr t : isoDepth)
+  writer.writeTag("div", XmlClass("undo-tree-layer"), [&]() {
+    for(UNDO::Scope::tTransactionPtr t : isoDepth)
     {
       tTransactionList myChildren;
-      t->addChildren (myChildren);
+      t->addChildren(myChildren);
 
       bool isSelectedLayer = getUndoScope().getUndoTransaction() == t;
-      XmlClass classAttribute (isSelectedLayer ? "undo-tree-entry selected" : "undo-tree-entry");
+      XmlClass classAttribute(isSelectedLayer ? "undo-tree-entry selected" : "undo-tree-entry");
 
       std::stringstream undoCommand;
       undoCommand << "$.get('/preset-manager/undo-jump?target=" << t.get() << "');";
 
-      writer.writeTextElement ("div", t->getName(), classAttribute,
-          Attribute ("onclick", undoCommand.str()), Attribute ("id", t.get()),
-          Attribute ("children", getCommaSeparated (myChildren)));
+      writer.writeTextElement("div", t->getName(), classAttribute, Attribute("onclick", undoCommand.str()),
+                              Attribute("id", t.get()), Attribute("children", getCommaSeparated(myChildren)));
 
-      children.insert (children.end(), myChildren.begin(), myChildren.end());
+      children.insert(children.end(), myChildren.begin(), myChildren.end());
     }
 
-    writer.writeTextElement ("canvas", "", XmlClass ("undo-tree-entry-connections"),
-        Attribute ("ins", getCommaSeparated (isoDepth)),
-        Attribute ("width", 1000), Attribute ("height", 1000));
+    writer.writeTextElement("canvas", "", XmlClass("undo-tree-entry-connections"),
+                            Attribute("ins", getCommaSeparated(isoDepth)), Attribute("width", 1000),
+                            Attribute("height", 1000));
   });
 
   if(!children.empty())
@@ -619,8 +609,9 @@ bool PresetManager::isLoading() const
   return m_loading.isLocked();
 }
 
-PresetManager::tPresetPtr PresetManager::getLoadedPreset() {
-    return findPreset(m_editBuffer->getUUIDOfLastLoadedPreset());
+PresetManager::tPresetPtr PresetManager::getLoadedPreset()
+{
+  return findPreset(m_editBuffer->getUUIDOfLastLoadedPreset());
 }
 
 void PresetManager::load()
@@ -726,12 +717,8 @@ list<PresetManager::tSaveSubTask> PresetManager::createListOfSaveSubTasks()
   auto file = Gio::File::create_for_path(path);
   g_file_make_directory_with_parents(file->gobj(), nullptr, nullptr);
 
-  return
-  {
-    bind (&PresetManager::saveMetadata, this, file),
-    bind (&PresetManager::saveInitSound, this, file),
-    bind (&PresetManager::saveBanks, this, file)
-  };
+  return { bind(&PresetManager::saveMetadata, this, file), bind(&PresetManager::saveInitSound, this, file),
+           bind(&PresetManager::saveBanks, this, file) };
 }
 
 SaveResult PresetManager::saveMetadata(RefPtr<Gio::File> pmFolder)
@@ -747,7 +734,8 @@ SaveResult PresetManager::saveMetadata(RefPtr<Gio::File> pmFolder)
   return SaveResult::Nothing;
 }
 
-void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Scope::tTransactionPtr transaction, RefPtr<Gio::File> pmFolder)
+void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Scope::tTransactionPtr transaction,
+                                                       RefPtr<Gio::File> pmFolder)
 {
   DEBUG_TRACE("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
@@ -794,7 +782,7 @@ SaveResult PresetManager::saveBanks(RefPtr<Gio::File> pmFolder)
         return SaveResult::Again;
 
       case SaveResult::Nothing:
-        break; // try next bank
+        break;  // try next bank
     }
   }
 
@@ -803,7 +791,7 @@ SaveResult PresetManager::saveBanks(RefPtr<Gio::File> pmFolder)
 
 void PresetManager::deleteOldBanks(const RefPtr<Gio::File> pmFolder)
 {
-  RefPtr < Gio::FileEnumerator > enumerator = pmFolder->enumerate_children();
+  RefPtr<Gio::FileEnumerator> enumerator = pmFolder->enumerate_children();
 
   while(auto file = enumerator->next_file())
   {
@@ -984,59 +972,59 @@ void PresetManager::resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transa
 
 void PresetManager::stress(int numTransactions)
 {
-  Glib::MainContext::get_default()->signal_timeout().connect_once([=]()
-  {
-    int parameterId = g_random_int_range(0, 200);
+  Glib::MainContext::get_default()->signal_timeout().connect_once(
+      [=]() {
+        int parameterId = g_random_int_range(0, 200);
 
-    {
-      auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
-      m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), to_string(parameterId));
+        {
+          auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
+          m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), to_string(parameterId));
 
-      if(auto p = m_editBuffer->getSelected())
-      {
-        p->stepCPFromHwui (transactionScope->getTransaction(), g_random_boolean() ? -1 : 1, ButtonModifiers());
-      }
-    }
+          if(auto p = m_editBuffer->getSelected())
+          {
+            p->stepCPFromHwui(transactionScope->getTransaction(), g_random_boolean() ? -1 : 1, ButtonModifiers());
+          }
+        }
 
-    if(numTransactions % 20 == 0)
-    {
-      int numUndos = g_random_int_range(1, 5);
+        if(numTransactions % 20 == 0)
+        {
+          int numUndos = g_random_int_range(1, 5);
 
-      for(int i = 0; i < numUndos; i++)
-      {
-        getUndoScope().undo();
-      }
-    }
+          for(int i = 0; i < numUndos; i++)
+          {
+            getUndoScope().undo();
+          }
+        }
 
-    if(numTransactions > 0)
-    {
-      stress(numTransactions - 1);
-    }
-
-  }, 20);
+        if(numTransactions > 0)
+        {
+          stress(numTransactions - 1);
+        }
+      },
+      20);
 }
 
 void PresetManager::stressLoad(int numTransactions)
 {
-  Glib::MainContext::get_default()->signal_timeout().connect_once([=]()
-  {
-    int numSteps = numTransactions;
-    auto transactionScope = getUndoScope().startTransaction("Stressing by Preset loading");
-    auto transaction = transactionScope->getTransaction();
+  Glib::MainContext::get_default()->signal_timeout().connect_once(
+      [=]() {
+        int numSteps = numTransactions;
+        auto transactionScope = getUndoScope().startTransaction("Stressing by Preset loading");
+        auto transaction = transactionScope->getTransaction();
 
-    while(numSteps > 0)
-    {
-      for(auto b : getBanks())
-      {
-        for(auto p : b->getPresets())
+        while(numSteps > 0)
         {
-          m_editBuffer->undoableLoad(transaction, p);
-          numSteps--;
+          for(auto b : getBanks())
+          {
+            for(auto p : b->getPresets())
+            {
+              m_editBuffer->undoableLoad(transaction, p);
+              numSteps--;
+            }
+          }
         }
-      }
-    }
-
-  }, 20);
+      },
+      20);
 }
 
 Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset2)
@@ -1046,7 +1034,8 @@ Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset
   auto parameters1 = preset1->getParametersSortedById();
   auto parameters2 = preset2->getParametersSortedById();
 
-  for(auto it_m1 = parameters1.cbegin(), end_m1 = parameters1.cend(), it_m2 = parameters2.cbegin(), end_m2 = parameters2.cend();
+  for(auto it_m1 = parameters1.cbegin(), end_m1 = parameters1.cend(), it_m2 = parameters2.cbegin(),
+           end_m2 = parameters2.cend();
       it_m1 != end_m1 || it_m2 != end_m2;)
   {
     if(it_m1 != end_m1 && it_m2 != end_m2)
