@@ -438,8 +438,7 @@ void EditBuffer::undoableInitSound(UNDO::Scope::tTransactionPtr transaction)
   ustring initName = "Init";
   ustring emptyUuid;
   shared_ptr<Preset> preset = nullptr;
-
-<<<<<<< HEAD
+  
   auto swap = UNDO::createSwapData(initName, emptyUuid, preset);
   transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
   {
@@ -447,13 +446,7 @@ void EditBuffer::undoableInitSound(UNDO::Scope::tTransactionPtr transaction)
     swap->swapWith<0> (m_lastLoadedPresetInfo.presetName);
     swap->swapWith<1> (m_lastLoadedPresetInfo.presetUUID);
     swap->swapWith<2>(m_loadedPreset);
-=======
-  auto swap = UNDO::createSwapData(initName, emptyUuid);
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    auto oldPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
-    swap->swapWith<0>(m_lastLoadedPresetInfo.presetName);
-    swap->swapWith<1>(m_lastLoadedPresetInfo.presetUUID);
->>>>>>> subscribe to paramater only instead of edit buffer
+
     auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
 
     m_signalPresetLoaded.send();
