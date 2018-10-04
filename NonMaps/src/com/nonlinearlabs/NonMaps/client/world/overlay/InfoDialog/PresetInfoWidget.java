@@ -24,6 +24,7 @@ public class PresetInfoWidget {
 	private Label bankName;
 	private IntegerBox position;
 	private Widget haveFocus = null;
+	private Preset m_currentShownPreset = null;
 	
 	private ColorTagBox colorBox = new ColorTagBox() {
 		@Override
@@ -56,6 +57,7 @@ public class PresetInfoWidget {
 	}
 		
 	public void updateInfo(Preset preset, boolean force) {
+		m_currentShownPreset = preset;
 		if (preset != null) {
 			String presetName = preset.getCurrentName();
 			deviceName.setText(preset.getAttribute("DeviceName"));
@@ -189,5 +191,14 @@ public class PresetInfoWidget {
 		int c = panel.getRowCount();
 		panel.setWidget(c, 0, new Label(name));
 		panel.setWidget(c, 1, content);
+	}
+
+	public void saveContent() {
+		if(m_currentShownPreset != null) {
+			if(m_currentShownPreset.getCurrentName() != name.getText())
+				m_currentShownPreset.setName(name.getText());
+			if(m_currentShownPreset.getAttribute("Comment") != comment.getText())
+				NonMaps.get().getServerProxy().setPresetAttribute(m_currentShownPreset, "Comment", comment.getText());
+		}
 	}
 }
