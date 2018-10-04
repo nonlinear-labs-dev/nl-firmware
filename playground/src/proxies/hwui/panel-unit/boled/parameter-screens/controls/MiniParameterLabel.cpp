@@ -19,8 +19,8 @@ MiniParameterLabel::~MiniParameterLabel()
 
 void MiniParameterLabel::onParameterChanged(const Parameter *p)
 {
-  auto [displayString, len] = prepareDisplayString(p);
-  setText(displayString, len);
+  auto stringPlusLen = prepareDisplayString(p);
+  setText(stringPlusLen.first, stringPlusLen.second);
 }
 
 void MiniParameterLabel::setSelected(bool selected)
@@ -66,6 +66,6 @@ const std::pair<Glib::ustring, short> MiniParameterLabel::prepareDisplayString(c
 {
   auto changed = p->isChangedFromLoaded();
   auto text = p->getMiniParameterEditorName() + (changed ? "*" : "");
-  auto suffixLen = changed ? 1 : 0;
+  short suffixLen = changed ? 1 : 0;
   return std::make_pair(text, suffixLen);
 }
