@@ -6,7 +6,6 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
-import com.nonlinearlabs.NonMaps.client.world.overlay.DialogColorFactory;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public class SetupPages extends OverlayLayout {
