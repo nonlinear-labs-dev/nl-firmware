@@ -361,6 +361,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Scope::tTransactionPtr transa
     setName(m_lastLoadedPresetInfo.presetName);
     setUuid(m_lastLoadedPresetInfo.presetUUID);
 
+    m_loadedPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
     m_signalPresetLoaded.send();
     onChange ();
   });
@@ -398,6 +399,7 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Scope::tTransactionPtr tra
       setUuid(m_lastLoadedPresetInfo.presetUUID);
 
       m_signalPresetLoaded.send();
+      m_loadedPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
       onChange ();
     });
   }
@@ -438,13 +440,15 @@ void EditBuffer::undoableInitSound(UNDO::Scope::tTransactionPtr transaction)
 
   ustring initName = "Init";
   ustring emptyUuid;
+  shared_ptr<Preset> preset = nullptr;
 
-  auto swap = UNDO::createSwapData(initName, emptyUuid);
+  auto swap = UNDO::createSwapData(initName, emptyUuid, preset);
   transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
   {
     auto oldPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
     swap->swapWith<0> (m_lastLoadedPresetInfo.presetName);
     swap->swapWith<1> (m_lastLoadedPresetInfo.presetUUID);
+    swap->swapWith<2>(m_loadedPreset);
     auto newPreset = getParent()->findPreset(m_lastLoadedPresetInfo.presetUUID);
 
     m_signalPresetLoaded.send();
@@ -610,4 +614,8 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
     }
   }
   return nullptr;
+}
+
+std::shared_ptr<Preset> EditBuffer::getPreset() const {
+  return m_loadedPreset;
 }
