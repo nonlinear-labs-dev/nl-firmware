@@ -1,13 +1,26 @@
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 #include "MiniParameterLabel.h"
 
-MiniParameterLabel::MiniParameterLabel(const Glib::ustring &text, const Rect &pos)
-    : super(text, pos)
+MiniParameterLabel::MiniParameterLabel(Parameter *parameter, const Rect &pos)
+    : super(parameter->getMiniParameterEditorName(), pos)
     , m_selected(false)
 {
+  parameter->onParameterChanged(sigc::mem_fun(this, &MiniParameterLabel::onParameterChanged));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::bind(sigc::mem_fun(this, &MiniParameterLabel::onParameterChanged), parameter));
 }
 
 MiniParameterLabel::~MiniParameterLabel()
 {
+}
+
+void MiniParameterLabel::onParameterChanged(const Parameter *p)
+{
+  auto [displayString, len] = prepareDisplayString(p);
+  setText(displayString, len);
 }
 
 void MiniParameterLabel::setSelected(bool selected)
@@ -47,4 +60,12 @@ void MiniParameterLabel::setFontColor(FrameBuffer &fb) const
       fb.setColor(FrameBuffer::Colors::C128);
   else
     fb.setColor(FrameBuffer::Colors::C128);
+}
+
+const std::pair<Glib::ustring, short> MiniParameterLabel::prepareDisplayString(const Parameter *p) const
+{
+  auto changed = p->isChangedFromLoaded();
+  auto text = p->getMiniParameterEditorName() + (changed ? "*" : "");
+  auto suffixLen = changed ? 1 : 0;
+  return std::make_pair(text, suffixLen);
 }
