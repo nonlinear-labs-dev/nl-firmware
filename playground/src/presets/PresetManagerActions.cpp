@@ -132,6 +132,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager) :
       handleImportBackupFile(transaction, buffer, http);
 
       boled.resetOverlay();
+      boled.invalidate();
       soup_buffer_free(buffer);
     }
   });
