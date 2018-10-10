@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.dataModel.EditBuffer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -429,25 +430,45 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				double srcValue = mc.getValue().getClippedValue();
 				double value = m.getValue().getClippedValue();
+				
 				double modLeft = value - modAmount * srcValue;
+				double modRight = modLeft + modAmount;
 
+				double grenzLeft = modAmount < 0 ? modRight : modLeft;
+				double grenzRight = modAmount < 0 ? modLeft : modRight;
+
+				
 				switch (mode) {
 				case mcAmount: {
+					boolean l = grenzLeft < 0.0;
+					boolean r = grenzRight > 1.0;
+					String clip = l||r ? "! " : "";
 					String with = m.getModulationAmount().getDecoratedValue(true);
 					String without = m.getModulationAmount().getDecoratedValue(false);
-					return new String[] { "MC Amount: " + with, "MC Amount: " + without, "MC Amt: " + without, "Amt: " + without, without };
+					return new String[] { clip + "MC Amount: " + with, clip + "MC Amount: " + without, clip + "MC Amt: " + without, clip + "Amt: " + without, clip + without };
 				}
 
 				case mcLower: {
+					String clip = "";
+					if(modAmount < 0)
+						clip = modLeft > 1.0 ? "! " : "";
+					else
+						clip = modLeft < 0.0 ? "! " : "";
 					String with = p.getDecoratedValue(true, modLeft);
 					String without = p.getDecoratedValue(false, modLeft);
-					return new String[] { "Lower Limit: " + with, "Lower Limit: " + without, "Lower: " + without, "Lo: " + without, without };
+					return new String[] { clip + "Lower Limit: " + with, clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without, clip + without };
 				}
 
 				case mcUpper: {
-					String with = p.getDecoratedValue(true, modLeft + modAmount);
-					String without = p.getDecoratedValue(false, modLeft + modAmount);
-					return new String[] { "Upper Limit: " + with, "Upper Limit: " + without, "Upper: " + without, "Up: " + without, without };
+					String clip = "";
+					if(modAmount < 0)
+						clip = modRight < 0.0 ? "! " : "";
+					else
+						clip = modRight > 1.0 ? "! " : "";
+						
+					String with = p.getDecoratedValue(true, modRight);
+					String without = p.getDecoratedValue(false, modRight);
+					return new String[] { clip + "Upper Limit: " + with, clip + "Upper Limit: " + without, clip + "Upper: " + without, clip + "Up: " + without, clip + without };
 				}
 
 				case mcValue: {
