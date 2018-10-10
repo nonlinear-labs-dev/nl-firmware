@@ -1,11 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.FBMixer;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableSlider;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHighPriority;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SmallParameterName;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
 
 class KeyTrackColumn extends ParameterColumn {
@@ -26,7 +26,7 @@ class KeyTrackColumn extends ParameterColumn {
 
 		private KeyTrack(MapsLayout parent) {
 			super(parent);
-			addChild(new SmallParameterName(this, getName()));
+			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
 		}

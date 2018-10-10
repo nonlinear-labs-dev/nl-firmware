@@ -1,3 +1,5 @@
+#include <utility>
+
 #include <Application.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <device-settings/Settings.h>
@@ -19,7 +21,6 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
-
 #include <functional>
 #include <memory>
 #include <vector>
@@ -89,6 +90,9 @@ void PresetManagerLayout::setupBankFocus()
 
 void PresetManagerLayout::setupBankEdit()
 {
+  if(getStoreModeData() != nullptr) {
+    setStoreModeData(nullptr);
+  }
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
@@ -100,6 +104,9 @@ void PresetManagerLayout::setupBankEdit()
 
 void PresetManagerLayout::setupBankSelect()
 {
+  if(getStoreModeData() != nullptr) {
+    setStoreModeData(nullptr);
+  }
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
@@ -113,12 +120,15 @@ void PresetManagerLayout::setupBankSelect()
 
 void PresetManagerLayout::setupBankStore()
 {
+  if(getStoreModeData() == nullptr) {
+    setStoreModeData(std::move(std::make_unique<StoreModeData>()));
+  }
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
-  m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true));
+  m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_presets->setBankFocus();
 }
 
@@ -144,6 +154,9 @@ void PresetManagerLayout::setupPresetFocus()
 
 void PresetManagerLayout::setupPresetEdit()
 {
+  if(getStoreModeData() != nullptr) {
+    setStoreModeData(nullptr);
+  }
   auto selectedBank = Application::get().getPresetManager()->getSelectedBank();
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
@@ -163,6 +176,9 @@ void PresetManagerLayout::setupPresetEdit()
 
 void PresetManagerLayout::setupPresetSelect()
 {
+  if(getStoreModeData() != nullptr) {
+    setStoreModeData(nullptr);
+  }
   m_bankAndPresetNumberLabel = addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   m_numPresetsInBank = addControl(new NumPresetsInBankLabel(Rect(192, 1, 64, 14)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
@@ -175,11 +191,14 @@ void PresetManagerLayout::setupPresetSelect()
 
 void PresetManagerLayout::setupPresetStore()
 {
+  if(getStoreModeData() == nullptr) {
+    setStoreModeData(std::move(std::make_unique<StoreModeData>()));
+  }
   m_bankAndPresetNumberLabel = addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10,11)));
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
-  m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true));
+  m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
 }
 
@@ -279,14 +298,14 @@ void PresetManagerLayout::updateAutoLoadButton(const Setting *setting)
 {
   if(m_autoLoad)
   {
-    const AutoLoadSelectedPreset *s = dynamic_cast<const AutoLoadSelectedPreset *>(setting);
+    const auto *s = dynamic_cast<const AutoLoadSelectedPreset *>(setting);
     m_autoLoad->setHighlight(s->get());
   }
 }
 
 bool PresetManagerLayout::animateSelectedPreset(function<void()> cb)
 {
-  return m_presets->animateSelectedPreset(cb);
+  return m_presets->animateSelectedPreset(std::move(cb));
 }
 
 std::pair<int, int> PresetManagerLayout::getSelectedPosition() const
@@ -297,3 +316,18 @@ std::pair<int, int> PresetManagerLayout::getSelectedPosition() const
   return
   {};
 }
+
+std::unique_ptr<StoreModeData>& PresetManagerLayout::getStoreModePtr() {
+  static std::unique_ptr<StoreModeData> s_storeModeData;
+  return s_storeModeData;
+}
+
+StoreModeData* PresetManagerLayout::getStoreModeData() {
+
+  return getStoreModePtr().get();
+}
+
+void PresetManagerLayout::setStoreModeData(std::unique_ptr<StoreModeData> ptr) {
+  getStoreModePtr() = std::move(ptr);
+}
+

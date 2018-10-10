@@ -112,7 +112,7 @@ void WebSocketSession::sendMessage(Domain d, tMessage msg)
   if(auto data = reinterpret_cast<const int8_t *>(msg->get_data(len)))
   {
     int8_t cp[len + 1];
-    cp[0] = (int8_t) d;
+    cp[0] = static_cast<int8_t>(d);
     std::copy(data, data + len, cp + 1);
     sendMessage(Glib::Bytes::create(cp, len + 1));
   }

@@ -34,6 +34,7 @@
 #include <iterator>
 #include <memory>
 #include <device-settings/DebugLevel.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 
 class ParameterInfoLayout;
 class ParameterLayout2;
@@ -380,6 +381,12 @@ bool PanelUnitParameterEditMode::isShowingParameterScreen() const
 
 void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 {
+  if(dynamic_pointer_cast<PresetManagerLayout>(getCurrentBoledLayout()) != nullptr)
+  {
+      std::cerr << "Current Boled Layout == PresetManagerLayout!" << std::endl;
+  }
+
+
   m_connectionToMacroControl.disconnect();
 
   shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
@@ -415,7 +422,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
       letMacroControlTargetsBlink();
     }
 
-    if(Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->get() == true)
+    if(Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->get())
       letTargetsBlink(selParam);
   }
 }

@@ -10,7 +10,7 @@ BASE_DIR=$(readlink -f  $1)
 TARGET_DIR=${BASE_DIR}/output/target
 BUILD_DIR=${BASE_DIR}/output/build/playground-HEAD
 STAGING_DIR=${BASE_DIR}/output/staging
-HOST_DIR=${BASE_DIR}/output/host
+HOST_DIR=/root/development/buildroot_assets/host
 
 GWT_COMPILER_DIR=${HOST_DIR}/$(ls ${HOST_DIR} | grep gwt | sort -n | tail -n1)
 

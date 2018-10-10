@@ -8,8 +8,7 @@
 #include <ui/Window.h>
 #endif
 
-
-void printStackTrace (int i)
+void printStackTrace(int i)
 {
   TRACE("Crash signal caught!");
 
@@ -17,39 +16,72 @@ void printStackTrace (int i)
   void* addrlist[max_frames + 1];
 
   // retrieve current stack addresses
-  guint32 addrlen = backtrace (addrlist, sizeof(addrlist) / sizeof(void*));
+  guint32 addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
 
-  if (addrlen == 0)
+  if(addrlen == 0)
   {
     TRACE("");
     return;
   }
 
-  TRACE ("\n\nThe stack trace:");
+  TRACE("\n\nThe stack trace:");
 
   // create readable strings to each frame. __attribute__((no_instrument_function))
-  char** symbollist = backtrace_symbols (addrlist, addrlen);
+  char** symbollist = backtrace_symbols(addrlist, addrlen);
 
   // print the stack trace.
-  for (guint32 i = 0; i < addrlen; i++)
-    TRACE (symbollist[i]);
+  for(guint32 i = 0; i < addrlen; i++)
+    TRACE(symbollist[i]);
 
-  free (symbollist);
-  exit (EXIT_FAILURE);
+  free(symbollist);
+  exit(EXIT_FAILURE);
 }
 
-int main (int numArgs, char **argv)
+int main(int numArgs, char** argv)
 {
-  Gio::init ();
+  Gio::init();
 
-  ::signal (SIGSEGV, printStackTrace);
-  ::signal (SIGILL, printStackTrace);
-  ::signal (SIGBUS, printStackTrace);
+  TRACE("bbbb 1");
+
+  ::signal(SIGSEGV, printStackTrace);
+  ::signal(SIGILL, printStackTrace);
+  ::signal(SIGBUS, printStackTrace);
 
   {
-    Application app (numArgs, argv);
-    Application::get ().run ();
+    Application app(numArgs, argv);
+    Application::get().run();
   }
 
   return EXIT_SUCCESS;
+}
+
+void printCurrentTime(const char* name)
+{
+  auto now = std::chrono::system_clock::now();
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+  printCurrentTime(name, ms);
+}
+
+void printCurrentTime(const char* name, int64_t ms)
+{
+  /*
+  auto s = ms / 1000;
+  ms -= s * 1000;
+
+  auto m = s / 60;
+  s -= m * 60;
+
+  auto h = m / 60;
+  m -= h * 60;
+
+  auto d = h / 24;
+  h -= d * 24;
+
+  auto y = d / 365;
+  d -= y * 360;
+
+  char txt[256];
+  sprintf(txt, "%ld:%ld:%02ld:%02ld:%02ld:%03ld", y, d, h, m, s, ms);*/
+
+  std::cout << "Performance time stamp at " << name << ": " << ms << std::endl;
 }

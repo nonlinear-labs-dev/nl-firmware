@@ -8,7 +8,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHi
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.NumericalControlSmall;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SmallParameterName;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
 
 class CombFilterCol2 extends ParameterColumn {
@@ -45,7 +44,7 @@ class CombFilterCol2 extends ParameterColumn {
 
 		private Keytracking(MapsLayout parent) {
 			super(parent);
-			addChild(new SmallParameterName(this, getName()));
+			addChild(new LabelModulationSource(this, getName()));
 			addChild(new NumericalControlSmall(this));
 		}
 

@@ -1,9 +1,8 @@
 #include <io/network/WebSocketServer.h>
 #include <netinet/tcp.h>
 
-
-WebSocketServer::WebSocketServer() :
-    m_server(soup_server_new(NULL), g_object_unref)
+WebSocketServer::WebSocketServer()
+    : m_server(soup_server_new(nullptr, nullptr), g_object_unref)
 {
   GError *error = nullptr;
 
@@ -27,15 +26,15 @@ sigc::connection WebSocketServer::onMessageReceived(Domain d, const sigc::slot<v
   return m_onMessageReceived[d].connect(cb);
 }
 
-
-void WebSocketServer::webSocket(SoupServer *, SoupWebsocketConnection *c, const char *, SoupClientContext *, WebSocketServer *pThis)
+void WebSocketServer::webSocket(SoupServer *, SoupWebsocketConnection *c, const char *, SoupClientContext *,
+                                WebSocketServer *pThis)
 {
   pThis->connectWebSocket(c);
 }
 
 void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
 {
-  g_signal_connect(connection, "message", G_CALLBACK (&WebSocketServer::receiveMessage), this);
+  g_signal_connect(connection, "message", G_CALLBACK(&WebSocketServer::receiveMessage), this);
   g_object_ref(connection);
   g_object_set(connection, "keepalive-interval", 5, nullptr);
 
@@ -46,7 +45,7 @@ void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
   GSocket *socket = nullptr;
   g_object_get(outStream, "socket", &socket, nullptr);
 
-  auto ret = g_socket_set_option (socket, SOL_TCP, TCP_NODELAY, 1, &error);
+  auto ret = g_socket_set_option(socket, SOL_TCP, TCP_NODELAY, 1, &error);
 
   if(error)
   {
@@ -64,11 +63,10 @@ void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
 
 void WebSocketServer::sendMessage(tMessage msg)
 {
-  m_connections.remove_if([&] (auto &c)
-  {
-    auto state = soup_websocket_connection_get_state (c.get());
+  m_connections.remove_if([&](auto &c) {
+    auto state = soup_websocket_connection_get_state(c.get());
 
-    if (state == SOUP_WEBSOCKET_STATE_OPEN)
+    if(state == SOUP_WEBSOCKET_STATE_OPEN)
     {
       gsize len = 0;
       auto data = msg->get_data(len);
@@ -81,13 +79,10 @@ void WebSocketServer::sendMessage(tMessage msg)
   });
 }
 
-void WebSocketServer::receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketServer *pThis)
+void WebSocketServer::receiveMessage(SoupWebsocketConnection *, gint, GBytes *message, WebSocketServer *pThis)
 {
-  tMessage msg = Glib::wrap(message);
-
   gsize len = 0;
-  auto data = reinterpret_cast<const uint8_t*>(msg->get_data(len));
-  Domain d = (Domain)data[0];
-  auto dup = g_memdup(data + 1, len - 1);
-  pThis->m_onMessageReceived[d](Glib::Bytes::create(dup, len - 1));
+  auto data = reinterpret_cast<const uint8_t *>(g_bytes_get_data(message, &len));
+  Domain d = static_cast<Domain>(data[0]);
+  pThis->m_onMessageReceived[d](Glib::Bytes::create(data + 1, len - 1));
 }

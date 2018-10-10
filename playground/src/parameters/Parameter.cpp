@@ -197,11 +197,8 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 
 Parameter* Parameter::getOriginalParameter() const {
   auto pm = Application::get().getPresetManager();
-  auto uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
-  if(auto originalPreset = pm->findPreset(uuid)) {
-    if(auto originalParameter = originalPreset->findParameterByID(getID())) {
-      return originalParameter;
-    }
+  if(auto preset = pm->getEditBuffer()->getPreset()) {
+    return preset->findParameterByID(static_cast<size_t>(getID()));
   }
   return nullptr;
 }

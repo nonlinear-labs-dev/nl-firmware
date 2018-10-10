@@ -22,6 +22,12 @@ Options::Options(int &argc, char **&argv)
   bbbb.set_description("IP of the device running the BeagleBoneBlackBridge (bbbb)");
   mainGroup.add_entry(bbbb, m_bbbb);
 
+  Glib::OptionEntry doTimestamps;
+  doTimestamps.set_long_name("timestamps");
+  doTimestamps.set_short_name('t');
+  doTimestamps.set_description("measure turn around time encoder -> playground -> oled");
+  mainGroup.add_entry(doTimestamps, m_doTimeStamps);
+
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
@@ -30,7 +36,7 @@ Options::Options(int &argc, char **&argv)
 
 Options::~Options()
 {
-  DebugLevel::warning (__PRETTY_FUNCTION__, __LINE__);
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void Options::setDefaults()
@@ -39,7 +45,7 @@ void Options::setDefaults()
 
   auto file = Gio::File::create_for_path(prefered);
 
-  if (file->query_exists() || makePresetManagerDirectory(file))
+  if(file->query_exists() || makePresetManagerDirectory(file))
   {
     m_pmPath = prefered;
   }
@@ -80,6 +86,11 @@ Glib::ustring Options::getPresetManagerPath() const
 Glib::ustring Options::getBBBB() const
 {
   return m_bbbb;
+}
+
+bool Options::sendBBBBTurnaroundTimestamps()
+{
+  return m_doTimeStamps;
 }
 
 Glib::ustring Options::getSettingsFile() const

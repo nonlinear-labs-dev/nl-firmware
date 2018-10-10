@@ -93,6 +93,8 @@ class PresetManager : public ContentSection
     void undoableSelectBank (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &uuid);
     void undoableSelectNext ();
     void undoableSelectPrevious ();
+    void undoableSelectFirstBank();
+    void undoableSelectLastBank();
 
     sigc::connection onBankSelection (sigc::slot<void, tBankPtr> slot);
     sigc::connection onNumBanksChanged (sigc::slot<void, int> slot);
