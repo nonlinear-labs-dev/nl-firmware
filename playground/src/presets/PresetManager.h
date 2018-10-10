@@ -184,4 +184,6 @@ class PresetManager : public ContentSection
 
     list<tSaveSubTask> m_saveTasks;
     bool m_saveRequestDuringSave = false;
+
+  bool undoIsBankImport(const UNDO::Scope::tTransactionPtr transactionToTest);
 };

@@ -135,9 +135,11 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
             }
             else
             {
-              currentUndo->reopen();
-              eb->undoableLoad(currentUndo, p);
-              currentUndo->close();
+              if(!undoIsBankImport(currentUndo)) {
+                currentUndo->reopen();
+                eb->undoableLoad(currentUndo, p);
+                currentUndo->close();
+              }
             }
             return;
           }
@@ -1057,4 +1059,8 @@ Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset
   }
 
   return out;
+}
+
+bool PresetManager::undoIsBankImport(const UNDO::Scope::tTransactionPtr transactionToTest) {
+  return transactionToTest->getName() == "Import new Bank";
 }
