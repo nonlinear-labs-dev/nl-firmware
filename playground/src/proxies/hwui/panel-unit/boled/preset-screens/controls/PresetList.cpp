@@ -12,7 +12,6 @@ PresetList::PresetList(const Rect &pos, bool showBankArrows) :
     super(pos, showBankArrows)
 {
   Application::get().getPresetManager()->onBankSelection(mem_fun(this, &PresetList::onBankSelectionChanged));
-  Application::get().getPresetManager()->onRestored(mem_fun(this, &PresetList::onRestore));
 }
 
 PresetList::~PresetList()
@@ -133,8 +132,4 @@ std::pair<int, int> PresetList::getSelectedPosition() const
   }
   return
   { -1, -1};
-}
-
-void PresetList::onRestore() {
-  onBankChanged();
 }

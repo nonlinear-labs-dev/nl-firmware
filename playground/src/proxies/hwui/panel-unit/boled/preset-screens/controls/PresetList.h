@@ -21,6 +21,5 @@ class PresetList : public PresetListBase
     void onBankChanged();
 
     sigc::connection m_bankChangedConnection;
-    void onRestore();
 };
 
