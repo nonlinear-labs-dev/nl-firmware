@@ -45,6 +45,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private OverlayControl mcAmountRadioButton;
 	private OverlayControl mcLowerBoundRadioButton;
 	private OverlayControl mcUpperBoundRadioButton;
+	private ParameterClippingLabel mcUpperClip;
+	private ParameterClippingLabel mcLowerClip;
 
 	private QuantizedClippedValue currentValue;
 
@@ -67,6 +69,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(mcLowerBoundRadioButton = new MCRadioButton(this, Mode.mcLower, "MC_Low_Aktiv.svg", "MC_Low_Inaktiv.svg"));
 		addChild(mcUpperBoundRadioButton = new MCRadioButton(this, Mode.mcUpper, "MC_High_Aktiv.svg", "MC_High_Inaktiv.svg"));
 
+		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
+		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
+		
+		
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
 
 		setupValue();
@@ -119,8 +125,13 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDim) / 2, modulationButtonsDim, modulationButtonsDim);
 		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
+	
+		double clipW = 17;
+		mcLowerClip.doLayout(sliderLeft - clipW, third, clipW, third);
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
+		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
 
+		
 		double upperElementsY = Millimeter.toPixels(0.5);
 
 		double sliderWidth = slider.getRelativePosition().getWidth();
@@ -160,7 +171,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
 
-		double lineWidth = slider.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight();
+		double lineWidth = mcLowerClip.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight();
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight(), 0, lineWidth, h);
 
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
@@ -437,7 +448,9 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				double grenzLeft = modAmount < 0 ? modRight : modLeft;
 				double grenzRight = modAmount < 0 ? modLeft : modRight;
 
-				
+				mcUpperClip.setClipping(modLeft > 1.0 || modRight > 1.0);
+				mcLowerClip.setClipping(modLeft < 0 || modRight < 0);
+
 				switch (mode) {
 				case mcAmount: {
 					boolean l = grenzLeft < 0.0;
@@ -450,10 +463,13 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				case mcLower: {
 					String clip = "";
-					if(modAmount < 0)
+					if(modAmount < 0) {
 						clip = modLeft > 1.0 ? "! " : "";
-					else
+					}
+					else {
 						clip = modLeft < 0.0 ? "! " : "";
+					}
+				
 					String with = p.getDecoratedValue(true, modLeft);
 					String without = p.getDecoratedValue(false, modLeft);
 					return new String[] { clip + "Lower Limit: " + with, clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without, clip + without };
@@ -461,10 +477,12 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				case mcUpper: {
 					String clip = "";
-					if(modAmount < 0)
+					if(modAmount < 0) {
 						clip = modRight < 0.0 ? "! " : "";
-					else
+					}
+					else {
 						clip = modRight > 1.0 ? "! " : "";
+					}
 						
 					String with = p.getDecoratedValue(true, modRight);
 					String without = p.getDecoratedValue(false, modRight);
