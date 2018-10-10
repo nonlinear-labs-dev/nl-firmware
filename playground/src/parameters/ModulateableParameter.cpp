@@ -225,7 +225,13 @@ void ModulateableParameter::writeDifferences(Writer& writer, Parameter* other) c
 
   if(getModulationAmount() != pOther->getModulationAmount())
   {
-    writer.writeTextElement("mc-amount", "", Attribute("a", getModulationAmount()), Attribute("b", pOther->getModulationAmount()));
+    auto c = ScaleConverter::get<LinearBipolar100PercentScaleConverter>();
+    auto currentParameter = c->getDimension().stringize(c->controlPositionToDisplay(getModulationAmount()));
+    auto otherParameter = c->getDimension().stringize(c->controlPositionToDisplay(pOther->getModulationAmount()));
+
+
+    writer.writeTextElement("mc-amount", "", Attribute("a", currentParameter),
+                            Attribute("b", otherParameter));
   }
 
   if(getModulationSource() != pOther->getModulationSource())

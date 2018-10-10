@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
@@ -90,7 +91,7 @@ public class SetupPages extends OverlayLayout {
 
 		ctx.closePath();
 
-		ctx.setFillStyle(Gray.overlayBackground().toString());
+		ctx.setFillStyle(new RGB(32,32,32).toString());
 		ctx.fill();
 
 		ctx.setLineWidth(Millimeter.toPixels(0.25));

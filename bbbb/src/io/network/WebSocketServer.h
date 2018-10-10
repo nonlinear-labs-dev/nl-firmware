@@ -21,7 +21,7 @@ class WebSocketServer
     void connectWebSocket(SoupWebsocketConnection *connection);
     static void webSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr, SoupClientContext *client,
                           WebSocketServer *pThis);
-    static void receiveMessage(SoupWebsocketConnection *self, gint type, GBytes *message, WebSocketServer *pThis);
+    static void receiveMessage(SoupWebsocketConnection *, gint, GBytes *message, WebSocketServer *pThis);
 
     using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
     using tSignal = sigc::signal<void, tMessage>;

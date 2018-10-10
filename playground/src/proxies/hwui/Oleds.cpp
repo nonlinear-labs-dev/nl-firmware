@@ -3,6 +3,7 @@
 #include "Application.h"
 #include <proxies/hwui/Font.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <tools/PerformanceTimer.h>
 
 Oleds &Oleds::get()
 {
@@ -25,6 +26,11 @@ void Oleds::setDirty()
     m_throttler.doTask(std::bind(&Oleds::syncRedraw, this));
 }
 
+bool Oleds::isDirty() const
+{
+  return m_throttler.isPending();
+}
+
 void Oleds::deInit()
 {
   m_proxies.clear();
@@ -41,13 +47,10 @@ void Oleds::registerProxy(OLEDProxy *proxy)
 
 void Oleds::syncRedraw()
 {
-  bool needsSwap = false;
-
   for(auto proxy : m_proxies)
-    needsSwap |= proxy->redraw();
+    proxy->redraw();
 
-  if(needsSwap)
-    FrameBuffer::get().swapBuffers();
+  FrameBuffer::get().swapBuffers();
 }
 
 Oleds::tFont Oleds::getFont(const Glib::ustring &name, int height)

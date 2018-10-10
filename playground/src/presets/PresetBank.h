@@ -16,6 +16,7 @@ class Preset;
 class Writer;
 class EditBuffer;
 class PresetManager;
+class BankChangeBlocker;
 
 class PresetBank : public UpdateDocumentContributor,
     public AttributesOwner,
@@ -123,6 +124,8 @@ class PresetBank : public UpdateDocumentContributor,
 
     // CALLBACKS
     sigc::connection onBankChanged(sigc::slot<void> slot);
+    void addChangeBlocker(BankChangeBlocker* blocker);
+    void removeChangeBlocker(BankChangeBlocker* blocker);
 
   private:
     Glib::ustring generateHumanReadablePresetName(size_t pos) const;
@@ -153,6 +156,7 @@ class PresetBank : public UpdateDocumentContributor,
 
     Signal<void> m_signalBankChanged;
     vector<tPresetPtr> m_presets;
+    int m_lastChangeTimestampBlocked = 0;
 
     Uuid m_uuid;
     Glib::ustring m_selectedPresetUUID;

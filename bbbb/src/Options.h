@@ -5,9 +5,12 @@
 
 class Options
 {
-  public:
-    Options(int &argc, char **&argv);
-    virtual ~Options();
+ public:
+  Options(int &argc, char **&argv);
+  virtual ~Options();
 
-  private:
+  bool doTimeStamps() const;
+
+ private:
+  bool m_doTimeStamps = false;
 };
