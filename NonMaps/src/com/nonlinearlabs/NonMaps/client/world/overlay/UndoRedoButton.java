@@ -26,4 +26,8 @@ abstract class UndoRedoButton extends SVGImage {
 
 		return 1;
 	}
+
+	public void doLayout(double x, double y) {
+		doLayout(x, y, getSelectedImage().getImgWidth(), getSelectedImage().getImgHeight());
+	}
 }

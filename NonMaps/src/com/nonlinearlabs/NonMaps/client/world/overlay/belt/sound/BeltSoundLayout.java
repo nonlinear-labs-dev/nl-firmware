@@ -2,8 +2,10 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.world.overlay.*;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.*;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.LockSymbol;
 
 public class BeltSoundLayout extends OverlayLayout {
 
@@ -27,7 +29,7 @@ public class BeltSoundLayout extends OverlayLayout {
 
 		int numAreas = 3;
 
-		double margin = getButtonDimension();
+		double margin = Millimeter.toPixels(2.5);
 		double margins = (numAreas + 1) * margin;
 
 		double widthPerArea = (w - margins) / (numAreas);
@@ -49,7 +51,8 @@ public class BeltSoundLayout extends OverlayLayout {
 		}
 
 		double lockSymbolSizeInPixel = Millimeter.toPixels(lock.getLockSizeInMM() + 1);
-		lock.doLayout(w - lockSymbolSizeInPixel * 1.25, lockSymbolSizeInPixel * 0.25, lockSymbolSizeInPixel, lockSymbolSizeInPixel);
+		lock.doLayout(w - lockSymbolSizeInPixel * 1.25, lockSymbolSizeInPixel * 0.25, lockSymbolSizeInPixel,
+				lockSymbolSizeInPixel);
 	}
 
 	public void update(Node settings) {
