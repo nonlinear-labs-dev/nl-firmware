@@ -1118,7 +1118,6 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
 
         bank->setAttribute("Name of Export File", "(via Browser)");
         bank->setAttribute("Date of Export File", TimeTools::getAdjustedIso());
-
       }
 
       return true;
@@ -1159,6 +1158,8 @@ PresetManager::tBankPtr BankActions::importBank(InStream& stream, const Glib::us
 
   XmlReader reader(stream, transaction);
   reader.read<PresetBankSerializer>(newBank, true);
+
+  newBank->undoableDetachBank(transaction);
 
   if(x.empty() || y.empty())
   {

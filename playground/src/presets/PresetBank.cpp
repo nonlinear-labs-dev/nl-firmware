@@ -852,7 +852,10 @@ void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Gl
 }
 void PresetBank::undoableDetachBank(UNDO::Scope::tTransactionPtr transaction)
 {
-  undoableAttachBank(transaction, "", AttachmentDirection::none);
+  if(!getAttached().uuid.empty())
+  {
+    undoableAttachBank(transaction, "", AttachmentDirection::none);
+  }
 }
 
 const PresetBank::Attachment &PresetBank::getAttached() const
@@ -993,11 +996,12 @@ PresetBank *PresetBank::getSlaveBottom()
   return nullptr;
 }
 
-void PresetBank::removeChangeBlocker(BankChangeBlocker *blocker) {
+void PresetBank::removeChangeBlocker(BankChangeBlocker *blocker)
+{
   m_lastChangeTimestampBlocked--;
 }
 
-void PresetBank::addChangeBlocker(BankChangeBlocker *blocker) {
+void PresetBank::addChangeBlocker(BankChangeBlocker *blocker)
+{
   m_lastChangeTimestampBlocked++;
 }
-
