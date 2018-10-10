@@ -250,6 +250,9 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		if (p instanceof ModulatableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
 
+			mcLowerClip.setClipping(false);
+			mcUpperClip.setClipping(false);
+
 			if (m.getModulationSource() != MacroControls.NONE) {
 				switch (getMode()) {
 				case mcAmount:
