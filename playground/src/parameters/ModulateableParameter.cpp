@@ -219,8 +219,6 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
 {
   Parameter::writeDocProperties(writer, knownRevision);
   auto modRange = getModulationRange(true);
-  writer.writeTextElement("upperlimit", to_string(modRange.second));
-  writer.writeTextElement("lowerlimit", to_string(modRange.first));
   writer.writeTextElement("modAmount", to_string(m_modulationAmount));
   writer.writeTextElement("modSrc", to_string(m_modSource));
 }

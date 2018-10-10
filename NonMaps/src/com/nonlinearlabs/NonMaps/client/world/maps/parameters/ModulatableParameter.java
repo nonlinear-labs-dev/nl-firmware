@@ -35,14 +35,7 @@ public abstract class ModulatableParameter extends Parameter {
 	});
 
 	private MacroControls modulationSource = MacroControls.NONE;
-	
-	private double m_lowerlimit;
-	private double m_upperlimit;
-	
-	public Pair<Double, Double> getLimits() {
-		return new Pair<Double, Double>(m_lowerlimit, m_upperlimit);
-	}
-		
+			
 	public ModulatableParameter(MapsLayout parent) {
 		super(parent);
 		addChild(new ParameterName(this, getName()));
@@ -145,10 +138,6 @@ public abstract class ModulatableParameter extends Parameter {
 				amount.setCoarseDenominator(Double.parseDouble(value));
 			} else if (nodeName.equals("mod-amount-fine")) {
 				amount.setFineDenominator(Double.parseDouble(value));
-			} else if (nodeName.equals("lowerlimit")) {
-				m_lowerlimit = Double.parseDouble(value);
-			} else if (nodeName.equals("upperlimit")) {
-				m_upperlimit = Double.parseDouble(value);
 			} else {
 				return false;
 			}
