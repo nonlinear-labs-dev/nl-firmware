@@ -841,9 +841,6 @@ std::pair<double, double> PresetBank::calcDefaultPosition() const
 void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Glib::ustring masterUuid,
                                     AttachmentDirection dir)
 {
-  if(getAttached().direction == dir)
-    return;
-
   auto swapData = UNDO::createSwapData(Attachment(masterUuid, dir));
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     swapData->swapWith(m_attachment);
