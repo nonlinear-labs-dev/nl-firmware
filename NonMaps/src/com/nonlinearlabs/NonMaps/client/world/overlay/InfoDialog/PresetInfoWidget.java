@@ -195,8 +195,11 @@ public class PresetInfoWidget {
 
 	public void saveContent() {
 		if(m_currentShownPreset != null) {
-			if(m_currentShownPreset.getCurrentName() != name.getText())
+			if(m_currentShownPreset.getCurrentName() != name.getText() && haveFocus == name) {
 				m_currentShownPreset.setName(name.getText());
+				name.setFocus(false);
+				haveFocus = null;
+			}
 			if(m_currentShownPreset.getAttribute("Comment") != comment.getText())
 				NonMaps.get().getServerProxy().setPresetAttribute(m_currentShownPreset, "Comment", comment.getText());
 		}
