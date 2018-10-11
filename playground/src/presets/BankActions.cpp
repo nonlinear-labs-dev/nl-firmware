@@ -1120,6 +1120,8 @@ PresetManager::tBankPtr BankActions::importBank(InStream &stream, const Glib::us
   XmlReader reader(stream, transaction);
   reader.read<PresetBankSerializer>(newBank, true);
 
+  newBank->undoableDetachBank(transaction);
+
   if(x.empty() || y.empty())
   {
     newBank->undoableAssignDefaultPosition(transaction);

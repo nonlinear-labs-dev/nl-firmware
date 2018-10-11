@@ -106,7 +106,9 @@ class PresetManager : public ContentSection
   void undoableSelectFirstBank();
   void undoableSelectLastBank();
 
-  sigc::connection onBankSelection(sigc::slot<void, tBankPtr> slot);
+
+  sigc::connection onBankSelection(sigc::slot<void> slot);
+
   sigc::connection onNumBanksChanged(sigc::slot<void, int> slot);
 
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &oldName) const;
@@ -184,7 +186,7 @@ class PresetManager : public ContentSection
   friend class PresetBankOrderSerializer;
   friend class PresetManagerActions;
 
-  Signal<void, tBankPtr> m_sigBankSelection;
+  Signal<void> m_sigBankSelection;
   Signal<void, int> m_sigNumBanksChanged;
 
   Expiration m_saveJob;

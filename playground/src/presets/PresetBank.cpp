@@ -246,6 +246,7 @@ void PresetBank::undoableSetPosition(UNDO::Scope::tTransactionPtr transaction, c
   auto swapData = UNDO::createSwapData(x, y);
 
   transaction->addSimpleCommand([=](UNDO::Command::State) {
+    BankChangeBlocker b(shared_from_this());
     swapData->swapWith<0>(m_X);
     swapData->swapWith<1>(m_Y);
     onChange();
@@ -841,18 +842,23 @@ std::pair<double, double> PresetBank::calcDefaultPosition() const
 void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Glib::ustring masterUuid,
                                     AttachmentDirection dir)
 {
-  if(getAttached().direction == dir)
-    return;
 
   auto swapData = UNDO::createSwapData(Attachment(masterUuid, dir));
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    BankChangeBlocker b(shared_from_this());
     swapData->swapWith(m_attachment);
     onChange();
   });
 }
+
 void PresetBank::undoableDetachBank(UNDO::Scope::tTransactionPtr transaction)
 {
-  undoableAttachBank(transaction, "", AttachmentDirection::none);
+  BankChangeBlocker b(shared_from_this());
+
+  if(!getAttached().uuid.empty())
+  {
+    undoableAttachBank(transaction, "", AttachmentDirection::none);
+  }
 }
 
 const PresetBank::Attachment &PresetBank::getAttached() const
@@ -862,6 +868,8 @@ const PresetBank::Attachment &PresetBank::getAttached() const
 
 void PresetBank::resetAttached(UNDO::Scope::tTransactionPtr transaction)
 {
+  BankChangeBlocker b(shared_from_this());
+
   setAttachedTo(transaction, "");
   setAttachedDirection(transaction, AttachmentDirection::none);
 }
@@ -993,11 +1001,12 @@ PresetBank *PresetBank::getSlaveBottom()
   return nullptr;
 }
 
-void PresetBank::removeChangeBlocker(BankChangeBlocker *blocker) {
+void PresetBank::removeChangeBlocker(BankChangeBlocker *blocker)
+{
   m_lastChangeTimestampBlocked--;
 }
 
-void PresetBank::addChangeBlocker(BankChangeBlocker *blocker) {
+void PresetBank::addChangeBlocker(BankChangeBlocker *blocker)
+{
   m_lastChangeTimestampBlocked++;
 }
-
