@@ -148,7 +148,7 @@ public class SearchQueryDialog extends GWTDialog {
 	}
 
 	private SearchFieldManager theFieldManager;
-	private static SearchQueryDialog theDialog;
+	public static SearchQueryDialog theDialog;
 	private RepeatingCommand timer;
 	private Label matches;
 	private NonRect storedZoom;

@@ -125,8 +125,6 @@ public abstract class ModulatableParameter extends Parameter {
 
 		try {
 			String value = ServerProxy.getText(child);
-
-			Tracer.log(nodeName + ": " + value);
 			
 			if (nodeName.equals("modAmount")) {
 				setModulationAmount(Initiator.INDIRECT_USER_ACTION, Double.parseDouble(value));
