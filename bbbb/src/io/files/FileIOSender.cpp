@@ -1,7 +1,7 @@
 #include <io/files/FileIOSender.h>
 
-FileIOSender::FileIOSender(const char *path) :
-    m_path(path)
+FileIOSender::FileIOSender(const char *path)
+    : m_path(path)
 {
   TRACE("open file for writing: " << path);
 
@@ -27,9 +27,9 @@ void FileIOSender::send(tMessage msg)
     try
     {
       gsize len = 0;
-      auto data = reinterpret_cast<const char*>(msg->get_data(len));
+      auto data = reinterpret_cast<const char *>(msg->get_data(len));
       gsize bytesWritten = 0;
-      m_channel->write(data, len, bytesWritten);
+      m_channel->write(data, static_cast<gssize>(len), bytesWritten);
       m_channel->flush();
     }
     catch(Glib::Error &err)

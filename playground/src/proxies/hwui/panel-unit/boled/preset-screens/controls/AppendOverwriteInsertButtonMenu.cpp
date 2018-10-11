@@ -10,13 +10,13 @@
 #include <presets/EditBuffer.h>
 #include <http/UndoScope.h>
 
-AppendOverwriteInsertButtonMenu::AppendOverwriteInsertButtonMenu(PresetManagerLayout &parent, const Rect &rect) :
-    super(rect),
-    m_parent(parent)
+AppendOverwriteInsertButtonMenu::AppendOverwriteInsertButtonMenu(PresetManagerLayout &parent, const Rect &rect)
+    : super(rect)
+    , m_parent(parent)
 {
-  Application::get().getPresetManager()->onNumBanksChanged(sigc::hide < 0 > (mem_fun(this, &AppendOverwriteInsertButtonMenu::buildMenu)));
+  Application::get().getPresetManager()->onNumBanksChanged(
+      sigc::hide<0>(mem_fun(this, &AppendOverwriteInsertButtonMenu::buildMenu)));
 }
-
 
 void AppendOverwriteInsertButtonMenu::buildMenu()
 {
@@ -55,10 +55,8 @@ size_t AppendOverwriteInsertButtonMenu::enumToIndex(PresetStoreModeSettings i) c
 
 bool AppendOverwriteInsertButtonMenu::animate()
 {
-  return m_parent.animateSelectedPreset([=]()
-  {
-    Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select);
-  });
+  return m_parent.animateSelectedPreset(
+      [=]() { Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select); });
 }
 
 void AppendOverwriteInsertButtonMenu::executeAction()
@@ -96,7 +94,8 @@ void AppendOverwriteInsertButtonMenu::executeAction()
       pushRenameScreen();
     }
   }
-  else {
+  else
+  {
     createBankAndStore();
   }
 }
@@ -104,13 +103,13 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 void AppendOverwriteInsertButtonMenu::createBankAndStore()
 {
   auto pm = Application::get().getPresetManager();
-  auto& scope = pm->getUndoScope();
+  auto &scope = pm->getUndoScope();
   auto transactionScope = scope.startTransaction("Create Bank and Store Preset");
   auto transaction = transactionScope->getTransaction();
   pm->addBank(transaction, true);
   auto bank = pm->getSelectedBank();
   auto preset = Preset::createPreset(bank.get());
-  bank->undoableCopyAndPrependPreset(transaction, pm->getEditBuffer ());
+  bank->undoableCopyAndPrependPreset(transaction, pm->getEditBuffer());
   bank->undoableEnsurePresetSelection(transaction);
   Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
 }
@@ -135,13 +134,15 @@ void AppendOverwriteInsertButtonMenu::insert(shared_ptr<PresetBank> bank, shared
     animate();
 }
 
-void AppendOverwriteInsertButtonMenu::overwrite(shared_ptr<PresetBank> bank, shared_ptr<Preset> tgtPreset, bool modified)
+void AppendOverwriteInsertButtonMenu::overwrite(shared_ptr<PresetBank> bank, shared_ptr<Preset> tgtPreset,
+                                                bool modified)
 {
   auto pm = Application::get().getPresetManager();
   auto scope = pm->getUndoScope().startTransaction("Overwrite preset '%0'", tgtPreset->getName());
   auto transaction = scope->getTransaction();
 
-  bool loaded = tgtPreset->getUuid() == Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset();
+  bool loaded
+      = tgtPreset->getUuid() == Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset();
 
   tgtPreset = overwritePreset(transaction, tgtPreset);
 
@@ -162,22 +163,21 @@ void AppendOverwriteInsertButtonMenu::overwrite(shared_ptr<PresetBank> bank, sha
 
 void AppendOverwriteInsertButtonMenu::pushRenameScreen()
 {
-  auto layout = new RenamePresetLayout([=](const Glib::ustring &newName)
-  {
-    if (auto bank = Application::get ().getPresetManager ()->getSelectedBank ())
-    {
-      const auto &uuid = bank->getSelectedPreset ();
+  auto layout = new RenamePresetLayout(
+      [=](const Glib::ustring &newName) {
+        if(auto bank = Application::get().getPresetManager()->getSelectedBank())
+        {
+          const auto &uuid = bank->getSelectedPreset();
 
-      if(auto preset = bank->getPreset (uuid))
-      {
-        auto scope = Application::get().getUndoScope()->startTransaction("Rename preset");
-        preset->undoableSetName (scope->getTransaction(), newName);
-      }
-    }
-    animate();
-  }, [=](){
-    animate();
-  });
+          if(auto preset = bank->getPreset(uuid))
+          {
+            auto scope = Application::get().getUndoScope()->startTransaction("Rename preset");
+            preset->undoableSetName(scope->getTransaction(), newName);
+          }
+        }
+        animate();
+      },
+      [=]() { animate(); });
 
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(layout);
 }
@@ -188,10 +188,9 @@ shared_ptr<Preset> AppendOverwriteInsertButtonMenu::overwritePreset(shared_ptr<P
   return overwritePreset(scope->getTransaction(), preset);
 }
 
-
-
-shared_ptr<Preset> AppendOverwriteInsertButtonMenu::overwritePreset(AppendOverwriteInsertButtonMenu::tTransactionPtr transaction,
-                                                                    shared_ptr<Preset> preset)
+shared_ptr<Preset>
+    AppendOverwriteInsertButtonMenu::overwritePreset(AppendOverwriteInsertButtonMenu::tTransactionPtr transaction,
+                                                     shared_ptr<Preset> preset)
 {
   auto pm = Application::get().getPresetManager();
 
@@ -207,8 +206,7 @@ shared_ptr<Preset> AppendOverwriteInsertButtonMenu::overwritePreset(AppendOverwr
   return preset;
 }
 
-void AppendOverwriteInsertButtonMenu::insertPreset(shared_ptr<PresetBank> bank, size_t pos,
-                                                                                               bool modified)
+void AppendOverwriteInsertButtonMenu::insertPreset(shared_ptr<PresetBank> bank, size_t pos, bool modified)
 {
   auto scope = Application::get().getUndoScope()->startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
@@ -223,4 +221,3 @@ void AppendOverwriteInsertButtonMenu::appendPreset(shared_ptr<PresetBank> bank, 
 {
   insertPreset(bank, bank->getNumPresets(), modified);
 }
-

@@ -21,11 +21,12 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <device-info/DateTimeInfo.h>
 #include <tools/TimeTools.h>
+#include "BankChangeBlocker.h"
 
-PresetBank::PresetBank(PresetManager *parent) :
-    UpdateDocumentContributor(parent),
-    m_signalBankChangedPending(false),
-    m_attachment("", AttachmentDirection::none)
+PresetBank::PresetBank(PresetManager *parent)
+    : UpdateDocumentContributor(parent)
+    , m_signalBankChangedPending(false)
+    , m_attachment("", AttachmentDirection::none)
 {
 }
 
@@ -55,18 +56,19 @@ PresetBank::tPresetPtr PresetBank::createPreset()
   return Preset::createPreset(this);
 }
 
-void PresetBank::loadSync(shared_ptr<UNDO::Transaction> transaction, RefPtr<Gio::File> bankFolder, int numBank, int numBanks)
+void PresetBank::loadSync(shared_ptr<UNDO::Transaction> transaction, RefPtr<Gio::File> bankFolder, int numBank,
+                          int numBanks)
 {
   auto lastChangeOnFile = loadMetadata(transaction, bankFolder);
 
-  SplashLayout::addStatus(UNDO::StringTools::buildString("Loading Bank ", numBank, " of ", numBanks, ": \"", getName(false), "\""));
+  SplashLayout::addStatus(
+      UNDO::StringTools::buildString("Loading Bank ", numBank, " of ", numBanks, ": \"", getName(false), "\""));
 
   loadPresets(transaction, bankFolder);
   deleteOldPresetFiles(bankFolder);
 
   m_metadataLastSavedForUpdateID = getUpdateIDOfLastChange();
   m_lastChangedTimestamp = lastChangeOnFile;
-
 }
 
 void PresetBank::deleteOldPresetFiles(RefPtr<Gio::File> bankFolder)
@@ -111,7 +113,8 @@ SaveResult PresetBank::save(RefPtr<Gio::File> bankFolder)
 
 uint64_t PresetBank::loadMetadata(UNDO::Scope::tTransactionPtr transaction, RefPtr<Gio::File> bankFolder)
 {
-  auto lastChangeOnFile = Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", shared_from_this());
+  auto lastChangeOnFile
+      = Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", shared_from_this());
   m_metadataLastSavedForUpdateID = getUpdateIDOfLastChange();
   return lastChangeOnFile;
 }
@@ -180,18 +183,17 @@ void PresetBank::undoableDeletePreset(UNDO::Scope::tTransactionPtr transaction, 
 
     bool wasSelectedPreset = m_presets[pos]->getUuid() == m_selectedPresetUUID;
 
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
-      swap->swapWith (m_presets[pos]);
-      m_presets.erase (m_presets.begin () + pos);
-      onChange();
-    }, [ = ] (UNDO::Command::State) mutable
-    {
-      insertPreset (m_presets.begin() + pos);
-      swap->swapWith (m_presets[pos]);
-      m_presets[pos]->onRestore();
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable {
+          swap->swapWith(m_presets[pos]);
+          m_presets.erase(m_presets.begin() + pos);
+          onChange();
+        },
+        [=](UNDO::Command::State) mutable {
+          insertPreset(m_presets.begin() + pos);
+          swap->swapWith(m_presets[pos]);
+          onChange();
+        });
 
     if(wasSelectedPreset)
     {
@@ -205,7 +207,8 @@ void PresetBank::undoableDeletePreset(UNDO::Scope::tTransactionPtr transaction, 
 
 void PresetBank::undoableSetName(const Glib::ustring &name)
 {
-  UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction("Rename bank '%0' to '%1'", getName(true), name);
+  UNDO::Scope::tTransactionScopePtr scope
+      = getUndoScope().startTransaction("Rename bank '%0' to '%1'", getName(true), name);
   undoableSetName(scope->getTransaction(), name);
 }
 
@@ -213,9 +216,8 @@ void PresetBank::undoableSetName(UNDO::Scope::tTransactionPtr transaction, const
 {
   auto swapData = UNDO::createSwapData(name);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
-    swapData->swapWith (m_name);
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
+    swapData->swapWith(m_name);
     onChange();
   });
 
@@ -238,14 +240,14 @@ void PresetBank::undoableEnsurePresetSelection(UNDO::Scope::tTransactionPtr tran
   }
 }
 
-void PresetBank::undoableSetPosition(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y)
+void PresetBank::undoableSetPosition(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x,
+                                     const Glib::ustring &y)
 {
   auto swapData = UNDO::createSwapData(x, y);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
-    swapData->swapWith<0> (m_X);
-    swapData->swapWith<1> (m_Y);
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
+    swapData->swapWith<0>(m_X);
+    swapData->swapWith<1>(m_Y);
     onChange();
   });
 }
@@ -261,17 +263,16 @@ void PresetBank::undoableMovePreset(size_t from, size_t to)
 {
   auto swapData = UNDO::createSwapData(from, to);
 
-  UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction("Move Preset '%0' from %1 to %2",
-      generateHumanReadablePresetName(from), from + 1, to + 1);
+  UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction(
+      "Move Preset '%0' from %1 to %2", generateHumanReadablePresetName(from), from + 1, to + 1);
 
   UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
-    m_presets[swapData->get<1>()] = getPreset (swapData->get<0>());
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
+    m_presets[swapData->get<1>()] = getPreset(swapData->get<0>());
     m_presets[swapData->get<0>()] = createPreset();
     onChange();
-    swapData->swapWith (swapData->get<1>());
+    swapData->swapWith(swapData->get<1>());
   });
 }
 
@@ -282,32 +283,32 @@ shared_ptr<Preset> PresetBank::undoableExpropriatePreset(UNDO::Scope::tTransacti
 
   if(pos != Glib::ustring::npos)
   {
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-    {
-      m_presets.erase(m_presets.begin() + pos);
-      onChange();
-    }, [=](UNDO::Command::State)
-    {
-      m_presets.insert(m_presets.begin() + pos, preset);
-      preset->adopt(this);
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) {
+          m_presets.erase(m_presets.begin() + pos);
+          onChange();
+        },
+        [=](UNDO::Command::State) {
+          m_presets.insert(m_presets.begin() + pos, preset);
+          preset->adopt(this);
+          onChange();
+        });
   }
   return preset;
 }
 
 void PresetBank::undoableAdoptPreset(UNDO::Scope::tTransactionPtr transaction, size_t pos, shared_ptr<Preset> preset)
 {
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
-    m_presets.insert(m_presets.begin() + pos, preset);
-    preset->adopt(this);
-    onChange();
-  }, [=](UNDO::Command::State)
-  {
-    m_presets.erase(m_presets.begin() + pos);
-    onChange();
-  });
+  transaction->addSimpleCommand(
+      [=](UNDO::Command::State) {
+        m_presets.insert(m_presets.begin() + pos, preset);
+        preset->adopt(this);
+        onChange();
+      },
+      [=](UNDO::Command::State) {
+        m_presets.erase(m_presets.begin() + pos);
+        onChange();
+      });
 }
 
 void PresetBank::undoableStorePreset(size_t pos, shared_ptr<EditBuffer> editBuffer)
@@ -323,7 +324,8 @@ void PresetBank::undoableOverwritePreset(UNDO::Scope::tTransactionPtr transactio
   undoableOverwritePreset(transaction, p.get(), preset.get());
 }
 
-void PresetBank::undoableOverwritePreset(UNDO::Scope::tTransactionPtr transaction, Preset *presetToOverwrite, Preset *src)
+void PresetBank::undoableOverwritePreset(UNDO::Scope::tTransactionPtr transaction, Preset *presetToOverwrite,
+                                         Preset *src)
 {
   presetToOverwrite->copyFrom(transaction, src, true);
   presetToOverwrite->setAutoGeneratedAttributes(transaction);
@@ -342,33 +344,34 @@ void PresetBank::undoableInsertPreset(UNDO::Scope::tTransactionPtr transaction, 
   tPresetPtr cleanPreset(createPreset());
   auto swapData = UNDO::createSwapData(cleanPreset);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    insertPreset (m_presets.begin() + pos, swapData->get<0>());
-    onChange();
-  }, [ = ] (UNDO::Command::State) mutable
-  {
-    m_presets.erase (m_presets.begin () + pos);
-    onChange();
-  });
+  transaction->addSimpleCommand(
+      [=](UNDO::Command::State) mutable {
+        insertPreset(m_presets.begin() + pos, swapData->get<0>());
+        onChange();
+      },
+      [=](UNDO::Command::State) mutable {
+        m_presets.erase(m_presets.begin() + pos);
+        onChange();
+      });
 }
 
 void PresetBank::undoableCopyAndPrependPreset(UNDO::Scope::tTransactionPtr transaction, tPresetPtr preset)
 {
-  if(preset) {
+  if(preset)
+  {
     auto newPreset = createPreset();
     newPreset->copyFrom(transaction, preset.get(), true);
 
     auto swapData = UNDO::createSwapData(newPreset);
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-                                  {
-                                    insertPreset (m_presets.begin(), swapData->get<0>());
-                                    onChange();
-                                  }, [ = ] (UNDO::Command::State) mutable
-                                  {
-                                    m_presets.erase (m_presets.begin ());
-                                    onChange();
-                                  });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable {
+          insertPreset(m_presets.begin(), swapData->get<0>());
+          onChange();
+        },
+        [=](UNDO::Command::State) mutable {
+          m_presets.erase(m_presets.begin());
+          onChange();
+        });
   }
 }
 
@@ -385,10 +388,9 @@ void PresetBank::undoableSelectPreset(UNDO::Scope::tTransactionPtr transaction, 
   {
     auto swapData = UNDO::createSwapData(uuid);
 
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       auto suppressUpdatingLastChangedTimestamp = m_lastChangedTimestamp;
-      swapData->swapWith (m_selectedPresetUUID);
+      swapData->swapWith(m_selectedPresetUUID);
       onChange();
       m_lastChangedTimestamp = suppressUpdatingLastChangedTimestamp;
     });
@@ -412,9 +414,8 @@ void PresetBank::setName(UNDO::Scope::tTransactionPtr transaction, const Glib::u
 {
   auto swapData = UNDO::createSwapData(name);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    swapData->swapWith (m_name);
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swapData->swapWith(m_name);
     onChange();
   });
 }
@@ -459,9 +460,8 @@ void PresetBank::setUuid(UNDO::Scope::tTransactionPtr transaction, const Glib::u
   Uuid uuid(id);
   auto swapData = UNDO::createSwapData(uuid);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    swapData->swapWith (m_uuid);
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swapData->swapWith(m_uuid);
     onChange();
   });
 }
@@ -470,9 +470,8 @@ void PresetBank::setX(UNDO::Scope::tTransactionPtr transaction, const Glib::ustr
 {
   auto swapData = UNDO::createSwapData(x);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
-    swapData->swapWith (m_X);
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
+    swapData->swapWith(m_X);
     onChange();
   });
 }
@@ -481,9 +480,8 @@ void PresetBank::setY(UNDO::Scope::tTransactionPtr transaction, const Glib::ustr
 {
   auto swapData = UNDO::createSwapData(y);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State)
-  {
-    swapData->swapWith (m_Y);
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
+    swapData->swapWith(m_Y);
     onChange();
   });
 }
@@ -534,7 +532,7 @@ const PresetBank::tPresetPtr PresetBank::getPreset(size_t pos) const
 
 const PresetBank::tPresetPtr PresetBank::getPreset(const Uuid &uuid) const
 {
-  for(auto & it : m_presets)
+  for(auto &it : m_presets)
     if(it->getUuid() == uuid)
       return it;
 
@@ -543,7 +541,7 @@ const PresetBank::tPresetPtr PresetBank::getPreset(const Uuid &uuid) const
 
 PresetBank::tPresetPtr PresetBank::getPreset(const Uuid &uuid)
 {
-  for(auto & it : m_presets)
+  for(auto &it : m_presets)
     if(it->getUuid() == uuid)
       return it;
 
@@ -552,7 +550,7 @@ PresetBank::tPresetPtr PresetBank::getPreset(const Uuid &uuid)
 
 const PresetBank::tPresetPtr PresetBank::findPresetByName(const Glib::ustring &name) const
 {
-  for(auto & it : m_presets)
+  for(auto &it : m_presets)
     if(it->getName() == name)
       return it;
 
@@ -566,7 +564,8 @@ sigc::connection PresetBank::onBankChanged(sigc::slot<void> slot)
 
 UpdateDocumentContributor::tUpdateID PresetBank::onChange(uint64_t flags)
 {
-  m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp();
+  if(m_lastChangeTimestampBlocked == 0)
+    m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp();
 
   if(getParent())
   {
@@ -580,41 +579,39 @@ void PresetBank::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("preset-bank", Attribute("uuid", (Glib::ustring) m_uuid), Attribute("name", m_name), Attribute("x", m_X),
-      Attribute("y", m_Y), Attribute("selected-preset", m_selectedPresetUUID),
-      Attribute("order-number", getParent()->calcOrderNumber(this)), Attribute("changed", changed), [&]()
-      {
-        if (changed)
-        {
-          AttributesOwner::writeAttributes(writer);
+  writer.writeTag("preset-bank", Attribute("uuid", (Glib::ustring) m_uuid), Attribute("name", m_name),
+                  Attribute("x", m_X), Attribute("y", m_Y), Attribute("selected-preset", m_selectedPresetUUID),
+                  Attribute("order-number", getParent()->calcOrderNumber(this)), Attribute("changed", changed), [&]() {
+                    if(changed)
+                    {
+                      AttributesOwner::writeAttributes(writer);
 
-          for (const tPresetPtr p : m_presets)
-          {
-            p->writeDocument (writer, knownRevision);
-          }
+                      for(const tPresetPtr p : m_presets)
+                      {
+                        p->writeDocument(writer, knownRevision);
+                      }
 
-          writer.writeTextElement ("date-of-last-change", TimeTools::getDisplayStringFromStamp(m_lastChangedTimestamp));
-          writer.writeTextElement ("attached-to", m_attachment.uuid);
-          writer.writeTextElement ("attached-direction", directionEnumToString(m_attachment.direction));
-          writer.writeTextElement("state", calcStateString());
-
-        }
-      });
+                      writer.writeTextElement("date-of-last-change",
+                                              TimeTools::getDisplayStringFromStamp(m_lastChangedTimestamp));
+                      writer.writeTextElement("attached-to", m_attachment.uuid);
+                      writer.writeTextElement("attached-direction", directionEnumToString(m_attachment.direction));
+                      writer.writeTextElement("state", calcStateString());
+                    }
+                  });
 }
 
 void PresetBank::searchPresets(Writer &writer, const SearchQuery &query) const
 {
   writer.writeTag("preset-bank", Attribute("uuid", (Glib::ustring) m_uuid), Attribute("name", m_name),
-      Attribute("order-number", getParent()->calcOrderNumber(this)), [&]()
-      {
-        for (const tPresetPtr p : m_presets)
-        {
-          if(p->matchesQuery(query))
-          {
-            p->writeDocument (writer, 0);
-          }
-        }
-      });
+                  Attribute("order-number", getParent()->calcOrderNumber(this)), [&]() {
+                    for(const tPresetPtr p : m_presets)
+                    {
+                      if(p->matchesQuery(query))
+                      {
+                        p->writeDocument(writer, 0);
+                      }
+                    }
+                  });
 }
 
 void PresetBank::signalBankChanged()
@@ -701,7 +698,8 @@ void PresetBank::undoableIncPresetSelection(int inc, ButtonModifiers modifiers)
       if(autoLoad)
         scope = getUndoScope().startTransaction(p->getUndoTransactionTitle("Load"));
       else
-        scope = getUndoScope().startContinuousTransaction(getParent(), chrono::hours(1), p->getUndoTransactionTitle("Select"));
+        scope = getUndoScope().startContinuousTransaction(getParent(), chrono::hours(1),
+                                                          p->getUndoTransactionTitle("Select"));
 
       undoableSelectPreset(scope->getTransaction(), p->getUuid());
     }
@@ -750,7 +748,7 @@ int PresetBank::getHighestIncrementForBaseName(const Glib::ustring &baseName) co
   return 0;
 }
 
-auto PresetBank::getPresets() const -> const vector<tPresetPtr>&
+auto PresetBank::getPresets() const -> const vector<tPresetPtr> &
 {
   return m_presets;
 }
@@ -759,19 +757,17 @@ void PresetBank::undoableSort(UNDO::Scope::tTransactionPtr transaction, bool asc
 {
   auto sorted = m_presets;
 
-  std::sort(sorted.begin(), sorted.end(), [asc] (tPresetPtr a, tPresetPtr b)
-  {
-    if (asc)
-    return a->getName() < b->getName();
+  std::sort(sorted.begin(), sorted.end(), [asc](tPresetPtr a, tPresetPtr b) {
+    if(asc)
+      return a->getName() < b->getName();
 
     return a->getName() > b->getName();
   });
 
   auto swap = UNDO::createSwapData(sorted);
 
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    swap->swapWith (m_presets);
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swap->swapWith(m_presets);
     onChange();
   });
 }
@@ -842,12 +838,15 @@ std::pair<double, double> PresetBank::calcDefaultPosition() const
   return std::make_pair(0.0, 0.0);
 }
 
-void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Glib::ustring masterUuid, AttachmentDirection dir)
+void PresetBank::undoableAttachBank(UNDO::Scope::tTransactionPtr transaction, Glib::ustring masterUuid,
+                                    AttachmentDirection dir)
 {
+  if(getAttached().direction == dir)
+    return;
+
   auto swapData = UNDO::createSwapData(Attachment(masterUuid, dir));
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
-    swapData->swapWith (m_attachment);
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swapData->swapWith(m_attachment);
     onChange();
   });
 }
@@ -871,8 +870,7 @@ void PresetBank::setAttachedTo(UNDO::Scope::tTransactionPtr transaction, Glib::u
 {
   auto swapData = UNDO::createSwapData(attachedTo);
 
-  transaction->addSimpleCommand([=] (UNDO::Command::State) mutable
-  {
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     swapData->swapWith(m_attachment.uuid);
     onChange();
   });
@@ -881,8 +879,7 @@ void PresetBank::setAttachedDirection(UNDO::Scope::tTransactionPtr transaction, 
 {
   auto swapData = UNDO::createSwapData(direction);
 
-  transaction->addSimpleCommand([=] (UNDO::Command::State) mutable
-  {
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     swapData->swapWith(m_attachment.direction);
     onChange();
   });
@@ -913,11 +910,12 @@ const Glib::ustring PresetBank::directionEnumToString(AttachmentDirection direct
 
 void PresetBank::resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transaction)
 {
-  std::vector<PresetBank*> banks;
+  std::vector<PresetBank *> banks;
   resolveCyclicAttachments(banks, transaction);
 }
 
-bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks, UNDO::Scope::tTransactionPtr transaction)
+bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank *> stackedBanks,
+                                          UNDO::Scope::tTransactionPtr transaction)
 {
   if(std::find(stackedBanks.begin(), stackedBanks.end(), this) != stackedBanks.end())
   {
@@ -936,7 +934,7 @@ bool PresetBank::resolveCyclicAttachments(std::vector<PresetBank*> stackedBanks,
   return true;
 }
 
-PresetBank* PresetBank::getClusterMaster()
+PresetBank *PresetBank::getClusterMaster()
 {
   if(auto master = getParent()->findBank(getAttached().uuid))
     if(master.get() != this)
@@ -945,45 +943,61 @@ PresetBank* PresetBank::getClusterMaster()
   return this;
 }
 
-void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid) {
+void PresetBank::undoableSetSelectedPresetUUID(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid)
+{
   auto swapData = UNDO::createSwapData(Glib::ustring(uuid));
 
-  transaction->addSimpleCommand([=] (UNDO::Command::State) mutable
-                                {
-                                    swapData->swapWith(m_selectedPresetUUID);
-                                    onChange();
-                                });
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swapData->swapWith(m_selectedPresetUUID);
+    onChange();
+  });
 }
 
-PresetBank *PresetBank::getMasterTop() {
-    if(getAttached().direction == AttachmentDirection::top) {
-        return getParent()->findBank(getAttached().uuid).get();
-    }
-    return nullptr;
+PresetBank *PresetBank::getMasterTop()
+{
+  if(getAttached().direction == AttachmentDirection::top)
+  {
+    return getParent()->findBank(getAttached().uuid).get();
+  }
+  return nullptr;
 }
 
-PresetBank *PresetBank::getMasterLeft() {
-    if(getAttached().direction == AttachmentDirection::left) {
-        return getParent()->findBank(getAttached().uuid).get();
-    }
-    return nullptr;
+PresetBank *PresetBank::getMasterLeft()
+{
+  if(getAttached().direction == AttachmentDirection::left)
+  {
+    return getParent()->findBank(getAttached().uuid).get();
+  }
+  return nullptr;
 }
 
-PresetBank *PresetBank::getSlaveRight() {
-    for(auto bank: getParent()->getBanks()) {
-        if(auto masterLeft = bank->getMasterLeft())
-            if(masterLeft == this)
-                return bank.get();
-    }
-    return nullptr;
+PresetBank *PresetBank::getSlaveRight()
+{
+  for(auto bank : getParent()->getBanks())
+  {
+    if(auto masterLeft = bank->getMasterLeft())
+      if(masterLeft == this)
+        return bank.get();
+  }
+  return nullptr;
 }
 
-PresetBank *PresetBank::getSlaveBottom() {
-    for(auto bank: getParent()->getBanks()) {
-        if(auto masterLeft = bank->getMasterTop())
-            if(masterLeft == this)
-                return bank.get();
-    }
-    return nullptr;
+PresetBank *PresetBank::getSlaveBottom()
+{
+  for(auto bank : getParent()->getBanks())
+  {
+    if(auto masterLeft = bank->getMasterTop())
+      if(masterLeft == this)
+        return bank.get();
+  }
+  return nullptr;
+}
+
+void PresetBank::removeChangeBlocker(BankChangeBlocker *blocker) {
+  m_lastChangeTimestampBlocked--;
+}
+
+void PresetBank::addChangeBlocker(BankChangeBlocker *blocker) {
+  m_lastChangeTimestampBlocked++;
 }
 
