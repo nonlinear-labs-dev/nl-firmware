@@ -15,6 +15,8 @@ PanelUnitPresetMode::PanelUnitPresetMode()
 {
   DebugLevel::gassy(__PRETTY_FUNCTION__);
 
+  Application::get().getHWUI()->onModifiersChanged([this](auto bm) { bruteForceUpdateLeds(); });
+
   Application::get().getPresetManager()->getEditBuffer()->onChange(
       mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds));
 }
