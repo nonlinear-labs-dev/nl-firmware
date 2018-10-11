@@ -121,9 +121,9 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
     {
       auto presetUUID = b->getSelectedPreset();
       auto eb = getEditBuffer();
-      bool canOmitLoad = eb->getUUIDOfLastLoadedPreset() == presetUUID && !eb->isModified();
+      bool shouldLoad = eb->getUUIDOfLastLoadedPreset() != presetUUID || eb->isModified();
 
-      if(!canOmitLoad)
+      if(shouldLoad)
       {
         if(auto p = b->getPreset(presetUUID))
         {
@@ -135,6 +135,7 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
             }
             else
             {
+
               currentUndo->reopen();
               eb->undoableLoad(currentUndo, p);
               currentUndo->close();

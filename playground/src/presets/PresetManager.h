@@ -106,7 +106,9 @@ class PresetManager : public ContentSection
   void undoableSelectFirstBank();
   void undoableSelectLastBank();
 
+
   sigc::connection onBankSelection(sigc::slot<void> slot);
+
   sigc::connection onNumBanksChanged(sigc::slot<void, int> slot);
 
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &oldName) const;

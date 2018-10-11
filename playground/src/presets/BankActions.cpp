@@ -1109,9 +1109,12 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
 PresetManager::tBankPtr BankActions::importBank(InStream &stream, const Glib::ustring &x, const Glib::ustring &y,
                                                 const Glib::ustring &fileName)
 {
-
   UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();
+
+  auto autoLoadOff = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->scopedOverlay(
+      BooleanSettings::BOOLEAN_SETTING_FALSE);
+
   PresetManager::tBankPtr newBank = m_presetManager.addBank(transaction, x, y, false);
 
   XmlReader reader(stream, transaction);
