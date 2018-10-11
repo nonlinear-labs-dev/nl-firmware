@@ -123,7 +123,6 @@ public class PresetInfoDialog extends GWTDialog {
 
 	private void updateInfo(Preset preset) {
 		editBufferInfoPage.updateInfo(getEditBuffer());
-		presetInfoPage.saveContent();
 		presetInfoPage.updateInfo(preset, true);
 		centerIfOutOfView();
 	}
