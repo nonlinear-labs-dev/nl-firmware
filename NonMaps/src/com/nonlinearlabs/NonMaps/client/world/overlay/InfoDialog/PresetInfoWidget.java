@@ -1,9 +1,18 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog;
 
+import java.util.Date;
+
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IntegerBox;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 import com.nonlinearlabs.NonMaps.client.GMTTimeZone;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
@@ -11,10 +20,8 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag.Color;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
-import java.util.Date;
-
 public class PresetInfoWidget {
-	
+
 	private static PresetInfoWidget instance;
 	private TextArea comment;
 	private Label deviceName;
@@ -23,28 +30,25 @@ public class PresetInfoWidget {
 	private Label storeTime;
 	private Label bankName;
 	private IntegerBox position;
-	private Widget haveFocus = null;
+	private FocusWidget haveFocus = null;
 	private Preset m_currentShownPreset = null;
-	
+
 	private ColorTagBox colorBox = new ColorTagBox() {
 		@Override
 		public void onBoxClick(Color c) {
-			NonMaps.get().getServerProxy().setPresetAttribute(PresetInfoWidget.get().getCurrentPreset(), "color", c.toString());	
+			NonMaps.get().getServerProxy().setPresetAttribute(PresetInfoWidget.get().m_currentShownPreset, "color",
+					c.toString());
 		}
 	};
-	
+
 	public Widget panel;
 
 	static public PresetInfoWidget get() {
-		if(instance == null)
+		if (instance == null)
 			instance = new PresetInfoWidget();
 		return instance;
 	}
 
-	public Preset getCurrentPreset() {
-		return NonMaps.get().getNonLinearWorld().getPresetManager().getSelectedPreset();
-	}
-	
 	private String localizeTime(String iso) {
 		try {
 			DateTimeFormat f = DateTimeFormat.getFormat("yyyy-MM-ddTHH:mm:ssZZZZ");
@@ -55,9 +59,13 @@ public class PresetInfoWidget {
 			return iso;
 		}
 	}
-		
+
 	public void updateInfo(Preset preset, boolean force) {
-		m_currentShownPreset = preset;
+		if (m_currentShownPreset != preset) {
+			saveContent();
+			m_currentShownPreset = preset;
+		}
+
 		if (preset != null) {
 			String presetName = preset.getCurrentName();
 			deviceName.setText(preset.getAttribute("DeviceName"));
@@ -83,22 +91,21 @@ public class PresetInfoWidget {
 
 			Bank bank = preset.getParent();
 			bankName.setText(bank.getOrderNumber() + " - " + bank.getTitleName());
-			
+
 			colorBox.updateCurrentHighlight(ColorTag.Color.toEnum(preset.getAttribute("color")));
-			
+
 		}
 	}
-	
+
 	protected PresetInfoWidget() {
-		
+
 		HTMLPanel presetNameAndPositionBox = new HTMLPanel("div", "");
 		presetNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
 		presetNameAndPositionBox.add(position = new IntegerBox());
 		presetNameAndPositionBox.add(name = new TextBox());
 		position.getElement().addClassName("position-box");
 		name.getElement().addClassName("preset-name-box");
-		
-		
+
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Bank", bankName = new Label());
 		addRow(panel, "Position/Name", presetNameAndPositionBox);
@@ -115,11 +122,12 @@ public class PresetInfoWidget {
 		comment.addBlurHandler(event -> {
 			haveFocus = null;
 
-			if (getCurrentPreset() != null) {
-				String oldInfo = getCurrentPreset().getAttribute("Comment");
+			if (m_currentShownPreset != null) {
+				String oldInfo = m_currentShownPreset.getAttribute("Comment");
 
 				if (!oldInfo.equals(comment.getText())) {
-					NonMaps.theMaps.getServerProxy().setPresetAttribute(getCurrentPreset(), "Comment", comment.getText());
+					NonMaps.theMaps.getServerProxy().setPresetAttribute(m_currentShownPreset, "Comment",
+							comment.getText());
 				}
 			}
 		});
@@ -129,11 +137,11 @@ public class PresetInfoWidget {
 		name.addBlurHandler(event -> {
 			haveFocus = null;
 
-			if (getCurrentPreset() != null) {
-				String oldName = getCurrentPreset().getCurrentName();
+			if (m_currentShownPreset != null) {
+				String oldName = m_currentShownPreset.getCurrentName();
 
 				if (!oldName.equals(name.getText())) {
-					NonMaps.theMaps.getServerProxy().renamePreset(getCurrentPreset().getUUID(), name.getText());
+					NonMaps.theMaps.getServerProxy().renamePreset(m_currentShownPreset.getUUID(), name.getText());
 				}
 			}
 		});
@@ -150,30 +158,31 @@ public class PresetInfoWidget {
 		position.addBlurHandler(event -> {
 			haveFocus = null;
 
-			if (getCurrentPreset() != null) {
-				int oldNumber = getCurrentPreset().getNumber();
+			if (m_currentShownPreset != null) {
+				int oldNumber = m_currentShownPreset.getNumber();
 				Integer newPos = position.getValue();
 				if (newPos != null) {
 					if (!newPos.equals(oldNumber)) {
-						Bank bank = getCurrentPreset().getParent();
+						Bank bank = m_currentShownPreset.getParent();
 						int presetCount = bank.getPresetList().getPresetCount();
 						int targetPos = newPos;
 						targetPos = Math.max(targetPos, 1);
 						targetPos = Math.min(targetPos, presetCount);
 
 						if (targetPos == presetCount)
-							NonMaps.theMaps.getServerProxy().movePresetBelow(getCurrentPreset(), bank.getLast());
+							NonMaps.theMaps.getServerProxy().movePresetBelow(m_currentShownPreset, bank.getLast());
 						else if (targetPos > oldNumber)
-							NonMaps.theMaps.getServerProxy().movePresetBelow(getCurrentPreset(), bank.getPreset(targetPos - 1));
+							NonMaps.theMaps.getServerProxy().movePresetBelow(m_currentShownPreset,
+									bank.getPreset(targetPos - 1));
 						else
-							NonMaps.theMaps.getServerProxy().movePresetAbove(getCurrentPreset(), bank.getPreset(targetPos - 1));
+							NonMaps.theMaps.getServerProxy().movePresetAbove(m_currentShownPreset,
+									bank.getPreset(targetPos - 1));
 					}
 				}
 			}
 
-			Preset p = getCurrentPreset();
-			if(p != null)
-			position.setText(p.getPaddedNumber());
+			if (m_currentShownPreset != null)
+				position.setText(m_currentShownPreset.getPaddedNumber());
 		});
 
 		position.addKeyPressHandler(arg0 -> {
@@ -183,25 +192,19 @@ public class PresetInfoWidget {
 			}
 		});
 		this.panel = panel;
-		
-		updateInfo(getCurrentPreset(), false);
+
+		updateInfo(NonMaps.get().getNonLinearWorld().getPresetManager().getSelectedPreset(), false);
 	}
-	
+
 	private void addRow(FlexTable panel, String name, Widget content) {
 		int c = panel.getRowCount();
 		panel.setWidget(c, 0, new Label(name));
 		panel.setWidget(c, 1, content);
 	}
 
-	public void saveContent() {
-		if(m_currentShownPreset != null) {
-			if(m_currentShownPreset.getCurrentName() != name.getText() && haveFocus == name) {
-				m_currentShownPreset.setName(name.getText());
-				name.setFocus(false);
-				haveFocus = null;
-			}
-			if(m_currentShownPreset.getAttribute("Comment") != comment.getText())
-				NonMaps.get().getServerProxy().setPresetAttribute(m_currentShownPreset, "Comment", comment.getText());
+	private void saveContent() {
+		if (haveFocus != null && m_currentShownPreset != null) {
+			haveFocus.setFocus(false);
 		}
 	}
 }
