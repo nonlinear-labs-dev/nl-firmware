@@ -48,7 +48,16 @@ public class TextCropper {
 			return text;
 		if ((min + 1) == max)
 			return text.substring(0, min) + "..";
-
+		if(text.startsWith("[") && text.endsWith("]")) {
+			String inside = (String) text.subSequence(1, text.length() - 1);
+			boolean isOnlyNumbers = true;
+			for(int i = 0; i < inside.length(); i++) {
+				if(Character.isDigit(inside.charAt(i)) == false)
+					isOnlyNumbers = false;
+			}
+			if(isOnlyNumbers)
+				return text;
+		}
 		return null;
 	}
 
