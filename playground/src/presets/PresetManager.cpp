@@ -297,13 +297,16 @@ void PresetManager::undoableSelectPrevious()
   }
 }
 
-void PresetManager::undoableSelectFirstBank() {
+void PresetManager::undoableSelectFirstBank()
+{
   if(getNumBanks() > 0)
     undoableSelectBank(getBank(0)->getUuid());
 }
 
-void PresetManager::undoableSelectLastBank() {
-  if(auto bankCount = getNumBanks()) {
+void PresetManager::undoableSelectLastBank()
+{
+  if(auto bankCount = getNumBanks())
+  {
     undoableSelectBank(getBank(bankCount - 1)->getUuid());
   }
 }
@@ -896,7 +899,6 @@ void PresetManager::reassignOrderNumbers()
     BankChangeBlocker blocker(b);
     b->onChange();
   }
-
 
   m_sigNumBanksChanged.send(getNumBanks());
 }

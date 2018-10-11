@@ -44,7 +44,8 @@ public abstract class Label extends OverlayControl {
 		ctx.setFillStyle(getColorFont().toString());
 		setFont(ctx, fontHeightInPixels);
 
-		String text = TextCropper.crop(getDrawText(ctx), ctx, pixRect.getWidth());
+		String text = getDrawText(ctx);
+		text = crop(ctx, pixRect, text);
 		Position left = pixRect.getCenterPoint();
 
 		switch (getAlignment()) {
@@ -83,6 +84,10 @@ public abstract class Label extends OverlayControl {
 				x += ctx.measureText(split).getWidth();
 			}
 		}
+	}
+
+	protected String crop(Context2d ctx, Rect pixRect, String text) {
+		return TextCropper.crop(text, ctx, pixRect.getWidth());
 	}
 
 	public void drawSplit(int idx, Context2d ctx, String split, double x, double y) {
