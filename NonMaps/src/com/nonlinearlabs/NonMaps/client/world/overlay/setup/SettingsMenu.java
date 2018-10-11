@@ -32,7 +32,7 @@ public abstract class SettingsMenu extends OverlayLayout {
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		double buttonDim = getButtonDimension();
+		double buttonDim = Millimeter.toPixels(10);
 		double maxWidth = Millimeter.toPixels(35);
 		if (w > maxWidth)
 			w = maxWidth;

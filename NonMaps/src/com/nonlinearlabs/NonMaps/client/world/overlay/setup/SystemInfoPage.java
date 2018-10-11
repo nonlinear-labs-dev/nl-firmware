@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
 public class SystemInfoPage extends SetupPage {
@@ -20,8 +21,8 @@ public class SystemInfoPage extends SetupPage {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		double lineHeight = getButtonDimension();
-		double margin = getButtonDimension() / 2;
+		double lineHeight = Millimeter.toPixels(10);
+		double margin = Millimeter.toPixels(5);
 		double yPos = 0;
 
 		for (OverlayControl c : getChildren()) {

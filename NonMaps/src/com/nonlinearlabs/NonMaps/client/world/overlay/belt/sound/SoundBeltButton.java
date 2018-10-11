@@ -1,11 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.pointer.PointerState;
@@ -24,8 +24,7 @@ public abstract class SoundBeltButton extends Label {
 			strokeColor = RGB.blue();
 		}
 
-		getPixRect().drawRoundedArea(ctx, SVGImage.calcSVGDimensionToPixels(5), SVGImage.calcSVGDimensionToPixels(1), new Gray(68),
-				strokeColor);
+		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(2.5), 1, new Gray(68), strokeColor);
 
 		super.draw(ctx, invalidationMask);
 	}

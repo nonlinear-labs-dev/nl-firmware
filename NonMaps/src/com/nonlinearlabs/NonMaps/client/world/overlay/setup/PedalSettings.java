@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
 import java.util.function.Function;
 
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
@@ -100,7 +101,7 @@ public class PedalSettings extends OverlayLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		double margin = getButtonDimension() / 2;
+		double margin = Millimeter.toPixels(5);
 		double elementsWidth = (w - margin);
 		slider.doLayout(0, 0, 2 * elementsWidth / 5, h);
 		menu.doLayout(slider.getRelativePosition().getWidth() + margin, 0, 3 * elementsWidth / 5, h);

@@ -14,7 +14,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
-import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
 
@@ -42,9 +41,9 @@ class BankHeader extends OverlayLayout {
 
 	}
 
-	private OverlayControl prev;
-	private OverlayControl title;
-	private OverlayControl next;
+	private PreviousBank prev;
+	private BankTitle title;
+	private NextBank next;
 	private boolean isDropTarget = false;
 
 	BankHeader(BankControl parent) {
@@ -61,7 +60,9 @@ class BankHeader extends OverlayLayout {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		Rect r = new Rect(prev.getPixRect().getLeft(), prev.getPixRect().getTop(), next.getPixRect().getRight() - prev.getPixRect().getLeft(), next.getPixRect().getBottom() - prev.getPixRect().getTop());
+		Rect r = new Rect(prev.getPixRect().getLeft(), prev.getPixRect().getTop(),
+				next.getPixRect().getRight() - prev.getPixRect().getLeft(),
+				next.getPixRect().getBottom() - prev.getPixRect().getTop());
 		r.reduceHeightBy(-2);
 		r.drawRoundedArea(ctx, 0, 1, new Gray(106), new Gray(106));
 		super.draw(ctx, invalidationMask);
@@ -136,25 +137,22 @@ class BankHeader extends OverlayLayout {
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		Bank b = getParent().getBankInCharge();
-		
-		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
-		
 
-		
+		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+
 		if (dragProxy.getOrigin() instanceof IPreset) {
 			if (pm.hasMultiplePresetSelection()) {
 				getNonMaps().getServerProxy().dropPresetsOnBank(pm.getMultiSelection().getCSV(), b);
 				pm.getMultiSelection().clear();
 			} else {
-			getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b);
+				getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b);
 			}
-		}
-		else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
+		} else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
 			getNonMaps().getServerProxy().dropEditBufferOnBank(b);
 		} else if (dragProxy.getOrigin() instanceof IBank) {
 			getNonMaps().getServerProxy().dropBankOnBank((IBank) dragProxy.getOrigin(), b);
 		}
-		
+
 		setIsDropTarget(false);
 		return this;
 	}
@@ -174,5 +172,10 @@ class BankHeader extends OverlayLayout {
 
 	public void setFontHeightInMM(int mm) {
 		((BankTitle) title).setFontHeightInMM(mm);
+	}
+
+	public void doLayout(double x, double y, double w) {
+		doLayout(x, y, w, prev.getSelectedImage().getImgHeight());
+
 	}
 }

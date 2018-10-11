@@ -1,7 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-
 public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 
 	public PresetBeltLayouterXXL(BeltPresetLayout layout) {
@@ -10,7 +8,7 @@ public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 
 	@Override
 	public boolean doLayout(double w, double h) {
-		double margin = OverlayLayout.getButtonDimension() / 2;
+		double margin = getDefaultMargin();
 		double left = margin;
 		double right = w - margin;
 		double autoLoadWidth = layout.autoLoad.getSelectedImage().getImgWidth();
@@ -31,7 +29,7 @@ public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 				currentPresetHeight);
 		right -= currentPresetWidth + margin;
 
-		layout.load.doLayout(right - LoadButtonArea.getFixedWidth(), 0, h);
+		layout.load.doLayout(right, 0, h);
 		right -= layout.load.getRelativePosition().getWidth() + margin;
 
 		double center = w / 2;

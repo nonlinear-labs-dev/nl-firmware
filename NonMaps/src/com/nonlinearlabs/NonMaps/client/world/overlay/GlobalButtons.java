@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
@@ -93,4 +94,15 @@ class GlobalButtons extends OverlayLayout {
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		return this;
 	}
+
+	public void doLayout(double right, double bottom) {
+		double xMargin = Millimeter.toPixels(6.5);
+		double yMargin = Millimeter.toPixels(2.5);
+		double w = sound.getSelectedImage().getImgWidth() + preset.getSelectedImage().getImgWidth()
+				+ parameter.getSelectedImage().getImgWidth();
+		w += 4 * xMargin;
+		double h = sound.getSelectedImage().getImgHeight() + 2 * yMargin;
+		doLayout(right - w, bottom - h, w, h);
+	}
+
 }

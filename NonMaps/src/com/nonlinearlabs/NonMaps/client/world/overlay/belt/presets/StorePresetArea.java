@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
@@ -28,7 +29,7 @@ public class StorePresetArea extends OverlayLayout {
 	public void doLayout(double x, double y, double h) {
 		double w = getDesiredWidth();
 		double buttonDim = m_modeButton.getSelectedImage().getImgWidth();
-		double margin = getButtonDimension() / 4;
+		double margin = Millimeter.toPixels(2.5);
 		double contentHeight = m_modeButton.getSelectedImage().getImgHeight() + margin + menu.getPictureHeight();
 		double top = (h - contentHeight) / 2;
 

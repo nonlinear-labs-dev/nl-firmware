@@ -4,11 +4,13 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.dataModel.EditBuffer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.*;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PhysicalControlParameter;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SelectionListener;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.ModulationAmount;
@@ -16,7 +18,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.IncrementalChanger;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
@@ -40,10 +41,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private OverlayControl infoButton;
 	private OverlayControl contextMenu;
 
-	private OverlayControl mcPositionRadioButton;
-	private OverlayControl mcAmountRadioButton;
-	private OverlayControl mcLowerBoundRadioButton;
-	private OverlayControl mcUpperBoundRadioButton;
+	private MCRadioButton mcPositionRadioButton;
+	private MCRadioButton mcAmountRadioButton;
+	private MCRadioButton mcLowerBoundRadioButton;
+	private MCRadioButton mcUpperBoundRadioButton;
 
 	private QuantizedClippedValue currentValue;
 
@@ -61,10 +62,14 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		addChild(contextMenu = new ContextMenuButton(this));
 
-		addChild(mcPositionRadioButton = new MCRadioButton(this, Mode.mcValue, "MC_Pos_Aktiv.svg", "MC_Pos_Inaktiv.svg"));
-		addChild(mcAmountRadioButton = new MCRadioButton(this, Mode.mcAmount, "MC_Amt_Aktiv.svg", "MC_Amt_Inaktiv.svg"));
-		addChild(mcLowerBoundRadioButton = new MCRadioButton(this, Mode.mcLower, "MC_Low_Aktiv.svg", "MC_Low_Inaktiv.svg"));
-		addChild(mcUpperBoundRadioButton = new MCRadioButton(this, Mode.mcUpper, "MC_High_Aktiv.svg", "MC_High_Inaktiv.svg"));
+		addChild(mcPositionRadioButton = new MCRadioButton(this, Mode.mcValue, "MC_Pos_Aktiv.svg",
+				"MC_Pos_Inaktiv.svg"));
+		addChild(
+				mcAmountRadioButton = new MCRadioButton(this, Mode.mcAmount, "MC_Amt_Aktiv.svg", "MC_Amt_Inaktiv.svg"));
+		addChild(mcLowerBoundRadioButton = new MCRadioButton(this, Mode.mcLower, "MC_Low_Aktiv.svg",
+				"MC_Low_Inaktiv.svg"));
+		addChild(mcUpperBoundRadioButton = new MCRadioButton(this, Mode.mcUpper, "MC_High_Aktiv.svg",
+				"MC_High_Inaktiv.svg"));
 
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
 
@@ -107,7 +112,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double undoRedoMargin = Millimeter.toPixels(4.5);
 
 		double third = h / 3.0;
-		final double buttonDim = getButtonDimension();
+		final double buttonDim = Millimeter.toPixels(10);
 
 		double editorModeLeft = (Millimeter.toPixels(70) / 4) + (buttonDim / 2);
 		double modSrcDim = Millimeter.toPixels(10);
@@ -115,16 +120,18 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double modulationButtonsLeft = Millimeter.toPixels(19.5 - 22.5 / 2);
 		double sliderLeft = modulationButtonsLeft + modulationButtonsDim + Millimeter.toPixels(10);
 
-		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDim) / 2, modulationButtonsDim, modulationButtonsDim);
-		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
+		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDim) / 2, modulationButtonsDim,
+				modulationButtonsDim);
+		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
+				modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 
 		double upperElementsY = Millimeter.toPixels(0.5);
 
 		double sliderWidth = slider.getRelativePosition().getWidth();
-		double margin = SVGImage.calcSVGDimensionToPixels(5);
-		double modulationButtonWidth = SVGImage.calcSVGDimensionToPixels(57);
+		double margin = Millimeter.toPixels(2.5);
+		double modulationButtonWidth = mcPositionRadioButton.getSelectedImage().getImgWidth();
 
 		HarmonicLayouter layouter = new HarmonicLayouter();
 
@@ -134,7 +141,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
-
 
 		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth * 0.75, 2, 1);
 
@@ -148,7 +154,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double walkerX = sliderLeft;
 
 		double modAndParamValueYValue = h / 2.3;
-		
+
 		for (HarmonicLayouter.Result r : layouter.layout(sliderWidth)) {
 			if (r.record.attached != null) {
 				OverlayControl c = (OverlayControl) r.record.attached;
@@ -163,11 +169,13 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight(), 0, lineWidth, h);
 
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
-		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
+		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
+				modSrcDim);
 	}
 
 	protected void showAndHideChildren() {
-		modulationButtons.setVisible(isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
+		modulationButtons.setVisible(
+				isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
 		mcSourceDisplay.setVisible(isOneOf(Mode.modulateableParameter));
 		editorMode.setVisible(true);
 		slider.setVisible(true);
@@ -184,23 +192,22 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		mcUpperBoundRadioButton.setVisible(modAssigned
 				&& isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
 
-		valueDisplay.setVisible(isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue,
-				Mode.modulateableParameter, Mode.unmodulateableParameter));
+		valueDisplay.setVisible(isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper,
+				Mode.paramValue, Mode.modulateableParameter, Mode.unmodulateableParameter));
 
 		dottedLine.setVisible(isOneOf(Mode.modulateableParameter));
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));
 
 		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.hasContextMenu() && existsMoreThanOneItemInContextMenu(p);
+		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.hasContextMenu()
+				&& existsMoreThanOneItemInContextMenu(p);
 		contextMenu.setVisible(ctxMenuVisible);
 	}
 
 	private boolean existsMoreThanOneItemInContextMenu(Parameter p) {
-		return (p instanceof ModulatableParameter ||
-				p instanceof PhysicalControlParameter ||
-				p instanceof MacroControlParameter) &&
-				!p.getName().getLongName().equals("Bender") &&
-				!p.getName().getLongName().equals("Aftertouch");
+		return (p instanceof ModulatableParameter || p instanceof PhysicalControlParameter
+				|| p instanceof MacroControlParameter) && !p.getName().getLongName().equals("Bender")
+				&& !p.getName().getLongName().equals("Aftertouch");
 	}
 
 	protected void toggleMcEditMode(Mode m) {
@@ -246,7 +253,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				case mcValue:
 					MacroControls s = m.getModulationSource();
-					Parameter q = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(s);
+					Parameter q = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+							.getControl(s);
 					currentValue = q.getValue();
 					return;
 
@@ -338,7 +346,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 			if (s != MacroControls.NONE) {
 
 				ModulationAmount amount = m.getModulationAmount();
-				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(s);
+				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+						.getControl(s);
 				double modAmount = amount.getClippedValue();
 
 				if (m.isBiPolar())
@@ -392,10 +401,12 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		if (currentIncrementalChanger != null) {
 			if (event.getNativeKeyCode() == KeyCodes.KEY_K) {
-				currentIncrementalChanger.getValue().inc(Parameter.Initiator.EXPLICIT_USER_ACTION, event.isShiftKeyDown());
+				currentIncrementalChanger.getValue().inc(Parameter.Initiator.EXPLICIT_USER_ACTION,
+						event.isShiftKeyDown());
 				return this;
 			} else if (event.getNativeKeyCode() == KeyCodes.KEY_M) {
-				currentIncrementalChanger.getValue().dec(Parameter.Initiator.EXPLICIT_USER_ACTION, event.isShiftKeyDown());
+				currentIncrementalChanger.getValue().dec(Parameter.Initiator.EXPLICIT_USER_ACTION,
+						event.isShiftKeyDown());
 				return this;
 			}
 		}
@@ -421,7 +432,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 			if (s != MacroControls.NONE) {
 				ModulationAmount amount = m.getModulationAmount();
-				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(s);
+				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+						.getControl(s);
 				double modAmount = amount.getClippedValue();
 
 				if (m.isBiPolar())
@@ -435,26 +447,29 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				case mcAmount: {
 					String with = m.getModulationAmount().getDecoratedValue(true);
 					String without = m.getModulationAmount().getDecoratedValue(false);
-					return new String[] { "MC Amount: " + with, "MC Amount: " + without, "MC Amt: " + without, "Amt: " + without, without };
+					return new String[] { "MC Amount: " + with, "MC Amount: " + without, "MC Amt: " + without,
+							"Amt: " + without, without };
 				}
 
 				case mcLower: {
 					String with = p.getDecoratedValue(true, modLeft);
 					String without = p.getDecoratedValue(false, modLeft);
-					return new String[] { "Lower Limit: " + with, "Lower Limit: " + without, "Lower: " + without, "Lo: " + without, without };
+					return new String[] { "Lower Limit: " + with, "Lower Limit: " + without, "Lower: " + without,
+							"Lo: " + without, without };
 				}
 
 				case mcUpper: {
 					String with = p.getDecoratedValue(true, modLeft + modAmount);
 					String without = p.getDecoratedValue(false, modLeft + modAmount);
-					return new String[] { "Upper Limit: " + with, "Upper Limit: " + without, "Upper: " + without, "Up: " + without, without };
+					return new String[] { "Upper Limit: " + with, "Upper Limit: " + without, "Upper: " + without,
+							"Up: " + without, without };
 				}
 
 				case mcValue: {
 					String with = mc.getDecoratedValue(true);
 					String without = mc.getDecoratedValue(false);
-					return new String[] { "MC Position: " + with, "MC Position: " + without, "MC Pos: " + without, "Pos: " + without,
-							without };
+					return new String[] { "MC Position: " + with, "MC Position: " + without, "MC Pos: " + without,
+							"Pos: " + without, without };
 				}
 
 				case mcSource:
