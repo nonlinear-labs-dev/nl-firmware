@@ -121,9 +121,9 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
     {
       auto presetUUID = b->getSelectedPreset();
       auto eb = getEditBuffer();
-      bool canOmitLoad = eb->getUUIDOfLastLoadedPreset() == presetUUID && !eb->isModified();
+      bool shouldLoad = eb->getUUIDOfLastLoadedPreset() != presetUUID || eb->isModified();
 
-      if(!canOmitLoad)
+      if(shouldLoad)
       {
         if(auto p = b->getPreset(presetUUID))
         {
@@ -135,11 +135,10 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
             }
             else
             {
-              if(!undoIsBankImport(currentUndo)) {
-                currentUndo->reopen();
-                eb->undoableLoad(currentUndo, p);
-                currentUndo->close();
-              }
+
+              currentUndo->reopen();
+              eb->undoableLoad(currentUndo, p);
+              currentUndo->close();
             }
             return;
           }
@@ -299,13 +298,16 @@ void PresetManager::undoableSelectPrevious()
   }
 }
 
-void PresetManager::undoableSelectFirstBank() {
+void PresetManager::undoableSelectFirstBank()
+{
   if(getNumBanks() > 0)
     undoableSelectBank(getBank(0)->getUuid());
 }
 
-void PresetManager::undoableSelectLastBank() {
-  if(auto bankCount = getNumBanks()) {
+void PresetManager::undoableSelectLastBank()
+{
+  if(auto bankCount = getNumBanks())
+  {
     undoableSelectBank(getBank(bankCount - 1)->getUuid());
   }
 }
@@ -899,7 +901,6 @@ void PresetManager::reassignOrderNumbers()
     b->onChange();
   }
 
-
   m_sigNumBanksChanged.send(getNumBanks());
 }
 
@@ -1059,8 +1060,4 @@ Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset
   }
 
   return out;
-}
-
-bool PresetManager::undoIsBankImport(const UNDO::Scope::tTransactionPtr transactionToTest) {
-  return transactionToTest->getName() == "Import new Bank";
 }
