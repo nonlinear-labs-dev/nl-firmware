@@ -451,12 +451,14 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				double grenzLeft = modAmount < 0 ? modRight : modLeft;
 				double grenzRight = modAmount < 0 ? modLeft : modRight;
 
+				double lowerValue = m.isBiPolar() ? -1.0 : 0;				
+				
 				mcUpperClip.setClipping(modLeft > 1.0 || modRight > 1.0);
-				mcLowerClip.setClipping(modLeft < 0 || modRight < 0);
+				mcLowerClip.setClipping(modLeft < lowerValue || modRight < lowerValue);
 
 				switch (mode) {
 				case mcAmount: {
-					boolean l = grenzLeft < 0.0;
+					boolean l = grenzLeft < lowerValue;
 					boolean r = grenzRight > 1.0;
 					String clip = l||r ? "! " : "";
 					String with = m.getModulationAmount().getDecoratedValue(true);
@@ -470,7 +472,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 						clip = modLeft > 1.0 ? "! " : "";
 					}
 					else {
-						clip = modLeft < 0.0 ? "! " : "";
+						clip = modLeft < lowerValue ? "! " : "";
 					}
 				
 					String with = p.getDecoratedValue(true, modLeft);
@@ -481,7 +483,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				case mcUpper: {
 					String clip = "";
 					if(modAmount < 0) {
-						clip = modRight < 0.0 ? "! " : "";
+						clip = modRight < lowerValue ? "! " : "";
 					}
 					else {
 						clip = modRight > 1.0 ? "! " : "";
