@@ -70,6 +70,7 @@ class EditBuffer : public Preset
     bool isModified () const;
     void sendToLPC ();
     bool isSelectedPresetLoadedAndUnModified();
+    std::shared_ptr<Preset> getPreset() const;
 
   private:
     Parameter *searchForAnyParameterWithLock() const;
@@ -103,6 +104,7 @@ class EditBuffer : public Preset
     friend class EditBufferActions;
 
     LastLoadedPresetInfo m_lastLoadedPresetInfo;
+    std::shared_ptr<Preset> m_loadedPreset;
 
     DelayedJob m_deferedJobs;
 

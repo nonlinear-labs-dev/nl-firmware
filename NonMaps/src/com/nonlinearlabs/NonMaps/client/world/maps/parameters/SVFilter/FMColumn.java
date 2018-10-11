@@ -1,10 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.SVFilter;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulateableKnob;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHighPriority;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SmallParameterName;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
 
 class FMColumn extends ParameterColumn {
@@ -25,7 +25,7 @@ class FMColumn extends ParameterColumn {
 
 		private AB(MapsLayout parent) {
 			super(parent);
-			addChild(new SmallParameterName(this, getName()));
+			addChild(new LabelModulationSource(this, getName()));
 			addChild(new LittleKnobSlider(this));
 			addChild(new ValueDisplaySmall(this));
 		}

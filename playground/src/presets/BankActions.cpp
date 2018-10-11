@@ -9,6 +9,7 @@
 #include <http/HTTPRequest.h>
 #include "xml/XmlWriter.h"
 #include "ClusterEnforcement.h"
+#include "BankChangeBlocker.h"
 #include <xml/MemoryInStream.h>
 #include <xml/XmlReader.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
@@ -409,6 +410,7 @@ BankActions::BankActions(PresetManager &presetManager) :
       int newPos = stoi(request->get("order-number"));
       auto scope = m_presetManager.getUndoScope().startTransaction("Changed Order Number of Bank: %0", bank->getName(true));
       m_presetManager.undoableSetOrderNumber(scope->getTransaction(), bank, newPos);
+      BankChangeBlocker blocker(bank);
       bank->onChange();
     }
   });
@@ -567,6 +569,8 @@ BankActions::BankActions(PresetManager &presetManager) :
           {
             auto scope = presetManager.getUndoScope().startTransaction ("Move preset bank '%0'", bank->getName(true));
             auto transaction = scope->getTransaction();
+
+            BankChangeBlocker blocker(bank);
             bank->undoableSetPosition (transaction, x, y);
             //  m_presetManager.undoableSelectBank (transaction, bank->getUuid(), false);
           }
@@ -871,6 +875,11 @@ BankActions::BankActions(PresetManager &presetManager) :
           UNDO::Scope::tTransactionScopePtr scope = presetManager.getUndoScope().startTransaction ("Move Bank '%0' %1", bank->getName(true), inDirectionDescriber);
           UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
 
+          //Prevent all banks from appearing changed externally
+          std::vector<BankChangeBlocker> blocker;
+          for(auto b: bank->getParent()->getBanks())
+            blocker.push_back(BankChangeBlocker(b));
+
           m_presetManager.undoableChangeBankOrder(transaction, bankUUID, direction);
         }
       });
@@ -959,6 +968,7 @@ BankActions::BankActions(PresetManager &presetManager) :
         auto parentBankName = attached->getName(true);
         auto scope = presetManager.getUndoScope().startTransaction("Detached Bank '%0' from '%1'", bank->getName(true), parentBankName);
         auto transaction = scope->getTransaction();
+
         bank->undoableDetachBank(transaction);
         bank->undoableSetPosition(transaction, x, y);
       }
@@ -975,11 +985,17 @@ BankActions::BankActions(PresetManager &presetManager) :
 
     for(auto bank: m_presetManager.getBanks())
     {
+      BankChangeBlocker blocker(bank);
       bank->undoableMovePosition(transaction, x, y);
     }
   });
 
   addAction("sort-bank-numbers", [&](auto request) mutable {
+    //Prevent all banks from appearing changed externally
+    std::vector<BankChangeBlocker> blocker;
+    for(auto b: Application::get().getPresetManager()->getBanks())
+      blocker.push_back(BankChangeBlocker(b));
+
     ClusterEnforcement::sortBankNumbers();
   });
 }

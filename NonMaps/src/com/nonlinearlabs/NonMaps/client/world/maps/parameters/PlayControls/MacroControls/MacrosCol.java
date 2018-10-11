@@ -3,10 +3,10 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.Macr
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHighPriority;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SmallParameterName;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
 
 abstract class MacrosCol extends ParameterColumn {
@@ -45,7 +45,7 @@ abstract class MacrosCol extends ParameterColumn {
 
 		private Smoothing(MapsLayout parent) {
 			super(parent);
-			addChild(new SmallParameterName(this, getName()));
+			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
 		}

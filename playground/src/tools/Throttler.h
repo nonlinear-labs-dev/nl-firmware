@@ -5,19 +5,19 @@
 
 class Throttler
 {
-  public:
-    using Task = function<void () >;
+ public:
+  using Task = function<void()>;
 
-    Throttler (Expiration::Duration maxDelay);
+  Throttler(Expiration::Duration maxDelay);
 
-    void doTask(Task&& task);
-    bool isPending() const;
+  void doTask(Task&& task);
+  bool isPending() const;
 
-   private:
-    void delayedCallback();
+ private:
+  void delayedCallback();
 
-    Expiration m_expiration;
-    Expiration::Duration m_maxDelay;
-    Task m_task;
+  Expiration m_expiration;
+  Expiration::Duration m_maxDelay;
+  Task m_task;
+  bool m_isPending = false;
 };
-
