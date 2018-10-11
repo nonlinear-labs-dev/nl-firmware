@@ -16,48 +16,56 @@
 #include "SoledHeader.h"
 #include "DirectLoadIndicator.h"
 
-class ShortenLabel : public Label {
-public:
-  ShortenLabel(const ustring &text, const Rect &pos) : Label(text, pos) {}
-protected:
-  Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const override {
+class ShortenLabel : public Label
+{
+ public:
+  ShortenLabel(const ustring &text, const Rect &pos)
+      : Label(text, pos)
+  {
+  }
+
+ protected:
+  Glib::ustring shortenStringIfNeccessary(shared_ptr<Font> font, const Glib::ustring &text) const override
+  {
     return TextCropper::shortenStringIfNeccessary(font, text, getPosition().getWidth());
   }
 };
 
-BanksLayout::BanksLayout () :
-    super (Application::get().getHWUI()->getBaseUnit().getPlayPanel().getSOLED())
+BanksLayout::BanksLayout()
+    : super(Application::get().getHWUI()->getBaseUnit().getPlayPanel().getSOLED())
 {
   const auto headlineHeight = 16;
-  addControl (new SoledHeader ("Bank", Rect (0, 0, 31, headlineHeight + 1)));
+  addControl(new SoledHeader("Bank", Rect(0, 0, 31, headlineHeight + 1)));
 
   m_number = addControl(new LabelRegular8("", Rect(32, 1, 64, headlineHeight - 1)));
   m_name = addControl(new ShortenLabel("", Rect(0, headlineHeight + 2, 128, 32 - headlineHeight - 2)));
-  m_directLoad = addControl (new DirectLoadIndicator (Rect (96, 0, 32, headlineHeight)));
+  m_directLoad = addControl(new DirectLoadIndicator(Rect(96, 0, 32, headlineHeight)));
   addControl(new DottedLine(Rect(31, headlineHeight, 96, 1)));
 
-  Application::get().getPresetManager()->onBankSelection (sigc::mem_fun(this, &BanksLayout::onBankSelected));
-  Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->onChange(sigc::mem_fun(this, &BanksLayout::onAutoLoadSettingChanged));
+  Application::get().getPresetManager()->onBankSelection(sigc::mem_fun(this, &BanksLayout::onBankSelected));
+  Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->onChange(
+      sigc::mem_fun(this, &BanksLayout::onAutoLoadSettingChanged));
 }
 
-BanksLayout::~BanksLayout ()
+BanksLayout::~BanksLayout()
 {
 }
 
-void BanksLayout::onBankSelected(shared_ptr<PresetBank> bank)
+void BanksLayout::onBankSelected()
 {
-  m_bank = bank;
+  m_bank = Application::get().getPresetManager()->getSelectedBank();
   m_bankconnection.disconnect();
-  if(bank)
-    m_bankconnection = bank->onBankChanged(sigc::mem_fun(this, &BanksLayout::onBankChanged));
+  if(m_bank)
+    m_bankconnection = m_bank->onBankChanged(sigc::mem_fun(this, &BanksLayout::onBankChanged));
 
-  updateFromBank(bank);
+  updateFromBank(m_bank);
 }
 
-void BanksLayout::updateFromBank(const shared_ptr<PresetBank> &bank) const {
+void BanksLayout::updateFromBank(const shared_ptr<PresetBank> &bank) const
+{
   if(bank)
   {
-    auto order = Application::get().getPresetManager()->calcOrderNumber (bank.get());
+    auto order = Application::get().getPresetManager()->calcOrderNumber(bank.get());
     auto numBanks = Application::get().getPresetManager()->getNumBanks();
     auto str = ustring::format(order);
     m_number->setText(str);
@@ -76,6 +84,7 @@ void BanksLayout::onAutoLoadSettingChanged(const Setting *s)
   m_directLoad->setMode(on ? DirectLoadIndicator::Mode::DirectLoad : DirectLoadIndicator::Mode::Off);
 }
 
-void BanksLayout::onBankChanged() {
+void BanksLayout::onBankChanged()
+{
   updateFromBank(m_bank);
 }

@@ -24,7 +24,7 @@ class BankNumberLabel : public Label
     BankNumberLabel (const BankNumberLabel& other);
     BankNumberLabel& operator= (const BankNumberLabel&);
 
-    void onBankSelectionChanged (shared_ptr<PresetBank> newBank);
+    void onBankSelectionChanged ();
 
 
 };

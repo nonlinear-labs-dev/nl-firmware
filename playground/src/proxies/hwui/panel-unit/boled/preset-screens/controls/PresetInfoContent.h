@@ -17,7 +17,7 @@ class PresetInfoContent : public InfoContent
     virtual ~PresetInfoContent ();
 
   private:
-    void onBankChanged (shared_ptr<PresetBank> bank);
+    void onBankChanged ();
     void onPresetSelectionChanged ();
 
     void fixLayout();

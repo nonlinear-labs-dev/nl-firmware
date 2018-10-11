@@ -176,7 +176,7 @@ void PresetManager::undoableSelectBank(UNDO::Scope::tTransactionPtr transaction,
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       swapData->swapWith(m_selectedBankUUID);
       onChange();
-      m_sigBankSelection.send(getSelectedBank());
+      m_sigBankSelection.deferedSend();
     });
 
     if(auto selBank = getSelectedBank())
@@ -297,13 +297,16 @@ void PresetManager::undoableSelectPrevious()
   }
 }
 
-void PresetManager::undoableSelectFirstBank() {
+void PresetManager::undoableSelectFirstBank()
+{
   if(getNumBanks() > 0)
     undoableSelectBank(getBank(0)->getUuid());
 }
 
-void PresetManager::undoableSelectLastBank() {
-  if(auto bankCount = getNumBanks()) {
+void PresetManager::undoableSelectLastBank()
+{
+  if(auto bankCount = getNumBanks())
+  {
     undoableSelectBank(getBank(bankCount - 1)->getUuid());
   }
 }
@@ -643,7 +646,7 @@ void PresetManager::load()
       getEditBuffer()->sendToLPC();
     }
 
-    m_sigBankSelection.send(getSelectedBank());
+    m_sigBankSelection.deferedSend();
 
     auto hwui = Application::get().getHWUI();
     hwui->getPanelUnit().getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndMode());
@@ -857,9 +860,9 @@ UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
   return UpdateDocumentContributor::onChange(flags);
 }
 
-sigc::connection PresetManager::onBankSelection(sigc::slot<void, tBankPtr> slot)
+sigc::connection PresetManager::onBankSelection(sigc::slot<void> slot)
 {
-  return m_sigBankSelection.connectAndInit(slot, getSelectedBank());
+  return m_sigBankSelection.connectAndInit(slot);
 }
 
 sigc::connection PresetManager::onNumBanksChanged(sigc::slot<void, int> slot)
@@ -896,7 +899,6 @@ void PresetManager::reassignOrderNumbers()
     BankChangeBlocker blocker(b);
     b->onChange();
   }
-
 
   m_sigNumBanksChanged.send(getNumBanks());
 }
