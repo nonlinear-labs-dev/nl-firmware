@@ -218,7 +218,6 @@ void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionP
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
-  auto modRange = getModulationRange(true);
   writer.writeTextElement("modAmount", to_string(m_modulationAmount));
   writer.writeTextElement("modSrc", to_string(m_modSource));
 }
