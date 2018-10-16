@@ -418,6 +418,16 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		return null;
 	}
 
+	@Override
+	public Control wheel(Position eventPoint, double amount, boolean fine) {
+		if (amount > 0)
+			getValue().inc(Initiator.EXPLICIT_USER_ACTION, fine);
+		else if (amount < 0)
+			getValue().dec(Initiator.EXPLICIT_USER_ACTION, fine);
+		
+		return this;
+	}
+	
 	public QuantizedClippedValue getValue() {
 		return currentValue;
 	}
