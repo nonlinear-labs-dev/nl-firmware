@@ -8,7 +8,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 class NextBank extends PrevNextBank {
 
 	NextBank(BankHeader parent) {
-		super(parent, "Bank_Right.svg", "Bank_Right_Active.svg", "Bank_Right_Disabled.svg");
+		super(parent, "Bank_Right_Enabled.svg", "Bank_Right_Active.svg", "Bank_Right_Disabled.svg");
 	}
 
 	@Override
