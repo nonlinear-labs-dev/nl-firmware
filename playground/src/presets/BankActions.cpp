@@ -565,6 +565,8 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Create new bank");
         PresetManager::tBankPtr newBank = presetManager.addBank(scope->getTransaction(), x, y);
+        BankChangeBlocker b(bank);
+
         auto transaction = scope->getTransaction();
         newBank->undoableInsertPreset(transaction, 0);
         newBank->undoableOverwritePreset(transaction, 0, p);
@@ -1031,6 +1033,7 @@ bool BankActions::loadPresetAtRelativePosition(int offset)
 
   if(tBankPtr bank = m_presetManager.findBankWithPreset(currentPreset))
   {
+
     size_t pos = bank->getPresetPosition(currentPreset);
 
     if(offset > 0 || pos >= (size_t)(-offset))
@@ -1073,6 +1076,9 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
         XmlWriter writer(stream);
         PresetBankSerializer serializer(bank);
         serializer.write(writer, VersionAttribute::get());
+
+        BankChangeBlocker b(bank);
+
 
         bank->setAttribute("Name of Export File", "(via Browser)");
         bank->setAttribute("Date of Export File", TimeTools::getAdjustedIso());
