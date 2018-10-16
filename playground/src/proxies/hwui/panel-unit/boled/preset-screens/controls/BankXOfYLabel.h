@@ -20,6 +20,6 @@ class BankXOfYLabel : public Label
     Font::Justification getJustification () const override;
 
   private:
-    void onBankSelectionChanged (shared_ptr<PresetBank> newBank);
+    void onBankSelectionChanged ();
 };
 

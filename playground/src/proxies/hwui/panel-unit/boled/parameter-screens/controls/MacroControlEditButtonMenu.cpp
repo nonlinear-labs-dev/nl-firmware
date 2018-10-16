@@ -11,7 +11,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <http/UndoScope.h>
 
-int MacroControlEditButtonMenu::s_lastAction = 0;
+int MacroControlEditButtonMenu::s_lastAction = 1;
 
 MacroControlEditButtonMenu::MacroControlEditButtonMenu(const Rect &rect) :
     super(rect)

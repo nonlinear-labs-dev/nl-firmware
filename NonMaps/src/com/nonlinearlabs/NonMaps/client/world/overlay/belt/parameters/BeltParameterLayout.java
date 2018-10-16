@@ -4,6 +4,8 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.dataModel.EditBuffer;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
@@ -45,6 +47,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private MCRadioButton mcAmountRadioButton;
 	private MCRadioButton mcLowerBoundRadioButton;
 	private MCRadioButton mcUpperBoundRadioButton;
+	private ParameterClippingLabel mcUpperClip;
+	private ParameterClippingLabel mcLowerClip;
 
 	private QuantizedClippedValue currentValue;
 
@@ -71,6 +75,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(mcUpperBoundRadioButton = new MCRadioButton(this, Mode.mcUpper, "MC_High_Aktiv.svg",
 				"MC_High_Inaktiv.svg"));
 
+		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
+		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
+		
+		
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
 
 		setupValue();
@@ -125,8 +133,13 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
+	
+		double clipW = 17;
+		mcLowerClip.doLayout(sliderLeft - clipW, third, clipW, third);
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
+		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
 
+		
 		double upperElementsY = Millimeter.toPixels(0.5);
 
 		double sliderWidth = slider.getRelativePosition().getWidth();
@@ -165,7 +178,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
 
-		double lineWidth = slider.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight();
+		double lineWidth = mcLowerClip.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight();
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight(), 0, lineWidth, h);
 
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
@@ -244,6 +257,9 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		if (p instanceof ModulatableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
+
+			mcLowerClip.setClipping(false);
+			mcUpperClip.setClipping(false);
 
 			if (m.getModulationSource() != MacroControls.NONE) {
 				switch (getMode()) {
@@ -441,28 +457,54 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				double srcValue = mc.getValue().getClippedValue();
 				double value = m.getValue().getClippedValue();
+				
 				double modLeft = value - modAmount * srcValue;
+				double modRight = modLeft + modAmount;
+
+				double grenzLeft = modAmount < 0 ? modRight : modLeft;
+				double grenzRight = modAmount < 0 ? modLeft : modRight;
+
+				double lowerValue = m.isBiPolar() ? -1.0 : 0;				
+				
+				mcUpperClip.setClipping(modLeft > 1.0 || modRight > 1.0);
+				mcLowerClip.setClipping(modLeft < lowerValue || modRight < lowerValue);
 
 				switch (mode) {
 				case mcAmount: {
+					boolean l = grenzLeft < lowerValue;
+					boolean r = grenzRight > 1.0;
+					String clip = l||r ? "! " : "";
 					String with = m.getModulationAmount().getDecoratedValue(true);
 					String without = m.getModulationAmount().getDecoratedValue(false);
-					return new String[] { "MC Amount: " + with, "MC Amount: " + without, "MC Amt: " + without,
-							"Amt: " + without, without };
+					return new String[] { clip + "MC Amount: " + with, clip + "MC Amount: " + without, clip + "MC Amt: " + without, clip + "Amt: " + without, clip + without };
 				}
 
 				case mcLower: {
+					String clip = "";
+					if(modAmount < 0) {
+						clip = modLeft > 1.0 ? "! " : "";
+					}
+					else {
+						clip = modLeft < lowerValue ? "! " : "";
+					}
+				
 					String with = p.getDecoratedValue(true, modLeft);
 					String without = p.getDecoratedValue(false, modLeft);
-					return new String[] { "Lower Limit: " + with, "Lower Limit: " + without, "Lower: " + without,
-							"Lo: " + without, without };
+					return new String[] { clip + "Lower Limit: " + with, clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without, clip + without };
 				}
 
 				case mcUpper: {
-					String with = p.getDecoratedValue(true, modLeft + modAmount);
-					String without = p.getDecoratedValue(false, modLeft + modAmount);
-					return new String[] { "Upper Limit: " + with, "Upper Limit: " + without, "Upper: " + without,
-							"Up: " + without, without };
+					String clip = "";
+					if(modAmount < 0) {
+						clip = modRight < lowerValue ? "! " : "";
+					}
+					else {
+						clip = modRight > 1.0 ? "! " : "";
+					}
+						
+					String with = p.getDecoratedValue(true, modRight);
+					String without = p.getDecoratedValue(false, modRight);
+					return new String[] { clip + "Upper Limit: " + with, clip + "Upper Limit: " + without, clip + "Upper: " + without, clip + "Up: " + without, clip + without };
 				}
 
 				case mcValue: {

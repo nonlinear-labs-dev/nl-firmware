@@ -18,7 +18,7 @@ public:
 
 private:
   void updateFromBank(const shared_ptr<PresetBank> &bank) const;
-  void onBankSelected(shared_ptr<PresetBank> bank);
+  void onBankSelected();
   void onAutoLoadSettingChanged(const Setting *s);
   void onBankChanged();
 

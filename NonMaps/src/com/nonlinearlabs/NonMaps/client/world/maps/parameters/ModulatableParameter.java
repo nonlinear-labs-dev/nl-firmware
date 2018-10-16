@@ -5,6 +5,8 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Checksum;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.tools.Pair;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
@@ -33,7 +35,7 @@ public abstract class ModulatableParameter extends Parameter {
 	});
 
 	private MacroControls modulationSource = MacroControls.NONE;
-
+			
 	public ModulatableParameter(MapsLayout parent) {
 		super(parent);
 		addChild(new ParameterName(this, getName()));
@@ -123,7 +125,7 @@ public abstract class ModulatableParameter extends Parameter {
 
 		try {
 			String value = ServerProxy.getText(child);
-
+			
 			if (nodeName.equals("modAmount")) {
 				setModulationAmount(Initiator.INDIRECT_USER_ACTION, Double.parseDouble(value));
 			} else if (nodeName.equals("modSrc")) {

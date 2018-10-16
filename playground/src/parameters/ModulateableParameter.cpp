@@ -16,11 +16,12 @@
 
 static TestDriver<ModulateableParameter> tests;
 
-ModulateableParameter::ModulateableParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
-                                             tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator) :
-    Parameter(group, id, scaling, def, coarseDenominator, fineDenominator),
-    m_modulationAmount(0),
-    m_modSource(NONE)
+ModulateableParameter::ModulateableParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
+                                             tDisplayValue def, tControlPositionValue coarseDenominator,
+                                             tControlPositionValue fineDenominator)
+    : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+    , m_modulationAmount(0)
+    , m_modSource(NONE)
 {
 }
 
@@ -73,11 +74,10 @@ void ModulateableParameter::setModulationAmount(UNDO::Scope::tTransactionPtr tra
   {
     auto swapData = UNDO::createSwapData(clampedAmount);
 
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
-      swapData->swapWith (m_modulationAmount);
-      getValue().resetSaturation ();
-      DebugLevel::gassy ("mod amount set to", m_modulationAmount);
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_modulationAmount);
+      getValue().resetSaturation();
+      DebugLevel::gassy("mod amount set to", m_modulationAmount);
       invalidate();
       sendToLpc();
     });
@@ -89,7 +89,7 @@ ModulateableParameter::ModulationSource ModulateableParameter::getModulationSour
   return m_modSource;
 }
 
-void ModulateableParameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter * other)
+void ModulateableParameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other)
 {
   if(!isLocked())
   {
@@ -109,31 +109,32 @@ void ModulateableParameter::setModulationSource(UNDO::Scope::tTransactionPtr tra
   {
     auto swapData = UNDO::createSwapData(src);
 
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
-      if (EditBuffer *edit = dynamic_cast<EditBuffer *> (getParentGroup()->getParent()))
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      if(EditBuffer *edit = dynamic_cast<EditBuffer *>(getParentGroup()->getParent()))
       {
-        if (m_modSource != NONE)
+        if(m_modSource != NONE)
         {
-          auto modSrc = dynamic_cast<MacroControlParameter*> (edit->findParameterByID (MacroControlsGroup::modSrcToParamID (m_modSource)));
-          modSrc->unregisterTarget (this);
+          auto modSrc = dynamic_cast<MacroControlParameter *>(
+              edit->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+          modSrc->unregisterTarget(this);
         }
 
-        swapData->swapWith (m_modSource);
+        swapData->swapWith(m_modSource);
 
-        if (m_modSource != NONE)
+        if(m_modSource != NONE)
         {
-          auto modSrc = dynamic_cast<MacroControlParameter*> (edit->findParameterByID (MacroControlsGroup::modSrcToParamID (m_modSource)));
-          modSrc->registerTarget (this);
+          auto modSrc = dynamic_cast<MacroControlParameter *>(
+              edit->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+          modSrc->registerTarget(this);
         }
 
-        getValue().resetSaturation ();
+        getValue().resetSaturation();
         sendToLpc();
       }
       else
       {
-        swapData->swapWith (m_modSource);
-        getValue().resetSaturation ();
+        swapData->swapWith(m_modSource);
+        getValue().resetSaturation();
       }
 
       invalidate();
@@ -168,7 +169,8 @@ void ModulateableParameter::undoableIncrementMCSelect(int inc)
 
 void ModulateableParameter::undoableIncrementMCAmount(int inc)
 {
-  auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'", getGroupAndParameterName());
+  auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
+                                                         getGroupAndParameterName());
   undoableIncrementMCAmount(scope->getTransaction(), inc, ButtonModifiers());
 }
 
@@ -183,14 +185,15 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
 
   if(m_modulationAmount != def)
   {
-    auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'", getGroupAndParameterName());
+    auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
+                                                           getGroupAndParameterName());
     setModulationAmount(scope->getTransaction(), def);
   }
 }
 
 void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionPtr transaction, int inc)
 {
-  int src = (int) getModulationSource();
+  auto src = (int) getModulationSource();
   src += inc;
 
   while(src < 0)
@@ -202,7 +205,8 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionP
   setModulationSource(transaction, (ModulationSource) src);
 }
 
-void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction, int inc, ButtonModifiers modifiers)
+void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction, int inc,
+                                                      ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
   double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
@@ -218,10 +222,10 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   writer.writeTextElement("modSrc", to_string(m_modSource));
 }
 
-void ModulateableParameter::writeDifferences(Writer& writer, Parameter* other) const
+void ModulateableParameter::writeDifferences(Writer &writer, Parameter *other) const
 {
   Parameter::writeDifferences(writer, other);
-  ModulateableParameter *pOther = static_cast<ModulateableParameter*>(other);
+  ModulateableParameter *pOther = static_cast<ModulateableParameter *>(other);
 
   if(getModulationAmount() != pOther->getModulationAmount())
   {
@@ -229,14 +233,13 @@ void ModulateableParameter::writeDifferences(Writer& writer, Parameter* other) c
     auto currentParameter = c->getDimension().stringize(c->controlPositionToDisplay(getModulationAmount()));
     auto otherParameter = c->getDimension().stringize(c->controlPositionToDisplay(pOther->getModulationAmount()));
 
-
-    writer.writeTextElement("mc-amount", "", Attribute("a", currentParameter),
-                            Attribute("b", otherParameter));
+    writer.writeTextElement("mc-amount", "", Attribute("a", currentParameter), Attribute("b", otherParameter));
   }
 
   if(getModulationSource() != pOther->getModulationSource())
   {
-    writer.writeTextElement("mc-select", "", Attribute("a", getModulationSource()), Attribute("b", pOther->getModulationSource()));
+    writer.writeTextElement("mc-select", "", Attribute("a", getModulationSource()),
+                            Attribute("b", pOther->getModulationSource()));
   }
 }
 
@@ -328,7 +331,7 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
 
   auto src = getModulationSource();
   uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
-  auto groupSet = dynamic_cast<const ParameterGroupSet*>(getParentGroup()->getParent());
+  auto groupSet = dynamic_cast<const ParameterGroupSet *>(getParentGroup()->getParent());
 
   if(auto srcParam = groupSet->findParameterByID(srcParamID))
   {
@@ -381,17 +384,16 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
 
 void ModulateableParameter::registerTests()
 {
-  g_test_add_func("/ModulateableParameter/1.4pct-to-112lpc", []()
-  {
+  g_test_add_func("/ModulateableParameter/1.4pct-to-112lpc", []() {
     class Root : public UpdateDocumentMaster
     {
-      public:
-      tUpdateID onChange (bool force)
+     public:
+      tUpdateID onChange(bool force)
       {
         return 0;
       }
 
-      virtual void writeDocument (Writer &writer, tUpdateID knownRevision) const
+      virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const
       {
       }
     };
@@ -400,24 +402,24 @@ void ModulateableParameter::registerTests()
 
     class GroupSet : public ParameterGroupSet
     {
-      public:
-      GroupSet (Root *root) :
-      ParameterGroupSet (root)
+     public:
+      GroupSet(Root *root)
+          : ParameterGroupSet(root)
       {
       }
 
-      virtual void writeDocument (Writer &writer, tUpdateID knownRevision) const
+      virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const
       {
       }
     };
 
-    GroupSet groupSet (&root);
+    GroupSet groupSet(&root);
 
     class Group : public ParameterGroup
     {
-      public:
-      Group (GroupSet *root) :
-      ParameterGroup (root, "a", "b", "b", "b")
+     public:
+      Group(GroupSet *root)
+          : ParameterGroup(root, "a", "b", "b", "b")
       {
       }
 
@@ -425,19 +427,18 @@ void ModulateableParameter::registerTests()
       {
       }
 
-      virtual void writeDocument (Writer &writer, tUpdateID knownRevision) const
+      virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const
       {
       }
     };
 
-    Group group (&groupSet);
+    Group group(&groupSet);
 
-    ModulateableParameter peter (&group, 1, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
+    ModulateableParameter peter(&group, 1, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
     peter.m_modulationAmount = 0.014;
     peter.m_modSource = MC1;
-    uint16_t packed = peter.getModulationSourceAndAmountPacked ();
+    uint16_t packed = peter.getModulationSourceAndAmountPacked();
     packed &= 0x3FFF;
-    g_assert (packed == 14);
+    g_assert(packed == 14);
   });
 }
-

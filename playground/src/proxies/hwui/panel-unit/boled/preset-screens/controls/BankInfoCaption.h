@@ -24,7 +24,7 @@ class BankInfoCaption : public Label
     virtual shared_ptr<Font> getFont() const override;
     virtual int getFontHeight() const override;
 
-    void onBankSelection (PresetManager::tBankPtr bank);
+    void onBankSelection ();
     void onBankChanged ();
 
     sigc::connection m_bankConnection;
