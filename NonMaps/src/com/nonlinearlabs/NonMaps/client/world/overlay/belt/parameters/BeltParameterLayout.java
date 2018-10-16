@@ -448,9 +448,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				double modLeft = value - modAmount * srcValue;
 				double modRight = modLeft + modAmount;
 
-				double grenzLeft = modAmount < 0 ? modRight : modLeft;
-				double grenzRight = modAmount < 0 ? modLeft : modRight;
-
 				double lowerValue = m.isBiPolar() ? -1.0 : 0;				
 				
 				mcUpperClip.setClipping(modLeft > 1.0 || modRight > 1.0);
@@ -458,39 +455,30 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				switch (mode) {
 				case mcAmount: {
-					boolean l = grenzLeft < lowerValue;
-					boolean r = grenzRight > 1.0;
-					String clip = l||r ? "! " : "";
+					String clip = clipPrintValue(Mode.mcAmount, modAmount, modLeft, modRight, lowerValue, m.isBiPolar());
+										
 					String with = m.getModulationAmount().getDecoratedValue(true);
 					String without = m.getModulationAmount().getDecoratedValue(false);
 					return new String[] { clip + "MC Amount: " + with, clip + "MC Amount: " + without, clip + "MC Amt: " + without, clip + "Amt: " + without, clip + without };
 				}
 
 				case mcLower: {
-					String clip = "";
-					if(modAmount < 0) {
-						clip = modLeft > 1.0 ? "! " : "";
-					}
-					else {
-						clip = modLeft < lowerValue ? "! " : "";
-					}
-				
+					String clip = clipPrintValue(Mode.mcLower, modAmount, modLeft, modRight, lowerValue, m.isBiPolar());
+									
+					modLeft = clipModPos(modLeft, lowerValue, clip);
+					
 					String with = p.getDecoratedValue(true, modLeft);
 					String without = p.getDecoratedValue(false, modLeft);
 					return new String[] { clip + "Lower Limit: " + with, clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without, clip + without };
 				}
 
 				case mcUpper: {
-					String clip = "";
-					if(modAmount < 0) {
-						clip = modRight < lowerValue ? "! " : "";
-					}
-					else {
-						clip = modRight > 1.0 ? "! " : "";
-					}
-						
-					String with = p.getDecoratedValue(true, modRight);
-					String without = p.getDecoratedValue(false, modRight);
+					String clip = clipPrintValue(Mode.mcUpper, modAmount, modLeft, modRight, lowerValue, m.isBiPolar());
+					
+					modRight = clipModPos(modRight, lowerValue, clip);
+					
+					String with = p.getDecoratedValue(true, m.getModulationAmount().clip(modRight));
+					String without = p.getDecoratedValue(false, m.getModulationAmount().clip(modRight));
 					return new String[] { clip + "Upper Limit: " + with, clip + "Upper Limit: " + without, clip + "Upper: " + without, clip + "Up: " + without, clip + without };
 				}
 
@@ -511,5 +499,44 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		}
 
 		return new String[] { p.getDecoratedValue(true), p.getDecoratedValue(false) };
+	}
+
+	private double clipModPos(double modLeft, double lowerValue, String clip) {
+		if(clip.isEmpty() == false && (mode == Mode.mcUpper || mode == Mode.mcLower)) {
+			modLeft = modLeft < lowerValue ? lowerValue : modLeft;
+			modLeft = modLeft > 1 ? 1 : modLeft;
+		}
+		return modLeft;
+	}
+
+	private String clipPrintValue(Mode mode, double modAmount, double modLeft, double modRight, double lowerValue, boolean bipolar) {
+		
+		String clip = "";
+		double grenzLeft = modAmount < 0 ? modRight : modLeft;
+		double grenzRight = modAmount < 0 ? modLeft : modRight;
+		
+		switch(mode) {
+			case mcLower:
+				if(modAmount < 0)
+					clip = modLeft > 1.0 ? "! " : "";
+				else
+					clip = modLeft < lowerValue ? "! " : "";
+				break;
+			case mcUpper:
+				if(modAmount < 0) 
+					clip = modRight < lowerValue ? "! " : "";
+				else
+					clip = modRight > 1.0 ? "! " : "";
+				break;
+			case mcAmount:
+				boolean l = grenzLeft < lowerValue;
+				boolean r = grenzRight > 1.0;
+				clip = l||r ? "! " : "";
+				break;
+			default:
+				return "";
+		}
+			
+		return clip;
 	}
 }
