@@ -7,7 +7,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 public class ParameterClippingLabel extends Label {
 
 	boolean m_clipping = false;
-	
+
 	ParameterClippingLabel(OverlayLayout parent, BeltParameterLayout.Mode mode) {
 		super(parent);
 		setFontHeightInMM(9);
@@ -15,8 +15,10 @@ public class ParameterClippingLabel extends Label {
 	}
 
 	public void setClipping(boolean b) {
-		m_clipping = b;
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		if (m_clipping != b) {
+			m_clipping = b;
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		}
 	}
 
 	@Override

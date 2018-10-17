@@ -434,10 +434,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 			getValue().inc(Initiator.EXPLICIT_USER_ACTION, fine);
 		else if (amount < 0)
 			getValue().dec(Initiator.EXPLICIT_USER_ACTION, fine);
-		
+
 		return this;
 	}
-	
+
 	public QuantizedClippedValue getValue() {
 		return currentValue;
 	}
@@ -466,20 +466,20 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				double srcValue = mc.getValue().getClippedValue();
 				double value = m.getValue().getClippedValue();
 
-				Range mod = new Range(value - modAmount * srcValue, value - modAmount * srcValue + modAmount);
-				mod.normalize();
 				Range bounds = new Range(m.isBiPolar() ? -1.0 : 0, 1.0);
+				Range mod = new Range(value - modAmount * srcValue, value - modAmount * srcValue + modAmount);
+				Range modNormalized = new Range(mod.getLeft(), mod.getRight());
+				modNormalized.normalize();
 
-				mcUpperClip.setClipping(bounds.outOfRange(mod.getRight()));
-				mcLowerClip.setClipping(bounds.outOfRange(mod.getLeft()));
+				mcUpperClip.setClipping(bounds.outOfRange(modNormalized.getRight()));
+				mcLowerClip.setClipping(bounds.outOfRange(modNormalized.getLeft()));
 
 				switch (mode) {
 				case mcAmount: {
-					String clip = mod.outOfRange(bounds) ? "! " : "";
 					String with = m.getModulationAmount().getDecoratedValue(true);
 					String without = m.getModulationAmount().getDecoratedValue(false);
-					return new String[] { clip + "MC Amount: " + with, clip + "MC Amount: " + without,
-							clip + "MC Amt: " + without, clip + "Amt: " + without, clip + without };
+					return new String[] { "MC Amount: " + with, "MC Amount: " + without, "MC Amt: " + without,
+							"Amt: " + without, without };
 				}
 
 				case mcLower: {
