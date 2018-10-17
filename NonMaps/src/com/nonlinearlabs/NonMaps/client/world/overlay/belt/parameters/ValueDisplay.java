@@ -40,11 +40,6 @@ public class ValueDisplay extends Label {
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
-		if (amount > 0)
-			getParent().getValue().inc(Initiator.EXPLICIT_USER_ACTION, fine);
-		else if (amount < 0)
-			getParent().getValue().dec(Initiator.EXPLICIT_USER_ACTION, fine);
-
-		return this;
+		return getParent().wheel(eventPoint, amount, fine);
 	}
 }

@@ -182,6 +182,7 @@ void PresetManager::undoableSelectBank(UNDO::Scope::tTransactionPtr transaction,
 
     if(auto selBank = getSelectedBank())
     {
+      BankChangeBlocker blocker(selBank);
       selBank->undoableEnsurePresetSelection(transaction);
     }
 
