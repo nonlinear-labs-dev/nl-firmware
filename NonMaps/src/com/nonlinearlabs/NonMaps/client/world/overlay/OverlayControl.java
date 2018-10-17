@@ -58,10 +58,6 @@ public abstract class OverlayControl extends Control {
 		myPos.setTop((parentPos.getHeight() - myPos.getHeight()) / 2);
 	}
 
-	static public double getButtonDimension() {
-		return SVGImage.calcSVGDimensionToPixels(28);
-	}
-
 	static public double getSpaceBetweenChildren() {
 		return SVGImage.calcSVGDimensionToPixels(1);
 	}

@@ -20,7 +20,7 @@ public class Setup extends FloatingWindow {
 
 	public void doLayout(double x, double y) {
 		double w = Millimeter.toPixels(110);
-		double lineHeight = getButtonDimension();
+		double lineHeight = Millimeter.toPixels(10);
 
 		if (isHidden()) {
 			super.doLayout(x, y, 0, 0);

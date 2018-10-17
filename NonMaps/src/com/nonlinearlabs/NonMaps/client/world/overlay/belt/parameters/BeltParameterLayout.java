@@ -19,7 +19,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.IncrementalChanger;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
@@ -43,10 +42,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private OverlayControl infoButton;
 	private OverlayControl contextMenu;
 
-	private OverlayControl mcPositionRadioButton;
-	private OverlayControl mcAmountRadioButton;
-	private OverlayControl mcLowerBoundRadioButton;
-	private OverlayControl mcUpperBoundRadioButton;
+	private MCRadioButton mcPositionRadioButton;
+	private MCRadioButton mcAmountRadioButton;
+	private MCRadioButton mcLowerBoundRadioButton;
+	private MCRadioButton mcUpperBoundRadioButton;
 	private ParameterClippingLabel mcUpperClip;
 	private ParameterClippingLabel mcLowerClip;
 
@@ -119,7 +118,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double undoRedoMargin = Millimeter.toPixels(4.5);
 
 		double third = h / 3.0;
-		final double buttonDim = getButtonDimension();
+		final double buttonDim = Millimeter.toPixels(10);
 
 		double editorModeLeft = (Millimeter.toPixels(70) / 4) + (buttonDim / 2);
 		double modSrcDim = Millimeter.toPixels(10);
@@ -141,8 +140,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double upperElementsY = Millimeter.toPixels(0.5);
 
 		double sliderWidth = slider.getRelativePosition().getWidth();
-		double margin = SVGImage.calcSVGDimensionToPixels(5);
-		double modulationButtonWidth = SVGImage.calcSVGDimensionToPixels(57);
+		double margin = Millimeter.toPixels(2.5);
+		double modulationButtonWidth = mcPositionRadioButton.getSelectedImage().getImgWidth();
 
 		HarmonicLayouter layouter = new HarmonicLayouter();
 

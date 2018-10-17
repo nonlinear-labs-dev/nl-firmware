@@ -12,10 +12,7 @@ file(GLOB_RECURSE SOURCE_FILES
   ${NONMAPS_ROOT}/src/*.java)
   
 file (GLOB IMAGES ${NONMAPS_ROOT}/src/com/nonlinearlabs/NonMaps/client/world/overlay/images/*)
-file (COPY ${IMAGES} DESTINATION ./war/images)
-
 file (GLOB MAPS_IMAGES ${NONMAPS_ROOT}/src/com/nonlinearlabs/NonMaps/client/world/maps/images/*)
-file (COPY ${MAPS_IMAGES} DESTINATION ./war/images)
 
 add_custom_command(OUTPUT ${OUTFILE}
   COMMAND /usr/bin/java -Xmx512m -classpath ${NONMAPS_ROOT}/src:${JARSDIR}/gwt-user.jar:${JARSDIR}/gwt-dev.jar com.google.gwt.dev.Compiler -optimize 9 -gen ${OBJDIR} -logLevel WARN -style OBF -war ./war -localWorkers 4 com.nonlinearlabs.NonMaps.NonMaps

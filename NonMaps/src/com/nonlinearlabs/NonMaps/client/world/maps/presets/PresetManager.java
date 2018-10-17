@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
@@ -66,7 +67,7 @@ public class PresetManager extends MapsLayout {
 		List<Bank> ret = new ArrayList<>();
 		for (Control c : getChildren()) {
 			if (c instanceof Bank) {
-				ret.add((Bank)c);
+				ret.add((Bank) c);
 			}
 		}
 		return ret;
@@ -152,33 +153,33 @@ public class PresetManager extends MapsLayout {
 	public void update(Node presetManagerNode) {
 
 		boolean shouldUpdateFilter = false;
-		
+
 		if (ServerProxy.didChange(presetManagerNode)) {
 			readPlaygroundFileVersion(presetManagerNode);
 
 			Preset oldPresetSelection = getSelectedPreset();
 			Preset oldLoadedPreset = getLoadedPreset();
 			NodeList children = presetManagerNode.getChildNodes();
-			
+
 			for (int i = 0; i < children.getLength(); i++) {
 				Node child = children.item(i);
 
 				if (child.getNodeName().equals("banks"))
 					shouldUpdateFilter = updateBanks(child) || shouldUpdateFilter;
 			}
-			
+
 			Preset newPresetSelection = getSelectedPreset();
 			Preset newLoadedPreset = getLoadedPreset();
-			
+
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
 			}
-			
-			if(oldLoadedPreset != newLoadedPreset) {
+
+			if (oldLoadedPreset != newLoadedPreset) {
 				onPresetLoadStatusChanged(newLoadedPreset);
 			}
-			
-			if(shouldUpdateFilter)
+
+			if (shouldUpdateFilter)
 				refreshFilter(false);
 
 			RenameDialog.onPresetManagerUpdate(this);
@@ -199,15 +200,16 @@ public class PresetManager extends MapsLayout {
 		if (PresetInfoDialog.isShown())
 			PresetInfoDialog.update(newPresetSelection);
 
-		if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "preset", "parameter-and-preset"))
+		if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "preset",
+				"parameter-and-preset"))
 			scrollToSelectedPreset();
 
 		if (hasMultiplePresetSelection())
 			closeMultiSelection();
 	}
-	
+
 	public void onPresetLoadStatusChanged(Preset newEditBuffer) {
-		if(PresetInfoDialog.isShown())
+		if (PresetInfoDialog.isShown())
 			PresetInfoDialog.editBufferInfoPage.updateInfo(PresetInfoDialog.getEditBuffer());
 	}
 
@@ -230,7 +232,7 @@ public class PresetManager extends MapsLayout {
 
 	private boolean updateBanks(Node banks) {
 		boolean banksChanged = false;
-		
+
 		clearDockingRelations();
 
 		ArrayList<MapsControl> currentChildren = new ArrayList<MapsControl>();
@@ -257,7 +259,7 @@ public class PresetManager extends MapsLayout {
 
 		if (BankInfoDialog.isShown())
 			BankInfoDialog.update();
-		
+
 		return banksChanged;
 	}
 
@@ -435,7 +437,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void startMultipleRectangle(Position pos) {
-		if(multiSelection == null)
+		if (multiSelection == null)
 			startMultiSelectionEmpty();
 		moveSomeBanks = new MoveSomeBanksLayer(this, pos);
 		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
@@ -479,7 +481,8 @@ public class PresetManager extends MapsLayout {
 			}
 
 			if (hasMultiplePresetSelection()) {
-				getNonMaps().getServerProxy().createNewBankFromPresets(toNonPosition(pos), getMultiSelection().getCSV());
+				getNonMaps().getServerProxy().createNewBankFromPresets(toNonPosition(pos),
+						getMultiSelection().getCSV());
 
 			} else {
 				getNonMaps().getServerProxy().createNewBankFromPreset(toNonPosition(pos), p);
@@ -570,9 +573,11 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_DELETE) {
 			PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
 			PresetContextMenu.deletePresetWithBankModal(pm.hasMultiplePresetSelection(), pm, getSelectedPreset());
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Z
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().undo();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_Y
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().redo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
 			SearchQueryDialog.toggle();
@@ -580,11 +585,13 @@ public class PresetManager extends MapsLayout {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
 			BankInfoDialog.toggle();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I && NonMaps.get().getNonLinearWorld().isCtrlDown() == false) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_I
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown() == false) {
 			ParameterInfoDialog.toggle();
-		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/war/online-help/index.html", "", "");
-		} else if( keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
 		} else {
@@ -740,7 +747,7 @@ public class PresetManager extends MapsLayout {
 			refreshFilter(true);
 		}
 	}
-	
+
 	private void refreshFilter(final boolean autoZoom) {
 		if (this.query.isEmpty()) {
 			clearFilter();
@@ -755,20 +762,21 @@ public class PresetManager extends MapsLayout {
 				fields += f.name();
 			}
 
-			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, fields, new ServerProxy.DownloadHandler() {
+			NonMaps.theMaps.getServerProxy().searchPresets(query, combination, fields,
+					new ServerProxy.DownloadHandler() {
 
-				@Override
-				public void onFileDownloaded(String text) {
-					Document xml = XMLParser.parse(text);
-					Node presetManager = xml.getElementsByTagName("preset-manager").item(0);
-					int numMatches = applyFilter(presetManager, autoZoom);
-					SearchQueryDialog.setMatches(numMatches);
-				}
+						@Override
+						public void onFileDownloaded(String text) {
+							Document xml = XMLParser.parse(text);
+							Node presetManager = xml.getElementsByTagName("preset-manager").item(0);
+							int numMatches = applyFilter(presetManager, autoZoom);
+							SearchQueryDialog.setMatches(numMatches);
+						}
 
-				@Override
-				public void onError() {
-				}
-			});
+						@Override
+						public void onError() {
+						}
+					});
 		}
 
 		if (currentFilterMatch != null)
@@ -885,7 +893,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void zoomToAllFilterMatches() {
-		Boolean setting = Boolean.parseBoolean(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
+		Boolean setting = Boolean
+				.parseBoolean(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
 
 		if (setting) {
 			currentFilterMatch = null;
@@ -904,10 +913,12 @@ public class PresetManager extends MapsLayout {
 				presetsHeight = p.getNonPosition().getHeight();
 			}
 
-			if (minX != Double.MAX_VALUE && minY != Double.MAX_VALUE && maxX != Double.MAX_VALUE && maxY != Double.MAX_VALUE) {
+			if (minX != Double.MAX_VALUE && minY != Double.MAX_VALUE && maxX != Double.MAX_VALUE
+					&& maxY != Double.MAX_VALUE) {
 				NonPosition leftTop = toNonPosition(new Position(minX, minY));
 				NonPosition rightBottom = toNonPosition(new Position(maxX, maxY));
-				NonDimension dim = new NonDimension(rightBottom.getX() - leftTop.getX(), rightBottom.getY() - leftTop.getY());
+				NonDimension dim = new NonDimension(rightBottom.getX() - leftTop.getX(),
+						rightBottom.getY() - leftTop.getY());
 				NonRect r = new NonRect(leftTop, dim);
 
 				double minHeight = 7 * presetsHeight;

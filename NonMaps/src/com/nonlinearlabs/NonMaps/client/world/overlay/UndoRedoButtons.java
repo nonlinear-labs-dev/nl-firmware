@@ -20,8 +20,16 @@ class UndoRedoButtons extends OverlayLayout {
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
 
-		undo.doLayout(0, 0, w / 2, h);
-		redo.doLayout(w / 2, 0, w / 2, h);
+		undo.doLayout(0, 0);
+		redo.doLayout(undo.getRelativePosition().getRight(), 0);
+	}
+
+	public double getWidth() {
+		return 2 * undo.getPhase(0).getImgWidth();
+	}
+
+	public double getHeight() {
+		return undo.getPhase(0).getImgHeight();
 	}
 
 	public void update() {
@@ -73,4 +81,9 @@ class UndoRedoButtons extends OverlayLayout {
 	public Control onContextMenu(Position pos) {
 		return this;
 	}
+
+	public void doLayout(double x, double y) {
+		doLayout(x, y, getWidth(), getHeight());
+	}
+
 }

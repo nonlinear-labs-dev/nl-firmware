@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class LoadButtonArea extends OverlayLayout {
 
@@ -18,28 +17,22 @@ public class LoadButtonArea extends OverlayLayout {
 		addChild(load = new LoadPreset(this));
 	}
 
-	public void doLayout(double x, double y, double h) {
-		double w = getFixedWidth();
+	public void doLayout(double right, double y, double h) {
+		double buttonWidth = load.getSelectedImage().getImgWidth();
+		double buttonHeight = load.getSelectedImage().getImgHeight();
 		double margin = getMargin();
-
-		double buttonWidth = SVGImage.calcSVGDimensionToPixels(36);
-		double buttonHeight = SVGImage.calcSVGDimensionToPixels(34);
+		double w = 2 * buttonWidth + margin;
 
 		bankInfos.doLayout(0, 0, buttonWidth, Millimeter.toPixels(12));
 		prevNext.doLayout(0, Millimeter.toPixels(12), buttonWidth, h - Millimeter.toPixels(12));
-		load.doLayout(prevNext.getRelativePosition().getRight() + margin, Millimeter.toPixels(18), buttonWidth, buttonHeight);
+		load.doLayout(prevNext.getRelativePosition().getRight() + margin, Millimeter.toPixels(18), buttonWidth,
+				buttonHeight);
 
-		super.doLayout(x, y, w, h);
-	}
-
-	static public double getFixedWidth() {
-		double buttonWidth = SVGImage.calcSVGDimensionToPixels(36);
-		double margin = getMargin();
-		return buttonWidth + margin + buttonWidth;
+		super.doLayout(right - w, y, w, h);
 	}
 
 	public static double getMargin() {
-		return getButtonDimension() / 2;
+		return Millimeter.toPixels(2.5);
 	}
 
 	public PrevNextPresetButtons getPrevNext() {

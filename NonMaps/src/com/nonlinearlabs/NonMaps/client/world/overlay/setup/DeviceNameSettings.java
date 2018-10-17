@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -27,7 +28,7 @@ public class DeviceNameSettings extends OverlayLayout implements Renameable {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		double margin = getButtonDimension() / 2;
+		double margin = Millimeter.toPixels(2.5);
 		double elementsWidth = (w - margin);
 		label.doLayout(0, 0, 3 * elementsWidth / 5, h);
 		button.doLayout(label.getRelativePosition().getWidth() + margin, 0, 2 * elementsWidth / 5, h);

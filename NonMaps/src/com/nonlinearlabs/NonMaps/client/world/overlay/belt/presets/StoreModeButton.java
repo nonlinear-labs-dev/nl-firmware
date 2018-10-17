@@ -11,7 +11,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 public class StoreModeButton extends SVGImage {
 
 	public StoreModeButton(OverlayLayout parent) {
-		super(parent, "StoreMode_Enabled.svg", "StoreMode_Active.svg", "StoreMode_Disabled.svg");
+		super(parent, "Select_Enabled.svg", "Select_Active.svg", "Select_Disabled.svg");
 	}
 
 	private PresetManager getPresetManager() {

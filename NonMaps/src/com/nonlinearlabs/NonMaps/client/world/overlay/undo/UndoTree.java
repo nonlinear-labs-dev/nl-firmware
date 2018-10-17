@@ -90,7 +90,7 @@ public class UndoTree extends OverlayLayout implements TransitionDamper.Client {
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		double buttonDim = getButtonDimension() * 0.75;
+		double buttonDim = Millimeter.toPixels(7.5);
 		double scrollbarDim = getScrollbarDimension();
 
 		if (w != 0 && h != 0) {
@@ -395,7 +395,8 @@ public class UndoTree extends OverlayLayout implements TransitionDamper.Client {
 
 				if (predecessorsRect != null) {
 					drawSpline(ctx,
-							new Position(predecessorsRect.getCenterPoint().getX(), predecessorsRect.getBottom() - splineHeight / 2),
+							new Position(predecessorsRect.getCenterPoint().getX(),
+									predecessorsRect.getBottom() - splineHeight / 2),
 							new Position(rect.getCenterPoint().getX(), rect.getTop() + splineHeight / 2));
 				}
 			}

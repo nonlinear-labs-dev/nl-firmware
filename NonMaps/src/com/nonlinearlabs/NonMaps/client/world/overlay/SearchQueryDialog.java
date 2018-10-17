@@ -11,14 +11,11 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -32,7 +29,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonRect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager.SearchQueryFields;
@@ -174,10 +170,11 @@ public class SearchQueryDialog extends GWTDialog {
 		rootPanel.add(createButtonPanel());
 		setWidget(rootPanel);
 	}
-		
+
 	private FlowPanel createSpacer() {
 		FlowPanel dividerPanel = new FlowPanel();
-		HTML html = new HTML("<hr  style=\"width:98%;border: 0;height: 1px;background: #a5a5a5;background-image: linear-gradient(to right, #a5a5a5,#a5a5a5,#a5a5a5);\" />");
+		HTML html = new HTML(
+				"<hr  style=\"width:98%;border: 0;height: 1px;background: #a5a5a5;background-image: linear-gradient(to right, #a5a5a5,#a5a5a5,#a5a5a5);\" />");
 		dividerPanel.add(html);
 		return dividerPanel;
 	}
@@ -194,9 +191,12 @@ public class SearchQueryDialog extends GWTDialog {
 		comment.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.comment));
 		deviceName.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.devicename));
 
-		name.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(name, theFieldManager));
-		comment.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(comment, theFieldManager));
-		deviceName.addValueChangeHandler((ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(deviceName, theFieldManager));
+		name.addValueChangeHandler(
+				(ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(name, theFieldManager));
+		comment.addValueChangeHandler(
+				(ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(comment, theFieldManager));
+		deviceName.addValueChangeHandler(
+				(ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(deviceName, theFieldManager));
 
 		name.addClickHandler(new ClickHandler() {
 
@@ -238,7 +238,7 @@ public class SearchQueryDialog extends GWTDialog {
 		zoomToAllMatches.getElement().addClassName("auto-zoom");
 		Boolean b = Boolean.valueOf(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
 		zoomToAllMatches.setValue(b);
-		
+
 		zoomToAllMatches.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -249,11 +249,11 @@ public class SearchQueryDialog extends GWTDialog {
 					zoomToAll();
 			}
 		});
-		
+
 		zoomPanel.add(zoomToAllMatches);
 		return zoomPanel;
 	}
-	
+
 	private FlowPanel createButtonPanel() {
 		FlowPanel buttonPanel = new FlowPanel();
 		Button nextMatch = new Button("Next");
@@ -273,10 +273,10 @@ public class SearchQueryDialog extends GWTDialog {
 				highlightNextMatch();
 			}
 		});
-		
+
 		previousMatch.getElement().addClassName("previous-button");
 		nextMatch.getElement().addClassName("next-button");
-		
+
 		buttonPanel.add(previousMatch);
 		buttonPanel.add(nextMatch);
 		return buttonPanel;
@@ -296,7 +296,8 @@ public class SearchQueryDialog extends GWTDialog {
 			public void onMouseDown(MouseDownEvent event) {
 				double x = event.getRelativeX(nameField.getElement());
 				double w = nameField.getElement().getClientWidth();
-				double activeAreaWidth = Millimeter.toPixels(10) / (NonMaps.getPixelFactor() * NonMaps.devicePixelRatio);
+				double activeAreaWidth = Millimeter.toPixels(10)
+						/ (NonMaps.getPixelFactor() * NonMaps.devicePixelRatio);
 
 				if (x > (w - activeAreaWidth)) {
 					nameField.setText("");
@@ -327,7 +328,8 @@ public class SearchQueryDialog extends GWTDialog {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().setSearchQueryCombination(PresetManager.SearchQueryCombination.AND);
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
+						.setSearchQueryCombination(PresetManager.SearchQueryCombination.AND);
 			}
 		});
 
@@ -335,16 +337,15 @@ public class SearchQueryDialog extends GWTDialog {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().setSearchQueryCombination(PresetManager.SearchQueryCombination.OR);
+				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
+						.setSearchQueryCombination(PresetManager.SearchQueryCombination.OR);
 			}
 		});
 
-		and.setValue(
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSearchQueryCombination() == PresetManager.SearchQueryCombination.AND,
-				false);
-		or.setValue(
-				NonMaps.theMaps.getNonLinearWorld().getPresetManager().getSearchQueryCombination() == PresetManager.SearchQueryCombination.OR,
-				false);
+		and.setValue(NonMaps.theMaps.getNonLinearWorld().getPresetManager()
+				.getSearchQueryCombination() == PresetManager.SearchQueryCombination.AND, false);
+		or.setValue(NonMaps.theMaps.getNonLinearWorld().getPresetManager()
+				.getSearchQueryCombination() == PresetManager.SearchQueryCombination.OR, false);
 
 		panel.add(and);
 		panel.add(or);

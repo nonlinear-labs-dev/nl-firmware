@@ -24,7 +24,7 @@ public class SetupPages extends OverlayLayout {
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		double lineHeight = getButtonDimension();
+		double lineHeight = Millimeter.toPixels(10);
 		header.doLayout(0, 0, w, lineHeight);
 
 		for (SetupPage p : pages)
@@ -91,7 +91,7 @@ public class SetupPages extends OverlayLayout {
 
 		ctx.closePath();
 
-		ctx.setFillStyle(new RGB(32,32,32).toString());
+		ctx.setFillStyle(new RGB(32, 32, 32).toString());
 		ctx.fill();
 
 		ctx.setLineWidth(Millimeter.toPixels(0.25));

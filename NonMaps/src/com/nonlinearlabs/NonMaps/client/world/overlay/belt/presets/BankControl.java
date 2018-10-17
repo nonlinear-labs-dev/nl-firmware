@@ -17,7 +17,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class BankControl extends OverlayLayout implements IBank {
 
@@ -93,10 +92,9 @@ public class BankControl extends OverlayLayout implements IBank {
 
 		super.doLayout(x, y, w, h);
 
-		double headerHeight = SVGImage.calcSVGDimensionToPixels(24);
 		double border = getSpaceBetweenChildren() * 2;
 
-		header.doLayout(border, border, w - 2 * border, headerHeight);
+		header.doLayout(border, border, w - 2 * border);
 
 		double listTop = header.getRelativePosition().getBottom() + getSpaceBetweenChildren();
 

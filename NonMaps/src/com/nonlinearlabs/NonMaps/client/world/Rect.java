@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.world;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class Rect extends Object {
 	private final Position pos = new Position();
@@ -118,7 +117,8 @@ public class Rect extends Object {
 	}
 
 	public boolean contains(Position pos) {
-		return getLeft() <= pos.getX() && getRight() >= pos.getX() && getTop() <= pos.getY() && getBottom() >= pos.getY();
+		return getLeft() <= pos.getX() && getRight() >= pos.getX() && getTop() <= pos.getY()
+				&& getBottom() >= pos.getY();
 	}
 
 	public void setDimension(Dimension dim) {
@@ -334,11 +334,11 @@ public class Rect extends Object {
 	}
 
 	public void drawValueEditSliderBackgound(Context2d ctx, boolean withArrows, RGB arrowColor) {
-		drawRoundedArea(ctx, getHeight() / 2, SVGImage.calcSVGDimensionToPixels(1), new Gray(68), new Gray(86));
+		drawRoundedArea(ctx, getHeight() / 2, 1, new Gray(68), new Gray(86));
 
 		if (withArrows) {
 			ctx.setStrokeStyle(arrowColor.toString());
-			ctx.setLineWidth(SVGImage.calcSVGDimensionToPixels(1));
+			ctx.setLineWidth(1);
 			ctx.setLineCap(LineCap.SQUARE);
 			ctx.setLineJoin(LineJoin.MITER);
 			double arrowWidth = getHeight() / 4;
@@ -382,5 +382,9 @@ public class Rect extends Object {
 		Rect a = copy();
 		a.moveBy(offset.getWidth(), offset.getHeight());
 		return a;
+	}
+
+	public void round() {
+		pos.round();
 	}
 }
