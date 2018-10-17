@@ -43,11 +43,6 @@ public class Sliders extends OverlayLayout {
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
-		if (amount > 0)
-			getParameter().inc(fine);
-		else if (amount < 0)
-			getParameter().dec(fine);
-
-		return this;
+		return getParent().wheel(eventPoint, amount, fine);
 	}
 }
