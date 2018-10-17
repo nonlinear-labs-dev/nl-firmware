@@ -383,4 +383,8 @@ public class Rect extends Object {
 		a.moveBy(offset.getWidth(), offset.getHeight());
 		return a;
 	}
+
+	public void round() {
+		pos.round();
+	}
 }

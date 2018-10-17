@@ -91,7 +91,7 @@ public class SVGImagePhase extends OverlayControl {
 		Rect newPos = getRelativePosition().copy();
 		double w = Millimeter.toPixels(imgWidthInMM);
 		double h = Millimeter.toPixels(imgHeightInMM);
-
+		newPos.round();
 		newPos.setWidth(w);
 		newPos.setHeight(h);
 		newPos.getPosition().moveBy(parentsReference);
