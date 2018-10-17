@@ -17,10 +17,10 @@ public class PresetBeltLayouterXS extends PresetBeltLayouter {
 		double right = w - margin;
 
 		layout.store.doLayout(left, 0, h);
-		left += layout.store.getRelativePosition().getWidth() + margin;
+		left += layout.store.getRelativePosition().getWidth();
 
 		layout.load.doLayout(right, 0, h);
-		right -= layout.load.getRelativePosition().getWidth() + margin;
+		right -= layout.load.getRelativePosition().getWidth();
 
 		double bankWidth = right - left;
 		if (bankWidth < getMinBankControlWidth())

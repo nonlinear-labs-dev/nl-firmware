@@ -50,6 +50,7 @@ public class BankControl extends OverlayLayout implements IBank {
 	private PresetSelectionRectangle selRectangle;
 	private PresetList presets;
 	private EmptyBeltPreset emptyLabel;
+	private static double inset = 4;
 
 	BankControl(OverlayLayout parent) {
 		super(parent);
@@ -62,10 +63,9 @@ public class BankControl extends OverlayLayout implements IBank {
 	public void draw(Context2d ctx, int invalidationMask) {
 		Rect r = getPixRect();
 		RGB black = new Gray(0);
-		double border = getSpaceBetweenChildren();
-		r.drawRoundedArea(ctx, border, 1, new Gray(102), black);
-		r = r.getReducedBy(8);
-		r.drawRoundedArea(ctx, border, 0, black, black);
+		r.drawRoundedArea(ctx, 0, 1, new Gray(102), black);
+		r = r.getReducedBy(2 * inset);
+		r.drawRoundedArea(ctx, 0, 0, black, black);
 		super.draw(ctx, invalidationMask);
 	}
 
@@ -91,21 +91,19 @@ public class BankControl extends OverlayLayout implements IBank {
 			w = 0;
 
 		super.doLayout(x, y, w, h);
+		header.doLayout(inset, inset, w - 2 * inset);
 
-		double border = getSpaceBetweenChildren() * 2;
+		double listTop = header.getRelativePosition().getBottom();
 
-		header.doLayout(border, border, w - 2 * border);
-
-		double listTop = header.getRelativePosition().getBottom() + getSpaceBetweenChildren();
-
-		presets.doLayout(border, listTop, w - 2 * border, h - listTop - border);
-
-		double emptyLabelHeight = (h - listTop - border) / 3;
+		presets.doLayout(inset, listTop, w - 2 * inset, h - listTop - inset);
+		double emptyLabelHeight = (h - listTop) / 3;
 
 		if (emptyLabel != null)
-			emptyLabel.doLayout(border / 2, listTop / 2 + emptyLabelHeight / 2, w - 2 * border, emptyLabelHeight);
+			emptyLabel.doLayout(inset, listTop + presets.getRelativePosition().getHeight() / 2 - emptyLabelHeight / 2,
+					w - 2 * inset, emptyLabelHeight);
 
-		selRectangle.doLayout(0, 0, w - 2 * border, presets.getPixRect().getHeight() / 3 - border / 3);
+		selRectangle.doLayout(0, 0, w - 2 * inset, presets.getPixRect().getHeight() / 3);
+
 	}
 
 	@Override

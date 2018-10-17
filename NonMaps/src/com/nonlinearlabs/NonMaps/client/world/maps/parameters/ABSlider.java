@@ -19,6 +19,15 @@ public class ABSlider extends SliderVertical {
 		Rect pixRect = getPixRect();
 		Rect sliderRect = getSliderRect();
 
+		ctx.beginPath();
+		ctx.setStrokeStyle(RGB.black().toString());
+
+		double handleHeight = toYPixels(getHandleHeight());
+		double value = sliderRect.getTop() + handleHeight / 2 + getValue() * (sliderRect.getHeight() - handleHeight);
+		ctx.moveTo(sliderRect.getLeft(), value);
+		ctx.lineTo(sliderRect.getRight(), value);
+		ctx.stroke();
+
 		double fontHeightInUnits = getFontHeight();
 		double fontHeightInPixels = toYPixels(fontHeightInUnits);
 
@@ -51,6 +60,6 @@ public class ABSlider extends SliderVertical {
 
 	@Override
 	protected double getHandleHeight() {
-		return super.getHandleHeight() * 3;
+		return super.getHandleHeight() * 5;
 	}
 }

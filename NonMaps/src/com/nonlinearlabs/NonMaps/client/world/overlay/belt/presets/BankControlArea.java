@@ -11,13 +11,13 @@ public class BankControlArea extends OverlayLayout {
 	public BankControlArea(OverlayLayout parent) {
 		super(parent);
 		addChild(bank = new BankControl(this));
-		bank.setHeaderTitleFontHeightInMM(5);
 	}
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		final double bankMargin = Millimeter.toPixels(2.5);
-		bank.doLayout(0, bankMargin, w, h - 2 * bankMargin);
+		final double xBankMargin = 0;
+		final double yBankMargin = Millimeter.toPixels(2.5);
+		bank.doLayout(xBankMargin, yBankMargin, w - 2 * xBankMargin, h - 2 * yBankMargin);
 		super.doLayout(x, y, bank.getRelativePosition().getWidth(), h);
 	}
 

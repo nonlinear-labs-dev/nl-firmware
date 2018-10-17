@@ -17,10 +17,10 @@ public class PresetBeltLayouterS extends PresetBeltLayouter {
 		double autoLoadWidth = layout.autoLoad.getSelectedImage().getImgWidth();
 
 		layout.store.doLayout(left, 0, h);
-		left += layout.store.getRelativePosition().getWidth() + margin;
+		left += layout.store.getRelativePosition().getWidth();
 
 		layout.autoLoad.doLayout(right - autoLoadWidth, 0, autoLoadWidth, h);
-		right -= autoLoadWidth + margin;
+		right -= autoLoadWidth;
 
 		layout.load.doLayout(right, 0, h);
 		right -= layout.load.getRelativePosition().getWidth() + margin;

@@ -46,7 +46,8 @@ class MenuArea extends OverlayLayout {
 		OverlayControl info;
 		OverlayControl search;
 
-		public MenuAndInfo(OverlayLayout parent, MenuLabel label, OverlayControl btn, OverlayControl info, OverlayControl search) {
+		public MenuAndInfo(OverlayLayout parent, MenuLabel label, OverlayControl btn, OverlayControl info,
+				OverlayControl search) {
 			super(parent);
 
 			this.label = label;
@@ -141,28 +142,30 @@ class MenuArea extends OverlayLayout {
 					@Override
 					public int getSelectedPhase() {
 						if (hasPreset())
-							return PresetInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
+							return PresetInfoDialog.isShown() ? drawStates.active.ordinal()
+									: drawStates.normal.ordinal();
 						else
 							return drawStates.disabled.ordinal();
 					}
 				}, new MenuAreaSearchButton(this)));
 
-		banks = addChild(new MenuAndInfo(this, new MenuLabel(this, "Bank"), new MenuAreaBankButton(this), new MenuAreaInfoButton(this) {
+		banks = addChild(new MenuAndInfo(this, new MenuLabel(this, "Bank"), new MenuAreaBankButton(this),
+				new MenuAreaInfoButton(this) {
 
-			@Override
-			public void toggle() {
-				if (hasBank())
-					BankInfoDialog.toggle();
-			}
+					@Override
+					public void toggle() {
+						if (hasBank())
+							BankInfoDialog.toggle();
+					}
 
-			@Override
-			public int getSelectedPhase() {
-				if (hasBank())
-					return BankInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
-				else
-					return drawStates.disabled.ordinal();
-			}
-		}, null));
+					@Override
+					public int getSelectedPhase() {
+						if (hasBank())
+							return BankInfoDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
+						else
+							return drawStates.disabled.ordinal();
+					}
+				}, null));
 	}
 
 	@Override
@@ -175,7 +178,8 @@ class MenuArea extends OverlayLayout {
 		double margin = getMargin();
 		presets.doLayout(margin, 0, h / 2, withLabels);
 		banks.doLayout(margin, h / 2, h / 2, withLabels);
-		double contentWidth = Math.max(presets.getRelativePosition().getWidth(), banks.getRelativePosition().getWidth());
+		double contentWidth = Math.max(presets.getRelativePosition().getWidth(),
+				banks.getRelativePosition().getWidth());
 		super.doLayout(x, y, margin + margin + contentWidth, h);
 	}
 
@@ -188,7 +192,7 @@ class MenuArea extends OverlayLayout {
 	}
 
 	public double getMargin() {
-		return getSmallButtonWidth() / 3;
+		return getSmallButtonWidth() / 8;
 	}
 
 	public double getLabelWidth() {
@@ -197,7 +201,7 @@ class MenuArea extends OverlayLayout {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(2), Millimeter.toPixels(1), new Gray(16), null);
+		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(1), new Gray(16), null);
 		super.draw(ctx, invalidationMask);
 	}
 }

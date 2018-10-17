@@ -25,7 +25,7 @@ class DirectLoadButton extends SVGImage {
 	public void doLayout(double x, double y, double w, double h) {
 		double imgHeight = getSelectedImage().getImgHeight();
 		y = (h - imgHeight) / 2;
-		y += Millimeter.toPixels(4.5);
+		y += Millimeter.toPixels(3);
 		h = imgHeight;
 		super.doLayout(x, y, w, h);
 	}
