@@ -498,6 +498,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 					String without = p.getDecoratedValue(false, mod.getRight());
 					return new String[] { clip + "Upper Limit: " + with, clip + "Upper Limit: " + without,
 							clip + "Upper: " + without, clip + "Up: " + without, clip + without };
+
 				}
 
 				case mcValue: {

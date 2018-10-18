@@ -3,8 +3,8 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.Sour
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationRoutingParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterEditor;

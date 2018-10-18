@@ -1,4 +1,6 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.setup;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
 
 public class DeviceInfomation {
 	private static DeviceInfomation theInstance = new DeviceInfomation();

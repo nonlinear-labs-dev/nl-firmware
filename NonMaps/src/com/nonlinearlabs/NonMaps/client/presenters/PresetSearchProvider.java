@@ -3,8 +3,8 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch.SearchQueryCombination;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 
 public class PresetSearchProvider {
 	public static PresetSearchProvider theInstance = new PresetSearchProvider();
@@ -78,8 +78,8 @@ public class PresetSearchProvider {
 		});
 	}
 
-	public com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch getModel() {
-		return com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch.get();
+	public com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch getModel() {
+		return com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.get();
 	}
 
 	protected void notifyClients() {

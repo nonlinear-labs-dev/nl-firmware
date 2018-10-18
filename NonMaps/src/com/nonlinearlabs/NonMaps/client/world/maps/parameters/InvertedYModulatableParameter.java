@@ -1,7 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.EditParameter;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;

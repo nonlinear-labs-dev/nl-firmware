@@ -13,7 +13,7 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
-import com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;

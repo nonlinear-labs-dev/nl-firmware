@@ -1,9 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.presenters;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.BasicParameterModel;
-import com.nonlinearlabs.NonMaps.client.dataModel.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.Notifier;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();

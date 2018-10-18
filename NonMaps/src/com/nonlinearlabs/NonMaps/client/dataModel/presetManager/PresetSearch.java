@@ -1,6 +1,10 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.presetManager;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.BooleanDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.StringSetDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 
 public class PresetSearch {
 

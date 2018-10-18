@@ -1,5 +1,6 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
+import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
 
 public class ParameterGroup {
 	private static ParameterFactory factory = new ParameterFactory();

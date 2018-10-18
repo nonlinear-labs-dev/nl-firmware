@@ -7,9 +7,9 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch.SearchQueryCombination;
-import com.nonlinearlabs.NonMaps.client.dataModel.PresetSearchUpdater;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearchUpdater;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
@@ -17,8 +17,8 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 public class PresetSearch {
 	private static PresetSearch theSearch = new PresetSearch();
 
-	private com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch getModel() {
-		return com.nonlinearlabs.NonMaps.client.dataModel.PresetSearch.get();
+	private com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch getModel() {
+		return com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.get();
 	}
 
 	public static PresetSearch get() {

@@ -1,7 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.dataModel;
 
 import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 
 public class ValueUpdater extends Updater {
 	private ValueDataModelEntity target;

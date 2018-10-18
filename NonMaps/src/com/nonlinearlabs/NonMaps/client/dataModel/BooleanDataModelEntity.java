@@ -1,6 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.dataModel;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 
 public class BooleanDataModelEntity extends EnumDataModelEntity<BooleanValues> {
 	public BooleanDataModelEntity() {

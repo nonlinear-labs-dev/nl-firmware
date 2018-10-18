@@ -1,15 +1,19 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.setup;
 
 import java.util.HashMap;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.dataModel.DataModelEntityBase;
+import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueUpdater;
 
 public class SetupUpdater extends Updater {
-	private Node firstSetting;
+	private Node settings;
 	private final HashMap<String, DataModelEntityBase> xmlNodeNameToSetting = createSettingMap();
 
-	public SetupUpdater(Node setting) {
-		firstSetting = setting;
+	public SetupUpdater(Node settings) {
+		this.settings = settings;
 	}
 
 	private HashMap<String, DataModelEntityBase> createSettingMap() {
@@ -49,7 +53,7 @@ public class SetupUpdater extends Updater {
 	}
 
 	public void doUpdate() {
-		Node setting = firstSetting;
+		Node setting = settings.getFirstChild();
 
 		while (setting != null) {
 			if (setting.getNodeType() == Node.ELEMENT_NODE) {

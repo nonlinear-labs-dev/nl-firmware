@@ -4,9 +4,9 @@ import java.util.Date;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 
-class DateDataModelEntity extends DataModelEntity<Date> {
+public class DateDataModelEntity extends DataModelEntity<Date> {
 
-	DateDataModelEntity() {
+	public DateDataModelEntity() {
 		super(new Date());
 	}
 

@@ -1,13 +1,13 @@
 package com.nonlinearlabs.NonMaps.client.useCases;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.AftertouchCurve;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BenderCurve;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.BooleanValues;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.DebugLevel;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.PedalType;
-import com.nonlinearlabs.NonMaps.client.dataModel.Setup.VelocityCurve;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.AftertouchCurve;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BenderCurve;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.DebugLevel;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.PedalType;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.VelocityCurve;
 
 public class SystemSettings {
 	private static SystemSettings theInstance = new SystemSettings();

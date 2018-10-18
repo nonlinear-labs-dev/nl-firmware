@@ -1,4 +1,10 @@
-package com.nonlinearlabs.NonMaps.client.dataModel;
+package com.nonlinearlabs.NonMaps.client.dataModel.setup;
+
+import com.nonlinearlabs.NonMaps.client.dataModel.BooleanDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 
 public class Setup {
 
