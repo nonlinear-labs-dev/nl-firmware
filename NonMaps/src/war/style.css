@@ -686,8 +686,6 @@ input[type="radio"] {
 input[type="text"] {
 	-moz-appearance: none;
 	-webkit-appearance: none;
-	color: #ff0;
-	background-color: #999;
 }	
 
 /*****************************/
@@ -706,8 +704,8 @@ textarea {
 	padding: 0.4em 0.6em;
 	resize: none;
 	outline: none;
-	background-color: #131827;
-	border: 1px solid #353B54;
+	background-color: #141414;
+	border: 1px solid #575757;
 }	
 
 .txt-area {
@@ -737,14 +735,21 @@ textarea {
 }
 
 textarea + button.reset {
-  width: 20px;
+  width: 25px;
   height: 27px;
-  min-width: 20px;
+  min-width: 25px;
   margin-left: -28px;
   border:none;
   outline:none;
  	background:
 		url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9Ijk1JSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0iZW5kIiBoZWlnaHQ9IjEwMCUiIGFsaWdubWVudC1iYXNlbGluZT0iY2VudHJhbCIgZm9udC1zaXplPSIxMDAlIiBmaWxsPSIjYzJjMmMyIj7ijKs8L3RleHQ+PC9zdmc+');
+}
+
+textarea + button.reset:active {
+  border:none;
+  outline:none;
+  background:
+    url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9Ijk1JSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0iZW5kIiBoZWlnaHQ9IjEwMCUiIGFsaWdubWVudC1iYXNlbGluZT0iY2VudHJhbCIgZm9udC1zaXplPSIxMDAlIiBmaWxsPSIjYzJjMmMyIj7ijKs8L3RleHQ+PC9zdmc+');
 }
 
 /*****************************/

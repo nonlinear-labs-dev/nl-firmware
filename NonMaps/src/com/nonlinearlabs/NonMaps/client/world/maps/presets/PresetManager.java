@@ -164,9 +164,6 @@ public class PresetManager extends MapsLayout {
 				onPresetLoadStatusChanged(newLoadedPreset);
 			}
 
-			if (shouldUpdateFilter)
-				refreshFilter(false);
-
 			RenameDialog.onPresetManagerUpdate(this);
 		}
 	}

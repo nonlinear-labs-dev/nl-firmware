@@ -1381,12 +1381,10 @@ input[type="checkbox"] {
 
 input[type="checkbox"]+label {
   display: inline-block;
-  margin: 5px 5px 5px 4px;
   vertical-align: middle;
   background: url("checkbox-unchecked.png") left center no-repeat;
   background-origin: padding-box;
   cursor: pointer;
-  padding-left: 25px;
   color: #bbb;
 }
 
@@ -1400,16 +1398,9 @@ input[type="radio"] {
 
 input[type="radio"]+label {
   display: inline-block;
-  margin: 5px 5px 5px 0px;
   vertical-align: middle;
-  background: url("radiobox-unchecked.png") left center no-repeat;
   cursor: pointer;
-  padding-left: 20px;
   color: #bbb;
-}
-
-input[type="radio"]:checked+label {
-  background: url("radiobox-checked.png") left top no-repeat;
 }
 
 .serverResponseLabelError {
@@ -1501,10 +1492,6 @@ textarea {
   background: #141414;
   border-radius: 3px;
   display: block;
-  min-width: 230px;
-  max-width: 350px;
-  min-height: 3.1em;
-  max-height: 350px;
 }
 
 .modal-dialog {
