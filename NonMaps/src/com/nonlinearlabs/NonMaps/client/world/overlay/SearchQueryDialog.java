@@ -187,6 +187,8 @@ public class SearchQueryDialog extends GWTDialog {
 
 		theFieldManager = new SearchFieldManager(name, comment, deviceName);
 
+		name.getElement().addClassName("name-box-search-dialog");
+		
 		name.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.name));
 		comment.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.comment));
 		deviceName.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.devicename));
@@ -234,7 +236,7 @@ public class SearchQueryDialog extends GWTDialog {
 
 	private FlowPanel createZoomPanel() {
 		FlowPanel zoomPanel = new FlowPanel();
-		CheckBox zoomToAllMatches = new CheckBox("Zoom to all matches");
+		CheckBox zoomToAllMatches = new CheckBox("Zoom to all Matches");
 		zoomToAllMatches.getElement().addClassName("auto-zoom");
 		Boolean b = Boolean.valueOf(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
 		zoomToAllMatches.setValue(b);
@@ -274,6 +276,7 @@ public class SearchQueryDialog extends GWTDialog {
 			}
 		});
 
+		buttonPanel.getElement().addClassName("prev-next-button-div");
 		previousMatch.getElement().addClassName("previous-button");
 		nextMatch.getElement().addClassName("next-button");
 
@@ -324,6 +327,8 @@ public class SearchQueryDialog extends GWTDialog {
 		RadioButton and = new RadioButton("AndOr", "AND");
 		RadioButton or = new RadioButton("AndOr", "OR");
 
+		and.getElement().addClassName("and-label-search-dialog");
+		
 		and.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
 			@Override
@@ -405,11 +410,11 @@ public class SearchQueryDialog extends GWTDialog {
 
 	public void updateMatches(int i) {
 		if (i == 0)
-			matches.setText("No matches.");
+			matches.setText("No Matches");
 		else if (i == 1)
-			matches.setText("One match.");
+			matches.setText("One Match");
 		else
-			matches.setText(i + " matches.");
+			matches.setText(i + " Matches");
 	}
 
 	public static void setMatches(int i) {
