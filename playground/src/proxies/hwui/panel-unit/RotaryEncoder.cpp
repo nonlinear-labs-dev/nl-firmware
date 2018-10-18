@@ -83,7 +83,7 @@ int64_t RotaryEncoder::resetOldestPendingTimestamp()
   return std::exchange(m_oldestPendingTimestamp, 0);
 }
 
-sigc::connection RotaryEncoder::onRotaryChanged(function<void(tIncrement)> slot)
+sigc::connection RotaryEncoder::onRotaryChanged(slot<void, tIncrement> slot)
 {
   return m_signalRotaryChanged.connect(slot);
 }

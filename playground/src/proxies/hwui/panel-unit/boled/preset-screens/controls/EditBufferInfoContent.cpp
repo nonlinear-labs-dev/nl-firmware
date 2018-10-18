@@ -2,21 +2,26 @@
 #include <tools/TimeTools.h>
 #include "EditBufferInfoContent.h"
 
-EditBufferInfoContent::EditBufferInfoContent () : InfoContent() {
+EditBufferInfoContent::EditBufferInfoContent()
+    : InfoContent()
+{
   addInfoField("name", "Name", new MultiLineContent());
   addInfoField("comment", "Comment", new MultiLineContent());
   addInfoField("lastchange", "Last Change");
   addInfoField("uiversion", "UI Version");
 
-  Application::get().getPresetManager()->getEditBuffer()->onPresetChanged(
-          mem_fun(this, &EditBufferInfoContent::onEditBufferChanged));
+  fillDefaults();
+
+  Application::get().getPresetManager()->getEditBuffer()->onChange(
+      mem_fun(this, &EditBufferInfoContent::onEditBufferChanged));
 }
 
-EditBufferInfoContent::~EditBufferInfoContent () {
-
+EditBufferInfoContent::~EditBufferInfoContent()
+{
 }
 
-void EditBufferInfoContent::fixLayout() {
+void EditBufferInfoContent::fixLayout()
+{
   int y = 0;
 
   for(auto infoKey : { "name", "comment", "lastchange", "uiversion" })
@@ -29,7 +34,9 @@ void EditBufferInfoContent::fixLayout() {
   super::setPosition(r);
 }
 
-bool EditBufferInfoContent::fillFromEditBuffer (const EditBuffer *eb) {
+bool EditBufferInfoContent::fillFromEditBuffer()
+{
+  auto eb = getEditBuffer();
   infoFields["name"]->setInfo(eb->getName(), FrameBuffer::Colors::C128);
   infoFields["comment"]->setInfo(eb->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(eb->getAttribute("StoreTime", "---")));
@@ -37,36 +44,23 @@ bool EditBufferInfoContent::fillFromEditBuffer (const EditBuffer *eb) {
   return true;
 }
 
-bool EditBufferInfoContent::fillDefaults()
+void EditBufferInfoContent::fillDefaults()
 {
   infoFields["name"]->setInfo("---", FrameBuffer::Colors::C128);
   infoFields["comment"]->setInfo("---", FrameBuffer::Colors::C128);
   infoFields["lastchange"]->setInfo("---");
   infoFields["uiversion"]->setInfo("---");
-  return true;
 }
 
-EditBuffer *EditBufferInfoContent::getCurrentEditBuffer () {
+EditBuffer *EditBufferInfoContent::getEditBuffer()
+{
   return Application::get().getPresetManager()->getEditBuffer().get();
 }
 
-void EditBufferInfoContent::onEditBufferChanged() {
-  if(auto eb = getCurrentEditBuffer())
-  {
-    connectToEditBuffer(eb);
-  }
-  else if(fillDefaults())
+void EditBufferInfoContent::onEditBufferChanged()
+{
+  if(fillFromEditBuffer())
   {
     fixLayout();
-    return;
   }
-
-  if(fillFromEditBuffer(getCurrentEditBuffer())) {
-    fixLayout();
-  }
-}
-void EditBufferInfoContent::connectToEditBuffer (EditBuffer* eb) {
-  m_editBufferConnection.disconnect();
-  m_editBufferConnection = eb->onChange(mem_fun(this, &EditBufferInfoContent::onEditBufferChanged));
-
 }
