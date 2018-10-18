@@ -11,7 +11,7 @@ public class PresetManager {
 		return thePresetManager;
 	}
 
-	BankMapDataModelEntity getBanks() {
+	public BankMapDataModelEntity getBanks() {
 		return banks;
 	}
 }

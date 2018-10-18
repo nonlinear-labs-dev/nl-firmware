@@ -17,12 +17,12 @@ public class DeviceInfoUpdater extends Updater {
 	private HashMap<String, DataModelEntityBase> createSettingMap() {
 		HashMap<String, DataModelEntityBase> m = new HashMap<String, DataModelEntityBase>();
 
-		m.put("free-disc-space", DeviceInfomation.get().freeDiscSpace);
-		m.put("software-version", DeviceInfomation.get().softwareVersion);
-		m.put("rt-software-version", DeviceInfomation.get().rtSoftwareVersion);
-		m.put("os-version", DeviceInfomation.get().osVersion);
-		m.put("date-time", DeviceInfomation.get().dateTime);
-		m.put("date-time-display", DeviceInfomation.get().dateTimeDisplay);
+		m.put("free-disc-space", DeviceInformation.get().freeDiscSpace);
+		m.put("software-version", DeviceInformation.get().softwareVersion);
+		m.put("rt-software-version", DeviceInformation.get().rtSoftwareVersion);
+		m.put("os-version", DeviceInformation.get().osVersion);
+		m.put("date-time", DeviceInformation.get().dateTime);
+		m.put("date-time-display", DeviceInformation.get().dateTimeDisplay);
 
 		return m;
 	}

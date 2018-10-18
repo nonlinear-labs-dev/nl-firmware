@@ -3,8 +3,6 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInfomation;
-
 public class DeviceInformationProvider {
 	public static DeviceInformationProvider theInstance = new DeviceInformationProvider();
 
@@ -16,31 +14,31 @@ public class DeviceInformationProvider {
 	private DeviceInformation info = new DeviceInformation();
 
 	private DeviceInformationProvider() {
-		DeviceInfomation.get().freeDiscSpace.onChange(v -> {
+		com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInformation.get().freeDiscSpace.onChange(v -> {
 			info.freeDiscSpace = v;
 			notifyClients();
 			return true;
 		});
 
-		DeviceInfomation.get().softwareVersion.onChange(v -> {
+		com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInformation.get().softwareVersion.onChange(v -> {
 			info.uiVersion = v;
 			notifyClients();
 			return true;
 		});
 
-		DeviceInfomation.get().rtSoftwareVersion.onChange(v -> {
+		com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInformation.get().rtSoftwareVersion.onChange(v -> {
 			info.rtVersion = v;
 			notifyClients();
 			return true;
 		});
 
-		DeviceInfomation.get().osVersion.onChange(v -> {
+		com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInformation.get().osVersion.onChange(v -> {
 			info.osVersion = v;
 			notifyClients();
 			return true;
 		});
 
-		DeviceInfomation.get().dateTimeDisplay.onChange(v -> {
+		com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInformation.get().dateTimeDisplay.onChange(v -> {
 			info.dateTime = v;
 			notifyClients();
 			return true;

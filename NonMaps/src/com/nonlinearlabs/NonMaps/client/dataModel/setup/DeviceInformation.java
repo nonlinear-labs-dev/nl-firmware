@@ -2,10 +2,10 @@ package com.nonlinearlabs.NonMaps.client.dataModel.setup;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
 
-public class DeviceInfomation {
-	private static DeviceInfomation theInstance = new DeviceInfomation();
+public class DeviceInformation {
+	private static DeviceInformation theInstance = new DeviceInformation();
 
-	static public DeviceInfomation get() {
+	static public DeviceInformation get() {
 		return theInstance;
 	}
 
