@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public class RandomizeSoundArea extends OverlayLayout {
@@ -23,7 +24,7 @@ public class RandomizeSoundArea extends OverlayLayout {
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
 
-		double buttonDim = getButtonDimension();
+		double buttonDim = Millimeter.toPixels(10);
 		double margin = buttonDim / 2;
 		double height = 2 * buttonDim + margin;
 		double yPos = (h - height) / 2;

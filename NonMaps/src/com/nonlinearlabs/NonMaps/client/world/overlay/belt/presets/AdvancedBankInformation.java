@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
@@ -24,5 +25,10 @@ public class AdvancedBankInformation extends Label {
 		} else {
 			return "";
 		}
+	}
+
+	@Override
+	protected String crop(Context2d ctx, Rect pixRect, String text) {
+		return text;
 	}
 }

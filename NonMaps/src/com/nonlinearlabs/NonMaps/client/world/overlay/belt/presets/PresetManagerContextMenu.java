@@ -1,6 +1,8 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -17,7 +19,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler;
 
 public class PresetManagerContextMenu extends ContextMenu {
 
@@ -77,7 +78,11 @@ public class PresetManagerContextMenu extends ContextMenu {
 				}
 				final FileUpload upload = new FileUpload();
 				upload.setName("uploadFormElement");
-				upload.getElement().setAttribute("accept", ".xml.tar.gz");
+
+				if(!Navigator.getPlatform().toLowerCase().contains("mac")) {
+					upload.getElement().setAttribute("accept", ".xml.tar.gz");
+				}
+				
 				upload.addChangeHandler(new ChangeHandler() {
 
 					@Override

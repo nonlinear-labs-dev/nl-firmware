@@ -136,6 +136,9 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void update(Node presetManagerNode) {
+
+		boolean shouldUpdateFilter = false;
+
 		if (ServerProxy.didChange(presetManagerNode)) {
 			readPlaygroundFileVersion(presetManagerNode);
 
@@ -160,6 +163,9 @@ public class PresetManager extends MapsLayout {
 			if (oldLoadedPreset != newLoadedPreset) {
 				onPresetLoadStatusChanged(newLoadedPreset);
 			}
+
+			if (shouldUpdateFilter)
+				refreshFilter(false);
 
 			RenameDialog.onPresetManagerUpdate(this);
 		}
@@ -734,7 +740,9 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void zoomToAllFilterMatches() {
+
 		if (PresetSearch.get().zoomToMatches.isTrue() && PresetSearch.get().searchActive.isTrue()) {
+
 			double minX = Double.MAX_VALUE;
 			double minY = Double.MAX_VALUE;
 			double maxX = -Double.MAX_VALUE;

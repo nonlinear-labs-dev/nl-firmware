@@ -113,7 +113,7 @@ char Ribbon::getLEDStateForBipolarValue(int led, tDisplayValue v) const
   constexpr auto center = NUM_LEDS_PER_RIBBON / 2;
 
   if(led == center)
-    return handleCenter(v);
+    return 3;
 
   bool ledIsOnLeftHalf = led < center;
   bool valueIsOnLeftHalf = v < 0.0;

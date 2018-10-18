@@ -23,7 +23,7 @@ class BankInfoContent : public InfoContent
     void setDirty() override;
 
   private:
-    void onBankSelectionChanged (shared_ptr<PresetBank> bank);
+    void onBankSelectionChanged ();
     void onBankChanged (shared_ptr<PresetBank> bank);
 
     void fixLayout();

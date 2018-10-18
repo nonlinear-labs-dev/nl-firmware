@@ -2,13 +2,13 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
+import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class InfoButton extends SVGImage {
 
 	public InfoButton(BeltParameterLayout parent) {
-		super(parent, "Info_A_Enabled.svg", "Info_A_Active.svg");
+		super(parent, "Menu_Info_Enabled_S.svg", "Menu_Info_Active_S.svg");
 	}
 
 	@Override

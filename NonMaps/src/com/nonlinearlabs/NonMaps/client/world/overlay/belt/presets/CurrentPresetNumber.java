@@ -26,12 +26,12 @@ public class CurrentPresetNumber extends Label {
 	}
 
 	public double getDesiredHeight() {
-		return Millimeter.toPixels(20);
+		return Millimeter.toPixels(15);
 	}
 
 	@Override
 	protected double getVerticalFontDisplacement() {
-		return Millimeter.toPixels(4);
+		return Millimeter.toPixels(2);
 	}
 
 	@Override

@@ -40,7 +40,8 @@ public class FloatingWindowHeader extends OverlayLayout {
 
 			private void drawX(Context2d ctx) {
 				Rect r = getPixRect().getReducedBy(Millimeter.toPixels(4));
-				r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), Millimeter.toPixels(0.25), new Gray(54), new Gray(84));
+				r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), Millimeter.toPixels(0.25),
+						new Gray(54), new Gray(84));
 
 				r = r.getReducedBy(Millimeter.toPixels(4));
 
@@ -79,7 +80,7 @@ public class FloatingWindowHeader extends OverlayLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		double buttonDim = getButtonDimension();
+		double buttonDim = Millimeter.toPixels(10);
 		this.x.doLayout(w - buttonDim, (h - buttonDim) / 2, buttonDim, buttonDim);
 		this.header.doLayout(buttonDim, 0, w - 2 * buttonDim, h);
 	}
@@ -102,7 +103,7 @@ public class FloatingWindowHeader extends OverlayLayout {
 	public Control startDragging(Position pos) {
 		return this;
 	}
-		
+
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
 		getParent().getRelativePosition().moveBy(newPoint.getX() - oldPoint.getX(), newPoint.getY() - oldPoint.getY());
@@ -124,13 +125,13 @@ public class FloatingWindowHeader extends OverlayLayout {
 		if (relPosition.getTop() > maxY)
 			relPosition.moveTo(relPosition.getLeft(), maxY);
 	}
-	
+
 	public void preventWindowOutsideOfLeftAndRight() {
 		double minX = 0;
 		double maxX = NonMaps.theMaps.getCanvas().getCoordinateSpaceWidth() - getPixRect().getWidth();
 		Rect relPosition = getParent().getRelativePosition();
-		double left = relPosition.getLeft() ;
-		
+		double left = relPosition.getLeft();
+
 		if (left < (minX - (relPosition.getWidth() / 2)))
 			relPosition.moveTo(minX - relPosition.getWidth() / 2, relPosition.getTop());
 

@@ -12,7 +12,7 @@ class NumPresetsInBankLabel : public Label
     virtual ~NumPresetsInBankLabel ();
 
   private:
-    void updateText (shared_ptr<PresetBank> bank);
+    void updateText ();
     void setFontColor (FrameBuffer &fb) const override;
 };
 

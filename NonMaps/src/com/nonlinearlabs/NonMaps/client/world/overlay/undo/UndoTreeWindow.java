@@ -28,7 +28,7 @@ public class UndoTreeWindow extends FloatingWindow {
 
 	@Override
 	public void doLayout(double x, double y) {
-		double lineHeight = getButtonDimension();
+		double lineHeight = Millimeter.toPixels(10);
 
 		if (isHidden()) {
 			super.doLayout(x, y, 0, 0);
@@ -36,7 +36,8 @@ public class UndoTreeWindow extends FloatingWindow {
 		} else {
 			double margin = Millimeter.toPixels(2);
 			header.doLayout(0, 0, fixDimension.getWidth(), lineHeight);
-			content.doLayout(margin, lineHeight, fixDimension.getWidth() - 2 * margin, fixDimension.getHeight() - lineHeight - margin);
+			content.doLayout(margin, lineHeight, fixDimension.getWidth() - 2 * margin,
+					fixDimension.getHeight() - lineHeight - margin);
 			super.doLayout(x, y, fixDimension.getWidth(), fixDimension.getHeight());
 		}
 	}

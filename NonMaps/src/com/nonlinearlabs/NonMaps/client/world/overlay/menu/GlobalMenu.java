@@ -148,7 +148,8 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getCheckText() {
-				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 " : "\uE0A3 ");
+				return (getNonMaps().getNonLinearWorld().getPresetManager().getPresetsVisible() ? "\uE0A4 "
+						: "\uE0A3 ");
 			}
 
 			@Override
@@ -169,7 +170,8 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getCheckText() {
-				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 " : "\uE0A3 ");
+				return (getNonMaps().getNonLinearWorld().getParameterEditor().isEditorVisible() ? "\uE0A4 "
+						: "\uE0A3 ");
 			}
 
 			@Override
@@ -205,7 +207,7 @@ public class GlobalMenu extends OverlayLayout {
 	}
 
 	public void doLayout(double w, double h) {
-		double buttonDim = getButtonDimension();
+		double buttonDim = Millimeter.toPixels(10);
 		double top = Millimeter.toPixels(2);
 
 		if (state == State.Collapsed) {
@@ -223,7 +225,7 @@ public class GlobalMenu extends OverlayLayout {
 		} else {
 			final int IGNORED_CHILDREN = 1;
 
-			double headerSize = getButtonDimension() * 0.9;
+			double headerSize = Millimeter.toPixels(10) * 0.9;
 
 			double myWidth = Millimeter.toPixels(65);
 			int childCount = getChildren().size() - IGNORED_CHILDREN;
@@ -241,15 +243,15 @@ public class GlobalMenu extends OverlayLayout {
 			}
 		}
 	}
-	
+
 	private RGB getBackgroundFillColor() {
-		return new RGB(34,34,42);
+		return new RGB(34, 34, 42);
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		double lineWidth = Millimeter.toPixels(1.1);
-		
+
 		createBackgroundAreaPath(ctx);
 		ctx.setStrokeStyle(RGB.blue().toString());
 		ctx.setLineWidth(lineWidth);
@@ -262,14 +264,14 @@ public class GlobalMenu extends OverlayLayout {
 		ctx.setStrokeStyle(RGB.floatingWindowHeaderBorder().toString());
 		ctx.setLineWidth(lineWidth / 4);
 		ctx.stroke();
-		
+
 		super.draw(ctx, invalidationMask);
-		
+
 		createHeaderAreaPath(ctx);
 		ctx.setFillStyle(RGB.black().toString());
 		ctx.setLineWidth(0);
 		ctx.fill();
-		
+
 		headerText.draw(ctx, invalidationMask);
 		header.draw(ctx, invalidationMask);
 	}
@@ -288,7 +290,7 @@ public class GlobalMenu extends OverlayLayout {
 		ctx.lineTo(r.getRight(), r.getBottom());
 		ctx.lineTo(r.getRight(), r.getTop());
 	}
-	
+
 	private void createBackgroundAreaPath(Context2d ctx) {
 		Rect r = getPixRect().copy();
 		double corner = Millimeter.toPixels(1);

@@ -9,9 +9,9 @@
 #include <xml/Writer.h>
 #include <tools/TimeTools.h>
 
-
-PresetManagerSerializer::PresetManagerSerializer(PresetManager &pm) :
-    Serializer(getTagName()), m_pm(pm)
+PresetManagerSerializer::PresetManagerSerializer(PresetManager &pm)
+    : Serializer(getTagName())
+    , m_pm(pm)
 {
 }
 
@@ -29,7 +29,7 @@ void PresetManagerSerializer::writeTagContent(Writer &writer) const
 
   SplashLayout::addStatus("Writing PresetManager");
 
-  for (size_t i = 0; i < numBanks; i++)
+  for(size_t i = 0; i < numBanks; i++)
   {
     auto bank = m_pm.getBank(i);
     PresetBankSerializer bankWriter(bank);
@@ -44,23 +44,16 @@ void PresetManagerSerializer::readTagContent(Reader &reader) const
 {
   SplashLayout::addStatus("Reading PresetManager");
 
-  reader.onTextElement("selected-bank-uuid", [&](const Glib::ustring &text, const Attributes &attributes)
-  {
+  reader.onTextElement("selected-bank-uuid", [&](const Glib::ustring &text, const Attributes &attributes) {
     m_pm.undoableSelectBank(reader.getTransaction(), text);
   });
 
-  reader.onTag(PresetBankSerializer::getTagName(), [&](const Attributes &attributes) mutable
-  {
+  reader.onTag(PresetBankSerializer::getTagName(), [&](const Attributes &attributes) mutable {
     int curBankPos = m_pm.getNumBanks();
     m_pm.addBank(reader.getTransaction(), false);
-    return new PresetBankSerializer(m_pm.getBank (curBankPos));
+    return new PresetBankSerializer(m_pm.getBank(curBankPos));
   });
 
-  reader.onTag(EditBufferSerializer::getTagName(), [&](const Attributes &attributes) mutable
-  {
-    return new EditBufferSerializer(m_pm.getEditBuffer());
-  });
-
-
+  reader.onTag(EditBufferSerializer::getTagName(),
+               [&](const Attributes &attributes) mutable { return new EditBufferSerializer(m_pm.getEditBuffer()); });
 }
-

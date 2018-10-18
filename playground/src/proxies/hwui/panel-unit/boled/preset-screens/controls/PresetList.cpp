@@ -8,8 +8,8 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListHeader.h>
 #include <memory>
 
-PresetList::PresetList(const Rect &pos, bool showBankArrows) :
-    super(pos, showBankArrows)
+PresetList::PresetList(const Rect &pos, bool showBankArrows)
+    : super(pos, showBankArrows)
 {
   Application::get().getPresetManager()->onBankSelection(mem_fun(this, &PresetList::onBankSelectionChanged));
 }
@@ -18,11 +18,11 @@ PresetList::~PresetList()
 {
 }
 
-void PresetList::onBankSelectionChanged(shared_ptr<PresetBank> bank)
+void PresetList::onBankSelectionChanged()
 {
   m_bankChangedConnection.disconnect();
 
-  if(bank)
+  if(auto bank = Application::get().getPresetManager()->getSelectedBank())
   {
     m_bankChangedConnection = bank->onBankChanged(mem_fun(this, &PresetList::onBankChanged));
   }
@@ -82,7 +82,6 @@ bool PresetList::onButton(int i, bool down, ButtonModifiers modifiers)
   }
 
   return false;
-
 }
 
 void PresetList::onRotary(int inc, ButtonModifiers modifiers)
@@ -92,13 +91,19 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 
   if(focusAndMode.focus == UIFocus::Banks)
   {
-    if(modifiers[SHIFT]) {
-      if(inc < 0) {
+    if(modifiers[SHIFT])
+    {
+      if(inc < 0)
+      {
         pm->undoableSelectFirstBank();
-      } else {
+      }
+      else
+      {
         pm->undoableSelectLastBank();
       }
-    } else {
+    }
+    else
+    {
       while(inc < 0)
       {
         pm->undoableSelectPrevious();
@@ -111,7 +116,6 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
         inc--;
       }
     }
-
   }
   else if(auto bank = pm->getSelectedBank())
   {
@@ -128,8 +132,6 @@ std::pair<int, int> PresetList::getSelectedPosition() const
     auto bankPos = pm->calcBankIndex(b.get());
     auto presetPos = b->getPresetPosition(b->getSelectedPreset());
     return make_pair(bankPos, presetPos);
-
   }
-  return
-  { -1, -1};
+  return { -1, -1 };
 }

@@ -144,20 +144,14 @@ public class Overlay extends OverlayLayout {
 		getRelativePosition().moveTo(0, 0);
 		super.doLayout(x, y, w, h);
 
-		double beltHeight = SVGImage.calcSVGDimensionToPixels(110);
+		double beltHeight = Millimeter.toPixels(40);
 		belt.doLayout(0, h - beltHeight, w, beltHeight);
 		beltHeight = belt.getRelativePosition().getHeight();
 
-		double undoWidth = SVGImage.calcSVGDimensionToPixels(52);
-		double undoHeight = SVGImage.calcSVGDimensionToPixels(32);
-		double undoRedoMargin = SVGImage.calcSVGDimensionToPixels(5);
-		undoRedo.doLayout(undoRedoMargin, h - beltHeight - undoHeight - undoRedoMargin, undoWidth * 2 + undoRedoMargin, undoHeight
-				+ undoRedoMargin);
+		buttons.doLayout(w, h - beltHeight);
 
-		double singleButtonWidth = getButtonDimension() * 2;
-		double buttonsWidth = 3 * singleButtonWidth;
-		double buttonsHeight = undoHeight;
-		buttons.doLayout(w - buttonsWidth, h - beltHeight - buttonsHeight, buttonsWidth, buttonsHeight);
+		double undoRedoMargin = Millimeter.toPixels(2.5);
+		undoRedo.doLayout(undoRedoMargin, buttons.getRelativePosition().getTop());
 
 		layoutFloatingWindows(undoRedoMargin);
 		layoutContextMenus(w, h);

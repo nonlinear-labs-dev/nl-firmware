@@ -15,16 +15,16 @@ namespace DETAIL
 {
   class PresetComment : public MultiLineLabel
   {
-    public:
-      PresetComment() :
-          MultiLineLabel("---")
-      {
-      }
+   public:
+    PresetComment()
+        : MultiLineLabel("---")
+    {
+    }
 
-      Oleds::tFont getFont()
-      {
-        return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
-      }
+    Oleds::tFont getFont()
+    {
+      return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
+    }
   };
 }
 
@@ -45,11 +45,11 @@ PresetInfoContent::~PresetInfoContent()
 {
 }
 
-void PresetInfoContent::onBankChanged(shared_ptr<PresetBank> bank)
+void PresetInfoContent::onBankChanged()
 {
   m_bankConnection.disconnect();
 
-  if(bank)
+  if(auto bank = Application::get().getPresetManager()->getSelectedBank())
     m_bankConnection = bank->onBankChanged(mem_fun(this, &PresetInfoContent::onPresetSelectionChanged));
 }
 
@@ -65,7 +65,7 @@ void PresetInfoContent::onPresetSelectionChanged()
   }
 }
 
-void PresetInfoContent::connectToPreset(Preset* preset)
+void PresetInfoContent::connectToPreset(Preset *preset)
 {
   m_presetConnection.disconnect();
   m_presetConnection = preset->onPresetChanged(mem_fun(this, &PresetInfoContent::onPresetChanged));
