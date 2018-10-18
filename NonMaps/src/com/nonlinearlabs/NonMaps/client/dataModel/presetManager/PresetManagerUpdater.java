@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.presetManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.xml.client.Node;
@@ -11,34 +12,37 @@ public class PresetManagerUpdater extends Updater {
 	}
 
 	public void update(Node xml, PresetManager pm) {
-		processChildrenElements(xml, "banks", t -> updateBanks(pm, t));
+		if (didChange(xml))
+			processChildrenElements(xml, "banks", t -> updateBanks(pm, t));
 	}
 
 	private void updateBanks(PresetManager pm, Node banks) {
-		Map<String, Bank> existingBanks = pm.getBanks();
+		BankMapDataModelEntity existingBanksEntity = pm.getBanks();
+		Map<String, Bank> existingBanks = new HashMap<String, Bank>(existingBanksEntity.getValue());
 		existingBanks.forEach((uuid, bank) -> bank.setDoomed());
 		processChildrenElements(banks, "preset-bank", t -> updateBank(existingBanks, t));
 		existingBanks.entrySet().removeIf(e -> e.getValue().isDoomed());
+		existingBanksEntity.setValue(existingBanks);
 	}
 
 	private void updateBank(Map<String, Bank> existingBanks, Node bank) {
-		String uuid = getAttributeValue(bank, "uuid");
-		Bank b = existingBanks.get(uuid);
-		boolean dirty = didChange(bank);
+		if (didChange(bank)) {
+			String uuid = getAttributeValue(bank, "uuid");
+			Bank b = existingBanks.get(uuid);
+			boolean dirty = didChange(bank);
 
-		if (b == null) {
-			b = new Bank();
-			existingBanks.put(uuid, b);
-			dirty = true;
+			if (b == null) {
+				b = new Bank();
+				existingBanks.put(uuid, b);
+				dirty = true;
+			}
+
+			b.revive();
+
+			if (dirty) {
+				BankUpdater updater = new BankUpdater();
+				updater.update(bank, b);
+			}
 		}
-
-		b.revive();
-
-		if (dirty) {
-			BankUpdater updater = new BankUpdater();
-			updater.update(bank, b);
-		}
-
-		// todo: inform clients about removed / added banks
 	}
 }

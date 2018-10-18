@@ -16,6 +16,8 @@ import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.NonMaps.client.contextStates.StopWatchState;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferUpdater;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetManager;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.DeviceInfoUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
@@ -118,6 +120,9 @@ public class ServerProxy {
 
 			EditBufferUpdater ebu = new EditBufferUpdater(editBufferNode);
 			ebu.doUpdate();
+
+			PresetManagerUpdater pmu = new PresetManagerUpdater();
+			pmu.update(presetManagerNode, PresetManager.get());
 		}
 	}
 

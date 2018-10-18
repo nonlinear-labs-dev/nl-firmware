@@ -13,10 +13,11 @@ public class BankUpdater extends Updater {
 		dataModelBank.name.setValue(getAttributeValue(xml, "name"));
 		dataModelBank.uuid.setValue(getAttributeValue(xml, "uuid"));
 
-		ArrayList<Preset> existingPresets = dataModelBank.getPresets();
-		dataModelBank.getPresets().forEach(p -> p.setDoomed());
+		ArrayList<Preset> existingPresets = new ArrayList<Preset>(dataModelBank.getPresets().getValue());
+		existingPresets.forEach(p -> p.setDoomed());
 		super.processChildrenElements(xml, "preset", p -> updatePreset(existingPresets, p));
 		existingPresets.removeIf(p -> p.isDoomed());
+		dataModelBank.getPresets().setValue(existingPresets);
 	}
 
 	private void updatePreset(ArrayList<Preset> existingPresets, Node p) {
@@ -31,8 +32,6 @@ public class BankUpdater extends Updater {
 			PresetUpdater updater = new PresetUpdater();
 			updater.update(p, preset);
 		}
-
-		// todo: inform clients about removed / added presets
 	}
 
 }

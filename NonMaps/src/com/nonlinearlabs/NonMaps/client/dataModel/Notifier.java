@@ -29,5 +29,4 @@ public abstract class Notifier<T> {
 	}
 
 	public abstract T getValue();
-
 }
