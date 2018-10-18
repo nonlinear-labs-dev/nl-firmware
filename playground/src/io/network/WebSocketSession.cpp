@@ -103,7 +103,8 @@ void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
   }
 
   m_connection.reset(connection);
-  m_onConnectionEstablished();
+
+  m_defaultContextQueue->pushMessage([=]() { m_onConnectionEstablished(); });
 }
 
 void WebSocketSession::sendMessage(Domain d, tMessage msg)
