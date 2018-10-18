@@ -23,15 +23,16 @@
 
 const int c_testTimePerFrequency = 5000;
 
-LPCProxy::LPCProxy() :
-    m_queueSendingScheduled(false),
-    m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID()),
-    m_throttledRelativeParameterChange(std::chrono::milliseconds(1)),
-    m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
+LPCProxy::LPCProxy()
+    : m_queueSendingScheduled(false)
+    , m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID())
+    , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))
+    , m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
 {
   m_msgParser.reset(new MessageParser());
 
   auto cb = sigc::mem_fun(this, &LPCProxy::onWebSocketMessage);
+  Application::get().getWebSocketSession()->onConnectionEstablished(sigc::mem_fun(this, &LPCProxy::onLPCConnected));
   Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Lpc, cb);
 }
 
@@ -42,7 +43,7 @@ LPCProxy::~LPCProxy()
 void LPCProxy::onWebSocketMessage(WebSocketSession::tMessage msg)
 {
   gsize numBytes = 0;
-  const uint8_t* buffer = (const uint8_t*) (msg->get_data(numBytes));
+  const uint8_t *buffer = (const uint8_t *) (msg->get_data(numBytes));
 
   if(numBytes > 0)
   {
@@ -122,6 +123,11 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
   }
 }
 
+void LPCProxy::onLPCConnected()
+{
+  requestLPCSoftwareVersion();
+}
+
 void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
 {
   DebugLevel::info("it is a param message");
@@ -185,12 +191,12 @@ void LPCProxy::onRelativeEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask([this, p]()
-  {
-    if (!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging (p->getValue ()))
-    m_relativeEditControlMessageChanger = p->getValue ().startUserEdit (Initiator::EXPLICIT_LPC);
+  m_throttledRelativeParameterChange.doTask([this, p]() {
+    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_LPC);
 
-    m_relativeEditControlMessageChanger->changeBy (m_throttledRelativeParameterAccumulator / (p->isBiPolar () ? 8000.0 : 16000.0));
+    m_relativeEditControlMessageChanger->changeBy(m_throttledRelativeParameterAccumulator
+                                                  / (p->isBiPolar() ? 8000.0 : 16000.0));
     m_throttledRelativeParameterAccumulator = 0;
   });
 }
@@ -199,27 +205,27 @@ void LPCProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask([this, p]()
-  {
-    auto scope = Application::get ().getUndoScope ()->startContinuousTransaction (p, "Set '%0'", p->getGroupAndParameterName ());
+  m_throttledAbsoluteParameterChange.doTask([this, p]() {
+    auto scope
+        = Application::get().getUndoScope()->startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
 
-    if (p->isBiPolar ())
+    if(p->isBiPolar())
     {
-      p->setCPFromHwui (scope->getTransaction (), (m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-      DebugLevel::info ("set it (absolutely - bipolar) to", p->getControlPositionValue ());
+      p->setCPFromHwui(scope->getTransaction(), (m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+      DebugLevel::info("set it (absolutely - bipolar) to", p->getControlPositionValue());
     }
     else
     {
-      p->setCPFromHwui (scope->getTransaction (), (m_throttledAbsoluteParameterValue / 16000.0));
-      DebugLevel::info ("set it (absolutely - unipolar) to", p->getControlPositionValue ());
+      p->setCPFromHwui(scope->getTransaction(), (m_throttledAbsoluteParameterValue / 16000.0));
+      DebugLevel::info("set it (absolutely - unipolar) to", p->getControlPositionValue());
     }
   });
 }
 
 void LPCProxy::notifyRibbonTouch(int ribbonsParameterID)
 {
-  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbonParameterID() || ribbonsParameterID
-      == HardwareSourcesGroup::getUpperRibbonParameterID())
+  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbonParameterID()
+     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbonParameterID())
   {
     m_lastTouchedRibbon = ribbonsParameterID;
     m_signalRibbonTouched.send(ribbonsParameterID);
@@ -303,7 +309,7 @@ void LPCProxy::sendEditBuffer()
 
   auto sorted = editBuffer->getParametersSortedById();
 
-  for(auto & it : sorted)
+  for(auto &it : sorted)
     it.second->writeToLPC(*cmp);
 
   queueToLPC(cmp);
@@ -311,19 +317,18 @@ void LPCProxy::sendEditBuffer()
   editBuffer->getSettings().sendToLPC();
   Application::get().getSettings()->sendToLPC();
 
-  for(auto & it : sorted)
+  for(auto &it : sorted)
     it.second->onPresetSentToLpc();
 }
 
 void LPCProxy::toggleSuppressParameterChanges(UNDO::Scope::tTransactionPtr transaction)
 {
-  transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-  {
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     m_suppressParamChanges = !m_suppressParamChanges;
 
-    if (!m_suppressParamChanges)
+    if(!m_suppressParamChanges)
     {
-      sendEditBuffer ();
+      sendEditBuffer();
     }
   });
 }
@@ -350,7 +355,7 @@ void LPCProxy::sendSetting(uint16_t key, gint16 value)
 
 void LPCProxy::sendSetting(uint16_t key, bool value)
 {
-  sendSetting(key, (uint16_t) (value ? 1 : 0));
+  sendSetting(key, (uint16_t)(value ? 1 : 0));
 }
 
 void LPCProxy::requestLPCSoftwareVersion()
