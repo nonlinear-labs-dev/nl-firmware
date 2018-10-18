@@ -20,7 +20,7 @@ public class EmptyBeltPreset extends OverlayLayout {
 
 		private boolean dropping = false;
 		private Bank bank;
-		
+
 		public EmptyLabel(OverlayLayout parent, Bank bank) {
 			super(parent);
 			this.bank = bank;
@@ -30,7 +30,7 @@ public class EmptyBeltPreset extends OverlayLayout {
 		public String getDrawText(Context2d ctx) {
 			return "- empty -";
 		}
-		
+
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
 			Rect rect = getPixRect();
@@ -43,7 +43,7 @@ public class EmptyBeltPreset extends OverlayLayout {
 
 			super.draw(ctx, invalidationMask);
 		}
-		
+
 		@Override
 		public RGB getColorFont() {
 			return new Gray(128);
@@ -82,25 +82,25 @@ public class EmptyBeltPreset extends OverlayLayout {
 			dropping = false;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
-		
+
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 		}
-		
+
 	}
-	
+
 	Label emptyLabel;
-	
+
 	public EmptyBeltPreset(OverlayLayout parent, Bank bank) {
 		super(parent);
 		emptyLabel = addChild(new EmptyLabel(this, bank));
 	}
-	
+
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-		emptyLabel.doLayout(x, y, w, h);
+		emptyLabel.doLayout(0, 0, w, h);
 	}
-	
+
 }

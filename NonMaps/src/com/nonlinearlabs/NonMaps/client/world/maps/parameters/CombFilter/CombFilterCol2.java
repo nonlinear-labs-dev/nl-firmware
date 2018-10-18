@@ -23,6 +23,11 @@ class CombFilterCol2 extends ParameterColumn {
 		public int getParameterID() {
 			return 115;
 		}
+
+		@Override
+		public double getPadding() {
+			return 2;
+		}
 	}
 
 	private class EnvC extends ModulationSourceHighPriority {

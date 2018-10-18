@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
@@ -10,7 +11,7 @@ public class ParameterClippingLabel extends Label {
 
 	ParameterClippingLabel(OverlayLayout parent, BeltParameterLayout.Mode mode) {
 		super(parent);
-		setFontHeightInMM(9);
+		setFontHeightInMM(6);
 		setClipping(false);
 	}
 
@@ -21,9 +22,21 @@ public class ParameterClippingLabel extends Label {
 		}
 	}
 
+	public boolean isClipping() {
+		return m_clipping;
+	}
+
 	@Override
 	public String getDrawText(Context2d ctx) {
 		return m_clipping ? "!" : "";
+	}
+
+	@Override
+	public void draw(Context2d ctx, int invalidationMask) {
+		if (isClipping()) {
+			getPixRect().fill(ctx, new RGB(51, 51, 51));
+			super.draw(ctx, invalidationMask);
+		}
 	}
 
 }

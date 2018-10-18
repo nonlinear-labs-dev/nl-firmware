@@ -22,7 +22,7 @@ class RotaryEncoder
 
   void fake(tIncrement amount);
   int64_t resetOldestPendingTimestamp();
-  sigc::connection onRotaryChanged(function<void(tIncrement)> slot);
+  sigc::connection onRotaryChanged(sigc::slot<void, tIncrement> slot);
 
   static void registerTests();
 

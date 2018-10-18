@@ -132,7 +132,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
 
-		double clipW = 17;
+		double clipW = 20;
 		mcLowerClip.doLayout(sliderLeft - clipW, third, clipW, third);
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
@@ -141,7 +141,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		double sliderWidth = slider.getRelativePosition().getWidth();
 		double margin = Millimeter.toPixels(2.5);
-		double modulationButtonWidth = mcPositionRadioButton.getSelectedImage().getImgWidth();
+		double modulationButtonWidth = 1.5 * mcPositionRadioButton.getSelectedImage().getImgWidth();
 
 		HarmonicLayouter layouter = new HarmonicLayouter();
 
@@ -175,9 +175,11 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
 
-		double lineWidth = mcLowerClip.getRelativePosition().getLeft()
-				- mcSourceDisplay.getRelativePosition().getRight();
-		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight(), 0, lineWidth, h);
+		double dottedLineInset = 5;
+		double lineWidth = slider.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight()
+				+ dottedLineInset;
+
+		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight() - dottedLineInset, 0, lineWidth, h);
 
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
 		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
