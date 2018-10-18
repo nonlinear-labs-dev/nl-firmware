@@ -28,9 +28,8 @@ void FileSystem::deleteFolder (Glib::RefPtr<Gio::File> folder)
 
 bool FileSystem::isNameAUUID(const ustring &name)
 {
-  if(name.size() == 36)
-  {
-    return true;
-  }
-  return false;
+  auto fileName = name.substr(0, name.find("."));
+  auto fileExt = name.substr(name.find(".") + 1);
+
+  return fileName.size() == 36;
 }
