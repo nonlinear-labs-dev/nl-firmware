@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Range;
@@ -432,6 +433,9 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
+		
+		fine = fine | NonMaps.get().getNonLinearWorld().isShiftDown();
+		
 		if (amount > 0)
 			getValue().inc(Initiator.EXPLICIT_USER_ACTION, fine);
 		else if (amount < 0)
