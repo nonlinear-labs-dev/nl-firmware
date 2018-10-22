@@ -475,10 +475,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				Range modNormalized = new Range(mod.getLeft(), mod.getRight());
 				modNormalized.normalize();
 
-				Tracer.log("R: " + modNormalized.getRight() + " L: " + modNormalized.getLeft());
 				double r = Math.round(modNormalized.getRight() * 100.) / 100.;
 				double l = Math.round(modNormalized.getLeft() * 100.) / 100.;
-				Tracer.log("Norm R: " + r + "Norm L: " + l);
 
 				mcUpperClip.setClipping(bounds.outOfRange(r));
 				mcLowerClip.setClipping(bounds.outOfRange(l));
