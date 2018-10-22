@@ -67,7 +67,6 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
           "Rename Preset Bank '%0' to '%1'", bank->getName(true), newName);
       UNDO::Scope::tTransactionPtr transaction = scope->getTransaction();
       bank->undoableSetName(transaction, newName);
-      presetManager.undoableSelectBank(scope->getTransaction(), bank->getUuid());
       presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(scope->getTransaction());
     }
   });

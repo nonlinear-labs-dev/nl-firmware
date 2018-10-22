@@ -221,7 +221,6 @@ void PresetBank::undoableSetName(UNDO::Scope::tTransactionPtr transaction, const
     onChange();
   });
 
-  getParent()->undoableSelectBank(transaction, getUuid());
   getParent()->getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
 }
 
