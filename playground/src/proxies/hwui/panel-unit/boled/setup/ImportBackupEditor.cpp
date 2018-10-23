@@ -19,6 +19,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <serialization/PresetManagerSerializer.h>
 #include <xml/FileInStream.h>
+#include <presets/EditBuffer.h>
 #include <xml/XmlReader.h>
 #include <xml/VersionAttribute.h>
 #include <memory>
@@ -131,7 +132,9 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
         return Reader::FileVersionCheckResult::OK;
       });
 
-      reader.read<PresetManagerSerializer>(std::ref(*pm.get()));
+      if(reader.read<PresetManagerSerializer>(std::ref(*pm.get()))) {
+          pm->getEditBuffer()->sendToLPC();
+      }
       SplashLayout::addStatus("Restore Complete!");
       std::this_thread::sleep_for(0.7s);
     }

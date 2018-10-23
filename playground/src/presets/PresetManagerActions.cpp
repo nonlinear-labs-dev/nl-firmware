@@ -203,6 +203,8 @@ void PresetManagerActions::handleImportBackupFile(UNDO::TransactionCreationScope
     {
       transaction->rollBack();
       http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
+    } else {
+      m_presetManager.getEditBuffer()->sendToLPC();
     }
   }
 }
