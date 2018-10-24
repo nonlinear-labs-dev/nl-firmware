@@ -432,6 +432,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
+
 		if (amount > 0)
 			getValue().inc(Initiator.EXPLICIT_USER_ACTION, fine);
 		else if (amount < 0)
