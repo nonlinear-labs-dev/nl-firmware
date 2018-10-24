@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.setup;
 
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.FloatingWindow;
@@ -16,6 +17,12 @@ public class Setup extends FloatingWindow {
 
 		addChild(header = new SetupHeader(this));
 		addChild(content = new SetupPages(this));
+	}
+
+	@Override
+	public void onShow() {
+		super.onShow();
+		NonMaps.get().getServerProxy().requestRTSoftwareVersion();
 	}
 
 	public void doLayout(double x, double y) {
