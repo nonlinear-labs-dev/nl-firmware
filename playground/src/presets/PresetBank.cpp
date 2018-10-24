@@ -79,13 +79,14 @@ void PresetBank::deleteOldPresetFiles(RefPtr<Gio::File> bankFolder)
   {
     if(file->get_file_type() == Gio::FILE_TYPE_REGULAR)
     {
-      auto uuid = file->get_name();
+      auto fileName = file->get_name();
+      auto withoutExtension = fileName.substr(0, fileName.find("."));
 
-      if(FileSystem::isNameAUUID(uuid))
+      if(FileSystem::isNameAUUID(withoutExtension))
       {
-        if(!getPreset(uuid))
+        if(!getPreset(withoutExtension))
         {
-          bankFolder->get_child(uuid)->remove();
+          bankFolder->get_child(withoutExtension)->remove();
         }
       }
     }
