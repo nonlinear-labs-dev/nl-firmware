@@ -118,6 +118,7 @@ public abstract class ModulatableParameter extends Parameter {
 
 	@Override
 	public boolean updateValues(Node child) {
+				
 		if (super.updateValues(child))
 			return true;
 

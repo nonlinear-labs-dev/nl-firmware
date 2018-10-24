@@ -91,7 +91,6 @@ public class ServerProxy {
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
 
 			boolean omitOracles = omitOracles(world);
-			Tracer.log("ServerProxy.applyChanges -> omitOracles = " + omitOracles);
 
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
 			nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);

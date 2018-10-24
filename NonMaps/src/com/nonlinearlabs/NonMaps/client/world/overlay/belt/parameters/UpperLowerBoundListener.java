@@ -23,7 +23,8 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 			ModulatableParameter modulatedParam = (ModulatableParameter) p;
 			MacroControls s = modulatedParam.getModulationSource();
 			if (s != MacroControls.NONE) {
-				MacroControlParameter mc = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getMacroControls().getControl(s);
+				MacroControlParameter mc = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getMacroControls()
+						.getControl(s);
 
 				double modAmount = modulatedParam.getModulationAmount().getClippedValue();
 
@@ -57,7 +58,8 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 				modulatedParam.getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, newValue);
 
 				if (initiator == Initiator.EXPLICIT_USER_ACTION)
-					NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount, newValue);
+					NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount,
+							newValue);
 			}
 		}
 	}
