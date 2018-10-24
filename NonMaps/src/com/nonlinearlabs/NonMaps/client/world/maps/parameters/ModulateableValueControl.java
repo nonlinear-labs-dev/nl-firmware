@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Checksum;
+import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
@@ -23,7 +24,8 @@ abstract class ModulateableValueControl extends ValueControl {
 		if (shouldDrawCorona() && getParentParameterLayout() instanceof ModulatableParameter) {
 
 			ModulatableParameter p = (ModulatableParameter) getParentParameterLayout();
-			Parameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(p.getModulationSource());
+			Parameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+					.getControl(p.getModulationSource());
 
 			if (mc != null) {
 				double modAmount = p.getModulationAmount().getQuantizedClipped();
@@ -46,11 +48,11 @@ abstract class ModulateableValueControl extends ValueControl {
 				}
 
 				if (isBiPolar) {
-					modLeft = clamp(modLeft, -1.0, 1.0);
-					modRight = clamp(modRight, -1.0, 1.0);
+					modLeft = NLMath.clamp(modLeft, -1.0, 1.0);
+					modRight = NLMath.clamp(modRight, -1.0, 1.0);
 				} else {
-					modLeft = clamp(modLeft, 0.0, 1.0);
-					modRight = clamp(modRight, 0.0, 1.0);
+					modLeft = NLMath.clamp(modLeft, 0.0, 1.0);
+					modRight = NLMath.clamp(modRight, 0.0, 1.0);
 				}
 
 				drawCorona(ctx, adaptValue(modLeft), adaptValue(modRight));
@@ -74,12 +76,6 @@ abstract class ModulateableValueControl extends ValueControl {
 
 	protected double getFontHeight() {
 		return 10;
-	}
-
-	private double clamp(double v, double min, double max) {
-		v = Math.min(v, max);
-		v = Math.max(v, min);
-		return v;
 	}
 
 	protected RGB getColorCorona() {
@@ -115,7 +111,8 @@ abstract class ModulateableValueControl extends ValueControl {
 
 			double modAmount = p.getModulationAmount().getQuantizedClipped();
 			double modSrcValue = 0;
-			Parameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(p.getModulationSource());
+			Parameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+					.getControl(p.getModulationSource());
 
 			if (mc != null)
 				modSrcValue = mc.getValue().getQuantizedClipped();

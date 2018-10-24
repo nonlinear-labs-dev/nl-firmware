@@ -4,7 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Range;
@@ -462,7 +462,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
 						.getControl(s);
 				double modAmount = amount.getClippedValue();
-				modAmount = Math.round(modAmount * 100.) / 100.;
+				modAmount = NLMath.quantize(modAmount, 100);
 
 				if (m.isBiPolar())
 					modAmount *= 2;
@@ -475,8 +475,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				Range modNormalized = new Range(mod.getLeft(), mod.getRight());
 				modNormalized.normalize();
 
-				double r = Math.round(modNormalized.getRight() * 100.) / 100.;
-				double l = Math.round(modNormalized.getLeft() * 100.) / 100.;
+				double r = NLMath.quantize(modNormalized.getRight(), 100);
+				double l = NLMath.quantize(modNormalized.getLeft(), 100);
 
 				mcUpperClip.setClipping(bounds.outOfRange(r));
 				mcLowerClip.setClipping(bounds.outOfRange(l));
