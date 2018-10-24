@@ -90,7 +90,7 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 				Rect pixRect = getPixRect();
 
 				if (isHWLocked())
-					ctx.fillText("L", pixRect.getLeft() + 16, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+					ctx.fillText("\ue20c", pixRect.getLeft() + ctx.measureText("\ue20c").getWidth() * 0.75, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 			}
 			
 		
