@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Range;
@@ -462,6 +463,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
 						.getControl(s);
 				double modAmount = amount.getClippedValue();
+				modAmount = NLMath.quantize(modAmount, 100);
 
 				if (m.isBiPolar())
 					modAmount *= 2;
@@ -474,8 +476,11 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				Range modNormalized = new Range(mod.getLeft(), mod.getRight());
 				modNormalized.normalize();
 
-				mcUpperClip.setClipping(bounds.outOfRange(modNormalized.getRight()));
-				mcLowerClip.setClipping(bounds.outOfRange(modNormalized.getLeft()));
+				double r = NLMath.quantize(modNormalized.getRight(), 100);
+				double l = NLMath.quantize(modNormalized.getLeft(), 100);
+
+				mcUpperClip.setClipping(bounds.outOfRange(r));
+				mcLowerClip.setClipping(bounds.outOfRange(l));
 
 				switch (mode) {
 				case mcAmount: {
@@ -486,7 +491,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				}
 
 				case mcLower: {
-					String clip = bounds.outOfRange(mod.getLeft()) ? "! " : "";
+					String clip = bounds.outOfRange(l) ? "! " : "";
 					mod.clipTo(bounds);
 					String with = p.getDecoratedValue(true, mod.getLeft());
 					String without = p.getDecoratedValue(false, mod.getLeft());
@@ -495,7 +500,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				}
 
 				case mcUpper: {
-					String clip = bounds.outOfRange(mod.getRight()) ? "! " : "";
+					String clip = bounds.outOfRange(r) ? "! " : "";
 					mod.clipTo(bounds);
 					String with = p.getDecoratedValue(true, mod.getRight());
 					String without = p.getDecoratedValue(false, mod.getRight());

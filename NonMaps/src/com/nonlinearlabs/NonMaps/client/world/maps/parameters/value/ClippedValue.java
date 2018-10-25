@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.value;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
 class ClippedValue extends Value {
@@ -10,7 +11,7 @@ class ClippedValue extends Value {
 	}
 
 	public double clip(double v) {
-		return Math.min(getUpperBorder(), Math.max(v, getLowerBorder()));
+		return NLMath.clamp(v, getLowerBorder(), getUpperBorder());
 	}
 
 	public double getUpperBorder() {

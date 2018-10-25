@@ -33,18 +33,23 @@ public abstract class FloatingWindow extends OverlayLayout {
 	public void toggle() {
 		shown = !shown;
 
-		if (shown)
+		if (shown) {
+			onShow();
 			getParent().pushToTop(this);
+		}
 
 		requestLayout();
+	}
+
+	public void onShow() {
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(1.5), null, RGB.black());
 
-		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25), RGB.floatingWindowHeaderBackground(),
-				Gray.floatingWindowHeaderBorder());
+		getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25),
+				RGB.floatingWindowHeaderBackground(), Gray.floatingWindowHeaderBorder());
 		super.draw(ctx, invalidationMask);
 	}
 

@@ -12,6 +12,7 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.ColorTag;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.CompareDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
@@ -134,13 +135,20 @@ public class PresetContextMenu extends ContextMenu {
 			});
 		}
 
-		addChild(new ContextMenuItem(this, "Color Tag  \uE01A") {
+		addChild(new TwoPartContextMenuItem(this, "Color Tag", "\uE01A") {
 			@Override
 			public Control click(Position eventPosition) {
 				Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-				return o.setContextMenu(this.getPixRect().getPosition(), new PresetColorTagContextMenu(o, preset));
+				return o.setContextMenu(calcColorMenuPosition(this), new PresetColorTagContextMenu(o, preset));
 			}
 		});
+	}
+	
+	protected Position calcColorMenuPosition(TwoPartContextMenuItem item) {
+		double bottom = item.getPixRect().getBottom();
+		double right = item.getPixRect().getRight() + 5;
+		double height = item.getPixRect().getHeight() * ColorTag.Color.values().length;
+		return new Position(right, bottom - height);
 	}
 
 	public static void deletePresetWithBankModal(boolean hasMultipleSelection, PresetManager pm, Preset preset) {

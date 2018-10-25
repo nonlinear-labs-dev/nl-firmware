@@ -79,7 +79,8 @@ public class ServerProxy {
 	}
 
 	private void queueJob(RemoteProcedureCall uri, boolean isOracle) {
-		webSocket.send(uri.getURI(isOracle));
+		if (webSocket != null)
+			webSocket.send(uri.getURI(isOracle));
 	}
 
 	private void applyChanges(String responseText) {
@@ -94,7 +95,6 @@ public class ServerProxy {
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
 
 			boolean omitOracles = omitOracles(world);
-			Tracer.log("ServerProxy.applyChanges -> omitOracles = " + omitOracles);
 
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
 			nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);
@@ -999,5 +999,11 @@ public class ServerProxy {
 
 	public void setBenderRampBypass(BooleanValues val) {
 		setSetting("bender-ramp-bypass", val.toString());
+	}
+
+	public void requestRTSoftwareVersion() {
+		StaticURI.Path path = new StaticURI.Path("device-info", "refresh-rt-software-version");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
 	}
 }

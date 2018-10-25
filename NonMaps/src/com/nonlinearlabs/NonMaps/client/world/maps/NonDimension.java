@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps;
 
 import com.nonlinearlabs.NonMaps.client.Animator;
 import com.nonlinearlabs.NonMaps.client.Animator.DoubleClientData.Client;
+import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 
 public class NonDimension {
 	private double width = 0;
@@ -54,8 +55,8 @@ public class NonDimension {
 	}
 
 	void clip(NonDimension min, NonDimension max) {
-		width = Math.min(max.getWidth(), Math.max(width, min.getWidth()));
-		height = Math.min(max.getHeight(), Math.max(height, min.getHeight()));
+		width = NLMath.clamp(width, min.getWidth(), max.getWidth());
+		height = NLMath.clamp(height, min.getHeight(), max.getHeight());
 	}
 
 	public NonPosition getNegated() {
