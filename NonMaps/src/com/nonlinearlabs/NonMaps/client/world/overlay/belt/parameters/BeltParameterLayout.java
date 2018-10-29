@@ -479,12 +479,13 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				double r = NLMath.quantize(modNormalized.getRight(), 1000);
 				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
-				
-				Tracer.log("L: " + l + " R: " + r);
-				
+								
 				mcUpperClip.setClipping(bounds.outOfRange(r));
 				mcLowerClip.setClipping(bounds.outOfRange(l));
 
+				Tracer.log("SourceVal: " + srcValue + "\nValue: " + value);
+				Tracer.log("MC Amt: " + modAmount + '\n' + "Lower Limit: " + mod.getLeft() + "\nUpper Limit: " + mod.getRight());
+				
 				switch (mode) {
 				case mcAmount: {
 					String with = m.getModulationAmount().getDecoratedValue(true);
