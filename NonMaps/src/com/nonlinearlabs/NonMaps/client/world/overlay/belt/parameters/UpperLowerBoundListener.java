@@ -57,9 +57,6 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 
 				if (modulatedParam.isBiPolar())
 					newModAmount /= 2;
-
-				double left = newValue - newModAmount * srcValue;
-				double right = left + newModAmount;
 								
 				if (initiator == Initiator.EXPLICIT_USER_ACTION) {
 					modulatedParam.getModulationAmount().setRawValue(Initiator.INDIRECT_USER_ACTION, newModAmount);
