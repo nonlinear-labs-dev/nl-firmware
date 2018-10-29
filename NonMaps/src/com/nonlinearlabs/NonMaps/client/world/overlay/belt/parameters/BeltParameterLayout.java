@@ -260,9 +260,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		if (p instanceof ModulatableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
 
-			mcLowerClip.setClipping(false);
-			mcUpperClip.setClipping(false);
-
 			if (m.getModulationSource() != MacroControls.NONE) {
 				switch (getMode()) {
 				case mcAmount:
@@ -402,8 +399,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control doubleClick() {
-		if (currentIncrementalChanger != null && mode == Mode.paramValue)
+		if (currentIncrementalChanger != null && mode == Mode.paramValue) {
 			currentIncrementalChanger.getValue().setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
+			Tracer.log("Set to Default! " + mode.toString());
+		}
 		return this;
 	}
 
@@ -463,7 +462,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
 						.getControl(s);
 				double modAmount = amount.getClippedValue();
-				modAmount = NLMath.quantize(modAmount, 100);
+				Tracer.log("modAmount before Quantize: " + modAmount);
+				modAmount = NLMath.quantize(modAmount, 1000);
 
 				if (m.isBiPolar())
 					modAmount *= 2;
@@ -479,6 +479,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				double r = NLMath.quantize(modNormalized.getRight(), 1000);
 				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
 
+				Tracer.log("modAmount: " + modAmount);
 				Tracer.log("mcAmt: " + m.getModulationAmount().getDecoratedValue(false));
 				Tracer.log("mcLower: " + p.getDecoratedValue(false, mod.getLeft()));
 				Tracer.log("mcUpper: " + p.getDecoratedValue(false, mod.getRight()));
@@ -498,7 +499,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				}
 
 				case mcLower: {
-					String clip = bounds.outOfRange(l) ? "! " : "";
+					String clip = bounds.outOfRange(modAmount >= 0 ? l : r) ? "! " : "";
 					mod.clipTo(bounds);
 					String with = p.getDecoratedValue(true, mod.getLeft());
 					String without = p.getDecoratedValue(false, mod.getLeft());
@@ -507,7 +508,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				}
 
 				case mcUpper: {
-					String clip = bounds.outOfRange(r) ? "! " : "";
+					String clip = bounds.outOfRange(modAmount >= 0 ? r : l) ? "! " : "";
 					mod.clipTo(bounds);
 					String with = p.getDecoratedValue(true, mod.getRight());
 					String without = p.getDecoratedValue(false, mod.getRight());
