@@ -54,12 +54,13 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 				if (modulatedParam.isBiPolar())
 					newModAmount /= 2;
 
-				modulatedParam.getModulationAmount().setRawValue(Initiator.INDIRECT_USER_ACTION, newModAmount);
-				modulatedParam.getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, newValue);
+				if (initiator == Initiator.EXPLICIT_USER_ACTION) {
+					modulatedParam.getModulationAmount().setRawValue(Initiator.INDIRECT_USER_ACTION, newModAmount);
+					modulatedParam.getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, newValue);
 
-				if (initiator == Initiator.EXPLICIT_USER_ACTION)
-					NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount,
-							newValue);
+					NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount,newValue);
+				}
+				
 			}
 		}
 	}
