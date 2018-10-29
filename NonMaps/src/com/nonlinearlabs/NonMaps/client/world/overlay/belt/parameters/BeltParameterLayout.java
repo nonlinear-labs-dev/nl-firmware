@@ -462,8 +462,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
 						.getControl(s);
 				double modAmount = amount.getClippedValue();
-				Tracer.log("modAmount before Quantize: " + modAmount);
-				modAmount = NLMath.quantize(modAmount, 1000);
 
 				if (m.isBiPolar())
 					modAmount *= 2;
@@ -472,20 +470,14 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				double value = m.getValue().getClippedValue();
 
 				Range bounds = new Range(m.isBiPolar() ? -1.0 : 0, 1.0);
-				Range mod = new Range(value - modAmount * srcValue, value - modAmount * srcValue + modAmount);
+				double left = (value - modAmount * srcValue);
+				double right = left + modAmount;
+				Range mod = new Range(left, right);
 				Range modNormalized = new Range(mod.getLeft(), mod.getRight());
 				modNormalized.normalize();
 
-				double r = NLMath.quantize(modNormalized.getRight(), 1000);
-				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
-
-				Tracer.log("modAmount: " + modAmount);
-				Tracer.log("mcAmt: " + m.getModulationAmount().getDecoratedValue(false));
-				Tracer.log("mcLower: " + p.getDecoratedValue(false, mod.getLeft()));
-				Tracer.log("mcUpper: " + p.getDecoratedValue(false, mod.getRight()));
-				Tracer.log("mcValue: " + mc.getDecoratedValue(false));
-				Tracer.log(bounds.getLeft() + " - " + bounds.getRight());
-
+				double r = NLMath.quantize(modNormalized.getRight(), 100);
+				double l = NLMath.quantize(modNormalized.getLeft(), 100);
 				
 				mcUpperClip.setClipping(bounds.outOfRange(r));
 				mcLowerClip.setClipping(bounds.outOfRange(l));
