@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -401,7 +402,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control doubleClick() {
-		if (currentIncrementalChanger != null)
+		if (currentIncrementalChanger != null && mode == Mode.paramValue)
 			currentIncrementalChanger.getValue().setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
 		return this;
 	}
@@ -476,9 +477,16 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				Range modNormalized = new Range(mod.getLeft(), mod.getRight());
 				modNormalized.normalize();
 
-				double r = NLMath.quantize(modNormalized.getRight(), 100);
-				double l = NLMath.quantize(modNormalized.getLeft(), 100);
+				double r = NLMath.quantize(modNormalized.getRight(), 1000);
+				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
 
+				Tracer.log("mcAmt: " + m.getModulationAmount().getDecoratedValue(false));
+				Tracer.log("mcLower: " + p.getDecoratedValue(false, mod.getLeft()));
+				Tracer.log("mcUpper: " + p.getDecoratedValue(false, mod.getRight()));
+				Tracer.log("mcValue: " + mc.getDecoratedValue(false));
+				Tracer.log(bounds.getLeft() + " - " + bounds.getRight());
+
+				
 				mcUpperClip.setClipping(bounds.outOfRange(r));
 				mcLowerClip.setClipping(bounds.outOfRange(l));
 
