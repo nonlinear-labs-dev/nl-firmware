@@ -481,7 +481,7 @@ public class PresetManager extends MapsLayout {
 		if (isInStoreSelectMode())
 			return m_storeSelectMode.canNext();
 
-		Preset p = findLoadedPreset();
+		Preset p = findSelectedPreset();
 		if (p != null) {
 			Bank b = p.getParent();
 			if (b != null)
@@ -494,7 +494,7 @@ public class PresetManager extends MapsLayout {
 		if (isInStoreSelectMode())
 			return m_storeSelectMode.canPrev();
 
-		Preset p = findLoadedPreset();
+		Preset p = findSelectedPreset();
 		if (p != null) {
 			Bank b = p.getParent();
 			if (b != null)
