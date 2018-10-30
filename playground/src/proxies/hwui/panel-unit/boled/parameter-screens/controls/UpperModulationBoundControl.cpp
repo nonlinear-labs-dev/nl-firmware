@@ -10,8 +10,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundSlider.h>
 
-UpperModulationBoundControl::UpperModulationBoundControl(const Rect &r) :
-    super(r)
+UpperModulationBoundControl::UpperModulationBoundControl(const Rect &r)
+    : super(r)
 {
   auto height = r.getHeight() / 2;
   addControl(new UpperModulationBoundSlider(Rect(0, 0, r.getWidth(), height)));
@@ -26,12 +26,12 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-  if(auto modulatedParam = dynamic_cast<ModulateableParameter*>(editBuffer->getSelected()))
+  if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected()))
   {
     auto mc = modulatedParam->getModulationSource();
     auto mcID = MacroControlsGroup::modSrcToParamID(mc);
 
-    if(auto mcParam = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(mcID)))
+    if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID)))
     {
       auto range = modulatedParam->getModulationRange(true);
 
@@ -42,18 +42,12 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       }
 
       auto maxCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMax();
-      auto wasClipped = range.second >= maxCP;
-
+      auto minCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMin();
       auto srcValue = mcParam->getControlPositionValue();
-      auto fine = modifiers[ButtonModifier::FINE];
-      auto fineDenominator = modulatedParam->getModulationAmountFineDenominator();
-      auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
-      auto denominator = fine ? fineDenominator : coarseDenominator;
+      double denominator = calcDenominator(modifiers, modulatedParam);
       auto newRight = (round(range.second * denominator) + inc) / denominator;
-      auto isClipped = newRight >= maxCP;
 
-      if(wasClipped && isClipped)
-        return true;
+      newRight = std::max(std::min(newRight, maxCP), minCP);
 
       auto newModAmount = newRight - range.first;
       auto newValue = range.first + newModAmount * srcValue;
@@ -62,7 +56,8 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         newModAmount /= 2;
 
       auto &undoScope = modulatedParam->getUndoScope();
-      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set '%0'", modulatedParam->getGroupAndParameterName());
+      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set '%0'",
+                                                        modulatedParam->getGroupAndParameterName());
       auto transaction = scope->getTransaction();
 
       modulatedParam->undoableSetModAmount(transaction, newModAmount);
@@ -71,4 +66,13 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
     }
   }
   return false;
+}
+
+double UpperModulationBoundControl::calcDenominator(const ButtonModifiers &modifiers,
+                                                    const ModulateableParameter *modulatedParam) const
+{
+  auto fine = modifiers[FINE];
+  auto fineDenominator = modulatedParam->getModulationAmountFineDenominator();
+  auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
+  return fine ? fineDenominator : coarseDenominator;
 }
