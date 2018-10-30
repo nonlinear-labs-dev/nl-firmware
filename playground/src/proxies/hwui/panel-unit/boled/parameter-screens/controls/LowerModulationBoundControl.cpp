@@ -11,8 +11,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundSlider.h>
 
-LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r) :
-    super(r)
+LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
+    : super(r)
 {
   auto height = r.getHeight() / 2;
 
@@ -38,7 +38,7 @@ void LowerModulationBoundControl::onSelectionChanged(Parameter *, Parameter *new
 
 void LowerModulationBoundControl::onParameterChanged(const Parameter *p)
 {
-  if(auto a = dynamic_cast<const ModulateableParameter*>(p))
+  if(auto a = dynamic_cast<const ModulateableParameter *>(p))
     m_dummyButton->setVisible(a->getModulationSource() == ModulateableParameter::NONE);
   else
     m_dummyButton->setVisible(true);
@@ -50,12 +50,12 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-  if(auto modulatedParam = dynamic_cast<ModulateableParameter*>(editBuffer->getSelected()))
+  if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected()))
   {
     auto mc = modulatedParam->getModulationSource();
     auto mcID = MacroControlsGroup::modSrcToParamID(mc);
 
-    if(auto mcParam = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(mcID)))
+    if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID)))
     {
       auto range = modulatedParam->getModulationRange(true);
 
@@ -65,30 +65,14 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         range.second = range.second * 2 - 1;
       }
 
-      auto minCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMin();
       auto maxCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMax();
-      auto wasClipped = range.first <= minCP;
+      auto minCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMin();
 
       auto srcValue = mcParam->getControlPositionValue();
-
-      auto fine = modifiers[ButtonModifier::FINE];
-      auto fineDenominator = modulatedParam->getModulationAmountFineDenominator();
-      auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
-      auto denominator = fine ? fineDenominator : coarseDenominator;
+      double denominator = calcDominator(modifiers, modulatedParam);
       auto newLeft = (round(range.first * denominator) + inc) / denominator;
 
-      if(modifiers[ButtonModifier::SHIFT]) {
-        if(inc < 0) {
-          newLeft = minCP;
-        } else {
-          newLeft = maxCP;
-        }
-      }
-
-      auto isClipped = newLeft <= minCP;
-
-      if(wasClipped && isClipped)
-        return true;
+      newLeft = std::max(std::min(newLeft, maxCP), minCP);
 
       auto newModAmount = range.second - newLeft;
       auto newValue = newLeft + newModAmount * srcValue;
@@ -97,7 +81,8 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         newModAmount /= 2;
 
       auto &undoScope = modulatedParam->getUndoScope();
-      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set '%0'", modulatedParam->getGroupAndParameterName());
+      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set '%0'",
+                                                        modulatedParam->getGroupAndParameterName());
       auto transaction = scope->getTransaction();
 
       modulatedParam->undoableSetModAmount(transaction, newModAmount);
@@ -108,13 +93,12 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
   return false;
 }
 
-void LowerModulationBoundControl::setDefault() {
-  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  if(auto modulatedParam = dynamic_cast<ModulateableParameter*>(editBuffer->getSelected())) {
-    auto &undoScope = modulatedParam->getUndoScope();
-    auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set Default'%0'",
-                                                      modulatedParam->getGroupAndParameterName());
-    modulatedParam->undoableSetModAmount(scope->getTransaction(), 0);
-  }
+double LowerModulationBoundControl::calcDominator(const ButtonModifiers &modifiers,
+                                                  const ModulateableParameter *modulatedParam) const
+{
+  auto fine = modifiers[FINE];
+  auto fineDenominator = modulatedParam->getModulationAmountFineDenominator();
+  auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
+  auto denominator = fine ? fineDenominator : coarseDenominator;
+  return denominator;
 }

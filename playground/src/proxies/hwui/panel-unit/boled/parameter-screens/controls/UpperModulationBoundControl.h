@@ -6,11 +6,12 @@
 
 class UpperModulationBoundControl : public ControlWithChildren, public RotaryEncoder::Receiver, public Defaultable
 {
-    typedef ControlWithChildren super;
-  public:
-    explicit UpperModulationBoundControl (const Rect &r);
-    ~UpperModulationBoundControl () override;
-    bool onRotary (int inc, ButtonModifiers modifiers) override;
-    void setDefault() override;
-};
+  typedef ControlWithChildren super;
 
+ public:
+  explicit UpperModulationBoundControl(const Rect &r);
+  ~UpperModulationBoundControl() override;
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
+
+  double calcDenominator(const ButtonModifiers &modifiers, const ModulateableParameter *modulatedParam) const;
+};

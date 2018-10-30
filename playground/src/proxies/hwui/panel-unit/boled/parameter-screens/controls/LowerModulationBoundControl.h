@@ -21,5 +21,7 @@ class LowerModulationBoundControl : public ControlWithChildren, public RotaryEnc
 
     Control *m_dummyButton = nullptr;
     connection m_paramChanged;
+
+  double calcDominator(const ButtonModifiers &modifiers, const ModulateableParameter *modulatedParam) const;
 };
 
