@@ -23,7 +23,7 @@ public class LoadButtonArea extends OverlayLayout {
 		double margin = getMargin();
 		double w = 2 * buttonWidth + margin;
 
-		bankInfos.doLayout(margin, 0, buttonWidth, Millimeter.toPixels(12));
+		bankInfos.doLayout(margin * 0.5, 0, buttonWidth + margin, Millimeter.toPixels(12));
 		prevNext.doLayout(margin, Millimeter.toPixels(12), buttonWidth, h - Millimeter.toPixels(12));
 		load.doLayout(prevNext.getRelativePosition().getRight() + margin, Millimeter.toPixels(18), buttonWidth,
 				buttonHeight);
