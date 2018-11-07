@@ -41,13 +41,12 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         range.second = range.second * 2 - 1;
       }
 
-      auto maxCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMax();
-      auto minCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMin();
+      auto &cpRange = modulatedParam->getValue().getScaleConverter()->getControlPositionRange();
       auto srcValue = mcParam->getControlPositionValue();
       double denominator = calcDenominator(modifiers, modulatedParam);
       auto newRight = (round(range.second * denominator) + inc) / denominator;
 
-      newRight = std::max(std::min(newRight, maxCP), minCP);
+      newRight = cpRange.clip(newRight);
 
       auto newModAmount = newRight - range.first;
       auto newValue = range.first + newModAmount * srcValue;
