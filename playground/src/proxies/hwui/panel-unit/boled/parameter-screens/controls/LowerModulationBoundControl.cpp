@@ -65,14 +65,11 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         range.second = range.second * 2 - 1;
       }
 
-      auto maxCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMax();
-      auto minCP = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().getMin();
-
+      auto &cpRange = modulatedParam->getValue().getScaleConverter()->getControlPositionRange();
       auto srcValue = mcParam->getControlPositionValue();
       double denominator = calcDominator(modifiers, modulatedParam);
       auto newLeft = (round(range.first * denominator) + inc) / denominator;
-
-      newLeft = std::max(std::min(newLeft, maxCP), minCP);
+      newLeft = cpRange.clip(newLeft);
 
       auto newModAmount = range.second - newLeft;
       auto newValue = newLeft + newModAmount * srcValue;
