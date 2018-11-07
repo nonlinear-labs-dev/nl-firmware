@@ -31,9 +31,14 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 
-
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
+}
+
+void ModulateableParameterLayout2::addModAmountSliders(ControlOwner *o)
+{
+  o->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X + 1, 23, BIG_SLIDER_WIDTH - 2, 1)));
+  o->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X + 1, 30, BIG_SLIDER_WIDTH - 2, 1)));
 }
 
 bool ModulateableParameterLayout2::switchToNormalMode()
@@ -41,10 +46,10 @@ bool ModulateableParameterLayout2::switchToNormalMode()
   return false;
 }
 
-ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2() :
-    virtual_base(),
-    super1(),
-    super2()
+ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
+    : virtual_base()
+    , super1()
+    , super2()
 {
   addControl(new MCPositionButton(BUTTON_A));
   addControl(new MCSelectButton(BUTTON_B));
@@ -57,7 +62,7 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2() :
 
 void ModulateableParameterSelectLayout2::copyFrom(Layout *other)
 {
-  if(auto p = dynamic_cast<ModulateableParameterSelectLayout2*>(other))
+  if(auto p = dynamic_cast<ModulateableParameterSelectLayout2 *>(other))
     setMode(p->m_mode);
 
   super1::copyFrom(other);
@@ -91,7 +96,7 @@ bool ModulateableParameterSelectLayout2::onButton(int i, bool down, ButtonModifi
         return true;
 
       case BUTTON_D:
-        if(auto m = dynamic_cast<ModulationCarousel*>(getCarousel()))
+        if(auto m = dynamic_cast<ModulationCarousel *>(getCarousel()))
         {
           if(m_mode == Mode::CarouselUpperBound)
             toggleMode(Mode::CarouselParameterValue);
@@ -111,7 +116,7 @@ bool ModulateableParameterSelectLayout2::onButton(int i, bool down, ButtonModifi
   return super2::onButton(i, down, modifiers);
 }
 
-Parameter * ModulateableParameterSelectLayout2::getCurrentEditParameter() const
+Parameter *ModulateableParameterSelectLayout2::getCurrentEditParameter() const
 {
   if(m_mode == Mode::MacroControlPosition)
   {
@@ -153,7 +158,7 @@ bool ModulateableParameterSelectLayout2::onRotary(int inc, ButtonModifiers modif
       if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
       {
         auto scope = p->getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
-            p->getGroupAndParameterName());
+                                                                  p->getGroupAndParameterName());
         p->undoableIncrementMCAmount(scope->getTransaction(), inc, modifiers);
       }
 
@@ -166,7 +171,7 @@ bool ModulateableParameterSelectLayout2::onRotary(int inc, ButtonModifiers modif
     case Mode::CarouselLowerBound:
     case Mode::CarouselUpperBound:
     case Mode::CarouselParameterValue:
-      if(auto m = dynamic_cast<ModulationCarousel*>(getCarousel()))
+      if(auto m = dynamic_cast<ModulationCarousel *>(getCarousel()))
       {
         return m->onRotary(inc, modifiers);
       }
@@ -230,13 +235,12 @@ void ModulateableParameterSelectLayout2::toggleMode(Mode desiredMode)
     setMode(desiredMode);
 }
 
-
 void ModulateableParameterSelectLayout2::installMcAmountScreen()
 {
   setMode(Mode::MacroControlAmount);
 }
 
-void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
+void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
 {
   m_mode = desiredMode;
 
@@ -255,8 +259,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
   switch(m_mode)
   {
     case Mode::ParameterValue:
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+      addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(0, 21, 55, 12), Font::Justification::Right));
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(57, 27, 17, 1)));
@@ -271,8 +274,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       break;
 
     case Mode::MacroControlPosition:
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+      addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(60, 27, 13, 1)));
       m_modeOverlay->addControl(new SelectedParamsMacroControlSlider(Rect(8, 25, 48, 4)));
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
@@ -287,8 +289,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       break;
 
     case Mode::MacroControlSelection:
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+      addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
@@ -302,8 +303,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       break;
 
     case Mode::MacroControlAmount:
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+      addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
@@ -317,8 +317,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       break;
 
     case Mode::CarouselUpperBound:
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+      addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
@@ -328,8 +327,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       break;
 
     case Mode::CarouselParameterValue:
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+      addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
@@ -340,8 +338,7 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
       break;
 
     case Mode::CarouselLowerBound:
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-      m_modeOverlay->addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+      addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new MCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
@@ -354,9 +351,9 @@ void ModulateableParameterSelectLayout2::setMode (Mode desiredMode)
   setAllDirty();
 }
 
-ModulateableParameterEditLayout2::ModulateableParameterEditLayout2() :
-    super1(),
-    super2()
+ModulateableParameterEditLayout2::ModulateableParameterEditLayout2()
+    : super1()
+    , super2()
 {
   addControl(new Button("", BUTTON_A));
   addControl(new Button("", BUTTON_B));
@@ -370,8 +367,7 @@ ModulateableParameterEditLayout2::ModulateableParameterEditLayout2() :
       addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
   }
 
-  addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 23, BIG_SLIDER_WIDTH, 1)));
-  addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X, 30, BIG_SLIDER_WIDTH, 1)));
+  addModAmountSliders(this);
   addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
 
   highlight<SelectedParameterValue>();
