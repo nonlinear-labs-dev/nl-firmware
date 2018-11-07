@@ -3,24 +3,25 @@
 #include <proxies/hwui/Oleds.h>
 #include "FileNameHeadlineLabel.h"
 
-FileNameHeadlineLabel::FileNameHeadlineLabel (const Glib::ustring& str, const Rect &pos) : super(pos)
+FileNameHeadlineLabel::FileNameHeadlineLabel(const Glib::ustring &str, const Rect &pos)
+    : super(pos)
 {
-  super::setText(str, 0);
+  super::setText(str);
   super::setFontColor(FrameBuffer::Colors::C179);
 }
 
-shared_ptr<Font> FileNameHeadlineLabel::getFont () const
+shared_ptr<Font> FileNameHeadlineLabel::getFont() const
 {
-  return Oleds::get ().getFont ("Emphase_9_Bold", getFontHeight ());
+  return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
 }
 
-bool FileNameHeadlineLabel::redraw (FrameBuffer &fb)
+bool FileNameHeadlineLabel::redraw(FrameBuffer &fb)
 {
-  const Rect &r = getPosition ();
+  const Rect &r = getPosition();
 
-  fb.setColor (FrameBuffer::Colors::C77);
-  fb.fillRect (r.getX (), r.getY (), r.getWidth (), r.getHeight ());
+  fb.setColor(FrameBuffer::Colors::C77);
+  fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 
-  super::redraw (fb);
+  super::redraw(fb);
   return true;
 }

@@ -15,7 +15,7 @@ BankNumberLabel::~BankNumberLabel()
 void BankNumberLabel::onBankSelectionChanged()
 {
   if(auto newBank = Application::get().getPresetManager()->getSelectedBank())
-    setText(to_string(Application::get().getPresetManager()->calcOrderNumber(newBank.get())));
+    setText({ to_string(Application::get().getPresetManager()->calcOrderNumber(newBank.get())) });
   else
     setText("");
 }

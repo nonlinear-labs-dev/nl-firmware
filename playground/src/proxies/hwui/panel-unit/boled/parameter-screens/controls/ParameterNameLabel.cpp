@@ -6,22 +6,21 @@
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 
-ParameterNameLabel::ParameterNameLabel (const Rect &pos) :
-    Label (pos)
+ParameterNameLabel::ParameterNameLabel(const Rect &pos)
+    : Label(pos)
 {
-  Application::get().getPresetManager ()->getEditBuffer ()->onSelectionChanged (
-      sigc::hide < 0 > (sigc::mem_fun (this, &ParameterNameLabel::onParameterSelected)));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::hide<0>(sigc::mem_fun(this, &ParameterNameLabel::onParameterSelected)));
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
-
 }
 
-ParameterNameLabel::~ParameterNameLabel ()
+ParameterNameLabel::~ParameterNameLabel()
 {
 }
 
-void ParameterNameLabel::onParameterSelected(Parameter * param)
+void ParameterNameLabel::onParameterSelected(Parameter *param)
 {
   if(param)
   {
@@ -30,38 +29,42 @@ void ParameterNameLabel::onParameterSelected(Parameter * param)
   }
 }
 
-Glib::ustring removeLastChar(const Glib::ustring& s) {
-  if (!s.empty())
-    return s.substr(0, s.size() -1);
+Glib::ustring removeLastChar(const Glib::ustring &s)
+{
+  if(!s.empty())
+    return s.substr(0, s.size() - 1);
   return s;
 }
 
-Glib::ustring addStar(const Glib::ustring& s) {
+Glib::ustring addStar(const Glib::ustring &s)
+{
   return s + "*";
 }
 
-void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter) {
+void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter)
+{
   const auto changed = pParameter->isChangedFromLoaded();
   auto name = pParameter->getLongName();
   name = truncateMCName(changed, name);
-  setText (name, changed ? 1 : 0);
+  setText({ name, changed ? 1u : 0u });
 }
 
-const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const {
+const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
+{
   Glib::ustring ret = name;
 
-  if(getFont()->getStringWidth(ret + (changed ? "*" : "")) > getWidth()) {
-
+  if(getFont()->getStringWidth(ret + (changed ? "*" : "")) > getWidth())
+  {
     ret = removeLastChar(ret);
 
-    while(getFont()->getStringWidth(ustring(ret + ".." + (changed ? "*" : ""))) > getWidth()) {
+    while(getFont()->getStringWidth(ustring(ret + ".." + (changed ? "*" : ""))) > getWidth())
+    {
       ret = removeLastChar(ret);
       if(ret.empty())
         break;
     }
 
     ret += "..";
-
   }
 
   if(changed)
@@ -70,48 +73,50 @@ const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const
   return ret;
 }
 
-void ParameterNameLabel::handleParameterName(const Parameter *pParameter) {
+void ParameterNameLabel::handleParameterName(const Parameter *pParameter)
+{
   const auto changed = pParameter->isChangedFromLoaded();
-  setText (pParameter->getLongName() + (changed ? "*" : ""), changed ? 1 : 0);
+  setText({ pParameter->getLongName() + (changed ? "*" : ""), changed ? 1u : 0u });
 }
 
-
-void ParameterNameLabel::onParameterChanged (const Parameter *param)
+void ParameterNameLabel::onParameterChanged(const Parameter *param)
 {
   auto id = param->getID();
-  if(id == 243 || id == 244 || id == 245 || id == 246) {
+  if(id == 243 || id == 244 || id == 245 || id == 246)
+  {
     handleMCParameterName(param);
-  } else {
+  }
+  else
+  {
     handleParameterName(param);
   }
-
 }
 
-void ParameterNameLabel::setFontColor (FrameBuffer &fb) const
+void ParameterNameLabel::setFontColor(FrameBuffer &fb) const
 {
-  if (isHighlight ())
-    fb.setColor (FrameBuffer::Colors::C255);
+  if(isHighlight())
+    fb.setColor(FrameBuffer::Colors::C255);
   else
-    fb.setColor (FrameBuffer::Colors::C128);
+    fb.setColor(FrameBuffer::Colors::C128);
 }
 
-shared_ptr<Font> ParameterNameLabel::getFont () const
+shared_ptr<Font> ParameterNameLabel::getFont() const
 {
-  return Oleds::get().getFont ("Emphase_9_Bold", getFontHeight ());
+  return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
 }
 
-int ParameterNameLabel::getFontHeight () const
+int ParameterNameLabel::getFontHeight() const
 {
   return 9;
 }
 
-void ParameterNameLabel::setSuffixFontColor(FrameBuffer &fb) const {
+void ParameterNameLabel::setSuffixFontColor(FrameBuffer &fb) const
+{
   fb.setColor(FrameBuffer::C103);
 }
 
-void ParameterNameLabel::onPresetLoaded() {
+void ParameterNameLabel::onPresetLoaded()
+{
   const auto param = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   onParameterChanged(param);
 }
-
-

@@ -4,8 +4,8 @@
 #include "presets/PresetManager.h"
 #include "presets/PresetBank.h"
 
-BankNameLabel::BankNameLabel(const Rect &pos) :
-    super(pos)
+BankNameLabel::BankNameLabel(const Rect &pos)
+    : super(pos)
 {
 }
 
@@ -18,7 +18,8 @@ void BankNameLabel::updateLabel(shared_ptr<PresetBank> newBank)
   if(newBank)
   {
     Glib::ustring bankName = newBank->getName(true);
-    Glib::ustring s = to_string(Application::get().getPresetManager()->calcOrderNumber(newBank.get())) + ": " + bankName;
+    Glib::ustring s
+        = to_string(Application::get().getPresetManager()->calcOrderNumber(newBank.get())) + ": " + bankName;
     setText(s);
   }
   else
@@ -27,13 +28,11 @@ void BankNameLabel::updateLabel(shared_ptr<PresetBank> newBank)
   }
 }
 
-Glib::ustring BankNameLabel::shortenStringIfNeccessary(shared_ptr<Font> font, const Glib::ustring &text) const
+Label::StringAndSuffix BankNameLabel::shortenStringIfNeccessary(shared_ptr<Font> font,
+                                                                const StringAndSuffix &text) const
 {
-
-  auto c = text;
   auto availableWidth = getPosition().getWidth() - 2 * getXOffset();
-
-  return TextCropper::shortenStringIfNeccessary(font, text, availableWidth);
+  return TextCropper::shortenStringIfNeccessary(font, text.text, availableWidth);
 }
 
 void BankNameLabel::setBackgroundColor(FrameBuffer &fb) const

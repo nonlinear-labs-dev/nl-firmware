@@ -7,81 +7,94 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationBoundLabel.h>
 
-ModulationBoundLabel::ModulationBoundLabel (const Rect &r) :
-    super (r)
+ModulationBoundLabel::ModulationBoundLabel(const Rect &r)
+    : super(r)
 {
-  Application::get ().getPresetManager ()->getEditBuffer ()->onSelectionChanged (
-      mem_fun (this, &ModulationBoundLabel::onParameterSelectionChanged));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      mem_fun(this, &ModulationBoundLabel::onParameterSelectionChanged));
 
   Application::get().getHWUI()->onModifiersChanged(mem_fun(this, &ModulationBoundLabel::onButtonModifiersChanged));
 }
 
-ModulationBoundLabel::~ModulationBoundLabel ()
+ModulationBoundLabel::~ModulationBoundLabel()
 {
 }
 
-void ModulationBoundLabel::onParameterSelectionChanged (Parameter *oldParam, Parameter *newParam)
+void ModulationBoundLabel::onParameterSelectionChanged(Parameter *oldParam, Parameter *newParam)
 {
-  m_paramConnection.disconnect ();
+  m_paramConnection.disconnect();
 
-  if ((m_modulatedParam = dynamic_cast<ModulateableParameter*> (newParam)))
+  if((m_modulatedParam = dynamic_cast<ModulateableParameter *>(newParam)))
   {
-    m_paramConnection = m_modulatedParam->onParameterChanged (mem_fun (this, &ModulationBoundLabel::onParameterChanged));
+    m_paramConnection = m_modulatedParam->onParameterChanged(mem_fun(this, &ModulationBoundLabel::onParameterChanged));
   }
   else
   {
-    setText ("", 0);
+    setText("");
   }
 }
 
-void ModulationBoundLabel::onParameterChanged (const Parameter *param)
+void ModulationBoundLabel::onParameterChanged(const Parameter *param)
 {
-  if (auto m = dynamic_cast<const ModulateableParameter*> (param))
+  if(auto m = dynamic_cast<const ModulateableParameter *>(param))
   {
-    if (m_mc != m->getModulationSource ())
+    if(m_mc != m->getModulationSource())
     {
-      m_mc = m->getModulationSource ();
-      m_mcConnection.disconnect ();
+      m_mc = m->getModulationSource();
+      m_mcConnection.disconnect();
 
-      auto mcID = MacroControlsGroup::modSrcToParamID (m_mc);
-      auto editBuffer = Application::get ().getPresetManager ()->getEditBuffer ();
+      auto mcID = MacroControlsGroup::modSrcToParamID(m_mc);
+      auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-      if ((m_mcParam = dynamic_cast<MacroControlParameter*> (editBuffer->findParameterByID (mcID))))
+      if((m_mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID))))
       {
-        m_mcConnection = m_mcParam->onParameterChanged (mem_fun (this, &ModulationBoundLabel::onMCParameterChanged));
+        m_mcConnection = m_mcParam->onParameterChanged(mem_fun(this, &ModulationBoundLabel::onMCParameterChanged));
       }
       else
       {
-        setText ("", 0);
+        setText("");
       }
     }
   }
 
-  updateText ();
+  updateText();
 }
 
-void ModulationBoundLabel::onMCParameterChanged (const Parameter *mcParam)
+void ModulationBoundLabel::onMCParameterChanged(const Parameter *mcParam)
 {
-  updateText ();
+  updateText();
 }
 
 void ModulationBoundLabel::onButtonModifiersChanged(ButtonModifiers mod)
 {
-  updateText ();
+  updateText();
 }
 
-void ModulationBoundLabel::updateText ()
+void ModulationBoundLabel::updateText()
 {
-  if (m_mcParam && m_modulatedParam)
-    updateText (m_mcParam, m_modulatedParam);
+  if(m_mcParam && m_modulatedParam)
+    updateText(m_mcParam, m_modulatedParam);
 }
 
-ModulateableParameter *ModulationBoundLabel::getModulatedParameter ()
+ModulateableParameter *ModulationBoundLabel::getModulatedParameter()
 {
   return m_modulatedParam;
 }
 
-void ModulationBoundLabel::setSuffixFontColor(FrameBuffer &fb) const {
+void ModulationBoundLabel::setSuffixFontColor(FrameBuffer &fb) const
+{
   fb.setColor(FrameBuffer::C103);
 }
 
+Label::StringAndSuffix ModulationBoundLabel::shortenStringIfNeccessary(shared_ptr<Font> font,
+                                                                       const StringAndSuffix &text) const
+{
+  auto avilableWidth = getWidth() - getXOffset() - getRightMargin();
+
+  if(font->getStringWidth(text.text) > avilableWidth)
+  {
+    return Label::StringAndSuffix(text.getSplits().first, 0);
+  }
+
+  return text;
+}
