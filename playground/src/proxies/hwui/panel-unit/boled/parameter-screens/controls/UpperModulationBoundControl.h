@@ -11,5 +11,7 @@ class UpperModulationBoundControl : public ControlWithChildren, public RotaryEnc
     virtual ~UpperModulationBoundControl ();
 
     bool onRotary (int inc, ButtonModifiers modifiers) override;
+
+  double calcDenominator(const ButtonModifiers &modifiers, const ModulateableParameter *modulatedParam) const;
 };
 
