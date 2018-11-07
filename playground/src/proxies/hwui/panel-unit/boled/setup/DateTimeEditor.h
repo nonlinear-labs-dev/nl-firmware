@@ -8,26 +8,32 @@
 
 class DateTimeEditor : public ControlWithChildren, public SetupEditor
 {
-  public:
-    DateTimeEditor ();
-    virtual ~DateTimeEditor ();
+ public:
+  DateTimeEditor();
+  virtual ~DateTimeEditor();
 
-    void setPosition (const Rect &) override;
-    bool onButton (int i, bool down, ButtonModifiers modifiers) override;
-    bool onRotary (int inc, ButtonModifiers modifiers) override;
+  void setPosition(const Rect &) override;
+  bool onButton(int i, bool down, ButtonModifiers modifiers) override;
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
 
-  private:
-    void setTimeValues();
+ private:
+  void setTimeValues();
 
-    enum Selection
-    {
-      Month = 0, Day = 1, Year = 2, Hour = 3, Minute = 4, NumFields
-    };
+  enum Selection
+  {
+    Year = 0,
+    Month = 1,
+    Day = 2,
+    Hour = 3,
+    Minute = 4,
+    NumFields,
+    First = Year,
+    Last = Minute
+  };
 
-    Selection m_selection = Selection::Hour;
-    std::array<Label*, Selection::NumFields> m_labels;
-    std::array<Label*, Selection::NumFields> m_controls;
-    uint64_t m_diff = 0;
-    std::time_t m_originalTime;
+  Selection m_selection = Selection::Hour;
+  std::array<Label *, Selection::NumFields> m_labels;
+  std::array<Label *, Selection::NumFields> m_controls;
+  uint64_t m_diff = 0;
+  std::time_t m_originalTime;
 };
-
