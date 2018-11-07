@@ -32,6 +32,11 @@ class MCRadioButton extends SVGImage {
 		getParent().toggleMcEditMode(this.mode);
 		return this;
 	}
+	
+	@Override
+	public Control doubleClick() {
+		return this;
+	}
 
 	@Override
 	public int getSelectedPhase() {
