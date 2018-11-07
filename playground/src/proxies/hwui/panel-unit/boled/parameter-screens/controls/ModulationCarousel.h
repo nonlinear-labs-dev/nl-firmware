@@ -5,25 +5,27 @@
 
 class ModulationCarousel : public Carousel, public RotaryEncoder::Receiver
 {
-  private:
-    typedef Carousel super;
+ private:
+  typedef Carousel super;
 
-  public:
-    enum class Mode
-    {
-      None, UpperBound, ParameterValue, LowerBound
-    };
+ public:
+  enum class Mode
+  {
+    None,
+    UpperBound,
+    ParameterValue,
+    LowerBound
+  };
 
-    ModulationCarousel (Mode mode, const Rect &pos);
+  ModulationCarousel(Mode mode, const Rect &pos);
 
-  ~ModulationCarousel () override;
+  ~ModulationCarousel() override;
 
-    bool onRotary (int inc, ButtonModifiers modifiers) override;
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
 
-    void setup (Parameter *selectedParameter) override;
-    void turn () override;
-    void antiTurn() override;
+  void setup(Parameter *selectedParameter) override;
+  void turn() override;
+  void antiTurn() override;
 
   void setDefault();
 };
-

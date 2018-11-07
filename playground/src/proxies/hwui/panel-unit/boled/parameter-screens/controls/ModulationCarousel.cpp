@@ -6,22 +6,24 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundControl.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 
-ModulationCarousel::ModulationCarousel (Mode mode, const Rect &pos) :
-    super (pos)
+ModulationCarousel::ModulationCarousel(Mode mode, const Rect &pos)
+    : super(pos)
 {
-  addControl(new UpperModulationBoundControl(Rect(0, 0, pos.getWidth(), 21)))->setHighlight(mode == Mode::UpperBound);
-  addControl(new CurrentModulatedValueLabel(Rect(0, 21, pos.getWidth(), 20)))->setHighlight(mode == Mode::ParameterValue);
-  addControl(new LowerModulationBoundControl(Rect(0, 41, pos.getWidth(), 21)))->setHighlight(mode == Mode::LowerBound);
+  addControl(new UpperModulationBoundControl(Rect(0, 1, pos.getWidth(), 20)))->setHighlight(mode == Mode::UpperBound);
+  addControl(new CurrentModulatedValueLabel(Rect(0, 21, pos.getWidth(), 20)))
+      ->setHighlight(mode == Mode::ParameterValue);
+  addControl(new LowerModulationBoundControl(Rect(0, 41, pos.getWidth(), 20)))->setHighlight(mode == Mode::LowerBound);
 }
 
-ModulationCarousel::~ModulationCarousel ()
-= default;
-
-void ModulationCarousel::setup (Parameter *p)
+ModulationCarousel::~ModulationCarousel()
 {
 }
 
-void ModulationCarousel::turn ()
+void ModulationCarousel::setup(Parameter *p)
+{
+}
+
+void ModulationCarousel::turn()
 {
   bool found = false;
 
@@ -42,7 +44,7 @@ void ModulationCarousel::turn ()
   getControls().front()->setHighlight(true);
 }
 
-void ModulationCarousel::antiTurn() 
+void ModulationCarousel::antiTurn()
 {
   auto foundCtrl = *getControls().rbegin();
 
@@ -58,7 +60,7 @@ void ModulationCarousel::antiTurn()
   }
 }
 
-bool ModulationCarousel::onRotary (int inc, ButtonModifiers modifiers)
+bool ModulationCarousel::onRotary(int inc, ButtonModifiers modifiers)
 {
   for(const auto &c : getControls())
     if(c->isHighlight())
@@ -68,10 +70,14 @@ bool ModulationCarousel::onRotary (int inc, ButtonModifiers modifiers)
   return false;
 }
 
-void ModulationCarousel::setDefault() {
-  for(const auto &c : getControls()) {
-    if(c->isHighlight()) {
-      if(auto a = dynamic_pointer_cast<Defaultable>(c)) {
+void ModulationCarousel::setDefault()
+{
+  for(const auto &c : getControls())
+  {
+    if(c->isHighlight())
+    {
+      if(auto a = dynamic_pointer_cast<Defaultable>(c))
+      {
         a->setDefault();
         return;
       }
