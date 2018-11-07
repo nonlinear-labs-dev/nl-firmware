@@ -4,7 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -401,7 +400,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	public Control doubleClick() {
 		if (currentIncrementalChanger != null && mode == Mode.paramValue) {
 			currentIncrementalChanger.getValue().setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
-			Tracer.log("Set to Default! " + mode.toString());
 		}
 		return this;
 	}
@@ -479,13 +477,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				double r = NLMath.quantize(modNormalized.getRight(), 1000);
 				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
-								
+
 				mcUpperClip.setClipping(bounds.outOfRange(r));
 				mcLowerClip.setClipping(bounds.outOfRange(l));
 
-				Tracer.log("SourceVal: " + srcValue + "\nValue: " + value);
-				Tracer.log("MC Amt: " + modAmount + '\n' + "Lower Limit: " + mod.getLeft() + "\nUpper Limit: " + mod.getRight());
-				
 				switch (mode) {
 				case mcAmount: {
 					String with = m.getModulationAmount().getDecoratedValue(true);
