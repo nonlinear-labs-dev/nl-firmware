@@ -12,29 +12,30 @@
 
 class FileDialogLayout : public DFBLayout
 {
-  private:
-    typedef std::function<void(std::experimental::filesystem::directory_entry)> tCallBackFunction;
-    typedef std::function<bool(std::experimental::filesystem::directory_entry)> tFilterFunction;
+ private:
+  typedef std::function<void(std::experimental::filesystem::directory_entry)> tCallBackFunction;
+  typedef std::function<bool(std::experimental::filesystem::directory_entry)> tFilterFunction;
+
  public:
-    FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header);
-    virtual ~FileDialogLayout();
+  FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header);
+  virtual ~FileDialogLayout();
 
-    bool onButton(int i, bool down, ButtonModifiers modifiers) override;
-    bool onRotary(int inc, ButtonModifiers modifiers) override;
+  bool onButton(int i, bool down, ButtonModifiers modifiers) override;
+  bool onRotary(int inc, ButtonModifiers) override;
 
-    std::experimental::filesystem::directory_entry getSelectedFile();
+  std::experimental::filesystem::directory_entry getSelectedFile();
 
  private:
-    void updateLabels();
-    void overlayInfo();
+  void updateLabels();
+  void overlayInfo();
 
-    int fileCount = 0;
-    FileListControl* fileList = nullptr;
-    Label* positionLabel = nullptr;
+  int fileCount = 0;
+  FileListControl* fileList = nullptr;
+  Label* positionLabel = nullptr;
 
-    InvertedLabel* headerLabel = nullptr;
-    tCallBackFunction commitFunction;
-    FileCrawlerJob crawler;
+  InvertedLabel* headerLabel = nullptr;
+  tCallBackFunction commitFunction;
+  FileCrawlerJob crawler;
 
-    std::string m_header;
+  std::string m_header;
 };

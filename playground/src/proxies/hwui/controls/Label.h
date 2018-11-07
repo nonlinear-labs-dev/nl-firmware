@@ -4,42 +4,77 @@
 
 class Label : public Control
 {
-  private:
-    typedef Control super;
+ private:
+  typedef Control super;
 
-  public:
-    Label (const Glib::ustring &text, const Rect &pos);
-    Label (const Rect &pos);
-    virtual ~Label ();
+ public:
+  struct StringAndSuffix
+  {
+    StringAndSuffix(const Glib::ustring &first, const Glib::ustring &second)
+        : text(first + second)
+        , suffix(second.length())
+    {
+    }
 
-    bool redraw (FrameBuffer &fb) override;
+    StringAndSuffix(const Glib::ustring &first, size_t suffix = 0)
+        : text(first)
+        , suffix(suffix)
+    {
+    }
 
-    virtual bool setText (const Glib::ustring &text, int suffixLength = 0);
-    virtual Glib::ustring getText () const;
+    StringAndSuffix(const char *first, size_t suffix = 0)
+        : text(first)
+        , suffix(suffix)
+    {
+    }
 
-    virtual shared_ptr<Font> getFont () const;
-    void setFontColor (FrameBuffer::Colors fontColor);
-  protected:
-    virtual Font::Justification getJustification () const;
-    virtual int getFontHeight () const;
+    bool operator!=(const StringAndSuffix &other) const
+    {
+      return text != other.text || suffix != other.suffix;
+    }
 
-    virtual Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const;
+    std::pair<Glib::ustring, Glib::ustring> getSplits() const
+    {
+      return std::make_pair<Glib::ustring, Glib::ustring>(text.substr(0, text.length() - suffix),
+                                                          text.substr(text.length() - suffix));
+    }
 
-    virtual void setFontColor (FrameBuffer &fb) const;
-    virtual void setSuffixFontColor (FrameBuffer &fb) const;
+    Glib::ustring text;
+    size_t suffix = 0;
+  };
 
-    virtual int getXOffset () const;
-    virtual int getYOffset () const;
-    virtual int getRightMargin() const;
+  Label(const StringAndSuffix &text, const Rect &pos);
+  Label(const Rect &pos);
+  ~Label() override;
 
-private:
-    virtual void drawSuffix (FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart, const Glib::ustring &secondPart);
-    Label (const Label& other);
-    Label& operator= (const Label&);
+  bool redraw(FrameBuffer &fb) override;
 
+  virtual bool setText(const StringAndSuffix &text);
+  virtual StringAndSuffix getText() const;
 
-    Glib::ustring m_text;
-    int m_suffixLength = 0;
-    FrameBuffer::Colors m_fontColor = FrameBuffer::Colors::Undefined;
+  virtual shared_ptr<Font> getFont() const;
+  void setFontColor(FrameBuffer::Colors fontColor);
+
+ protected:
+  virtual Font::Justification getJustification() const;
+  virtual int getFontHeight() const;
+
+  virtual StringAndSuffix shortenStringIfNeccessary(shared_ptr<Font> font, const StringAndSuffix &text) const;
+
+  virtual void setFontColor(FrameBuffer &fb) const;
+  virtual void setSuffixFontColor(FrameBuffer &fb) const;
+
+  virtual int getXOffset() const;
+  virtual int getYOffset() const;
+  virtual int getRightMargin() const;
+
+ private:
+  virtual void drawSuffix(FrameBuffer &fb, int fullWidth, const Glib::ustring &firstPart,
+                          const Glib::ustring &secondPart);
+
+  Label(const Label &other);
+  Label &operator=(const Label &);
+
+  StringAndSuffix m_text;
+  FrameBuffer::Colors m_fontColor = FrameBuffer::Colors::Undefined;
 };
-
