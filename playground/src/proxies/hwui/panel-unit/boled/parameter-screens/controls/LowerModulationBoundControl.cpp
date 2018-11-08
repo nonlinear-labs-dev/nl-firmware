@@ -17,7 +17,7 @@ LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
   auto height = r.getHeight() / 2;
 
   addControl(new LowerModulationBoundLabel(Rect(0, 0, r.getWidth(), height)));
-  m_dummyButton = addControl(new Button("", Rect(0, r.getHeight() - 11, 58, 11)));
+  m_dummyButton = addControl(new Button("", Rect(0, r.getHeight() - 1 - 11, 58, 11)));
   addControl(new LowerModulationBoundSlider(Rect(0, height, r.getWidth(), height)));
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
