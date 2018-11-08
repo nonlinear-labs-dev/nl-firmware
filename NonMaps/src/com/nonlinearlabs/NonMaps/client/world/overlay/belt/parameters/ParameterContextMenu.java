@@ -15,7 +15,7 @@ public class ParameterContextMenu extends ContextMenu {
 	public ParameterContextMenu(OverlayLayout parent, final Parameter param) {
 		super(parent);
 
-		addChild(new ContextMenuItem(this, "Parameter Info...") {
+		addChild(new ContextMenuItem(this, "Parameter Info ...") {
 			@Override
 			public Control click(Position eventPoint) {
 				ParameterInfoDialog.toggle();
