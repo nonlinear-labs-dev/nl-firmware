@@ -90,7 +90,25 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 				Rect pixRect = getPixRect();
 
 				if (isHWLocked())
-					ctx.fillText("\ue20c", pixRect.getLeft() + ctx.measureText("\ue20c").getWidth() * 0.75, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+					ctx.fillText(getSourcesLockSymbol(), pixRect.getLeft() + ctx.measureText(getSourcesLockSymbol()).getWidth() * 0.75, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			}
+			
+			private String getSourcesLockSymbol() {
+				return "\ue20c";
+			}
+			
+			private String getAmountLockSymbol() {
+				return "\ue20b";
+			}
+			
+			@Override
+			protected String getLockSymbol() {
+				return getAmountLockSymbol();
+			}
+			
+			@Override
+			protected float getLockSymbolOffsetFactor() {
+				return 0.75f;
 			}
 			
 		
