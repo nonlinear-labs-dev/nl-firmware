@@ -8,33 +8,29 @@ class Parameter;
 
 class SelectedParameterModAmount : public Control
 {
-  private:
-    typedef Control super;
+ private:
+  typedef Control super;
 
-  public:
-    // public methods
-    SelectedParameterModAmount (const Rect &rect);
-    virtual ~SelectedParameterModAmount ();
+ public:
+  SelectedParameterModAmount(const Rect& rect);
+  virtual ~SelectedParameterModAmount();
 
-    virtual bool redraw (FrameBuffer &fb) override;
-    void setRange(float from, float to);
+  SelectedParameterModAmount(const SelectedParameterModAmount& other) = delete;
+  SelectedParameterModAmount& operator=(const SelectedParameterModAmount&) = delete;
 
-  protected:
-    virtual void setSliderColor (FrameBuffer &fb);
+  virtual bool redraw(FrameBuffer& fb) override;
+  void setRange(float from, float to);
 
-  private:
-    // private methods
-    SelectedParameterModAmount (const SelectedParameterModAmount& other);
-    SelectedParameterModAmount& operator= (const SelectedParameterModAmount&);
+ protected:
+  virtual void setSliderColor(FrameBuffer& fb);
 
-    void setRangeOrdered(float from, float to);
-    void setParameter (Parameter * param);
-    void onParamValueChanged(const Parameter* param);
+ private:
+  void setRangeOrdered(float from, float to);
+  void setParameter(Parameter* param);
+  void onParamValueChanged(const Parameter* param);
 
-    
-    sigc::connection m_paramValueConnection;
+  sigc::connection m_paramValueConnection;
 
-    float m_from;
-    float m_to;
+  float m_from;
+  float m_to;
 };
-

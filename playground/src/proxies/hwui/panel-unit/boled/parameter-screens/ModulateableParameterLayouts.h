@@ -10,7 +10,6 @@ class ModulateableParameterLayout2 : public virtual ParameterLayout2
   ModulateableParameterLayout2();
 
   void addModAmountSliders(ControlOwner *o);
-
   virtual bool switchToNormalMode();
 };
 
@@ -33,6 +32,10 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   virtual bool switchToNormalMode() override;
 
  private:
+  void onSelectedParameterChanged(Parameter *oldParam, Parameter *newParam);
+  void onCurrentParameterChanged(const Parameter *p);
+  void fixModeIfNecessary(const Parameter *p);
+
   enum class Mode
   {
     ParameterValue,
@@ -50,6 +53,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
 
   Mode m_mode = Mode::ParameterValue;
   Overlay *m_modeOverlay = nullptr;
+  sigc::connection m_paramConnection;
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2
