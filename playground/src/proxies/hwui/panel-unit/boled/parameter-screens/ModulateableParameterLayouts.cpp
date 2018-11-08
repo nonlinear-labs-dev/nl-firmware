@@ -58,6 +58,51 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
   m_modeOverlay = addControl(new Overlay(Rect(0, 0, 256, 64)));
 
   setMode(Mode::ParameterValue);
+
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged));
+}
+
+void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *, Parameter *newParam)
+{
+  m_paramConnection.disconnect();
+
+  if(newParam)
+    m_paramConnection = newParam->onParameterChanged(
+        sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onCurrentParameterChanged));
+}
+
+void ModulateableParameterSelectLayout2::onCurrentParameterChanged(const Parameter *p)
+{
+  fixModeIfNecessary(p);
+}
+
+void ModulateableParameterSelectLayout2::fixModeIfNecessary(const Parameter *p)
+{
+  auto isModulateable = dynamic_cast<const ModulateableParameter *>(p) != nullptr;
+  auto isModulated = isModulateable
+      && dynamic_cast<const ModulateableParameter *>(p)->getModulationSource()
+          != ModulateableParameter::ModulationSource::NONE;
+
+  switch(m_mode)
+  {
+    case Mode::ParameterValue:
+      return;
+
+    case Mode::MacroControlPosition:
+    case Mode::MacroControlAmount:
+    case Mode::CarouselUpperBound:
+    case Mode::CarouselParameterValue:
+    case Mode::CarouselLowerBound:
+      if(!isModulated)
+        setMode(Mode::ParameterValue);
+      break;
+
+    case Mode::MacroControlSelection:
+      if(!isModulateable)
+        setMode(Mode::ParameterValue);
+      break;
+  }
 }
 
 void ModulateableParameterSelectLayout2::copyFrom(Layout *other)
@@ -194,13 +239,11 @@ void ModulateableParameterSelectLayout2::setDefault()
         auto scope = p->getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
         p->undoableSelectModSource(scope->getTransaction(), 0);
       }
-
       return;
 
     case Mode::MacroControlAmount:
       if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
         p->undoableSetMCAmountToDefault();
-
       return;
 
     case Mode::ParameterValue:
