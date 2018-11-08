@@ -377,7 +377,7 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
   auto ret = scaleConverter->getDimension().stringize(displayValue);
 
   if(clipped != v)
-    ret = "!" + ret;
+    ret = "! " + ret;
 
   return ret;
 }

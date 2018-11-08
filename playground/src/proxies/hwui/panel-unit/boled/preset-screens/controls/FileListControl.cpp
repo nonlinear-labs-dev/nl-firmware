@@ -1,8 +1,9 @@
 
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/FileListControl.h>
 
-FileListControl::FileListControl() :
-    selectedItem(0), ControlWithChildren(Rect(0, 0, 256, 36))
+FileListControl::FileListControl()
+    : selectedItem(0)
+    , ControlWithChildren(Rect(0, 0, 256, 36))
 {
   fileList = std::make_unique<FileTools::FileList>();
   upperFile = addControl(new Label("", Rect(0, 0, 256, 12)));
@@ -20,24 +21,22 @@ void FileListControl::setFileList(FileTools::FileList list)
   setSelection(selectedItem);
 }
 
-
 FileListControl::~FileListControl()
 {
-
 }
 
 void FileListControl::setSelection(int index)
 {
-  upperFile->setText(getFileNameAtIndex(index - 1));
-  middleFile->setText(getFileNameAtIndex(index));
-  bottomFile->setText(getFileNameAtIndex(index + 1));
+  upperFile->setText({ getFileNameAtIndex(index - 1) });
+  middleFile->setText({ getFileNameAtIndex(index) });
+  bottomFile->setText({ getFileNameAtIndex(index + 1) });
 
   selectedItem = index;
 }
 
 std::string FileListControl::getFileNameAtIndex(int index)
 {
-  if (index >= 0 && index < fileList->size())
+  if(index >= 0 && index < fileList->size())
     return fileList->at(index).path().filename().string();
   return "";
 }
@@ -46,9 +45,9 @@ void FileListControl::changeSelection(int change)
 {
   auto newIndex = selectedItem + change;
 
-  if (newIndex < 0)
+  if(newIndex < 0)
     setSelection(0);
-  else if (newIndex >= fileList->size())
+  else if(newIndex >= fileList->size())
     setSelection((int) fileList->size() - 1);
   else
     setSelection(newIndex);
@@ -56,7 +55,7 @@ void FileListControl::changeSelection(int change)
 
 fs::directory_entry FileListControl::getSelection() const
 {
-  if (selectedItem < fileList->size())
+  if(selectedItem < fileList->size())
     return fileList->at(selectedItem);
   else
     return fs::directory_entry();
@@ -66,4 +65,3 @@ int FileListControl::getSelectedIndex() const
 {
   return selectedItem;
 }
-

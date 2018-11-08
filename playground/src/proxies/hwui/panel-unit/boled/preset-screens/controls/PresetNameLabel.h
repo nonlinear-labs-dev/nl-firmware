@@ -7,21 +7,20 @@ class Preset;
 
 class PresetNameLabel : public PresetLabel
 {
-  private:
-    typedef PresetLabel super;
+ private:
+  typedef PresetLabel super;
 
-  public:
-  explicit PresetNameLabel (const Rect &pos);
+ public:
+  explicit PresetNameLabel(const Rect &pos);
 
-  ~PresetNameLabel () = default;
+  ~PresetNameLabel() = default;
 
-    void drawBackground (FrameBuffer &fb) override;
-    void update(const Glib::ustring &presetName, bool selected, bool loaded);
+  void drawBackground(FrameBuffer &fb) override;
+  void update(const Glib::ustring &presetName, bool selected, bool loaded);
 
-  protected:
-    Font::Justification getJustification () const override;
-    int getXOffset () const override;
-    int getRightMargin() const override;
-    Glib::ustring shortenStringIfNeccessary (shared_ptr<Font> font, const Glib::ustring &text) const override;
+ protected:
+  Font::Justification getJustification() const override;
+  int getXOffset() const override;
+  int getRightMargin() const override;
+  StringAndSuffix shortenStringIfNeccessary(shared_ptr<Font> font, const StringAndSuffix &text) const override;
 };
-

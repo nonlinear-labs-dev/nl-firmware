@@ -18,7 +18,7 @@ void BankXOfYLabel::onBankSelectionChanged()
   {
     auto bankNumber = to_string(Application::get().getPresetManager()->calcOrderNumber(newBank.get()));
     auto numBanks = to_string(Application::get().getPresetManager()->getNumBanks());
-    setText(bankNumber + " of " + numBanks);
+    setText({ bankNumber + " of " + numBanks });
   }
   else
     setText("");

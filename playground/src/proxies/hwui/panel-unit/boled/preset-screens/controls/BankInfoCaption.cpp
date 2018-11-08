@@ -34,7 +34,7 @@ void BankInfoCaption::onBankChanged()
   {
     auto bankNumber = pm->calcOrderNumber(bank.get());
     auto text = std::to_string(bankNumber);
-    setText(text);
+    setText({ text });
     return;
   }
 }

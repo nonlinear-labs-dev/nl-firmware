@@ -12,12 +12,11 @@
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/controls/Button.h>
 
-FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header) :
-    DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled()),
-    commitFunction(cb),
-    m_header(header),
-    crawler("/mnt/usb-stick/", filter, [ = ]()
-    {
+FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header)
+    : DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
+    , commitFunction(cb)
+    , m_header(header)
+    , crawler("/mnt/usb-stick/", filter, [=]() {
       auto fl = crawler.copyData();
       fileCount = fl.size();
       fileList->setFileList(fl);
@@ -62,7 +61,7 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
         }
         return true;
       case BUTTON_PRESET:
-        hwui->undoableSetFocusAndMode( { UIFocus::Banks, UIMode::Select });
+        hwui->undoableSetFocusAndMode({ UIFocus::Banks, UIMode::Select });
         return true;
       case BUTTON_INC:
         fileList->changeSelection(1);
@@ -92,7 +91,7 @@ void FileDialogLayout::overlayInfo()
   bol.setOverlay(new FileDialogInfoLayout(getSelectedFile(), m_header));
 }
 
-bool FileDialogLayout::onRotary(int inc, ButtonModifiers modifiers)
+bool FileDialogLayout::onRotary(int inc, ButtonModifiers)
 {
   fileList->changeSelection(inc);
   updateLabels();
@@ -102,7 +101,8 @@ bool FileDialogLayout::onRotary(int inc, ButtonModifiers modifiers)
 void FileDialogLayout::updateLabels()
 {
   if(fileCount != 0)
-    positionLabel->setText("[" + std::to_string(fileList->getSelectedIndex() + 1) + "/" + std::to_string(fileCount) + "]");
+    positionLabel->setText(
+        { "[" + std::to_string(fileList->getSelectedIndex() + 1) + "/" + std::to_string(fileCount) + "]" });
   else
     positionLabel->setText("[0/0]");
 }
@@ -111,4 +111,3 @@ std::experimental::filesystem::directory_entry FileDialogLayout::getSelectedFile
 {
   return fileList->getSelection();
 }
-
