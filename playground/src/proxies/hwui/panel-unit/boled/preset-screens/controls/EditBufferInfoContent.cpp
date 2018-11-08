@@ -7,8 +7,6 @@ EditBufferInfoContent::EditBufferInfoContent()
 {
   addInfoField("name", "Name", new MultiLineContent());
   addInfoField("comment", "Comment", new MultiLineContent());
-  addInfoField("lastchange", "Last Change");
-  addInfoField("uiversion", "UI Version");
 
   fillDefaults();
 
@@ -24,7 +22,7 @@ void EditBufferInfoContent::fixLayout()
 {
   int y = 0;
 
-  for(auto infoKey : { "name", "comment", "lastchange", "uiversion" })
+  for(auto infoKey : { "name", "comment" })
   {
     y = infoFields[infoKey]->format(y);
   }
@@ -39,8 +37,6 @@ bool EditBufferInfoContent::fillFromEditBuffer()
   auto eb = getEditBuffer();
   infoFields["name"]->setInfo(eb->getName(), FrameBuffer::Colors::C128);
   infoFields["comment"]->setInfo(eb->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
-  infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(eb->getAttribute("StoreTime", "---")));
-  infoFields["uiversion"]->setInfo(eb->getAttribute("SoftwareVersion", "---"));
   return true;
 }
 
@@ -48,8 +44,6 @@ void EditBufferInfoContent::fillDefaults()
 {
   infoFields["name"]->setInfo("---", FrameBuffer::Colors::C128);
   infoFields["comment"]->setInfo("---", FrameBuffer::Colors::C128);
-  infoFields["lastchange"]->setInfo("---");
-  infoFields["uiversion"]->setInfo("---");
 }
 
 EditBuffer *EditBufferInfoContent::getEditBuffer()
