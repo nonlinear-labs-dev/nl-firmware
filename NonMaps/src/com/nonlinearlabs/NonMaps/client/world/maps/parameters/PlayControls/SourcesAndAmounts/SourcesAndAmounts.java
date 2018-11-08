@@ -93,6 +93,16 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 					ctx.fillText("\ue20c", pixRect.getLeft() + ctx.measureText("\ue20c").getWidth() * 0.75, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 			}
 			
+			@Override
+			protected String getLockSymbol() {
+				return "\ue20c";
+			}
+			
+			@Override
+			protected float getLockSymbolOffsetFactor() {
+				return 0.75f;
+			}
+			
 		
 			@Override
 			public RGB getColorFont() {

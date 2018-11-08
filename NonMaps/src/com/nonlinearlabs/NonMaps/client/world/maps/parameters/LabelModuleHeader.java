@@ -99,9 +99,17 @@ public class LabelModuleHeader extends LabelSmall {
 		super.draw(ctx, invalidationMask);
 
 		if (isLocked())
-			ctx.fillText("\ue20b", pixRect.getRight() - ctx.measureText("\ue20b").getWidth() * 0.75, pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			ctx.fillText(getLockSymbol(), pixRect.getRight() - ctx.measureText(getLockSymbol()).getWidth() * getLockSymbolOffsetFactor(), pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+	}
+	
+	protected String getLockSymbol() {
+		return "\ue20A";
 	}
 
+	protected float getLockSymbolOffsetFactor() {
+		return (float) 1;
+	}
+	
 	@Override
 	protected double getFontHeight() {
 		return 16;
