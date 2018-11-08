@@ -51,7 +51,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				});
 			}
 
-			addChild(new ContextMenuItem(this, "Import Bank from File...") {
+			addChild(new ContextMenuItem(this, "Import Bank from File ...") {
 				@Override
 				public Control click(final Position eventPoint) {
 					new TextUpload(new TextUploadedHandler() {
