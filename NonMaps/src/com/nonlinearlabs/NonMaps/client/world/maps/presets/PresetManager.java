@@ -137,13 +137,10 @@ public class PresetManager extends MapsLayout {
 
 	public void update(Node presetManagerNode) {
 
-		boolean shouldUpdateFilter = false;
-
 		if (ServerProxy.didChange(presetManagerNode)) {
 			readPlaygroundFileVersion(presetManagerNode);
 
 			Preset oldPresetSelection = getSelectedPreset();
-			Preset oldLoadedPreset = getLoadedPreset();
 			NodeList children = presetManagerNode.getChildNodes();
 
 			for (int i = 0; i < children.getLength(); i++) {
@@ -154,16 +151,11 @@ public class PresetManager extends MapsLayout {
 			}
 
 			Preset newPresetSelection = getSelectedPreset();
-			Preset newLoadedPreset = getLoadedPreset();
 
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
 			}
-
-			if (oldLoadedPreset != newLoadedPreset) {
-				onPresetLoadStatusChanged(newLoadedPreset);
-			}
-
+			
 			RenameDialog.onPresetManagerUpdate(this);
 		}
 	}
@@ -188,11 +180,6 @@ public class PresetManager extends MapsLayout {
 
 		if (hasMultiplePresetSelection())
 			closeMultiSelection();
-	}
-
-	public void onPresetLoadStatusChanged(Preset newEditBuffer) {
-		if (PresetInfoDialog.isShown())
-			PresetInfoDialog.editBufferInfoPage.updateInfo(PresetInfoDialog.getEditBuffer());
 	}
 
 	private void scrollToSelectedPreset() {
@@ -584,16 +571,6 @@ public class PresetManager extends MapsLayout {
 		return this;
 	}
 
-	private void deletePreset(Preset p) {
-		ServerProxy sp = NonMaps.get().getServerProxy();
-		sp.deletePreset(p, false);
-	}
-
-	private void deleteBank(Bank b) {
-		ServerProxy sp = NonMaps.get().getServerProxy();
-		sp.deleteBank(b);
-	}
-
 	public void selectPreviousPreset(Initiator initiator) {
 		if (isInStoreSelectMode()) {
 			getStoreSelectMode().selectPreviousPreset();
@@ -703,7 +680,6 @@ public class PresetManager extends MapsLayout {
 
 		if (p != null) {
 			getNonMaps().getServerProxy().loadPreset(p);
-			onPresetLoadStatusChanged(p);
 		}
 	}
 

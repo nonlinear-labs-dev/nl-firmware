@@ -1867,7 +1867,6 @@ button {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   background-color: #202020;
-  border-top: none;
 }
 
 .preset-info-dialog td:nth-of-type (2) {

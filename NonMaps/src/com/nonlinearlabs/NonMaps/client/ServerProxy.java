@@ -103,12 +103,6 @@ public class ServerProxy {
 					presetManagerNode, deviceInfo, undoNode);
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
-			if (PresetInfoDialog.isShown()) {
-				PresetInfoDialog.theDialog.updateEditBuffer(editBufferNode);
-			} else {
-				PresetInfoDialog.setLastUpdateNode(editBufferNode);
-			}
-
 			setPlaygroundSoftwareVersion(deviceInfo);
 			checkSoftwareVersionCompatibility();
 
