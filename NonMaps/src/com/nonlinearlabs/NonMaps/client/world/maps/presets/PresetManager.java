@@ -175,10 +175,6 @@ public class PresetManager extends MapsLayout {
 				onPresetSelectionChanged(newPresetSelection);
 			}
 
-			if (oldLoadedPreset != newLoadedPreset) {
-				onPresetLoadStatusChanged(newLoadedPreset);
-			}
-
 			if (shouldUpdateFilter)
 				refreshFilter(false);
 
@@ -206,11 +202,6 @@ public class PresetManager extends MapsLayout {
 
 		if (hasMultiplePresetSelection())
 			closeMultiSelection();
-	}
-
-	public void onPresetLoadStatusChanged(Preset newEditBuffer) {
-		if (PresetInfoDialog.isShown())
-			PresetInfoDialog.editBufferInfoPage.updateInfo(PresetInfoDialog.getEditBuffer());
 	}
 
 	private void scrollToSelectedPreset() {
@@ -721,7 +712,6 @@ public class PresetManager extends MapsLayout {
 
 		if (p != null) {
 			getNonMaps().getServerProxy().loadPreset(p);
-			onPresetLoadStatusChanged(p);
 		}
 	}
 

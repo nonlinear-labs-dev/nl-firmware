@@ -278,8 +278,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 		if (loadedPreset != null && !loadedPreset.equals(this.loadedPreset)) {
 			this.loadedPreset = loadedPreset;
 			AppendOverwriteInsertPresetDialog.close();
-			PresetManager m = NonMaps.get().getNonLinearWorld().getPresetManager();
-			m.onPresetLoadStatusChanged(m.findPreset(loadedPreset));
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
 
