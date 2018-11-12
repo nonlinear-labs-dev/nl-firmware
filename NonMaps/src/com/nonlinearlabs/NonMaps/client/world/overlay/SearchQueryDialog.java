@@ -258,6 +258,7 @@ public class SearchQueryDialog extends GWTDialog {
 
 	private FlowPanel createButtonPanel() {
 		FlowPanel buttonPanel = new FlowPanel();
+		buttonPanel.getElement().addClassName("prev-next-wrapper");
 		Button nextMatch = new Button("Next");
 		Button previousMatch = new Button("Previous");
 		previousMatch.addClickHandler(new ClickHandler() {

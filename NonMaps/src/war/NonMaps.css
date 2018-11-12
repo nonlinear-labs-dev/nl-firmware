@@ -1779,8 +1779,8 @@ input.param-name-edit {
 .prev-next-button-div {
 	margin: auto;
     margin-bottom: 5px;
-    display: block;
-    width: 50%;
+    display: inline-block;
+    width:100%;
 }
 
 .gwt-Button.next-button {
@@ -1851,6 +1851,10 @@ button {
   margin: 0;
   border-bottom: 1px solid rgb(99, 99, 99);
   background-color: #1d1d1d;
+}
+
+.prev-next-wrapper {
+	text-align: center;
 }
 
 .preset-info-dialog .tab.selected {
