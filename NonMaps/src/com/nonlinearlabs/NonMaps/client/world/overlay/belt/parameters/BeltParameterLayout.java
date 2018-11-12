@@ -449,8 +449,12 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	}
 
 	public String[] getDecoratedValue(boolean b) {
+		
+		mcUpperClip.setClipping(false);
+		mcLowerClip.setClipping(false);
+		
 		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-
+		
 		if (p instanceof ModulatableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
 			MacroControls s = m.getModulationSource();
