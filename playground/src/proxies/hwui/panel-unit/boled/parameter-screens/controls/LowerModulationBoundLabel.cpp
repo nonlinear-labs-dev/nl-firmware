@@ -5,6 +5,7 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundLabel.h>
 #include <utility>
+#include <tools/StringTools.h>
 
 class MacroControlParameter;
 
@@ -20,9 +21,19 @@ LowerModulationBoundLabel::~LowerModulationBoundLabel()
 void LowerModulationBoundLabel::updateText(MacroControlParameter *mcParam, ModulateableParameter *modulatedParam)
 {
   auto rangeDisplayValues = modulatedParam->getModRangeAsDisplayValues();
+  const auto fine = isHighlight() && Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE);
+  auto displayValue = rangeDisplayValues.first + (fine ? " F" : "");
 
-  if(isHighlight() && Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
-    setText({ rangeDisplayValues.first, " F" });
+  auto textClipped = false;
+
+  if(getFont()->getStringWidth(displayValue) >= 55)
+  {
+    displayValue = StringTools::removeSpaces(displayValue);
+    textClipped = true;
+  }
+
+  if(fine)
+    setText({ displayValue, textClipped ? 1 : 2 });
   else
-    setText(rangeDisplayValues.first);
+    setText(displayValue);
 }
