@@ -1,5 +1,6 @@
 
 #include <vector>
+#include <algorithm>
 #include "StringTools.h"
 
 namespace StringTools {
@@ -23,5 +24,12 @@ namespace StringTools {
       }
       return ret;
     }
+
+    Glib::ustring removeSpaces(const Glib::ustring& in) {
+        std::string ret(in);
+        ret.erase(std::remove_if(ret.begin(), ret.end(), [&](char c){ return std::isspace(c);}), ret.end());
+        return ret;
+    }
+
 }
 
