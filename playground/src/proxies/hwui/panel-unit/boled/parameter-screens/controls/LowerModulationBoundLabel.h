@@ -8,7 +8,6 @@ class LowerModulationBoundLabel : public ModulationBoundLabel
   public:
     LowerModulationBoundLabel (const Rect &r);
     virtual ~LowerModulationBoundLabel ();
-
   protected:
     void updateText(MacroControlParameter *mcParam, ModulateableParameter *modulatedParam) override;
 };
