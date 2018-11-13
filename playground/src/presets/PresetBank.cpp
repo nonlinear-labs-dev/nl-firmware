@@ -86,7 +86,9 @@ void PresetBank::deleteOldPresetFiles(RefPtr<Gio::File> bankFolder)
       {
         if(!getPreset(withoutExtension))
         {
-          bankFolder->get_child(withoutExtension)->remove();
+          auto presetFile = bankFolder->get_child(fileName);
+          if(presetFile)
+            presetFile->remove();
         }
       }
     }
