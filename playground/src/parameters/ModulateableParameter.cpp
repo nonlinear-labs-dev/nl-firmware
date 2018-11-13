@@ -206,16 +206,15 @@ void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionP
                                                       ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
-  auto bipolarRange = ScaleConverter::getControlPositionRangeBipolar();
+  double denominator = getModAmountDenominator(modifiers);
+  int rasterized = round(controlVal * denominator);
+  controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
+  setModulationAmount(transaction, controlVal);
+}
 
-  if(modifiers[ButtonModifier::SHIFT]) {
-    controlVal = inc < 0 ? bipolarRange.getMin() : bipolarRange.getMax();
-  } else {
-    double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
-    auto rasterized = static_cast<int>(round(controlVal * denominator));
-    controlVal = bipolarRange.clip((rasterized + inc) / denominator);
-  }
-  setModulationAmount(std::move(transaction), controlVal);
+int ModulateableParameter::getModAmountDenominator(const ButtonModifiers &modifiers) const
+{
+  return modifiers[FINE] ? 1000 : 100;
 }
 
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
