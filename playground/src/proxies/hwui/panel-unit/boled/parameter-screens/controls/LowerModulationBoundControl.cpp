@@ -96,7 +96,6 @@ double LowerModulationBoundControl::calcDominator(const ButtonModifiers &modifie
   auto fine = modifiers[FINE];
   auto fineDenominator = modulatedParam->getValue().getFineDenominator();
   auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
-  DebugLevel::warning("Coarse: ", coarseDenominator);
   auto denominator = fine ? fineDenominator : coarseDenominator;
   return denominator;
 }
