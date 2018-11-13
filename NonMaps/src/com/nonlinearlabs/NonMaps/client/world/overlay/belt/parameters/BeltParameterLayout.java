@@ -53,7 +53,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private ParameterClippingLabel mcLowerClip;
 
 	private QuantizedClippedValue currentValue;
-
+	
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
 
@@ -453,10 +453,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	}
 
 	public String[] getDecoratedValue(boolean b) {
-		
-		mcUpperClip.setClipping(false);
-		mcLowerClip.setClipping(false);
-		
+				
 		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 		
 		if (p instanceof ModulatableParameter) {
@@ -484,10 +481,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				double r = NLMath.quantize(modNormalized.getRight(), 1000);
 				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
-
-				mcUpperClip.setClipping(bounds.outOfRange(r));
-				mcLowerClip.setClipping(bounds.outOfRange(l));
-
+								
 				switch (mode) {
 				case mcAmount: {
 					String with = m.getModulationAmount().getDecoratedValue(true);
