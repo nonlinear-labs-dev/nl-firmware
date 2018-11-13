@@ -19,8 +19,8 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 	@Override
 	public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
 		
-		oldQuantizedValue = NLMath.quantize(oldQuantizedValue, 100);
-		newQuantizedValue = NLMath.quantize(newQuantizedValue, 100);
+		oldQuantizedValue = NLMath.quantize(oldQuantizedValue, 1000);
+		newQuantizedValue = NLMath.quantize(newQuantizedValue, 1000);
 		
 		Parameter p = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 
