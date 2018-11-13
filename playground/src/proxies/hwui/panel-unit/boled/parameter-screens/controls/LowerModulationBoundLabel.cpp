@@ -26,7 +26,7 @@ void LowerModulationBoundLabel::updateText(MacroControlParameter *mcParam, Modul
 
   auto textClipped = false;
 
-  if(getFont()->getStringWidth(displayValue) >= 55)
+  if(getFont()->getStringWidth(displayValue) >= getWidth())
   {
     displayValue = StringTools::removeSpaces(displayValue);
     textClipped = true;
