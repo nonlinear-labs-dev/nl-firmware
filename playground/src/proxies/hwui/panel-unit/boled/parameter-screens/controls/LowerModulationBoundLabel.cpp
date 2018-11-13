@@ -22,18 +22,10 @@ void LowerModulationBoundLabel::updateText(MacroControlParameter *mcParam, Modul
 {
   auto rangeDisplayValues = modulatedParam->getModRangeAsDisplayValues();
   const auto fine = isHighlight() && Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE);
-  auto displayValue = rangeDisplayValues.first + (fine ? " F" : "");
-
-  auto textClipped = false;
-
-  if(getFont()->getStringWidth(displayValue) >= getWidth())
-  {
-    displayValue = StringTools::removeSpaces(displayValue);
-    textClipped = true;
-  }
 
   if(fine)
-    setText({ displayValue, textClipped ? 1 : 2 });
+    setText({ rangeDisplayValues.first, " F" });
   else
-    setText(displayValue);
+    setText({ rangeDisplayValues.first });
 }
+
