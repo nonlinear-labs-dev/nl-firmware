@@ -319,9 +319,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-		
-		fine = NonMaps.get().getNonLinearWorld().isShiftDown();
-		
+				
 		if (currentIncrementalChanger != null) {
 			double amount = newPoint.getX() - oldPoint.getX();
 			currentIncrementalChanger.changeBy(fine, amount);
