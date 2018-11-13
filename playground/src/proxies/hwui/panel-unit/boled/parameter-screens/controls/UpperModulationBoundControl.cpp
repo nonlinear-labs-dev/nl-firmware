@@ -71,7 +71,7 @@ double UpperModulationBoundControl::calcDenominator(const ButtonModifiers &modif
                                                     const ModulateableParameter *modulatedParam) const
 {
   auto fine = modifiers[FINE];
-  auto fineDenominator = modulatedParam->getModulationAmountFineDenominator();
+  auto fineDenominator = modulatedParam->getValue().getFineDenominator();;
   auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
   return fine ? fineDenominator : coarseDenominator;
 }
