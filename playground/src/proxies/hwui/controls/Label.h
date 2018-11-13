@@ -30,7 +30,8 @@ class Label : public Control
 
     bool operator!=(const StringAndSuffix &other) const
     {
-      return text != other.text || suffix != other.suffix;
+
+      return text.raw() != other.text.raw() || suffix != other.suffix;
     }
 
     std::pair<Glib::ustring, Glib::ustring> getSplits() const
