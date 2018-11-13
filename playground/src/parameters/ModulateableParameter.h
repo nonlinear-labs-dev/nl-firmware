@@ -51,12 +51,15 @@ class ModulateableParameter : public Parameter
 
     std::pair<Glib::ustring, Glib::ustring> getModRangeAsDisplayValues() const;
 
+
+
     static void registerTests ();
 
     virtual DFBLayout *createLayout (FocusAndMode focusAndMode) const override;
     void *getAmountCookie ();
 
     std::pair<tControlPositionValue, tControlPositionValue> getModulationRange(bool clipped) const;
+    int getModAmountDenominator(const ButtonModifiers &modifiers) const;
 
   protected:
     void writeDocProperties (Writer &writer, tUpdateID knownRevision) const override;
@@ -67,5 +70,6 @@ class ModulateableParameter : public Parameter
 
     tDisplayValue m_modulationAmount;
     ModulationSource m_modSource;
+
 };
 
