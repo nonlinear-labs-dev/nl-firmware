@@ -7,7 +7,6 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/CurrentModulatedValueLabel.h>
-#include <tools/StringTools.h>
 
 class MacroControlParameter;
 
