@@ -70,8 +70,5 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 double UpperModulationBoundControl::calcDenominator(const ButtonModifiers &modifiers,
                                                     const ModulateableParameter *modulatedParam) const
 {
-  auto fine = modifiers[FINE];
-  auto fineDenominator = modulatedParam->getModulationAmountFineDenominator();
-  auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
-  return fine ? fineDenominator : coarseDenominator;
+  return modulatedParam->getModAmountDenominator(modifiers);
 }

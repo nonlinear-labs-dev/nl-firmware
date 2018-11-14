@@ -93,9 +93,5 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 double LowerModulationBoundControl::calcDominator(const ButtonModifiers &modifiers,
                                                   const ModulateableParameter *modulatedParam) const
 {
-  auto fine = modifiers[FINE];
-  auto fineDenominator = modulatedParam->getModulationAmountFineDenominator();
-  auto coarseDenominator = modulatedParam->getModulationAmountCoarseDenominator();
-  auto denominator = fine ? fineDenominator : coarseDenominator;
-  return denominator;
+  return modulatedParam->getModAmountDenominator(modifiers);
 }

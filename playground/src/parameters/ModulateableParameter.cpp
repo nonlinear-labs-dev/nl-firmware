@@ -209,10 +209,15 @@ void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionP
                                                       ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
-  double denominator = modifiers[ButtonModifier::FINE] ? 1000 : 100;
+  double denominator = getModAmountDenominator(modifiers);
   int rasterized = round(controlVal * denominator);
   controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
   setModulationAmount(transaction, controlVal);
+}
+
+int ModulateableParameter::getModAmountDenominator(const ButtonModifiers &modifiers) const
+{
+  return modifiers[FINE] ? 1000 : 100;
 }
 
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
