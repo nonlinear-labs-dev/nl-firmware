@@ -6,6 +6,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationBoundLabel.h>
+#include <tools/StringTools.h>
 
 ModulationBoundLabel::ModulationBoundLabel(const Rect &r)
     : super(r)
@@ -89,12 +90,12 @@ void ModulationBoundLabel::setSuffixFontColor(FrameBuffer &fb) const
 Label::StringAndSuffix ModulationBoundLabel::shortenStringIfNeccessary(shared_ptr<Font> font,
                                                                        const StringAndSuffix &text) const
 {
-  auto avilableWidth = getWidth() - getXOffset() - getRightMargin();
-
-  if(font->getStringWidth(text.text) > avilableWidth)
+  if(font->getStringWidth(text.text) >= getWidth())
   {
-    return Label::StringAndSuffix(text.getSplits().first, 0);
+    auto sText = StringTools::removeSpaces(text.text);
+    if(sText.find_last_of('F') != sText.npos)
+      return { sText, 1 };
+    return { sText };
   }
-
   return text;
 }
