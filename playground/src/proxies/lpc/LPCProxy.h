@@ -78,8 +78,6 @@ class LPCProxy
 
   typedef shared_ptr<MessageComposer> tMessageComposerPtr;
   void queueToLPC(tMessageComposerPtr cmp);
-  void writePendingData();
-  bool sendQueue();
 
   gint16 separateSignedBitToComplementary(uint16_t v) const;
   void traceBytes(const RefPtr<Bytes> bytes) const;
@@ -96,10 +94,7 @@ class LPCProxy
   void onLPCConnected();
 
   bool m_suppressParamChanges = false;
-  atomic<bool> m_queueSendingScheduled;
   shared_ptr<MessageParser> m_msgParser;
-
-  list<tMessageComposerPtr> m_queueToLPC;
 
   int m_lastTouchedRibbon;
   Signal<void, int> m_signalRibbonTouched;

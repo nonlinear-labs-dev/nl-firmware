@@ -24,8 +24,7 @@
 const int c_testTimePerFrequency = 5000;
 
 LPCProxy::LPCProxy()
-    : m_queueSendingScheduled(false)
-    , m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID())
+    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID())
     , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))
     , m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
 {
@@ -243,42 +242,9 @@ void LPCProxy::sendParameter(const Parameter *param)
 
 void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
 {
-  if(!m_queueToLPC.empty())
-    if(cmp->canReplace(m_queueToLPC.back().get()))
-      m_queueToLPC.pop_back();
-
-  m_queueToLPC.push_back(cmp);
-
-  bool expected = false;
-
-  if(m_queueSendingScheduled.compare_exchange_strong(expected, true))
-    Application::get().getMainContext()->signal_idle().connect(sigc::mem_fun(this, &LPCProxy::sendQueue));
-}
-
-bool LPCProxy::sendQueue()
-{
-  writePendingData();
-
-  if(m_queueToLPC.empty())
-  {
-    m_queueSendingScheduled = false;
-    return false;
-  }
-  return true;
-}
-
-void LPCProxy::writePendingData()
-{
-  if(!m_queueToLPC.empty())
-  {
-    tMessageComposerPtr cmp = m_queueToLPC.front();
-    m_queueToLPC.pop_front();
-
-    auto flushed = cmp->flush();
-
-    traceBytes(flushed);
-    Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::Lpc, flushed);
-  }
+  auto flushed = cmp->flush();
+  traceBytes(flushed);
+  Application::get().getWebSocketSession()->sendMessage(WebSocketSession::Domain::Lpc, flushed);
 }
 
 void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
@@ -302,7 +268,6 @@ void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
 void LPCProxy::sendEditBuffer()
 {
   DebugLevel::info("send preset to LPC");
-
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   tMessageComposerPtr cmp(new EditBufferMessageComposer());
