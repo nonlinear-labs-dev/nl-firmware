@@ -5,7 +5,6 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundLabel.h>
 #include <utility>
-#include <tools/StringTools.h>
 
 class MacroControlParameter;
 
