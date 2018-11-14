@@ -8,7 +8,6 @@
 #include "xml/Writer.h"
 #include <math.h>
 #include "testing/TestDriver.h"
-#include "tools/StringTools.h"
 #include "http/UpdateDocumentMaster.h"
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
