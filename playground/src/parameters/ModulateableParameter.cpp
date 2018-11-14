@@ -6,7 +6,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include "testing/TestDriver.h"
-#include "tools/StringTools.h"
 #include "http/UpdateDocumentMaster.h"
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
