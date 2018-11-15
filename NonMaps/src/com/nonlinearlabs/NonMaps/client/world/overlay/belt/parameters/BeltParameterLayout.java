@@ -4,8 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -53,7 +51,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private ParameterClippingLabel mcLowerClip;
 
 	private QuantizedClippedValue currentValue;
-	
+
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
 
@@ -319,7 +317,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-				
+
 		if (currentIncrementalChanger != null) {
 			double amount = newPoint.getX() - oldPoint.getX();
 			currentIncrementalChanger.changeBy(fine, amount);
@@ -452,9 +450,9 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	}
 
 	public String[] getDecoratedValue(boolean b) {
-				
+
 		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-		
+
 		if (p instanceof ModulatableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
 			MacroControls s = m.getModulationSource();
@@ -480,7 +478,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 				double r = NLMath.quantize(modNormalized.getRight(), 1000);
 				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
-								
+
 				switch (mode) {
 				case mcAmount: {
 					String with = m.getModulationAmount().getDecoratedValue(true);

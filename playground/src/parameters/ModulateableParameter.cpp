@@ -217,14 +217,21 @@ void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionP
 
 int ModulateableParameter::getModAmountDenominator(const ButtonModifiers &modifiers) const
 {
-  return modifiers[FINE] ? 1000 : 100;
+  return modifiers[FINE] ? getModulationAmountFineDenominator() : getModulationAmountCoarseDenominator();
 }
 
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
+
   writer.writeTextElement("modAmount", to_string(m_modulationAmount));
   writer.writeTextElement("modSrc", to_string(m_modSource));
+
+  if(shouldWriteDocProperties(knownRevision))
+  {
+    writer.writeTextElement("mod-amount-coarse", to_string(getModulationAmountCoarseDenominator()));
+    writer.writeTextElement("mod-amount-fine", to_string(getModulationAmountFineDenominator()));
+  }
 }
 
 void ModulateableParameter::writeDifferences(Writer &writer, Parameter *other) const

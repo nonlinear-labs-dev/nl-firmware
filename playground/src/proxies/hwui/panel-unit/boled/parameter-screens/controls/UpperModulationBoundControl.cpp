@@ -34,25 +34,12 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
     if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID)))
     {
       auto range = modulatedParam->getModulationRange(true);
-
-      if(modulatedParam->isBiPolar())
-      {
-        range.first = range.first * 2 - 1;
-        range.second = range.second * 2 - 1;
-      }
-
-      auto &cpRange = modulatedParam->getValue().getScaleConverter()->getControlPositionRange();
       auto srcValue = mcParam->getControlPositionValue();
       double denominator = calcDenominator(modifiers, modulatedParam);
       auto newRight = (round(range.second * denominator) + inc) / denominator;
-
-      newRight = cpRange.clip(newRight);
-
+      newRight = ScaleConverter::getControlPositionRangeUnipolar().clip(newRight);
       auto newModAmount = newRight - range.first;
       auto newValue = range.first + newModAmount * srcValue;
-
-      if(modulatedParam->isBiPolar())
-        newModAmount /= 2;
 
       auto &undoScope = modulatedParam->getUndoScope();
       auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set '%0'",
@@ -60,7 +47,11 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       auto transaction = scope->getTransaction();
 
       modulatedParam->undoableSetModAmount(transaction, newModAmount);
-      modulatedParam->setCPFromHwui(transaction, newValue);
+      if(modulatedParam->isBiPolar())
+        modulatedParam->setCPFromHwui(transaction, newValue * 2 - 1);
+      else
+        modulatedParam->setCPFromHwui(transaction, newValue);
+
       return true;
     }
   }
