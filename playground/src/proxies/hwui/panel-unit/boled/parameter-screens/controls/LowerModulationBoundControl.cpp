@@ -24,10 +24,6 @@ LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
       mem_fun(this, &LowerModulationBoundControl::onSelectionChanged));
 }
 
-LowerModulationBoundControl::~LowerModulationBoundControl()
-{
-}
-
 void LowerModulationBoundControl::onSelectionChanged(Parameter *, Parameter *newParam)
 {
   m_paramChanged.disconnect();
@@ -58,13 +54,25 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
     if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID)))
     {
       auto range = modulatedParam->getModulationRange(true);
-      auto srcValue = mcParam->getControlPositionValue();
-      double denominator = calcDominator(modifiers, modulatedParam);
-      auto newLeft = (round(range.first * denominator) + inc) / denominator;
-      newLeft = ScaleConverter::getControlPositionRangeUnipolar().clip(newLeft);
 
+      if(modulatedParam->isBiPolar())
+      {
+        range.first = 2 * range.first - 1;
+        range.second = 2 * range.second - 1;
+      }
+
+      auto srcValue = mcParam->getControlPositionValue();
+      double denominator = modifiers[FINE] ? modulatedParam->getValue().getFineDenominator()
+                                           : modulatedParam->getValue().getCoarseDenominator();
+
+      auto newLeft = (round(range.first * denominator) + inc) / denominator;
+      newLeft = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().clip(newLeft);
       auto newModAmount = range.second - newLeft;
+
       auto newValue = newLeft + newModAmount * srcValue;
+
+      if(modulatedParam->isBiPolar())
+        newModAmount /= 2;
 
       auto &undoScope = modulatedParam->getUndoScope();
       auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set '%0'",
@@ -72,20 +80,9 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       auto transaction = scope->getTransaction();
 
       modulatedParam->undoableSetModAmount(transaction, newModAmount);
-
-      if(modulatedParam->isBiPolar())
-        modulatedParam->setCPFromHwui(transaction, newValue * 2 - 1);
-      else
-        modulatedParam->setCPFromHwui(transaction, newValue);
-
+      modulatedParam->setCPFromHwui(transaction, newValue);
       return true;
     }
   }
   return false;
-}
-
-double LowerModulationBoundControl::calcDominator(const ButtonModifiers &modifiers,
-                                                  const ModulateableParameter *modulatedParam) const
-{
-  return modulatedParam->getModAmountDenominator(modifiers);
 }

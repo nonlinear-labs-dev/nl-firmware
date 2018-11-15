@@ -11,6 +11,4 @@ class UpperModulationBoundControl : public ControlWithChildren, public RotaryEnc
  public:
   explicit UpperModulationBoundControl(const Rect &r);
   bool onRotary(int inc, ButtonModifiers modifiers) override;
-
-  double calcDenominator(const ButtonModifiers &modifiers, const ModulateableParameter *modulatedParam) const;
 };

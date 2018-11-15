@@ -399,7 +399,15 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control doubleClick() {
-		if (currentIncrementalChanger != null && mode == Mode.paramValue) {
+		if (currentIncrementalChanger == null) {
+			if (currentValue == null)
+				setupValue();
+
+			if (currentValue != null)
+				currentIncrementalChanger = currentValue.startUserEdit(slider.getPixRect().getWidth());
+		}
+
+		if (currentIncrementalChanger != null) {
 			currentIncrementalChanger.getValue().setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
 		}
 		return this;
