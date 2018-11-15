@@ -18,10 +18,6 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 
 	@Override
 	public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
-		
-		oldQuantizedValue = NLMath.quantize(oldQuantizedValue, 1000);
-		newQuantizedValue = NLMath.quantize(newQuantizedValue, 1000);
-		
 		Parameter p = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 
 		if (p instanceof ModulatableParameter) {
@@ -51,7 +47,7 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 					double modRight = modLeft + modAmount;
 					newModAmount = modRight - newQuantizedValue;
 					newValue = newQuantizedValue + newModAmount * srcValue;
-				}
+				}  
 
 				newValue = modulatedParam.getValue().clip(newValue);
 
