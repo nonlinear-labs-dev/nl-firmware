@@ -344,7 +344,16 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	}
 
 	private QuantizedClippedValue createBoundDummyValue(ModulatableParameter p, final boolean upper) {
-		QuantizedClippedValue dummyValue = new QuantizedClippedValue(new UpperLowerBoundListener(upper));
+		QuantizedClippedValue dummyValue = new QuantizedClippedValue(new UpperLowerBoundListener(upper)) {
+			@Override
+			public void setToDefault(Initiator initiator) {
+				Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
+				if (p instanceof ModulatableParameter) {
+					ModulatableParameter m = (ModulatableParameter) p;
+					m.getModulationAmount().setRawValue(Initiator.EXPLICIT_USER_ACTION, m.getModulationAmount().getDefaultValue());
+				}
+			}
+		};
 		dummyValue.setCoarseDenominator(p.getValue().getCoarseDenominator());
 		dummyValue.setFineDenominator(p.getValue().getFineDenominator());
 		dummyValue.setBipolar(p.getValue().isBipolar());
