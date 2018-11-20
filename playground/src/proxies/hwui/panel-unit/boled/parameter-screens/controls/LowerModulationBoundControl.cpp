@@ -10,6 +10,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundControl.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundSlider.h>
+#include <functional/LambdaFactory.h>
 
 LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
     : super(r)
@@ -87,6 +88,18 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       modulatedParam->setCPFromHwui(transaction, newValue);
       return true;
     }
+  }
+  return false;
+}
+
+bool LowerModulationBoundControl::onButton(int i, bool down, ButtonModifiers modifiers)
+{
+  switch(i)
+  {
+    case BUTTON_DEFAULT:
+      if(down && LambdaFactory::setCurrentModulatedParamAmountToZero()())
+        return true;
+      break;
   }
   return false;
 }

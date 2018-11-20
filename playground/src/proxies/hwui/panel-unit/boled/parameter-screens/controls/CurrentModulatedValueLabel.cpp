@@ -7,6 +7,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/CurrentModulatedValueLabel.h>
+#include <functional/LambdaFactory.h>
 
 class MacroControlParameter;
 
@@ -34,6 +35,20 @@ bool CurrentModulatedValueLabel::onRotary(int inc, ButtonModifiers modifiers)
     auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
     p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
     return true;
+  }
+  return false;
+}
+
+bool CurrentModulatedValueLabel::onButton(int i, bool down, ButtonModifiers modifires)
+{
+  switch(i)
+  {
+    case BUTTON_DEFAULT:
+      if(down && LambdaFactory::setCurrentParameterToDefault()())
+      {
+        return true;
+      }
+      break;
   }
   return false;
 }

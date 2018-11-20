@@ -122,6 +122,11 @@ void ModulateableParameterSelectLayout2::init()
 
 bool ModulateableParameterSelectLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 {
+  if(auto m = dynamic_cast<ModulationCarousel*>(getCarousel())) {
+    if(m->onButton(i, down, modifiers))
+      return true;
+  }
+
   if(down)
   {
     switch(i)
