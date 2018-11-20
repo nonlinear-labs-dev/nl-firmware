@@ -51,7 +51,7 @@ var modulation = {
 	updateAmt: function(value) {
 		this.values.amt = this.calcScaledValue(value);
 		document.getElementById("AmountValue").innerHTML = this.calcDisplayValue(value);
-		this.values.parBase = this.values.parUncl - (this.values.amt * this.values.mc);
+		this.values.parBase = this.values.par - (this.values.amt * this.values.mc);
 		this.values.parCeil = this.values.parBase + this.values.amt;
 		this.redraw();
 	},
