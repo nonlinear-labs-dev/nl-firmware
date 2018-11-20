@@ -7,6 +7,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/CurrentModulatedValueLabel.h>
+#include <functional/LambdaFactory.h>
 
 class MacroControlParameter;
 
@@ -14,9 +15,6 @@ CurrentModulatedValueLabel::CurrentModulatedValueLabel(const Rect &r)
     : super(r)
 {
 }
-
-CurrentModulatedValueLabel::~CurrentModulatedValueLabel ()
-= default;
 
 void CurrentModulatedValueLabel::updateText(MacroControlParameter *mcParam, ModulateableParameter *modulatedParam)
 {
@@ -37,9 +35,16 @@ bool CurrentModulatedValueLabel::onRotary(int inc, ButtonModifiers modifiers)
   return false;
 }
 
-void CurrentModulatedValueLabel::setDefault() {
-  if(auto param = getModulatedParameter()) {
-    auto scope = param->getUndoScope().startTransaction("Set Default '%0'", param->getGroupAndParameterName());
-    param->setCPFromHwui(scope->getTransaction(), param->getDefaultValue());
+bool CurrentModulatedValueLabel::onButton(int i, bool down, ButtonModifiers modifires)
+{
+  switch(i)
+  {
+    case BUTTON_DEFAULT:
+      if(down && LambdaFactory::setCurrentParameterToDefault()())
+      {
+        return true;
+      }
+      break;
   }
+  return false;
 }

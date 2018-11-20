@@ -15,10 +15,6 @@ ModulationCarousel::ModulationCarousel(Mode mode, const Rect &pos)
   addControl(new LowerModulationBoundControl(Rect(0, 41, pos.getWidth(), 20)))->setHighlight(mode == Mode::LowerBound);
 }
 
-ModulationCarousel::~ModulationCarousel()
-{
-}
-
 void ModulationCarousel::setup(Parameter *p)
 {
 }
@@ -70,17 +66,14 @@ bool ModulationCarousel::onRotary(int inc, ButtonModifiers modifiers)
   return false;
 }
 
-void ModulationCarousel::setDefault()
-{
-  for(const auto &c : getControls())
-  {
-    if(c->isHighlight())
-    {
-      if(auto a = dynamic_pointer_cast<Defaultable>(c))
-      {
-        a->setDefault();
-        return;
-      }
+bool ModulationCarousel::onButton(int i, bool down, ButtonModifiers modifiers) {
+    for(auto& c: getControls()) {
+        if(c->isHighlight()) {
+            if(auto buttonReceiver = dynamic_cast<ButtonReceiver*>(c.get())) {
+                if(buttonReceiver->onButton(i, down, modifiers))
+                    return true;
+            }
+        }
     }
-  }
+    return false;
 }
