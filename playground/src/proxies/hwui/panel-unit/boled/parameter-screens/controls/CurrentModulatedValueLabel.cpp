@@ -7,7 +7,6 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/CurrentModulatedValueLabel.h>
-#include <functional/LambdaFactory.h>
 
 class MacroControlParameter;
 
@@ -40,8 +39,11 @@ bool CurrentModulatedValueLabel::onButton(int i, bool down, ButtonModifiers modi
   switch(i)
   {
     case BUTTON_DEFAULT:
-      if(down && LambdaFactory::setCurrentParameterToDefault()())
+      if(down)
       {
+        if(auto p = getModulatedParameter())
+          p->setDefaultFromHwui();
+
         return true;
       }
       break;
