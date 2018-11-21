@@ -39,7 +39,8 @@ public class ModulationAmountSlider extends OverlayControl {
 	}
 
 	protected void drawSlider(Context2d ctx, ModulatableParameter modulatedParameter, MacroControls modSource) {
-		Parameter modulator = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(modSource);
+		Parameter modulator = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+				.getControl(modSource);
 
 		boolean isBiPolar = modulatedParameter.isBiPolar();
 		double modulationAmount = modulatedParameter.getModulationAmount().getQuantizedClipped();
@@ -99,13 +100,17 @@ public class ModulationAmountSlider extends OverlayControl {
 	}
 
 	protected void drawTopAndBottomContour(Context2d ctx, Rect leftRect, RGB fillColor) {
+		ctx.setLineWidth(2);
+		ctx.setStrokeStyle(fillColor.darker(40).toString());
+
 		ctx.beginPath();
 		ctx.moveTo(leftRect.getLeft(), leftRect.getTop());
 		ctx.lineTo(leftRect.getRight(), leftRect.getTop());
+		ctx.stroke();
+
+		ctx.beginPath();
 		ctx.moveTo(leftRect.getLeft(), leftRect.getBottom());
 		ctx.lineTo(leftRect.getRight(), leftRect.getBottom());
-		ctx.setLineWidth(2);
-		ctx.setStrokeStyle(fillColor.darker(40).toString());
 		ctx.stroke();
 	}
 
