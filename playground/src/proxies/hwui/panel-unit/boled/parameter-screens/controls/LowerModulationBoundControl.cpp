@@ -24,10 +24,6 @@ LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
       mem_fun(this, &LowerModulationBoundControl::onSelectionChanged));
 }
 
-LowerModulationBoundControl::~LowerModulationBoundControl()
-{
-}
-
 void LowerModulationBoundControl::onSelectionChanged(Parameter *, Parameter *newParam)
 {
   m_paramChanged.disconnect();

@@ -37,3 +37,20 @@ bool CurrentModulatedValueLabel::onRotary(int inc, ButtonModifiers modifiers)
   }
   return false;
 }
+
+bool CurrentModulatedValueLabel::onButton(int i, bool down, ButtonModifiers modifires)
+{
+  switch(i)
+  {
+    case BUTTON_DEFAULT:
+      if(down)
+      {
+        if(auto p = getModulatedParameter())
+          p->setDefaultFromHwui();
+
+        return true;
+      }
+      break;
+  }
+  return false;
+}

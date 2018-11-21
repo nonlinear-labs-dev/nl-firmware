@@ -1,15 +1,13 @@
 #pragma once
 
-#include <proxies/hwui/controls/ControlWithChildren.h>
-#include <proxies/hwui/panel-unit/RotaryEncoder.h>
+#include "ModulationBoundControl.h"
 
-class UpperModulationBoundControl : public ControlWithChildren, public RotaryEncoder::Receiver
+class UpperModulationBoundControl : public ModulationBoundControl
 {
-  typedef ControlWithChildren super;
+  typedef ModulationBoundControl super;
 
  public:
   UpperModulationBoundControl(const Rect &r);
-  virtual ~UpperModulationBoundControl();
 
   bool onRotary(int inc, ButtonModifiers modifiers) override;
 };

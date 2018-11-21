@@ -18,6 +18,8 @@ class ModulationCarousel : public Carousel, public RotaryEncoder::Receiver
     virtual ~ModulationCarousel ();
 
     bool onRotary (int inc, ButtonModifiers modifiers) override;
+    bool onButton (int i, bool down, ButtonModifiers modifiers);
+
 
     void setup (Parameter *selectedParameter) override;
     void turn () override;
