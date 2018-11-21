@@ -1,15 +1,11 @@
-#include <Application.h>
-#include <groups/MacroControlsGroup.h>
-#include <libundo/undo/Scope.h>
-#include <parameters/MacroControlParameter.h>
-#include <parameters/ModulateableParameter.h>
-#include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundControl.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundSlider.h>
-#include <functional/LambdaFactory.h>
+#include <Application.h>
+#include <groups/MacroControlsGroup.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <parameters/MacroControlParameter.h>
 
 UpperModulationBoundControl::UpperModulationBoundControl(const Rect &r)
     : super(r)
@@ -17,10 +13,6 @@ UpperModulationBoundControl::UpperModulationBoundControl(const Rect &r)
   auto height = r.getHeight() / 2;
   addControl(new UpperModulationBoundSlider(Rect(0, 0, r.getWidth(), height)));
   addControl(new UpperModulationBoundLabel(Rect(0, height, r.getWidth(), height)));
-}
-
-UpperModulationBoundControl::~UpperModulationBoundControl()
-{
 }
 
 bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
@@ -64,18 +56,6 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
       modulatedParam->setCPFromHwui(transaction, newValue);
       return true;
     }
-  }
-  return false;
-}
-
-bool UpperModulationBoundControl::onButton(int i, bool down, ButtonModifiers modifiers)
-{
-  switch(i)
-  {
-    case BUTTON_DEFAULT:
-      if(down && LambdaFactory::setCurrentModulatedParamAmountToZero()())
-        return true;
-      break;
   }
   return false;
 }
