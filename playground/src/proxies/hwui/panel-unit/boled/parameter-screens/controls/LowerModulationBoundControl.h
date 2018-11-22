@@ -8,6 +8,7 @@ class LowerModulationBoundControl : public ModulationBoundControl
 
  public:
   explicit LowerModulationBoundControl(const Rect &r);
+
   bool onRotary(int inc, ButtonModifiers modifiers) override;
 
  private:

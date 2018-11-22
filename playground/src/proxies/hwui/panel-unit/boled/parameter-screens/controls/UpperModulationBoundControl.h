@@ -8,5 +8,6 @@ class UpperModulationBoundControl : public ModulationBoundControl
 
  public:
   explicit UpperModulationBoundControl(const Rect &r);
+
   bool onRotary(int inc, ButtonModifiers modifiers) override;
 };

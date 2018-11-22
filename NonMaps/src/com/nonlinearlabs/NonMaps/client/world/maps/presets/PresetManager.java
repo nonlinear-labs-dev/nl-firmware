@@ -155,7 +155,7 @@ public class PresetManager extends MapsLayout {
 			if (oldPresetSelection != newPresetSelection) {
 				onPresetSelectionChanged(newPresetSelection);
 			}
-			
+
 			RenameDialog.onPresetManagerUpdate(this);
 		}
 	}

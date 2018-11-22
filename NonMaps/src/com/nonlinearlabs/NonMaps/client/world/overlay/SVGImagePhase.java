@@ -97,6 +97,7 @@ public class SVGImagePhase extends OverlayControl {
 		newPos.round();
 		newPos.moveBy(0.5,  0.5);
 		setPixRect(newPos);
+
 	}
 
 	@Override
