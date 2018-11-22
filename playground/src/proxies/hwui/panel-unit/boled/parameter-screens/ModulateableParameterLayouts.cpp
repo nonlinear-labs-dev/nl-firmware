@@ -256,13 +256,6 @@ void ModulateableParameterSelectLayout2::setDefault()
       super1::setDefault();
       super2::setDefault();
       break;
-
-    case Mode::CarouselLowerBound:
-    case Mode::CarouselParameterValue:
-    case Mode::CarouselUpperBound:
-      if(auto c = dynamic_cast<ModulationCarousel*>(getCarousel()))
-        c->setDefault();
-      break;
   }
 }
 
