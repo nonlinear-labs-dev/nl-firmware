@@ -10,30 +10,29 @@ class OLEDProxy;
 
 class DFBLayout : public Layout, public ControlOwner
 {
-  public:
-    DFBLayout (OLEDProxy &oled);
-    virtual ~DFBLayout ();
+ public:
+  DFBLayout(OLEDProxy &oled);
+  virtual ~DFBLayout();
 
-    virtual bool redrawLayout () override;
+  virtual bool redrawLayout() override;
 
-    virtual bool onButton (int i, bool down, ButtonModifiers modifiers);
-    virtual bool onRotary (int inc, ButtonModifiers modifiers);
+  virtual bool onButton(int i, bool down, ButtonModifiers modifiers);
+  virtual bool onRotary(int inc, ButtonModifiers modifiers);
 
-    virtual void setDirty () override;
+  virtual void setDirty() override;
 
-    FrameBuffer &getFrameBuffer ();
+  FrameBuffer &getFrameBuffer();
 
-  protected:
-    void installButtonRepeat (function<void ()> cb);
-    void removeButtonRepeat ();
+ protected:
+  void installButtonRepeat(function<void()> cb);
+  void removeButtonRepeat();
 
-    bool isResolutionFine () const;
+  bool isResolutionFine() const;
 
-    OLEDProxy &getOLEDProxy ();
+  OLEDProxy &getOLEDProxy();
 
-  private:
-    bool m_clear = true;
-    unique_ptr<ButtonRepeat> m_buttonRepeat;
-    OLEDProxy &m_oled;
+ private:
+  bool m_clear = true;
+  unique_ptr<ButtonRepeat> m_buttonRepeat;
+  OLEDProxy &m_oled;
 };
-

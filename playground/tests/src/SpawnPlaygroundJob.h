@@ -4,17 +4,16 @@
 
 class SpawnPlaygroundJob : public Job
 {
-  private:
-    typedef Job super;
+ private:
+  typedef Job super;
 
-  public:
-    SpawnPlaygroundJob (Job *parent);
-    virtual ~SpawnPlaygroundJob ();
+ public:
+  SpawnPlaygroundJob(Job* parent);
+  virtual ~SpawnPlaygroundJob();
 
-    void implRun () override;
+  void implRun() override;
 
-  private:
-    SpawnPlaygroundJob (const SpawnPlaygroundJob& other) = delete;
-    SpawnPlaygroundJob& operator= (const SpawnPlaygroundJob&) = delete;
+ private:
+  SpawnPlaygroundJob(const SpawnPlaygroundJob& other) = delete;
+  SpawnPlaygroundJob& operator=(const SpawnPlaygroundJob&) = delete;
 };
-

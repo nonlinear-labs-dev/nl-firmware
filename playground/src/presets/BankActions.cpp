@@ -1079,7 +1079,6 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
 
         BankChangeBlocker b(bank);
 
-
         bank->setAttribute("Name of Export File", "(via Browser)");
         bank->setAttribute("Date of Export File", TimeTools::getAdjustedIso());
       }

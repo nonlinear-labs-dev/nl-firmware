@@ -4,17 +4,16 @@
 
 class SetDefaultsJob : public ExecutePlaygroundCommandJob
 {
-  private:
-    typedef ExecutePlaygroundCommandJob super;
+ private:
+  typedef ExecutePlaygroundCommandJob super;
 
-  public:
-    SetDefaultsJob (Job *parent);
-    virtual ~SetDefaultsJob ();
+ public:
+  SetDefaultsJob(Job* parent);
+  virtual ~SetDefaultsJob();
 
-    virtual string getURL() const override;
+  virtual string getURL() const override;
 
-  private:
-    SetDefaultsJob (const SetDefaultsJob& other) = delete;
-    SetDefaultsJob& operator= (const SetDefaultsJob&) = delete;
+ private:
+  SetDefaultsJob(const SetDefaultsJob& other) = delete;
+  SetDefaultsJob& operator=(const SetDefaultsJob&) = delete;
 };
-

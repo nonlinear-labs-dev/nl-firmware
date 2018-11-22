@@ -15,8 +15,8 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 
-ParameterLayout2::ParameterLayout2() :
-    super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
+ParameterLayout2::ParameterLayout2()
+    : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
   addControl(new ModuleCaption(Rect(0, 0, 64, 13)));
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X, 8, 107, 11)));
@@ -24,12 +24,12 @@ ParameterLayout2::ParameterLayout2() :
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
 }
 
-Parameter * ParameterLayout2::getCurrentParameter() const
+Parameter *ParameterLayout2::getCurrentParameter() const
 {
   return Application::get().getPresetManager()->getEditBuffer()->getSelected();
 }
 
-Parameter * ParameterLayout2::getCurrentEditParameter() const
+Parameter *ParameterLayout2::getCurrentEditParameter() const
 {
   return getCurrentParameter();
 }
@@ -99,8 +99,8 @@ void ParameterLayout2::handlePresetValueRecall()
   }
 }
 
-ParameterSelectLayout2::ParameterSelectLayout2() :
-    super()
+ParameterSelectLayout2::ParameterSelectLayout2()
+    : super()
 {
 }
 
@@ -162,8 +162,8 @@ bool ParameterSelectLayout2::onButton(int i, bool down, ButtonModifiers modifier
   return super::onButton(i, down, modifiers);
 }
 
-ParameterEditLayout2::ParameterEditLayout2() :
-    super()
+ParameterEditLayout2::ParameterEditLayout2()
+    : super()
 {
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
 }
@@ -216,8 +216,8 @@ bool ParameterEditLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
   return super::onButton(i, down, modifiers);
 }
 
-ParameterRecallLayout2::ParameterRecallLayout2() :
-    super()
+ParameterRecallLayout2::ParameterRecallLayout2()
+    : super()
 {
   m_buttonA = addControl(new Button("", BUTTON_A));
   m_buttonB = addControl(new Button("", BUTTON_B));
@@ -260,7 +260,8 @@ bool ParameterRecallLayout2::onButton(int i, bool down, ButtonModifiers modifier
   if(i == BUTTON_C || i == BUTTON_B)
     return true;
 
-  if(i == BUTTON_INC || i == BUTTON_DEC) {
+  if(i == BUTTON_INC || i == BUTTON_DEC)
+  {
     auto ret = super::onButton(i, down, modifiers);
     getOLEDProxy().resetOverlay();
     return ret;
@@ -279,7 +280,7 @@ bool ParameterRecallLayout2::onRotary(int inc, ButtonModifiers modifiers)
 
 void ParameterRecallLayout2::doRecall()
 {
-  auto& scope = Application::get().getPresetManager()->getUndoScope();
+  auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getCurrentParameter()->getLongName());
   auto transaction = transactionScope->getTransaction();
   if(auto curr = getCurrentParameter())
@@ -296,8 +297,9 @@ void ParameterRecallLayout2::doRecall()
 
 void ParameterRecallLayout2::undoRecall()
 {
-  auto& scope = Application::get().getPresetManager()->getUndoScope();
-  auto transactionScope = scope.startTransaction("Recall %0 value from Editbuffer", getCurrentParameter()->getLongName());
+  auto &scope = Application::get().getPresetManager()->getUndoScope();
+  auto transactionScope
+      = scope.startTransaction("Recall %0 value from Editbuffer", getCurrentParameter()->getLongName());
   auto transaction = transactionScope->getTransaction();
   if(auto curr = getCurrentParameter())
   {
@@ -355,4 +357,3 @@ void ParameterRecallLayout2::onParameterChanged(const Parameter *)
 {
   updateUI(!getCurrentEditParameter()->isChangedFromLoaded());
 }
-

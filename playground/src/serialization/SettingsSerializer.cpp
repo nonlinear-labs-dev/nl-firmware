@@ -4,12 +4,10 @@
 #include "device-settings/Setting.h"
 #include "SettingsSerializer.h"
 
-
-SettingsSerializer::SettingsSerializer(Settings &settings) :
-  Serializer(getTagName()),
-  m_settings(settings)
+SettingsSerializer::SettingsSerializer(Settings &settings)
+    : Serializer(getTagName())
+    , m_settings(settings)
 {
-
 }
 
 Glib::ustring SettingsSerializer::getTagName()
@@ -19,15 +17,14 @@ Glib::ustring SettingsSerializer::getTagName()
 
 void SettingsSerializer::writeTagContent(Writer &writer) const
 {
-  for (const auto &a : m_settings.getSettings())
+  for(const auto &a : m_settings.getSettings())
     if(a.second->persistent())
       writer.writeTextElement("setting", a.second->save(), Attribute("id", a.first));
 }
 
 void SettingsSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("setting", [&](const Glib::ustring &text, const Attributes &attr) mutable
-  {
+  reader.onTextElement("setting", [&](const Glib::ustring &text, const Attributes &attr) mutable {
     if(auto s = m_settings.getSetting(attr.get("id")))
       if(s->persistent())
         s->load(text);

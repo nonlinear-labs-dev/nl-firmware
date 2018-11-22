@@ -3,8 +3,8 @@
 #include "proxies/lpc/LPCProxy.h"
 #include "Settings.h"
 
-BenderRampBypass::BenderRampBypass(Settings& settings) :
-    BooleanSetting(settings, false)
+BenderRampBypass::BenderRampBypass(Settings& settings)
+    : BooleanSetting(settings, false)
 {
 }
 
@@ -12,9 +12,9 @@ BenderRampBypass::~BenderRampBypass()
 {
 }
 
-void BenderRampBypass::sendToLPC () const
+void BenderRampBypass::sendToLPC() const
 {
-  Application::get ().getLPCProxy ()->sendSetting (BENDER_RAMP_BYPASS, (uint16_t) (get ()));
+  Application::get().getLPCProxy()->sendSetting(BENDER_RAMP_BYPASS, (uint16_t)(get()));
 }
 
 bool BenderRampBypass::persistent() const

@@ -66,14 +66,18 @@ bool ModulationCarousel::onRotary(int inc, ButtonModifiers modifiers)
   return false;
 }
 
-bool ModulationCarousel::onButton(int i, bool down, ButtonModifiers modifiers) {
-    for(auto& c: getControls()) {
-        if(c->isHighlight()) {
-            if(auto buttonReceiver = dynamic_cast<ButtonReceiver*>(c.get())) {
-                if(buttonReceiver->onButton(i, down, modifiers))
-                    return true;
-            }
-        }
+bool ModulationCarousel::onButton(int i, bool down, ButtonModifiers modifiers)
+{
+  for(auto &c : getControls())
+  {
+    if(c->isHighlight())
+    {
+      if(auto buttonReceiver = dynamic_cast<ButtonReceiver *>(c.get()))
+      {
+        if(buttonReceiver->onButton(i, down, modifiers))
+          return true;
+      }
     }
-    return false;
+  }
+  return false;
 }

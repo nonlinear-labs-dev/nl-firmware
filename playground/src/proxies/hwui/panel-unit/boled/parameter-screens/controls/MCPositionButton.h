@@ -6,13 +6,12 @@ class Application;
 
 class MCPositionButton : public ModulationModeButton
 {
-  private:
-    typedef ModulationModeButton super;
+ private:
+  typedef ModulationModeButton super;
 
-  public:
-    MCPositionButton (int id);
-    virtual ~MCPositionButton ();
+ public:
+  MCPositionButton(int id);
+  virtual ~MCPositionButton();
 
-    void update(const Parameter *parameter);
+  void update(const Parameter *parameter);
 };
-

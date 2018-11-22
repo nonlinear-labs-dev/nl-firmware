@@ -4,19 +4,18 @@
 
 class SetModulationSourceJob : public ExecutePlaygroundCommandJob
 {
-  private:
-    typedef ExecutePlaygroundCommandJob super;
+ private:
+  typedef ExecutePlaygroundCommandJob super;
 
-  public:
-    SetModulationSourceJob (Job *parent, const string &cmd);
-    virtual ~SetModulationSourceJob ();
+ public:
+  SetModulationSourceJob(Job* parent, const string& cmd);
+  virtual ~SetModulationSourceJob();
 
-    virtual string getURL() const override;
+  virtual string getURL() const override;
 
-  private:
-    SetModulationSourceJob (const SetModulationSourceJob& other) = delete;
-    SetModulationSourceJob& operator= (const SetModulationSourceJob&) = delete;
+ private:
+  SetModulationSourceJob(const SetModulationSourceJob& other) = delete;
+  SetModulationSourceJob& operator=(const SetModulationSourceJob&) = delete;
 
-    int m_value;
+  int m_value;
 };
-

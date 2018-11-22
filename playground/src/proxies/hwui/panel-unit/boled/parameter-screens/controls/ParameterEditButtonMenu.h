@@ -6,29 +6,29 @@ class PresetBank;
 
 class ParameterEditButtonMenu : public ButtonMenu
 {
-  private:
-    typedef ButtonMenu super;
+ private:
+  typedef ButtonMenu super;
 
-  public:
-    ParameterEditButtonMenu(const Rect &rect);
-    virtual ~ParameterEditButtonMenu();
+ public:
+  ParameterEditButtonMenu(const Rect &rect);
+  virtual ~ParameterEditButtonMenu();
 
-    void selectButton(size_t i) override;
+  void selectButton(size_t i) override;
 
-  private:
-    void setup();
-    void toggleGroupLock();
-    void unlockAll();
-    void lockAll();
+ private:
+  void setup();
+  void toggleGroupLock();
+  void unlockAll();
+  void lockAll();
 
-    void onParameterSelectionChanged(Parameter *oldParameter, Parameter *newParameter);
-    void onGroupChanged();
+  void onParameterSelectionChanged(Parameter *oldParameter, Parameter *newParameter);
+  void onGroupChanged();
 
-    void sanitizeLastAction();
+  void sanitizeLastAction();
 
-    ParameterGroup *m_currentGroup = nullptr;
-    bool m_allParametersLocked = false;
-    sigc::connection m_connection;
+  ParameterGroup *m_currentGroup = nullptr;
+  bool m_allParametersLocked = false;
+  sigc::connection m_connection;
 
-    static int s_lastAction;
+  static int s_lastAction;
 };

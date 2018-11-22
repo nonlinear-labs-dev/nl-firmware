@@ -4,20 +4,19 @@
 
 class LoadScriptJob : public Job
 {
-  private:
-    typedef Job super;
+ private:
+  typedef Job super;
 
-  public:
-    LoadScriptJob (Job *parent);
-    virtual ~LoadScriptJob ();
+ public:
+  LoadScriptJob(Job* parent);
+  virtual ~LoadScriptJob();
 
-    void implRun() override;
-    string getContent () const;
+  void implRun() override;
+  string getContent() const;
 
-  private:
-    LoadScriptJob (const LoadScriptJob& other) = delete;
-    LoadScriptJob& operator= (const LoadScriptJob&) = delete;
+ private:
+  LoadScriptJob(const LoadScriptJob& other) = delete;
+  LoadScriptJob& operator=(const LoadScriptJob&) = delete;
 
-    string m_content;
+  string m_content;
 };
-

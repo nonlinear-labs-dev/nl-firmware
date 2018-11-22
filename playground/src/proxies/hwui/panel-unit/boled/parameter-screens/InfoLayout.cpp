@@ -8,85 +8,83 @@
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
 
-InfoLayout::InfoLayout () :
-    super (Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ())
+InfoLayout::InfoLayout()
+    : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
-
 }
 
-void InfoLayout::init ()
+void InfoLayout::init()
 {
-  super::init ();
+  super::init();
 
-  addModuleCaption ();
-  addHeadline ();
-  addInfoLabel ();
+  addModuleCaption();
+  addHeadline();
+  addInfoLabel();
 
-  m_scrollArea = addControl (new ScrollArea (createScrollableContent (), getScrollableAreaRect ()));
+  m_scrollArea = addControl(new ScrollArea(createScrollableContent(), getScrollableAreaRect()));
 }
 
-Rect InfoLayout::getScrollableAreaRect () const
+Rect InfoLayout::getScrollableAreaRect() const
 {
-  return Rect (0, 14, 256, 50);
+  return Rect(0, 14, 256, 50);
 }
 
-bool InfoLayout::onRotary (int inc, ButtonModifiers modifiers)
+bool InfoLayout::onRotary(int inc, ButtonModifiers modifiers)
 {
-  m_scrollArea->scroll (inc*2);
+  m_scrollArea->scroll(inc * 2);
   return true;
 }
 
-void InfoLayout::scrollToMax ()
+void InfoLayout::scrollToMax()
 {
-  m_scrollArea->scroll (std::numeric_limits<int>::max () / 2);
+  m_scrollArea->scroll(std::numeric_limits<int>::max() / 2);
 }
 
-bool InfoLayout::onButton (int i, bool down, ButtonModifiers modifiers)
+bool InfoLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  if (down)
+  if(down)
   {
-    switch (i)
+    switch(i)
     {
-    case BUTTON_A:
-      if (Application::get().getHWUI()->getFocusAndMode().mode == UIMode::Info)
-      {
-        if (Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Presets)
+      case BUTTON_A:
+        if(Application::get().getHWUI()->getFocusAndMode().mode == UIMode::Info)
         {
-          Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Info));
+          if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Presets)
+          {
+            Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Info));
+          }
+          else if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Banks)
+          {
+            Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Info));
+          }
+          return true;
         }
-        else if (Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Banks)
-        {
-          Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Info));
-        }
-        return true;
-      }
-      break;
+        break;
       case BUTTON_PRESET:
-        if (Application::get ().getHWUI ()->getFocusAndMode().focus == UIFocus::Presets)
+        if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Presets)
         {
-          Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Select);
+          Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select);
         }
         else
         {
-          Application::get ().getHWUI ()->undoableSetFocusAndMode (UIFocus::Presets);
+          Application::get().getHWUI()->undoableSetFocusAndMode(UIFocus::Presets);
         }
         return true;
 
       case BUTTON_STORE:
-        Application::get ().getHWUI ()->undoableSetFocusAndMode (FocusAndMode (UIFocus::Presets, UIMode::Store));
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
         return true;
 
       case BUTTON_EDIT:
-        Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Edit);
+        Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Edit);
         return true;
 
       case BUTTON_INFO:
       case BUTTON_ENTER:
-        Application::get ().getHWUI ()->undoableSetFocusAndMode (UIMode::Select);
+        Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select);
         return true;
     }
   }
 
-  return super::onButton (i, down, modifiers);
+  return super::onButton(i, down, modifiers);
 }
-

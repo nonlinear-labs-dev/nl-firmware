@@ -27,4 +27,3 @@ void LowerModulationBoundLabel::updateText(MacroControlParameter *mcParam, Modul
   else
     setText({ rangeDisplayValues.first });
 }
-

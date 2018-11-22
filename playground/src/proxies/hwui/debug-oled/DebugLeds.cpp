@@ -2,8 +2,8 @@
 
 #include "DebugLedPanel.h"
 
-DebugLeds::DebugLeds (OLEDProxy &oled) :
-    super (oled)
+DebugLeds::DebugLeds(OLEDProxy &oled)
+    : super(oled)
 {
   const int screenWidth = 256;
   const int screenHeight = 64;
@@ -15,22 +15,22 @@ DebugLeds::DebugLeds (OLEDProxy &oled) :
 
   int ledID = 0;
 
-  for (int i = 0; i < numPanels; i++)
+  for(int i = 0; i < numPanels; i++)
   {
-    Rect r (i * panelWidth, 0, panelWidth, panelHeight);
-    addControl (new DebugLedPanel (r, ledID));
+    Rect r(i * panelWidth, 0, panelWidth, panelHeight);
+    addControl(new DebugLedPanel(r, ledID));
     ledID += numLedsPerPanel;
   }
 }
 
-DebugLeds::~DebugLeds ()
+DebugLeds::~DebugLeds()
 {
 }
 
-void DebugLeds::setLedState (int ledId, bool onOrOff)
+void DebugLeds::setLedState(int ledId, bool onOrOff)
 {
-  for (auto c : getControls ())
-    if (auto led = dynamic_pointer_cast < DebugLedPanel > (c))
-      if (led->setLedState (ledId, onOrOff))
+  for(auto c : getControls())
+    if(auto led = dynamic_pointer_cast<DebugLedPanel>(c))
+      if(led->setLedState(ledId, onOrOff))
         return;
 }

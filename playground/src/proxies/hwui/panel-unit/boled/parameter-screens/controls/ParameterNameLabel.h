@@ -7,27 +7,26 @@ class Parameter;
 
 class ParameterNameLabel : public Label
 {
-  private:
-    typedef Label super;
+ private:
+  typedef Label super;
 
-  public:
-    ParameterNameLabel (const Rect &pos);
-    virtual ~ParameterNameLabel ();
+ public:
+  ParameterNameLabel(const Rect &pos);
+  virtual ~ParameterNameLabel();
 
-  protected:
-    virtual void setSuffixFontColor (FrameBuffer &fb) const;
+ protected:
+  virtual void setSuffixFontColor(FrameBuffer &fb) const;
 
-  private:
-    ParameterNameLabel (const ParameterNameLabel& other);
-    ParameterNameLabel& operator= (const ParameterNameLabel&);
+ private:
+  ParameterNameLabel(const ParameterNameLabel &other);
+  ParameterNameLabel &operator=(const ParameterNameLabel &);
 
-    void onParameterSelected(Parameter * param);
-    void onParameterChanged (const Parameter *param);
+  void onParameterSelected(Parameter *param);
+  void onParameterChanged(const Parameter *param);
 
-    virtual void setFontColor (FrameBuffer &fb) const override;
-    virtual shared_ptr<Font> getFont () const override;
-    virtual int getFontHeight () const override;
-
+  virtual void setFontColor(FrameBuffer &fb) const override;
+  virtual shared_ptr<Font> getFont() const override;
+  virtual int getFontHeight() const override;
 
   sigc::connection m_connection;
 
@@ -39,4 +38,3 @@ class ParameterNameLabel : public Label
 
   void onPresetLoaded();
 };
-

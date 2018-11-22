@@ -4,17 +4,16 @@
 
 class IsPlaygroundRunningJob : public Job
 {
-  private:
-    typedef Job super;
+ private:
+  typedef Job super;
 
-  public:
-    IsPlaygroundRunningJob (Job *parent);
-    virtual ~IsPlaygroundRunningJob ();
+ public:
+  IsPlaygroundRunningJob(Job* parent);
+  virtual ~IsPlaygroundRunningJob();
 
-    void implRun () override;
+  void implRun() override;
 
-  private:
-    IsPlaygroundRunningJob (const IsPlaygroundRunningJob& other) = delete;
-    IsPlaygroundRunningJob& operator= (const IsPlaygroundRunningJob&) = delete;
+ private:
+  IsPlaygroundRunningJob(const IsPlaygroundRunningJob& other) = delete;
+  IsPlaygroundRunningJob& operator=(const IsPlaygroundRunningJob&) = delete;
 };
-

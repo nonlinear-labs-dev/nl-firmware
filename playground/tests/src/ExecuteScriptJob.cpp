@@ -1,15 +1,15 @@
 #include "ExecuteScriptJob.h"
 
-ExecuteScriptJob::ExecuteScriptJob (Job *parent) :
-    super (parent)
+ExecuteScriptJob::ExecuteScriptJob(Job *parent)
+    : super(parent)
 {
 }
 
-ExecuteScriptJob::~ExecuteScriptJob ()
+ExecuteScriptJob::~ExecuteScriptJob()
 {
 }
 
-void ExecuteScriptJob::implRun ()
+void ExecuteScriptJob::implRun()
 {
-  getParent ()->onChildFinished (this, true);
+  getParent()->onChildFinished(this, true);
 }

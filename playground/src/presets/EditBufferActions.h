@@ -7,17 +7,15 @@ class Parameter;
 
 class EditBufferActions : public RPCActionManager
 {
-  private:
+ private:
+  typedef RPCActionManager super;
 
-    typedef RPCActionManager super;
+ public:
+  typedef Parameter* tParameterPtr;
+  EditBufferActions(shared_ptr<EditBuffer> editBuffer);
+  virtual ~EditBufferActions();
 
-  public:
-    typedef Parameter* tParameterPtr;
-    EditBufferActions (shared_ptr<EditBuffer> editBuffer);
-    virtual ~EditBufferActions ();
-
-  private:
-    EditBufferActions (const EditBufferActions& other) = delete;
-    EditBufferActions& operator= (const EditBufferActions&) = delete;
+ private:
+  EditBufferActions(const EditBufferActions& other) = delete;
+  EditBufferActions& operator=(const EditBufferActions&) = delete;
 };
-

@@ -233,7 +233,7 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
 void ModulateableParameter::writeDifferences(Writer &writer, Parameter *other) const
 {
   Parameter::writeDifferences(writer, other);
-  auto *pOther = static_cast<ModulateableParameter*>(other);
+  auto *pOther = static_cast<ModulateableParameter *>(other);
 
   if(getModulationAmount() != pOther->getModulationAmount())
   {

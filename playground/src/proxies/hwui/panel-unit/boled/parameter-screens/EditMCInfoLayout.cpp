@@ -4,30 +4,30 @@
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
 
-EditMCInfoLayout::EditMCInfoLayout () :
-    super ()
+EditMCInfoLayout::EditMCInfoLayout()
+    : super()
 {
 }
 
-void EditMCInfoLayout::commit (const Glib::ustring &newName)
+void EditMCInfoLayout::commit(const Glib::ustring &newName)
 {
-  if (auto p = getMacroControl ())
+  if(auto p = getMacroControl())
   {
-    p->undoableSetInfo (newName);
+    p->undoableSetInfo(newName);
   }
 }
 
-Glib::ustring EditMCInfoLayout::getInitialText () const
+Glib::ustring EditMCInfoLayout::getInitialText() const
 {
-  if (auto p = getMacroControl ())
+  if(auto p = getMacroControl())
   {
-    return p->getInfo ();
+    return p->getInfo();
   }
 
   return "";
 }
 
-MacroControlParameter *EditMCInfoLayout::getMacroControl () const
+MacroControlParameter *EditMCInfoLayout::getMacroControl() const
 {
-  return dynamic_cast<MacroControlParameter*> (Application::get ().getPresetManager ()->getEditBuffer ()->getSelected ());
+  return dynamic_cast<MacroControlParameter *>(Application::get().getPresetManager()->getEditBuffer()->getSelected());
 }

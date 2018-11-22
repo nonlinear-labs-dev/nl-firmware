@@ -2,19 +2,19 @@
 #include "IsPlaygroundRunningJob.h"
 #include "SpawnPlaygroundJob.h"
 
-StartPlaygroundJob::StartPlaygroundJob (Job *parent) :
-    super (parent)
+StartPlaygroundJob::StartPlaygroundJob(Job *parent)
+    : super(parent)
 {
-  add<IsPlaygroundRunningJob> ();
+  add<IsPlaygroundRunningJob>();
 }
 
-StartPlaygroundJob::~StartPlaygroundJob ()
+StartPlaygroundJob::~StartPlaygroundJob()
 {
 }
 
-void StartPlaygroundJob::onChildFinished (Job *child, bool success)
+void StartPlaygroundJob::onChildFinished(Job *child, bool success)
 {
-  if (dynamic_cast<IsPlaygroundRunningJob*> (child))
+  if(dynamic_cast<IsPlaygroundRunningJob *>(child))
   {
     if(!success)
       add<SpawnPlaygroundJob>();
@@ -25,7 +25,7 @@ void StartPlaygroundJob::onChildFinished (Job *child, bool success)
   super::onChildFinished(child, success);
 }
 
-void StartPlaygroundJob::implRun ()
+void StartPlaygroundJob::implRun()
 {
   getParent()->onChildFinished(this, true);
 }

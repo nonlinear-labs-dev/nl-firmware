@@ -4,17 +4,16 @@
 
 class ParseScriptJob : public Job
 {
-  private:
-    typedef Job super;
+ private:
+  typedef Job super;
 
-  public:
-    ParseScriptJob (Job *parent);
-    virtual ~ParseScriptJob ();
+ public:
+  ParseScriptJob(Job* parent);
+  virtual ~ParseScriptJob();
 
-    virtual void implRun () override;
+  virtual void implRun() override;
 
-  private:
-    ParseScriptJob (const ParseScriptJob& other) = delete;
-    ParseScriptJob& operator= (const ParseScriptJob&) = delete;
+ private:
+  ParseScriptJob(const ParseScriptJob& other) = delete;
+  ParseScriptJob& operator=(const ParseScriptJob&) = delete;
 };
-

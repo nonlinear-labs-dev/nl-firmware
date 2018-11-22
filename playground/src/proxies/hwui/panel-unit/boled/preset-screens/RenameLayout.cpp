@@ -12,59 +12,59 @@ const int c_numRows = 4;
 const int c_letterWidth = 256 / 12;
 const int c_letterHeight = 12;
 
-RenameLayout::RenameLayout () :
-    super (Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ())
+RenameLayout::RenameLayout()
+    : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
-  auto &panelUnit = Application::get ().getHWUI ()->getPanelUnit ();
+  auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
   m_oldUsageMode = panelUnit.getUsageMode();
 }
 
-RenameLayout::~RenameLayout ()
+RenameLayout::~RenameLayout()
 {
   Application::get().getHWUI()->getPanelUnit().restoreUsageMode(m_oldUsageMode);
 }
 
-void RenameLayout::init ()
+void RenameLayout::init()
 {
-  Layout::init ();
+  Layout::init();
 
-  replaceUsageMode ();
+  replaceUsageMode();
 
-  addLetters ();
-  addControlKeys ();
+  addLetters();
+  addControlKeys();
 
-  addControl (new Button ("Cancel", BUTTON_A));
-  addControl (new Button ("Apply", BUTTON_D));
+  addControl(new Button("Cancel", BUTTON_A));
+  addControl(new Button("Apply", BUTTON_D));
 
-  addControl (new TextEditControl (Rect (67, 51, 122, 11), m_textUsageMode));
+  addControl(new TextEditControl(Rect(67, 51, 122, 11), m_textUsageMode));
 
-  m_textUsageMode->onTextChanged (mem_fun (this, &RenameLayout::onTextChanged));
+  m_textUsageMode->onTextChanged(mem_fun(this, &RenameLayout::onTextChanged));
 }
 
-void RenameLayout::replaceUsageMode ()
+void RenameLayout::replaceUsageMode()
 {
-  auto &panelUnit = Application::get ().getHWUI ()->getPanelUnit ();
-  panelUnit.setUsageMode (new TextEditUsageMode (getInitialText ()));
-  auto newUsageMode = panelUnit.getUsageMode ();
-  m_textUsageMode = dynamic_pointer_cast<TextEditUsageMode> (newUsageMode);
+  auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
+  panelUnit.setUsageMode(new TextEditUsageMode(getInitialText()));
+  auto newUsageMode = panelUnit.getUsageMode();
+  m_textUsageMode = dynamic_pointer_cast<TextEditUsageMode>(newUsageMode);
 }
 
-void RenameLayout::addLetters ()
+void RenameLayout::addLetters()
 {
   int x = 1;
 
-  for (int col = 0; col < c_numCols; col++)
+  for(int col = 0; col < c_numCols; col++)
   {
-    if (col == c_numCols / 2)
+    if(col == c_numCols / 2)
       x += 2;
 
     int y = 0;
 
-    for (int row = 0; row < c_numRows - 1; row++)
+    for(int row = 0; row < c_numRows - 1; row++)
     {
       int buttonID = col * c_numRows + row;
-      Glib::ustring label = m_textUsageMode->getKeyLabel (buttonID);
-      addControl (new RenameLetter (m_textUsageMode, buttonID, Rect (x, y, c_letterWidth, c_letterHeight)));
+      Glib::ustring label = m_textUsageMode->getKeyLabel(buttonID);
+      addControl(new RenameLetter(m_textUsageMode, buttonID, Rect(x, y, c_letterWidth, c_letterHeight)));
       y += c_letterHeight;
     }
 
@@ -72,62 +72,61 @@ void RenameLayout::addLetters ()
   }
 }
 
-void RenameLayout::addControlKeys ()
+void RenameLayout::addControlKeys()
 {
   int y = 3 * c_letterHeight;
   int x = 1;
   int twiceLetterWidth = c_letterWidth * 2;
 
-  for (int col = 0; col < c_numCols / 2; col++)
+  for(int col = 0; col < c_numCols / 2; col++)
   {
-    if (col == c_numCols / 4)
+    if(col == c_numCols / 4)
       x += 2;
 
     int buttonID = 2 * col * c_numRows + 3;
-    Glib::ustring label = m_textUsageMode->getKeyLabel (buttonID);
-    addControl (new RenameLetter (m_textUsageMode, buttonID, Rect (x, y, twiceLetterWidth, c_letterHeight)));
+    Glib::ustring label = m_textUsageMode->getKeyLabel(buttonID);
+    addControl(new RenameLetter(m_textUsageMode, buttonID, Rect(x, y, twiceLetterWidth, c_letterHeight)));
     x += twiceLetterWidth;
   }
 }
 
-void RenameLayout::onTextChanged (const ustring &text)
+void RenameLayout::onTextChanged(const ustring &text)
 {
-  setDirty ();
+  setDirty();
 }
 
-bool RenameLayout::onButton (int i, bool down, ButtonModifiers modifiers)
+bool RenameLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  switch (i)
+  switch(i)
   {
     case BUTTON_A:
-      if (down)
+      if(down)
       {
-        cancel ();
-        Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ().resetOverlay ();
+        cancel();
+        Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().resetOverlay();
       }
 
       return true;
 
     case BUTTON_D:
     case BUTTON_ENTER:
-      if (down)
+      if(down)
       {
-        commit (m_textUsageMode->getText ());
-        Application::get ().getHWUI ()->getPanelUnit ().getEditPanel ().getBoled ().resetOverlay ();
+        commit(m_textUsageMode->getText());
+        Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().resetOverlay();
         return true;
       }
   }
 
-  return super::onButton (i, down, modifiers);
+  return super::onButton(i, down, modifiers);
 }
 
-bool RenameLayout::onRotary (int inc, ButtonModifiers modifiers)
+bool RenameLayout::onRotary(int inc, ButtonModifiers modifiers)
 {
-  m_textUsageMode->moveCursor (inc);
+  m_textUsageMode->moveCursor(inc);
   return true;
 }
 
-void RenameLayout::cancel ()
+void RenameLayout::cancel()
 {
 }
-

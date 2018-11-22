@@ -1,17 +1,16 @@
 #include "SpawnPlaygroundJob.h"
 
-SpawnPlaygroundJob::SpawnPlaygroundJob (Job *parent) :
-    super (parent)
+SpawnPlaygroundJob::SpawnPlaygroundJob(Job *parent)
+    : super(parent)
 {
 }
 
-SpawnPlaygroundJob::~SpawnPlaygroundJob ()
+SpawnPlaygroundJob::~SpawnPlaygroundJob()
 {
 }
 
-void SpawnPlaygroundJob::implRun ()
+void SpawnPlaygroundJob::implRun()
 {
-  Glib::spawn_command_line_async ("../playground");
+  Glib::spawn_command_line_async("../playground");
   getParent()->onChildFinished(this, true);
 }
-

@@ -9,12 +9,11 @@ class Parameter;
 
 class AnyParameterLockedIndicator : public LockedIndicator
 {
-  public:
-  explicit AnyParameterLockedIndicator (const Rect &pos);
+ public:
+  explicit AnyParameterLockedIndicator(const Rect &pos);
 
-  ~AnyParameterLockedIndicator () override = default;
+  ~AnyParameterLockedIndicator() override = default;
 
-  private:
-    void onParameterGroupChanged();
+ private:
+  void onParameterGroupChanged();
 };
-

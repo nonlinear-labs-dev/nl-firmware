@@ -18,45 +18,43 @@ class Button;
 
 class PresetManagerLayout : public DFBLayout
 {
-  private:
-    typedef DFBLayout super;
+ private:
+  typedef DFBLayout super;
 
-  public:
-    PresetManagerLayout(FocusAndMode focusAndMode);
-    virtual ~PresetManagerLayout();
+ public:
+  PresetManagerLayout(FocusAndMode focusAndMode);
+  virtual ~PresetManagerLayout();
 
-    void setFocusAndMode(FocusAndMode focusAndMode);
+  void setFocusAndMode(FocusAndMode focusAndMode);
 
-    virtual bool onButton(int i, bool down, ButtonModifiers modifiers) override;
-    virtual bool onRotary(int inc, ButtonModifiers modifiers) override;
+  virtual bool onButton(int i, bool down, ButtonModifiers modifiers) override;
+  virtual bool onRotary(int inc, ButtonModifiers modifiers) override;
 
-    bool animateSelectedPreset(function<void()> cb);
+  bool animateSelectedPreset(function<void()> cb);
 
-    std::pair<int, int> getSelectedPosition() const;
-    std::unique_ptr<StoreModeData>& getStoreModePtr();
+  std::pair<int, int> getSelectedPosition() const;
+  std::unique_ptr<StoreModeData> &getStoreModePtr();
 
-  private:
-    void updateAutoLoadButton(const Setting *setting);
-    void setup();
-    auto getPresetManager();
+ private:
+  void updateAutoLoadButton(const Setting *setting);
+  void setup();
+  auto getPresetManager();
 
-    void setupBankFocus();
-    void setupPresetFocus();
-    void setupPresetEdit();
-    void setupPresetSelect();
-    void setupPresetStore();
-    void setupBankEdit();
-    void setupBankSelect();
-    void setupBankStore();
+  void setupBankFocus();
+  void setupPresetFocus();
+  void setupPresetEdit();
+  void setupPresetSelect();
+  void setupPresetStore();
+  void setupBankEdit();
+  void setupBankSelect();
+  void setupBankStore();
 
-    ButtonMenu *m_menu = nullptr;
-    Button *m_autoLoad = nullptr;
-    NumPresetsInBankLabel *m_numPresetsInBank = nullptr;
-    BankAndPresetNumberLabel *m_bankAndPresetNumberLabel = nullptr;
-    PresetListBase *m_presets = nullptr;
-    FocusAndMode m_focusAndMode;
-    StoreModeData* getStoreModeData();
-    void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
-
+  ButtonMenu *m_menu = nullptr;
+  Button *m_autoLoad = nullptr;
+  NumPresetsInBankLabel *m_numPresetsInBank = nullptr;
+  BankAndPresetNumberLabel *m_bankAndPresetNumberLabel = nullptr;
+  PresetListBase *m_presets = nullptr;
+  FocusAndMode m_focusAndMode;
+  StoreModeData *getStoreModeData();
+  void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
 };
-

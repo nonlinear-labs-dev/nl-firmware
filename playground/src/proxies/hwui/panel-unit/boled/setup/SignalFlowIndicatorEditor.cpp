@@ -8,27 +8,25 @@
 #include <device-settings/DebugLevel.h>
 #include <proxies/hwui/UsageMode.h>
 
-SignalFlowIndicatorEditor::SignalFlowIndicatorEditor () :
-    super ()
+SignalFlowIndicatorEditor::SignalFlowIndicatorEditor()
+    : super()
 {
-  Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->onChange (
-      mem_fun (this, &SignalFlowIndicatorEditor::onSettingChanged));
-
+  Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->onChange(
+      mem_fun(this, &SignalFlowIndicatorEditor::onSettingChanged));
 }
 
-void SignalFlowIndicatorEditor::incSetting (int inc)
+void SignalFlowIndicatorEditor::incSetting(int inc)
 {
   Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->inc(inc, false);
 }
 
-const vector<ustring> &SignalFlowIndicatorEditor::getDisplayStrings () const
+const vector<ustring> &SignalFlowIndicatorEditor::getDisplayStrings() const
 {
   return Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->enumToDisplayString();
 }
 
-
-int SignalFlowIndicatorEditor::getSelectedIndex () const
+int SignalFlowIndicatorEditor::getSelectedIndex() const
 {
-  auto enabled = Application::get ().getSettings ()->getSetting<SignalFlowIndicationSetting> ()->get ();
+  auto enabled = Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->get();
   return enabled ? 0 : 1;
 }

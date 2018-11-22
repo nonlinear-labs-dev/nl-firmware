@@ -31,10 +31,10 @@
 
 static const Rect c_fullRightSidePosition(129, 16, 126, 48);
 
-ImportBackupEditor::ImportBackupEditor () :
-    ControlWithChildren (Rect (0, 0, 0, 0))
+ImportBackupEditor::ImportBackupEditor()
+    : ControlWithChildren(Rect(0, 0, 0, 0))
 {
-  if (USBStickAvailableView::usbIsReady())
+  if(USBStickAvailableView::usbIsReady())
   {
     addLabel("Attention! This action will delete all current banks!");
     addControl(new Button("OK", Button::getButtonPos(BUTTON_C).getMovedBy(Point(-128, -16))));
@@ -42,44 +42,46 @@ ImportBackupEditor::ImportBackupEditor () :
   }
   else
   {
-    addControl(new MultiLineLabel("Please insert an USB-Stick and reload this page!"))->setPosition(Rect(3, 0, 119, 24));
+    addControl(new MultiLineLabel("Please insert an USB-Stick and reload this page!"))
+        ->setPosition(Rect(3, 0, 119, 24));
     addControl(new Button("Back", Button::getButtonPos(BUTTON_D).getMovedBy(Point(-128, -16))));
   }
 }
 
-ImportBackupEditor::~ImportBackupEditor ()
+ImportBackupEditor::~ImportBackupEditor()
 {
 }
 
-void ImportBackupEditor::addLabel (const Glib::ustring &text)
+void ImportBackupEditor::addLabel(const Glib::ustring &text)
 {
-  addControl (new MultiLineLabel (text))->setPosition (Rect (3, 0, 119, 24));
+  addControl(new MultiLineLabel(text))->setPosition(Rect(3, 0, 119, 24));
 }
 
-void ImportBackupEditor::setPosition (const Rect &)
+void ImportBackupEditor::setPosition(const Rect &)
 {
-  ControlWithChildren::setPosition (c_fullRightSidePosition);
+  ControlWithChildren::setPosition(c_fullRightSidePosition);
 }
 
-bool ImportBackupEditor::onButton (int i, bool down, ButtonModifiers modifiers)
+bool ImportBackupEditor::onButton(int i, bool down, ButtonModifiers modifiers)
 {
-  if (down)
+  if(down)
   {
-    if (i == BUTTON_C && USBStickAvailableView::usbIsReady())
+    if(i == BUTTON_C && USBStickAvailableView::usbIsReady())
     {
-      importBackup ();
+      importBackup();
       return true;
     }
-    else if (i == BUTTON_D)
+    else if(i == BUTTON_D)
     {
-      diveUp ();
+      diveUp();
       return true;
     }
   }
   return false;
 }
 
-Glib::ustring ImportBackupEditor::generateFileDialogCompliantNameFromPath(std::experimental::filesystem::directory_entry file)
+Glib::ustring
+    ImportBackupEditor::generateFileDialogCompliantNameFromPath(std::experimental::filesystem::directory_entry file)
 {
   auto nameWithoutZipAtTheEnd = file.path().stem().string();
   auto parentPathToFile = file.path().parent_path().string();
@@ -91,7 +93,8 @@ bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem
   auto fileName = term.path().filename().string();
   string endA = ".xml.zip";
   string endB = ".xml.tar.gz";
-  return !(std::equal(endA.rbegin(), endA.rend(), fileName.rbegin()) ||  std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
+  return !(std::equal(endA.rbegin(), endA.rend(), fileName.rbegin())
+           || std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
 }
 
 void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem::directory_entry file)
@@ -99,18 +102,17 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
   auto &app = Application::get();
   auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
 
-  if (file != std::experimental::filesystem::directory_entry())
+  if(file != std::experimental::filesystem::directory_entry())
   {
 
     auto path = generateFileDialogCompliantNameFromPath(file);
 
     FileInStream in(path, true);
 
-    if (!in.eof())
+    if(!in.eof())
     {
       auto scope = app.getUndoScope()->startTransaction("Import Presetmanager Backup");
       auto pm = app.getPresetManager();
-
 
       pm->undoableClear(scope->getTransaction());
       PresetManagerSerializer serializer(*pm.get());
@@ -120,34 +122,33 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
       SplashLayout::addStatus("Restoring Backup from File!");
 
       XmlReader reader(in, scope->getTransaction());
-      reader.onFileVersionRead([=](int version)
-      {
-        if (version > VersionAttribute::getCurrentFileVersion ())
+      reader.onFileVersionRead([=](int version) {
+        if(version > VersionAttribute::getCurrentFileVersion())
         {
-          SplashLayout::setStatus("Unsupported File Version. The backup was created with a newer firmware. Please update your C15.");
-          std::this_thread::sleep_for (2s);
-          scope->getTransaction ()->rollBack ();
+          SplashLayout::setStatus(
+              "Unsupported File Version. The backup was created with a newer firmware. Please update your C15.");
+          std::this_thread::sleep_for(2s);
+          scope->getTransaction()->rollBack();
           return Reader::FileVersionCheckResult::Unsupported;
         }
         return Reader::FileVersionCheckResult::OK;
       });
 
-      if(reader.read<PresetManagerSerializer>(std::ref(*pm.get()))) {
-          pm->getEditBuffer()->sendToLPC();
+      if(reader.read<PresetManagerSerializer>(std::ref(*pm.get())))
+      {
+        pm->getEditBuffer()->sendToLPC();
       }
       SplashLayout::addStatus("Restore Complete!");
       std::this_thread::sleep_for(0.7s);
     }
   }
   boled.resetOverlay();
-  Application::get().getHWUI()->getPanelUnit().setupFocusAndMode(
-  { UIFocus::Presets, UIMode::Select });
+  Application::get().getHWUI()->getPanelUnit().setupFocusAndMode({ UIFocus::Presets, UIMode::Select });
 }
 
 void ImportBackupEditor::importBackup()
 {
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(
-          new FileDialogLayout(&ImportBackupEditor::filterApplicableFileNames,
-                               &ImportBackupEditor::importBackupFileFromPath,
-                               "Select Backup for Restore"));
+      new FileDialogLayout(&ImportBackupEditor::filterApplicableFileNames,
+                           &ImportBackupEditor::importBackupFileFromPath, "Select Backup for Restore"));
 }

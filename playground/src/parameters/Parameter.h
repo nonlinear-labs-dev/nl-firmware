@@ -51,7 +51,7 @@ class Parameter : public UpdateDocumentContributor,
   ParameterGroup *getParentGroup();
   gint32 getID() const;
 
-  Parameter* getOriginalParameter() const;
+  Parameter *getOriginalParameter() const;
   bool isChangedFromLoaded() const;
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;

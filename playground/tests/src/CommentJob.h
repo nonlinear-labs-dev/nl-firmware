@@ -4,19 +4,18 @@
 
 class CommentJob : public Job
 {
-  private:
-    typedef Job super;
+ private:
+  typedef Job super;
 
-  public:
-    CommentJob (Job *parent, const string &cmd);
-    virtual ~CommentJob ();
+ public:
+  CommentJob(Job* parent, const string& cmd);
+  virtual ~CommentJob();
 
-    void implRun () override;
+  void implRun() override;
 
-  private:
-    CommentJob (const CommentJob& other) = delete;
-    CommentJob& operator= (const CommentJob&) = delete;
+ private:
+  CommentJob(const CommentJob& other) = delete;
+  CommentJob& operator=(const CommentJob&) = delete;
 
-    string m_cmd;
+  string m_cmd;
 };
-

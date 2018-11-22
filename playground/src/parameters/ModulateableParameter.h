@@ -4,72 +4,75 @@
 
 class ModulateableParameter : public Parameter
 {
-    typedef Parameter super;
-  public:
-    ModulateableParameter (ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
-                           tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
-    virtual ~ModulateableParameter ();
+  typedef Parameter super;
 
-    enum ModulationSource
-    {
-      NONE = 0, MC1 = 1, MC2 = 2, MC3 = 3, MC4 = 4, NUM_CHOICES = 5
-    };
+ public:
+  ModulateableParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
+                        tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
+  virtual ~ModulateableParameter();
 
-    void writeToLPC (MessageComposer &cmp) const override;
-    virtual size_t getHash () const override;
+  enum ModulationSource
+  {
+    NONE = 0,
+    MC1 = 1,
+    MC2 = 2,
+    MC3 = 3,
+    MC4 = 4,
+    NUM_CHOICES = 5
+  };
 
-    tDisplayValue getModulationAmount () const;
-    void setModulationAmount (UNDO::Scope::tTransactionPtr transaction, const tDisplayValue &amount);
+  void writeToLPC(MessageComposer &cmp) const override;
+  virtual size_t getHash() const override;
 
-    ModulationSource getModulationSource () const;
-    void setModulationSource (UNDO::Scope::tTransactionPtr transaction, ModulationSource src);
+  tDisplayValue getModulationAmount() const;
+  void setModulationAmount(UNDO::Scope::tTransactionPtr transaction, const tDisplayValue &amount);
 
-    void undoableSetMCAmountToDefault ();
+  ModulationSource getModulationSource() const;
+  void setModulationSource(UNDO::Scope::tTransactionPtr transaction, ModulationSource src);
 
-    void undoableSelectModSource (UNDO::Scope::tTransactionPtr transaction, int src);
-    void undoableSetModAmount (UNDO::Scope::tTransactionPtr transaction, double amount);
+  void undoableSetMCAmountToDefault();
 
-    void undoableIncrementMCSelect (int inc);
-    void undoableIncrementMCAmount (int inc);
+  void undoableSelectModSource(UNDO::Scope::tTransactionPtr transaction, int src);
+  void undoableSetModAmount(UNDO::Scope::tTransactionPtr transaction, double amount);
 
-    void undoableIncrementMCSelect (UNDO::Scope::tTransactionPtr transaction, int inc);
-    virtual void undoableIncrementMCAmount (UNDO::Scope::tTransactionPtr transaction, int inc, ButtonModifiers modifiers);
+  void undoableIncrementMCSelect(int inc);
+  void undoableIncrementMCAmount(int inc);
 
-    void undoableLoadPackedModulationInfo (UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &packedModulationInfo);
+  void undoableIncrementMCSelect(UNDO::Scope::tTransactionPtr transaction, int inc);
+  virtual void undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction, int inc, ButtonModifiers modifiers);
 
-    void loadDefault (UNDO::Scope::tTransactionPtr transaction) override;
+  void undoableLoadPackedModulationInfo(UNDO::Scope::tTransactionPtr transaction,
+                                        const Glib::ustring &packedModulationInfo);
 
-    uint16_t getModulationSourceAndAmountPacked () const;
-    void applyLpcMacroControl (tDisplayValue diff);
+  void loadDefault(UNDO::Scope::tTransactionPtr transaction) override;
 
-    void copyFrom (UNDO::Scope::tTransactionPtr transaction, Parameter * other) override;
-    virtual void exportReaktorParameter (stringstream &target) const override;
+  uint16_t getModulationSourceAndAmountPacked() const;
+  void applyLpcMacroControl(tDisplayValue diff);
 
-    virtual Glib::ustring stringizeModulationAmount () const;
-    virtual double getModulationAmountFineDenominator () const;
-    virtual double getModulationAmountCoarseDenominator () const;
+  void copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other) override;
+  virtual void exportReaktorParameter(stringstream &target) const override;
 
-    std::pair<Glib::ustring, Glib::ustring> getModRangeAsDisplayValues() const;
+  virtual Glib::ustring stringizeModulationAmount() const;
+  virtual double getModulationAmountFineDenominator() const;
+  virtual double getModulationAmountCoarseDenominator() const;
 
+  std::pair<Glib::ustring, Glib::ustring> getModRangeAsDisplayValues() const;
 
+  static void registerTests();
 
-    static void registerTests ();
+  virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+  void *getAmountCookie();
 
-    virtual DFBLayout *createLayout (FocusAndMode focusAndMode) const override;
-    void *getAmountCookie ();
+  std::pair<tControlPositionValue, tControlPositionValue> getModulationRange(bool clipped) const;
+  int getModAmountDenominator(const ButtonModifiers &modifiers) const;
 
-    std::pair<tControlPositionValue, tControlPositionValue> getModulationRange(bool clipped) const;
-    int getModAmountDenominator(const ButtonModifiers &modifiers) const;
+ protected:
+  void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDifferences(Writer &writer, Parameter *other) const override;
 
-  protected:
-    void writeDocProperties (Writer &writer, tUpdateID knownRevision) const override;
-    void writeDifferences(Writer& writer, Parameter* other) const override;
+ private:
+  Glib::ustring modulationValueToDisplayString(tControlPositionValue v) const;
 
-  private:
-    Glib::ustring modulationValueToDisplayString(tControlPositionValue v) const;
-
-    tDisplayValue m_modulationAmount;
-    ModulationSource m_modSource;
-
+  tDisplayValue m_modulationAmount;
+  ModulationSource m_modSource;
 };
-

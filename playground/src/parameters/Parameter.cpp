@@ -195,23 +195,25 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
   return m_value.getNextStepValue(incs, modifiers);
 }
 
-Parameter* Parameter::getOriginalParameter() const {
+Parameter *Parameter::getOriginalParameter() const
+{
   auto pm = Application::get().getPresetManager();
-  if(auto preset = pm->getEditBuffer()->getPreset()) {
+  if(auto preset = pm->getEditBuffer()->getPreset())
+  {
     return preset->findParameterByID(static_cast<size_t>(getID()));
   }
   return nullptr;
 }
 
-bool Parameter::isChangedFromLoaded() const {
-  if(auto currentParam = this) {
+bool Parameter::isChangedFromLoaded() const
+{
+  if(auto currentParam = this)
+  {
     if(auto originalParameter = getOriginalParameter())
       return currentParam->getControlPositionValue() != originalParameter->getControlPositionValue();
   }
   return false;
 }
-
-
 
 bool Parameter::isBiPolar() const
 {

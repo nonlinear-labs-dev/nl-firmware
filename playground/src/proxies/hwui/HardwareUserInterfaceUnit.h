@@ -7,26 +7,24 @@ class UsageMode;
 
 class HardwareUserInterfaceUnit
 {
-  private:
+ private:
+ public:
+  HardwareUserInterfaceUnit();
+  virtual ~HardwareUserInterfaceUnit();
 
-  public:
-    HardwareUserInterfaceUnit ();
-    virtual ~HardwareUserInterfaceUnit ();
+  virtual void setupFocusAndMode(FocusAndMode focusAndMode);
 
-    virtual void setupFocusAndMode (FocusAndMode focusAndMode);
+  void setUsageMode(UsageMode* mode);
 
-    void setUsageMode (UsageMode *mode);
+  void restoreUsageMode(shared_ptr<UsageMode> mode);
+  shared_ptr<UsageMode> getUsageMode();
+  shared_ptr<const UsageMode> getUsageMode() const;
 
-    void restoreUsageMode (shared_ptr<UsageMode> mode);
-    shared_ptr<UsageMode> getUsageMode ();
-    shared_ptr<const UsageMode> getUsageMode () const;
+  virtual bool onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool state);
 
-    virtual bool onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool state);
+ private:
+  HardwareUserInterfaceUnit(const HardwareUserInterfaceUnit& other) = delete;
+  HardwareUserInterfaceUnit& operator=(const HardwareUserInterfaceUnit&) = delete;
 
-  private:
-    HardwareUserInterfaceUnit (const HardwareUserInterfaceUnit& other) = delete;
-    HardwareUserInterfaceUnit& operator= (const HardwareUserInterfaceUnit&) = delete;
-
-    shared_ptr<UsageMode> m_usageMode;
+  shared_ptr<UsageMode> m_usageMode;
 };
-

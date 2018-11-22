@@ -11,8 +11,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulationRouterParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 
-ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2() :
-    super()
+ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2()
+    : super()
 {
   addControl(new Button("HW Source..", BUTTON_A));
   addControl(new Button("", BUTTON_B));
@@ -27,10 +27,10 @@ ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2()
   highlight<SelectedParameterValue>();
 }
 
-Carousel *ModulationRouterParameterSelectLayout2::createCarousel (const Rect &rect) {
+Carousel *ModulationRouterParameterSelectLayout2::createCarousel(const Rect &rect)
+{
   return nullptr;
 }
-
 
 bool ModulationRouterParameterSelectLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 {
@@ -38,7 +38,7 @@ bool ModulationRouterParameterSelectLayout2::onButton(int i, bool down, ButtonMo
   {
     if(i == BUTTON_A)
     {
-      if(auto p = dynamic_cast<ModulationRoutingParameter*>(getCurrentParameter()))
+      if(auto p = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
       {
         Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getSourceParameter());
       }
@@ -48,7 +48,7 @@ bool ModulationRouterParameterSelectLayout2::onButton(int i, bool down, ButtonMo
 
     if(i == BUTTON_D)
     {
-      if(auto p = dynamic_cast<ModulationRoutingParameter*>(getCurrentParameter()))
+      if(auto p = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
       {
         p->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
 
@@ -62,8 +62,8 @@ bool ModulationRouterParameterSelectLayout2::onButton(int i, bool down, ButtonMo
   return super::onButton(i, down, modifiers);
 }
 
-ModulationRouterParameterEditLayout2::ModulationRouterParameterEditLayout2() :
-    super()
+ModulationRouterParameterEditLayout2::ModulationRouterParameterEditLayout2()
+    : super()
 {
   addControl(new Button("", BUTTON_A));
   addControl(new Button("", BUTTON_B));

@@ -4,17 +4,16 @@
 
 class ExecuteScriptJob : public Job
 {
-  private:
-    typedef Job super;
+ private:
+  typedef Job super;
 
-  public:
-    ExecuteScriptJob (Job *parent);
-    virtual ~ExecuteScriptJob ();
+ public:
+  ExecuteScriptJob(Job* parent);
+  virtual ~ExecuteScriptJob();
 
-    void implRun() override;
+  void implRun() override;
 
-  private:
-    ExecuteScriptJob (const ExecuteScriptJob& other) = delete;
-    ExecuteScriptJob& operator= (const ExecuteScriptJob&) = delete;
+ private:
+  ExecuteScriptJob(const ExecuteScriptJob& other) = delete;
+  ExecuteScriptJob& operator=(const ExecuteScriptJob&) = delete;
 };
-

@@ -9,10 +9,9 @@
 #include <presets/StoreModeData.h>
 #include <algorithm>
 
-PresetListSelectStorePosition::PresetListSelectStorePosition(const Rect &pos, bool showBankArrows,
-                                                             StoreModeData *pod) :
-    super(pos, showBankArrows),
-    m_storeModeData(pod)
+PresetListSelectStorePosition::PresetListSelectStorePosition(const Rect &pos, bool showBankArrows, StoreModeData *pod)
+    : super(pos, showBankArrows)
+    , m_storeModeData(pod)
 {
   initBankAndPreset();
 }
@@ -54,8 +53,7 @@ void PresetListSelectStorePosition::onBankChanged()
 
 std::pair<int, int> PresetListSelectStorePosition::getSelectedPosition() const
 {
-  return
-  { m_storeModeData->bankPos, m_storeModeData->presetPos};
+  return { m_storeModeData->bankPos, m_storeModeData->presetPos };
 }
 
 bool PresetListSelectStorePosition::onButton(int i, bool down, ButtonModifiers modifiers)

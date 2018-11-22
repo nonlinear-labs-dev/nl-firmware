@@ -10,10 +10,12 @@
 
 class NeverHighlitButton : public Button
 {
-  public:
-      using Button::Button;
+ public:
+  using Button::Button;
 
-      virtual void setHighlight(bool isHighlight) override {}
+  virtual void setHighlight(bool isHighlight) override
+  {
+  }
 };
 
 ParameterCarousel::ParameterCarousel(const Rect& pos)
@@ -21,7 +23,9 @@ ParameterCarousel::ParameterCarousel(const Rect& pos)
 {
 }
 
-ParameterCarousel::~ParameterCarousel() {}
+ParameterCarousel::~ParameterCarousel()
+{
+}
 
 void ParameterCarousel::setup(Parameter* selectedParameter)
 {

@@ -6,14 +6,13 @@ class Application;
 
 class MCSelectButton : public ModulationModeButton
 {
-  private:
-    typedef ModulationModeButton super;
+ private:
+  typedef ModulationModeButton super;
 
-  public:
-    MCSelectButton (int id);
-    virtual ~MCSelectButton ();
+ public:
+  MCSelectButton(int id);
+  virtual ~MCSelectButton();
 
-protected:
-    virtual void update (const Parameter *parameter) override;
+ protected:
+  virtual void update(const Parameter *parameter) override;
 };
-

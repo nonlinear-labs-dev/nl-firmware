@@ -12,75 +12,71 @@
 #include "presets/PresetSettings.h"
 #include <proxies/hwui/buttons.h>
 
-BaseUnitPlayMode::BaseUnitPlayMode ()
+BaseUnitPlayMode::BaseUnitPlayMode()
 {
 }
 
-BaseUnitPlayMode::~BaseUnitPlayMode ()
+BaseUnitPlayMode::~BaseUnitPlayMode()
 {
 }
 
-void BaseUnitPlayMode::setup ()
+void BaseUnitPlayMode::setup()
 {
-  setupBaseUnitUIModeButton ();
-  setupBaseUnitMinusButton ();
-  setupBaseUnitPlusButton ();
+  setupBaseUnitUIModeButton();
+  setupBaseUnitMinusButton();
+  setupBaseUnitPlusButton();
 
-  setupButtonConnection (BUTTON_FUNCTION, [ = ] (gint32 buttonID, ButtonModifiers modifiers, bool state)
-  {
-    if (state)
-    toggleTouchBehaviour();
+  setupButtonConnection(BUTTON_FUNCTION, [=](gint32 buttonID, ButtonModifiers modifiers, bool state) {
+    if(state)
+      toggleTouchBehaviour();
 
     return true;
   });
 }
 
-void BaseUnitPlayMode::toggleTouchBehaviour ()
+void BaseUnitPlayMode::toggleTouchBehaviour()
 {
-  if (auto pm = Application::get ().getPresetManager ())
+  if(auto pm = Application::get().getPresetManager())
   {
-    auto trans = pm->getUndoScope ().startTransaction ("Set ribbon mode");
-    int id = Application::get ().getLPCProxy ()->getLastTouchedRibbonParameterID ();
+    auto trans = pm->getUndoScope().startTransaction("Set ribbon mode");
+    int id = Application::get().getLPCProxy()->getLastTouchedRibbonParameterID();
 
-    if (auto ribbonParam = dynamic_cast<RibbonParameter*> (pm->getEditBuffer ()->findParameterByID (id)))
+    if(auto ribbonParam = dynamic_cast<RibbonParameter*>(pm->getEditBuffer()->findParameterByID(id)))
     {
-      ribbonParam->undoableIncRibbonTouchBehaviour (trans->getTransaction ());
+      ribbonParam->undoableIncRibbonTouchBehaviour(trans->getTransaction());
     }
   }
 }
 
-void BaseUnitPlayMode::setupBaseUnitUIModeButton ()
+void BaseUnitPlayMode::setupBaseUnitUIModeButton()
 {
-  setupButtonConnection (BUTTON_MODE, [ = ] (gint32 buttonID, ButtonModifiers modifiers, bool state)
-  {
-    if (state)
-    Application::get ().getSettings ()->getSetting<BaseUnitUIMode> ()->inc (1, true);
+  setupButtonConnection(BUTTON_MODE, [=](gint32 buttonID, ButtonModifiers modifiers, bool state) {
+    if(state)
+      Application::get().getSettings()->getSetting<BaseUnitUIMode>()->inc(1, true);
 
     return true;
   });
 }
 
-void BaseUnitPlayMode::setupBaseUnitMinusButton ()
+void BaseUnitPlayMode::setupBaseUnitMinusButton()
 {
-  setupButtonConnection (BUTTON_MINUS, [ = ] (gint32 buttonID, ButtonModifiers modifiers, bool state)
-  {
-    if (state)
-    m_noteShiftState.traverse (NOTE_SHIFT_EVENT_MINUS_PRESSED);
+  setupButtonConnection(BUTTON_MINUS, [=](gint32 buttonID, ButtonModifiers modifiers, bool state) {
+    if(state)
+      m_noteShiftState.traverse(NOTE_SHIFT_EVENT_MINUS_PRESSED);
     else
-    m_noteShiftState.traverse (NOTE_SHIFT_EVENT_MINUS_RELEASED);
+      m_noteShiftState.traverse(NOTE_SHIFT_EVENT_MINUS_RELEASED);
 
     return true;
   });
 }
 
-void BaseUnitPlayMode::setupBaseUnitPlusButton ()
+void BaseUnitPlayMode::setupBaseUnitPlusButton()
 {
-  setupButtonConnection (BUTTON_PLUS, [ = ] (gint32 buttonID, ButtonModifiers modifiers, bool state)
-  {
-    if (state)
-    m_noteShiftState.traverse (NOTE_SHIFT_EVENT_PLUS_PRESSED);
+  setupButtonConnection(BUTTON_PLUS, [=](gint32 buttonID, ButtonModifiers modifiers, bool state) {
+    if(state)
+      m_noteShiftState.traverse(NOTE_SHIFT_EVENT_PLUS_PRESSED);
     else
-    m_noteShiftState.traverse (NOTE_SHIFT_EVENT_PLUS_RELEASED);
+      m_noteShiftState.traverse(NOTE_SHIFT_EVENT_PLUS_RELEASED);
 
     return true;
   });

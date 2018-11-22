@@ -4,19 +4,18 @@
 
 class SelectParameterJob : public ExecutePlaygroundCommandJob
 {
-  private:
-    typedef ExecutePlaygroundCommandJob super;
+ private:
+  typedef ExecutePlaygroundCommandJob super;
 
-  public:
-    SelectParameterJob (Job *parent, const string &cmd);
-    virtual ~SelectParameterJob ();
+ public:
+  SelectParameterJob(Job* parent, const string& cmd);
+  virtual ~SelectParameterJob();
 
-    virtual string getURL() const override;
+  virtual string getURL() const override;
 
-  private:
-    SelectParameterJob (const SelectParameterJob& other) = delete;
-    SelectParameterJob& operator= (const SelectParameterJob&) = delete;
+ private:
+  SelectParameterJob(const SelectParameterJob& other) = delete;
+  SelectParameterJob& operator=(const SelectParameterJob&) = delete;
 
-    int m_ID;
+  int m_ID;
 };
-

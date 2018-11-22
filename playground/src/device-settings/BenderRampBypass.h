@@ -3,12 +3,11 @@
 
 class BenderRampBypass : public BooleanSetting
 {
-  public:
-    BenderRampBypass(Settings& settings);
-    virtual ~BenderRampBypass();
+ public:
+  BenderRampBypass(Settings& settings);
+  virtual ~BenderRampBypass();
 
-  private:
-    void sendToLPC () const override;
-    bool persistent() const override;
+ private:
+  void sendToLPC() const override;
+  bool persistent() const override;
 };
-

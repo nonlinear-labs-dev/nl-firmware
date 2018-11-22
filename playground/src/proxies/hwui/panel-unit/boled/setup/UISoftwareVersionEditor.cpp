@@ -6,7 +6,11 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-UISoftwareVersionEditor::UISoftwareVersionEditor() : m_head(TOSTRING(HEAD_REF)), m_commitCount(TOSTRING(COMMIT_COUNT)), m_branch(TOSTRING(BRANCH_NAME)), DisplayEditor()
+UISoftwareVersionEditor::UISoftwareVersionEditor()
+    : m_head(TOSTRING(HEAD_REF))
+    , m_commitCount(TOSTRING(COMMIT_COUNT))
+    , m_branch(TOSTRING(BRANCH_NAME))
+    , DisplayEditor()
 {
   int y = 0;
   addEntry("branch", "Branch:", m_branch);
@@ -15,8 +19,7 @@ UISoftwareVersionEditor::UISoftwareVersionEditor() : m_head(TOSTRING(HEAD_REF)),
   doLayout();
 }
 
-
-void UISoftwareVersionEditor::setPosition (const Rect &)
+void UISoftwareVersionEditor::setPosition(const Rect &)
 {
- doLayout();
+  doLayout();
 }
