@@ -199,7 +199,7 @@ public class GlobalMenu extends OverlayLayout {
 
 		});
 		
-		addChild(new MenuEntry(this, "(Exp.!)") {
+		addChild(new MenuEntry(this, "Exp") {
 
 			@Override
 			public String getDrawText(Context2d ctx) {

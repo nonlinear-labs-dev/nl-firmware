@@ -26,6 +26,8 @@ class MacroControlMappingGroup : public ParameterGroup
 
   void init();
 
+  std::array<MacroControlParameter*, 4> macroControlPtr;
+
  private:
   ParameterGroup *m_mc = nullptr;
   ParameterGroup *m_hw = nullptr;

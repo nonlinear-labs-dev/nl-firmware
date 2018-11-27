@@ -21,6 +21,9 @@ class EditBuffer : public Preset
   static shared_ptr<EditBuffer> createEditBuffer(UpdateDocumentContributor *parent);
   virtual ~EditBuffer();
 
+
+  void setMacroControlValueFromMCView(int id, double value);
+
   void undoableClear(UNDO::Scope::tTransactionPtr transaction);
 
   void undoableSelectParameter(const Glib::ustring &id);

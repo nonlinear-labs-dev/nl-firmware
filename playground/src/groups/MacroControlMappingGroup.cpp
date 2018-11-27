@@ -25,6 +25,11 @@ void MacroControlMappingGroup::init()
   auto mc_c = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(245));
   auto mc_d = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(246));
 
+  macroControlPtr[0] = mc_a;
+  macroControlPtr[1] = mc_b;
+  macroControlPtr[2] = mc_c;
+  macroControlPtr[3] = mc_d;
+
   auto pedal1
       = dynamic_cast<PhysicalControlParameter *>(m_hw->getParameterByID(HardwareSourcesGroup::getPedal1ParameterID()));
   auto pedal2

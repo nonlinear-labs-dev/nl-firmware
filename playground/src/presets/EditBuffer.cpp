@@ -15,9 +15,11 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <tools/TimeTools.h>
 #include <device-settings/DeviceName.h>
+#include <groups/MacroControlMappingGroup.h>
 #include "device-settings/Settings.h"
 #include "device-settings/RandomizeAmount.h"
 #include "device-info/DeviceInformation.h"
+#include "parameters/MacroControlParameter.h"
 
 shared_ptr<EditBuffer> EditBuffer::createEditBuffer(UpdateDocumentContributor *parent)
 {
@@ -615,4 +617,11 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
 std::shared_ptr<Preset> EditBuffer::getPreset() const
 {
   return m_loadedPreset;
+}
+
+void EditBuffer::setMacroControlValueFromMCView(int id, double value) {
+  auto mcs = dynamic_cast<MacroControlMappingGroup*>(ParameterGroupSet::getParameterGroupByID("MCM"));
+  auto index = id - 243;
+  auto mc = mcs->macroControlPtr[index];
+  mc->applyAbsoluteLpcPhysicalControl(value);
 }
