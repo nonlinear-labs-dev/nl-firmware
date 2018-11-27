@@ -122,9 +122,9 @@ class ModRange {
 		var oldValY = Number(this.valueY).toFixed(1);
 
 		this.valueX = (((this.currentPointerPos.x - rect.x) / rect.w) * 100).toFixed(3);
-		this.valueY = (((this.currentPointerPos.y - rect.y) / rect.h) * 100).toFixed(3);
+		this.valueY = 100 - (((this.currentPointerPos.y - rect.y) / rect.h) * 100).toFixed(3);
 		this.targetX = (((this.targetPosition.x - rect.x) / rect.w) * 100).toFixed(3);
-		this.targetY = (((this.targetPosition.y - rect.y) / rect.h) * 100).toFixed(3);
+		this.targetY = 100 - (((this.targetPosition.y - rect.y) / rect.h) * 100).toFixed(3);
 
 		if(oldValX !== Number(this.valueX).toFixed(1)) {
 			this.ischanged = true;
@@ -227,24 +227,69 @@ function drawModRangeValue(ctx, modRange) {
 		currentPointerPos.y = rect.y + rect.h / 2;
 	}
 
-	drawCircleAtPoint(ctx, currentPointerPos, 20, "Blue");
-	drawCircleAtPoint(ctx, targetPos, 15, "Red");
+	drawCircleAtPoint(ctx, currentPointerPos, 10, "Blue");
+	drawCircleAtPoint(ctx, targetPos, 3, "Red");
+}
+
+function drawGraph2D(ctx, rect, modRange) {
+	let drawHeigth = rect.y + rect.h * 0.95;
+	let drawLeft = rect.x + rect.w * 0.05;
+	let outValueX = Number(modRange.valueX).toFixed(1);
+	let outValueY = Number(modRange.valueY).toFixed(1);
+
+	//Draw MC Name 1
+	ctx.fillStyle = "rgba(69,69,69,0.5)"
+	ctx.font = "4em Arial";
+	ctx.fillText(modRange.idX, rect.x + rect.w * 0.46, rect.y + rect.h / 1.2);
+	ctx.fill();
+	//Draw Value 1
+	ctx.fillStyle = "Black";
+	ctx.font = "2em Arial";
+	ctx.fillText(String(outValueX), rect.x + rect.w * 0.46, drawHeigth);
+	ctx.fill();
+
+	//Draw MC Name 2
+	ctx.fillStyle = "rgba(69,69,69,0.5)"
+	ctx.font = "4em Arial";
+	ctx.fillText(modRange.idY, drawLeft + rect.w * 0.12, rect.y + rect.h * 0.46);
+	ctx.fill();
+	//Draw Value 2
+	ctx.fillStyle = "Black";
+	ctx.font = "2em Arial";
+	ctx.fillText(String(outValueY), drawLeft, rect.y + rect.h * 0.46);
+	ctx.fill();
+}
+
+function drawGraph1D(ctx, rect, modRange) {
+	let drawHeigth = rect.y + rect.h * 0.95;
+	let outValue = Number(modRange.valueX).toFixed(1);
+	//Draw MC Name
+	ctx.fillStyle = "rgba(69,69,69,0.5)"
+	ctx.font = "4em Arial";
+	ctx.fillText(modRange.idX, rect.x + rect.w * 0.46, rect.y + rect.h / 1.5);
+	ctx.fill();
+	//Draw Value
+	ctx.fillStyle = "Black";
+	ctx.font = "2em Arial";
+	ctx.fillText(String(outValue), rect.x + rect.w * 0.46, drawHeigth);
+	ctx.fill();
 }
 
 function drawModRanges(ctx) {
-	var colors = ["#FF0000", "#48FF00", "#ff00b6", "#00ffbb"];
-
+	let colors = ["#C0C0C0", "#C8C8C8", "#D0D0D0", "#D8D8D8"];
 	ctx.beginPath();
 	for(var i = 0; i < 4; i++) {
 		ctx.fillStyle = colors[i];
+
 		var rect = getModRect(i);
-		var modRange = modRanges[i];
 		ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-		ctx.fillStyle = "Black";
-		if(modRange.idX != null)
-			ctx.fillText(modRange.idX + ":" + modRange.valueX, rect.x + rect.w / 2, rect.y + rect.h - 1);
-		if(modRange.idY != null)
-			ctx.fillText(modRange.idY + ": " + modRange.valueY, rect.x + 10, rect.y + rect.h / 2);
+
+		var modRange = modRanges[i];
+		if(modRange.id == 2 || modRange.id == 3) {
+			drawGraph1D(ctx, rect, modRange);
+		} else {
+			drawGraph2D(ctx, rect, modRange);
+		}
 	}
 }
 
