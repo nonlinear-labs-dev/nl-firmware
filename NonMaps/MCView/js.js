@@ -24,6 +24,11 @@ class Rect {
 	}
 }
 
+function isRound(n1, n2, delta) {
+	var diff = Math.abs(n1 - n2);
+	return diff <= delta;
+}
+
 class Point {
 	constructor(x, y) {
 		this.x = x;
@@ -38,6 +43,12 @@ class Point {
 		var x = (1 - n) * ax + n * bx;
 		var y = (1 - n) * ay + n * by;
 		return new Point(x, y);
+	}
+
+	equals(other, delta=0) {
+		var inRangeX = isRound(this.x, other.x, delta);
+		var inRangeY = isRound(this.y, other.y, delta);
+		return inRangeX && inRangeY;
 	}
 }
 
@@ -145,6 +156,8 @@ function updateCanvasSize() {
 	var nw = window.innerWidth;
 	var nh = window.innerHeight;
 	if ((w != nw) || (h != nh)) {
+		var ow = w;
+		var oh = h;
 		w = nw;
 		h = nh;
 		canvas.style.width = w+'px';
@@ -158,6 +171,19 @@ function updateCanvasSize() {
 		document.body.style.margin = "0";
 		document.body.style.height = h+'px';
 		document.body.style.width = w+'px';
+
+		var absoluteXChange = nw - ow;
+		var absoluteYChange = nh - oh;
+
+		var i = 0;
+		for(; i< modRanges.length; i++) {
+			var modRange = modRanges[i];
+			var rect = getModRect(modRange.id);
+			modRange.currentPointerPos.x = rect.x + (Number(modRange.valueX).toFixed(3) / 100) * rect.w;
+			modRange.currentPointerPos.y = rect.y + (Number(modRange.valueY).toFixed(3) / 100) * rect.h;
+			modRange.targetPosition = modRange.currentPointerPos;
+		}
+
 	}
 }
 
@@ -197,11 +223,14 @@ function drawCircleAtPoint(ctx, point, size, color) {
 function drawModRangeValue(ctx, modRange) {
 	var rect = getModRect(modRange.id);
 	var currentPointerPos = modRange.currentPointerPos;
+	var targetPos = modRange.targetPosition;
+
 	if(modRange.id == 2 || modRange.id == 3) {
 		currentPointerPos.y = rect.y + rect.h / 2;
 	}
+
 	drawCircleAtPoint(ctx, currentPointerPos, 20, "Blue");
-	drawCircleAtPoint(ctx, modRange.targetPosition, 10, "Red");
+	drawCircleAtPoint(ctx, targetPos, 15, "Red");
 }
 
 function drawModRanges(ctx) {
