@@ -6,6 +6,7 @@ var timer;
 var updateStarted = false;
 var touches = [];
 var modRanges = [];
+var interpolationStep = 0.01;
 //Change if devPC:
 //var websocket = new WebSocket("ws://localhost:8080/ws/");
 var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
@@ -51,6 +52,7 @@ class ModRange {
 		this.valueY = 0;
 		this.currentPointerPos = new Point(0, 0);
 		this.targetPosition = new Point(0, 0);
+		this.ischanged = true;
 	}
 
 	accumilateTouches(touches) {
@@ -71,9 +73,11 @@ class ModRange {
 			handle2DMc(this);
 		else if(this.id == 2 || this.id == 3)
 			handle1DMc(this);
+
+		this.ischanged = false;
 	}
 
-	interpolateTowardsTarget(stepSizeInPx=0.1) {
+	interpolateTowardsTarget(stepSizeInPx=0.01) {
 		if(this.currentPointerPos.x != this.targetPosition.x && this.currentPointerPos.y != this.targetPosition.y) {
 			this.currentPointerPos = this.currentPointerPos.lerp(this.currentPointerPos, this.targetPosition, stepSizeInPx);
 		}
@@ -100,14 +104,36 @@ class ModRange {
 
 	updateValueFromCurrentValues() {
 		var rect = getModRect(this.id)
-		this.valueX = (((this.currentPointerPos.x - rect.x) / rect.w) * 100).toFixed(1);
-		this.valueY = (((this.currentPointerPos.y - rect.y) / rect.h) * 100).toFixed(1);
+
+		var oldValX = this.valueX;
+		var oldValY = this.valueY;
+
+		this.valueX = (((this.currentPointerPos.x - rect.x) / rect.w) * 100).toFixed(3);
+		this.valueY = (((this.currentPointerPos.y - rect.y) / rect.h) * 100).toFixed(3);
+
+		if(this.ischanged === false)
+			this.ischanged =  !(oldValX === this.valueX || oldValY === this.valueY);
 	}
 
 	update(touches) {
 		this.targetPosition = this.calculateTargetFromTouches(touches);
 		this.updateValueFromCurrentValues();
 	}
+
+	changed() {
+		return this.ischanged;
+	}
+}
+
+function setInterpolationTime(value) {
+	clearInterval(interpolationTimer);
+	interpolationTimer = setInterval(interpolate, value);
+	document.getElementById("interpolation-time-label").innerHTML = value + "ms";
+}
+
+function setInterpolation(value) {
+	interpolationStep = value;
+	document.getElementById("interpolation-step-label").innerHTML = value;
 }
 
 function updateCanvasSize() {
@@ -190,12 +216,7 @@ function drawModRanges(ctx) {
 	}
 }
 
-function update() {
-	if (updateStarted)
-		return;
-
-	updateStarted = true;
-
+function update(timestamp) {
 	updateCanvasSize();
 	ctx.clearRect(0, 0, w, h);
 	drawModRanges(ctx);
@@ -204,8 +225,7 @@ function update() {
 		modRanges[i].update(touches);
 		drawModRangeValue(ctx, modRanges[i]);
 	}
-
-	updateStarted = false;
+	window.requestAnimationFrame(update);
 }
 
 function handle1DMc(modRange) {
@@ -229,33 +249,43 @@ function handle2DMc(modRange) {
 	sendToPlayground(mc2, value2);
 }
 
-function sendValues() {
+function testAndSendChanged() {
+	if(websocket.readyState === WebSocket.OPEN) {
+		for(var i = 0; i < modRanges.length; i++) {
+			var modRange = modRanges[i];
+			if(modRange.changed()) {
+				modRange.sendValues();
+			}
+		}
+	}
+}
+
+function sendAll() {
 	for(var i = 0; i < modRanges.length; i++) {
 		var modRange = modRanges[i];
-		if(modRange.id == 0)
-			handle2DMc(modRange);
-		else if(modRange.id == 2 || modRange.id == 3)
-			handle1DMc(modRange);
+		modRange.sendValues();
 	}
 }
 
 var sendTimer;
+var sendAllRegularlyTimer;
 var interpolationTimer;
 
 function interpolate() {
 	for(var i = 0; i < modRanges.length; i++) {
 		var modRange = modRanges[i];
-		modRange.interpolateTowardsTarget();
+		modRange.interpolateTowardsTarget(interpolationStep);
 	}
-
-	sendValues();
 }
 
 function onLoad() {
 	canvas = document.getElementById('canvas');
 	ctx = canvas.getContext('2d');
-	timer = setInterval(update, 1);
-	interpolationTimer = setInterval(interpolate, 10);
+	window.requestAnimationFrame(update);
+	//timer = setInterval(update, 1);
+	interpolationTimer = setInterval(interpolate, 5);
+	sendTimer = setInterval(testAndSendChanged, 1);
+	sendAllRegularlyTimer = setInterval(sendAll, 50);
 
 	modRanges = [new ModRange(0, 'A', 'B'), new ModRange(1, 'Kein', 'Kein'), new ModRange(2, 'C', null), new ModRange(3, 'D', null)];
 

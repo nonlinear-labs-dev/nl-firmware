@@ -623,5 +623,5 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value) {
   auto mcs = dynamic_cast<MacroControlMappingGroup*>(ParameterGroupSet::getParameterGroupByID("MCM"));
   auto index = id - 243;
   auto mc = mcs->macroControlPtr[index];
-  mc->applyAbsoluteLpcPhysicalControl(value);
+  mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(),value);
 }
