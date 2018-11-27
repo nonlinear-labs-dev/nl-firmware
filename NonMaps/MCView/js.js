@@ -6,7 +6,9 @@ var timer;
 var updateStarted = false;
 var touches = [];
 var modRanges = [];
-var websocket = new WebSocket("ws://localhost:8080/ws/");
+//Change if devPC:
+//var websocket = new WebSocket("ws://localhost:8080/ws/");
+var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
 
 class Rect {
 	constructor(x,y,w,h) {
