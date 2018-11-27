@@ -61,6 +61,8 @@ class ModRange {
 		this.idY = idY;
 		this.valueX = 0;
 		this.valueY = 0;
+		this.targetX = 0;
+		this.targetY = 0;
 		this.currentPointerPos = new Point(0, 0);
 		this.targetPosition = new Point(0, 0);
 		this.ischanged = true;
@@ -121,6 +123,8 @@ class ModRange {
 
 		this.valueX = (((this.currentPointerPos.x - rect.x) / rect.w) * 100).toFixed(3);
 		this.valueY = (((this.currentPointerPos.y - rect.y) / rect.h) * 100).toFixed(3);
+		this.targetX = (((this.targetPosition.x - rect.x) / rect.w) * 100).toFixed(3);
+		this.targetY = (((this.targetPosition.y - rect.y) / rect.h) * 100).toFixed(3);
 
 		if(oldValX !== Number(this.valueX).toFixed(1)) {
 			this.ischanged = true;
@@ -156,8 +160,6 @@ function updateCanvasSize() {
 	var nw = window.innerWidth;
 	var nh = window.innerHeight;
 	if ((w != nw) || (h != nh)) {
-		var ow = w;
-		var oh = h;
 		w = nw;
 		h = nh;
 		canvas.style.width = w+'px';
@@ -172,18 +174,14 @@ function updateCanvasSize() {
 		document.body.style.height = h+'px';
 		document.body.style.width = w+'px';
 
-		var absoluteXChange = nw - ow;
-		var absoluteYChange = nh - oh;
-
-		var i = 0;
-		for(; i< modRanges.length; i++) {
+		for(var i=0; i< modRanges.length; i++) {
 			var modRange = modRanges[i];
 			var rect = getModRect(modRange.id);
 			modRange.currentPointerPos.x = rect.x + (Number(modRange.valueX).toFixed(3) / 100) * rect.w;
 			modRange.currentPointerPos.y = rect.y + (Number(modRange.valueY).toFixed(3) / 100) * rect.h;
-			modRange.targetPosition = modRange.currentPointerPos;
+			modRange.targetPosition.x = rect.x + (Number(modRange.targetX).toFixed(3) / 100) * rect.w;
+			modRange.targetPosition.y = rect.y + (Number(modRange.targetY).toFixed(3) / 100) * rect.h;
 		}
-
 	}
 }
 
