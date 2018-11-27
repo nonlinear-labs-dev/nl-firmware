@@ -8,8 +8,8 @@ var touches = [];
 var modRanges = [];
 var interpolationStep = 0.01;
 //Change if devPC:
-//var websocket = new WebSocket("ws://localhost:8080/ws/");
-var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
+var websocket = new WebSocket("ws://localhost:8080/ws/");
+//var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
 
 class Rect {
 	constructor(x,y,w,h) {
@@ -105,14 +105,19 @@ class ModRange {
 	updateValueFromCurrentValues() {
 		var rect = getModRect(this.id)
 
-		var oldValX = this.valueX;
-		var oldValY = this.valueY;
+		var oldValX = Number(this.valueX).toFixed(1);
+		var oldValY = Number(this.valueY).toFixed(1);
 
 		this.valueX = (((this.currentPointerPos.x - rect.x) / rect.w) * 100).toFixed(3);
 		this.valueY = (((this.currentPointerPos.y - rect.y) / rect.h) * 100).toFixed(3);
 
-		if(this.ischanged === false)
-			this.ischanged =  !(oldValX === this.valueX || oldValY === this.valueY);
+		if(oldValX !== Number(this.valueX).toFixed(1)) {
+			this.ischanged = true;
+		}
+		if((this.id !== 2 && this.id !== 3) && oldValY !== Number(this.valueY).toFixed(1)) {
+			this.ischanged = true;
+		}
+
 	}
 
 	update(touches) {
@@ -281,11 +286,10 @@ function interpolate() {
 function onLoad() {
 	canvas = document.getElementById('canvas');
 	ctx = canvas.getContext('2d');
+
 	window.requestAnimationFrame(update);
-	//timer = setInterval(update, 1);
 	interpolationTimer = setInterval(interpolate, 5);
 	sendTimer = setInterval(testAndSendChanged, 1);
-	sendAllRegularlyTimer = setInterval(sendAll, 50);
 
 	modRanges = [new ModRange(0, 'A', 'B'), new ModRange(1, 'Kein', 'Kein'), new ModRange(2, 'C', null), new ModRange(3, 'D', null)];
 

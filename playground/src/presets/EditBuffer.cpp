@@ -619,9 +619,10 @@ std::shared_ptr<Preset> EditBuffer::getPreset() const
   return m_loadedPreset;
 }
 
-void EditBuffer::setMacroControlValueFromMCView(int id, double value) {
-  auto mcs = dynamic_cast<MacroControlMappingGroup*>(ParameterGroupSet::getParameterGroupByID("MCM"));
+void EditBuffer::setMacroControlValueFromMCView(int id, double value)
+{
+  auto mcs = dynamic_cast<MacroControlMappingGroup *>(ParameterGroupSet::getParameterGroupByID("MCM"));
   auto index = id - 243;
   auto mc = mcs->macroControlPtr[index];
-  mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(),value);
+  mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
 }
