@@ -6,6 +6,7 @@
 #include "device-settings/DebugLevel.h"
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
+#include <tools/PerformanceTimer.h>
 #include "StringTools.h"
 
 namespace UNDO
@@ -272,10 +273,25 @@ namespace UNDO
 
   void Transaction::recurse(function<void(const Transaction *)> cb) const
   {
-    cb(this);
+    PerformanceTimer t("Traverse Undo Tree");
+    std::vector<const Transaction *> list{ this };
+    size_t count = 1;
 
-    for(auto s : m_successors)
-      s->recurse(cb);
+    while(!list.empty())
+    {
+      auto curr = list.front();
+      if(curr != nullptr)
+      {
+        for(const auto &child : curr->m_successors)
+        {
+          list.emplace_back(child.get());
+          count++;
+        }
+        cb(curr);
+      }
+      list.erase(list.begin());
+    }
+    DebugLevel::warning("Undo Tree Size:", count);
   }
 
   int Transaction::countPredecessors() const

@@ -9,7 +9,7 @@ namespace UNDO
 {
   class Scope;
 
-  class Transaction : public Command, public UpdateDocumentContributor
+class Transaction : public Command, public UpdateDocumentContributor, public std::enable_shared_from_this<Transaction>
   {
    public:
     typedef std::shared_ptr<Transaction> tTransactionPtr;

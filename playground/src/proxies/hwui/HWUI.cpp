@@ -158,9 +158,17 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         onButtonPressed(BUTTON_UNDO, false);
         onButtonPressed(BUTTON_REDO, false);
       }
-      else if(line == "stress-undo")
+      else if(line == "stress-undo-s")
       {
         Application::get().getPresetManager()->stress(1000);
+      }
+      else if(line == "stress-undo-m")
+      {
+        Application::get().getPresetManager()->stress(10000);
+      }
+      else if(line == "stress-undo-l")
+      {
+        Application::get().getPresetManager()->stress(100000);
       }
       else if(line == "stress-pm")
       {
