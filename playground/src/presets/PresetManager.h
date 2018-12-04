@@ -45,6 +45,7 @@ class PresetManager : public ContentSection
 
   void init();
   void stress(int numTransactions);
+  void stressBlocking(int numTransactions);
   void stressLoad(int numTransactions);
   void reload();
 
