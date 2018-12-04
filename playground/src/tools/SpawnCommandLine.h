@@ -1,13 +1,10 @@
 #pragma once
-
-#include <glib/gerror.h>
-#include <glibmm/ustring.h>
 #include <string>
 
 class SpawnCommandLine
 {
  public:
-  SpawnCommandLine(const std::string &cmd);
+    explicit SpawnCommandLine(const std::string &cmd);
 
   std::string getStdOutputOrFallback(const std::string &fallbackIfEmpty) const;
   const std::string &getStdOutput() const;

@@ -51,6 +51,8 @@
 #include <proxies/hwui/panel-unit/boled/setup/ImportBackupEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicationView.h>
 #include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicatorEditor.h>
+#include <proxies/hwui/panel-unit/boled/setup/WiFiSettingEditor.h>
+#include <proxies/hwui/panel-unit/boled/setup/WiFiSettingView.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/lpc/LPCProxy.h>
@@ -210,6 +212,24 @@ namespace NavTree
     PedalParameter *param;
   };
 
+  struct WiFiSetting : EditableLeaf
+  {
+    WiFiSetting(InnerNode *parent)
+        : EditableLeaf(parent, "Enable/Disable WiFi")
+    {
+    }
+
+    virtual Control *createView() override
+    {
+      return new WiFiSettingView();
+    }
+
+    virtual Control *createEditor() override
+    {
+      return new WiFiSettingEditor();
+    }
+  };
+
   struct PresetGlitchSuppression : EditableLeaf
   {
     PresetGlitchSuppression(InnerNode *parent)
@@ -269,6 +289,7 @@ namespace NavTree
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new PresetGlitchSuppression(this));
+      children.emplace_back(new WiFiSetting(this));
     }
   };
 
