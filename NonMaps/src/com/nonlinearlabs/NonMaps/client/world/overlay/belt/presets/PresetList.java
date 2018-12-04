@@ -119,7 +119,7 @@ public class PresetList extends OverlayLayout {
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (!getPixRect().contains(pos))
 			return null;
-
+		
 		if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
 				|| dragProxy.getOrigin() instanceof IBank) {
 			setIsDropTarget(true);
@@ -144,9 +144,9 @@ public class PresetList extends OverlayLayout {
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		Bank b = getParent().getBankInCharge();
-
+				
 		if (dragProxy.getOrigin() instanceof IPreset)
-			getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b);
+			getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b, true);
 		else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
 			getNonMaps().getServerProxy().dropEditBufferOnBank(b);
 		else if (dragProxy.getOrigin() instanceof IBank) {

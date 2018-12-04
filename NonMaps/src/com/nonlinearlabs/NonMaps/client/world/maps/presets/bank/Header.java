@@ -115,7 +115,7 @@ public class Header extends Label {
 					getNonMaps().getServerProxy().dropPresetsOnBank(pm.getMultiSelection().getCSV(), b);
 					pm.getMultiSelection().clear();
 				} else {
-					getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b);
+					getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b, false);
 				}
 			} else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
 				getNonMaps().getServerProxy().dropEditBufferOnBank(b);

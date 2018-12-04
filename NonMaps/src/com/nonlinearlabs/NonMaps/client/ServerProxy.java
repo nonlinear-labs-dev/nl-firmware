@@ -585,10 +585,11 @@ public class ServerProxy {
 				handler);
 	}
 
-	public void dropPresetOnBank(IPreset p, Bank b) {
-		if (b.getPresetList().findPreset(p.getUUID()) != null)
+	public void dropPresetOnBank(IPreset p, Bank b, boolean dontMove) {
+		boolean foundInBank = b.getPresetList().findPreset(p.getUUID()) != null;
+		if (!dontMove && foundInBank)
 			movePresetBelow(p, b.getLast());
-		else
+		else if(!foundInBank)
 			appendPreset(p, b);
 	}
 
