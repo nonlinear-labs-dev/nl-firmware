@@ -144,7 +144,7 @@ class BankHeader extends OverlayLayout {
 				getNonMaps().getServerProxy().dropPresetsOnBank(pm.getMultiSelection().getCSV(), b);
 				pm.getMultiSelection().clear();
 			} else {
-				getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b, false);
+				getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b);
 			}
 		} else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton) {
 			getNonMaps().getServerProxy().dropEditBufferOnBank(b);

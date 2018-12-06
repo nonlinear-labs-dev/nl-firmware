@@ -146,7 +146,7 @@ public class PresetList extends OverlayLayout {
 		Bank b = getParent().getBankInCharge();
 				
 		if (dragProxy.getOrigin() instanceof IPreset)
-			getNonMaps().getServerProxy().dropPresetOnBank((IPreset) dragProxy.getOrigin(), b, true);
+			getNonMaps().getServerProxy().dropPresetOnBankIfNotInBank((IPreset) dragProxy.getOrigin(), b);
 		else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
 			getNonMaps().getServerProxy().dropEditBufferOnBank(b);
 		else if (dragProxy.getOrigin() instanceof IBank) {
