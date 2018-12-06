@@ -186,7 +186,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Scope::tTransactionPtr transaction
 
 void Parameter::sendToLpc() const
 {
-  if(dynamic_cast<const EditBuffer *>(getParentGroup()->getParent()))
+  if(getParentGroup()->getParent() == Application::get().getPresetManager()->getEditBuffer().get())
     Application::get().getLPCProxy()->sendParameter(this);
 }
 

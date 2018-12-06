@@ -225,7 +225,7 @@ void RibbonParameter::onPresetSentToLpc() const
 
 void RibbonParameter::sendModeToLpc() const
 {
-  if(dynamic_cast<const EditBuffer *>(getParentGroup()->getParent()))
+  if(getParentGroup()->getParent() == Application::get().getPresetManager()->getEditBuffer().get())
   {
     uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
                                                                                : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;

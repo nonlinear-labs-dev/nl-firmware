@@ -9,6 +9,10 @@
 #include "http/UpdateDocumentMaster.h"
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
+#include "device-settings/DebugLevel.h"
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <glib.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -106,7 +110,8 @@ void ModulateableParameter::setModulationSource(UNDO::Scope::tTransactionPtr tra
     auto swapData = UNDO::createSwapData(src);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      if(EditBuffer *edit = dynamic_cast<EditBuffer *>(getParentGroup()->getParent()))
+      auto edit = Application::get().getPresetManager()->getEditBuffer().get();
+      if(edit == getParentGroup()->getParent())
       {
         if(m_modSource != NONE)
         {
