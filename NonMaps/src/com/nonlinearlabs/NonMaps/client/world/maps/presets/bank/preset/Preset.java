@@ -2,6 +2,8 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset;
 
 import java.util.HashMap;
 
+import org.eclipse.jetty.servlet.FilterHolder;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
@@ -14,6 +16,7 @@ import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.presenters.PresetSearchProvider;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -33,6 +36,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetDeleter;
+import com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 	private String uuid = null;
@@ -157,62 +161,118 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		setNonSize(parentsWidthFromFirstPass, Math.ceil(getNonPosition().getHeight()));
 	}
 
-	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
+	class PresetColorPack {
+		public PresetColorPack(RGB c, RGB f, RGB h) {
+				contour = c;
+				fill = f;
+				highlight = h;
+				overlay = new RGBA(0, 0, 0, 0);
+			}
+		public RGB contour;
+		public RGB fill;
+		public RGB highlight;
+		public RGBA overlay;
+	}
+	
+	public PresetColorPack applyNotMatched(PresetColorPack current) {
+		current.overlay =  new RGBA(0, 0, 0, 0.75);
+		return current;
+	}
+	
+	public PresetColorPack getActiveColorPack() {
 		boolean selected = isSelected() || isContextMenuActiveOnMe();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
 		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
+		boolean isSearchOpen = PresetSearchDialog.isShown();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
+		
+		return selectAppropriateColor(selected, loaded, isOriginPreset, isSearchOpen);
+	}
+
+	static class ColorHolder {
+		private final static RGB standardContour = new RGB(77, 77, 77);
+		
+		public final static PresetColorPack loadedColor = new Preset.PresetColorPack(new RGB(0,0,0),
+				  RGB.blue(),
+				  standardContour);
+		
+		
+		public final static PresetColorPack standardColor = new PresetColorPack(new RGB(0, 0, 0), 
+				new RGB(25, 25, 25), 
+				standardContour);		
+		
+		
+		public final static PresetColorPack renamedColor = new PresetColorPack(new RGB(0,0,0),
+				   new RGB(77, 77, 77),
+				   standardContour);
+		
+		public final static PresetColorPack selectedColor = new PresetColorPack(new RGB(0, 0, 0),
+				new RGB(77, 77, 77),
+				standardContour);
+		
+		public final static PresetColorPack filterMatch = new PresetColorPack(new RGB(0, 0, 0),
+				  new RGB(50, 65, 110),
+				  standardContour);
+		
+		public final static PresetColorPack filterMatchLoaded = new PresetColorPack(new RGB(0, 0, 0),
+				  RGB.blue(),
+				  standardContour);
+		
+		public final static PresetColorPack filterMatchHighlighted = new PresetColorPack(new RGB(0, 0, 0),
+				  RGB.blue(),
+				  new RGB(255, 255, 255));	
+	}
+	
+	private PresetColorPack selectAppropriateColor(boolean selected, boolean loaded, boolean isOriginPreset, boolean isSearchOpen) 
+	{
+		
+		
+		PresetColorPack currentPack = ColorHolder.standardColor;
+		
+		if(loaded || isOriginPreset)
+			currentPack = ColorHolder.loadedColor;
+		else
+			currentPack = selected ? ColorHolder.selectedColor : ColorHolder.standardColor;	
+		
+		if (isSearchOpen) {
+			if(isCurrentFilterMatch)
+				currentPack = ColorHolder.filterMatchHighlighted;
+			else if(isInFilterSet)
+				currentPack = loaded ? ColorHolder.filterMatchLoaded : ColorHolder.filterMatch;
+			else
+				currentPack = applyNotMatched(currentPack);
+		} else if (RenameDialog.isPresetBeingRenamed(this)) {
+			currentPack = ColorHolder.renamedColor;
+		}
+
+		if (isDraggingControl())
+			currentPack.fill.brighter(40);
+		return currentPack;
+	}
+	
+	@Override
+	public void draw(Context2d ctx, int invalidationMask) {
+
+	
+		PresetColorPack currentPresetColorPack = getActiveColorPack();
 
 		double cp = getConturPixels();
 		cp = Math.ceil(cp);
 		cp = Math.max(1, cp);
-
-		RGB colorContour = new RGB(0, 0, 0);
-		RGB colorFill = new RGB(25, 25, 25);
-		RGB colorHighlight = getParent().getColorBankInnerBorder();
-
-		if (filterActive && isInFilterSet) {
-
-			if (loaded)
-				colorFill = RGB.blue();
-			else
-				colorFill = new RGB(50, 65, 110);
-
-			if (isCurrentFilterMatch) {
-				colorContour = new RGB(230, 240, 255);
-
-			}
-		} else if (RenameDialog.isPresetBeingRenamed(this)) {
-			colorFill = new RGB(77, 77, 77);
-		} else {
-			if (loaded || isOriginPreset)
-				colorFill = RGB.blue();
-			else if (selected)
-				colorFill = new RGB(77, 77, 77);
-		}
-
-		if (isDraggingControl())
-			colorFill = colorFill.brighter(40);
-
+		
 		Rect r = getPixRect().copy();
-		r.fill(ctx, colorFill);
-		r.stroke(ctx, cp, colorHighlight);
+		r.fill(ctx, currentPresetColorPack.fill);
+		r.stroke(ctx, cp, currentPresetColorPack.highlight);
 		r.reduceHeightBy(2 * cp);
 		r.reduceWidthBy(2 * cp);
-		r.stroke(ctx, cp, colorContour);
+		r.stroke(ctx, cp, currentPresetColorPack.contour);
 
 		super.draw(ctx, invalidationMask);
-
-		if (isInFilterSet) {
-			r.fill(ctx, new RGBA(0, 0, 0, 0.75));
-		} else if (isCurrentFilterMatch) {
-			r.stroke(ctx, 2 * cp, new RGB(230, 240, 255));
-		}
+		r.fill(ctx, currentPresetColorPack.overlay);
 	}
 
 	public boolean isSelected() {
