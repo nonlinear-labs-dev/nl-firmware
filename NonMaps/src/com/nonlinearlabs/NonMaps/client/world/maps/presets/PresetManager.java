@@ -396,6 +396,8 @@ public class PresetManager extends MapsLayout {
 						Preset p = (Preset) bc;
 						if (moveSomeBanks.getSelectionRect().intersects(p.getPixRect())) {
 							multiSelection.add(p);
+						} else {
+							multiSelection.remove(p);
 						}
 					}
 				}
