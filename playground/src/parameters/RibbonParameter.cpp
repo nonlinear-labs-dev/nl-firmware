@@ -22,37 +22,39 @@ void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContribut
   writer.writeTextElement("ribbon-return-mode", to_string(m_returnMode));
 }
 
-void RibbonParameter::writeDifferences(Writer& writer, Parameter* other) const
+void RibbonParameter::writeDifferences(Writer &writer, Parameter *other) const
 {
   Parameter::writeDifferences(writer, other);
-  RibbonParameter *pOther = static_cast<RibbonParameter*>(other);
+  RibbonParameter *pOther = static_cast<RibbonParameter *>(other);
 
   if(getRibbonTouchBehaviour() != pOther->getRibbonTouchBehaviour())
   {
-    writer.writeTextElement("behaviour", "", Attribute("a", getRibbonTouchBehaviour()), Attribute("b", pOther->getRibbonTouchBehaviour()));
+    writer.writeTextElement("behaviour", "", Attribute("a", getRibbonTouchBehaviour()),
+                            Attribute("b", pOther->getRibbonTouchBehaviour()));
   }
 
   if(getReturnMode() != pOther->getReturnMode())
   {
-    writer.writeTextElement("return-mode", "", Attribute("a", (int)getReturnMode()), Attribute("b", (int)pOther->getReturnMode()));
+    writer.writeTextElement("return-mode", "", Attribute("a", (int) getReturnMode()),
+                            Attribute("b", (int) pOther->getReturnMode()));
   }
 }
 
-void RibbonParameter::loadFromPreset (UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value)
+void RibbonParameter::loadFromPreset(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value)
 {
   Parameter::loadFromPreset(transaction, value);
 }
 
-void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction, RibbonParameter::RibbonTouchBehaviour mode)
+void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction,
+                                                      RibbonParameter::RibbonTouchBehaviour mode)
 {
   if(m_touchBehaviour != mode)
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
-      swapData->swapWith (m_touchBehaviour);
-      setupScalingAndDefaultValue ();
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_touchBehaviour);
+      setupScalingAndDefaultValue();
     });
   }
   else
@@ -70,7 +72,7 @@ void RibbonParameter::setupScalingAndDefaultValue()
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
   ParameterGroupSet *groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
-  auto mappings = dynamic_cast<MacroControlMappingGroup*>(groups->getParameterGroupByID("MCM"));
+  auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
   for(auto router : mappings->getModulationRoutingParametersFor(this))
   {
     router->getValue().setIsBoolean(routersAreBoolean);
@@ -97,7 +99,8 @@ tControlPositionValue RibbonParameter::getDefaultValueAccordingToMode() const
   return 0.0;
 }
 
-void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &mode)
+void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction,
+                                                      const Glib::ustring &mode)
 {
   if(mode == "absolute")
     undoableSetRibbonTouchBehaviour(transaction, RibbonParameter::ABSOLUTE);
@@ -121,7 +124,8 @@ RibbonParameter::RibbonTouchBehaviour RibbonParameter::getRibbonTouchBehaviour()
   return m_touchBehaviour;
 }
 
-void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction, RibbonParameter::RibbonReturnMode mode)
+void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction,
+                                                  RibbonParameter::RibbonReturnMode mode)
 {
   if(mode != STAY && mode != RETURN)
     mode = STAY;
@@ -130,9 +134,8 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr t
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand([ = ] (UNDO::Command::State) mutable
-    {
-      swapData->swapWith (m_returnMode);
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_returnMode);
       setupScalingAndDefaultValue();
     });
   }
@@ -179,7 +182,7 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
   if(getRibbonReturnMode() == STAY)
   {
     ParameterGroupSet *groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
-    auto mappings = dynamic_cast<MacroControlMappingGroup*>(groups->getParameterGroupByID("MCM"));
+    auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
     auto routers = mappings->getModulationRoutingParametersFor(this);
     auto highest = *routers.begin();
 
@@ -222,10 +225,10 @@ void RibbonParameter::onPresetSentToLpc() const
 
 void RibbonParameter::sendModeToLpc() const
 {
-  if(dynamic_cast<const EditBuffer *>(getParentGroup()->getParent()))
+  if(getParentGroup()->getParent() == Application::get().getPresetManager()->getEditBuffer().get())
   {
-    uint16_t id =
-        getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
+    uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
+                                                                               : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
     uint16_t v = 0;
 
     if(getRibbonReturnMode() == RibbonParameter::RibbonParameter::RETURN)
@@ -238,13 +241,13 @@ void RibbonParameter::sendModeToLpc() const
   }
 }
 
-void RibbonParameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter * other)
+void RibbonParameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other)
 {
   if(!isLocked())
   {
     super::copyFrom(transaction, other);
 
-    if(auto ribbon = dynamic_cast<RibbonParameter*>(other))
+    if(auto ribbon = dynamic_cast<RibbonParameter *>(other))
     {
       undoableSetRibbonReturnMode(transaction, ribbon->getRibbonReturnMode());
       undoableSetRibbonTouchBehaviour(transaction, ribbon->getRibbonTouchBehaviour());
@@ -277,8 +280,7 @@ Glib::ustring RibbonParameter::getCurrentBehavior() const
       break;
 
     default:
-      g_assert_not_reached ()
-      ;
+      g_assert_not_reached();
       break;
   }
 
@@ -295,7 +297,7 @@ void RibbonParameter::undoableStepBehavior(UNDO::Scope::tTransactionPtr transact
   while(v >= NUM_RETURN_MODES)
     v -= NUM_RETURN_MODES;
 
-  undoableSetRibbonReturnMode(transaction, (RibbonParameter::RibbonReturnMode) (v));
+  undoableSetRibbonReturnMode(transaction, (RibbonParameter::RibbonReturnMode)(v));
 }
 
 DFBLayout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
