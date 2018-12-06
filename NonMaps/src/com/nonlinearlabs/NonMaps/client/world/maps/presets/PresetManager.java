@@ -97,6 +97,20 @@ public class PresetManager extends MapsLayout {
 			tmp.updateUI();
 		}
 	}
+	
+	public void setAllBanksMinimizeState(boolean min) {
+		for(Bank b: getBanks()) {
+			b.setMinimized(min);
+		}
+	}
+	
+	public boolean isAnyBankMinimized() {
+		for(Bank b: getBanks()) {
+			if(!b.isMinimized())
+				return false;
+		}
+		return true;
+	}
 
 	public MoveSomeBanksLayer getMoveSomeBanks() {
 		return moveSomeBanks;

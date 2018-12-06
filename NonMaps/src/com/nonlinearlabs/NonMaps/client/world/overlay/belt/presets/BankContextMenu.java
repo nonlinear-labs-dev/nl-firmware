@@ -9,6 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
@@ -145,8 +146,19 @@ public abstract class BankContextMenu extends ContextMenu {
 						return super.click(eventPoint);
 					}
 				});
+				
+				PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+				
+				addChild(new ContextMenuItem(this, pm.isAnyBankMinimized() ? "Full Size All" : "Minimize All") {
+					@Override
+					public Control click(Position eventPoint) {
+						boolean min = !pm.isAnyBankMinimized();
+						pm.setAllBanksMinimizeState(min);
+						return super.click(eventPoint);
+					}
+				});
 			}
-
+			
 			addChild(new ContextMenuItem(this, "Export as File ...") {
 				@Override
 				public Control click(Position eventPoint) {
