@@ -69,8 +69,8 @@ class EditBuffer : public Preset
   Glib::ustring exportReaktorPreset();
   bool isModified() const;
   void sendToLPC();
-  bool isSelectedPresetLoadedAndUnModified();
-  std::shared_ptr<Preset> getPreset() const;
+
+    std::shared_ptr<Preset> getPreset() const;
 
  private:
   Parameter *searchForAnyParameterWithLock() const;
