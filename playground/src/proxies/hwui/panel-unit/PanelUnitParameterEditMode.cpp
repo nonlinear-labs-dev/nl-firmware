@@ -461,8 +461,12 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
   {
     letOtherTargetsBlink({ 178, 158 });
   }
-  else if(group->getID() == "Flang" || group->getID() == "Gap Filt" || group->getID() == "Cab"
-          || group->getID() == "Echo" || group->getID() == "Reverb")
+  else if(group->getID() == "Flang")
+  {
+    letOtherTargetsBlink({ 160, 307 });
+  }
+  else if(group->getID() == "Gap Filt" || group->getID() == "Cab" || group->getID() == "Echo"
+          || group->getID() == "Reverb")
   {
     letOtherTargetsBlink({ 160 });
 
