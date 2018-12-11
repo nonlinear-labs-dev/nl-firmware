@@ -10,7 +10,8 @@ WiFiSettingEditor::WiFiSettingEditor() {
 WiFiSettingEditor::~WiFiSettingEditor() = default;
 
 void WiFiSettingEditor::incSetting(int inc) {
-    Application::get().getSettings()->getSetting<WifiSetting>()->inc(inc, false);
+    auto setting = Application::get().getSettings()->getSetting<WifiSetting>();
+    setting->set(!setting->get() ? "on" : "off");
 }
 
 const vector<ustring> &WiFiSettingEditor::getDisplayStrings() const {

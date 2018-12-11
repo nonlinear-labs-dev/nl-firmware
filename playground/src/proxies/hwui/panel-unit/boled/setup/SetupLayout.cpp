@@ -55,6 +55,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingView.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
+#include <proxies/hwui/TextEditUsageMode.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <xml/FileOutStream.h>
 #include <bitset>
@@ -590,6 +591,136 @@ namespace NavTree
     }
   };
 
+  struct Backdoor : EditableLeaf
+  {
+    explicit Backdoor(InnerNode *parent)
+        : EditableLeaf(parent, "Backdoor Shell")
+    {
+    }
+
+    class EnterShellLayout : public RenameLayout
+    {
+     public:
+      explicit EnterShellLayout()
+      {
+        ret = "pwd";
+      }
+
+      void commit(const Glib::ustring &newName) override
+      {
+        SpawnCommandLine cmd(newName);
+        const auto &stdOut = cmd.getStdOutput();
+        const auto &stdErr = cmd.getStdError();
+        if(!stdErr.empty())
+          ret = stdErr;
+        else
+          ret = stdOut;
+
+        for(const auto &c : getControls())
+        {
+          c->setVisible(false);
+        }
+
+        result = addControl(new MultiLineLabel(ret));
+        result->setPosition(Rect(0, 0, 187, 96));
+        setDirty();
+      }
+
+      bool onRotary(int inc, ButtonModifiers modifiers) override
+      {
+        if(result)
+        {
+          auto pos = result->getPosition();
+          pos.setTop(pos.getTop() + inc);
+          result->setForceUpdateLine(true);
+          result->setPosition(pos);
+          setDirty();
+          return true;
+        }
+        return RenameLayout::onRotary(inc, modifiers);
+      }
+
+      bool onButton(int i, bool down, ButtonModifiers modifiers) override
+      {
+
+        if(result)
+        {
+          if(i == BUTTON_INC)
+          {
+            onRotary(1, modifiers);
+            return true;
+          }
+          else if(i == BUTTON_DEC)
+          {
+            onRotary(-1, modifiers);
+            return true;
+          }
+
+          if(down)
+          {
+            m_textUsageMode->setText("");
+            remove(result);
+            result = nullptr;
+
+            for(const auto &c : getControls())
+            {
+              c->setVisible(true);
+            }
+
+            setDirty();
+          }
+          return true;
+        }
+
+        switch(i)
+        {
+          case BUTTON_A:
+            if(down)
+            {
+              cancel();
+              Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().resetOverlay();
+            }
+            return true;
+          case BUTTON_D:
+          case BUTTON_ENTER:
+            if(down)
+            {
+              commit(m_textUsageMode->getText());
+            }
+            return true;
+        }
+
+        return RenameLayout::onButton(i, down, modifiers);
+      }
+
+      Glib::ustring getInitialText() const override
+      {
+        return ret;
+      }
+
+     protected:
+      MultiLineLabel *result = nullptr;
+      Glib::ustring ret;
+    };
+
+    virtual Control *createView() override
+    {
+      return new SetupLabel("...", Rect(0, 0, 0, 0));
+    }
+
+    virtual Control *createEditor() override
+    {
+      return nullptr;
+    }
+
+    virtual bool onEditModeEntered() override
+    {
+      auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+      boled.setOverlay(new EnterShellLayout);
+      return true;
+    }
+  };
+
   struct BackupExport : EditableLeaf
   {
     BackupExport(InnerNode *parent)
@@ -634,6 +765,7 @@ namespace NavTree
       children.emplace_back(new USBStickAvailable(this));
       children.emplace_back(new BackupExport(this));
       children.emplace_back(new BackupImport(this));
+      children.emplace_back(new Backdoor(this));
     }
   };
 

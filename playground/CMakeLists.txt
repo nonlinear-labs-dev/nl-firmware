@@ -63,7 +63,7 @@ ADD_CUSTOM_TARGET(
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
-add_executable(playground ${SOURCE_FILES} src/device-settings/WifiSetting.cpp src/device-settings/WifiSetting.h src/proxies/hwui/panel-unit/boled/setup/WiFiSettingEditor.cpp src/proxies/hwui/panel-unit/boled/setup/WiFiSettingEditor.h src/proxies/hwui/panel-unit/boled/setup/WiFiSettingView.cpp src/proxies/hwui/panel-unit/boled/setup/WiFiSettingView.h)
+add_executable(playground ${SOURCE_FILES})
 
 TARGET_LINK_LIBRARIES(playground pthread)
 TARGET_LINK_LIBRARIES(playground stdc++fs)

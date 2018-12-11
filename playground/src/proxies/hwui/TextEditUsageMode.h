@@ -26,6 +26,7 @@ class TextEditUsageMode : public UsageMode
   bool isInserting() const;
   void moveCursor(int step);
   ustring getText() const;
+  void setText(ustring newText);
 
   enum class Layout
   {
