@@ -603,7 +603,7 @@ namespace NavTree
      public:
       explicit EnterShellLayout()
       {
-        ret = "pwd";
+        ret = "";
       }
 
       void commit(const Glib::ustring &newName) override
@@ -765,7 +765,9 @@ namespace NavTree
       children.emplace_back(new USBStickAvailable(this));
       children.emplace_back(new BackupExport(this));
       children.emplace_back(new BackupImport(this));
+  #ifdef DEV_PC //Eventuell als Runtime Entwickleroption freigeben! Wenn es vernümpftig zu verwenden ist. (z.B x mal Shift auf About Layout o.Ä.)
       children.emplace_back(new Backdoor(this));
+  #endif
     }
   };
 
