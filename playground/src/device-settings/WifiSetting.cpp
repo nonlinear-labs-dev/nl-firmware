@@ -5,16 +5,6 @@
 WifiSetting::WifiSetting(Settings &settings)
     : BooleanSetting(settings, WifiSetting::pollAccessPointRunning())
 {
-  auto bState = get();
-  auto wifiState = WifiSetting::pollAccessPointRunning();
-  if(bState && !wifiState)
-  {
-    set("on");
-  }
-  else if(!bState && wifiState)
-  {
-    set("off");
-  }
 }
 
 WifiSetting::~WifiSetting() = default;
