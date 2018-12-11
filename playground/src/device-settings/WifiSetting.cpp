@@ -29,11 +29,11 @@ bool WifiSetting::set(Glib::ustring value)
   bool off = value.find("off") != Glib::ustring::npos;
 
   if(on) {
-    SpawnCommandLine cmd("systemctl enable accesspoint && systemctl start accesspoint");
+    SpawnCommandLine cmd("su - root -c \"systemctl enable accesspoint && systemctl start accesspoint\"");
     printRet(cmd);
   }
   else if(off) {
-    SpawnCommandLine cmd("systemctl disable accesspoint && systemctl stop accesspoint");
+    SpawnCommandLine cmd("su - root -c \"systemctl disable accesspoint && systemctl stop accesspoint\"");
     printRet(cmd);
   }
 
