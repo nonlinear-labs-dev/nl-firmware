@@ -1,5 +1,6 @@
 #include <tools/SpawnCommandLine.h>
 #include "WifiSetting.h"
+#include "DebugLevel.h"
 
 WifiSetting::WifiSetting(Settings &settings)
     : BooleanSetting(settings, WifiSetting::pollAccessPointRunning())
@@ -20,13 +21,21 @@ WifiSetting::~WifiSetting() = default;
 
 bool WifiSetting::set(Glib::ustring value)
 {
+  auto printRet = [](SpawnCommandLine& cmd) {
+      DebugLevel::warning("COut:", cmd.getStdOutput(), "CError:", cmd.getStdError());
+  };
+
   bool on = value.find("on") != Glib::ustring::npos;
   bool off = value.find("off") != Glib::ustring::npos;
 
-  if(on)
+  if(on) {
     SpawnCommandLine cmd("systemctl enable accesspoint && systemctl start accesspoint");
-  else if(off)
+    printRet(cmd);
+  }
+  else if(off) {
     SpawnCommandLine cmd("systemctl disable accesspoint && systemctl stop accesspoint");
+    printRet(cmd);
+  }
 
   return BooleanSetting::set(on ? BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE
                                 : BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
