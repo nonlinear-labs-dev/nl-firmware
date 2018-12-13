@@ -18,11 +18,11 @@ char *Application::initStatic(Application *app, char *argv)
   return argv;
 }
 
-Application::Application(int numArgs, char **argv) :
-    m_selfPath(initStatic(this, argv[0])),
-    m_options(std::make_unique<Options>(numArgs, argv)),
-    m_websocketServer(std::make_unique<WebSocketServer>()),
-    m_bridges(std::make_unique<Bridges>())
+Application::Application(int numArgs, char **argv)
+    : m_selfPath(initStatic(this, argv[0]))
+    , m_options(std::make_unique<Options>(numArgs, argv))
+    , m_websocketServer(std::make_unique<WebSocketServer>())
+    , m_bridges(std::make_unique<Bridges>())
 {
 }
 
@@ -71,7 +71,7 @@ WebSocketServer *Application::getWebsocketServer()
   return m_websocketServer.get();
 }
 
-Bridges* Application::getBridges()
+Bridges *Application::getBridges()
 {
   return m_bridges.get();
 }

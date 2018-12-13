@@ -4,7 +4,7 @@
 
 PanelUnit::PanelUnit()
 {
-  int v[4] = {0, 24, 48, 72 };
+  int v[4] = { 0, 24, 48, 72 };
 
   for(int i = 0; i < 4; i++)
     m_panels[i] = new ButtonPanel(v[i]);
@@ -15,7 +15,7 @@ PanelUnit::PanelUnit()
 
 PanelUnit::~PanelUnit()
 {
-  for(auto p: m_panels)
+  for(auto p : m_panels)
     delete p;
 }
 

@@ -1,5 +1,6 @@
 #include "LowerRibbon.h"
 
-bool LowerRibbon::isUpperRibbon() {
+bool LowerRibbon::isUpperRibbon()
+{
   return false;
 }

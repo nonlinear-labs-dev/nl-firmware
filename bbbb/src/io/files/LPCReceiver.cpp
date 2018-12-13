@@ -3,9 +3,9 @@
 #include "Options.h"
 #include "MessageParser.h"
 
-LPCReceiver::LPCReceiver() :
-    super("/dev/lpc_bb_driver", MessageParser::getNumInitialBytesNeeded()),
-    m_parser(std::make_unique<MessageParser>())
+LPCReceiver::LPCReceiver()
+    : super("/dev/lpc_bb_driver", MessageParser::getNumInitialBytesNeeded())
+    , m_parser(std::make_unique<MessageParser>())
 {
 }
 

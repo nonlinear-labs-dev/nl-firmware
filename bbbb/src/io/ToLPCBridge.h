@@ -4,10 +4,9 @@
 
 class ToLPCBridge : public Bridge
 {
-    using super = Bridge;
+  using super = Bridge;
 
-  public:
-    ToLPCBridge();
-    virtual ~ToLPCBridge();
+ public:
+  ToLPCBridge();
+  virtual ~ToLPCBridge();
 };
-

@@ -2,7 +2,8 @@
 
 #include "Ribbon.h"
 
-class LowerRibbon : public Ribbon {
-public:
-   bool isUpperRibbon() override;
+class LowerRibbon : public Ribbon
+{
+ public:
+  bool isUpperRibbon() override;
 };

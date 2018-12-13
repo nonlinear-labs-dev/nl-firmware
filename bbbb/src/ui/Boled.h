@@ -7,16 +7,16 @@
 
 class Boled : public Gtk::DrawingArea
 {
-  public:
-    Boled();
-    virtual ~Boled();
+ public:
+  Boled();
+  virtual ~Boled();
 
-    void setBuffer(WebSocketServer::tMessage frameBuffer);
+  void setBuffer(WebSocketServer::tMessage frameBuffer);
 
-    bool on_draw(const ::Cairo::RefPtr<::Cairo::Context> & cr) override;
+  bool on_draw(const ::Cairo::RefPtr<::Cairo::Context>& cr) override;
 
-  private:
-    WebSocketServer::tMessage m_frameBuffer;
+ private:
+  WebSocketServer::tMessage m_frameBuffer;
 };
 
 #endif

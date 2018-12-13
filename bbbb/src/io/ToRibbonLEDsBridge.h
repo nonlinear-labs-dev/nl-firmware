@@ -4,11 +4,9 @@
 
 class ToRibbonLEDsBridge : public Bridge
 {
-    using super = Bridge;
+  using super = Bridge;
 
-  public:
-    ToRibbonLEDsBridge();
-    virtual ~ToRibbonLEDsBridge();
-
+ public:
+  ToRibbonLEDsBridge();
+  virtual ~ToRibbonLEDsBridge();
 };
-

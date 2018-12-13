@@ -4,14 +4,13 @@
 
 class FileIOSender : public Sender
 {
-  public:
-    FileIOSender(const char *path);
-    virtual ~FileIOSender();
+ public:
+  FileIOSender(const char *path);
+  virtual ~FileIOSender();
 
-    void send(tMessage msg) override;
+  void send(tMessage msg) override;
 
-  private:
-    Glib::RefPtr<Glib::IOChannel> m_channel;
-    const char *m_path = nullptr;
+ private:
+  Glib::RefPtr<Glib::IOChannel> m_channel;
+  const char *m_path = nullptr;
 };
-
