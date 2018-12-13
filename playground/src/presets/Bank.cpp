@@ -8,6 +8,8 @@
 
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
+    , m_selectedPresetUuid(Uuid::none())
+    , m_attachedToBankWithUuid(Uuid::none())
     , m_presets(std::bind(&Bank::onChange, this, UpdateDocumentContributor::ChangeFlags::Generic),
                 std::bind(&Bank::clonePreset, this, std::placeholders::_1))
 {
@@ -233,24 +235,67 @@ Bank *Bank::getSlaveBottom() const
 
 void Bank::selectNextPreset()
 {
-  auto pos = getPresetPosition(getSelectedPresetUuid()) + 1;
-  if(pos < getNumPresets())
-  {
-    auto &p = m_presets.getElements()[pos];
-    auto scope = getUndoScope().startTransaction("Select Preset '%0'", p->getName());
-    selectPreset(scope->getTransaction(), p->getUuid());
-  }
+  selectPreset(getNextPresetPosition());
 }
 
 void Bank::selectPreviousPreset()
 {
-  auto pos = getPresetPosition(getSelectedPresetUuid());
-  if(pos > 0)
+  selectPreset(getPreviousPresetPosition());
+}
+
+void Bank::selectNextPreset(UNDO::Transaction *transaction)
+{
+  selectPreset(transaction, getNextPresetPosition());
+}
+
+void Bank::selectPreviousPreset(UNDO::Transaction *transaction)
+{
+  selectPreset(transaction, getPreviousPresetPosition());
+}
+
+void Bank::selectPreset(UNDO::Transaction *transaction, size_t pos)
+{
+  if(pos < getNumPresets())
+    selectPreset(transaction, getPresetAt(pos)->getUuid());
+}
+
+void Bank::selectPreset(size_t pos)
+{
+  if(pos < getNumPresets())
   {
-    auto &p = m_presets.getElements()[pos - 1];
-    auto scope = getUndoScope().startTransaction("Select Preset '%0'", p->getName());
-    selectPreset(scope->getTransaction(), p->getUuid());
+    auto scope = getUndoScope().startTransaction("Select Preset '%0'", getPresetAt(pos)->getName());
+    selectPreset(scope->getTransaction(), pos);
   }
+}
+
+size_t Bank::getNextPresetPosition() const
+{
+  auto selUuid = getSelectedPresetUuid();
+
+  if(selUuid.empty())
+  {
+    assert(getNumPresets() == 0);
+    return std::numeric_limits<size_t>::max();
+  }
+
+  return getPresetPosition(selUuid) + 1;
+}
+
+size_t Bank::getPreviousPresetPosition() const
+{
+  auto selUuid = getSelectedPresetUuid();
+
+  if(selUuid.empty())
+  {
+    assert(getNumPresets() == 0);
+    return std::numeric_limits<size_t>::max();
+  }
+
+  auto pos = getPresetPosition(selUuid);
+  if(pos == 0)
+    return std::numeric_limits<size_t>::max();
+
+  return pos - 1;
 }
 
 void Bank::rename(const ustring &name)
@@ -287,20 +332,6 @@ void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
     transaction->addUndoSwap(this, m_selectedPresetUuid, uuid);
     static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
   }
-}
-
-void Bank::selectNextPreset(UNDO::Transaction *transaction)
-{
-  auto pos = getPresetPosition(getSelectedPresetUuid()) + 1;
-  if(pos < getNumPresets())
-    selectPreset(transaction, getPresetAt(pos)->getUuid());
-}
-
-void Bank::selectPreviousPreset(UNDO::Transaction *transaction)
-{
-  auto pos = getPresetPosition(getSelectedPresetUuid());
-  if(pos > 0)
-    selectPreset(transaction, getPresetAt(pos - 1)->getUuid());
 }
 
 void Bank::ensurePresetSelection(UNDO::Transaction *transaction)
@@ -354,9 +385,10 @@ void Bank::movePreset(UNDO::Transaction *transaction, const Preset *toMove, cons
   m_presets.move(transaction, toMove, before);
 }
 
-void Bank::movePresetBetweenBanks(UNDO::Transaction *transaction, Bank *tgtBank, Preset *presetToMove,
-                                  const Preset *presetAnchor)
+void Bank::movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, const Preset *presetAnchor)
 {
+  auto tgtBank = static_cast<Bank *>(presetAnchor->getParent());
+
   if(tgtBank == this)
   {
     movePreset(transaction, presetToMove, presetAnchor);

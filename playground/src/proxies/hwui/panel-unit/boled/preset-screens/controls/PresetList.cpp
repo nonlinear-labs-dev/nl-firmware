@@ -37,16 +37,20 @@ void PresetList::onBankChanged()
   if(auto bank = Application::get().getPresetManager()->getSelectedBank())
   {
     m_header->setup(bank);
-    m_content->setup(bank, bank->getPresetPosition(bank->getSelectedPreset()));
+
+    if(auto p = bank->getSelectedPreset())
+      m_content->setup(bank, bank->getPresetPosition(p));
+    else
+      m_content->setup(bank, size_t(-1));
   }
   else
   {
     m_header->setup(nullptr);
-    m_content->setup(nullptr, -1);
+    m_content->setup(nullptr, size_t(-1));
   }
 }
 
-bool PresetList::onButton(int i, bool down, ButtonModifiers modifiers)
+bool PresetList::onButton(int i, bool down, ButtonModifiers)
 {
   if(down)
   {

@@ -13,8 +13,12 @@ StoreModeData::StoreModeData()
     if(it != banks.end())
     {
       auto &bank = *it;
-      bankPos = std::distance(banks.begin(), it);
-      presetPos = (*it)->getPresetPosition(bank->getSelectedPresetUuid());
+      bankPos = static_cast<size_t>(std::distance(banks.begin(), it));
+
+      if(bank->getSelectedPresetUuid().empty())
+        presetPos = invalid;
+      else
+        presetPos = (*it)->getPresetPosition(bank->getSelectedPresetUuid());
     }
   }
 }

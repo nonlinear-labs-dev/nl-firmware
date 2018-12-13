@@ -20,8 +20,6 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_attributes(other.m_attributes)
-    , m_settings(other.m_settings)
 {
   std::for_each(other.m_parameterGroups.begin(), other.m_parameterGroups.end(), [this](auto &a) {
     m_parameterGroups[a.first] = std::make_unique<PresetParameterGroup>(this, *a.second.get());
@@ -73,15 +71,6 @@ Glib::ustring Preset::getName() const
   return m_name;
 }
 
-string Preset::getSetting(const string &key, const string &defaultValue) const
-{
-  auto it = m_settings.find(key);
-  if(it != m_settings.end())
-    return it->second;
-
-  return defaultValue;
-}
-
 void Preset::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   transaction->addUndoSwap(this, m_uuid, uuid);
@@ -101,28 +90,6 @@ void Preset::guessName(UNDO::Transaction *transaction)
 
   setName(transaction, "");
   setName(transaction, Application::get().getPresetManager()->createPresetNameBasedOn(currentName));
-}
-
-void Preset::setSetting(UNDO::Transaction *transaction, const string &key, const string &value)
-{
-  auto s = UNDO::createSwapData(value);
-
-  transaction->addSimpleCommand([=](auto) {
-    auto v = getSetting(key, "");
-    s->swapWith(v);
-
-    if(v.empty())
-      m_settings.erase(key);
-    else
-      m_settings[key] = v;
-
-    onChange();
-  });
-}
-
-void Preset::clearSettings(UNDO::Transaction *transaction)
-{
-  transaction->addUndoSwap(this, m_settings, {});
 }
 
 PresetParameter *Preset::findParameterByID(int id) const
@@ -146,12 +113,12 @@ PresetParameterGroup *Preset::findParameterGroup(const string &id) const
 
 void Preset::copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid)
 {
+  super::copyFrom(transaction, other);
+
   if(!ignoreUuid)
     setUuid(transaction, other->getUuid());
 
   setName(transaction, other->getName());
-  transaction->addUndoSwap(this, m_attributes, other->m_attributes);
-  transaction->addUndoSwap(this, m_settings, other->m_settings);
 
   for(auto &g : m_parameterGroups)
     if(auto o = other->findParameterGroup(g.first))
@@ -160,8 +127,8 @@ void Preset::copyFrom(UNDO::Transaction *transaction, const Preset *other, bool 
 
 void Preset::copyFrom(UNDO::Transaction *transaction, EditBuffer *edit)
 {
+  super::copyFrom(transaction, edit);
   setName(transaction, edit->getName());
-  transaction->addUndoSwap(this, m_attributes, edit->getAttributes());
 
   for(auto &g : m_parameterGroups)
     if(auto o = edit->getParameterGroupByID(g.first))

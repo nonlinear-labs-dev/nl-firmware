@@ -68,6 +68,7 @@ class Bank : public AttributesOwner
   // convenience
   void selectNextPreset();
   void selectPreviousPreset();
+  void selectPreset(size_t pos);
   void rename(const Glib::ustring &name);
   void attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, AttachmentDirection dir);
   void invalidate();
@@ -79,6 +80,7 @@ class Bank : public AttributesOwner
   void setName(UNDO::Transaction *transaction, const std::string &name);
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
   void selectPreset(UNDO::Transaction *transaction, const Uuid &uuid);
+  void selectPreset(UNDO::Transaction *transaction, size_t pos);
   void selectNextPreset(UNDO::Transaction *transaction);
   void selectPreviousPreset(UNDO::Transaction *transaction);
   void ensurePresetSelection(UNDO::Transaction *transaction);
@@ -92,8 +94,7 @@ class Bank : public AttributesOwner
   Preset *prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
   Preset *insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
   void movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before);
-  void movePresetBetweenBanks(UNDO::Transaction *transaction, Bank *tgtBank, Preset *presetToMove,
-                              const Preset *presetAnchor);
+  void movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, const Preset *presetAnchor);
 
   void deletePreset(UNDO::Transaction *transaction, const Uuid &uuid);
   void resolveCyclicAttachments(UNDO::Transaction *transaction);
@@ -124,6 +125,8 @@ class Bank : public AttributesOwner
   bool resolveCyclicAttachments(UNDO::Transaction *transaction, std::vector<Bank *> stackedBanks);
 
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags) override;
+  size_t getNextPresetPosition() const;
+  size_t getPreviousPresetPosition() const;
 
   Uuid m_uuid;
   std::string m_name;

@@ -94,7 +94,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto scope = m_presetManager.getUndoScope().startTransaction("Move preset");
         auto transaction = scope->getTransaction();
         auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 1);
-        srcBank->movePresetBetweenBanks(transaction, tgtBank, toMove, anchor);
+        srcBank->movePresetBetweenBanks(transaction, toMove, anchor);
         tgtBank->selectPreset(transaction, presetToMoveUuid);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
@@ -114,7 +114,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto scope = m_presetManager.getUndoScope().startTransaction("Move preset");
         auto transaction = scope->getTransaction();
         auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 0);
-        srcBank->movePresetBetweenBanks(transaction, tgtBank, toMove, anchor);
+        srcBank->movePresetBetweenBanks(transaction, toMove, anchor);
         tgtBank->selectPreset(transaction, presetToMoveUuid);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
@@ -138,7 +138,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto transaction = scope->getTransaction();
 
         auto anchor = tgtBank->findPresetNear(presetToOverwrite, 0);
-        tgtBank->movePresetBetweenBanks(transaction, tgtBank, srcPreset, anchor);
+        tgtBank->movePresetBetweenBanks(transaction, srcPreset, anchor);
         srcBank->deletePreset(transaction, presetToOverwrite);
         tgtBank->selectPreset(transaction, srcPreset->getUuid());
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
@@ -373,7 +373,7 @@ BankActions::BankActions(PresetManager &presetManager)
 
   addAction("insert-preset", [&](shared_ptr<NetworkRequest> request) mutable {
     auto selUuid = request->get("seluuid");
-    if(auto bank = dynamic_cast<Bank *>(m_presetManager.findPreset(selUuid)->getParent()))
+    if(auto bank = m_presetManager.findBankWithPreset(selUuid))
     {
       auto uuid = request->get("uuid");
       auto newName = guessNameBasedOnEditBuffer();
@@ -401,11 +401,13 @@ BankActions::BankActions(PresetManager &presetManager)
 
       auto scope = m_presetManager.getUndoScope().startTransaction("Insert preset");
       auto transaction = scope->getTransaction();
+      size_t desiredPresetPos = 0;
 
-      auto selPreset = bank->getPresetPosition(bank->getSelectedPreset());
-      auto desiredPresetPos = selPreset + 1;
-      auto newPreset = bank->insertPreset(transaction, desiredPresetPos,
-                                          std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer()));
+      if(auto p = bank->getSelectedPreset())
+        desiredPresetPos = bank->getPresetPosition(p) + 1;
+
+      auto p = std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer());
+      auto newPreset = bank->insertPreset(transaction, desiredPresetPos, std::move(p));
       newPreset->setName(transaction, name);
       newPreset->setAttribute(transaction, "Comment", info);
       bank->selectPreset(transaction, newPreset->getUuid());
@@ -654,8 +656,9 @@ BankActions::BankActions(PresetManager &presetManager)
         if(bank != targetBank)
         {
           auto &undo = m_presetManager.getUndoScope();
-          auto scope
-              = undo.startTransaction("Drop bank '%0' into bank '%1'", bank->getName(true), targetBank->getName(true));
+          auto srcBankName = bank->getName(true);
+          auto tgtBankName = targetBank->getName(true);
+          auto scope = undo.startTransaction("Drop bank '%0' into bank '%1'", srcBankName, tgtBankName);
           auto transaction = scope->getTransaction();
 
           size_t insertPos = targetBank->getPresetPosition(anchorUuid) + 1;
@@ -663,9 +666,8 @@ BankActions::BankActions(PresetManager &presetManager)
 
           for(size_t i = 0; i < numPresets; i++)
           {
-            targetBank->insertPreset(transaction, insertPos,
-                                     std::make_unique<Preset>(targetBank, *bank->getPresetAt(i), true));
-            insertPos++;
+            auto p = std::make_unique<Preset>(targetBank, *bank->getPresetAt(i), true);
+            targetBank->insertPreset(transaction, insertPos + i, std::move(p));
           }
 
           targetBank->deletePreset(scope->getTransaction(), anchorUuid);
@@ -894,8 +896,9 @@ void BankActions::dropPresets(UNDO::Transaction *transaction, const Glib::ustrin
 
   if(auto anchor = m_presetManager.findPreset(anchorUUID))
   {
-    auto bank = dynamic_cast<Bank *>(anchor->getParent());
-    auto pos = bank->getPresetPosition(anchorUUID) + offset;
+    auto bank = static_cast<Bank *>(anchor->getParent());
+    auto anchorPos = static_cast<int>(bank->getPresetPosition(anchorUUID));
+    auto pos = std::max(anchorPos + offset, 0);
 
     for(auto presetUUID : strs)
     {
@@ -907,7 +910,7 @@ void BankActions::dropPresets(UNDO::Transaction *transaction, const Glib::ustrin
         }
         else
         {
-          bank->insertPreset(transaction, pos, std::make_unique<Preset>(bank, *src, true));
+          bank->insertPreset(transaction, size_t(pos), std::make_unique<Preset>(bank, *src, true));
           pos++;
         }
       }
@@ -920,11 +923,14 @@ void BankActions::insertBank(shared_ptr<NetworkRequest> request, size_t offset)
   Glib::ustring anchorUuid = request->get("anchor");
   Glib::ustring bankUuid = request->get("bank");
 
-  if(auto targetBank = m_presetManager.findBankWithPreset(anchorUuid))
-    if(auto preset = targetBank->findPreset(anchorUuid))
+  if(auto preset = m_presetManager.findPreset(anchorUuid))
+    if(auto targetBank = static_cast<Bank *>(preset->getParent()))
       if(auto bank = m_presetManager.findBank(bankUuid))
         if(bank != targetBank)
-          insertBank(bank, targetBank, targetBank->getPresetPosition(anchorUuid) + offset);
+        {
+          auto anchorPos = targetBank->getPresetPosition(anchorUuid);
+          insertBank(bank, targetBank, anchorPos + offset);
+        }
 }
 
 void BankActions::insertBank(Bank *bank, Bank *targetBank, size_t insertPos)
@@ -943,21 +949,17 @@ bool BankActions::loadPresetAtRelativePosition(int offset)
 
   if(auto bank = m_presetManager.findBankWithPreset(currentPreset))
   {
-    auto pos = bank->getPresetPosition(currentPreset);
+    auto pos = static_cast<int>(bank->getPresetPosition(currentPreset)) + offset;
+    pos = std::max(pos, 0);
 
-    if(offset > 0 || pos >= (size_t)(-offset))
+    if(pos < int(bank->getNumPresets()))
     {
-      auto newPos = pos + offset;
-
-      if(newPos < bank->getNumPresets())
-      {
-        auto newPreset = bank->getPresetAt(newPos);
-        auto scope = m_presetManager.getUndoScope().startTransaction(newPreset->buildUndoTransactionTitle("Load"));
-        auto transaction = scope->getTransaction();
-        m_presetManager.getEditBuffer()->undoableLoad(transaction, newPreset);
-        bank->selectPreset(transaction, newPreset->getUuid());
-        return true;
-      }
+      auto newPreset = bank->getPresetAt(size_t(pos));
+      auto scope = m_presetManager.getUndoScope().startTransaction(newPreset->buildUndoTransactionTitle("Load"));
+      auto transaction = scope->getTransaction();
+      m_presetManager.getEditBuffer()->undoableLoad(transaction, newPreset);
+      bank->selectPreset(transaction, newPreset->getUuid());
+      return true;
     }
   }
 

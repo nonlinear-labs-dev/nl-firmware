@@ -16,6 +16,7 @@ class AttributesOwner : public UpdateDocumentContributor
   ~AttributesOwner() override;
 
   void setAttribute(UNDO::Transaction *transaction, const std::string &key, const ustring &value);
+  void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
   void clear(UNDO::Transaction *transaction);
 
   Glib::ustring getAttribute(const Glib::ustring &key, const Glib::ustring &def) const;

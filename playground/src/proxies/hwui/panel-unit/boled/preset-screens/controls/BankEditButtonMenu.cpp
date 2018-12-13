@@ -103,6 +103,7 @@ void BankEditButtonMenu::newBank()
   auto pos = pm->calcDefaultBankPositionFor(newBank);
   newBank->setX(transaction, std::to_string(pos.first));
   newBank->setY(transaction, std::to_string(pos.second));
+  pm->selectBank(transaction, newBank->getUuid());
 
   Application::get().getHWUI()->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Presets, UIMode::Select));
 

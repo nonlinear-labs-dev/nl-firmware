@@ -39,6 +39,14 @@ void AttributesOwner::setAttribute(UNDO::Transaction *transaction, const std::st
   });
 }
 
+void AttributesOwner::copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other)
+{
+  clear(transaction);
+
+  for(auto &a : other->m_attributes)
+    setAttribute(transaction, a.first, a.second);
+}
+
 void AttributesOwner::clear(UNDO::Transaction *transaction)
 {
   transaction->addUndoSwap(this, m_attributes, tAttributes());
