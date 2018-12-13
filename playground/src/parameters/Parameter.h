@@ -18,6 +18,7 @@ class ParameterGroupSet;
 class ParameterGroup;
 class MessageComposer;
 class FrameBuffer;
+class PresetParameter;
 
 enum ParameterFlags
 {
@@ -51,36 +52,37 @@ class Parameter : public UpdateDocumentContributor,
   ParameterGroup *getParentGroup();
   gint32 getID() const;
 
-  Parameter *getOriginalParameter() const;
+  PresetParameter *getOriginalParameter() const;
   bool isChangedFromLoaded() const;
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
 
   void setDefaultFromHwui();
-  void setDefaultFromHwui(UNDO::Scope::tTransactionPtr transaction);
-  void setDefaultFromWebUI(UNDO::Scope::tTransactionPtr transaction);
+  void setDefaultFromHwui(UNDO::Transaction *transaction);
+  void setDefaultFromWebUI(UNDO::Transaction *transaction);
 
-  virtual void setCPFromHwui(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue);
-  virtual void setCPFromWebUI(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue);
+  virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
+  virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
 
-  void stepCPFromHwui(UNDO::Scope::tTransactionPtr transaction, int incs, ButtonModifiers modifiers);
-  void stepCPFromWebUI(UNDO::Scope::tTransactionPtr transaction, Step step, ButtonModifiers modifiers);
-  void setIndirect(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value);
+  void stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers);
+  void stepCPFromWebUI(UNDO::Transaction *transaction, Step step, ButtonModifiers modifiers);
+  void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value);
 
-  virtual void loadFromPreset(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value);
+  virtual void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value);
 
-  virtual void loadDefault(UNDO::Scope::tTransactionPtr transaction);
-  virtual void reset(UNDO::Scope::tTransactionPtr transaction, Initiator initiator);
-  virtual void copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other);
+  virtual void loadDefault(UNDO::Transaction *transaction);
+  virtual void reset(UNDO::Transaction *transaction, Initiator initiator);
+  virtual void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other);
+  virtual void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const;
 
-  virtual void undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetType oldType, PresetType desiredType);
-  virtual void undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount);
+  virtual void undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType);
+  virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
 
-  void undoableLoadValue(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &value);
-  void undoableSetDefaultValue(UNDO::Scope::tTransactionPtr transaction, Parameter *values);
+  void undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value);
+  void undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *values);
 
-  void undoableLock(UNDO::Scope::tTransactionPtr transaction);
-  void undoableUnlock(UNDO::Scope::tTransactionPtr transaction);
+  void undoableLock(UNDO::Transaction *transaction);
+  void undoableUnlock(UNDO::Transaction *transaction);
   bool isLocked() const;
 
   virtual void exportReaktorParameter(stringstream &target) const;
@@ -119,8 +121,7 @@ class Parameter : public UpdateDocumentContributor,
 
  protected:
   virtual void sendToLpc() const;
-  void setCpValue(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, tControlPositionValue value,
-                  bool doSendToLpc);
+  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const;

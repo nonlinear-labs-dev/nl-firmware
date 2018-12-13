@@ -62,7 +62,7 @@ void MiniParameterLabel::setFontColor(FrameBuffer &fb) const
     fb.setColor(FrameBuffer::Colors::C128);
 }
 
-const std::pair<Glib::ustring, size_t> MiniParameterLabel::prepareDisplayString(const Parameter *p) const
+const std::pair<Glib::ustring, short> MiniParameterLabel::prepareDisplayString(const Parameter *p) const
 {
   auto changed = p->isChangedFromLoaded();
   auto text = p->getMiniParameterEditorName() + (changed ? "*" : "");

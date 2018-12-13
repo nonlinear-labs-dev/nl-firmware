@@ -1,7 +1,7 @@
 #include <Application.h>
 #include <http/UndoScope.h>
 #include <presets/Preset.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
@@ -12,8 +12,7 @@ EditPresetInfoLayout::EditPresetInfoLayout()
 {
   if(auto bank = Application::get().getPresetManager()->getSelectedBank())
   {
-    const auto &uuid = bank->getSelectedPreset();
-    m_currentPreset = bank->getPreset(uuid);
+    m_currentPreset = bank->getSelectedPreset();
   }
 }
 
@@ -22,7 +21,7 @@ void EditPresetInfoLayout::commit(const Glib::ustring &comment)
   if(m_currentPreset)
   {
     UNDO::Scope::tTransactionScopePtr scope = m_currentPreset->getUndoScope().startTransaction("Set Preset Comment");
-    m_currentPreset->undoableSetAttribute(scope->getTransaction(), "Comment", comment);
+    m_currentPreset->setAttribute(scope->getTransaction(), "Comment", comment);
   }
 }
 

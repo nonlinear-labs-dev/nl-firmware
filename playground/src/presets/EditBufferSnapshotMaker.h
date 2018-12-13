@@ -11,7 +11,7 @@ class EditBufferSnapshotMaker : public sigc::trackable
  public:
   static EditBufferSnapshotMaker &get();
 
-  void addSnapshotIfRequired(UNDO::Scope::tTransactionPtr transaction);
+  void addSnapshotIfRequired(UNDO::Transaction *transaction);
 
  private:
   EditBufferSnapshotMaker();
@@ -24,8 +24,8 @@ class EditBufferSnapshotMaker : public sigc::trackable
 
   using tParams = list<Record>;
 
-  tParams collectDirtyParameters(shared_ptr<EditBuffer> editBuffer);
-  void addSnapshot(UNDO::Scope::tTransactionPtr transaction, tParams &&params);
+  tParams collectDirtyParameters(EditBuffer *editBuffer);
+  void addSnapshot(UNDO::Transaction *transaction, tParams &&params);
   void sortParametersByModulationFlow(EditBufferSnapshotMaker::tParams &params);
 
   int m_lastKnownUpdateID = 0;

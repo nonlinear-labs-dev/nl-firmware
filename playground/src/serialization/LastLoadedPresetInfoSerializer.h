@@ -2,19 +2,17 @@
 
 #include "Serializer.h"
 
-class LastLoadedPresetInfo;
+class EditBuffer;
 
 class LastLoadedPresetInfoSerializer : public Serializer
 {
  public:
-  LastLoadedPresetInfoSerializer(LastLoadedPresetInfo &info);
-  virtual ~LastLoadedPresetInfoSerializer();
-
+  LastLoadedPresetInfoSerializer(EditBuffer *eb);
   static Glib::ustring getTagName();
 
  private:
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  LastLoadedPresetInfo &m_info;
+  EditBuffer *m_editBuffer;
 };

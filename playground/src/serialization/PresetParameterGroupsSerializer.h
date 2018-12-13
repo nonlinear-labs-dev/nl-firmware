@@ -1,12 +1,13 @@
 #pragma once
 
-#include "presets/Preset.h"
-#include "Serializer.h"
+#include <serialization/Serializer.h>
 
-class PresetSettingsSerializer : public Serializer
+class Preset;
+
+class PresetParameterGroupsSerializer : public Serializer
 {
  public:
-  PresetSettingsSerializer(Preset *preset);
+  PresetParameterGroupsSerializer(Preset *preset);
 
   static Glib::ustring getTagName();
 

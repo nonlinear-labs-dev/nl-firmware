@@ -7,7 +7,6 @@
 class Application;
 class Parameter;
 class Setting;
-class PresetSetting;
 
 class LowerRibbon : public Ribbon
 {

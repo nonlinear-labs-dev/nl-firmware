@@ -21,7 +21,7 @@ class PresetListBase : public ControlWithChildren
 
   void setBankFocus();
 
-  virtual std::pair<int, int> getSelectedPosition() const = 0;
+  virtual std::pair<size_t, size_t> getSelectedPosition() const = 0;
 
   virtual bool onButton(int i, bool down, ButtonModifiers modifiers) = 0;
   virtual void onRotary(int inc, ButtonModifiers modifiers) = 0;

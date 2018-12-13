@@ -12,7 +12,7 @@ NumBanksLabel::~NumBanksLabel()
 {
 }
 
-void NumBanksLabel::onNumBanksChanged(int numBanks)
+void NumBanksLabel::onNumBanksChanged(size_t numBanks)
 {
   setText(UNDO::StringTools::buildString('[', numBanks, ']'));
 }

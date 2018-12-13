@@ -3,7 +3,6 @@
 #include "parameters/Parameter.h"
 #include <parameters/RibbonParameter.h>
 #include "presets/EditBuffer.h"
-#include "presets/PresetSettings.h"
 #include "presets/PresetManager.h"
 #include "device-settings/BaseUnitUIMode.h"
 #include "device-settings/Settings.h"
@@ -72,7 +71,7 @@ void UpperRibbon::onParamValueChanged(const Parameter* param)
   {
     if(auto ribbonParameter = dynamic_cast<const RibbonParameter*>(param))
     {
-      bipol = ribbonParameter->getRibbonReturnMode() == RibbonParameter::RETURN;
+      bipol = ribbonParameter->getRibbonReturnMode() == RibbonReturnMode::RETURN;
     }
   }
 

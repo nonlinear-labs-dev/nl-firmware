@@ -2,7 +2,7 @@
 
 #include "PresetBankMetadataSerializer.h"
 
-class PresetBank;
+class Bank;
 
 class PresetBankSerializer : public PresetBankMetadataSerializer
 {
@@ -10,7 +10,7 @@ class PresetBankSerializer : public PresetBankMetadataSerializer
   typedef PresetBankMetadataSerializer super;
 
  public:
-  PresetBankSerializer(shared_ptr<PresetBank> bank, bool ignoreUUIDs = false);
+  PresetBankSerializer(Bank *bank, bool ignoreUUIDs = false);
 
  private:
   void writeTagContent(Writer &writer) const;

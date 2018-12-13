@@ -8,8 +8,9 @@ namespace UNDO
   {
    public:
     TrashTransaction();
-    virtual ~TrashTransaction();
 
-    virtual void addCommand(tCommandPtr cmd) override;
+    void addCommand(tCommandPtr cmd) override;
+    void addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo) override;
+    void addSimpleCommand(ActionCommand::tAction doRedoUndo) override;
   };
 }

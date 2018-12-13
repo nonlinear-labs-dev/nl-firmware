@@ -3,7 +3,7 @@
 #include "proxies/hwui/controls/ButtonMenu.h"
 #include <experimental/filesystem>
 
-class PresetBank;
+class Bank;
 
 class BankEditButtonMenu : public ButtonMenu
 {
@@ -33,19 +33,17 @@ class BankEditButtonMenu : public ButtonMenu
 
  public:
   explicit BankEditButtonMenu(const Rect& rect);
-  virtual ~BankEditButtonMenu() = default;
+  ~BankEditButtonMenu() override = default;
 
   void selectButton(size_t i) override;
-  void rebuildMenu();
+  void rebuildMenu(size_t numBanks);
 
  private:
+  void rebuildMenuOnClipboardChange();
   void rebuildFullMenu();
   void rebuildNoBankAvailableMenu();
 
   void correctMenuSelection();
-
-  BankEditButtonMenu(const BankEditButtonMenu& other);
-  BankEditButtonMenu& operator=(const BankEditButtonMenu&);
 
   void newBank();
   void importBank();
@@ -59,7 +57,7 @@ class BankEditButtonMenu : public ButtonMenu
 
   static Glib::ustring createValidOutputPath(const Glib::ustring& bankName);
 
-  static void writeSelectedBankToFile(PresetManager::tBankPtr selBank, const std::string& outFile);
+  static void writeSelectedBankToFile(Bank* selBank, const std::string& outFile);
   static FileInfos extractFileInfos(std::experimental::filesystem::directory_entry file);
   static void importBankFromPath(std::experimental::filesystem::directory_entry file);
   static bool applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term);

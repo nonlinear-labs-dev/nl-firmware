@@ -121,7 +121,7 @@ bool UndoLayout::onRotary(int inc, ButtonModifiers modifiers)
   return true;
 }
 
-shared_ptr<UNDO::Transaction> UndoLayout::getTip() const
+UNDO::Transaction *UndoLayout::getTip() const
 {
   return m_tip ? m_tip : Application::get().getUndoScope()->getUndoTransaction();
 }
@@ -174,7 +174,7 @@ void UndoLayout::moveTipBy(int inc)
   }
 }
 
-shared_ptr<UNDO::Transaction> UndoLayout::jumpForward(shared_ptr<UNDO::Transaction> tip, int inc)
+UNDO::Transaction *UndoLayout::jumpForward(UNDO::Transaction *tip, int inc)
 {
   if(inc > 0)
     if(auto next = tip->getDefaultRedoRoute())
@@ -183,7 +183,7 @@ shared_ptr<UNDO::Transaction> UndoLayout::jumpForward(shared_ptr<UNDO::Transacti
   return tip;
 }
 
-shared_ptr<UNDO::Transaction> UndoLayout::jumpBackward(shared_ptr<UNDO::Transaction> tip, int inc)
+UNDO::Transaction *UndoLayout::jumpBackward(UNDO::Transaction *tip, int inc)
 {
   if(inc < 0)
     if(auto next = tip->getPredecessor())
@@ -209,7 +209,7 @@ void UndoLayout::selectPreviousSibling()
     if(auto parent = tip->getPredecessor())
     {
       size_t numSuccessors = parent->getNumSuccessors();
-      shared_ptr<UNDO::Transaction> before;
+      UNDO::Transaction *before = nullptr;
 
       for(size_t i = 0; i < numSuccessors; i++)
       {

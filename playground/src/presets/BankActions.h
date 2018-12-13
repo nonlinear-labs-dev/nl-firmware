@@ -5,13 +5,12 @@
 #include <xml/FileInStream.h>
 
 class PresetManager;
-class PresetBank;
 class Preset;
+class Bank;
 
 class BankActions : public RPCActionManager
 {
   typedef RPCActionManager super;
-  typedef shared_ptr<PresetBank> tBankPtr;
 
  public:
   BankActions(PresetManager &presetManager);
@@ -19,20 +18,19 @@ class BankActions : public RPCActionManager
 
   bool handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request) override;
 
-  tBankPtr importBank(InStream &stream, const Glib::ustring &x = "", const Glib::ustring &y = "",
-                      const Glib::ustring &fileName = "");
+  Bank *importBank(InStream &stream, Glib::ustring x = "", Glib::ustring y = "", const Glib::ustring &fileName = "");
 
  private:
-  typedef shared_ptr<Preset> tPresetPtr;
+  typedef Preset *tPresetPtr;
 
-  void dropPresets(UNDO::TransactionCreationScope::tTransactionPtr transaction, const Glib::ustring &anchorUUID,
-                   int offset, const Glib::ustring &csv);
+  void dropPresets(UNDO::Transaction *transaction, const Glib::ustring &anchorUUID, int offset,
+                   const Glib::ustring &csv);
   bool loadPresetAtRelativePosition(int offset);
-  void insertBank(tBankPtr bank, tBankPtr targetBank, size_t insertPos);
+  void insertBank(Bank *bank, Bank *targetBank, size_t insertPos);
   void insertBank(shared_ptr<NetworkRequest> request, size_t offset);
   Glib::ustring guessNameBasedOnEditBuffer() const;
 
   PresetManager &m_presetManager;
 
-  void insertBankInCluster(tBankPtr bankToInsert, tBankPtr bankAtInsert, const ustring directionSeenFromBankInCluster);
+  void insertBankInCluster(Bank *bankToInsert, Bank *bankAtInsert, const ustring directionSeenFromBankInCluster);
 };

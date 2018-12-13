@@ -63,7 +63,7 @@ class LPCProxy
   void sendSetting(uint16_t key, uint16_t value);
   void sendSetting(uint16_t key, bool v);
 
-  void toggleSuppressParameterChanges(UNDO::Scope::tTransactionPtr transaction);
+  void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
 
   connection onRibbonTouched(slot<void, int> s);
   connection onLPCSoftwareVersionChanged(slot<void, int> s);

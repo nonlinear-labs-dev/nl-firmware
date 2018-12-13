@@ -21,7 +21,7 @@ class MiniParameterLabel : public LabelRegular8
   MiniParameterLabel& operator=(const MiniParameterLabel&);
 
   void onParameterChanged(const Parameter* p);
-  const std::pair<ustring, size_t> prepareDisplayString(const Parameter* p) const;
+  const std::pair<Glib::ustring, short> prepareDisplayString(const Parameter* p) const;
 
   bool redraw(FrameBuffer& fb) override;
   void setFontColor(FrameBuffer& fb) const override;

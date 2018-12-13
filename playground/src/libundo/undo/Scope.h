@@ -1,21 +1,23 @@
 #pragma once
 
-#include "TransactionCreationScope.h"
 #include "SwapData.h"
 #include "StringTools.h"
 #include "http/ContentSection.h"
 #include "http/UndoActions.h"
+#include "TransactionCreationScope.h"
 #include <chrono>
 
 namespace UNDO
 {
   using chrono::steady_clock;
 
+  class TransactionCreationScope;
+  class Transaction;
+
   class Scope : public ContentSection
   {
    public:
-    typedef TransactionCreationScope::tTransactionPtr tTransactionPtr;
-    typedef TransactionCreationScope::tTransactionScopePtr tTransactionScopePtr;
+    using tTransactionScopePtr = std::unique_ptr<TransactionCreationScope>;
 
     constexpr static steady_clock::duration getStandardContinuousTransactionTimeout()
     {
@@ -51,16 +53,16 @@ namespace UNDO
                                                     const Glib::ustring &name);
 
     tTransactionScopePtr startTransaction(const Glib::ustring &name);
-    tTransactionScopePtr startTrashTransaction();
+    static tTransactionScopePtr startTrashTransaction();
 
     tTransactionScopePtr startCuckooTransaction();
     void resetCukooTransaction();
 
-    const tTransactionPtr getUndoTransaction() const;
-    const tTransactionPtr getRedoTransaction() const;
-    const tTransactionPtr getRootTransaction() const;
+    Transaction *getUndoTransaction() const;
+    Transaction *getRedoTransaction() const;
+    Transaction *getRootTransaction() const;
 
-    void rebase(tTransactionPtr newRoot);
+    void rebase(Transaction *newRoot);
 
     bool canUndo() const;
     bool canRedo() const;
@@ -70,10 +72,10 @@ namespace UNDO
     void redo(int way = -1);
 
     void undoJump(const Glib::ustring &target);
-    void undoJump(shared_ptr<Transaction> target);
+    void undoJump(Transaction *target);
 
     void eraseBranch(const Glib::ustring &id);
-    void eraseBranch(shared_ptr<Transaction> branch);
+    void eraseBranch(Transaction *branch);
 
     Glib::ustring getPrefix() const override;
     void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
@@ -81,9 +83,11 @@ namespace UNDO
 
    protected:
     virtual void onTransactionAdded();
-    virtual void onAddTransaction(tTransactionPtr transaction);
+    virtual void onAddTransaction(Transaction *transaction);
 
    private:
+    using tTransactionPtr = std::unique_ptr<Transaction>;
+
     Scope(const Scope &other);
     void operator=(const Scope &other);
 
@@ -97,9 +101,10 @@ namespace UNDO
     UndoActions m_undoActions;
 
     tTransactionPtr m_root;
-    tTransactionPtr m_undoPosition;
-    tTransactionPtr m_redoPosition;
     tTransactionPtr m_cuckooTransaction;
+
+    Transaction *m_undoPosition = nullptr;
+    Transaction *m_redoPosition = nullptr;
   };
 
 } /* namespace UNDO */

@@ -12,7 +12,7 @@ class MacroControlParameter : public Parameter
 
  public:
   MacroControlParameter(ParameterGroup *group, uint16_t id);
-  virtual ~MacroControlParameter();
+  ~MacroControlParameter() override;
 
   typedef set<ModulateableParameter *> tTargets;
 
@@ -30,16 +30,17 @@ class MacroControlParameter : public Parameter
   int getUiSelectedHardwareSource() const;
 
   void undoableSetGivenName(const Glib::ustring &newName);
-  void undoableSetGivenName(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &newName);
+  void undoableSetGivenName(UNDO::Transaction *transaction, const ustring &newName);
   void undoableSetInfo(const Glib::ustring &newName);
-  void undoableSetInfo(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &newName);
-  virtual void undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount) override;
+  void undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &newName);
+  virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
   void undoableResetConnectionsToTargets();
   const Glib::ustring &getGivenName() const;
   const Glib::ustring &getInfo() const;
 
-  void loadDefault(UNDO::Scope::tTransactionPtr transaction) override;
-  void copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other) override;
+  void loadDefault(UNDO::Transaction *transaction) override;
+  void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
+  void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
   Glib::ustring getLongName() const override;
 
   const tTargets &getTargets() const;

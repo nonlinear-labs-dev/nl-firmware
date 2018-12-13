@@ -21,7 +21,7 @@ class FileDialogLayout : public DFBLayout
   virtual ~FileDialogLayout();
 
   bool onButton(int i, bool down, ButtonModifiers modifiers) override;
-  bool onRotary(int inc, ButtonModifiers) override;
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
 
   std::experimental::filesystem::directory_entry getSelectedFile();
 

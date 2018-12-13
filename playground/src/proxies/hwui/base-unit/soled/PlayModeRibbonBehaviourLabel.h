@@ -20,5 +20,5 @@ class PlayModeRibbonBehaviourLabel : public Label
   PlayModeRibbonBehaviourLabel& operator=(const PlayModeRibbonBehaviourLabel&) = delete;
 
   void updateText(const Parameter* s);
-  shared_ptr<EditBuffer> getEditBuffer() const;
+  EditBuffer* getEditBuffer() const;
 };

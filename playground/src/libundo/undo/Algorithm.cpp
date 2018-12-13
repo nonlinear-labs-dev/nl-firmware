@@ -13,9 +13,9 @@ namespace UNDO
   {
   }
 
-  void Algorithm::traverse(tTransactionPtr from, tTransactionPtr to)
+  void Algorithm::traverse(Transaction* from, Transaction* to)
   {
-    tTransactionPtr root = getCommonRoot(from, to);
+    Transaction* root = getCommonRoot(from, to);
 
     if(from == root)
     {
@@ -32,7 +32,7 @@ namespace UNDO
     }
   }
 
-  Algorithm::tTransactionPtr Algorithm::getCommonRoot(tTransactionPtr one, tTransactionPtr other)
+  Transaction* Algorithm::getCommonRoot(Transaction* one, Transaction* other)
   {
     if(one == other)
       return one;
@@ -43,11 +43,11 @@ namespace UNDO
       return getCommonRoot(one, other->getPredecessor());
   }
 
-  std::list<Algorithm::tTransactionPtr> Algorithm::getPathAsList(tTransactionPtr target, const Transaction *stop)
+  std::list<Transaction*> Algorithm::getPathAsList(Transaction* target, const Transaction* stop)
   {
-    std::list<Algorithm::tTransactionPtr> ret;
+    std::list<Transaction*> ret;
 
-    while(target.get() != stop)
+    while(target != stop)
     {
       ret.push_front(target);
       target = target->getPredecessor();
@@ -56,22 +56,22 @@ namespace UNDO
     return ret;
   }
 
-  Algorithm::tTransactionPtr Algorithm::find(tTransactionPtr root, const Glib::ustring &targetID)
+  Transaction* Algorithm::find(Transaction* root, const Glib::ustring& targetID)
   {
     long i = strtol(targetID.c_str(), NULL, 10);
-    return find(root, (void *) i);
+    return find(root, (void*) i);
   }
 
-  Algorithm::tTransactionPtr Algorithm::find(tTransactionPtr root, const void *targetID)
+  Transaction* Algorithm::find(Transaction* root, const void* targetID)
   {
-    if(root.get() == targetID)
+    if(root == targetID)
       return root;
 
     size_t numChildren = root->getNumSuccessors();
 
     for(size_t i = 0; i < numChildren; i++)
     {
-      if(tTransactionPtr found = find(root->getSuccessor(i), targetID))
+      if(Transaction* found = find(root->getSuccessor(i), targetID))
         return found;
     }
 

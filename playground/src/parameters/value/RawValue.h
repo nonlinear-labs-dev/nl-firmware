@@ -19,7 +19,7 @@ class RawValue
     MorphB = 2
   };
 
-  void undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetType oldType, PresetType desiredType);
+  void undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType);
 
   tValueType getRawValue() const;
   bool setRawValue(Initiator initiator, tValueType newRawValue);

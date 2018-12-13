@@ -114,15 +114,15 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
       auto scope = app.getUndoScope()->startTransaction("Import Presetmanager Backup");
       auto pm = app.getPresetManager();
 
-      pm->undoableClear(scope->getTransaction());
-      PresetManagerSerializer serializer(*pm.get());
+      pm->clear(scope->getTransaction());
+      PresetManagerSerializer serializer(pm.get());
 
       boled.resetOverlay();
       boled.setOverlay(new SplashLayout());
       SplashLayout::addStatus("Restoring Backup from File!");
 
       XmlReader reader(in, scope->getTransaction());
-      reader.onFileVersionRead([=](int version) {
+      reader.onFileVersionRead([&](int version) {
         if(version > VersionAttribute::getCurrentFileVersion())
         {
           SplashLayout::setStatus(
@@ -134,7 +134,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
         return Reader::FileVersionCheckResult::OK;
       });
 
-      if(reader.read<PresetManagerSerializer>(std::ref(*pm.get())))
+      if(reader.read<PresetManagerSerializer>(pm.get()))
       {
         pm->getEditBuffer()->sendToLPC();
       }

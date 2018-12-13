@@ -1,8 +1,9 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoMenu.h>
 #include <Application.h>
 #include <http/UndoScope.h>
+#include <libundo/undo/Transaction.h>
 
-UndoMenu::UndoMenu(shared_ptr<UNDO::Transaction> tip, const Rect &r)
+UndoMenu::UndoMenu(UNDO::Transaction *tip, const Rect &r)
     : super(r, 2)
 {
   assignTransaction(tip);
@@ -26,7 +27,7 @@ UndoMenu::~UndoMenu()
 {
 }
 
-void UndoMenu::assignTransaction(shared_ptr<UNDO::Transaction> tip)
+void UndoMenu::assignTransaction(UNDO::Transaction *tip)
 {
   m_tip = tip;
 }

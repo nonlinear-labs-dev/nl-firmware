@@ -12,6 +12,10 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/UnmodulatebaleParameterLayouts.h>
 #include <presets/EditBuffer.h>
+#include <presets/PresetManager.h>
+#include <libundo/undo/Transaction.h>
+#include <presets/PresetParameter.h>
+#include <presets/Preset.h>
 
 static const auto c_invalidSnapshotValue = numeric_limits<tControlPositionValue>::max();
 
@@ -75,43 +79,43 @@ void Parameter::setDefaultFromHwui()
   setCPFromHwui(scope->getTransaction(), getDefaultValue());
 }
 
-void Parameter::setDefaultFromHwui(UNDO::Scope::tTransactionPtr transaction)
+void Parameter::setDefaultFromHwui(UNDO::Transaction *transaction)
 {
   setCPFromHwui(transaction, getDefaultValue());
 }
 
-void Parameter::setDefaultFromWebUI(UNDO::Scope::tTransactionPtr transaction)
+void Parameter::setDefaultFromWebUI(UNDO::Transaction *transaction)
 {
   setCPFromWebUI(transaction, getDefaultValue());
 }
 
-void Parameter::stepCPFromHwui(UNDO::Scope::tTransactionPtr transaction, int incs, ButtonModifiers modifiers)
+void Parameter::stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers)
 {
   setCPFromHwui(transaction, getNextStepValue(incs, modifiers));
 }
 
-void Parameter::stepCPFromWebUI(UNDO::Scope::tTransactionPtr transaction, Step step, ButtonModifiers modifiers)
+void Parameter::stepCPFromWebUI(UNDO::Transaction *transaction, Step step, ButtonModifiers modifiers)
 {
   setCPFromWebUI(transaction, getNextStepValue(step == Parameter::Step::STEP_INC ? 1 : -1, modifiers));
 }
 
-void Parameter::setCPFromHwui(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue)
+void Parameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   setCpValue(transaction, Initiator::EXPLICIT_HWUI, cpValue, true);
 }
 
-void Parameter::setCPFromWebUI(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue)
+void Parameter::setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   setCpValue(transaction, Initiator::EXPLICIT_WEBUI, cpValue, true);
 }
 
-void Parameter::loadFromPreset(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value)
+void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   setIndirect(transaction, value);
   m_lastSnapshotedValue = value;
 }
 
-void Parameter::setIndirect(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value)
+void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   if(value != m_value.getRawValue())
   {
@@ -125,17 +129,17 @@ void Parameter::setIndirect(UNDO::Scope::tTransactionPtr transaction, const tCon
   }
 }
 
-void Parameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)
+void Parameter::loadDefault(UNDO::Transaction *transaction)
 {
   loadFromPreset(transaction, getDefaultValue());
 }
 
-void Parameter::reset(UNDO::Scope::tTransactionPtr transaction, Initiator initiator)
+void Parameter::reset(UNDO::Transaction *transaction, Initiator initiator)
 {
   setCpValue(transaction, initiator, getDefaultValue(), true);
 }
 
-void Parameter::setCpValue(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, tControlPositionValue value,
+void Parameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
                            bool doSendToLpc)
 {
   if(m_value.differs(value))
@@ -161,19 +165,26 @@ void Parameter::setCpValue(UNDO::Scope::tTransactionPtr transaction, Initiator i
   }
 }
 
-void Parameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other)
+void Parameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   if(!isLocked())
   {
-    loadFromPreset(transaction, other->getControlPositionValue());
+    loadFromPreset(transaction, other->getValue());
   }
 }
 
-void Parameter::undoableSetDefaultValue(UNDO::Scope::tTransactionPtr transaction, Parameter *value)
+void Parameter::copyTo(UNDO::Transaction *transaction, PresetParameter *other) const
 {
-  if(value->getControlPositionValue() != m_value.getDefaultValue())
+  other->setValue(transaction, getControlPositionValue());
+}
+
+void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *value)
+{
+  auto diff = value->getValue() - m_value.getDefaultValue();
+
+  if(std::abs(diff) > std::numeric_limits<tControlPositionValue>::epsilon())
   {
-    auto swapData = UNDO::createSwapData(value->getControlPositionValue());
+    auto swapData = UNDO::createSwapData(value->getValue());
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       tDisplayValue newVal = m_value.getDefaultValue();
@@ -186,7 +197,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Scope::tTransactionPtr transaction
 
 void Parameter::sendToLpc() const
 {
-  if(getParentGroup()->getParent() == Application::get().getPresetManager()->getEditBuffer().get())
+  if(dynamic_cast<const EditBuffer *>(getParentGroup()->getParent()))
     Application::get().getLPCProxy()->sendParameter(this);
 }
 
@@ -195,12 +206,12 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
   return m_value.getNextStepValue(incs, modifiers);
 }
 
-Parameter *Parameter::getOriginalParameter() const
+PresetParameter *Parameter::getOriginalParameter() const
 {
   auto pm = Application::get().getPresetManager();
-  if(auto preset = pm->getEditBuffer()->getPreset())
+  if(auto preset = pm->getEditBuffer()->getOrigin())
   {
-    return preset->findParameterByID(static_cast<size_t>(getID()));
+    return preset->findParameterByID(getID());
   }
   return nullptr;
 }
@@ -210,7 +221,7 @@ bool Parameter::isChangedFromLoaded() const
   if(auto currentParam = this)
   {
     if(auto originalParameter = getOriginalParameter())
-      return currentParam->getControlPositionValue() != originalParameter->getControlPositionValue();
+      return currentParam->getControlPositionValue() != originalParameter->getValue();
   }
   return false;
 }
@@ -353,14 +364,14 @@ void Parameter::writeToLPC(MessageComposer &cmp) const
   cmp << v;
 }
 
-void Parameter::undoableLoadValue(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &value)
+void Parameter::undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value)
 {
   auto tcdValue = stoi(value);
   auto cpValue = m_value.getScaleConverter()->tcdToControlPosition(tcdValue);
   loadFromPreset(transaction, cpValue);
 }
 
-void Parameter::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount)
+void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
   auto rnd = g_random_double_range(0.0, 1.0);
   auto range = getValue().getScaleConverter()->getControlPositionRange();
@@ -369,7 +380,7 @@ void Parameter::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Init
   setCpValue(transaction, initiator, newPos, false);
 }
 
-void Parameter::undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetType oldType, PresetType desiredType)
+void Parameter::undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType)
 {
   m_value.undoableSetType(transaction, oldType, desiredType);
 }
@@ -428,26 +439,26 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
   return VisualizationStyle::Bar;
 }
 
-void Parameter::undoableLock(UNDO::Scope::tTransactionPtr transaction)
+void Parameter::undoableLock(UNDO::Transaction *transaction)
 {
   if(!isLocked())
   {
     auto swapData = UNDO::createSwapData(true);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    transaction->addSimpleCommand([=](auto) mutable {
       swapData->swapWith(m_isLocked);
       onChange(ChangeFlags::LockState);
     });
   }
 }
 
-void Parameter::undoableUnlock(UNDO::Scope::tTransactionPtr transaction)
+void Parameter::undoableUnlock(UNDO::Transaction *transaction)
 {
   if(isLocked())
   {
     auto swapData = UNDO::createSwapData(false);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    transaction->addSimpleCommand([=](auto) mutable {
       swapData->swapWith(m_isLocked);
       onChange(ChangeFlags::LockState);
     });

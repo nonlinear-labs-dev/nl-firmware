@@ -58,31 +58,24 @@ tStrings splitQuotes(const Glib::ustring &str)
   return trimAll(ret);
 }
 
-SearchQuery::SearchQuery(const Glib::ustring &query, Mode mode,
-                         std::vector<PresetManager::presetInfoSearchFields> &&fields)
+SearchQuery::SearchQuery(const Glib::ustring &query, Mode mode, std::vector<Fields> &&fields)
     : m_mode(mode)
     , m_query(splitQuotes(query))
     , m_searchFields(fields)
 {
 }
 
-SearchQuery::SearchQuery(const Glib::ustring &query, const Glib::ustring &mode,
-                         std::vector<PresetManager::presetInfoSearchFields> &&fields)
+SearchQuery::SearchQuery(const Glib::ustring &query, const Glib::ustring &mode, std::vector<Fields> &&fields)
     : SearchQuery(query, fromString(mode), std::move(fields))
 {
 }
 
-SearchQuery::~SearchQuery()
-{
-}
-
-std::vector<PresetManager::presetInfoSearchFields> SearchQuery::getFields() const
+std::vector<SearchQuery::Fields> SearchQuery::getFields() const
 {
   return m_searchFields;
 }
 
-bool SearchQuery::iterate(
-    function<bool(const Glib::ustring &, std::vector<PresetManager::presetInfoSearchFields> fields)> cb) const
+bool SearchQuery::iterate(function<bool(const ustring &, const std::vector<Fields> &)> cb) const
 {
   bool match = false;
 

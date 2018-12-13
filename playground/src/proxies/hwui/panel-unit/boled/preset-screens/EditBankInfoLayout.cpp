@@ -1,7 +1,7 @@
 #include <Application.h>
 #include <http/UndoScope.h>
 #include <presets/Preset.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
@@ -21,7 +21,7 @@ void EditBankInfoLayout::commit(const Glib::ustring &comment)
   if(m_currentBank)
   {
     UNDO::Scope::tTransactionScopePtr scope = m_currentBank->getUndoScope().startTransaction("Set Bank Comment");
-    m_currentBank->undoableSetAttribute(scope->getTransaction(), "Comment", comment);
+    m_currentBank->setAttribute(scope->getTransaction(), "Comment", comment);
   }
 }
 

@@ -4,7 +4,7 @@
 #include <libundo/undo/Transaction.h>
 #include <libundo/undo/TransactionCreationScope.h>
 #include <presets/Preset.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
@@ -56,12 +56,10 @@ void PresetEditButtonMenu::renamePreset()
   auto layout = new RenamePresetLayout([=](const Glib::ustring &newName) {
     if(auto bank = Application::get().getPresetManager()->getSelectedBank())
     {
-      const auto &uuid = bank->getSelectedPreset();
-
-      if(auto preset = bank->getPreset(uuid))
+      if(auto preset = bank->getSelectedPreset())
       {
         auto scope = Application::get().getUndoScope()->startTransaction("Rename Preset");
-        preset->undoableSetName(scope->getTransaction(), newName);
+        preset->setName(scope->getTransaction(), newName);
       }
     }
   });
@@ -74,7 +72,7 @@ void PresetEditButtonMenu::cutPreset()
   auto pm = Application::get().getPresetManager();
   if(auto bank = pm->getSelectedBank())
   {
-    Application::get().getClipboard()->cutPreset(bank->getSelectedPreset());
+    Application::get().getClipboard()->cutPreset(bank->getSelectedPresetUuid());
     selectButton(Paste);
     m_lastCopyingAction = Cut;
   }
@@ -85,7 +83,7 @@ void PresetEditButtonMenu::copyPreset()
   auto pm = Application::get().getPresetManager();
   if(auto bank = pm->getSelectedBank())
   {
-    Application::get().getClipboard()->copyPreset(bank->getSelectedPreset());
+    Application::get().getClipboard()->copyPreset(bank->getSelectedPresetUuid());
     selectButton(Paste);
     m_lastCopyingAction = Copy;
   }
@@ -97,11 +95,10 @@ void PresetEditButtonMenu::deletePreset()
 
   if(auto bank = pm->getSelectedBank())
   {
-    auto presetUUID = bank->getSelectedPreset();
-    if(auto preset = bank->getPreset(presetUUID))
+    if(auto preset = bank->getSelectedPreset())
     {
       auto scope = bank->getUndoScope().startTransaction("Delete preset '%0'", preset->getName());
-      bank->undoableDeletePreset(scope->getTransaction(), presetUUID);
+      bank->deletePreset(scope->getTransaction(), preset->getUuid());
     }
   }
 }
@@ -112,8 +109,9 @@ void PresetEditButtonMenu::pasteClipboard()
 
   if(auto bank = pm->getSelectedBank())
   {
-    auto selctedPreset = bank->getSelectedPreset();
-    Application::get().getClipboard()->pasteOnPreset(selctedPreset);
+    if(auto selctedPreset = bank->getSelectedPreset())
+      Application::get().getClipboard()->pasteOnPreset(selctedPreset->getUuid());
+
     selectButton(m_lastCopyingAction);
   }
 }

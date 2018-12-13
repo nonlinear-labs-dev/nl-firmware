@@ -56,8 +56,8 @@ bool SelectedParameterModAmount::redraw(FrameBuffer &fb)
   {
     Rect r = getPosition();
     Rect filled = r;
-    auto left = r.getLeft() + ceil(m_from * r.getWidth());
-    auto right = r.getLeft() + ceil(m_to * r.getWidth());
+    auto left = round(r.getLeft() + m_from * r.getWidth());
+    auto right = round(r.getLeft() + m_to * r.getWidth());
     filled.setLeft(left);
     filled.setWidth(right - left);
     setSliderColor(fb);

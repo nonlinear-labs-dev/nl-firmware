@@ -2,10 +2,6 @@
 
 #include "PresetLabel.h"
 
-class Application;
-class PresetBank;
-class Preset;
-
 class PresetNumberLabel : public PresetLabel
 {
  private:
@@ -13,7 +9,7 @@ class PresetNumberLabel : public PresetLabel
 
  public:
   PresetNumberLabel(const Rect &pos);
-  virtual ~PresetNumberLabel();
+  ~PresetNumberLabel() override;
 
   void update(int presetNumber, bool selected, bool loaded);
 

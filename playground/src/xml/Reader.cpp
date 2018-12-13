@@ -2,7 +2,7 @@
 #include "serialization/Serializer.h"
 #include "Attributes.h"
 
-Reader::Reader(InStream &in, UNDO::Scope::tTransactionPtr transaction)
+Reader::Reader(InStream &in, UNDO::Transaction *transaction)
     : m_in(in)
     , m_transaction(transaction)
     , m_treeDepth(0)
@@ -37,12 +37,24 @@ void Reader::loadTextElement(size_t nameHash, ustring &target)
 {
   onTextElement(nameHash, [&](const ustring &text, const Attributes &attr) mutable {
     auto scope = UNDO::createSwapData(text);
+    getTransaction()->addSimpleCommand([=, &target](UNDO::Command::State) mutable { scope->swapWith(target); });
+  });
+}
 
+void Reader::loadTextElement(size_t nameHash, std::string &target)
+{
+  onTextElement(nameHash, [&](const ustring &text, const Attributes &attr) mutable {
+    auto scope = UNDO::createSwapData(text.raw());
     getTransaction()->addSimpleCommand([=, &target](UNDO::Command::State) mutable { scope->swapWith(target); });
   });
 }
 
 void Reader::loadTextElement(const ustring &name, ustring &target)
+{
+  loadTextElement(m_hash(name), target);
+}
+
+void Reader::loadTextElement(const ustring &name, std::string &target)
 {
   loadTextElement(m_hash(name), target);
 }
@@ -113,7 +125,7 @@ void Reader::onTextElement(size_t nameHash, const Attributes &attributes, const 
   }
 }
 
-UNDO::Scope::tTransactionPtr Reader::getTransaction()
+UNDO::Transaction *Reader::getTransaction()
 {
   return m_transaction;
 }

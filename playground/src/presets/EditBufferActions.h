@@ -12,7 +12,7 @@ class EditBufferActions : public RPCActionManager
 
  public:
   typedef Parameter* tParameterPtr;
-  EditBufferActions(shared_ptr<EditBuffer> editBuffer);
+  EditBufferActions(EditBuffer* editBuffer);
   virtual ~EditBufferActions();
 
  private:

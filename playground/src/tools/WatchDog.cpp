@@ -48,7 +48,7 @@ bool WatchDog::isDebuggerPreset()
   return false;
 }
 
-void WatchDog::run(chrono::_V2::system_clock::duration timeout)
+void WatchDog::run(chrono::system_clock::duration timeout)
 {
   run(timeout, [=](int numWarnings, int msInactive) {
     const int maxNumWarnings = 10;
@@ -65,7 +65,7 @@ void WatchDog::run(chrono::_V2::system_clock::duration timeout)
   });
 }
 
-void WatchDog::run(chrono::_V2::system_clock::duration timeout, tCB cb)
+void WatchDog::run(chrono::system_clock::duration timeout, tCB cb)
 {
   m_timeout = timeout;
 

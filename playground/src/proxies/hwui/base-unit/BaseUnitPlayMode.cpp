@@ -5,11 +5,9 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/lpc/LPCProxy.h"
 #include "groups/HardwareSourcesGroup.h"
-#include "presets/PresetSettings.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include <parameters/RibbonParameter.h>
-#include "presets/PresetSettings.h"
 #include <proxies/hwui/buttons.h>
 
 BaseUnitPlayMode::BaseUnitPlayMode()

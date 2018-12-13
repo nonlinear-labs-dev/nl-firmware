@@ -15,39 +15,26 @@ class RibbonParameter : public PhysicalControlParameter
  public:
   using super::super;
 
-  enum RibbonTouchBehaviour
-  {
-    ABSOLUTE,
-    RELATIVE,
-    NUM_TOUCH_BEHAVIOURS
-  };
+  void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode);
+  void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, const Glib::ustring &mode);
+  void undoableIncRibbonTouchBehaviour(UNDO::Transaction *transaction);
 
-  enum RibbonReturnMode
-  {
-    STAY = 0,
-    RETURN = 1,
-    NUM_RETURN_MODES
-  };
-
-  void undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction, RibbonTouchBehaviour mode);
-  void undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &mode);
-  void undoableIncRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction);
-
-  void undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction, RibbonReturnMode mode);
-  void undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &mode);
-  void undoableIncRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction);
+  void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode);
+  void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
+  void undoableIncRibbonReturnMode(UNDO::Transaction *transaction);
 
   RibbonTouchBehaviour getRibbonTouchBehaviour() const;
   RibbonReturnMode getRibbonReturnMode() const;
 
-  virtual ReturnMode getReturnMode() const override;
-  virtual void copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other) override;
-  virtual void loadDefault(UNDO::Scope::tTransactionPtr transaction) override;
+  ReturnMode getReturnMode() const override;
+  void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
+  void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
+  void loadDefault(UNDO::Transaction *transaction) override;
 
   void boundToMacroControl(tControlPositionValue v);
 
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
-  virtual void loadFromPreset(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value) override;
+  virtual void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -57,7 +44,7 @@ class RibbonParameter : public PhysicalControlParameter
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
   virtual bool hasBehavior() const override;
   virtual Glib::ustring getCurrentBehavior() const override;
-  virtual void undoableStepBehavior(UNDO::Scope::tTransactionPtr transaction, int direction) override;
+  virtual void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   virtual size_t getHash() const override;
 
  private:
@@ -67,7 +54,7 @@ class RibbonParameter : public PhysicalControlParameter
   tControlPositionValue getDefaultValueAccordingToMode() const;
   void setupScalingAndDefaultValue();
 
-  RibbonTouchBehaviour m_touchBehaviour = ABSOLUTE;
-  RibbonReturnMode m_returnMode = STAY;
+  RibbonTouchBehaviour m_touchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
+  RibbonReturnMode m_returnMode = RibbonReturnMode::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;
 };

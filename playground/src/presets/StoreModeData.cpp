@@ -1,18 +1,20 @@
 #include <Application.h>
 #include "StoreModeData.h"
-#include "PresetManager.h"
-#include "PresetBank.h"
+#include <presets/PresetManager.h>
+#include <presets/Bank.h>
+#include <algorithm>
 
 StoreModeData::StoreModeData()
 {
   if(auto pm = Application::get().getPresetManager())
   {
-
-    auto banks = pm->getBanks();
-    if(!banks.empty())
-      bankPos = static_cast<int>(std::find(banks.begin(), banks.end(), pm->getSelectedBank()) - banks.begin());
-
-    if(auto bank = pm->getBank(bankPos))
-      presetPos = static_cast<int>(bank->getPresetPosition(bank->getSelectedPreset()));
+    const auto &banks = pm->getBanks();
+    auto it = std::find(banks.begin(), banks.end(), pm->getSelectedBank());
+    if(it != banks.end())
+    {
+      auto &bank = *it;
+      bankPos = std::distance(banks.begin(), it);
+      presetPos = (*it)->getPresetPosition(bank->getSelectedPresetUuid());
+    }
   }
 }

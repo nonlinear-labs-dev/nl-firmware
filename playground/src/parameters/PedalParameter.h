@@ -12,21 +12,14 @@ class PedalParameter : public PhysicalControlParameter
  public:
   using super::super;
 
-  enum PedalModes
-  {
-    STAY = 0,
-    RETURN_TO_ZERO = 1,
-    RETURN_TO_CENTER = 2,
-    NUM_PEDAL_MODES
-  };
-
-  void undoableSetPedalMode(UNDO::Scope::tTransactionPtr transaction, PedalModes mode);
-  void undoableSetPedalMode(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &mode);
-  void undoableIncPedalMode(UNDO::Scope::tTransactionPtr transaction);
+  void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode);
+  void undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
+  void undoableIncPedalMode(UNDO::Transaction *transaction);
   PedalModes getPedalMode() const;
-  virtual ReturnMode getReturnMode() const override;
-  virtual void copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other) override;
-  virtual void loadDefault(UNDO::Scope::tTransactionPtr transaction) override;
+  ReturnMode getReturnMode() const override;
+  void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
+  void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
+  void loadDefault(UNDO::Transaction *transaction) override;
 
   shared_ptr<PedalType> getAssociatedPedalTypeSetting() const;
 
@@ -38,7 +31,7 @@ class PedalParameter : public PhysicalControlParameter
 
   virtual bool hasBehavior() const override;
   virtual Glib::ustring getCurrentBehavior() const override;
-  virtual void undoableStepBehavior(UNDO::Scope::tTransactionPtr transaction, int direction) override;
+  virtual void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
 
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
   virtual size_t getHash() const override;
@@ -50,6 +43,6 @@ class PedalParameter : public PhysicalControlParameter
   tControlPositionValue getDefValueAccordingToMode() const;
   void setRoutersModeAccordingToReturnMode();
 
-  PedalModes m_mode = STAY;
+  PedalModes m_mode = PedalModes::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;
 };

@@ -1,6 +1,6 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/Settings.h>
@@ -27,7 +27,7 @@ void BaseUnitPresetsMode::setup()
     {
       if(auto bank = Application::get().getPresetManager()->getSelectedBank())
       {
-        bank->undoableIncPresetSelection(-1, ButtonModifiers());
+        bank->selectPreviousPreset();
       }
     }
 
@@ -39,7 +39,7 @@ void BaseUnitPresetsMode::setup()
     {
       if(auto bank = Application::get().getPresetManager()->getSelectedBank())
       {
-        bank->undoableIncPresetSelection(1, ButtonModifiers());
+        bank->selectNextPreset();
       }
     }
     return true;

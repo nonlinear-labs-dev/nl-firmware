@@ -21,14 +21,12 @@ class DateTimeEditor : public ControlWithChildren, public SetupEditor
 
   enum Selection
   {
-    Year = 0,
-    Month = 1,
-    Day = 2,
+    Month = 0,
+    Day = 1,
+    Year = 2,
     Hour = 3,
     Minute = 4,
-    NumFields,
-    First = Year,
-    Last = Minute
+    NumFields
   };
 
   Selection m_selection = Selection::Hour;

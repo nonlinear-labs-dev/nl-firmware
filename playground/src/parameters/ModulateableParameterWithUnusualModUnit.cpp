@@ -10,8 +10,8 @@ ModulateableParameterWithUnusualModUnit::ModulateableParameterWithUnusualModUnit
 {
 }
 
-void ModulateableParameterWithUnusualModUnit::undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction,
-                                                                        int inc, ButtonModifiers modifiers)
+void ModulateableParameterWithUnusualModUnit::undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc,
+                                                                        ButtonModifiers modifiers)
 {
   double denominator
       = modifiers[ButtonModifier::FINE] ? getModulationAmountFineDenominator() : getModulationAmountCoarseDenominator();
@@ -26,7 +26,6 @@ void ModulateableParameterWithUnusualModUnit::writeDocProperties(
     Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   ModulateableParameter::writeDocProperties(writer, knownRevision);
-
   writer.writeTextElement("mod-amount-stringizer", m_modAmountScaling->controlPositionToDisplayJS());
 }
 

@@ -1,6 +1,7 @@
 #include "BankNumberLabel.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
+#include "presets/Bank.h"
 
 BankNumberLabel::BankNumberLabel(const Rect &pos)
     : super(pos)
@@ -15,7 +16,7 @@ BankNumberLabel::~BankNumberLabel()
 void BankNumberLabel::onBankSelectionChanged()
 {
   if(auto newBank = Application::get().getPresetManager()->getSelectedBank())
-    setText({ to_string(Application::get().getPresetManager()->calcOrderNumber(newBank.get())) });
+    setText({ to_string(Application::get().getPresetManager()->getBankPosition(newBank->getUuid()) + 1) });
   else
     setText("");
 }

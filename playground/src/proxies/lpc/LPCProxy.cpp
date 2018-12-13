@@ -268,6 +268,7 @@ void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
 void LPCProxy::sendEditBuffer()
 {
   DebugLevel::info("send preset to LPC");
+
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   tMessageComposerPtr cmp(new EditBufferMessageComposer());
@@ -278,15 +279,13 @@ void LPCProxy::sendEditBuffer()
     it.second->writeToLPC(*cmp);
 
   queueToLPC(cmp);
-
-  editBuffer->getSettings().sendToLPC();
   Application::get().getSettings()->sendToLPC();
 
   for(auto &it : sorted)
     it.second->onPresetSentToLpc();
 }
 
-void LPCProxy::toggleSuppressParameterChanges(UNDO::Scope::tTransactionPtr transaction)
+void LPCProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)
 {
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     m_suppressParamChanges = !m_suppressParamChanges;

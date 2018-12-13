@@ -21,6 +21,6 @@ void MasterGroup::init()
   appendParameter(new Parameter(this, 248, ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48, 4800));
 }
 
-void MasterGroup::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount)
+void MasterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
 }

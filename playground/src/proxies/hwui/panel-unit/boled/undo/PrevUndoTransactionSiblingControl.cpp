@@ -10,8 +10,7 @@ PrevUndoTransactionSiblingControl::~PrevUndoTransactionSiblingControl()
 {
 }
 
-void PrevUndoTransactionSiblingControl::assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected,
-                                                          bool current)
+void PrevUndoTransactionSiblingControl::assignTransaction(UNDO::Transaction *transaction, bool selected, bool current)
 {
   super::assignTransaction(transaction, selected, current);
 

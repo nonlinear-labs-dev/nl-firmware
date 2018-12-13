@@ -1,4 +1,5 @@
 #include <Application.h>
+#include <http/UndoScope.h>
 #include <device-settings/DebugLevel.h>
 #include <device-settings/Settings.h>
 #include <errno.h>
@@ -155,10 +156,9 @@ void FileOutStream::setKioskMode(bool kiosk)
     auto pm = app.getPresetManager();
     auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
 
-    pm->undoableClear();
     boled.setOverlay(new SplashLayout());
     app.getSettings()->reload();
-    pm->reload();
+    pm->init();
     boled.resetOverlay();
   }
 }

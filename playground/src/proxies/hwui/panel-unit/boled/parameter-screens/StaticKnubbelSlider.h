@@ -5,8 +5,6 @@
 class StaticKnubbelSlider : public DotSlider
 {
  public:
-  static const int c_handleWidth = 4;
-  StaticKnubbelSlider(Parameter* parameter, Rect pos);
-  void onParamValueChanged(const Parameter* param) override;
-  void setValueExplicit(tControlPositionValue value);
+  StaticKnubbelSlider(tControlPositionValue value, bool biPolar, Rect pos);
+  void setValueExplicit(tControlPositionValue value, bool biPolar);
 };

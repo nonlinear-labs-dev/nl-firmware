@@ -1,4 +1,5 @@
 #include "ParameterGroupSet.h"
+#include <presets/Preset.h>
 
 #include "../groups/GapFilterGroup.h"
 #include "parameters/Parameter.h"
@@ -28,7 +29,7 @@
 #include "xml/Writer.h"
 
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
-    : UpdateDocumentContributor(parent)
+    : super(parent)
 {
 }
 
@@ -70,12 +71,10 @@ void ParameterGroupSet::init()
 ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::getParameterGroupByID(const Glib::ustring &id) const
 {
   for(auto a : m_parameterGroups)
-  {
     if(a->getID() == id)
       return a;
-  }
 
-  return NULL;
+  return nullptr;
 }
 
 ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup(ParameterGroup *p)
@@ -87,20 +86,18 @@ ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup(Pa
   return wrapped;
 }
 
-void ParameterGroupSet::copyFrom(UNDO::Scope::tTransactionPtr transaction, ParameterGroupSet *other)
+void ParameterGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other)
 {
-  auto itThis = getParameterGroups().begin();
-  auto itOther = other->getParameterGroups().begin();
-  auto endThis = getParameterGroups().end();
-  auto endOther = other->getParameterGroups().end();
-
-  for(; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
+  for(auto &g : getParameterGroups())
   {
-    (*itThis)->copyFrom(transaction, *itOther);
+    if(auto c = other->findParameterGroup(g->getID()))
+    {
+      g->copyFrom(transaction, c);
+    }
   }
 }
 
-Parameter *ParameterGroupSet::findParameterByID(size_t id) const
+Parameter *ParameterGroupSet::findParameterByID(int id) const
 {
   try
   {
@@ -142,4 +139,12 @@ void ParameterGroupSet::writeDiff(Writer &writer, ParameterGroupSet *other) cons
       group->writeDiff(writer, otherGroup);
     }
   });
+}
+
+void ParameterGroupSet::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  super::writeDocument(writer, knownRevision);
+
+  for(const tParameterGroupPtr p : getParameterGroups())
+    p->writeDocument(writer, knownRevision);
 }

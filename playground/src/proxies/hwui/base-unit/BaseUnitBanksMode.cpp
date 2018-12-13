@@ -21,7 +21,7 @@ void BaseUnitBanksMode::setup()
   setupButtonConnection(BUTTON_MINUS, [=](gint32 button, ButtonModifiers modifiers, bool state) {
     if(state)
     {
-      Application::get().getPresetManager()->undoableSelectPrevious();
+      Application::get().getPresetManager()->selectPreviousBank();
     }
     return true;
   });
@@ -29,7 +29,7 @@ void BaseUnitBanksMode::setup()
   setupButtonConnection(BUTTON_PLUS, [=](gint32 button, ButtonModifiers modifiers, bool state) {
     if(state)
     {
-      Application::get().getPresetManager()->undoableSelectNext();
+      Application::get().getPresetManager()->selectNextBank();
     }
     return true;
   });

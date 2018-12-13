@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Serializer.h"
+#include <serialization/Serializer.h>
 
 class PresetManager;
 
 class PresetBankOrderSerializer : public Serializer
 {
  public:
-  PresetBankOrderSerializer(PresetManager &pm);
+  PresetBankOrderSerializer(PresetManager *pm);
 
   static Glib::ustring getTagName();
   void finalize(Reader &reader);
@@ -16,5 +16,5 @@ class PresetBankOrderSerializer : public Serializer
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  PresetManager &m_pm;
+  PresetManager *m_pm = nullptr;
 };

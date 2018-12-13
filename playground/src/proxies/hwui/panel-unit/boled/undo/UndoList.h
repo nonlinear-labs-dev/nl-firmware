@@ -12,6 +12,6 @@ class UndoList : public ControlWithChildren
   UndoList(const Rect &pos);
   virtual ~UndoList();
 
-  void assignTransactions(shared_ptr<UNDO::Transaction> tip);
+  void assignTransactions(UNDO::Transaction *tip);
   bool redraw(FrameBuffer &fb) override;
 };

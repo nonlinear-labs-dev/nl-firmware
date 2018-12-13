@@ -12,6 +12,6 @@ class UndoEntryLabel : public Label, public UndoTransactionClient
   UndoEntryLabel(const Rect &pos);
   virtual ~UndoEntryLabel();
 
-  virtual void assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected, bool current) override;
+  virtual void assignTransaction(UNDO::Transaction *transaction, bool selected, bool current) override;
   virtual void setBackgroundColor(FrameBuffer &fb) const override;
 };

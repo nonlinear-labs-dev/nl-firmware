@@ -49,7 +49,7 @@ void LowerRibbon::onParamValueChanged(const Parameter *param)
   auto ribbonParameter = dynamic_cast<const RibbonParameter *>(param);
   auto ribbonMode = ribbonParameter->getRibbonReturnMode();
 
-  bool bipol = ribbonMode == RibbonParameter::RETURN;
+  bool bipol = ribbonMode == RibbonReturnMode::RETURN;
 
   auto paramVal = param->getControlPositionValue();
 

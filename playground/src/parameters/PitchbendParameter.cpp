@@ -2,7 +2,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/PlayControlParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-PhysicalControlParameter::ReturnMode PitchbendParameter::getReturnMode() const
+ReturnMode PitchbendParameter::getReturnMode() const
 {
   return ReturnMode::Center;
 }

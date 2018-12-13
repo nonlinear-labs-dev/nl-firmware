@@ -3,6 +3,7 @@
 #include "playground.h"
 #include "InStream.h"
 #include "libundo/undo/Scope.h"
+#include <libundo/undo/Transaction.h>
 
 class Attributes;
 class Serializer;
@@ -10,7 +11,7 @@ class Serializer;
 class Reader
 {
  public:
-  Reader(InStream &in, UNDO::Scope::tTransactionPtr transaction);
+  Reader(InStream &in, UNDO::Transaction *transaction);
   virtual ~Reader();
 
   typedef function<void(const ustring &text, const Attributes &attr)> tTextElementCB;
@@ -27,7 +28,9 @@ class Reader
   void preProcess();
 
   void loadTextElement(size_t nameHash, ustring &target);
+  void loadTextElement(size_t nameHash, std::string &target);
   void loadTextElement(const ustring &name, ustring &target);
+  void loadTextElement(const ustring &name, std::string &target);
 
   template <typename T> void loadElement(const ustring &name, T &target)
   {
@@ -47,7 +50,7 @@ class Reader
     });
   }
 
-  UNDO::Scope::tTransactionPtr getTransaction();
+  UNDO::Transaction *getTransaction();
 
   enum FileVersionCheckResult
   {
@@ -82,7 +85,7 @@ class Reader
   virtual void feed() = 0;
 
   InStream &m_in;
-  UNDO::Scope::tTransactionPtr m_transaction;
+  UNDO::Transaction *m_transaction;
 
   typedef map<size_t, tTextElementCB> tTextElementCallbacks;
   typedef map<size_t, tTagElementCB> tTagElementCallbacks;

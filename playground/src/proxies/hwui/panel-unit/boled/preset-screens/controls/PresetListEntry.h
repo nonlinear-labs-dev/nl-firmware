@@ -22,7 +22,7 @@ class PresetListEntry : public ControlWithChildren
   PresetListEntry(const Rect &pos);
   virtual ~PresetListEntry();
 
-  void setPreset(std::shared_ptr<Preset> preset, bool selected);
+  void setPreset(Preset *preset, bool selected);
   bool redraw(FrameBuffer &fb) override;
   void animate(tCallback cb);
 
@@ -41,5 +41,5 @@ class PresetListEntry : public ControlWithChildren
   connection m_presetConnection;
 
   bool m_selected = false;
-  shared_ptr<Preset> m_preset;
+  Preset *m_preset;
 };

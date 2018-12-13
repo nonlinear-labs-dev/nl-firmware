@@ -1,11 +1,8 @@
 #pragma once
 
-#include <presets/PresetBank.h>
 #include <proxies/hwui/panel-unit/boled/InfoContent.h>
 
-class MultiLineLabel;
-class Label;
-class PresetBank;
+class Preset;
 
 class PresetInfoContent : public InfoContent
 {

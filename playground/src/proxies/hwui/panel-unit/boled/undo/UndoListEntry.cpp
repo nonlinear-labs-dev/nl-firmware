@@ -42,7 +42,7 @@ bool UndoListEntry::redraw(FrameBuffer &fb)
   return true;
 }
 
-void UndoListEntry::assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected, bool current)
+void UndoListEntry::assignTransaction(UNDO::Transaction *transaction, bool selected, bool current)
 {
   forEach([&](shared_ptr<Control> ptr) {
     if(auto p = dynamic_pointer_cast<UndoTransactionClient>(ptr))

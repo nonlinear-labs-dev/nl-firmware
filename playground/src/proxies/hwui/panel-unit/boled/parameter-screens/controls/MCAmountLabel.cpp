@@ -32,7 +32,7 @@ void MCAmountLabel::update(const Parameter *parameter)
 {
   if(const ModulateableParameter *mp = dynamic_cast<const ModulateableParameter *>(parameter))
   {
-    if(mp->getModulationSource() != ModulateableParameter::NONE)
+    if(mp->getModulationSource() != ModulationSource::NONE)
     {
       auto amount = mp->stringizeModulationAmount();
 

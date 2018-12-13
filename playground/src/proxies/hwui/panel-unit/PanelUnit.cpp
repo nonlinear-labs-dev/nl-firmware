@@ -54,7 +54,7 @@ PanelUnit::PanelUnit()
       if(modParam->getModulationSource() == mc)
       {
         auto scope = Application::get().getUndoScope()->startTransaction("Remove Modulation Source");
-        modParam->undoableSelectModSource(scope->getTransaction(), ModulateableParameter::NONE);
+        modParam->undoableSelectModSource(scope->getTransaction(), ModulationSource::NONE);
       }
       else
       {

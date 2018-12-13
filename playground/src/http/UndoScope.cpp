@@ -2,7 +2,7 @@
 #include "xml/Writer.h"
 #include <presets/EditBufferSnapshotMaker.h>
 
-void UndoScope::onAddTransaction(UNDO::Scope::tTransactionPtr transaction)
+void UndoScope::onAddTransaction(UNDO::Transaction* transaction)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
   UNDO::Scope::onAddTransaction(transaction);

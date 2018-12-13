@@ -1,12 +1,6 @@
 #pragma once
 
 #include <proxies/hwui/controls/Label.h>
-#include <presets/PresetManager.h>
-
-class FrameBuffer;
-class Application;
-class Parameter;
-class PresetBank;
 
 class PresetInfoCaption : public Label
 {
@@ -15,7 +9,7 @@ class PresetInfoCaption : public Label
 
  public:
   PresetInfoCaption(const Rect &pos);
-  virtual ~PresetInfoCaption();
+  ~PresetInfoCaption() override;
 
   bool redraw(FrameBuffer &fb) override;
 

@@ -34,19 +34,11 @@ bool CurrentModulatedValueLabel::onRotary(int inc, ButtonModifiers modifiers)
   return false;
 }
 
-bool CurrentModulatedValueLabel::onButton(int i, bool down, ButtonModifiers modifires)
+void CurrentModulatedValueLabel::setDefault()
 {
-  switch(i)
+  if(auto param = getModulatedParameter())
   {
-    case BUTTON_DEFAULT:
-      if(down)
-      {
-        if(auto p = getModulatedParameter())
-          p->setDefaultFromHwui();
-
-        return true;
-      }
-      break;
+    auto scope = param->getUndoScope().startTransaction("Set Default '%0'", param->getGroupAndParameterName());
+    param->setCPFromHwui(scope->getTransaction(), param->getDefaultValue());
   }
-  return false;
 }

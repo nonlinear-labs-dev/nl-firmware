@@ -4,9 +4,6 @@
 #include <presets/PresetManager.h>
 
 class FrameBuffer;
-class Application;
-class Parameter;
-class PresetBank;
 
 class BankInfoCaption : public Label
 {

@@ -1,11 +1,7 @@
-#include <serialization/AttributesOwnerSerializer.h>
-#include "xml/Attributes.h"
-#include "presets/Preset.h"
-#include "ParameterGroupsSerializer.h"
+#include "AttributesOwnerSerializer.h"
 #include "PresetSerializer.h"
-#include "PresetSettingsSerializer.h"
-#include "xml/Writer.h"
-#include "xml/Reader.h"
+#include "PresetParameterGroupsSerializer.h"
+#include <presets/Preset.h>
 
 PresetSerializer::PresetSerializer(Preset *preset, bool ignoreUUIDs)
     : Serializer(getTagName())
@@ -26,37 +22,29 @@ Glib::ustring PresetSerializer::getTagName()
 void PresetSerializer::writeTagContent(Writer &writer) const
 {
   writer.writeTextElement("name", m_preset->getName());
-  writer.writeTextElement("uuid", m_preset->getUuid());
+  writer.writeTextElement("uuid", m_preset->getUuid().raw());
 
   AttributesOwnerSerializer attributesWriter(m_preset);
   attributesWriter.write(writer);
 
-  PresetSettingsSerializer settingsWriter(m_preset);
-  settingsWriter.write(writer);
-
-  ParameterGroupsSerializer groups(m_preset);
+  PresetParameterGroupsSerializer groups(m_preset);
   groups.write(writer);
 }
 
 void PresetSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("name", [&](const Glib::ustring &text, const Attributes &attr) {
-    m_preset->undoableSetName(reader.getTransaction(), text);
-  });
+  reader.onTextElement("name", [&](auto &text, auto) { m_preset->setName(reader.getTransaction(), text); });
 
   if(!m_ignoreUUIDs)
   {
     reader.onTextElement("uuid", [&](const Glib::ustring &text, const Attributes &attr) {
-      m_preset->undoableSetUuid(reader.getTransaction(), text);
+      m_preset->setUuid(reader.getTransaction(), text);
     });
   }
 
   reader.onTag(AttributesOwnerSerializer::getTagName(),
                [&](const Attributes &attr) mutable { return new AttributesOwnerSerializer(m_preset); });
 
-  reader.onTag(PresetSettingsSerializer::getTagName(),
-               [&](const Attributes &attr) mutable { return new PresetSettingsSerializer(m_preset); });
-
-  reader.onTag(ParameterGroupsSerializer::getTagName(),
-               [&](const Attributes &attr) mutable { return new ParameterGroupsSerializer(m_preset); });
+  reader.onTag(PresetParameterGroupsSerializer::getTagName(),
+               [&](const Attributes &attr) mutable { return new PresetParameterGroupsSerializer(m_preset); });
 }

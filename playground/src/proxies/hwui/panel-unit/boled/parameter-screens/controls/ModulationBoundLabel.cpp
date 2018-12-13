@@ -1,12 +1,12 @@
 #include <Application.h>
 #include <groups/MacroControlsGroup.h>
+#include <tools/StringTools.h>
 #include <parameters/MacroControlParameter.h>
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationBoundLabel.h>
-#include <tools/StringTools.h>
 
 ModulationBoundLabel::ModulationBoundLabel(const Rect &r)
     : super(r)

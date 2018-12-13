@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
 #include <presets/EditBuffer.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <iomanip>
 #include <locale>
 #include <sstream>
@@ -13,7 +13,7 @@ BankAndPresetNumberLabel::BankAndPresetNumberLabel(const Rect &pos)
   auto pm = Application::get().getPresetManager();
   auto eb = pm->getEditBuffer();
   pm->onNumBanksChanged(sigc::hide<0>(mem_fun(this, &BankAndPresetNumberLabel::onEditBufferChanged)));
-  eb->onPresetChanged(sigc::mem_fun(this, &BankAndPresetNumberLabel::onEditBufferChanged));
+  eb->onChange(sigc::mem_fun(this, &BankAndPresetNumberLabel::onEditBufferChanged));
   eb->onModificationStateChanged(sigc::hide<0>(mem_fun(this, &BankAndPresetNumberLabel::onEditBufferChanged)));
 }
 
@@ -25,11 +25,11 @@ void BankAndPresetNumberLabel::onEditBufferChanged()
 bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
 {
   auto pm = Application::get().getPresetManager();
-  Glib::ustring uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
+  auto uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
 
   if(auto bank = pm->findBankWithPreset(uuid))
   {
-    auto bankPos = pm->calcOrderNumber(bank.get());
+    auto bankPos = pm->getBankPosition(bank->getUuid()) + 1;
     auto presetPos = bank->getPresetPosition(uuid) + 1;
     ostringstream presetPosStr;
     presetPosStr.width(3);

@@ -1,6 +1,6 @@
 #include <Application.h>
 #include <presets/Preset.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
@@ -68,7 +68,7 @@ void PresetInfoContent::onPresetSelectionChanged()
 void PresetInfoContent::connectToPreset(Preset *preset)
 {
   m_presetConnection.disconnect();
-  m_presetConnection = preset->onPresetChanged(mem_fun(this, &PresetInfoContent::onPresetChanged));
+  m_presetConnection = preset->onChanged(mem_fun(this, &PresetInfoContent::onPresetChanged));
 }
 
 void PresetInfoContent::onPresetChanged()
@@ -85,7 +85,7 @@ void PresetInfoContent::onPresetChanged()
 Preset *PresetInfoContent::getCurrentPreset()
 {
   if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-    return bank->getPreset(bank->getSelectedPreset()).get();
+    return bank->getSelectedPreset();
 
   return nullptr;
 }

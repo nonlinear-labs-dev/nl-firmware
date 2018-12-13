@@ -29,7 +29,7 @@ void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPos
   {
     if(auto p = dynamic_cast<RibbonParameter *>(getSourceParameter()))
     {
-      if(p->getRibbonReturnMode() == RibbonParameter::STAY)
+      if(p->getRibbonReturnMode() == RibbonReturnMode::STAY)
       {
         MacroControlMappingGroup *parent = dynamic_cast<MacroControlMappingGroup *>(getParentGroup());
         auto otherRouters = parent->getModulationRoutingParametersFor(getSourceParameter());
@@ -95,7 +95,7 @@ bool ModulationRoutingParameter::routes(const PhysicalControlParameter *p) const
 
 Glib::ustring ModulationRoutingParameter::getDisplayString() const
 {
-  if(getSourceParameter()->getReturnMode() == PhysicalControlParameter::ReturnMode::None)
+  if(getSourceParameter()->getReturnMode() == ReturnMode::None)
   {
     if(getValue().getDisplayValue() != 0.0)
     {
@@ -112,7 +112,7 @@ Glib::ustring ModulationRoutingParameter::getDisplayString() const
 
 tControlPositionValue ModulationRoutingParameter::getControlPositionValue() const
 {
-  if(getSourceParameter()->getReturnMode() == PhysicalControlParameter::ReturnMode::None)
+  if(getSourceParameter()->getReturnMode() == ReturnMode::None)
   {
     if(getValue().getDisplayValue() != 0.0)
     {
@@ -145,7 +145,6 @@ DFBLayout *ModulationRoutingParameter::createLayout(FocusAndMode focusAndMode) c
   g_return_val_if_reached(nullptr);
 }
 
-void ModulationRoutingParameter::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator,
-                                                   double amount)
+void ModulationRoutingParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
 }

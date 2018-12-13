@@ -14,9 +14,9 @@ class EditPresetInfoLayout : public RenameLayout
   EditPresetInfoLayout();
 
  protected:
-  virtual void commit(const Glib::ustring &newName) override;
+  virtual void commit(const Glib::ustring& newName) override;
   virtual Glib::ustring getInitialText() const override;
 
  protected:
-  shared_ptr<Preset> m_currentPreset;
+  Preset* m_currentPreset;
 };

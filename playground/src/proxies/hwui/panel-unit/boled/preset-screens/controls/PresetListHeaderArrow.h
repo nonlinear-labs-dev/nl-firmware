@@ -2,9 +2,6 @@
 
 #include "proxies/hwui/controls/Label.h"
 
-class Application;
-class PresetBank;
-
 class PresetListHeaderArrow : public Label
 {
  private:
@@ -12,7 +9,7 @@ class PresetListHeaderArrow : public Label
 
  public:
   PresetListHeaderArrow(const Glib::ustring &text, const Rect &pos);
-  virtual ~PresetListHeaderArrow();
+  ~PresetListHeaderArrow() override;
 
   bool redraw(FrameBuffer &fb) override;
 

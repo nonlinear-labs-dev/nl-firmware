@@ -16,19 +16,12 @@ class PhysicalControlParameter : public Parameter
   virtual void onChangeFromLpc(tControlPositionValue newValue);
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
-  virtual void loadFromPreset(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value) override;
+  virtual void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
-  virtual void setCPFromHwui(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue) override;
-  virtual void setCPFromWebUI(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue) override;
+  virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
+  virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
 
   virtual Glib::ustring getDisplayString() const override;
-
-  enum class ReturnMode
-  {
-    None,
-    Center,
-    Zero
-  };
 
   virtual ReturnMode getReturnMode() const = 0;
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
@@ -42,9 +35,9 @@ class PhysicalControlParameter : public Parameter
 
   virtual bool hasBehavior() const;
   virtual Glib::ustring getCurrentBehavior() const;
-  virtual void undoableStepBehavior(UNDO::Scope::tTransactionPtr transaction, int direction);
+  virtual void undoableStepBehavior(UNDO::Transaction *transaction, int direction);
 
-  virtual void undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount) override;
+  virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
 
   virtual size_t getHash() const override;
 

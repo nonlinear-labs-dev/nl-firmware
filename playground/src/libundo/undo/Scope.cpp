@@ -15,8 +15,7 @@ namespace UNDO
       : ContentSection(parent)
       , m_undoActions(*this)
   {
-    tTransactionScopePtr rootScope = startTransaction("Root");
-    m_root = rootScope->getTransaction();
+    reset();
   }
 
   Scope::~Scope()
@@ -24,17 +23,17 @@ namespace UNDO
     DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }
 
-  const Scope::tTransactionPtr Scope::getRootTransaction() const
+  Transaction *Scope::getRootTransaction() const
   {
-    return m_root;
+    return m_root.get();
   }
 
-  const Scope::tTransactionPtr Scope::getUndoTransaction() const
+  Transaction *Scope::getUndoTransaction() const
   {
     return m_undoPosition;
   }
 
-  const Scope::tTransactionPtr Scope::getRedoTransaction() const
+  Transaction *Scope::getRedoTransaction() const
   {
     return m_redoPosition;
   }
@@ -47,37 +46,40 @@ namespace UNDO
   void Scope::reset()
   {
     m_root.reset();
-    m_undoPosition.reset();
-    m_redoPosition.reset();
-
-    tTransactionScopePtr rootScope = startTransaction("Big Bang");
-    m_root = rootScope->getTransaction();
+    m_undoPosition = nullptr;
+    m_redoPosition = nullptr;
+    m_root = std::make_unique<Transaction>(*this, "Root", 0);
+    m_root->close();
+    m_undoPosition = m_root.get();
   }
 
-  void Scope::rebase(Scope::tTransactionPtr newRoot)
+  void Scope::rebase(Transaction *newRoot)
   {
-    m_root = newRoot;
+#warning "Test me"
+    if(auto parent = newRoot->getPredecessor())
+    {
+      m_root = parent->exhaust(newRoot);
 
-    if(m_undoPosition == m_root->getPredecessor())
-      m_undoPosition.reset();
+      if(m_undoPosition == parent)
+        m_undoPosition = nullptr;
 
-    m_root->setPredecessor(nullptr);
-    onChange();
+      onChange();
+    }
   }
 
   Scope::tTransactionScopePtr Scope::startTransaction(const Glib::ustring &name)
   {
     assert(m_undoPosition == NULL || m_undoPosition->isClosed());
 
-    std::shared_ptr<Transaction> transaction(new Transaction(*this, name, getDepth()));
-    addTransaction(transaction);
-    return Scope::tTransactionScopePtr(new TransactionCreationScope(transaction));
+    auto transaction = std::make_unique<Transaction>(*this, name, getDepth());
+    auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
+    addTransaction(std::move(transaction));
+    return ret;
   }
 
   Scope::tTransactionScopePtr Scope::startTrashTransaction()
   {
-    std::shared_ptr<Transaction> transaction(new TrashTransaction());
-    return Scope::tTransactionScopePtr(new TransactionCreationScope(transaction));
+    return std::make_unique<TransactionCreationScope>(new TrashTransaction(), true);
   }
 
   Scope::tTransactionScopePtr Scope::startCuckooTransaction()
@@ -87,11 +89,11 @@ namespace UNDO
     if(m_cuckooTransaction)
     {
       m_cuckooTransaction->reopen();
-      return Scope::tTransactionScopePtr(new TransactionCreationScope(m_cuckooTransaction));
+      return std::make_unique<TransactionCreationScope>(m_cuckooTransaction.get());
     }
 
     m_cuckooTransaction.reset(new Transaction(*this, "Cuckoo", getDepth()));
-    return Scope::tTransactionScopePtr(new TransactionCreationScope(m_cuckooTransaction));
+    return std::make_unique<TransactionCreationScope>(m_cuckooTransaction.get());
   }
 
   void Scope::resetCukooTransaction()
@@ -104,20 +106,21 @@ namespace UNDO
   {
     assert(m_undoPosition == NULL || m_undoPosition->isClosed());
 
-    std::shared_ptr<ContinuousTransaction> transaction(new ContinuousTransaction(*this, id, name, getDepth()));
+    auto transaction = std::make_unique<ContinuousTransaction>(*this, id, name, getDepth());
 
     if(!canRedo())
     {
-      if(shared_ptr<ContinuousTransaction> last = dynamic_pointer_cast<ContinuousTransaction>(getUndoTransaction()))
+      if(auto last = dynamic_cast<ContinuousTransaction *>(getUndoTransaction()))
       {
         if(last->getID() == id && last->getAge() <= timeout)
         {
-          last->setClosingCommand(transaction);
-          return Scope::tTransactionScopePtr(new TransactionCreationScope(transaction));
+          auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
+          last->setClosingCommand(std::move(transaction));
+          return ret;
         }
       }
     }
-    else if(shared_ptr<ContinuousTransaction> redo = dynamic_pointer_cast<ContinuousTransaction>(getRedoTransaction()))
+    else if(auto redo = dynamic_cast<ContinuousTransaction *>(getRedoTransaction()))
     {
       if(redo->getNumSuccessors() == 0)
       {
@@ -128,32 +131,30 @@ namespace UNDO
       }
     }
 
-    addTransaction(transaction);
-    return Scope::tTransactionScopePtr(new TransactionCreationScope(transaction));
+    auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
+    addTransaction(std::move(transaction));
+    return ret;
   }
 
   void Scope::addTransaction(tTransactionPtr successor)
   {
     DebugLevel::info("UNDO::Scope::addTransaction");
+    auto raw = successor.get();
 
     if(m_undoPosition)
-      m_undoPosition->addSuccessor(successor);
+      m_undoPosition->addSuccessor(std::move(successor));
+    else
+      throw std::runtime_error("unexpected");
 
-    successor->setPredecessor(m_undoPosition);
-
-    m_undoPosition = successor;
-    m_redoPosition = NULL;
+    raw->setPredecessor(m_undoPosition);
+    m_undoPosition = raw;
+    m_redoPosition = nullptr;
 
     if(m_cuckooTransaction)
-    {
-      successor->addCommand(m_cuckooTransaction);
-      m_cuckooTransaction.reset();
-    }
+      raw->addCommand(std::move(m_cuckooTransaction));
 
-    onAddTransaction(successor);
-
+    onAddTransaction(raw);
     m_undoPosition->doAction();
-
     onTransactionAdded();
   }
 
@@ -161,7 +162,7 @@ namespace UNDO
   {
   }
 
-  void Scope::onAddTransaction(tTransactionPtr transaction)
+  void Scope::onAddTransaction(Transaction *transaction)
   {
   }
 
@@ -182,7 +183,7 @@ namespace UNDO
 
     for(size_t i = 0; i < numWays; ++i)
     {
-      if(m_undoPosition->getSuccessor(i).get() == transaction)
+      if(m_undoPosition->getSuccessor(i) == transaction)
       {
         m_undoPosition = m_undoPosition->getSuccessor(i);
         m_redoPosition = m_undoPosition->getDefaultRedoRoute();
@@ -193,12 +194,12 @@ namespace UNDO
 
   bool Scope::canUndo() const
   {
-    return m_undoPosition != m_root;
+    return m_undoPosition != m_root.get();
   }
 
   bool Scope::canRedo() const
   {
-    return m_redoPosition != NULL;
+    return m_redoPosition != nullptr;
   }
 
   void Scope::undo()
@@ -210,10 +211,8 @@ namespace UNDO
         if(m_cuckooTransaction)
         {
           undo->reopen();
-          undo->addCommand(m_cuckooTransaction);
+          undo->addCommand(std::move(m_cuckooTransaction));
           undo->close();
-
-          m_cuckooTransaction.reset();
         }
         undo->undoAction();
         onChange();
@@ -228,7 +227,7 @@ namespace UNDO
       auto oldUndo = m_undoPosition;
       undo();
       eraseBranch(oldUndo);
-      m_redoPosition.reset();
+      m_redoPosition = nullptr;
     }
   }
 
@@ -244,7 +243,7 @@ namespace UNDO
       }
       else
       {
-        UNDO::Scope::tTransactionPtr predecessor = redo->getPredecessor();
+        UNDO::Transaction *predecessor = redo->getPredecessor();
 
         if(predecessor->getNumSuccessors() > (size_t) way)
         {
@@ -258,13 +257,13 @@ namespace UNDO
 
   void Scope::undoJump(const Glib::ustring &target)
   {
-    if(tTransactionPtr foundTransaction = Algorithm::find(getRootTransaction(), target))
+    if(auto foundTransaction = Algorithm::find(getRootTransaction(), target))
     {
       undoJump(foundTransaction);
     }
   }
 
-  void Scope::undoJump(shared_ptr<Transaction> target)
+  void Scope::undoJump(Transaction *target)
   {
     Algorithm::traverse(getUndoTransaction(), target);
     onChange();
@@ -278,14 +277,14 @@ namespace UNDO
     }
   }
 
-  void Scope::eraseBranch(shared_ptr<Transaction> branch)
+  void Scope::eraseBranch(Transaction *branch)
   {
     if(auto parent = branch->getPredecessor())
     {
       parent->eraseSuccessor(branch);
 
       if(m_redoPosition == branch)
-        m_redoPosition.reset();
+        m_redoPosition = nullptr;
     }
   }
 
@@ -305,11 +304,11 @@ namespace UNDO
     {
       writer.writeTag("undo", [&]() {
         if(getUndoTransaction() && canUndo())
-          writer.writeTextElement("undo", StringTools::buildString(getUndoTransaction().get()));
+          writer.writeTextElement("undo", StringTools::buildString(getUndoTransaction()));
         else
           writer.writeTextElement("undo", "0");
 
-        writer.writeTextElement("redo", StringTools::buildString(getRedoTransaction().get()));
+        writer.writeTextElement("redo", StringTools::buildString(getRedoTransaction()));
 
         getRootTransaction()->recurse([&](const Transaction *p) mutable { p->writeDocument(writer, knownRevision); });
       });

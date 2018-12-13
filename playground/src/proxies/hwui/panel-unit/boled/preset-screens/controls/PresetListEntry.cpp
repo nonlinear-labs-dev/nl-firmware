@@ -1,7 +1,8 @@
 #include <Application.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
+#include <presets/Preset.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListEntry.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNameLabel.h>
@@ -24,11 +25,12 @@ PresetListEntry::PresetListEntry(const Rect &pos)
 
 PresetListEntry::~PresetListEntry()
 {
+  doAnimationCallback();
   m_animationConnection.disconnect();
   m_presetConnection.disconnect();
 }
 
-void PresetListEntry::setPreset(std::shared_ptr<Preset> preset, bool selected)
+void PresetListEntry::setPreset(Preset *preset, bool selected)
 {
   m_presetConnection.disconnect();
 
@@ -37,7 +39,7 @@ void PresetListEntry::setPreset(std::shared_ptr<Preset> preset, bool selected)
 
   if(m_preset)
   {
-    m_presetConnection = m_preset->onPresetChanged(mem_fun(this, &PresetListEntry::onPresetChanged));
+    m_presetConnection = m_preset->onChanged(mem_fun(this, &PresetListEntry::onPresetChanged));
   }
   else
   {
@@ -51,7 +53,7 @@ void PresetListEntry::onPresetChanged()
   {
     bool isLoaded
         = m_preset->getUuid() == Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset();
-    auto bank = m_preset->getBank();
+    auto bank = dynamic_cast<Bank *>(m_preset->getParent());
     auto num = bank->getPresetPosition(m_preset->getUuid());
     m_number->update(num, m_selected, isLoaded);
     m_name->update(m_preset->getName(), m_selected, isLoaded);

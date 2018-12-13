@@ -25,15 +25,18 @@
 #include <io/network/WebSocketSession.h>
 
 HWUI::HWUI()
-    : m_blinkCount(0)
+    : m_readersCancel(Gio::Cancellable::create())
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
-    , m_readersCancel(Gio::Cancellable::create())
+    , m_blinkCount(0)
 {
   m_buttonStates.fill(false);
 
 #ifdef _DEVELOPMENT_PC
-  m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
-  m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
+  if(isatty(fileno(stdin)))
+  {
+    m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
+    m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
+  }
 #endif
 
   Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Buttons,
@@ -157,14 +160,6 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         onButtonPressed(BUTTON_REDO, true);
         onButtonPressed(BUTTON_UNDO, false);
         onButtonPressed(BUTTON_REDO, false);
-      }
-      else if(line == "stress-undo")
-      {
-        Application::get().getPresetManager()->stress(1000);
-      }
-      else if(line == "stress-pm")
-      {
-        Application::get().getPresetManager()->stressLoad(1000);
       }
       else if(line.at(0) == '!')
       {
@@ -444,7 +439,7 @@ bool HWUI::onBlinkTimeout()
   return true;
 }
 
-void HWUI::undoableSetFocusAndMode(UNDO::Scope::tTransactionPtr transaction, FocusAndMode focusAndMode)
+void HWUI::undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode focusAndMode)
 {
   if(Application::get().getPresetManager()->isLoading())
     return;

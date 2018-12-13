@@ -11,5 +11,4 @@ class SingleSoundEditMenu : public ButtonMenu
 
  public:
   SingleSoundEditMenu(const Rect &rect);
-  virtual ~SingleSoundEditMenu();
 };

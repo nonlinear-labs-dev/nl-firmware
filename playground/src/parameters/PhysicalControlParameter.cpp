@@ -31,8 +31,7 @@ void PhysicalControlParameter::onChangeFromLpc(tControlPositionValue newVal)
   getValue().setRawValue(Initiator::EXPLICIT_LPC, getValue().clip(newVal));
 }
 
-void PhysicalControlParameter::setCPFromHwui(UNDO::Scope::tTransactionPtr transaction,
-                                             const tControlPositionValue &cpValue)
+void PhysicalControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   m_changingFromHWUI = true;
   Parameter::setCPFromHwui(transaction, cpValue);
@@ -40,8 +39,7 @@ void PhysicalControlParameter::setCPFromHwui(UNDO::Scope::tTransactionPtr transa
   m_lastChangedFromHWUI = true;
 }
 
-void PhysicalControlParameter::setCPFromWebUI(UNDO::Scope::tTransactionPtr transaction,
-                                              const tControlPositionValue &cpValue)
+void PhysicalControlParameter::setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   Parameter::setCPFromWebUI(transaction, cpValue);
 }
@@ -79,8 +77,7 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
   return Parameter::getDisplayString();
 }
 
-void PhysicalControlParameter::loadFromPreset(UNDO::Scope::tTransactionPtr transaction,
-                                              const tControlPositionValue &value)
+void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
 }
 
@@ -218,12 +215,11 @@ Glib::ustring PhysicalControlParameter::getCurrentBehavior() const
   throw bad_function_call();
 }
 
-void PhysicalControlParameter::undoableStepBehavior(UNDO::Scope::tTransactionPtr transaction, int direction)
+void PhysicalControlParameter::undoableStepBehavior(UNDO::Transaction *transaction, int direction)
 {
   throw bad_function_call();
 }
 
-void PhysicalControlParameter::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator,
-                                                 double amount)
+void PhysicalControlParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
 }

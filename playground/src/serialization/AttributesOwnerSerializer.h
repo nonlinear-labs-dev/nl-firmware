@@ -1,7 +1,8 @@
 #pragma once
 
-#include "presets/AttributesOwner.h"
-#include "Serializer.h"
+#include <serialization/Serializer.h>
+
+class AttributesOwner;
 
 class AttributesOwnerSerializer : public Serializer
 {

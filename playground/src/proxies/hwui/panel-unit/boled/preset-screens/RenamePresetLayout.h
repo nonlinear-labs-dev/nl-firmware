@@ -21,7 +21,7 @@ class RenamePresetLayout : public RenameLayout
   virtual Glib::ustring getInitialText() const override;
 
  private:
-  shared_ptr<Preset> m_currentPreset;
+  Preset *m_currentPreset;
   tCommitCB m_commitCB;
   tCancelCB m_cancelCB;
 };

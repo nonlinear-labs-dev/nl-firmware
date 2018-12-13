@@ -30,9 +30,9 @@ Font::~Font()
   FT_Done_Face(m_face);
 }
 
-int Font::getStringWidth(const Glib::ustring &text) const
+uint32_t Font::getStringWidth(const Glib::ustring &text) const
 {
-  int x = 0;
+  uint32_t x = 0;
 
   for(auto c : text)
     if(check(FT_Load_Char(m_face, c, FT_LOAD_NO_BITMAP), __LINE__, c))

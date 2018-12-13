@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ParameterLayout.h"
-#include <proxies/hwui/controls/ControlWithChildren.h>
 
 class ModulateableParameterLayout2 : public virtual ParameterLayout2
 {
@@ -9,8 +8,10 @@ class ModulateableParameterLayout2 : public virtual ParameterLayout2
   typedef ParameterLayout2 super;
   ModulateableParameterLayout2();
 
-  void addModAmountSliders(ControlOwner *o);
   virtual bool switchToNormalMode();
+
+ protected:
+  void addModAmountSliders(ControlOwner *o);
 };
 
 class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public ModulateableParameterLayout2

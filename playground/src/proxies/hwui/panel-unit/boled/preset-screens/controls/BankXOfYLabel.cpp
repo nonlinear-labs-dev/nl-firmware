@@ -1,6 +1,7 @@
 #include "BankXOfYLabel.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
+#include "presets/Bank.h"
 
 BankXOfYLabel::BankXOfYLabel(const Rect &pos)
     : super(pos)
@@ -16,7 +17,8 @@ void BankXOfYLabel::onBankSelectionChanged()
 {
   if(auto newBank = Application::get().getPresetManager()->getSelectedBank())
   {
-    auto bankNumber = to_string(Application::get().getPresetManager()->calcOrderNumber(newBank.get()));
+    auto pos = Application::get().getPresetManager()->getBankPosition(newBank->getUuid());
+    auto bankNumber = to_string(pos + 1);
     auto numBanks = to_string(Application::get().getPresetManager()->getNumBanks());
     setText({ bankNumber + " of " + numBanks });
   }

@@ -11,19 +11,15 @@ SingleSoundEditMenu::SingleSoundEditMenu(const Rect &rect)
 
   addButton("Store Init", [=]() {
     auto scope = pm->getUndoScope().startTransaction("Store Init Sound");
-    pm->undoableStoreInitSound(scope->getTransaction());
+    pm->storeInitSound(scope->getTransaction());
     selectButton(-1);
   });
 
   addButton("Reset Init", [=]() {
     auto scope = pm->getUndoScope().startTransaction("Reset Init Sound");
-    pm->undoableResetInitSound(scope->getTransaction());
+    pm->resetInitSound(scope->getTransaction());
     selectButton(-1);
   });
 
   selectButton(-1);
-}
-
-SingleSoundEditMenu::~SingleSoundEditMenu()
-{
 }

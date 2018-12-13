@@ -1,12 +1,13 @@
 #pragma once
-#include "PresetBank.h"
+
+class Bank;
 
 class BankChangeBlocker
 {
  public:
-  BankChangeBlocker(std::shared_ptr<PresetBank> bank);
+  BankChangeBlocker(Bank* bank);
   ~BankChangeBlocker();
 
  protected:
-  std::shared_ptr<PresetBank> m_bank;
+  Bank* m_bank;
 };

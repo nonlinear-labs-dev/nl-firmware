@@ -25,18 +25,18 @@ namespace UNDO
     return m_id;
   }
 
-  void ContinuousTransaction::setClosingCommand(std::shared_ptr<UNDO::ContinuousTransaction> command)
+  void ContinuousTransaction::setClosingCommand(std::unique_ptr<ContinuousTransaction> command)
   {
-    m_closingCommand = command;
+    m_closingCommand = std::move(command);
     m_closingCommand->setIsNested();
     m_closingCommand->doAction();
     setName(m_closingCommand->getName());
     onChange();
   }
 
-  std::shared_ptr<UNDO::ContinuousTransaction> ContinuousTransaction::getClosingCommand() const
+  ContinuousTransaction *ContinuousTransaction::getClosingCommand() const
   {
-    return m_closingCommand;
+    return m_closingCommand.get();
   }
 
   void ContinuousTransaction::implUndoAction() const

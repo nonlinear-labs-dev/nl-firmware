@@ -2,16 +2,21 @@
 
 #include "playground.h"
 #include "groups/ParameterGroup.h"
+#include <presets/AttributesOwner.h>
 #include <vector>
 #include "tools/IntrusiveList.h"
 
 class Parameter;
+class Preset;
 
-class ParameterGroupSet : public UpdateDocumentContributor
+class ParameterGroupSet : public AttributesOwner
 {
+ private:
+  using super = AttributesOwner;
+
  public:
   ParameterGroupSet(UpdateDocumentContributor *parent);
-  virtual ~ParameterGroupSet();
+  ~ParameterGroupSet() override;
 
   virtual void init();
 
@@ -26,12 +31,13 @@ class ParameterGroupSet : public UpdateDocumentContributor
   }
 
   map<int, Parameter *> getParametersSortedById() const;
-  Parameter *findParameterByID(size_t id) const;
+  Parameter *findParameterByID(int id) const;
 
   void writeDiff(Writer &writer, ParameterGroupSet *other) const;
+  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  protected:
-  void copyFrom(UNDO::Scope::tTransactionPtr transaction, ParameterGroupSet *other);
+  void copyFrom(UNDO::Transaction *transaction, const Preset *other);
   virtual tParameterGroupPtr appendParameterGroup(ParameterGroup *p);
 
  private:

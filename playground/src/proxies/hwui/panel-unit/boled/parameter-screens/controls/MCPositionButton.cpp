@@ -15,7 +15,7 @@ void MCPositionButton::update(const Parameter *parameter)
 {
   if(const ModulateableParameter *p = dynamic_cast<const ModulateableParameter *>(parameter))
   {
-    if(p->getModulationSource() == ModulateableParameter::NONE)
+    if(p->getModulationSource() == ModulationSource::NONE)
       setText("");
     else
       setText("MC Pos");

@@ -29,7 +29,7 @@ void ModulationSourceEnabledDottedLine::onParameterSelected(Parameter *parameter
 void ModulationSourceEnabledDottedLine::onParamValueChanged(const Parameter *param)
 {
   if(const ModulateableParameter *modP = dynamic_cast<const ModulateableParameter *>(param))
-    setEnabled(modP->getModulationSource() != ModulateableParameter::NONE);
+    setEnabled(modP->getModulationSource() != ModulationSource::NONE);
   else
     setEnabled(false);
 }

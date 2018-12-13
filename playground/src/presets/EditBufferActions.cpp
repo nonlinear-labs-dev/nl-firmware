@@ -11,9 +11,9 @@
 #include <boost/algorithm/string.hpp>
 
 //NonMember helperFunctions pre:
-IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(std::shared_ptr<EditBuffer> editBuffer);
+IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);
 
-EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer)
+EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     : super("/presets/param-editor/")
 {
   addAction("sync-lpc", [=](shared_ptr<NetworkRequest> request) mutable {
@@ -39,7 +39,7 @@ EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer)
 
   addAction("set-mod-src", [=](shared_ptr<NetworkRequest> request) mutable {
     auto src = stoi(request->get("source"));
-    editBuffer->setModulationSource(src);
+    editBuffer->setModulationSource(static_cast<ModulationSource>(src));
   });
 
   addAction("reset", [=](shared_ptr<NetworkRequest> request) mutable {
@@ -196,7 +196,7 @@ EditBufferActions::~EditBufferActions()
 {
 }
 
-IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(std::shared_ptr<EditBuffer> editBuffer)
+IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer)
 {
   auto paramGroup = editBuffer->getParameterGroupByID("Scale");
   return paramGroup->getParameters();

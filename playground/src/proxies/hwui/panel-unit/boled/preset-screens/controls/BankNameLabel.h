@@ -3,7 +3,7 @@
 #include "proxies/hwui/controls/Label.h"
 
 class Application;
-class PresetBank;
+class Bank;
 
 class BankNameLabel : public Label
 {
@@ -14,7 +14,7 @@ class BankNameLabel : public Label
   BankNameLabel(const Rect &pos);
   virtual ~BankNameLabel();
 
-  void updateLabel(shared_ptr<PresetBank> newBank);
+  void updateLabel(Bank *newBank);
 
  protected:
   void setBackgroundColor(FrameBuffer &fb) const override;

@@ -94,7 +94,7 @@ void RawValue::onRawValueChanged(Initiator initiator, tValueType oldRawValue, tV
 {
 }
 
-void RawValue::undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetType oldType, PresetType desiredType)
+void RawValue::undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType)
 {
   if(oldType != desiredType)
   {

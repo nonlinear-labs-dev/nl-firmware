@@ -2,9 +2,6 @@
 
 #include <proxies/hwui/controls/Label.h>
 
-class Application;
-class PresetBank;
-
 class PresetNameHeadlineLabel : public Label
 {
  private:

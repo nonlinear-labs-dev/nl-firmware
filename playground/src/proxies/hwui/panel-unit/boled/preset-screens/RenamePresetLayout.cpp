@@ -1,7 +1,7 @@
 #include <Application.h>
 #include <http/UndoScope.h>
 #include <presets/Preset.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
@@ -16,8 +16,7 @@ RenamePresetLayout::RenamePresetLayout(tCommitCB commitCB, tCancelCB cancelCB)
 {
   if(auto bank = Application::get().getPresetManager()->getSelectedBank())
   {
-    const auto &uuid = bank->getSelectedPreset();
-    m_currentPreset = bank->getPreset(uuid);
+    m_currentPreset = bank->getSelectedPreset();
   }
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Serializer.h"
+#include <serialization/Serializer.h>
 
 class Preset;
 
@@ -16,6 +16,6 @@ class PresetSerializer : public Serializer
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  Preset *m_preset;
+  Preset *m_preset = nullptr;
   bool m_ignoreUUIDs = false;
 };

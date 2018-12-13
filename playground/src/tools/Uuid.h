@@ -1,23 +1,33 @@
 #pragma once
 
 #include "playground.h"
+#include <string>
 
 class Uuid
 {
  public:
   Uuid();
   Uuid(const Uuid &other);
-  Uuid(const Glib::ustring &id);
+  Uuid(Uuid &&other);
+
   Uuid(const std::string &id);
+  Uuid(const Glib::ustring &id);
+  Uuid(const char *id);
+
   virtual ~Uuid();
 
   void generate();
   Uuid &operator=(const Uuid &other);
   bool operator==(const Uuid &other) const;
-  bool operator==(const Glib::ustring &other) const;
+  bool operator!=(const Uuid &other) const;
+  bool operator<(const Uuid &other) const;
 
-  operator Glib::ustring() const;
+  const std::string &raw() const;
+  std::string &raw();
+  bool empty() const;
+
+  static Uuid none();
 
  private:
-  Glib::ustring id;
+  std::string id;
 };

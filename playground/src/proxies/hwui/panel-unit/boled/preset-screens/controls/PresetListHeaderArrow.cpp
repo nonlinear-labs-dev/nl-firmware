@@ -1,7 +1,7 @@
 #include "PresetListHeaderArrow.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
-#include "presets/PresetBank.h"
+#include <presets/Bank.h>
 #include "proxies/hwui/Oleds.h"
 
 PresetListHeaderArrow::PresetListHeaderArrow(const Glib::ustring &text, const Rect &pos)

@@ -9,10 +9,10 @@
 #include "http/UpdateDocumentMaster.h"
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
-#include "device-settings/DebugLevel.h"
-#include <Application.h>
-#include <presets/PresetManager.h>
-#include <glib.h>
+#include <libundo/undo/Transaction.h>
+#include <device-settings/DebugLevel.h>
+#include <xml/Writer.h>
+#include <presets/PresetParameter.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -21,7 +21,7 @@ ModulateableParameter::ModulateableParameter(ParameterGroup *group, uint16_t id,
                                              tControlPositionValue fineDenominator)
     : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
     , m_modulationAmount(0)
-    , m_modSource(NONE)
+    , m_modSource(ModulationSource::NONE)
 {
 }
 
@@ -50,12 +50,12 @@ void ModulateableParameter::writeToLPC(MessageComposer &cmp) const
 
 uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
 {
-  if(getModulationSource() == NONE)
+  if(getModulationSource() == ModulationSource::NONE)
     return 0;
 
   auto scaled = static_cast<gint16>(round(m_modulationAmount * getModulationAmountFineDenominator()));
   auto abs = (scaled < 0) ? -scaled : scaled;
-  gint16 src = getModulationSource();
+  gint16 src = static_cast<gint16>(getModulationSource());
 
   g_assert(src > 0);
   src--;
@@ -66,7 +66,7 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
   return toSend;
 }
 
-void ModulateableParameter::setModulationAmount(UNDO::Scope::tTransactionPtr transaction, const tDisplayValue &amount)
+void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount)
 {
   auto clampedAmount = CLAMP(amount, -1.0, 1.0);
 
@@ -84,36 +84,38 @@ void ModulateableParameter::setModulationAmount(UNDO::Scope::tTransactionPtr tra
   }
 }
 
-ModulateableParameter::ModulationSource ModulateableParameter::getModulationSource() const
+ModulationSource ModulateableParameter::getModulationSource() const
 {
   return m_modSource;
 }
 
-void ModulateableParameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other)
+void ModulateableParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   if(!isLocked())
   {
     super::copyFrom(transaction, other);
-
-    if(auto p = dynamic_cast<ModulateableParameter *>(other))
-    {
-      setModulationSource(transaction, p->getModulationSource());
-      setModulationAmount(transaction, p->getModulationAmount());
-    }
+    setModulationSource(transaction, other->getModulationSource());
+    setModulationAmount(transaction, other->getModulationAmount());
   }
 }
 
-void ModulateableParameter::setModulationSource(UNDO::Scope::tTransactionPtr transaction, ModulationSource src)
+void ModulateableParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *other) const
+{
+  super::copyTo(transaction, other);
+  other->setField(transaction, PresetParameter::Fields::ModSource, to_string(getModulationSource()));
+  other->setField(transaction, PresetParameter::Fields::ModAmount, to_string(getModulationAmount()));
+}
+
+void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, ModulationSource src)
 {
   if(m_modSource != src)
   {
     auto swapData = UNDO::createSwapData(src);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      auto edit = Application::get().getPresetManager()->getEditBuffer().get();
-      if(edit == getParentGroup()->getParent())
+      if(EditBuffer *edit = dynamic_cast<EditBuffer *>(getParentGroup()->getParent()))
       {
-        if(m_modSource != NONE)
+        if(m_modSource != ModulationSource::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
               edit->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
@@ -122,7 +124,7 @@ void ModulateableParameter::setModulationSource(UNDO::Scope::tTransactionPtr tra
 
         swapData->swapWith(m_modSource);
 
-        if(m_modSource != NONE)
+        if(m_modSource != ModulationSource::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
               edit->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
@@ -151,13 +153,12 @@ void ModulateableParameter::applyLpcMacroControl(tDisplayValue diff)
   getValue().changeRawValue(Initiator::EXPLICIT_LPC, diff * m_modulationAmount);
 }
 
-void ModulateableParameter::undoableSelectModSource(UNDO::Scope::tTransactionPtr transaction, int src)
+void ModulateableParameter::undoableSelectModSource(UNDO::Transaction *transaction, ModulationSource src)
 {
-  ModulationSource modSrc = (ModulationSource) src;
-  setModulationSource(transaction, modSrc);
+  setModulationSource(transaction, src);
 }
 
-void ModulateableParameter::undoableSetModAmount(UNDO::Scope::tTransactionPtr transaction, double amount)
+void ModulateableParameter::undoableSetModAmount(UNDO::Transaction *transaction, double amount)
 {
   setModulationAmount(transaction, amount);
 }
@@ -192,21 +193,22 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
   }
 }
 
-void ModulateableParameter::undoableIncrementMCSelect(UNDO::Scope::tTransactionPtr transaction, int inc)
+void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc)
 {
   auto src = (int) getModulationSource();
+  auto numChoices = static_cast<int>(ModulationSource::NUM_CHOICES);
   src += inc;
 
   while(src < 0)
-    src += NUM_CHOICES;
+    src += numChoices;
 
-  while(src >= NUM_CHOICES)
-    src -= NUM_CHOICES;
+  while(src >= numChoices)
+    src -= numChoices;
 
   setModulationSource(std::move(transaction), (ModulationSource) src);
 }
 
-void ModulateableParameter::undoableIncrementMCAmount(UNDO::Scope::tTransactionPtr transaction, int inc,
+void ModulateableParameter::undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc,
                                                       ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
@@ -256,14 +258,14 @@ void ModulateableParameter::writeDifferences(Writer &writer, Parameter *other) c
   }
 }
 
-void ModulateableParameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)
+void ModulateableParameter::loadDefault(UNDO::Transaction *transaction)
 {
-  undoableSelectModSource(transaction, 0);
+  undoableSelectModSource(transaction, ModulationSource::NONE);
   undoableSetModAmount(transaction, 0.0);
   super::loadDefault(transaction);
 }
 
-void ModulateableParameter::undoableLoadPackedModulationInfo(UNDO::Scope::tTransactionPtr transaction,
+void ModulateableParameter::undoableLoadPackedModulationInfo(UNDO::Transaction *transaction,
                                                              const Glib::ustring &packedModulationInfo)
 {
   auto bits = stoul(packedModulationInfo);
@@ -273,12 +275,12 @@ void ModulateableParameter::undoableLoadPackedModulationInfo(UNDO::Scope::tTrans
 
   if(negative && modAmount == 0)
   {
-    undoableSelectModSource(transaction, 0);
+    undoableSelectModSource(transaction, ModulationSource::NONE);
     undoableSetModAmount(transaction, 0.0);
   }
   else
   {
-    auto iModSrc = modSrc + 1;
+    auto iModSrc = static_cast<ModulationSource>(modSrc + 1);
     undoableSelectModSource(transaction, iModSrc);
 
     auto fModAmount = (negative ? -1.0 : 1.0) * modAmount / getModulationAmountFineDenominator();
@@ -306,7 +308,7 @@ void ModulateableParameter::exportReaktorParameter(stringstream &target) const
   super::exportReaktorParameter(target);
   auto packedModulationInfo = getModulationSourceAndAmountPacked();
 
-  if(m_modSource == ModulateableParameter::NONE)
+  if(m_modSource == ModulationSource::NONE)
     packedModulationInfo = 0x2000;
 
   target << packedModulationInfo << endl;
@@ -449,7 +451,7 @@ void ModulateableParameter::registerTests()
 
     ModulateableParameter peter(&group, 1, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
     peter.m_modulationAmount = 0.014;
-    peter.m_modSource = MC1;
+    peter.m_modSource = ModulationSource::MC1;
     uint16_t packed = peter.getModulationSourceAndAmountPacked();
     packed &= 0x3FFF;
     g_assert(packed == 14);

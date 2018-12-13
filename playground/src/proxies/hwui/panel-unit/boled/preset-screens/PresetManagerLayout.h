@@ -32,7 +32,7 @@ class PresetManagerLayout : public DFBLayout
 
   bool animateSelectedPreset(function<void()> cb);
 
-  std::pair<int, int> getSelectedPosition() const;
+  std::pair<size_t, size_t> getSelectedPosition() const;
   std::unique_ptr<StoreModeData> &getStoreModePtr();
 
  private:

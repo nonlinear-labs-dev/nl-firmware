@@ -1,9 +1,9 @@
 #pragma once
 
 #include <proxies/hwui/DFBLayout.h>
+#include <tools/Uuid.h>
 
 class Label;
-class PresetBank;
 class Setting;
 class DirectLoadIndicator;
 
@@ -23,7 +23,7 @@ class PresetsLayout : public DFBLayout
   void onAutoLoadSettingChanged(const Setting *s);
   void onEditBufferModified(bool b);
   void update();
-  Glib::ustring getCurrentlySelectedPresetUUID() const;
+  Uuid getCurrentlySelectedPresetUUID() const;
   void updateDirectLoadLabel();
   bool updateNameAndNumber();
   Glib::ustring formatBankAndPresetNumber(size_t bankNumber, size_t presetPosition, bool modified) const;

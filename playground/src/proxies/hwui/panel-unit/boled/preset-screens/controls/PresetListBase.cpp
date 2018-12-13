@@ -1,5 +1,5 @@
 #include <Application.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/Rect.h>

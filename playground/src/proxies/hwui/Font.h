@@ -19,7 +19,7 @@ class Font
     Right
   };
 
-  int getStringWidth(const Glib::ustring &str) const;
+  uint32_t getStringWidth(const Glib::ustring &str) const;
   uint32_t draw(const Glib::ustring &text, tCoordinate x, tCoordinate y);
   int getHeight() const;
 

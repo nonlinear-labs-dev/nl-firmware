@@ -13,7 +13,7 @@ class UndoListEntry : public ControlWithChildren, public UndoTransactionClient
   virtual ~UndoListEntry();
 
   virtual bool redraw(FrameBuffer &fb) override;
-  virtual void assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected, bool current) override;
+  virtual void assignTransaction(UNDO::Transaction *transaction, bool selected, bool current) override;
 
  private:
   bool m_selected = false;

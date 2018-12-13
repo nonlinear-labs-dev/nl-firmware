@@ -1,200 +1,136 @@
 #pragma once
 
-#include <giomm/file.h>
-#include <http/NetworkRequest.h>
+#include "UndoableVector.h"
+
+#include <memory>
+#include <vector>
+#include <string>
+
 #include <http/UpdateDocumentContributor.h>
-#include <libundo/undo/Scope.h>
-#include "tools/RecursionGuard.h"
-#include <tools/Expiration.h>
-#include <tools/Signal.h>
+#include <presets/SearchQuery.h>
+#include <serialization/PresetManagerSerializer.h>
+#include <tools/ScopedGuard.h>
 #include <tools/Throttler.h>
 #include <tools/Uuid.h>
-#include <xml/Writer.h>
-#include <xml/InStream.h>
-#include <list>
-#include <vector>
 
+class Bank;
 class Preset;
-
-class Application;
-class Writer;
-class XmlReader;
-class PresetBank;
 class EditBuffer;
-class RPCActionManager;
 
 class PresetManager : public ContentSection
 {
+  using SaveSubTask = function<SaveResult()>;
+
  public:
-  enum moveDirection
-  {
-    LeftByOne,
-    RightByOne
-  };
-  enum class presetInfoSearchFields : short
-  {
-    name,
-    comment,
-    devicename
-  };
-
-  typedef function<SaveResult()> tSaveSubTask;
-
   PresetManager(UpdateDocumentContributor *parent);
-  virtual ~PresetManager();
+  ~PresetManager() override;
 
   void init();
-  void stress(int numTransactions);
-  void stressLoad(int numTransactions);
-  void reload();
 
-  virtual Glib::ustring getPrefix() const override;
-  virtual void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
-
-  typedef shared_ptr<PresetBank> tBankPtr;
-  typedef shared_ptr<Preset> tPresetPtr;
-
-  // getters
-  shared_ptr<EditBuffer> getEditBuffer();
-  size_t getNumBanks() const;
-  tBankPtr getBank(int pos);
-  const tBankPtr getBank(int pos) const;
-  const vector<tBankPtr> &getBanks() const;
-
-  int calcOrderNumber(const PresetBank *bank) const;
-  int calcBankIndex(const PresetBank *bank) const;
-
-  tPresetPtr getSelectedPreset() const;
-
-  // undo transactions
-  tBankPtr addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y);
-  tBankPtr addBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &x, const Glib::ustring &y,
-                   bool autoSelect);
-  tBankPtr addBank(UNDO::Scope::tTransactionPtr transaction, bool autoSelect);
-
-  void undoableClear();
-  void undoableClear(UNDO::Scope::tTransactionPtr transaction);
-  void undoableDeleteBank(UNDO::Scope::tTransactionPtr transaction, const tBankPtr bank);
-
-  void undoableStoreInitSound(UNDO::Scope::tTransactionPtr transaction);
-  void undoableLoadInitSound(UNDO::Scope::tTransactionPtr transaction);
-  void undoableResetInitSound(UNDO::Scope::tTransactionPtr transaction);
-  void undoableChangeBankOrder(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, moveDirection direction);
-  void undoableSetOrderNumber(UNDO::Scope::tTransactionPtr transaction, tBankPtr bank, int newOrderNumber);
-  void undoableSetBanks(UNDO::Scope::tTransactionPtr transaction, std::vector<tBankPtr> newBankOrder);
-
+  // supported interfaces
+  UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
+  Glib::ustring getPrefix() const override;
+  void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  void searchPresets(Writer &writer, const Glib::ustring &query, const Glib::ustring &mode,
-                     std::vector<presetInfoSearchFields> &&fieldsToSearch) const;
 
-  void load();
-  bool isLoading() const;
-  tPresetPtr getLoadedPreset();
+  template <typename Mgr> Mgr &findActionManager()
+  {
+    for(auto &a : m_actionManagers)
+      if(auto m = std::dynamic_pointer_cast<Mgr>(a))
+        return *m.get();
 
-  tBankPtr findBankWithPreset(const Glib::ustring &presetUUID);
-  tPresetPtr findPreset(const Glib::ustring &presetUUID);
+    throw std::runtime_error("ActionManager does not exist in object");
+  }
 
-  tBankPtr findBank(const Glib::ustring &uuid) const;
-  void undoableDeleteSelectedBank(UNDO::Scope::tTransactionPtr transaction);
-  tBankPtr getSelectedBank() const;
-
-  void undoableSelectBank(const Glib::ustring &uuid);
-  bool undoableSelectBank(UNDO::Scope::tTransactionPtr transaction, int idx);
-  void undoableSelectBank(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &uuid);
-  void undoableSelectNext();
-  void undoableSelectPrevious();
-  void undoableSelectFirstBank();
-  void undoableSelectLastBank();
-
-  sigc::connection onBankSelection(sigc::slot<void> slot);
-
-  sigc::connection onNumBanksChanged(sigc::slot<void, int> slot);
-
-  Glib::ustring createPresetNameBasedOn(const Glib::ustring &oldName) const;
-  void undoableAppendBank(UNDO::Scope::tTransactionPtr transaction, const Uuid &uuid, bool autoSelect);
+  // ???
   void doAutoLoadSelectedPreset();
+  bool isLoading() const;
+  std::shared_ptr<ScopedGuard::Lock> getLoadingLock();
 
-  void importBank(InStream &stream, const Glib::ustring &x = "", const Glib::ustring &y = "",
-                  const Glib::ustring &fileName = "");
+  // accessors
+  Bank *findBank(const Uuid &uuid) const;
+  Preset *findPreset(const Uuid &uuid) const;
+  Bank *findBankWithPreset(const Uuid &uuid) const;
+  size_t getNumBanks() const;
+  std::list<Bank *> getBanks() const;
+  Bank *getBankAt(size_t idx) const;
+  const Uuid &getSelectedBankUuid() const;
+  Bank *getSelectedBank() const;
+  EditBuffer *getEditBuffer() const;
+  void forEachBank(std::function<void(Bank *b)> cb) const;
 
-  void sanitizeBankClusterRelations(UNDO::Scope::tTransactionPtr transaction);
+  // convenience
+  void selectPreviousBank();
+  void selectNextBank();
+  void onPresetSelectionChanged();
 
-  Glib::ustring getDiffString(tPresetPtr preset1, tPresetPtr preset2);
+  // algorithms
+  std::pair<double, double> calcDefaultBankPositionFor(const Bank *bank) const;
+  size_t getBankPosition(const Uuid &uuid) const;
 
- protected:
-  void onTransactionAdded();
-  virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+  // transactions
+  Bank *addBank(UNDO::Transaction *transaction);
+  Bank *addBank(UNDO::Transaction *transaction, std::unique_ptr<Bank> bank);
+  void moveBank(UNDO::Transaction *transaction, const Bank *bankToMove, const Bank *moveBefore);
+  void deleteBank(UNDO::Transaction *transaction, const Uuid &uuid);
+  void selectBank(UNDO::Transaction *transaction, const Uuid &uuid);
+  bool selectPreviousBank(UNDO::Transaction *transaction);
+  bool selectNextBank(UNDO::Transaction *transaction);
+  void sortBanks(UNDO::Transaction *transaction, const std::vector<Bank *> &banks);
+  void storeInitSound(UNDO::Transaction *transaction);
+  void resetInitSound(UNDO::Transaction *transaction);
+  void loadInitSound(UNDO::Transaction *transaction);
+  void clear(UNDO::Transaction *transaction);
+  void setOrderNumber(UNDO::Transaction *transaction, const Uuid &bank, size_t targetPos);
+  void sanitizeBankClusterRelations(UNDO::Transaction *transaction);
+  void resolveCyclicAttachments(UNDO::Transaction *transaction);
+
+  // algorithms
+  Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;
+  void searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
+                     std::vector<SearchQuery::Fields> &&fieldsToSearch) const;
+
+  // signals
+  sigc::connection onBankSelection(sigc::slot<void> cb);
+  sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
 
  private:
-  PresetManager(const PresetManager &);
-  PresetManager(PresetManager &);
-  void operator=(const PresetManager &);
-  void operator=(PresetManager &);
-
-  void doSaveTask();
-
-  void reassignOrderNumbers();
-
-  void clearBanks(UNDO::Scope::tTransactionPtr transaction);
-  void clearEditBuffer(UNDO::Scope::tTransactionPtr transaction);
-
-  void onSelectedBankChanged();
-  void signalPresetManagerChanged();
-
-  typedef std::list<UNDO::Scope::tTransactionPtr> tTransactionList;
-  void recurseIsoDepthTransactions(Writer &writer, const tTransactionList &isoDepth) const;
-
-  Glib::ustring getCommaSeparated(const tTransactionList &list) const;
-
-  Glib::ustring createPresetNameBasedOnString(const Glib::ustring &name) const;
-  void loadMetadataAndSendEditBufferToLpc(UNDO::Scope::tTransactionPtr transaction, RefPtr<Gio::File> folder);
-  void loadInitSound(UNDO::Scope::tTransactionPtr transaction, RefPtr<Gio::File> pmFolder);
-  void loadBanks(UNDO::Scope::tTransactionPtr transaction, RefPtr<Gio::File> file);
-  SaveResult saveMetadata(RefPtr<Gio::File> file);
-  SaveResult saveInitSound(RefPtr<Gio::File> pmFolder);
-  SaveResult saveBanks(RefPtr<Gio::File> file);
+  void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
+  void loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
   Glib::ustring getBaseName(const ustring &basedOn) const;
-  void deleteOldBanks(const Glib::RefPtr<Gio::File> pmFolder);
-
-  void undoableSelectSibling(UNDO::Scope::tTransactionPtr transaction, int idx);
-
-  void scheduleSave();
   void scheduleAutoLoadSelectedPreset();
 
-  list<PresetManager::tSaveSubTask> createListOfSaveSubTasks();
+  list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
+  SaveResult saveMetadata(RefPtr<Gio::File> pmFolder);
+  SaveResult saveInitSound(RefPtr<Gio::File> pmFolder);
+  SaveResult saveBanks(RefPtr<Gio::File> pmFolder);
+
+  void doSaveTask();
   void popSaveTaskAndRecurseSynchronously();
   void popSaveTaskAndRecurseAsynchronously();
   void recurseSaveAsynchronously();
+  void scheduleSave();
 
-  void resolveCyclicAttachments(UNDO::Scope::tTransactionPtr transaction);
-  void enforceClusterRuleOfOne();
-  std::vector<PresetManager::tBankPtr> getClusterMasters();
-  std::tuple<PresetManager::tBankPtr, PresetManager::tBankPtr> getChildrenOfMaster(Glib::ustring masterUUID);
-
-  vector<tBankPtr> m_banks;
-  shared_ptr<EditBuffer> m_editBuffer;
-  shared_ptr<EditBuffer> m_initSound;
-
-  Glib::ustring m_selectedBankUUID;
+  UndoableVector<Bank> m_banks;
+  Uuid m_selectedBank;
 
   typedef shared_ptr<RPCActionManager> tRPCActionManagerPtr;
-  list<tRPCActionManagerPtr> m_actionManagers;
+  std::list<tRPCActionManagerPtr> m_actionManagers;
+  std::unique_ptr<EditBuffer> m_editBuffer;
+  std::unique_ptr<Preset> m_initSound;
 
-  friend class PresetManagerSerializer;
-  friend class PresetManagerMetadataSerializer;
-  friend class PresetBankOrderSerializer;
-  friend class PresetManagerActions;
-
+  ScopedGuard m_isLoading;
   Signal<void> m_sigBankSelection;
-  Signal<void, int> m_sigNumBanksChanged;
-
-  Expiration m_saveJob;
-  tUpdateID m_lastSavedMetdaDataUpdateID = 0;
-  tUpdateID m_lastSavedInitSoundUpdateID = 0;
+  Signal<void, size_t> m_sigNumBanksChanged;
 
   Throttler m_autoLoadThrottler;
-  RecursionGuard m_loading;
 
-  list<tSaveSubTask> m_saveTasks;
+  Expiration m_saveJob;
+  tUpdateID m_lastSavedInitSoundUpdateID = 0;
+  tUpdateID m_lastSavedMetaDataUpdateID = 0;
+
+  list<SaveSubTask> m_saveTasks;
   bool m_saveRequestDuringSave = false;
+
+  friend class PresetManagerSerializer;
 };

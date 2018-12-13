@@ -2,7 +2,6 @@
 
 #include "PresetLabel.h"
 
-class PresetBank;
 class Preset;
 
 class PresetNameLabel : public PresetLabel

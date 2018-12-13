@@ -1,7 +1,9 @@
 #include <Application.h>
 #include <clipboard/Clipboard.h>
 #include <libundo/undo/Scope.h>
-#include <presets/PresetBank.h>
+#include <http/UndoScope.h>
+#include <presets/BankActions.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankEditButtonMenu.h>
@@ -23,25 +25,26 @@ static size_t s_lastSelectedButton = 0;
 BankEditButtonMenu::BankEditButtonMenu(const Rect& rect)
     : super(rect)
 {
-  Application::get().getClipboard()->onClipboardChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
-  Application::get().getPresetManager()->onNumBanksChanged(
-      sigc::hide<0>(mem_fun(this, &BankEditButtonMenu::rebuildMenu)));
+  Application::get().getClipboard()->onClipboardChanged(
+      mem_fun(this, &BankEditButtonMenu::rebuildMenuOnClipboardChange));
+  Application::get().getPresetManager()->onNumBanksChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
 }
 
-void BankEditButtonMenu::rebuildMenu()
+void BankEditButtonMenu::rebuildMenuOnClipboardChange()
+{
+  rebuildMenu(Application::get().getPresetManager()->getNumBanks());
+}
+
+void BankEditButtonMenu::rebuildMenu(size_t numBanks)
 {
   clear();
   clearActions();
 
-  auto pm = Application::get().getPresetManager();
-  if(pm->getNumBanks() != 0)
-  {
+  if(numBanks != 0)
     rebuildFullMenu();
-  }
   else
-  {
     rebuildNoBankAvailableMenu();
-  }
+
   correctMenuSelection();
   selectButton(s_lastSelectedButton);
 }
@@ -96,8 +99,10 @@ void BankEditButtonMenu::newBank()
   auto pm = Application::get().getPresetManager();
   auto scope = pm->getUndoScope().startTransaction("New bank");
   auto transaction = scope->getTransaction();
-  auto newBank = pm->addBank(transaction, true);
-  newBank->assignDefaultPosition();
+  auto newBank = pm->addBank(transaction);
+  auto pos = pm->calcDefaultBankPositionFor(newBank);
+  newBank->setX(transaction, std::to_string(pos.first));
+  newBank->setY(transaction, std::to_string(pos.second));
 
   Application::get().getHWUI()->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Presets, UIMode::Select));
 
@@ -129,7 +134,8 @@ void BankEditButtonMenu::importBankFromPath(std::experimental::filesystem::direc
 
     FileInStream stream(fileInfos.filePath, false);
     SplashLayout::addStatus("Importing " + fileInfos.fileName);
-    Application::get().getPresetManager()->importBank(stream, "", "", fileInfos.fileName);
+    auto& bankActions = Application::get().getPresetManager()->findActionManager<BankActions>();
+    bankActions.importBank(stream, "0", "0", fileInfos.fileName);
   }
   hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
   hwui->getPanelUnit().setupFocusAndMode({ UIFocus::Presets, UIMode::Select });
@@ -155,7 +161,7 @@ void BankEditButtonMenu::exportBank()
 
   if(auto selBank = Application::get().getPresetManager()->getSelectedBank())
   {
-    boled.setOverlay(new RenameExportLayout(selBank, [](Glib::ustring newExportName, std::shared_ptr<PresetBank> bank) {
+    boled.setOverlay(new RenameExportLayout(selBank, [](Glib::ustring newExportName, auto bank) {
       auto& panelunit = Application::get().getHWUI()->getPanelUnit();
       auto& boled = panelunit.getEditPanel().getBoled();
       auto outPath = BankEditButtonMenu::createValidOutputPath(newExportName);
@@ -167,11 +173,12 @@ void BankEditButtonMenu::exportBank()
   }
 }
 
-void BankEditButtonMenu::writeSelectedBankToFile(PresetManager::tBankPtr selBank, const std::string& outFile)
+void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::string& outFile)
 {
   SplashLayout::addStatus("Exporting " + selBank->getName(true));
-  selBank->setAttribute("Date of Export File", TimeTools::getAdjustedIso());
-  selBank->setAttribute("Name of Export File", outFile);
+  auto scope = Application::get().getUndoScope()->startTrashTransaction();
+  selBank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
+  selBank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
   PresetBankSerializer serializer(selBank, false);
   XmlWriter writer(std::make_shared<FileOutStream>(outFile, false));
   serializer.write(writer, VersionAttribute::get());
@@ -210,7 +217,7 @@ void BankEditButtonMenu::deleteBank()
   if(auto bank = pm->getSelectedBank())
   {
     auto scope = bank->getUndoScope().startTransaction("Delete bank '%0'", bank->getName(true));
-    pm->undoableDeleteSelectedBank(scope->getTransaction());
+    pm->deleteBank(scope->getTransaction(), pm->getSelectedBankUuid());
   }
 
   if(pm->getNumBanks() == 0)
@@ -227,8 +234,12 @@ void BankEditButtonMenu::moveLeft()
 
   if(auto bank = pm->getSelectedBank())
   {
-    auto scope = bank->getUndoScope().startTransaction("Move bank '%0' left", bank->getName(true));
-    pm->undoableChangeBankOrder(scope->getTransaction(), bank->getUuid(), PresetManager::moveDirection::LeftByOne);
+    auto pos = pm->getBankPosition(bank->getUuid());
+    if(pos > 0)
+    {
+      auto scope = bank->getUndoScope().startTransaction("Move bank '%0' left", bank->getName(true));
+      pm->setOrderNumber(scope->getTransaction(), bank->getUuid(), pos - 1);
+    }
   }
 }
 
@@ -238,8 +249,12 @@ void BankEditButtonMenu::moveRight()
 
   if(auto bank = pm->getSelectedBank())
   {
-    auto scope = bank->getUndoScope().startTransaction("Move bank '%0' right", bank->getName(true));
-    pm->undoableChangeBankOrder(scope->getTransaction(), bank->getUuid(), PresetManager::moveDirection::RightByOne);
+    auto pos = pm->getBankPosition(bank->getUuid()) + 1;
+    if(pos < pm->getNumBanks())
+    {
+      auto scope = bank->getUndoScope().startTransaction("Move bank '%0' right", bank->getName(true));
+      pm->setOrderNumber(scope->getTransaction(), bank->getUuid(), pos);
+    }
   }
 }
 

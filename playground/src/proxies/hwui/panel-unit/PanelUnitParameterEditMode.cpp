@@ -246,7 +246,7 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(gint3
 
 bool PanelUnitParameterEditMode::toggleParameterSelection(vector<gint32> ids, bool state)
 {
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto firstParameterInList = editBuffer->findParameterByID(ids.front());
 
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
@@ -353,7 +353,7 @@ bool PanelUnitParameterEditMode::setParameterSelection(gint32 audioID, bool stat
   {
     DebugLevel::gassy("setParameterSelection - state == true");
 
-    shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
     if(Parameter *p = editBuffer->findParameterByID(audioID))
     {
@@ -387,7 +387,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
   m_connectionToMacroControl.disconnect();
 
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   if(Parameter *selParam = editBuffer->getSelected())
   {
@@ -507,7 +507,7 @@ void PanelUnitParameterEditMode::setLedStates(const tLedStates &states)
 void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
 {
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   Parameter *selParam = editBuffer->getSelected();
 
   if(auto mc = dynamic_cast<MacroControlParameter *>(selParam))
@@ -525,7 +525,7 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
 
 void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &targets)
 {
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   for(auto targetID : targets)
@@ -541,7 +541,7 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
 void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets)
 {
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   const auto FMAB = editBuffer->findParameterByID(SVFilterFMAB);
@@ -584,7 +584,7 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &targets)
 {
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB);
@@ -621,7 +621,7 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
 {
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   for(auto targetID : targets)

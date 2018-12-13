@@ -36,5 +36,5 @@ Glib::ustring DateTimeInfo::get() const
 
 Glib::ustring DateTimeInfo::getDisplayString() const
 {
-  return TimeTools::getDisplayStringFromIso(TimeTools::getLocalTime(TimeTools::getAdjustedTimestamp()));
+  return TimeTools::getDisplayStringFromIso(TimeTools::getAdjustedIso());
 }
