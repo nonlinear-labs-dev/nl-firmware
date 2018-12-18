@@ -22,7 +22,7 @@ class TestLayout : public DFBLayout
     Full = 0,
     Gradient = 1,
     Border = 2,
-    NumTests
+    NumTests = 3
   };
 
   int m_test = Full;

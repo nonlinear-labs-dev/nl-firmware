@@ -19,6 +19,7 @@ void TestLayout::iterate()
 {
   m_test++;
   m_isDirty = true;
+  setDirty();
 
   if(m_test >= NumTests)
     getOLEDProxy().resetOverlay();
@@ -47,7 +48,7 @@ bool TestLayout::redrawLayout()
     case Tests::Gradient:
       for(int i = 0; i < r.getHeight(); i++)
       {
-        float normalized = i / (r.getHeight() - 1.0);
+        float normalized = i / (r.getHeight() - 1.0f);
         s.fiddleColor(s.interpolateColor(normalized));
         s.drawHorizontalLine(0, i, r.getWidth());
       }
