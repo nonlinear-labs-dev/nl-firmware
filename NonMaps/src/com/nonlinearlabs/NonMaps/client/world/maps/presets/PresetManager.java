@@ -35,6 +35,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.DirectLoadButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
@@ -900,5 +901,12 @@ public class PresetManager extends MapsLayout {
 
 	public Preset getLoadedPreset() {
 		return findLoadedPreset();
+	}
+
+	public boolean isChangingPresetWhileInDirectLoad() {
+		if(DirectLoadButton.isActive() && findSelectedPreset() != findLoadedPreset()) {
+			return true;
+		}
+		return false;
 	}
 }

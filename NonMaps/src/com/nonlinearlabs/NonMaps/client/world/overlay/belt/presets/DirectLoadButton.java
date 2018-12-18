@@ -9,9 +9,13 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
-class DirectLoadButton extends SVGImage {
+public class DirectLoadButton extends SVGImage {
 
-	private boolean married;
+	static private boolean married;
+	
+	public static boolean isActive() {
+		return married;
+	}
 
 	DirectLoadButton(OverlayLayout parent) {
 		super(parent, "Link_Enabled.svg", "Link_Active.svg", "Link_Disabled.svg");
