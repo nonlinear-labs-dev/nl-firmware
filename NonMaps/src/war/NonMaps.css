@@ -20,7 +20,7 @@ html,body {
   top: 0%;
   margin: 0px;
   padding: 0px;
-  overflow: hidden;
+  overflow: hidden;d
 }
 
 html * {
@@ -1449,7 +1449,8 @@ canvas {
 	width: 26px;
 	height: 26px;
 	vertical-align: middle;
-	background: url(close.png) no-repeat;
+	background: url(close.png);
+	background-position: right 26px;
 	cursor: pointer;
 	position: absolute;
 	top: 0.4em;
@@ -1458,15 +1459,16 @@ canvas {
 
 .dialog-header>button:active {
   flex-grow: 0;
-  width: 6mm;
-  height: 6mm;
-  background-repeat: no-repeat;
-  background-size: contain;
-  border: none;
-  background-image: url(dialog-close.png);
-  position: absolute;
-  right: 2px;
-  top: 4px;
+
+	border: none;
+	width: 26px;
+	height: 26px;
+	vertical-align: middle;
+	background: url(close.png);
+	cursor: pointer;
+	position: absolute;
+	top: 0.4em;
+	right: 0.4em;
 }
 
 .dialog-header>.headline {

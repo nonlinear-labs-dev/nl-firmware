@@ -8,10 +8,12 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public class FloatingWindowHeader extends OverlayLayout {
 
+	protected boolean mouseDown = false;
 	protected Label header;
 	protected Label x;
 
@@ -40,8 +42,12 @@ public class FloatingWindowHeader extends OverlayLayout {
 
 			private void drawX(Context2d ctx) {
 				Rect r = getPixRect().getReducedBy(Millimeter.toPixels(4));
+				
+				RGB fillColor = mouseDown ? new Gray(133) : new Gray(66);
+				RGB strokeColor = mouseDown ? new Gray(222) : new Gray(154);
+				
 				r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), Millimeter.toPixels(0.25),
-						new Gray(54), new Gray(84));
+						fillColor, strokeColor);
 
 				r = r.getReducedBy(Millimeter.toPixels(4));
 
@@ -51,19 +57,37 @@ public class FloatingWindowHeader extends OverlayLayout {
 				ctx.moveTo(r.getRight(), r.getTop());
 				ctx.lineTo(r.getLeft(), r.getBottom());
 
-				ctx.setStrokeStyle(new Gray(120).toString());
+				ctx.setStrokeStyle(strokeColor.toString());
 				ctx.setLineWidth(Millimeter.toPixels(0.5));
 				ctx.setLineCap(LineCap.SQUARE);
 				ctx.setLineJoin(LineJoin.MITER);
 
 				ctx.stroke();
 			}
-
+			
 			@Override
 			public Control mouseDown(Position eventPoint) {
+				mouseDown = true;
 				return this;
 			}
-
+			
+			@Override
+			public void onMouseLost() {
+				mouseDown = false;
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			}
+			
+			@Override
+			public Control mouseUp(Position eventPoint) {
+				mouseDown = false;
+				return this;
+			}
+			
+			@Override
+			public void dragLeave() {
+				mouseDown = false;
+			}
+			
 			@Override
 			public Control click(Position eventPoint) {
 				parent.toggle();
