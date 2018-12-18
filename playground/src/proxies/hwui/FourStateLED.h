@@ -6,6 +6,7 @@
 class FourStateLED : public LED
 {
  public:
+  static bool suppress;
   FourStateLED();
   virtual ~FourStateLED();
 

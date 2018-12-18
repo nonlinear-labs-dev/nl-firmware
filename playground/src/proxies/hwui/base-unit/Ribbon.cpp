@@ -37,7 +37,8 @@ void Ribbon::initLEDs()
 void Ribbon::setLEDState(int ledPos, char state)
 {
   m_leds[ledPos].setState(state);
-  // debugTrace();
+  if(!FourStateLED::suppress && ledPos == NUM_LEDS_PER_RIBBON - 1)
+    debugTrace();
 }
 
 void Ribbon::debugTrace()

@@ -320,16 +320,23 @@ void EditBuffer::undoableLoad(UNDO::Scope::tTransactionPtr transaction, shared_p
 {
   auto lpc = Application::get().getLPCProxy();
   lpc->toggleSuppressParameterChanges(transaction);
+  transaction->addSimpleCommand([](auto){
+      FourStateLED::suppress = true;
+  });
 
   copyFrom(transaction, preset.get(), true);
   undoableSetLoadedPresetInfo(transaction, preset.get());
 
-  if(PresetBank *bank = dynamic_cast<PresetBank *>(preset->getParent()))
+  if(auto *bank = dynamic_cast<PresetBank *>(preset->getParent()))
   {
     bank->undoableSelectPreset(transaction, preset->getUuid());
     getParent()->undoableSelectBank(transaction, bank->getUuid());
   }
 
+  transaction->addSimpleCommand([](auto){
+      FourStateLED::suppress = false;
+      Application::get().getHWUI()->getBaseUnit().ribbonForceSyncBBBB();
+  });
   lpc->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, preset->getHash());
 }
