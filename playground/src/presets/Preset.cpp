@@ -198,7 +198,7 @@ bool Preset::matchesQuery(const SearchQuery &query) const
 
     for(auto f : fields)
     {
-      if(entries[static_cast<int>(f)].find(part) != ustring::npos)
+      if(entries[static_cast<size_t>(f)].find(part) != ustring::npos)
       {
         return true;
       }
