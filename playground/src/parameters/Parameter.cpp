@@ -197,8 +197,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, const Pr
 
 void Parameter::sendToLpc() const
 {
-  if(dynamic_cast<const EditBuffer *>(getParentGroup()->getParent()))
-    Application::get().getLPCProxy()->sendParameter(this);
+  Application::get().getLPCProxy()->sendParameter(this);
 }
 
 tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modifiers) const
@@ -316,25 +315,6 @@ void Parameter::writeDocument(Writer &writer, tUpdateID knownRevision) const
                       writeDocProperties(writer, knownRevision);
                     }
                   });
-}
-
-void Parameter::writeDiff(Writer &writer, Parameter *other) const
-{
-  if(getHash() != other->getHash())
-  {
-    writer.writeTag("parameter", Attribute("name", getLongName()), [&] { writeDifferences(writer, other); });
-  }
-}
-
-void Parameter::writeDifferences(Writer &writer, Parameter *other) const
-{
-  auto myString = getDisplayString();
-  auto otherString = other->getDisplayString();
-
-  if(myString != otherString)
-  {
-    writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
-  }
 }
 
 void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const

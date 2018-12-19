@@ -38,7 +38,6 @@ class RibbonParameter : public PhysicalControlParameter
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
-  void writeDifferences(Writer &writer, Parameter *other) const override;
 
   virtual void onPresetSentToLpc() const override;
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const override;

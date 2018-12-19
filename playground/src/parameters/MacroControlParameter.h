@@ -60,7 +60,6 @@ class MacroControlParameter : public Parameter
 
  private:
   void updateBoundRibbon();
-  void writeDifferences(Writer &writer, Parameter *other) const override;
 
   tTargets m_targets;
   int m_UiSelectedHardwareSourceParameterID;

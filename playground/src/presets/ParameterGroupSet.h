@@ -33,7 +33,6 @@ class ParameterGroupSet : public AttributesOwner
   map<int, Parameter *> getParametersSortedById() const;
   Parameter *findParameterByID(int id) const;
 
-  void writeDiff(Writer &writer, ParameterGroupSet *other) const;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  protected:

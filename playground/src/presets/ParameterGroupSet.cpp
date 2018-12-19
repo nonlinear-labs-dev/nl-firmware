@@ -132,17 +132,6 @@ map<int, Parameter *> ParameterGroupSet::getParametersSortedById() const
   return sorted;
 }
 
-void ParameterGroupSet::writeDiff(Writer &writer, ParameterGroupSet *other) const
-{
-  writer.writeTag("groups", [&] {
-    for(auto group : getParameterGroups())
-    {
-      auto otherGroup = other->getParameterGroupByID(group->getID());
-      group->writeDiff(writer, otherGroup);
-    }
-  });
-}
-
 void ParameterGroupSet::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   super::writeDocument(writer, knownRevision);

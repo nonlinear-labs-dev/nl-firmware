@@ -1,7 +1,6 @@
 #include "ModulateableParameter.h"
 #include "MacroControlParameter.h"
 #include "groups/MacroControlsGroup.h"
-#include "presets/EditBuffer.h"
 #include "proxies/lpc/MessageComposer.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
@@ -12,6 +11,7 @@
 #include <libundo/undo/Transaction.h>
 #include <device-settings/DebugLevel.h>
 #include <xml/Writer.h>
+#include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
 
 static TestDriver<ModulateableParameter> tests;
@@ -113,12 +113,12 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
     auto swapData = UNDO::createSwapData(src);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      if(EditBuffer *edit = dynamic_cast<EditBuffer *>(getParentGroup()->getParent()))
+      if(auto groups = static_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != ModulationSource::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              edit->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
           modSrc->unregisterTarget(this);
         }
 
@@ -127,7 +127,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
         if(m_modSource != ModulationSource::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              edit->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
           modSrc->registerTarget(this);
         }
 
@@ -234,27 +234,6 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   {
     writer.writeTextElement("mod-amount-coarse", to_string(getModulationAmountCoarseDenominator()));
     writer.writeTextElement("mod-amount-fine", to_string(getModulationAmountFineDenominator()));
-  }
-}
-
-void ModulateableParameter::writeDifferences(Writer &writer, Parameter *other) const
-{
-  Parameter::writeDifferences(writer, other);
-  auto *pOther = static_cast<ModulateableParameter *>(other);
-
-  if(getModulationAmount() != pOther->getModulationAmount())
-  {
-    auto c = ScaleConverter::get<LinearBipolar100PercentScaleConverter>();
-    auto currentParameter = c->getDimension().stringize(c->controlPositionToDisplay(getModulationAmount()));
-    auto otherParameter = c->getDimension().stringize(c->controlPositionToDisplay(pOther->getModulationAmount()));
-
-    writer.writeTextElement("mc-amount", "", Attribute("a", currentParameter), Attribute("b", otherParameter));
-  }
-
-  if(getModulationSource() != pOther->getModulationSource())
-  {
-    writer.writeTextElement("mc-select", "", Attribute("a", getModulationSource()),
-                            Attribute("b", pOther->getModulationSource()));
   }
 }
 

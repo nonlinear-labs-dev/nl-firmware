@@ -57,7 +57,6 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   virtual void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  void writeDiff(Writer &writer, ParameterGroup *other) const;
 
   virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 

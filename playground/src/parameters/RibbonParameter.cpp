@@ -11,10 +11,10 @@
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <xml/Writer.h>
-#include <presets/EditBuffer.h>
 #include <device-settings/DebugLevel.h>
 #include <cmath>
 #include <libundo/undo/Transaction.h>
+#include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -22,24 +22,6 @@ void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContribut
   Parameter::writeDocProperties(writer, knownRevision);
   writer.writeTextElement("ribbon-touch-behaviour", to_string(m_touchBehaviour));
   writer.writeTextElement("ribbon-return-mode", to_string(m_returnMode));
-}
-
-void RibbonParameter::writeDifferences(Writer &writer, Parameter *other) const
-{
-  Parameter::writeDifferences(writer, other);
-  RibbonParameter *pOther = static_cast<RibbonParameter *>(other);
-
-  if(getRibbonTouchBehaviour() != pOther->getRibbonTouchBehaviour())
-  {
-    writer.writeTextElement("behaviour", "", Attribute("a", getRibbonTouchBehaviour()),
-                            Attribute("b", pOther->getRibbonTouchBehaviour()));
-  }
-
-  if(getReturnMode() != pOther->getReturnMode())
-  {
-    writer.writeTextElement("return-mode", "", Attribute("a", (int) getReturnMode()),
-                            Attribute("b", (int) pOther->getReturnMode()));
-  }
 }
 
 void RibbonParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
@@ -224,20 +206,17 @@ void RibbonParameter::onPresetSentToLpc() const
 
 void RibbonParameter::sendModeToLpc() const
 {
-  if(dynamic_cast<const EditBuffer *>(getParentGroup()->getParent()))
-  {
-    uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
-                                                                               : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
-    uint16_t v = 0;
+  uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
+                                                                             : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
+  uint16_t v = 0;
 
-    if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
-      v += 1;
+  if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
+    v += 1;
 
-    if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
-      v += 2;
+  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+    v += 2;
 
-    Application::get().getLPCProxy()->sendSetting(id, v);
-  }
+  Application::get().getLPCProxy()->sendSetting(id, v);
 }
 
 void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)

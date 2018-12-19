@@ -58,7 +58,6 @@ class ModulateableParameter : public Parameter
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
-  void writeDifferences(Writer &writer, Parameter *other) const override;
 
  private:
   Glib::ustring modulationValueToDisplayString(tControlPositionValue v) const;

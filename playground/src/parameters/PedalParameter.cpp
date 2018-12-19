@@ -13,7 +13,7 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/value/QuantizedValue.h>
 #include <playground.h>
-#include <presets/EditBuffer.h>
+#include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
@@ -25,18 +25,6 @@ void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributo
 {
   Parameter::writeDocProperties(writer, knownRevision);
   writer.writeTextElement("pedal-mode", to_string(m_mode));
-}
-
-void PedalParameter::writeDifferences(Writer &writer, Parameter *other) const
-{
-  Parameter::writeDifferences(writer, other);
-  PedalParameter *pOther = static_cast<PedalParameter *>(other);
-
-  if(getReturnMode() != pOther->getReturnMode())
-  {
-    writer.writeTextElement("return-mode", "", Attribute("a", (int) getReturnMode()),
-                            Attribute("b", (int) pOther->getReturnMode()));
-  }
 }
 
 void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode)
@@ -137,12 +125,9 @@ void PedalParameter::onPresetSentToLpc() const
 
 void PedalParameter::sendModeToLpc() const
 {
-  if(dynamic_cast<const EditBuffer *>(getParentGroup()->getParent()))
-  {
-    uint16_t id = mapParameterIdToLPCSetting();
-    uint16_t v = (uint16_t) m_mode;
-    Application::get().getLPCProxy()->sendSetting(id, v);
-  }
+  uint16_t id = mapParameterIdToLPCSetting();
+  uint16_t v = (uint16_t) m_mode;
+  Application::get().getLPCProxy()->sendSetting(id, v);
 }
 
 uint16_t PedalParameter::mapParameterIdToLPCSetting() const

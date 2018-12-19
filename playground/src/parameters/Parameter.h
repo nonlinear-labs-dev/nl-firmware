@@ -97,7 +97,6 @@ class Parameter : public UpdateDocumentContributor,
   virtual size_t getHash() const;
 
   virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  void writeDiff(Writer &writer, Parameter *other) const;
   virtual void writeToLPC(MessageComposer &cmp) const;
   virtual void onPresetSentToLpc() const;
 
@@ -126,7 +125,6 @@ class Parameter : public UpdateDocumentContributor,
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const;
   virtual tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
-  virtual void writeDifferences(Writer &writer, Parameter *other) const;
 
  private:
   Signal<void, const Parameter *> m_signalParamChanged;

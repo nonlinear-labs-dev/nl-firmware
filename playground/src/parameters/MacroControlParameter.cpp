@@ -38,22 +38,6 @@ void MacroControlParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   writer.writeTextElement("info", m_info);
 }
 
-void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) const
-{
-  Parameter::writeDifferences(writer, other);
-  MacroControlParameter *pOther = static_cast<MacroControlParameter *>(other);
-
-  if(getGivenName() != pOther->getGivenName())
-  {
-    writer.writeTextElement("name", "", Attribute("a", getGivenName()), Attribute("b", pOther->getGivenName()));
-  }
-
-  if(getInfo() != pOther->getInfo())
-  {
-    writer.writeTextElement("info", "", Attribute("a", "changed"), Attribute("b", "changed"));
-  }
-}
-
 void MacroControlParameter::registerTarget(ModulateableParameter *target)
 {
   m_targets.insert(target);

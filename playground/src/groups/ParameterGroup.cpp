@@ -184,20 +184,6 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
                   });
 }
 
-void ParameterGroup::writeDiff(Writer &writer, ParameterGroup *other) const
-{
-  if(getHash() != other->getHash())
-  {
-    writer.writeTag("group", Attribute("name", getLongName()), [&] {
-      for(auto parameter : getParameters())
-      {
-        auto otherParameter = other->getParameterByID(parameter->getID());
-        parameter->writeDiff(writer, otherParameter);
-      }
-    });
-  }
-}
-
 void ParameterGroup::undoableClear(UNDO::Transaction *transaction)
 {
   for(auto p : getParameters())
