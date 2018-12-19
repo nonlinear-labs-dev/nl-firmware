@@ -65,7 +65,7 @@ bool PresetList::onButton(int i, bool down, ButtonModifiers)
           if(auto bank = pm->getSelectedBank())
             bank->selectPreviousPreset();
         }
-        else if(auto bank = pm->getSelectedBank())
+        else
         {
           pm->selectPreviousBank();
         }

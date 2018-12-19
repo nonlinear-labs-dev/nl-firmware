@@ -15,9 +15,9 @@ class AttributesOwner : public UpdateDocumentContributor
   AttributesOwner(UpdateDocumentContributor *parent);
   ~AttributesOwner() override;
 
-  void setAttribute(UNDO::Transaction *transaction, const std::string &key, const ustring &value);
-  void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
-  void clear(UNDO::Transaction *transaction);
+  virtual void setAttribute(UNDO::Transaction *transaction, const std::string &key, const ustring &value);
+  virtual void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
+  virtual void clear(UNDO::Transaction *transaction);
 
   Glib::ustring getAttribute(const Glib::ustring &key, const Glib::ustring &def) const;
   const tAttributes &getAttributes() const;

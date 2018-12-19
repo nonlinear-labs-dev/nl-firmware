@@ -186,8 +186,15 @@ void ContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 void ContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type, GBytes *message,
                                         ContentManager *pThis)
 {
-  shared_ptr<NetworkRequest> request(new WebSocketRequest(self, message));
-  pThis->handleRequest(request);
+  try
+  {
+    shared_ptr<NetworkRequest> request(new WebSocketRequest(self, message));
+    pThis->handleRequest(request);
+  }
+  catch(...)
+  {
+    DebugLevel::warning("handled exception for websocket message");
+  }
 }
 
 void ContentManager::feedWebSockets()

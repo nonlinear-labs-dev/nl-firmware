@@ -2,7 +2,6 @@
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
 #include <serialization/PresetBankMetadataSerializer.h>
-#include <assert.h>
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
 
@@ -270,32 +269,12 @@ void Bank::selectPreset(size_t pos)
 
 size_t Bank::getNextPresetPosition() const
 {
-  auto selUuid = getSelectedPresetUuid();
-
-  if(selUuid.empty())
-  {
-    assert(getNumPresets() == 0);
-    return std::numeric_limits<size_t>::max();
-  }
-
-  return getPresetPosition(selUuid) + 1;
+  return m_presets.getNextPosition(getSelectedPresetUuid());
 }
 
 size_t Bank::getPreviousPresetPosition() const
 {
-  auto selUuid = getSelectedPresetUuid();
-
-  if(selUuid.empty())
-  {
-    assert(getNumPresets() == 0);
-    return std::numeric_limits<size_t>::max();
-  }
-
-  auto pos = getPresetPosition(selUuid);
-  if(pos == 0)
-    return std::numeric_limits<size_t>::max();
-
-  return pos - 1;
+  return m_presets.getPreviousPosition(getSelectedPresetUuid());
 }
 
 void Bank::rename(const ustring &name)

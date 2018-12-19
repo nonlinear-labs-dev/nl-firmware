@@ -358,26 +358,53 @@ void PresetManager::forEachBank(std::function<void(Bank *)> cb) const
 
 void PresetManager::selectNextBank()
 {
-  auto pos = getBankPosition(getSelectedBankUuid()) + 1;
+  selectBank(getNextBankPosition());
+}
 
-  if(pos < getNumBanks())
+void PresetManager::selectPreviousBank()
+{
+  selectBank(getPreviousBankPosition());
+}
+
+void PresetManager::selectBank(size_t idx)
+{
+  if(idx < getNumBanks())
   {
-    auto &bank = m_banks.getElements()[pos];
+    auto bank = getBankAt(idx);
     auto transactionScope = getUndoScope().startTransaction("Select Bank '%0'", bank->getName(true));
     selectBank(transactionScope->getTransaction(), bank->getUuid());
   }
 }
 
-void PresetManager::selectPreviousBank()
+bool PresetManager::selectPreviousBank(UNDO::Transaction *transaction)
 {
-  auto pos = getBankPosition(getSelectedBankUuid());
+  return selectBank(transaction, getPreviousBankPosition());
+}
 
-  if(pos > 0)
+bool PresetManager::selectNextBank(UNDO::Transaction *transaction)
+{
+  return selectBank(transaction, getNextBankPosition());
+}
+
+bool PresetManager::selectBank(UNDO::Transaction *transaction, size_t idx)
+{
+  if(idx < getNumBanks())
   {
-    auto &bank = m_banks.getElements()[pos - 1];
-    auto transactionScope = getUndoScope().startTransaction("Select Bank '%0'", bank->getName(true));
-    selectBank(transactionScope->getTransaction(), bank->getUuid());
+    auto bank = getBankAt(idx);
+    selectBank(transaction, bank->getUuid());
+    return true;
   }
+  return false;
+}
+
+size_t PresetManager::getNextBankPosition() const
+{
+  return m_banks.getNextPosition(getSelectedBankUuid());
+}
+
+size_t PresetManager::getPreviousBankPosition() const
+{
+  return m_banks.getPreviousPosition(getSelectedBankUuid());
 }
 
 Bank *PresetManager::addBank(UNDO::Transaction *transaction)
@@ -424,32 +451,6 @@ void PresetManager::onPresetSelectionChanged()
 {
   if(Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get())
     doAutoLoadSelectedPreset();
-}
-
-bool PresetManager::selectPreviousBank(UNDO::Transaction *transaction)
-{
-  auto pos = getBankPosition(getSelectedBankUuid());
-
-  if(pos > 0)
-  {
-    auto &bank = m_banks.getElements()[pos - 1];
-    selectBank(transaction, bank->getUuid());
-    return true;
-  }
-  return false;
-}
-
-bool PresetManager::selectNextBank(UNDO::Transaction *transaction)
-{
-  auto pos = getBankPosition(getSelectedBankUuid()) + 1;
-
-  if(pos < getNumBanks())
-  {
-    auto &bank = m_banks.getElements()[pos];
-    selectBank(transaction, bank->getUuid());
-    return true;
-  }
-  return false;
 }
 
 void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<Bank *> &banks)

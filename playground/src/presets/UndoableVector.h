@@ -6,6 +6,7 @@
 #include <tools/Uuid.h>
 #include "libundo/undo/SwapData.h"
 #include "libundo/undo/Transaction.h"
+#include <assert.h>
 
 template <typename Element> class UndoableVector
 {
@@ -283,6 +284,33 @@ template <typename Element> class UndoableVector
   const std::vector<ElementPtr> &getElements() const
   {
     return m_elements;
+  }
+
+  size_t getPreviousPosition(const Uuid &uuid) const
+  {
+    if(uuid.empty() || size() == 0)
+    {
+      assert(size() == 0);
+      return std::numeric_limits<size_t>::max();
+    }
+
+    auto pos = getIndexOf(uuid);
+
+    if(pos == 0)
+      return std::numeric_limits<size_t>::max();
+
+    return pos - 1;
+  }
+
+  size_t getNextPosition(const Uuid &uuid) const
+  {
+    if(uuid.empty() || size() == 0)
+    {
+      assert(size() == 0);
+      return std::numeric_limits<size_t>::max();
+    }
+
+    return std::min(getIndexOf(uuid) + 1, size() - 1);
   }
 
  private:

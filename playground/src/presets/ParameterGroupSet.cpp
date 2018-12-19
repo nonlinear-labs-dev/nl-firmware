@@ -88,6 +88,8 @@ ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup(Pa
 
 void ParameterGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other)
 {
+  super::copyFrom(transaction, other);
+
   for(auto &g : getParameterGroups())
   {
     if(auto c = other->findParameterGroup(g->getID()))

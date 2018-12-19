@@ -35,6 +35,9 @@ class Preset : public AttributesOwner
   void load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath);
   bool save(RefPtr<Gio::File> bankPath);
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+  void setAttribute(UNDO::Transaction *transaction, const std::string &key, const ustring &value) override;
+  void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other) override;
+  void clear(UNDO::Transaction *transaction) override;
 
   // accessors
   const Uuid &getUuid() const;

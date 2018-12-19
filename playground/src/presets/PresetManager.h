@@ -94,6 +94,8 @@ class PresetManager : public ContentSection
   sigc::connection onBankSelection(sigc::slot<void> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
 
+  void selectBank();
+
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
   void loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
@@ -110,6 +112,11 @@ class PresetManager : public ContentSection
   void popSaveTaskAndRecurseAsynchronously();
   void recurseSaveAsynchronously();
   void scheduleSave();
+
+  size_t getPreviousBankPosition() const;
+  size_t getNextBankPosition() const;
+  void selectBank(size_t idx);
+  bool selectBank(UNDO::Transaction *transaction, size_t idx);
 
   UndoableVector<Bank> m_banks;
   Uuid m_selectedBank;
