@@ -93,8 +93,8 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         auto scope = m_presetManager.getUndoScope().startTransaction("Move preset");
         auto transaction = scope->getTransaction();
-        auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 1);
-        srcBank->movePresetBetweenBanks(transaction, toMove, anchor);
+        auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 0);
+        srcBank->movePresetBetweenBanks(transaction, toMove, tgtBank, anchor);
         tgtBank->selectPreset(transaction, presetToMoveUuid);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
@@ -113,8 +113,8 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         auto scope = m_presetManager.getUndoScope().startTransaction("Move preset");
         auto transaction = scope->getTransaction();
-        auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 0);
-        srcBank->movePresetBetweenBanks(transaction, toMove, anchor);
+        auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 1);
+        srcBank->movePresetBetweenBanks(transaction, toMove, tgtBank, anchor);
         tgtBank->selectPreset(transaction, presetToMoveUuid);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
@@ -138,7 +138,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto transaction = scope->getTransaction();
 
         auto anchor = tgtBank->findPresetNear(presetToOverwrite, 0);
-        tgtBank->movePresetBetweenBanks(transaction, srcPreset, anchor);
+        tgtBank->movePresetBetweenBanks(transaction, srcPreset, tgtBank, anchor);
         srcBank->deletePreset(transaction, presetToOverwrite);
         tgtBank->selectPreset(transaction, srcPreset->getUuid());
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
@@ -207,7 +207,7 @@ BankActions::BankActions(PresetManager &presetManager)
     if(srcBank && tgtBank)
     {
       auto srcPreset = srcBank->findPreset(presetToMove);
-      auto anchorPos = tgtBank->getPresetPosition(presetAnchor) + 1;
+      auto anchorPos = tgtBank->getPresetPosition(presetAnchor);
 
       assert(srcPreset);
 
@@ -249,7 +249,7 @@ BankActions::BankActions(PresetManager &presetManager)
     if(auto tgtBank = m_presetManager.findBankWithPreset(presetAnchor))
     {
       auto name = guessNameBasedOnEditBuffer();
-      auto anchorPos = tgtBank->getPresetPosition(presetAnchor) + 1;
+      auto anchorPos = tgtBank->getPresetPosition(presetAnchor);
       auto &undoScope = m_presetManager.getUndoScope();
       auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
       auto transaction = transactionScope->getTransaction();
@@ -272,7 +272,7 @@ BankActions::BankActions(PresetManager &presetManager)
     if(auto tgtBank = m_presetManager.findBankWithPreset(presetAnchor))
     {
       auto name = guessNameBasedOnEditBuffer();
-      auto anchorPos = tgtBank->getPresetPosition(presetAnchor);
+      auto anchorPos = tgtBank->getPresetPosition(presetAnchor) + 1;
       auto &undoScope = m_presetManager.getUndoScope();
       auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
       auto transaction = transactionScope->getTransaction();
@@ -759,28 +759,9 @@ BankActions::BankActions(PresetManager &presetManager)
         auto scope = presetManager.getUndoScope().startTransaction("Move Bank '%0' right", bank->getName(true));
         auto transaction = scope->getTransaction();
         pos++;
-        if(pos < bank->getNumPresets())
+        if(pos < presetManager.getNumBanks())
           m_presetManager.setOrderNumber(transaction, bankUUID, pos);
       }
-    }
-  });
-
-  addAction("dock-bank", [&](shared_ptr<NetworkRequest> request) mutable {
-    const auto uuid = request->get("uuid");
-    const auto masterUuid = request->get("master-uuid");
-    const auto dockingDirection = request->get("direction");
-
-    DebugLevel::warning("docking-bank: ", uuid, " to ", masterUuid, " side: ", dockingDirection);
-
-    if(auto bank = m_presetManager.findBank(uuid))
-    {
-      auto newMasterName = m_presetManager.findBank(masterUuid)->getName(true);
-      auto scope = presetManager.getUndoScope().startTransaction("Attached Bank '%0' to '%1'", bank->getName(true),
-                                                                 newMasterName);
-      auto transaction = scope->getTransaction();
-      auto direction = dockingDirection == "top" ? Bank::AttachmentDirection::top : Bank::AttachmentDirection::left;
-      bank->attachBank(transaction, masterUuid, direction);
-      m_presetManager.sanitizeBankClusterRelations(transaction);
     }
   });
 

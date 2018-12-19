@@ -119,7 +119,6 @@ class PresetManager : public ContentSection
   bool selectBank(UNDO::Transaction *transaction, size_t idx);
 
   UndoableVector<Bank> m_banks;
-  Uuid m_selectedBank;
 
   typedef shared_ptr<RPCActionManager> tRPCActionManagerPtr;
   std::list<tRPCActionManagerPtr> m_actionManagers;

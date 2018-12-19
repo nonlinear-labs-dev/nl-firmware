@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_set>
 #include <algorithm>
 #include <tools/Uuid.h>
 #include "libundo/undo/SwapData.h"
@@ -16,22 +17,49 @@ template <typename Element> class UndoableVector
   using ChangeCB = std::function<void()>;
   using CloneFactory = std::function<Element *(const Element *)>;
 
+  static constexpr size_t invalidPosition = std::numeric_limits<size_t>::max();
+
   UndoableVector(ChangeCB &&c, CloneFactory &&f)
       : m_onChange(c)
       , m_factory(f)
+      , m_selection(Uuid::none())
   {
   }
 
   UndoableVector &operator=(const UndoableVector &other)
   {
+    Checker checker(this);
     m_elements.clear();
     other.forEach([&](auto e) { m_elements.emplace_back(m_factory(e)); });
+
+    if(auto p = other.getSelected())
+      m_selection = at(getIndexOf(p))->getUuid();
+    else if(!empty())
+      m_selection = first()->getUuid();
+    else
+      m_selection = Uuid::none();
+
     return *this;
+  }
+
+  Element *getSelected() const
+  {
+    return find(m_selection);
+  }
+
+  const Uuid &getSelectedUuid() const
+  {
+    return m_selection;
   }
 
   bool empty() const
   {
     return m_elements.empty();
+  }
+
+  Element *at(size_t idx) const
+  {
+    return getElements().at(idx).get();
   }
 
   Element *first() const
@@ -103,6 +131,21 @@ template <typename Element> class UndoableVector
     return nullptr;
   }
 
+  void select(UNDO::Transaction *transaction, const Uuid &uuid, std::function<void()> cb = nullptr)
+  {
+    Checker checker(this);
+    if(m_selection != uuid)
+    {
+      transaction->addSimpleCommand([this, cb, swap = UNDO::createSwapData(uuid)](auto) {
+        Checker checker(this);
+        swap->swapWith(m_selection);
+        m_onChange();
+        if(cb)
+          cb();
+      });
+    }
+  }
+
   Element *append(UNDO::Transaction *transaction, ElementPtr p)
   {
     return insert(transaction, size(), std::move(p));
@@ -115,18 +158,21 @@ template <typename Element> class UndoableVector
 
   Element *insert(UNDO::Transaction *transaction, size_t pos, ElementPtr p)
   {
+    Checker checker(this);
     auto raw = p.get();
     auto swapData = UNDO::createSwapData(std::move(p));
     pos = std::min(pos, size());
 
     transaction->addSimpleCommand(
         [=](auto) {
+          Checker checker(this);
           auto it = std::next(m_elements.begin(), pos);
           it = m_elements.insert(it, ElementPtr());
           swapData->swapWith(*it);
           m_onChange();
         },
         [=](auto) {
+          Checker checker(this);
           auto it = std::next(m_elements.begin(), pos);
           swapData->swapWith(*it);
           m_elements.erase(it);
@@ -138,49 +184,31 @@ template <typename Element> class UndoableVector
 
   void move(UNDO::Transaction *transaction, const Element *toMove, const Element *before)
   {
-    auto isToMove = [=](auto &b) { return b->getUuid() == toMove->getUuid(); };
-    auto fromIt = find_if(m_elements.begin(), m_elements.end(), isToMove);
-
-    if(fromIt != m_elements.end())
+    Checker checker(this);
+    if(toMove != before)
     {
-      auto toIt = m_elements.begin();
-
-      if(before)
-      {
-        auto isBefore = [=](auto &b) { return b->getUuid() == before->getUuid(); };
-        toIt = std::find_if(m_elements.begin(), m_elements.end(), isBefore);
-      }
-
-      auto fromPos = std::distance(m_elements.begin(), fromIt);
-      auto toPos = std::distance(m_elements.begin(), toIt);
-      auto swapData = UNDO::createSwapData(fromPos, toPos);
-
-      transaction->addSimpleCommand([swapData, this](auto) {
-        auto &fromPos = swapData->template get<0>();
-        auto &toPos = swapData->template get<1>();
-        auto fromIt = std::next(m_elements.begin(), fromPos);
-        auto toIt = std::next(m_elements.begin(), toPos);
-        m_elements.insert(toIt, std::move(*fromIt));
-        auto isEmpty = [](auto &b) { return static_cast<bool>(b); };
-        auto itEmpty = std::find_if(m_elements.begin(), m_elements.end(), isEmpty);
-        m_elements.erase(itEmpty);
-        std::swap(fromPos, toPos);
-        m_onChange();
-      });
+      auto e = release(transaction, toMove);
+      auto idx = before ? getIndexOf(before) : size();
+      adopt(transaction, idx, e);
     }
   }
 
   void remove(UNDO::Transaction *transaction, const Uuid &uuid)
   {
+    Checker checker(this);
     auto it = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
 
     if(it != m_elements.end())
     {
+      if(uuid == m_selection)
+        fixSelection(transaction);
+
       auto pos = std::distance(m_elements.begin(), it);
       auto swapData = UNDO::createSwapData(ElementPtr(nullptr));
 
       transaction->addSimpleCommand(
           [=](auto) {
+            Checker checker(this);
             auto it = std::next(m_elements.begin(), pos);
             ElementPtr e = std::move(*it);
             m_elements.erase(it);
@@ -188,6 +216,7 @@ template <typename Element> class UndoableVector
             m_onChange();
           },
           [=](auto) {
+            Checker checker(this);
             ElementPtr e;
             swapData->swapWith(e);
             auto it = std::next(m_elements.begin(), pos);
@@ -197,25 +226,52 @@ template <typename Element> class UndoableVector
     }
   }
 
+  void fixSelection(UNDO::Transaction *transaction)
+  {
+    Checker checker(this);
+    auto doomedElementUuid = m_selection;
+    auto newSelectionPos = getPreviousPosition(doomedElementUuid);
+
+    if(newSelectionPos == invalidPosition)
+      newSelectionPos = getNextPosition(doomedElementUuid);
+
+    if(newSelectionPos != invalidPosition)
+    {
+      select(transaction, at(newSelectionPos)->getUuid());
+    }
+    else
+    {
+      select(transaction, Uuid::none());
+    }
+  }
+
   Element *release(UNDO::Transaction *transaction, const Uuid &uuid)
   {
+    Checker checker(this);
     auto it = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
     return release(transaction, it);
   }
 
   Element *release(UNDO::Transaction *transaction, const Element *e)
   {
+    Checker checker(this);
     auto it = find_if(m_elements.begin(), m_elements.end(), [&](auto &p) { return p.get() == e; });
     return release(transaction, it);
   }
 
   Element *release(UNDO::Transaction *transaction, typename Elements::iterator it)
   {
+    Checker checker(this);
     if(it != m_elements.end())
     {
       auto pos = std::distance(m_elements.begin(), it);
       auto it = std::next(m_elements.begin(), pos);
       Element *theElement = it->get();
+
+      if(theElement->getUuid() == m_selection)
+      {
+        fixSelection(transaction);
+      }
 
       transaction->addSimpleCommand(
           [=](auto) {
@@ -237,6 +293,7 @@ template <typename Element> class UndoableVector
 
   void adopt(UNDO::Transaction *transaction, size_t pos, Element *p)
   {
+    Checker checker(this);
     pos = std::min(pos, size());
 
     transaction->addSimpleCommand(
@@ -255,6 +312,8 @@ template <typename Element> class UndoableVector
 
   void sort(UNDO::Transaction *transaction, const std::vector<Element *> &order)
   {
+    Checker checker(this);
+
 #ifdef _DEVELOPMENT_PC
     g_assert(order.size() == m_elements.size());
 
@@ -288,33 +347,70 @@ template <typename Element> class UndoableVector
 
   size_t getPreviousPosition(const Uuid &uuid) const
   {
-    if(uuid.empty() || size() == 0)
+    try
     {
-      assert(size() == 0);
-      return std::numeric_limits<size_t>::max();
+      if(auto pos = getIndexOf(uuid))
+        return pos - 1;
+    }
+    catch(...)
+    {
     }
 
-    auto pos = getIndexOf(uuid);
+    if(empty())
+      return invalidPosition;
 
-    if(pos == 0)
-      return std::numeric_limits<size_t>::max();
-
-    return pos - 1;
+    return 0;
   }
 
   size_t getNextPosition(const Uuid &uuid) const
   {
-    if(uuid.empty() || size() == 0)
+    try
     {
-      assert(size() == 0);
-      return std::numeric_limits<size_t>::max();
+      auto pos = getIndexOf(uuid) + 1;
+      if(pos < size())
+        return pos;
+    }
+    catch(...)
+    {
     }
 
-    return std::min(getIndexOf(uuid) + 1, size() - 1);
+    if(empty())
+      return invalidPosition;
+
+    return size() - 1;
   }
 
  private:
+  struct Checker
+  {
+    Checker(UndoableVector *p)
+        : m_p(p)
+    {
+      m_p->check();
+    }
+
+    ~Checker()
+    {
+      m_p->check();
+    }
+
+    UndoableVector *m_p;
+  };
+  void check()
+  {
+#if _DEVELOPMENT_PC
+    if(!empty())
+    {
+      //assert(getSelected());
+      assert(std::none_of(m_elements.begin(), m_elements.end(), [&](auto &b) { return b.get() == nullptr; }));
+      std::unordered_set<std::string> uuids;
+      std::for_each(m_elements.begin(), m_elements.end(), [&](auto &c) { uuids.insert(c->getUuid().raw()); });
+      assert(uuids.size() == size());
+    }
+#endif
+  }
   ChangeCB m_onChange;
   CloneFactory m_factory;
   Elements m_elements;
+  Uuid m_selection;
 };

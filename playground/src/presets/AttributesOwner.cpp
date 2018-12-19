@@ -7,6 +7,12 @@ AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent)
 {
 }
 
+AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent, const AttributesOwner *other)
+    : AttributesOwner(parent)
+{
+  m_attributes = other->m_attributes;
+}
+
 AttributesOwner::~AttributesOwner() = default;
 
 size_t AttributesOwner::getHash() const

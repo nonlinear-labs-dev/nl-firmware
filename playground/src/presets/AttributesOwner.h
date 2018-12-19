@@ -13,6 +13,7 @@ class AttributesOwner : public UpdateDocumentContributor
   typedef std::map<std::string, std::string> tAttributes;
 
   AttributesOwner(UpdateDocumentContributor *parent);
+  AttributesOwner(UpdateDocumentContributor *parent, const AttributesOwner *other);
   ~AttributesOwner() override;
 
   virtual void setAttribute(UNDO::Transaction *transaction, const std::string &key, const ustring &value);

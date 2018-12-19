@@ -333,17 +333,17 @@ std::list<Bank *> PresetManager::getBanks() const
 
 Bank *PresetManager::getBankAt(size_t idx) const
 {
-  return m_banks.getElements().at(idx).get();
+  return m_banks.at(idx);
 }
 
 const Uuid &PresetManager::getSelectedBankUuid() const
 {
-  return m_selectedBank;
+  return m_banks.getSelectedUuid();
 }
 
 Bank *PresetManager::getSelectedBank() const
 {
-  return findBank(getSelectedBankUuid());
+  return m_banks.getSelected();
 }
 
 EditBuffer *PresetManager::getEditBuffer() const
@@ -434,17 +434,10 @@ void PresetManager::deleteBank(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  if(m_selectedBank != uuid)
-  {
-    auto swap = UNDO::createSwapData(std::move(uuid));
-
-    transaction->addSimpleCommand([=](auto) {
-      swap->swapWith(m_selectedBank);
-      onPresetSelectionChanged();
-      this->m_sigBankSelection.send();
-      this->onChange();
-    });
-  }
+  m_banks.select(transaction, uuid, [this] {
+    onPresetSelectionChanged();
+    this->m_sigBankSelection.send();
+  });
 }
 
 void PresetManager::onPresetSelectionChanged()
@@ -481,10 +474,9 @@ void PresetManager::setOrderNumber(UNDO::Transaction *transaction, const Uuid &b
 {
   if(getNumBanks())
   {
-    auto b = findBank(bank);
-    auto anchor = std::min(targetPos, getNumBanks() - 1);
-    auto &anchorBank = m_banks.getElements()[anchor];
-    m_banks.move(transaction, b, anchorBank.get());
+    auto p = m_banks.release(transaction, bank);
+    m_banks.adopt(transaction, targetPos, p);
+    m_banks.forEach([](auto b) { b->invalidate(); });
   }
 }
 

@@ -94,7 +94,8 @@ class Bank : public AttributesOwner
   Preset *prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
   Preset *insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
   void movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before);
-  void movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, const Preset *presetAnchor);
+  void movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, Bank *tgtBank,
+                              const Preset *presetAnchor);
 
   void deletePreset(UNDO::Transaction *transaction, const Uuid &uuid);
   void resolveCyclicAttachments(UNDO::Transaction *transaction);
@@ -133,7 +134,6 @@ class Bank : public AttributesOwner
   std::string m_serializationDate;
   std::string m_x;
   std::string m_y;
-  Uuid m_selectedPresetUuid;
   Uuid m_attachedToBankWithUuid;
   std::string m_attachDirection;
   std::map<std::string, std::string> m_attributes;

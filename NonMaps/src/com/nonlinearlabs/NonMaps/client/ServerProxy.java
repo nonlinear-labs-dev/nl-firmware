@@ -37,7 +37,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
-import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 
 public class ServerProxy {
 
@@ -905,16 +904,6 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
 				new StaticURI.KeyValue("x", slave.getNonPosition().getPosition().getX()),
 				new StaticURI.KeyValue("y", slave.getNonPosition().getPosition().getY()));
-		queueJob(uri, false);
-	}
-
-	public void dockBank(Bank slave, Bank master, String direction) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "dock-bank");
-
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
-				new StaticURI.KeyValue("master-uuid", master.getUUID()),
-				new StaticURI.KeyValue("direction", direction));
-
 		queueJob(uri, false);
 	}
 

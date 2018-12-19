@@ -7,7 +7,6 @@
 
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
-    , m_selectedPresetUuid(Uuid::none())
     , m_attachedToBankWithUuid(Uuid::none())
     , m_presets(std::bind(&Bank::onChange, this, UpdateDocumentContributor::ChangeFlags::Generic),
                 std::bind(&Bank::clonePreset, this, std::placeholders::_1))
@@ -20,7 +19,6 @@ Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoeUuids
   if(!ignoeUuids)
   {
     m_uuid = other.m_uuid;
-    m_selectedPresetUuid = other.m_selectedPresetUuid;
     m_attachedToBankWithUuid = other.m_attachedToBankWithUuid;
   }
 
@@ -134,7 +132,7 @@ string Bank::getY() const
 
 const Uuid &Bank::getSelectedPresetUuid() const
 {
-  return m_selectedPresetUuid;
+  return m_presets.getSelectedUuid();
 }
 
 Preset *Bank::getSelectedPreset() const
@@ -179,12 +177,12 @@ Preset *Bank::findPresetNear(const Uuid &anchorUuid, int seek) const
 
 Preset *Bank::findSelectedPreset() const
 {
-  return findPreset(m_selectedPresetUuid);
+  return m_presets.getSelected();
 }
 
 Preset *Bank::getPresetAt(size_t idx) const
 {
-  return m_presets.getElements().at(idx).get();
+  return m_presets.at(idx);
 }
 
 void Bank::forEachPreset(std::function<void(Preset *)> cb) const
@@ -306,17 +304,14 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  if(m_selectedPresetUuid != uuid)
-  {
-    transaction->addUndoSwap(this, m_selectedPresetUuid, uuid);
-    static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
-  }
+  m_presets.select(transaction, uuid,
+                   [this] { static_cast<PresetManager *>(getParent())->onPresetSelectionChanged(); });
 }
 
 void Bank::ensurePresetSelection(UNDO::Transaction *transaction)
 {
   if(getNumPresets() && !findPreset(getSelectedPresetUuid()))
-    selectPreset(transaction, m_presets.getElements().front()->getUuid());
+    selectPreset(transaction, m_presets.first()->getUuid());
 }
 
 void Bank::setAttachedToBank(UNDO::Transaction *transaction, const Uuid &uuid)
@@ -364,10 +359,9 @@ void Bank::movePreset(UNDO::Transaction *transaction, const Preset *toMove, cons
   m_presets.move(transaction, toMove, before);
 }
 
-void Bank::movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, const Preset *presetAnchor)
+void Bank::movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, Bank *tgtBank,
+                                  const Preset *presetAnchor)
 {
-  auto tgtBank = static_cast<Bank *>(presetAnchor->getParent());
-
   if(tgtBank == this)
   {
     movePreset(transaction, presetToMove, presetAnchor);
