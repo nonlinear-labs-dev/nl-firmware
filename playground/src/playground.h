@@ -45,18 +45,18 @@ namespace std
     target = str;
     return res;
   }
+}
+template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std::string to_string(const T& e)
+{
+  return to_string(static_cast<int>(e));
+}
 
-  template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std::string to_string(const T& e)
-  {
-    return to_string(static_cast<int>(e));
-  }
 
-  template <typename S, typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true>
-  S& operator<<(S& stream, const T& e)
-  {
-    stream << static_cast<int>(e);
-    return stream;
-  }
+template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true>
+std::ostream& operator<<(std::ostream& stream, const T& e)
+{
+  stream << static_cast<int>(e);
+  return stream;
 }
 
 template <class T> inline void hash_combine(std::size_t& seed, const T& v)
