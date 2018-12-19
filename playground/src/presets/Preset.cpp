@@ -198,7 +198,7 @@ bool Preset::matchesQuery(const SearchQuery &query) const
 
     for(auto f : fields)
     {
-      if(entries[(int) f].find(part) != ustring::npos)
+      if(entries[static_cast<int>(f)].find(part) != ustring::npos)
       {
         return true;
       }
@@ -227,9 +227,30 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
 
 void Preset::writeDiff(Writer &writer, const Preset *other) const
 {
-  for(auto &group : m_parameterGroups)
+  char txt[256];
+  auto pm = Application::get().getPresetManager();
+  std::string aPositionString;
+  std::string bPositionString;
+
+  if(auto b = dynamic_cast<Bank *>(getParent()))
   {
-    auto otherGroup = other->findParameterGroup(group.first);
-    group.second->writeDiff(writer, group.first, otherGroup);
+    sprintf(txt, "%d-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(getUuid()) + 1);
+    aPositionString = txt;
   }
+
+  if(auto b = dynamic_cast<Bank *>(other->getParent()))
+  {
+    sprintf(txt, "%d-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(getUuid()) + 1);
+    bPositionString = txt;
+  }
+
+  writer.writeTag("diff", [&] {
+    writer.writeTextElement("position", "", Attribute("a", aPositionString), Attribute("b", bPositionString));
+    writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
+
+    super::writeDiff(writer, other);
+
+    for(auto &group : m_parameterGroups)
+      group.second->writeDiff(writer, group.first, other->findParameterGroup(group.first));
+  });
 }

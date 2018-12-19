@@ -286,7 +286,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
     {
       auto pm = Application::get().getPresetManager();
       auto eb = pm->getEditBuffer();
-      auto ebAsPreset = std::make_unique<Preset>(nullptr, eb);
+      auto ebAsPreset = std::make_unique<Preset>(pm.get(), *eb);
       auto aUUID = request->get("p1");
       auto bUUID = request->get("p2");
       auto a = pm->findPreset(aUUID);

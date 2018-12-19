@@ -1,6 +1,7 @@
 #include "AttributesOwner.h"
 #include <libundo/undo/Transaction.h>
 #include <xml/Writer.h>
+#include <unordered_set>
 
 AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent)
     : UpdateDocumentContributor(parent)
@@ -77,4 +78,26 @@ void AttributesOwner::writeDocument(Writer &writer, UpdateDocumentContributor::t
 {
   for(auto &it : m_attributes)
     writer.writeTextElement("attribute", it.second, Attribute("key", it.first));
+}
+
+void AttributesOwner::writeDiff(Writer &writer, const AttributesOwner *other) const
+{
+  std::unordered_set<std::string> keys;
+
+  for(auto &a : m_attributes)
+    keys.insert(a.first);
+
+  for(auto &a : other->m_attributes)
+    keys.insert(a.first);
+
+  for(auto key : keys)
+  {
+    auto va = getAttribute(key, "");
+    auto vb = other->getAttribute(key, "");
+
+    if(va != vb)
+    {
+      writer.writeTextElement(key, "", Attribute("a", va), Attribute("b", vb));
+    }
+  }
 }

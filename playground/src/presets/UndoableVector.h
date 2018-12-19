@@ -187,9 +187,13 @@ template <typename Element> class UndoableVector
     Checker checker(this);
     if(toMove != before)
     {
+      auto isSelected = getSelected() == toMove;
       auto e = release(transaction, toMove);
       auto idx = before ? getIndexOf(before) : size();
       adopt(transaction, idx, e);
+
+      if(isSelected)
+        select(transaction, toMove->getUuid());
     }
   }
 

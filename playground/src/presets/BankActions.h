@@ -25,7 +25,6 @@ class BankActions : public RPCActionManager
 
   void dropPresets(UNDO::Transaction *transaction, const Glib::ustring &anchorUUID, int offset,
                    const Glib::ustring &csv);
-  bool loadPresetAtRelativePosition(int offset);
   void insertBank(Bank *bank, Bank *targetBank, size_t insertPos);
   void insertBank(shared_ptr<NetworkRequest> request, size_t offset);
   Glib::ustring guessNameBasedOnEditBuffer() const;

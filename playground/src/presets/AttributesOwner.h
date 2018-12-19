@@ -25,6 +25,7 @@ class AttributesOwner : public UpdateDocumentContributor
   size_t getHash() const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDiff(Writer &writer, const AttributesOwner *other) const;
 
  private:
   tAttributes m_attributes;

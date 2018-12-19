@@ -34,7 +34,10 @@ void PresetBankSerializer::readTagContent(Reader &reader) const
 
   super::readTagContent(reader);
 
-  reader.onTag(PresetSerializer::getTagName(), [&](auto) mutable {
+  reader.onTag(PresetSerializer::getTagName(), [&](const auto &attr) mutable {
+    auto pos = std::stoull(attr.get("pos", std::to_string(std::numeric_limits<size_t>::max())));
+    if(pos < m_bank->getNumPresets())
+      return new PresetSerializer(m_bank->getPresetAt(pos), m_ignoreUUIDs);
     auto p = m_bank->appendPreset(reader.getTransaction());
     return new PresetSerializer(p, m_ignoreUUIDs);
   });

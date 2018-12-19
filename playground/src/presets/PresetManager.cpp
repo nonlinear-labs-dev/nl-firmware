@@ -449,6 +449,7 @@ void PresetManager::onPresetSelectionChanged()
 void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<Bank *> &banks)
 {
   m_banks.sort(transaction, banks);
+  m_banks.forEach([](auto b) { b->invalidate(); });
 }
 
 void PresetManager::storeInitSound(UNDO::Transaction *transaction)
@@ -474,8 +475,14 @@ void PresetManager::setOrderNumber(UNDO::Transaction *transaction, const Uuid &b
 {
   if(getNumBanks())
   {
+    auto isSelected = getSelectedBankUuid() == bank;
+
     auto p = m_banks.release(transaction, bank);
     m_banks.adopt(transaction, targetPos, p);
+
+    if(isSelected)
+      selectBank(transaction, bank);
+
     m_banks.forEach([](auto b) { b->invalidate(); });
   }
 }
