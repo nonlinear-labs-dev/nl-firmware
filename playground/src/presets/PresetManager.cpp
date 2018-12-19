@@ -64,6 +64,7 @@ void PresetManager::init()
   {
     DEBUG_TRACE("Loading presetmanager at", path);
     loadMetadataAndSendEditBufferToLpc(transaction, file);
+    loadInitSound(transaction, file);
     loadBanks(transaction, file);
   }
 
@@ -281,6 +282,17 @@ void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transa
   DEBUG_TRACE("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
   Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this);
+}
+
+void PresetManager::loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
+{
+  DEBUG_TRACE("loadInitSound", pmFolder->get_uri());
+  SplashLayout::addStatus("Loading Init Sound");
+
+  Serializer::read<PresetSerializer>(transaction, pmFolder, ".initSound", m_initSound.get(), true);
+
+  m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
+  m_lastSavedInitSoundUpdateID = getUpdateIDOfLastChange();
 }
 
 void PresetManager::loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)

@@ -423,7 +423,6 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   for(auto group : getParameterGroups())
     group->undoableClear(transaction);
 
-
   auto swap = UNDO::createSwapData(Uuid::none());
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     swap->swapWith(m_lastLoadedPreset);
@@ -438,8 +437,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *other)
 {
   for(auto &g : getParameterGroups())
-    if(auto p = other->findParameterGroup(g->getID()))
-      g->undoableSetDefaultValues(transaction, p);
+    g->undoableSetDefaultValues(transaction, other->findParameterGroup(g->getID()));
 }
 
 UNDO::Scope &EditBuffer::getUndoScope()

@@ -165,10 +165,8 @@ void ParameterGroup::undoableSetDefaultValues(UNDO::Transaction *transaction, co
 {
   for(auto &g : getParameters())
   {
-    if(auto c = other->findParameterByID(g->getID()))
-    {
-      g->undoableSetDefaultValue(transaction, c);
-    }
+    PresetParameter *p = other ? other->findParameterByID(g->getID()) : nullptr;
+    g->undoableSetDefaultValue(transaction, p);
   }
 }
 

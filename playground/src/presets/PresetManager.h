@@ -98,6 +98,7 @@ class PresetManager : public ContentSection
 
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
+  void loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
   void loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
   Glib::ustring getBaseName(const ustring &basedOn) const;
   void scheduleAutoLoadSelectedPreset();

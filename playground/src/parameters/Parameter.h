@@ -125,6 +125,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const;
   virtual tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
+  void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
 
  private:
   Signal<void, const Parameter *> m_signalParamChanged;

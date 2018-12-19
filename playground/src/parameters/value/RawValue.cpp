@@ -3,6 +3,7 @@
 
 RawValue::RawValue(const ScaleConverter *scale, tValueType def)
     : m_defaultValue(def)
+    , m_factoryDefaultValue(def)
     , m_scaleConverter(scale)
 {
   m_rawValue.resize(1, m_defaultValue);
@@ -63,6 +64,11 @@ void RawValue::changeRawValue(Initiator initiator, tValueType diff)
 RawValue::tValueType RawValue::getDefaultValue() const
 {
   return m_defaultValue;
+}
+
+RawValue::tValueType RawValue::getFactoryDefaultValue() const
+{
+  return m_factoryDefaultValue;
 }
 
 void RawValue::setDefaultValue(tValueType defaultValue)

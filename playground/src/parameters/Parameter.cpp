@@ -180,11 +180,17 @@ void Parameter::copyTo(UNDO::Transaction *transaction, PresetParameter *other) c
 
 void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *value)
 {
-  auto diff = value->getValue() - m_value.getDefaultValue();
+  tControlPositionValue v = value ? value->getValue() : m_value.getFactoryDefaultValue();
+  undoableSetDefaultValue(transaction, v);
+}
+
+void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value)
+{
+  auto diff = value - m_value.getDefaultValue();
 
   if(std::abs(diff) > std::numeric_limits<tControlPositionValue>::epsilon())
   {
-    auto swapData = UNDO::createSwapData(value->getValue());
+    auto swapData = UNDO::createSwapData(value);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       tDisplayValue newVal = m_value.getDefaultValue();
