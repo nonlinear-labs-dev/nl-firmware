@@ -148,14 +148,39 @@ public abstract class BankContextMenu extends ContextMenu {
 				});
 				
 				PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+				if(pm.areAllBanksMinimized()) {
+					addChild(new ContextMenuItem(this, "Full Size All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(false);
+							return super.click(eventPoint);
+						}
+					});
+				} else if(pm.isAnyBankMinimized() && !pm.areAllBanksMinimized()) {
+					addChild(new ContextMenuItem(this, "Minimze All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(true);
+							return super.click(eventPoint);
+						}
+					});
+					addChild(new ContextMenuItem(this, "Full Size All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(false);
+							return super.click(eventPoint);
+						}
+					});
+				} else {
+					addChild(new ContextMenuItem(this, "Minimze All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(true);
+							return super.click(eventPoint);
+						}
+					});
+				}
 				
-				addChild(new ContextMenuItem(this, pm.isAnyBankMinimized() ? "Full Size All" : "Minimize All") {
-					@Override
-					public Control click(Position eventPoint) {
-						pm.setAllBanksMinimizeState(!pm.isAnyBankMinimized());
-						return super.click(eventPoint);
-					}
-				});
 			}
 			
 			addChild(new ContextMenuItem(this, "Export as File ...") {

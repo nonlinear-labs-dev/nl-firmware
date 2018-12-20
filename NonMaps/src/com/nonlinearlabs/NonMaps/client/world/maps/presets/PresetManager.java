@@ -112,6 +112,14 @@ public class PresetManager extends MapsLayout {
 		return false;
 	}
 
+	public boolean areAllBanksMinimized() {
+		for(Bank b: getBanks()) {
+			if(!b.isMinimized())
+				return false;
+		}
+		return true;
+	}
+		
 	public MoveSomeBanksLayer getMoveSomeBanks() {
 		return moveSomeBanks;
 	}
