@@ -2,27 +2,31 @@
 #include "WifiSetting.h"
 #include "DebugLevel.h"
 
-WifiSetting::WifiSetting(Settings &settings)
+WifiSetting::WifiSetting(Settings& settings)
     : BooleanSetting(settings, WifiSetting::pollAccessPointRunning())
 {
 }
+
+
+auto printRet = [](SpawnCommandLine & cmd)
+{
+  DebugLevel::warning("COut:", cmd.getStdOutput(), "CError:", cmd.getStdError(), "Exit Status:", cmd.getExitStatus());
+};
 
 WifiSetting::~WifiSetting() = default;
 
 bool WifiSetting::set(Glib::ustring value)
 {
-  auto printRet = [](SpawnCommandLine& cmd) {
-      DebugLevel::warning("COut:", cmd.getStdOutput(), "CError:", cmd.getStdError());
-  };
 
-  bool on = value.find("on") != Glib::ustring::npos;
-  bool off = value.find("off") != Glib::ustring::npos;
+  bool on = value == "on";
 
-  if(on) {
+  if(on)
+  {
     SpawnCommandLine cmd("su - root -c \"systemctl enable accesspoint && systemctl start accesspoint\"");
     printRet(cmd);
   }
-  else if(off) {
+  else
+  {
     SpawnCommandLine cmd("su - root -c \"systemctl disable accesspoint && systemctl stop accesspoint\"");
     printRet(cmd);
   }
@@ -33,9 +37,11 @@ bool WifiSetting::set(Glib::ustring value)
 
 bool WifiSetting::pollAccessPointRunning()
 {
+  SpawnCommandLine cmd("systemctl is-active accesspoint");
+  printRet(cmd);
 #ifdef DEV_PC
   return true;
+#else
+  return cmd.getExitStatus() == 0;
 #endif
-  SpawnCommandLine cmd("systemctl is-active accesspoint");
-  return cmd.getStdOutput().find("active") != Glib::ustring::npos;
 }
