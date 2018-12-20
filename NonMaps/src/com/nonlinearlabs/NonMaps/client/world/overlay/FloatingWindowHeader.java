@@ -13,7 +13,6 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 
 public class FloatingWindowHeader extends OverlayLayout {
 
-	protected boolean mouseDown = false;
 	protected Label header;
 	protected Label x;
 
@@ -43,6 +42,8 @@ public class FloatingWindowHeader extends OverlayLayout {
 			private void drawX(Context2d ctx) {
 				Rect r = getPixRect().getReducedBy(Millimeter.toPixels(4));
 				
+				boolean mouseDown = isCaptureControl();
+				
 				RGB fillColor = mouseDown ? new Gray(133) : new Gray(66);
 				RGB strokeColor = mouseDown ? new Gray(222) : new Gray(154);
 				
@@ -67,25 +68,24 @@ public class FloatingWindowHeader extends OverlayLayout {
 			
 			@Override
 			public Control mouseDown(Position eventPoint) {
-				mouseDown = true;
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return this;
 			}
 			
 			@Override
 			public void onMouseLost() {
-				mouseDown = false;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
 			
 			@Override
 			public Control mouseUp(Position eventPoint) {
-				mouseDown = false;
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return this;
 			}
 			
 			@Override
 			public void dragLeave() {
-				mouseDown = false;
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
 			
 			@Override
