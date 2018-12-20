@@ -22,7 +22,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
-#include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/Settings.h>
 #include <device-settings/Setting.h>
@@ -35,6 +34,8 @@
 #include <memory>
 #include <device-settings/DebugLevel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
+#include "PanelUnitParameterEditMode.h"
+
 
 class ParameterInfoLayout;
 class ParameterLayout2;
@@ -461,8 +462,12 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
   {
     letOtherTargetsBlink({ 178, 158 });
   }
-  else if(group->getID() == "Flang" || group->getID() == "Gap Filt" || group->getID() == "Cab"
-          || group->getID() == "Echo" || group->getID() == "Reverb")
+  else if(group->getID() == "Flang")
+  {
+    letOtherTargetsBlink({ 160, 307 });
+  }
+  else if(group->getID() == "Gap Filt" || group->getID() == "Cab" || group->getID() == "Echo"
+          || group->getID() == "Reverb")
   {
     letOtherTargetsBlink({ 160 });
 
@@ -546,14 +551,26 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
 
   const auto FMAB = editBuffer->findParameterByID(SVFilterFMAB);
   const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB);
+  constexpr const auto IdCombMix = 138;
+  const auto SVCombMix = editBuffer->findParameterByID(IdCombMix);
+  const auto combMax = SVCombMix->getValue().getUpperBorder();
+  const auto combMin = SVCombMix->getValue().getLowerBorder();
 
   for(auto targetID : targets)
   {
     const auto currentParam = editBuffer->findParameterByID(targetID);
     switch(targetID)
     {
-      case CombFilterAB:
       case SVFilterAB:
+        if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
+        {
+          if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
+          {
+            panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          }
+        }
+        break;
+      case CombFilterAB:
         if(currentParam->getControlPositionValue() < 1.d)
         {
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
@@ -589,12 +606,25 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
 
   const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB);
   const auto stateVariableFilterFMAB = editBuffer->findParameterByID(SVFilterFMAB);
+  constexpr const auto IdCombMix = 138;
+  const auto SVCombMix = editBuffer->findParameterByID(IdCombMix);
+  const auto combMax = SVCombMix->getValue().getUpperBorder();
+  const auto combMin = SVCombMix->getValue().getLowerBorder();
 
   for(auto targetID : targets)
   {
     auto currentParam = editBuffer->findParameterByID(targetID);
     switch(targetID)
     {
+      case SVFilterAB:
+        if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
+        {
+          if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
+          {
+            panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          }
+        }
+        break;
       case CombFilterPM:
         if(currentParam->getControlPositionValue() != currentParam->getDefaultValue()
            && combFilterPMAB->getControlPositionValue() != combFilterPMAB->getDefaultValue())

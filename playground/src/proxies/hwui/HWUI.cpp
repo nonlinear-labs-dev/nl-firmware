@@ -23,6 +23,7 @@
 #include <xml/FileOutStream.h>
 #include <groups/HardwareSourcesGroup.h>
 #include <io/network/WebSocketSession.h>
+#include <tools/PerformanceTimer.h>
 
 HWUI::HWUI()
     : m_readersCancel(Gio::Cancellable::create())
@@ -160,6 +161,41 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         onButtonPressed(BUTTON_REDO, true);
         onButtonPressed(BUTTON_UNDO, false);
         onButtonPressed(BUTTON_REDO, false);
+      }
+      else if(line == "stress-undo-s")
+      {
+        Application::get().getPresetManager()->stress(1000);
+      }
+      else if(line == "stress-undo-m")
+      {
+        Application::get().getPresetManager()->stress(10000);
+      }
+      else if(line == "stress-undo-l")
+      {
+        Application::get().getPresetManager()->stress(100000);
+      }
+      else if(line == "stress-pm")
+      {
+        Application::get().getPresetManager()->stressLoad(1000);
+      }
+      else if(line == "undo-performance-compare")
+      {
+        Application::get().stopWatchDog();
+
+
+        for(int steps = 0; steps < 50; steps++) {
+          unsigned long long totalTraverse = 0;
+          long avgusTraverse = 0;
+          for(int i = 1; i < 101; i++)
+          {
+            auto traverse = Application::get().getPresetManager()->getUndoScope().getRootTransaction()->traverseTree();
+            totalTraverse += traverse;
+          }
+          avgusTraverse = static_cast<long>(totalTraverse / 100);
+          DebugLevel::warning("Count: ~",steps*1000,"Transactions Traverse avg:", avgusTraverse / 1000, "\bms");
+          Application::get().getPresetManager()->stressBlocking(1000);
+        }
+        Application::get().runWatchDog();
       }
       else if(line.at(0) == '!')
       {

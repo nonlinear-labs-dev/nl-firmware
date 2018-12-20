@@ -310,7 +310,7 @@ namespace UNDO
 
         writer.writeTextElement("redo", StringTools::buildString(getRedoTransaction()));
 
-        getRootTransaction()->recurse([&](const Transaction *p) mutable { p->writeDocument(writer, knownRevision); });
+        getRootTransaction()->traverse([&](const Transaction *p) mutable { p->writeDocument(writer, knownRevision); });
       });
     }
   }

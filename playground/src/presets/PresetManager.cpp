@@ -624,3 +624,121 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
                     }
                   });
 }
+
+void PresetManager::stress(int numTransactions)
+{
+  Glib::MainContext::get_default()->signal_timeout().connect_once(
+      [=]() {
+        int parameterId = g_random_int_range(0, 200);
+
+        {
+          auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
+          m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), to_string(parameterId));
+
+          if(auto p = m_editBuffer->getSelected())
+          {
+            p->stepCPFromHwui(transactionScope->getTransaction(), g_random_boolean() ? -1 : 1, ButtonModifiers());
+          }
+        }
+
+        if(numTransactions % 20 == 0)
+        {
+          int numUndos = g_random_int_range(1, 5);
+
+          for(int i = 0; i < numUndos; i++)
+          {
+            getUndoScope().undo();
+          }
+        }
+
+        if(numTransactions > 0)
+        {
+          stress(numTransactions - 1);
+        }
+      },
+      20);
+}
+
+void PresetManager::stressBlocking(int numTransactions)
+{
+  int parameterId = g_random_int_range(0, 200);
+  {
+    auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
+    m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), to_string(parameterId));
+
+    if(auto p = m_editBuffer->getSelected())
+    {
+      p->stepCPFromHwui(transactionScope->getTransaction(), g_random_boolean() ? -1 : 1, ButtonModifiers());
+    }
+  }
+
+  if(numTransactions % 20 == 0)
+  {
+    int numUndos = g_random_int_range(1, 5);
+
+    for(int i = 0; i < numUndos; i++)
+    {
+      getUndoScope().undo();
+    }
+  }
+
+  if(numTransactions > 0)
+  {
+    stressBlocking(numTransactions - 1);
+  }
+}
+
+void PresetManager::stressLoad(int numTransactions)
+{
+  Glib::MainContext::get_default()->signal_timeout().connect_once(
+      [=]() {
+        int numSteps = numTransactions;
+        auto transactionScope = getUndoScope().startTransaction("Stressing by Preset loading");
+        auto transaction = transactionScope->getTransaction();
+
+        while(numSteps > 0)
+        {
+          for(auto b : getBanks())
+          {
+            for(auto p : b->getPresets())
+            {
+              m_editBuffer->undoableLoad(transaction, p);
+              numSteps--;
+            }
+          }
+        }
+      },
+      20);
+}
+
+Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset2)
+{
+  Glib::ustring out;
+
+  auto parameters1 = preset1->getParametersSortedById();
+  auto parameters2 = preset2->getParametersSortedById();
+
+  for(auto it_m1 = parameters1.cbegin(), end_m1 = parameters1.cend(), it_m2 = parameters2.cbegin(),
+           end_m2 = parameters2.cend();
+      it_m1 != end_m1 || it_m2 != end_m2;)
+  {
+    if(it_m1 != end_m1 && it_m2 != end_m2)
+    {
+      if(it_m1->second->getDisplayString() != it_m2->second->getDisplayString())
+      {
+        out += Glib::ustring(it_m1->second->getParentGroup()->getLongName());
+        out += ",";
+        out += Glib::ustring(it_m1->second->getLongName());
+        out += ",";
+        out += Glib::ustring(it_m1->second->getDisplayString());
+        out += ",";
+        out += Glib::ustring(it_m2->second->getDisplayString());
+        out += ",";
+      }
+      ++it_m1;
+      ++it_m2;
+    }
+  }
+
+  return out;
+}

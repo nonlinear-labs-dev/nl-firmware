@@ -11,43 +11,46 @@
 #include <proxies/hwui/HWUIEnums.h>
 
 BaseUnitPresetsAndBanksMode::BaseUnitPresetsAndBanksMode()
-    : m_fireLongPress(bind(&BaseUnitPresetsAndBanksMode::onLongPress, this))
-{
-}
-
-BaseUnitPresetsAndBanksMode::~BaseUnitPresetsAndBanksMode()
+    : m_modeButtonHandler(std::bind(&BaseUnitPresetsAndBanksMode::modeButtonShortPress, this),
+                          std::bind(&BaseUnitPresetsAndBanksMode::modeButtonLongPress, this))
+    , m_funcButtonHandler([] {},
+                          [] { Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle(); })
 {
 }
 
 void BaseUnitPresetsAndBanksMode::setup()
 {
-  setupButtonConnection(BUTTON_FUNCTION, [=](gint32 button, ButtonModifiers modifiers, bool state) {
+  setupButtonConnection(BUTTON_FUNCTION, [=](auto, auto, auto state) {
     if(state)
-    {
       onFuncButtonDown();
-      m_fireLongPress.refresh(std::chrono::milliseconds(600));
-    }
-    else
-    {
-      m_fireLongPress.cancel();
-    }
 
+    m_funcButtonHandler.onButtonEvent(state);
     return true;
   });
 
-  setupButtonConnection(BUTTON_MODE, [=](gint32 buttonID, ButtonModifiers modifiers, bool state) {
-    if(state)
-    {
-      Application::get().getSettings()->getSetting<BaseUnitUIMode>()->inc(1, true);
-    }
-
+  setupButtonConnection(BUTTON_MODE, [=](auto, auto, auto state) {
+    m_modeButtonHandler.onButtonEvent(state);
     return true;
   });
 }
 
+void BaseUnitPresetsAndBanksMode::modeButtonShortPress()
+{
+  auto s = Application::get().getSettings()->getSetting<BaseUnitUIMode>();
+
+  if(s->get() == BaseUnitUIModes::Presets)
+    s->set(BaseUnitUIModes::Banks);
+  else
+    s->set(BaseUnitUIModes::Presets);
+}
+
+void BaseUnitPresetsAndBanksMode::modeButtonLongPress()
+{
+  Application::get().getSettings()->getSetting<BaseUnitUIMode>()->set(BaseUnitUIModes::Play);
+}
+
 void BaseUnitPresetsAndBanksMode::onLongPress()
 {
-  Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
 }
 
 void BaseUnitPresetsAndBanksMode::onFuncButtonDown()

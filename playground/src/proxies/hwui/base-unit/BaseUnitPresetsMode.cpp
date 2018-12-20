@@ -2,46 +2,29 @@
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
-#include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/Settings.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnitPresetsMode.h>
 #include <proxies/hwui/buttons.h>
-#include <proxies/hwui/HWUIEnums.h>
-
-BaseUnitPresetsMode::BaseUnitPresetsMode()
-{
-}
-
-BaseUnitPresetsMode::~BaseUnitPresetsMode()
-{
-}
 
 void BaseUnitPresetsMode::setup()
 {
   super::setup();
 
-  setupButtonConnection(BUTTON_MINUS, [=](gint32 button, ButtonModifiers modifiers, bool state) {
+  setupButtonConnection(BUTTON_MINUS, [=](auto, auto, auto state) {
     if(state)
-    {
       if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-      {
         bank->selectPreviousPreset();
-      }
-    }
 
     return true;
   });
 
-  setupButtonConnection(BUTTON_PLUS, [=](gint32 button, ButtonModifiers modifiers, bool state) {
+  setupButtonConnection(BUTTON_PLUS, [=](auto, auto, auto state) {
     if(state)
-    {
       if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-      {
         bank->selectNextPreset();
-      }
-    }
+
     return true;
   });
 }
@@ -52,11 +35,7 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto eb = app.getPresetManager()->getEditBuffer();
 
   if(!app.getSettings()->getSetting<AutoLoadSelectedPreset>()->get())
-  {
     eb->undoableLoadSelectedPreset();
-  }
   else if(eb->isModified())
-  {
     eb->undoableLoadSelectedPreset();
-  }
 }

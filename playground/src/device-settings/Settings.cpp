@@ -39,6 +39,7 @@
 #include <xml/XmlWriter.h>
 #include <xml/VersionAttribute.h>
 #include <proxies/lpc/LPCProxy.h>
+#include "WifiSetting.h"
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -75,6 +76,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("KioskMode", new KioskModeSetting(*this));
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
   addSetting("BenderRampBypass", new BenderRampBypass(*this));
+  addSetting("WifiSetting", new WifiSetting(*this));
 }
 
 Settings::~Settings()

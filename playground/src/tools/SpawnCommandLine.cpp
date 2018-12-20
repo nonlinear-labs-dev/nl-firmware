@@ -7,7 +7,7 @@ SpawnCommandLine::SpawnCommandLine(const std::string &cmd)
 {
   try
   {
-    Glib::spawn_command_line_sync(cmd, &m_stdOutput, &m_stdError, nullptr);
+    Glib::spawn_command_line_sync(cmd, &m_stdOutput, &m_stdError, &m_exitStatus);
   }
   catch(Glib::Error &error)
   {
@@ -28,4 +28,8 @@ const std::string &SpawnCommandLine::getStdOutput() const
 const std::string &SpawnCommandLine::getStdError() const
 {
   return m_stdError;
+}
+
+const int SpawnCommandLine::getExitStatus() const {
+  return m_exitStatus;
 }

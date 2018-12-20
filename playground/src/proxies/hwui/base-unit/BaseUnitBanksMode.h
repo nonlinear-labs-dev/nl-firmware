@@ -10,8 +10,5 @@ class BaseUnitBanksMode : public BaseUnitPresetsAndBanksMode
   typedef BaseUnitPresetsAndBanksMode super;
 
  public:
-  BaseUnitBanksMode();
-  virtual ~BaseUnitBanksMode();
-
   void setup() override;
 };

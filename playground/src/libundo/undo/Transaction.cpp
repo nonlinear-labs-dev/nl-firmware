@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "Transaction.h"
 #include "Scope.h"
 #include "Algorithm.h"
@@ -6,6 +8,7 @@
 #include "device-settings/DebugLevel.h"
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
+#include <tools/PerformanceTimer.h>
 #include "StringTools.h"
 
 namespace UNDO
@@ -50,7 +53,7 @@ namespace UNDO
 
     swap(todo, m_postfixCommands);
 
-    for(auto h : todo)
+    for(const auto &h : todo)
       addCommand(h);
 
     m_isClosed = true;
@@ -69,13 +72,13 @@ namespace UNDO
 
   void Transaction::addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo)
   {
-    tCommandPtr cmd(new ActionCommand(doAndRedo, undo));
+    tCommandPtr cmd(new ActionCommand(std::move(doAndRedo), undo));
     addCommand(cmd);
   }
 
   void Transaction::addSimpleCommand(ActionCommand::tAction doRedoUndo)
   {
-    tCommandPtr cmd(new SwapCommand(doRedoUndo));
+    tCommandPtr cmd(new SwapCommand(std::move(doRedoUndo)));
     addCommand(cmd);
   }
 
@@ -108,9 +111,9 @@ namespace UNDO
   {
     assert(m_isClosed);
 
-    for(auto it = m_commands.begin(); it != m_commands.end(); ++it)
+    for(const auto &m_command : m_commands)
     {
-      (*it)->redoAction();
+      m_command->redoAction();
     }
 
     onImplRedoActionFinished();
@@ -202,9 +205,15 @@ namespace UNDO
 
   void Transaction::redoUntil(Transaction *target)
   {
+<<<<<<< HEAD
     std::list<Transaction *> steps = Algorithm::getPathAsList(target, this);
 
     for(Transaction *step : steps)
+=======
+    std::list<tTransactionPtr> steps = Algorithm::getPathAsList(std::move(target), this);
+
+    for(const tTransactionPtr &step : steps)
+>>>>>>> RELEASE-2019-01
     {
       step->redoAction();
     }
@@ -220,13 +229,18 @@ namespace UNDO
 
   void Transaction::addChildren(std::list<Transaction *> &list) const
   {
+<<<<<<< HEAD
     for(auto &c : m_successors)
       list.push_back(c.get());
+=======
+    for(const tTransactionPtr &c : m_successors)
+      list.push_back(c);
+>>>>>>> RELEASE-2019-01
   }
 
   void Transaction::setDefaultRedoRoute(Transaction *route)
   {
-    m_defaultRedoRoute = route;
+    m_defaultRedoRoute = std::move(route);
     onChange();
   }
 
@@ -237,7 +251,7 @@ namespace UNDO
 
   void Transaction::addPostfixCommand(ActionCommand::tAction doRedoUndo)
   {
-    m_postfixCommands.emplace_back(new SwapCommand(doRedoUndo));
+    m_postfixCommands.emplace_back(new SwapCommand(std::move(doRedoUndo)));
   }
 
   void Transaction::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -258,7 +272,11 @@ namespace UNDO
   {
     stringstream str;
 
+<<<<<<< HEAD
     for(auto &s : m_successors)
+=======
+    for(const auto &s : m_successors)
+>>>>>>> RELEASE-2019-01
     {
       if(str.tellp())
         str << ',';
@@ -268,12 +286,31 @@ namespace UNDO
     return str.str();
   }
 
-  void Transaction::recurse(function<void(const Transaction *)> cb) const
+  long Transaction::traverseTree() const
   {
-    cb(this);
+    auto start = std::chrono::high_resolution_clock::now();
+    size_t count = 0;
+    this->traverse([&](const Transaction *t) { count++; });
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  }
 
-    for(auto &s : m_successors)
-      s->recurse(cb);
+  void Transaction::traverse(function<void(const UNDO::Transaction *)> cb) const
+  {
+    std::vector<const Transaction *> list{ this };
+    unsigned long long index = 0;
+
+    while(index < list.size())
+    {
+      if(auto curr = list[index]; curr != nullptr)
+      {
+        for(const auto &node : curr->m_successors)
+          list.emplace_back(node.get());
+
+        cb(curr);
+        index++;
+      }
+    }
   }
 
   int Transaction::countPredecessors() const
@@ -336,7 +373,7 @@ namespace UNDO
     if(a == b)
       return 0;
 
-    for(auto &p : m_successors)
+    for(const auto &p : m_successors)
     {
       if(p.get() == a)
         return -1;

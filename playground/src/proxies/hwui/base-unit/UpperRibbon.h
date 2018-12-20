@@ -14,8 +14,6 @@ class UpperRibbon : public Ribbon
 
  public:
   UpperRibbon();
-  virtual ~UpperRibbon();
-
   static void registerTests();
 
  private:

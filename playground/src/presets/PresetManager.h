@@ -27,6 +27,11 @@ class PresetManager : public ContentSection
 
   void init();
 
+  // debug
+  void stress(int numTransactions);
+  void stressBlocking(int numTransactions);
+  void stressLoad(int numTransactions);
+
   // supported interfaces
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
   Glib::ustring getPrefix() const override;

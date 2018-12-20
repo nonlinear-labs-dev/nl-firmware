@@ -60,9 +60,10 @@ namespace UNDO
 
     void addPostfixCommand(ActionCommand::tAction doRedoUndo);
 
-    virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+    void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
-    void recurse(function<void(const Transaction *)> cb) const;
+    long traverseTree() const;
+    void traverse(function<void(const Transaction *)> cb) const;
 
     template <typename T> void addUndoSwap(UpdateDocumentContributor *c, T &target, const T &newValue)
     {
@@ -87,9 +88,9 @@ namespace UNDO
     }
 
    protected:
-    virtual void implDoAction() const override;
-    virtual void implUndoAction() const override;
-    virtual void implRedoAction() const override;
+    void implDoAction() const override;
+    void implUndoAction() const override;
+    void implRedoAction() const override;
 
     virtual void onImplUndoActionStart() const;
     virtual void onImplRedoActionFinished() const;

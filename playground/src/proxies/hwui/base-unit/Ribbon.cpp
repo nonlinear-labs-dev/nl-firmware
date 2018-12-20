@@ -37,7 +37,7 @@ void Ribbon::initLEDs()
 void Ribbon::setLEDState(int ledPos, char state)
 {
   m_leds[ledPos].setState(state);
-  // debugTrace();
+  //debugTrace();
 }
 
 void Ribbon::debugTrace()

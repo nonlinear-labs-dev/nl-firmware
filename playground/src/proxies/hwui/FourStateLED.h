@@ -7,7 +7,7 @@ class FourStateLED : public LED
 {
  public:
   FourStateLED();
-  virtual ~FourStateLED();
+  ~FourStateLED() override;
 
   void setState(char state);
   char getState() const;

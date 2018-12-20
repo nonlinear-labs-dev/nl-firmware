@@ -14,7 +14,6 @@ class LowerRibbon : public Ribbon
 
  public:
   LowerRibbon();
-  virtual ~LowerRibbon();
   void indicateBlockingMainThread(bool onOff);
 
  private:

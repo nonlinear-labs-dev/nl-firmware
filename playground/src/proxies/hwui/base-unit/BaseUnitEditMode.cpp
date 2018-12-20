@@ -5,25 +5,14 @@
 #include "proxies/lpc/LPCProxy.h"
 #include "groups/HardwareSourcesGroup.h"
 
-BaseUnitEditMode::BaseUnitEditMode()
-{
-}
-
-BaseUnitEditMode::~BaseUnitEditMode()
-{
-}
-
 void BaseUnitEditMode::toggleTouchBehaviour()
 {
-  if(Application::get().getLPCProxy()->getLastTouchedRibbonParameterID()
-     == HardwareSourcesGroup::getUpperRibbonParameterID())
-  {
+  auto p = Application::get().getLPCProxy();
+
+  if(p->getLastTouchedRibbonParameterID() == HardwareSourcesGroup::getUpperRibbonParameterID())
     toggleParameterEditModeRibbonBehaviour();
-  }
   else
-  {
     super::toggleTouchBehaviour();
-  }
 }
 
 void BaseUnitEditMode::toggleParameterEditModeRibbonBehaviour()
