@@ -1,8 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -55,6 +57,11 @@ public class PresetSearch extends Composite {
 
 		prev.addClickHandler(b -> getUseCases().highlightPrev());
 		next.addClickHandler(b -> getUseCases().highlightNext());
+		
+		Scheduler.get().scheduleFinally((Command) () -> {
+			search.selectAll();
+			search.setFocus(true);
+		});
 	}
 
 	public com.nonlinearlabs.NonMaps.client.useCases.PresetSearch getUseCases() {
