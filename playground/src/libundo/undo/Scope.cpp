@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "Scope.h"
 #include "Transaction.h"
 #include "ContinuousTransaction.h"
@@ -69,7 +71,7 @@ namespace UNDO
 
   Scope::tTransactionScopePtr Scope::startTransaction(const Glib::ustring &name)
   {
-    assert(m_undoPosition == NULL || m_undoPosition->isClosed());
+    assert(m_undoPosition == nullptr || m_undoPosition->isClosed());
 
     auto transaction = std::make_unique<Transaction>(*this, name, getDepth());
     auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
@@ -92,7 +94,7 @@ namespace UNDO
       return std::make_unique<TransactionCreationScope>(m_cuckooTransaction.get());
     }
 
-    m_cuckooTransaction.reset(new Transaction(*this, "Cuckoo", getDepth()));
+    m_cuckooTransaction = std::make_unique<Transaction>(*this, "Cuckoo", getDepth());
     return std::make_unique<TransactionCreationScope>(m_cuckooTransaction.get());
   }
 
@@ -104,7 +106,7 @@ namespace UNDO
   Scope::tTransactionScopePtr Scope::startContinuousTransaction(void *id, steady_clock::duration timeout,
                                                                 const Glib::ustring &name)
   {
-    assert(m_undoPosition == NULL || m_undoPosition->isClosed());
+    assert(m_undoPosition == nullptr || m_undoPosition->isClosed());
 
     auto transaction = std::make_unique<ContinuousTransaction>(*this, id, name, getDepth());
 
@@ -168,7 +170,7 @@ namespace UNDO
 
   void Scope::onTransactionUndoStart()
   {
-    assert(m_undoPosition != NULL);
+    assert(m_undoPosition != nullptr);
     m_redoPosition = m_undoPosition;
     m_undoPosition = m_undoPosition->getPredecessor();
 
@@ -178,7 +180,7 @@ namespace UNDO
 
   void Scope::onTransactionRedone(const Transaction *transaction)
   {
-    assert(m_redoPosition != NULL);
+    assert(m_redoPosition != nullptr);
     size_t numWays = m_undoPosition->getNumSuccessors();
 
     for(size_t i = 0; i < numWays; ++i)
