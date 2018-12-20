@@ -408,6 +408,13 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return this;
 	}
 
+	public void setMinimized(boolean min) {
+		if(minimized != min) {
+			minimized = min;
+			requestLayout();
+		}
+	}
+	
 	public void toggleMinMax() {
 		minimized = !minimized;
 		requestLayout();

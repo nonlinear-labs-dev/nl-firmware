@@ -9,6 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
@@ -145,8 +146,43 @@ public abstract class BankContextMenu extends ContextMenu {
 						return super.click(eventPoint);
 					}
 				});
+				
+				PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+				if(pm.areAllBanksMinimized()) {
+					addChild(new ContextMenuItem(this, "Full Size All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(false);
+							return super.click(eventPoint);
+						}
+					});
+				} else if(pm.isAnyBankMinimized() && !pm.areAllBanksMinimized()) {
+					addChild(new ContextMenuItem(this, "Minimze All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(true);
+							return super.click(eventPoint);
+						}
+					});
+					addChild(new ContextMenuItem(this, "Full Size All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(false);
+							return super.click(eventPoint);
+						}
+					});
+				} else {
+					addChild(new ContextMenuItem(this, "Minimze All") {
+						@Override
+						public Control click(Position eventPoint) {
+							pm.setAllBanksMinimizeState(true);
+							return super.click(eventPoint);
+						}
+					});
+				}
+				
 			}
-
+			
 			addChild(new ContextMenuItem(this, "Export as File ...") {
 				@Override
 				public Control click(Position eventPoint) {
