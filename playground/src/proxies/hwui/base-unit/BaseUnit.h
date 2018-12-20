@@ -23,9 +23,8 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   void init();
 
   PlayPanel &getPlayPanel();
-  void ribbonForceSyncBBBB();
 
- private:
+private:
   void respectUsageMode(const Setting *s);
   void onBBBBConnected();
 

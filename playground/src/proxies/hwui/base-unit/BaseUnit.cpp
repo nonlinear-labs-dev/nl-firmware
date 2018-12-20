@@ -67,8 +67,3 @@ PlayPanel &BaseUnit::getPlayPanel()
 {
   return m_playPanel;
 }
-
-void BaseUnit::ribbonForceSyncBBBB() {
-  m_lowerRibbon.syncBBBB();
-  m_upperRibbon.syncBBBB();
-}
