@@ -59,7 +59,7 @@ std::string sanitize(const std::string &in)
 void ParameterDB::importParsedRow(vector<std::string> &&items)
 {
   int id = stoi(items[0]);
-  m_spec[id] = { sanitize(items[4]), sanitize(items[8]), parseSignalPathIndication(items[10]) };
+  m_spec[id] = { sanitize(items[4]), sanitize(items[8]), parseSignalPathIndication(items[11]) };
 }
 
 tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &c) const
