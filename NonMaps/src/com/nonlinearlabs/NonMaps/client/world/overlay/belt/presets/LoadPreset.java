@@ -36,6 +36,8 @@ class LoadPreset extends SVGImage {
 			return drawStates.disabled.ordinal();
 		} else if (isCaptureControl()) {
 			return drawStates.active.ordinal();
+		} else if(NonMaps.theMaps.getNonLinearWorld().getPresetManager().isChangingPresetWhileInDirectLoad()) {
+			return drawStates.disabled.ordinal();
 		} else {
 			return drawStates.normal.ordinal();
 		}

@@ -9,7 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
-class DirectLoadButton extends SVGImage {
+public class DirectLoadButton extends SVGImage {
 
 	private boolean married;
 
@@ -63,6 +63,10 @@ class DirectLoadButton extends SVGImage {
 		}
 	}
 
+	public boolean isDirectLoadActive() {
+		return married;
+	}
+	
 	public void toggle() {
 		married = !married;
 		NonMaps.theMaps.getServerProxy().setSetting("AutoLoadSelectedPreset", married ? "on" : "off");
