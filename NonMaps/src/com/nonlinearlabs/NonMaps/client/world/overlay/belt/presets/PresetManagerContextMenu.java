@@ -16,6 +16,7 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
+import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
@@ -105,7 +106,9 @@ public class PresetManagerContextMenu extends ContextMenu {
 			}
 		});
 
-		addChild(new ContextMenuItem(this, "Move all Banks") {
+		PresetManager pm = getNonMaps().getNonLinearWorld().getPresetManager();
+		
+		addChild(new ContextMenuItem(this, !pm.isInMoveAllBanks() ? "Move all Banks" : "Disable Move all Banks") {
 			@Override
 			public Control click(Position eventPoint) {
 				getNonMaps().getNonLinearWorld().getPresetManager().toggleMoveAllBanks();
