@@ -15,24 +15,18 @@ auto printRet = [](SpawnCommandLine & cmd)
 
 WifiSetting::~WifiSetting() = default;
 
-bool WifiSetting::set(Glib::ustring value)
+bool WifiSetting::set(tEnum m)
 {
+  auto ret = super::set(m);
 
-  bool on = value == "on";
-
-  if(on)
-  {
+  if(get()) {
     SpawnCommandLine cmd("su - root -c \"systemctl enable accesspoint && systemctl start accesspoint\"");
     printRet(cmd);
-  }
-  else
-  {
+  } else {
     SpawnCommandLine cmd("su - root -c \"systemctl disable accesspoint && systemctl stop accesspoint\"");
     printRet(cmd);
   }
-
-  return BooleanSetting::set(on ? BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE
-                                : BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
+  return ret;
 }
 
 bool WifiSetting::pollAccessPointRunning()

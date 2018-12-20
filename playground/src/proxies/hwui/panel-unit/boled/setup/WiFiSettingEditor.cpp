@@ -11,7 +11,7 @@ WiFiSettingEditor::~WiFiSettingEditor() = default;
 
 void WiFiSettingEditor::incSetting(int inc) {
     auto setting = Application::get().getSettings()->getSetting<WifiSetting>();
-    setting->set(!setting->get() ? "on" : "off");
+    setting->inc(1, true);
 }
 
 const vector<ustring> &WiFiSettingEditor::getDisplayStrings() const {
