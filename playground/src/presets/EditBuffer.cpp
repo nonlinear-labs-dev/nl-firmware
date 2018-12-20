@@ -324,7 +324,7 @@ void EditBuffer::undoableLoad(UNDO::Scope::tTransactionPtr transaction, shared_p
   copyFrom(transaction, preset.get(), true);
   undoableSetLoadedPresetInfo(transaction, preset.get());
 
-  if(PresetBank *bank = dynamic_cast<PresetBank *>(preset->getParent()))
+  if(auto *bank = dynamic_cast<PresetBank *>(preset->getParent()))
   {
     bank->undoableSelectPreset(transaction, preset->getUuid());
     getParent()->undoableSelectBank(transaction, bank->getUuid());
