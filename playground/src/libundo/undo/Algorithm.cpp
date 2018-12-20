@@ -58,7 +58,7 @@ namespace UNDO
 
   Transaction* Algorithm::find(Transaction* root, const Glib::ustring& targetID)
   {
-    long i = strtol(targetID.c_str(), NULL, 10);
+    long i = strtol(targetID.c_str(), nullptr, 10);
     return find(root, (void*) i);
   }
 
