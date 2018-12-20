@@ -302,7 +302,8 @@ namespace UNDO
 
     while(index < list.size())
     {
-      if(auto curr = list[index]; curr != nullptr)
+      auto curr = list[index];
+      if(curr != nullptr)
       {
         for(const auto &node : curr->m_successors)
           list.emplace_back(node.get());
