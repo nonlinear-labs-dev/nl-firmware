@@ -106,10 +106,10 @@ public class PresetManager extends MapsLayout {
 	
 	public boolean isAnyBankMinimized() {
 		for(Bank b: getBanks()) {
-			if(!b.isMinimized())
-				return false;
+			if(b.isMinimized())
+				return true;
 		}
-		return true;
+		return false;
 	}
 
 	public MoveSomeBanksLayer getMoveSomeBanks() {

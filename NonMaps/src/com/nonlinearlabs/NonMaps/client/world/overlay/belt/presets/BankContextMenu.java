@@ -152,8 +152,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				addChild(new ContextMenuItem(this, pm.isAnyBankMinimized() ? "Full Size All" : "Minimize All") {
 					@Override
 					public Control click(Position eventPoint) {
-						boolean min = !pm.isAnyBankMinimized();
-						pm.setAllBanksMinimizeState(min);
+						pm.setAllBanksMinimizeState(!pm.isAnyBankMinimized());
 						return super.click(eventPoint);
 					}
 				});
