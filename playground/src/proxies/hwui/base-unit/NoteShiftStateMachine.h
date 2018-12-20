@@ -37,7 +37,6 @@ class NoteShiftStateMachine
 
  public:
   NoteShiftStateMachine();
-  virtual ~NoteShiftStateMachine();
 
   bool traverse(NoteShiftEvents event) override;
 

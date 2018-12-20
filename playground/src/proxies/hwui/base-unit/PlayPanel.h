@@ -7,9 +7,6 @@ class Application;
 class PlayPanel
 {
  public:
-  PlayPanel();
-  virtual ~PlayPanel();
-
   void onTimeout();
   SOLED &getSOLED();
 

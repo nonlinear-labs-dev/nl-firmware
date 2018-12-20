@@ -24,10 +24,6 @@ UpperRibbon::UpperRibbon()
       sigc::mem_fun(this, &UpperRibbon::onSettingChanged));
 }
 
-UpperRibbon::~UpperRibbon()
-{
-}
-
 void UpperRibbon::onParamSelectionChanged(Parameter* oldOne, Parameter* newOne)
 {
   reconnect();
