@@ -698,47 +698,13 @@ void PresetManager::stressLoad(int numTransactions)
 
         while(numSteps > 0)
         {
-          for(auto b : getBanks())
-          {
-            for(auto p : b->getPresets())
-            {
+          forEachBank([&](auto b) {
+            b->forEachPreset([&](auto p) {
               m_editBuffer->undoableLoad(transaction, p);
               numSteps--;
-            }
-          }
+            });
+          });
         }
       },
       20);
-}
-
-Glib::ustring PresetManager::getDiffString(tPresetPtr preset1, tPresetPtr preset2)
-{
-  Glib::ustring out;
-
-  auto parameters1 = preset1->getParametersSortedById();
-  auto parameters2 = preset2->getParametersSortedById();
-
-  for(auto it_m1 = parameters1.cbegin(), end_m1 = parameters1.cend(), it_m2 = parameters2.cbegin(),
-           end_m2 = parameters2.cend();
-      it_m1 != end_m1 || it_m2 != end_m2;)
-  {
-    if(it_m1 != end_m1 && it_m2 != end_m2)
-    {
-      if(it_m1->second->getDisplayString() != it_m2->second->getDisplayString())
-      {
-        out += Glib::ustring(it_m1->second->getParentGroup()->getLongName());
-        out += ",";
-        out += Glib::ustring(it_m1->second->getLongName());
-        out += ",";
-        out += Glib::ustring(it_m1->second->getDisplayString());
-        out += ",";
-        out += Glib::ustring(it_m2->second->getDisplayString());
-        out += ",";
-      }
-      ++it_m1;
-      ++it_m2;
-    }
-  }
-
-  return out;
 }

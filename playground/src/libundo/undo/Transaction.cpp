@@ -205,15 +205,9 @@ namespace UNDO
 
   void Transaction::redoUntil(Transaction *target)
   {
-<<<<<<< HEAD
     std::list<Transaction *> steps = Algorithm::getPathAsList(target, this);
 
     for(Transaction *step : steps)
-=======
-    std::list<tTransactionPtr> steps = Algorithm::getPathAsList(std::move(target), this);
-
-    for(const tTransactionPtr &step : steps)
->>>>>>> RELEASE-2019-01
     {
       step->redoAction();
     }
@@ -229,13 +223,8 @@ namespace UNDO
 
   void Transaction::addChildren(std::list<Transaction *> &list) const
   {
-<<<<<<< HEAD
     for(auto &c : m_successors)
       list.push_back(c.get());
-=======
-    for(const tTransactionPtr &c : m_successors)
-      list.push_back(c);
->>>>>>> RELEASE-2019-01
   }
 
   void Transaction::setDefaultRedoRoute(Transaction *route)
@@ -272,11 +261,7 @@ namespace UNDO
   {
     stringstream str;
 
-<<<<<<< HEAD
-    for(auto &s : m_successors)
-=======
     for(const auto &s : m_successors)
->>>>>>> RELEASE-2019-01
     {
       if(str.tellp())
         str << ',';
