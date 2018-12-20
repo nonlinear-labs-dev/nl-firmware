@@ -55,7 +55,7 @@ void MultiLineLabel::setPosition(const Rect &rect)
 
   super::setPosition(rect);
 
-  if(widthChanged)
+  if(widthChanged || m_forceUpdateOnSetPos)
   {
     updateLines();
   }
@@ -97,4 +97,14 @@ void MultiLineLabel::drawBackground(FrameBuffer &fb)
 bool MultiLineLabel::redraw(FrameBuffer &fb)
 {
   return super::redraw(fb);
+}
+
+const Glib::ustring &MultiLineLabel::getText() const
+{
+  return m_text;
+}
+
+void MultiLineLabel::setForceUpdateLine(bool update)
+{
+  m_forceUpdateOnSetPos = update;
 }
