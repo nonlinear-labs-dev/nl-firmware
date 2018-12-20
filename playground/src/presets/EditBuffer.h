@@ -69,7 +69,6 @@ class EditBuffer : public ParameterGroupSet
   Glib::ustring exportReaktorPreset();
   bool isModified() const;
   void sendToLPC();
-  bool isSelectedPresetLoadedAndUnModified();
 
  private:
   Parameter *searchForAnyParameterWithLock() const;

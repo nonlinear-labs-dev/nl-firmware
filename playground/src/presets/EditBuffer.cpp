@@ -316,24 +316,9 @@ void EditBuffer::undoableLoadSelectedPreset()
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      if(!isSelectedPresetLoadedAndUnModified())
-      {
-        undoableLoad(preset);
-      }
+      undoableLoad(preset);
     }
   }
-}
-
-bool EditBuffer::isSelectedPresetLoadedAndUnModified()
-{
-  if(auto bank = getParent()->getSelectedBank())
-  {
-    if(auto preset = bank->getSelectedPreset())
-    {
-      return getUUIDOfLastLoadedPreset() == preset->getUuid() && !isModified();
-    }
-  }
-  return false;
 }
 
 void EditBuffer::undoableLoad(Preset *preset)
