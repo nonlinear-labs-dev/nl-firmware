@@ -410,8 +410,3 @@ void TextEditUsageMode::registerTests()
     g_assert_true(mode.m_layout == Layout::Shift);
   });
 }
-
-void TextEditUsageMode::setText(ustring newText) {
-  m_text = std::move(newText);
-  m_sigTextChanged.send(m_text);
-}
