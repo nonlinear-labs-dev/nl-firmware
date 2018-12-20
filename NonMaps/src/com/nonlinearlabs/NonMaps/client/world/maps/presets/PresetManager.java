@@ -854,6 +854,10 @@ public class PresetManager extends MapsLayout {
 		}
 		requestLayout();
 	}
+	
+	public boolean isInMoveAllBanks() {
+		return moveAllBanks != null;
+	}
 
 	public void moveAllBanksBy(NonDimension distance) {
 
