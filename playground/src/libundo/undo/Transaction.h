@@ -40,7 +40,6 @@ namespace UNDO
     void setPredecessor(Transaction *predecessor);
     Transaction *getSuccessor(size_t num) const;
     void addSuccessor(std::unique_ptr<Transaction> successor);
-    void eraseSuccessor(Transaction *successor);
     void eraseSuccessor(const Transaction *successor);
 
     std::unique_ptr<Transaction> exhaust(const Transaction *a);
