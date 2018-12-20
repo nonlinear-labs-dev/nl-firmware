@@ -904,9 +904,10 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean isChangingPresetWhileInDirectLoad() {
-		if(DirectLoadButton.isActive() && findSelectedPreset() != findLoadedPreset()) {
+		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().isDirectLoadActive();
+		if(directLoadActive && findSelectedPreset() != findLoadedPreset()) {
 			return true;
 		}
 		return false;
-	}
+	}	
 }

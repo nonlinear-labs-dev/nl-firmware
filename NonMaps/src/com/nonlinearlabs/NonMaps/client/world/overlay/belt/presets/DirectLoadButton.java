@@ -11,11 +11,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class DirectLoadButton extends SVGImage {
 
-	static private boolean married;
-	
-	public static boolean isActive() {
-		return married;
-	}
+	private boolean married;
 
 	DirectLoadButton(OverlayLayout parent) {
 		super(parent, "Link_Enabled.svg", "Link_Active.svg", "Link_Disabled.svg");
@@ -67,6 +63,10 @@ public class DirectLoadButton extends SVGImage {
 		}
 	}
 
+	public boolean isDirectLoadActive() {
+		return married;
+	}
+	
 	public void toggle() {
 		married = !married;
 		NonMaps.theMaps.getServerProxy().setSetting("AutoLoadSelectedPreset", married ? "on" : "off");
