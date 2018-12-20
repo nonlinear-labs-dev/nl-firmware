@@ -1008,6 +1008,35 @@ void PresetManager::stress(int numTransactions)
       20);
 }
 
+void PresetManager::stressBlocking(int numTransactions)
+{
+  int parameterId = g_random_int_range(0, 200);
+  {
+    auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
+    m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), to_string(parameterId));
+
+    if(auto p = m_editBuffer->getSelected())
+    {
+      p->stepCPFromHwui(transactionScope->getTransaction(), g_random_boolean() ? -1 : 1, ButtonModifiers());
+    }
+  }
+
+  if(numTransactions % 20 == 0)
+  {
+    int numUndos = g_random_int_range(1, 5);
+
+    for(int i = 0; i < numUndos; i++)
+    {
+      getUndoScope().undo();
+    }
+  }
+
+  if(numTransactions > 0)
+  {
+    stressBlocking(numTransactions - 1);
+  }
+}
+
 void PresetManager::stressLoad(int numTransactions)
 {
   Glib::MainContext::get_default()->signal_timeout().connect_once(
