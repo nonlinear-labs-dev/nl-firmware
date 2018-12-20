@@ -242,7 +242,7 @@ void ModulateableParameter::writeDifferences(Writer &writer, Parameter *other) c
 
   if(getModulationAmount() != pOther->getModulationAmount())
   {
-    auto c = ScaleConverter::get<LinearBipolar100PercentScaleConverter>();
+    auto c = getValue().getScaleConverter();
     auto currentParameter = c->getDimension().stringize(c->controlPositionToDisplay(getModulationAmount()));
     auto otherParameter = c->getDimension().stringize(c->controlPositionToDisplay(pOther->getModulationAmount()));
 
