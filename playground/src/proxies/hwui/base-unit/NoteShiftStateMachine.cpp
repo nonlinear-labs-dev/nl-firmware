@@ -38,10 +38,6 @@ NoteShiftStateMachine::NoteShiftStateMachine()
   registerTraversal(NOTE_SHIFT_STATE_WAIT_FOR_INC_SEMITONE, NOTE_SHIFT_EVENT_PLUS_RELEASED, NOTE_SHIFT_STATE_INITIAL);
 }
 
-NoteShiftStateMachine::~NoteShiftStateMachine()
-{
-}
-
 bool NoteShiftStateMachine::traverse(NoteShiftEvents event)
 {
   switch(event)

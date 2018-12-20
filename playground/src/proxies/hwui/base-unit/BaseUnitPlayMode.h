@@ -3,7 +3,7 @@
 #include "proxies/hwui/UsageMode.h"
 #include "NoteShiftStateMachine.h"
 
-class Application;
+#include <proxies/hwui/ShortVsLongPress.h>
 
 class BaseUnitPlayMode : public UsageMode
 {
@@ -12,8 +12,6 @@ class BaseUnitPlayMode : public UsageMode
 
  public:
   BaseUnitPlayMode();
-  virtual ~BaseUnitPlayMode();
-
   void setup() override;
 
  protected:
@@ -23,6 +21,9 @@ class BaseUnitPlayMode : public UsageMode
   void setupBaseUnitUIModeButton();
   void setupBaseUnitMinusButton();
   void setupBaseUnitPlusButton();
+  void modeButtonShortPress();
+  void modeButtonLongPress();
 
   NoteShiftStateMachine m_noteShiftState;
+  ShortVsLongPress m_modeButtonHandler;
 };

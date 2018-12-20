@@ -16,10 +16,6 @@ LowerRibbon::LowerRibbon()
       sigc::mem_fun(this, &LowerRibbon::onParamSelectionChanged));
 }
 
-LowerRibbon::~LowerRibbon()
-{
-}
-
 int LowerRibbon::posToLedID(int pos) const
 {
   return pos * 2;
