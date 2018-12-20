@@ -67,7 +67,8 @@ void RibbonParameter::setupScalingAndDefaultValue()
 {
   getValue().setScaleConverter(createScaleConverter());
   getValue().setDefaultValue(getDefaultValueAccordingToMode());
-  getValue().setToDefault(Initiator::INDIRECT);
+  if(getReturnMode() != ReturnMode::None)
+    getValue().setToDefault(Initiator::INDIRECT);
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 

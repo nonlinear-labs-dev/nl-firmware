@@ -10,8 +10,7 @@ FourStateLED::FourStateLED()
 }
 
 FourStateLED::~FourStateLED()
-{
-}
+= default;
 
 void FourStateLED::setState(char state)
 {
