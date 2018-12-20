@@ -6,9 +6,8 @@
 class FourStateLED : public LED
 {
  public:
-  static bool suppress;
   FourStateLED();
-  virtual ~FourStateLED();
+  ~FourStateLED() override;
 
   void setState(char state);
   char getState() const;
