@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.presetManager;
 
+import java.util.HashSet;
+
 import com.nonlinearlabs.NonMaps.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
@@ -17,6 +19,13 @@ public class PresetSearch {
 
 	public enum SearchQueryCombination {
 		AND, OR
+	}
+	
+	public void reset() {
+		query.setValue("");
+		matchCount.setValue(0);
+		results.setValue(new HashSet<String>());
+		currentFilterMatch.setValue("");
 	}
 
 	public BooleanDataModelEntity searchActive = new BooleanDataModelEntity(BooleanValues.off);

@@ -60,6 +60,11 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
+	private void saveView() {
+		if(NonMaps.theMaps.getNonLinearWorld() != null && NonMaps.theMaps.getNonLinearWorld().getViewport() != null)
+			oldView = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();
+	}
+	
 	private void resetView() {
 		if(NonMaps.theMaps.getNonLinearWorld() != null && oldView != null) {
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(oldView, true);
@@ -71,7 +76,7 @@ public class PresetManager extends MapsLayout {
 
 		PresetSearch.get().searchActive.onChange(b -> {
 			if(b == BooleanValues.on) {
-				oldView = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();	
+				saveView();	
 			} else {
 				resetView();
 			}
@@ -79,15 +84,21 @@ public class PresetManager extends MapsLayout {
 		});
 		
 		PresetSearch.get().currentFilterMatch.onChange(b -> {
-			zoomToAllFilterMatches();
 			if(PresetSearch.get().matchCount.getValue() == 0) {
 				resetView();
+			} else {
+				zoomToAllFilterMatches();
 			}
 			return true;
 		});
 		
 		PresetSearch.get().zoomToMatches.onChange(b -> {
-			zoomToAllFilterMatches();
+			if(b == BooleanValues.on) {
+				saveView();
+				zoomToAllFilterMatches();
+			} else {
+				resetView();
+			}
 			return true;
 		});
 

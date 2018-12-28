@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.presenters;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.function.Function;
 
@@ -23,6 +24,17 @@ public class PresetSearchProvider {
 			return true;
 		});
 
+		getModel().searchActive.onChange(b -> {
+			if(b == BooleanValues.on) {
+				
+			} else {
+				getModel().reset();
+				notifyClients();
+
+			}
+			return true;
+		});
+		
 		getModel().combination.onChange(q -> {
 			if (q == SearchQueryCombination.AND) {
 				presenter.andCombination = true;
