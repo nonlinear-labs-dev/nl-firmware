@@ -40,14 +40,17 @@ public class PresetSearchProvider {
 			switch (s) {
 			case 0:
 				presenter.numMatches = "No Matches.";
+				getModel().matchCount.setValue(0);
 				break;
 
 			case 1:
 				presenter.numMatches = "1 Match.";
+				getModel().matchCount.setValue(1);
 				break;
 
 			default:
 				presenter.numMatches = s + " Matches.";
+				getModel().matchCount.setValue(Integer.valueOf(s));
 			}
 			notifyClients();
 			return true;

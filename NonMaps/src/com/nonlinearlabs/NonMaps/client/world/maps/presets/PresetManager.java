@@ -14,6 +14,7 @@ import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch;
+import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
@@ -35,7 +36,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.DragProxy;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.EditBufferDraggingButton;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.DirectLoadButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
@@ -60,9 +60,32 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
+	private void resetView() {
+		if(NonMaps.theMaps.getNonLinearWorld() != null && oldView != null) {
+			NonMaps.theMaps.getNonLinearWorld().animateViewport(oldView, true);
+		}
+	}
+	
 	public PresetManager(NonLinearWorld parent) {
 		super(parent);
 
+		PresetSearch.get().searchActive.onChange(b -> {
+			if(b == BooleanValues.on) {
+				oldView = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();	
+			} else {
+				resetView();
+			}
+			return true;
+		});
+		
+		PresetSearch.get().currentFilterMatch.onChange(b -> {
+			zoomToAllFilterMatches();
+			if(PresetSearch.get().matchCount.getValue() == 0) {
+				resetView();
+			}
+			return true;
+		});
+		
 		PresetSearch.get().zoomToMatches.onChange(b -> {
 			zoomToAllFilterMatches();
 			return true;
@@ -737,8 +760,10 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
+	static NonRect oldView = null;
+	
 	public void zoomToAllFilterMatches() {
-
+		
 		if (PresetSearch.get().zoomToMatches.isTrue() && PresetSearch.get().searchActive.isTrue()) {
 
 			double minX = Double.MAX_VALUE;
@@ -766,8 +791,7 @@ public class PresetManager extends MapsLayout {
 				double minHeight = 7 * presetsHeight;
 
 				if (dim.getHeight() < minHeight)
-					r.enlargeToHeight(minHeight);
-
+					r.enlargeToHeight(minHeight);						
 				NonMaps.theMaps.getNonLinearWorld().zoomTo(r, true);
 			}
 		}
