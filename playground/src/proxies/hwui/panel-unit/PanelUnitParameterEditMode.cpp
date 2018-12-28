@@ -36,7 +36,6 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 #include "PanelUnitParameterEditMode.h"
 
-
 class ParameterInfoLayout;
 class ParameterLayout2;
 
@@ -299,18 +298,23 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(vector<gint32> ids, bo
     }
     else
     {
-        if(Application::get().getHWUI()->getButtonModifiers()[SHIFT]) {
-            for(auto paramId: ids) {
-                auto param = editBuffer->findParameterByID(paramId);
-                if(param->isChangedFromLoaded()) {
-                    setParameterSelection(paramId, state);
-                    return true;
-                }
-            }
-            setParameterSelection(ids.front(), state);
-        } else {
-            setParameterSelection(ids.front(), state);
+      if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
+      {
+        for(auto paramId : ids)
+        {
+          auto param = editBuffer->findParameterByID(paramId);
+          if(param->isChangedFromLoaded())
+          {
+            setParameterSelection(paramId, state);
+            return true;
+          }
         }
+        setParameterSelection(ids.front(), state);
+      }
+      else
+      {
+        setParameterSelection(ids.front(), state);
+      }
     }
   }
 
