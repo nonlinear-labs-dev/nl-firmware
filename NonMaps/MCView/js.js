@@ -8,8 +8,8 @@ var touches = [];
 var modRanges = [];
 var interpolationStep = 0.01;
 //Change if devPC:
-var websocket = new WebSocket("ws://localhost:8080/ws/");
-//var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
+//var websocket = new WebSocket("ws://localhost:8080/ws/");
+var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
 
 class Rect {
 	constructor(x,y,w,h) {
@@ -363,7 +363,7 @@ function onLoad() {
 	interpolationTimer = setInterval(interpolate, 5);
 	sendTimer = setInterval(testAndSendChanged, 1);
 
-	modRanges = [new ModRange(0, 'A', 'B'), new ModRange(1, 'not assigned', 'not assigned'), new ModRange(2, 'C', null), new ModRange(3, 'D', null)];
+	modRanges = [new ModRange(0, 'A', 'B'), new ModRange(1, 'none', 'none'), new ModRange(2, 'C', null), new ModRange(3, 'D', null)];
 
 	canvas.addEventListener('touchstart', function(event) {
   		event.preventDefault();
