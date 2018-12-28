@@ -66,7 +66,10 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
 {
   try
   {
-    return stod(c);
+    if(!c.empty())
+      return stod(c);
+    else
+      return 0;
   }
   catch(...)
   {

@@ -539,7 +539,8 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
     if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
     {
-      panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+      auto state = editBuffer->getSelected() == currentParam ? TwoStateLED::ON : TwoStateLED::BLINK;
+      panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
     }
   }
 }
