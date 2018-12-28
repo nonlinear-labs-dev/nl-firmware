@@ -161,24 +161,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		setNonSize(parentsWidthFromFirstPass, Math.ceil(getNonPosition().getHeight()));
 	}
 
-	class PresetColorPack {
-		public PresetColorPack(RGB c, RGB f, RGB h) {
-				contour = c;
-				fill = f;
-				highlight = h;
-				overlay = new RGBA(0, 0, 0, 0);
-			}
-		public RGB contour;
-		public RGB fill;
-		public RGB highlight;
-		public RGBA overlay;
-	}
-	
-	public PresetColorPack applyNotMatched(PresetColorPack current) {
-		current.overlay =  new RGBA(0, 0, 0, 0.75);
-		return current;
-	}
-	
 	public PresetColorPack getActiveColorPack() {
 		boolean selected = isSelected() || isContextMenuActiveOnMe();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
@@ -193,60 +175,60 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return selectAppropriateColor(selected, loaded, isOriginPreset, isSearchOpen);
 	}
 
-	static class ColorHolder {
-		private final static RGB standardContour = new RGB(77, 77, 77);
+	class ColorHolder {
+		private final RGB standardContour = new RGB(77, 77, 77);
 		
-		public final static PresetColorPack loadedColor = new Preset.PresetColorPack(new RGB(0,0,0),
+		public final PresetColorPack loadedColor = new PresetColorPack(new RGB(0,0,0),
 				  RGB.blue(),
 				  standardContour);
 		
 		
-		public final static PresetColorPack standardColor = new PresetColorPack(new RGB(0, 0, 0), 
+		public final PresetColorPack standardColor = new PresetColorPack(new RGB(0, 0, 0), 
 				new RGB(25, 25, 25), 
 				standardContour);		
 		
 		
-		public final static PresetColorPack renamedColor = new PresetColorPack(new RGB(0,0,0),
+		public final PresetColorPack renamedColor = new PresetColorPack(new RGB(0,0,0),
 				   new RGB(77, 77, 77),
 				   standardContour);
 		
-		public final static PresetColorPack selectedColor = new PresetColorPack(new RGB(0, 0, 0),
+		public final PresetColorPack selectedColor = new PresetColorPack(new RGB(0, 0, 0),
 				new RGB(77, 77, 77),
 				standardContour);
 		
-		public final static PresetColorPack filterMatch = new PresetColorPack(new RGB(0, 0, 0),
+		public final PresetColorPack filterMatch = new PresetColorPack(new RGB(0, 0, 0),
 				  new RGB(50, 65, 110),
 				  standardContour);
 		
-		public final static PresetColorPack filterMatchLoaded = new PresetColorPack(new RGB(0, 0, 0),
+		public final PresetColorPack filterMatchLoaded = new PresetColorPack(new RGB(0, 0, 0),
 				  RGB.blue(),
 				  standardContour);
 		
-		public final static PresetColorPack filterMatchHighlighted = new PresetColorPack(new RGB(0, 0, 0),
+		public final PresetColorPack filterMatchHighlighted = new PresetColorPack(new RGB(0, 0, 0),
 				  RGB.blue(),
 				  new RGB(255, 255, 255));	
 	}
 	
 	private PresetColorPack selectAppropriateColor(boolean selected, boolean loaded, boolean isOriginPreset, boolean isSearchOpen) 
 	{
+		ColorHolder colors = new ColorHolder();
 		
-		
-		PresetColorPack currentPack = ColorHolder.standardColor;
+		PresetColorPack currentPack = colors.standardColor;
 		
 		if(loaded || isOriginPreset)
-			currentPack = ColorHolder.loadedColor;
+			currentPack = colors.loadedColor;
 		else
-			currentPack = selected ? ColorHolder.selectedColor : ColorHolder.standardColor;	
+			currentPack = selected ? colors.selectedColor : colors.standardColor;	
 		
 		if (isSearchOpen) {
 			if(isCurrentFilterMatch)
-				currentPack = ColorHolder.filterMatchHighlighted;
+				currentPack = colors.filterMatchHighlighted;
 			else if(isInFilterSet)
-				currentPack = loaded ? ColorHolder.filterMatchLoaded : ColorHolder.filterMatch;
+				currentPack = loaded ? colors.filterMatchLoaded : colors.filterMatch;
 			else
-				currentPack = applyNotMatched(currentPack);
+				currentPack = currentPack.applyNotMatched(currentPack);
 		} else if (RenameDialog.isPresetBeingRenamed(this)) {
-			currentPack = ColorHolder.renamedColor;
+			currentPack = colors.renamedColor;
 		}
 
 		if (isDraggingControl())
