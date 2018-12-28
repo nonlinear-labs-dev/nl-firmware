@@ -299,7 +299,18 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(vector<gint32> ids, bo
     }
     else
     {
-      setParameterSelection(ids.front(), state);
+        if(Application::get().getHWUI()->getButtonModifiers()[SHIFT]) {
+            for(auto paramId: ids) {
+                auto param = editBuffer->findParameterByID(paramId);
+                if(param->isChangedFromLoaded()) {
+                    setParameterSelection(paramId, state);
+                    return true;
+                }
+            }
+            setParameterSelection(ids.front(), state);
+        } else {
+            setParameterSelection(ids.front(), state);
+        }
     }
   }
 

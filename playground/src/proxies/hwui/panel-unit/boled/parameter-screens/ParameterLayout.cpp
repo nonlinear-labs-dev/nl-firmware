@@ -24,6 +24,17 @@ ParameterLayout2::ParameterLayout2()
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
 }
 
+void ParameterLayout2::init()
+{
+  if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
+  {
+    if(getCurrentParameter()->isChangedFromLoaded())
+    {
+      handlePresetValueRecall();
+    }
+  }
+}
+
 Parameter *ParameterLayout2::getCurrentParameter() const
 {
   return Application::get().getPresetManager()->getEditBuffer()->getSelected();
@@ -265,6 +276,13 @@ bool ParameterRecallLayout2::onButton(int i, bool down, ButtonModifiers modifier
     auto ret = super::onButton(i, down, modifiers);
     getOLEDProxy().resetOverlay();
     return ret;
+  }
+
+  if(i == BUTTON_PRESET)
+  {
+    if(down)
+      Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
+    return true;
   }
 
   getOLEDProxy().resetOverlay();
