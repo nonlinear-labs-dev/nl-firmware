@@ -616,7 +616,7 @@ std::shared_ptr<Preset> EditBuffer::getPreset() const
 
 void EditBuffer::setMacroControlValueFromMCView(int id, double value)
 {
-  auto mcs = getParameterGroupByID("MCs");
-  auto mc = mcs->getParameterByID(id);
-  mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+  if(auto mcs = getParameterGroupByID("MCs"))
+    if(auto mc = mcs->getParameterByID(id))
+      mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
 }
