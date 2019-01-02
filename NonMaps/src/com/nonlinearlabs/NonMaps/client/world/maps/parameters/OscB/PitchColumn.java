@@ -5,12 +5,10 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSou
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulateableNumericalControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHighPriority;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.NumericalControlSmall;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SmallParameterName;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.OscA.KeyTrackParameter;
 
 class PitchColumn extends ParameterColumn {
 
@@ -27,20 +25,6 @@ class PitchColumn extends ParameterColumn {
 		}
 	}
 
-	private class Keytracking extends Parameter {
-
-		private Keytracking(MapsLayout parent) {
-			super(parent);
-			addChild(new SmallParameterName(this, getName()));
-			addChild(new NumericalControlSmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 85;
-		}
-	}
-
 	private class EnvelopeC extends ModulationSourceHighPriority {
 
 		private EnvelopeC(MapsLayout parent) {
@@ -53,6 +37,20 @@ class PitchColumn extends ParameterColumn {
 		@Override
 		public int getParameterID() {
 			return 86;
+		}
+	}
+
+	private class Keytracking extends ModulationSourceHighPriority {
+
+		private Keytracking(MapsLayout parent) {
+			super(parent);
+			addChild(new LabelModulationSource(this, getName()));
+			addChild(new KeyTrackParameter(this));
+		}
+
+		@Override
+		public int getParameterID() {
+			return 85;
 		}
 	}
 

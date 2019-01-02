@@ -12,9 +12,4 @@ public abstract class ModulationSourceHighPriority extends ModulationSource {
 	public double getLevelOfDetailForFullVisibility() {
 		return 4;
 	}
-
-	/*-	@Override
-		public boolean setNonSize(double width, double height) {
-			return super.setNonSize(width, Math.max(height, 25));
-		} -*/
 }
