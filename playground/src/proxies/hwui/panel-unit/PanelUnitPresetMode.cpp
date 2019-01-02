@@ -33,7 +33,7 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
       return;
 
-    array<TwoStateLED::LedState, numLeds> states;
+    array<TwoStateLED::LedState, numLeds> states{};
     states.fill(TwoStateLED::OFF);
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
