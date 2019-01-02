@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.NonMaps.ScreenResizeListener;
 
@@ -42,8 +43,8 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 
 		@Override
 		public void onTouchMove(TouchMoveEvent event) {
-			onMouseMove(getCaption().asWidget(), event.getTouches().get(0).getRelativeX(GWTDialog.this.getElement()), event.getTouches()
-					.get(0).getRelativeY(GWTDialog.this.getElement()));
+			onMouseMove(getCaption().asWidget(), event.getTouches().get(0).getRelativeX(GWTDialog.this.getElement()),
+					event.getTouches().get(0).getRelativeY(GWTDialog.this.getElement()));
 		}
 
 		@Override
@@ -55,8 +56,8 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 
 		@Override
 		public void onTouchStart(TouchStartEvent event) {
-			onMouseDown(getCaption().asWidget(), event.getTouches().get(0).getRelativeX(GWTDialog.this.getElement()), event.getTouches()
-					.get(0).getRelativeY(GWTDialog.this.getElement()));
+			onMouseDown(getCaption().asWidget(), event.getTouches().get(0).getRelativeX(GWTDialog.this.getElement()),
+					event.getTouches().get(0).getRelativeY(GWTDialog.this.getElement()));
 		}
 	}
 
@@ -68,21 +69,6 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 		addDomHandler(touchHandler, TouchMoveEvent.getType());
 		addDomHandler(touchHandler, TouchEndEvent.getType());
 
-		addDomHandler(new MouseDownHandler() {
-			public void onMouseDown(MouseDownEvent event) {
-				pushDialogToFront();
-			}
-		}, MouseDownEvent.getType());
-
-		addDomHandler(new TouchStartHandler() {
-
-			@Override
-			public void onTouchStart(TouchStartEvent event) {
-				pushDialogToFront();
-			}
-		}, TouchStartEvent.getType());
-
-		sinkEvents(Event.MOUSEEVENTS);
 		registerCloseHandler();
 	}
 
@@ -132,7 +118,6 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 		HTML captionHTML = (HTML) getCaption();
 		captionHTML.getElement().appendChild(header.getElement());
 
-		Event.sinkEvents(captionHTML.getElement(), Event.TOUCHEVENTS);
 		Event.sinkEvents(close.getElement(), Event.ONCLICK | Event.ONTOUCHSTART);
 		Event.setEventListener(close.getElement(), new EventListener() {
 
@@ -153,8 +138,10 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 		int top = getPopupTop();
 		int right = left + getOffsetWidth();
 		int bottom = top + getOffsetHeight();
-		int vpWidth = (int) (NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect().getWidth() / NonMaps.devicePixelRatio);
-		int vpHeight = (int) (NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect().getHeight() / NonMaps.devicePixelRatio);
+		int vpWidth = (int) (NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect().getWidth()
+				/ NonMaps.devicePixelRatio);
+		int vpHeight = (int) (NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect().getHeight()
+				/ NonMaps.devicePixelRatio);
 		boolean toMuchRight = (right >= vpWidth);
 		boolean toMuchDown = (bottom >= vpHeight);
 		boolean toMuchUp = (top <= 0);
@@ -195,29 +182,52 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 		NonMaps.theMaps.unregisterScreenResizeListener(this);
 		super.onDetach();
 	}
-	
+
 	@Override
-	protected void endDragging(MouseUpEvent event)
-	{
+	protected void endDragging(MouseUpEvent event) {
 		int marginW = getOffsetWidth() / 2;
 		int marginH = 40;
 
-		
 		int leftMargin = -(getOffsetWidth() - marginW);
 		int lowerMargin = Window.getClientHeight() - marginH;
 		int rightMargin = Window.getClientWidth() - marginW;
 		int upperMargin = 0;
-		
-		if (getAbsoluteLeft() > rightMargin) 
-			setPopupPosition(rightMargin, getPopupTop()); 
-		if (getAbsoluteLeft() < leftMargin) 
-			setPopupPosition(leftMargin, getPopupTop()); 
-		if(getAbsoluteTop() > lowerMargin) 
+
+		if (getAbsoluteLeft() > rightMargin)
+			setPopupPosition(rightMargin, getPopupTop());
+		if (getAbsoluteLeft() < leftMargin)
+			setPopupPosition(leftMargin, getPopupTop());
+		if (getAbsoluteTop() > lowerMargin)
 			setPopupPosition(getPopupLeft(), lowerMargin);
-		if (getAbsoluteTop() < upperMargin) 
+		if (getAbsoluteTop() < upperMargin)
 			setPopupPosition(getPopupLeft(), upperMargin);
-		
+
 		super.endDragging(event);
+	}
+
+	@Override
+	public void setWidget(Widget w) {
+		super.setWidget(w);
+		addBringToFrontHandlers(w);
+		addBringToFrontHandlers(getCaption().asWidget());
+	}
+
+	private void addBringToFrontHandlers(Widget w) {
+		w.addDomHandler(new MouseDownHandler() {
+			public void onMouseDown(MouseDownEvent event) {
+				pushDialogToFront();
+			}
+		}, MouseDownEvent.getType());
+
+		w.addDomHandler(new TouchStartHandler() {
+
+			@Override
+			public void onTouchStart(TouchStartEvent event) {
+				pushDialogToFront();
+			}
+		}, TouchStartEvent.getType());
+
+		w.sinkEvents(Event.MOUSEEVENTS | Event.TOUCHEVENTS);
 	}
 
 }
