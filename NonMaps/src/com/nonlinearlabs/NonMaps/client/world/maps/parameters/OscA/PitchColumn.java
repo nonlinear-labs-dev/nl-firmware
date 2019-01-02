@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.OscA;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.KeyTrackParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulateableNumericalControl;

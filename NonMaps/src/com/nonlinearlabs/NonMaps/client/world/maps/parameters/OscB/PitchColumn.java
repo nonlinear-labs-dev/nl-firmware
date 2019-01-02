@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.OscB;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.KeyTrackParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulateableNumericalControl;
@@ -8,7 +9,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHi
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.OscA.KeyTrackParameter;
 
 class PitchColumn extends ParameterColumn {
 
