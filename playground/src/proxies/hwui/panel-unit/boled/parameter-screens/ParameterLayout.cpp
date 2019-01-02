@@ -26,12 +26,20 @@ ParameterLayout2::ParameterLayout2()
 
 void ParameterLayout2::init()
 {
+  showRecallScreenIfAppropriate();
+}
+
+void ParameterLayout2::copyFrom(Layout *src)
+{
+  super::copyFrom(src);
+  showRecallScreenIfAppropriate();
+}
+
+void ParameterLayout2::showRecallScreenIfAppropriate()
+{
   if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
   {
-    if(getCurrentParameter()->isChangedFromLoaded())
-    {
-      handlePresetValueRecall();
-    }
+    handlePresetValueRecall();
   }
 }
 

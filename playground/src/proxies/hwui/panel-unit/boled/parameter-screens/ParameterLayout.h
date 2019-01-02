@@ -32,6 +32,10 @@ class ParameterLayout2 : public DFBLayout
   virtual void setDefault();
   Control *m_lock = nullptr;
   void handlePresetValueRecall();
+  void copyFrom(Layout *src) override;
+
+ private:
+  void showRecallScreenIfAppropriate();
 };
 
 class ParameterSelectLayout2 : public virtual ParameterLayout2

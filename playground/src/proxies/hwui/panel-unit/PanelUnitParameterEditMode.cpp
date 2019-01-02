@@ -244,7 +244,7 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(gint3
               std::placeholders::_3);
 }
 
-bool PanelUnitParameterEditMode::toggleParameterSelection(vector<gint32> ids, bool state)
+bool PanelUnitParameterEditMode::toggleParameterSelection(const vector<gint32> ids, bool state)
 {
   shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto firstParameterInList = editBuffer->findParameterByID(ids.front());
@@ -309,12 +309,9 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(vector<gint32> ids, bo
             return true;
           }
         }
-        setParameterSelection(ids.front(), state);
       }
-      else
-      {
-        setParameterSelection(ids.front(), state);
-      }
+
+      setParameterSelection(ids.front(), state);
     }
   }
 
@@ -369,9 +366,9 @@ bool PanelUnitParameterEditMode::setParameterSelection(gint32 audioID, bool stat
   {
     DebugLevel::gassy("setParameterSelection - state == true");
 
-    shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-    if(Parameter *p = editBuffer->findParameterByID(audioID))
+    if(auto p = editBuffer->findParameterByID(audioID))
     {
       DebugLevel::gassy("selecting param");
       editBuffer->undoableSelectParameter(p);
