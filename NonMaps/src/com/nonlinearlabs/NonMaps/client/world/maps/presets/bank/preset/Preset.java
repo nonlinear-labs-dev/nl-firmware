@@ -2,8 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset;
 
 import java.util.HashMap;
 
-import org.eclipse.jetty.servlet.FilterHolder;
-
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
@@ -16,13 +14,12 @@ import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
-import com.nonlinearlabs.NonMaps.client.presenters.PresetSearchProvider;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.IPreset;
 import com.nonlinearlabs.NonMaps.client.world.NonLinearWorld;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
-import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingHorizontal;
@@ -48,6 +45,16 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private boolean filterActive = false;
 	private boolean isInFilterSet = false;
 	private boolean isCurrentFilterMatch = false;
+
+	private static final PresetColorPack loadedColor = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
+	private static final PresetColorPack standardColor = new PresetColorPack(new Gray(0), new Gray(25), new Gray(77));
+	private static final PresetColorPack renamedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
+	private static final PresetColorPack selectedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
+	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
+			new Gray(77));
+	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
+	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), RGB.blue(),
+			new Gray(255));
 
 	public Preset(Bank parent) {
 		super(parent);
@@ -171,81 +178,47 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
-		
+
 		return selectAppropriateColor(selected, loaded, isOriginPreset, isSearchOpen);
 	}
 
-	class ColorHolder {
-		private final RGB standardContour = new RGB(77, 77, 77);
-		
-		public final PresetColorPack loadedColor = new PresetColorPack(new RGB(0,0,0),
-				  RGB.blue(),
-				  standardContour);
-		
-		
-		public final PresetColorPack standardColor = new PresetColorPack(new RGB(0, 0, 0), 
-				new RGB(25, 25, 25), 
-				standardContour);		
-		
-		
-		public final PresetColorPack renamedColor = new PresetColorPack(new RGB(0,0,0),
-				   new RGB(77, 77, 77),
-				   standardContour);
-		
-		public final PresetColorPack selectedColor = new PresetColorPack(new RGB(0, 0, 0),
-				new RGB(77, 77, 77),
-				standardContour);
-		
-		public final PresetColorPack filterMatch = new PresetColorPack(new RGB(0, 0, 0),
-				  new RGB(50, 65, 110),
-				  standardContour);
-		
-		public final PresetColorPack filterMatchLoaded = new PresetColorPack(new RGB(0, 0, 0),
-				  RGB.blue(),
-				  standardContour);
-		
-		public final PresetColorPack filterMatchHighlighted = new PresetColorPack(new RGB(0, 0, 0),
-				  RGB.blue(),
-				  new RGB(255, 255, 255));	
-	}
-	
-	private PresetColorPack selectAppropriateColor(boolean selected, boolean loaded, boolean isOriginPreset, boolean isSearchOpen) 
-	{
-		ColorHolder colors = new ColorHolder();
-		
-		PresetColorPack currentPack = colors.standardColor;
-		
-		if(loaded || isOriginPreset)
-			currentPack = colors.loadedColor;
+	private PresetColorPack selectAppropriateColor(boolean selected, boolean loaded, boolean isOriginPreset,
+			boolean isSearchOpen) {
+
+		PresetColorPack currentPack = standardColor;
+
+		if (loaded || isOriginPreset)
+			currentPack = loadedColor;
 		else
-			currentPack = selected ? colors.selectedColor : colors.standardColor;	
-		
+			currentPack = selected ? selectedColor : standardColor;
+
 		if (isSearchOpen) {
-			if(isCurrentFilterMatch)
-				currentPack = colors.filterMatchHighlighted;
-			else if(isInFilterSet)
-				currentPack = loaded ? colors.filterMatchLoaded : colors.filterMatch;
+			if (isCurrentFilterMatch)
+				currentPack = filterMatchHighlighted;
+			else if (isInFilterSet)
+				currentPack = loaded ? filterMatchLoaded : filterMatch;
 			else
-				currentPack = currentPack.applyNotMatched(currentPack);
+				currentPack = currentPack.applyNotMatched();
 		} else if (RenameDialog.isPresetBeingRenamed(this)) {
-			currentPack = colors.renamedColor;
+			currentPack = renamedColor;
 		}
 
-		if (isDraggingControl())
+		if (isDraggingControl()) {
+			currentPack = new PresetColorPack(currentPack);
 			currentPack.fill.brighter(40);
+		}
 		return currentPack;
 	}
-	
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 
-	
 		PresetColorPack currentPresetColorPack = getActiveColorPack();
 
 		double cp = getConturPixels();
 		cp = Math.ceil(cp);
 		cp = Math.max(1, cp);
-		
+
 		Rect r = getPixRect().copy();
 		r.fill(ctx, currentPresetColorPack.fill);
 		r.stroke(ctx, cp, currentPresetColorPack.highlight);
