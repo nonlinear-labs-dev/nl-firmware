@@ -19,8 +19,6 @@ class EditBuffer : public Preset
 
  public:
   static shared_ptr<EditBuffer> createEditBuffer(UpdateDocumentContributor *parent);
-  virtual ~EditBuffer();
-
 
   void setMacroControlValueFromMCView(int id, double value);
 
@@ -112,8 +110,8 @@ class EditBuffer : public Preset
 
   DelayedJob m_deferedJobs;
 
-  size_t m_hashOnStore;
   bool m_isModified;
+  size_t m_hashOnStore;
 
   friend class PresetManager;
 };

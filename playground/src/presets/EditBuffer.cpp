@@ -15,7 +15,6 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <tools/TimeTools.h>
 #include <device-settings/DeviceName.h>
-#include <groups/MacroControlMappingGroup.h>
 #include "device-settings/Settings.h"
 #include "device-settings/RandomizeAmount.h"
 #include "device-info/DeviceInformation.h"
@@ -30,14 +29,10 @@ shared_ptr<EditBuffer> EditBuffer::createEditBuffer(UpdateDocumentContributor *p
 
 EditBuffer::EditBuffer(UpdateDocumentContributor *parent)
     : Preset(parent)
-    , m_isModified(false)
+    , m_selectedParameter(nullptr)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
-{
-  m_selectedParameter = NULL;
-  m_hashOnStore = getHash();
-}
-
-EditBuffer::~EditBuffer()
+    , m_isModified(false)
+    , m_hashOnStore(getHash())
 {
 }
 
@@ -621,8 +616,7 @@ std::shared_ptr<Preset> EditBuffer::getPreset() const
 
 void EditBuffer::setMacroControlValueFromMCView(int id, double value)
 {
-  auto mcs = dynamic_cast<MacroControlMappingGroup *>(ParameterGroupSet::getParameterGroupByID("MCM"));
-  auto index = id - 243;
-  auto mc = mcs->macroControlPtr[index];
+  auto mcs = getParameterGroupByID("MCs");
+  auto mc = mcs->getParameterByID(id);
   mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
 }
