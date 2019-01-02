@@ -4,7 +4,6 @@ import java.util.HashSet;
 
 import com.nonlinearlabs.NonMaps.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
-import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.StringSetDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
@@ -20,10 +19,9 @@ public class PresetSearch {
 	public enum SearchQueryCombination {
 		AND, OR
 	}
-	
+
 	public void reset() {
 		query.setValue("");
-		matchCount.setValue(0);
 		results.setValue(new HashSet<String>());
 		currentFilterMatch.setValue("");
 	}
@@ -37,6 +35,5 @@ public class PresetSearch {
 	public EnumDataModelEntity<SearchQueryCombination> combination = new EnumDataModelEntity<SearchQueryCombination>(
 			SearchQueryCombination.class, SearchQueryCombination.AND);
 	public StringSetDataModelEntity results = new StringSetDataModelEntity();
-	public IntegerDataModelEntity matchCount = new IntegerDataModelEntity();
 	public StringDataModelEntity currentFilterMatch = new StringDataModelEntity();
 }

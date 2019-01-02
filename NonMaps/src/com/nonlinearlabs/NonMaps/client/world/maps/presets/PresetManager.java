@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -61,39 +62,38 @@ public class PresetManager extends MapsLayout {
 	}
 
 	private void saveView() {
-		if(NonMaps.theMaps.getNonLinearWorld() != null && NonMaps.theMaps.getNonLinearWorld().getViewport() != null)
+		if (NonMaps.theMaps.getNonLinearWorld() != null && NonMaps.theMaps.getNonLinearWorld().getViewport() != null)
 			oldView = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();
 	}
-	
+
 	private void resetView() {
-		if(NonMaps.theMaps.getNonLinearWorld() != null && oldView != null) {
+		if (NonMaps.theMaps.getNonLinearWorld() != null && oldView != null)
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(oldView, true);
-		}
 	}
-	
+
 	public PresetManager(NonLinearWorld parent) {
 		super(parent);
 
 		PresetSearch.get().searchActive.onChange(b -> {
-			if(b == BooleanValues.on) {
-				saveView();	
+			if (b == BooleanValues.on) {
+				saveView();
 			} else {
 				resetView();
 			}
 			return true;
 		});
-		
+
 		PresetSearch.get().currentFilterMatch.onChange(b -> {
-			if(PresetSearch.get().matchCount.getValue() == 0) {
+			if (PresetSearch.get().results.getValue().isEmpty()) {
 				resetView();
 			} else {
 				zoomToAllFilterMatches();
 			}
 			return true;
 		});
-		
+
 		PresetSearch.get().zoomToMatches.onChange(b -> {
-			if(b == BooleanValues.on) {
+			if (b == BooleanValues.on) {
 				saveView();
 				zoomToAllFilterMatches();
 			} else {
@@ -132,29 +132,29 @@ public class PresetManager extends MapsLayout {
 			tmp.updateUI();
 		}
 	}
-	
+
 	public void setAllBanksMinimizeState(boolean min) {
-		for(Bank b: getBanks()) {
+		for (Bank b : getBanks()) {
 			b.setMinimized(min);
 		}
 	}
-	
+
 	public boolean isAnyBankMinimized() {
-		for(Bank b: getBanks()) {
-			if(b.isMinimized())
+		for (Bank b : getBanks()) {
+			if (b.isMinimized())
 				return true;
 		}
 		return false;
 	}
 
 	public boolean areAllBanksMinimized() {
-		for(Bank b: getBanks()) {
-			if(!b.isMinimized())
+		for (Bank b : getBanks()) {
+			if (!b.isMinimized())
 				return false;
 		}
 		return true;
 	}
-		
+
 	public MoveSomeBanksLayer getMoveSomeBanks() {
 		return moveSomeBanks;
 	}
@@ -751,6 +751,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public LinkedList<Preset> collectMatchingPresets() {
+		Set<String> matches = PresetSearch.get().results.getValue();
 		LinkedList<Preset> ret = new LinkedList<Preset>();
 
 		for (Control c : getChildren()) {
@@ -760,10 +761,8 @@ public class PresetManager extends MapsLayout {
 				for (Control f : b.getPresetList().getChildren()) {
 					if (f instanceof Preset) {
 						Preset p = (Preset) f;
-
-						if (p.isInCurrentFilterSet()) {
+						if (matches.contains(p.getUUID()))
 							ret.add(p);
-						}
 					}
 				}
 			}
@@ -772,9 +771,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	static NonRect oldView = null;
-	
+
 	public void zoomToAllFilterMatches() {
-		
 		if (PresetSearch.get().zoomToMatches.isTrue() && PresetSearch.get().searchActive.isTrue()) {
 
 			double minX = Double.MAX_VALUE;
@@ -802,7 +800,7 @@ public class PresetManager extends MapsLayout {
 				double minHeight = 7 * presetsHeight;
 
 				if (dim.getHeight() < minHeight)
-					r.enlargeToHeight(minHeight);						
+					r.enlargeToHeight(minHeight);
 				NonMaps.theMaps.getNonLinearWorld().zoomTo(r, true);
 			}
 		}
@@ -911,7 +909,7 @@ public class PresetManager extends MapsLayout {
 		}
 		requestLayout();
 	}
-	
+
 	public boolean isInMoveAllBanks() {
 		return moveAllBanks != null;
 	}
@@ -967,10 +965,11 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean isChangingPresetWhileInDirectLoad() {
-		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().isDirectLoadActive();
-		if(directLoadActive && findSelectedPreset() != findLoadedPreset()) {
+		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt()
+				.getPresetLayout().isDirectLoadActive();
+		if (directLoadActive && findSelectedPreset() != findLoadedPreset()) {
 			return true;
 		}
 		return false;
-	}	
+	}
 }
