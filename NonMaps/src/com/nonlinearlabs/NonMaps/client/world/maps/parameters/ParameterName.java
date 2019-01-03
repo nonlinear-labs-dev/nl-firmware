@@ -27,6 +27,11 @@ public class ParameterName extends LabelLarge {
 		super.draw(ctx, invalidationMask);
 	}
 
+	@Override
+	protected double getMinHeight() {
+		return 0;
+	}
+
 	private RGB getNameBackgroundColor() {
 		return getParent().isSelected() ? getColorObjectContourSelected() : new Gray(87);
 	}
