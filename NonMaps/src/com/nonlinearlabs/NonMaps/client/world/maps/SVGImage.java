@@ -10,7 +10,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ZoomReactingContro
 public abstract class SVGImage extends ZoomReactingControl implements SVGRenderHandler {
 
 	private String[] imageNames;
-	private ImageElement lastImage;
+	private ImageElement img;
 
 	public SVGImage(MapsLayout parent, String... imageNames) {
 		super(parent);
@@ -27,40 +27,39 @@ public abstract class SVGImage extends ZoomReactingControl implements SVGRenderH
 	@Override
 	public void getStateHash(Checksum crc) {
 		super.getStateHash(crc);
-		if (lastImage != null)
-			crc.eat(lastImage.hashCode());
+		crc.eat(img.hashCode());
 	}
 
-	private ImageElement getSelectedImage() {
+	private void getSelectedImage() {
 		int face = getSelectedPhase();
 
 		if (face >= 0 && face < imageNames.length) {
 			Rect r = getPixRect();
-			ImageElement img = RenderedSVGImageStore.get().render(imageNames[face], (int) Math.ceil(r.getWidth()),
+			ImageElement i = RenderedSVGImageStore.get().render(imageNames[face], (int) Math.ceil(r.getWidth()),
 					(int) Math.ceil(r.getHeight()), this);
 
-			if (img != null)
-				lastImage = img;
+			if (i != null)
+				img = i;
 		}
-
-		return lastImage;
 	}
 
 	@Override
 	public void onSVGRendered(ImageElement img) {
-		lastImage = img;
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		if (this.img != img) {
+			this.img = img;
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		}
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		ImageElement face = getSelectedImage();
+		getSelectedImage();
 
-		if (face != null) {
+		if (img != null) {
 			Rect pix = getBitmapRect();
 
-			double h = face.getHeight();
-			double w = face.getWidth();
+			double h = img.getHeight();
+			double w = img.getWidth();
 
 			if (h != 0 && w != 0) {
 
@@ -78,16 +77,17 @@ public abstract class SVGImage extends ZoomReactingControl implements SVGRenderH
 					xOffset = (pix.getWidth() - w) / 2;
 				}
 
-				
-				if(w > 0 && h > 0)
-					ctx.drawImage(face, pix.getLeft() + xOffset, pix.getTop() + yOffset, w, h);
+				if (w > 0 && h > 0) {
+					ctx.drawImage(img, pix.getLeft() + xOffset, pix.getTop() + yOffset, w, h);
+				}
 			}
 		}
 	}
 
 	protected Rect getBitmapRect() {
 		Rect r = getPixRect().copy();
-		r.applyPadding(toXPixels(getLeftPadding()), toYPixels(getTopPadding()), toXPixels(getRightPadding()), toYPixels(getBottomPadding()));
+		r.applyPadding(toXPixels(getLeftPadding()), toYPixels(getTopPadding()), toXPixels(getRightPadding()),
+				toYPixels(getBottomPadding()));
 		return r;
 	}
 

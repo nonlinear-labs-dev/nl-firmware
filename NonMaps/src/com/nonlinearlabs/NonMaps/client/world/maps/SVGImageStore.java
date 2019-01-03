@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps;
 
 import java.util.HashMap;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
@@ -32,8 +33,9 @@ public class SVGImageStore {
 					Document dom = XMLParser.parse(text);
 					sources.put(name, dom);
 
-					if (r != null)
+					if (r != null) {
 						r.onSVGDownloaded(dom);
+					}
 				}
 
 				@Override
@@ -41,8 +43,9 @@ public class SVGImageStore {
 				}
 			});
 		} else {
-			if (r != null)
-				r.onSVGDownloaded(doc);
+			if (r != null) {
+				Scheduler.get().scheduleDeferred(() -> r.onSVGDownloaded(doc));
+			}
 		}
 	}
 
