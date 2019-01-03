@@ -1,4 +1,4 @@
-bethw,"TCD
+Param ID,"TCD
 ID","Size/
 16 Bit","Group Label
 Long","Param. Label
@@ -402,7 +402,7 @@ Continuous amounts can be set [in percent] and can cover the whole range of the 
 305,62,2,(Comb Filter),Decay - Gate,(Comb),Gate,(Comb Filter),Gate,Hor. Slider,2.0,,N,57.2,Y,2,LINEAR_100_PERCENT,lin,100,0...100,0,0.0,0.1,%,%,,1/100,1/1000,NA,0 ... 16 000,16000,E - 0,direct,Id => 305 !!,"Amount of gating applied to the decay time. It reduces the decay time when the key is released (Note-off).
 0.0 % same decay time in the release phase
 100.0 %: the decay time is set to zero at the release of the key",
-307,121,1,(Flanger),Envelope,,,(Flanger),Envelope,Small Knob,1.0,0,N,77.0,N,1,LINEAR_100_PERCENT,lin,100,0...100,0,0.0,0.1,%,%,,1/100,1/1000,NA,0 ... 16 000,16000,,direct,,Crossfades between the signals of the LFO and the envelope as modulation sources for the delay times and the allpass center frequencies.,
+307,121,1,(Flanger),Envelope,,,(Flanger),Envelope,Small Knob,1.0,,N,77.0,N,1,LINEAR_100_PERCENT,lin,100,0...100,0,0.0,0.1,%,%,,1/100,1/1000,NA,0 ... 16 000,16000,,direct,,Crossfades between the signals of the LFO and the envelope as modulation sources for the delay times and the allpass center frequencies.,
 308,122,2,(Flanger),Allpass Mod,,,(Flanger),AP Mod,Big Knob,4.0,,Y,85.0,Y,1,LINEAR_BIPOLAR_100_PERCENT,lin,100,-100...100,0,0.0,0.1,%,NA,,1/100,1/1000,NA,-8 000 ... 8 000,8000,,direct,,Relative amount of the modulation of the allpass center frequencies by the LFO and/or the envelope. The allpass creates the effect of a phaser.,
 310,123,2,(Flanger),Allpass Tune,,,(Flanger),AP Tune,Big Knob,5.0,,N,85.1,Y,1,LINEAR_0_140_ST,lin,140,0...140,140,1.0,0.1,st,st,140 (1/1400) ,1/140,1/1400,-14000 ... 28000,0 ... 14 000,14000,,direct,,"Mean center frequency of the 4-pole allpass filters which are in series with the delays.
 Their frequency-dependant phase shifts can create a ""Phaser"" effect. The phase shift is minimized by setting this control to its maximum.
