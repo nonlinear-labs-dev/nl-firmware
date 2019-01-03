@@ -551,7 +551,8 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
     if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
     {
-      panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+      auto state = editBuffer->getSelected() == currentParam ? TwoStateLED::ON : TwoStateLED::BLINK;
+      panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
     }
   }
 }
@@ -576,7 +577,7 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
       case SVFilterAB:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
         {
-          if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
+          if(currentParam->getControlPositionValue() == currentParam->getDefaultValue())
           {
             panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
           }
