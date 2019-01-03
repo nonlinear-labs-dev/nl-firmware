@@ -212,7 +212,7 @@ select {
 
 .gwt-DialogBox .Caption {
   background: transparent;
-  padding-bottom: 3px;
+  padding-bottom: 5px;
   cursor: default;
   font-family: regularfont, Arial Unicode MS, Arial, sans-serif;
   color: #bbb;
