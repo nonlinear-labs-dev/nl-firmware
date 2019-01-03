@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world;
 
-
 public class RGB {
 
 	int r;
@@ -8,16 +7,20 @@ public class RGB {
 	int b;
 
 	public RGB(String color) {
-		if(isHex(color))
+		if (isHex(color))
 			fromHex(color);
 		else
-			assert(false);
+			assert (false);
 	}
-		
+
 	public RGB(int r, int g, int b) {
 		this.r = clip(r);
 		this.g = clip(g);
 		this.b = clip(b);
+	}
+
+	public RGB clone() {
+		return new RGB(r, g, b);
 	}
 
 	private int clip(int in) {
@@ -31,14 +34,14 @@ public class RGB {
 	private boolean isHex(String color) {
 		return color.startsWith("#") && color.length() == 7;
 	}
-	
+
 	private void fromHex(String color) {
 		String noHashtag = color.substring(1);
-		this.r = clip(Integer.valueOf( noHashtag.substring( 0, 1 ), 16 ));
-		this.g = clip(Integer.valueOf( noHashtag.substring( 2, 3 ), 16 ));
-        this.b = clip(Integer.valueOf( noHashtag.substring( 4, 5 ), 16 ));
+		this.r = clip(Integer.valueOf(noHashtag.substring(0, 1), 16));
+		this.g = clip(Integer.valueOf(noHashtag.substring(2, 3), 16));
+		this.b = clip(Integer.valueOf(noHashtag.substring(4, 5), 16));
 	}
-	
+
 	public RGB brighter(int amount) {
 		return new RGB(r + amount, g + amount, b + amount);
 	}

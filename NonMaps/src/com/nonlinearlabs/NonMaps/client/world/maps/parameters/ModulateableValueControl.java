@@ -97,7 +97,7 @@ abstract class ModulateableValueControl extends ValueControl {
 		double thickLevel = 2;
 		drawThicker = levelOfDetail < thickLevel;
 
-		double coronaLevel = 6;
+		double coronaLevel = 5;
 		drawCorona = levelOfDetail >= coronaLevel;
 	}
 

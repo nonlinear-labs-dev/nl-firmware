@@ -8,8 +8,16 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 
 public class ABSlider extends SliderVertical {
+	private boolean labelsVisible = true;
+
 	public ABSlider(MapsLayout parent) {
 		super(parent);
+	}
+
+	@Override
+	public void doFirstLayoutPass(double levelOfDetail) {
+		super.doFirstLayoutPass(levelOfDetail);
+		labelsVisible = levelOfDetail >= 2;
 	}
 
 	@Override
@@ -28,19 +36,21 @@ public class ABSlider extends SliderVertical {
 		ctx.lineTo(sliderRect.getRight(), value);
 		ctx.stroke();
 
-		double fontHeightInUnits = getFontHeight();
-		double fontHeightInPixels = toYPixels(fontHeightInUnits);
+		if (labelsVisible) {
+			double fontHeightInUnits = getFontHeight();
+			double fontHeightInPixels = toYPixels(fontHeightInUnits);
 
-		ctx.setTextAlign(TextAlign.CENTER);
-		ctx.setFillStyle(getColorFont().toString());
-		ctx.setFont(fontHeightInPixels + "px " + getFontName());
+			ctx.setTextAlign(TextAlign.CENTER);
+			ctx.setFillStyle(getColorFont().toString());
+			ctx.setFont(fontHeightInPixels + "px " + getFontName());
 
-		double x = sliderRect.getLeft() - fontHeightInPixels;
-		ctx.setTextBaseline(TextBaseline.TOP);
-		ctx.fillText("A", x, pixRect.getTop());
+			double x = sliderRect.getLeft() - fontHeightInPixels;
+			ctx.setTextBaseline(TextBaseline.TOP);
+			ctx.fillText("A", x, pixRect.getTop());
 
-		ctx.setTextBaseline(TextBaseline.BOTTOM);
-		ctx.fillText("B", x, pixRect.getBottom());
+			ctx.setTextBaseline(TextBaseline.BOTTOM);
+			ctx.fillText("B", x, pixRect.getBottom());
+		}
 	}
 
 	@Override

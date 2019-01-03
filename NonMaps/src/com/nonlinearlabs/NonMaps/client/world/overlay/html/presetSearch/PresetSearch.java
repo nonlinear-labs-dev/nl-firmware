@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
@@ -43,8 +44,15 @@ public class PresetSearch extends Composite {
 	}
 
 	public void connectEventHandlers() {
-		search.addKeyUpHandler(b -> getUseCases().setQuery(search.getText()));
-
+		search.addKeyUpHandler(b -> {
+			if(b.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+				getUseCases().finishSearch();
+				PresetSearchDialog.hideDialog();
+			} else {
+				getUseCases().setQuery(search.getText());
+			}
+		});
+		
 		logicalAnd.addValueChangeHandler(b -> getUseCases().setCombinationAnd());
 		logicalOr.addValueChangeHandler(b -> getUseCases().setCombinationOr());
 		resetQuery.addClickHandler(b -> getUseCases().resetQuery());

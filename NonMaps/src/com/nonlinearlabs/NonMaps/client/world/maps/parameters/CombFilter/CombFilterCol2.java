@@ -1,11 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.CombFilter;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.KeyTrackParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulateableNumericalControl;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHighPriority;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.NumericalControlSmall;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ValueDisplaySmall;
@@ -50,7 +50,7 @@ class CombFilterCol2 extends ParameterColumn {
 		private Keytracking(MapsLayout parent) {
 			super(parent);
 			addChild(new LabelModulationSource(this, getName()));
-			addChild(new NumericalControlSmall(this));
+			addChild(new KeyTrackParameter(this));
 		}
 
 		@Override

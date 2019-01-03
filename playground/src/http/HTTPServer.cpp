@@ -84,6 +84,9 @@ void HTTPServer::handleRequest(shared_ptr<NetworkRequest> request)
     DebugLevel::warning("LogMsg:", logMsg);
     request->okAndComplete();
   }
+  else if(path.find("/testWS/") != ustring::npos) {
+      DebugLevel::warning("testWs:", path);
+  }
   else if(path == "/C15-journal.tar.gz")
   {
     tServedStream file(new ServedJournal(*this, dynamic_pointer_cast<HTTPRequest>(request)));
