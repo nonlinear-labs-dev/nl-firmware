@@ -7,9 +7,12 @@ var updateStarted = false;
 var touches = [];
 var modRanges = [];
 var interpolationStep = 0.01;
+var lastMouseEvent = null;
 //Change if devPC:
-//var websocket = new WebSocket("ws://localhost:8080/ws/");
-var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
+var websocket = new WebSocket("ws://localhost:8080/ws/");
+//var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
+
+var mouseDown = 0;
 
 class Rect {
 	constructor(x,y,w,h) {
@@ -78,6 +81,7 @@ class ModRange {
 				touchesOfInterest.push(touches[i]);
 			}
 		}
+
 		return touchesOfInterest;
 	}
 
@@ -100,17 +104,34 @@ class ModRange {
 		var filteredToches = this.accumilateTouches(touches);
 		var normalizedPointerPos = new Point(0, 0);
 
-		if(filteredToches.length == 0)
+		if(filteredToches.length == 0 && lastMouseEvent == null)
 			return this.targetPosition;
 
 		for(var i = 0; i < filteredToches.length; i++) {
 			normalizedPointerPos.x += filteredToches[i].pageX;
 			normalizedPointerPos.y += filteredToches[i].pageY;
 		}
+		if(lastMouseEvent != null) {
+			var mousePos = 	new Point(lastMouseEvent.clientX, lastMouseEvent.clientY);
+			if(getModRect(this.id).contains(mousePos.x, mousePos.y)) {
+				if(mouseDown) {
+					normalizedPointerPos.x += mousePos.x;
+					normalizedPointerPos.y += mousePos.y;
+				}
+			}
+		}
 
-		if(filteredToches.length > 0) {
-			normalizedPointerPos.x /= filteredToches.length;
-			normalizedPointerPos.y /= filteredToches.length;
+		if(filteredToches.length > 0 || lastMouseEvent != null) {
+			var mousePresent = 0;
+			if(lastMouseEvent != null)
+				mousePresent++;
+			normalizedPointerPos.x /= filteredToches.length + mousePresent;
+			normalizedPointerPos.y /= filteredToches.length + mousePresent;
+		}
+
+		console.log(normalizedPointerPos);
+		if(normalizedPointerPos.equals(new Point(0,0))) {
+			return this.targetPosition;
 		}
 		return normalizedPointerPos;
 	}
@@ -363,11 +384,23 @@ function onLoad() {
 	interpolationTimer = setInterval(interpolate, 5);
 	sendTimer = setInterval(testAndSendChanged, 1);
 
-	modRanges = [new ModRange(0, 'A', 'B'), new ModRange(1, 'none', 'none'), new ModRange(2, 'C', null), new ModRange(3, 'D', null)];
+	modRanges = [new ModRange(0, 'A', 'B'), new ModRange(1, 'E', 'F'), new ModRange(2, 'C', null), new ModRange(3, 'D', null)];
 
 	canvas.addEventListener('touchstart', function(event) {
   		event.preventDefault();
   		touches = event.touches;
+	});
+
+	canvas.addEventListener('mousemove', function(event) {
+		lastMouseEvent = event;
+	});
+
+	canvas.addEventListener('mousedown', function() {
+	    mouseDown = 1;
+	});
+
+	canvas.addEventListener('mouseup', function() {
+	    mouseDown = 0;
 	});
 
 	canvas.addEventListener('touchmove', function(event) {
