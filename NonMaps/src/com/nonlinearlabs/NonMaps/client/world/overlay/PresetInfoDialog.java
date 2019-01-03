@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay;
 
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.InfoDialog.PresetInfoWidget;
@@ -34,9 +33,7 @@ public class PresetInfoDialog extends GWTDialog {
 	}
 
 	private void addContent() {
-		
 		presetInfoPage = PresetInfoWidget.get();
-		
 		presetInfoPage.updateInfo(getCurrentPreset(), false);
 
 		HTMLPanel pane = new HTMLPanel("div", "");
