@@ -275,7 +275,7 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 			infoField.setText(text);
 
 		infoField.setHeight("1em");
-		int height = infoField.getElement().getScrollHeight();
+		int height = infoField.getElement().getScrollHeight() + 2;
 		infoField.setHeight(Math.max(30, height) + "px");
 	}
 
