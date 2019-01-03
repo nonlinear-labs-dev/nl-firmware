@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/PanelUnitPresetMode.h>
 #include <proxies/hwui/TwoStateLED.h>
 #include <memory>
+#include "PanelUnitPresetMode.h"
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
@@ -76,6 +77,16 @@ void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parame
       if(!mc->getTargets().empty())
       {
         states[buttonId] = TwoStateLED::ON;
+        break;
+      }
+    }
+    else if(isSpecialCase(parameter->getID()))
+    {
+      auto sig = getSpecialCaseValue(parameter->getID());
+      if(sig != parameter->getControlPositionValue())
+      {
+        states[buttonId] = TwoStateLED::ON;
+        break;
       }
     }
     else if(signalFlowIndicator != invalidSignalFlowIndicator)
@@ -83,6 +94,7 @@ void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parame
       if(parameter->getControlPositionValue() != signalFlowIndicator)
       {
         states[buttonId] = TwoStateLED::ON;
+        break;
       }
     }
   }
@@ -95,4 +107,20 @@ void PanelUnitPresetMode::applyStateToLeds(array<TwoStateLED::LedState, numLeds>
   {
     panelUnit.getLED(i)->setState(states[i]);
   }
+}
+
+const tControlPositionValue PanelUnitPresetMode::getSpecialCaseValue(const gint32 id) const
+{
+  switch(id)
+  {
+    case 307:
+      return 0;
+    default:
+      return ParameterDB::getInvalidSignalPathIndication();
+  }
+}
+
+const bool PanelUnitPresetMode::isSpecialCase(const gint32 id) const {
+  auto special = std::vector<size_t>{307};
+  return std::find(special.begin(), special.end(), id) != special.end();
 }
