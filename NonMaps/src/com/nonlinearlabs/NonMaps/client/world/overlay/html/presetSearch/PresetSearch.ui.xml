@@ -10,8 +10,7 @@
 					  <g:TextArea ui:field="search" styleName="editable w100 txt-oneline" visibleLines="1"></g:TextArea>
 					  <g:Button  ui:field="resetQuery" styleName="reset"></g:Button>
 					</div>
-					<div class="w5p"></div>
-					<div class="w25p">
+					<div>
 					    <g:Label ui:field="numMatches" styleName="h-blau padd-left"></g:Label>
 					</div>
 				</div><!-- end eins-he -->
@@ -54,9 +53,9 @@
 				<div class="linie"></div>
 
 				<div class="eineinhalb-he">
-					<div class="w100p">
-					    <g:Button ui:field="prev" text="Previous" styleName="left-btn"></g:Button>
-					    <g:Button ui:field="next" text="Next" styleName="right-btn"></g:Button>
+					<div class="w100p prev-next-buttons">
+					    <g:Button ui:field="prev" text="Previous"></g:Button>
+					    <g:Button ui:field="next" text="Next"></g:Button>
 					</div>
 				</div><!-- end eins-he -->
 
