@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/PanelUnitPresetMode.h>
 #include <proxies/hwui/TwoStateLED.h>
 #include <memory>
+#include "PanelUnitPresetMode.h"
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
@@ -76,6 +77,7 @@ void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parame
       if(!mc->getTargets().empty())
       {
         states[buttonId] = TwoStateLED::ON;
+        break;
       }
     }
     else if(signalFlowIndicator != invalidSignalFlowIndicator)
@@ -83,6 +85,7 @@ void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parame
       if(parameter->getControlPositionValue() != signalFlowIndicator)
       {
         states[buttonId] = TwoStateLED::ON;
+        break;
       }
     }
   }
