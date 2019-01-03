@@ -181,3 +181,7 @@ void HTTPServer::messageFinishedCB(SoupMessage *msg, HTTPServer *pThis)
 {
   pThis->onMessageFinished(msg);
 }
+
+void HTTPServer::sendToAllWebsockets(const Glib::ustring message) {
+  m_contentManager.sendToAllWebsockets(message);
+}

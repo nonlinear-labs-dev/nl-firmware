@@ -63,6 +63,7 @@ enum class Initiator
   EXPLICIT_HWUI,
   EXPLICIT_LPC,
   EXPLICIT_OTHER,
+  EXPLICIT_MCVIEW,
   INDIRECT
 };
 

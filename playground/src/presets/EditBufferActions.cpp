@@ -26,10 +26,10 @@ EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer)
     editBuffer->undoableSelectParameter(id);
   });
 
-  addAction("set-mc", [=](auto request) mutable {
-      auto id = stoi(request->get("id"));
-      auto value = stod(request->get("value"));
-      editBuffer->setMacroControlValueFromMCView(id, value);
+  addAction("set-mc", [=](shared_ptr<NetworkRequest> request) mutable {
+    auto id = stoi(request->get("id"));
+    auto value = stod(request->get("value"));
+    editBuffer->setMacroControlValueFromMCView(id, value);
   });
 
   addAction("set-param", [=](shared_ptr<NetworkRequest> request) mutable {

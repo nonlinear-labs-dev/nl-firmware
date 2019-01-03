@@ -85,6 +85,25 @@ class ModRange {
 		return touchesOfInterest;
 	}
 
+	setValue(id, val) {
+		var rect = getModRect(this.id);
+
+		if(id === 0) {
+			this.valueX = val;
+			this.targetX = val;
+			this.targetPosition.x = rect.x + (Number(this.targetX).toFixed(3) / 10) * rect.w;
+			this.currentPointerPos.x = rect.x + (Number(this.valueX).toFixed(3) / 10) * rect.w;
+		} else {
+			this.valueY = val;
+			this.targetY = val;
+			this.targetPosition.y = rect.y + (Number(this.targetY).toFixed(3) / 10) * rect.h;
+			this.currentPointerPos.y = rect.y + (Number(this.valueY).toFixed(3) / 10) * rect.h;
+
+		}
+		this.ischanged = true;
+}
+
+
 	sendValues() {
 		if(this.id == 0)
 			handle2DMc(this);
@@ -129,7 +148,6 @@ class ModRange {
 			normalizedPointerPos.y /= filteredToches.length + mousePresent;
 		}
 
-		console.log(normalizedPointerPos);
 		if(normalizedPointerPos.equals(new Point(0,0))) {
 			return this.targetPosition;
 		}
@@ -410,5 +428,35 @@ function onLoad() {
 
 	canvas.addEventListener('touchend', function(event) {
 		touches = event.touches;
-	})
+	});
+
+	websocket.onmessage = function(event) {
+		var text = event.data;
+		if(text.startsWith("MCVIEW")) {
+			var id = text.substr(6, 3);
+			console.log(id);
+			var val = text.substr(10);
+			console.log(val);
+			var idN = Number(id);
+			val *= 10;
+			val.toFixed(3);
+			if(idN >= 243 && idN <= 246) {
+				switch(idN) {
+					case 243:
+						modRanges[0].setValue(0, val);
+					break;
+					case 244:
+						modRanges[0].setValue(1, val);
+					break;
+					case 245:
+						modRanges[2].setValue(0, val);
+					break;
+					case 246:
+						modRanges[3].setValue(0, val);
+					break;
+				}
+			}
+
+		}
+	};
 };

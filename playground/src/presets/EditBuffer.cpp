@@ -618,5 +618,5 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value)
 {
   if(auto mcs = getParameterGroupByID("MCs"))
     if(auto mc = mcs->getParameterByID(id))
-      mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+      mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
 }

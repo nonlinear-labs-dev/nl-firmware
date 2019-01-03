@@ -60,6 +60,7 @@ class Parameter : public UpdateDocumentContributor,
   void setDefaultFromHwui(UNDO::Scope::tTransactionPtr transaction);
   void setDefaultFromWebUI(UNDO::Scope::tTransactionPtr transaction);
 
+  virtual void setCPFromMCView(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromHwui(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromWebUI(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue);
 

@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "ContentManager.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
@@ -179,7 +181,7 @@ bool ContentManager::isSendResponsesScheduled() const
 void ContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 {
   g_signal_connect(connection, "message", G_CALLBACK(&ContentManager::onWebSocketMessage), this);
-  m_webSockets.push_back(tWebsocketConnection(new WebsocketConnection(connection)));
+  m_webSockets.push_back(std::make_shared<WebsocketConnection>(connection));
   feedWebSocket(m_webSockets.back());
 }
 
@@ -313,7 +315,7 @@ void ContentManager::sendResponses()
 
   auto pendingMessages = expropriateFromPendingMessages();
 
-  for(auto msg : pendingMessages)
+  for(const auto &msg : pendingMessages)
   {
     msg->unpause();
     Application::get().getHTTPServer()->handleRequest(msg);
@@ -339,4 +341,17 @@ UNDO::Scope &ContentManager::getUndoScope()
 const UNDO::Scope &ContentManager::getUndoScope() const
 {
   return *(Application::get().getUndoScope().get());
+}
+
+void ContentManager::sendToAllWebsockets(const Glib::ustring message)
+{
+  for(auto &ws : m_webSockets)
+  {
+    auto state = soup_websocket_connection_get_state(ws->getConnection());
+
+    if(state == SOUP_WEBSOCKET_STATE_OPEN)
+    {
+        soup_websocket_connection_send_text(ws->getConnection(), message.c_str());
+    }
+  }
 }

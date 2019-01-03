@@ -104,7 +104,10 @@ class WebSocketConnection {
 	public void onServerUpdate(String data) {
 		if (data.startsWith("/pong/")) {
 			onPongReceived();
+		} else if(data.startsWith("MCVIEW")) {
+			//Ignore!
 		} else {
+
 			pendingUpdates.add(data);
 			scheduleNotify();
 		}

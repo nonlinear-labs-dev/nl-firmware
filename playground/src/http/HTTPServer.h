@@ -26,6 +26,7 @@ class HTTPServer
 
   void pauseMessage(SoupMessage *msg);
   void unpauseMessage(SoupMessage *msg);
+  void sendToAllWebsockets(const Glib::ustring message);
 
   UpdateDocumentMaster *getUpdateDocumentMaster();
 
