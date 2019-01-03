@@ -48,8 +48,8 @@ public class SliderHorizontal extends Slider {
 		double centerX = pixRect.getCenterPoint().getX();
 
 		if (isBiPolar()) {
-			Rect middle = new Rect(centerX - toXPixels(0.5), pixRect.getTop() - toYPixels(4), toXPixels(1), pixRect.getHeight()
-					+ toYPixels(8));
+			Rect middle = new Rect(centerX - toXPixels(0.5), pixRect.getTop() - toYPixels(4), toXPixels(1),
+					pixRect.getHeight() + toYPixels(8));
 			middle.fill(ctx, getColorObjectContour());
 		}
 
@@ -86,7 +86,8 @@ public class SliderHorizontal extends Slider {
 	protected void drawIndicatorArea(Context2d ctx, double centerX, double indicatorAreaWidth, double indicatorStartX) {
 		Rect pixRect = getPixRect();
 		ctx.setFillStyle(getColorSliderHighlight().toString());
-		ctx.fillRect(indicatorStartX, pixRect.getTop() + toYPixels(0.5), toXPixels(indicatorAreaWidth), pixRect.getHeight() - toYPixels(1));
+		ctx.fillRect(indicatorStartX, pixRect.getTop() + toYPixels(0.5), toXPixels(indicatorAreaWidth),
+				pixRect.getHeight() - toYPixels(1));
 	}
 
 	protected void drawHandle(Context2d ctx, double indicatorAreaWidth, double indicatorStartX) {
@@ -96,12 +97,12 @@ public class SliderHorizontal extends Slider {
 			ctx.setFillStyle(getColorObjectContour().toString());
 		else {
 			ctx.setFillStyle(getColorObjectContour().toString());
-			ctx.fillRect(indicatorStartX + toXPixels(indicatorAreaWidth - 1), pixRect.getTop() + toYPixels(0.5), toXPixels(2),
-					pixRect.getHeight() - toYPixels(1));
+			ctx.fillRect(indicatorStartX + toXPixels(indicatorAreaWidth - 1), pixRect.getTop() + toYPixels(0.5),
+					toXPixels(2), pixRect.getHeight() - toYPixels(1));
 			ctx.setFillStyle(getColorIndicator().toString());
 		}
 
-		ctx.fillRect(indicatorStartX + toXPixels(indicatorAreaWidth - 0.5), pixRect.getTop() + toYPixels(0.5), toXPixels(1),
-				pixRect.getHeight() - toYPixels(1));
+		ctx.fillRect(indicatorStartX + toXPixels(indicatorAreaWidth - 0.5), pixRect.getTop() + toYPixels(0.5),
+				toXPixels(1), pixRect.getHeight() - toYPixels(1));
 	}
 }

@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.SVFilter;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.SliderHorizontal;
 
 public class LittleKnobSlider extends SliderHorizontal {
@@ -15,23 +14,21 @@ public class LittleKnobSlider extends SliderHorizontal {
 	protected void drawIndicatorArea(Context2d ctx, double centerX, double indicatorAreaWidth, double indicatorStartX) {
 	}
 
-	@Override
 	protected void drawHandle(Context2d ctx, double indicatorAreaWidth, double indicatorStartX) {
 		Rect pixRect = getPixRect();
 
-		ctx.setStrokeStyle(getColorObjectContour().toString());
+		ctx.setFillStyle(getColorIndicator().toString());
 
-		Parameter p = getParentParameterLayout();
+		double handleWidth = toXPixels(3);
+		double width = toXPixels(getBasicWidth() - 41 + 1) - handleWidth;
 
-		if (Math.abs(getValue()) < 0.001 && p.dimHandleAtDefaultValue())
-			ctx.setFillStyle(getColorObjectContour().toString());
-		else
-			ctx.setFillStyle(getColorIndicator().toString());
+		ctx.fillRect(indicatorStartX + getValue() * width - toXPixels(0.5), pixRect.getTop() + toYPixels(0.5),
+				handleWidth, pixRect.getHeight() - toYPixels(1));
 
-		double x = indicatorStartX + toXPixels(indicatorAreaWidth);
-		ctx.beginPath();
-		ctx.arc(x, pixRect.getCenterPoint().getY(), pixRect.getHeight() / 2, 0, 2 * Math.PI);
-		ctx.fill();
-		ctx.stroke();
+		ctx.setFillStyle(getColorObjectContour().toString());
+		ctx.fillRect(indicatorStartX + getValue() * width - toXPixels(1) + handleWidth / 2,
+				pixRect.getTop() + toYPixels(0.5), toXPixels(1), pixRect.getHeight() - toYPixels(1));
+
 	}
+
 }

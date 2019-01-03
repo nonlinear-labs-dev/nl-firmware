@@ -190,10 +190,12 @@ public class NonLinearWorld extends MapsLayout {
 		setNonSize(width, height);
 		getNonPosition().moveTo(-maxDimension / 2, -maxDimension / 2);
 
-		parameterEditor.moveTo(-parameterEditor.getNonPosition().getWidth() / 2, -parameterEditor.getNonPosition().getHeight() / 2);
+		parameterEditor.moveTo(-parameterEditor.getNonPosition().getWidth() / 2,
+				-parameterEditor.getNonPosition().getHeight() / 2);
 
 		if (firstLayout) {
-			settings.getNonPosition().moveTo(-settings.getNonPosition().getWidth() / 2, -2 * parameterEditor.getNonPosition().getHeight());
+			settings.getNonPosition().moveTo(-settings.getNonPosition().getWidth() / 2,
+					-2 * parameterEditor.getNonPosition().getHeight());
 		}
 
 		calcPixRects();
@@ -437,7 +439,8 @@ public class NonLinearWorld extends MapsLayout {
 
 		T ctxMenu = addChild(menu);
 		ctxMenu.doFirstLayoutPass(getCurrentLevelOfDetail());
-		pos.moveBy(new NonDimension(-ctxMenu.getNonPosition().getWidth() / 2, -ctxMenu.getNonPosition().getHeight() / 2));
+		pos.moveBy(
+				new NonDimension(-ctxMenu.getNonPosition().getWidth() / 2, -ctxMenu.getNonPosition().getHeight() / 2));
 		ctxMenu.getNonPosition().moveTo(pos);
 		requestLayout();
 		return ctxMenu;
