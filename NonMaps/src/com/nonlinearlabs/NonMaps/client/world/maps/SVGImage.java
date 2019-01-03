@@ -27,7 +27,8 @@ public abstract class SVGImage extends ZoomReactingControl implements SVGRenderH
 	@Override
 	public void getStateHash(Checksum crc) {
 		super.getStateHash(crc);
-		crc.eat(img.hashCode());
+		if (img != null)
+			crc.eat(img.hashCode());
 	}
 
 	private void getSelectedImage() {
