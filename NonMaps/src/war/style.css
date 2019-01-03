@@ -732,6 +732,8 @@ textarea {
 	white-space: nowrap;
 	padding: 0.3em 0.6em;
 	margin: 0;
+	font-family: regularfont, Arial Unicode MS, Arial, sans-serif;
+    color: #c2c2c2;
 }
 
 textarea + button.reset {

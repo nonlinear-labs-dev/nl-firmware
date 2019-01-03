@@ -23,6 +23,14 @@ public class PresetSearchProvider {
 			return true;
 		});
 
+		getModel().searchActive.onChange(b -> {
+			if (b == BooleanValues.off) {
+				getModel().reset();
+				notifyClients();
+			}
+			return true;
+		});
+
 		getModel().combination.onChange(q -> {
 			if (q == SearchQueryCombination.AND) {
 				presenter.andCombination = true;

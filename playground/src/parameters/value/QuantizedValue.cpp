@@ -44,10 +44,11 @@ void QuantizedValue::IncrementalChanger::changeBy(tControlPositionValue amount)
   m_pendingAmount += amount;
 
   auto newVal = m_value.getQuantizedValue(m_lastQuantizedValue + m_pendingAmount, fine);
-  newVal = m_value.clip(newVal);
 
   if(newVal != m_lastQuantizedValue && m_value.m_owner != nullptr)
   {
+    newVal = m_value.clip(newVal);
+
     if(m_value.isBoolean())
     {
       if(newVal > m_lastQuantizedValue)

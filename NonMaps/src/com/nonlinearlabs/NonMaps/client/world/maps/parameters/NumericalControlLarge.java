@@ -46,7 +46,7 @@ public class NumericalControlLarge extends ValueDisplayLarge {
 
 	@Override
 	protected double getFontHeight() {
-		return 17;
+		return 23;
 	}
 
 	@Override
