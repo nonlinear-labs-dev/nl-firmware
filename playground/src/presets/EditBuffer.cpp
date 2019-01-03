@@ -18,6 +18,7 @@
 #include "device-settings/Settings.h"
 #include "device-settings/RandomizeAmount.h"
 #include "device-info/DeviceInformation.h"
+#include "parameters/MacroControlParameter.h"
 
 shared_ptr<EditBuffer> EditBuffer::createEditBuffer(UpdateDocumentContributor *parent)
 {
@@ -28,14 +29,10 @@ shared_ptr<EditBuffer> EditBuffer::createEditBuffer(UpdateDocumentContributor *p
 
 EditBuffer::EditBuffer(UpdateDocumentContributor *parent)
     : Preset(parent)
-    , m_isModified(false)
+    , m_selectedParameter(nullptr)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
-{
-  m_selectedParameter = NULL;
-  m_hashOnStore = getHash();
-}
-
-EditBuffer::~EditBuffer()
+    , m_isModified(false)
+    , m_hashOnStore(getHash())
 {
 }
 
@@ -615,4 +612,11 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
 std::shared_ptr<Preset> EditBuffer::getPreset() const
 {
   return m_loadedPreset;
+}
+
+void EditBuffer::setMacroControlValueFromMCView(int id, double value)
+{
+  if(auto mcs = getParameterGroupByID("MCs"))
+    if(auto mc = mcs->getParameterByID(id))
+      mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
 }

@@ -84,13 +84,12 @@ public class BankInfoDialog extends GWTDialog {
 	}
 
 	private void addContent() {
-
 		HTMLPanel bankNameAndPositionBox = new HTMLPanel("div", "");
 		bankNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
 		bankNameAndPositionBox.add(position = new IntegerBox());
 		bankNameAndPositionBox.add(name = new TextBox());
-		position.getElement().addClassName("position-box");
-		name.getElement().addClassName("preset-name-box");
+		position.getElement().addClassName("position-box editable");
+		name.getElement().addClassName("preset-name-box editable");
 
 		position.setText("1");
 
@@ -107,6 +106,7 @@ public class BankInfoDialog extends GWTDialog {
 
 		position.getElement().addClassName("gwt-TextBox");
 
+		comment.getElement().addClassName("editable");
 		comment.addFocusHandler(new FocusHandler() {
 
 			@Override

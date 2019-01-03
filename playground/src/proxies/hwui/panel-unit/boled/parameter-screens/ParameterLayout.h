@@ -18,6 +18,8 @@ class ParameterLayout2 : public DFBLayout
   typedef ParameterLayout2 virtual_base;
   ParameterLayout2();
 
+ protected:
+  void init() override;
   constexpr static int BUTTON_VALUE_Y_POSITION = 34;
   constexpr static int BIG_SLIDER_X = 77;
   constexpr static int BIG_SLIDER_WIDTH = 102;
@@ -30,6 +32,10 @@ class ParameterLayout2 : public DFBLayout
   virtual void setDefault();
   Control *m_lock = nullptr;
   void handlePresetValueRecall();
+  void copyFrom(Layout *src) override;
+
+ private:
+  void showRecallScreenIfAppropriate();
 };
 
 class ParameterSelectLayout2 : public virtual ParameterLayout2
@@ -39,7 +45,7 @@ class ParameterSelectLayout2 : public virtual ParameterLayout2
   ParameterSelectLayout2();
 
  protected:
-  virtual void init() override;
+  void init() override;
   virtual bool onButton(int i, bool down, ButtonModifiers modifiers) override;
   virtual Carousel *createCarousel(const Rect &rect);
 

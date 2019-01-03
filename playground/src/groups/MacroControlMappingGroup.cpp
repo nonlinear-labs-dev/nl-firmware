@@ -9,8 +9,8 @@
 
 MacroControlMappingGroup::MacroControlMappingGroup(ParameterGroupSet *parent, ParameterGroup *hw, ParameterGroup *mc)
     : ParameterGroup(parent, "MCM", "HW Amount", "Hardware Amount", "Hardware Amount")
-    , m_hw(hw)
     , m_mc(mc)
+    , m_hw(hw)
 {
 }
 

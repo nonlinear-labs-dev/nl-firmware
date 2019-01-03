@@ -20,39 +20,18 @@ ShaperAGroup::~ShaperAGroup()
 
 void ShaperAGroup::init()
 {
-  appendParameter(new ModulateableParameterWithUnusualModUnit(this, 71,
-
-                                                              ScaleConverter::get<Linear50DbScaleConverter>(),
+  appendParameter(new ModulateableParameterWithUnusualModUnit(this, 71, ScaleConverter::get<Linear50DbScaleConverter>(),
                                                               ScaleConverter::get<LinearBipolar50DbScaleConverter>(),
                                                               0.2, 100, 500));
-
-  appendParameter(new Parameter(this, 73,
-
-                                ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new Parameter(this, 74,
-
-                                ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
-
-  appendParameter(new Parameter(this, 75,
-
-                                ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
-
+  appendParameter(new Parameter(this, 73, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, 74, ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+  appendParameter(new Parameter(this, 75, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 76,
-
-      ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+      this, 76, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
       ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new ModulateableParameter(this, 78,
-
-                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new Parameter(this, 80,
-
-                                ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new ModulateableParameter(this, 81,
-
-                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(
+      new ModulateableParameter(this, 78, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, 80, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(
+      new ModulateableParameter(this, 81, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
 }

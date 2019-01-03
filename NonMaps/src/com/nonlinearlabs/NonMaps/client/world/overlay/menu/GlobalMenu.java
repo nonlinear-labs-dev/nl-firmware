@@ -198,6 +198,22 @@ public class GlobalMenu extends OverlayLayout {
 			}
 
 		});
+		
+		addChild(new MenuEntry(this, "Exp") {
+
+			@Override
+			public String getDrawText(Context2d ctx) {
+				return "Open MC-View";
+			}
+
+			@Override
+			public Control mouseDown(Position eventPoint) {
+				getParent().toggle();
+				Window.open("/NonMaps/MCView/index.html", "", "");
+				return this;
+			}
+
+		});
 
 	}
 
