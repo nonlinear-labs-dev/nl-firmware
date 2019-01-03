@@ -14,7 +14,8 @@ public class SizeLinkedParameterColumn extends ParameterColumn {
 		super.doSecondLayoutPass(parentsWidthFromFirstPass, parentsHeightFromFirstPass);
 		setNonSize(getNonPosition().getWidth(), parentsHeightFromFirstPass);
 		LayoutResizingVertical param = (LayoutResizingVertical) getChildren().get(0);
-		param.setNonSize(getNonPosition().getDimension().getWidth(), getNonPosition().getDimension().getHeight() - 2 * getYMargin());
+		param.setNonSize(getNonPosition().getDimension().getWidth(),
+				parentsHeightFromFirstPass - getTopMargin() - getBottomMargin());
 		param.centerChildrenExceptFirst();
 	}
 }
