@@ -8,13 +8,14 @@ public class PresetSearchDialog extends GWTDialog {
 	static int lastPopupLeft = -1;
 	static int lastPopupTop = -1;
 	static PresetSearchDialog theSearch;
-	
+
 	PresetSearch presetSearch = null;
-	
+
 	private PresetSearchDialog() {
 		super();
 		com.nonlinearlabs.NonMaps.client.useCases.PresetSearch.get().startSearch();
 		add(presetSearch = new PresetSearch());
+		getElement().addClassName("search-dialog");
 		setAnimationEnabled(true);
 		setGlassEnabled(false);
 		setModal(false);

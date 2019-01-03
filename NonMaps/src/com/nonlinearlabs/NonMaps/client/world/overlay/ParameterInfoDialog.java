@@ -83,7 +83,7 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 		paramNameEditor.getElement().addClassName("flex-div");
 		paramNameEditor.add(paramNameEditView = new Label());
 		paramNameEditor.add(paramNameEditEditor = new TextBox());
-		paramNameEditEditor.getElement().addClassName("param-name-edit");
+		paramNameEditEditor.getElement().addClassName("param-name-edit editable");
 		panel.add(paramNameEditor);
 
 		HTMLPanel infoFieldBox = new HTMLPanel("div", "");
@@ -208,6 +208,14 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 		infoField.setEnabled(isMC);
 		paramNameEditor.setVisible(isMC);
 		parameterNameView.setVisible(!isMC);
+
+		if (isMC) {
+			infoField.getElement().addClassName("editable");
+			infoField.getElement().removeClassName("txt-area");
+		} else {
+			infoField.getElement().removeClassName("editable");
+			infoField.getElement().addClassName("txt-area");
+		}
 
 		if (isMC) {
 			MacroControlParameter p = (MacroControlParameter) newSelection;
