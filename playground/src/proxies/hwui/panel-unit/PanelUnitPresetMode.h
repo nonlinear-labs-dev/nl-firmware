@@ -24,6 +24,4 @@ class PanelUnitPresetMode : public PanelUnitParameterEditMode
   void setStateForButton(int buttonId, const list<int> parameters, array<TwoStateLED::LedState, numLeds>& states);
   void letChangedButtonsBlink(int buttonId, const list<int> parameters, array<TwoStateLED::LedState, numLeds>& states);
   void applyStateToLeds(array<TwoStateLED::LedState, numLeds>& states);
-  const tControlPositionValue getSpecialCaseValue(gint32 id) const;
-  const bool isSpecialCase(gint32 id) const;
 };

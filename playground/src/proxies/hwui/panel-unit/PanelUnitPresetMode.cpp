@@ -80,15 +80,6 @@ void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parame
         break;
       }
     }
-    else if(isSpecialCase(parameter->getID()))
-    {
-      auto sig = getSpecialCaseValue(parameter->getID());
-      if(sig != parameter->getControlPositionValue())
-      {
-        states[buttonId] = TwoStateLED::ON;
-        break;
-      }
-    }
     else if(signalFlowIndicator != invalidSignalFlowIndicator)
     {
       if(parameter->getControlPositionValue() != signalFlowIndicator)
@@ -107,20 +98,4 @@ void PanelUnitPresetMode::applyStateToLeds(array<TwoStateLED::LedState, numLeds>
   {
     panelUnit.getLED(i)->setState(states[i]);
   }
-}
-
-const tControlPositionValue PanelUnitPresetMode::getSpecialCaseValue(const gint32 id) const
-{
-  switch(id)
-  {
-    case 307:
-      return 0;
-    default:
-      return ParameterDB::getInvalidSignalPathIndication();
-  }
-}
-
-const bool PanelUnitPresetMode::isSpecialCase(const gint32 id) const {
-  auto special = std::vector<size_t>{307};
-  return std::find(special.begin(), special.end(), id) != special.end();
 }
