@@ -18,3 +18,8 @@ body {
 .inline-elements {
 	display: inline;
 }
+
+@font-face {
+  font-family: 'nonlinearfont';
+  src: url('./SourceSansProLW25-Regular.otf');
+}

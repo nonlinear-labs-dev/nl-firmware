@@ -278,25 +278,42 @@ function drawGraph2D(ctx, rect, modRange) {
 
 	//Draw MC Name 1
 	ctx.fillStyle = "rgba(69,69,69,0.5)"
-	ctx.font = "4em Arial";
-	ctx.fillText(modRange.idX, rect.x + rect.w * 0.46, rect.y + rect.h / 1.2);
+	ctx.font = "4em nonlinearfont";
+	ctx.fillText(getUnicodeForMC(modRange.idX), rect.x + rect.w * 0.46, rect.y + rect.h / 1.2);
 	ctx.fill();
 	//Draw Value 1
 	ctx.fillStyle = "Black";
-	ctx.font = "2em Arial";
+	ctx.font = "2em nonlinearfont";
 	ctx.fillText(String(outValueX), rect.x + rect.w * 0.46, drawHeigth);
 	ctx.fill();
 
 	//Draw MC Name 2
 	ctx.fillStyle = "rgba(69,69,69,0.5)"
-	ctx.font = "4em Arial";
-	ctx.fillText(modRange.idY, drawLeft + rect.w * 0.12, rect.y + rect.h * 0.46);
+	ctx.font = "4em nonlinearfont";
+	ctx.fillText(getUnicodeForMC(modRange.idY), drawLeft + rect.w * 0.12, rect.y + rect.h * 0.46);
 	ctx.fill();
 	//Draw Value 2
 	ctx.fillStyle = "Black";
-	ctx.font = "2em Arial";
+	ctx.font = "2em nonlinearfont";
 	ctx.fillText(String(outValueY), drawLeft, rect.y + rect.h * 0.46);
 	ctx.fill();
+}
+
+function getUnicodeForMC(modid) {
+	switch(modid) {
+		case "A":
+		return "\uE000";
+		case "B":
+		return "\uE001";
+		case "C":
+		return "\uE002";
+		case "D":
+		return "\uE003";
+		case "E":
+		return "\u039B";
+		case "F":
+		return "\uE181";
+	}
 }
 
 function drawGraph1D(ctx, rect, modRange) {
@@ -304,18 +321,18 @@ function drawGraph1D(ctx, rect, modRange) {
 	let outValue = Number(modRange.valueX).toFixed(1);
 	//Draw MC Name
 	ctx.fillStyle = "rgba(69,69,69,0.5)"
-	ctx.font = "4em Arial";
-	ctx.fillText(modRange.idX, rect.x + rect.w * 0.46, rect.y + rect.h / 1.5);
+	ctx.font = "4em nonlinearfont";
+	ctx.fillText(getUnicodeForMC(modRange.idX), rect.x + rect.w * 0.46, rect.y + rect.h / 1.5);
 	ctx.fill();
 	//Draw Value
 	ctx.fillStyle = "Black";
-	ctx.font = "2em Arial";
+	ctx.font = "2em nonlinearfont";
 	ctx.fillText(String(outValue), rect.x + rect.w * 0.46, drawHeigth);
 	ctx.fill();
 }
 
 function drawModRanges(ctx) {
-	let colors = ["#C0C0C0", "#C8C8C8", "#D0D0D0", "#D8D8D8"];
+	let colors = ["#2b2b2b", "#2b2b2b", "#2b2b2b", "#2b2b2b"];
 	ctx.beginPath();
 	for(var i = 0; i < 4; i++) {
 		ctx.fillStyle = colors[i];
@@ -397,6 +414,9 @@ function interpolate() {
 function onLoad() {
 	canvas = document.getElementById('canvas');
 	ctx = canvas.getContext('2d');
+
+	ctx.font = '4em nonlinearfont';
+
 
 	window.requestAnimationFrame(update);
 	interpolationTimer = setInterval(interpolate, 5);
