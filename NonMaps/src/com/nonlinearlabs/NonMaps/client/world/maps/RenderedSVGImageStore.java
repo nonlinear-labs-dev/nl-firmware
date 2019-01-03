@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.xml.client.Document;
@@ -22,7 +20,7 @@ public class RenderedSVGImageStore {
 		return self;
 	}
 
-	private class PendingRenderJob implements Runnable {
+	private class PendingRenderJob {
 		private final int width;
 		private final int height;
 		private final String name;
@@ -35,8 +33,7 @@ public class RenderedSVGImageStore {
 			this.handler.add(handler);
 		}
 
-		@Override
-		public void run() {
+		public void run(Runnable f) {
 			SVGImageStore.get().loadImage(name, new SVGDownloadHandler() {
 
 				@Override
@@ -53,14 +50,15 @@ public class RenderedSVGImageStore {
 						String moddedSvg = "data:image/svg+xml;base64," + base64Encode(svg.toString());
 						face.setSrc(moddedSvg);
 
-						if (img.getWidth() != 0 && img.getHeight() != 0) {
-							String key = name + width + height;
-							cache.put(key, face);
+						String key = name + width + height;
+						cache.put(key, face);
 
-							for (SVGRenderHandler h : handler)
-								h.onSVGRendered(face);
+						for (SVGRenderHandler h : handler) {
+							h.onSVGRendered(face);
 						}
 					}
+
+					f.run();
 				}
 			});
 		}
@@ -77,12 +75,12 @@ public class RenderedSVGImageStore {
 	}
 
 	private static native String base64Encode(String v) /*-{
-														return btoa(v);
-														}-*/;
+		return btoa(v);
+	}-*/;
 
 	private static native String base64Decode(String v) /*-{
-														return atob(v);
-														}-*/;
+		return atob(v);
+	}-*/;
 
 	public ImageElement render(String name, int width, int height, SVGRenderHandler handler) {
 		for (Iterator<PendingRenderJob> iter = pendingJobs.listIterator(); iter.hasNext();) {
@@ -92,7 +90,11 @@ public class RenderedSVGImageStore {
 				if (a.width == width && a.height == height && a.name.equals(name)) {
 					return null;
 				} else {
-					iter.remove();
+					a.handler.remove(handler);
+
+					if (a.handler.isEmpty()) {
+						iter.remove();
+					}
 				}
 			}
 		}
@@ -100,24 +102,14 @@ public class RenderedSVGImageStore {
 		String key = name + width + height;
 		ImageElement img = cache.get(key);
 
-		if (img == null)
+		if (img == null || img.getWidth() != width || img.getHeight() != height)
 			downloadAndCache(name, width, height, handler);
-		else if (img.getWidth() != width || img.getHeight() != height)
-			downloadAndCache(name, width, height, handler);
-
 		return img;
 	}
 
-	public void cancel(SVGRenderHandler handler) {
-		for (Iterator<PendingRenderJob> iter = pendingJobs.listIterator(); iter.hasNext();) {
-			PendingRenderJob a = iter.next();
-			if (a.handler == handler) {
-				iter.remove();
-			}
-		}
-	}
+	private void downloadAndCache(final String name, final int width, final int height,
+			final SVGRenderHandler handler) {
 
-	private void downloadAndCache(final String name, final int width, final int height, final SVGRenderHandler handler) {
 		for (Iterator<PendingRenderJob> iter = pendingJobs.listIterator(); iter.hasNext();) {
 			PendingRenderJob a = iter.next();
 
@@ -128,7 +120,6 @@ public class RenderedSVGImageStore {
 		}
 
 		PendingRenderJob r = new PendingRenderJob(width, height, name, handler);
-
 		boolean schedule = pendingJobs.isEmpty();
 		pendingJobs.add(r);
 
@@ -137,20 +128,15 @@ public class RenderedSVGImageStore {
 	}
 
 	private void scheduleJobs() {
-		Scheduler.get().scheduleIncremental(new RepeatingCommand() {
+		if (!pendingJobs.isEmpty()) {
+			PendingRenderJob r = pendingJobs.getFirst();
 
-			@Override
-			public boolean execute() {
-				Runnable r = pendingJobs.pollFirst();
-
-				if (r != null) {
-					r.run();
+			if (r != null) {
+				r.run(() -> {
 					pendingJobs.remove(r);
-					return true;
-				}
-
-				return false;
+					scheduleJobs();
+				});
 			}
-		});
+		}
 	}
 }
