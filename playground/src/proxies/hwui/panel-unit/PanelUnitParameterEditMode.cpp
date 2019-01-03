@@ -565,7 +565,7 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
       case SVFilterAB:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
         {
-          if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
+          if(currentParam->getControlPositionValue() == currentParam->getDefaultValue())
           {
             panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
           }
