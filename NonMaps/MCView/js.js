@@ -9,7 +9,7 @@ var modRanges = [];
 var interpolationStep = 0.01;
 var lastMouseEvent = null;
 //Change if devPC:
-var websocket = new WebSocket("ws://localhost:8080/ws/");
+var websocket = new WebSocket("ws://192.168.0.2:8080/ws/");
 //var websocket = new WebSocket("ws://192.168.8.2:80/ws/");
 
 var mouseDown = 0;
@@ -88,6 +88,8 @@ class ModRange {
 	setValue(id, val) {
 		var rect = getModRect(this.id);
 
+		console.log(val * 10);
+
 		if(id === 0) {
 			this.valueX = val;
 			this.targetX = val;
@@ -98,7 +100,6 @@ class ModRange {
 			this.targetY = val;
 			this.targetPosition.y = rect.y + (Number(this.targetY).toFixed(3) / 10) * rect.h;
 			this.currentPointerPos.y = rect.y + (Number(this.valueY).toFixed(3) / 10) * rect.h;
-
 		}
 		this.ischanged = true;
 }
@@ -454,9 +455,7 @@ function onLoad() {
 		var text = event.data;
 		if(text.startsWith("MCVIEW")) {
 			var id = text.substr(6, 3);
-			console.log(id);
 			var val = text.substr(10);
-			console.log(val);
 			var idN = Number(id);
 			val *= 10;
 			val.toFixed(3);
@@ -480,3 +479,23 @@ function onLoad() {
 		}
 	};
 };
+
+
+
+//Structure I want:
+/*
+	Model:
+	list of mcs,
+	websocketconnection
+
+	public interface:
+	onMcValueChanged()
+	onTargetChanged()
+	setTarget(val)
+	hidden func:
+	update to and from server / PG
+
+	View:
+	map mc to display
+
+*/
