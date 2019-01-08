@@ -39,9 +39,23 @@ class MC {
   }
 }
 
+class Timer {
+  constructor(length) {
+    this.length = length;
+    this.start = Date.now();
+  }
+  expired() {
+    return Date.now() >= this.start + this.length;
+  }
+  restart() {
+    this.start = Date.now();
+  }
+}
+
 class MCModel {
   constructor(webSocket) {
     this.mcs = [];
+    this.redrawtimer = new Timer(16);
 
     for(var i = 0; i < 4; i++) {
       this.mcs[i] = new MC(243+i);
@@ -67,7 +81,6 @@ class MCModel {
   }
 
   update() {
-    var changed = false;
     var i;
     for(i = 0; i < model.mcs.length; i++) {
       var mc = model.mcs[i];
@@ -75,15 +88,13 @@ class MCModel {
         var n = 1.0 / (1 * 0.5 + 1.0);
         var oldParam = mc.paramValue;
       	mc.paramValue = (1 - n) * mc.targetValue + n * mc.paramValue;
-
-        if(oldParam != mc.paramValue)
-          changed = true;
       }
     }
-    if(changed) {
+
+    if(model.redrawtimer.expired())
       view.redraw(model);
-    }
-    setInterval(this.update, 250);
+
+    setInterval(this.update, 20);
   }
 }
 
@@ -174,6 +185,8 @@ class MCView {
 
       this.drawHandle(division);
     }
+
+    model.redrawtimer.restart();
   }
 
   drawHandle(division) {
@@ -387,5 +400,6 @@ function onLoad() {
     view = new MCView();
     controller = new MCController();
     model.update();
+    window.requestAnimationFrame(function() { view.redraw(model); });
   };
 }
