@@ -1039,18 +1039,18 @@ input[type="range"]::-moz-range-track {
 .t-center {text-align: center;}
 
 ::selection {
-	color: #111;
-	background-color: #8cb0ee;
+  color: #101010;
+  background-color: #b6b6b6;
 }
 	
 ::-moz-selection {
-	color: #111;
-	background-color: #8cb0ee;
+	color: #101010;
+   background-color: #b6b6b6;
 }
 	
 ::-webkit-selection {
-	color: #111;
-	background-color: #8cb0ee;
+	color: #101010;
+  background-color: #b6b6b6;
 }
 	
 .stretcher {
