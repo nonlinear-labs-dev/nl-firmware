@@ -280,6 +280,12 @@ public class BankInfoDialog extends GWTDialog {
 			if (haveFocus != comment) {
 				if (!commentText.equals(comment.getText())) {
 					comment.setText(commentText);
+
+					if (comment.getElement().getScrollHeight() > 0) {
+						comment.setHeight("1em");
+						int height = comment.getElement().getScrollHeight() + 5;
+						comment.setHeight(height + "px");
+					}
 				}
 			}
 

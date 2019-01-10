@@ -21,6 +21,7 @@ html,body {
   margin: 0px;
   padding: 0px;
   overflow: hidden;
+  user-select: none
 }
 
 html * {
@@ -229,7 +230,6 @@ select {
 }
 
 .gwt-DialogBox {
-	width: 25em;
   background-color: #16161e;
   border: 0.25mm solid #76829a;
   border-radius: 2mm;
@@ -1598,7 +1598,6 @@ select[disabled='disabled'] {
   text-align: center;
 }
 
-
 .dialogContent .compare-tree tr td:nth-child(1) {
   min-width: 8 em;
   text-align: left;
@@ -1610,6 +1609,11 @@ select[disabled='disabled'] {
 
 .gwt-TextArea {
   resize: vertical;
+}
+
+.dialogContent textarea.editable {
+    min-height: 3em;
+    max-height: 10em;
 }
 
 input.param-name-edit {
