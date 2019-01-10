@@ -33,8 +33,11 @@ HWUI::HWUI()
   m_buttonStates.fill(false);
 
 #ifdef _DEVELOPMENT_PC
-  m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
-  m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
+  if(isatty(fileno(stdin)))
+  {
+    m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
+    m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
+  }
 #endif
 
   Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Buttons,
@@ -179,8 +182,8 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         Application::get().stopWatchDog();
 
-
-        for(int steps = 0; steps < 50; steps++) {
+        for(int steps = 0; steps < 50; steps++)
+        {
           unsigned long long totalTraverse = 0;
           long avgusTraverse = 0;
           for(int i = 1; i < 101; i++)
@@ -189,7 +192,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
             totalTraverse += traverse;
           }
           avgusTraverse = static_cast<long>(totalTraverse / 100);
-          DebugLevel::warning("Count: ~",steps*1000,"Transactions Traverse avg:", avgusTraverse / 1000, "\bms");
+          DebugLevel::warning("Count: ~", steps * 1000, "Transactions Traverse avg:", avgusTraverse / 1000, "\bms");
           Application::get().getPresetManager()->stressBlocking(1000);
         }
         Application::get().runWatchDog();
