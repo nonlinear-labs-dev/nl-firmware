@@ -1598,7 +1598,6 @@ select[disabled='disabled'] {
   text-align: center;
 }
 
-
 .dialogContent .compare-tree tr td:nth-child(1) {
   min-width: 8 em;
   text-align: left;
@@ -1610,6 +1609,11 @@ select[disabled='disabled'] {
 
 .gwt-TextArea {
   resize: vertical;
+}
+
+.dialogContent textarea.editable {
+    min-height: 3em;
+    max-height: 10em;
 }
 
 input.param-name-edit {

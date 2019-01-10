@@ -52,9 +52,7 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 		setModal(false);
 
 		addHeader("Parameter Info");
-
 		addContent();
-
 		update(NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome());
 
 		super.pushDialogToFront();
