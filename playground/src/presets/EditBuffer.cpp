@@ -19,6 +19,7 @@
 #include "device-settings/RandomizeAmount.h"
 #include "device-info/DeviceInformation.h"
 #include <libundo/undo/Transaction.h>
+#include "parameters/MacroControlParameter.h"
 
 EditBuffer::EditBuffer(UpdateDocumentContributor *parent)
     : ParameterGroupSet(parent)
@@ -568,4 +569,11 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
     }
   }
   return nullptr;
+}
+
+void EditBuffer::setMacroControlValueFromMCView(int id, double value)
+{
+  if(auto mcs = getParameterGroupByID("MCs"))
+    if(auto mc = mcs->getParameterByID(id))
+      mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
 }

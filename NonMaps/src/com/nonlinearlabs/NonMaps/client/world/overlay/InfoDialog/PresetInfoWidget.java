@@ -74,8 +74,12 @@ public class PresetInfoWidget {
 			String commentText = preset.getAttribute("Comment");
 
 			if (force || haveFocus != comment) {
-				if (!commentText.equals(comment.getText())) {
-					comment.setText(commentText);
+				comment.setText(commentText);
+
+				if (comment.getElement().getScrollHeight() > 0) {
+					comment.setHeight("1em");
+					int height = comment.getElement().getScrollHeight() + 5;
+					comment.setHeight(height + "px");
 				}
 			}
 
@@ -91,9 +95,7 @@ public class PresetInfoWidget {
 
 			Bank bank = preset.getParent();
 			bankName.setText(bank.getOrderNumber() + " - " + bank.getTitleName());
-
 			colorBox.updateCurrentHighlight(ColorTag.Color.toEnum(preset.getAttribute("color")));
-
 		}
 	}
 
@@ -103,8 +105,8 @@ public class PresetInfoWidget {
 		presetNameAndPositionBox.getElement().addClassName("preset-name-and-pos");
 		presetNameAndPositionBox.add(position = new IntegerBox());
 		presetNameAndPositionBox.add(name = new TextBox());
-		position.getElement().addClassName("position-box");
-		name.getElement().addClassName("preset-name-box");
+		position.getElement().addClassName("position-box editable");
+		name.getElement().addClassName("preset-name-box editable");
 
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Bank", bankName = new Label());
@@ -117,6 +119,7 @@ public class PresetInfoWidget {
 
 		position.getElement().addClassName("gwt-TextBox");
 
+		comment.getElement().addClassName("editable");
 		comment.addFocusHandler(event -> haveFocus = comment);
 
 		comment.addBlurHandler(event -> {

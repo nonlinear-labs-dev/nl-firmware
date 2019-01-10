@@ -13,6 +13,7 @@ file(GLOB_RECURSE SOURCE_FILES
 
 file (GLOB IMAGES ${NONMAPS_ROOT}/src/com/nonlinearlabs/NonMaps/client/world/overlay/images/*)
 file (GLOB MAPS_IMAGES ${NONMAPS_ROOT}/src/com/nonlinearlabs/NonMaps/client/world/maps/images/*)
+file (GLOB MCSITE ${NONMAPS_ROOT}/PerformanceView/*)
 
 add_custom_command(OUTPUT ${OUTFILE}
   COMMAND /usr/bin/java -Xmx512m -classpath ${NONMAPS_ROOT}/src:${JARSDIR}/gwt-user.jar:${JARSDIR}/gwt-dev.jar com.google.gwt.dev.Compiler -optimize 9 -gen ${OBJDIR} -logLevel WARN -style OBF -war ./war -localWorkers 4 com.nonlinearlabs.NonMaps.NonMaps
@@ -52,6 +53,10 @@ install(FILES ${IMAGES}
 install(FILES ${MAPS_IMAGES}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps/war/images
   )
+  
+  install(DIRECTORY MCView
+  	DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps
+  	)
 
 install(DIRECTORY war
   DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/NonMaps

@@ -18,6 +18,8 @@ class EditBuffer : public ParameterGroupSet
   EditBuffer(UpdateDocumentContributor *parent);
   ~EditBuffer() override;
 
+  void setMacroControlValueFromMCView(int id, double value);
+
   Glib::ustring getName() const;
   size_t getHash() const;
   const Preset *getOrigin() const;
@@ -104,8 +106,8 @@ class EditBuffer : public ParameterGroupSet
 
   DelayedJob m_deferedJobs;
 
-  size_t m_hashOnStore;
   bool m_isModified;
+  size_t m_hashOnStore;
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;

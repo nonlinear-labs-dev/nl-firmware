@@ -36,7 +36,6 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 #include "PanelUnitParameterEditMode.h"
 
-
 class ParameterInfoLayout;
 class ParameterLayout2;
 
@@ -245,7 +244,7 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(gint3
               std::placeholders::_3);
 }
 
-bool PanelUnitParameterEditMode::toggleParameterSelection(vector<gint32> ids, bool state)
+bool PanelUnitParameterEditMode::toggleParameterSelection(const vector<gint32> ids, bool state)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto firstParameterInList = editBuffer->findParameterByID(ids.front());
@@ -299,6 +298,19 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(vector<gint32> ids, bo
     }
     else
     {
+      if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
+      {
+        for(auto paramId : ids)
+        {
+          auto param = editBuffer->findParameterByID(paramId);
+          if(param->isChangedFromLoaded())
+          {
+            setParameterSelection(paramId, state);
+            return true;
+          }
+        }
+      }
+
       setParameterSelection(ids.front(), state);
     }
   }
@@ -356,7 +368,7 @@ bool PanelUnitParameterEditMode::setParameterSelection(gint32 audioID, bool stat
 
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-    if(Parameter *p = editBuffer->findParameterByID(audioID))
+    if(auto p = editBuffer->findParameterByID(audioID))
     {
       DebugLevel::gassy("selecting param");
       editBuffer->undoableSelectParameter(p);
@@ -539,7 +551,8 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
     if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
     {
-      panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+      auto state = editBuffer->getSelected() == currentParam ? TwoStateLED::ON : TwoStateLED::BLINK;
+      panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
     }
   }
 }
@@ -564,7 +577,7 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
       case SVFilterAB:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
         {
-          if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
+          if(currentParam->getControlPositionValue() == currentParam->getDefaultValue())
           {
             panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
           }

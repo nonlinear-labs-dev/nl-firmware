@@ -40,21 +40,19 @@ class NumericalControlsModulation extends ModulateableValueControl {
 
 	@Override
 	protected void drawBackgroundAndOutline(Context2d ctx) {
-		if (shouldDrawCorona()) {
-			Rect sliderRect = getModulationStuffRect();
-			sliderRect.fillAndStroke(ctx, getColorSliderBackground(), toXPixels(1), getColorObjectContour());
+		Rect sliderRect = getModulationStuffRect();
+		sliderRect.fillAndStroke(ctx, getColorSliderBackground(), toXPixels(1), getColorObjectContour());
 
-			double modWidth = getModWidth();
-			ctx.beginPath();
-			ctx.moveTo(sliderRect.getLeft(), sliderRect.getTop() + modWidth);
-			ctx.lineTo(sliderRect.getRight(), sliderRect.getTop() + modWidth);
-			ctx.stroke();
+		double modWidth = getModWidth();
+		ctx.beginPath();
+		ctx.moveTo(sliderRect.getLeft(), sliderRect.getTop() + modWidth);
+		ctx.lineTo(sliderRect.getRight(), sliderRect.getTop() + modWidth);
+		ctx.stroke();
 
-			ctx.beginPath();
-			ctx.moveTo(sliderRect.getLeft(), sliderRect.getBottom() - modWidth);
-			ctx.lineTo(sliderRect.getRight(), sliderRect.getBottom() - modWidth);
-			ctx.stroke();
-		}
+		ctx.beginPath();
+		ctx.moveTo(sliderRect.getLeft(), sliderRect.getBottom() - modWidth);
+		ctx.lineTo(sliderRect.getRight(), sliderRect.getBottom() - modWidth);
+		ctx.stroke();
 	}
 
 	private double getModWidth() {
@@ -63,25 +61,23 @@ class NumericalControlsModulation extends ModulateableValueControl {
 
 	@Override
 	protected void drawActiveArea(Context2d ctx) {
-		if (shouldDrawCorona()) {
-			Rect sliderRect = getModulationStuffRect();
+		Rect sliderRect = getModulationStuffRect();
 
-			try (ContextState s = new ClipContext(ctx, sliderRect.getReducedBy(getConturPixels()))) {
-				sliderRect.moveBy(0, toYPixels(2.5));
-				sliderRect.setHeight(sliderRect.getHeight() - 2 * getModWidth());
-				sliderRect.reduceWidthBy(getConturPixels());
-				sliderRect.reduceHeightBy(getConturPixels());
+		try (ContextState s = new ClipContext(ctx, sliderRect.getReducedBy(getConturPixels()))) {
+			sliderRect.moveBy(0, toYPixels(2.5));
+			sliderRect.setHeight(sliderRect.getHeight() - 2 * getModWidth());
+			sliderRect.reduceWidthBy(getConturPixels());
+			sliderRect.reduceHeightBy(getConturPixels());
 
-				Rect indicator = sliderRect.copy();
+			Rect indicator = sliderRect.copy();
 
-				double value = getValue();
-				indicator.setWidth(sliderRect.getWidth() * value);
-				indicator.fill(ctx, getColorSliderHighlight());
+			double value = getValue();
+			indicator.setWidth(sliderRect.getWidth() * value);
+			indicator.fill(ctx, getColorSliderHighlight());
 
-				indicator.setLeft(indicator.getRight() - toXPixels(0.5));
-				indicator.setWidth(toXPixels(1));
-				indicator.fill(ctx, getColorIndicator());
-			}
+			indicator.setLeft(indicator.getRight() - toXPixels(0.5));
+			indicator.setWidth(toXPixels(1));
+			indicator.fill(ctx, getColorIndicator());
 		}
 	}
 

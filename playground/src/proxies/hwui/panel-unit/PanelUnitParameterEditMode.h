@@ -46,7 +46,7 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
   tAction createParameterSelectAction(vector<gint32> toggleAudioIDs);
   tAction createParameterSelectAction(gint32 audioID);
 
-  bool toggleParameterSelection(vector<gint32> ids, bool state);
+  bool toggleParameterSelection(const vector<gint32> ids, bool state);
   bool setParameterSelection(gint32 audioID, bool state);
 
   bool isShowingParameterScreen() const;

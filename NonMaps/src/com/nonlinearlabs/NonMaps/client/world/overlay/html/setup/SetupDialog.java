@@ -12,6 +12,7 @@ public class SetupDialog extends GWTDialog {
 	private SetupDialog() {
 		super();
 		add(new Setup());
+		getElement().addClassName("setup-dialog");
 		setAnimationEnabled(true);
 		setGlassEnabled(false);
 		setModal(false);

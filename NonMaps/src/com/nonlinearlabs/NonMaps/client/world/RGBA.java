@@ -13,6 +13,10 @@ public class RGBA extends RGB {
 		this(rgb.r, rgb.g, rgb.b, a);
 	}
 
+	public RGBA clone() {
+		return new RGBA(r, g, b, a);
+	}
+
 	@Override
 	public String toString() {
 		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
