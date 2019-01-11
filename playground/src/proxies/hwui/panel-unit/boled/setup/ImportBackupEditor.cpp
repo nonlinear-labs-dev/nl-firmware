@@ -134,12 +134,15 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
         return Reader::FileVersionCheckResult::OK;
       });
 
-      if(reader.read<PresetManagerSerializer>(std::ref(*pm.get())))
+      if(auto lock = pm->lockLoading())
       {
-        pm->getEditBuffer()->sendToLPC();
+        if(reader.read<PresetManagerSerializer>(std::ref(*pm.get())))
+        {
+          pm->getEditBuffer()->sendToLPC();
+        }
+        SplashLayout::addStatus("Restore Complete!");
+        std::this_thread::sleep_for(0.7s);
       }
-      SplashLayout::addStatus("Restore Complete!");
-      std::this_thread::sleep_for(0.7s);
     }
   }
   boled.resetOverlay();
