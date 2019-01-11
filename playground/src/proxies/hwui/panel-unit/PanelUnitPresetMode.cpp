@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/PanelUnitPresetMode.h>
 #include <proxies/hwui/TwoStateLED.h>
 #include <memory>
+#include "PanelUnitPresetMode.h"
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
@@ -33,8 +34,7 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
       return;
 
-    array<TwoStateLED::LedState, numLeds> states{};
-    states.fill(TwoStateLED::OFF);
+    array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
       getMappings().forEachButton(
@@ -70,22 +70,22 @@ void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parame
   for(auto i : parameters)
   {
     auto signalFlowIndicator = ParameterDB::get().getSignalPathIndication(i);
+    auto parameter = editBuffer->findParameterByID(static_cast<size_t>(i));
 
-    if(auto mc = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(i)))
+    if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
     {
-      if(mc->getTargets().size() > 0)
+      if(!mc->getTargets().empty())
       {
         states[buttonId] = TwoStateLED::ON;
+        break;
       }
     }
     else if(signalFlowIndicator != invalidSignalFlowIndicator)
     {
-      if(auto p = editBuffer->findParameterByID(i))
+      if(parameter->getControlPositionValue() != signalFlowIndicator)
       {
-        if(p->getControlPositionValue() != signalFlowIndicator)
-        {
-          states[buttonId] = TwoStateLED::ON;
-        }
+        states[buttonId] = TwoStateLED::ON;
+        break;
       }
     }
   }

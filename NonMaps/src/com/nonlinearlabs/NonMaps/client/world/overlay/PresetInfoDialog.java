@@ -34,7 +34,6 @@ public class PresetInfoDialog extends GWTDialog {
 
 	private void addContent() {
 		presetInfoPage = PresetInfoWidget.get();
-		presetInfoPage.updateInfo(getCurrentPreset(), false);
 
 		HTMLPanel pane = new HTMLPanel("div", "");
 		pane.getElement().addClassName("preset-info-edit-buffer-dialog-pane");
@@ -45,6 +44,8 @@ public class PresetInfoDialog extends GWTDialog {
 		pane.add(content);
 		content.add(presetInfoPage.panel);
 		setWidget(pane);
+
+		presetInfoPage.updateInfo(getCurrentPreset(), false);
 	}
 
 	@Override

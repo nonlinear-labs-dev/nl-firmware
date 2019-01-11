@@ -614,6 +614,11 @@ bool PresetManager::isLoading() const
   return m_loading.isLocked();
 }
 
+RecursionGuard::tLock PresetManager::lockLoading()
+{
+  return m_loading.lock();
+}
+
 PresetManager::tPresetPtr PresetManager::getLoadedPreset()
 {
   return findPreset(m_editBuffer->getUUIDOfLastLoadedPreset());

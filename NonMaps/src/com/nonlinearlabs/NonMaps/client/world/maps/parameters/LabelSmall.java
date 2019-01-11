@@ -131,7 +131,8 @@ public class LabelSmall extends ZoomReactingControl {
 			}
 
 			ctx.setTextBaseline(TextBaseline.MIDDLE);
-			String croppedText = TextCropper.crop(getDisplayText(), ctx, pixRect.getWidth() - toXPixels(getWidthMargin()));
+			String croppedText = TextCropper.crop(getDisplayText(), ctx,
+					pixRect.getWidth() - toXPixels(getWidthMargin()));
 			ctx.fillText(croppedText, center.getX(), center.getY() + toYPixels(moveFontVerticallyBy()));
 		}
 	}

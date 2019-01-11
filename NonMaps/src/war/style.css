@@ -714,12 +714,10 @@ textarea {
 	border: 0px solid #000;
 	border-radius: 5px;
 	width: auto;
-	min-height: 6em;
-	font-family: 'Source Sans Pro';
 	font-size: 95%;
 	font-weight: 300;
 	padding: 0.4em 0.6em;
-	margin: 0.5em 0.6em 0em 0.6em;
+	margin: 0.5em;
 	resize: none;
 	outline: none;
 	flex-grow: 1;
@@ -777,15 +775,15 @@ textarea + button.reset:active {
 	color: #7d829c;
 }	
 
-.left-btn {
-	border-top-right-radius: 0px !important;
-	border-bottom-right-radius: 0px !important;
-}
-.right-btn {
-	border-top-left-radius: 0px !important;
-	border-bottom-left-radius: 0px !important;
+.prev-next-buttons {
+	justify-content: space-around;
+	padding-left:4em;
+	padding-right:4em;
 }
 
+.prev-next-buttons > button {
+	width: 5em;
+}
 
 /*****************************/
 /* !select option */
@@ -1041,18 +1039,18 @@ input[type="range"]::-moz-range-track {
 .t-center {text-align: center;}
 
 ::selection {
-	color: #111;
-	background-color: #8cb0ee;
+  color: #101010;
+  background-color: #b6b6b6;
 }
 	
 ::-moz-selection {
-	color: #111;
-	background-color: #8cb0ee;
+	color: #101010;
+   background-color: #b6b6b6;
 }
 	
 ::-webkit-selection {
-	color: #111;
-	background-color: #8cb0ee;
+	color: #101010;
+  background-color: #b6b6b6;
 }
 	
 .stretcher {

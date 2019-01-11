@@ -21,6 +21,7 @@ html,body {
   margin: 0px;
   padding: 0px;
   overflow: hidden;
+  user-select: none
 }
 
 html * {
@@ -38,10 +39,6 @@ h1 {
 .sendButton {
   display: block;
   font-size: 18pt;
-}
-
-.gwt-DialogBox {
-  width: 400px;
 }
 
 .dialogVPanel {
@@ -233,7 +230,6 @@ select {
 }
 
 .gwt-DialogBox {
-  width: auto;
   background-color: #16161e;
   border: 0.25mm solid #76829a;
   border-radius: 2mm;
@@ -241,59 +237,21 @@ select {
   box-shadow: black 0 0 0 0.5mm;
 }
 
-.gwt-DialogBox .dialogMiddleCenter {
-  background: #1d1d1d;
-  border: 0.25mm solid rgb(102, 102, 102);
-  border-radius: 1mm;
-}
-
-
-/* .gwt-DialogBox .dialogBottomCenter {
-  background: url(images/hborder.png) repeat-x 0px -2945px;
-}
-.gwt-DialogBox .dialogMiddleLeft {
-  background: url(images/vborder.png) repeat-y -31px 0px;
-}
-.gwt-DialogBox .dialogMiddleRight {
-  background: url(images/vborder.png) repeat-y -32px 0px;
-} */
-
 .gwt-DialogBox .dialogTopLeftInner {
-  /*   width: 10px;
-  height: 8px; */
   zoom: 1;
 }
 
 .gwt-DialogBox .dialogTopRightInner {
-  /*   width: 12px; */
   zoom: 1;
 }
 
 .gwt-DialogBox .dialogBottomLeftInner {
-  /*   width: 10px;
-  height: 12px; */
   zoom: 1;
 }
 
 .gwt-DialogBox .dialogBottomRightInner {
-  /*   width: 12px;
-  height: 12px; */
   zoom: 1;
 }
-
-
-/* .gwt-DialogBox .dialogTopLeft {
-  background: url(images/circles.png) no-repeat -20px 0px;
-}
-.gwt-DialogBox .dialogTopRight {
-  background: url(images/circles.png) no-repeat -28px 0px;
-}
-.gwt-DialogBox .dialogBottomLeft {
-  background: url(images/circles.png) no-repeat 0px -36px;
-}
-.gwt-DialogBox .dialogBottomRight {
-  background: url(images/circles.png) no-repeat -8px -36px;
-} */
 
 .gwt-DisclosurePanel {}
 
@@ -305,7 +263,6 @@ select {
 .gwt-DisclosurePanel .header a,
 .gwt-DisclosurePanel .header td {
   text-decoration: none;
-  /* Remove underline from header */
   color: black;
   cursor: pointer;
   cursor: hand;
@@ -1605,10 +1562,6 @@ textarea {
   flex-grow: 1;
 }
 
-.gwt-TextArea:disabled {
-  background-color: #202020;
-}
-
 input[disabled],
 textarea[disabled],
 select[disabled='disabled'] {
@@ -1645,7 +1598,6 @@ select[disabled='disabled'] {
   text-align: center;
 }
 
-
 .dialogContent .compare-tree tr td:nth-child(1) {
   min-width: 8 em;
   text-align: left;
@@ -1659,10 +1611,15 @@ select[disabled='disabled'] {
   resize: vertical;
 }
 
+.dialogContent textarea.editable {
+    min-height: 3em;
+    max-height: 10em;
+}
+
 input.param-name-edit {
-  width: 92px;
   align-self: right;
   margin: 3px;
+  flex-grow:1;
 }
 
 .flex-4-col .td {
@@ -1690,6 +1647,10 @@ input.param-name-edit {
 .gwt-DialogBox .dialogContent {
   max-height: 80vh;
   overflow-y: auto;
+  border: solid 1px rgb(99, 99, 99);
+  border-radius: 6px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .colortaggingfield-template {
@@ -1702,33 +1663,26 @@ input.param-name-edit {
 }
 
 .colortaggingfield-green {
-  margin-left: 8px;
-  margin-right: 18.7px;
   background-color: #52ad45;
 }
 
 .colortaggingfield-blue {
-  margin-right: 18.7px;
   background-color: #4b69d5;
 }
 
 .colortaggingfield-yellow {
-  margin-right: 18.7px;
   background-color: #ccc536;
 }
 
 .colortaggingfield-orange {
-  margin-right: 18.7px;
   background-color: #dd9537;
 }
 
 .colortaggingfield-purple {
-  margin-right: 18.7px;
   background-color: #b75fae;
 }
 
 .colortaggingfield-red {
-  margin-right: 18.7px;
   background-color: #cf2b3b;
 }
 
@@ -1869,13 +1823,6 @@ button {
   background-color: inherit;
 }
 
-.preset-info-dialog.gwt-DialogBox .content {
-  border: solid 1px rgb(99, 99, 99);
-  border-radius: 6px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
 .preset-info-dialog td:nth-of-type (2) {
   display: flex;
 }
@@ -1888,16 +1835,10 @@ button {
   flex-grow: 1;
 }
 
-.preset-info-dialog .content {
-  min-width: 30em;
-}
-
 .preset-info-dialog .tag-div {
-  display: table-cell;
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 1em;
-  padding-right: 1em;
 }
 
 .bank-info-dialog td:nth-of-type (2) {
@@ -1908,11 +1849,27 @@ button {
   width: 100%;
 }
 
+.parameter-info-dialog table {
+  width: 100%;
+}
+
 .bank-info-dialog td:nth-of-type (2)>* {
   flex-grow: 1;
 }
 
-.parameter-info-dialog .gwt-TextArea {
-	width: 20em;
-	min-width: 10em;
+.rename-dialog {
+	width: auto;
 }
+
+.setup-dialog {
+	width: auto;
+}
+
+.search-dialog {
+	width: auto;
+}
+
+.rename-dialog .dialogContent {
+	padding: 0.25em;
+}
+

@@ -74,8 +74,12 @@ public class PresetInfoWidget {
 			String commentText = preset.getAttribute("Comment");
 
 			if (force || haveFocus != comment) {
-				if (!commentText.equals(comment.getText())) {
-					comment.setText(commentText);
+				comment.setText(commentText);
+
+				if (comment.getElement().getScrollHeight() > 0) {
+					comment.setHeight("1em");
+					int height = comment.getElement().getScrollHeight() + 5;
+					comment.setHeight(height + "px");
 				}
 			}
 

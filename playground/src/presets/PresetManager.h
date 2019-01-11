@@ -122,6 +122,8 @@ class PresetManager : public ContentSection
 
   Glib::ustring getDiffString(tPresetPtr preset1, tPresetPtr preset2);
 
+  RecursionGuard::tLock lockLoading();
+
  protected:
   void onTransactionAdded();
   virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
