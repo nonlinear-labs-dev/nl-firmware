@@ -12,6 +12,7 @@ class ServedStream;
 class AvahiService;
 class NetworkRequest;
 class HTTPRequest;
+class MacroControlParameter;
 
 class HTTPServer
 {
@@ -26,9 +27,9 @@ class HTTPServer
 
   void pauseMessage(SoupMessage *msg);
   void unpauseMessage(SoupMessage *msg);
-  void sendToAllWebsockets(const Glib::ustring message);
 
   UpdateDocumentMaster *getUpdateDocumentMaster();
+  const ContentManager &getContentManager() const;
 
  private:
   static void serverCallback(SoupServer *server, SoupMessage *msg, const char *path, GHashTable *query,

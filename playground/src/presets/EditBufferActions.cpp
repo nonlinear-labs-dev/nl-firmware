@@ -30,7 +30,6 @@ EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer)
     auto id = stoi(request->get("id"));
     auto value = stod(request->get("value"));
     editBuffer->setMacroControlValueFromMCView(id, value);
-    auto resp = request->createStream("text", false);
   });
 
   addAction("set-param", [=](shared_ptr<NetworkRequest> request) mutable {

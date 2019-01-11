@@ -36,8 +36,10 @@ class MC {
     this.targetValue = undefined;
     this.onValueChanged = new Slot(mcID);
     this.onTargetChanged = new Slot(mcID);
-    this.throttler = new Timer(5);
-    this.ignoreSet = new Timer(50);
+    this.changed = new Slot(mcID);
+    this.throttler = new Timer(1);
+    this.ignoreSet = new Timer(250);
+    this.updateThrottler = new Timer(20);
   }
 
   setTarget(val) {
@@ -48,18 +50,24 @@ class MC {
 
   updateValue(val) {
     var old = this.paramValue;
-    this.paramValue = val;
     if(old !== val) {
-      this.sendMC(this.paramValue, this.paramID);
-      this.onTargetChanged.onChange(val);
+      this.paramValue = val;
+      this.changed.onChange();
+
+      if(this.throttler.expired()) {
+        this.sendMC(this.paramValue, this.paramID);
+        this.throttler.restart();
+      }
     }
   }
 
   setValue(val) {
     if(this.ignoreSet.expired()) {
-      this.paramValue = val;
-      this.targetValue = undefined;
-      this.onValueChanged.onChange(val);
+      if(!this.isCurrentlyControlled) {
+        this.paramValue = val;
+        this.targetValue = undefined;
+        this.onValueChanged.onChange(val);
+      }
     }
   }
 
@@ -68,11 +76,13 @@ class MC {
   }
 
   sendMC() {
-    if(this.throttler.expired()) {
-      var scaled = this.paramValue.toFixed(3) / 100;
-      webSocket.send("/presets/param-editor/set-mc?id="+this.paramID+"&value="+scaled);
-      this.throttler.restart();
-    }
+    var scaled = this.paramValue.toFixed(3) / 100;
+    webSocket.send("/presets/param-editor/set-mc?id="+this.paramID+"&value="+scaled);
+  }
+
+  update() {
+    var n = 1.0 / (1 * InterpolationStepSize + 1.0);
+    this.updateValue((1 - n) * this.targetValue + n * this.paramValue);
   }
 }
 
@@ -81,13 +91,14 @@ class MCModel {
     this.mcs = [];
 
     for(var i = 0; i < 4; i++) {
-      this.mcs[i] = new MC(243+i);
+      this.mcs[i] = new MC(243 + i);
       this.mcs[i].onTargetChanged.connect(function(val, id) {
-        model.update();
+        model.mcs[id - 243].update();
       });
     }
 
     webSocket.onmessage = this.onMessage;
+    setInterval(this.update.bind(this), 16);
   }
 
   onMessage(event) {
@@ -110,21 +121,10 @@ class MCModel {
     var i;
     for(i = 0; i < model.mcs.length; i++) {
       var mc = model.mcs[i];
-      if(mc.targetValue !== undefined && mc.targetValue != mc.paramValue) {
-        var oldVal = mc.paramValue;
-
-        var n = 1.0 / (1 * InterpolationStepSize + 1.0);
-
-        if(InterpolationStepSize !== 1) {
-          mc.updateValue((1 - n) * mc.targetValue + n * mc.paramValue);
-        } else {
-          mc.updateValue(mc.targetValue);
-        }
+      if(mc.targetValue !== undefined && mc.targetValue !== mc.paramValue) {
+        mc.update();
       }
     }
-
-    if(mc.paramValue != mc.targetValue)
-      setInterval(this.update, 16);
   }
 }
 
@@ -144,6 +144,10 @@ class MCView {
 
     model.mcs.forEach(function(mc) {
       mc.onValueChanged.connect(function(val, id) {
+        view.redraw(model);
+      });
+
+      mc.changed.connect(function(val, id) {
         view.redraw(model);
       });
     });
@@ -171,6 +175,7 @@ class MCView {
 
     element.addEventListener('mouseup', function() {
        controller.mouseDown = 0;
+       view.removeCurrentControlledFlagIfApplicable();
        controller.onChange();
     });
 
@@ -182,8 +187,17 @@ class MCView {
 
     element.addEventListener('touchend', function(event) {
       controller.touches = event.touches;
+      view.removeCurrentControlledFlagIfApplicable();
       controller.onChange();
     });
+  }
+
+  removeCurrentControlledFlagIfApplicable() {
+    if(controller.touches.length === 0 && !controller.mouseDown) {
+      model.mcs.forEach(function(mc, i, arr) {
+        mc.isCurrentlyControlled = false;
+      });
+    }
   }
 
   redraw(model) {
@@ -307,8 +321,6 @@ class MCView {
     ctx.lineTo(w / 100 * xVal, y + h - 1);
     ctx.stroke();
     ctx.fill();
-
-
   }
 
   getViewInfo() {
@@ -445,7 +457,6 @@ function onLoad() {
     model = new MCModel(webSocket);
     view = new MCView();
     controller = new MCController();
-    model.update();
     window.requestAnimationFrame(function() { view.redraw(model); });
   };
 }

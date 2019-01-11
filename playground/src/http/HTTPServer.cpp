@@ -10,6 +10,8 @@
 #include <memory>
 #include "device-settings/DebugLevel.h"
 #include "SoupOutStream.h"
+#include <parameters/MacroControlParameter.h>
+#include <tools/Throttler.h>
 
 HTTPServer::HTTPServer()
     : m_contentManager()
@@ -84,8 +86,9 @@ void HTTPServer::handleRequest(shared_ptr<NetworkRequest> request)
     DebugLevel::warning("LogMsg:", logMsg);
     request->okAndComplete();
   }
-  else if(path.find("/testWS/") != ustring::npos) {
-      DebugLevel::warning("testWs:", path);
+  else if(path.find("/testWS/") != ustring::npos)
+  {
+    DebugLevel::warning("testWs:", path);
   }
   else if(path == "/C15-journal.tar.gz")
   {
@@ -182,6 +185,6 @@ void HTTPServer::messageFinishedCB(SoupMessage *msg, HTTPServer *pThis)
   pThis->onMessageFinished(msg);
 }
 
-void HTTPServer::sendToAllWebsockets(const Glib::ustring message) {
-  m_contentManager.sendToAllWebsockets(message);
+const ContentManager &HTTPServer::getContentManager() const {
+  return m_contentManager;
 }

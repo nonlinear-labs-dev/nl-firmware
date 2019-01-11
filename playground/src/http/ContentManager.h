@@ -23,7 +23,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
   void init();
   void handleRequest(shared_ptr<NetworkRequest> request);
   void onSectionMessageFinished(SoupMessage *msg);
-  void sendToAllWebsockets(const Glib::ustring);
+  void sendToAllWebsockets(const Glib::ustring) const;
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 

@@ -15,6 +15,7 @@
 #include "RibbonParameter.h"
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
+#include <tools/Throttler.h>
 #include "http/HTTPServer.h"
 
 static int lastSelectedMacroControl
@@ -93,11 +94,12 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
 
-  if(initiator != Initiator::EXPLICIT_MCVIEW) {
-      Application::get().getHTTPServer()->sendToAllWebsockets([this]() -> std::string {
-          return std::string("MCVIEW") + std::to_string(getID()) + std::string(" ") + std::to_string(getValue().getClippedValue());
-      }());
-  }
+
+  static Throttler t(Expiration::Duration{ 1 });
+  t.doTask([this](){
+      auto str = std::string("MCVIEW") + std::to_string(this->getID()) + std::string(" ") + std::to_string(this->getValue().getClippedValue());
+      Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str);
+  });
 }
 
 void MacroControlParameter::updateBoundRibbon()

@@ -343,7 +343,7 @@ const UNDO::Scope &ContentManager::getUndoScope() const
   return *(Application::get().getUndoScope().get());
 }
 
-void ContentManager::sendToAllWebsockets(const Glib::ustring message)
+void ContentManager::sendToAllWebsockets(const Glib::ustring message) const
 {
   for(auto &ws : m_webSockets)
   {
