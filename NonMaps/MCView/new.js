@@ -493,7 +493,7 @@ function onLoad() {
     }
   }
 
-  webSocket = new WebSocket('ws://192.168.0.2:8080/ws/');
+  webSocket = new WebSocket('ws://192.168.8.2:80/ws/');
   webSocket.onopen = function() {
     model = new MCModel(webSocket);
     view = new MCView();
