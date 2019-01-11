@@ -1,3 +1,5 @@
+var InterpolationStepSize = 0.5;
+
 class Slot {
   constructor(id) {
     this.paramID = id;
@@ -14,31 +16,6 @@ class Slot {
   }
 }
 
-class MC {
-  constructor(mcID) {
-    this.paramID = mcID;
-    this.paramValue = 0;
-    this.targetValue = undefined;
-    this.onValueChanged = new Slot(mcID);
-    this.onTargetChanged = new Slot(mcID);
-  }
-
-  setTarget(val) {
-    this.targetValue = val;
-    this.onTargetChanged.onChange();
-  }
-
-  setValue(val) {
-    this.paramValue = val;
-    this.targetValue = undefined;
-    this.onValueChanged.onChange(val);
-  }
-
-  connectValue(cb) {
-    this.onValueChanged.connect(cb);
-  }
-}
-
 class Timer {
   constructor(length) {
     this.length = length;
@@ -52,13 +29,62 @@ class Timer {
   }
 }
 
+class MC {
+  constructor(mcID) {
+    this.paramID = mcID;
+    this.paramValue = 0;
+    this.targetValue = undefined;
+    this.onValueChanged = new Slot(mcID);
+    this.onTargetChanged = new Slot(mcID);
+    this.throttler = new Timer(5);
+    this.ignoreSet = new Timer(50);
+  }
+
+  setTarget(val) {
+    this.targetValue = val;
+    this.onTargetChanged.onChange(val);
+    this.ignoreSet.restart();
+  }
+
+  updateValue(val) {
+    var old = this.paramValue;
+    this.paramValue = val;
+    if(old !== val) {
+      this.sendMC(this.paramValue, this.paramID);
+      this.onTargetChanged.onChange(val);
+    }
+  }
+
+  setValue(val) {
+    if(this.ignoreSet.expired()) {
+      this.paramValue = val;
+      this.targetValue = undefined;
+      this.onValueChanged.onChange(val);
+    }
+  }
+
+  connectValue(cb) {
+    this.onValueChanged.connect(cb);
+  }
+
+  sendMC() {
+    if(this.throttler.expired()) {
+      var scaled = this.paramValue.toFixed(3) / 100;
+      webSocket.send("/presets/param-editor/set-mc?id="+this.paramID+"&value="+scaled);
+      this.throttler.restart();
+    }
+  }
+}
+
 class MCModel {
   constructor(webSocket) {
     this.mcs = [];
-    this.redrawtimer = new Timer(16);
 
     for(var i = 0; i < 4; i++) {
       this.mcs[i] = new MC(243+i);
+      this.mcs[i].onTargetChanged.connect(function(val, id) {
+        model.update();
+      });
     }
 
     webSocket.onmessage = this.onMessage;
@@ -85,16 +111,20 @@ class MCModel {
     for(i = 0; i < model.mcs.length; i++) {
       var mc = model.mcs[i];
       if(mc.targetValue !== undefined && mc.targetValue != mc.paramValue) {
-        var n = 1.0 / (1 * 0.5 + 1.0);
-        var oldParam = mc.paramValue;
-      	mc.paramValue = (1 - n) * mc.targetValue + n * mc.paramValue;
+        var oldVal = mc.paramValue;
+
+        var n = 1.0 / (1 * InterpolationStepSize + 1.0);
+
+        if(InterpolationStepSize !== 1) {
+          mc.updateValue((1 - n) * mc.targetValue + n * mc.paramValue);
+        } else {
+          mc.updateValue(mc.targetValue);
+        }
       }
     }
 
-    if(model.redrawtimer.expired())
-      view.redraw(model);
-
-    setInterval(this.update, 20);
+    if(mc.paramValue != mc.targetValue)
+      setInterval(this.update, 16);
   }
 }
 
@@ -113,54 +143,55 @@ class MCView {
     this.range = new RangeDivision();
 
     model.mcs.forEach(function(mc) {
-      mc.connectValue(function(val, id) {
+      mc.onValueChanged.connect(function(val, id) {
         view.redraw(model);
       });
     });
 
     this.body = document.getElementById('body');
+    this.addEventsToElement(this.canvas);
+  }
 
-    var importantElements = [this.body, this.canvas];
-    for(var i = 0; i < importantElements.length; i++){
-      var element = importantElements[i];
-      element.addEventListener('touchstart', function(event) {
-    		event.preventDefault();
-    		controller.touches = event.touches;
-        controller.onChange();
-    	});
+  addEventsToElement(element) {
+    element.addEventListener('touchstart', function(event) {
+      event.preventDefault();
+      controller.touches = event.touches;
+      controller.onChange();
+    });
 
-    	element.addEventListener('mousemove', function(event) {
-    		controller.lastMouseEvent = event;
-        controller.onChange();
-    	});
+    element.addEventListener('mousemove', function(event) {
+      controller.lastMouseEvent = event;
+      controller.onChange();
+    });
 
-    	element.addEventListener('mousedown', function() {
-    	   controller.mouseDown = 1;
-         controller.onChange();
-    	});
+    element.addEventListener('mousedown', function() {
+       controller.mouseDown = 1;
+       controller.onChange();
+    });
 
-    	element.addEventListener('mouseup', function() {
-    	   controller.mouseDown = 0;
-         controller.onChange();
-    	});
+    element.addEventListener('mouseup', function() {
+       controller.mouseDown = 0;
+       controller.onChange();
+    });
 
-    	element.addEventListener('touchmove', function(event) {
-    		event.preventDefault();
-    		controller.touches = event.touches;
-        controller.onChange();
-    	});
+    element.addEventListener('touchmove', function(event) {
+      event.preventDefault();
+      controller.touches = event.touches;
+      controller.onChange();
+    });
 
-    	element.addEventListener('touchend', function(event) {
-    		controller.touches = event.touches;
-        controller.onChange();
-    	});
-    }
+    element.addEventListener('touchend', function(event) {
+      controller.touches = event.touches;
+      controller.onChange();
+    });
   }
 
   redraw(model) {
     var canvas = view.canvas;
     var ctx = canvas.getContext('2d');
     var info = view.getViewInfo();
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
     var width = canvas.width;
     var heigth = canvas.height;
 
@@ -185,8 +216,6 @@ class MCView {
 
       this.drawHandle(division);
     }
-
-    model.redrawtimer.restart();
   }
 
   drawHandle(division) {
@@ -214,16 +243,24 @@ class MCView {
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var yVal = model.mcs[division.MCY - 243].paramValue;
 
+    var size = canvas.width / 200 * 2;
+
+
     ctx.beginPath();
     ctx.strokeStyle = "transparent";
-    ctx.fillStyle = "blue";
-    var size = canvas.width / 200 * 2;
+
+    if(xTarget !== undefined && yTarget !== undefined)
+      ctx.fillStyle = "blue";
+    else
+      ctx.fillStyle = "darkblue";
+
     ctx.arc(w / 100 * xVal, h / 100 * yVal, size, 0, 2*Math.PI, true);
     ctx.stroke();
     ctx.fill();
 
     if(xTarget !== undefined && yTarget !== undefined) {
       ctx.beginPath();
+      ctx.lineWidth = "2";
       ctx.strokeStyle = "gray";
       ctx.fillStyle = "transparent";
       ctx.arc(w / 100 * xTarget, h / 100 * yTarget, size, 0, 2*Math.PI, true);
@@ -245,17 +282,9 @@ class MCView {
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var xTarget = model.mcs[division.MCX - 243].targetValue;
 
-    ctx.beginPath();
-    ctx.fillStyle = "transparent";
-    ctx.strokeStyle = "blue";
-    ctx.lineWidth = w / 200 * 1;
-    ctx.moveTo(w / 100 * xVal, y + 1);
-    ctx.lineTo(w / 100 * xVal, y + h - 1);
-    ctx.stroke();
-    ctx.fill();
-
     if(xTarget !== undefined) {
       ctx.beginPath();
+      ctx.lineWidth = "6";
       ctx.fillStyle = "transparent";
       ctx.strokeStyle = "grey";
       ctx.moveTo(w / 100 * xTarget, y + 1);
@@ -263,10 +292,28 @@ class MCView {
       ctx.stroke();
       ctx.fill();
     }
+
+    ctx.beginPath();
+    ctx.fillStyle = "transparent";
+    ctx.lineWidth = "3";
+
+    if(xTarget !== undefined)
+      ctx.strokeStyle = "blue";
+    else
+      ctx.strokeStyle = "darkblue";
+
+    ctx.lineWidth = w / 200 * 1;
+    ctx.moveTo(w / 100 * xVal, y + 1);
+    ctx.lineTo(w / 100 * xVal, y + h - 1);
+    ctx.stroke();
+    ctx.fill();
+
+
   }
 
   getViewInfo() {
-    return {"canvas-w": this.canvas.width, "canvas-h": this.canvas.height, "controls": this.range.controls}
+    var canvas = document.getElementById('canvas');
+    return {"canvas-w": canvas.width, "canvas-h": canvas.height, "controls": this.range.controls}
   }
 }
 
@@ -357,7 +404,6 @@ class MCController {
       xVal = Math.min(100, Math.max(xVal, 0));
       yVal = Math.min(100, Math.max(yVal, 0));
 
-
       if(division.type.startsWith("xy")) {
         model.setTarget(division.MCX, xVal);
         model.setTarget(division.MCY, yVal);
@@ -402,4 +448,16 @@ function onLoad() {
     model.update();
     window.requestAnimationFrame(function() { view.redraw(model); });
   };
+}
+
+//UI Functionality
+function toggleSettings() {
+  var e = document.getElementById("settings-burger");
+  e.classList.toggle("collapsed");
+  e.classList.toggle("full");
+}
+
+function setInterpolation(val) {
+  InterpolationStepSize = val;
+  document.getElementById("interpolation-step-label").innerHTML = val;
 }

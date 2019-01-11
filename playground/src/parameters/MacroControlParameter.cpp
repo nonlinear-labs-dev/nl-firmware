@@ -94,9 +94,9 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
       target->invalidate();
 
   if(initiator != Initiator::EXPLICIT_MCVIEW) {
-    Application::get().getHTTPServer()->sendToAllWebsockets([this]() -> std::string {
-      return std::string("MCVIEW") + std::to_string(getID()) + std::string(" ") + std::to_string(getValue().getClippedValue());
-    }());
+      Application::get().getHTTPServer()->sendToAllWebsockets([this]() -> std::string {
+          return std::string("MCVIEW") + std::to_string(getID()) + std::string(" ") + std::to_string(getValue().getClippedValue());
+      }());
   }
 }
 

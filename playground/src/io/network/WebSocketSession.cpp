@@ -3,6 +3,7 @@
 #include <Application.h>
 #include <Options.h>
 #include <netinet/tcp.h>
+#include <http/HTTPServer.h>
 
 using namespace std::chrono_literals;
 
