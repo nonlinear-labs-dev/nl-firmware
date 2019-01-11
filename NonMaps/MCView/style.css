@@ -18,26 +18,74 @@ html, body {
   width:  100%;
   height: 100%;
   margin: 0;
+  overflow: hidden;
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(13, 13, 13, 1);
+  z-index: 200;
+  cursor: pointer;
+  position: fixed;
+  overflow: hidden;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+#close {
+  color: red;
+}
+
+#close:hover {
+  color: lightred;
+}
+
+.container {
+  display: inline-flex;
+}
+
+.setting-item {
+  background-color: rgba(30,30,30);
+  border-radius: 0.5;
+  border-style: solid;
+  border-width: thin;
+  border-color: white;
 }
 
 #canvas {
   width: 100%;
   height: 100%;
-  padding: -8px;
+  padding: 8px;
   margin: -8px;
 }
 
 #settings-burger {
   width: 5%;
-  min-width: 2%;
+  height: 100%;
   background-color: black;
   cursor: pointer;
 }
 
-#settings-burger-content {
-    background-color: green;
+#settings-burger:hover {
+  background-color: grey;
 }
 
-.input-range {
-  transform: rotate(270);
+#settings-burger-content {
+  width: 5%;
+  background-color: green;
+}
+
+#interpolation-step-label {
+  color: white;
+}
+
+.range-input-v {
 }

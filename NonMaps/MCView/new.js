@@ -40,6 +40,11 @@ class MC {
     this.throttler = new Timer(1);
     this.ignoreSet = new Timer(250);
     this.updateThrottler = new Timer(20);
+    this.callBackAfterUpdate = undefined;
+  }
+
+  setCallbackAfterUpdate(cb) {
+    this.callBackAfterUpdate = cb;
   }
 
   setTarget(val) {
@@ -83,6 +88,10 @@ class MC {
   update() {
     var n = 1.0 / (1 * InterpolationStepSize + 1.0);
     this.updateValue((1 - n) * this.targetValue + n * this.paramValue);
+
+    if(this.callBackAfterUpdate) {
+      this.callBackAfterUpdate(this);
+    }
   }
 }
 
@@ -175,7 +184,6 @@ class MCView {
 
     element.addEventListener('mouseup', function() {
        controller.mouseDown = 0;
-       view.removeCurrentControlledFlagIfApplicable();
        controller.onChange();
     });
 
@@ -187,17 +195,8 @@ class MCView {
 
     element.addEventListener('touchend', function(event) {
       controller.touches = event.touches;
-      view.removeCurrentControlledFlagIfApplicable();
       controller.onChange();
     });
-  }
-
-  removeCurrentControlledFlagIfApplicable() {
-    if(controller.touches.length === 0 && !controller.mouseDown) {
-      model.mcs.forEach(function(mc, i, arr) {
-        mc.isCurrentlyControlled = false;
-      });
-    }
   }
 
   redraw(model) {
@@ -256,8 +255,24 @@ class MCView {
     var yTarget = model.mcs[division.MCY - 243].targetValue;
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var yVal = model.mcs[division.MCY - 243].paramValue;
+    var xLabel = model.mcs[division.MCX - 243].paramID;
+    var yLabel = model.mcs[division.MCY - 243].paramID;
 
     var size = canvas.width / 200 * 2;
+
+    ctx.beginPath();
+    ctx.strokeStyle = "lightgray";
+    ctx.fillStyle = "lightgray";
+    ctx.font = "20px nonlinearfont";
+    var lineHeight=ctx.measureText('M').width;
+    var textMeasure = ctx.measureText(xLabel);
+    ctx.fillText(getUnicodeForMC(xLabel), x + w - textMeasure.width * 2, y + h - lineHeight * 2.5);
+    ctx.fillText(Number(xVal).toFixed(1), x+w - textMeasure.width * 2, y + h - lineHeight);
+
+    //Y
+    textMeasure = ctx.measureText(yLabel);
+    ctx.fillText(getUnicodeForMC(yLabel), x + textMeasure.width / 2, y + lineHeight);
+    ctx.fillText(Number(yVal).toFixed(1), x + textMeasure.width / 2, y + lineHeight * 2.5);
 
 
     ctx.beginPath();
@@ -295,6 +310,17 @@ class MCView {
 
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var xTarget = model.mcs[division.MCX - 243].targetValue;
+    var xLabel = model.mcs[division.MCX - 243].paramID;
+
+    ctx.beginPath();
+    ctx.strokeStyle = "lightgray";
+    ctx.fillStyle = "lightgray";
+    ctx.font = "20px nonlinearfont";
+    var textMeasure = ctx.measureText(xLabel);
+    var lineHeight=ctx.measureText('M').width;
+    ctx.fillText(getUnicodeForMC(xLabel), x + w / 2, y + h - lineHeight * 2.5);
+    ctx.fillText(Number(xVal).toFixed(1), x + w / 2, y + h - lineHeight);
+
 
     if(xTarget !== undefined) {
       ctx.beginPath();
@@ -332,12 +358,16 @@ class MCView {
 function getUnicodeForMC(mcId) {
 	switch(mcId) {
 		case 243:
+    return "A";
 		return "\uE000";
 		case 244:
+    return "B";
 		return "\uE001";
 		case 245:
+    return "C";
 		return "\uE002";
 		case 246:
+    return "D";
 		return "\uE003";
 		case 247:
 		return "\u039B";
@@ -412,22 +442,29 @@ class MCController {
       var xVal = Number(x / dW * 100).toFixed(1);
       var yVal = Number(y / dH * 100).toFixed(1);
 
-      //To Be Safe!
+      //Just To Be Safe!
       xVal = Math.min(100, Math.max(xVal, 0));
       yVal = Math.min(100, Math.max(yVal, 0));
 
-      if(division.type.startsWith("xy")) {
-        model.setTarget(division.MCX, xVal);
-        model.setTarget(division.MCY, yVal);
-      } else if(division.type.startsWith("x")) {
-        model.setTarget(division.MCX, xVal);
+      if(division.type.startsWith("xy") && division.MCX !== null && division.MCY !== null) {
+        if(  xVal !== model.mcs[division.MCX - 243].targetValue ||
+          yVal !== model.mcs[division.MCY - 243].targetValue) {
+          model.setTarget(division.MCX, xVal);
+          model.setTarget(division.MCY, yVal);
+          model.mcs[division.MCX - 243].isCurrentlyControlled = true;
+          model.mcs[division.MCY - 243].isCurrentlyControlled = true;
+        }
+      } else if(division.type.startsWith("x") && division.MCX) {
+        if(xVal !== model.mcs[division.MCX - 243].targetValue) {
+          model.setTarget(division.MCX, xVal);
+          model.mcs[division.MCX - 243].isCurrentlyControlled = true;
+        }
       }
     }
   }
 
   collectInputs() {
     var activePositions = [];
-
 
     for(var i = 0; i < this.touches.length; i++) {
       var touch = this.touches[i];
@@ -444,26 +481,42 @@ class MCController {
   }
 }
 
-
-
 var webSocket;
 var model;
 var view;
 var controller;
 
 function onLoad() {
+  document.onkeypress = function(event) {
+    if(event.key == "H" || event.key == "h") {
+      toggleSettings();
+    }
+  }
+
   webSocket = new WebSocket('ws://192.168.0.2:8080/ws/');
   webSocket.onopen = function() {
     model = new MCModel(webSocket);
     view = new MCView();
     controller = new MCController();
     window.requestAnimationFrame(function() { view.redraw(model); });
+    setInterval(model.update.bind(model), 25);
+    setInterval(function() {
+      model.mcs.forEach(function(mc, i, arr) {
+        if(mc.targetValue) {
+          if(mc.paramValue.toFixed(3) === mc.targetValue.toFixed(3))
+            mc.isCurrentlyControlled = false;
+        } else {
+          mc.isCurrentlyControlled = false;
+        }
+
+      }, 50);
+    });
   };
 }
 
 //UI Functionality
 function toggleSettings() {
-  var e = document.getElementById("settings-burger");
+  var e = document.getElementById("settings-overlay");
   e.classList.toggle("collapsed");
   e.classList.toggle("full");
 }
