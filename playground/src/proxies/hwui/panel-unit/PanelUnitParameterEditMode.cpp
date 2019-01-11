@@ -49,9 +49,11 @@ const constexpr auto SVFilterFMAB = 155;
 
 PanelUnitParameterEditMode::PanelUnitParameterEditMode()
 {
-
   Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->onChange(
       sigc::hide(sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds)));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds));
 }
 
 PanelUnitParameterEditMode::~PanelUnitParameterEditMode()
