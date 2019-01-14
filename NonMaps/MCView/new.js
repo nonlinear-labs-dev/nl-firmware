@@ -473,7 +473,7 @@ class MCController {
       var xD = dX + (dW - wD) / 2;
       var yD = dY + (dH - hD) / 2;
 
-      var padding = 5;
+      var padding = 2;
 
       for(var iI in this.userInputs) {
         var input = this.userInputs[iI];
