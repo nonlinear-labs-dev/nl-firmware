@@ -382,7 +382,7 @@ class MCView {
 
     if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
-      ctx.lineWidth = "8";
+      ctx.lineWidth = "10";
       ctx.fillStyle = "transparent";
       ctx.strokeStyle = "grey";
       ctx.moveTo(xD + wD / 100 * xTarget, yD + 1);
@@ -393,7 +393,7 @@ class MCView {
 
     ctx.beginPath();
     ctx.fillStyle = "transparent";
-    ctx.lineWidth = "3";
+    ctx.lineWidth = "5";
     ctx.strokeStyle = "blue";
     ctx.lineWidth = w / 200 * 1;
     ctx.moveTo(x + w / 100 * xVal, y + 1);
@@ -555,6 +555,19 @@ function onLoad() {
     controller = new MCController();
     window.requestAnimationFrame(function() { view.redraw(model); });
     setInterval(model.update.bind(model), 25);
+    setInterval(function() {
+      model.mcs.forEach(function(mc){
+        var changed = false;
+        if(mc.targetValue !== undefined) {
+          if(mc.paramValue.toFixed(1) === mc.targetValue.toFixed(1)) {
+            mc.targetValue = undefined;
+            changed = true;
+          }
+        }
+        if(changed)
+          view.redraw(model);
+      });
+    }, 50);
   });
 }
 
@@ -574,12 +587,12 @@ function setDeadZoneY(val) {
   view.range.deadzones.forEach(function(dz) {
     dz.y = val / 10;
   });
-  document.getElementById("y-deadzone-label").innerHTML = "Deadzone Y: " + val*10 + "%";
+  document.getElementById("y-deadzone-label").innerHTML = "Deadzone Y: " + Number(val*10).toFixed(1) + "%";
 }
 
 function setDeadZoneX(val) {
   view.range.deadzones.forEach(function(dz) {
     dz.x = val / 10;
   });
-  document.getElementById("x-deadzone-label").innerHTML = "Deadzone X: " + val*10 + "%";
+  document.getElementById("x-deadzone-label").innerHTML = "Deadzone X: " + Number(val*10).toFixed(1) + "%";
 }
