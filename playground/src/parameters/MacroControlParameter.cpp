@@ -100,9 +100,9 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
       target->invalidate();
 
   static Throttler t(Expiration::Duration{ 1 });
-  t.doTask([this]() {
+  t.doTask([initiator, this]() {
     auto string = std::string("MCVIEW&ID="s + std::to_string(this->getID()) + "&VAL="s
-                              + std::to_string(this->getValue().getClippedValue()) + "&UUID="s + m_lastMCViewUuid);
+                                  + std::to_string(this->getValue().getClippedValue()) + "&UUID="s + (initiator == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid : Glib::ustring("NONE")));
     Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(string);
   });
 }

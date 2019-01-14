@@ -1,4 +1,4 @@
-var InterpolationStepSize = 0.5;
+var InterpolationStepSize = 0.1;
 
 function guid() {
   function s4() {
@@ -64,13 +64,14 @@ class ServerProxy {
       var val = Number(Number(serverProxy.getValueForKeyFromMessage(message, "VAL")) * 100).toFixed(3);
       var uuid = serverProxy.getValueForKeyFromMessage(message, "UUID");
 
-      if(uuid !== serverProxy.uuid.uuid) {
-        var mc = model.mcs[id - 243];
-        if(mc !== undefined) {
+      var mc = model.mcs[id - 243];
+      if(mc !== undefined) {
+        if(uuid !== serverProxy.uuid.uuid) {
+          mc.active = false;
           mc.setValue(val);
+        } else {
+          mc.active = true;
         }
-      } else {
-        console.log("ignoring update that came from this MCView!");
       }
     }
   }
@@ -102,9 +103,9 @@ class MC {
     this.onTargetChanged = new Slot(mcID);
     this.changed = new Slot(mcID);
     this.throttler = new Timer(1);
-    this.ignoreSet = new Timer(250);
     this.updateThrottler = new Timer(20);
     this.callBackAfterUpdate = undefined;
+    this.active = false;
   }
 
   setCallbackAfterUpdate(cb) {
@@ -114,7 +115,6 @@ class MC {
   setTarget(val) {
     this.targetValue = val;
     this.onTargetChanged.onChange(val);
-    this.ignoreSet.restart();
   }
 
   updateValue(val) {
@@ -131,13 +131,9 @@ class MC {
   }
 
   setValue(val) {
-    if(this.ignoreSet.expired()) {
-      if(!this.isCurrentlyControlled) {
-        this.paramValue = val;
-        this.targetValue = undefined;
-        this.onValueChanged.onChange(val);
-      }
-    }
+    this.paramValue = val;
+    this.targetValue = undefined;
+    this.onValueChanged.onChange(val);
   }
 
   connectValue(cb) {
@@ -193,6 +189,11 @@ class RangeDivision {
                      {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.5,  "type":"none","MCX":null, "MCY":null},
                      {"ID":2,"x":0,   "y":0.5,  "w":1,    "h":0.25, "type":"x",   "MCX":245,  "MCY":null},
                      {"ID":3,"x":0,   "y":0.75, "w":1,    "h":0.25, "type":"x",   "MCX":246,  "MCY":null}];
+
+    this.deadzones = [{"ID":0,"x":0.1,"y":0.15},
+                      {"ID":1,"x":0.1,"y":0.1},
+                      {"ID":2,"x":0.05,"y":0.6},
+                      {"ID":3,"x":0.05,"y":0.1}];
   }
 }
 
@@ -266,6 +267,7 @@ class MCView {
     var i;
     for(i in info.controls) {
       var division = info.controls[i];
+      var deadZones = view.range.deadzones[i];
       var x = width * division.x;
       var y = heigth * division.y;
       var w = width * division.w;
@@ -274,32 +276,40 @@ class MCView {
       ctx.beginPath();
       ctx.lineWidth = "1";
       ctx.strokeStyle = "black";
+
       ctx.rect(x, y, w, h);
       ctx.stroke();
 
-      this.drawHandle(division);
+      ctx.beginPath();
+      ctx.fillStyle = "rgb(10,10,10)";
+      var wD = w - w * deadZones.x;
+      var hD = h - h * deadZones.y;
+      var xD = x + (w - wD) / 2;
+      var yD = y + (h  - hD) / 2;
+
+      ctx.fillRect(xD, yD, wD, hD);
+      ctx.fill();
+      this.drawHandle(division, xD, yD, wD, hD);
     }
   }
 
-  drawHandle(division) {
+  drawHandle(division, xD, yD, wD, hD) {
     if(division.type == null)
       return;
     if(division.type.startsWith("xy")) {
-      this.draw2DDivision(division);
+      this.draw2DDivision(division, xD, yD, wD, hD);
     } else if(division.type.startsWith("x")) {
-      this.draw1DDivision(division);
+      this.draw1DDivision(division, xD, yD, wD, hD);
     }
   }
 
-  draw2DDivision(division) {
+  draw2DDivision(division, xD, yD, wD, hD) {
     var canvas = view.canvas;
     var ctx = canvas.getContext('2d');
-    var width = canvas.width;
-    var heigth = canvas.height;
-    var x = width * division.x;
-    var y = heigth * division.y;
-    var w = width * division.w;
-    var h = heigth * division.h;
+    var x = xD;
+    var y = yD;
+    var w = wD;
+    var h = hD;
 
     var xTarget = model.mcs[division.MCX - 243].targetValue;
     var yTarget = model.mcs[division.MCY - 243].targetValue;
@@ -328,35 +338,30 @@ class MCView {
     ctx.beginPath();
     ctx.strokeStyle = "transparent";
 
-    if(xTarget !== undefined && yTarget !== undefined)
-      ctx.fillStyle = "blue";
-    else
-      ctx.fillStyle = "darkblue";
+    ctx.fillStyle = "blue";
 
-    ctx.arc(w / 100 * xVal, h / 100 * yVal, size, 0, 2*Math.PI, true);
+    ctx.arc(x + w / 100 * xVal, y + h / 100 * yVal, size, 0, 2*Math.PI, true);
     ctx.stroke();
     ctx.fill();
 
-    if(xTarget !== undefined && yTarget !== undefined) {
+    if(xTarget !== undefined && yTarget !== undefined && xTarget !== xVal || yTarget !== yVal) {
       ctx.beginPath();
       ctx.lineWidth = "2";
       ctx.strokeStyle = "gray";
       ctx.fillStyle = "transparent";
-      ctx.arc(w / 100 * xTarget, h / 100 * yTarget, size, 0, 2*Math.PI, true);
+      ctx.arc(x + w / 100 * xTarget, y + h / 100 * yTarget, size, 0, 2*Math.PI, true);
       ctx.fill();
       ctx.stroke();
     }
   }
 
-  draw1DDivision(division) {
+  draw1DDivision(division, xD, yD, wD, hD) {
     var canvas = view.canvas;
     var ctx = canvas.getContext('2d');
-    var width = canvas.width;
-    var heigth = canvas.height;
-    var x = width * division.x;
-    var y = heigth * division.y;
-    var w = width * division.w;
-    var h = heigth * division.h;
+    var x = xD;
+    var y = yD;
+    var w = wD;
+    var h = hD;
 
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var xTarget = model.mcs[division.MCX - 243].targetValue;
@@ -371,14 +376,13 @@ class MCView {
     ctx.fillText(getUnicodeForMC(xLabel), x + w / 2, y + h - lineHeight * 2.5);
     ctx.fillText(Number(xVal).toFixed(1), x + w / 2, y + h - lineHeight);
 
-
-    if(xTarget !== undefined) {
+    if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
       ctx.lineWidth = "6";
       ctx.fillStyle = "transparent";
       ctx.strokeStyle = "grey";
-      ctx.moveTo(w / 100 * xTarget, y + 1);
-      ctx.lineTo(w / 100 * xTarget, y + h - 1);
+      ctx.moveTo(xD + wD / 100 * xTarget, yD + 1);
+      ctx.lineTo(xD + wD / 100 * xTarget, yD + hD - 1);
       ctx.stroke();
       ctx.fill();
     }
@@ -386,15 +390,10 @@ class MCView {
     ctx.beginPath();
     ctx.fillStyle = "transparent";
     ctx.lineWidth = "3";
-
-    if(xTarget !== undefined)
-      ctx.strokeStyle = "blue";
-    else
-      ctx.strokeStyle = "darkblue";
-
+    ctx.strokeStyle = "blue";
     ctx.lineWidth = w / 200 * 1;
-    ctx.moveTo(w / 100 * xVal, y + 1);
-    ctx.lineTo(w / 100 * xVal, y + h - 1);
+    ctx.moveTo(x + w / 100 * xVal, y + 1);
+    ctx.lineTo(x + w / 100 * xVal, y + h - 1);
     ctx.stroke();
     ctx.fill();
   }
@@ -454,21 +453,33 @@ class MCController {
     var i;
     for(i in displayInformation.controls) {
       var division = displayInformation.controls[i];
+      var deadzone = view.range.deadzones[i];
       var activeInputs = [];
       var cW = view.canvas.width;
       var cH = view.canvas.height;
       var rect = view.canvas.getBoundingClientRect();
-      var dX = (cW * division.x) + rect.left;
-      var dY = (cH * division.y) + rect.top;
+      var dX = (cW * division.x);
+      var dY = (cH * division.y);
       var dW = cW * division.w;
       var dH = cH * division.h;
+
+      var ctx = view.canvas.getContext("2d");
+
+      var wD = dW - dW * deadzone.x;
+      var hD = dH - dH * deadzone.y;
+      var xD = dX + (dW - wD) / 2;
+      var yD = dY + (dH - hD) / 2;
+
+      var padding = 5;
 
       for(var iI in this.userInputs) {
         var input = this.userInputs[iI];
 
-        if(input.x >= dX && input.x <= dX + dW &&
-           input.y >= dY && input.y <= dY + dH) {
+        if(input.x >= xD - padding && input.x <= Number(xD) + Number(wD) + padding &&
+           input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding) {
           activeInputs.push(input);
+        } else {
+          console.error("Not Releveant!");
         }
       }
 
@@ -477,9 +488,8 @@ class MCController {
         continue;
       }
 
-      var rect = view.canvas.getBoundingClientRect();
-      var x = -rect.left;
-      var y = -rect.top;
+      var x = (wD - dW) / 2;
+      var y = (hD - dH) / 2;
       activeInputs.forEach(function(input) {
         x+=input.x;
         y+=input.y;
@@ -489,8 +499,8 @@ class MCController {
         y /= inputCount;
       }
 
-      var xVal = Number(x / dW * 100).toFixed(1);
-      var yVal = Number(y / dH * 100).toFixed(1);
+      var xVal = Number(x / wD * 100).toFixed(1);
+      var yVal = Number(y / hD * 100).toFixed(1);
 
       //Just To Be Safe!
       xVal = Math.min(100, Math.max(xVal, 0));
@@ -501,13 +511,10 @@ class MCController {
           yVal !== model.mcs[division.MCY - 243].targetValue) {
           model.setTarget(division.MCX, xVal);
           model.setTarget(division.MCY, yVal);
-          model.mcs[division.MCX - 243].isCurrentlyControlled = true;
-          model.mcs[division.MCY - 243].isCurrentlyControlled = true;
         }
       } else if(division.type.startsWith("x") && division.MCX) {
         if(xVal !== model.mcs[division.MCX - 243].targetValue) {
           model.setTarget(division.MCX, xVal);
-          model.mcs[division.MCX - 243].isCurrentlyControlled = true;
         }
       }
     }
@@ -550,16 +557,6 @@ function onLoad() {
     controller = new MCController();
     window.requestAnimationFrame(function() { view.redraw(model); });
     setInterval(model.update.bind(model), 25);
-    setInterval(function() {
-      model.mcs.forEach(function(mc, i, arr) {
-        if(mc.targetValue) {
-          if(mc.paramValue.toFixed(3) === mc.targetValue.toFixed(3))
-            mc.isCurrentlyControlled = false;
-        } else {
-          mc.isCurrentlyControlled = false;
-        }
-      }, 50);
-    });
   });
 }
 
