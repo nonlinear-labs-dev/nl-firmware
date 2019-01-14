@@ -259,9 +259,9 @@ class MCView {
     var width = canvas.width;
     var heigth = canvas.height;
 
-    ctx.font = '4em nonlinearfont';
+    ctx.font = '20px nonlinearfont';
     ctx.strokeStyle = "black";
-    ctx.fillStyle = "#2b2b2b";
+    ctx.fillStyle = "rgb(30,30,30)";
     ctx.fillRect(0, 0, width, heigth);
 
     var i;
@@ -281,7 +281,7 @@ class MCView {
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.fillStyle = "rgb(10,10,10)";
+      ctx.fillStyle = "#2b2b2b";
       var wD = w - w * deadZones.x;
       var hD = h - h * deadZones.y;
       var xD = x + (w - wD) / 2;
@@ -315,24 +315,27 @@ class MCView {
     var yTarget = model.mcs[division.MCY - 243].targetValue;
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var yVal = model.mcs[division.MCY - 243].paramValue;
-    var xLabel = model.mcs[division.MCX - 243].paramID;
-    var yLabel = model.mcs[division.MCY - 243].paramID;
+    var yLabel = getUnicodeForMC(division.MCY);
+    var xLabel = getUnicodeForMC(division.MCX);
 
     var size = canvas.width / 200 * 2;
 
-    ctx.beginPath();
     ctx.strokeStyle = "lightgray";
     ctx.fillStyle = "lightgray";
     ctx.font = "20px nonlinearfont";
-    var lineHeight=ctx.measureText('M').width;
+    var lineHeight=ctx.measureText("\uE001").width;
+
+    //X
     var textMeasure = ctx.measureText(xLabel);
-    ctx.fillText(getUnicodeForMC(xLabel), x + w - textMeasure.width * 2, y + h - lineHeight * 2.5);
-    ctx.fillText(Number(xVal).toFixed(1), x+w - textMeasure.width * 2, y + h - lineHeight);
+    var valMeasure = ctx.measureText(Number(xVal).toFixed(1));
+    ctx.fillText(xLabel, x + w - textMeasure.width * 2, y + h - lineHeight * 2.5);
+    ctx.fillText(Number(xVal).toFixed(1), x + w - textMeasure.width * 1.5 - valMeasure.width / 2, y + h - lineHeight);
 
     //Y
     textMeasure = ctx.measureText(yLabel);
-    ctx.fillText(getUnicodeForMC(yLabel), x + textMeasure.width / 2, y + lineHeight);
-    ctx.fillText(Number(yVal).toFixed(1), x + textMeasure.width / 2, y + lineHeight * 2.5);
+    valMeasure = ctx.measureText(Number(yVal).toFixed(1));
+    ctx.fillText(yLabel, x + textMeasure.width, y + lineHeight);
+    ctx.fillText(Number(yVal).toFixed(1), x + textMeasure.width * 1.5 - valMeasure.width / 2, y + lineHeight * 2.5);
 
 
     ctx.beginPath();
@@ -365,16 +368,18 @@ class MCView {
 
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var xTarget = model.mcs[division.MCX - 243].targetValue;
-    var xLabel = model.mcs[division.MCX - 243].paramID;
+    var xLabel = getUnicodeForMC(division.MCX);
 
     ctx.beginPath();
     ctx.strokeStyle = "lightgray";
     ctx.fillStyle = "lightgray";
     ctx.font = "20px nonlinearfont";
     var textMeasure = ctx.measureText(xLabel);
-    var lineHeight=ctx.measureText('M').width;
-    ctx.fillText(getUnicodeForMC(xLabel), x + w / 2, y + h - lineHeight * 2.5);
-    ctx.fillText(Number(xVal).toFixed(1), x + w / 2, y + h - lineHeight);
+    var valMeasure = ctx.measureText(String(Number(xVal).toFixed(1)));
+
+    var lineHeight=ctx.measureText("\uE001").width;
+    ctx.fillText(xLabel, x + w / 2 - textMeasure.width / 2, y + h / 2 - lineHeight / 2);
+    ctx.fillText(Number(xVal).toFixed(1), x + w / 2 - valMeasure.width / 2, y + h / 2 + lineHeight);
 
     if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
@@ -407,16 +412,12 @@ class MCView {
 function getUnicodeForMC(mcId) {
 	switch(mcId) {
 		case 243:
-    return "A";
 		return "\uE000";
 		case 244:
-    return "B";
 		return "\uE001";
 		case 245:
-    return "C";
 		return "\uE002";
 		case 246:
-    return "D";
 		return "\uE003";
 		case 247:
 		return "\u039B";
@@ -478,8 +479,6 @@ class MCController {
         if(input.x >= xD - padding && input.x <= Number(xD) + Number(wD) + padding &&
            input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding) {
           activeInputs.push(input);
-        } else {
-          console.error("Not Releveant!");
         }
       }
 

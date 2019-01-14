@@ -3,7 +3,7 @@
 	font-style: normal;
 	font-weight: 400;
   src: url('./SourceSansProLW25-Regular.otf');
-	unicode-range: U+???;
+  unicode-range: U+E000-E003; 
 }
 
 .collapsed {
