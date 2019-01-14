@@ -55,9 +55,6 @@ class ServerProxy {
   }
 
   onMessage(event) {
-    var websocketData = document.getElementById("websocket-data");
-    websocketData.innerHTML = serverProxy.webSocket;
-
     var message = event.data;
     if(message.startsWith("MCVIEW")) {
       var id = serverProxy.getValueForKeyFromMessage(message, "ID");
@@ -190,10 +187,10 @@ class RangeDivision {
                      {"ID":2,"x":0,   "y":0.5,  "w":1,    "h":0.25, "type":"x",   "MCX":245,  "MCY":null},
                      {"ID":3,"x":0,   "y":0.75, "w":1,    "h":0.25, "type":"x",   "MCX":246,  "MCY":null}];
 
-    this.deadzones = [{"ID":0,"x":0.1,"y":0.15},
+    this.deadzones = [{"ID":0,"x":0.1,"y":0.1},
                       {"ID":1,"x":0.1,"y":0.1},
-                      {"ID":2,"x":0.05,"y":0.6},
-                      {"ID":3,"x":0.05,"y":0.1}];
+                      {"ID":2,"x":0.1,"y":0.1},
+                      {"ID":3,"x":0.1,"y":0.1}];
   }
 }
 
@@ -569,4 +566,18 @@ function toggleSettings() {
 function setInterpolation(val) {
   InterpolationStepSize = val;
   document.getElementById("interpolation-step-label").innerHTML = val;
+}
+
+function setDeadZoneY(val) {
+  view.range.deadzones.forEach(function(dz) {
+    dz.y = val / 10;
+  });
+  document.getElementById("y-deadzone-label").innerHTML = "Deadzone Y: " + val*10 + "%";
+}
+
+function setDeadZoneX(val) {
+  view.range.deadzones.forEach(function(dz) {
+    dz.x = val / 10;
+  });
+  document.getElementById("x-deadzone-label").innerHTML = "Deadzone X: " + val*10 + "%";
 }
