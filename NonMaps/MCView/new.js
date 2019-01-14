@@ -482,6 +482,7 @@ class MCController {
            input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding) {
           activeInputs.push(input);
         }
+
       }
 
       var inputCount = activeInputs.length;
@@ -550,8 +551,6 @@ function onLoad() {
   if(href.includes("settings")) {
     toggleSettings();
   }
-
-
 
   document.onkeypress = function(event) {
     if(event.key == "H" || event.key == "h") {

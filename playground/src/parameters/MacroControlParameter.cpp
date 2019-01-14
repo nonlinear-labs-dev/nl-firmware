@@ -99,16 +99,11 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
 
-  auto prepStringForMC = [initiator](MacroControlParameter *mc) {
-    return std::string("MCVIEW&ID="s + std::to_string(mc->getID()) + "&VAL="s
-                       + std::to_string(mc->getValue().getClippedValue()) + "&UUID="s
-                       + (initiator == Initiator::EXPLICIT_MCVIEW ? mc->m_lastMCViewUuid : Glib::ustring("NONE")));
-  };
-
   static Throttler t(Expiration::Duration{ 1 });
-  t.doTask([&, this]() {
-    Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(prepStringForMC(this));
-  });
+  auto str = std::string("MCVIEW&ID="s + std::to_string(this->getID()) + "&VAL="s
+                         + std::to_string(this->getValue().getClippedValue()) + "&UUID="s
+                         + (initiator == Initiator::EXPLICIT_MCVIEW ? this->m_lastMCViewUuid : Glib::ustring("NONE")));
+  t.doTask([=]() { Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str); });
 }
 
 void MacroControlParameter::updateBoundRibbon()
