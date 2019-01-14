@@ -12,7 +12,6 @@ function guid() {
 class UUID {
   constructor() {
     this.uuid = guid();
-    console.log(this.uuid);
   }
 }
 
@@ -143,9 +142,15 @@ class MC {
   }
 
   update() {
-    var x = InterpolationStepSize / 100;
-    var step = 1.0 / (x * 0.5 +1.0);
-    this.updateValue((1 - step) * this.targetValue + step * this.paramValue);
+    var step = 1.0 / ((InterpolationStepSize / 100) * 0.5 + 1.0);
+
+    var t = this.targetValue * (1 - step);
+    var p = this.paramValue * step;
+
+    this.updateValue(t + p);
+
+
+
 
     if(this.callBackAfterUpdate) {
       this.callBackAfterUpdate(this);
@@ -159,9 +164,6 @@ class MCModel {
 
     for(var i = 0; i < 4; i++) {
       this.mcs[i] = new MC(243 + i);
-      /*this.mcs[i].onTargetChanged.connect(function(val, id) {
-        model.mcs[id - 243].update();
-      });*/
     }
     setInterval(this.update.bind(this), 20);
   }
@@ -544,6 +546,13 @@ var controller;
 var serverProxy;
 
 function onLoad() {
+  var href = window.location.href;
+  if(href.includes("settings")) {
+    toggleSettings();
+  }
+
+
+
   document.onkeypress = function(event) {
     if(event.key == "H" || event.key == "h") {
       toggleSettings();
@@ -558,8 +567,8 @@ function onLoad() {
     setInterval(function() {
       model.mcs.forEach(function(mc){
         var changed = false;
-        if(mc.targetValue !== undefined) {
-          if(mc.paramValue.toFixed(1) === mc.targetValue.toFixed(1)) {
+        if(mc !== undefined && mc.targetValue !== undefined && mc.paramValue !== undefined) {
+          if(Number(mc.paramValue).toFixed(1) === Number(mc.targetValue).toFixed(1)) {
             mc.targetValue = undefined;
             changed = true;
           }

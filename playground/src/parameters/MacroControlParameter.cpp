@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "MacroControlParameter.h"
 #include "ModulateableParameter.h"
 #include "PhysicalControlParameter.h"
@@ -27,9 +29,7 @@ MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
 {
 }
 
-MacroControlParameter::~MacroControlParameter()
-{
-}
+MacroControlParameter::~MacroControlParameter() = default;
 
 void MacroControlParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
@@ -43,7 +43,7 @@ void MacroControlParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
 void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) const
 {
   Parameter::writeDifferences(writer, other);
-  MacroControlParameter *pOther = static_cast<MacroControlParameter *>(other);
+  auto *pOther = static_cast<MacroControlParameter *>(other);
 
   if(getGivenName() != pOther->getGivenName())
   {
@@ -99,11 +99,15 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
 
+  auto prepStringForMC = [initiator](MacroControlParameter *mc) {
+    return std::string("MCVIEW&ID="s + std::to_string(mc->getID()) + "&VAL="s
+                       + std::to_string(mc->getValue().getClippedValue()) + "&UUID="s
+                       + (initiator == Initiator::EXPLICIT_MCVIEW ? mc->m_lastMCViewUuid : Glib::ustring("NONE")));
+  };
+
   static Throttler t(Expiration::Duration{ 1 });
-  t.doTask([initiator, this]() {
-    auto string = std::string("MCVIEW&ID="s + std::to_string(this->getID()) + "&VAL="s
-                                  + std::to_string(this->getValue().getClippedValue()) + "&UUID="s + (initiator == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid : Glib::ustring("NONE")));
-    Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(string);
+  t.doTask([&, this]() {
+    Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(prepStringForMC(this));
   });
 }
 
@@ -132,9 +136,9 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 {
   if(m_UiSelectedHardwareSourceParameterID != pos)
   {
-    ParameterGroupSet *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+    auto *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
 
-    if(auto old = grandPa->findParameterByID(m_UiSelectedHardwareSourceParameterID))
+    if(auto old = grandPa->findParameterByID(static_cast<size_t>(m_UiSelectedHardwareSourceParameterID)))
       old->onUnselected();
 
     m_UiSelectedHardwareSourceParameterID = pos;
@@ -341,5 +345,5 @@ void MacroControlParameter::undoableRandomize(UNDO::Scope::tTransactionPtr trans
 void MacroControlParameter::setCPFromMCView(UNDO::Scope::tTransactionPtr transaction,
                                             const tControlPositionValue &cpValue)
 {
-  setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
+  setCpValue(std::move(transaction), Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }
