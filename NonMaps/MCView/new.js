@@ -142,14 +142,9 @@ class MC {
   }
 
   update() {
-    var step = 1.0 / ((InterpolationStepSize / 100) * 0.5 + 1.0);
-
-    var t = this.targetValue * (1 - step);
-    var p = this.paramValue * step;
-
-    this.updateValue(t + p);
-
-
+    var step = 1.0 / ((InterpolationStepSize) * 0.5 + 1.0);
+		var foo = (1 - step) * this.paramValue + step * this.targetValue;
+    this.updateValue(foo);
 
 
     if(this.callBackAfterUpdate) {
