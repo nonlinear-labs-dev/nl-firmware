@@ -1,4 +1,4 @@
-var InterpolationStepSize = 0.1;
+var InterpolationStepSize = 50;
 
 function guid() {
   function s4() {
@@ -143,8 +143,9 @@ class MC {
   }
 
   update() {
-    var n = 1.0 / (1 * InterpolationStepSize + 1.0);
-    this.updateValue((1 - n) * this.targetValue + n * this.paramValue);
+    var x = InterpolationStepSize / 100;
+    var step = 1.0 / (x * 0.5 +1.0);
+    this.updateValue((1 - step) * this.targetValue + step * this.paramValue);
 
     if(this.callBackAfterUpdate) {
       this.callBackAfterUpdate(this);
@@ -158,11 +159,11 @@ class MCModel {
 
     for(var i = 0; i < 4; i++) {
       this.mcs[i] = new MC(243 + i);
-      this.mcs[i].onTargetChanged.connect(function(val, id) {
+      /*this.mcs[i].onTargetChanged.connect(function(val, id) {
         model.mcs[id - 243].update();
-      });
+      });*/
     }
-    setInterval(this.update.bind(this), 16);
+    setInterval(this.update.bind(this), 20);
   }
 
   setTarget(id, target) {
@@ -554,7 +555,6 @@ function onLoad() {
     view = new MCView();
     controller = new MCController();
     window.requestAnimationFrame(function() { view.redraw(model); });
-    setInterval(model.update.bind(model), 25);
     setInterval(function() {
       model.mcs.forEach(function(mc){
         var changed = false;

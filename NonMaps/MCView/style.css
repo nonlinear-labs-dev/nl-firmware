@@ -83,7 +83,7 @@ html, body {
   background-color: green;
 }
 
-#interpolation-step-label {
+#interpolation-step-label #x-deadzone-label #y-deadzone-label {
   color: white;
   margin-left: 2%;
 }
