@@ -337,8 +337,10 @@ class MCView {
 
     ctx.beginPath();
     ctx.strokeStyle = "transparent";
-
     ctx.fillStyle = "blue";
+
+    yTarget = 100 - yTarget;
+    yVal = 100 - yVal;
 
     ctx.arc(x + w / 100 * xVal, y + h / 100 * yVal, size, 0, 2*Math.PI, true);
     ctx.stroke();
@@ -346,7 +348,7 @@ class MCView {
 
     if(xTarget !== undefined && yTarget !== undefined && xTarget !== xVal || yTarget !== yVal) {
       ctx.beginPath();
-      ctx.lineWidth = "2";
+      ctx.lineWidth = "3";
       ctx.strokeStyle = "gray";
       ctx.fillStyle = "transparent";
       ctx.arc(x + w / 100 * xTarget, y + h / 100 * yTarget, size, 0, 2*Math.PI, true);
@@ -380,7 +382,7 @@ class MCView {
 
     if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
-      ctx.lineWidth = "6";
+      ctx.lineWidth = "8";
       ctx.fillStyle = "transparent";
       ctx.strokeStyle = "grey";
       ctx.moveTo(xD + wD / 100 * xTarget, yD + 1);
@@ -496,7 +498,7 @@ class MCController {
       }
 
       var xVal = Number(x / wD * 100).toFixed(1);
-      var yVal = Number(y / hD * 100).toFixed(1);
+      var yVal = 100 - Number(y / hD * 100).toFixed(1);
 
       //Just To Be Safe!
       xVal = Math.min(100, Math.max(xVal, 0));
