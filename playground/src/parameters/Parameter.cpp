@@ -95,11 +95,6 @@ void Parameter::stepCPFromWebUI(UNDO::Scope::tTransactionPtr transaction, Step s
   setCPFromWebUI(transaction, getNextStepValue(step == Parameter::Step::STEP_INC ? 1 : -1, modifiers));
 }
 
-void Parameter::setCPFromMCView(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue)
-{
-  setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
-}
-
 void Parameter::setCPFromHwui(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue)
 {
   setCpValue(transaction, Initiator::EXPLICIT_HWUI, cpValue, true);

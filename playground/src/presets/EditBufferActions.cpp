@@ -29,7 +29,8 @@ EditBufferActions::EditBufferActions(shared_ptr<EditBuffer> editBuffer)
   addAction("set-mc", [=](shared_ptr<NetworkRequest> request) mutable {
     auto id = stoi(request->get("id"));
     auto value = stod(request->get("value"));
-    editBuffer->setMacroControlValueFromMCView(id, value);
+    auto uuid = request->get("uuid");
+    editBuffer->setMacroControlValueFromMCView(id, value, uuid);
   });
 
   addAction("set-param", [=](shared_ptr<NetworkRequest> request) mutable {

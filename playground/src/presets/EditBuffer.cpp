@@ -614,9 +614,12 @@ std::shared_ptr<Preset> EditBuffer::getPreset() const
   return m_loadedPreset;
 }
 
-void EditBuffer::setMacroControlValueFromMCView(int id, double value)
+void EditBuffer::setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid)
 {
   if(auto mcs = getParameterGroupByID("MCs"))
-    if(auto mc = mcs->getParameterByID(id))
-      mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+    if(auto mc = dynamic_cast<MacroControlParameter*>(mcs->getParameterByID(id)))
+    {
+        mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+        mc->setLastMCViewUUID(uuid);
+    }
 }

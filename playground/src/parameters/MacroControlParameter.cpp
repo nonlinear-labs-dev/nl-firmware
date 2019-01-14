@@ -78,6 +78,11 @@ void MacroControlParameter::applyAbsoluteLpcPhysicalControl(tControlPositionValu
   getValue().setRawValue(Initiator::EXPLICIT_LPC, v);
 }
 
+void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid)
+{
+  m_lastMCViewUuid = uuid;
+}
+
 void MacroControlParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                            tControlPositionValue newValue)
 {
@@ -94,11 +99,11 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
 
-
   static Throttler t(Expiration::Duration{ 1 });
-  t.doTask([this](){
-      auto str = std::string("MCVIEW") + std::to_string(this->getID()) + std::string(" ") + std::to_string(this->getValue().getClippedValue());
-      Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str);
+  t.doTask([this]() {
+    auto string = std::string("MCVIEW&ID="s + std::to_string(this->getID()) + "&VAL="s
+                              + std::to_string(this->getValue().getClippedValue()) + "&UUID="s + m_lastMCViewUuid);
+    Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(string);
   });
 }
 
@@ -331,4 +336,10 @@ int MacroControlParameter::getLastSelectedMacroControl()
 void MacroControlParameter::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator,
                                               double amount)
 {
+}
+
+void MacroControlParameter::setCPFromMCView(UNDO::Scope::tTransactionPtr transaction,
+                                            const tControlPositionValue &cpValue)
+{
+  setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }

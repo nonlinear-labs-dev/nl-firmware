@@ -21,6 +21,7 @@ class MacroControlParameter : public Parameter
   void registerTarget(ModulateableParameter *target);
   void unregisterTarget(ModulateableParameter *target);
 
+  void setCPFromMCView(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue);
   void applyLpcPhysicalControl(tControlPositionValue diff);
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
@@ -57,6 +58,8 @@ class MacroControlParameter : public Parameter
 
   virtual size_t getHash() const override;
 
+  void setLastMCViewUUID(const Glib::ustring &uuid);
+
  private:
   void updateBoundRibbon();
   void writeDifferences(Writer &writer, Parameter *other) const override;
@@ -65,6 +68,7 @@ class MacroControlParameter : public Parameter
   int m_UiSelectedHardwareSourceParameterID;
   Glib::ustring m_givenName;
   Glib::ustring m_info;
+  Glib::ustring m_lastMCViewUuid;
 
   sigc::signal<void> m_targetListChanged;
 };

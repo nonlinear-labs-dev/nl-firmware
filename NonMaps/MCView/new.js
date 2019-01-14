@@ -1,5 +1,21 @@
 var InterpolationStepSize = 0.5;
 
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+};
+
+class UUID {
+  constructor() {
+    this.uuid = guid();
+    console.log(this.uuid);
+  }
+}
+
 class Slot {
   constructor(id) {
     this.paramID = id;
@@ -13,6 +29,54 @@ class Slot {
       var cb = this.callbacks[i];
       cb(val, this.paramID);
     }
+  }
+}
+
+class ServerProxy {
+  constructor(onStartCB) {
+    this.webSocket = new WebSocket('ws://192.168.0.2:8080/ws/');
+    this.uuid = new UUID();
+    this.webSocket.onopen =  onStartCB;
+    this.webSocket.onmessage = this.onMessage;
+  }
+
+  getValueForKeyFromMessage(message, key) {
+    var ret = null;
+    if(message.includes(key)) {
+      var keyPos = message.indexOf(key + "=");
+      var endPos = message.indexOf("&", keyPos);
+      if(endPos !== -1) {
+          ret = message.slice(keyPos + key.length + 1, endPos);
+  	} else {
+      	ret = message.slice(keyPos + key.length + 1);
+      }
+    }
+    return ret;
+  }
+
+  onMessage(event) {
+    var websocketData = document.getElementById("websocket-data");
+    websocketData.innerHTML = serverProxy.webSocket;
+
+    var message = event.data;
+    if(message.startsWith("MCVIEW")) {
+      var id = serverProxy.getValueForKeyFromMessage(message, "ID");
+      var val = Number(Number(serverProxy.getValueForKeyFromMessage(message, "VAL")) * 100).toFixed(3);
+      var uuid = serverProxy.getValueForKeyFromMessage(message, "UUID");
+
+      if(uuid !== serverProxy.uuid.uuid) {
+        var mc = model.mcs[id - 243];
+        if(mc !== undefined) {
+          mc.setValue(val);
+        }
+      } else {
+        console.log("ignoring update that came from this MCView!");
+      }
+    }
+  }
+
+  send(path, message) {
+    this.webSocket.send(path + message + "&uuid=" + this.uuid.uuid);
   }
 }
 
@@ -60,7 +124,7 @@ class MC {
       this.changed.onChange();
 
       if(this.throttler.expired()) {
-        this.sendMC(this.paramValue, this.paramID);
+        this.sendMC();
         this.throttler.restart();
       }
     }
@@ -82,7 +146,7 @@ class MC {
 
   sendMC() {
     var scaled = this.paramValue.toFixed(3) / 100;
-    webSocket.send("/presets/param-editor/set-mc?id="+this.paramID+"&value="+scaled);
+    serverProxy.send("/presets/param-editor/set-mc", "?id="+this.paramID+"&value="+scaled);
   }
 
   update() {
@@ -96,7 +160,7 @@ class MC {
 }
 
 class MCModel {
-  constructor(webSocket) {
+  constructor() {
     this.mcs = [];
 
     for(var i = 0; i < 4; i++) {
@@ -105,21 +169,7 @@ class MCModel {
         model.mcs[id - 243].update();
       });
     }
-
-    webSocket.onmessage = this.onMessage;
     setInterval(this.update.bind(this), 16);
-  }
-
-  onMessage(event) {
-    var text = event.data;
-    if(text.startsWith("MCVIEW")) {
-      var val = Number(text.substr(10)*100).toFixed(1);
-      var id = Number(text.substr(6, 3));
-      var mc = model.mcs[id - 243]; //have to use model, because 'this' is not MCModel but WebSocket!
-      if(mc !== undefined) {
-        mc.setValue(val);
-      }
-    }
   }
 
   setTarget(id, target) {
@@ -485,6 +535,7 @@ var webSocket;
 var model;
 var view;
 var controller;
+var serverProxy;
 
 function onLoad() {
   document.onkeypress = function(event) {
@@ -493,9 +544,8 @@ function onLoad() {
     }
   }
 
-  webSocket = new WebSocket('ws://192.168.8.2:80/ws/');
-  webSocket.onopen = function() {
-    model = new MCModel(webSocket);
+  serverProxy = new ServerProxy(function() {
+    model = new MCModel(serverProxy.webSocket);
     view = new MCView();
     controller = new MCController();
     window.requestAnimationFrame(function() { view.redraw(model); });
@@ -508,10 +558,9 @@ function onLoad() {
         } else {
           mc.isCurrentlyControlled = false;
         }
-
       }, 50);
     });
-  };
+  });
 }
 
 //UI Functionality
