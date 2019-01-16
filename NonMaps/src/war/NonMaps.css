@@ -1612,7 +1612,7 @@ select[disabled='disabled'] {
 }
 
 .dialogContent textarea.editable {
-    min-height: 3em;
+    min-height: 4em;
     max-height: 10em;
 }
 
