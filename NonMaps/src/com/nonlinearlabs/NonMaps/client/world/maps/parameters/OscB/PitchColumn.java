@@ -24,6 +24,11 @@ class PitchColumn extends ParameterColumn {
 		public int getParameterID() {
 			return 83;
 		}
+
+		@Override
+		public double getPadding() {
+			return 2;
+		}
 	}
 
 	private class EnvelopeC extends ModulationSourceHighPriority {
