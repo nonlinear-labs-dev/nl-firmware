@@ -4,6 +4,7 @@
 #include <parameters/names/ParameterDB.h>
 #include <tools/StringTools.h>
 #include "RowStream.h"
+#include <parameters/Parameter.h>
 
 ParameterDB &ParameterDB::get()
 {
@@ -87,4 +88,11 @@ ustring ParameterDB::getShortName(int id) const
 tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
 {
   return m_spec.at(id).signalPathIndication;
+}
+
+bool ParameterDB::isActive(const Parameter *p) const
+{
+  const auto inActiveCP = getSignalPathIndication(p->getID());
+  const auto diff = std::abs(inActiveCP - p->getControlPositionValue());
+  return diff > std::numeric_limits<tControlPositionValue>::epsilon();
 }
