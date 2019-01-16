@@ -1337,3 +1337,7 @@ input[type="range"]::-moz-range-track {
 .padd-left {
 	padding-left: 0.5em;
 }
+
+.dialogcontainer .w70p {
+	margin: initial;
+}
