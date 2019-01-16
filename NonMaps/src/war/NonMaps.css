@@ -1511,6 +1511,7 @@ textarea {
 
 .flex-div {
   display: flex;
+  align-items:center;
 }
 
 .centered-text {
@@ -1790,6 +1791,12 @@ button {
   border-bottom: 1px solid rgb(99, 99, 99);
 }
 
+.preset-info-dialog .dialogContent tr:nth-child(4) td:nth-child(2){
+  display: table-cell;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
 .preset-info-dialog .tab {
   height: 1cm;
   border-color: rgb(12, 12, 12);
@@ -1846,6 +1853,10 @@ button {
 
 .parameter-info-dialog table {
   width: 100%;
+}
+
+.parameter-info-dialog textarea {
+  width: 28em;
 }
 
 .bank-info-dialog td:nth-of-type (2)>* {

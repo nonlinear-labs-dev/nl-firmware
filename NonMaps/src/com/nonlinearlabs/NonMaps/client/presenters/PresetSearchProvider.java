@@ -47,15 +47,15 @@ public class PresetSearchProvider {
 			int s = r.size();
 			switch (s) {
 			case 0:
-				presenter.numMatches = "No Matches.";
+				presenter.numMatches = "no matches";
 				break;
 
 			case 1:
-				presenter.numMatches = "1 Match.";
+				presenter.numMatches = "1 match";
 				break;
 
 			default:
-				presenter.numMatches = s + " Matches.";
+				presenter.numMatches = s + " matches";
 			}
 			notifyClients();
 			return true;
