@@ -1039,18 +1039,18 @@ input[type="range"]::-moz-range-track {
 .t-center {text-align: center;}
 
 ::selection {
-  color: #101010;
-  background-color: #b6b6b6;
+  color: rgba(17,17,17, 0.99);
+  background-color: rgba(187,187,187,0.99);
 }
 	
 ::-moz-selection {
-	color: #101010;
-   background-color: #b6b6b6;
+	color: rgba(17,17,17, 0.99);
+  background-color: rgba(187,187,187,0.99);
 }
 	
 ::-webkit-selection {
-	color: #101010;
-  background-color: #b6b6b6;
+	color: rgba(17,17,17, 0.99);
+  background-color: rgba(187,187,187,0.99);
 }
 	
 .stretcher {
