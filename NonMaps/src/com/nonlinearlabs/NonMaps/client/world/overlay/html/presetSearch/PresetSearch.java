@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
 import com.nonlinearlabs.NonMaps.client.presenters.PresetSearchProvider;
 
 public class PresetSearch extends Composite {
@@ -36,6 +37,8 @@ public class PresetSearch extends Composite {
 	@UiField
 	Label numMatches;
 
+	Widget focussed;
+
 	public PresetSearch() {
 		initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -45,14 +48,17 @@ public class PresetSearch extends Composite {
 
 	public void connectEventHandlers() {
 		search.addKeyUpHandler(b -> {
-			if(b.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+			if (b.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
 				getUseCases().finishSearch();
 				PresetSearchDialog.hideDialog();
 			} else {
 				getUseCases().setQuery(search.getText());
 			}
 		});
-		
+
+		search.addFocusHandler(v -> focussed = search);
+		search.addBlurHandler(v -> focussed = null);
+
 		logicalAnd.addValueChangeHandler(b -> getUseCases().setCombinationAnd());
 		logicalOr.addValueChangeHandler(b -> getUseCases().setCombinationOr());
 		resetQuery.addClickHandler(b -> getUseCases().resetQuery());
@@ -65,7 +71,7 @@ public class PresetSearch extends Composite {
 
 		prev.addClickHandler(b -> getUseCases().highlightPrev());
 		next.addClickHandler(b -> getUseCases().highlightNext());
-		
+
 		Scheduler.get().scheduleFinally((Command) () -> {
 			search.selectAll();
 			search.setFocus(true);
@@ -81,7 +87,9 @@ public class PresetSearch extends Composite {
 	}
 
 	protected boolean applyPresenter(com.nonlinearlabs.NonMaps.client.presenters.PresetSearch t) {
-		search.setText(t.query);
+		if (focussed != search)
+			search.setText(t.query);
+
 		logicalAnd.setValue(t.andCombination);
 		logicalOr.setValue(t.orCombination);
 		searchCriteriaName.setValue(t.searchInNames);

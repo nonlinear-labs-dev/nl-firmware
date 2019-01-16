@@ -7,8 +7,8 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
-import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearchUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
+import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearchUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
@@ -157,7 +157,6 @@ public class PresetSearch {
 				Document xml = XMLParser.parse(text);
 				PresetSearchUpdater updater = new PresetSearchUpdater(xml);
 				updater.doUpdate();
-
 				sanitizeSelection();
 			}
 
