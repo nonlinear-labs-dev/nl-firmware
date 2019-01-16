@@ -1509,16 +1509,6 @@ textarea {
   line-height: 0.7em;
 }
 
-::selection {
-  background: #9DA8BF;
-  color: #000 text-shadow: none;
-}
-
-::-moz-selection {
-  background: #9DA8BF;
-  color: #000 text-shadow: none;
-}
-
 .flex-div {
   display: flex;
 }
@@ -1614,6 +1604,11 @@ select[disabled='disabled'] {
 .dialogContent textarea.editable {
     min-height: 4em;
     max-height: 10em;
+}
+
+.dialogContent textarea.editable.txt-oneline {
+    min-height: initial;
+    max-height: initial;
 }
 
 input.param-name-edit {
