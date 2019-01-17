@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.nonlinearlabs.NonMaps.client.presenters.PresetSearchProvider;
 
@@ -29,7 +29,7 @@ public class PresetSearch extends Composite {
 	Button resetQuery, prev, next;
 
 	@UiField
-	TextArea search;
+	TextBox search;
 
 	@UiField
 	CheckBox searchCriteriaName, searchCriteriaComment, searchCriteriaDeviceName, zoomToAllMatches;

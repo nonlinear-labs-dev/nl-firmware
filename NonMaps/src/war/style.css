@@ -734,7 +734,7 @@ textarea {
 	color: #c2c2c2;
 }
 
-textarea+button.reset {
+input[type="text"]+button.reset {
 	width: 25px;
 	height: 27px;
 	min-width: 25px;
