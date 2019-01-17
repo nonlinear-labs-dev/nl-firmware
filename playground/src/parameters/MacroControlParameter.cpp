@@ -99,11 +99,30 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
 
-  static Throttler t(Expiration::Duration{ 1 });
-  auto str = std::string("MCVIEW&ID="s + std::to_string(this->getID()) + "&VAL="s
-                         + std::to_string(this->getValue().getClippedValue()) + "&UUID="s
-                         + (initiator == Initiator::EXPLICIT_MCVIEW ? this->m_lastMCViewUuid : Glib::ustring("NONE")));
-  t.doTask([=]() { Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str); });
+  static std::mutex sLock;
+  static std::set<gint32> sChangedParameterSet;
+  static Throttler t(Expiration::Duration{ 5 });
+
+  sLock.lock();
+  sChangedParameterSet.emplace(this->getID());
+  sLock.unlock();
+
+  t.doTask([=]() {
+    sLock.lock();
+    for(auto &entry : sChangedParameterSet)
+    {
+      auto param = getParentGroup()->getParameterByID(entry);
+      if(param)
+      {
+        const auto id = std::to_string(entry);
+        const auto value = std::to_string(param->getValue().getClippedValue());
+        const auto uuid = std::to_string(initiator == Initiator::EXPLICIT_MCVIEW ? (this->m_lastMCViewUuid.empty() ? "NONE"s : this->m_lastMCViewUuid.c_str()) : "NONE"s);
+        const auto str = "MCVIEW&ID="s.append(id).append("&VAL=").append(value).append("&UUID=").append(uuid);
+        Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str);
+      }
+    }
+    sLock.unlock();
+  });
 }
 
 void MacroControlParameter::updateBoundRibbon()
