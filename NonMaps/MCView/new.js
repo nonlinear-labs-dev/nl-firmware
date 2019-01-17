@@ -211,11 +211,64 @@ class MCView {
     this.addEventsToElement(this.canvas);
   }
 
+  getMCForPagePos(pageX, pageY) {
+    var width = view.canvas.width;
+    var heigth = view.canvas.height;
+    var mc = null;
+    view.range.controls.forEach(function(division) {
+      var x = width * division.x;
+      var y = heigth * division.y;
+      var w = width * division.w;
+      var h = heigth * division.h;
+
+      if(pageX >= x && pageX <= x + w  &&
+         pageY >= y && pageY <= y + h) {
+        mc = division.MCX;
+      }
+    });
+    return mc;
+  }
+
+  getMCForTouch(touch) {
+    return this.getMCForPagePos(touch.pageX, touch.pageY);
+  }
+
   addEventsToElement(element) {
     element.addEventListener('touchstart', function(event) {
-      event.preventDefault();
-      controller.touches = event.touches;
-      controller.onChange();
+
+      for (var i=0; i < event.changedTouches.length; i++) {
+        console.log("changedTouches[" + i + "].identifier = " + event.changedTouches[i].identifier);
+      }
+
+      var found = false;
+      var newTouches = [];
+
+      for(var i = 0; i < event.changedTouches.length; i++) {
+        var changedTouch = event.changedTouches[i];
+        controller.touches.forEach(function(touch) {
+          console.log(touch);
+          console.log(changedTouch);
+          if(touch.touch.identifier === changedTouch.identifier) {
+            found = true;
+          } else {
+            newTouches.push(changedTouch);
+          }
+        });
+      }
+
+      var currTouch = event.changedTouches[0];
+      if(currTouch) {
+        var found = controller.touches.some(function(touch) {
+          return touch.touch.identifier === currTouch.identifier;
+        });
+
+        if(!found) {
+          var mc = view.getMCForTouch(currTouch);
+          console.log(mc);
+          controller.touches.push({"touch":currTouch, "mc":mc});
+          controller.onChange();
+        }
+      }
     });
 
     element.addEventListener('mousemove', function(event) {
@@ -234,14 +287,38 @@ class MCView {
     });
 
     element.addEventListener('touchmove', function(event) {
+      var changed = false;
+
       event.preventDefault();
-      controller.touches = event.touches;
-      controller.onChange();
+      controller.touches.forEach(function(inputTouch) {
+        var touches = event.touches;
+        var l = touches.length;
+        for(var i = 0; i < l; i++) {
+          var eventTouch = touches[i];
+          if(inputTouch.touch.identifier === eventTouch.identifier) {
+            inputTouch.touch = eventTouch;
+            changed = true;
+          }
+        }
+      });
+
+      if(changed)
+        controller.onChange();
     });
 
     element.addEventListener('touchend', function(event) {
-      controller.touches = event.touches;
-      controller.onChange();
+
+      var endingTouch = event.changedTouches[0];
+
+      if(endingTouch) {
+        var filtered = controller.touches.filter(function(touch){
+            return touch.touch.identifier !== endingTouch.identifier;
+        });
+
+        controller.touches = filtered;
+        controller.onChange();
+      }
+
     });
   }
 
@@ -277,8 +354,8 @@ class MCView {
 
       ctx.beginPath();
       ctx.fillStyle = "#2b2b2b";
-      var wD = w - w * deadZones.x;
-      var hD = h - h * deadZones.y;
+      var wD = w - width * deadZones.x;
+      var hD = h - heigth * deadZones.y;
       var xD = x + (w - wD) / 2;
       var yD = y + (h  - hD) / 2;
 
@@ -424,9 +501,10 @@ function getUnicodeForMC(mcId) {
 }
 
 class Input {
-  constructor(x, y) {
+  constructor(x, y, originMC) {
     this.x = x;
     this.y = y;
+    this.mc = originMC;
   }
 }
 
@@ -463,8 +541,8 @@ class MCController {
 
       var ctx = view.canvas.getContext("2d");
 
-      var wD = dW - dW * deadzone.x;
-      var hD = dH - dH * deadzone.y;
+      var wD = dW - cW * deadzone.x;
+      var hD = dH - cH * deadzone.y;
       var xD = dX + (dW - wD) / 2;
       var yD = dY + (dH - hD) / 2;
 
@@ -474,8 +552,10 @@ class MCController {
         var input = this.userInputs[iI];
 
         if(input.x >= xD - padding && input.x <= Number(xD) + Number(wD) + padding &&
-           input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding) {
+           input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding &&
+            input.mc === division.MCX || input.mc === division.MCY && input.mc !== null) {
           activeInputs.push(input);
+          console.log("Adding Active Touch for Division X: " + division.MCX + " Y: " + division.MCY + " touch: " + input.mc);
         }
 
       }
@@ -520,14 +600,13 @@ class MCController {
   collectInputs() {
     var activePositions = [];
 
-    for(var i = 0; i < this.touches.length; i++) {
-      var touch = this.touches[i];
-      activePositions.push(new Input(touch.pageX, touch.pageY));
-    }
+    this.touches.forEach(function(touch) {
+      activePositions.push(new Input(touch.touch.pageX, touch.touch.pageY, touch.mc));
+    });
 
     if(this.lastMouseEvent !== undefined) {
       if(this.mouseDown !== 0) {
-        activePositions.push(new Input(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY));
+        activePositions.push(new Input(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY, view.getMCForPagePos(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY)));
       }
     }
 
