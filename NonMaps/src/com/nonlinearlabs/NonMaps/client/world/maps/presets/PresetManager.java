@@ -141,23 +141,23 @@ public class PresetManager extends MapsLayout {
 		}
 	}
 
-	public void setAllBanksMinimizeState(boolean min) {
+	public void setAllBanksCollapseState(boolean min) {
 		for (Bank b : getBanks()) {
-			b.setMinimized(min);
+			b.setCollapsed(min);
 		}
 	}
 
-	public boolean isAnyBankMinimized() {
+	public boolean isAnyBankCollapsed() {
 		for (Bank b : getBanks()) {
-			if (b.isMinimized())
+			if (b.isCollapsed())
 				return true;
 		}
 		return false;
 	}
 
-	public boolean areAllBanksMinimized() {
+	public boolean areAllBanksCollapsed() {
 		for (Bank b : getBanks()) {
-			if (!b.isMinimized())
+			if (!b.isCollapsed())
 				return false;
 		}
 		return true;

@@ -119,21 +119,21 @@ public class PresetManagerContextMenu extends ContextMenu {
 
 		if (!pm.getBanks().isEmpty()) {
 
-			if (!pm.areAllBanksMinimized()) {
-				addChild(new ContextMenuItem(this, "Minimize All") {
+			if (!pm.areAllBanksCollapsed()) {
+				addChild(new ContextMenuItem(this, "Collapse all Banks") {
 					@Override
 					public Control click(Position eventPoint) {
-						pm.setAllBanksMinimizeState(true);
+						pm.setAllBanksCollapseState(true);
 						return super.click(eventPoint);
 					}
 				});
 			}
 
-			if (pm.isAnyBankMinimized()) {
-				addChild(new ContextMenuItem(this, "Full Size All") {
+			if (pm.isAnyBankCollapsed()) {
+				addChild(new ContextMenuItem(this, "Expand all Banks") {
 					@Override
 					public Control click(Position eventPoint) {
-						pm.setAllBanksMinimizeState(false);
+						pm.setAllBanksCollapseState(false);
 						return super.click(eventPoint);
 					}
 				});

@@ -25,7 +25,7 @@ class BankHeader extends OverlayLayout {
 		}
 
 		@Override
-		protected boolean hasMinimize() {
+		protected boolean hasCollapse() {
 			return false;
 		}
 

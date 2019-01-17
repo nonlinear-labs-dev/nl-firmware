@@ -139,8 +139,8 @@ public abstract class BankContextMenu extends ContextMenu {
 				}
 			});
 
-			if (hasMinimize()) {
-				addChild(new ContextMenuItem(this, bank.isMinimized() ? "Full Size" : "Minimize") {
+			if (hasCollapse()) {
+				addChild(new ContextMenuItem(this, bank.isCollapsed() ? "Expand" : "Collapse") {
 					@Override
 					public Control click(Position eventPoint) {
 						bank.toggleMinMax();
@@ -195,7 +195,7 @@ public abstract class BankContextMenu extends ContextMenu {
 		PresetManagerContextMenu.createNewBank(bankPosition);
 	}
 
-	protected abstract boolean hasMinimize();
+	protected abstract boolean hasCollapse();
 
 	protected abstract boolean hasPaste();
 

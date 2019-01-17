@@ -1431,7 +1431,7 @@ canvas {
 }
 
 .dialog-header>.headline {
-  width: 100%;
+  width: 24em;
 }
 
 .dialog-caption>button:active {
@@ -1853,10 +1853,6 @@ button {
 
 .parameter-info-dialog table {
   width: 100%;
-}
-
-.parameter-info-dialog textarea {
-  width: 28em;
 }
 
 .bank-info-dialog td:nth-of-type (2)>* {
