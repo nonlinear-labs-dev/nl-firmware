@@ -27,6 +27,8 @@ public class PresetSearchDialog extends GWTDialog {
 			theSearch.setModal(false);
 			theSearch.addHeader("Search Presets for ...");
 			theSearch.initalShow();
+			theSearch.pushDialogToFront();
+
 		}
 	}
 
