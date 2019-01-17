@@ -26,6 +26,8 @@ static int lastSelectedMacroControl
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID())
+    , mcviewThrottler{Expiration::Duration(5)}
+    , m_lastMCViewUuid{"NONE"s}
 {
 }
 
@@ -104,40 +106,22 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
 
 void MacroControlParameter::updateMCViewsFromMCChange(const Initiator &initiator)
 {
-  static mutex sLock;
-  static set<gint32> sChangedParameterSet;
-  static unordered_map<gint32, tControlPositionValue> sLastBroadcastedInfo;
+  mcviewThrottler.doTask([=]() { propagateMCChangeToMCViews(initiator); });
+}
 
-  static Throttler t(Expiration::Duration{ 5 });
+void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiatior)
+{
+  const auto idString = to_string(getID());
+  const auto valueD = getValue().getClippedValue();
+  const auto value = to_string(valueD);
+  const auto uuid = initiatior == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid.c_str() : "NONE"s;
 
-  sLock.lock();
-  sChangedParameterSet.emplace(getID());
-  sLock.unlock();
-
-  t.doTask([=]() {
-    sLock.lock();
-    for(auto &id : sChangedParameterSet)
-    {
-      auto param = getParentGroup()->getParameterByID(id);
-      if(param)
-      {
-        const auto idString = to_string(id);
-        const auto valueD = param->getValue().getClippedValue();
-        const auto value = to_string(valueD);
-        const auto uuid = to_string(initiator == Initiator::EXPLICIT_MCVIEW
-                                        ? (m_lastMCViewUuid.empty() ? "NONE"s : m_lastMCViewUuid.c_str())
-                                        : "NONE"s);
-
-        if(valueD != sLastBroadcastedInfo[id])
-        {
-          const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid);
-          Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
-          sLastBroadcastedInfo[id] = valueD;
-        }
-      }
-    }
-    sLock.unlock();
-  });
+  if(valueD != lastBroadcastedControlPosition)
+  {
+    const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid);
+    Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
+    lastBroadcastedControlPosition = valueD;
+  }
 }
 
 void MacroControlParameter::updateBoundRibbon()

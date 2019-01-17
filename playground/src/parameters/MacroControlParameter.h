@@ -3,6 +3,7 @@
 #include "Parameter.h"
 #include <proxies/hwui/HWUIEnums.h>
 #include <set>
+#include <tools/Throttler.h>
 
 class ModulateableParameter;
 
@@ -69,6 +70,10 @@ class MacroControlParameter : public Parameter
   Glib::ustring m_givenName;
   Glib::ustring m_info;
   Glib::ustring m_lastMCViewUuid;
+
+  void propagateMCChangeToMCViews(const Initiator& initiatior);
+  tControlPositionValue lastBroadcastedControlPosition;
+  Throttler mcviewThrottler;
 
   sigc::signal<void> m_targetListChanged;
 
