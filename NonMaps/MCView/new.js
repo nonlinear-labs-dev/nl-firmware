@@ -56,6 +56,8 @@ class ServerProxy {
   onMessage(event) {
     var message = event.data;
     if(message.startsWith("MCVIEW")) {
+      console.log(message);
+
       var id = serverProxy.getValueForKeyFromMessage(message, "ID");
       var val = Number(Number(serverProxy.getValueForKeyFromMessage(message, "VAL")) * 100).toFixed(3);
       var uuid = serverProxy.getValueForKeyFromMessage(message, "UUID");

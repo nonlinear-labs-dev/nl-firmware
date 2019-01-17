@@ -99,26 +99,41 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
 
-  static std::mutex sLock;
-  static std::set<gint32> sChangedParameterSet;
+  updateMCViewsFromMCChange(initiator);
+}
+
+void MacroControlParameter::updateMCViewsFromMCChange(const Initiator &initiator)
+{
+  static mutex sLock;
+  static set<gint32> sChangedParameterSet;
+  static unordered_map<gint32, tControlPositionValue> sLastBroadcastedInfo;
+
   static Throttler t(Expiration::Duration{ 5 });
 
   sLock.lock();
-  sChangedParameterSet.emplace(this->getID());
+  sChangedParameterSet.emplace(getID());
   sLock.unlock();
 
   t.doTask([=]() {
     sLock.lock();
-    for(auto &entry : sChangedParameterSet)
+    for(auto &id : sChangedParameterSet)
     {
-      auto param = getParentGroup()->getParameterByID(entry);
+      auto param = getParentGroup()->getParameterByID(id);
       if(param)
       {
-        const auto id = std::to_string(entry);
-        const auto value = std::to_string(param->getValue().getClippedValue());
-        const auto uuid = std::to_string(initiator == Initiator::EXPLICIT_MCVIEW ? (this->m_lastMCViewUuid.empty() ? "NONE"s : this->m_lastMCViewUuid.c_str()) : "NONE"s);
-        const auto str = "MCVIEW&ID="s.append(id).append("&VAL=").append(value).append("&UUID=").append(uuid);
-        Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str);
+        const auto idString = to_string(id);
+        const auto valueD = param->getValue().getClippedValue();
+        const auto value = to_string(valueD);
+        const auto uuid = to_string(initiator == Initiator::EXPLICIT_MCVIEW
+                                        ? (m_lastMCViewUuid.empty() ? "NONE"s : m_lastMCViewUuid.c_str())
+                                        : "NONE"s);
+
+        if(valueD != sLastBroadcastedInfo[id])
+        {
+          const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid);
+          Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str);
+          sLastBroadcastedInfo[id] = valueD;
+        }
       }
     }
     sLock.unlock();

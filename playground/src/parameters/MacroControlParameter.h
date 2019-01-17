@@ -71,4 +71,6 @@ class MacroControlParameter : public Parameter
   Glib::ustring m_lastMCViewUuid;
 
   sigc::signal<void> m_targetListChanged;
+
+    void updateMCViewsFromMCChange(const Initiator &initiator);
 };
