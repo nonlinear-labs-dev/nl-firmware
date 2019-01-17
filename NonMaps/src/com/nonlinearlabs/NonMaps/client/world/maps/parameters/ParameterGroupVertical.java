@@ -54,7 +54,8 @@ public abstract class ParameterGroupVertical extends LayoutResizingVertical impl
 	public void draw(Context2d ctx, int invalidationMask) {
 		getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, toXPixels(6), toXPixels(2), new Gray(26), null);
 		super.draw(ctx, invalidationMask);
-		getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, toXPixels(6), toXPixels(2), null, getColorModuleHeaderBackground());
+		getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, toXPixels(6), toXPixels(2), null,
+				getColorModuleHeaderBackground());
 
 	}
 
@@ -73,7 +74,7 @@ public abstract class ParameterGroupVertical extends LayoutResizingVertical impl
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(m_viewportPosAtClick, true);
 			m_viewportPosAtClick = null;
 		}
-
+		getNonMaps().getNonLinearWorld().getPresetManager().resetStoredViewportPosition();
 		return this;
 	}
 
