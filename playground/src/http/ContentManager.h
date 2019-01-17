@@ -20,8 +20,8 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
   ContentManager();
   virtual ~ContentManager();
 
-  virtual void init();
-  virtual void handleRequest(shared_ptr<NetworkRequest> request);
+  void init();
+  void handleRequest(shared_ptr<NetworkRequest> request);
   void onSectionMessageFinished(SoupMessage *msg);
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
@@ -34,7 +34,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
 
   virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
- protected:
+ private:
   typedef shared_ptr<ContentSection> tContentSectionPtr;
   typedef set<tContentSectionPtr> tSections;
 
