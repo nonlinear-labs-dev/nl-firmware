@@ -47,9 +47,12 @@ void HTTPServer::startServer()
 void HTTPServer::initializeServer()
 {
   DebugLevel::info("HTTPServer runs on port", soup_server_get_port(m_server));
-  soup_server_add_handler(m_server, NULL, (SoupServerCallback)((serverCallback)), this, NULL);
+  soup_server_add_handler(m_server, nullptr, (SoupServerCallback)((serverCallback)), this, nullptr);
   soup_server_add_websocket_handler(m_server, "/ws", nullptr, nullptr,
                                     (SoupServerWebsocketCallback) &HTTPServer::webSocket, this, nullptr);
+
+  soup_server_add_websocket_handler(m_server, "/ws-mc", nullptr, nullptr,
+                                    (SoupServerWebsocketCallback) &HTTPServer::mcWebSocket, this, nullptr);
   soup_server_run_async(m_server);
 }
 
@@ -57,6 +60,11 @@ void HTTPServer::webSocket(SoupServer *server, SoupWebsocketConnection *connecti
                            SoupClientContext *client, HTTPServer *pThis)
 {
   pThis->m_contentManager.connectWebSocket(connection);
+}
+
+void HTTPServer::mcWebSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
+                             SoupClientContext *client, HTTPServer *pThis) {
+  pThis->m_mcviewManager.connectWebSocket(connection);
 }
 
 void HTTPServer::init()
@@ -181,6 +189,7 @@ void HTTPServer::messageFinishedCB(SoupMessage *msg, HTTPServer *pThis)
   pThis->onMessageFinished(msg);
 }
 
-const ContentManager &HTTPServer::getContentManager() const {
-  return m_contentManager;
+const MCViewContentManager &HTTPServer::getMCViewContentManager() const {
+  return m_mcviewManager;
 }
+

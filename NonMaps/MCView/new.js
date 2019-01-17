@@ -33,7 +33,7 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws/');
+    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
@@ -144,7 +144,7 @@ class MC {
       return;
 
     var scaled = this.paramValue.toFixed(3) / 100;
-    serverProxy.send("/presets/param-editor/set-mc", "?id="+this.paramID+"&value="+scaled);
+    serverProxy.send("/set-mc", "?id="+this.paramID+"&value="+scaled);
   }
 
   update() {

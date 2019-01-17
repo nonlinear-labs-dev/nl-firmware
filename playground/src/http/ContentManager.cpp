@@ -342,16 +342,3 @@ const UNDO::Scope &ContentManager::getUndoScope() const
 {
   return *(Application::get().getUndoScope().get());
 }
-
-void ContentManager::sendToAllWebsockets(const Glib::ustring message) const
-{
-  for(auto &ws : m_webSockets)
-  {
-    auto state = soup_websocket_connection_get_state(ws->getConnection());
-
-    if(state == SOUP_WEBSOCKET_STATE_OPEN)
-    {
-        soup_websocket_connection_send_text(ws->getConnection(), message.c_str());
-    }
-  }
-}

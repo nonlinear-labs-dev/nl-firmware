@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include "ContentManager.h"
+#include "MCViewContentManager.h"
 #include <libsoup/soup.h>
 #include <map>
 #include <glib.h>
@@ -29,13 +30,16 @@ class HTTPServer
   void unpauseMessage(SoupMessage *msg);
 
   UpdateDocumentMaster *getUpdateDocumentMaster();
-  const ContentManager &getContentManager() const;
+  const MCViewContentManager &getMCViewContentManager() const;
 
  private:
   static void serverCallback(SoupServer *server, SoupMessage *msg, const char *path, GHashTable *query,
                              SoupClientContext *context, HTTPServer *pThis);
   static void webSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
                         SoupClientContext *client, HTTPServer *pThis);
+
+  static void mcWebSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
+                          SoupClientContext *client, HTTPServer *pThis);
 
   static void messageFinishedCB(SoupMessage *msg, HTTPServer *pThis);
 
@@ -53,6 +57,7 @@ class HTTPServer
 
   SoupServer *m_server = nullptr;
   ContentManager m_contentManager;
+  MCViewContentManager m_mcviewManager;
 
   typedef shared_ptr<ServedStream> tServedStream;
   typedef shared_ptr<HTTPRequest> tHTTPRequest;

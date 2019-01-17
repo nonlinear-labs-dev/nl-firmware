@@ -131,7 +131,7 @@ void MacroControlParameter::updateMCViewsFromMCChange(const Initiator &initiator
         if(valueD != sLastBroadcastedInfo[id])
         {
           const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid);
-          Application::get().getHTTPServer()->getContentManager().sendToAllWebsockets(str);
+          Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
           sLastBroadcastedInfo[id] = valueD;
         }
       }
