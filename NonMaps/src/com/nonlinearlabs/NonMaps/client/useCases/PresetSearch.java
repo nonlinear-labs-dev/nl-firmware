@@ -7,6 +7,7 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearchUpdater;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
@@ -154,6 +155,11 @@ public class PresetSearch {
 
 			@Override
 			public void onFileDownloaded(String text) {
+				if (!query.equals(getModel().query.getValue())) {
+					Tracer.log("rejecting outdated preset search response for query " + query);
+					return;
+				}
+
 				Document xml = XMLParser.parse(text);
 				PresetSearchUpdater updater = new PresetSearchUpdater(xml);
 				updater.doUpdate();

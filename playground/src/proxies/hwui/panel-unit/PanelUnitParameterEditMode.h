@@ -60,6 +60,7 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
   void letOscBShaperBBlink(const std::vector<int> &targets);
   void letOtherTargetsBlink(const std::vector<int> &targets);
   void letReverbBlink(const std::vector<int> &targets);
+  bool isSignalFlowingThrough(const Parameter *p) const;
 
   void setLedStates(const tLedStates &states);
 

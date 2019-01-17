@@ -545,7 +545,6 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
 
 void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &targets)
 {
-  auto &paramDB = ParameterDB::get();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
@@ -553,7 +552,7 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
   {
     const auto currentParam = editBuffer->findParameterByID(targetID);
 
-    if(paramDB.isActive(currentParam))
+    if(isSignalFlowingThrough(currentParam))
     {
       auto state = editBuffer->getSelected() == currentParam ? TwoStateLED::ON : TwoStateLED::BLINK;
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
@@ -561,9 +560,13 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
   }
 }
 
+bool PanelUnitParameterEditMode::isSignalFlowingThrough(const Parameter *p) const
+{
+  return std::abs(p->getControlPositionValue()) > std::numeric_limits<tControlPositionValue>::epsilon();
+}
+
 void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets)
 {
-  auto &paramDB = ParameterDB::get();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
@@ -589,15 +592,15 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
       case CombFilterPM:
-        if(paramDB.isActive(currentParam) && combFilterPMAB->getControlPositionValue() < 1)
+        if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
       case SVFilterFM:
-        if(paramDB.isActive(currentParam) && stateVariableFilterFMAB->getControlPositionValue() < 1)
+        if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
       default:
-        if(paramDB.isActive(currentParam))
+        if(isSignalFlowingThrough(currentParam))
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
     }
@@ -606,7 +609,6 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &targets)
 {
-  auto &paramDB = ParameterDB::get();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
@@ -632,15 +634,15 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
       case CombFilterPM:
-        if(paramDB.isActive(currentParam) && combFilterPMAB->getControlPositionValue() > 0)
+        if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() > 0)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
       case SVFilterFM:
-        if(paramDB.isActive(currentParam) && stateVariableFilterFMAB->getControlPositionValue() > 0)
+        if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() > 0)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
       default:
-        if(paramDB.isActive(currentParam))
+        if(isSignalFlowingThrough(currentParam))
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
     }
@@ -649,7 +651,6 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
 {
-  auto &paramDB = ParameterDB::get();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
@@ -658,7 +659,7 @@ void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
     const auto currentParam = editBuffer->findParameterByID(targetID);
     const auto effectParam = editBuffer->findParameterByID(effectsID);
 
-    if(paramDB.isActive(currentParam) && paramDB.isActive(effectParam))
+    if(isSignalFlowingThrough(currentParam) && isSignalFlowingThrough(effectParam))
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
   }
 }

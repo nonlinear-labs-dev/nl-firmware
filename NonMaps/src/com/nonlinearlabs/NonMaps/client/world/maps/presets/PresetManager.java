@@ -69,6 +69,8 @@ public class PresetManager extends MapsLayout {
 	private void resetView() {
 		if (NonMaps.theMaps.getNonLinearWorld() != null && oldView != null)
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(oldView, true);
+
+		oldView = null;
 	}
 
 	public PresetManager(NonLinearWorld parent) {
