@@ -138,7 +138,7 @@ class MC {
 
   sendMC() {
     //// TODO:
-    if(Number(this.paramID) > 245)
+    if(Number(this.paramID) > 246)
       return;
 
     var scaled = this.paramValue.toFixed(3) / 100;
