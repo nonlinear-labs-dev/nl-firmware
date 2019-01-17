@@ -137,6 +137,10 @@ class MC {
   }
 
   sendMC() {
+    //// TODO:
+    if(Number(this.paramID) > 245)
+      return;
+
     var scaled = this.paramValue.toFixed(3) / 100;
     serverProxy.send("/presets/param-editor/set-mc", "?id="+this.paramID+"&value="+scaled);
   }
@@ -157,7 +161,7 @@ class MCModel {
   constructor() {
     this.mcs = [];
 
-    for(var i = 0; i < 4; i++) {
+    for(var i = 0; i < 6; i++) {
       this.mcs[i] = new MC(243 + i);
     }
     setInterval(this.update.bind(this), 20);
@@ -181,7 +185,7 @@ class MCModel {
 class RangeDivision {
   constructor() {
     this.controls = [{"ID":0,"x":0,   "y":0,    "w":0.5,  "h":0.5,  "type":"xy",  "MCX":243,  "MCY":244},
-                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.5,  "type":"none","MCX":null, "MCY":null},
+                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.5,  "type":"xy",  "MCX":247, "MCY":248},
                      {"ID":2,"x":0,   "y":0.5,  "w":1,    "h":0.25, "type":"x",   "MCX":245,  "MCY":null},
                      {"ID":3,"x":0,   "y":0.75, "w":1,    "h":0.25, "type":"x",   "MCX":246,  "MCY":null}];
 
@@ -235,19 +239,12 @@ class MCView {
 
   addEventsToElement(element) {
     element.addEventListener('touchstart', function(event) {
-
-      for (var i=0; i < event.changedTouches.length; i++) {
-        console.log("changedTouches[" + i + "].identifier = " + event.changedTouches[i].identifier);
-      }
-
       var found = false;
       var newTouches = [];
 
       for(var i = 0; i < event.changedTouches.length; i++) {
         var changedTouch = event.changedTouches[i];
         controller.touches.forEach(function(touch) {
-          console.log(touch);
-          console.log(changedTouch);
           if(touch.touch.identifier === changedTouch.identifier) {
             found = true;
           } else {
@@ -264,7 +261,6 @@ class MCView {
 
         if(!found) {
           var mc = view.getMCForTouch(currTouch);
-          console.log(mc);
           controller.touches.push({"touch":currTouch, "mc":mc});
           controller.onChange();
         }
@@ -494,9 +490,9 @@ function getUnicodeForMC(mcId) {
 		case 246:
 		return "\uE003";
 		case 247:
-		return "\u039B";
+		return "\uE200";
 		case 248:
-		return "\uE181";
+		return "\uE201";
 	}
 }
 
@@ -555,9 +551,7 @@ class MCController {
            input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding &&
             input.mc === division.MCX || input.mc === division.MCY && input.mc !== null) {
           activeInputs.push(input);
-          console.log("Adding Active Touch for Division X: " + division.MCX + " Y: " + division.MCY + " touch: " + input.mc);
         }
-
       }
 
       var inputCount = activeInputs.length;
@@ -567,10 +561,18 @@ class MCController {
 
       var x = (wD - dW) / 2;
       var y = (hD - dH) / 2;
+
       activeInputs.forEach(function(input) {
         x+=input.x;
         y+=input.y;
       });
+
+      //HUH?! TODO: Investigate
+      if(division.MCX === 247) {
+        x -= xD;
+        x += (dW - wD) / 2;
+      }
+
       if(inputCount > 0) {
         x /= inputCount;
         y /= inputCount;
