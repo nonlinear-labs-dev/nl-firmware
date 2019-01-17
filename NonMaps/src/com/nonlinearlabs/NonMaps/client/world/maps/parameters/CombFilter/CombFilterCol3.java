@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.CombFilter;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.KeyTrkLabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulateableKnob;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulationSourceHighPriority;
@@ -27,7 +26,7 @@ class CombFilterCol3 extends ParameterColumn {
 
 		private KeyTrk(MapsLayout parent) {
 			super(parent);
-			addChild(new KeyTrkLabelModulationSource(this, getName()));
+			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
 		}

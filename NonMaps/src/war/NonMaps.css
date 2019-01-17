@@ -1431,7 +1431,7 @@ canvas {
 }
 
 .dialog-header>.headline {
-  width: 100%;
+  width: 24em;
 }
 
 .dialog-caption>button:active {
@@ -1509,18 +1509,9 @@ textarea {
   line-height: 0.7em;
 }
 
-::selection {
-  background: #9DA8BF;
-  color: #000 text-shadow: none;
-}
-
-::-moz-selection {
-  background: #9DA8BF;
-  color: #000 text-shadow: none;
-}
-
 .flex-div {
   display: flex;
+  align-items:center;
 }
 
 .centered-text {
@@ -1612,8 +1603,13 @@ select[disabled='disabled'] {
 }
 
 .dialogContent textarea.editable {
-    min-height: 3em;
+    min-height: 4em;
     max-height: 10em;
+}
+
+.dialogContent textarea.editable.txt-oneline {
+    min-height: initial;
+    max-height: initial;
 }
 
 input.param-name-edit {
@@ -1793,6 +1789,12 @@ button {
   flex-grow: 1;
   border: none;
   border-bottom: 1px solid rgb(99, 99, 99);
+}
+
+.preset-info-dialog .dialogContent tr:nth-child(4) td:nth-child(2){
+  display: table-cell;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .preset-info-dialog .tab {

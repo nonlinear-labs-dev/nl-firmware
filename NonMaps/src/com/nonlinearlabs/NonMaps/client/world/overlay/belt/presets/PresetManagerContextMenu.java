@@ -1,12 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
@@ -25,7 +24,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 
 	public PresetManagerContextMenu(OverlayLayout parent) {
 		super(parent);
-		
+
 		addChild(new ContextMenuItem(this, "Create New Bank") {
 			@Override
 			public Control click(Position eventPoint) {
@@ -39,7 +38,8 @@ public class PresetManagerContextMenu extends ContextMenu {
 			addChild(new ContextMenuItem(this, "Paste") {
 				@Override
 				public Control click(Position eventPoint) {
-					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
+					NonPosition pos = getNonMaps().getNonLinearWorld()
+							.toNonPosition(getParent().getPixRect().getLeftTop());
 					getNonMaps().getServerProxy().pasteOnPresetManager(pos);
 					return super.click(eventPoint);
 				}
@@ -51,10 +51,11 @@ public class PresetManagerContextMenu extends ContextMenu {
 			public Control click(final Position eventPoint) {
 
 				new TextUpload((fileName, text) -> {
-					NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
+					NonPosition pos = getNonMaps().getNonLinearWorld()
+							.toNonPosition(getParent().getPixRect().getLeftTop());
 					NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
 				}, ".xml");
-        
+
 				return super.click(eventPoint);
 			}
 		});
@@ -71,8 +72,8 @@ public class PresetManagerContextMenu extends ContextMenu {
 		addChild(new ContextMenuItem(this, "Restore all Banks from Backup File ...") {
 			@Override
 			public Control click(Position eventPoint) {
-				boolean confirm = Window
-						.confirm("This will replace all current banks! Please save the banks with your work as files before restoring the backup.");
+				boolean confirm = Window.confirm(
+						"This will replace all current banks! Please save the banks with your work as files before restoring the backup.");
 
 				if (confirm == false) {
 					return null;
@@ -80,10 +81,10 @@ public class PresetManagerContextMenu extends ContextMenu {
 				final FileUpload upload = new FileUpload();
 				upload.setName("uploadFormElement");
 
-				if(!Navigator.getPlatform().toLowerCase().contains("mac")) {
+				if (!Navigator.getPlatform().toLowerCase().contains("mac")) {
 					upload.getElement().setAttribute("accept", ".xml.tar.gz");
 				}
-				
+
 				upload.addChangeHandler(new ChangeHandler() {
 
 					@Override
@@ -107,7 +108,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 		});
 
 		PresetManager pm = getNonMaps().getNonLinearWorld().getPresetManager();
-		
+
 		addChild(new ContextMenuItem(this, !pm.isInMoveAllBanks() ? "Move all Banks" : "Disable Move all Banks") {
 			@Override
 			public Control click(Position eventPoint) {
@@ -115,7 +116,30 @@ public class PresetManagerContextMenu extends ContextMenu {
 				return super.click(eventPoint);
 			}
 		});
-		
+
+		if (!pm.getBanks().isEmpty()) {
+
+			if (!pm.areAllBanksCollapsed()) {
+				addChild(new ContextMenuItem(this, "Collapse all Banks") {
+					@Override
+					public Control click(Position eventPoint) {
+						pm.setAllBanksCollapseState(true);
+						return super.click(eventPoint);
+					}
+				});
+			}
+
+			if (pm.isAnyBankCollapsed()) {
+				addChild(new ContextMenuItem(this, "Expand all Banks") {
+					@Override
+					public Control click(Position eventPoint) {
+						pm.setAllBanksCollapseState(false);
+						return super.click(eventPoint);
+					}
+				});
+			}
+		}
+
 		addChild(new ContextMenuItem(this, "Sort Bank Numbers") {
 			@Override
 			public Control click(Position eventPoint) {

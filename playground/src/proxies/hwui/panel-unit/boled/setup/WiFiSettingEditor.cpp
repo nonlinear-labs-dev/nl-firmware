@@ -2,23 +2,27 @@
 #include <Application.h>
 #include "WiFiSettingEditor.h"
 
-WiFiSettingEditor::WiFiSettingEditor() {
-    Application::get().getSettings()->getSetting<WifiSetting>()->onChange(
-            mem_fun(this, &WiFiSettingEditor::onSettingChanged));
+WiFiSettingEditor::WiFiSettingEditor()
+{
+  Application::get().getSettings()->getSetting<WifiSetting>()->onChange(
+      mem_fun(this, &WiFiSettingEditor::onSettingChanged));
 }
 
 WiFiSettingEditor::~WiFiSettingEditor() = default;
 
-void WiFiSettingEditor::incSetting(int inc) {
-    auto setting = Application::get().getSettings()->getSetting<WifiSetting>();
-    setting->inc(1, true);
+void WiFiSettingEditor::incSetting(int inc)
+{
+  auto setting = Application::get().getSettings()->getSetting<WifiSetting>();
+  setting->inc(1, true);
 }
 
-const vector<ustring> &WiFiSettingEditor::getDisplayStrings() const {
-    return Application::get().getSettings()->getSetting<WifiSetting>()->enumToDisplayString();
+const vector<ustring> &WiFiSettingEditor::getDisplayStrings() const
+{
+  return Application::get().getSettings()->getSetting<WifiSetting>()->enumToDisplayString();
 }
 
-int WiFiSettingEditor::getSelectedIndex() const {
-    auto enabled = Application::get().getSettings()->getSetting<WifiSetting>()->get();
-    return enabled ? 0 : 1;
+int WiFiSettingEditor::getSelectedIndex() const
+{
+  auto enabled = Application::get().getSettings()->getSetting<WifiSetting>()->get();
+  return enabled ? 0 : 1;
 }

@@ -150,7 +150,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		super.doFirstLayoutPass(levelOfDetail);
 
-		if (getParent().isMinimized()) {
+		if (getParent().isCollapsed()) {
 			if (!isSelected()) {
 				tag.getNonPosition().getDimension().setHeight(0);
 				number.getNonPosition().getDimension().setHeight(0);

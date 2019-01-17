@@ -2,6 +2,8 @@
 
 #include "playground.h"
 
+class Parameter;
+
 class ParameterDB
 {
  public:
@@ -17,6 +19,8 @@ class ParameterDB
   {
     return std::numeric_limits<tControlPositionValue>::max();
   }
+
+  bool isActive(const Parameter *p) const;
 
  private:
   ParameterDB();

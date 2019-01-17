@@ -55,8 +55,7 @@ size_t AppendOverwriteInsertButtonMenu::enumToIndex(PresetStoreModeSettings i) c
 
 bool AppendOverwriteInsertButtonMenu::animate()
 {
-  return m_parent.animateSelectedPreset(
-      [=]() { Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select); });
+  return m_parent.animateSelectedPreset([] { Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select); });
 }
 
 void AppendOverwriteInsertButtonMenu::executeAction()
