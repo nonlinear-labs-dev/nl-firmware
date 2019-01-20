@@ -20,7 +20,7 @@ class EditBuffer : public Preset
  public:
   static shared_ptr<EditBuffer> createEditBuffer(UpdateDocumentContributor *parent);
 
-  void setMacroControlValueFromMCView(int id, double value);
+  void setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid);
 
   void undoableClear(UNDO::Scope::tTransactionPtr transaction);
 

@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "MacroControlParameter.h"
 #include "ModulateableParameter.h"
 #include "PhysicalControlParameter.h"
@@ -14,6 +16,9 @@
 #include "ParameterAlgorithm.h"
 #include "RibbonParameter.h"
 #include <device-settings/DebugLevel.h>
+#include <Application.h>
+#include <tools/Throttler.h>
+#include "http/HTTPServer.h"
 
 static int lastSelectedMacroControl
     = MacroControlsGroup::modSrcToParamID(ModulateableParameter::ModulateableParameter::MC1);
@@ -21,12 +26,12 @@ static int lastSelectedMacroControl
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID())
+    , mcviewThrottler{Expiration::Duration(5)}
+    , m_lastMCViewUuid{"NONE"s}
 {
 }
 
-MacroControlParameter::~MacroControlParameter()
-{
-}
+MacroControlParameter::~MacroControlParameter() = default;
 
 void MacroControlParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
@@ -40,7 +45,7 @@ void MacroControlParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
 void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) const
 {
   Parameter::writeDifferences(writer, other);
-  MacroControlParameter *pOther = static_cast<MacroControlParameter *>(other);
+  auto *pOther = static_cast<MacroControlParameter *>(other);
 
   if(getGivenName() != pOther->getGivenName())
   {
@@ -75,6 +80,11 @@ void MacroControlParameter::applyAbsoluteLpcPhysicalControl(tControlPositionValu
   getValue().setRawValue(Initiator::EXPLICIT_LPC, v);
 }
 
+void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid)
+{
+  m_lastMCViewUuid = uuid;
+}
+
 void MacroControlParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                            tControlPositionValue newValue)
 {
@@ -90,6 +100,28 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
   if(initiator == Initiator::INDIRECT)
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
+
+  updateMCViewsFromMCChange(initiator);
+}
+
+void MacroControlParameter::updateMCViewsFromMCChange(const Initiator &initiator)
+{
+  mcviewThrottler.doTask([=]() { propagateMCChangeToMCViews(initiator); });
+}
+
+void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiatior)
+{
+  const auto idString = to_string(getID());
+  const auto valueD = getValue().getClippedValue();
+  const auto value = to_string(valueD);
+  const auto uuid = initiatior == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid.c_str() : "NONE"s;
+
+  if(valueD != lastBroadcastedControlPosition)
+  {
+    const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid);
+    Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
+    lastBroadcastedControlPosition = valueD;
+  }
 }
 
 void MacroControlParameter::updateBoundRibbon()
@@ -117,9 +149,9 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 {
   if(m_UiSelectedHardwareSourceParameterID != pos)
   {
-    ParameterGroupSet *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+    auto *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
 
-    if(auto old = grandPa->findParameterByID(m_UiSelectedHardwareSourceParameterID))
+    if(auto old = grandPa->findParameterByID(static_cast<size_t>(m_UiSelectedHardwareSourceParameterID)))
       old->onUnselected();
 
     m_UiSelectedHardwareSourceParameterID = pos;
@@ -321,4 +353,10 @@ int MacroControlParameter::getLastSelectedMacroControl()
 void MacroControlParameter::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator,
                                               double amount)
 {
+}
+
+void MacroControlParameter::setCPFromMCView(UNDO::Scope::tTransactionPtr transaction,
+                                            const tControlPositionValue &cpValue)
+{
+  setCpValue(std::move(transaction), Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }

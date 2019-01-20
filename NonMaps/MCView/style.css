@@ -1,20 +1,97 @@
-body {
-	margin: 0;
-	overflow: hidden;
+@font-face {
+  font-family: 'nonlinearfont';
+	font-style: normal;
+	font-weight: 400;
+  src: url('./SourceSansProLW25-Regular.otf');
+  unicode-range: U+E000-E201;
+}
+
+.collapsed {
+  display: none;
+}
+
+.full {
+  display: block;
+}
+
+html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(13, 13, 13, 1);
+  z-index: 200;
+  cursor: pointer;
+  position: fixed;
+  overflow: hidden;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+#close {
+  color: red;
+}
+
+#close:hover {
+  color: lightred;
+}
+
+.container {
+  display: inline-flex;
+}
+
+.setting-item {
+  background-color: rgb(100,100,100);
+  border-radius: 0.5;
+  border-style: solid;
+  border-width: thin;
+  border-color: white;
+  display: inline-flex;
+  width: 100%;
 }
 
 #canvas {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	margin-left: -8px;
-	margin-top: -8px;
-	margin-right: 0;
-	margin-bottom: 0;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  margin: -8px;
 }
 
-.inline-elements {
-	display: inline;
+#settings-burger {
+  width: 5%;
+  height: 100%;
+  background-color: black;
+  cursor: pointer;
+}
+
+#settings-burger:hover {
+  background-color: grey;
+}
+
+#settings-burger-content {
+  width: 5%;
+  background-color: green;
+}
+
+#interpolation-step-label #x-deadzone-label #y-deadzone-label {
+  color: white;
+  margin-left: 2%;
+}
+
+.step-range {
+  margin-top: 3%;
+  margin-bottom: 3%;
+  width: 30%;
 }
