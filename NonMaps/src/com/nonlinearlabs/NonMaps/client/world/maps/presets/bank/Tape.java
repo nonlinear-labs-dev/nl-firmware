@@ -97,11 +97,7 @@ public class Tape extends MapsControl {
 	}
 
 	private double measureDistance(Tape other) {
-		NonPosition myPos = getCompareablePosition(this);
-		NonPosition oPos = getCompareablePosition(other);
-	    double ac = Math.abs(oPos.getY() - myPos.getY());
-	    double cb = Math.abs(oPos.getX() - myPos.getX());
-	    return Math.hypot(ac, cb);
+	    return getCompareablePosition(this).distanceTo(getCompareablePosition(other));
 	}
 	
 	private boolean intersects(Tape otherTape) {
