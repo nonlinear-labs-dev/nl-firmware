@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
+import java.util.ArrayList;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -8,6 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsControl;
+import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonDimension;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
@@ -41,25 +43,83 @@ public class Tape extends MapsControl {
 	public boolean isVisible() {
 		return (isActiveEmptyTape() || isActiveInsertTape());
 	}
-
+	
 	private boolean isActiveEmptyTape() {
 		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
 
 		for (DragProxy d : o.getDragProxies()) {
 			Control r = d.getCurrentReceiver();
 			if (r != null) {
-
 				if (r instanceof PresetManager || r instanceof Tape) {
-					boolean visible = super.isVisible();
-					return visible && o.isCurrentlyDraggingATypeOf(Bank.class.getName())
-							&& getParent().isTapeActive(orientation);
+					return 	super.isVisible() && 
+							o.isCurrentlyDraggingATypeOf(Bank.class.getName()) &&
+							getParent().isTapeActive(orientation);
 				}
 			}
 		}
 
 		return false;
 	}
+	
+	static private NonPosition getCompareablePosition(MapsControl c) {
+		return c.getNonPositionRelativeToParent((MapsLayout)NonMaps.get().getNonLinearWorld().getPresetManager()).getCenterPoint();
+	}
 
+	private Tape getTopMostIntersectingTape(Tape other) {
+		
+		if(this.isOrientedHorizontal() || other.isOrientedHorizontal())
+			return this;
+		
+		ArrayList<Tape> tapesInQuestion = new ArrayList<>();
+		
+		for(Bank b: this.getParent().getParent().getBanks()) {
+			for(Tape t: b.getTapes()) {
+				if(!t.isOrientedHorizontal()) {
+					if(t.intersects(other)) {
+						tapesInQuestion.add(t);
+					}
+				}
+			}
+		}
+		
+		Tape currentTarget = this;
+		double shortestDistance = Double.MAX_VALUE;
+		
+		for(Tape tape: tapesInQuestion) {
+			double curr = tape.measureDistance(other);
+			if(shortestDistance > curr) {
+				shortestDistance = curr;
+				currentTarget = tape;
+			}
+		}
+		
+		return currentTarget;
+	}
+
+	private double measureDistance(Tape other) {
+		NonPosition myPos = getCompareablePosition(this);
+		NonPosition oPos = getCompareablePosition(other);
+	    double ac = Math.abs(oPos.getY() - myPos.getY());
+	    double cb = Math.abs(oPos.getX() - myPos.getX());
+	    return Math.hypot(ac, cb);
+	}
+	
+	private boolean intersects(Tape otherTape) {
+		
+		final Rect otherRect = createRect(otherTape);
+		final Rect myRect = createRect(this);
+		return myRect.intersects(otherRect);
+	}
+
+	private Rect createRect(Tape t) {
+		NonPosition p = getCompareablePosition(t);
+		return new Rect(p.getX(), p.getY(), t.getNonPosition().getWidth(), t.getNonPosition().getHeight());
+	}
+
+	public boolean isOrientedHorizontal() {
+		return orientation == Orientation.North || orientation == Orientation.South;
+	}
+	
 	private boolean isInsertTape() {
 		return getParent().hasSlaveInDirection(getOrientation());
 	}
@@ -192,7 +252,7 @@ public class Tape extends MapsControl {
 		if (!others.isVisible())
 			return false;
 
-		return isInvertedOrientation(others.orientation);
+		return isInvertedOrientation(others.orientation) && getTopMostIntersectingTape(others) == this;
 	}
 
 	private boolean isInvertedOrientation(Orientation other) {
