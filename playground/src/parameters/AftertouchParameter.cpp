@@ -2,7 +2,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/PlayControlParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-PhysicalControlParameter::ReturnMode AftertouchParameter::getReturnMode() const
+ReturnMode AftertouchParameter::getReturnMode() const
 {
   return ReturnMode::Zero;
 }

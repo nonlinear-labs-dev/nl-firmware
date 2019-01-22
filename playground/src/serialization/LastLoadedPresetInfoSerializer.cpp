@@ -5,13 +5,9 @@
 #include "xml/Reader.h"
 #include "xml/Writer.h"
 
-LastLoadedPresetInfoSerializer::LastLoadedPresetInfoSerializer(LastLoadedPresetInfo &info)
+LastLoadedPresetInfoSerializer::LastLoadedPresetInfoSerializer(EditBuffer *editBuffer)
     : Serializer(getTagName())
-    , m_info(info)
-{
-}
-
-LastLoadedPresetInfoSerializer::~LastLoadedPresetInfoSerializer()
+    , m_editBuffer(editBuffer)
 {
 }
 
@@ -22,22 +18,12 @@ Glib::ustring LastLoadedPresetInfoSerializer::getTagName()
 
 void LastLoadedPresetInfoSerializer::writeTagContent(Writer &writer) const
 {
-  writer.writeTextElement("loaded-preset", m_info.presetUUID);
-  writer.writeTextElement("loaded-bank", m_info.bankUUID);
-
-  writer.writeTextElement("loaded-presets-name", m_info.presetName);
-  writer.writeTextElement("loaded-presets-bank-name", m_info.bankName);
-
-  writer.writeTextElement("preset-was-deleted", to_string(m_info.presetDeleted));
+  writer.writeTextElement("loaded-preset", m_editBuffer->getUUIDOfLastLoadedPreset().raw());
+  writer.writeTextElement("loaded-presets-name", m_editBuffer->getName());
 }
 
 void LastLoadedPresetInfoSerializer::readTagContent(Reader &reader) const
 {
-  reader.loadTextElement("loaded-preset", m_info.presetUUID);
-  reader.loadTextElement("loaded-bank", m_info.bankUUID);
-
-  reader.loadTextElement("loaded-presets-name", m_info.presetName);
-  reader.loadTextElement("loaded-presets-bank-name", m_info.bankName);
-
-  reader.loadElement("preset-was-deleted", m_info.presetDeleted);
+  reader.onTextElement("loaded-preset", [&](auto txt, auto) { m_editBuffer->m_lastLoadedPreset = txt; });
+  reader.loadTextElement("loaded-presets-name", m_editBuffer->m_name);
 }

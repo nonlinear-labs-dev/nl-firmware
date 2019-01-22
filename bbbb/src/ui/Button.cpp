@@ -3,8 +3,8 @@
 #include <Application.h>
 #include <io/Bridges.h>
 
-Button::Button(int buttonId, const std::string &title) :
-    m_buttonId(buttonId)
+Button::Button(int buttonId, const std::string& title)
+    : m_buttonId(buttonId)
 {
   set_size_request(1, 1);
 

@@ -3,6 +3,7 @@
 
 RawValue::RawValue(const ScaleConverter *scale, tValueType def)
     : m_defaultValue(def)
+    , m_factoryDefaultValue(def)
     , m_scaleConverter(scale)
 {
   m_rawValue.resize(1, m_defaultValue);
@@ -65,6 +66,11 @@ RawValue::tValueType RawValue::getDefaultValue() const
   return m_defaultValue;
 }
 
+RawValue::tValueType RawValue::getFactoryDefaultValue() const
+{
+  return m_factoryDefaultValue;
+}
+
 void RawValue::setDefaultValue(tValueType defaultValue)
 {
   m_defaultValue = defaultValue;
@@ -94,7 +100,7 @@ void RawValue::onRawValueChanged(Initiator initiator, tValueType oldRawValue, tV
 {
 }
 
-void RawValue::undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetType oldType, PresetType desiredType)
+void RawValue::undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType)
 {
   if(oldType != desiredType)
   {

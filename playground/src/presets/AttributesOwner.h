@@ -1,40 +1,34 @@
 #pragma once
 
-#include <glibmm/ustring.h>
-#include <libundo/undo/Scope.h>
-#include <xml/Writer.h>
-#include <map>
+#include <http/UpdateDocumentContributor.h>
 
-class AttributesOwner
+namespace UNDO
+{
+  class Transaction;
+}
+
+class AttributesOwner : public UpdateDocumentContributor
 {
  public:
-  typedef std::map<Glib::ustring, Glib::ustring> tAttributes;
+  typedef std::map<std::string, std::string> tAttributes;
 
-  AttributesOwner();
-  virtual ~AttributesOwner();
+  AttributesOwner(UpdateDocumentContributor *parent);
+  AttributesOwner(UpdateDocumentContributor *parent, const AttributesOwner *other);
+  ~AttributesOwner() override;
 
-  virtual UpdateDocumentContributor::tUpdateID onChange(uint64_t flags
-                                                        = UpdateDocumentContributor::ChangeFlags::Generic)
-      = 0;
-
-  void setAttribute(const Glib::ustring &key, const Glib::ustring &value);
-  void undoableSetAttribute(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &key,
-                            const Glib::ustring &value);
-  void undoableClearAttributes(UNDO::Scope::tTransactionPtr transaction);
-
-  void copyFrom(UNDO::Scope::tTransactionPtr transaction, AttributesOwner *other);
-  size_t getHash() const;
-  bool doesAnyAttributeMatch(const Glib::ustring &part) const;
+  virtual void setAttribute(UNDO::Transaction *transaction, const std::string &key, const ustring &value);
+  virtual void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
+  virtual void clear(UNDO::Transaction *transaction);
 
   Glib::ustring getAttribute(const Glib::ustring &key, const Glib::ustring &def) const;
   const tAttributes &getAttributes() const;
-  void writeAttributes(Writer &writer) const;
+  size_t getHash() const;
 
-  static void registerTests();
+  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDiff(Writer &writer, const AttributesOwner *other) const;
 
  private:
-  static bool isHashTag(const Glib::ustring &str, size_t pos = Glib::ustring::npos);
-  static bool doesAttributeMatch(const Glib::ustring &attribute, const Glib::ustring &query);
-
   tAttributes m_attributes;
+
+  friend class AttributesOwnerSerializer;
 };

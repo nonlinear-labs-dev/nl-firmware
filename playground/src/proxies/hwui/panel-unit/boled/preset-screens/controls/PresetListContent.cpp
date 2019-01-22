@@ -1,7 +1,7 @@
 #include "PresetListContent.h"
 #include "PresetListEntry.h"
 #include "Application.h"
-#include "presets/PresetBank.h"
+#include <presets/Bank.h>
 #include "presets/PresetManager.h"
 #include "EmptyBankLabel.h"
 
@@ -24,14 +24,14 @@ bool PresetListContent::animateSelectedPreset(function<void()> cb)
   return false;
 }
 
-shared_ptr<Preset> PresetListContent::getPresetAtPosition(shared_ptr<PresetBank> bank, int pos) const
+Preset *PresetListContent::getPresetAtPosition(Bank *bank, int pos) const
 {
   if(pos >= 0 && pos < bank->getNumPresets())
-    return bank->getPreset(pos);
+    return bank->getPresetAt(pos);
   return nullptr;
 }
 
-void PresetListContent::setup(shared_ptr<PresetBank> bank, int focussedPresetPos)
+void PresetListContent::setup(Bank *bank, size_t focussedPresetPos)
 {
   if(bank && bank->getNumPresets())
   {

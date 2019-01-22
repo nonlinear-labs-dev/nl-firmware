@@ -12,5 +12,5 @@ class PositionInTreeLabel : public Label, public UndoTransactionClient
   PositionInTreeLabel(const Rect &pos);
   virtual ~PositionInTreeLabel();
 
-  virtual void assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected, bool current) override;
+  virtual void assignTransaction(UNDO::Transaction *transaction, bool selected, bool current) override;
 };

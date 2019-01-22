@@ -13,17 +13,17 @@ void PhysicalControlSlider::drawSliderBackground(FrameBuffer &fb)
 
     switch(returnMode)
     {
-      case PhysicalControlParameter::ReturnMode::Center:
+      case ReturnMode::Center:
         fb.setColor(FrameBuffer::Colors::C128);
         fb.fillRect(r.getCenter().getX() - centerMarkWidth / 2, r.getTop(), centerMarkWidth, r.getHeight());
         break;
 
-      case PhysicalControlParameter::ReturnMode::Zero:
+      case ReturnMode::Zero:
         fb.setColor(FrameBuffer::Colors::C128);
         fb.fillRect(r.getLeft(), r.getTop(), centerMarkWidth, r.getHeight());
         break;
 
-      case PhysicalControlParameter::ReturnMode::None:
+      case ReturnMode::None:
       default:
         break;
     }

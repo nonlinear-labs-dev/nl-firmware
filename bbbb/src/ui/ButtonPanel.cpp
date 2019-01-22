@@ -6,7 +6,7 @@ ButtonPanel::ButtonPanel(int firstButtonId)
 
 {
   for(int i = 0; i < 6; i++)
-    m_columns[i] =  new ButtonColumn(firstButtonId + (i*4));
+    m_columns[i] = new ButtonColumn(firstButtonId + (i * 4));
 
   set_margin_left(10);
   set_margin_right(10);
@@ -19,7 +19,7 @@ ButtonPanel::ButtonPanel(int firstButtonId)
 
 ButtonPanel::~ButtonPanel()
 {
-  for(auto b: m_columns)
+  for(auto b : m_columns)
     delete b;
 }
 

@@ -28,7 +28,7 @@ void SelectedMacroControlsHWSourceAmount::onParameterSelected(Parameter *newOne)
   m_mcChanged = newOne->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::onMCChanged));
 }
 
-shared_ptr<EditBuffer> SelectedMacroControlsHWSourceAmount::getEditBuffer()
+EditBuffer *SelectedMacroControlsHWSourceAmount::getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }

@@ -1,11 +1,6 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
-#include <tools/Throttler.h>
-
-class Application;
-class PresetBank;
-class Preset;
 
 class PresetLabel : public Label
 {
@@ -19,7 +14,7 @@ class PresetLabel : public Label
   void setText(const Glib::ustring &text, bool selected, bool loaded);
 
  protected:
-  void setFontColor(FrameBuffer &fb) const;
+  void setFontColor(FrameBuffer &fb) const override;
   bool showsLoadedPreset() const;
   bool showsSelectedPreset() const;
 

@@ -66,6 +66,6 @@ const std::pair<Glib::ustring, size_t> MiniParameterLabel::prepareDisplayString(
 {
   auto changed = p->isChangedFromLoaded();
   auto text = p->getMiniParameterEditorName() + (changed ? "*" : "");
-  short suffixLen = changed ? 1 : 0;
+  size_t suffixLen = changed ? 1 : 0;
   return std::make_pair(text, suffixLen);
 }

@@ -1,13 +1,12 @@
 #pragma once
 
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <proxies/hwui/controls/ControlWithChildren.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/Scrollable.h>
 #include <proxies/hwui/panel-unit/boled/InfoContent.h>
 
 class MultiLineLabel;
 class Label;
-class PresetBank;
 
 class BankInfoContent : public InfoContent
 {
@@ -24,10 +23,10 @@ class BankInfoContent : public InfoContent
 
  private:
   void onBankSelectionChanged();
-  void onBankChanged(shared_ptr<PresetBank> bank);
+  void onBankChanged(Bank *bank);
 
   void fixLayout();
-  bool fillFromBank(PresetBank *bank);
+  bool fillFromBank(Bank *bank);
   bool fillDefaults();
 
   sigc::connection m_bankConnection;

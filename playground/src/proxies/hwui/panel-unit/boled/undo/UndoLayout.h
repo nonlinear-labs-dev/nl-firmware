@@ -36,13 +36,12 @@ class UndoLayout : public DFBLayout
   bool canNext() const;
   bool canPrev() const;
 
-  shared_ptr<UNDO::Transaction> getTip() const;
-  shared_ptr<UNDO::Transaction> jumpForward(shared_ptr<UNDO::Transaction> tip, int inc);
-  shared_ptr<UNDO::Transaction> jumpBackward(shared_ptr<UNDO::Transaction> tip, int inc);
+  UNDO::Transaction *getTip() const;
+  UNDO::Transaction *jumpForward(UNDO::Transaction *tip, int inc);
+  UNDO::Transaction *jumpBackward(UNDO::Transaction *tip, int inc);
   void toggleEdit();
 
-  shared_ptr<UNDO::Transaction> m_tip;
-
+  UNDO::Transaction *m_tip = nullptr;
   UndoList *m_list = nullptr;
   Button *m_editButton = nullptr;
   Label *m_editMode = nullptr;

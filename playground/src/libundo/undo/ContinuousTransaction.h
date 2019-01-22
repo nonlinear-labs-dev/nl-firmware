@@ -21,8 +21,8 @@ namespace UNDO
     void *getID() const;
     void setIsNested();
 
-    void setClosingCommand(std::shared_ptr<UNDO::ContinuousTransaction> command);
-    std::shared_ptr<UNDO::ContinuousTransaction> getClosingCommand() const;
+    void setClosingCommand(std::unique_ptr<ContinuousTransaction> command);
+    UNDO::ContinuousTransaction *getClosingCommand() const;
 
    protected:
     virtual void implUndoAction() const;
@@ -32,9 +32,9 @@ namespace UNDO
     virtual void onImplRedoActionFinished() const;
 
    private:
-    void *m_id = NULL;
+    void *m_id = nullptr;
     steady_clock::time_point m_creationTimestamp;
-    std::shared_ptr<UNDO::ContinuousTransaction> m_closingCommand;
+    std::unique_ptr<ContinuousTransaction> m_closingCommand = nullptr;
     bool m_isNested = false;
   };
 

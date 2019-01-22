@@ -1,6 +1,6 @@
 #include <xml/BinaryReader.h>
 
-BinaryReader::BinaryReader(InStream &in, UNDO::Scope::tTransactionPtr transaction)
+BinaryReader::BinaryReader(InStream &in, UNDO::Transaction *transaction)
     : Reader(in, transaction)
 {
 }

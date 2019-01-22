@@ -11,10 +11,10 @@ class PresetList : public PresetListBase
   PresetList(const Rect &pos, bool showBankArrows);
   virtual ~PresetList();
 
-  virtual bool onButton(int i, bool down, ButtonModifiers modifiers) override;
+  virtual bool onButton(int i, bool down, ButtonModifiers) override;
   virtual void onRotary(int inc, ButtonModifiers modifiers) override;
 
-  std::pair<int, int> getSelectedPosition() const override;
+  std::pair<size_t, size_t> getSelectedPosition() const override;
 
  private:
   void onBankSelectionChanged();

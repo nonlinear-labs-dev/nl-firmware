@@ -5,6 +5,8 @@
 #include <memory>
 #include <list>
 
+class Writer;
+
 namespace UNDO
 {
   class Scope;
@@ -12,20 +14,18 @@ namespace UNDO
   class Transaction : public Command, public UpdateDocumentContributor
   {
    public:
-    typedef std::shared_ptr<Transaction> tTransactionPtr;
-
     Transaction(Scope &scope, const Glib::ustring &name, size_t depth);
-    virtual ~Transaction();
+    ~Transaction() override;
 
     static int getAndResetNumTransactions();
 
     Glib::ustring getName() const;
     void setName(const Glib::ustring &name);
 
-    void addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo);
-    void addSimpleCommand(ActionCommand::tAction doRedoUndo);
-
+    virtual void addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo);
+    virtual void addSimpleCommand(ActionCommand::tAction doRedoUndo);
     virtual void addCommand(tCommandPtr cmd);
+
     void close();
     void reopen();
     bool isClosed() const;
@@ -36,22 +36,24 @@ namespace UNDO
 
     bool hasSuccessors() const;
     size_t getNumSuccessors() const;
-    const tTransactionPtr getPredecessor() const;
-    void setPredecessor(tTransactionPtr predecessor);
-    const tTransactionPtr getSuccessor(size_t num) const;
-    void addSuccessor(tTransactionPtr successor);
-    void eraseSuccessor(tTransactionPtr successor);
+    Transaction *getPredecessor() const;
+    void setPredecessor(Transaction *predecessor);
+    Transaction *getSuccessor(size_t num) const;
+    void addSuccessor(std::unique_ptr<Transaction> successor);
+    void eraseSuccessor(Transaction *successor);
     void eraseSuccessor(const Transaction *successor);
+
+    std::unique_ptr<Transaction> exhaust(const Transaction *a);
 
     size_t getDepth() const;
 
-    void redoUntil(tTransactionPtr target);
-    void undoUntil(tTransactionPtr target);
+    void redoUntil(Transaction *target);
+    void undoUntil(Transaction *target);
 
-    void addChildren(std::list<tTransactionPtr> &list) const;
+    void addChildren(std::list<Transaction *> &list) const;
 
-    void setDefaultRedoRoute(tTransactionPtr route);
-    tTransactionPtr getDefaultRedoRoute() const;
+    void setDefaultRedoRoute(Transaction *route);
+    Transaction *getDefaultRedoRoute() const;
 
     bool isDefaultRouteLeft() const;
     bool isDefaultRouteRight() const;
@@ -62,6 +64,28 @@ namespace UNDO
 
     long traverseTree() const;
     void traverse(function<void(const Transaction *)> cb) const;
+
+    template <typename T> void addUndoSwap(UpdateDocumentContributor *c, T &target, const T &newValue)
+    {
+      if(target != newValue)
+      {
+        addSimpleCommand([c, &target, swap = UNDO::createSwapData(std::move(newValue))](auto) {
+          swap->swapWith(target);
+          c->onChange();
+        });
+      }
+    }
+
+    template <typename T> void addUndoSwap(UpdateDocumentContributor *c, T &target, T &&newValue)
+    {
+      if(target != newValue)
+      {
+        addSimpleCommand([c, &target, swap = UNDO::createSwapData(std::forward<T>(newValue))](auto) {
+          swap->swapWith(target);
+          c->onChange();
+        });
+      }
+    }
 
    protected:
     void implDoAction() const override;
@@ -77,16 +101,16 @@ namespace UNDO
     int getDirectionToDefaultRoute() const;
 
     typedef std::list<tCommandPtr> tCommandList;
-    typedef std::vector<tTransactionPtr> tSuccessors;
+    typedef std::vector<std::unique_ptr<Transaction>> tSuccessors;
 
     Scope &m_scope;
     Glib::ustring m_name;
     tCommandList m_commands;
     bool m_isClosed;
 
-    weak_ptr<Transaction> m_predecessor;
+    Transaction *m_predecessor = nullptr;
     tSuccessors m_successors;
-    tTransactionPtr m_defaultRedoRoute;
+    Transaction *m_defaultRedoRoute;
     tCommandList m_postfixCommands;
 
     size_t m_depth;

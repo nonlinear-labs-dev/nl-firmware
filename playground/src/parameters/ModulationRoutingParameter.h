@@ -26,7 +26,7 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   void applyLpcPhysicalControl(tControlPositionValue diff);
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
 
-  virtual void undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount) override;
+  virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
 
   tMCParameterPtr getTargetParameter() const;
   tSrcParameterPtr getSourceParameter() const;

@@ -155,12 +155,12 @@ template <typename TItemPtr> class IntrusiveList
       return *this;
     }
 
-    tItemPtr operator*()
+    tItemPtr &operator*()
     {
       return m_item;
     }
 
-    tItemPtr operator->()
+    tItemPtr &operator->()
     {
       return m_item;
     }
@@ -199,12 +199,12 @@ template <typename TItemPtr> class IntrusiveList
       return *this;
     }
 
-    const tItemPtr operator*()
+    const tItemPtr &operator*()
     {
       return m_item;
     }
 
-    const tItemPtr operator->()
+    const tItemPtr &operator->()
     {
       return m_item;
     }

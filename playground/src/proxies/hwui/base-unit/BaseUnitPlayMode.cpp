@@ -3,6 +3,7 @@
 #include "device-settings/Settings.h"
 #include "device-settings/BaseUnitUIMode.h"
 #include "proxies/lpc/LPCProxy.h"
+#include "groups/HardwareSourcesGroup.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include <parameters/RibbonParameter.h>

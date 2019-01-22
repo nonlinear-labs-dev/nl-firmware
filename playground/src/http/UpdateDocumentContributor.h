@@ -3,11 +3,11 @@
 #include "playground.h"
 #include <memory>
 #include "tools/IntrusiveList.h"
+#include <libundo/undo/SwapData.h>
 
 namespace UNDO
 {
   class Scope;
-  class Transaction;
 }
 
 class Writer;
@@ -40,8 +40,7 @@ class UpdateDocumentContributor : public IntrusiveListItem<UpdateDocumentContrib
 
   virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const = 0;
 
-  const UpdateDocumentContributor *getParent() const;
-  UpdateDocumentContributor *getParent();
+  UpdateDocumentContributor *getParent() const;
   UpdateDocumentMaster *getRoot();
   const UpdateDocumentMaster *getRoot() const;
 

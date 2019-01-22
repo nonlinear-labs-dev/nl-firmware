@@ -13,13 +13,13 @@ class UndoMenu : public ButtonMenu
   typedef ButtonMenu super;
 
  public:
-  UndoMenu(shared_ptr<UNDO::Transaction> tip, const Rect &r);
+  UndoMenu(UNDO::Transaction *tip, const Rect &r);
   virtual ~UndoMenu();
 
-  void assignTransaction(shared_ptr<UNDO::Transaction> tip);
+  void assignTransaction(UNDO::Transaction *tip);
 
  private:
   bool isParentOfCurrentUndo();
 
-  shared_ptr<UNDO::Transaction> m_tip;
+  UNDO::Transaction *m_tip = nullptr;
 };

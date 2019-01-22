@@ -7,7 +7,7 @@
 class BinaryReader : public Reader
 {
  public:
-  BinaryReader(InStream &in, UNDO::Scope::tTransactionPtr transaction);
+  BinaryReader(InStream &in, UNDO::Transaction *transaction);
   virtual ~BinaryReader();
 
  private:

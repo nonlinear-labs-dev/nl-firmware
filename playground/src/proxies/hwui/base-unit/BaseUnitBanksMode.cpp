@@ -9,14 +9,14 @@ void BaseUnitBanksMode::setup()
 
   setupButtonConnection(BUTTON_MINUS, [=](auto, auto, auto state) {
     if(state)
-      Application::get().getPresetManager()->undoableSelectPrevious();
+      Application::get().getPresetManager()->selectPreviousBank();
 
     return true;
   });
 
   setupButtonConnection(BUTTON_PLUS, [=](auto, auto, auto state) {
     if(state)
-      Application::get().getPresetManager()->undoableSelectNext();
+      Application::get().getPresetManager()->selectNextBank();
 
     return true;
   });

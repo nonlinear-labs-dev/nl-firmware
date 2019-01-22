@@ -9,7 +9,7 @@ PositionInTreeLabel::~PositionInTreeLabel()
 {
 }
 
-void PositionInTreeLabel::assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected, bool current)
+void PositionInTreeLabel::assignTransaction(UNDO::Transaction *transaction, bool selected, bool current)
 {
   int above = transaction->countPredecessors();
   int below = transaction->countSuccessorsOnDefaultRoute();

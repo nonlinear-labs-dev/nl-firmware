@@ -26,9 +26,9 @@
 #include <tools/PerformanceTimer.h>
 
 HWUI::HWUI()
-    : m_blinkCount(0)
+    : m_readersCancel(Gio::Cancellable::create())
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
-    , m_readersCancel(Gio::Cancellable::create())
+    , m_blinkCount(0)
 {
   m_buttonStates.fill(false);
 
@@ -475,7 +475,7 @@ bool HWUI::onBlinkTimeout()
   return true;
 }
 
-void HWUI::undoableSetFocusAndMode(UNDO::Scope::tTransactionPtr transaction, FocusAndMode focusAndMode)
+void HWUI::undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode focusAndMode)
 {
   if(Application::get().getPresetManager()->isLoading())
     return;

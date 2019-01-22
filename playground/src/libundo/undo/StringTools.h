@@ -1,7 +1,7 @@
 #pragma once
 
 #include <sstream>
-#include <glib.h>
+#include <glibmm.h>
 #include <stdlib.h>
 
 using namespace std;

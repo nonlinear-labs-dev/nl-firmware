@@ -11,9 +11,11 @@
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <xml/Writer.h>
-#include <presets/EditBuffer.h>
 #include <device-settings/DebugLevel.h>
 #include <cmath>
+#include <libundo/undo/Transaction.h>
+#include <presets/ParameterGroupSet.h>
+#include <presets/PresetParameter.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -22,31 +24,12 @@ void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContribut
   writer.writeTextElement("ribbon-return-mode", to_string(m_returnMode));
 }
 
-void RibbonParameter::writeDifferences(Writer &writer, Parameter *other) const
-{
-  Parameter::writeDifferences(writer, other);
-  RibbonParameter *pOther = static_cast<RibbonParameter *>(other);
-
-  if(getRibbonTouchBehaviour() != pOther->getRibbonTouchBehaviour())
-  {
-    writer.writeTextElement("behaviour", "", Attribute("a", getRibbonTouchBehaviour()),
-                            Attribute("b", pOther->getRibbonTouchBehaviour()));
-  }
-
-  if(getReturnMode() != pOther->getReturnMode())
-  {
-    writer.writeTextElement("return-mode", "", Attribute("a", (int) getReturnMode()),
-                            Attribute("b", (int) pOther->getReturnMode()));
-  }
-}
-
-void RibbonParameter::loadFromPreset(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &value)
+void RibbonParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   Parameter::loadFromPreset(transaction, value);
 }
 
-void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction,
-                                                      RibbonParameter::RibbonTouchBehaviour mode)
+void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode)
 {
   if(m_touchBehaviour != mode)
   {
@@ -100,36 +83,34 @@ tControlPositionValue RibbonParameter::getDefaultValueAccordingToMode() const
   return 0.0;
 }
 
-void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction,
-                                                      const Glib::ustring &mode)
+void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, const Glib::ustring &mode)
 {
   if(mode == "absolute")
-    undoableSetRibbonTouchBehaviour(transaction, RibbonParameter::ABSOLUTE);
+    undoableSetRibbonTouchBehaviour(transaction, RibbonTouchBehaviour::ABSOLUTE);
   else if(mode == "relative")
-    undoableSetRibbonTouchBehaviour(transaction, RibbonParameter::RELATIVE);
+    undoableSetRibbonTouchBehaviour(transaction, RibbonTouchBehaviour::RELATIVE);
 }
 
-void RibbonParameter::undoableIncRibbonTouchBehaviour(UNDO::Scope::tTransactionPtr transaction)
+void RibbonParameter::undoableIncRibbonTouchBehaviour(UNDO::Transaction *transaction)
 {
-  int e = (int) m_touchBehaviour;
+  auto e = static_cast<int>(m_touchBehaviour);
   e++;
 
-  if(e >= NUM_TOUCH_BEHAVIOURS)
+  if(e >= static_cast<int>(RibbonTouchBehaviour::NUM_TOUCH_BEHAVIOURS))
     e = 0;
 
-  undoableSetRibbonTouchBehaviour(transaction, (RibbonParameter::RibbonTouchBehaviour) e);
+  undoableSetRibbonTouchBehaviour(transaction, static_cast<RibbonTouchBehaviour>(e));
 }
 
-RibbonParameter::RibbonTouchBehaviour RibbonParameter::getRibbonTouchBehaviour() const
+RibbonTouchBehaviour RibbonParameter::getRibbonTouchBehaviour() const
 {
   return m_touchBehaviour;
 }
 
-void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction,
-                                                  RibbonParameter::RibbonReturnMode mode)
+void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode)
 {
-  if(mode != STAY && mode != RETURN)
-    mode = STAY;
+  if(mode != RibbonReturnMode::STAY && mode != RibbonReturnMode::RETURN)
+    mode = RibbonReturnMode::STAY;
 
   if(m_returnMode != mode)
   {
@@ -146,33 +127,33 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr t
   }
 }
 
-void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &mode)
+void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode)
 {
   if(mode == "stay")
-    undoableSetRibbonReturnMode(transaction, STAY);
+    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
   else if(mode == "return")
-    undoableSetRibbonReturnMode(transaction, RETURN);
+    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::RETURN);
 }
 
-RibbonParameter::RibbonReturnMode RibbonParameter::getRibbonReturnMode() const
+RibbonReturnMode RibbonParameter::getRibbonReturnMode() const
 {
   return m_returnMode;
 }
 
-void RibbonParameter::undoableIncRibbonReturnMode(UNDO::Scope::tTransactionPtr transaction)
+void RibbonParameter::undoableIncRibbonReturnMode(UNDO::Transaction *transaction)
 {
-  int e = (int) m_returnMode;
+  int e = static_cast<int>(m_returnMode);
   e++;
 
-  if(e >= NUM_RETURN_MODES)
+  if(e >= static_cast<int>(RibbonReturnMode::NUM_RETURN_MODES))
     e = 0;
 
-  undoableSetRibbonReturnMode(transaction, (RibbonParameter::RibbonReturnMode) e);
+  undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(e));
 }
 
-PhysicalControlParameter::ReturnMode RibbonParameter::getReturnMode() const
+ReturnMode RibbonParameter::getReturnMode() const
 {
-  if(m_returnMode == RibbonParameter::RETURN)
+  if(m_returnMode == RibbonReturnMode::RETURN)
     return ReturnMode::Center;
 
   return ReturnMode::None;
@@ -180,7 +161,7 @@ PhysicalControlParameter::ReturnMode RibbonParameter::getReturnMode() const
 
 void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 {
-  if(getRibbonReturnMode() == STAY)
+  if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
     ParameterGroupSet *groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
     auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
@@ -212,7 +193,7 @@ bool RibbonParameter::shouldWriteDocProperties(UpdateDocumentContributor::tUpdat
 
 const ScaleConverter *RibbonParameter::createScaleConverter() const
 {
-  if(m_returnMode == RETURN)
+  if(m_returnMode == RibbonReturnMode::RETURN)
     return ScaleConverter::get<LinearBipolar100PercentScaleConverter>();
 
   return ScaleConverter::get<Linear100PercentScaleConverter>();
@@ -226,34 +207,34 @@ void RibbonParameter::onPresetSentToLpc() const
 
 void RibbonParameter::sendModeToLpc() const
 {
-  if(getParentGroup()->getParent() == Application::get().getPresetManager()->getEditBuffer().get())
-  {
-    uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
-                                                                               : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
-    uint16_t v = 0;
+  uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
+                                                                             : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
+  uint16_t v = 0;
 
-    if(getRibbonReturnMode() == RibbonParameter::RibbonParameter::RETURN)
-      v += 1;
+  if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
+    v += 1;
 
-    if(getRibbonTouchBehaviour() == RibbonParameter::RELATIVE)
-      v += 2;
+  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+    v += 2;
 
-    Application::get().getLPCProxy()->sendSetting(id, v);
-  }
+  Application::get().getLPCProxy()->sendSetting(id, v);
 }
 
-void RibbonParameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other)
+void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   if(!isLocked())
   {
     super::copyFrom(transaction, other);
-
-    if(auto ribbon = dynamic_cast<RibbonParameter *>(other))
-    {
-      undoableSetRibbonReturnMode(transaction, ribbon->getRibbonReturnMode());
-      undoableSetRibbonTouchBehaviour(transaction, ribbon->getRibbonTouchBehaviour());
-    }
+    undoableSetRibbonReturnMode(transaction, other->getRibbonReturnMode());
+    undoableSetRibbonTouchBehaviour(transaction, other->getRibbonTouchBehaviour());
   }
+}
+
+void RibbonParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *other) const
+{
+  super::copyTo(transaction, other);
+  other->setField(transaction, PresetParameter::Fields::RibbonReturnMode, to_string(getRibbonReturnMode()));
+  other->setField(transaction, PresetParameter::Fields::RibbonTouchBehaviour, to_string(getRibbonTouchBehaviour()));
 }
 
 void RibbonParameter::boundToMacroControl(tControlPositionValue v)
@@ -272,13 +253,11 @@ Glib::ustring RibbonParameter::getCurrentBehavior() const
 {
   switch(m_returnMode)
   {
-    case STAY:
+    case RibbonReturnMode::STAY:
       return "Non-Return";
-      break;
 
-    case RETURN:
+    case RibbonReturnMode::RETURN:
       return "Return Center";
-      break;
 
     default:
       g_assert_not_reached();
@@ -288,17 +267,18 @@ Glib::ustring RibbonParameter::getCurrentBehavior() const
   throw std::logic_error("unknown ribbon return mode");
 }
 
-void RibbonParameter::undoableStepBehavior(UNDO::Scope::tTransactionPtr transaction, int direction)
+void RibbonParameter::undoableStepBehavior(UNDO::Transaction *transaction, int direction)
 {
-  int v = (int) m_returnMode + direction;
+  auto v = static_cast<int>(m_returnMode) + direction;
+  auto numModes = static_cast<int>(RibbonReturnMode::NUM_RETURN_MODES);
 
   while(v < 0)
-    v += NUM_RETURN_MODES;
+    v += numModes;
 
-  while(v >= NUM_RETURN_MODES)
-    v -= NUM_RETURN_MODES;
+  while(v >= numModes)
+    v -= numModes;
 
-  undoableSetRibbonReturnMode(transaction, (RibbonParameter::RibbonReturnMode)(v));
+  undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(v));
 }
 
 DFBLayout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
@@ -319,7 +299,7 @@ DFBLayout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
   g_return_val_if_reached(nullptr);
 }
 
-void RibbonParameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)
+void RibbonParameter::loadDefault(UNDO::Transaction *transaction)
 {
   super::loadDefault(transaction);
   undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);

@@ -1,8 +1,8 @@
 #include <io/files/FileIOReceiver.h>
 
-FileIOReceiver::FileIOReceiver(const char *path, size_t blockSize) :
-    m_cancel(Gio::Cancellable::create()),
-    m_blockSize(blockSize)
+FileIOReceiver::FileIOReceiver(const char *path, size_t blockSize)
+    : m_cancel(Gio::Cancellable::create())
+    , m_blockSize(blockSize)
 {
   TRACE("open file for reading: " << path);
   auto file = Gio::File::create_for_path(path);
@@ -33,18 +33,18 @@ void FileIOReceiver::setBlockSize(size_t blockSize)
 
 void FileIOReceiver::readStream(Glib::RefPtr<Gio::InputStream> stream)
 {
-  auto avail = Glib::RefPtr<Gio::BufferedInputStream>::cast_dynamic (stream)->get_available ();
+  auto avail = Glib::RefPtr<Gio::BufferedInputStream>::cast_dynamic(stream)->get_available();
 
-  if (avail >= m_blockSize)
+  if(avail >= m_blockSize)
   {
-    auto bytes = stream->read_bytes (m_blockSize, m_cancel);
+    auto bytes = stream->read_bytes(m_blockSize, m_cancel);
     onDataReceived(bytes);
     readStream(stream);
   }
   else
   {
-    stream->read_bytes_async (m_blockSize, sigc::bind (sigc::mem_fun (this, &FileIOReceiver::onStreamRead), stream), m_cancel,
-        Glib::PRIORITY_HIGH);
+    stream->read_bytes_async(m_blockSize, sigc::bind(sigc::mem_fun(this, &FileIOReceiver::onStreamRead), stream),
+                             m_cancel, Glib::PRIORITY_HIGH);
   }
 }
 

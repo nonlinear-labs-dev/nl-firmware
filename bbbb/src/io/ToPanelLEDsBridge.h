@@ -4,11 +4,9 @@
 
 class ToPanelLEDsBridge : public Bridge
 {
-    using super = Bridge;
+  using super = Bridge;
 
-  public:
-    ToPanelLEDsBridge();
-    virtual ~ToPanelLEDsBridge();
-
+ public:
+  ToPanelLEDsBridge();
+  virtual ~ToPanelLEDsBridge();
 };
-

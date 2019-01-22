@@ -18,8 +18,4 @@ class DotSlider : public Slider
   virtual void drawSliderBackground(FrameBuffer &fb);
   virtual void drawHandle(FrameBuffer &fb);
   int getHandlePixelPosition();
-
- private:
-  DotSlider(const DotSlider &other);
-  DotSlider &operator=(const DotSlider &);
 };

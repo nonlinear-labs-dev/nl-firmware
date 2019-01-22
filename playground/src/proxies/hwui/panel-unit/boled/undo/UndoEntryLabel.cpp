@@ -9,7 +9,7 @@ UndoEntryLabel::~UndoEntryLabel()
 {
 }
 
-void UndoEntryLabel::assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected, bool current)
+void UndoEntryLabel::assignTransaction(UNDO::Transaction *transaction, bool selected, bool current)
 {
   setHighlight(current);
 }

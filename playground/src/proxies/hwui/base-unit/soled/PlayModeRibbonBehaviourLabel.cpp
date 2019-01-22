@@ -21,11 +21,11 @@ void PlayModeRibbonBehaviourLabel::updateText(const Parameter *s)
   {
     switch(ribbonParameter->getRibbonTouchBehaviour())
     {
-      case RibbonParameter::ABSOLUTE:
+      case RibbonTouchBehaviour::ABSOLUTE:
         setText("a");
         break;
 
-      case RibbonParameter::RELATIVE:
+      case RibbonTouchBehaviour::RELATIVE:
         setText("r");
         break;
 
@@ -36,7 +36,7 @@ void PlayModeRibbonBehaviourLabel::updateText(const Parameter *s)
   }
 }
 
-shared_ptr<EditBuffer> PlayModeRibbonBehaviourLabel::getEditBuffer() const
+EditBuffer *PlayModeRibbonBehaviourLabel::getEditBuffer() const
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }

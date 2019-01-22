@@ -16,7 +16,7 @@ UndoList::~UndoList()
 {
 }
 
-void UndoList::assignTransactions(shared_ptr<UNDO::Transaction> tip)
+void UndoList::assignTransactions(UNDO::Transaction *tip)
 {
   auto current = Application::get().getUndoScope()->getUndoTransaction();
   auto walker = tip;

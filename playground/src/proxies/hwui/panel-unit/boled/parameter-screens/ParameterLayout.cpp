@@ -11,6 +11,7 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <presets/PresetParameter.h>
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
@@ -248,12 +249,19 @@ ParameterRecallLayout2::ParameterRecallLayout2()
     if(auto originalParam = p->getOriginalParameter())
     {
       if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-        m_slider = addControl(new StaticKnubbelSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        m_slider = addControl(new StaticKnubbelSlider(originalParam->getValue(), p->isBiPolar(),
+                                                      Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
       else
-        m_slider = addControl(new StaticBarSlider(originalParam, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        m_slider = addControl(new StaticBarSlider(originalParam->getValue(), p->isBiPolar(),
+                                                  Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
 
       m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
-      m_rightValue = addControl(new Label(originalParam->getDisplayString(), Rect(131, 35, 58, 11)));
+
+      auto sc = p->getValue().getScaleConverter();
+      auto displayValue = sc->controlPositionToDisplay(originalParam->getValue());
+      auto displayString = sc->getDimension().stringize(displayValue);
+
+      m_rightValue = addControl(new Label(displayString, Rect(131, 35, 58, 11)));
     }
   }
 
@@ -315,7 +323,7 @@ void ParameterRecallLayout2::doRecall()
     {
       m_recallString = curr->getDisplayString();
       m_recallValue = curr->getControlPositionValue();
-      curr->setCPFromHwui(transaction, original->getControlPositionValue());
+      curr->setCPFromHwui(transaction, original->getValue());
       updateUI(true);
     }
   }
@@ -359,7 +367,10 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
       }
       else
       {
-        m_leftValue->setText(originalParam->getDisplayString());
+        auto sc = p->getValue().getScaleConverter();
+        auto displayValue = sc->controlPositionToDisplay(originalParam->getValue());
+        auto displayString = sc->getDimension().stringize(displayValue);
+        m_leftValue->setText(displayString);
         m_rightValue->setText(p->getDisplayString());
         m_slider->setValue(m_recallValue, p->isBiPolar());
         m_leftValue->setHighlight(false);

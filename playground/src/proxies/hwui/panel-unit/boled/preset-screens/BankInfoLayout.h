@@ -2,7 +2,7 @@
 
 #include <proxies/hwui/panel-unit/boled/parameter-screens/InfoLayout.h>
 
-class PresetBank;
+class Bank;
 
 class BankInfoLayout : public InfoLayout
 {
@@ -21,6 +21,6 @@ class BankInfoLayout : public InfoLayout
   virtual void addInfoLabel() override;
   virtual Scrollable* createScrollableContent() override;
 
-  void onBankChanged(shared_ptr<PresetBank> bank);
+  void onBankChanged(Bank* bank);
   void onPresetSelectionChanged();
 };

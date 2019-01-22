@@ -1,12 +1,13 @@
 #include "BankChangeBlocker.h"
+#include <presets/Bank.h>
 
-BankChangeBlocker::BankChangeBlocker(std::shared_ptr<PresetBank> bank)
+BankChangeBlocker::BankChangeBlocker(Bank *bank)
     : m_bank(bank)
 {
-  m_bank->addChangeBlocker(this);
+  m_bank->addChangeBlocker();
 }
 
 BankChangeBlocker::~BankChangeBlocker()
 {
-  m_bank->removeChangeBlocker(this);
+  m_bank->removeChangeBlocker();
 }

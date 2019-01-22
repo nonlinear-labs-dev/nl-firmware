@@ -14,7 +14,7 @@ class UndoScope : public UNDO::Scope
   sigc::connection onUndoScopeChanged(slot<void> cb);
 
  protected:
-  virtual void onAddTransaction(tTransactionPtr transaction);
+  virtual void onAddTransaction(UNDO::Transaction *transaction);
 
  private:
   Signal<void> m_sigUndoScopeChanged;

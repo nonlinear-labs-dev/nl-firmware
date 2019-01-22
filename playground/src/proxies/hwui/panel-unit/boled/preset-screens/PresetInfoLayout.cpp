@@ -3,12 +3,16 @@
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/HWUIEnums.h>
+#include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/InfoLabel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetInfoCaption.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetInfoContent.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNameHeadlineLabel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/EditPresetInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetInfoLayout.h>
+#include <proxies/hwui/panel-unit/EditPanel.h>
+#include <proxies/hwui/panel-unit/PanelUnit.h>
 
 PresetInfoLayout::PresetInfoLayout()
     : super()

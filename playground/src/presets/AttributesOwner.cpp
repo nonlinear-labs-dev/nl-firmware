@@ -1,79 +1,20 @@
-#include <libundo/undo/Command.h>
-#include <libundo/undo/SwapData.h>
-#include <playground.h>
-#include <presets/AttributesOwner.h>
-#include <testing/TestDriver.h>
-#include <xml/Attribute.h>
-#include <utility>
+#include "AttributesOwner.h"
+#include <libundo/undo/Transaction.h>
+#include <xml/Writer.h>
+#include <unordered_set>
 
-static TestDriver<AttributesOwner> attributesOwnerTests;
-
-AttributesOwner::AttributesOwner()
+AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent)
+    : UpdateDocumentContributor(parent)
 {
 }
 
-AttributesOwner::~AttributesOwner()
+AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent, const AttributesOwner *other)
+    : AttributesOwner(parent)
 {
+  m_attributes = other->m_attributes;
 }
 
-const AttributesOwner::tAttributes &AttributesOwner::getAttributes() const
-{
-  return m_attributes;
-}
-
-void AttributesOwner::setAttribute(const Glib::ustring &key, const Glib::ustring &value)
-{
-  m_attributes[key] = value;
-  onChange();
-}
-
-void AttributesOwner::undoableSetAttribute(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &key,
-                                           const Glib::ustring &value)
-{
-  auto swapData = UNDO::createSwapData(value);
-
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    Glib::ustring curValue = getAttribute(key, "");
-    swapData->swapWith(curValue);
-
-    if(curValue.empty())
-      m_attributes.erase(key);
-    else
-      m_attributes[key] = curValue;
-
-    onChange();
-  });
-}
-
-void AttributesOwner::undoableClearAttributes(UNDO::Scope::tTransactionPtr transaction)
-{
-  auto swapData = UNDO::createSwapData(tAttributes());
-
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    swapData->swapWith(m_attributes);
-    onChange();
-  });
-}
-
-Glib::ustring AttributesOwner::getAttribute(const Glib::ustring &key, const Glib::ustring &def) const
-{
-  auto it = m_attributes.find(key);
-
-  if(it != m_attributes.end())
-    return it->second;
-
-  return def;
-}
-
-void AttributesOwner::copyFrom(UNDO::Scope::tTransactionPtr transaction, AttributesOwner *other)
-{
-  auto swapData = UNDO::createSwapData(other->m_attributes);
-
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    swapData->swapWith<0>(m_attributes);
-    onChange();
-  });
-}
+AttributesOwner::~AttributesOwner() = default;
 
 size_t AttributesOwner::getHash() const
 {
@@ -88,125 +29,75 @@ size_t AttributesOwner::getHash() const
   return hash;
 }
 
-bool AttributesOwner::doesAnyAttributeMatch(const Glib::ustring &part) const
+void AttributesOwner::setAttribute(UNDO::Transaction *transaction, const std::string &key, const Glib::ustring &value)
 {
-  for(auto &a : m_attributes)
-  {
-    if(doesAttributeMatch(a.second, part))
-    {
-      return true;
-    }
-  }
-  return false;
+  auto swapData = UNDO::createSwapData(value);
+
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    auto curValue = getAttribute(key, "");
+    swapData->swapWith(curValue);
+
+    if(curValue.empty())
+      m_attributes.erase(key);
+    else
+      m_attributes[key] = curValue;
+
+    onChange();
+  });
 }
 
-bool AttributesOwner::doesAttributeMatch(const Glib::ustring &attribute, const Glib::ustring &query)
+void AttributesOwner::copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other)
 {
-  auto lower = attribute.lowercase();
-  auto pos = lower.find(query);
+  clear(transaction);
 
-  if(pos != Glib::ustring::npos)
-  {
-    if(isHashTag(query))
-    {
-      return true;
-    }
-
-    if(!isHashTag(lower, pos))
-    {
-      return true;
-    }
-  }
-
-  return false;
+  for(auto &a : other->m_attributes)
+    setAttribute(transaction, a.first, a.second);
 }
 
-bool AttributesOwner::isHashTag(const Glib::ustring &str, size_t pos)
+void AttributesOwner::clear(UNDO::Transaction *transaction)
 {
-  auto whiteSpacePos = str.rfind(' ', pos);
-  auto hashTagPosition = 0;
-
-  if(whiteSpacePos == Glib::ustring::npos)
-  {
-    return str[0] == '#';
-  }
-  else if(whiteSpacePos == pos)
-  {
-    return false;
-  }
-  else
-  {
-    return str[whiteSpacePos + 1] == '#';
-  }
+  transaction->addUndoSwap(this, m_attributes, tAttributes());
 }
 
-void AttributesOwner::writeAttributes(Writer &writer) const
+Glib::ustring AttributesOwner::getAttribute(const Glib::ustring &key, const Glib::ustring &def) const
 {
-  for(auto &it : getAttributes())
+  auto it = m_attributes.find(key);
+
+  if(it != m_attributes.end())
+    return it->second;
+
+  return def;
+}
+
+const AttributesOwner::tAttributes &AttributesOwner::getAttributes() const
+{
+  return m_attributes;
+}
+
+void AttributesOwner::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  for(auto &it : m_attributes)
     writer.writeTextElement("attribute", it.second, Attribute("key", it.first));
 }
 
-void AttributesOwner::registerTests()
+void AttributesOwner::writeDiff(Writer &writer, const AttributesOwner *other) const
 {
-  g_test_add_func("/AttributesOwner/isHashTag", []() {
-    g_assert_true(AttributesOwner::isHashTag("#abc"));
-    g_assert_true(AttributesOwner::isHashTag("#a"));
-    g_assert_true(AttributesOwner::isHashTag("#"));
-    g_assert_true(AttributesOwner::isHashTag(" #abc"));
-    g_assert_true(AttributesOwner::isHashTag(" #a"));
+  std::unordered_set<std::string> keys;
 
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 0));
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 1));
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 2));
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 3));
+  for(auto &a : m_attributes)
+    keys.insert(a.first);
 
-    g_assert_true(AttributesOwner::isHashTag("def #abc ghi", 4));
-    g_assert_true(AttributesOwner::isHashTag("def #abc ghi", 5));
-    g_assert_true(AttributesOwner::isHashTag("def #abc ghi", 6));
-    g_assert_true(AttributesOwner::isHashTag("def #abc ghi", 7));
+  for(auto &a : other->m_attributes)
+    keys.insert(a.first);
 
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 8));
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 9));
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 10));
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 11));
+  for(auto key : keys)
+  {
+    auto va = getAttribute(key, "");
+    auto vb = other->getAttribute(key, "");
 
-    g_assert_false(AttributesOwner::isHashTag("def #abc ghi", 100));
-    g_assert_false(AttributesOwner::isHashTag(" abc"));
-    g_assert_false(AttributesOwner::isHashTag(""));
-    g_assert_false(AttributesOwner::isHashTag(" # abc"));
-
-    g_assert_true(AttributesOwner::isHashTag(" ags uyr j #abc", 11));
-    g_assert_true(AttributesOwner::isHashTag(" ags uyr j #a", 11));
-    g_assert_true(AttributesOwner::isHashTag(" ags uyr j #", 11));
-
-    g_assert_false(AttributesOwner::isHashTag(" ags uyr j  #a ", 11));
-    g_assert_false(AttributesOwner::isHashTag(" ags uyr j  #abc", 11));
-    g_assert_false(AttributesOwner::isHashTag(" ags uyr j  abc", 11));
-    g_assert_false(AttributesOwner::isHashTag(" ags uyr j ", 11));
-    g_assert_false(AttributesOwner::isHashTag(" ags uyr j  # abc", 11));
-  });
-
-  g_test_add_func("/AttributesOwner/doesAttributeMatch", []() {
-    g_assert_false(AttributesOwner::doesAttributeMatch("eins zwei drei", "#eins"));
-    g_assert_false(AttributesOwner::doesAttributeMatch("eins zwei drei", "#zwei"));
-    g_assert_false(AttributesOwner::doesAttributeMatch("eins zwei drei", "#drei"));
-
-    g_assert_true(AttributesOwner::doesAttributeMatch("eins zwei drei", "eins"));
-    g_assert_true(AttributesOwner::doesAttributeMatch("eins zwei drei", "zwei"));
-    g_assert_true(AttributesOwner::doesAttributeMatch("eins zwei drei", "drei"));
-
-    g_assert_true(AttributesOwner::doesAttributeMatch("#eins zwei drei", "#eins"));
-    g_assert_false(AttributesOwner::doesAttributeMatch("#eins zwei drei", "#zwei"));
-    g_assert_false(AttributesOwner::doesAttributeMatch("#eins zwei drei", "#drei"));
-    g_assert_true(AttributesOwner::doesAttributeMatch("#eins zwei drei", "zwei"));
-    g_assert_true(AttributesOwner::doesAttributeMatch("#eins zwei drei", "drei"));
-
-    g_assert_false(AttributesOwner::doesAttributeMatch("eins #zwei drei", "#eins"));
-    g_assert_true(AttributesOwner::doesAttributeMatch("eins #zwei drei", "#zwei"));
-    g_assert_false(AttributesOwner::doesAttributeMatch("eins #zwei drei", "#drei"));
-
-    g_assert_false(AttributesOwner::doesAttributeMatch("eins zwei #drei", "#eins"));
-    g_assert_false(AttributesOwner::doesAttributeMatch("eins zwei #drei", "#zwei"));
-    g_assert_true(AttributesOwner::doesAttributeMatch("eins zwei #drei", "#drei"));
-  });
+    if(va != vb)
+    {
+      writer.writeTextElement(key, "", Attribute("a", va), Attribute("b", vb));
+    }
+  }
 }

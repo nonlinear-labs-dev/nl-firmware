@@ -249,7 +249,7 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(gint3
 
 bool PanelUnitParameterEditMode::toggleParameterSelection(const vector<gint32> ids, bool state)
 {
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto firstParameterInList = editBuffer->findParameterByID(ids.front());
 
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
@@ -403,7 +403,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
   m_connectionToMacroControl.disconnect();
 
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   if(Parameter *selParam = editBuffer->getSelected())
   {
@@ -527,7 +527,7 @@ void PanelUnitParameterEditMode::setLedStates(const tLedStates &states)
 void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
 {
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
-  shared_ptr<EditBuffer> editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   Parameter *selParam = editBuffer->getSelected();
 
   if(auto mc = dynamic_cast<MacroControlParameter *>(selParam))

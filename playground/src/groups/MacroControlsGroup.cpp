@@ -28,20 +28,20 @@ void MacroControlsGroup::init()
       new Parameter(this, 327, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
 }
 
-uint16_t MacroControlsGroup::modSrcToParamID(ModulateableParameter::ModulationSource src)
+uint16_t MacroControlsGroup::modSrcToParamID(ModulationSource src)
 {
   switch(src)
   {
-    case ModulateableParameter::MC1:
+    case ModulationSource::MC1:
       return 243;
 
-    case ModulateableParameter::MC2:
+    case ModulationSource::MC2:
       return 244;
 
-    case ModulateableParameter::MC3:
+    case ModulationSource::MC3:
       return 245;
 
-    case ModulateableParameter::MC4:
+    case ModulationSource::MC4:
       return 246;
 
     default:
@@ -49,23 +49,23 @@ uint16_t MacroControlsGroup::modSrcToParamID(ModulateableParameter::ModulationSo
   }
 }
 
-ModulateableParameter::ModulationSource MacroControlsGroup::paramIDToModSrc(uint16_t pid)
+ModulationSource MacroControlsGroup::paramIDToModSrc(uint16_t pid)
 {
   switch(pid)
   {
     case 243:
-      return ModulateableParameter::MC1;
+      return ModulationSource::MC1;
 
     case 244:
-      return ModulateableParameter::MC2;
+      return ModulationSource::MC2;
 
     case 245:
-      return ModulateableParameter::MC3;
+      return ModulationSource::MC3;
 
     case 246:
-      return ModulateableParameter::MC4;
+      return ModulationSource::MC4;
 
     default:
-      return ModulateableParameter::NONE;
+      return ModulationSource::NONE;
   }
 }

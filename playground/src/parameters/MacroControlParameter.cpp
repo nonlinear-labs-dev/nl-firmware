@@ -19,9 +19,10 @@
 #include <Application.h>
 #include <tools/Throttler.h>
 #include "http/HTTPServer.h"
+#include <libundo/undo/Transaction.h>
+#include <presets/PresetParameter.h>
 
-static int lastSelectedMacroControl
-    = MacroControlsGroup::modSrcToParamID(ModulateableParameter::ModulateableParameter::MC1);
+static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(ModulationSource::MC1);
 
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
@@ -57,6 +58,7 @@ void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) c
     writer.writeTextElement("info", "", Attribute("a", "changed"), Attribute("b", "changed"));
   }
 }
+
 
 void MacroControlParameter::registerTarget(ModulateableParameter *target)
 {
@@ -136,7 +138,7 @@ void MacroControlParameter::updateBoundRibbon()
     {
       if(router->getControlPositionValue() > 0)
       {
-        if(ribbon->getRibbonReturnMode() == RibbonParameter::STAY)
+        if(ribbon->getRibbonReturnMode() == RibbonReturnMode::STAY)
         {
           ribbon->boundToMacroControl(getControlPositionValue());
         }
@@ -183,7 +185,7 @@ void MacroControlParameter::undoableSetGivenName(const Glib::ustring &newName)
   }
 }
 
-void MacroControlParameter::undoableSetGivenName(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &newName)
+void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction, const Glib::ustring &newName)
 {
   if(m_givenName != newName)
   {
@@ -207,7 +209,7 @@ void MacroControlParameter::undoableSetInfo(const Glib::ustring &info)
   }
 }
 
-void MacroControlParameter::undoableSetInfo(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &info)
+void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &info)
 {
   if(m_info != info)
   {
@@ -227,32 +229,35 @@ void MacroControlParameter::undoableResetConnectionsToTargets()
   while(!m_targets.empty())
   {
     auto p = *m_targets.begin();
-    p->undoableSelectModSource(scope->getTransaction(), 0);
+    p->undoableSelectModSource(scope->getTransaction(), ModulationSource::NONE);
     p->undoableSetModAmount(scope->getTransaction(), 0);
   }
 }
 
-void MacroControlParameter::loadDefault(UNDO::Scope::tTransactionPtr transaction)
+void MacroControlParameter::loadDefault(UNDO::Transaction *transaction)
 {
   super::loadDefault(transaction);
   undoableSetGivenName(transaction, "");
   undoableSetInfo(transaction, "");
 }
 
-void MacroControlParameter::copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other)
+void MacroControlParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   if(!isLocked())
   {
     super::copyFrom(transaction, other);
-
-    if(auto otherMCP = dynamic_cast<MacroControlParameter *>(other))
-    {
-      undoableSetGivenName(transaction, otherMCP->getGivenName());
-      undoableSetInfo(transaction, otherMCP->getInfo());
-    }
+    undoableSetGivenName(transaction, other->getGivenName());
+    undoableSetInfo(transaction, other->getInfo());
 
     transaction->addPostfixCommand([=](UNDO::Command::State) mutable { updateBoundRibbon(); });
   }
+}
+
+void MacroControlParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *other) const
+{
+  super::copyTo(transaction, other);
+  other->setField(transaction, PresetParameter::Fields::GivenName, getGivenName());
+  other->setField(transaction, PresetParameter::Fields::Info, getInfo());
 }
 
 const Glib::ustring &MacroControlParameter::getGivenName() const
@@ -350,13 +355,12 @@ int MacroControlParameter::getLastSelectedMacroControl()
   return lastSelectedMacroControl;
 }
 
-void MacroControlParameter::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator,
-                                              double amount)
+void MacroControlParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
 }
 
-void MacroControlParameter::setCPFromMCView(UNDO::Scope::tTransactionPtr transaction,
+void MacroControlParameter::setCPFromMCView(UNDO::Transaction* transaction,
                                             const tControlPositionValue &cpValue)
 {
-  setCpValue(std::move(transaction), Initiator::EXPLICIT_MCVIEW, cpValue, true);
+  setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }

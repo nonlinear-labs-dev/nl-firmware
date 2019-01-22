@@ -13,10 +13,10 @@ class PresetListHeader : public ControlWithChildren
   PresetListHeader(const Rect &pos, bool showBankArrows);
   virtual ~PresetListHeader();
 
-  void setup(shared_ptr<PresetBank> bank);
+  void setup(Bank *bank);
 
  private:
-  void setupWithArrows(shared_ptr<PresetBank> bank);
+  void setupWithArrows(Bank *bank);
 
   bool m_showBankArrows;
 };

@@ -91,7 +91,7 @@ void FileDialogLayout::overlayInfo()
   bol.setOverlay(new FileDialogInfoLayout(getSelectedFile(), m_header));
 }
 
-bool FileDialogLayout::onRotary(int inc, ButtonModifiers)
+bool FileDialogLayout::onRotary(int inc, ButtonModifiers modifiers)
 {
   fileList->changeSelection(inc);
   updateLabels();

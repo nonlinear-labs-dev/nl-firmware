@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 import java.util.LinkedList;
 
 import com.google.gwt.xml.client.Node;
-import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
@@ -39,6 +38,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		layouters.add(new PresetBeltLayouterS(this));
 		layouters.add(new PresetBeltLayouterXS(this));
 		layouters.add(new PresetBeltLayouterXXS(this));
+
 	}
 
 	@Override

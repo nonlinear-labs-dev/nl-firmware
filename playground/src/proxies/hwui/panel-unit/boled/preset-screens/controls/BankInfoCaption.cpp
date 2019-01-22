@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
-#include "presets/PresetBank.h"
+#include <presets/Bank.h>
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
@@ -32,10 +32,8 @@ void BankInfoCaption::onBankChanged()
   auto pm = Application::get().getPresetManager();
   if(auto bank = pm->getSelectedBank())
   {
-    auto bankNumber = pm->calcOrderNumber(bank.get());
-    auto text = std::to_string(bankNumber);
-    setText({ text });
-    return;
+    auto bankNumber = pm->getBankPosition(bank->getUuid()) + 1;
+    setText({ std::to_string(bankNumber) });
   }
 }
 

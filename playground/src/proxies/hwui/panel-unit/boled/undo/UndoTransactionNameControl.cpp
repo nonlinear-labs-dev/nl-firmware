@@ -9,8 +9,7 @@ UndoTransactionNameControl::~UndoTransactionNameControl()
 {
 }
 
-void UndoTransactionNameControl::assignTransaction(shared_ptr<UNDO::Transaction> transaction, bool selected,
-                                                   bool current)
+void UndoTransactionNameControl::assignTransaction(UNDO::Transaction *transaction, bool selected, bool current)
 {
   super::assignTransaction(transaction, selected, current);
 

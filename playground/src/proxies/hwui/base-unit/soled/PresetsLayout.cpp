@@ -9,12 +9,13 @@
 #include <proxies/hwui/base-unit/PlayPanel.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <device-settings/Settings.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <proxies/hwui/TextCropper.h>
 #include "SoledHeader.h"
 #include "DirectLoadIndicator.h"
+#include <presets/Preset.h>
 
 class ShortenLabel : public Label
 {
@@ -106,9 +107,9 @@ bool PresetsLayout::updateNameAndNumber()
   {
     auto presetUUID = getCurrentlySelectedPresetUUID();
 
-    if(auto preset = bank->getPreset(presetUUID))
+    if(auto preset = bank->findPreset(presetUUID))
     {
-      auto bankNumber = pm->calcOrderNumber(bank.get());
+      auto bankNumber = pm->getBankPosition(bank->getUuid()) + 1;
       auto presetPosition = bank->getPresetPosition(presetUUID);
       auto modified = eb->isModified() && eb->getUUIDOfLastLoadedPreset() == presetUUID;
       auto presetNumberString = formatBankAndPresetNumber(bankNumber, presetPosition, modified);
@@ -151,12 +152,12 @@ void PresetsLayout::updateDirectLoadLabel()
   }
 }
 
-Glib::ustring PresetsLayout::getCurrentlySelectedPresetUUID() const
+Uuid PresetsLayout::getCurrentlySelectedPresetUUID() const
 {
   auto pm = Application::get().getPresetManager();
 
   if(auto bank = pm->getSelectedBank())
-    return bank->getSelectedPreset();
+    return bank->getSelectedPresetUuid();
 
-  return {};
+  return Uuid::none();
 }

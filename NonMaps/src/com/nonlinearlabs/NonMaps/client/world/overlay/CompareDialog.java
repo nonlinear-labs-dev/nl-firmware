@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import java.util.LinkedList;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -194,6 +196,7 @@ public class CompareDialog extends GWTDialog {
 	public int writeParameterGroup(int row, Node group) {
 		table.setText(row, 0, group.getAttributes().getNamedItem("name").getNodeValue());
 		row++;
+		int startedAtRow = row;
 
 		NodeList params = group.getChildNodes();
 
@@ -206,25 +209,35 @@ public class CompareDialog extends GWTDialog {
 				row = writeParameter(row, param);
 			}
 		}
+
+		if (row == startedAtRow) {
+			table.removeRow(row - 1);
+			row--;
+		}
 		return row;
 	}
 
 	public int writeParameter(int row, Node param) {
-		String paramName = param.getAttributes().getNamedItem("name").getNodeValue();
-		table.setWidget(row, 0, new HTMLPanel("span", indent + paramName));
-		table.getWidget(row, 0).getElement().addClassName("indent-1");
-		row++;
-
 		NodeList changes = param.getChildNodes();
-
+		LinkedList<Node> elements = new LinkedList<Node>();
 		int numChanges = changes.getLength();
 
 		for (int numChange = 0; numChange < numChanges; numChange++) {
 			Node change = changes.item(numChange);
 
 			if (change.getNodeType() == Node.ELEMENT_NODE) {
-				row = writeParameterChange(row, paramName, change);
+				elements.add(change);
 			}
+		}
+
+		if (!elements.isEmpty()) {
+			String paramName = param.getAttributes().getNamedItem("name").getNodeValue();
+			table.setWidget(row, 0, new HTMLPanel("span", indent + paramName));
+			table.getWidget(row, 0).getElement().addClassName("indent-1");
+			row++;
+
+			for (Node change : elements)
+				row = writeParameterChange(row, paramName, change);
 		}
 		return row;
 	}
@@ -258,8 +271,10 @@ public class CompareDialog extends GWTDialog {
 			}
 		});
 
-		String preset1PositionText = SafeHtmlUtils.htmlEscape(positionNode.getAttributes().getNamedItem("a").getNodeValue());
-		String preset2PositionText = SafeHtmlUtils.htmlEscape(positionNode.getAttributes().getNamedItem("b").getNodeValue());
+		String preset1PositionText = SafeHtmlUtils
+				.htmlEscape(positionNode.getAttributes().getNamedItem("a").getNodeValue());
+		String preset2PositionText = SafeHtmlUtils
+				.htmlEscape(positionNode.getAttributes().getNamedItem("b").getNodeValue());
 
 		String preset1Name = nameNode.getAttributes().getNamedItem("a").getNodeValue();
 		String preset2Name = nameNode.getAttributes().getNamedItem("b").getNodeValue();
@@ -278,14 +293,19 @@ public class CompareDialog extends GWTDialog {
 
 	private void updateLoadButtonStates() {
 		if (xml != null) {
+			loadPresetA.setEnabled(true);
+			loadPresetB.setEnabled(true);
+			/*-
+			
 			Element root = xml.getDocumentElement();
 			Node hashNode = ServerProxy.getChild(root, "hash");
 			String a = hashNode.getAttributes().getNamedItem("a").getNodeValue();
 			String b = hashNode.getAttributes().getNamedItem("b").getNodeValue();
 			String ebHash = NonMaps.get().getNonLinearWorld().getParameterEditor().getHash();
-
+			
 			loadPresetA.setEnabled(!(presetAXml == null || a.equals(ebHash)));
 			loadPresetB.setEnabled(!(presetBXml == null || b.equals(ebHash)));
+			-*/
 		}
 	}
 

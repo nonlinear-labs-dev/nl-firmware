@@ -1,7 +1,7 @@
 #include <proxies/hwui/TextCropper.h>
 #include "PresetNameLabel.h"
 #include "Application.h"
-#include "presets/Preset.h"
+#include <presets/Preset.h>
 
 PresetNameLabel::PresetNameLabel(const Rect &pos)
     : super(pos)

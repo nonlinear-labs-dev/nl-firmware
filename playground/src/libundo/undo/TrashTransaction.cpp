@@ -39,13 +39,19 @@ namespace UNDO
   {
   }
 
-  TrashTransaction::~TrashTransaction()
-  {
-  }
-
   void TrashTransaction::addCommand(Command::tCommandPtr cmd)
   {
     cmd->setParentTransaction(this);
     cmd->doAction();
+  }
+
+  void TrashTransaction::addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo)
+  {
+    doAndRedo(DOING);
+  }
+
+  void TrashTransaction::addSimpleCommand(ActionCommand::tAction doRedoUndo)
+  {
+    doRedoUndo(DOING);
   }
 }

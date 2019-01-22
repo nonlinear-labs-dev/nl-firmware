@@ -7,7 +7,7 @@
 #include <proxies/hwui/base-unit/BaseUnit.h>
 #include <proxies/hwui/base-unit/PlayPanel.h>
 #include <presets/PresetManager.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <device-settings/Settings.h>
 #include <proxies/hwui/controls/LabelRegular8.h>
@@ -61,15 +61,14 @@ void BanksLayout::onBankSelected()
   updateFromBank(m_bank);
 }
 
-void BanksLayout::updateFromBank(const shared_ptr<PresetBank> &bank) const
+void BanksLayout::updateFromBank(const Bank *bank) const
 {
   if(bank)
   {
-    auto order = Application::get().getPresetManager()->calcOrderNumber(bank.get());
-    auto numBanks = Application::get().getPresetManager()->getNumBanks();
+    auto order = Application::get().getPresetManager()->getBankPosition(bank->getUuid()) + 1;
     auto str = ustring::format(order);
     m_number->setText(str);
-    m_name->setText(bank->getName(true));
+    m_name->setText({ bank->getName(true) });
   }
   else
   {

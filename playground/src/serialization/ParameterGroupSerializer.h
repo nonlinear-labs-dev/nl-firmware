@@ -3,6 +3,7 @@
 #include "Serializer.h"
 
 class ParameterGroup;
+class Parameter;
 
 class ParameterGroupSerializer : public Serializer
 {

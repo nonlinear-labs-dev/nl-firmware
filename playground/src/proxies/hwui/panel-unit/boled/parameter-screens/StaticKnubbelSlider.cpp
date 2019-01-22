@@ -1,17 +1,13 @@
 #include "StaticKnubbelSlider.h"
 
-StaticKnubbelSlider::StaticKnubbelSlider(Parameter* parameter, Rect pos)
-    : DotSlider(parameter, pos)
+StaticKnubbelSlider::StaticKnubbelSlider(tControlPositionValue value, bool biPolar, Rect pos)
+    : DotSlider(nullptr, pos)
 {
   setHighlight(true);
-  setValue(parameter->getControlPositionValue(), parameter->isBiPolar());
+  setValue(value, biPolar);
 }
 
-void StaticKnubbelSlider::onParamValueChanged(const Parameter* param)
+void StaticKnubbelSlider::setValueExplicit(tControlPositionValue value, bool biPolar)
 {
-}
-
-void StaticKnubbelSlider::setValueExplicit(tControlPositionValue value)
-{
-  setValue(value, getParameter()->isBiPolar());
+  setValue(value, biPolar);
 }

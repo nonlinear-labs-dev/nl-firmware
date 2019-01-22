@@ -1,22 +1,20 @@
 #pragma once
 
-#include "Transaction.h"
-
 namespace UNDO
 {
+  class Transaction;
 
   class TransactionCreationScope
   {
    public:
-    typedef std::shared_ptr<Transaction> tTransactionPtr;
-    typedef std::shared_ptr<TransactionCreationScope> tTransactionScopePtr;
-    TransactionCreationScope(tTransactionPtr transaction);
+    TransactionCreationScope(Transaction* transaction, bool ownTransaction = false);
     virtual ~TransactionCreationScope();
 
-    tTransactionPtr getTransaction();
+    Transaction* getTransaction() const;
 
    private:
-    tTransactionPtr m_transaction;
+    Transaction* m_transaction = nullptr;
+    bool m_transactionOwned = false;
   };
 
 } /* namespace UNDO */

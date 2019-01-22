@@ -6,18 +6,17 @@
 
 class Throttler
 {
-  public:
-   using Task = std::function<void()>;
+ public:
+  using Task = std::function<void()>;
 
-   Throttler(Expiration::Duration maxDelay);
+  Throttler(Expiration::Duration maxDelay);
 
-   void doTask(Task&& task);
+  void doTask(Task&& task);
 
-  private:
-    void delayedCallback();
+ private:
+  void delayedCallback();
 
-    Expiration m_expiration;
-    Expiration::Duration m_maxDelay;
-    Task m_task;
+  Expiration m_expiration;
+  Expiration::Duration m_maxDelay;
+  Task m_task;
 };
-

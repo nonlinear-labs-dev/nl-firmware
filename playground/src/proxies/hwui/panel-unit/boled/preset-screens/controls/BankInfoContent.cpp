@@ -1,6 +1,6 @@
 #include <Application.h>
 #include <presets/Preset.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
@@ -43,8 +43,7 @@ BankInfoContent::BankInfoContent()
   addInfoField("exportfile", "Export File");
 
   Application::get().getPresetManager()->onBankSelection(mem_fun(this, &BankInfoContent::onBankSelectionChanged));
-
-  fillFromBank(Application::get().getPresetManager()->getSelectedBank().get());
+  fillFromBank(Application::get().getPresetManager()->getSelectedBank());
 }
 
 BankInfoContent::~BankInfoContent()
@@ -59,11 +58,11 @@ void BankInfoContent::onBankSelectionChanged()
     m_bankConnection = bank->onBankChanged(sigc::bind(mem_fun(this, &BankInfoContent::onBankChanged), bank));
 }
 
-void BankInfoContent::onBankChanged(shared_ptr<PresetBank> bank)
+void BankInfoContent::onBankChanged(Bank *bank)
 {
   if(bank)
   {
-    if(fillFromBank(bank.get()))
+    if(fillFromBank(bank))
     {
       fixLayout();
     }
@@ -74,7 +73,7 @@ void BankInfoContent::onBankChanged(shared_ptr<PresetBank> bank)
   }
 }
 
-bool BankInfoContent::fillFromBank(PresetBank *bank)
+bool BankInfoContent::fillFromBank(Bank *bank)
 {
   infoFields["name"]->setInfo(bank->getName(true), FrameBuffer::Colors::C128);
   infoFields["size"]->setInfo(to_string(bank->getNumPresets()));

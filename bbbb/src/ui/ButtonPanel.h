@@ -7,14 +7,14 @@
 
 class ButtonPanel : public Gtk::HBox
 {
-  public:
-    ButtonPanel(int firstButtonId);
-    virtual ~ButtonPanel();
+ public:
+  ButtonPanel(int firstButtonId);
+  virtual ~ButtonPanel();
 
-    void setLed(int idx, bool state);
+  void setLed(int idx, bool state);
 
-  private:
-    ButtonColumn* m_columns[6];
+ private:
+  ButtonColumn* m_columns[6];
 };
 
 #endif

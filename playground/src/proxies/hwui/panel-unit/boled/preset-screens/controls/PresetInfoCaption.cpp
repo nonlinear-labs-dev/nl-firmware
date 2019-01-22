@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
-#include "presets/PresetBank.h"
+#include <presets/Bank.h>
+#include <presets/Preset.h>
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
@@ -32,12 +33,11 @@ void PresetInfoCaption::onBankChanged()
   auto pm = Application::get().getPresetManager();
   if(auto bank = pm->getSelectedBank())
   {
-    auto bankNumber = pm->calcOrderNumber(bank.get());
-    auto selectedPresetUUID = bank->getSelectedPreset();
+    auto bankNumber = pm->getBankPosition(bank->getUuid()) + 1;
 
-    if(auto selecteddPreset = bank->getPreset(selectedPresetUUID))
+    if(auto selectedPreset = bank->getSelectedPreset())
     {
-      auto presetNumber = bank->getPresetPosition(selectedPresetUUID) + 1;
+      auto presetNumber = bank->getPresetPosition(selectedPreset->getUuid()) + 1;
 
       ostringstream presetPosStr;
       presetPosStr.width(3);

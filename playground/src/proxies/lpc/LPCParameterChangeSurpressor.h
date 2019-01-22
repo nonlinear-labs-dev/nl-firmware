@@ -6,7 +6,7 @@
 class LPCParameterChangeSurpressor
 {
  public:
-  LPCParameterChangeSurpressor(UNDO::Transaction::tTransactionPtr transaction)
+  LPCParameterChangeSurpressor(UNDO::Transaction *transaction)
       : m_transaction(transaction)
   {
     Application::get().getLPCProxy()->toggleSuppressParameterChanges(transaction);
@@ -18,5 +18,5 @@ class LPCParameterChangeSurpressor
   }
 
  private:
-  UNDO::Transaction::tTransactionPtr m_transaction;
+  UNDO::Transaction *m_transaction;
 };

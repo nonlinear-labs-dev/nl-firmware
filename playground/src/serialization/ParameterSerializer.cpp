@@ -111,7 +111,7 @@ void ParameterSerializer::loadModulationAmount(Reader &reader, const Glib::ustri
     if(i == -1)
       i = 0;
 
-    ModulateableParameter::ModulationSource s = (ModulateableParameter::ModulationSource)((i));
+    ModulationSource s = (ModulationSource)((i));
     p->setModulationSource(reader.getTransaction(), s);
   }
 }
@@ -140,12 +140,12 @@ void ParameterSerializer::tryLoadHardwareSourceParameter(Reader &reader) const
     {
       reader.onTextElement("ribbon-touch-behaviour", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
         int mode = stoi(text);
-        ribbon->undoableSetRibbonTouchBehaviour(reader.getTransaction(), (RibbonParameter::RibbonTouchBehaviour) mode);
+        ribbon->undoableSetRibbonTouchBehaviour(reader.getTransaction(), (RibbonTouchBehaviour) mode);
       });
 
       reader.onTextElement("ribbon-return-mode", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
         int mode = stoi(text);
-        ribbon->undoableSetRibbonReturnMode(reader.getTransaction(), (RibbonParameter::RibbonReturnMode) mode);
+        ribbon->undoableSetRibbonReturnMode(reader.getTransaction(), (RibbonReturnMode) mode);
       });
     }
 
@@ -153,7 +153,7 @@ void ParameterSerializer::tryLoadHardwareSourceParameter(Reader &reader) const
     {
       reader.onTextElement("pedalMode", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
         int mode = stoi(text);
-        pedal->undoableSetPedalMode(reader.getTransaction(), (PedalParameter::PedalModes) mode);
+        pedal->undoableSetPedalMode(reader.getTransaction(), (PedalModes) mode);
       });
     }
   }

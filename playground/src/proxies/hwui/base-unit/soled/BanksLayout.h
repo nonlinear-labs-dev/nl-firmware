@@ -3,7 +3,7 @@
 #include <proxies/hwui/DFBLayout.h>
 
 class Label;
-class PresetBank;
+class Bank;
 class Setting;
 class DirectLoadIndicator;
 
@@ -18,7 +18,7 @@ class BanksLayout : public DFBLayout
   virtual ~BanksLayout();
 
  private:
-  void updateFromBank(const shared_ptr<PresetBank> &bank) const;
+  void updateFromBank(const Bank *bank) const;
   void onBankSelected();
   void onAutoLoadSettingChanged(const Setting *s);
   void onBankChanged();
@@ -27,5 +27,5 @@ class BanksLayout : public DFBLayout
   Label *m_name;
   sigc::connection m_bankconnection;
   DirectLoadIndicator *m_directLoad;
-  shared_ptr<PresetBank> m_bank;
+  Bank *m_bank = nullptr;
 };

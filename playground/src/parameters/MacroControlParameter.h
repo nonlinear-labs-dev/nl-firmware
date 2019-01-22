@@ -13,16 +13,17 @@ class MacroControlParameter : public Parameter
 
  public:
   MacroControlParameter(ParameterGroup *group, uint16_t id);
-  virtual ~MacroControlParameter();
+  ~MacroControlParameter() override;
 
   typedef set<ModulateableParameter *> tTargets;
 
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDifferences(Writer &writer, Parameter *other) const override;
 
   void registerTarget(ModulateableParameter *target);
   void unregisterTarget(ModulateableParameter *target);
 
-  void setCPFromMCView(UNDO::Scope::tTransactionPtr transaction, const tControlPositionValue &cpValue);
+  void setCPFromMCView(UNDO::Transaction* transaction, const tControlPositionValue &cpValue);
   void applyLpcPhysicalControl(tControlPositionValue diff);
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
@@ -32,16 +33,18 @@ class MacroControlParameter : public Parameter
   int getUiSelectedHardwareSource() const;
 
   void undoableSetGivenName(const Glib::ustring &newName);
-  void undoableSetGivenName(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &newName);
+  void undoableSetGivenName(UNDO::Transaction *transaction, const ustring &newName);
   void undoableSetInfo(const Glib::ustring &newName);
-  void undoableSetInfo(UNDO::Scope::tTransactionPtr transaction, const Glib::ustring &newName);
-  virtual void undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount) override;
+  void undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &newName);
+
+  void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
   void undoableResetConnectionsToTargets();
   const Glib::ustring &getGivenName() const;
   const Glib::ustring &getInfo() const;
 
-  void loadDefault(UNDO::Scope::tTransactionPtr transaction) override;
-  void copyFrom(UNDO::Scope::tTransactionPtr transaction, Parameter *other) override;
+  void loadDefault(UNDO::Transaction *transaction) override;
+  void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
+  void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
   Glib::ustring getLongName() const override;
 
   const tTargets &getTargets() const;
@@ -50,20 +53,20 @@ class MacroControlParameter : public Parameter
   bool isSourceOfTargetIn(const list<gint32> &ids) const;
   bool isSourceOf(gint32 id) const;
 
-  virtual void onSelected() override;
-  virtual void onUnselected() override;
+  void onSelected() override;
+
+  void onUnselected() override;
 
   static int getLastSelectedMacroControl();
 
-  virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+  DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
-  virtual size_t getHash() const override;
+  size_t getHash() const override;
 
   void setLastMCViewUUID(const Glib::ustring &uuid);
 
  private:
   void updateBoundRibbon();
-  void writeDifferences(Writer &writer, Parameter *other) const override;
 
   tTargets m_targets;
   int m_UiSelectedHardwareSourceParameterID;
@@ -71,11 +74,11 @@ class MacroControlParameter : public Parameter
   Glib::ustring m_info;
   Glib::ustring m_lastMCViewUuid;
 
-  void propagateMCChangeToMCViews(const Initiator& initiatior);
+  void propagateMCChangeToMCViews(const Initiator &initiatior);
   tControlPositionValue lastBroadcastedControlPosition;
   Throttler mcviewThrottler;
 
   sigc::signal<void> m_targetListChanged;
 
-    void updateMCViewsFromMCChange(const Initiator &initiator);
+  void updateMCViewsFromMCChange(const Initiator &initiator);
 };

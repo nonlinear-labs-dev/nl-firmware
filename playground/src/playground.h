@@ -46,6 +46,18 @@ namespace std
     return res;
   }
 }
+template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std::string to_string(const T& e)
+{
+  return to_string(static_cast<int>(e));
+}
+
+
+template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true>
+std::ostream& operator<<(std::ostream& stream, const T& e)
+{
+  stream << static_cast<int>(e);
+  return stream;
+}
 
 template <class T> inline void hash_combine(std::size_t& seed, const T& v)
 {
@@ -79,6 +91,45 @@ enum class SaveResult : uint8_t
   Nothing,
   Again,
   Finished
+};
+
+enum class ModulationSource
+{
+  NONE = 0,
+  MC1 = 1,
+  MC2 = 2,
+  MC3 = 3,
+  MC4 = 4,
+  NUM_CHOICES = 5
+};
+
+enum class RibbonTouchBehaviour
+{
+  ABSOLUTE,
+  RELATIVE,
+  NUM_TOUCH_BEHAVIOURS
+};
+
+enum class RibbonReturnMode
+{
+  STAY = 0,
+  RETURN = 1,
+  NUM_RETURN_MODES
+};
+
+enum class PedalModes
+{
+  STAY = 0,
+  RETURN_TO_ZERO = 1,
+  RETURN_TO_CENTER = 2,
+  NUM_PEDAL_MODES
+};
+
+enum class ReturnMode
+{
+  None,
+  Center,
+  Zero
 };
 
 #ifdef _TESTS

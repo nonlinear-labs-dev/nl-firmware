@@ -12,11 +12,9 @@ class SelectedParameterModAmount : public Control
   typedef Control super;
 
  public:
+  // public methods
   SelectedParameterModAmount(const Rect& rect);
   virtual ~SelectedParameterModAmount();
-
-  SelectedParameterModAmount(const SelectedParameterModAmount& other) = delete;
-  SelectedParameterModAmount& operator=(const SelectedParameterModAmount&) = delete;
 
   virtual bool redraw(FrameBuffer& fb) override;
   void setRange(float from, float to);
@@ -25,6 +23,10 @@ class SelectedParameterModAmount : public Control
   virtual void setSliderColor(FrameBuffer& fb);
 
  private:
+  // private methods
+  SelectedParameterModAmount(const SelectedParameterModAmount& other);
+  SelectedParameterModAmount& operator=(const SelectedParameterModAmount&);
+
   void setRangeOrdered(float from, float to);
   void setParameter(Parameter* param);
   void onParamValueChanged(const Parameter* param);

@@ -1,5 +1,5 @@
 #include "EditBufferSnapshotMaker.h"
-#include "PresetManager.h"
+#include <presets/PresetManager.h>
 #include "EditBuffer.h"
 #include <Application.h>
 #include <http/UndoScope.h>
@@ -7,6 +7,7 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/ModulationRoutingParameter.h>
 #include <parameters/MacroControlParameter.h>
+#include <libundo/undo/Transaction.h>
 
 EditBufferSnapshotMaker &EditBufferSnapshotMaker::get()
 {
@@ -18,7 +19,7 @@ EditBufferSnapshotMaker::EditBufferSnapshotMaker()
 {
 }
 
-void EditBufferSnapshotMaker::addSnapshotIfRequired(UNDO::Scope::tTransactionPtr transaction)
+void EditBufferSnapshotMaker::addSnapshotIfRequired(UNDO::Transaction *transaction)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto hardwareSources = editBuffer->getParameterGroupByID("CS");
@@ -37,7 +38,7 @@ void EditBufferSnapshotMaker::addSnapshotIfRequired(UNDO::Scope::tTransactionPtr
   }
 }
 
-auto EditBufferSnapshotMaker::collectDirtyParameters(shared_ptr<EditBuffer> editBuffer) -> tParams
+auto EditBufferSnapshotMaker::collectDirtyParameters(EditBuffer *editBuffer) -> tParams
 {
   EditBufferSnapshotMaker::tParams ret;
 
@@ -64,7 +65,7 @@ auto EditBufferSnapshotMaker::collectDirtyParameters(shared_ptr<EditBuffer> edit
   return std::move(ret);
 }
 
-void EditBufferSnapshotMaker::addSnapshot(UNDO::Scope::tTransactionPtr transaction, tParams &&params)
+void EditBufferSnapshotMaker::addSnapshot(UNDO::Transaction *transaction, tParams &&params)
 {
   DebugLevel::info("Some parameters changed since last snapshot -> so creating a new one");
 

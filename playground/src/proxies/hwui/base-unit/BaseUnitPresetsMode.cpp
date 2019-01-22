@@ -1,6 +1,6 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
@@ -15,7 +15,7 @@ void BaseUnitPresetsMode::setup()
   setupButtonConnection(BUTTON_MINUS, [=](auto, auto, auto state) {
     if(state)
       if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-        bank->undoableIncPresetSelection(-1, ButtonModifiers());
+        bank->selectPreviousPreset();
 
     return true;
   });
@@ -23,7 +23,7 @@ void BaseUnitPresetsMode::setup()
   setupButtonConnection(BUTTON_PLUS, [=](auto, auto, auto state) {
     if(state)
       if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-        bank->undoableIncPresetSelection(1, ButtonModifiers());
+        bank->selectNextPreset();
 
     return true;
   });

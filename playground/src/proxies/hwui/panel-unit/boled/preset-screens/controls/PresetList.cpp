@@ -1,5 +1,5 @@
 #include <Application.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/buttons.h>
@@ -37,16 +37,20 @@ void PresetList::onBankChanged()
   if(auto bank = Application::get().getPresetManager()->getSelectedBank())
   {
     m_header->setup(bank);
-    m_content->setup(bank, bank->getPresetPosition(bank->getSelectedPreset()));
+
+    if(auto p = bank->getSelectedPreset())
+      m_content->setup(bank, bank->getPresetPosition(p));
+    else
+      m_content->setup(bank, size_t(-1));
   }
   else
   {
     m_header->setup(nullptr);
-    m_content->setup(nullptr, -1);
+    m_content->setup(nullptr, size_t(-1));
   }
 }
 
-bool PresetList::onButton(int i, bool down, ButtonModifiers modifiers)
+bool PresetList::onButton(int i, bool down, ButtonModifiers)
 {
   if(down)
   {
@@ -59,11 +63,11 @@ bool PresetList::onButton(int i, bool down, ButtonModifiers modifiers)
         if(focusAndMode.focus == UIFocus::Banks)
         {
           if(auto bank = pm->getSelectedBank())
-            bank->undoableIncPresetSelection(-1, ButtonModifiers());
+            bank->selectPreviousPreset();
         }
-        else if(auto bank = pm->getSelectedBank())
+        else
         {
-          pm->undoableSelectPrevious();
+          pm->selectPreviousBank();
         }
         return true;
 
@@ -71,11 +75,11 @@ bool PresetList::onButton(int i, bool down, ButtonModifiers modifiers)
         if(focusAndMode.focus == UIFocus::Banks)
         {
           if(auto bank = pm->getSelectedBank())
-            bank->undoableIncPresetSelection(1, ButtonModifiers());
+            bank->selectNextPreset();
         }
         else
         {
-          pm->undoableSelectNext();
+          pm->selectNextBank();
         }
         return true;
     }
@@ -91,45 +95,54 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 
   if(focusAndMode.focus == UIFocus::Banks)
   {
-    if(modifiers[SHIFT])
+    auto scope = pm->getUndoScope().startTransaction("Select Bank");
+
+    if(modifiers[SHIFT] && pm->getNumBanks() > 0)
     {
       if(inc < 0)
-      {
-        pm->undoableSelectFirstBank();
-      }
+        pm->selectBank(scope->getTransaction(), pm->getBanks().front()->getUuid());
       else
-      {
-        pm->undoableSelectLastBank();
-      }
+        pm->selectBank(scope->getTransaction(), pm->getBanks().back()->getUuid());
     }
     else
     {
       while(inc < 0)
       {
-        pm->undoableSelectPrevious();
+        pm->selectPreviousBank(scope->getTransaction());
         inc++;
       }
 
       while(inc > 0)
       {
-        pm->undoableSelectNext();
+        pm->selectNextBank(scope->getTransaction());
         inc--;
       }
     }
   }
   else if(auto bank = pm->getSelectedBank())
   {
-    bank->undoableIncPresetSelection(inc, modifiers);
+    auto scope = pm->getUndoScope().startTransaction("Select Preset");
+    while(inc < 0)
+    {
+      bank->selectPreviousPreset(scope->getTransaction());
+      inc++;
+    }
+
+    while(inc > 0)
+    {
+      bank->selectNextPreset(scope->getTransaction());
+      inc--;
+    }
   }
 }
 
-std::pair<int, int> PresetList::getSelectedPosition() const
+std::pair<size_t, size_t> PresetList::getSelectedPosition() const
 {
   auto pm = Application::get().getPresetManager();
 
   if(auto b = pm->getSelectedBank())
   {
-    auto bankPos = pm->calcBankIndex(b.get());
+    auto bankPos = pm->getBankPosition(b->getUuid());
     auto presetPos = b->getPresetPosition(b->getSelectedPreset());
     return make_pair(bankPos, presetPos);
   }

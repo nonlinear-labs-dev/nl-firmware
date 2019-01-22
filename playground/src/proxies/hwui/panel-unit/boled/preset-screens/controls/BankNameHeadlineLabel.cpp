@@ -1,7 +1,7 @@
 #include <proxies/hwui/Oleds.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankNameHeadlineLabel.h>
 

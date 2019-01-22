@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Serializer.h"
+#include <serialization/Serializer.h>
 
 class PresetManager;
 
@@ -10,7 +10,7 @@ class PresetManagerMetadataSerializer : public Serializer
   typedef Serializer super;
 
  public:
-  PresetManagerMetadataSerializer(PresetManager &pm);
+  PresetManagerMetadataSerializer(PresetManager *pm);
 
   static Glib::ustring getTagName();
 
@@ -18,5 +18,5 @@ class PresetManagerMetadataSerializer : public Serializer
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  PresetManager &m_pm;
+  PresetManager *m_pm = nullptr;
 };

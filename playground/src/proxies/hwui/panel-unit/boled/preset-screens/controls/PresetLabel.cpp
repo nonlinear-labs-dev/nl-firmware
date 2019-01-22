@@ -4,7 +4,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetLabel.h>
 

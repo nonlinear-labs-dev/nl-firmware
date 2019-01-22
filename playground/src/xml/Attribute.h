@@ -3,21 +3,28 @@
 #include "playground.h"
 #include <sstream>
 
+namespace attribute_detail
+{
+  template <typename tValue> inline ustring toString(const tValue &v)
+  {
+    stringstream str;
+    str << v;
+    return str.str();
+  }
+
+  template <> inline ustring toString(const ustring &v)
+  {
+    return v;
+  }
+}
+
 class Attribute
 {
  public:
   template <typename tValue> inline Attribute(const Glib::ustring &name, const tValue &v)
   {
     m_name = name;
-    stringstream str;
-    str << v;
-    m_value = str.str();
-  }
-
-  inline Attribute(const Glib::ustring &name, const ustring &v)
-  {
-    m_name = name;
-    m_value = v;
+    m_value = attribute_detail::toString(v);
   }
 
   virtual ~Attribute();

@@ -26,7 +26,7 @@ class Serializer
   void read(Reader &read) const;
 
   template <typename tSerializer, typename... tArgs>
-  static uint64_t read(UNDO::Scope::tTransactionPtr transaction, RefPtr<Gio::File> folder, const std::string &fileName,
+  static uint64_t read(UNDO::Transaction *transaction, RefPtr<Gio::File> folder, const std::string &fileName,
                        tArgs... args)
   {
     auto xmlFile = folder->get_child(fileName);
@@ -52,7 +52,7 @@ class Serializer
 
  private:
   template <typename tSerializer, typename tReader, typename... tArgs>
-  static uint64_t readFormated(UNDO::Scope::tTransactionPtr transaction, Glib::RefPtr<Gio::File> file, tArgs... args)
+  static uint64_t readFormated(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> file, tArgs... args)
   {
     FileInStream in(file->get_path(), true);
     if(!in.eof())

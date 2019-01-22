@@ -1,7 +1,7 @@
 #include "PresetNumberLabel.h"
 #include "Application.h"
-#include "presets/PresetBank.h"
-#include "presets/Preset.h"
+#include <presets/Bank.h>
+#include <presets/Preset.h>
 #include "proxies/hwui/Oleds.h"
 
 #include <glib/gprintf.h>

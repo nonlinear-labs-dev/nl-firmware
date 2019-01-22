@@ -1,13 +1,9 @@
-#include "xml/Attributes.h"
-#include "EditBufferSerializer.h"
-#include "xml/Writer.h"
-#include "xml/Reader.h"
-#include "presets/PresetManager.h"
-#include <presets/PresetBank.h>
 #include "PresetOrderSerializer.h"
-#include <device-settings/DebugLevel.h>
+#include <presets/Bank.h>
+#include <presets/Preset.h>
+#include <tools/Uuid.h>
 
-PresetOrderSerializer::PresetOrderSerializer(shared_ptr<PresetBank> bank, bool ignoreUUIDs)
+PresetOrderSerializer::PresetOrderSerializer(Bank *bank, bool ignoreUUIDs)
     : Serializer(getTagName())
     , m_bank(bank)
     , m_ignoreUUIDs(ignoreUUIDs)
@@ -21,16 +17,15 @@ Glib::ustring PresetOrderSerializer::getTagName()
 
 void PresetOrderSerializer::writeTagContent(Writer &writer) const
 {
-  for(auto p : m_bank->m_presets)
-  {
-    writer.writeTextElement("uuid", p->getUuid());
-  }
+  m_bank->forEachPreset([&](auto p) { writer.writeTextElement("uuid", p->getUuid().raw()); });
 }
 
 void PresetOrderSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("uuid", [&](const Glib::ustring &text, const Attributes &attributes) mutable {
-    Uuid uuid = m_ignoreUUIDs ? Uuid() : Uuid(text);
-    m_bank->undoableAppendPreset(reader.getTransaction(), uuid);
+  reader.onTextElement("uuid", [&](auto &text, auto) mutable {
+    auto p = m_bank->appendPreset(reader.getTransaction());
+
+    if(!m_ignoreUUIDs)
+      p->setUuid(reader.getTransaction(), text);
   });
 }

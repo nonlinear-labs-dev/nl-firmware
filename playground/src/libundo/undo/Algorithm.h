@@ -11,13 +11,11 @@ namespace UNDO
     Algorithm();
     virtual ~Algorithm();
 
-    typedef std::shared_ptr<Transaction> tTransactionPtr;
-
-    static tTransactionPtr getCommonRoot(tTransactionPtr one, tTransactionPtr other);
-    static void traverse(tTransactionPtr from, tTransactionPtr to);
-    static std::list<tTransactionPtr> getPathAsList(tTransactionPtr target, const Transaction *stop);
-    static tTransactionPtr find(tTransactionPtr root, const Glib::ustring &targetID);
-    static tTransactionPtr find(tTransactionPtr root, const void *targetID);
+    static Transaction* getCommonRoot(Transaction* one, Transaction* other);
+    static void traverse(Transaction* from, Transaction* to);
+    static std::list<Transaction*> getPathAsList(Transaction* target, const Transaction* stop);
+    static Transaction* find(Transaction* root, const Glib::ustring& targetID);
+    static Transaction* find(Transaction* root, const void* targetID);
   };
 
 } /* namespace UNDO */

@@ -18,7 +18,7 @@ class XmlReader : public Parser, public Reader
   typedef Reader super;
 
  public:
-  XmlReader(InStream& in, UNDO::Scope::tTransactionPtr transaction);
+  XmlReader(InStream& in, UNDO::Transaction* transaction);
   virtual ~XmlReader();
 
   static Glib::ustring trim(const Glib::ustring& text);

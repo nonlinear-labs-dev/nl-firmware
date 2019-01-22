@@ -37,7 +37,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ParameterInfoDialog;
-import com.nonlinearlabs.NonMaps.client.world.overlay.PresetInfoDialog;
 
 public class ServerProxy {
 
@@ -413,18 +412,6 @@ public class ServerProxy {
 		RenameDialog.awaitNewPreset(uuid);
 	}
 
-	public void nextPreset() {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "next-preset");
-		StaticURI uri = new StaticURI(path);
-		queueJob(uri, false);
-	}
-
-	public void prevPreset() {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "prev-preset");
-		StaticURI uri = new StaticURI(path);
-		queueJob(uri, false);
-	}
-
 	public void undo() {
 		queueJob(new StaticURI(new StaticURI.Path("undo", "undo")), false);
 	}
@@ -737,12 +724,6 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void duplicateBank(Bank bank) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "duplicate-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", bank.getUUID()));
-		queueJob(uri, false);
-	}
-
 	public void sortBank(Bank bank, boolean asc) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "sort-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", bank.getUUID()),
@@ -805,12 +786,6 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-preset-attribute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", thePreset.getUUID()),
 				new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
-		queueJob(uri, false);
-	}
-
-	public void setEditBufferAttribute(String key, String value) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-editbuffer-attribute");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
 	}
 
@@ -911,16 +886,6 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
 				new StaticURI.KeyValue("x", slave.getNonPosition().getPosition().getX()),
 				new StaticURI.KeyValue("y", slave.getNonPosition().getPosition().getY()));
-		queueJob(uri, false);
-	}
-
-	public void dockBank(Bank slave, Bank master, String direction) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "dock-bank");
-
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
-				new StaticURI.KeyValue("master-uuid", master.getUUID()),
-				new StaticURI.KeyValue("direction", direction));
-
 		queueJob(uri, false);
 	}
 

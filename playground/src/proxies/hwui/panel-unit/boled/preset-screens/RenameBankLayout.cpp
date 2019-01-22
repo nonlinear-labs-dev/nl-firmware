@@ -4,10 +4,11 @@
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/controls/Button.h>
 #include <presets/PresetManager.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/Preset.h>
+#include <libundo/undo/Transaction.h>
 
-RenameBankLayout::RenameBankLayout(UNDO::Scope::tTransactionPtr transaction)
+RenameBankLayout::RenameBankLayout(UNDO::Transaction *transaction)
     : super()
     , m_transaction(transaction)
 {
@@ -21,12 +22,13 @@ void RenameBankLayout::commit(const Glib::ustring &newName)
     if(m_transaction)
     {
       m_transaction->reopen();
-      m_currentBank->undoableSetName(m_transaction, newName);
+      m_currentBank->setName(m_transaction, newName);
       m_transaction->close();
     }
     else
     {
-      m_currentBank->undoableSetName(newName);
+      auto s = Application::get().getPresetManager()->getUndoScope().startTransaction("Rename Bank");
+      m_currentBank->setName(s->getTransaction(), newName);
     }
   }
 }

@@ -14,5 +14,5 @@ class NumBanksLabel : public Label
   virtual ~NumBanksLabel();
 
  private:
-  void onNumBanksChanged(int numBanks);
+  void onNumBanksChanged(size_t numBanks);
 };

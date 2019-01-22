@@ -48,14 +48,14 @@ bool MCRoutings::redraw(FrameBuffer &fb)
   return true;
 }
 
-shared_ptr<EditBuffer> MCRoutings::getEditBuffer() const
+EditBuffer *MCRoutings::getEditBuffer() const
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }
 
 MacroControlMappingGroup::tModRoutingParams MCRoutings::getRoutingParameters()
 {
-  shared_ptr<EditBuffer> editBuffer = getEditBuffer();
+  auto editBuffer = getEditBuffer();
   auto cs = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID("CS"));
   auto routers = dynamic_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID("MCM"));
   auto ribbonParam = dynamic_cast<PhysicalControlParameter *>(cs->getParameterByID(m_ribbonParamID));

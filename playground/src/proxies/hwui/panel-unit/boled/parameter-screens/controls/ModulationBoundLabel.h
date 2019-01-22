@@ -24,11 +24,10 @@ class ModulationBoundLabel : public LabelRegular8
   void onMCParameterChanged(const Parameter *mcParam);
   void onButtonModifiersChanged(ButtonModifiers mod);
   void updateText();
-
   void setSuffixFontColor(FrameBuffer &fb) const override;
   StringAndSuffix shortenStringIfNeccessary(shared_ptr<Font> font, const StringAndSuffix &text) const override;
 
-  ModulateableParameter::ModulationSource m_mc = ModulateableParameter::NONE;
+  ModulationSource m_mc = ModulationSource::NONE;
   sigc::connection m_paramConnection;
   sigc::connection m_mcConnection;
 

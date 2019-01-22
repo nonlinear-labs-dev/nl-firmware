@@ -1,14 +1,9 @@
 #include <proxies/hwui/panel-unit/boled/file/RenameExportLayout.h>
 
-RenameExportLayout::RenameExportLayout(std::shared_ptr<PresetBank> bank,
-                                       std::function<void(Glib::ustring, std::shared_ptr<PresetBank>)> callBack)
+RenameExportLayout::RenameExportLayout(Bank *bank, Callback callBack)
     : initialName(bank->getName(true))
-    , callBackAfterCommit(callBack)
     , m_bank(bank)
-{
-}
-
-RenameExportLayout::~RenameExportLayout()
+    , callBackAfterCommit(callBack)
 {
 }
 

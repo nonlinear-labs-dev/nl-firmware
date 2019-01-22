@@ -2,7 +2,7 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/NumPresetsInBankLabel.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 
 NumPresetsInBankLabel::NumPresetsInBankLabel(const Rect &pos)
     : super(pos)

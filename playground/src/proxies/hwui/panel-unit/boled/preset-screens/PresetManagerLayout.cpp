@@ -4,7 +4,7 @@
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <device-settings/Settings.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/controls/Button.h>
@@ -97,6 +97,7 @@ void PresetManagerLayout::setupBankEdit()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
+  addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_menu = addControl(new BankEditButtonMenu(Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   m_presets->setBankFocus();
@@ -164,9 +165,10 @@ void PresetManagerLayout::setupPresetEdit()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
+  addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
 
-  if(selectedBank && !selectedBank->getPresets().empty())
+  if(selectedBank && !selectedBank->empty())
   {
     m_menu = addControl(new PresetEditButtonMenu(Rect(195, 1, 58, 62)));
   }
@@ -309,7 +311,7 @@ bool PresetManagerLayout::animateSelectedPreset(function<void()> cb)
   return m_presets->animateSelectedPreset(std::move(cb));
 }
 
-std::pair<int, int> PresetManagerLayout::getSelectedPosition() const
+std::pair<size_t, size_t> PresetManagerLayout::getSelectedPosition() const
 {
   if(m_presets)
     return m_presets->getSelectedPosition();

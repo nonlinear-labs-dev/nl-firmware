@@ -22,7 +22,7 @@ class MCRoutings : public Control
   MCRoutings(const MCRoutings &other) = delete;
   MCRoutings &operator=(const MCRoutings &) = delete;
 
-  shared_ptr<EditBuffer> getEditBuffer() const;
+  EditBuffer *getEditBuffer() const;
   void connectToRoutingParameters();
   void onRoutingParameterChanged(const Parameter *p);
 

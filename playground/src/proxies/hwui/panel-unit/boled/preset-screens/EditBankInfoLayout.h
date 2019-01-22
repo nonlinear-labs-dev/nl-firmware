@@ -3,7 +3,7 @@
 #include "RenameLayout.h"
 #include <libundo/undo/Transaction.h>
 
-class PresetBank;
+class Bank;
 
 class EditBankInfoLayout : public RenameLayout
 {
@@ -14,9 +14,9 @@ class EditBankInfoLayout : public RenameLayout
   EditBankInfoLayout();
 
  protected:
-  virtual void commit(const Glib::ustring &newName) override;
+  virtual void commit(const Glib::ustring& newName) override;
   virtual Glib::ustring getInitialText() const override;
 
  private:
-  shared_ptr<PresetBank> m_currentBank;
+  Bank* m_currentBank = nullptr;
 };

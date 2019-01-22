@@ -72,23 +72,23 @@ bool DateTimeEditor::onButton(int i, bool down, ButtonModifiers modifiers)
 
     if(i == BUTTON_C)
     {
-      if(m_selection == Selection::First)
-        m_selection = Selection::Last;
+      if(m_selection == 0)
+        m_selection = Selection::Year;
       else
-        m_selection = static_cast<Selection>(m_selection - 1);
+        m_selection = (Selection)(m_selection - 1);
     }
 
     if(i == BUTTON_D)
     {
-      if(m_selection == Selection::Last)
-        m_selection = Selection::First;
+      if(m_selection == Selection::Year)
+        m_selection = Selection::Month;
       else
-        m_selection = static_cast<Selection>(m_selection + 1);
+        m_selection = (Selection)(m_selection + 1);
     }
 
     m_labels[m_selection]->setHighlight(true);
     m_controls[m_selection]->setHighlight(true);
-    return true;
+    true;
   }
   return false;
 }

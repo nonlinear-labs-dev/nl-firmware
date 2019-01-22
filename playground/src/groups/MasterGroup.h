@@ -10,5 +10,5 @@ class MasterGroup : public ParameterGroup
 
   void init();
 
-  virtual void undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount) override;
+  virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
 };

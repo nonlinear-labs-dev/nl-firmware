@@ -6,15 +6,15 @@ ButtonColumn::ButtonColumn(int firstButtonId)
 {
 
   for(int i = 0; i < 4; i++)
-    m_buttons[i] = new Button(firstButtonId+i);
+    m_buttons[i] = new Button(firstButtonId + i);
 
-  for (auto &m_button : m_buttons)
+  for(auto &m_button : m_buttons)
     add(*m_button);
 }
 
 ButtonColumn::~ButtonColumn()
 {
-  for(auto& b: m_buttons)
+  for(auto &b : m_buttons)
     delete b;
 }
 

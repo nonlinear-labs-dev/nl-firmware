@@ -1,6 +1,6 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
-#include <presets/PresetBank.h>
+#include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/Settings.h>

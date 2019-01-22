@@ -69,12 +69,7 @@ void UpdateDocumentContributor::incUpdateID()
   m_updateIDOnLastChange++;
 }
 
-const UpdateDocumentContributor *UpdateDocumentContributor::getParent() const
-{
-  return m_parent;
-}
-
-UpdateDocumentContributor *UpdateDocumentContributor::getParent()
+UpdateDocumentContributor *UpdateDocumentContributor::getParent() const
 {
   return m_parent;
 }

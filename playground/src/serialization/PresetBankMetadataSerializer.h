@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Serializer.h"
+#include <serialization/Serializer.h>
 
-class PresetBank;
+class Bank;
 
 class PresetBankMetadataSerializer : public Serializer
 {
  public:
-  PresetBankMetadataSerializer(shared_ptr<PresetBank> bank, bool ignoreUUIDs = false);
+  PresetBankMetadataSerializer(Bank *bank, bool ignoreUUIDs = false);
 
   static Glib::ustring getTagName();
 
@@ -15,6 +15,6 @@ class PresetBankMetadataSerializer : public Serializer
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  shared_ptr<PresetBank> m_bank;
+  Bank *m_bank = nullptr;
   bool m_ignoreUUIDs = false;
 };

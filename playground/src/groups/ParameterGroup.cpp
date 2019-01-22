@@ -2,6 +2,7 @@
 #include "xml/Writer.h"
 #include "parameters/Parameter.h"
 #include "presets/ParameterGroupSet.h"
+#include "presets/PresetParameterGroup.h"
 #include <fstream>
 
 ParameterGroup::ParameterGroup(ParameterGroupSet *parent, const char *id, const char *shortName, const char *longName,
@@ -63,6 +64,11 @@ ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(gint32 id) const
   }
 
   return NULL;
+}
+
+ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(gint32 id) const
+{
+  return getParameterByID(id);
 }
 
 map<int, pair<tDisplayValue, Glib::ustring>> &getDefaultValues()
@@ -144,29 +150,23 @@ ParameterGroup::tUpdateID ParameterGroup::onChange(uint64_t flags)
   return ret;
 }
 
-void ParameterGroup::copyFrom(UNDO::Scope::tTransactionPtr transaction, ParameterGroup *other)
+void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other)
 {
-  auto itThis = getParameters().begin();
-  auto itOther = other->getParameters().begin();
-  auto endThis = getParameters().end();
-  auto endOther = other->getParameters().end();
-
-  for(; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
+  for(auto &g : getParameters())
   {
-    (*itThis)->copyFrom(transaction, *itOther);
+    if(auto c = other->findParameterByID(g->getID()))
+    {
+      g->copyFrom(transaction, c);
+    }
   }
 }
 
-void ParameterGroup::undoableSetDefaultValues(UNDO::Scope::tTransactionPtr transaction, ParameterGroup *other)
+void ParameterGroup::undoableSetDefaultValues(UNDO::Transaction *transaction, const PresetParameterGroup *other)
 {
-  auto itThis = getParameters().begin();
-  auto itOther = other->getParameters().begin();
-  auto endThis = getParameters().end();
-  auto endOther = other->getParameters().end();
-
-  for(; itThis != endThis && itOther != endOther; (itThis++), (itOther++))
+  for(auto &g : getParameters())
   {
-    (*itThis)->undoableSetDefaultValue(transaction, *itOther);
+    PresetParameter *p = other ? other->findParameterByID(g->getID()) : nullptr;
+    g->undoableSetDefaultValue(transaction, p);
   }
 }
 
@@ -182,21 +182,7 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
                   });
 }
 
-void ParameterGroup::writeDiff(Writer &writer, ParameterGroup *other) const
-{
-  if(getHash() != other->getHash())
-  {
-    writer.writeTag("group", Attribute("name", getLongName()), [&] {
-      for(auto parameter : getParameters())
-      {
-        auto otherParameter = other->getParameterByID(parameter->getID());
-        parameter->writeDiff(writer, otherParameter);
-      }
-    });
-  }
-}
-
-void ParameterGroup::undoableClear(UNDO::Scope::tTransactionPtr transaction)
+void ParameterGroup::undoableClear(UNDO::Transaction *transaction)
 {
   for(auto p : getParameters())
   {
@@ -207,13 +193,13 @@ void ParameterGroup::undoableClear(UNDO::Scope::tTransactionPtr transaction)
   }
 }
 
-void ParameterGroup::undoableReset(UNDO::Scope::tTransactionPtr transaction, Initiator initiator)
+void ParameterGroup::undoableReset(UNDO::Transaction *transaction, Initiator initiator)
 {
   for(auto p : getParameters())
     p->reset(transaction, initiator);
 }
 
-void ParameterGroup::undoableRandomize(UNDO::Scope::tTransactionPtr transaction, Initiator initiator, double amount)
+void ParameterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
   for(auto p : getParameters())
   {
@@ -224,8 +210,7 @@ void ParameterGroup::undoableRandomize(UNDO::Scope::tTransactionPtr transaction,
   }
 }
 
-void ParameterGroup::undoableSetType(UNDO::Scope::tTransactionPtr transaction, PresetType oldType,
-                                     PresetType desiredType)
+void ParameterGroup::undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType)
 {
   for(auto p : getParameters())
     p->undoableSetType(transaction, oldType, desiredType);
@@ -240,19 +225,19 @@ void ParameterGroup::check()
   }
 }
 
-void ParameterGroup::undoableLock(UNDO::Scope::tTransactionPtr transaction)
+void ParameterGroup::undoableLock(UNDO::Transaction *transaction)
 {
   for(auto p : getParameters())
     p->undoableLock(transaction);
 }
 
-void ParameterGroup::undoableUnlock(UNDO::Scope::tTransactionPtr transaction)
+void ParameterGroup::undoableUnlock(UNDO::Transaction *transaction)
 {
   for(auto p : getParameters())
     p->undoableUnlock(transaction);
 }
 
-void ParameterGroup::undoableToggleLock(UNDO::Scope::tTransactionPtr transaction)
+void ParameterGroup::undoableToggleLock(UNDO::Transaction *transaction)
 {
   if(areAllParametersLocked())
     undoableUnlock(transaction);

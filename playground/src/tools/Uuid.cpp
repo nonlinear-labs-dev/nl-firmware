@@ -7,18 +7,28 @@ Uuid::Uuid()
 }
 
 Uuid::Uuid(const Uuid &other)
+    : id(other.id)
 {
-  id = other.id;
 }
 
-Uuid::Uuid(const Glib::ustring &id)
+Uuid::Uuid(Uuid &&other)
+    : id(std::move(other.id))
 {
-  this->id = id;
 }
 
 Uuid::Uuid(const std::string &id)
+    : id(id)
 {
-  this->id = id;
+}
+
+Uuid::Uuid(const ustring &id)
+    : id(id)
+{
+}
+
+Uuid::Uuid(const char *id)
+    : id(id)
+{
 }
 
 Uuid::~Uuid()
@@ -31,19 +41,39 @@ Uuid &Uuid::operator=(const Uuid &other)
   return *this;
 }
 
-Uuid::operator Glib::ustring() const
-{
-  return id;
-}
-
 bool Uuid::operator==(const Uuid &other) const
 {
   return other.id == id;
 }
 
-bool Uuid::operator==(const Glib::ustring &other) const
+bool Uuid::operator!=(const Uuid &other) const
 {
-  return id == other;
+  return other.id != id;
+}
+
+bool Uuid::operator<(const Uuid &other) const
+{
+  return id < other.id;
+}
+
+const string &Uuid::raw() const
+{
+  return id;
+}
+
+string &Uuid::raw()
+{
+  return id;
+}
+
+bool Uuid::empty() const
+{
+  return id.empty();
+}
+
+Uuid Uuid::none()
+{
+  return Uuid("");
 }
 
 void Uuid::generate()

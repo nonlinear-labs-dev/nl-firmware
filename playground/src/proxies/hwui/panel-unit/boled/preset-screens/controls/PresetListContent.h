@@ -1,16 +1,12 @@
 #pragma once
 
-#include <presets/PresetBank.h>
 #include <proxies/hwui/controls/ControlWithChildren.h>
-#include <sigc++/connection.h>
 #include <functional>
-#include <memory>
 
-class EmptyBankLabel;
 class Label;
-class Application;
-class PresetBank;
 class PresetListEntry;
+class Preset;
+class Bank;
 
 class PresetListContent : public ControlWithChildren
 {
@@ -21,15 +17,11 @@ class PresetListContent : public ControlWithChildren
   PresetListContent(const Rect &pos);
   virtual ~PresetListContent();
 
-  void setup(shared_ptr<PresetBank> bank, int focussedPresetPos);
+  void setup(Bank *bank, size_t focussedPresetPos);
   bool animateSelectedPreset(function<void()> cb);
 
  private:
-  void onBankSelectionChanged(shared_ptr<PresetBank> newBank);
-  void onBankChanged(shared_ptr<PresetBank> bank);
-  shared_ptr<Preset> getPresetAtPosition(shared_ptr<PresetBank> bank, int pos) const;
-
-  connection m_onBankChanged;
+  Preset *getPresetAtPosition(Bank *bank, int pos) const;
 
   PresetListEntry *m_firstPreset = nullptr;
   PresetListEntry *m_secondPreset = nullptr;

@@ -1,12 +1,8 @@
 #include "StaticBarSlider.h"
 
-StaticBarSlider::StaticBarSlider(Parameter *param, const Rect &pos)
-    : BarSlider(param, pos)
+StaticBarSlider::StaticBarSlider(tControlPositionValue v, bool isBiPolar, const Rect& pos)
+    : BarSlider(nullptr, pos)
 {
   setHighlight(true);
-  setValue(param->getControlPositionValue(), param->isBiPolar());
-}
-
-void StaticBarSlider::onParamValueChanged(const Parameter *param)
-{
+  setValue(v, isBiPolar);
 }

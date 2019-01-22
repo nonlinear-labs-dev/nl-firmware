@@ -6,7 +6,6 @@
 #include <libundo/undo/Transaction.h>
 
 class PresetManager;
-class PresetBank;
 class Preset;
 class HTTPRequest;
 
@@ -23,9 +22,7 @@ class PresetManagerActions : public RPCActionManager
   bool handleRequest(const Glib::ustring& path, shared_ptr<NetworkRequest> request) override;
 
  private:
-  void handleImportBackupFile(UNDO::TransactionCreationScope::tTransactionPtr transaction, SoupBuffer* buffer,
-                              shared_ptr<HTTPRequest> http);
+  void handleImportBackupFile(UNDO::Transaction* transaction, SoupBuffer* buffer, shared_ptr<HTTPRequest> http);
 
-  typedef shared_ptr<PresetBank> tBankPtr;
-  typedef shared_ptr<Preset> tPresetPtr;
+  typedef Preset* tPresetPtr;
 };

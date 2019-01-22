@@ -14,8 +14,8 @@ ParameterGroupSerializer::ParameterGroupSerializer(ParameterGroup *paramGroup)
     m_parameterById[p->getID()] = p;
 }
 
-ParameterGroupSerializer::~ParameterGroupSerializer(){
-#warning "should set defaults for parameters that have no "LOADED" flag"
+ParameterGroupSerializer::~ParameterGroupSerializer()
+{
 }
 
 Glib::ustring ParameterGroupSerializer::getTagName()
@@ -41,15 +41,15 @@ void ParameterGroupSerializer::readTagContent(Reader &reader) const
       p->removeFlag(ParameterFlags::Loaded);
     }
 
-    reader.onTag(ParameterSerializer::getTagName(), [&](const Attributes &attr) mutable {
-      auto p = m_parameterById.find(stoul(attr.get("id")));
+    reader.onTag(ParameterSerializer::getTagName(), [&](auto attr) mutable {
+      auto p = m_parameterById.find(stoi(attr.get("id")));
       if(p != m_parameterById.end())
       {
         auto param = p->second;
         param->setFlag(ParameterFlags::Loaded);
         return new ParameterSerializer(param);
       }
-      return (ParameterSerializer *) nullptr;
+      return static_cast<ParameterSerializer *>(nullptr);
     });
   }
 }

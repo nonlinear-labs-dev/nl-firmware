@@ -141,55 +141,55 @@ namespace UNDO
     return m_successors.size();
   }
 
-  const Transaction::tTransactionPtr Transaction::getSuccessor(size_t num) const
+  Transaction *Transaction::getSuccessor(size_t num) const
   {
     if(!hasSuccessors())
-      return Transaction::tTransactionPtr(nullptr);
+      return nullptr;
 
-    return m_successors[num];
+    return m_successors[num].get();
   }
 
-  void Transaction::addSuccessor(tTransactionPtr successor)
+  void Transaction::addSuccessor(std::unique_ptr<Transaction> successor)
   {
-    m_successors.push_back(successor);
-    m_defaultRedoRoute = successor;
+    m_defaultRedoRoute = successor.get();
+    m_successors.push_back(std::move(successor));
     onChange();
   }
 
-  void Transaction::setPredecessor(tTransactionPtr predecessor)
+  void Transaction::setPredecessor(Transaction *predecessor)
   {
     m_predecessor = predecessor;
     onChange();
   }
 
-  void Transaction::eraseSuccessor(tTransactionPtr successor)
+  void Transaction::eraseSuccessor(Transaction *successor)
   {
-    eraseSuccessor(successor.get());
+    eraseSuccessor(successor);
   }
 
   void Transaction::eraseSuccessor(const Transaction *successor)
   {
     auto end = std::remove_if(m_successors.begin(), m_successors.end(),
-                              [successor](auto p) { return p.get() == successor; });
+                              [successor](auto &p) { return p.get() == successor; });
 
     m_successors.erase(end, m_successors.end());
 
-    if(m_defaultRedoRoute.get() == successor)
+    if(m_defaultRedoRoute == successor)
     {
-      m_defaultRedoRoute.reset();
+      m_defaultRedoRoute = nullptr;
 
       if(!m_successors.empty())
       {
-        m_defaultRedoRoute = m_successors.front();
+        m_defaultRedoRoute = m_successors.front().get();
       }
     }
 
     onChange();
   }
 
-  const Transaction::tTransactionPtr Transaction::getPredecessor() const
+  Transaction *Transaction::getPredecessor() const
   {
-    return m_predecessor.lock();
+    return m_predecessor;
   }
 
   size_t Transaction::getDepth() const
@@ -203,17 +203,17 @@ namespace UNDO
     m_scope.undoAndHushUp();
   }
 
-  void Transaction::redoUntil(tTransactionPtr target)
+  void Transaction::redoUntil(Transaction *target)
   {
-    std::list<tTransactionPtr> steps = Algorithm::getPathAsList(std::move(target), this);
+    std::list<Transaction *> steps = Algorithm::getPathAsList(target, this);
 
-    for(const tTransactionPtr &step : steps)
+    for(Transaction *step : steps)
     {
       step->redoAction();
     }
   }
 
-  void Transaction::undoUntil(tTransactionPtr target)
+  void Transaction::undoUntil(Transaction *target)
   {
     undoAction();
 
@@ -221,19 +221,19 @@ namespace UNDO
       getPredecessor()->undoUntil(target);
   }
 
-  void Transaction::addChildren(std::list<tTransactionPtr> &list) const
+  void Transaction::addChildren(std::list<Transaction *> &list) const
   {
-    for(const tTransactionPtr &c : m_successors)
-      list.push_back(c);
+    for(auto &c : m_successors)
+      list.push_back(c.get());
   }
 
-  void Transaction::setDefaultRedoRoute(Transaction::tTransactionPtr route)
+  void Transaction::setDefaultRedoRoute(Transaction *route)
   {
     m_defaultRedoRoute = std::move(route);
     onChange();
   }
 
-  Transaction::tTransactionPtr Transaction::getDefaultRedoRoute() const
+  Transaction *Transaction::getDefaultRedoRoute() const
   {
     return m_defaultRedoRoute;
   }
@@ -250,9 +250,9 @@ namespace UNDO
     if(changed)
     {
       writer.writeTag("transaction", Attribute("name", getName()), Attribute("id", StringTools::buildString(this)),
-                      Attribute("predecessor", StringTools::buildString(getPredecessor().get())),
+                      Attribute("predecessor", StringTools::buildString(getPredecessor())),
                       Attribute("successors", getSuccessorsString()),
-                      Attribute("default-redo-route", StringTools::buildString(m_defaultRedoRoute.get())),
+                      Attribute("default-redo-route", StringTools::buildString(m_defaultRedoRoute)),
                       Attribute("changed", changed), [&]() {});
     }
   }
@@ -346,12 +346,12 @@ namespace UNDO
     {
       if(parent == path->getPredecessor())
       {
-        return parent->getOrder(this, path.get());
+        return parent->getOrder(this, path);
       }
       path = path->getPredecessor();
     }
 
-    return parent->getOrder(this, parent->m_defaultRedoRoute.get());
+    return parent->getOrder(this, parent->m_defaultRedoRoute);
   }
 
   int Transaction::getOrder(const Transaction *a, const Transaction *b) const
@@ -367,6 +367,18 @@ namespace UNDO
         return 1;
     }
     return 0;
+  }
+
+  std::unique_ptr<Transaction> Transaction::exhaust(const Transaction *a)
+  {
+    auto it = std::find_if(m_successors.begin(), m_successors.end(), [&](auto &b) { return b.get() == a; });
+    if(it != m_successors.end())
+    {
+      std::unique_ptr<Transaction> ret(std::move(*it));
+      m_successors.erase(it);
+      return ret;
+    }
+    return nullptr;
   }
 
 } /* namespace UNDO */

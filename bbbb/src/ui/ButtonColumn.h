@@ -8,14 +8,14 @@
 
 class ButtonColumn : public Gtk::VBox
 {
-  public:
-    ButtonColumn(int firstButtonId);
-    virtual ~ButtonColumn();
+ public:
+  ButtonColumn(int firstButtonId);
+  virtual ~ButtonColumn();
 
-    void setLed(int idx, bool state);
+  void setLed(int idx, bool state);
 
-  private:
-    Button* m_buttons[4];
+ private:
+  Button* m_buttons[4];
 };
 
 #endif

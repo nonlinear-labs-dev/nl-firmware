@@ -3,7 +3,7 @@
 #include <unordered_set>
 #include "../device-settings/DebugLevel.h"
 
-XmlReader::XmlReader(InStream& in, UNDO::Scope::tTransactionPtr transaction)
+XmlReader::XmlReader(InStream& in, UNDO::Transaction* transaction)
     : super(in, transaction)
     , m_context(*this)
 {
