@@ -13,10 +13,10 @@ Bank::Bank(UpdateDocumentContributor *parent)
 {
 }
 
-Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoeUuids)
+Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids)
     : Bank(parent)
 {
-  if(!ignoeUuids)
+  if(!ignoreUuids)
   {
     m_uuid = other.m_uuid;
     m_attachedToBankWithUuid = other.m_attachedToBankWithUuid;

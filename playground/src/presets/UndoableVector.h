@@ -33,7 +33,7 @@ template <typename Element> class UndoableVector
     other.forEach([&](auto e) { m_elements.emplace_back(m_factory(e)); });
 
     if(auto p = other.getSelected())
-      m_selection = at(getIndexOf(p))->getUuid();
+      m_selection = at(other.getIndexOf(p))->getUuid();
     else if(!empty())
       m_selection = first()->getUuid();
     else
