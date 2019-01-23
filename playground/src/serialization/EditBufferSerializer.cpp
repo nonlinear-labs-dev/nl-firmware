@@ -53,7 +53,7 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
         p->undoableUnlock(reader.getTransaction());
 
   reader.onTag(ParameterGroupsSerializer::getTagName(),
-               [&](auto) mutable { return new ParameterGroupsSerializer(m_editBuffer); });
+               [&](auto) mutable { auto ret = new ParameterGroupsSerializer(m_editBuffer); m_editBuffer->sendToLPC(); return ret; });
 
   reader.onTextElement("selected-parameter", [&](auto text, auto) mutable {
     m_editBuffer->undoableSelectParameter(reader.getTransaction(), text);
