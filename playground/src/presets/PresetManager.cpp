@@ -282,6 +282,7 @@ void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transa
   DEBUG_TRACE("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
   Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this);
+  m_editBuffer->sendToLPC();
 }
 
 void PresetManager::loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
