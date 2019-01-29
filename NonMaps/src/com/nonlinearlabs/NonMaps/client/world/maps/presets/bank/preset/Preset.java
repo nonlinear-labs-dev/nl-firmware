@@ -86,6 +86,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			boolean v = r.equals(uuid);
 			if (isCurrentFilterMatch != v) {
 				isCurrentFilterMatch = v;
+				
+				if(isCurrentFilterMatch) {
+					onSearchHighlight();
+				}
+				
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
 			return true;
@@ -97,6 +102,17 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return (Bank) super.getParent();
 	}
 
+	private void onSearchHighlight() {
+		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt()
+				.getPresetLayout().isDirectLoadActive();
+		
+		if(directLoadActive) {
+			load();
+		} else {
+			select();
+		}
+	}
+	
 	@Override
 	public RGB getColorFont() {
 		boolean selected = isSelected();
