@@ -493,8 +493,18 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
   }
 }
 
+bool isScaleParameter(int paramID)
+{
+  return dynamic_cast<ScaleParameter*>(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID)) != nullptr;
+}
+
 void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, int selectedParameterID)
 {
+  if(isScaleParameter(selectedParameterID))
+  {
+    selectedParameterID = ScaleGroup::getScaleBaseParameterID();
+  }
+
   auto button = m_mappings.findButton(selectedParameterID);
 
   if(button >= 0)

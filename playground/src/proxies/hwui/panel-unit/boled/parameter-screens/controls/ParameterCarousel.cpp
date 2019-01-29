@@ -1,4 +1,6 @@
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
+#include <groups/ScaleGroup.h>
+#include <parameters/ScaleParameter.h>
 #include "ParameterCarousel.h"
 #include "Application.h"
 #include "proxies/hwui/HWUI.h"
@@ -78,7 +80,11 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const l
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
-    miniParam->setSelected(param == selectedParameter);
+    if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr) {
+      miniParam->setSelected(param->getID() == ScaleGroup::getScaleBaseParameterID());
+    } else {
+      miniParam->setSelected(param == selectedParameter);
+    }
     addControl(miniParam);
     yPos += ySpaceing;
     yPos += miniParamHeight;
