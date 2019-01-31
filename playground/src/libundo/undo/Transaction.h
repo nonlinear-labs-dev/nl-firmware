@@ -106,14 +106,15 @@ namespace UNDO
     Scope &m_scope;
     Glib::ustring m_name;
     tCommandList m_commands;
-    bool m_isClosed;
+    bool m_isClosed = false;
 
     Transaction *m_predecessor = nullptr;
+    Transaction *m_defaultRedoRoute = nullptr;
+
     tSuccessors m_successors;
-    Transaction *m_defaultRedoRoute;
     tCommandList m_postfixCommands;
 
-    size_t m_depth;
+    size_t m_depth = 0;
   };
 
 } /* namespace UNDO */
