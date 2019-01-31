@@ -32,7 +32,7 @@ class Bank : public AttributesOwner
   };
 
   Bank(UpdateDocumentContributor *parent);
-  Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoeUuids);
+  Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids);
   ~Bank() override;
 
   void load(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder, int numBank, int numBanks);
