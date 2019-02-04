@@ -103,14 +103,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	private void onSearchHighlight() {
-		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt()
-				.getPresetLayout().isDirectLoadActive();
-		
-		if(directLoadActive) {
-			load();
-		} else {
-			select();
-		}
+		select();
 	}
 	
 	@Override
