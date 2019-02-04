@@ -25,8 +25,7 @@ public class ParameterUpdater extends Updater {
 		if (!longName.isEmpty())
 			target.longName.setValue(longName);
 		
-		if(changed != target.changed.getBool())
-			target.changed.setValue(changed);
+		target.changed.setValue(changed);
 
 		ValueUpdater vu = new ValueUpdater(target.value);
 		vu.update(root);

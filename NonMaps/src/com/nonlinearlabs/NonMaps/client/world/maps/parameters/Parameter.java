@@ -64,13 +64,18 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private boolean isLocked = false;
 	protected QuantizedClippedValue.IncrementalChanger currentParameterChanger = null;
 
+	static public void onChange() {
+		
+	}
+	
 	public Parameter(MapsLayout parent) {
 		super(parent);
 		name = createName();
 		value = createValue(new ValueChangeListener());
-				
+		
 		if (getParameterID() != 0)
 			getSelectionRoot().registerSelectable(this);
+		
 	}
 
 	protected QuantizedClippedValue createValue(ChangeListener changeListener) {
@@ -101,10 +106,14 @@ public abstract class Parameter extends LayoutResizingVertical {
 				null);
 
 		super.draw(ctx, invalidationMask);
-
+		
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
+		else if(EditBufferModel.get().findParameter(getParameterID()).changed.isTrue()) {
+			getPixRect().drawRoundedRect(ctx,  getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
+		}
+
 	}
 
 	private RGB getParameterBackgroundColor() {
