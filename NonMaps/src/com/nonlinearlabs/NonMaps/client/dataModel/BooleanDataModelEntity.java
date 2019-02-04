@@ -12,10 +12,7 @@ public class BooleanDataModelEntity extends EnumDataModelEntity<BooleanValues> {
 	}
 
 	public void toggle() {
-		if (getValue() == BooleanValues.on)
-			setValue(BooleanValues.off);
-		else
-			setValue(BooleanValues.on);
+		setValue(getValue() == BooleanValues.on);
 	}
 
 	public boolean isTrue() {
@@ -24,5 +21,16 @@ public class BooleanDataModelEntity extends EnumDataModelEntity<BooleanValues> {
 
 	public boolean isFalse() {
 		return getValue() == BooleanValues.off;
+	}
+
+	public void setValue(boolean changed) {
+		if (changed)
+			setValue(BooleanValues.on);
+		else
+			setValue(BooleanValues.off);
+	}
+	
+	public boolean getBool() {
+		return getValue() == BooleanValues.on;
 	}
 }

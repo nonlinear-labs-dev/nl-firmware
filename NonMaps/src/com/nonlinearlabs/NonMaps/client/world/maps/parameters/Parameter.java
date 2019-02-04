@@ -11,6 +11,7 @@ import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
@@ -55,7 +56,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	public interface ParameterListener {
 		public void onParameterChanged(QuantizedClippedValue newValue);
 	}
-
+	
 	private HashSet<ParameterListener> listeners = new HashSet<ParameterListener>();
 	private QuantizedClippedValue value;
 	private JavaScriptObject stringizer;
@@ -67,7 +68,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		super(parent);
 		name = createName();
 		value = createValue(new ValueChangeListener());
-
+				
 		if (getParameterID() != 0)
 			getSelectionRoot().registerSelectable(this);
 	}
@@ -435,7 +436,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getFullNameWithGroup() {
-		return getGroupName() + "   \u2013   " + getName().getLongName();
+		boolean changed = EditBufferModel.get().findParameter(getParameterID()).changed.isTrue();
+		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
 	}
 
 	public String getGroupName() {

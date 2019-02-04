@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 import java.util.HashMap;
 import java.util.function.Function;
 
+import com.nonlinearlabs.NonMaps.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.DateDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
@@ -28,7 +29,7 @@ public class EditBufferModel {
 	public StringDataModelEntity comment = new StringDataModelEntity();
 	public StringDataModelEntity deviceName = new StringDataModelEntity();
 	public DateDataModelEntity storeTime = new DateDataModelEntity();
-
+	
 	static public EditBufferModel get() {
 		return theInstance;
 	}

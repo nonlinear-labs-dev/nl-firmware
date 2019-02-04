@@ -17,12 +17,16 @@ public class ParameterUpdater extends Updater {
 	public void doUpdate() {
 		String shortName = getChildText(root, "short-name");
 		String longName = getChildText(root, "short-name");
+		boolean changed = Boolean.valueOf(getChildText(root, "changed"));
 
 		if (!shortName.isEmpty())
 			target.shortName.setValue(shortName);
 
 		if (!longName.isEmpty())
 			target.longName.setValue(longName);
+		
+		if(changed != target.changed.getBool())
+			target.changed.setValue(changed);
 
 		ValueUpdater vu = new ValueUpdater(target.value);
 		vu.update(root);
