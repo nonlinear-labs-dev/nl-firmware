@@ -16,6 +16,7 @@ import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
 import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
+import com.nonlinearlabs.NonMaps.client.useCases.PresetRecall;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Name;
@@ -110,7 +111,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
-		else if(EditBufferModel.get().findParameter(getParameterID()).changed.isTrue()) {
+		else if(EditBufferModel.get().findParameter(getParameterID()).isChanged()) {
 			getPixRect().drawRoundedRect(ctx,  getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
 		}
 
@@ -445,7 +446,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getFullNameWithGroup() {
-		boolean changed = EditBufferModel.get().findParameter(getParameterID()).changed.isTrue();
+		boolean changed = EditBufferModel.get().findParameter(getParameterID()).isChanged();
 		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
 	}
 

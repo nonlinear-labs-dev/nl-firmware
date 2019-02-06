@@ -17,7 +17,6 @@ public class ParameterPresenter {
 	public boolean locked = false;
 	public boolean isBoolean = false;
 	public String shortName = "---";
-	public boolean changed = false;
 
 	public long hash = 0;
 
@@ -46,7 +45,6 @@ public class ParameterPresenter {
 		c.eat(isBoolean);
 		c.eat(shortName);
 		c.eat(displayValue);
-		c.eat(changed);
 
 		long newHash = c.getHash();
 

@@ -161,11 +161,6 @@ namespace UNDO
     onChange();
   }
 
-  void Transaction::eraseSuccessor(Transaction *successor)
-  {
-    eraseSuccessor(successor);
-  }
-
   void Transaction::eraseSuccessor(const Transaction *successor)
   {
     auto end = std::remove_if(m_successors.begin(), m_successors.end(),

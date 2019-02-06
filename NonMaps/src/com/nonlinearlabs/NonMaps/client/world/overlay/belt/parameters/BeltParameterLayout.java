@@ -1,9 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -51,7 +53,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private ParameterClippingLabel mcLowerClip;
 
 	private QuantizedClippedValue currentValue;
-
+	private RecallArea recallArea;
+	
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
 
@@ -77,6 +80,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
+		
+		addChild(recallArea = new RecallArea(this));
 
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
 
@@ -174,6 +179,17 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 			walkerX += r.width;
 		}
 
+		
+		GWT.log(recallArea.getPixRect().toString());
+		
+		recallArea.doLayout(valueDisplay.getPixRect().getLeft() - w / 3, upperElementsY, w / 4, third);
+		recallArea.setVisible(EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue()).isChanged());
+		
+		GWT.log("Visible:" + recallArea.isVisible());
+		
+		GWT.log(recallArea.getPixRect().toString());
+
+		
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
 
 		double dottedLineInset = 5;

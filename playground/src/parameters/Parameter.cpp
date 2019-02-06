@@ -214,20 +214,17 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 PresetParameter *Parameter::getOriginalParameter() const
 {
   auto pm = Application::get().getPresetManager();
-  if(auto preset = pm->getEditBuffer()->getOrigin())
+  if(auto presetLoadedFrom = pm->getEditBuffer()->getOrigin())
   {
-    return preset->findParameterByID(getID());
+    return presetLoadedFrom->findParameterByID(getID());
   }
   return nullptr;
 }
 
 bool Parameter::isChangedFromLoaded() const
 {
-  if(auto currentParam = this)
-  {
-    if(auto originalParameter = getOriginalParameter())
-      return currentParam->getControlPositionValue() != originalParameter->getValue();
-  }
+  if(auto originalParameter = getOriginalParameter())
+    return getControlPositionValue() != originalParameter->getValue();
   return false;
 }
 
@@ -327,7 +324,10 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
 {
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
-  writer.writeTextElement("changed", Glib::ustring(isChangedFromLoaded() ? "true" : "false"));
+
+  if(auto ogParam = getOriginalParameter()) {
+      writer.writeTextElement("og-value", to_string(ogParam->getValue()));
+  }
 
   if(shouldWriteDocProperties(knownRevision))
   {
@@ -508,4 +508,14 @@ void Parameter::check()
 
   cp = getControlPositionValue();
   g_assert(cp == m_value.getLowerBorder());
+}
+
+void Parameter::undoableRecallFromPreset() {
+  auto &scope = Application::get().getPresetManager()->getUndoScope();
+  auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getLongName());
+  auto transaction = transactionScope->getTransaction();
+    if(auto original = getOriginalParameter())
+    {
+      setCPFromHwui(transaction, original->getValue());
+    }
 }
