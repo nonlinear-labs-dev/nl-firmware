@@ -30,6 +30,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.ChangeListener;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterCompareButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.ParameterContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
@@ -111,7 +112,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
-		else if(EditBufferModel.get().findParameter(getParameterID()).isChanged()) {
+		else if(EditBufferModel.get().findParameter(getParameterID()).isChanged() && ParameterCompareButton.inCompare) {
 			getPixRect().drawRoundedRect(ctx,  getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
 		}
 

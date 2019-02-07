@@ -5,10 +5,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Range;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
@@ -23,6 +26,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterCompareButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
@@ -54,6 +58,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	private QuantizedClippedValue currentValue;
 	private RecallArea recallArea;
+	private ParameterCompareButton compareButton;
 	
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
@@ -80,9 +85,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
-		
+	
 		addChild(recallArea = new RecallArea(this));
-
+		addChild(compareButton = new ParameterCompareButton(this));
+		
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
 
 		setupValue();
@@ -100,7 +106,16 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		fixMode();
+
 		super.draw(ctx, invalidationMask);
+		
+		valueDisplay.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
+		compareButton.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
+		recallArea.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
+		recallArea.button.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
+		recallArea.value.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
+		parameterName.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
+		
 	}
 
 	private void fixMode() {
@@ -157,9 +172,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
-
 		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth * 0.75, 2, 1);
-
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcLowerBoundRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
@@ -177,20 +190,16 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 			}
 			walkerX += r.width;
-		}
+		}	
 
+						
+		recallArea.setVisible(EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue()).isChanged() && ParameterCompareButton.inCompare);
 		
-		GWT.log(recallArea.getPixRect().toString());
+		recallArea.doLayout(w / 2 - valueDisplay.getRelativePosition().getWidth() / 2 - buttonDim * 5, upperElementsY, buttonDim * 5, third);
 		
-		recallArea.doLayout(valueDisplay.getPixRect().getLeft() - w / 3, upperElementsY, w / 4, third);
-		recallArea.setVisible(EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue()).isChanged());
-		
-		GWT.log("Visible:" + recallArea.isVisible());
-		
-		GWT.log(recallArea.getPixRect().toString());
-
 		
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
+		compareButton.doLayout(w / 2 + valueDisplay.getRelativePosition().getWidth() / 2 , 2*third - upperElementsY, buttonDim, third);
 
 		double dottedLineInset = 5;
 		double lineWidth = slider.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight()

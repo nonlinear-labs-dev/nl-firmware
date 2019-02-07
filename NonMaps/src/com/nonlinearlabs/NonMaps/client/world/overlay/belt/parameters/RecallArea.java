@@ -1,10 +1,12 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
@@ -13,11 +15,12 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 public class RecallArea extends OverlayLayout {
 
 
-	private class RecallValue extends Label {
+	class RecallValue extends Label {
 
 		public RecallValue(OverlayLayout parent) {
 			super(parent);
 			setFontHeightInMM(5);
+			setFontColor(RGB.lightGray());
 		}
 
 		@Override
@@ -29,17 +32,16 @@ public class RecallArea extends OverlayLayout {
 		
 	}
 	
-	private class RecallButton extends SVGImage {
+	class RecallButton extends SVGImage {
 
+		public boolean clicked = false;
+		
 		@Override
 		public int getSelectedPhase() {
-			EditBufferModel eb = EditBufferModel.get();
-
-			if(eb.findParameter(eb.selectedParameter.getValue()).isChanged()) {
-				return 1;
-			} else {
-				return 2;
+			if(clicked) {
+				return 0;
 			}
+			return 1;
 		}
 
 		@Override
@@ -48,9 +50,17 @@ public class RecallArea extends OverlayLayout {
 
 			if(eb.findParameter(eb.selectedParameter.getValue()).isChanged()) {
 				NonMaps.get().getServerProxy().recallCurrentParameterFromPreset();
+				getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				clicked = true;
 				return this;
 			}
 			return null;
+		}
+		
+		@Override
+		public Control mouseUp(Position eventPoint) {
+			clicked = false;
+			return super.mouseUp(eventPoint);
 		}
 
 		public RecallButton(Control parent) {
@@ -61,8 +71,8 @@ public class RecallArea extends OverlayLayout {
 		
 	}
 	
-	private RecallValue value;
-	private RecallButton button;
+	public RecallValue value;
+	public RecallButton button;
 	
 	protected RecallArea(BeltParameterLayout parent) {
 		super(parent);
@@ -72,9 +82,21 @@ public class RecallArea extends OverlayLayout {
 	
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
+		double buttonDim = Millimeter.toPixels(10);
 		super.doLayout(x, y, w, h);
-		value.doLayout(x, y, w / 2, h);
-		button.doLayout(x + value.getPixRect().getWidth(), y, w/2, h);
+		
+		x = x - 2*w;
+
+		button.doLayout(x, y, buttonDim, h);
+		value.doLayout(x + buttonDim, y, w - buttonDim, h);
+
 	}
 
+	@Override
+	public void setVisible(boolean v) {
+		if( v != isVisible()) {
+			super.setVisible(v);
+			button.clicked = false;
+		}
+	}
 }
