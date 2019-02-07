@@ -108,14 +108,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		fixMode();
 
 		super.draw(ctx, invalidationMask);
-		
-		valueDisplay.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
-		compareButton.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
-		recallArea.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
-		recallArea.button.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
-		recallArea.value.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
-		parameterName.getPixRect().drawRoundedRect(NonMaps.get().getCanvas().getContext2d(), 2, 2, 2, null, RGB.red());
-		
 	}
 
 	private void fixMode() {
