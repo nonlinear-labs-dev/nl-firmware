@@ -70,4 +70,12 @@ public class EditBufferModel {
 		findParameter(parameterId).value.onChange(cb);
 	}
 
+	public boolean isAnyParamChanged() {
+		for(BasicParameterModel param: parameters.values()) {
+			if(param.isChanged())
+				return true;
+		}
+		return false;
+	}
+
 }

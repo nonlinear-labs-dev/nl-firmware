@@ -30,7 +30,7 @@ public class ParameterCompareButton extends SVGImage {
 	public int getSelectedPhase() {
 		
 		
-		if(EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue()).isChanged()) {
+		if(EditBufferModel.get().isAnyParamChanged()) {
 			if(inCompare) {
 				return 1;
 			} else {
@@ -47,7 +47,7 @@ public class ParameterCompareButton extends SVGImage {
 	
 	@Override
 	public Control click(Position eventPos) {
-		if(inCompare || EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue()).isChanged()) {
+		if(inCompare || EditBufferModel.get().isAnyParamChanged()) {
 			inCompare = !inCompare;
 			NonMaps.get().getNonLinearWorld().getPresetManager().getChildren().forEach(c -> c.invalidate(INVALIDATION_FLAG_ZOOMED));
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);

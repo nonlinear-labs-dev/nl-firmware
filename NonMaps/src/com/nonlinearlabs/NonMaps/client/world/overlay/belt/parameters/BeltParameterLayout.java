@@ -106,7 +106,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		fixMode();
 
 		super.draw(ctx, invalidationMask);
-		recallArea.getPixRect().drawRoundedRect(ctx, 2, 2, 2, null, RGB.red());
 	}
 
 	private void fixMode() {
@@ -180,7 +179,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				OverlayControl c = (OverlayControl) r.record.attached;
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 				if(c instanceof ValueDisplay) {
-					recallArea.setVisible(EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue()).isChanged() && !isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
+					recallArea.setVisible(!isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
 					double recallWidth = buttonDim * 5;
 					recallArea.doLayout(walkerX - recallWidth, upperElementsY, recallWidth, third);
 				}

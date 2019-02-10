@@ -26,6 +26,10 @@ public class RecallArea extends OverlayLayout {
 		@Override
 		public String getDrawText(Context2d ctx) {
 			EditBufferModel eb = EditBufferModel.get();
+			
+			if(!eb.findParameter(eb.selectedParameter.getValue()).isChanged())
+				return "";
+			
 			Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(eb.selectedParameter.getValue());
 			return param.getDecoratedValue(true, eb.findParameter(eb.selectedParameter.getValue()).originalValue.getValue());
 		}
@@ -38,9 +42,16 @@ public class RecallArea extends OverlayLayout {
 		
 		@Override
 		public int getSelectedPhase() {
-			if(clicked) {
+			EditBufferModel eb = EditBufferModel.get();
+			if(!eb.findParameter(eb.selectedParameter.getValue()).isChanged())
+				clicked = false;
+
+			
+			if(!eb.findParameter(eb.selectedParameter.getValue()).isChanged())
+				return 2;
+			if(clicked && eb.findParameter(eb.selectedParameter.getValue()).isChanged())
 				return 0;
-			}
+			
 			return 1;
 		}
 
@@ -91,9 +102,6 @@ public class RecallArea extends OverlayLayout {
 
 	@Override
 	public void setVisible(boolean v) {
-		if( v != isVisible()) {
-			super.setVisible(v);
-			button.clicked = false;
-		}
+		super.setVisible(v);
 	}
 }
