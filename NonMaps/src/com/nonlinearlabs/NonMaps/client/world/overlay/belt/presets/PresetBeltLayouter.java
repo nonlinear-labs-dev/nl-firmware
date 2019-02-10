@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 
@@ -15,6 +16,8 @@ public class PresetBeltLayouter {
 	}
 
 	protected void layoutLockSymbol(double w) {
+		GWT.log(this.getClass().getName());
+		GWT.log("W: " + w);
 		double lockSymbolSizeInPixel = Millimeter.toPixels(layout.lock.getLockSizeInMM() + 1);
 		layout.lock.doLayout(w - lockSymbolSizeInPixel * 1.25, lockSymbolSizeInPixel * 0.25, lockSymbolSizeInPixel,
 				lockSymbolSizeInPixel);

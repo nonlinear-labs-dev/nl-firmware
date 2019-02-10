@@ -10,12 +10,14 @@ public class PresetBeltLayouterS extends PresetBeltLayouter {
 	public boolean doLayout(double w, double h) {
 		hide(layout.menu);
 		hide(layout.currentPreset);
+		hide(layout.compareButton);
 
 		double margin = getDefaultMargin();
 		double left = margin;
 		double right = w - margin;
 		double autoLoadWidth = layout.autoLoad.getSelectedImage().getImgWidth();
 
+		
 		layout.store.doLayout(left, 0, h);
 		left += layout.store.getRelativePosition().getWidth();
 

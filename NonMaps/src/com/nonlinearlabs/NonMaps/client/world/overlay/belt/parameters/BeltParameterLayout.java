@@ -58,7 +58,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	private QuantizedClippedValue currentValue;
 	private RecallArea recallArea;
-	private ParameterCompareButton compareButton;
 	
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
@@ -87,7 +86,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
 	
 		addChild(recallArea = new RecallArea(this));
-		addChild(compareButton = new ParameterCompareButton(this));
 		
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
 
@@ -191,7 +189,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		
 		
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
-		compareButton.doLayout(w / 2 + valueDisplay.getRelativePosition().getWidth() / 2 , 2*third - upperElementsY, buttonDim, third);
 
 		double dottedLineInset = 5;
 		double lineWidth = slider.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight()
