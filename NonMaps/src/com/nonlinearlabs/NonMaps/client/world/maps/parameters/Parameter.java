@@ -93,6 +93,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		super.getStateHash(crc);
 		crc.eat(isSelected());
 		crc.eat(getParameterID());
+		crc.eat(ParameterCompareButton.inCompare);
 	}
 
 	public final boolean isBiPolar() {

@@ -49,8 +49,6 @@ public class ParameterCompareButton extends SVGImage {
 	public Control click(Position eventPos) {
 		if(inCompare || EditBufferModel.get().isAnyParamChanged()) {
 			inCompare = !inCompare;
-			NonMaps.get().getNonLinearWorld().getPresetManager().getChildren().forEach(c -> c.invalidate(INVALIDATION_FLAG_ZOOMED));
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
 		return this;
 	}
