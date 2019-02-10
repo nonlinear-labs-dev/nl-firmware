@@ -83,12 +83,9 @@ public class RecallArea extends OverlayLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		double buttonDim = Millimeter.toPixels(10);
-		super.doLayout(x, y, w, h);
-		
-		x = x - 2*w;
-
-		button.doLayout(x, y, buttonDim, h);
-		value.doLayout(x + buttonDim, y, w - buttonDim, h);
+		super.doLayout(x, y, w, h);		
+		button.doLayout(0, 0, buttonDim, h);
+		value.doLayout(buttonDim, 0, buttonDim * 4, h);
 
 	}
 
