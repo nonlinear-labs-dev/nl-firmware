@@ -112,9 +112,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
-		else if(EditBufferModel.get().findParameter(getParameterID()).isChanged() && ParameterCompareButton.inCompare) {
+		if(EditBufferModel.get().findParameter(getParameterID()).isChanged() && ParameterCompareButton.inCompare)
 			getPixRect().drawRoundedRect(ctx,  getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
-		}
 
 	}
 
