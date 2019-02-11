@@ -457,7 +457,7 @@ BankActions::BankActions(PresetManager &presetManager)
         {
           if(srcBank->getNumPresets() == 0)
           {
-            m_presetManager.selectBank(transaction, srcBank->getUuid());
+              m_presetManager.deleteBank(transaction, srcBank->getUuid());
           }
         }
       }
