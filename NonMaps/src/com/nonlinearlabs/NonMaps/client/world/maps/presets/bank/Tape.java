@@ -70,11 +70,13 @@ public class Tape extends MapsControl {
 		for(Bank b: this.getParent().getParent().getBanks()) {
 			if(b != other.getParent()) {
 				for(Tape tape: b.getTapes()) {
-					if(tape != other) {
-						double curr = tape.measureDistance(other);
-						if(shortestDistance > curr) {
-							shortestDistance = curr;
-							currentTarget = tape;
+					if(!tape.isOrientedHorizontal()) {
+						if(tape != other) {
+							double curr = tape.measureDistance(other);
+							if(shortestDistance > curr) {
+								shortestDistance = curr;
+								currentTarget = tape;
+							}
 						}
 					}
 				}
