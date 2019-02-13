@@ -36,6 +36,27 @@ void printStackTrace(int i)
   exit(EXIT_FAILURE);
 }
 
+std::string getStackTrace(const std::string& prefix)
+{
+  std::stringstream str;
+  str << prefix << ":" << std::endl << std::endl;
+
+  const size_t max_frames = 16;
+  void* addrlist[max_frames + 1];
+  guint32 addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
+
+  if(addrlen != 0)
+  {
+    char** symbollist = backtrace_symbols(addrlist, addrlen);
+
+    for(guint32 i = 0; i < addrlen; i++)
+      str << symbollist[i] << std::endl;
+
+    free(symbollist);
+  }
+  return str.str();
+}
+
 void setupLocale()
 {
   const char* desiredLocales[] = { "en_US.utf8@nonlinear", "en_US.utf8" };

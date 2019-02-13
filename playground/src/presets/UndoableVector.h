@@ -74,7 +74,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range("Element is not in vector");
+    throw std::out_of_range(getStackTrace("Element is not in vector"));
   }
 
   size_t getIndexOf(const Element *e) const
@@ -84,7 +84,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range("Element is not in vector");
+    throw std::out_of_range(getStackTrace("Element is not in vector"));
   }
 
   size_t size() const
