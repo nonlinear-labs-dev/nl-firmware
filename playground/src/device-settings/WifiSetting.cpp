@@ -4,7 +4,13 @@
 
 WifiSetting::WifiSetting(Settings& settings)
     : BooleanSetting(settings, WifiSetting::pollAccessPointRunning())
-    , m_bgThread([&]() { this->doBackgroundWork(); })
+    , m_bgThread([&]() {
+      #ifdef _DEVELOPMENT_PC
+        DebugLevel::warning("WiFiSetting not functional, disable DEV_PC to enable WiFi");
+      #else
+        this->doBackgroundWork();
+      #endif
+    })
 {
 }
 
@@ -54,11 +60,12 @@ void WifiSetting::doBackgroundWork()
 
 bool WifiSetting::pollAccessPointRunning()
 {
-  SpawnCommandLine cmd("systemctl is-active accesspoint");
-  printRet(cmd);
-#ifdef DEV_PC
+
+#ifdef _DEVELOPMENT_PC
   return true;
 #else
+  SpawnCommandLine cmd("systemctl is-active accesspoint");
+  printRet(cmd);
   return cmd.getExitStatus() == 0;
 #endif
 }
