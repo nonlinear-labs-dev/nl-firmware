@@ -314,18 +314,12 @@ bool ParameterRecallLayout2::onRotary(int inc, ButtonModifiers modifiers)
 
 void ParameterRecallLayout2::doRecall()
 {
-  auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getCurrentParameter()->getLongName());
-  auto transaction = transactionScope->getTransaction();
   if(auto curr = getCurrentParameter())
   {
-    if(auto original = curr->getOriginalParameter())
-    {
-      m_recallString = curr->getDisplayString();
-      m_recallValue = curr->getControlPositionValue();
-      curr->setCPFromHwui(transaction, original->getValue());
-      updateUI(true);
-    }
+    m_recallString = curr->getDisplayString();
+    m_recallValue = curr->getControlPositionValue();
+    curr->undoableRecallFromPreset();
+    updateUI(true);
   }
 }
 

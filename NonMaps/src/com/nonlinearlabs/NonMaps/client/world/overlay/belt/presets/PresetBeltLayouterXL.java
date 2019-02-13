@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import com.nonlinearlabs.NonMaps.client.Millimeter;
+
 public class PresetBeltLayouterXL extends PresetBeltLayouter {
 
 	public PresetBeltLayouterXL(BeltPresetLayout layout) {
@@ -24,11 +26,15 @@ public class PresetBeltLayouterXL extends PresetBeltLayouter {
 
 		layout.autoLoad.doLayout(right - autoLoadWidth, 0, autoLoadWidth, h);
 		right -= autoLoadWidth + margin;
-
+				
 		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth,
 				currentPresetHeight);
+		layout.compareButton.doLayout(right + margin, (h / 2 - currentPresetHeight - Millimeter.toPixels(5)), Millimeter.toPixels(10), Millimeter.toPixels(10));
+
 		right -= currentPresetWidth + margin;
 
+		
+		
 		layout.load.doLayout(right, 0, h);
 		right -= layout.load.getRelativePosition().getWidth() + margin;
 
@@ -53,6 +59,9 @@ public class PresetBeltLayouterXL extends PresetBeltLayouter {
 		layout.load.getRelativePosition().moveTo(right + margin, layout.load.getRelativePosition().getTop());
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
+		right += layout.currentPreset.getRelativePosition().getWidth() / 2 - Millimeter.toPixels(5);
+		layout.compareButton.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getBottom());
+
 
 		super.layoutLockSymbol(w);
 		return true;

@@ -190,6 +190,14 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto scope = editBuffer->getUndoScope().startTransaction("Toggle Group Lock");
     editBuffer->undoableToggleGroupLock(scope->getTransaction(), groupId);
   });
+
+  addAction("recall-current-from-preset", [=](shared_ptr<NetworkRequest> request) {
+    if(auto selParam = editBuffer->getSelected()) {
+      if(selParam->isChangedFromLoaded()) {
+        selParam->undoableRecallFromPreset();
+      }
+    }
+  });
 }
 
 EditBufferActions::~EditBufferActions()

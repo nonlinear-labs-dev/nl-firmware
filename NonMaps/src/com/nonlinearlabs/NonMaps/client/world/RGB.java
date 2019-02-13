@@ -61,6 +61,10 @@ public class RGB {
 	public static RGB red() {
 		return new RGB(255, 0, 0);
 	}
+	
+	public static RGB yellow() {
+		return new RGB(255, 255, 0);
+	}
 
 	public static RGB lightGray() {
 		return new RGB(155, 159, 163);

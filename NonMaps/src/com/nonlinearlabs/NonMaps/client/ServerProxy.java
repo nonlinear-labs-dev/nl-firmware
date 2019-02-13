@@ -971,4 +971,10 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
+
+	public void recallCurrentParameterFromPreset() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-current-from-preset");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
 }

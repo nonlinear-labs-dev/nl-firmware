@@ -49,7 +49,7 @@ public class Name {
 			} else if (nodeName.equals("long-name")) {
 				setLongName(value);
 				return true;
-			}
+			} 
 		} catch (Exception e) {
 
 		}
