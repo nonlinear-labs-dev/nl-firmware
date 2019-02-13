@@ -15,34 +15,34 @@ enum class DebugLevels
 
 inline std::ostream& operator<<(std::ostream& out, const DebugLevels& level)
 {
-    switch(level)
-    {
-        case DebugLevels::DEBUG_LEVEL_SILENT:
-            out << "silent";
-            break;
+  switch(level)
+  {
+    case DebugLevels::DEBUG_LEVEL_SILENT:
+      out << "silent";
+      break;
 
-        case DebugLevels::DEBUG_LEVEL_ERROR:
-            out << "!!! ERROR !!!";
-            break;
+    case DebugLevels::DEBUG_LEVEL_ERROR:
+      out << "!!! ERROR !!!";
+      break;
 
-        case DebugLevels::DEBUG_LEVEL_WARNING:
-            out << "WARNING";
-            break;
+    case DebugLevels::DEBUG_LEVEL_WARNING:
+      out << "WARNING";
+      break;
 
-        case DebugLevels::DEBUG_LEVEL_DEBUG:
-            out << "Debug";
-            break;
+    case DebugLevels::DEBUG_LEVEL_DEBUG:
+      out << "Debug";
+      break;
 
-        case DebugLevels::DEBUG_LEVEL_INFO:
-            out << "info";
-            break;
+    case DebugLevels::DEBUG_LEVEL_INFO:
+      out << "info";
+      break;
 
-        case DebugLevels::DEBUG_LEVEL_GASSY:
-            out << "gassy";
-            break;
-    }
+    case DebugLevels::DEBUG_LEVEL_GASSY:
+      out << "gassy";
+      break;
+  }
 
-    return out;
+  return out;
 }
 
 class DebugLevel : public EnumSetting<DebugLevels>

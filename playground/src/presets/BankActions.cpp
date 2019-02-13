@@ -434,7 +434,7 @@ BankActions::BankActions(PresetManager &presetManager)
   });
 
   addAction("delete-presets", [&](shared_ptr<NetworkRequest> request) mutable {
-    PerformanceTimer  t("delete-presets");
+    PerformanceTimer t("delete-presets");
     auto scope = m_presetManager.getUndoScope().startTransaction("Delete Presets");
     auto transaction = scope->getTransaction();
 
@@ -455,7 +455,7 @@ BankActions::BankActions(PresetManager &presetManager)
         {
           if(srcBank->getNumPresets() == 0)
           {
-              m_presetManager.deleteBank(transaction, srcBank->getUuid());
+            m_presetManager.deleteBank(transaction, srcBank->getUuid());
           }
         }
       }
@@ -868,19 +868,26 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
 
       Glib::ustring uuid = request->get("uuid");
 
+      Preset *preset = nullptr;
+      auto ebAsPreset = std::make_unique<Preset>(&m_presetManager, *m_presetManager.getEditBuffer());
+
       if(uuid.empty())
       {
-        auto eb = m_presetManager.getEditBuffer();
-        EditBufferSerializer serializer(eb);
-        httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + eb->getName() + ".xml\"");
-        serializer.write(writer, VersionAttribute::get());
+        preset = ebAsPreset.get();
       }
       else if(auto p = m_presetManager.findPreset(uuid))
       {
-        PresetSerializer serializer(p);
-        httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + p->getName() + ".xml\"");
-        serializer.write(writer, VersionAttribute::get());
+        preset = p;
       }
+      else
+      {
+        DebugLevel::warning("Could not download Preset!");
+        return false;
+      }
+
+      PresetSerializer serializer(preset);
+      httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + preset->getName() + ".xml\"");
+      serializer.write(writer, VersionAttribute::get());
 
       return true;
     }

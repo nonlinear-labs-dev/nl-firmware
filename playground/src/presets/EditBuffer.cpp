@@ -21,7 +21,7 @@
 #include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
 
-EditBuffer::EditBuffer(UpdateDocumentContributor *parent)
+EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
@@ -574,10 +574,9 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
 void EditBuffer::setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid)
 {
   if(auto mcs = getParameterGroupByID("MCs"))
-    if(auto mc = dynamic_cast<MacroControlParameter*>(mcs->getParameterByID(id)))
+    if(auto mc = dynamic_cast<MacroControlParameter *>(mcs->getParameterByID(id)))
     {
-        mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
-        mc->setLastMCViewUUID(uuid);
+      mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+      mc->setLastMCViewUUID(uuid);
     }
 }
-

@@ -491,7 +491,9 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
 
 bool isScaleParameter(int paramID)
 {
-  return dynamic_cast<ScaleParameter*>(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID)) != nullptr;
+  return dynamic_cast<ScaleParameter *>(
+             Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID))
+      != nullptr;
 }
 
 void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, int selectedParameterID)

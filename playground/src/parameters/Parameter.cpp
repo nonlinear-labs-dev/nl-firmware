@@ -332,8 +332,9 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
 
-  if(auto ogParam = getOriginalParameter()) {
-      writer.writeTextElement("og-value", to_string(ogParam->getValue()));
+  if(auto ogParam = getOriginalParameter())
+  {
+    writer.writeTextElement("og-value", to_string(ogParam->getValue()));
   }
 
   if(shouldWriteDocProperties(knownRevision))
@@ -517,12 +518,13 @@ void Parameter::check()
   g_assert(cp == m_value.getLowerBorder());
 }
 
-void Parameter::undoableRecallFromPreset() {
+void Parameter::undoableRecallFromPreset()
+{
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getLongName());
   auto transaction = transactionScope->getTransaction();
-    if(auto original = getOriginalParameter())
-    {
-      setCPFromHwui(transaction, original->getValue());
-    }
+  if(auto original = getOriginalParameter())
+  {
+    setCPFromHwui(transaction, original->getValue());
+  }
 }

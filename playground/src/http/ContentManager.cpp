@@ -76,8 +76,7 @@ ContentManager::ContentManager()
 {
 }
 
-ContentManager::~ContentManager()
-= default;
+ContentManager::~ContentManager() = default;
 
 void ContentManager::init()
 {
@@ -308,8 +307,7 @@ void ContentManager::onSectionChanged()
     {
       auto millisecondsTillNextUpdate = duration_cast<milliseconds>(minDelayBetweenUpdates - diff).count();
       Application::get().getMainContext()->signal_timeout().connect_once(
-              sigc::mem_fun(this, &ContentManager::sendResponses),
-              static_cast<unsigned int>(millisecondsTillNextUpdate));
+          sigc::mem_fun(this, &ContentManager::sendResponses), static_cast<unsigned int>(millisecondsTillNextUpdate));
     }
   }
 }
