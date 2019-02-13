@@ -27,7 +27,7 @@ void PresetParameterGroupsSerializer::readTagContent(Reader &reader) const
 {
   reader.onTag(PresetParameterGroupSerializer::getTagName(), [&](const Attributes &attr) mutable {
     auto id = attr.get("id");
-    auto group = std::make_unique<PresetParameterGroup>(m_preset);
+    auto group = std::make_unique<PresetParameterGroup>();
     auto serializer = new PresetParameterGroupSerializer(group.get());
     m_preset->m_parameterGroups[id] = std::move(group);
     return serializer;

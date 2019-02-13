@@ -13,16 +13,13 @@ class PresetParameterGroupSerializer;
 
 using ParameterPtr = std::unique_ptr<PresetParameter>;
 
-class PresetParameterGroup : public UpdateDocumentContributor
+class PresetParameterGroup
 {
  public:
-  PresetParameterGroup(Preset *parent);
-  PresetParameterGroup(Preset *parent, const ::ParameterGroup &other);
-  PresetParameterGroup(Preset *parent, const PresetParameterGroup &other);
-  ~PresetParameterGroup() override;
-
-  // supported interfaces
-  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  PresetParameterGroup();
+  PresetParameterGroup(const ::ParameterGroup &other);
+  PresetParameterGroup(const PresetParameterGroup &other);
+  ~PresetParameterGroup();
 
   // accessors
   PresetParameter *findParameterByID(int id) const;

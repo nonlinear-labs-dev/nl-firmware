@@ -86,6 +86,23 @@ namespace UNDO
       }
     }
 
+    template <typename T> void addUndoSwap(T &target, const T &newValue)
+    {
+      if(target != newValue)
+      {
+        addSimpleCommand([&target, swap = UNDO::createSwapData(std::move(newValue))](auto) { swap->swapWith(target); });
+      }
+    }
+
+    template <typename T> void addUndoSwap(T &target, T &&newValue)
+    {
+      if(target != newValue)
+      {
+        addSimpleCommand(
+            [&target, swap = UNDO::createSwapData(std::forward<T>(newValue))](auto) { swap->swapWith(target); });
+      }
+    }
+
    protected:
     void implDoAction() const override;
     void implUndoAction() const override;

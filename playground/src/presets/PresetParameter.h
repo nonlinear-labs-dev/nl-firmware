@@ -1,7 +1,6 @@
 #pragma once
 
 #include "playground.h"
-#include <http/UpdateDocumentContributor.h>
 #include <unordered_map>
 #include <type_traits>
 
@@ -11,18 +10,15 @@ namespace UNDO
 }
 
 class Parameter;
-
 class PresetParameterGroup;
+class Writer;
 
-class PresetParameter : public UpdateDocumentContributor
+class PresetParameter
 {
  public:
-  PresetParameter(PresetParameterGroup *parent, int id);
-  PresetParameter(PresetParameterGroup *parent, const ::Parameter &other);
-  PresetParameter(PresetParameterGroup *parent, const PresetParameter &other);
-
-  // supported interfaces
-  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  PresetParameter(int id);
+  PresetParameter(const ::Parameter &other);
+  PresetParameter(const PresetParameter &other);
 
   enum Fields : uint8_t
   {

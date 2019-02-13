@@ -131,6 +131,8 @@ enum class ReturnMode
   Zero
 };
 
+std::string getStackTrace(const std::string& prefix);
+
 #ifdef _TESTS
 #define FOR_TESTS(expression) expression
 #else
