@@ -41,18 +41,17 @@ public class Tape extends MapsControl {
 	public boolean isVisible() {
 		return (isActiveEmptyTape() || isActiveInsertTape());
 	}
-
+	
 	private boolean isActiveEmptyTape() {
 		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
 
 		for (DragProxy d : o.getDragProxies()) {
 			Control r = d.getCurrentReceiver();
 			if (r != null) {
-
 				if (r instanceof PresetManager || r instanceof Tape) {
-					boolean visible = super.isVisible();
-					return visible && o.isCurrentlyDraggingATypeOf(Bank.class.getName())
-							&& getParent().isTapeActive(orientation);
+					return 	super.isVisible() && 
+							o.isCurrentlyDraggingATypeOf(Bank.class.getName()) &&
+							getParent().isTapeActive(orientation);
 				}
 			}
 		}
@@ -60,6 +59,53 @@ public class Tape extends MapsControl {
 		return false;
 	}
 
+	private Tape getTopMostIntersectingTape(Tape other) {
+		
+		if(this.isOrientedHorizontal() || other.isOrientedHorizontal())
+			return this;
+		
+		Tape currentTarget = this;
+		double shortestDistance = Double.MAX_VALUE;
+		
+		for(Bank b: this.getParent().getParent().getBanks()) {
+			if(b != other.getParent()) {
+				for(Tape tape: b.getTapes()) {
+					if(!tape.isOrientedHorizontal()) {
+						if(tape != other) {
+							double curr = tape.measureDistance(other);
+							if(shortestDistance > curr) {
+								shortestDistance = curr;
+								currentTarget = tape;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return currentTarget;
+	}
+
+	private double measureDistance(Tape other) {
+		
+		Rect otherPos = other.getPixRect();
+		
+		if(other.isDraggingControl()) {
+			Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
+			for(DragProxy d: o.getDragProxies()) {
+				if(d.getOrigin() == other.getParent()) {
+					otherPos = d.getCalculatedPixRect(d.getParent().getPixRect().getPosition(), 1);
+				}
+			}
+		}
+		
+		return otherPos.getCenterPoint().getDistanceTo(this.getPixRect().getCenterPoint());
+	}
+
+	public boolean isOrientedHorizontal() {
+		return orientation == Orientation.North || orientation == Orientation.South;
+	}
+	
 	private boolean isInsertTape() {
 		return getParent().hasSlaveInDirection(getOrientation());
 	}
@@ -191,8 +237,8 @@ public class Tape extends MapsControl {
 
 		if (!others.isVisible())
 			return false;
-
-		return isInvertedOrientation(others.orientation);
+		
+		return isInvertedOrientation(others.orientation) && getTopMostIntersectingTape(others) == this;
 	}
 
 	private boolean isInvertedOrientation(Orientation other) {
