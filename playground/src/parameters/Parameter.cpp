@@ -16,6 +16,7 @@
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
 #include <presets/Preset.h>
+#include <device-settings/DebugLevel.h>
 
 static const auto c_invalidSnapshotValue = numeric_limits<tControlPositionValue>::max();
 
@@ -223,10 +224,13 @@ PresetParameter *Parameter::getOriginalParameter() const
 
 bool Parameter::isChangedFromLoaded() const
 {
-  if(auto currentParam = this)
+  if(auto originalParameter = getOriginalParameter())
   {
-    if(auto originalParameter = getOriginalParameter())
-      return currentParam->getControlPositionValue() != originalParameter->getValue();
+    const auto rawOld = originalParameter->getValue();
+    const auto rawNow = getControlPositionValue();
+    const auto epsilon = 0.5 / getValue().getFineDenominator();
+    DebugLevel::warning("Using", epsilon, "as epsilon for Parameter::isChangedFromLoaded!", getLongName());
+    return std::fabs(rawOld - rawNow) > epsilon;
   }
   return false;
 }
