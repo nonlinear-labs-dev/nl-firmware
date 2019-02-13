@@ -70,14 +70,11 @@ bool ContentManager::WebsocketConnection::canOmitOracles(int currentUpdateId) co
 }
 
 ContentManager::ContentManager()
-    :
-
-    m_lastUpdateSentAt(chrono::system_clock::now())
+    : m_lastUpdateSentAt(chrono::steady_clock::now())
 {
 }
 
-ContentManager::~ContentManager()
-= default;
+ContentManager::~ContentManager() = default;
 
 void ContentManager::init()
 {
@@ -296,10 +293,10 @@ void ContentManager::onSectionChanged()
     const auto minDelayBetweenUpdates = milliseconds(100);
     m_sendResponsesScheduled = true;
 
-    auto now = system_clock::now();
+    auto now = steady_clock::now();
     auto diff = now - m_lastUpdateSentAt;
 
-    if(diff >= minDelayBetweenUpdates || diff < system_clock::duration::zero())
+    if(diff >= minDelayBetweenUpdates || diff < steady_clock::duration::zero())
     {
       Application::get().getMainContext()->signal_idle().connect_once(
           sigc::mem_fun(this, &ContentManager::sendResponses));
@@ -308,8 +305,7 @@ void ContentManager::onSectionChanged()
     {
       auto millisecondsTillNextUpdate = duration_cast<milliseconds>(minDelayBetweenUpdates - diff).count();
       Application::get().getMainContext()->signal_timeout().connect_once(
-              sigc::mem_fun(this, &ContentManager::sendResponses),
-              static_cast<unsigned int>(millisecondsTillNextUpdate));
+          sigc::mem_fun(this, &ContentManager::sendResponses), static_cast<unsigned int>(millisecondsTillNextUpdate));
     }
   }
 }
@@ -330,7 +326,7 @@ void ContentManager::sendResponses()
 
   feedWebSockets();
 
-  m_lastUpdateSentAt = std::chrono::system_clock::now();
+  m_lastUpdateSentAt = std::chrono::steady_clock::now();
 
   DebugLevel::info("sent outstanding update responses");
 }

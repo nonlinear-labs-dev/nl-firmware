@@ -48,7 +48,7 @@ bool WatchDog::isDebuggerPreset()
   return false;
 }
 
-void WatchDog::run(chrono::system_clock::duration timeout)
+void WatchDog::run(chrono::steady_clock::duration timeout)
 {
   run(timeout, [=](int numWarnings, int msInactive) {
     const int maxNumWarnings = 10;
@@ -65,7 +65,7 @@ void WatchDog::run(chrono::system_clock::duration timeout)
   });
 }
 
-void WatchDog::run(chrono::system_clock::duration timeout, tCB cb)
+void WatchDog::run(chrono::steady_clock::duration timeout, tCB cb)
 {
   m_timeout = timeout;
 
@@ -80,7 +80,7 @@ void WatchDog::run(chrono::system_clock::duration timeout, tCB cb)
 
 void WatchDog::doBackgroundCheck(tCB cb)
 {
-  auto timeOfLastChange = std::chrono::system_clock::now();
+  auto timeOfLastChange = std::chrono::steady_clock::now();
   int numWarnings = 0;
 
   while(m_run)
@@ -95,7 +95,7 @@ void WatchDog::doBackgroundCheck(tCB cb)
       if(oldVal == m_counter)
       {
         numWarnings++;
-        auto now = std::chrono::system_clock::now();
+        auto now = std::chrono::steady_clock::now();
         auto timeSinceLastChange = now - timeOfLastChange;
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeSinceLastChange).count();
 
@@ -104,7 +104,7 @@ void WatchDog::doBackgroundCheck(tCB cb)
       else
       {
         numWarnings = 0;
-        timeOfLastChange = std::chrono::system_clock::now();
+        timeOfLastChange = std::chrono::steady_clock::now();
       }
     }
   }

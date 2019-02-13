@@ -57,7 +57,7 @@ int main(int numArgs, char** argv)
 
 void printCurrentTime(const char* name)
 {
-  auto now = std::chrono::system_clock::now();
+  auto now = std::chrono::steady_clock::now();
   auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
   printCurrentTime(name, ms);
 }

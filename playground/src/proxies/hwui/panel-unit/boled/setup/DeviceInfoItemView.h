@@ -12,7 +12,7 @@ class DeviceInfoItemView : public SetupLabel
   typedef SetupLabel base_type;
 
  public:
-  using Duration = std::chrono::system_clock::duration;
+  using Duration = std::chrono::steady_clock::duration;
 
   DeviceInfoItemView(DeviceInformationItem* item, Duration updateInterval = Duration::zero());
   virtual ~DeviceInfoItemView();

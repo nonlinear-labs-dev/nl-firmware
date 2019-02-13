@@ -31,7 +31,7 @@ void ToOledsBridge::handleTimeStampedFramebuffer(Receiver::tMessage msg)
 
   if(ms)
   {
-    auto now = std::chrono::system_clock::now();
+    auto now = std::chrono::steady_clock::now();
     int64_t nowMS = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     auto diff = nowMS - ms;
     m_timeStamps.push_back({ now, diff });
@@ -40,7 +40,7 @@ void ToOledsBridge::handleTimeStampedFramebuffer(Receiver::tMessage msg)
 
 void ToOledsBridge::removeOldRecords()
 {
-  auto now = std::chrono::system_clock::now();
+  auto now = std::chrono::steady_clock::now();
 
   auto e = std::remove_if(m_timeStamps.begin(), m_timeStamps.end(), [&](auto p) {
     auto age = now - p.captureTime;

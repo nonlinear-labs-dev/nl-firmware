@@ -8,7 +8,7 @@ class Expiration
 {
  public:
   using Callback = std::function<void()>;
-  using Duration = std::chrono::system_clock::duration;
+  using Duration = std::chrono::steady_clock::duration;
 
   Expiration(Callback cb = Callback(), Duration d = Duration::zero(), int priority = Glib::PRIORITY_DEFAULT);
   ~Expiration();
