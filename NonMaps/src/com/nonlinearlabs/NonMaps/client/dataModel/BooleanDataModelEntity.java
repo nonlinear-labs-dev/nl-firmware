@@ -26,11 +26,8 @@ public class BooleanDataModelEntity extends EnumDataModelEntity<BooleanValues> {
 		return getValue() == BooleanValues.off;
 	}
 
-	public void setValue(boolean changed) {
-		if (changed)
-			setValue(BooleanValues.on);
-		else
-			setValue(BooleanValues.off);
+	public void setValue(boolean v) {
+		setValue(v ? BooleanValues.on : BooleanValues.off);
 	}
 	
 	public boolean getBool() {
