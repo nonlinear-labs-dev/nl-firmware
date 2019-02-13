@@ -23,7 +23,7 @@ class MacroControlParameter : public Parameter
   void registerTarget(ModulateableParameter *target);
   void unregisterTarget(ModulateableParameter *target);
 
-  void setCPFromMCView(UNDO::Transaction* transaction, const tControlPositionValue &cpValue);
+  void setCPFromMCView(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
   void applyLpcPhysicalControl(tControlPositionValue diff);
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
@@ -75,7 +75,7 @@ class MacroControlParameter : public Parameter
   Glib::ustring m_lastMCViewUuid;
 
   void propagateMCChangeToMCViews(const Initiator &initiatior);
-  tControlPositionValue lastBroadcastedControlPosition;
+  tControlPositionValue lastBroadcastedControlPosition = 0;
   Throttler mcviewThrottler;
 
   sigc::signal<void> m_targetListChanged;

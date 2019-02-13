@@ -31,6 +31,8 @@ void PresetBankMetadataSerializer::writeTagContent(Writer &writer) const
 
   AttributesOwnerSerializer attributesWriter(m_bank);
   attributesWriter.write(writer);
+
+  writer.writeTextElement("last-changed-timestamp", std::to_string(m_bank->m_lastChangedTimestamp));
 }
 
 void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
@@ -72,4 +74,9 @@ void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
 
   reader.onTag(AttributesOwnerSerializer::getTagName(),
                [&](const Attributes &attr) mutable { return new AttributesOwnerSerializer(m_bank); });
+
+  reader.onTextElement("last-changed-timestamp", [&](auto text, auto) {
+    reader.getTransaction()->addPostfixCommand(
+        [text = text, bank = m_bank](auto) { bank->m_lastChangedTimestamp = std::stoull(text); });
+  });
 }
