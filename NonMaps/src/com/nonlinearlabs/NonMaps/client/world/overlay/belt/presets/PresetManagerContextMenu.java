@@ -72,17 +72,18 @@ public class PresetManagerContextMenu extends ContextMenu {
 		addChild(new ContextMenuItem(this, "Restore all Banks from Backup File ...") {
 			@Override
 			public Control click(Position eventPoint) {
-				boolean confirm = Window.confirm(
-						"This will replace all current banks! Please save the banks with your work as files before restoring the backup.");
-
-				if (confirm == false) {
-					return null;
-				}
 				final FileUpload upload = new FileUpload();
 				upload.setName("uploadFormElement");
 
-				if (!Navigator.getPlatform().toLowerCase().contains("mac")) {
+				if (!Navigator.getPlatform().toLowerCase().contains("mac"))
 					upload.getElement().setAttribute("accept", ".xml.tar.gz");
+
+				if (canOpenFileDialogAfterConfirmationDialogs()) {
+					boolean confirm = Window.confirm(
+							"This will replace all current banks! Please save the banks with your work as files before restoring the backup.");
+
+					if (!confirm)
+						return null;
 				}
 
 				upload.addChangeHandler(new ChangeHandler() {
@@ -104,6 +105,16 @@ public class PresetManagerContextMenu extends ContextMenu {
 				upload.click();
 				RootPanel.get().add(upload);
 				return super.click(eventPoint);
+			}
+
+			private boolean canOpenFileDialogAfterConfirmationDialogs() {
+				String platform = Navigator.getPlatform();
+				String version = Navigator.getAppVersion();
+				boolean isMac = platform.toLowerCase().contains("mac");
+				boolean isChrome72 = version.contains("Chrome/72.");
+
+				boolean hasBug = isMac && isChrome72;
+				return !hasBug;
 			}
 		});
 

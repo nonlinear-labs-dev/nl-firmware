@@ -11,7 +11,6 @@
 #include <http/HTTPRequest.h>
 #include "xml/XmlWriter.h"
 #include "ClusterEnforcement.h"
-#include "BankChangeBlocker.h"
 #include <xml/MemoryInStream.h>
 #include <xml/XmlReader.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
@@ -361,7 +360,6 @@ BankActions::BankActions(PresetManager &presetManager)
     auto uuid = request->get("uuid");
     if(auto bank = m_presetManager.findBank(uuid))
     {
-      BankChangeBlocker blocker(bank);
       auto &undoScope = m_presetManager.getUndoScope();
       auto newPos = std::max(1ULL, stoull(request->get("order-number"))) - 1;
       auto scope = undoScope.startTransaction("Changed Order Number of Bank: %0", bank->getName(true));
@@ -491,7 +489,6 @@ BankActions::BankActions(PresetManager &presetManager)
         auto scope = presetManager.getUndoScope().startTransaction("Move preset bank '%0'", bank->getName(true));
         auto transaction = scope->getTransaction();
 
-        BankChangeBlocker blocker(bank);
         bank->setX(transaction, x);
         bank->setY(transaction, y);
       }
@@ -512,7 +509,6 @@ BankActions::BankActions(PresetManager &presetManager)
         auto newBank = presetManager.addBank(transaction);
         newBank->setX(transaction, x);
         newBank->setY(transaction, y);
-        BankChangeBlocker b(bank);
         auto newPreset = newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *p, true));
         newBank->setName(transaction, "New Bank");
         newBank->selectPreset(transaction, newPreset->getUuid());
@@ -646,6 +642,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto scope = presetManager.getUndoScope().startTransaction("Set bank attribute");
       auto transaction = scope->getTransaction();
       bank->setAttribute(transaction, key, value);
+      bank->updateLastModifiedTimestamp(transaction);
     }
   });
 
@@ -655,8 +652,6 @@ BankActions::BankActions(PresetManager &presetManager)
 
     if(auto bank = m_presetManager.getSelectedBank())
     {
-      std::vector<BankChangeBlocker> blocker;
-      m_presetManager.forEachBank([&](auto b) { blocker.emplace_back(b); });
       auto pos = presetManager.getBankPosition(bankUUID);
 
       if(value == "LeftByOne")
@@ -762,19 +757,12 @@ BankActions::BankActions(PresetManager &presetManager)
 
     for(auto bank : m_presetManager.getBanks())
     {
-      BankChangeBlocker blocker(bank);
       bank->setX(transaction, std::to_string(std::stoi(bank->getX()) + x));
       bank->setY(transaction, std::to_string(std::stoi(bank->getY()) + y));
     }
   });
 
-  addAction("sort-bank-numbers", [&](auto request) mutable {
-    std::vector<BankChangeBlocker> blocker;
-    for(auto b : Application::get().getPresetManager()->getBanks())
-      blocker.push_back(BankChangeBlocker(b));
-
-    ClusterEnforcement::sortBankNumbers();
-  });
+  addAction("sort-bank-numbers", [&](auto request) mutable { ClusterEnforcement::sortBankNumbers(); });
 }
 
 BankActions::~BankActions()
@@ -856,8 +844,6 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
         XmlWriter writer(stream);
         PresetBankSerializer serializer(bank);
         serializer.write(writer, VersionAttribute::get());
-
-        BankChangeBlocker b(bank);
 
         auto scope = UNDO::Scope::startTrashTransaction();
         auto transaction = scope->getTransaction();

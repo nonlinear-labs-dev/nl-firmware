@@ -64,6 +64,7 @@ class Preset : public AttributesOwner
 
  private:
   size_t getHash() const = delete;
+  void updateBanksLastModifiedTimestamp(UNDO::Transaction *transaction);
 
   Uuid m_uuid;
   Glib::ustring m_name;

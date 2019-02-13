@@ -63,7 +63,8 @@ void HTTPServer::webSocket(SoupServer *server, SoupWebsocketConnection *connecti
 }
 
 void HTTPServer::mcWebSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
-                             SoupClientContext *client, HTTPServer *pThis) {
+                             SoupClientContext *client, HTTPServer *pThis)
+{
   pThis->m_mcviewManager.connectWebSocket(connection);
 }
 
@@ -189,7 +190,7 @@ void HTTPServer::messageFinishedCB(SoupMessage *msg, HTTPServer *pThis)
   pThis->onMessageFinished(msg);
 }
 
-const MCViewContentManager &HTTPServer::getMCViewContentManager() const {
+const MCViewContentManager &HTTPServer::getMCViewContentManager() const
+{
   return m_mcviewManager;
 }
-

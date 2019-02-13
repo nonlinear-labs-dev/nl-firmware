@@ -2,6 +2,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
 #include <serialization/PresetBankMetadataSerializer.h>
+#include <tools/FileSystem.h>
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
 
@@ -84,15 +85,40 @@ Preset *Bank::clonePreset(const Preset *p)
 
 void Bank::load(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder, int numBank, int numBanks)
 {
-  loadMetadata(transaction, bankFolder);
+  auto lastChangedDateOfFile = loadMetadata(transaction, bankFolder);
   loadPresets(transaction, bankFolder);
+  deleteOldPresetFiles(bankFolder);
+
+  m_lastChangedTimestamp = lastChangedDateOfFile;
+  // to be overwritten by PresetBankMetadataSerializer addPostfixCommand, if timestamp exists in file
+}
+
+void Bank::deleteOldPresetFiles(RefPtr<Gio::File> bankFolder)
+{
+  RefPtr<Gio::FileEnumerator> enumerator = bankFolder->enumerate_children();
+
+  while(auto file = enumerator->next_file())
+  {
+    if(file->get_file_type() == Gio::FILE_TYPE_REGULAR)
+    {
+      auto fileName = file->get_name();
+      auto withoutExtension = fileName.substr(0, fileName.find("."));
+
+      if(FileSystem::isNameAUUID(withoutExtension))
+      {
+        if(!findPreset(withoutExtension))
+        {
+          if(auto presetFile = bankFolder->get_child(fileName))
+            presetFile->remove();
+        }
+      }
+    }
+  }
 }
 
 uint64_t Bank::loadMetadata(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder)
 {
-  auto lastChangeOnFile
-      = Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", this, false);
-  return lastChangeOnFile;
+  return Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", this, false);
 }
 
 void Bank::loadPresets(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder)
@@ -102,9 +128,8 @@ void Bank::loadPresets(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFol
 
 UpdateDocumentContributor::tUpdateID Bank::onChange(uint64_t flags)
 {
-  auto ret = AttributesOwner::onChange(flags);
   m_sigBankChanged.deferedSend();
-  return ret;
+  return AttributesOwner::onChange(flags);
 }
 
 const Uuid &Bank::getUuid() const
@@ -295,11 +320,13 @@ void Bank::invalidate()
 void Bank::setName(UNDO::Transaction *transaction, const string &name)
 {
   transaction->addUndoSwap(this, m_name, name);
+  updateLastModifiedTimestamp(transaction);
 }
 
 void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   transaction->addUndoSwap(this, m_uuid, uuid);
+  updateLastModifiedTimestamp(transaction);
 }
 
 void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
@@ -334,6 +361,11 @@ void Bank::setY(UNDO::Transaction *transaction, const string &y)
   transaction->addUndoSwap(this, m_y, y);
 }
 
+void Bank::updateLastModifiedTimestamp(UNDO::Transaction *transaction)
+{
+  transaction->addSimpleCommand([&](auto) { m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp(); });
+}
+
 Preset *Bank::appendPreset(UNDO::Transaction *transaction)
 {
   return appendPreset(transaction, std::make_unique<Preset>(this));
@@ -341,21 +373,25 @@ Preset *Bank::appendPreset(UNDO::Transaction *transaction)
 
 Preset *Bank::appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
+  updateLastModifiedTimestamp(transaction);
   return m_presets.append(transaction, std::move(preset));
 }
 
 Preset *Bank::prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
+  updateLastModifiedTimestamp(transaction);
   return m_presets.prepend(transaction, std::move(preset));
 }
 
 Preset *Bank::insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
 {
+  updateLastModifiedTimestamp(transaction);
   return m_presets.insert(transaction, pos, std::move(preset));
 }
 
 void Bank::movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before)
 {
+  updateLastModifiedTimestamp(transaction);
   m_presets.move(transaction, toMove, before);
 }
 
@@ -372,27 +408,20 @@ void Bank::movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *preset
     assert(p == presetToMove);
     auto pos = presetAnchor ? tgtBank->getPresetPosition(presetAnchor) : tgtBank->getNumPresets();
     tgtBank->m_presets.adopt(transaction, pos, p);
+    tgtBank->updateLastModifiedTimestamp(transaction);
+    updateLastModifiedTimestamp(transaction);
   }
 }
 
 void Bank::deletePreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   m_presets.remove(transaction, uuid);
+  updateLastModifiedTimestamp(transaction);
 }
 
 connection Bank::onBankChanged(sigc::slot<void> cb)
 {
   return m_sigBankChanged.connectAndInit(cb);
-}
-
-void Bank::removeChangeBlocker()
-{
-  m_lastChangeTimestampBlocked--;
-}
-
-void Bank::addChangeBlocker()
-{
-  m_lastChangeTimestampBlocked++;
 }
 
 void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -434,7 +463,7 @@ void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other, bool igno
 
   other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, p, ignoreUuids)); });
 
-  m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp();
+  updateLastModifiedTimestamp(transaction);
 }
 
 string to_string(Bank::AttachmentDirection dir)
