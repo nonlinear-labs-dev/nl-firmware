@@ -28,6 +28,7 @@
 #include <tools/TimeTools.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include "SearchQuery.h"
+#include <device-settings/DebugLevel.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     : RPCActionManager("/presets/")
@@ -147,9 +148,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     {
       auto scope = presetManager.getUndoScope().startTransaction("Load Edit Buffer");
       auto transaction = scope->getTransaction();
-      auto xml = http->get("xml", "");
-
-      LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
+      auto xml = sanitizeXML(http->get("xml", ""));
 
       MemoryInStream stream(xml, false);
       XmlReader reader(stream, transaction);
@@ -159,10 +158,14 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       {
         transaction->rollBack();
         http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
+        DebugLevel::warning("Could not read EditBuffer xml!");
+        return;
       }
 
       if(auto preset = m_presetManager.findPreset(editBuffer->getUUIDOfLastLoadedPreset()))
       {
+        LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
+
         auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
         auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
         auto bank = dynamic_cast<Bank *>(preset->getParent());
@@ -300,4 +303,12 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
   }
 
   return false;
+}
+
+Glib::ustring PresetManagerActions::sanitizeXML(const Glib::ustring &in) const {
+    if(in.find("<preset") != Glib::ustring::npos)
+    {
+        return StringTools::replaceAll(in, "<preset", "<edit-buffer");
+    }
+    return in;
 }
