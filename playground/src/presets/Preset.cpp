@@ -111,7 +111,6 @@ void Preset::guessName(UNDO::Transaction *transaction)
   if(currentName.empty())
     currentName = "New preset";
 
-  setName(transaction, "");
   setName(transaction, Application::get().getPresetManager()->createPresetNameBasedOn(currentName));
 }
 
