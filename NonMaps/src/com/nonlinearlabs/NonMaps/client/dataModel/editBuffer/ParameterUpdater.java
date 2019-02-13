@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 import com.nonlinearlabs.NonMaps.client.dataModel.ValueUpdater;
@@ -27,9 +26,7 @@ public class ParameterUpdater extends Updater {
 			target.longName.setValue(longName);
 		
 		if(!og.isEmpty()) {
-			GWT.log(og);
 			target.originalValue.setValue(Double.valueOf(og));
-
 		}
 		
 		ValueUpdater vu = new ValueUpdater(target.value);
