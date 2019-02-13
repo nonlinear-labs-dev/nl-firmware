@@ -21,7 +21,7 @@ class ToOledsBridge : public Bridge
 
   struct Record
   {
-    std::chrono::system_clock::time_point captureTime;
+    std::chrono::steady_clock::time_point captureTime;
     int64_t ms;
   };
 

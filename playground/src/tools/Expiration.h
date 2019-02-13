@@ -3,12 +3,14 @@
 #include "playground.h"
 #include "Uncopyable.h"
 #include <chrono>
+#include <functional>
+#include <glibmm.h>
 
 class Expiration : public Uncopyable
 {
  public:
-  using Callback = function<void()>;
-  using Duration = std::chrono::system_clock::duration;
+  using Callback = std::function<void()>;
+  using Duration = std::chrono::steady_clock::duration;
 
   Expiration(Callback cb = Callback(), Duration d = Duration::zero(), int priority = Glib::PRIORITY_DEFAULT);
   ~Expiration();

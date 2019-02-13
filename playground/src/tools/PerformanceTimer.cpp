@@ -4,13 +4,6 @@
 
 int PerformanceTimer::s_indent = 0;
 
-void PerformanceTimer::printCurrentTime(const char *name)
-{
-  auto now = std::chrono::system_clock::now();
-  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-  printCurrentTime(name, ms);
-}
-
 void PerformanceTimer::printCurrentTime(const char *name, int64_t ms)
 {
   /* auto s = ms / 1000;

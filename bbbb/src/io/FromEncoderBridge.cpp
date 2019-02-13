@@ -36,10 +36,10 @@ void FromEncoderBridge::sendRotary(int8_t inc)
 
 void FromEncoderBridge::scheduleTimestampedEvent(int8_t inc)
 {
-  if(m_firstPendingEventTime == std::chrono::system_clock::time_point::min())
-    m_firstPendingEventTime = std::chrono::system_clock::now();
+  if(m_firstPendingEventTime == std::chrono::steady_clock::time_point::min())
+    m_firstPendingEventTime = std::chrono::steady_clock::now();
 
-  auto timeStamp = std::exchange(m_firstPendingEventTime, std::chrono::system_clock::time_point::min());
+  auto timeStamp = std::exchange(m_firstPendingEventTime, std::chrono::steady_clock::time_point::min());
   int64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeStamp.time_since_epoch()).count();
   uint8_t data[9];
   memcpy(data, &ms, 8);

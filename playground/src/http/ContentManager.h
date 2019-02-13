@@ -58,7 +58,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
   bool m_sendResponsesScheduled = false;
   list<connection> m_connections;
 
-  std::chrono::system_clock::time_point m_lastUpdateSentAt;
+  std::chrono::steady_clock::time_point m_lastUpdateSentAt;
 
   struct WebsocketConnection
   {

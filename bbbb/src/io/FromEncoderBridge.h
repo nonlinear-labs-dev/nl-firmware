@@ -18,6 +18,6 @@ class FromEncoderBridge : public Bridge
   void scheduleSimpleEvent(int8_t inc);
   void scheduleTimestampedEvent(int8_t inc);
 
-  std::chrono::system_clock::time_point m_firstPendingEventTime;
+  std::chrono::steady_clock::time_point m_firstPendingEventTime;
   static Domain getDomain();
 };
