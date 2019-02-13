@@ -15,7 +15,7 @@ class EditBuffer : public ParameterGroupSet
   typedef ParameterGroupSet super;
 
  public:
-  EditBuffer(UpdateDocumentContributor *parent);
+  EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
   Glib::ustring getName() const;

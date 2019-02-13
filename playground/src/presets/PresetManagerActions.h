@@ -23,7 +23,6 @@ class PresetManagerActions : public RPCActionManager
 
  private:
   void handleImportBackupFile(UNDO::Transaction* transaction, SoupBuffer* buffer, shared_ptr<HTTPRequest> http);
-  Glib::ustring sanitizeXML(const Glib::ustring& in) const;
 
   typedef Preset* tPresetPtr;
 };

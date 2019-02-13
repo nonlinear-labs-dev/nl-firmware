@@ -21,7 +21,7 @@
 #include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
 
-EditBuffer::EditBuffer(UpdateDocumentContributor *parent)
+EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)

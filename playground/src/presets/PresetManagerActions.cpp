@@ -143,37 +143,32 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("load-editbuffer", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("load-preset-from-xml", [&](shared_ptr<NetworkRequest> request) mutable {
     if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto scope = presetManager.getUndoScope().startTransaction("Load Edit Buffer");
+      auto scope = presetManager.getUndoScope().startTransaction("Load Compare Buffer");
       auto transaction = scope->getTransaction();
-      auto xml = sanitizeXML(http->get("xml", ""));
+      auto xml = http->get("xml", "");
 
       MemoryInStream stream(xml, false);
       XmlReader reader(stream, transaction);
       auto editBuffer = presetManager.getEditBuffer();
 
-      if(!reader.read<EditBufferSerializer>(editBuffer))
+      auto newPreset = std::make_shared<Preset>(editBuffer);
+
+      if(!reader.read<PresetSerializer>(newPreset.get()))
       {
         transaction->rollBack();
-        http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
-        DebugLevel::warning("Could not read EditBuffer xml!");
+        http->respond("Invalid File!");
+        DebugLevel::warning("Could not read Preset xml!");
         return;
       }
 
-      if(auto preset = m_presetManager.findPreset(editBuffer->getUUIDOfLastLoadedPreset()))
-      {
-        LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
-
-        auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
-        auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
-        auto bank = dynamic_cast<Bank *>(preset->getParent());
-
-        editBuffer->undoableSetLoadedPresetInfo(transaction, preset);
-        bank->selectPreset(transaction, preset->getUuid());
-        presetManager.selectBank(transaction, bank->getUuid());
-      }
+      LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
+      auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
+      auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
+      editBuffer->copyFrom(transaction, newPreset.get());
+      editBuffer->undoableSetLoadedPresetInfo(transaction, newPreset.get());
     }
   });
 
@@ -303,12 +298,4 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
   }
 
   return false;
-}
-
-Glib::ustring PresetManagerActions::sanitizeXML(const Glib::ustring &in) const {
-    if(in.find("<preset") != Glib::ustring::npos)
-    {
-        return StringTools::replaceAll(in, "<preset", "<edit-buffer");
-    }
-    return in;
 }
