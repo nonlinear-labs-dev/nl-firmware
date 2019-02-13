@@ -7,7 +7,7 @@
 using namespace std::chrono_literals;
 
 WebSocketSession::WebSocketSession()
-    : m_soupSession(soup_session_new(), g_object_unref)
+    : m_soupSession(nullptr, g_object_unref)
     , m_message(nullptr, g_object_unref)
     , m_connection(nullptr, g_object_unref)
     , m_defaultContextQueue(std::make_unique<ContextBoundMessageQueue>(Glib::MainContext::get_default()))
@@ -29,9 +29,10 @@ void WebSocketSession::startListening()
 void WebSocketSession::backgroundThread()
 {
   auto m = Glib::MainContext::create();
+  g_main_context_push_thread_default(m->gobj());
+  this->m_soupSession.reset(soup_session_new());
   this->m_backgroundContextQueue = std::make_unique<ContextBoundMessageQueue>(m);
   this->m_messageLoop = Glib::MainLoop::create(m);
-  g_main_context_push_thread_default(m->gobj());
   m_backgroundContextQueue->pushMessage(std::bind(&WebSocketSession::connect, this));
   this->m_messageLoop->run();
 }
