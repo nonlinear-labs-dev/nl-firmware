@@ -83,9 +83,14 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		});
 
 		PresetSearch.get().currentFilterMatch.onChange(r -> {
-			boolean v = r.equals(uuid);
-			if (isCurrentFilterMatch != v) {
-				isCurrentFilterMatch = v;
+			boolean isFilterMatch = r.equals(uuid);
+			if (isCurrentFilterMatch != isFilterMatch) {
+				isCurrentFilterMatch = isFilterMatch;
+				
+				if(isCurrentFilterMatch) {
+					onSearchHighlight();
+				}
+				
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
 			return true;
@@ -97,6 +102,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return (Bank) super.getParent();
 	}
 
+	private void onSearchHighlight() {
+		select();
+	}
+	
 	@Override
 	public RGB getColorFont() {
 		boolean selected = isSelected();
@@ -421,7 +430,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public void select() {
 		getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
 	}
-
+	
 	public void load() {
 		getNonMaps().getServerProxy().loadPreset(this);
 	}

@@ -48,8 +48,6 @@ public abstract class ColorTagBox {
 		for(int i = 0; i < buttons.length; i++) {
 			Button b = buttons[i];
 			
-			GWT.log("updateHighlioght!" + current.name());
-			
 			if(activeColorIndex != i)
 				b.getElement().removeClassName("colortag-current");
 			else

@@ -436,6 +436,7 @@ BankActions::BankActions(PresetManager &presetManager)
   });
 
   addAction("delete-presets", [&](shared_ptr<NetworkRequest> request) mutable {
+    PerformanceTimer  t("delete-presets");
     auto scope = m_presetManager.getUndoScope().startTransaction("Delete Presets");
     auto transaction = scope->getTransaction();
 
@@ -444,24 +445,25 @@ BankActions::BankActions(PresetManager &presetManager)
     auto withBank = request->get("delete-bank");
     boost::split(strs, csv, boost::is_any_of(","));
 
-    for(auto presetUUID : strs)
+    for(const auto &presetUUID : strs)
     {
       if(auto srcBank = m_presetManager.findBankWithPreset(presetUUID))
       {
         if(auto preset = srcBank->findPreset(presetUUID))
         {
           srcBank->deletePreset(transaction, presetUUID);
-          m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(scope->getTransaction());
         }
         if(withBank == "true")
         {
           if(srcBank->getNumPresets() == 0)
           {
-            m_presetManager.selectBank(transaction, srcBank->getUuid());
+              m_presetManager.deleteBank(transaction, srcBank->getUuid());
           }
         }
       }
     }
+
+    m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(scope->getTransaction());
   });
 
   addAction("load-preset", [&](shared_ptr<NetworkRequest> request) mutable {
