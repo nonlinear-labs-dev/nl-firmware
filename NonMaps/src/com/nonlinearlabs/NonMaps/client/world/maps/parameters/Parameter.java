@@ -65,10 +65,6 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private Name name;
 	private boolean isLocked = false;
 	protected QuantizedClippedValue.IncrementalChanger currentParameterChanger = null;
-
-	static public void onChange() {
-		
-	}
 	
 	public Parameter(MapsLayout parent) {
 		super(parent);
