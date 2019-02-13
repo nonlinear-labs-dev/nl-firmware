@@ -5,11 +5,11 @@
 WifiSetting::WifiSetting(Settings& settings)
     : BooleanSetting(settings, WifiSetting::pollAccessPointRunning())
     , m_bgThread([&]() {
-      #ifdef _DEVELOPMENT_PC
-        DebugLevel::warning("WiFiSetting not functional, disable DEV_PC to enable WiFi");
-      #else
-        this->doBackgroundWork();
-      #endif
+#ifdef _DEVELOPMENT_PC
+      DebugLevel::warning("WiFiSetting not functional, disable DEV_PC to enable WiFi");
+#else
+      this->doBackgroundWork();
+#endif
     })
 {
 }

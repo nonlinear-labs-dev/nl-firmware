@@ -436,7 +436,7 @@ BankActions::BankActions(PresetManager &presetManager)
   });
 
   addAction("delete-presets", [&](shared_ptr<NetworkRequest> request) mutable {
-    PerformanceTimer  t("delete-presets");
+    PerformanceTimer t("delete-presets");
     auto scope = m_presetManager.getUndoScope().startTransaction("Delete Presets");
     auto transaction = scope->getTransaction();
 
@@ -457,7 +457,7 @@ BankActions::BankActions(PresetManager &presetManager)
         {
           if(srcBank->getNumPresets() == 0)
           {
-              m_presetManager.deleteBank(transaction, srcBank->getUuid());
+            m_presetManager.deleteBank(transaction, srcBank->getUuid());
           }
         }
       }

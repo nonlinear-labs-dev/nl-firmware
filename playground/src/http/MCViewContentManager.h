@@ -9,7 +9,7 @@ class MCViewContentManager
   static void onWebSocketMessage(SoupWebsocketConnection *self, gint type, GBytes *message,
                                  MCViewContentManager *pThis);
 
-  void sendToAllWebsockets(const Glib::ustring& message) const;
+  void sendToAllWebsockets(const Glib::ustring &message) const;
 
   void handleRequest(std::shared_ptr<WebSocketRequest> request);
 
@@ -19,6 +19,7 @@ class MCViewContentManager
     explicit WebsocketConnection(SoupWebsocketConnection *c);
     ~WebsocketConnection();
     SoupWebsocketConnection *getConnection();
+
    private:
     SoupWebsocketConnection *ws;
   };

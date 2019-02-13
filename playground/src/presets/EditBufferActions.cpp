@@ -192,8 +192,10 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 
   addAction("recall-current-from-preset", [=](shared_ptr<NetworkRequest> request) {
-    if(auto selParam = editBuffer->getSelected()) {
-      if(selParam->isChangedFromLoaded()) {
+    if(auto selParam = editBuffer->getSelected())
+    {
+      if(selParam->isChangedFromLoaded())
+      {
         selParam->undoableRecallFromPreset();
       }
     }

@@ -80,9 +80,12 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const l
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
-    if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr) {
+    if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr)
+    {
       miniParam->setSelected(param->getID() == ScaleGroup::getScaleBaseParameterID());
-    } else {
+    }
+    else
+    {
       miniParam->setSelected(param == selectedParameter);
     }
     addControl(miniParam);

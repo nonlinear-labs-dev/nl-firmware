@@ -30,6 +30,7 @@ const std::string &SpawnCommandLine::getStdError() const
   return m_stdError;
 }
 
-const int SpawnCommandLine::getExitStatus() const {
+const int SpawnCommandLine::getExitStatus() const
+{
   return m_exitStatus;
 }

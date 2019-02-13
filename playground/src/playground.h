@@ -51,7 +51,6 @@ template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std
   return to_string(static_cast<int>(e));
 }
 
-
 template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true>
 std::ostream& operator<<(std::ostream& stream, const T& e)
 {

@@ -120,9 +120,9 @@ class Parameter : public UpdateDocumentContributor,
 
   void check();
 
-    void undoableRecallFromPreset();
+  void undoableRecallFromPreset();
 
-protected:
+ protected:
   virtual void sendToLpc() const;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;

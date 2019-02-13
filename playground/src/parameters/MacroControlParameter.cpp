@@ -27,8 +27,8 @@ static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(Modula
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID())
-    , mcviewThrottler{Expiration::Duration(5)}
-    , m_lastMCViewUuid{"NONE"s}
+    , mcviewThrottler{ Expiration::Duration(5) }
+    , m_lastMCViewUuid{ "NONE"s }
 {
 }
 
@@ -58,7 +58,6 @@ void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) c
     writer.writeTextElement("info", "", Attribute("a", "changed"), Attribute("b", "changed"));
   }
 }
-
 
 void MacroControlParameter::registerTarget(ModulateableParameter *target)
 {
@@ -359,8 +358,7 @@ void MacroControlParameter::undoableRandomize(UNDO::Transaction *transaction, In
 {
 }
 
-void MacroControlParameter::setCPFromMCView(UNDO::Transaction* transaction,
-                                            const tControlPositionValue &cpValue)
+void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }
