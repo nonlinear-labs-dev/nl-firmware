@@ -9,21 +9,20 @@
 #include <presets/EditBuffer.h>
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 
-PresetParameter::PresetParameter(PresetParameterGroup *parent, int id)
-    : UpdateDocumentContributor(parent)
-    , m_id(id)
+PresetParameter::PresetParameter(int id)
+    : m_id(id)
 {
 }
 
-PresetParameter::PresetParameter(PresetParameterGroup *parent, const ::Parameter &other)
-    : PresetParameter(parent, other.getID())
+PresetParameter::PresetParameter(const ::Parameter &other)
+    : PresetParameter(other.getID())
 {
   auto trash = UNDO::Scope::startTrashTransaction();
   other.copyTo(trash->getTransaction(), this);
 }
 
-PresetParameter::PresetParameter(PresetParameterGroup *parent, const PresetParameter &other)
-    : PresetParameter(parent, other.m_id)
+PresetParameter::PresetParameter(const PresetParameter &other)
+    : PresetParameter(other.m_id)
 {
   m_value = other.m_value;
   m_fields = other.m_fields;
@@ -36,7 +35,7 @@ tControlPositionValue PresetParameter::getValue() const
 
 void PresetParameter::setValue(UNDO::Transaction *transaction, tControlPositionValue v)
 {
-  transaction->addUndoSwap(this, m_value, v);
+  transaction->addUndoSwap(m_value, v);
 }
 
 void PresetParameter::setField(UNDO::Transaction *transaction, Fields field, const std::string &value)
@@ -44,21 +43,20 @@ void PresetParameter::setField(UNDO::Transaction *transaction, Fields field, con
   transaction->addSimpleCommand([this, field, s = UNDO::createSwapData(value)](auto) {
     auto &v = m_fields[field];
     s->swapWith(v);
-    onChange();
   });
 }
 
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   assert(m_id == other->m_id);
-  transaction->addUndoSwap(this, m_value, other->m_value);
-  transaction->addUndoSwap(this, m_fields, other->m_fields);
+  transaction->addUndoSwap(m_value, other->m_value);
+  transaction->addUndoSwap(m_fields, other->m_fields);
 }
 
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter *other)
 {
   assert(m_id == other->getID());
-  transaction->addUndoSwap(this, m_fields, {});
+  transaction->addUndoSwap(m_fields, {});
   other->copyTo(transaction, this);
 }
 
@@ -188,10 +186,6 @@ enum PedalModes PresetParameter::getPedalMode() const
     return static_cast<enum PedalModes>(stoi(it->second));
 
   return PedalModes::STAY;
-}
-
-void PresetParameter::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
-{
 }
 
 string paramFieldToString(PresetParameter::Fields f)

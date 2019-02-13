@@ -128,8 +128,9 @@ void Bank::loadPresets(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFol
 
 UpdateDocumentContributor::tUpdateID Bank::onChange(uint64_t flags)
 {
-  m_sigBankChanged.deferedSend();
-  return AttributesOwner::onChange(flags);
+  auto ret = AttributesOwner::onChange(flags);
+  m_sigBankChanged.send();
+  return ret;
 }
 
 const Uuid &Bank::getUuid() const
