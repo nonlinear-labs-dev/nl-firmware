@@ -63,6 +63,7 @@ class Preset : public AttributesOwner
   sigc::connection onChanged(sigc::slot<void> cb);
 
  private:
+  EditBuffer *getEditBuffer();
   size_t getHash() const = delete;
   void updateBanksLastModifiedTimestamp(UNDO::Transaction *transaction);
 
