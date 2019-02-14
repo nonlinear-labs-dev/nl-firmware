@@ -454,6 +454,7 @@ void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   m_banks.select(transaction, uuid, [this] {
     onPresetSelectionChanged();
+    onChange();
     this->m_sigBankSelection.send();
   });
 }

@@ -331,8 +331,10 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  m_presets.select(transaction, uuid,
-                   [this] { static_cast<PresetManager *>(getParent())->onPresetSelectionChanged(); });
+  m_presets.select(transaction, uuid, [this] {
+    static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
+    invalidate();
+  });
 }
 
 void Bank::ensurePresetSelection(UNDO::Transaction *transaction)
