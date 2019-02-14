@@ -51,7 +51,7 @@ bool WatchDog::isDebuggerPreset()
 void WatchDog::run(chrono::steady_clock::duration timeout)
 {
   run(timeout, [=](int numWarnings, int msInactive) {
-    const int maxNumWarnings = 10;
+    const int maxNumWarnings = 2;
     DebugLevel::error(G_STRLOC, " => MainLoop did not answer for more than", msInactive, "ms!");
 
 #ifdef _PROFILING
