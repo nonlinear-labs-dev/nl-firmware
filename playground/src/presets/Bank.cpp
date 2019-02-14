@@ -9,8 +9,7 @@
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
     , m_attachedToBankWithUuid(Uuid::none())
-    , m_presets(std::bind(&Bank::onChange, this, UpdateDocumentContributor::ChangeFlags::Generic),
-                std::bind(&Bank::clonePreset, this, std::placeholders::_1))
+    , m_presets(std::bind(&Bank::clonePreset, this, std::placeholders::_1))
 {
 }
 
