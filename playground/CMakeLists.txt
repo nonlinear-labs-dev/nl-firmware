@@ -33,10 +33,8 @@ IF(DEV_PC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
 ENDIF(DEV_PC)
 
-IF(PROFILING)
   ADD_DEFINITIONS(-D_PROFILING)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -finstrument-functions -finstrument-functions-exclude-file-list=Profiler.h,Profiler.cpp,map,/c++/")
-ENDIF(PROFILING)
 
 function(addLib name)
   pkg_check_modules(${name} REQUIRED ${name})
