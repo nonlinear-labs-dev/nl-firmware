@@ -113,7 +113,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
       auto pm = app.getPresetManager();
 
       pm->clear(scope->getTransaction());
-      PresetManagerSerializer serializer(pm.get());
+      PresetManagerSerializer serializer(pm);
 
       boled.resetOverlay();
       boled.setOverlay(new SplashLayout());
@@ -134,7 +134,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
 
       if(auto lock = pm->lockLoading())
       {
-        if(reader.read<PresetManagerSerializer>(pm.get()))
+        if(reader.read<PresetManagerSerializer>(pm))
         {
           pm->getEditBuffer()->sendToLPC();
         }

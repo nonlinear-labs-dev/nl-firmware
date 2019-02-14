@@ -72,7 +72,7 @@ void ExportBackupEditor::writeBackupToStream(std::shared_ptr<OutStream> stream)
 {
   XmlWriter writer(std::move(stream));
   auto pm = Application::get().getPresetManager();
-  PresetManagerSerializer serializer(pm.get());
+  PresetManagerSerializer serializer(pm);
   serializer.write(writer, VersionAttribute::get());
 }
 

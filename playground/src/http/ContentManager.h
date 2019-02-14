@@ -35,8 +35,8 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
   virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  private:
-  typedef shared_ptr<ContentSection> tContentSectionPtr;
-  typedef set<tContentSectionPtr> tSections;
+  using tContentSectionPtr = ContentSection *;
+  using tSections = set<tContentSectionPtr>;
 
   void addContentSections();
   void addContentSection(tContentSectionPtr section);

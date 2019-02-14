@@ -208,7 +208,7 @@ void Clipboard::pasteBankOnBackground(const Glib::ustring &transactionName, cons
   auto srcBank = dynamic_cast<const Bank *>(content);
   auto scope = getUndoScope().startTransaction(transactionName);
   auto transaction = scope->getTransaction();
-  auto newBank = pm->addBank(transaction, std::make_unique<Bank>(pm.get(), *srcBank, true));
+  auto newBank = pm->addBank(transaction, std::make_unique<Bank>(pm, *srcBank, true));
   newBank->setX(transaction, x);
   newBank->setY(transaction, y);
   pm->selectBank(transaction, newBank->getUuid());
@@ -219,7 +219,7 @@ std::unique_ptr<Bank> multiplePresetsToBank(const MultiplePresetSelection &mulPr
 {
   auto scope = Application::get().getClipboard()->getUndoScope().startTrashTransaction();
   auto transaction = scope->getTransaction();
-  auto b = std::make_unique<Bank>(Application::get().getPresetManager().get());
+  auto b = std::make_unique<Bank>(Application::get().getPresetManager());
 
   for(auto &preset : mulPresets.getPresets())
     b->prependPreset(transaction, std::make_unique<Preset>(b.get(), *preset.get(), true));
