@@ -11,7 +11,6 @@ class PhysicalControlParameter : public Parameter
  public:
   PhysicalControlParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
-  virtual ~PhysicalControlParameter();
 
   virtual void onChangeFromLpc(tControlPositionValue newValue);
   void registerTarget(ModulationRoutingParameter *target);

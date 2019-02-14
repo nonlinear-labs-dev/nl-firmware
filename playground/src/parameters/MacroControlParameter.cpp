@@ -89,10 +89,6 @@ void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid)
 void MacroControlParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                            tControlPositionValue newValue)
 {
-  if(initiator != Initiator::INDIRECT)
-    for(ModulateableParameter *target : m_targets)
-      target->applyLpcMacroControl(newValue - oldValue);
-
   super::onValueChanged(initiator, oldValue, newValue);
 
   if(initiator != Initiator::INDIRECT)
@@ -103,6 +99,16 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
       target->invalidate();
 
   updateMCViewsFromMCChange(initiator);
+}
+
+void MacroControlParameter::onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
+                                                        tControlPositionValue newValue)
+{
+  if(initiator != Initiator::INDIRECT)
+    for(ModulateableParameter *target : m_targets)
+      target->applyLpcMacroControl(newValue - oldValue);
+
+  super::onValueFineQuantizedChanged(initiator, oldValue, newValue);
 }
 
 void MacroControlParameter::updateMCViewsFromMCChange(const Initiator &initiator)

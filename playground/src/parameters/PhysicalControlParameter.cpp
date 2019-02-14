@@ -22,10 +22,6 @@ PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, uint16
 {
 }
 
-PhysicalControlParameter::~PhysicalControlParameter()
-{
-}
-
 void PhysicalControlParameter::onChangeFromLpc(tControlPositionValue newVal)
 {
   getValue().setRawValue(Initiator::EXPLICIT_LPC, getValue().clip(newVal));

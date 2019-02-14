@@ -15,10 +15,6 @@ SelectedParameterModAmount::SelectedParameterModAmount(const Rect &rect)
       sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterModAmount::setParameter)));
 }
 
-SelectedParameterModAmount::~SelectedParameterModAmount()
-{
-}
-
 void SelectedParameterModAmount::setParameter(Parameter *param)
 {
   if(param)

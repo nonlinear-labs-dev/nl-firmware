@@ -16,7 +16,6 @@ import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
 import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
-import com.nonlinearlabs.NonMaps.client.useCases.PresetRecall;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Name;
@@ -43,6 +42,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 		@Override
 		public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
+			Parameter.this.onQuantizedValueChanged(initiator, newQuantizedValue - oldQuantizedValue);
 		}
 
 		@Override
@@ -58,22 +58,26 @@ public abstract class Parameter extends LayoutResizingVertical {
 	public interface ParameterListener {
 		public void onParameterChanged(QuantizedClippedValue newValue);
 	}
-	
+
 	private HashSet<ParameterListener> listeners = new HashSet<ParameterListener>();
 	private QuantizedClippedValue value;
 	private JavaScriptObject stringizer;
 	private Name name;
 	private boolean isLocked = false;
 	protected QuantizedClippedValue.IncrementalChanger currentParameterChanger = null;
-	
+
 	public Parameter(MapsLayout parent) {
 		super(parent);
 		name = createName();
 		value = createValue(new ValueChangeListener());
-		
+
 		if (getParameterID() != 0)
 			getSelectionRoot().registerSelectable(this);
-		
+
+	}
+
+	public void onQuantizedValueChanged(Initiator initiator, double d) {
+
 	}
 
 	protected QuantizedClippedValue createValue(ChangeListener changeListener) {
@@ -105,12 +109,12 @@ public abstract class Parameter extends LayoutResizingVertical {
 				null);
 
 		super.draw(ctx, invalidationMask);
-		
+
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
-		if(EditBufferModel.get().findParameter(getParameterID()).isChanged() && ParameterCompareButton.inCompare)
-			getPixRect().drawRoundedRect(ctx,  getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
+		if (EditBufferModel.get().findParameter(getParameterID()).isChanged() && ParameterCompareButton.inCompare)
+			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
 
 	}
 
