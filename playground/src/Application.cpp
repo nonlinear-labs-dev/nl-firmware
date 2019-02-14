@@ -77,13 +77,16 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_hwui->deInit();
   m_hwui.reset();
   m_presetManager.reset();
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
 #ifdef _PROFILING
   Profiler::get().print();
 #endif
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 Application &Application::get()

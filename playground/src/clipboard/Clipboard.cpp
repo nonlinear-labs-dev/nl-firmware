@@ -7,6 +7,7 @@
 #include <xml/Writer.h>
 #include <Application.h>
 #include <tools/StringTools.h>
+#include <device-settings/DebugLevel.h>
 
 Clipboard::Clipboard(UpdateDocumentContributor *parent)
     : ContentSection(parent)
@@ -70,6 +71,7 @@ Clipboard::Clipboard(UpdateDocumentContributor *parent)
 
 Clipboard::~Clipboard()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void Clipboard::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)

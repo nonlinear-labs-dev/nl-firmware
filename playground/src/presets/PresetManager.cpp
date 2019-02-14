@@ -42,6 +42,7 @@ PresetManager::~PresetManager()
 
   for(auto &task : tasks)
   {
+    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     while(task() == SaveResult::Again)
       ;
   }
@@ -114,7 +115,6 @@ SaveResult PresetManager::saveMetadata(RefPtr<Gio::File> pmFolder)
 {
   if(m_lastSavedMetaDataUpdateID != getUpdateIDOfLastChange())
   {
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     PresetManagerMetadataSerializer serializer(this);
     serializer.write(pmFolder, ".metadata");
     m_lastSavedMetaDataUpdateID = getUpdateIDOfLastChange();
@@ -128,7 +128,6 @@ SaveResult PresetManager::saveInitSound(RefPtr<Gio::File> pmFolder)
 {
   if(m_lastSavedInitSoundUpdateID != m_initSound->getUpdateIDOfLastChange())
   {
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     PresetSerializer serializer(m_initSound.get(), true);
     serializer.write(pmFolder, ".initSound");
     m_lastSavedInitSoundUpdateID = m_initSound->getUpdateIDOfLastChange();
@@ -205,15 +204,12 @@ SaveResult PresetManager::saveBanks(RefPtr<Gio::File> pmFolder)
     switch(b->save(bankFolder))
     {
       case SaveResult::Again:
-        DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
         return SaveResult::Again;
 
       case SaveResult::Finished:
-        DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
         return SaveResult::Again;
 
       case SaveResult::Nothing:
-        DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
         break;  // try next bank
     }
   }
