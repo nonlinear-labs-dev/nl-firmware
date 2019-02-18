@@ -235,13 +235,11 @@ bool Parameter::isChangedFromLoaded() const
 
   if(auto originalParameter = getOriginalParameter())
   {
-    const auto rawOld = originalParameter->getValue();
-    return std::fabs(rawOld - rawNow) > epsilon;
+    return std::fabs(originalParameter->getValue() - rawNow) > epsilon;
   }
   else
   {
-    const auto rawOld = getDefaultValue();
-    return std::fabs(rawOld - rawNow) > epsilon;
+    return std::fabs(getDefaultValue() - rawNow) > epsilon;
   }
 }
 
