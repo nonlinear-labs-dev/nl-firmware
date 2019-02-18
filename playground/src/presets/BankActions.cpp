@@ -821,9 +821,12 @@ void BankActions::insertBank(Bank *bank, Bank *targetBank, size_t insertPos)
   auto scope = m_presetManager.getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", bank->getName(true),
                                                                targetBank->getName(true));
   auto transaction = scope->getTransaction();
+  size_t i = 0;
 
-  bank->forEachPreset(
-      [&](auto p) { targetBank->appendPreset(transaction, std::make_unique<Preset>(targetBank, *p, true)); });
+  bank->forEachPreset([&](auto p) {
+    targetBank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(targetBank, *p, true));
+    i++;
+  });
 }
 
 bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request)

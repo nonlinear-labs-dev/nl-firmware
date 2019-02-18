@@ -9,8 +9,7 @@
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
     , m_attachedToBankWithUuid(Uuid::none())
-    , m_presets(std::bind(&Bank::onChange, this, UpdateDocumentContributor::ChangeFlags::Generic),
-                std::bind(&Bank::clonePreset, this, std::placeholders::_1))
+    , m_presets(std::bind(&Bank::clonePreset, this, std::placeholders::_1))
 {
 }
 
@@ -332,8 +331,10 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  m_presets.select(transaction, uuid,
-                   [this] { static_cast<PresetManager *>(getParent())->onPresetSelectionChanged(); });
+  m_presets.select(transaction, uuid, [this] {
+    static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
+    invalidate();
+  });
 }
 
 void Bank::ensurePresetSelection(UNDO::Transaction *transaction)
