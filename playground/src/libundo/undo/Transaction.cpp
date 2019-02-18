@@ -370,6 +370,7 @@ namespace UNDO
     {
       std::unique_ptr<Transaction> ret(std::move(*it));
       m_successors.erase(it);
+      ret->setPredecessor(nullptr);
       return ret;
     }
     return nullptr;
