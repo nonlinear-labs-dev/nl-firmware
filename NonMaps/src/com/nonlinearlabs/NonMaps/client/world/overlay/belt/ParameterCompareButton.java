@@ -18,7 +18,6 @@ public class ParameterCompareButton extends SVGImage {
 	
 	private boolean setupChange(int id) {
 		EditBufferModel.get().findParameter(id).value.onChange(e -> {
-			//inCompare = false;
 			return true;
 		});
 		return true;

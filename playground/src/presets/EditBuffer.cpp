@@ -420,6 +420,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 
   setName(transaction, "Init Sound");
   transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
+
 }
 
 void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *other)
