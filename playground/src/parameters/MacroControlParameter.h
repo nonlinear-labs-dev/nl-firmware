@@ -66,7 +66,10 @@ class MacroControlParameter : public Parameter
   void setLastMCViewUUID(const Glib::ustring &uuid);
 
  private:
+  void updateMCViewsFromMCChange(const Initiator &initiator);
   void updateBoundRibbon();
+  void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
+                                   tControlPositionValue newValue) override;
 
   tTargets m_targets;
   int m_UiSelectedHardwareSourceParameterID;
@@ -80,6 +83,4 @@ class MacroControlParameter : public Parameter
   Throttler mcviewThrottler;
 
   sigc::signal<void> m_targetListChanged;
-
-  void updateMCViewsFromMCChange(const Initiator &initiator);
 };

@@ -127,6 +127,8 @@ class Parameter : public UpdateDocumentContributor,
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
+  virtual void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
+                                           tControlPositionValue newValue);
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const;
   virtual tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);

@@ -67,6 +67,11 @@ void Parameter::onValueChanged(Initiator initiator, tControlPositionValue oldVal
   invalidate();
 }
 
+void Parameter::onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
+                                            tControlPositionValue newValue)
+{
+}
+
 tControlPositionValue Parameter::expropriateSnapshotValue()
 {
   tControlPositionValue v = m_lastSnapshotedValue;
