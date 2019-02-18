@@ -58,48 +58,52 @@ public class Tape extends MapsControl {
 
 		return false;
 	}
-
-	private Tape getTopMostIntersectingTape(Tape other) {
+	
+	private DragProxy getDragProxyOf(Tape t) {
+		for(DragProxy d: NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
+			if(d.getOrigin() == t.getParent()) {
+				return d;
+			}
+		}
+		return null;
+	}
+	
+	private Tape getTopMostIntersectingTape(Tape draggedTape) {
 		
-		if(this.isOrientedHorizontal() || other.isOrientedHorizontal())
+		if(isOrientedHorizontal() || draggedTape.isOrientedHorizontal())
 			return this;
 		
-		Tape currentTarget = this;
-		double shortestDistance = Double.MAX_VALUE;
+		DragProxy dragProxy = getDragProxyOf(draggedTape);
 		
-		for(Bank b: this.getParent().getParent().getBanks()) {
-			if(b != other.getParent()) {
-				for(Tape tape: b.getTapes()) {
-					if(!tape.isOrientedHorizontal()) {
-						if(tape != other) {
-							double curr = tape.measureDistance(other);
-							if(shortestDistance > curr) {
-								shortestDistance = curr;
-								currentTarget = tape;
-							}
-						}
-					}
+		if(dragProxy == null)
+			return null;
+		
+		Bank draggedBank = draggedTape.getParent();
+		Dimension offset = dragProxy.getPixRect().getLeftTop().getVector(draggedBank.getPixRect().getLeftTop());
+		Rect draggedRect = draggedBank.header.getPixRect().getMovedBy(offset);
+		
+		double yDiff = Double.MAX_VALUE;
+		Tape curr = null;
+		
+		for(Bank bank: this.getParent().getParent().getBanks()) {
+			if(bank == draggedBank)
+				continue;
+			
+			for(Tape tape: bank.getTapes()) {
+				if(tape == draggedTape)
+					continue;
+				if(!tape.getPixRect().intersects(draggedRect))
+					continue;
+				
+				double diff = Math.abs(draggedRect.getTop() - tape.getParent().getPixRect().getTop());
+				if(diff < yDiff) {
+					yDiff = diff;
+					curr = tape;
 				}
 			}
 		}
 		
-		return currentTarget;
-	}
-
-	private double measureDistance(Tape other) {
-		
-		Rect otherPos = other.getPixRect();
-		
-		if(other.isDraggingControl()) {
-			Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
-			for(DragProxy d: o.getDragProxies()) {
-				if(d.getOrigin() == other.getParent()) {
-					otherPos = d.getCalculatedPixRect(d.getParent().getPixRect().getPosition(), 1);
-				}
-			}
-		}
-		
-		return otherPos.getCenterPoint().getDistanceTo(this.getPixRect().getCenterPoint());
+		return curr;
 	}
 
 	public boolean isOrientedHorizontal() {
@@ -228,7 +232,7 @@ public class Tape extends MapsControl {
 		return getParent().getParent().isAttachingTape(this) ? activeColor : new RGB(51, 83, 171);
 	}
 
-	private boolean fitsTo(Tape others) {
+	private boolean fitsTo(Tape others) {		
 		if (getParent().isClusteredWith(others.getParent()))
 			return false;
 
@@ -238,7 +242,13 @@ public class Tape extends MapsControl {
 		if (!others.isVisible())
 			return false;
 		
-		return isInvertedOrientation(others.orientation) && getTopMostIntersectingTape(others) == this;
+		if(!isInvertedOrientation(others.orientation))
+			return false;
+		
+		if(getTopMostIntersectingTape(others) != this)
+			return false;
+		
+		return true;
 	}
 
 	private boolean isInvertedOrientation(Orientation other) {
