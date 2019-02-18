@@ -43,6 +43,15 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
 
     setText(text);
   }
+  else if(uuid.empty())
+  {
+    Glib::ustring text = "Init";
+
+    if(pm->getEditBuffer()->isModified())
+      text += "*";
+
+    setText(text);
+  }
   else
   {
     setText("");

@@ -416,6 +416,8 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
     onChange();
   });
 
+  resetModifiedIndicator(transaction);
+
   setName(transaction, "Init Sound");
   transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
 }
