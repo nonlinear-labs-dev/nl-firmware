@@ -17,11 +17,8 @@ UpdateDocumentContributor::UpdateDocumentContributor(UpdateDocumentContributor *
 
 UpdateDocumentContributor::~UpdateDocumentContributor()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-
   for(UpdateDocumentContributor *c : m_children)
   {
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     c->orphan();
   }
 
@@ -29,9 +26,8 @@ UpdateDocumentContributor::~UpdateDocumentContributor()
   {
     DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     m_parent->m_children.remove(this);
+    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }
-
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void UpdateDocumentContributor::orphan()
