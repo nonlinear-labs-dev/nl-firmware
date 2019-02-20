@@ -31,13 +31,16 @@ void WebSocketSession::startListening()
 
 void WebSocketSession::backgroundThread()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   auto m = Glib::MainContext::create();
   g_main_context_push_thread_default(m->gobj());
   this->m_soupSession.reset(soup_session_new());
   this->m_backgroundContextQueue = std::make_unique<ContextBoundMessageQueue>(m);
   this->m_messageLoop = Glib::MainLoop::create(m);
   m_backgroundContextQueue->pushMessage(std::bind(&WebSocketSession::connect, this));
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   this->m_messageLoop->run();
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 sigc::connection WebSocketSession::onMessageReceived(Domain d, const sigc::slot<void, tMessage> &cb)
@@ -52,6 +55,7 @@ sigc::connection WebSocketSession::onConnectionEstablished(const sigc::slot<void
 
 void WebSocketSession::connect()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   auto uri = "http://" + Application::get().getOptions()->getBBBB() + ":11111";
   m_message.reset(soup_message_new("GET", uri.c_str()));
   auto cb = (GAsyncReadyCallback) &WebSocketSession::onWebSocketConnected;
@@ -60,10 +64,12 @@ void WebSocketSession::connect()
 
 void WebSocketSession::onWebSocketConnected(SoupSession *session, GAsyncResult *res, WebSocketSession *pThis)
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   GError *error = nullptr;
 
   if(SoupWebsocketConnection *connection = soup_session_websocket_connect_finish(session, res, &error))
   {
+    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     pThis->connectWebSocket(connection);
   }
 
@@ -77,12 +83,14 @@ void WebSocketSession::onWebSocketConnected(SoupSession *session, GAsyncResult *
 
 void WebSocketSession::reconnect()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
   sigTimeOut.connect_seconds_once(std::bind(&WebSocketSession::connect, this), 2);
 }
 
 void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   g_signal_connect(connection, "message", G_CALLBACK(&WebSocketSession::receiveMessage), this);
   g_object_ref(connection);
 
@@ -109,6 +117,7 @@ void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
   m_connection.reset(connection);
 
   m_defaultContextQueue->pushMessage([=]() { m_onConnectionEstablished(); });
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void WebSocketSession::sendMessage(Domain d, tMessage msg)
@@ -128,16 +137,19 @@ void WebSocketSession::sendMessage(tMessage msg)
   m_backgroundContextQueue->pushMessage([=]() {
     if(m_connection)
     {
+      DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
       auto state = soup_websocket_connection_get_state(m_connection.get());
 
       if(state == SOUP_WEBSOCKET_STATE_OPEN)
       {
+        DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
         gsize len = 0;
         auto data = msg->get_data(len);
         soup_websocket_connection_send_binary(m_connection.get(), data, len);
       }
       else
       {
+        DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
         m_connection.reset();
         reconnect();
       }
