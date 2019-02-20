@@ -70,9 +70,7 @@ public class LocalSettingsProvider {
 		});
 		
 		s.forceHighlightChanged.onChange(t -> {
-			NonMaps.get().getNonLinearWorld().getParameterEditor().getChildren().forEach(control -> {
-				control.invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
-			});
+			NonMaps.get().getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 			return true;
 		});
 	}

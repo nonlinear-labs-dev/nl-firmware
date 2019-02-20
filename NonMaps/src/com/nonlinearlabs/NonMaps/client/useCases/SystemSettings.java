@@ -97,9 +97,8 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("PresetGlitchSuppression", netify(c.name()));
 	}
 
-	public Object setHighlightChangedParameters(BooleanValues c) {
+	public void setHighlightChangedParameters(BooleanValues c) {
 		Setup.get().systemSettings.highlightChangedParameters.setValue(c);
 		NonMaps.theMaps.getServerProxy().setSetting("HighlightChangedParameters", netify(c.name()));
-		return null;
 	}
 }
