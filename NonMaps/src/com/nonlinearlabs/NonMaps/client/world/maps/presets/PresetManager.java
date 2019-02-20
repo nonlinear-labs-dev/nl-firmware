@@ -973,9 +973,15 @@ public class PresetManager extends MapsLayout {
 	public boolean isChangingPresetWhileInDirectLoad() {
 		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt()
 				.getPresetLayout().isDirectLoadActive();
-		if (directLoadActive && findSelectedPreset() != findLoadedPreset()) {
-			return true;
-		}
-		return false;
+		
+		boolean isInitSound = findLoadedPreset() == null;
+		
+		if(!directLoadActive)
+			return false;
+		
+		if(isInitSound)
+			return false;
+		
+		return findSelectedPreset() != findLoadedPreset();
 	}
 }
