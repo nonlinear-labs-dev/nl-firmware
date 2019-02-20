@@ -108,12 +108,10 @@ public class PresetManagerContextMenu extends ContextMenu {
 			}
 
 			private boolean canOpenFileDialogAfterConfirmationDialogs() {
-				String platform = Navigator.getPlatform();
 				String version = Navigator.getAppVersion();
-				boolean isMac = platform.toLowerCase().contains("mac");
 				boolean isChrome72 = version.contains("Chrome/72.");
 
-				boolean hasBug = isMac && isChrome72;
+				boolean hasBug = isChrome72;
 				return !hasBug;
 			}
 		});
