@@ -29,7 +29,6 @@ public class PresetBeltLayouterL extends PresetBeltLayouter {
 				
 		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth,
 				currentPresetHeight);
-		layout.compareButton.doLayout(right + margin, (h / 2 - currentPresetHeight - Millimeter.toPixels(5)), Millimeter.toPixels(10), Millimeter.toPixels(10));
 
 		right -= currentPresetWidth + margin;
 		
@@ -49,7 +48,6 @@ public class PresetBeltLayouterL extends PresetBeltLayouter {
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 		right += layout.currentPreset.getRelativePosition().getWidth() / 2 - Millimeter.toPixels(5);
-		layout.compareButton.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getBottom());
 
 
 		super.layoutLockSymbol(w);

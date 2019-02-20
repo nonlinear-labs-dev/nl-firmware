@@ -3,11 +3,13 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.PedalParameter;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettings.Pedal;
+import com.nonlinearlabs.NonMaps.client.world.Control;
 
 public class DeviceSettingsProvider {
 	public static DeviceSettingsProvider theInstance = new DeviceSettingsProvider();
@@ -83,6 +85,17 @@ public class DeviceSettingsProvider {
 			return true;
 		});
 
+		Setup.get().systemSettings.highlightChangedParameters.onChange(t -> {
+			settings.highlightChangedParameters.value = t == BooleanValues.on;
+			notifyClients();
+			return true;
+		});
+		
+		Setup.get().systemSettings.forceHighlightChangedParameters.onChange(t -> {
+			NonMaps.get().getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
+			return true;
+		});
+		
 		connectToPedal(254, settings.pedal1);
 		connectToPedal(259, settings.pedal2);
 		connectToPedal(264, settings.pedal3);

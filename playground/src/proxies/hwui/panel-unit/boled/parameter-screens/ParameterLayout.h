@@ -79,7 +79,7 @@ class ParameterRecallLayout2 : public virtual ParameterLayout2
  public:
   typedef ParameterLayout2 super;
   ParameterRecallLayout2();
-  ~ParameterRecallLayout2() = default;
+  ~ParameterRecallLayout2() override;
 
  protected:
   void init() override;
