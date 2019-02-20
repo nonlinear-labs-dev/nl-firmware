@@ -229,15 +229,18 @@ PresetParameter *Parameter::getOriginalParameter() const
 
 bool Parameter::isChangedFromLoaded() const
 {
+  const auto rawNow = getControlPositionValue();
+  const auto epsilon = 0.5 / getValue().getFineDenominator();
+  DebugLevel::gassy("Using", epsilon, "as epsilon for Parameter::isChangedFromLoaded!", getLongName());
+
   if(auto originalParameter = getOriginalParameter())
   {
-    const auto rawOld = originalParameter->getValue();
-    const auto rawNow = getControlPositionValue();
-    const auto epsilon = 0.5 / getValue().getFineDenominator();
-    DebugLevel::warning("Using", epsilon, "as epsilon for Parameter::isChangedFromLoaded!", getLongName());
-    return std::fabs(rawOld - rawNow) > epsilon;
+    return std::fabs(originalParameter->getValue() - rawNow) > epsilon;
   }
-  return false;
+  else
+  {
+    return std::fabs(getDefaultValue() - rawNow) > epsilon;
+  }
 }
 
 bool Parameter::isBiPolar() const
@@ -338,9 +341,9 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
 
   if(auto ogParam = getOriginalParameter())
-  {
     writer.writeTextElement("og-value", to_string(ogParam->getValue()));
-  }
+  else
+    writer.writeTextElement("og-value", to_string(getDefaultValue()));
 
   if(shouldWriteDocProperties(knownRevision))
   {
@@ -526,10 +529,12 @@ void Parameter::check()
 void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto transactionScope = scope.startTransaction("Recall %0 value from Preset", getLongName());
+  auto original = getOriginalParameter();
+  auto origin = original ? "Preset" : "Init-Sound";
+  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), origin);
   auto transaction = transactionScope->getTransaction();
-  if(auto original = getOriginalParameter())
-  {
+  if(original)
     setCPFromHwui(transaction, original->getValue());
-  }
+  else
+    setDefaultFromHwui(transaction);
 }

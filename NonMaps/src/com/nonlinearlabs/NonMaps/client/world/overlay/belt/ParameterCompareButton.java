@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt;
 
-import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -10,18 +9,6 @@ public class ParameterCompareButton extends SVGImage {
 
 	public ParameterCompareButton(Control parent) {
 		super(parent, "PreRecall_B_Enabled.svg", "PreRecall_B_Active.svg", "PreRecall_B_Disabled.svg");
-				
-		EditBufferModel.get().selectedParameter.onChange(id -> setupChange(id));
-		
-		setupChange(EditBufferModel.get().selectedParameter.getValue());
-	}
-	
-	private boolean setupChange(int id) {
-		EditBufferModel.get().findParameter(id).value.onChange(e -> {
-			//inCompare = false;
-			return true;
-		});
-		return true;
 	}
 	
 	public static boolean inCompare = false;
