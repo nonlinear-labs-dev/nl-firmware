@@ -836,6 +836,11 @@ public class PresetManager extends MapsLayout {
 
 				return ret;
 			}
+		} else {
+			String ret = "Init";
+			if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isModified())
+				ret += " *";
+			return ret;
 		}
 		return "";
 	}
