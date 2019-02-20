@@ -78,6 +78,10 @@ Application::Application(int numArgs, char **argv)
 Application::~Application()
 {
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  m_watchDog.reset();
+  m_aggroWatchDog.reset();
+
   m_hwui->deInit();
   m_hwui.reset();
   m_undoScope.reset();
