@@ -26,7 +26,8 @@ PanelUnitPresetMode::PanelUnitPresetMode()
 
 PanelUnitPresetMode::~PanelUnitPresetMode()
 {
-  ForceHighlightChangedParametersSetting::disable();
+  Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+      BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
   DebugLevel::gassy(__PRETTY_FUNCTION__);
 }
 
@@ -40,12 +41,14 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
       getMappings().forEachButton([&](int buttonId, const list<int> parameters) {
-        ForceHighlightChangedParametersSetting::enable();
+        Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+            BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
         letChangedButtonsBlink(buttonId, parameters, states);
       });
     else
       getMappings().forEachButton([&](int buttonId, const list<int> parameters) {
-        ForceHighlightChangedParametersSetting::disable();
+        Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+            BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
         setStateForButton(buttonId, parameters, states);
       });
 

@@ -240,7 +240,8 @@ bool ParameterEditLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 ParameterRecallLayout2::ParameterRecallLayout2()
     : super()
 {
-  ForceHighlightChangedParametersSetting::enable();
+  Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+      BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
 
   m_buttonA = addControl(new Button("", BUTTON_A));
   m_buttonB = addControl(new Button("", BUTTON_B));
@@ -274,6 +275,12 @@ ParameterRecallLayout2::ParameterRecallLayout2()
       sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged));
 
   updateUI(false);
+}
+
+ParameterRecallLayout2::~ParameterRecallLayout2()
+{
+  Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+      BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
 }
 
 void ParameterRecallLayout2::init()
@@ -390,9 +397,4 @@ void ParameterRecallLayout2::onParameterSelectionChanged(Parameter *oldParam, Pa
 void ParameterRecallLayout2::onParameterChanged(const Parameter *)
 {
   updateUI(!getCurrentEditParameter()->isChangedFromLoaded());
-}
-
-ParameterRecallLayout2::~ParameterRecallLayout2()
-{
-  ForceHighlightChangedParametersSetting::disable();
 }

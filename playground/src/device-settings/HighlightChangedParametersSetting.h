@@ -10,6 +10,4 @@ class ForceHighlightChangedParametersSetting : public BooleanSetting {
 public:
     explicit ForceHighlightChangedParametersSetting(Settings& parent);
     bool persistent() const override;
-    static void enable();
-    static void disable();
 };
