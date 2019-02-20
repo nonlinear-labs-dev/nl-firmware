@@ -17,8 +17,11 @@ WebSocketSession::WebSocketSession()
 
 WebSocketSession::~WebSocketSession()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_messageLoop->quit();
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_contextThread.join();
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void WebSocketSession::startListening()

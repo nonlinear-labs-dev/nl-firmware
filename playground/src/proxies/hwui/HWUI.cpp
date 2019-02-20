@@ -46,6 +46,7 @@ HWUI::HWUI()
 
 HWUI::~HWUI()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_readersCancel->cancel();
 }
 
