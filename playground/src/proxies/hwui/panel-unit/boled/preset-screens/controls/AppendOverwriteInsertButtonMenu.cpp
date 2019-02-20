@@ -209,6 +209,7 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
     preset->guessName(transaction);
 
   bank->selectPreset(scope->getTransaction(), preset->getUuid());
+  pm->selectBank(transaction, bank->getUuid());
 }
 
 void AppendOverwriteInsertButtonMenu::appendPreset(Bank* bank, bool modified)
