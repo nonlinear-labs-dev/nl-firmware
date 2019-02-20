@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <algorithm>
 #include <tools/Uuid.h>
+#include <device-settings/DebugLevel.h>
 #include "libundo/undo/SwapData.h"
 #include "libundo/undo/Transaction.h"
 #include <assert.h>
@@ -24,6 +25,13 @@ template <typename Element> class UndoableVector
       , m_factory(f)
       , m_selection(Uuid::none())
   {
+  }
+
+  ~UndoableVector()
+  {
+    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+    m_elements.clear();
+    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }
 
   UndoableVector &operator=(const UndoableVector &other)
