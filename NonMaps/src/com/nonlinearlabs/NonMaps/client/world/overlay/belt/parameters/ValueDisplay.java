@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelLarge;
@@ -21,6 +22,13 @@ public class ValueDisplay extends Label {
 		return (BeltParameterLayout) super.getParent();
 	}
 
+	public double calculateTextWidth() {
+		Context2d ctx = NonMaps.get().getCanvas().getContext2d();
+		String text = getDrawText(ctx);
+		ctx.setFont(getFontHeight(getPixRect()) + "px 'Source Sans Pro LW25'");		
+		return ctx.measureText(text).getWidth();
+	}
+	
 	@Override
 	public String getDrawText(Context2d ctx) {
 		String[] str = getParent().getDecoratedValue(true);

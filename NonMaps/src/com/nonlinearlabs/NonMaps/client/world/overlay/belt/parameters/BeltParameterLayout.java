@@ -104,7 +104,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		fixMode();
-
 		super.draw(ctx, invalidationMask);
 	}
 
@@ -179,9 +178,13 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				OverlayControl c = (OverlayControl) r.record.attached;
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 				if(c instanceof ValueDisplay) {
+					ValueDisplay vd = (ValueDisplay)c;
+					double width = vd.calculateTextWidth();
+					
 					recallArea.setVisible(!isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
-					double recallWidth = buttonDim * 5;
-					recallArea.doLayout(walkerX - recallWidth, upperElementsY, recallWidth, third);
+					double recallWidth = buttonDim * 7;
+					
+					recallArea.doLayout(walkerX - width / 2 + recallWidth / 5, upperElementsY, recallWidth, third);
 				}
 			}
 			walkerX += r.width;

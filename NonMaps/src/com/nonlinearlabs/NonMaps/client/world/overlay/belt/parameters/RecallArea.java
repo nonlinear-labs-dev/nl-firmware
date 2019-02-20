@@ -5,56 +5,57 @@ import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Dimension;
+import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
+import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class RecallArea extends OverlayLayout {
 
 
 	class RecallValue extends Label {
 
-		public RecallValue(OverlayLayout parent) {
+		public RecallValue(RecallArea parent) {
 			super(parent);
 			setFontHeightInMM(5);
-			setFontColor(RGB.lightGray());
+			setFontColor(new Gray(155));
 		}
 
 		@Override
 		public String getDrawText(Context2d ctx) {
 			EditBufferModel eb = EditBufferModel.get();
 			
-			if(!eb.findParameter(eb.selectedParameter.getValue()).isChanged())
+			if(!getParent().isChanged())
 				return "";
 			
 			Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(eb.selectedParameter.getValue());
 			return param.getDecoratedValue(true, eb.findParameter(eb.selectedParameter.getValue()).originalValue.getValue());
 		}
 		
-	}
-	
-	class RecallButton extends SVGImage {
-
-		public boolean clicked = false;
-		
 		@Override
-		public int getSelectedPhase() {
-			EditBufferModel eb = EditBufferModel.get();
-			if(!eb.findParameter(eb.selectedParameter.getValue()).isChanged())
-				clicked = false;
-
-			
-			if(!eb.findParameter(eb.selectedParameter.getValue()).isChanged())
-				return 2;
-			if(clicked && eb.findParameter(eb.selectedParameter.getValue()).isChanged())
-				return 0;
-			
-			return 1;
+		public RecallArea getParent() {
+			return (RecallArea)super.getParent();
 		}
 
+		public double getFontSizeInPixel() {
+			return getFontHeight(getPixRect());
+		}
+
+		public double calculateTextWidth() {
+			Context2d ctx = NonMaps.get().getCanvas().getContext2d();
+			String text = value.getDrawText(ctx);
+			ctx.setFont(value.getFontSizeInPixel() + "px 'Source Sans Pro LW25'");		
+			return ctx.measureText(text).getWidth();
+		}
+	}
+	
+	class RecallButton extends OverlayControl {
+		
 		@Override
 		public Control click(Position eventPoint) {
 			EditBufferModel eb = EditBufferModel.get();
@@ -62,24 +63,37 @@ public class RecallArea extends OverlayLayout {
 			if(eb.findParameter(eb.selectedParameter.getValue()).isChanged()) {
 				NonMaps.get().getServerProxy().recallCurrentParameterFromPreset();
 				getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				clicked = true;
 				return this;
 			}
 			return null;
 		}
 		
-		@Override
-		public Control mouseUp(Position eventPoint) {
-			clicked = false;
-			return super.mouseUp(eventPoint);
+		public RecallButton(RecallArea parent) {
+			super(parent);
 		}
 
-		public RecallButton(Control parent) {
-			super(parent, "PreRecall_A_Active.svg", "PreRecall_A_Enabled.svg", "PreRecall_A_Disabled.svg");
+		@Override
+		public void draw(Context2d ctx, int invalidationMask) {
+			if(getParent().isChanged()) {				
+				getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), 1, new Gray(77), null);
+				Rect movedToRight = getPixRect().copy().getMovedBy(new Dimension(getPixRect().getWidth(), 0)).copy();
+				movedToRight = movedToRight.getReducedBy(movedToRight.getHeight() / 3);
+				
+				ctx.beginPath();
+				ctx.moveTo(movedToRight.getLeft(), movedToRight.getTop());
+				ctx.lineTo(movedToRight.getLeft() + Millimeter.toPixels(3), movedToRight.getCenterPoint().getY());
+				ctx.lineTo(movedToRight.getLeft(), movedToRight.getBottom());
+				ctx.lineTo(movedToRight.getLeft(), movedToRight.getTop());
+				ctx.setFillStyle(new Gray(77).toString());
+				ctx.closePath();
+				ctx.fill();
+			}
 		}
 		
-		
-		
+		@Override
+		public RecallArea getParent() {
+			return (RecallArea)super.getParent();
+		}
 	}
 	
 	public RecallValue value;
@@ -87,21 +101,29 @@ public class RecallArea extends OverlayLayout {
 	
 	protected RecallArea(BeltParameterLayout parent) {
 		super(parent);
-		addChild(value = new RecallValue(this));
 		addChild(button = new RecallButton(this));
+		addChild(value = new RecallValue(this));
 	}
 	
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		double buttonDim = Millimeter.toPixels(10);
 		super.doLayout(x, y, w, h);		
-		button.doLayout(0, 0, buttonDim, h);
-		value.doLayout(buttonDim, 0, buttonDim * 4, h);
-
+		value.doLayout(0, 0, w, h);
+	
+		double textWidth = value.calculateTextWidth();
+		textWidth += Millimeter.toPixels(2);
+		
+		button.doLayout(w / 2 - textWidth / 2, h / 6, textWidth, (h / 3) * 2);
 	}
-
+	
 	@Override
 	public void setVisible(boolean v) {
 		super.setVisible(v);
+		requestLayout();
+	}
+	
+	public boolean isChanged() {
+		EditBufferModel eb = EditBufferModel.get();
+		return eb.findParameter(eb.selectedParameter.getValue()).isChanged();
 	}
 }
