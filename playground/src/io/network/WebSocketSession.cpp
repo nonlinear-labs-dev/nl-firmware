@@ -83,9 +83,12 @@ void WebSocketSession::onWebSocketConnected(SoupSession *session, GAsyncResult *
 
 void WebSocketSession::reconnect()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-  auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
-  sigTimeOut.connect_seconds_once(std::bind(&WebSocketSession::connect, this), 2);
+  if(!Application::get().isQuit())
+  {
+    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+    auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
+    sigTimeOut.connect_seconds_once(std::bind(&WebSocketSession::connect, this), 2);
+  }
 }
 
 void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)
