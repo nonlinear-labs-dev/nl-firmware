@@ -129,6 +129,7 @@ public class Setup {
 		public EnumDataModelEntity<VelocityCurve> velocityCurve = createEnumDataModelEntity(VelocityCurve.class, VelocityCurve.normal);
 		public BooleanDataModelEntity benderRampBypass = new BooleanDataModelEntity();
 		public BooleanDataModelEntity highlightChangedParameters = new BooleanDataModelEntity();
+		public BooleanDataModelEntity forceHighlightChangedParameters = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {
@@ -142,7 +143,6 @@ public class Setup {
 		public StripeBrightnessSetting stripeBrightness = new StripeBrightnessSetting();
 		public BooleanDataModelEntity bitmapCache = new BooleanDataModelEntity();
 		public BooleanDataModelEntity showDeveloperOptions = new BooleanDataModelEntity();
-		public BooleanDataModelEntity forceHighlightChanged = new BooleanDataModelEntity();
 	}
 
 	public SystemSettings systemSettings = new SystemSettings();

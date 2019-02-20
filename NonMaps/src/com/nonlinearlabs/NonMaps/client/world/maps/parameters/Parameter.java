@@ -96,7 +96,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		crc.eat(isSelected());
 		crc.eat(getParameterID());
 		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
-		crc.eat(Setup.get().localSettings.forceHighlightChanged.getValue().toString());
+		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
 	}
 
 	public final boolean isBiPolar() {
@@ -112,7 +112,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private boolean shouldHightlightChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
 		boolean highlight = Setup.get().systemSettings.highlightChangedParameters.isTrue();
-		boolean forceHighlight = Setup.get().localSettings.forceHighlightChanged.isTrue();
+		boolean forceHighlight = Setup.get().systemSettings.forceHighlightChangedParameters.isTrue();
 				
 		if(HardwareSourceIDS().contains(getParameterID()))
 			return false;

@@ -49,7 +49,7 @@ public class SetupUpdater extends Updater {
 		m.put("RandomizeAmount", Setup.get().systemSettings.randomizeAmount);
 		m.put("BenderRampBypass", Setup.get().systemSettings.benderRampBypass);
 		m.put("HighlightChangedParameters", Setup.get().systemSettings.highlightChangedParameters);
-		m.put("ForceHighlightChangedParameters", Setup.get().localSettings.forceHighlightChanged);
+		m.put("ForceHighlightChangedParameters", Setup.get().systemSettings.forceHighlightChangedParameters);
 
 		return m;
 	}

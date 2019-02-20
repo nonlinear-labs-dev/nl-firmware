@@ -68,11 +68,6 @@ public class LocalSettingsProvider {
 			notifyClients();
 			return true;
 		});
-		
-		s.forceHighlightChanged.onChange(t -> {
-			NonMaps.get().getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
-			return true;
-		});
 	}
 
 	protected void notifyClients() {
