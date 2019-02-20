@@ -76,18 +76,22 @@ public class RecallArea extends OverlayLayout {
 		public void draw(Context2d ctx, int invalidationMask) {
 			if(getParent().isChanged()) {				
 				getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), 1, new Gray(77), null);
-				Rect movedToRight = getPixRect().copy().getMovedBy(new Dimension(getPixRect().getWidth(), 0)).copy();
-				movedToRight = movedToRight.getReducedBy(movedToRight.getHeight() / 3);
-				
-				ctx.beginPath();
-				ctx.moveTo(movedToRight.getLeft(), movedToRight.getTop());
-				ctx.lineTo(movedToRight.getLeft() + Millimeter.toPixels(3), movedToRight.getCenterPoint().getY());
-				ctx.lineTo(movedToRight.getLeft(), movedToRight.getBottom());
-				ctx.lineTo(movedToRight.getLeft(), movedToRight.getTop());
-				ctx.setFillStyle(new Gray(77).toString());
-				ctx.closePath();
-				ctx.fill();
+				drawTriangle(ctx, new Gray(77));
 			}
+		}
+		
+		private void drawTriangle(Context2d ctx, RGB color) {
+			Rect movedToRight = getPixRect().copy().getMovedBy(new Dimension(getPixRect().getWidth(), 0)).copy();
+			movedToRight = movedToRight.getReducedBy(movedToRight.getHeight() / 3);
+			
+			ctx.beginPath();
+			ctx.moveTo(movedToRight.getLeft(), movedToRight.getTop());
+			ctx.lineTo(movedToRight.getLeft() + Millimeter.toPixels(3), movedToRight.getCenterPoint().getY());
+			ctx.lineTo(movedToRight.getLeft(), movedToRight.getBottom());
+			ctx.lineTo(movedToRight.getLeft(), movedToRight.getTop());
+			ctx.setFillStyle(color.toString());
+			ctx.closePath();
+			ctx.fill();
 		}
 		
 		@Override
@@ -107,13 +111,16 @@ public class RecallArea extends OverlayLayout {
 	
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		super.doLayout(x, y, w, h);		
-		value.doLayout(0, 0, w, h);
-	
-		double textWidth = value.calculateTextWidth();
-		textWidth += Millimeter.toPixels(2);
+		super.doLayout(x, y, w, h);
 		
-		button.doLayout(w / 2 - textWidth / 2, h / 6, textWidth, (h / 3) * 2);
+		final double padding = Millimeter.toPixels(2);
+		final double textWidth = value.calculateTextWidth() + padding;
+		final double buttonX = w / 2 - textWidth / 2;
+		final double buttonY = h / 6;
+		final double twothirds = (h / 3) * 2;
+		
+		value.doLayout(0, 0, w, h);		
+		button.doLayout(buttonX, buttonY, textWidth, twothirds);
 	}
 	
 	@Override
