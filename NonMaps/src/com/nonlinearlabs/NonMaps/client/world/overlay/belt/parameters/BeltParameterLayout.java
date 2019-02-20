@@ -1,17 +1,12 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
-import com.nonlinearlabs.NonMaps.client.world.RGB;
-import com.nonlinearlabs.NonMaps.client.world.RGBA;
 import com.nonlinearlabs.NonMaps.client.world.Range;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
@@ -26,7 +21,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterCompareButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
@@ -182,9 +176,12 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 					double width = vd.calculateTextWidth();
 					
 					recallArea.setVisible(!isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
-					double recallWidth = buttonDim * 7;
 					
-					recallArea.doLayout(walkerX - width / 2 + recallWidth / 5, upperElementsY, recallWidth, third);
+					double recallWidth = buttonDim * 7;
+					double recallY = upperElementsY + Math.abs(modAndParamValueYValue - third) / 4;
+					double recallX = walkerX - width / 2 + recallWidth / 5;
+					
+					recallArea.doLayout(recallX, recallY, recallWidth, third);
 				}
 			}
 			walkerX += r.width;

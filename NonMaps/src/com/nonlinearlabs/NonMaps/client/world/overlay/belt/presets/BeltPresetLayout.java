@@ -2,17 +2,14 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import java.util.LinkedList;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.world.Control;
-import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.LockSymbol;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterCompareButton;
 
 public class BeltPresetLayout extends OverlayLayout {
-
 	MenuArea menu;
 	StorePresetArea store;
 	BankControlArea bank;
