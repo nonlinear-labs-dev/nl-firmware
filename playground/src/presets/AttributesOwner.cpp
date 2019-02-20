@@ -17,7 +17,6 @@ AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent, const Attrib
 
 AttributesOwner::~AttributesOwner()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 size_t AttributesOwner::getHash() const
