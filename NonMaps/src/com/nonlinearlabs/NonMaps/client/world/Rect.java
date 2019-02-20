@@ -3,6 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
+import com.nonlinearlabs.NonMaps.client.Millimeter;
 
 public class Rect extends Object {
 	private final Position pos = new Position();
@@ -156,6 +157,27 @@ public class Rect extends Object {
 		stroke(ctx, strokeWidth, strokeColor);
 	}
 
+	public void drawDebug(Context2d ctx) {
+		//Draw Rect
+		drawRoundedRect(ctx, 0, 0, 1, null, RGB.red());
+		
+		//Draw Center Point
+		double centerSize = Millimeter.toPixels(2);
+		ctx.beginPath();
+		ctx.arc(getCenterPoint().getX(), getCenterPoint().getY(), centerSize, 0, 2 * Math.PI);
+		ctx.closePath();
+		ctx.stroke();
+		
+		//Draw Lines Through Center and extend indefinitely
+		ctx.beginPath();
+		ctx.moveTo(getCenterPoint().getX(), Integer.MIN_VALUE);
+		ctx.lineTo(getCenterPoint().getX(), Integer.MAX_VALUE);
+		ctx.moveTo(Integer.MIN_VALUE, getCenterPoint().getY());
+		ctx.lineTo(Integer.MAX_VALUE, getCenterPoint().getY());
+		ctx.closePath();
+		ctx.stroke();
+	}
+	
 	public void drawRoundedArea(Context2d ctx, double corner, double width, RGB fill, RGB stroke) {
 		ctx.beginPath();
 		ctx.moveTo(getLeft() + corner, getTop());

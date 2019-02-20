@@ -59,7 +59,7 @@ public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 		right += layout.currentPreset.getRelativePosition().getWidth() + margin;
-		layout.compareButton.getRelativePosition().moveTo(right, h / 2 - Millimeter.toPixels(5));
+		layout.compareButton.getRelativePosition().moveTo(right, layout.load.load.getRelativePosition().getTop());
 
 		super.layoutLockSymbol(w);
 		return true;
