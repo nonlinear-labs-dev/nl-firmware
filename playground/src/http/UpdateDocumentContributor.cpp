@@ -2,8 +2,6 @@
 #include "UpdateDocumentMaster.h"
 #include "libundo/undo/Transaction.h"
 
-#include <device-settings/DebugLevel.h>
-
 UpdateDocumentContributor::UpdateDocumentContributor(UpdateDocumentContributor *parent)
     : m_parent(parent)
     , m_updateIDOnLastChange(1)
@@ -24,9 +22,7 @@ UpdateDocumentContributor::~UpdateDocumentContributor()
 
   if(m_parent)
   {
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     m_parent->m_children.remove(this);
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }
 }
 

@@ -19,7 +19,6 @@ WebSocketSession::~WebSocketSession()
 {
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_messageLoop->quit();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_contextThread.join();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
@@ -31,16 +30,13 @@ void WebSocketSession::startListening()
 
 void WebSocketSession::backgroundThread()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   auto m = Glib::MainContext::create();
   g_main_context_push_thread_default(m->gobj());
   this->m_soupSession.reset(soup_session_new());
   this->m_backgroundContextQueue = std::make_unique<ContextBoundMessageQueue>(m);
   this->m_messageLoop = Glib::MainLoop::create(m);
   m_backgroundContextQueue->pushMessage(std::bind(&WebSocketSession::connect, this));
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   this->m_messageLoop->run();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 sigc::connection WebSocketSession::onMessageReceived(Domain d, const sigc::slot<void, tMessage> &cb)

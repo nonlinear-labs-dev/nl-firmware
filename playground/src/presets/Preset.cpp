@@ -38,7 +38,6 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
 
 Preset::~Preset()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void Preset::load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath)

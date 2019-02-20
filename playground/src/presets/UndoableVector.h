@@ -29,9 +29,7 @@ template <typename Element> class UndoableVector
 
   ~UndoableVector()
   {
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     m_elements.clear();
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }
 
   UndoableVector &operator=(const UndoableVector &other)
