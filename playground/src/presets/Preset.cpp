@@ -268,7 +268,7 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
   if(auto b = dynamic_cast<Bank *>(other->getParent()))
   {
-    sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(getUuid()) + 1);
+    sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(other->getUuid()) + 1);
     bPositionString = txt;
   }
 
