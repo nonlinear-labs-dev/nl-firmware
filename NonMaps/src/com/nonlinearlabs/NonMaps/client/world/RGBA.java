@@ -22,6 +22,10 @@ public class RGBA extends RGB {
 		return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 	}
 
+	public static RGBA redTransparent() {
+		return new RGBA(255, 0, 0, 0.5);
+	}
+	
 	@Override
 	public RGBA brighter(int amount) {
 		return new RGBA(r + amount, g + amount, b + amount, a);
