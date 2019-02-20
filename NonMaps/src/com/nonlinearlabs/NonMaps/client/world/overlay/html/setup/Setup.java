@@ -57,7 +57,7 @@ public class Setup extends Composite {
 
 	@UiField
 	RadioButton presetGlitchSurpressionOn, presetGlitchSurpressionOff, showContextMenusOn, showContextMenusOff, presetDragDropOn,
-			presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff;
+			presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff, highlightChangedOn, highlightChangedOff;
 
 	@UiField
 	InputElement editSmoothingTimeSlider;
@@ -104,6 +104,7 @@ public class Setup extends Composite {
 		fillRadioButtons(presetDragDropOn, presetDragDropOff, LocalSettings.PresetDragDrop.options);
 		fillRadioButtons(bitmapCacheOn, bitmapCacheOff, LocalSettings.BitmapCache.options);
 		fillRadioButtons(developerOptionsOn, developerOptionsOff, LocalSettings.ShowDeveloperOptions.options);
+		fillRadioButtons(highlightChangedOn, highlightChangedOff, DeviceSettings.HighlightChanged.options);
 	}
 
 	public void connectEventHandlers() {
@@ -152,6 +153,10 @@ public class Setup extends Composite {
 		pedal4Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 269, e.getValue().doubleValue(), true));
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
+		
+		highlightChangedOn.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.on));
+		highlightChangedOff.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.off));
+
 	}
 
 	public void connectUpdate() {
@@ -197,6 +202,9 @@ public class Setup extends Composite {
 		editSmoothingTimeDisplayString.setText(t.editSmoothingTime.displayValue);
 
 		deviceName.setText(t.deviceName);
+		
+		highlightChangedOn.setValue(t.highlightChangedParameters.value);
+		highlightChangedOff.setValue(!t.highlightChangedParameters.value);
 	}
 
 	public void applyPedalValues(DeviceSettings.Pedal src, ListBox type, Range slider, Label text) {

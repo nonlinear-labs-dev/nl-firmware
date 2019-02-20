@@ -83,6 +83,12 @@ public class DeviceSettingsProvider {
 			return true;
 		});
 
+		Setup.get().systemSettings.highlightChangedParameters.onChange(t -> {
+			settings.highlightChangedParameters.value = t == BooleanValues.on;
+			notifyClients();
+			return true;
+		});
+		
 		connectToPedal(254, settings.pedal1);
 		connectToPedal(259, settings.pedal2);
 		connectToPedal(264, settings.pedal3);

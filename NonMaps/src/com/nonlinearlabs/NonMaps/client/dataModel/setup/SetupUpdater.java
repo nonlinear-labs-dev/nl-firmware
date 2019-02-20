@@ -48,6 +48,8 @@ public class SetupUpdater extends Updater {
 		m.put("VelocityCurve", Setup.get().systemSettings.velocityCurve);
 		m.put("RandomizeAmount", Setup.get().systemSettings.randomizeAmount);
 		m.put("BenderRampBypass", Setup.get().systemSettings.benderRampBypass);
+		m.put("HighlightChangedParameters", Setup.get().systemSettings.highlightChangedParameters);
+		m.put("ForceHighlightChangedParameters", Setup.get().localSettings.forceHighlightChanged);
 
 		return m;
 	}

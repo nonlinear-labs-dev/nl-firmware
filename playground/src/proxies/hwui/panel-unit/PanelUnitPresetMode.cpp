@@ -10,6 +10,7 @@
 #include <proxies/hwui/TwoStateLED.h>
 #include <memory>
 #include "PanelUnitPresetMode.h"
+#include <device-settings/HighlightChangedParametersSetting.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
@@ -25,6 +26,7 @@ PanelUnitPresetMode::PanelUnitPresetMode()
 
 PanelUnitPresetMode::~PanelUnitPresetMode()
 {
+  ForceHighlightChangedParametersSetting::disable();
   DebugLevel::gassy(__PRETTY_FUNCTION__);
 }
 
@@ -37,11 +39,15 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
-      getMappings().forEachButton(
-          [&](int buttonId, const list<int> parameters) { letChangedButtonsBlink(buttonId, parameters, states); });
+      getMappings().forEachButton([&](int buttonId, const list<int> parameters) {
+        ForceHighlightChangedParametersSetting::enable();
+        letChangedButtonsBlink(buttonId, parameters, states);
+      });
     else
-      getMappings().forEachButton(
-          [&](int buttonId, const list<int> parameters) { setStateForButton(buttonId, parameters, states); });
+      getMappings().forEachButton([&](int buttonId, const list<int> parameters) {
+        ForceHighlightChangedParametersSetting::disable();
+        setStateForButton(buttonId, parameters, states);
+      });
 
     applyStateToLeds(states);
   });

@@ -11,7 +11,6 @@ public class PresetBeltLayouterM extends PresetBeltLayouter {
 	@Override
 	public boolean doLayout(double w, double h) {
 		hide(layout.menu);
-		hide(layout.compareButton);
 
 		double margin = getDefaultMargin();
 		double left = margin;
@@ -29,8 +28,6 @@ public class PresetBeltLayouterM extends PresetBeltLayouter {
 		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth,
 				currentPresetHeight);
 		
-		layout.compareButton.doLayout(right - currentPresetWidth + margin, (h / 2 - currentPresetHeight - Millimeter.toPixels(5)), Millimeter.toPixels(10), Millimeter.toPixels(10));
-
 		right -= currentPresetWidth + margin;
 		
 		layout.load.doLayout(right, 0, h);
@@ -48,7 +45,6 @@ public class PresetBeltLayouterM extends PresetBeltLayouter {
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 		right += layout.currentPreset.getRelativePosition().getWidth() / 2 - Millimeter.toPixels(5);
-		layout.compareButton.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getBottom());
 
 		super.layoutLockSymbol(w);
 		return true;

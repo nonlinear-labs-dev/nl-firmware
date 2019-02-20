@@ -3,8 +3,10 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.NonMaps.client.world.Control;
 
 public class LocalSettingsProvider {
 	public static LocalSettingsProvider theInstance = new LocalSettingsProvider();
@@ -64,6 +66,13 @@ public class LocalSettingsProvider {
 		s.showDeveloperOptions.onChange(t -> {
 			settings.showDeveloperOptions.value = t == BooleanValues.on;
 			notifyClients();
+			return true;
+		});
+		
+		s.forceHighlightChanged.onChange(t -> {
+			NonMaps.get().getNonLinearWorld().getParameterEditor().getChildren().forEach(control -> {
+				control.invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
+			});
 			return true;
 		});
 	}
