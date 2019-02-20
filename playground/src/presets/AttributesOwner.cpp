@@ -2,6 +2,7 @@
 #include <libundo/undo/Transaction.h>
 #include <xml/Writer.h>
 #include <unordered_set>
+#include <device-settings/DebugLevel.h>
 
 AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent)
     : UpdateDocumentContributor(parent)
@@ -14,7 +15,9 @@ AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent, const Attrib
   m_attributes = other->m_attributes;
 }
 
-AttributesOwner::~AttributesOwner() = default;
+AttributesOwner::~AttributesOwner()
+{
+}
 
 size_t AttributesOwner::getHash() const
 {

@@ -33,6 +33,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
 
 EditBuffer::~EditBuffer()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 Glib::ustring EditBuffer::getName() const

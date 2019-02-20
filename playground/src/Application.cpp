@@ -36,8 +36,8 @@ void quitApp(int sig)
 
 Application::Application(int numArgs, char **argv)
     : m_selfPath(initStatic(this, argv[0]))
-    , m_options(new Options(numArgs, argv))
     , m_theMainLoop(MainLoop::create())
+    , m_options(new Options(numArgs, argv))
     , m_websocketSession(std::make_unique<WebSocketSession>())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
@@ -77,13 +77,21 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  m_watchDog.reset();
+  m_aggroWatchDog.reset();
+
   m_hwui->deInit();
   m_hwui.reset();
+  m_undoScope.reset();
   m_presetManager.reset();
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
 #ifdef _PROFILING
   Profiler::get().print();
 #endif
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 Application &Application::get()
@@ -163,59 +171,59 @@ void Application::stopWatchDog()
     m_aggroWatchDog->stop();
 }
 
-shared_ptr<PresetManager> Application::getPresetManager() const
+PresetManager *Application::getPresetManager() const
 {
-  return m_presetManager;
+  return m_presetManager.get();
 }
 
-shared_ptr<HTTPServer> Application::getHTTPServer()
+HTTPServer *Application::getHTTPServer()
 {
-  return m_http;
+  return m_http.get();
 }
 
-shared_ptr<Clipboard> Application::getClipboard()
+Clipboard *Application::getClipboard()
 {
-  return m_clipboard;
+  return m_clipboard.get();
 }
 
-shared_ptr<Options> Application::getOptions()
+Options *Application::getOptions()
 {
-  return m_options;
+  return m_options.get();
 }
 
-shared_ptr<LPCProxy> Application::getLPCProxy() const
+LPCProxy *Application::getLPCProxy() const
 {
-  return m_lpcProxy;
+  return m_lpcProxy.get();
 }
 
-shared_ptr<Settings> Application::getSettings()
+Settings *Application::getSettings()
 {
-  return m_settings;
+  return m_settings.get();
 }
 
-shared_ptr<HWTests> Application::getHWTests()
+HWTests *Application::getHWTests()
 {
-  return m_hwtests;
+  return m_hwtests.get();
 }
 
-shared_ptr<HWUI> Application::getHWUI()
+HWUI *Application::getHWUI()
 {
-  return m_hwui;
+  return m_hwui.get();
 }
 
-shared_ptr<const HWUI> Application::getHWUI() const
+const HWUI *Application::getHWUI() const
 {
-  return m_hwui;
+  return m_hwui.get();
 }
 
-shared_ptr<UndoScope> Application::getUndoScope()
+UndoScope *Application::getUndoScope()
 {
-  return m_undoScope;
+  return m_undoScope.get();
 }
 
-shared_ptr<DeviceInformation> Application::getDeviceInformation()
+DeviceInformation *Application::getDeviceInformation()
 {
-  return m_deviceInformation;
+  return m_deviceInformation.get();
 }
 
 WebSocketSession *Application::getWebSocketSession()

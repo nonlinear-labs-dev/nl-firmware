@@ -5,6 +5,7 @@
 #include "PresetParameterGroup.h"
 #include <serialization/PresetSerializer.h>
 #include <Application.h>
+#include <device-settings/DebugLevel.h>
 #include <device-settings/DeviceName.h>
 #include <device-settings/Settings.h>
 #include <device-info/DeviceInformation.h>
@@ -35,7 +36,9 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
   m_name = editBuffer.getName();
 }
 
-Preset::~Preset() = default;
+Preset::~Preset()
+{
+}
 
 void Preset::load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath)
 {

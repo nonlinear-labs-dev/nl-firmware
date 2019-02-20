@@ -16,7 +16,9 @@ UpdateDocumentContributor::UpdateDocumentContributor(UpdateDocumentContributor *
 UpdateDocumentContributor::~UpdateDocumentContributor()
 {
   for(UpdateDocumentContributor *c : m_children)
+  {
     c->orphan();
+  }
 
   if(m_parent)
   {

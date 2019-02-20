@@ -72,7 +72,7 @@ class ClusterEnforcement
   static void sortBankNumbers();
 
  private:
-  std::shared_ptr<PresetManager> m_presetManager;
+  PresetManager *m_presetManager = nullptr;
   std::vector<tCluster> m_clusters;
   std::map<Uuid, tTreeNodePtr> m_uuidToTreeNode;
 

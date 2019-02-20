@@ -42,9 +42,12 @@ PresetManager::~PresetManager()
 
   for(auto &task : tasks)
   {
+    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
     while(task() == SaveResult::Again)
       ;
   }
+
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void PresetManager::init()

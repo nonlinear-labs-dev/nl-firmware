@@ -30,17 +30,17 @@ class Application
   void run();
   RefPtr<MainContext> getMainContext();
 
-  shared_ptr<PresetManager> getPresetManager() const;
-  shared_ptr<HTTPServer> getHTTPServer();
-  shared_ptr<Options> getOptions();
-  shared_ptr<LPCProxy> getLPCProxy() const;
-  shared_ptr<HWTests> getHWTests();
-  shared_ptr<HWUI> getHWUI();
-  shared_ptr<const HWUI> getHWUI() const;
-  shared_ptr<UndoScope> getUndoScope();
-  shared_ptr<Settings> getSettings();
-  shared_ptr<DeviceInformation> getDeviceInformation();
-  shared_ptr<Clipboard> getClipboard();
+  PresetManager *getPresetManager() const;
+  HTTPServer *getHTTPServer();
+  Options *getOptions();
+  LPCProxy *getLPCProxy() const;
+  HWTests *getHWTests();
+  HWUI *getHWUI();
+  const HWUI *getHWUI() const;
+  UndoScope *getUndoScope();
+  Settings *getSettings();
+  DeviceInformation *getDeviceInformation();
+  Clipboard *getClipboard();
 
   WebSocketSession *getWebSocketSession();
 
@@ -56,21 +56,22 @@ class Application
 
   static Application *theApp;
   Glib::ustring m_selfPath;
-  shared_ptr<Options> m_options;
   RefPtr<MainLoop> m_theMainLoop;
+
+  unique_ptr<Options> m_options;
   unique_ptr<WebSocketSession> m_websocketSession;
-  shared_ptr<HTTPServer> m_http;
-  shared_ptr<Settings> m_settings;
-  shared_ptr<UndoScope> m_undoScope;
-  shared_ptr<PresetManager> m_presetManager;
-  shared_ptr<LPCProxy> m_lpcProxy;
-  shared_ptr<HWUI> m_hwui;
-  shared_ptr<HWTests> m_hwtests;
-  shared_ptr<EmbeddedPC> m_epc;
+  unique_ptr<HTTPServer> m_http;
+  unique_ptr<Settings> m_settings;
+  unique_ptr<UndoScope> m_undoScope;
+  unique_ptr<PresetManager> m_presetManager;
+  unique_ptr<LPCProxy> m_lpcProxy;
+  unique_ptr<HWUI> m_hwui;
+  unique_ptr<HWTests> m_hwtests;
+
   unique_ptr<WatchDog> m_watchDog;
   unique_ptr<WatchDog> m_aggroWatchDog;
-  shared_ptr<DeviceInformation> m_deviceInformation;
-  shared_ptr<Clipboard> m_clipboard;
+  unique_ptr<DeviceInformation> m_deviceInformation;
+  unique_ptr<Clipboard> m_clipboard;
 
   bool m_heartbeatState;
   bool m_isQuit;
