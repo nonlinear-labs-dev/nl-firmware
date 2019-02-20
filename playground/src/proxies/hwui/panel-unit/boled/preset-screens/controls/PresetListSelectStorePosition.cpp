@@ -105,7 +105,7 @@ void PresetListSelectStorePosition::movePresetSelection(int moveBy)
 {
   auto pm = Application::get().getPresetManager();
 
-  sanitizeBankPosition(pm.get());
+  sanitizeBankPosition(pm);
 
   if(auto bank = pm->getBankAt(m_storeModeData->bankPos))
   {
@@ -149,7 +149,7 @@ void PresetListSelectStorePosition::moveBankSelection(int moveBy)
   auto pm = Application::get().getPresetManager();
   m_storeModeData->bankPos += moveBy;
 
-  sanitizeBankPosition(pm.get());
+  sanitizeBankPosition(pm);
   sanitizePresetPosition(pm->getBankAt(m_storeModeData->bankPos));
 
   onChange();

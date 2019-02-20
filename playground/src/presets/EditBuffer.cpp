@@ -33,6 +33,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
 
 EditBuffer::~EditBuffer()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 Glib::ustring EditBuffer::getName() const
@@ -420,6 +421,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 
   setName(transaction, "Init Sound");
   transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
+
 }
 
 void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *other)

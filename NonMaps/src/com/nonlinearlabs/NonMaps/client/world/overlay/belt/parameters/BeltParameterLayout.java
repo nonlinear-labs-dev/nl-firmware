@@ -175,7 +175,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				if(c instanceof ValueDisplay) {
 					recallArea.setVisible(!isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
 					double recallWidth = buttonDim * 5;
-					recallArea.doLayout(walkerX - recallWidth, upperElementsY, recallWidth, third);
+					recallArea.doLayout(walkerX, 0, recallWidth, modAndParamValueYValue);
 				}
 			}
 			walkerX += r.width;

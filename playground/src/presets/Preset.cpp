@@ -5,6 +5,7 @@
 #include "PresetParameterGroup.h"
 #include <serialization/PresetSerializer.h>
 #include <Application.h>
+#include <device-settings/DebugLevel.h>
 #include <device-settings/DeviceName.h>
 #include <device-settings/Settings.h>
 #include <device-info/DeviceInformation.h>
@@ -35,7 +36,9 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
   m_name = editBuffer.getName();
 }
 
-Preset::~Preset() = default;
+Preset::~Preset()
+{
+}
 
 void Preset::load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath)
 {
@@ -265,7 +268,7 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
   if(auto b = dynamic_cast<Bank *>(other->getParent()))
   {
-    sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(getUuid()) + 1);
+    sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(other->getUuid()) + 1);
     bPositionString = txt;
   }
 

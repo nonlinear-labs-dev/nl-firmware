@@ -31,7 +31,10 @@ Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuid
   m_presets = other.m_presets;
 }
 
-Bank::~Bank() = default;
+Bank::~Bank()
+{
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+}
 
 SaveResult Bank::save(RefPtr<Gio::File> bankFolder)
 {

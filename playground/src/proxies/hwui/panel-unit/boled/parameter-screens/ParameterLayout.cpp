@@ -250,23 +250,23 @@ ParameterRecallLayout2::ParameterRecallLayout2()
 
   if(auto p = getCurrentParameter())
   {
-    if(auto originalParam = p->getOriginalParameter())
-    {
-      if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-        m_slider = addControl(new StaticKnubbelSlider(originalParam->getValue(), p->isBiPolar(),
-                                                      Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-      else
-        m_slider = addControl(new StaticBarSlider(originalParam->getValue(), p->isBiPolar(),
-                                                  Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+    auto originalParam = p->getOriginalParameter();
+    auto originalValue = originalParam ? originalParam->getValue() : p->getDefaultValue();
 
-      m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
+    if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
+      m_slider = addControl(
+          new StaticKnubbelSlider(originalValue, p->isBiPolar(), Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+    else
+      m_slider
+          = addControl(new StaticBarSlider(originalValue, p->isBiPolar(), Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
 
-      auto sc = p->getValue().getScaleConverter();
-      auto displayValue = sc->controlPositionToDisplay(originalParam->getValue());
-      auto displayString = sc->getDimension().stringize(displayValue);
+    m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
 
-      m_rightValue = addControl(new Label(displayString, Rect(131, 35, 58, 11)));
-    }
+    auto sc = p->getValue().getScaleConverter();
+    auto displayValue = sc->controlPositionToDisplay(originalValue);
+    auto displayString = sc->getDimension().stringize(displayValue);
+
+    m_rightValue = addControl(new Label(displayString, Rect(131, 35, 58, 11)));
   }
 
   m_recallValue = getCurrentParameter()->getControlPositionValue();
@@ -357,31 +357,30 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
 
   if(auto p = getCurrentParameter())
   {
-    if(auto originalParam = p->getOriginalParameter())
+    if(paramLikeInPreset)
     {
-      if(paramLikeInPreset)
-      {
-        m_leftValue->setText(p->getDisplayString());
-        m_rightValue->setText(m_recallString);
-        m_slider->setValue(p->getControlPositionValue(), p->isBiPolar());
-        m_rightValue->setHighlight(false);
-        m_leftValue->setHighlight(true);
-        m_buttonB->setText("");
-        m_buttonC->setText("Recall");
-      }
-      else
-      {
-        auto sc = p->getValue().getScaleConverter();
-        auto displayValue = sc->controlPositionToDisplay(originalParam->getValue());
-        auto displayString = sc->getDimension().stringize(displayValue);
-        m_leftValue->setText(displayString);
-        m_rightValue->setText(p->getDisplayString());
-        m_slider->setValue(m_recallValue, p->isBiPolar());
-        m_leftValue->setHighlight(false);
-        m_rightValue->setHighlight(true);
-        m_buttonC->setText("");
-        m_buttonB->setText("Recall");
-      }
+      m_leftValue->setText(p->getDisplayString());
+      m_rightValue->setText(m_recallString);
+      m_slider->setValue(p->getControlPositionValue(), p->isBiPolar());
+      m_rightValue->setHighlight(false);
+      m_leftValue->setHighlight(true);
+      m_buttonB->setText("");
+      m_buttonC->setText("Recall");
+    }
+    else
+    {
+      auto sc = p->getValue().getScaleConverter();
+      auto originalParam = p->getOriginalParameter();
+      auto originalValue = originalParam ? originalParam->getValue() : p->getDefaultValue();
+      auto displayValue = sc->controlPositionToDisplay(originalValue);
+      auto displayString = sc->getDimension().stringize(displayValue);
+      m_leftValue->setText(displayString);
+      m_rightValue->setText(p->getDisplayString());
+      m_slider->setValue(m_recallValue, p->isBiPolar());
+      m_leftValue->setHighlight(false);
+      m_rightValue->setHighlight(true);
+      m_buttonC->setText("");
+      m_buttonB->setText("Recall");
     }
   }
 }

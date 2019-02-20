@@ -83,12 +83,12 @@ void ContentManager::init()
 
 void ContentManager::addContentSections()
 {
-  addContentSection(static_pointer_cast<ContentSection>(Application::get().getPresetManager()));
-  addContentSection(static_pointer_cast<ContentSection>(Application::get().getHWTests()));
-  addContentSection(static_pointer_cast<ContentSection>(Application::get().getUndoScope()));
-  addContentSection(static_pointer_cast<ContentSection>(Application::get().getSettings()));
-  addContentSection(static_pointer_cast<ContentSection>(Application::get().getDeviceInformation()));
-  addContentSection(static_pointer_cast<ContentSection>(Application::get().getClipboard()));
+  addContentSection(static_cast<ContentSection *>(Application::get().getPresetManager()));
+  addContentSection(static_cast<ContentSection *>(Application::get().getHWTests()));
+  addContentSection(static_cast<ContentSection *>(Application::get().getUndoScope()));
+  addContentSection(static_cast<ContentSection *>(Application::get().getSettings()));
+  addContentSection(static_cast<ContentSection *>(Application::get().getDeviceInformation()));
+  addContentSection(static_cast<ContentSection *>(Application::get().getClipboard()));
 }
 
 void ContentManager::addContentSection(tContentSectionPtr section)
@@ -338,10 +338,10 @@ void ContentManager::onSectionMessageFinished(SoupMessage *msg)
 
 UNDO::Scope &ContentManager::getUndoScope()
 {
-  return *(Application::get().getUndoScope().get());
+  return *(Application::get().getUndoScope());
 }
 
 const UNDO::Scope &ContentManager::getUndoScope() const
 {
-  return *(Application::get().getUndoScope().get());
+  return *(Application::get().getUndoScope());
 }

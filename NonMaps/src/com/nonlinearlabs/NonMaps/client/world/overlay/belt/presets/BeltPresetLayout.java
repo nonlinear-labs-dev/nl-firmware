@@ -9,7 +9,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.LockSymbol;
 
 public class BeltPresetLayout extends OverlayLayout {
-
 	MenuArea menu;
 	StorePresetArea store;
 	BankControlArea bank;

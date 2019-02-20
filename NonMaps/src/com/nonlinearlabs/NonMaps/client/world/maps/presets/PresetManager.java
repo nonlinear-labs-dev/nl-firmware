@@ -836,6 +836,11 @@ public class PresetManager extends MapsLayout {
 
 				return ret;
 			}
+		} else {
+			String ret = "Init";
+			if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isModified())
+				ret += " *";
+			return ret;
 		}
 		return "";
 	}
@@ -973,9 +978,17 @@ public class PresetManager extends MapsLayout {
 	public boolean isChangingPresetWhileInDirectLoad() {
 		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt()
 				.getPresetLayout().isDirectLoadActive();
-		if (directLoadActive && findSelectedPreset() != findLoadedPreset()) {
-			return true;
-		}
-		return false;
+		
+		if(!directLoadActive)
+			return false;
+		
+		Preset loadedPreset = findLoadedPreset();		
+		boolean isInitSound = loadedPreset == null;
+		
+		if(isInitSound)
+			return false;
+		
+		return findSelectedPreset() != loadedPreset;
 	}
 }
+;

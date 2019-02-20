@@ -32,7 +32,7 @@ shared_ptr<ParameterEditModeRibbonBehaviour> ParamEditModeRibbonBehaviourLabel::
   return getSettings()->getSetting<ParameterEditModeRibbonBehaviour>();
 }
 
-shared_ptr<Settings> ParamEditModeRibbonBehaviourLabel::getSettings() const
+Settings* ParamEditModeRibbonBehaviourLabel::getSettings() const
 {
   return Application::get().getSettings();
 }

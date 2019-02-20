@@ -37,6 +37,7 @@ LPCProxy::LPCProxy()
 
 LPCProxy::~LPCProxy()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void LPCProxy::onWebSocketMessage(WebSocketSession::tMessage msg)
