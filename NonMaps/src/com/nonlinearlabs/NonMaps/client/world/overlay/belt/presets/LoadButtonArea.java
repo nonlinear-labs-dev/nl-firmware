@@ -6,7 +6,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 public class LoadButtonArea extends OverlayLayout {
 
 	private PrevNextPresetButtons prevNext;
-	private LoadPreset load;
+	LoadPreset load;
 	AdvancedBankInformation bankInfos;
 
 	protected LoadButtonArea(BeltPresetLayout parent) {

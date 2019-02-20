@@ -11,6 +11,7 @@ import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
@@ -28,6 +29,7 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.ChangeListener;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterCompareButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.ParameterContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
@@ -40,6 +42,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 		@Override
 		public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
+			Parameter.this.onQuantizedValueChanged(initiator, newQuantizedValue - oldQuantizedValue);
 		}
 
 		@Override
@@ -70,6 +73,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 		if (getParameterID() != 0)
 			getSelectionRoot().registerSelectable(this);
+
+	}
+
+	public void onQuantizedValueChanged(Initiator initiator, double d) {
+
 	}
 
 	protected QuantizedClippedValue createValue(ChangeListener changeListener) {
@@ -85,6 +93,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		super.getStateHash(crc);
 		crc.eat(isSelected());
 		crc.eat(getParameterID());
+		crc.eat(ParameterCompareButton.inCompare);
 	}
 
 	public final boolean isBiPolar() {
@@ -104,6 +113,9 @@ public abstract class Parameter extends LayoutResizingVertical {
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
+		if (EditBufferModel.get().findParameter(getParameterID()).isChanged() && ParameterCompareButton.inCompare)
+			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
+
 	}
 
 	private RGB getParameterBackgroundColor() {
@@ -435,7 +447,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getFullNameWithGroup() {
-		return getGroupName() + "   \u2013   " + getName().getLongName();
+		boolean changed = EditBufferModel.get().findParameter(getParameterID()).isChanged();
+		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
 	}
 
 	public String getGroupName() {

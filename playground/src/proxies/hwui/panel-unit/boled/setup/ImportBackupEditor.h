@@ -10,7 +10,7 @@ class ImportBackupEditor : public ControlWithChildren, public SetupEditor
 {
  public:
   ImportBackupEditor();
-  virtual ~ImportBackupEditor();
+  ~ImportBackupEditor() override;
 
   void setPosition(const Rect &) override;
   bool onButton(int i, bool down, ButtonModifiers modifiers) override;
@@ -21,5 +21,4 @@ class ImportBackupEditor : public ControlWithChildren, public SetupEditor
   static Glib::ustring generateFileDialogCompliantNameFromPath(std::experimental::filesystem::directory_entry file);
   static bool filterApplicableFileNames(std::experimental::filesystem::directory_entry term);
   static void importBackupFileFromPath(std::experimental::filesystem::directory_entry file);
-  static Reader::FileVersionCheckResult checkForCompatibleVersion(int version);
 };

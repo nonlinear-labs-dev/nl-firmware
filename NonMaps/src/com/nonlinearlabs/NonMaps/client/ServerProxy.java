@@ -942,8 +942,8 @@ public class ServerProxy {
 		downloadFile("/presets/banks/download-preset/?uuid=" + URL.encodeQueryString(uuid), downloadHandler);
 	}
 
-	public void loadEditBuffer(Document xml) {
-		StaticURI.Path path = new StaticURI.Path("presets", "load-editbuffer");
+	public void loadPresetFromXML(Document xml) {
+		StaticURI.Path path = new StaticURI.Path("presets", "load-preset-from-xml");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("xml", xml.toString()));
 		final XMLHttpRequest xhr = XMLHttpRequest.create();
 		xhr.open("POST", path.toString());
@@ -968,6 +968,12 @@ public class ServerProxy {
 
 	public void requestRTSoftwareVersion() {
 		StaticURI.Path path = new StaticURI.Path("device-info", "refresh-rt-software-version");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
+	public void recallCurrentParameterFromPreset() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-current-from-preset");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}

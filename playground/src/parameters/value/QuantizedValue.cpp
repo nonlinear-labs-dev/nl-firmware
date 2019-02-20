@@ -248,4 +248,6 @@ void QuantizedValue::onClippedValueChanged(Initiator initiator, tControlPosition
 void QuantizedValue::onFineQuantizedChanged(Initiator initiator, tControlPositionValue oldFine,
                                             tControlPositionValue newFine)
 {
+  if(m_owner)
+    m_owner->onValueFineQuantizedChanged(initiator, oldFine, newFine);
 }

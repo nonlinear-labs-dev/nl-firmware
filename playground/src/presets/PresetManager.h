@@ -12,6 +12,7 @@
 #include <tools/ScopedGuard.h>
 #include <tools/Throttler.h>
 #include <tools/Uuid.h>
+#include <tools/RecursionGuard.h>
 
 class Bank;
 class Preset;
@@ -69,6 +70,8 @@ class PresetManager : public ContentSection
   void selectNextBank();
   void onPresetSelectionChanged();
 
+  std::shared_ptr<ScopedGuard::Lock> lockLoading();
+
   // algorithms
   std::pair<double, double> calcDefaultBankPositionFor(const Bank *bank) const;
   size_t getBankPosition(const Uuid &uuid) const;
@@ -99,8 +102,6 @@ class PresetManager : public ContentSection
   sigc::connection onBankSelection(sigc::slot<void> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
 
-  void selectBank();
-
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
@@ -123,6 +124,7 @@ class PresetManager : public ContentSection
   size_t getNextBankPosition() const;
   void selectBank(size_t idx);
   bool selectBank(UNDO::Transaction *transaction, size_t idx);
+  void invalidateAllBanks();
 
   UndoableVector<Bank> m_banks;
 

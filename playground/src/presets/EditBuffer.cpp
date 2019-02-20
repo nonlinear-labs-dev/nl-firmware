@@ -18,10 +18,11 @@
 #include "device-settings/Settings.h"
 #include "device-settings/RandomizeAmount.h"
 #include "device-info/DeviceInformation.h"
+#include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
 #include "parameters/MacroControlParameter.h"
 
-EditBuffer::EditBuffer(UpdateDocumentContributor *parent)
+EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
@@ -416,8 +417,11 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
     onChange();
   });
 
+  resetModifiedIndicator(transaction);
+
   setName(transaction, "Init Sound");
   transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
+
 }
 
 void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *other)
@@ -571,9 +575,12 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
   return nullptr;
 }
 
-void EditBuffer::setMacroControlValueFromMCView(int id, double value)
+void EditBuffer::setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid)
 {
   if(auto mcs = getParameterGroupByID("MCs"))
-    if(auto mc = mcs->getParameterByID(id))
-      mc->setCPFromHwui(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+    if(auto mc = dynamic_cast<MacroControlParameter *>(mcs->getParameterByID(id)))
+    {
+      mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+      mc->setLastMCViewUUID(uuid);
+    }
 }

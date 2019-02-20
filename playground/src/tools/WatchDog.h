@@ -16,8 +16,8 @@ class WatchDog
 
   typedef function<void(int, int)> tCB;
 
-  void run(std::chrono::system_clock::duration timeout);
-  void run(std::chrono::system_clock::duration timeout, tCB cb);
+  void run(std::chrono::steady_clock::duration timeout);
+  void run(std::chrono::steady_clock::duration timeout, tCB cb);
 
   void stop();
 
@@ -27,7 +27,7 @@ class WatchDog
   void killProcess();
   bool isDebuggerPreset();
 
-  std::chrono::system_clock::duration m_timeout;
+  std::chrono::steady_clock::duration m_timeout;
   Expiration m_regularTimer;
   std::atomic<int> m_counter = { 0 };
   std::atomic<bool> m_run = { 1 };

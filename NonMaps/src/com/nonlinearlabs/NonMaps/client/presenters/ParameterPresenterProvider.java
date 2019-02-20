@@ -30,7 +30,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
 		presenter.displayValue = Stringizers.get().stringize(e.value.metaData.scaling.getValue(), e.value.value.getValue());
 		presenter.shortName = e.shortName.getValue();
-
+		
 		if (presenter.updateHash())
 			notifyChanges();
 

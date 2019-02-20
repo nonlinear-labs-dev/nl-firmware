@@ -54,7 +54,7 @@ public class SliderHorizontal extends Slider {
 		}
 
 		double indicatorAreaWidth = getIndicatorAreaWidth();
-		double indicatorStartX = isBiPolar() ? centerX : pixRect.getLeft() + toXPixels(20.5);
+		double indicatorStartX = isBiPolar() ? centerX : pixRect.getLeft() + toXPixels(19);
 
 		drawBackground(ctx);
 		drawIndicatorArea(ctx, centerX, indicatorAreaWidth, indicatorStartX);
@@ -68,14 +68,14 @@ public class SliderHorizontal extends Slider {
 
 	protected Rect calcBackgroundRect() {
 		Rect background = getPixRect().copy();
-		double xPadding = toXPixels(20);
+		double xPadding = toXPixels(18.5);
 		double yPadding = 0;
 		background.applyPadding(xPadding, yPadding, xPadding, yPadding);
 		return background;
 	}
 
 	protected double getIndicatorAreaWidth() {
-		double indicatorAreaWidth = (getBasicWidth() - 41) * getValue();
+		double indicatorAreaWidth = (getBasicWidth() - 38) * getValue();
 
 		if (isBiPolar())
 			indicatorAreaWidth = indicatorAreaWidth / 2;

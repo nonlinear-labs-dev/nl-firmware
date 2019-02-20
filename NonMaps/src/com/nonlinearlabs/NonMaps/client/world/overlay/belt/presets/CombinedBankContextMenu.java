@@ -10,7 +10,7 @@ public class CombinedBankContextMenu extends BankContextMenu {
 	}
 
 	@Override
-	protected boolean hasMinimize() {
+	protected boolean hasCollapse() {
 		return false;
 	}
 

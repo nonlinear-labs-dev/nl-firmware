@@ -11,7 +11,6 @@
 #include <http/HTTPRequest.h>
 #include "xml/XmlWriter.h"
 #include "ClusterEnforcement.h"
-#include "BankChangeBlocker.h"
 #include <xml/MemoryInStream.h>
 #include <xml/XmlReader.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
@@ -361,7 +360,6 @@ BankActions::BankActions(PresetManager &presetManager)
     auto uuid = request->get("uuid");
     if(auto bank = m_presetManager.findBank(uuid))
     {
-      BankChangeBlocker blocker(bank);
       auto &undoScope = m_presetManager.getUndoScope();
       auto newPos = std::max(1ULL, stoull(request->get("order-number"))) - 1;
       auto scope = undoScope.startTransaction("Changed Order Number of Bank: %0", bank->getName(true));
@@ -436,6 +434,7 @@ BankActions::BankActions(PresetManager &presetManager)
   });
 
   addAction("delete-presets", [&](shared_ptr<NetworkRequest> request) mutable {
+    PerformanceTimer t("delete-presets");
     auto scope = m_presetManager.getUndoScope().startTransaction("Delete Presets");
     auto transaction = scope->getTransaction();
 
@@ -444,24 +443,25 @@ BankActions::BankActions(PresetManager &presetManager)
     auto withBank = request->get("delete-bank");
     boost::split(strs, csv, boost::is_any_of(","));
 
-    for(auto presetUUID : strs)
+    for(const auto &presetUUID : strs)
     {
       if(auto srcBank = m_presetManager.findBankWithPreset(presetUUID))
       {
         if(auto preset = srcBank->findPreset(presetUUID))
         {
           srcBank->deletePreset(transaction, presetUUID);
-          m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(scope->getTransaction());
         }
         if(withBank == "true")
         {
           if(srcBank->getNumPresets() == 0)
           {
-            m_presetManager.selectBank(transaction, srcBank->getUuid());
+            m_presetManager.deleteBank(transaction, srcBank->getUuid());
           }
         }
       }
     }
+
+    m_presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(scope->getTransaction());
   });
 
   addAction("load-preset", [&](shared_ptr<NetworkRequest> request) mutable {
@@ -491,7 +491,6 @@ BankActions::BankActions(PresetManager &presetManager)
         auto scope = presetManager.getUndoScope().startTransaction("Move preset bank '%0'", bank->getName(true));
         auto transaction = scope->getTransaction();
 
-        BankChangeBlocker blocker(bank);
         bank->setX(transaction, x);
         bank->setY(transaction, y);
       }
@@ -512,7 +511,6 @@ BankActions::BankActions(PresetManager &presetManager)
         auto newBank = presetManager.addBank(transaction);
         newBank->setX(transaction, x);
         newBank->setY(transaction, y);
-        BankChangeBlocker b(bank);
         auto newPreset = newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *p, true));
         newBank->setName(transaction, "New Bank");
         newBank->selectPreset(transaction, newPreset->getUuid());
@@ -646,6 +644,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto scope = presetManager.getUndoScope().startTransaction("Set bank attribute");
       auto transaction = scope->getTransaction();
       bank->setAttribute(transaction, key, value);
+      bank->updateLastModifiedTimestamp(transaction);
     }
   });
 
@@ -655,8 +654,6 @@ BankActions::BankActions(PresetManager &presetManager)
 
     if(auto bank = m_presetManager.getSelectedBank())
     {
-      std::vector<BankChangeBlocker> blocker;
-      m_presetManager.forEachBank([&](auto b) { blocker.emplace_back(b); });
       auto pos = presetManager.getBankPosition(bankUUID);
 
       if(value == "LeftByOne")
@@ -762,19 +759,12 @@ BankActions::BankActions(PresetManager &presetManager)
 
     for(auto bank : m_presetManager.getBanks())
     {
-      BankChangeBlocker blocker(bank);
       bank->setX(transaction, std::to_string(std::stoi(bank->getX()) + x));
       bank->setY(transaction, std::to_string(std::stoi(bank->getY()) + y));
     }
   });
 
-  addAction("sort-bank-numbers", [&](auto request) mutable {
-    std::vector<BankChangeBlocker> blocker;
-    for(auto b : Application::get().getPresetManager()->getBanks())
-      blocker.push_back(BankChangeBlocker(b));
-
-    ClusterEnforcement::sortBankNumbers();
-  });
+  addAction("sort-bank-numbers", [&](auto request) mutable { ClusterEnforcement::sortBankNumbers(); });
 }
 
 BankActions::~BankActions()
@@ -831,9 +821,12 @@ void BankActions::insertBank(Bank *bank, Bank *targetBank, size_t insertPos)
   auto scope = m_presetManager.getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", bank->getName(true),
                                                                targetBank->getName(true));
   auto transaction = scope->getTransaction();
+  size_t i = 0;
 
-  bank->forEachPreset(
-      [&](auto p) { targetBank->appendPreset(transaction, std::make_unique<Preset>(targetBank, *p, true)); });
+  bank->forEachPreset([&](auto p) {
+    targetBank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(targetBank, *p, true));
+    i++;
+  });
 }
 
 bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request)
@@ -857,8 +850,6 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
         PresetBankSerializer serializer(bank);
         serializer.write(writer, VersionAttribute::get());
 
-        BankChangeBlocker b(bank);
-
         auto scope = UNDO::Scope::startTrashTransaction();
         auto transaction = scope->getTransaction();
         bank->setAttribute(transaction, "Name of Export File", "(via Browser)");
@@ -880,19 +871,26 @@ bool BankActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkReq
 
       Glib::ustring uuid = request->get("uuid");
 
+      Preset *preset = nullptr;
+      auto ebAsPreset = std::make_unique<Preset>(&m_presetManager, *m_presetManager.getEditBuffer());
+
       if(uuid.empty())
       {
-        auto eb = m_presetManager.getEditBuffer();
-        EditBufferSerializer serializer(eb);
-        httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + eb->getName() + ".xml\"");
-        serializer.write(writer, VersionAttribute::get());
+        preset = ebAsPreset.get();
       }
       else if(auto p = m_presetManager.findPreset(uuid))
       {
-        PresetSerializer serializer(p);
-        httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + p->getName() + ".xml\"");
-        serializer.write(writer, VersionAttribute::get());
+        preset = p;
       }
+      else
+      {
+        DebugLevel::warning("Could not download Preset!");
+        return false;
+      }
+
+      PresetSerializer serializer(preset);
+      httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + preset->getName() + ".xml\"");
+      serializer.write(writer, VersionAttribute::get());
 
       return true;
     }

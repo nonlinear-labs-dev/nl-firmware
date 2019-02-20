@@ -15,16 +15,16 @@ class EditBuffer : public ParameterGroupSet
   typedef ParameterGroupSet super;
 
  public:
-  EditBuffer(UpdateDocumentContributor *parent);
+  EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
-  void setMacroControlValueFromMCView(int id, double value);
 
   Glib::ustring getName() const;
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
 
+  void setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid);
   void undoableClear(UNDO::Transaction *transaction);
   void undoableSelectParameter(const Glib::ustring &id);
   void undoableSelectParameter(uint16_t id);
@@ -55,7 +55,7 @@ class EditBuffer : public ParameterGroupSet
 
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
 
-  virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+  tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
   bool hasLocks();
 
@@ -75,7 +75,7 @@ class EditBuffer : public ParameterGroupSet
  private:
   Parameter *searchForAnyParameterWithLock() const;
 
-  virtual UNDO::Scope &getUndoScope() override;
+  UNDO::Scope &getUndoScope() override;
 
   void setParameter(size_t id, double cpValue);
 
@@ -88,7 +88,6 @@ class EditBuffer : public ParameterGroupSet
 
   void doDeferedJobs();
   void checkModified();
-  void checkAnyLocks();
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   Signal<void, bool> m_signalModificationState;

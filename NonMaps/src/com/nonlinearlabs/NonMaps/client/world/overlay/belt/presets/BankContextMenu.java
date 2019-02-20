@@ -1,23 +1,21 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import java.util.List;
+
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RenameDialog;
 import com.nonlinearlabs.NonMaps.client.world.maps.NonPosition;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler;
-
-import java.util.List;
 
 public abstract class BankContextMenu extends ContextMenu {
 
@@ -45,7 +43,8 @@ public abstract class BankContextMenu extends ContextMenu {
 				addChild(new ContextMenuItem(this, "Paste") {
 					@Override
 					public Control click(Position eventPoint) {
-						NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
+						NonPosition pos = getNonMaps().getNonLinearWorld()
+								.toNonPosition(getParent().getPixRect().getLeftTop());
 						getNonMaps().getServerProxy().pasteOnPresetManager(pos);
 						return super.click(eventPoint);
 					}
@@ -58,7 +57,8 @@ public abstract class BankContextMenu extends ContextMenu {
 					new TextUpload(new TextUploadedHandler() {
 						@Override
 						public void onTextUploaded(String fileName, String text) {
-							NonPosition pos = getNonMaps().getNonLinearWorld().toNonPosition(getParent().getPixRect().getLeftTop());
+							NonPosition pos = getNonMaps().getNonLinearWorld()
+									.toNonPosition(getParent().getPixRect().getLeftTop());
 							NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
 						}
 					}, ".xml");
@@ -99,7 +99,8 @@ public abstract class BankContextMenu extends ContextMenu {
 			});
 
 			if (hasPaste()) {
-				if (getNonMaps().getNonLinearWorld().getClipboardManager().getClipboardState() != ClipboardContent.empty) {
+				if (getNonMaps().getNonLinearWorld().getClipboardManager()
+						.getClipboardState() != ClipboardContent.empty) {
 					addChild(new ContextMenuItem(this, "Paste") {
 						@Override
 						public Control click(Position eventPoint) {
@@ -138,51 +139,16 @@ public abstract class BankContextMenu extends ContextMenu {
 				}
 			});
 
-			if (hasMinimize()) {
-				addChild(new ContextMenuItem(this, bank.isMinimized() ? "Full Size" : "Minimize") {
+			if (hasCollapse()) {
+				addChild(new ContextMenuItem(this, bank.isCollapsed() ? "Expand" : "Collapse") {
 					@Override
 					public Control click(Position eventPoint) {
 						bank.toggleMinMax();
 						return super.click(eventPoint);
 					}
 				});
-				
-				PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
-				if(pm.areAllBanksMinimized()) {
-					addChild(new ContextMenuItem(this, "Full Size All") {
-						@Override
-						public Control click(Position eventPoint) {
-							pm.setAllBanksMinimizeState(false);
-							return super.click(eventPoint);
-						}
-					});
-				} else if(pm.isAnyBankMinimized() && !pm.areAllBanksMinimized()) {
-					addChild(new ContextMenuItem(this, "Minimze All") {
-						@Override
-						public Control click(Position eventPoint) {
-							pm.setAllBanksMinimizeState(true);
-							return super.click(eventPoint);
-						}
-					});
-					addChild(new ContextMenuItem(this, "Full Size All") {
-						@Override
-						public Control click(Position eventPoint) {
-							pm.setAllBanksMinimizeState(false);
-							return super.click(eventPoint);
-						}
-					});
-				} else {
-					addChild(new ContextMenuItem(this, "Minimze All") {
-						@Override
-						public Control click(Position eventPoint) {
-							pm.setAllBanksMinimizeState(true);
-							return super.click(eventPoint);
-						}
-					});
-				}
-				
 			}
-			
+
 			addChild(new ContextMenuItem(this, "Export as File ...") {
 				@Override
 				public Control click(Position eventPoint) {
@@ -211,18 +177,17 @@ public abstract class BankContextMenu extends ContextMenu {
 		List<Bank> banks = NonMaps.get().getNonLinearWorld().getPresetManager().getBanks();
 
 		NonPosition np = new NonPosition();
-		if(!banks.isEmpty()) {
+		if (!banks.isEmpty()) {
 			Bank rightMost = banks.get(0);
-			for(Bank b : banks)
-			{
+			for (Bank b : banks) {
 				double currentX = b.getNonPosition().getLeft();
 				double rightMostX = rightMost.getNonPosition().getLeft();
-				if(currentX > rightMostX)
+				if (currentX > rightMostX)
 					rightMost = b;
 			}
 			return new NonPosition(rightMost.getNonPosition().getLeft() + 300, rightMost.getNonPosition().getTop());
 		}
-		return new NonPosition(0,0);
+		return new NonPosition(0, 0);
 	}
 
 	private void createNewBank() {
@@ -230,7 +195,7 @@ public abstract class BankContextMenu extends ContextMenu {
 		PresetManagerContextMenu.createNewBank(bankPosition);
 	}
 
-	protected abstract boolean hasMinimize();
+	protected abstract boolean hasCollapse();
 
 	protected abstract boolean hasPaste();
 

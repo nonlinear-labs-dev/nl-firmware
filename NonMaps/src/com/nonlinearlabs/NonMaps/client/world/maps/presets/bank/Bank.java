@@ -39,7 +39,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 	private IPreset currentDropPreset;
 	private String uuid = "";
 	final Header header = new Header(this);
-	private boolean minimized = false;
+	private boolean collapsed = false;
 	private Label emptyLabel = null;
 	private PrevNextButtons prevNext;
 	private int orderNumber = 0;
@@ -408,15 +408,15 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return this;
 	}
 
-	public void setMinimized(boolean min) {
-		if(minimized != min) {
-			minimized = min;
+	public void setCollapsed(boolean min) {
+		if(collapsed != min) {
+			collapsed = min;
 			requestLayout();
 		}
 	}
 	
 	public void toggleMinMax() {
-		minimized = !minimized;
+		collapsed = !collapsed;
 		requestLayout();
 	}
 
@@ -500,8 +500,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
-	public boolean isMinimized() {
-		return minimized;
+	public boolean isCollapsed() {
+		return collapsed;
 	}
 
 	void showEmptyLabel(boolean bankEmpty) {

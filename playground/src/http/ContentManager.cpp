@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "ContentManager.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
@@ -68,15 +70,11 @@ bool ContentManager::WebsocketConnection::canOmitOracles(int currentUpdateId) co
 }
 
 ContentManager::ContentManager()
-    :
-
-    m_lastUpdateSentAt(chrono::system_clock::now())
+    : m_lastUpdateSentAt(chrono::steady_clock::now())
 {
 }
 
-ContentManager::~ContentManager()
-{
-}
+ContentManager::~ContentManager() = default;
 
 void ContentManager::init()
 {
@@ -118,7 +116,7 @@ void ContentManager::handleRequest(shared_ptr<NetworkRequest> request)
     request->okAndComplete();
   }
 
-  for(tContentSectionPtr section : m_sections)
+  for(const tContentSectionPtr &section : m_sections)
   {
     if(tryHandlingContentSectionRequest(section, request))
     {
@@ -161,7 +159,7 @@ void ContentManager::onUpdateIdChangedByNetworkRequest(shared_ptr<NetworkRequest
 {
   if(auto causer = dynamic_pointer_cast<WebSocketRequest>(request))
   {
-    for(auto ws : m_webSockets)
+    for(const auto &ws : m_webSockets)
     {
       if(causer->getSocket() == ws->getConnection())
       {
@@ -179,7 +177,7 @@ bool ContentManager::isSendResponsesScheduled() const
 void ContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 {
   g_signal_connect(connection, "message", G_CALLBACK(&ContentManager::onWebSocketMessage), this);
-  m_webSockets.push_back(tWebsocketConnection(new WebsocketConnection(connection)));
+  m_webSockets.push_back(std::make_shared<WebsocketConnection>(connection));
   feedWebSocket(m_webSockets.back());
 }
 
@@ -269,7 +267,7 @@ void ContentManager::writeDocument(Writer &writer, tUpdateID knownRevision, bool
 
   writer.writeTag("nonlinear-world", Attribute("updateID", getUpdateIDOfLastChange()),
                   Attribute("omit-oracles", omitOracles), [&]() {
-                    for(tContentSectionPtr section : m_sections)
+                    for(const tContentSectionPtr &section : m_sections)
                       section->writeDocument(writer, knownRevision);
                   });
 }
@@ -295,10 +293,10 @@ void ContentManager::onSectionChanged()
     const auto minDelayBetweenUpdates = milliseconds(100);
     m_sendResponsesScheduled = true;
 
-    auto now = system_clock::now();
+    auto now = steady_clock::now();
     auto diff = now - m_lastUpdateSentAt;
 
-    if(diff >= minDelayBetweenUpdates || diff < system_clock::duration::zero())
+    if(diff >= minDelayBetweenUpdates || diff < steady_clock::duration::zero())
     {
       Application::get().getMainContext()->signal_idle().connect_once(
           sigc::mem_fun(this, &ContentManager::sendResponses));
@@ -307,7 +305,7 @@ void ContentManager::onSectionChanged()
     {
       auto millisecondsTillNextUpdate = duration_cast<milliseconds>(minDelayBetweenUpdates - diff).count();
       Application::get().getMainContext()->signal_timeout().connect_once(
-          sigc::mem_fun(this, &ContentManager::sendResponses), millisecondsTillNextUpdate);
+          sigc::mem_fun(this, &ContentManager::sendResponses), static_cast<unsigned int>(millisecondsTillNextUpdate));
     }
   }
 }
@@ -320,7 +318,7 @@ void ContentManager::sendResponses()
 
   auto pendingMessages = expropriateFromPendingMessages();
 
-  for(auto msg : pendingMessages)
+  for(const auto &msg : pendingMessages)
   {
     msg->unpause();
     Application::get().getHTTPServer()->handleRequest(msg);
@@ -328,7 +326,7 @@ void ContentManager::sendResponses()
 
   feedWebSockets();
 
-  m_lastUpdateSentAt = std::chrono::system_clock::now();
+  m_lastUpdateSentAt = std::chrono::steady_clock::now();
 
   DebugLevel::info("sent outstanding update responses");
 }

@@ -7,23 +7,20 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 
-PresetParameterGroup::PresetParameterGroup(Preset *parent)
-    : UpdateDocumentContributor(parent)
+PresetParameterGroup::PresetParameterGroup()
 {
 }
 
-PresetParameterGroup::PresetParameterGroup(Preset *parent, const ::ParameterGroup &other)
-    : PresetParameterGroup(parent)
+PresetParameterGroup::PresetParameterGroup(const ::ParameterGroup &other)
 {
   for(auto &g : other.getParameters())
-    m_parameters[g->getID()] = std::make_unique<PresetParameter>(this, *g);
+    m_parameters[g->getID()] = std::make_unique<PresetParameter>(*g);
 }
 
-PresetParameterGroup::PresetParameterGroup(Preset *parent, const PresetParameterGroup &other)
-    : PresetParameterGroup(parent)
+PresetParameterGroup::PresetParameterGroup(const PresetParameterGroup &other)
 {
   for(auto &g : other.m_parameters)
-    m_parameters[g.first] = std::make_unique<PresetParameter>(this, *g.second);
+    m_parameters[g.first] = std::make_unique<PresetParameter>(*g.second);
 }
 
 PresetParameterGroup::~PresetParameterGroup() = default;
@@ -48,10 +45,6 @@ void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::Para
   for(auto &g : m_parameters)
     if(auto o = other->getParameterByID(g.first))
       g.second->copyFrom(transaction, o);
-}
-
-void PresetParameterGroup::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
-{
 }
 
 void PresetParameterGroup::writeDiff(Writer &writer, const std::string &groupId,

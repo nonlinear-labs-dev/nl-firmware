@@ -96,7 +96,9 @@ class Parameter : public UpdateDocumentContributor,
   const QuantizedValue &getValue() const;
   virtual size_t getHash() const;
 
-  virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  virtual void writeDiff(Writer &writer, Parameter *other) const;
+  virtual void writeDifferences(Writer &writer, Parameter *other) const;
   virtual void writeToLPC(MessageComposer &cmp) const;
   virtual void onPresetSentToLpc() const;
 
@@ -118,11 +120,15 @@ class Parameter : public UpdateDocumentContributor,
 
   void check();
 
+  void undoableRecallFromPreset();
+
  protected:
   virtual void sendToLpc() const;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
+  virtual void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
+                                           tControlPositionValue newValue);
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const;
   virtual tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);

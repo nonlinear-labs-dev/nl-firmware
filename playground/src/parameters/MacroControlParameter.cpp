@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "MacroControlParameter.h"
 #include "ModulateableParameter.h"
 #include "PhysicalControlParameter.h"
@@ -14,6 +16,9 @@
 #include "ParameterAlgorithm.h"
 #include "RibbonParameter.h"
 #include <device-settings/DebugLevel.h>
+#include <Application.h>
+#include <tools/Throttler.h>
+#include "http/HTTPServer.h"
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
 
@@ -22,12 +27,12 @@ static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(Modula
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID())
+    , mcviewThrottler{ Expiration::Duration(5) }
+    , m_lastMCViewUuid{ "NONE"s }
 {
 }
 
-MacroControlParameter::~MacroControlParameter()
-{
-}
+MacroControlParameter::~MacroControlParameter() = default;
 
 void MacroControlParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
@@ -36,6 +41,22 @@ void MacroControlParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   writer.writeTextElement("long-name", getLongName());
   writer.writeTextElement("short-name", getShortName());
   writer.writeTextElement("info", m_info);
+}
+
+void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) const
+{
+  Parameter::writeDifferences(writer, other);
+  auto *pOther = static_cast<MacroControlParameter *>(other);
+
+  if(getGivenName() != pOther->getGivenName())
+  {
+    writer.writeTextElement("name", "", Attribute("a", getGivenName()), Attribute("b", pOther->getGivenName()));
+  }
+
+  if(getInfo() != pOther->getInfo())
+  {
+    writer.writeTextElement("info", "", Attribute("a", "changed"), Attribute("b", "changed"));
+  }
 }
 
 void MacroControlParameter::registerTarget(ModulateableParameter *target)
@@ -60,13 +81,14 @@ void MacroControlParameter::applyAbsoluteLpcPhysicalControl(tControlPositionValu
   getValue().setRawValue(Initiator::EXPLICIT_LPC, v);
 }
 
+void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid)
+{
+  m_lastMCViewUuid = uuid;
+}
+
 void MacroControlParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                            tControlPositionValue newValue)
 {
-  if(initiator != Initiator::INDIRECT)
-    for(ModulateableParameter *target : m_targets)
-      target->applyLpcMacroControl(newValue - oldValue);
-
   super::onValueChanged(initiator, oldValue, newValue);
 
   if(initiator != Initiator::INDIRECT)
@@ -75,6 +97,38 @@ void MacroControlParameter::onValueChanged(Initiator initiator, tControlPosition
   if(initiator == Initiator::INDIRECT)
     for(ModulateableParameter *target : m_targets)
       target->invalidate();
+
+  updateMCViewsFromMCChange(initiator);
+}
+
+void MacroControlParameter::onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
+                                                        tControlPositionValue newValue)
+{
+  if(initiator != Initiator::INDIRECT)
+    for(ModulateableParameter *target : m_targets)
+      target->applyLpcMacroControl(newValue - oldValue);
+
+  super::onValueFineQuantizedChanged(initiator, oldValue, newValue);
+}
+
+void MacroControlParameter::updateMCViewsFromMCChange(const Initiator &initiator)
+{
+  mcviewThrottler.doTask([=]() { propagateMCChangeToMCViews(initiator); });
+}
+
+void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiatior)
+{
+  const auto idString = to_string(getID());
+  const auto valueD = getValue().getClippedValue();
+  const auto value = to_string(valueD);
+  const auto uuid = initiatior == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid.c_str() : "NONE"s;
+
+  if(valueD != lastBroadcastedControlPosition)
+  {
+    const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid);
+    Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
+    lastBroadcastedControlPosition = valueD;
+  }
 }
 
 void MacroControlParameter::updateBoundRibbon()
@@ -102,9 +156,9 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 {
   if(m_UiSelectedHardwareSourceParameterID != pos)
   {
-    ParameterGroupSet *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+    auto *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
 
-    if(auto old = grandPa->findParameterByID(m_UiSelectedHardwareSourceParameterID))
+    if(auto old = grandPa->findParameterByID(static_cast<size_t>(m_UiSelectedHardwareSourceParameterID)))
       old->onUnselected();
 
     m_UiSelectedHardwareSourceParameterID = pos;
@@ -308,4 +362,9 @@ int MacroControlParameter::getLastSelectedMacroControl()
 
 void MacroControlParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
+}
+
+void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+{
+  setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }

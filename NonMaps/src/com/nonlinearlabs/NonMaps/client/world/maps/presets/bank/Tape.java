@@ -41,25 +41,75 @@ public class Tape extends MapsControl {
 	public boolean isVisible() {
 		return (isActiveEmptyTape() || isActiveInsertTape());
 	}
-
+	
 	private boolean isActiveEmptyTape() {
 		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
 
 		for (DragProxy d : o.getDragProxies()) {
 			Control r = d.getCurrentReceiver();
 			if (r != null) {
-
 				if (r instanceof PresetManager || r instanceof Tape) {
-					boolean visible = super.isVisible();
-					return visible && o.isCurrentlyDraggingATypeOf(Bank.class.getName())
-							&& getParent().isTapeActive(orientation);
+					return 	super.isVisible() && 
+							o.isCurrentlyDraggingATypeOf(Bank.class.getName()) &&
+							getParent().isTapeActive(orientation);
 				}
 			}
 		}
 
 		return false;
 	}
+	
+	private DragProxy getDragProxyOf(Tape t) {
+		for(DragProxy d: NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getDragProxies()) {
+			if(d.getOrigin() == t.getParent()) {
+				return d;
+			}
+		}
+		return null;
+	}
+	
+	private Tape getTopMostIntersectingTape(Tape draggedTape) {
+		
+		if(isOrientedHorizontal() || draggedTape.isOrientedHorizontal())
+			return this;
+		
+		DragProxy dragProxy = getDragProxyOf(draggedTape);
+		
+		if(dragProxy == null)
+			return null;
+		
+		Bank draggedBank = draggedTape.getParent();
+		Dimension offset = dragProxy.getPixRect().getLeftTop().getVector(draggedBank.getPixRect().getLeftTop());
+		Rect draggedRect = draggedBank.header.getPixRect().getMovedBy(offset);
+		
+		double yDiff = Double.MAX_VALUE;
+		Tape curr = null;
+		
+		for(Bank bank: this.getParent().getParent().getBanks()) {
+			if(bank == draggedBank)
+				continue;
+			
+			for(Tape tape: bank.getTapes()) {
+				if(tape == draggedTape)
+					continue;
+				if(!tape.getPixRect().intersects(draggedRect))
+					continue;
+				
+				double diff = Math.abs(draggedRect.getTop() - tape.getParent().getPixRect().getTop());
+				if(diff < yDiff) {
+					yDiff = diff;
+					curr = tape;
+				}
+			}
+		}
+		
+		return curr;
+	}
 
+	public boolean isOrientedHorizontal() {
+		return orientation == Orientation.North || orientation == Orientation.South;
+	}
+	
 	private boolean isInsertTape() {
 		return getParent().hasSlaveInDirection(getOrientation());
 	}
@@ -182,7 +232,7 @@ public class Tape extends MapsControl {
 		return getParent().getParent().isAttachingTape(this) ? activeColor : new RGB(51, 83, 171);
 	}
 
-	private boolean fitsTo(Tape others) {
+	private boolean fitsTo(Tape others) {		
 		if (getParent().isClusteredWith(others.getParent()))
 			return false;
 
@@ -191,8 +241,14 @@ public class Tape extends MapsControl {
 
 		if (!others.isVisible())
 			return false;
-
-		return isInvertedOrientation(others.orientation);
+		
+		if(!isInvertedOrientation(others.orientation))
+			return false;
+		
+		if(getTopMostIntersectingTape(others) != this)
+			return false;
+		
+		return true;
 	}
 
 	private boolean isInvertedOrientation(Orientation other) {

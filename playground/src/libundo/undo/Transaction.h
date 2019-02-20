@@ -86,6 +86,23 @@ namespace UNDO
       }
     }
 
+    template <typename T> void addUndoSwap(T &target, const T &newValue)
+    {
+      if(target != newValue)
+      {
+        addSimpleCommand([&target, swap = UNDO::createSwapData(std::move(newValue))](auto) { swap->swapWith(target); });
+      }
+    }
+
+    template <typename T> void addUndoSwap(T &target, T &&newValue)
+    {
+      if(target != newValue)
+      {
+        addSimpleCommand(
+            [&target, swap = UNDO::createSwapData(std::forward<T>(newValue))](auto) { swap->swapWith(target); });
+      }
+    }
+
    protected:
     void implDoAction() const override;
     void implUndoAction() const override;
@@ -105,14 +122,15 @@ namespace UNDO
     Scope &m_scope;
     Glib::ustring m_name;
     tCommandList m_commands;
-    bool m_isClosed;
+    bool m_isClosed = false;
 
     Transaction *m_predecessor = nullptr;
+    Transaction *m_defaultRedoRoute = nullptr;
+
     tSuccessors m_successors;
-    Transaction *m_defaultRedoRoute;
     tCommandList m_postfixCommands;
 
-    size_t m_depth;
+    size_t m_depth = 0;
   };
 
 } /* namespace UNDO */

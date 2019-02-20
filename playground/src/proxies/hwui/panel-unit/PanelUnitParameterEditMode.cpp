@@ -34,6 +34,7 @@
 #include <memory>
 #include <device-settings/DebugLevel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
+#include <parameters/names/ParameterDB.h>
 #include "PanelUnitParameterEditMode.h"
 
 class ParameterInfoLayout;
@@ -49,9 +50,11 @@ const constexpr auto SVFilterFMAB = 155;
 
 PanelUnitParameterEditMode::PanelUnitParameterEditMode()
 {
-
   Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->onChange(
       sigc::hide(sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds)));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds));
 }
 
 PanelUnitParameterEditMode::~PanelUnitParameterEditMode()
@@ -474,12 +477,8 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
   {
     letOtherTargetsBlink({ 178, 158 });
   }
-  else if(group->getID() == "Flang")
-  {
-    letOtherTargetsBlink({ 160, 307 });
-  }
   else if(group->getID() == "Gap Filt" || group->getID() == "Cab" || group->getID() == "Echo"
-          || group->getID() == "Reverb")
+          || group->getID() == "Reverb" || group->getID() == "Flang")
   {
     letOtherTargetsBlink({ 160 });
 
@@ -490,8 +489,20 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
   }
 }
 
+bool isScaleParameter(int paramID)
+{
+  return dynamic_cast<ScaleParameter *>(
+             Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID))
+      != nullptr;
+}
+
 void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, int selectedParameterID)
 {
+  if(isScaleParameter(selectedParameterID))
+  {
+    selectedParameterID = ScaleGroup::getScaleBaseParameterID();
+  }
+
   auto button = m_mappings.findButton(selectedParameterID);
 
   if(button >= 0)
@@ -549,7 +560,7 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
   {
     const auto currentParam = editBuffer->findParameterByID(targetID);
 
-    if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
+    if(isSignalFlowingThrough(currentParam))
     {
       auto state = editBuffer->getSelected() == currentParam ? TwoStateLED::ON : TwoStateLED::BLINK;
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
@@ -557,12 +568,17 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
   }
 }
 
+bool PanelUnitParameterEditMode::isSignalFlowingThrough(const Parameter *p) const
+{
+  return std::abs(p->getControlPositionValue()) > std::numeric_limits<tControlPositionValue>::epsilon();
+}
+
 void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
-  const auto FMAB = editBuffer->findParameterByID(SVFilterFMAB);
+  const auto stateVariableFilterFMAB = editBuffer->findParameterByID(SVFilterFMAB);
   const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB);
   constexpr const auto IdCombMix = 138;
   const auto SVCombMix = editBuffer->findParameterByID(IdCombMix);
@@ -576,37 +592,24 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
     {
       case SVFilterAB:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
-        {
-          if(currentParam->getControlPositionValue() == currentParam->getDefaultValue())
-          {
+          if(currentParam->getControlPositionValue() < 1)
             panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-          }
-        }
         break;
       case CombFilterAB:
-        if(currentParam->getControlPositionValue() < 1.d)
-        {
+        if(currentParam->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-        }
         break;
       case CombFilterPM:
-        if(combFilterPMAB->getControlPositionValue() < 1.d && currentParam->getControlPositionValue() != 0.d)
-        {
+        if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-        }
         break;
       case SVFilterFM:
-        if(currentParam->getControlPositionValue() != currentParam->getDefaultValue()
-           && FMAB->getControlPositionValue() < 1.d)
-        {
+        if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-        }
         break;
       default:
-        if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
-        {
+        if(isSignalFlowingThrough(currentParam))
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-        }
         break;
     }
   }
@@ -631,32 +634,24 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
     {
       case SVFilterAB:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
-        {
-          if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
-          {
+          if(currentParam->getControlPositionValue() > 0)
             panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-          }
-        }
+        break;
+      case CombFilterAB:
+        if(currentParam->getControlPositionValue() > 0)
+          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
       case CombFilterPM:
-        if(currentParam->getControlPositionValue() != currentParam->getDefaultValue()
-           && combFilterPMAB->getControlPositionValue() != combFilterPMAB->getDefaultValue())
-        {
+        if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() > 0)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-        }
         break;
       case SVFilterFM:
-        if(currentParam->getControlPositionValue() != currentParam->getDefaultValue()
-           && stateVariableFilterFMAB->getControlPositionValue() != stateVariableFilterFMAB->getDefaultValue())
-        {
+        if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() > 0)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-        }
         break;
       default:
-        if(currentParam->getControlPositionValue() != currentParam->getDefaultValue())
-        {
+        if(isSignalFlowingThrough(currentParam))
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-        }
         break;
     }
   }
@@ -671,10 +666,9 @@ void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
   {
     const auto currentParam = editBuffer->findParameterByID(targetID);
     const auto effectParam = editBuffer->findParameterByID(effectsID);
-    if(currentParam->getControlPositionValue() > 0.d && effectParam->getControlPositionValue() != 0.d)
-    {
+
+    if(isSignalFlowingThrough(currentParam) && isSignalFlowingThrough(effectParam))
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
-    }
   }
 }
 

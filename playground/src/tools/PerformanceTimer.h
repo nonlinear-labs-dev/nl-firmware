@@ -7,7 +7,7 @@ using namespace std::chrono;
 
 class PerformanceTimer
 {
-  using Clock = system_clock;
+  using Clock = steady_clock;
 
  public:
   PerformanceTimer(const char *name, int indent = 0)
@@ -35,7 +35,6 @@ class PerformanceTimer
     }
   }
 
-  static void printCurrentTime(const char *s);
   static void printCurrentTime(const char *s, int64_t ms);
 
  private:

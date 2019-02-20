@@ -7,7 +7,7 @@
 				<div class="mt1"></div>
 				<div class="eins-he">
 					<div class="w70p">
-					  <g:TextArea ui:field="search" styleName="editable w100 txt-oneline" visibleLines="1"></g:TextArea>
+					  <g:TextBox ui:field="search" styleName="editable w100 txt-oneline gwt-TextBox"></g:TextBox>
 					  <g:Button  ui:field="resetQuery" styleName="reset"></g:Button>
 					</div>
 					<div>

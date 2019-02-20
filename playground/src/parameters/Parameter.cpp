@@ -16,6 +16,7 @@
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
 #include <presets/Preset.h>
+#include <device-settings/DebugLevel.h>
 
 static const auto c_invalidSnapshotValue = numeric_limits<tControlPositionValue>::max();
 
@@ -64,6 +65,11 @@ void Parameter::onValueChanged(Initiator initiator, tControlPositionValue oldVal
   }
 
   invalidate();
+}
+
+void Parameter::onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
+                                            tControlPositionValue newValue)
+{
 }
 
 tControlPositionValue Parameter::expropriateSnapshotValue()
@@ -214,21 +220,27 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 PresetParameter *Parameter::getOriginalParameter() const
 {
   auto pm = Application::get().getPresetManager();
-  if(auto preset = pm->getEditBuffer()->getOrigin())
+  if(auto presetLoadedFrom = pm->getEditBuffer()->getOrigin())
   {
-    return preset->findParameterByID(getID());
+    return presetLoadedFrom->findParameterByID(getID());
   }
   return nullptr;
 }
 
 bool Parameter::isChangedFromLoaded() const
 {
-  if(auto currentParam = this)
+  const auto rawNow = getControlPositionValue();
+  const auto epsilon = 0.5 / getValue().getFineDenominator();
+  DebugLevel::gassy("Using", epsilon, "as epsilon for Parameter::isChangedFromLoaded!", getLongName());
+
+  if(auto originalParameter = getOriginalParameter())
   {
-    if(auto originalParameter = getOriginalParameter())
-      return currentParam->getControlPositionValue() != originalParameter->getValue();
+    return std::fabs(originalParameter->getValue() - rawNow) > epsilon;
   }
-  return false;
+  else
+  {
+    return std::fabs(getDefaultValue() - rawNow) > epsilon;
+  }
 }
 
 bool Parameter::isBiPolar() const
@@ -328,6 +340,11 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
 
+  if(auto ogParam = getOriginalParameter())
+    writer.writeTextElement("og-value", to_string(ogParam->getValue()));
+  else
+    writer.writeTextElement("og-value", to_string(getDefaultValue()));
+
   if(shouldWriteDocProperties(knownRevision))
   {
     writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
@@ -336,6 +353,25 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
     writer.writeTextElement("short-name", getShortName());
     writer.writeTextElement("coarse-denominator", to_string(m_value.getCoarseDenominator()));
     writer.writeTextElement("fine-denominator", to_string(m_value.getFineDenominator()));
+  }
+}
+
+void Parameter::writeDiff(Writer &writer, Parameter *other) const
+{
+  if(getHash() != other->getHash())
+  {
+    writer.writeTag("parameter", Attribute("name", getLongName()), [&] { writeDifferences(writer, other); });
+  }
+}
+
+void Parameter::writeDifferences(Writer &writer, Parameter *other) const
+{
+  auto myString = getDisplayString();
+  auto otherString = other->getDisplayString();
+
+  if(myString != otherString)
+  {
+    writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
   }
 }
 
@@ -488,4 +524,17 @@ void Parameter::check()
 
   cp = getControlPositionValue();
   g_assert(cp == m_value.getLowerBorder());
+}
+
+void Parameter::undoableRecallFromPreset()
+{
+  auto &scope = Application::get().getPresetManager()->getUndoScope();
+  auto original = getOriginalParameter();
+  auto origin = original ? "Preset" : "Init-Sound";
+  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), origin);
+  auto transaction = transactionScope->getTransaction();
+  if(original)
+    setCPFromHwui(transaction, original->getValue());
+  else
+    setDefaultFromHwui(transaction);
 }

@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.maps.parameters.OscB;
 
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.KeyTrackParameter;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.KeyTrkLabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulateableNumericalControl;
@@ -23,6 +22,11 @@ class PitchColumn extends ParameterColumn {
 		@Override
 		public int getParameterID() {
 			return 83;
+		}
+
+		@Override
+		public double getPadding() {
+			return 2;
 		}
 	}
 
@@ -45,7 +49,7 @@ class PitchColumn extends ParameterColumn {
 
 		private Keytracking(MapsLayout parent) {
 			super(parent);
-			addChild(new KeyTrkLabelModulationSource(this, getName()));
+			addChild(new LabelModulationSource(this, getName()));
 			addChild(new KeyTrackParameter(this));
 		}
 

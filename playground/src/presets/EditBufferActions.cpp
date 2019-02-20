@@ -26,12 +26,6 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     editBuffer->undoableSelectParameter(id);
   });
 
-  addAction("set-mc", [=](auto request) mutable {
-      auto id = stoi(request->get("id"));
-      auto value = stod(request->get("value"));
-      editBuffer->setMacroControlValueFromMCView(id, value);
-  });
-
   addAction("set-param", [=](shared_ptr<NetworkRequest> request) mutable {
     auto id = stoi(request->get("id"));
     auto value = stod(request->get("value"));
@@ -195,6 +189,16 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto groupId = request->get("group");
     auto scope = editBuffer->getUndoScope().startTransaction("Toggle Group Lock");
     editBuffer->undoableToggleGroupLock(scope->getTransaction(), groupId);
+  });
+
+  addAction("recall-current-from-preset", [=](shared_ptr<NetworkRequest> request) {
+    if(auto selParam = editBuffer->getSelected())
+    {
+      if(selParam->isChangedFromLoaded())
+      {
+        selParam->undoableRecallFromPreset();
+      }
+    }
   });
 }
 

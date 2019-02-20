@@ -14,14 +14,12 @@ template <typename Element> class UndoableVector
  public:
   using ElementPtr = std::unique_ptr<Element>;
   using Elements = std::vector<ElementPtr>;
-  using ChangeCB = std::function<void()>;
   using CloneFactory = std::function<Element *(const Element *)>;
 
   static constexpr size_t invalidPosition = std::numeric_limits<size_t>::max();
 
-  UndoableVector(ChangeCB &&c, CloneFactory &&f)
-      : m_onChange(c)
-      , m_factory(f)
+  UndoableVector(CloneFactory &&f)
+      : m_factory(f)
       , m_selection(Uuid::none())
   {
   }
@@ -33,7 +31,7 @@ template <typename Element> class UndoableVector
     other.forEach([&](auto e) { m_elements.emplace_back(m_factory(e)); });
 
     if(auto p = other.getSelected())
-      m_selection = at(getIndexOf(p))->getUuid();
+      m_selection = at(other.getIndexOf(p))->getUuid();
     else if(!empty())
       m_selection = first()->getUuid();
     else
@@ -74,7 +72,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range("Element is not in vector");
+    throw std::out_of_range(getStackTrace("Element is not in vector"));
   }
 
   size_t getIndexOf(const Element *e) const
@@ -84,7 +82,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range("Element is not in vector");
+    throw std::out_of_range(getStackTrace("Element is not in vector"));
   }
 
   size_t size() const
@@ -139,7 +137,7 @@ template <typename Element> class UndoableVector
       transaction->addSimpleCommand([this, cb, swap = UNDO::createSwapData(uuid)](auto) {
         Checker checker(this);
         swap->swapWith(m_selection);
-        m_onChange();
+
         if(cb)
           cb();
       });
@@ -169,14 +167,14 @@ template <typename Element> class UndoableVector
           auto it = std::next(m_elements.begin(), pos);
           it = m_elements.insert(it, ElementPtr());
           swapData->swapWith(*it);
-          m_onChange();
+          invalidateAllChildren();
         },
         [=](auto) {
           Checker checker(this);
           auto it = std::next(m_elements.begin(), pos);
           swapData->swapWith(*it);
           m_elements.erase(it);
-          m_onChange();
+          invalidateAllChildren();
         });
 
     return raw;
@@ -217,7 +215,7 @@ template <typename Element> class UndoableVector
             ElementPtr e = std::move(*it);
             m_elements.erase(it);
             swapData->swapWith(e);
-            m_onChange();
+            invalidateAllChildren();
           },
           [=](auto) {
             Checker checker(this);
@@ -225,7 +223,7 @@ template <typename Element> class UndoableVector
             swapData->swapWith(e);
             auto it = std::next(m_elements.begin(), pos);
             m_elements.insert(it, std::move(e));
-            m_onChange();
+            invalidateAllChildren();
           });
     }
   }
@@ -282,12 +280,12 @@ template <typename Element> class UndoableVector
             auto it = std::next(m_elements.begin(), pos);
             auto ptr = it->release();
             m_elements.erase(it);
-            m_onChange();
+            invalidateAllChildren();
           },
           [=](auto) {
             auto it = std::next(m_elements.begin(), pos);
             m_elements.insert(it, ElementPtr(theElement));
-            m_onChange();
+            invalidateAllChildren();
           });
 
       return theElement;
@@ -304,13 +302,13 @@ template <typename Element> class UndoableVector
         [=](auto) {
           auto it = std::next(m_elements.begin(), pos);
           m_elements.insert(it, ElementPtr(p));
-          m_onChange();
+          invalidateAllChildren();
         },
         [=](auto) {
           auto it = std::next(m_elements.begin(), pos);
           it->release();
           m_elements.erase(it);
-          m_onChange();
+          invalidateAllChildren();
         });
   }
 
@@ -341,6 +339,8 @@ template <typename Element> class UndoableVector
         m_elements[i].release();
         m_elements[i].reset(newOrder[i]);
       }
+
+      invalidateAllChildren();
     });
   }
 
@@ -360,10 +360,7 @@ template <typename Element> class UndoableVector
     {
     }
 
-    if(empty())
-      return invalidPosition;
-
-    return 0;
+    return invalidPosition;
   }
 
   size_t getNextPosition(const Uuid &uuid) const
@@ -378,13 +375,15 @@ template <typename Element> class UndoableVector
     {
     }
 
-    if(empty())
-      return invalidPosition;
-
-    return size() - 1;
+    return invalidPosition;
   }
 
  private:
+  void invalidateAllChildren()
+  {
+    forEach([&](auto a) { a->invalidate(); });
+  }
+
   struct Checker
   {
     Checker(UndoableVector *p)
@@ -413,7 +412,7 @@ template <typename Element> class UndoableVector
     }
 #endif
   }
-  ChangeCB m_onChange;
+
   CloneFactory m_factory;
   Elements m_elements;
   Uuid m_selection;

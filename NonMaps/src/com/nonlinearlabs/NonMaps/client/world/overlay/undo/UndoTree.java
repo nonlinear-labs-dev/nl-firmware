@@ -217,8 +217,9 @@ public class UndoTree extends OverlayLayout implements TransitionDamper.Client {
 		ArrayList<Node> ret = new ArrayList<Node>();
 
 		NodeList children = node.getChildNodes();
+		int numChildren = children.getLength();
 
-		for (int i = 0; i < children.getLength(); i++)
+		for (int i = 0; i < numChildren; i++)
 			ret.add(children.item(i));
 
 		return ret;

@@ -188,7 +188,7 @@ class PrevNextButtons extends LayoutResizingHorizontal {
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
 
-		if (!getParent().isMinimized())
+		if (!getParent().isCollapsed())
 			getNonPosition().getDimension().setHeight(0);
 	}
 

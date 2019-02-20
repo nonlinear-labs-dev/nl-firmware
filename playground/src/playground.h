@@ -51,7 +51,6 @@ template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std
   return to_string(static_cast<int>(e));
 }
 
-
 template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true>
 std::ostream& operator<<(std::ostream& stream, const T& e)
 {
@@ -75,6 +74,7 @@ enum class Initiator
   EXPLICIT_HWUI,
   EXPLICIT_LPC,
   EXPLICIT_OTHER,
+  EXPLICIT_MCVIEW,
   INDIRECT
 };
 
@@ -130,6 +130,8 @@ enum class ReturnMode
   Center,
   Zero
 };
+
+std::string getStackTrace(const std::string& prefix);
 
 #ifdef _TESTS
 #define FOR_TESTS(expression) expression

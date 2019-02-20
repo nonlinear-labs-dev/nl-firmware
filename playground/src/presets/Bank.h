@@ -32,7 +32,7 @@ class Bank : public AttributesOwner
   };
 
   Bank(UpdateDocumentContributor *parent);
-  Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoeUuids);
+  Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids);
   ~Bank() override;
 
   void load(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder, int numBank, int numBanks);
@@ -88,6 +88,7 @@ class Bank : public AttributesOwner
   void setAttachedDirection(UNDO::Transaction *transaction, const std::string &direction);
   void setX(UNDO::Transaction *transaction, const std::string &x);
   void setY(UNDO::Transaction *transaction, const std::string &y);
+  void updateLastModifiedTimestamp(UNDO::Transaction *transaction);
 
   Preset *appendPreset(UNDO::Transaction *transaction);
   Preset *appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
@@ -109,15 +110,12 @@ class Bank : public AttributesOwner
   // signals
   sigc::connection onBankChanged(sigc::slot<void> cb);
 
-  // other
-  void addChangeBlocker();
-  void removeChangeBlocker();
-
  private:
   using Attributes = std::map<std::string, std::string>;
 
   uint64_t loadMetadata(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder);
   void loadPresets(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder);
+  void deleteOldPresetFiles(RefPtr<Gio::File> bankFolder);
 
   SaveResult saveMetadata(RefPtr<Gio::File> bankFolder);
   SaveResult savePresets(RefPtr<Gio::File> bankFolder);
@@ -140,14 +138,14 @@ class Bank : public AttributesOwner
 
   UndoableVector<Preset> m_presets;
 
-  int m_lastChangeTimestampBlocked = 0;
-  time_t m_lastChangedTimestamp = 0;
+  uint64_t m_lastChangedTimestamp = 0;
   tUpdateID m_metadataLastSavedForUpdateID = 0;
   tUpdateID m_presetsLastSavedForUpdateID = 0;
 
   Signal<void> m_sigBankChanged;
 
   friend class PresetBankSerializer;
+  friend class PresetBankMetadataSerializer;
 };
 
 std::string to_string(Bank::AttachmentDirection dir);

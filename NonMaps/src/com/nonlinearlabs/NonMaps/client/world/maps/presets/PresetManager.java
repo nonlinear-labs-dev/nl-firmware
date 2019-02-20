@@ -51,6 +51,8 @@ public class PresetManager extends MapsLayout {
 	private StoreSelectMode m_storeSelectMode = null;
 	private Tape attachingTapes[] = new Tape[2];
 
+	private static NonRect oldView = null;
+
 	public List<Bank> getBanks() {
 		List<Bank> ret = new ArrayList<>();
 		for (Control c : getChildren()) {
@@ -69,6 +71,12 @@ public class PresetManager extends MapsLayout {
 	private void resetView() {
 		if (NonMaps.theMaps.getNonLinearWorld() != null && oldView != null)
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(oldView, true);
+
+		oldView = null;
+	}
+
+	public void resetStoredViewportPosition() {
+		oldView = null;
 	}
 
 	public PresetManager(NonLinearWorld parent) {
@@ -133,23 +141,23 @@ public class PresetManager extends MapsLayout {
 		}
 	}
 
-	public void setAllBanksMinimizeState(boolean min) {
+	public void setAllBanksCollapseState(boolean min) {
 		for (Bank b : getBanks()) {
-			b.setMinimized(min);
+			b.setCollapsed(min);
 		}
 	}
 
-	public boolean isAnyBankMinimized() {
+	public boolean isAnyBankCollapsed() {
 		for (Bank b : getBanks()) {
-			if (b.isMinimized())
+			if (b.isCollapsed())
 				return true;
 		}
 		return false;
 	}
 
-	public boolean areAllBanksMinimized() {
+	public boolean areAllBanksCollapsed() {
 		for (Bank b : getBanks()) {
-			if (!b.isMinimized())
+			if (!b.isCollapsed())
 				return false;
 		}
 		return true;
@@ -770,8 +778,6 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
-	static NonRect oldView = null;
-
 	public void zoomToAllFilterMatches() {
 		if (PresetSearch.get().zoomToMatches.isTrue() && PresetSearch.get().searchActive.isTrue()) {
 
@@ -830,6 +836,11 @@ public class PresetManager extends MapsLayout {
 
 				return ret;
 			}
+		} else {
+			String ret = "Init";
+			if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isModified())
+				ret += " *";
+			return ret;
 		}
 		return "";
 	}
@@ -967,9 +978,17 @@ public class PresetManager extends MapsLayout {
 	public boolean isChangingPresetWhileInDirectLoad() {
 		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt()
 				.getPresetLayout().isDirectLoadActive();
-		if (directLoadActive && findSelectedPreset() != findLoadedPreset()) {
-			return true;
-		}
-		return false;
+		
+		if(!directLoadActive)
+			return false;
+		
+		Preset loadedPreset = findLoadedPreset();		
+		boolean isInitSound = loadedPreset == null;
+		
+		if(isInitSound)
+			return false;
+		
+		return findSelectedPreset() != loadedPreset;
 	}
 }
+;

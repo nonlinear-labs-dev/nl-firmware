@@ -322,7 +322,7 @@ public class CompareDialog extends GWTDialog {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				NonMaps.get().getServerProxy().loadEditBuffer(presetAXml);
+				NonMaps.get().getServerProxy().loadPresetFromXML(presetAXml);
 			}
 		});
 
@@ -330,7 +330,7 @@ public class CompareDialog extends GWTDialog {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				NonMaps.get().getServerProxy().loadEditBuffer(presetBXml);
+				NonMaps.get().getServerProxy().loadPresetFromXML(presetBXml);
 			}
 		});
 	}

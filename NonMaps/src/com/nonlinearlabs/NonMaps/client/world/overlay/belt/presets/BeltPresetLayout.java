@@ -7,9 +7,9 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.LockSymbol;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterCompareButton;
 
 public class BeltPresetLayout extends OverlayLayout {
-
 	MenuArea menu;
 	StorePresetArea store;
 	BankControlArea bank;
@@ -17,6 +17,8 @@ public class BeltPresetLayout extends OverlayLayout {
 	CurrentPresetNumber currentPreset;
 	DirectLoadButton autoLoad;
 	LockSymbol lock;
+	ParameterCompareButton compareButton;
+
 
 	private LinkedList<PresetBeltLayouter> layouters = new LinkedList<PresetBeltLayouter>();
 
@@ -30,6 +32,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		addChild(currentPreset = new CurrentPresetNumber(this));
 		addChild(autoLoad = new DirectLoadButton(this));
 		addChild(lock = new LockSymbol(this));
+		addChild(compareButton = new ParameterCompareButton(this));
 
 		layouters.add(new PresetBeltLayouterXXL(this));
 		layouters.add(new PresetBeltLayouterXL(this));

@@ -93,8 +93,8 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 	}
 
 	@Override
-	public void onValueChanged(Initiator initiator, double diff) {
-		super.onValueChanged(initiator, diff);
+	public void onQuantizedValueChanged(Initiator initiator, double diff) {
+		super.onQuantizedValueChanged(initiator, diff);
 
 		if (initiator == Initiator.EXPLICIT_USER_ACTION || initiator == Initiator.MODULATION)
 			if (Math.abs(diff) > 0.0)

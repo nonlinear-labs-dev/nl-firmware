@@ -11,6 +11,7 @@ public class PresetBeltLayouterXS extends PresetBeltLayouter {
 		hide(layout.menu);
 		hide(layout.currentPreset);
 		hide(layout.autoLoad);
+		hide(layout.compareButton);
 
 		double margin = getDefaultMargin();
 		double left = margin;

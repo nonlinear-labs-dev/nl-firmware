@@ -11,11 +11,17 @@ public class EditBufferUpdater extends Updater {
 	}
 
 	public void doUpdate() {
+		if(rootNode != null) {
+			String selParam = getAttributeValue(rootNode, "selected-parameter");
+			EditBufferModel.get().selectedParameter.setValue(Integer.valueOf(selParam));
+		}
+
 		processChangedChildrenElements(rootNode, "parameter-group", child -> processGroup(child));
 	}
 
 	private void processGroup(Node c) {
 		String groupId = getAttributeValue(c, "id");
+		
 		ParameterGroupModel target = EditBufferModel.get().getGroup(groupId);
 		ParameterGroupUpdater updater = new ParameterGroupUpdater(c, target);
 		updater.doUpdate();

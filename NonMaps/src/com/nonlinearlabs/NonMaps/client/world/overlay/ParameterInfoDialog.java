@@ -14,6 +14,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -71,6 +72,7 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 	}
 
 	private void addContent() {
+		FlexTable justToAddABorder = new FlexTable();
 		HTMLPanel panel = new HTMLPanel("");
 		panel.getElement().addClassName("vertical-panel");
 
@@ -191,7 +193,9 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 					update(s);
 			}
 		});
-		setWidget(panel);
+
+		justToAddABorder.setWidget(0, 0, panel);
+		setWidget(justToAddABorder);
 	}
 
 	protected void update(Parameter newSelection) {
@@ -281,7 +285,7 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 			infoField.setText(text);
 
 		infoField.setHeight("1em");
-		int height = infoField.getElement().getScrollHeight() + 2;
+		int height = infoField.getElement().getScrollHeight() + 5;
 		infoField.setHeight(Math.max(30, height) + "px");
 	}
 

@@ -33,7 +33,7 @@ public class Header extends Label {
 		}
 
 		@Override
-		protected boolean hasMinimize() {
+		protected boolean hasCollapse() {
 			return true;
 		}
 

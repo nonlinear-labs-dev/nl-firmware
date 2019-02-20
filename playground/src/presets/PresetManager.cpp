@@ -23,7 +23,7 @@ constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
 PresetManager::PresetManager(UpdateDocumentContributor *parent)
     : ContentSection(parent)
-    , m_banks(std::bind(&PresetManager::onChange, this, UpdateDocumentContributor::ChangeFlags::Generic), nullptr)
+    , m_banks(nullptr)
     , m_editBuffer(std::make_unique<EditBuffer>(this))
     , m_initSound(std::make_unique<Preset>(this))
     , m_autoLoadThrottler(std::chrono::milliseconds(200))
@@ -282,6 +282,7 @@ void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transa
   DEBUG_TRACE("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
   Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this);
+  m_editBuffer->sendToLPC();
 }
 
 void PresetManager::loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
@@ -373,6 +374,11 @@ void PresetManager::selectNextBank()
   selectBank(getNextBankPosition());
 }
 
+std::shared_ptr<ScopedGuard::Lock> PresetManager::lockLoading()
+{
+  return m_isLoading.lock();
+}
+
 void PresetManager::selectPreviousBank()
 {
   selectBank(getPreviousBankPosition());
@@ -448,6 +454,7 @@ void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   m_banks.select(transaction, uuid, [this] {
     onPresetSelectionChanged();
+    onChange();
     this->m_sigBankSelection.send();
   });
 }
@@ -461,6 +468,10 @@ void PresetManager::onPresetSelectionChanged()
 void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<Bank *> &banks)
 {
   m_banks.sort(transaction, banks);
+}
+
+void PresetManager::invalidateAllBanks()
+{
   m_banks.forEach([](auto b) { b->invalidate(); });
 }
 
@@ -494,8 +505,6 @@ void PresetManager::setOrderNumber(UNDO::Transaction *transaction, const Uuid &b
 
     if(isSelected)
       selectBank(transaction, bank);
-
-    m_banks.forEach([](auto b) { b->invalidate(); });
   }
 }
 
