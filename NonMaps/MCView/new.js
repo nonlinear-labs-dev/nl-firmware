@@ -56,7 +56,6 @@ class ServerProxy {
   onMessage(event) {
     var message = event.data;
     if(message.startsWith("MCVIEW")) {
-      console.log(message);
 
       var id = serverProxy.getValueForKeyFromMessage(message, "ID");
       var val = Number(Number(serverProxy.getValueForKeyFromMessage(message, "VAL")) * 100).toFixed(3);
@@ -580,9 +579,17 @@ class MCController {
       for(var iI in this.userInputs) {
         var input = this.userInputs[iI];
 
-        if(input.x >= xD - padding && input.x <= Number(xD) + Number(wD) + padding &&
-           input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding &&
-            input.mc === division.MCX || input.mc === division.MCY && input.mc !== null) {
+        if(input.mc !== division.MCX && input.mc !== division.MCY)
+          continue;
+
+
+        var cappedX = Math.max(Math.min(input.x, xD + wD + padding), xD - padding);
+        var cappedY = Math.max(Math.min(input.y, yD + hD + padding), yD - padding);
+
+        input.x = cappedX;
+        input.y = cappedY;
+
+        if(input.mc !== null) {
           activeInputs.push(input);
         }
       }
