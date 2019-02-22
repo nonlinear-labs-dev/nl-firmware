@@ -6,6 +6,14 @@
   unicode-range: U+E000-E201;
 }
 
+@font-face {
+  font-family: 'nonlinearfont2';
+	font-style: normal;
+	font-weight: 400;
+  src: url('./SourceSansProLW25-Regular.otf');
+}
+
+
 .collapsed {
   display: none;
 }

@@ -420,10 +420,13 @@ class MCView {
 
     //X
     ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
+    ctx.font = "20px nonlinearfont2";
     ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight);
     ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
     //Y
+    ctx.font = "20px nonlinearfont";
     ctx.fillText(yLabel, upperLeftFixPointX - getTextWidth(yLabel) / 2, upperLeftFixPointY);
+    ctx.font = "20px nonlinearfont2";
     ctx.fillText(Number(yVal).toFixed(1), upperLeftFixPointX - getTextWidth(Number(yVal).toFixed(1)) / 2, upperLeftFixPointY + lineHeight);
     ctx.fillText(yName, upperLeftFixPointX + getTextWidth(yLabel), upperLeftFixPointY);
 
@@ -477,6 +480,7 @@ class MCView {
     };
 
     ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
+    ctx.font = "20px nonlinearfont2";
     ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight);
     ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
 
