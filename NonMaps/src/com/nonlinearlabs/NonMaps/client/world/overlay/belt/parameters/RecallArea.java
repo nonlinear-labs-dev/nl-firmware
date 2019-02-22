@@ -122,12 +122,7 @@ public class RecallArea extends OverlayLayout {
 		value.doLayout(0, 0, w, h);		
 		button.doLayout(buttonX, buttonY, textWidth, twothirds);
 	}
-	
-	@Override
-	public void setVisible(boolean v) {
-		super.setVisible(v);
-	}
-	
+		
 	public boolean isChanged() {
 		EditBufferModel eb = EditBufferModel.get();
 		return eb.findParameter(eb.selectedParameter.getValue()).isChanged();
