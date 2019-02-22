@@ -57,7 +57,11 @@ template <typename Element> class UndoableVector
 
   Element *at(size_t idx) const
   {
-    return getElements().at(idx).get();
+      try {
+          return getElements().at(idx).get();
+      } catch(std::out_of_range& e) {
+          return nullptr;
+      }
   }
 
   Element *first() const
