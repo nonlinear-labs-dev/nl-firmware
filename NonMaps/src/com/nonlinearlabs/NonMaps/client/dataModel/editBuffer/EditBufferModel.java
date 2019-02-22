@@ -24,7 +24,12 @@ public class EditBufferModel {
 
 	public IntegerDataModelEntity selectedParameter = new IntegerDataModelEntity();
 	public StringDataModelEntity loadedPreset = new StringDataModelEntity();
-
+	public StringDataModelEntity loadedPresetName = new StringDataModelEntity();
+	public StringDataModelEntity loadedPresetBankName = new StringDataModelEntity();
+	public BooleanDataModelEntity isZombie = new BooleanDataModelEntity();
+	public BooleanDataModelEntity isModified = new BooleanDataModelEntity();
+	public BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
+	
 	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
 	public StringDataModelEntity comment = new StringDataModelEntity();
 	public StringDataModelEntity deviceName = new StringDataModelEntity();
@@ -37,6 +42,19 @@ public class EditBufferModel {
 	private EditBufferModel() {
 	}
 
+	@Override
+	public String toString() {
+		String ret = "";
+		ret += "Selected Parameter: " + selectedParameter.getValue().toString() + "\n";
+		ret += "Loaded Preset: " + loadedPreset.getValue() + "\n";
+		ret += "Loaded Preset Name: " + loadedPresetName.getValue() + "\n";
+		ret += "Loaded Preset Bank Name: " + loadedPresetBankName.getValue() + "\n";
+		ret += "Is Zombie: " + isZombie.getValue().toString() + "\n";
+		ret += "Is Modified: " + isModified.getValue().toString() + "\n";
+		ret += "Is Changed: " + isChanged.getValue().toString() + "\n";
+		return ret;
+	}
+	
 	public ParameterGroupModel getGroup(String id) {
 		ParameterGroupModel g = parameterGroups.get(id);
 

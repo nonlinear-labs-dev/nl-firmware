@@ -284,12 +284,20 @@ void EditBuffer::setName(UNDO::Transaction *transaction, const ustring &name)
   transaction->addUndoSwap(this, m_name, name);
 }
 
+bool EditBuffer::isZombie() const {
+
+    if(getUUIDOfLastLoadedPreset() == Uuid::init())
+        return false;
+
+    return !getParent()->findPreset(getUUIDOfLastLoadedPreset());
+}
+
 void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   auto changed = knownRevision < ParameterGroupSet::getUpdateIDOfLastChange();
   auto pm = static_cast<const PresetManager *>(getParent());
   auto origin = pm->findPreset(getUUIDOfLastLoadedPreset());
-  auto isZombie = origin != nullptr;
+  auto zombie = isZombie();
   auto bank = origin ? dynamic_cast<const Bank *>(origin->getParent()) : nullptr;
   auto bankName = bank ? bank->getName(true) : "";
 
@@ -299,7 +307,7 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                       Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()),
                       Attribute("loaded-presets-name", getName()),
                       Attribute("loaded-presets-bank-name", bankName),
-                      Attribute("preset-is-zombie", isZombie),
+                      Attribute("preset-is-zombie", zombie),
                       Attribute("is-modified", m_isModified),
                       Attribute("hash", getHash()),
                       Attribute("changed", changed),
@@ -410,7 +418,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   for(auto group : getParameterGroups())
     group->undoableClear(transaction);
 
-  auto swap = UNDO::createSwapData(Uuid::none());
+  auto swap = UNDO::createSwapData(Uuid::init());
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     swap->swapWith(m_lastLoadedPreset);
     m_signalPresetLoaded.send();
