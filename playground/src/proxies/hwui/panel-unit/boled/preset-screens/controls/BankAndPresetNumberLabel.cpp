@@ -26,6 +26,7 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
 {
   auto pm = Application::get().getPresetManager();
   auto uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
+  Glib::ustring text = "";
 
   if(auto bank = pm->findBankWithPreset(uuid))
   {
@@ -36,26 +37,21 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
     presetPosStr.fill('0');
     presetPosStr << presetPos;
 
-    auto text = UNDO::StringTools::buildString(bankPos, "-", presetPosStr.str());
-
-    if(pm->getEditBuffer()->isModified())
-      text += "*";
-
-    setText(text);
+    text = UNDO::StringTools::buildString(bankPos, "-", presetPosStr.str());
   }
-  else if(uuid.empty())
+  else if(uuid == Uuid::init())
   {
-    Glib::ustring text = "Init";
-
-    if(pm->getEditBuffer()->isModified())
-      text += "*";
-
-    setText(text);
+    text = "Init";
   }
   else
   {
-    setText("");
+    text = "Deleted";
   }
+
+  if(pm->getEditBuffer()->isModified())
+    text += "*";
+
+  setText(text);
 
   Label::redraw(fb);
   return true;
