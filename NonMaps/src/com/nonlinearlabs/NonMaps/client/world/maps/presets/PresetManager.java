@@ -831,7 +831,7 @@ public class PresetManager extends MapsLayout {
 		if(eb.loadedPreset.getValue().equals("Init")) {
 			ret = "Init";
 		} else if(bank == null && preset == null) {
-			ret = "Deleted";
+			ret = "";
 		} else if(bank != null && preset != null) {
 			ret = bank.getOrderNumber() + "-" + NumberFormat.getFormat("000").format(preset.getNumber()); 
 		}
@@ -842,6 +842,10 @@ public class PresetManager extends MapsLayout {
 	public String getLoadedPresetNumberString() {
 		boolean mod = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isModified();
 		String ret = getBaseLoadedPresetNumberString();
+		
+		if(ret.isEmpty())
+			return ret;
+		
 		return ret += mod ? " *" : "";
 	}
 

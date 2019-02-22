@@ -45,10 +45,10 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
   }
   else
   {
-    text = "Deleted";
+    text = "";
   }
 
-  if(pm->getEditBuffer()->isModified())
+  if(pm->getEditBuffer()->isModified() && !text.empty())
     text += "*";
 
   setText(text);
