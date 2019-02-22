@@ -106,7 +106,10 @@ class MC {
     this.updateThrottler = new Timer(20);
     this.callBackAfterUpdate = undefined;
     this.active = false;
-    this.givenName = "";
+    var temp = ""
+    if(mcID > 246)
+      temp = "Not Used";
+    this.givenName = temp;
   }
 
   setCallbackAfterUpdate(cb) {
