@@ -33,7 +33,7 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
+    this.webSocket = new WebSocket('ws://192.168.0.2:8080/ws-mc/');
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
@@ -61,9 +61,11 @@ class ServerProxy {
       var id = serverProxy.getValueForKeyFromMessage(message, "ID");
       var val = Number(Number(serverProxy.getValueForKeyFromMessage(message, "VAL")) * 100).toFixed(3);
       var uuid = serverProxy.getValueForKeyFromMessage(message, "UUID");
+      var name = serverProxy.getValueForKeyFromMessage(message, "NAME");
 
       var mc = model.mcs[id - 243];
       if(mc !== undefined) {
+        mc.setName(name);
         if(uuid !== serverProxy.uuid.uuid) {
           mc.active = false;
           mc.setValue(val);
@@ -104,6 +106,7 @@ class MC {
     this.updateThrottler = new Timer(20);
     this.callBackAfterUpdate = undefined;
     this.active = false;
+    this.givenName = "";
   }
 
   setCallbackAfterUpdate(cb) {
@@ -132,6 +135,10 @@ class MC {
     this.paramValue = val;
     this.targetValue = undefined;
     this.onValueChanged.onChange(val);
+  }
+
+  setName(name) {
+    this.givenName = name;
   }
 
   connectValue(cb) {

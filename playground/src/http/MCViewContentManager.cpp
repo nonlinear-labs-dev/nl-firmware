@@ -2,6 +2,7 @@
 #include "MCViewContentManager.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <parameters/MacroControlParameter.h>
 #include "WebSocketRequest.h"
 
 MCViewContentManager::MCViewContentManager() = default;
@@ -9,7 +10,7 @@ MCViewContentManager::MCViewContentManager() = default;
 void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 {
   g_signal_connect(connection, "message", G_CALLBACK(&MCViewContentManager::onWebSocketMessage), this);
-  m_webSockets.emplace_back(std::make_shared<WebsocketConnection>(connection));
+  auto it = m_webSockets.emplace_back(std::make_shared<WebsocketConnection>(connection));
 }
 
 void MCViewContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type, GBytes *message,

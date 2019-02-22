@@ -125,7 +125,7 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
   if(valueD != lastBroadcastedControlPosition)
   {
-    const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid);
+    const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid).append("&NAME=").append(getGivenName());
     Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
     lastBroadcastedControlPosition = valueD;
   }
