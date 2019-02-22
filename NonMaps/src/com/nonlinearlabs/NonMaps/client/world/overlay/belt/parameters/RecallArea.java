@@ -126,7 +126,6 @@ public class RecallArea extends OverlayLayout {
 	@Override
 	public void setVisible(boolean v) {
 		super.setVisible(v);
-		requestLayout();
 	}
 	
 	public boolean isChanged() {
