@@ -393,7 +393,9 @@ class MCView {
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var yVal = model.mcs[division.MCY - 243].paramValue;
     var yLabel = getUnicodeForMC(division.MCY);
+    var yName =  model.mcs[division.MCY - 243].givenName;
     var xLabel = getUnicodeForMC(division.MCX);
+    var xName = model.mcs[division.MCX - 243].givenName;
 
     var size = canvas.width / 200 * 2;
 
@@ -402,18 +404,25 @@ class MCView {
     ctx.font = "20px nonlinearfont";
     var lineHeight=ctx.measureText("\uE001").width;
 
+    var offset = lineHeight;
+
+    var upperLeftFixPointX = x + offset;
+    var upperLeftFixPointY = y + offset;
+    var lowerRightFixPointX = x + w - offset;
+    var lowerRightFixPointY = y + h - offset * 1.3;
+
+    var getTextWidth = function(text) {
+      return view.canvas.getContext("2d").measureText(text).width;
+    };
+
     //X
-    var textMeasure = ctx.measureText(xLabel);
-    var valMeasure = ctx.measureText(Number(xVal).toFixed(1));
-    ctx.fillText(xLabel, x + w - textMeasure.width * 2, y + h - lineHeight * 2.5);
-    ctx.fillText(Number(xVal).toFixed(1), x + w - textMeasure.width * 1.5 - valMeasure.width / 2, y + h - lineHeight);
-
+    ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
+    ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight);
+    ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
     //Y
-    textMeasure = ctx.measureText(yLabel);
-    valMeasure = ctx.measureText(Number(yVal).toFixed(1));
-    ctx.fillText(yLabel, x + textMeasure.width, y + lineHeight);
-    ctx.fillText(Number(yVal).toFixed(1), x + textMeasure.width * 1.5 - valMeasure.width / 2, y + lineHeight * 2.5);
-
+    ctx.fillText(yLabel, upperLeftFixPointX - getTextWidth(yLabel) / 2, upperLeftFixPointY);
+    ctx.fillText(Number(yVal).toFixed(1), upperLeftFixPointX - getTextWidth(Number(yVal).toFixed(1)) / 2, upperLeftFixPointY + lineHeight);
+    ctx.fillText(yName, upperLeftFixPointX + getTextWidth(yLabel), upperLeftFixPointY);
 
     ctx.beginPath();
     ctx.strokeStyle = "transparent";
@@ -448,17 +457,25 @@ class MCView {
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var xTarget = model.mcs[division.MCX - 243].targetValue;
     var xLabel = getUnicodeForMC(division.MCX);
+    var xName = model.mcs[division.MCX - 243].givenName;
 
     ctx.beginPath();
     ctx.strokeStyle = "lightgray";
     ctx.fillStyle = "lightgray";
     ctx.font = "20px nonlinearfont";
-    var textMeasure = ctx.measureText(xLabel);
-    var valMeasure = ctx.measureText(String(Number(xVal).toFixed(1)));
 
     var lineHeight=ctx.measureText("\uE001").width;
-    ctx.fillText(xLabel, x + w / 2 - textMeasure.width / 2, y + h / 2 - lineHeight / 2);
-    ctx.fillText(Number(xVal).toFixed(1), x + w / 2 - valMeasure.width / 2, y + h / 2 + lineHeight);
+    var offset = lineHeight;
+    var lowerRightFixPointX = x + w - offset;
+    var lowerRightFixPointY = y + h - offset * 1.3;
+
+    var getTextWidth = function(text) {
+      return view.canvas.getContext("2d").measureText(text).width;
+    };
+
+    ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
+    ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight);
+    ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
 
     if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
