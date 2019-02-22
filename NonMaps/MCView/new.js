@@ -290,6 +290,7 @@ class MCView {
 
     element.addEventListener('mouseup', function() {
        controller.mouseDown = 0;
+       controller.lastMouseMC = null;
        controller.onChange();
     });
 
@@ -542,6 +543,7 @@ class MCController {
     this.lastMouseEvent = null;
     this.mouseDown = 0;
     this.userInputs = null;
+    this.lastMouseMC = null;
   }
 
   onChange() {
@@ -648,7 +650,11 @@ class MCController {
 
     if(this.lastMouseEvent !== undefined) {
       if(this.mouseDown !== 0) {
-        activePositions.push(new Input(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY, view.getMCForPagePos(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY)));
+        if(this.lastMouseMC === null) {
+          this.lastMouseMC = view.getMCForPagePos(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY);
+        }
+
+        activePositions.push(new Input(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY, this.lastMouseMC));
       }
     }
 
