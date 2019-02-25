@@ -1612,6 +1612,14 @@ select[disabled='disabled'] {
     max-height: initial;
 }
 
+.modal-button-button {
+	display: inline-block;
+}
+
+.modal-button-div {
+	text-align: center;
+}
+
 input.param-name-edit {
   align-self: right;
   margin: 3px;

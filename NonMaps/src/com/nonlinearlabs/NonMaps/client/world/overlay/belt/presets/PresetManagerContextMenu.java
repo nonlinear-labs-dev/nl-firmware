@@ -1,5 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
+import java.util.concurrent.Callable;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -9,6 +11,7 @@ import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
+import com.nonlinearlabs.NonMaps.client.tools.CallableVoid;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -68,52 +71,44 @@ public class PresetManagerContextMenu extends ContextMenu {
 				return super.click(eventPoint);
 			}
 		});
+		
 
 		addChild(new ContextMenuItem(this, "Restore all Banks from Backup File ...") {
 			@Override
 			public Control click(Position eventPoint) {
-				final FileUpload upload = new FileUpload();
-				upload.setName("uploadFormElement");
+				
+				NonMaps.get().getNonLinearWorld().getViewport().getOverlay().promptUser("This will replace all current banks! Please save the banks with your work as files before restoring the backup.", () -> {
+					final FileUpload upload = new FileUpload();
+					upload.setName("uploadFormElement");
 
-				if (!Navigator.getPlatform().toLowerCase().contains("mac"))
-					upload.getElement().setAttribute("accept", ".xml.tar.gz");
+					if (!Navigator.getPlatform().toLowerCase().contains("mac"))
+						upload.getElement().setAttribute("accept", ".xml.tar.gz");
 
-				if (canOpenFileDialogAfterConfirmationDialogs()) {
-					boolean confirm = Window.confirm(
-							"This will replace all current banks! Please save the banks with your work as files before restoring the backup.");
 
-					if (!confirm)
-						return null;
-				}
+					upload.addChangeHandler(new ChangeHandler() {
 
-				upload.addChangeHandler(new ChangeHandler() {
+						@Override
+						public void onChange(ChangeEvent event) {
+							loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
 
-					@Override
-					public void onChange(ChangeEvent event) {
-						loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
+								@Override
+								public void onZipUploaded(JavaScriptObject buffer) {
+									NonMaps.theMaps.getServerProxy().importPresetManager(buffer);
+								}
+							});
 
-							@Override
-							public void onZipUploaded(JavaScriptObject buffer) {
-								NonMaps.theMaps.getServerProxy().importPresetManager(buffer);
-							}
-						});
+							RootPanel.get().remove(upload);
+						}
+					});
 
-						RootPanel.get().remove(upload);
-					}
+					upload.click();
+					RootPanel.get().add(upload);
+				}, () -> {
+					
 				});
-
-				upload.click();
-				RootPanel.get().add(upload);
 				return super.click(eventPoint);
 			}
 
-			private boolean canOpenFileDialogAfterConfirmationDialogs() {
-				String version = Navigator.getAppVersion();
-				boolean isChrome72 = version.contains("Chrome/72.");
-
-				boolean hasBug = isChrome72;
-				return !hasBug;
-			}
 		});
 
 		PresetManager pm = getNonMaps().getNonLinearWorld().getPresetManager();

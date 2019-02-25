@@ -9,6 +9,7 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.tools.CallableVoid;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -32,6 +33,7 @@ public class Overlay extends OverlayLayout {
 	private GlobalMenu globalMenu;
 	private UndoTreeWindow undo;
 	private List<CompareDialog> compareDialogs;
+	private ModalDialog modalDialog;
 
 	public Overlay(Viewport parent) {
 		super(parent);
@@ -71,7 +73,13 @@ public class Overlay extends OverlayLayout {
 		layoutRequested = true;
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
-
+	
+	public void promptUser(String prompt, CallableVoid okAction, CallableVoid cancelAction) {
+		modalDialog = null;
+		modalDialog = new ModalDialog(prompt, okAction, cancelAction);
+		modalDialog.initalShow();
+	}
+	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		if (layoutRequested) {
@@ -432,5 +440,10 @@ public class Overlay extends OverlayLayout {
 
 	public List<CompareDialog> getCompareDialogs() {
 		return compareDialogs;
+	}
+
+	public void removeModal(ModalDialog modal) {
+		if(modal == modalDialog)
+			modalDialog = null;
 	}
 }
