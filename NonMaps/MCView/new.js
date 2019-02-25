@@ -203,6 +203,8 @@ class RangeDivision {
                       {"ID":1,"x":0.025,"y":0.05},
                       {"ID":2,"x":0.025,"y":0.05},
                       {"ID":3,"x":0.025,"y":0.05}];
+
+    this.leftMargin = 0.03;
   }
 }
 
@@ -236,7 +238,9 @@ class MCView {
   }
 
   getMCForPagePos(pageX, pageY) {
-    var width = view.canvas.width;
+    var canvasWidth = view.canvas.width;
+    var leftMargin = view.range.leftMargin * canvasWidth;
+    var width = canvasWidth - leftMargin;
     var heigth = view.canvas.height;
     var mc = null;
     var i;
@@ -244,9 +248,7 @@ class MCView {
       var division = view.range.controls[i];
       var deadZones = view.range.deadzones[i];
 
-      console.log(deadZones);
-
-      var x = width * division.x;
+      var x = leftMargin + width * division.x;
       var y = heigth * division.y;
       var w = width * division.w;
       var h = heigth * division.h;
@@ -358,13 +360,22 @@ class MCView {
         var canvas = view.canvas;
         var middle = canvas.height / 2;
         var height = (canvas.height / 100) * 3;
-        var width = height / 2;
+        var width = canvas.width * view.range.leftMargin * 0.75;
 
         var area = function(x1, y1, x2, y2, x3, y3)
         {
            return Math.abs((x1*(y2-y3) + x2*(y3-y1)+
                                         x3*(y1-y2))/2.0);
         };
+
+        var a = area(0, middle - height, 0, middle + height, width, middle);
+        var a1 = area(event.pageX, event.pageY, 0, middle - height, 0, middle + height);
+        var a2 = area(event.pageX, event.pageY, 0, middle - height, width, middle);
+        var a3 = area(event.pageX, event.pageY, 0, middle + height, width, middle);
+
+        if(Math.abs((a1 + a2 + a3) - a) < 0.2) {
+          toggleSettings();
+        }
 
         console.log(event);
       }
@@ -377,19 +388,21 @@ class MCView {
     var info = view.getViewInfo();
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-    var width = canvas.width;
+    var canvasWidth = canvas.width;
+    var leftMargin = canvasWidth * view.range.leftMargin;
+    var width = canvasWidth - leftMargin;
     var heigth = canvas.height;
 
     ctx.font = '20px nonlinearfont';
     ctx.strokeStyle = "black";
     ctx.fillStyle = new ColorScheme().backgroundColor;
-    ctx.fillRect(0, 0, width, heigth);
+    ctx.fillRect(0, 0, canvasWidth, heigth);
 
     var i;
     for(i in info.controls) {
       var division = info.controls[i];
       var deadZones = view.range.deadzones[i];
-      var x = width * division.x;
+      var x = leftMargin + width * division.x;
       var y = heigth * division.y;
       var w = width * division.w;
       var h = heigth * division.h;
@@ -417,16 +430,21 @@ class MCView {
   }
 
   drawSettingsOpener() {
+    var area = function(x1, y1, x2, y2, x3, y3) {
+      return Math.abs((x1*(y2-y3) + x2*(y3-y1)+
+                                    x3*(y1-y2))/2.0);
+    };
+
     var canvas = view.canvas;
     var ctx = canvas.getContext("2d");
     ctx.beginPath();
     ctx.strokeStyle = new ColorScheme().markerColor;
-    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().grayIndicator;
     ctx.lineWidth = "3";
 
     var middle = canvas.height / 2;
     var height = (canvas.height / 100) * 3;
-    var width = height / 2;
+    var width = canvas.width * view.range.leftMargin * 0.75;
 
     ctx.moveTo(0, middle - height);
     ctx.lineTo(0, middle + height);
@@ -624,10 +642,11 @@ class MCController {
       var division = displayInformation.controls[i];
       var deadzone = view.range.deadzones[i];
       var activeInputs = [];
-      var cW = view.canvas.width;
+      var canvasWidth = view.canvas.width;
+      var leftMargin = canvasWidth * view.range.leftMargin;
+      var cW = canvasWidth - leftMargin;
       var cH = view.canvas.height;
-      var rect = view.canvas.getBoundingClientRect();
-      var dX = (cW * division.x);
+      var dX = leftMargin + (cW * division.x);
       var dY = (cH * division.y);
       var dW = cW * division.w;
       var dH = cH * division.h;
@@ -676,6 +695,8 @@ class MCController {
       if(division.MCX === 247) {
         x -= xD;
         x += (dW - wD) / 2;
+      } else {
+        x -= leftMargin;
       }
 
       if(inputCount > 0) {

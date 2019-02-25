@@ -51,6 +51,8 @@ html, body {
 
 #close {
   color: red;
+  width: 50%;
+  margin-left: 25%;
 }
 
 #close:hover {
@@ -66,7 +68,7 @@ html, body {
   border-style: solid;
   border-width: thin;
   border-color: white;
-  width: 10%;
+  width: 25%;
   height: 100%;
 }
 
@@ -96,14 +98,17 @@ html, body {
 #interpolation-step-label{
   width: 100%;
   text-align: center;
+  margin: 0;
 }
 
 .step-range {
   height: 50%;
   width: 100%;
   -webkit-appearance: slider-vertical;
+  writing-mode: bt-lr;
 }
 
 h1 {
+  overflow-wrap: break-word;
   text-align: center;
 }

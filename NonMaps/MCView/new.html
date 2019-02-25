@@ -9,10 +9,10 @@
     <div class='overlay collapsed' id='settings-overlay' class='collapsed'>
       <div class="setting-item">
         <h1>Smoothing</h1>
-        <input class="step-range" type="range" min="0" max="100" step="1" value="50" id="interpolation-step" onchange="setInterpolation(this.value);" oninput="setInterpolation(this.value);">
+        <input orient="vertical" class="step-range" type="range" min="0" max="100" step="1" value="50" id="interpolation-step" onchange="setInterpolation(this.value);" oninput="setInterpolation(this.value);">
         <h1 id="interpolation-step-label">50</h1>
+        <button id='close' onclick='toggleSettings();'>Close Settings</button>
       </div>
-      <button id='close' onclick='toggleSettings();'>Close Settings</button>
     </div>
     <canvas id="canvas"></canvas>
     </div>
