@@ -780,6 +780,16 @@ function onLoad() {
     toggleSettings();
   }
 
+  try {
+    var val = window.localStorage.getItem("smoothing");
+    if(val !== undefined) {
+      setInterpolation(val);
+      document.getElementById("interpolation-step").value = val;
+    }
+  } catch(err) {
+    console.log(err);
+  }
+
   document.onkeypress = function(event) {
     if(event.key == "H" || event.key == "h") {
       toggleSettings();
@@ -819,4 +829,9 @@ function toggleSettings() {
 function setInterpolation(val) {
   InterpolationStepSize = val;
   document.getElementById("interpolation-step-label").innerHTML = val;
+  try {
+    window.localStorage.setItem("smoothing", val);
+  } catch(err) {
+    console.log(err);
+  }
 }
