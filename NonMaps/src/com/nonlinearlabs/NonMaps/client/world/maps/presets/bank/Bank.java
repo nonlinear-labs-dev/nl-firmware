@@ -84,7 +84,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		tapes[Tape.Orientation.West.ordinal()] = addChild(new Tape(this, Tape.Orientation.West));
 	}
 
-	public boolean hasSlaveInDirection(Orientation orientation) {
+	public boolean isDockedInDirection(Orientation orientation) {
 		switch (orientation) {
 		case North:
 			return getMasterTop() != null;
@@ -97,7 +97,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean skipChildOnLayout(MapsControl c) {
 		return c instanceof Tape;
@@ -721,13 +721,12 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			slaveRight = null;
 	}
 
-	public String getDirectionOfMaster() {
+	public Orientation getDirectionOfMaster() {
 		if (masterLeft != null)
-			return "left";
+			return Orientation.West;
 		else if (masterTop != null)
-			return "top";
-		else
-			return "";
+			return Orientation.North;
+		return null;
 	}
 
 	public void removeAllSlaves() {
@@ -875,6 +874,37 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		pos.getDimension().setWidth(pos.getDimension().getWidth() + 2 * border);
 		pos.getDimension().setHeight(pos.getDimension().getHeight() + border);
 		return dim;
+	}
+
+	public Tape getAttachedTapeInDirection(Orientation orientation) {
+		Bank bottomSlave = getBottomSlave();
+		Bank rightSlave = getRightSlave();
+		Bank masterTop = getMasterTop();
+		Bank masterLeft = getMasterLeft();
+		
+		switch(orientation) {
+		case East:
+			if(rightSlave != null)
+				return rightSlave.getTape(Orientation.West);
+			break;
+		case North:
+			if(masterTop != null)
+				return masterTop.getTape(Orientation.South); 
+			break;
+		case South:
+			if(bottomSlave != null)
+				return bottomSlave.getTape(Orientation.North);
+			break;
+		case West:
+			if(masterLeft != null)
+				return masterLeft.getTape(Orientation.East);
+			break;
+		default:
+			break;
+		
+		}
+		
+		return null;
 	}
 
 }
