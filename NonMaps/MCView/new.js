@@ -33,7 +33,7 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
+    this.webSocket = new WebSocket('ws://192.168.0.2:8080/ws-mc/');
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
@@ -65,7 +65,7 @@ class ServerProxy {
       var mc = model.mcs[id - 243];
       if(mc !== undefined) {
         mc.setName(name);
-        if(uuid !== serverProxy.uuid.uuid) {
+        if(uuid !== serverProxy.uuid.uuid || uuid === "FORCE") {
           mc.active = false;
           mc.setValue(val);
         } else {
@@ -206,6 +206,16 @@ class RangeDivision {
   }
 }
 
+class ColorScheme {
+  constructor() {
+    this.markerColor = "rgb(72,72,72)";
+    this.blueIndicator = "rgb(13,111,220)";
+    this.grayIndicator = "rgb(156,156,156)";
+    this.backgroundColor = "rgb(30,30,30)";
+    this.playZoneColor = "#2b2b2b";
+  }
+}
+
 class MCView {
   constructor() {
     this.canvas = document.getElementById('canvas');
@@ -229,17 +239,29 @@ class MCView {
     var width = view.canvas.width;
     var heigth = view.canvas.height;
     var mc = null;
-    view.range.controls.forEach(function(division) {
+    var i;
+    for(i in view.range.controls) {
+      var division = view.range.controls[i];
+      var deadZones = view.range.deadzones[i];
+
+      console.log(deadZones);
+
       var x = width * division.x;
       var y = heigth * division.y;
       var w = width * division.w;
       var h = heigth * division.h;
 
-      if(pageX >= x && pageX <= x + w  &&
-         pageY >= y && pageY <= y + h) {
+      var wD = w - width * deadZones.x;
+      var hD = h - heigth * deadZones.y;
+      var xD = x + (w - wD) / 2;
+      var yD = y + (h  - hD) / 2;
+
+
+      if(pageX >= xD && pageX <= xD + wD  &&
+         pageY >= yD && pageY <= yD + hD) {
         mc = division.MCX;
       }
-    });
+    }
     return mc;
   }
 
@@ -271,8 +293,10 @@ class MCView {
 
         if(!found) {
           var mc = view.getMCForTouch(currTouch);
-          controller.touches.push({"touch":currTouch, "mc":mc});
-          controller.onChange();
+          if(mc !== null) {
+            controller.touches.push({"touch":currTouch, "mc":mc});
+            controller.onChange();
+          }
         }
       }
     });
@@ -327,6 +351,24 @@ class MCView {
       }
 
     });
+
+    element.addEventListener('click', function(event) {
+      console.log(document.getElementById('settings-overlay').classList);
+      if(document.getElementById('settings-overlay').classList.contains("collapsed")) {
+        var canvas = view.canvas;
+        var middle = canvas.height / 2;
+        var height = (canvas.height / 100) * 3;
+        var width = height / 2;
+
+        var area = function(x1, y1, x2, y2, x3, y3)
+        {
+           return Math.abs((x1*(y2-y3) + x2*(y3-y1)+
+                                        x3*(y1-y2))/2.0);
+        };
+
+        console.log(event);
+      }
+    });
   }
 
   redraw(model) {
@@ -340,7 +382,7 @@ class MCView {
 
     ctx.font = '20px nonlinearfont';
     ctx.strokeStyle = "black";
-    ctx.fillStyle = "rgb(30,30,30)";
+    ctx.fillStyle = new ColorScheme().backgroundColor;
     ctx.fillRect(0, 0, width, heigth);
 
     var i;
@@ -360,7 +402,7 @@ class MCView {
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.fillStyle = "#2b2b2b";
+      ctx.fillStyle = new ColorScheme().playZoneColor;
       var wD = w - width * deadZones.x;
       var hD = h - heigth * deadZones.y;
       var xD = x + (w - wD) / 2;
@@ -370,6 +412,28 @@ class MCView {
       ctx.fill();
       this.drawHandle(division, xD, yD, wD, hD);
     }
+
+    this.drawSettingsOpener();
+  }
+
+  drawSettingsOpener() {
+    var canvas = view.canvas;
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.strokeStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.lineWidth = "3";
+
+    var middle = canvas.height / 2;
+    var height = (canvas.height / 100) * 3;
+    var width = height / 2;
+
+    ctx.moveTo(0, middle - height);
+    ctx.lineTo(0, middle + height);
+    ctx.lineTo(width, middle);
+    ctx.lineTo(0, middle - height);
+    ctx.stroke();
+    ctx.fill();
   }
 
   drawHandle(division, xD, yD, wD, hD) {
@@ -401,8 +465,8 @@ class MCView {
 
     var size = canvas.width / 200 * 2;
 
-    ctx.strokeStyle = "lightgray";
-    ctx.fillStyle = "lightgray";
+    ctx.strokeStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().markerColor;
     ctx.font = "20px nonlinearfont";
     var lineHeight=ctx.measureText("\uE001").width;
 
@@ -431,7 +495,7 @@ class MCView {
 
     ctx.beginPath();
     ctx.strokeStyle = "transparent";
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = new ColorScheme().blueIndicator;
 
     yTarget = 100 - yTarget;
     yVal = 100 - yVal;
@@ -443,7 +507,7 @@ class MCView {
     if(xTarget !== undefined && yTarget !== undefined && xTarget !== xVal || yTarget !== yVal) {
       ctx.beginPath();
       ctx.lineWidth = "3";
-      ctx.strokeStyle = "gray";
+      ctx.strokeStyle = new ColorScheme().grayIndicator;
       ctx.fillStyle = "transparent";
       ctx.arc(x + w / 100 * xTarget, y + h / 100 * yTarget, size, 0, 2*Math.PI, true);
       ctx.fill();
@@ -465,8 +529,8 @@ class MCView {
     var xName = model.mcs[division.MCX - 243].givenName;
 
     ctx.beginPath();
-    ctx.strokeStyle = "lightgray";
-    ctx.fillStyle = "lightgray";
+    ctx.strokeStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().markerColor;
     ctx.font = "20px nonlinearfont";
 
     var lineHeight=ctx.measureText("\uE001").width;
@@ -487,7 +551,7 @@ class MCView {
       ctx.beginPath();
       ctx.lineWidth = "10";
       ctx.fillStyle = "transparent";
-      ctx.strokeStyle = "grey";
+      ctx.strokeStyle = new ColorScheme().grayIndicator;
       ctx.moveTo(xD + wD / 100 * xTarget, yD + 1);
       ctx.lineTo(xD + wD / 100 * xTarget, yD + hD - 1);
       ctx.stroke();
@@ -497,7 +561,7 @@ class MCView {
     ctx.beginPath();
     ctx.fillStyle = "transparent";
     ctx.lineWidth = "5";
-    ctx.strokeStyle = "blue";
+    ctx.strokeStyle = new ColorScheme().blueIndicator;
     ctx.lineWidth = w / 200 * 1;
     ctx.moveTo(x + w / 100 * xVal, y + 1);
     ctx.lineTo(x + w / 100 * xVal, y + h - 1);
@@ -698,6 +762,8 @@ function onLoad() {
       });
     }, 50);
   });
+
+  view.redraw(model);
 }
 
 //UI Functionality
