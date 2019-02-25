@@ -210,13 +210,24 @@ class RangeDivision {
 
 class ColorScheme {
   constructor() {
-    this.markerColor = "rgb(72,72,72)";
-    this.blueIndicator = "rgb(13,111,220)";
+    this.markerColor = "rgb(130, 130, 130)";
+    this.labelColor = "rgb(130, 130, 130)";
+    this.blueIndicator = "rgb(50,140,255)";
     this.grayIndicator = "rgb(156,156,156)";
     this.backgroundColor = "rgb(30,30,30)";
     this.playZoneColor = "#2b2b2b";
   }
 }
+
+var mmToPx = function(mm) {
+    var div = document.createElement('div');
+    div.style.display = 'block';
+    div.style.height = '100mm';
+    document.body.appendChild(div);
+    var convert = div.offsetHeight * mm / 100;
+    div.parentNode.removeChild(div);
+    return convert;
+};
 
 class MCView {
   constructor() {
@@ -240,6 +251,7 @@ class MCView {
   getMCForPagePos(pageX, pageY) {
     var canvasWidth = view.canvas.width;
     var leftMargin = view.range.leftMargin * canvasWidth;
+    leftMargin = Math.min(mmToPx(7), leftMargin);
     var width = canvasWidth - leftMargin;
     var heigth = view.canvas.height;
     var mc = null;
@@ -360,7 +372,9 @@ class MCView {
         var canvas = view.canvas;
         var middle = canvas.height / 2;
         var height = (canvas.height / 100) * 3;
-        var width = canvas.width * view.range.leftMargin * 0.75;
+        var leftMargin = canvas.width * view.range.leftMargin;
+        leftMargin = Math.min(mmToPx(7), leftMargin);
+        var width = leftMargin * 0.75;
 
         var area = function(x1, y1, x2, y2, x3, y3)
         {
@@ -390,6 +404,7 @@ class MCView {
     canvas.height = window.innerHeight;
     var canvasWidth = canvas.width;
     var leftMargin = canvasWidth * view.range.leftMargin;
+    leftMargin = Math.min(mmToPx(7), leftMargin);
     var width = canvasWidth - leftMargin;
     var heigth = canvas.height;
 
@@ -444,7 +459,9 @@ class MCView {
 
     var middle = canvas.height / 2;
     var height = (canvas.height / 100) * 3;
-    var width = canvas.width * view.range.leftMargin * 0.75;
+    var leftMargin = canvas.width * view.range.leftMargin;
+    leftMargin = Math.min(mmToPx(7), leftMargin);
+    var width = leftMargin * 0.75;
 
     ctx.moveTo(0, middle - height);
     ctx.lineTo(0, middle + height);
@@ -484,7 +501,7 @@ class MCView {
     var size = canvas.width / 200 * 2;
 
     ctx.strokeStyle = new ColorScheme().markerColor;
-    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().labelColor;
     ctx.font = "20px nonlinearfont";
     var lineHeight=ctx.measureText("\uE001").width;
 
@@ -502,12 +519,15 @@ class MCView {
     //X
     ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
     ctx.font = "20px nonlinearfont2";
+    ctx.fillStyle = new ColorScheme().markerColor;
     ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight);
     ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
     //Y
+    ctx.fillStyle = new ColorScheme().labelColor;
     ctx.font = "20px nonlinearfont";
     ctx.fillText(yLabel, upperLeftFixPointX - getTextWidth(yLabel) / 2, upperLeftFixPointY);
     ctx.font = "20px nonlinearfont2";
+    ctx.fillStyle = new ColorScheme().markerColor;
     ctx.fillText(Number(yVal).toFixed(1), upperLeftFixPointX - getTextWidth(Number(yVal).toFixed(1)) / 2, upperLeftFixPointY + lineHeight);
     ctx.fillText(yName, upperLeftFixPointX + getTextWidth(yLabel), upperLeftFixPointY);
 
@@ -548,7 +568,7 @@ class MCView {
 
     ctx.beginPath();
     ctx.strokeStyle = new ColorScheme().markerColor;
-    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().labelColor;
     ctx.font = "20px nonlinearfont";
 
     var lineHeight=ctx.measureText("\uE001").width;
@@ -562,12 +582,13 @@ class MCView {
 
     ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
     ctx.font = "20px nonlinearfont2";
+    ctx.fillStyle = new ColorScheme().markerColor;
     ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight);
     ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
 
     if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
-      ctx.lineWidth = "10";
+      ctx.lineWidth = w / 200 * 1;
       ctx.fillStyle = "transparent";
       ctx.strokeStyle = new ColorScheme().grayIndicator;
       ctx.moveTo(xD + wD / 100 * xTarget, yD + 1);
@@ -644,6 +665,7 @@ class MCController {
       var activeInputs = [];
       var canvasWidth = view.canvas.width;
       var leftMargin = canvasWidth * view.range.leftMargin;
+      leftMargin = Math.min(leftMargin, mmToPx(7));
       var cW = canvasWidth - leftMargin;
       var cH = view.canvas.height;
       var dX = leftMargin + (cW * division.x);
