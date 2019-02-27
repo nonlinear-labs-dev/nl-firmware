@@ -32,6 +32,7 @@ public class Overlay extends OverlayLayout {
 	private GlobalMenu globalMenu;
 	private UndoTreeWindow undo;
 	private List<CompareDialog> compareDialogs;
+	private ModalDialog modalDialog;
 
 	public Overlay(Viewport parent) {
 		super(parent);
@@ -71,7 +72,13 @@ public class Overlay extends OverlayLayout {
 		layoutRequested = true;
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
-
+	
+	public void promptUser(String prompt, Runnable okAction, Runnable cancelAction) {
+		modalDialog = null;
+		modalDialog = new ModalDialog(prompt, okAction, cancelAction);
+		modalDialog.initalShow();
+	}
+	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		if (layoutRequested) {
@@ -432,5 +439,10 @@ public class Overlay extends OverlayLayout {
 
 	public List<CompareDialog> getCompareDialogs() {
 		return compareDialogs;
+	}
+
+	public void removeModal(ModalDialog modal) {
+		if(modal == modalDialog)
+			modalDialog = null;
 	}
 }
