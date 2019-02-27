@@ -1,6 +1,7 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Dimension;
@@ -18,6 +19,20 @@ public class Tape extends MapsControl {
 
 	public enum Orientation {
 		North, South, East, West
+	}
+	
+	public Orientation invertOrientation(Orientation o) {
+		switch(o) {
+		case East:
+			return Orientation.West;
+		case North:
+			return Orientation.South;
+		case South:
+			return Orientation.North;
+		case West:
+			return Orientation.East;
+		}
+		return null;
 	}
 
 	private Orientation orientation;
@@ -111,18 +126,24 @@ public class Tape extends MapsControl {
 	}
 	
 	private boolean isInsertTape() {
-		return getParent().hasSlaveInDirection(getOrientation());
+		return getParent().isDockedInDirection(getOrientation());
 	}
 
-	private boolean isCurrentlyDraggedOverMe() {
+	public boolean isCurrentlyDraggedOverMe() {
 		if (!isInsertTape())
 			return false;
 
+		
+		Tape otherTape = null;
+		if(getParent().getMaster() != null) {
+			otherTape = getParent().getMaster().getTape(invertOrientation(getOrientation()));
+		}
+		
 		Overlay o = getNonMaps().getNonLinearWorld().getViewport().getOverlay();
 		for (DragProxy d : o.getDragProxies()) {
 			Control r = d.getCurrentReceiver();
-			if (r == this)
-				if (getPixRect().contains(d.getMousePosition()) && prospectBank != null)
+			if (r == this || (otherTape != null && r == otherTape))
+				if ((getPixRect().contains(d.getMousePosition()) || otherTape.getPixRect().contains(d.getMousePosition())) && prospectBank != null)
 					return true;
 		}
 		return false;
@@ -167,7 +188,7 @@ public class Tape extends MapsControl {
 					boolean bankIsNotInCluster = !b.isInCluster();
 
 					return visible && o.isCurrentlyDraggingATypeOf(Bank.class.getName())
-							&& getParent().hasSlaveInDirection(getOrientation()) && bankIsNotInCluster;
+							&& getParent().isDockedInDirection(getOrientation()) && bankIsNotInCluster;
 				}
 			}
 		}
@@ -217,10 +238,21 @@ public class Tape extends MapsControl {
 		}
 	}
 
+	private Tape findOppositeInsertTape() {
+		return getParent().getAttachedTapeInDirection(getOrientation());
+	}
+	
 	private RGB getInsertColor() {
 		RGB activeColor = new RGB(172, 185, 198);
-
-		if (isCurrentlyDraggedOverMe())
+		Tape opposite = findOppositeInsertTape();
+		boolean otherActive = false;
+				
+		if(opposite != null)
+			otherActive = opposite.isCurrentlyDraggedOverMe();
+		else
+			GWT.log("should not happen! " + toString());
+		
+		if (isCurrentlyDraggedOverMe() || otherActive)
 			return activeColor;
 
 		return new RGB(51, 83, 171);
@@ -257,7 +289,7 @@ public class Tape extends MapsControl {
 				|| (orientation == Orientation.North && other == Orientation.South)
 				|| (orientation == Orientation.South && other == Orientation.North);
 	}
-
+	
 	private boolean fitsTo(Bank other) {
 		if (getParent().isClusteredWith(other))
 			return false;

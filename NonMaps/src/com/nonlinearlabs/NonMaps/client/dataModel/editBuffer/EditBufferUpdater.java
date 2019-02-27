@@ -11,9 +11,22 @@ public class EditBufferUpdater extends Updater {
 	}
 
 	public void doUpdate() {
-		if(rootNode != null) {
+		if(rootNode != null) {		
+			EditBufferModel eb = EditBufferModel.get();
 			String selParam = getAttributeValue(rootNode, "selected-parameter");
-			EditBufferModel.get().selectedParameter.setValue(Integer.valueOf(selParam));
+			eb.selectedParameter.setValue(Integer.valueOf(selParam));
+			String loadedPreset = getAttributeValue(rootNode, "loaded-preset");
+			eb.loadedPreset.setValue(loadedPreset);
+			String loadedPresetName = getAttributeValue(rootNode, "loaded-presets-name");
+			eb.loadedPresetName.setValue(loadedPresetName);
+			String loadedPresetBankName = getAttributeValue(rootNode, "loaded-presets-bank-name");
+			eb.loadedPresetBankName.setValue(loadedPresetBankName);
+			String isZombie = getAttributeValue(rootNode, "preset-is-zombie");
+			eb.isZombie.setValue(Boolean.valueOf(isZombie));
+			String isModified = getAttributeValue(rootNode, "is-modified");
+			eb.isModified.setValue(Boolean.valueOf(isModified));
+			String changed = getAttributeValue(rootNode, "changed");
+			eb.isChanged.setValue(Boolean.valueOf(changed));
 		}
 
 		processChangedChildrenElements(rootNode, "parameter-group", child -> processGroup(child));
