@@ -88,6 +88,7 @@ int main(int numArgs, char** argv)
   ::signal(SIGSEGV, printStackTrace);
   ::signal(SIGILL, printStackTrace);
   ::signal(SIGBUS, printStackTrace);
+  ::signal(SIGKILL, printStackTrace);
 
   //Profiler::get ().enable (true);
 
