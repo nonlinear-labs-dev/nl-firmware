@@ -1,7 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
-import java.util.concurrent.Callable;
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -11,7 +9,6 @@ import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.nonlinearlabs.NonMaps.client.ClipboardManager.ClipboardContent;
-import com.nonlinearlabs.NonMaps.client.tools.CallableVoid;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.world.Control;

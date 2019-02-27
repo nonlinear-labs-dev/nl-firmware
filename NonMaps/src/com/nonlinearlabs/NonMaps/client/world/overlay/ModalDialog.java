@@ -6,17 +6,16 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.tools.CallableVoid;
 
 public class ModalDialog extends GWTDialog {
 
-	protected CallableVoid ok;
-	protected CallableVoid cancel;
+	protected Runnable ok;
+	protected Runnable cancel;
 	
 	static int modalPopupLeft = 0;
 	static int modalPopupTop = 0;
 	
-	public ModalDialog(String message, CallableVoid okAction, CallableVoid cancelAction) {
+	public ModalDialog(String message, Runnable okAction, Runnable cancelAction) {
 		ok = okAction;
 		cancel = cancelAction;
 		setModal(true);
@@ -33,7 +32,7 @@ public class ModalDialog extends GWTDialog {
 			
 			@Override
 			public void onClick(ClickEvent arg0) {
-				ok.action();
+				ok.run();;
 				commit();
 			}
 		}));
@@ -41,7 +40,7 @@ public class ModalDialog extends GWTDialog {
 			
 			@Override
 			public void onClick(ClickEvent arg0) {
-				cancel.action();
+				cancel.run();
 				commit();
 			}
 		}));

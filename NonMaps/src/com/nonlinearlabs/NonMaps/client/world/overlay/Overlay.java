@@ -9,7 +9,6 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.tools.CallableVoid;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -74,7 +73,7 @@ public class Overlay extends OverlayLayout {
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 	
-	public void promptUser(String prompt, CallableVoid okAction, CallableVoid cancelAction) {
+	public void promptUser(String prompt, Runnable okAction, Runnable cancelAction) {
 		modalDialog = null;
 		modalDialog = new ModalDialog(prompt, okAction, cancelAction);
 		modalDialog.initalShow();
