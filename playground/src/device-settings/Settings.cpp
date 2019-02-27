@@ -41,6 +41,7 @@
 #include <xml/VersionAttribute.h>
 #include <proxies/lpc/LPCProxy.h>
 #include "WifiSetting.h"
+#include "CrashOnError.h"
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -80,6 +81,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("WifiSetting", new WifiSetting(*this));
   addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
+  addSetting("CrashOnError", new CrashOnError(*this));
 }
 
 Settings::~Settings()

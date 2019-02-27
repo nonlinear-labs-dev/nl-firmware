@@ -216,7 +216,9 @@ Preset *Bank::findSelectedPreset() const
 
 Preset *Bank::getPresetAt(size_t idx) const
 {
-  return m_presets.at(idx);
+  if(!m_presets.empty())
+    return m_presets.at(idx);
+  return nullptr;
 }
 
 void Bank::forEachPreset(std::function<void(Preset *)> cb) const

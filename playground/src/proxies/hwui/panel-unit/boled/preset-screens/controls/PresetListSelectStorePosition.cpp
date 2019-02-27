@@ -40,9 +40,11 @@ void PresetListSelectStorePosition::onBankChanged()
 {
   if(auto bank = Application::get().getPresetManager()->getBankAt(m_storeModeData->bankPos))
   {
-    if(m_selectedPreset != bank->getSelectedPreset())
+    Preset *selPresetInBank = bank->getSelectedPreset();
+
+    if(selPresetInBank != nullptr && m_selectedPreset != selPresetInBank)
     {
-      m_selectedPreset = bank->getSelectedPreset();
+      m_selectedPreset = selPresetInBank;
       m_storeModeData->presetPos = bank->getPresetPosition(m_selectedPreset);
     }
 

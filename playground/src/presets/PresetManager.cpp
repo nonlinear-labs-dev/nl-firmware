@@ -349,7 +349,9 @@ std::list<Bank *> PresetManager::getBanks() const
 
 Bank *PresetManager::getBankAt(size_t idx) const
 {
-  return m_banks.at(idx);
+  if(!m_banks.empty())
+    return m_banks.at(idx);
+  return nullptr;
 }
 
 const Uuid &PresetManager::getSelectedBankUuid() const

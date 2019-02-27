@@ -130,6 +130,7 @@ public class Setup {
 		public BooleanDataModelEntity benderRampBypass = new BooleanDataModelEntity();
 		public BooleanDataModelEntity highlightChangedParameters = new BooleanDataModelEntity();
 		public BooleanDataModelEntity forceHighlightChangedParameters = new BooleanDataModelEntity();
+		public BooleanDataModelEntity crashOnError = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {
