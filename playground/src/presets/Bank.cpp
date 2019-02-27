@@ -7,6 +7,8 @@
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
 
+string to_string(Bank::AttachmentDirection dir);
+
 EditBuffer *getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
@@ -361,7 +363,16 @@ void Bank::setAttachedToBank(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::setAttachedDirection(UNDO::Transaction *transaction, const string &direction)
 {
-  transaction->addUndoSwap(this, m_attachDirection, direction);
+  try
+  {
+    auto i = stoi(direction);
+    auto dir = static_cast<Bank::AttachmentDirection>(i);
+    transaction->addUndoSwap(this, m_attachDirection, to_string(dir));
+  }
+  catch(...)
+  {
+    transaction->addUndoSwap(this, m_attachDirection, direction);
+  }
 }
 
 void Bank::setX(UNDO::Transaction *transaction, const string &x)
