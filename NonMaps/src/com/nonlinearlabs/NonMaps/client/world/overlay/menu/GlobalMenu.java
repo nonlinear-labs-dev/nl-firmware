@@ -202,7 +202,7 @@ public class GlobalMenu extends OverlayLayout {
 		addChild(new MenuEntry(this, "") {
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return "Open MC-View";
+				return "Open MC View";
 			}
 
 			@Override
