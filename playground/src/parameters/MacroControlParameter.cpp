@@ -21,6 +21,7 @@
 #include "http/HTTPServer.h"
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
+#include <tools/StringTools.h>
 
 static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(ModulationSource::MC1);
 
@@ -125,7 +126,7 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
   if(valueD != lastBroadcastedControlPosition)
   {
-    const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid).append("&NAME=").append(getGivenName());
+    const auto str = StringTools::buildString("MCVIEW&ID=",idString,"&VAL=",value,"&UUID=",uuid,"&NAME=",getGivenName());
     Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
     lastBroadcastedControlPosition = valueD;
   }
@@ -158,7 +159,7 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
   {
     auto *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
 
-    if(auto old = grandPa->findParameterByID(static_cast<size_t>(m_UiSelectedHardwareSourceParameterID)))
+    if(auto old = grandPa->findParameterByID(m_UiSelectedHardwareSourceParameterID))
       old->onUnselected();
 
     m_UiSelectedHardwareSourceParameterID = pos;
