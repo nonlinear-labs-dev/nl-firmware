@@ -3,6 +3,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
+#include <tools/StringTools.h>
 #include "WebSocketRequest.h"
 
 MCViewContentManager::MCViewContentManager() = default;
@@ -17,7 +18,7 @@ void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
           const auto valueD = mc->getValue().getClippedValue();
           const auto value = to_string(valueD);
           const auto uuid = "FORCE"s;
-          const auto str = "MCVIEW&ID="s.append(idString).append("&VAL=").append(value).append("&UUID=").append(uuid).append("&NAME=").append(mc->getGivenName());
+          const auto str = StringTools::buildString("MCVIEW&ID=",idString,"&VAL=",value,"&UUID=",uuid,"&NAME=",mc->getGivenName());
           soup_websocket_connection_send_text(m_webSockets.back()->getConnection(), str.c_str());
       }
   }
