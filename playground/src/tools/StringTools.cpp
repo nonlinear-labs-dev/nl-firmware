@@ -1,6 +1,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <libundo/undo/StringTools.h>
 #include "StringTools.h"
 
 namespace StringTools
@@ -13,7 +14,7 @@ namespace StringTools
     std::istringstream tokenStream(s);
     while(std::getline(tokenStream, token, delimiter))
     {
-      strings.push_back(token);
+      strings.emplace_back(token);
     }
     return strings;
   }

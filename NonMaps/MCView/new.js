@@ -56,15 +56,16 @@ class ServerProxy {
   onMessage(event) {
     var message = event.data;
     if(message.startsWith("MCVIEW")) {
-      console.log(message);
 
       var id = serverProxy.getValueForKeyFromMessage(message, "ID");
       var val = Number(Number(serverProxy.getValueForKeyFromMessage(message, "VAL")) * 100).toFixed(3);
       var uuid = serverProxy.getValueForKeyFromMessage(message, "UUID");
+      var name = serverProxy.getValueForKeyFromMessage(message, "NAME");
 
       var mc = model.mcs[id - 243];
       if(mc !== undefined) {
-        if(uuid !== serverProxy.uuid.uuid) {
+        mc.setName(name);
+        if(uuid !== serverProxy.uuid.uuid || uuid === "FORCE") {
           mc.active = false;
           mc.setValue(val);
         } else {
@@ -104,6 +105,10 @@ class MC {
     this.updateThrottler = new Timer(20);
     this.callBackAfterUpdate = undefined;
     this.active = false;
+    var temp = ""
+    if(mcID > 246)
+      temp = "Not Used";
+    this.givenName = temp;
   }
 
   setCallbackAfterUpdate(cb) {
@@ -134,12 +139,15 @@ class MC {
     this.onValueChanged.onChange(val);
   }
 
+  setName(name) {
+    this.givenName = name;
+  }
+
   connectValue(cb) {
     this.onValueChanged.connect(cb);
   }
 
   sendMC() {
-    //// TODO:
     if(Number(this.paramID) > 246)
       return;
 
@@ -191,12 +199,35 @@ class RangeDivision {
                      {"ID":2,"x":0,   "y":0.5,  "w":1,    "h":0.25, "type":"x",   "MCX":245,  "MCY":null},
                      {"ID":3,"x":0,   "y":0.75, "w":1,    "h":0.25, "type":"x",   "MCX":246,  "MCY":null}];
 
-    this.deadzones = [{"ID":0,"x":0.1,"y":0.1},
-                      {"ID":1,"x":0.1,"y":0.1},
-                      {"ID":2,"x":0.1,"y":0.1},
-                      {"ID":3,"x":0.1,"y":0.1}];
+    this.deadzones = [{"ID":0,"x":0.025,"y":0.05},
+                      {"ID":1,"x":0.025,"y":0.05},
+                      {"ID":2,"x":0.025,"y":0.05},
+                      {"ID":3,"x":0.025,"y":0.05}];
+
+    this.leftMargin = 0.03;
   }
 }
+
+class ColorScheme {
+  constructor() {
+    this.markerColor = "rgb(130, 130, 130)";
+    this.labelColor = "rgb(130, 130, 130)";
+    this.blueIndicator = "rgb(50,140,255)";
+    this.grayIndicator = "rgb(156,156,156)";
+    this.backgroundColor = "rgb(30,30,30)";
+    this.playZoneColor = "#2b2b2b";
+  }
+}
+
+var mmToPx = function(mm) {
+    var div = document.createElement('div');
+    div.style.display = 'block';
+    div.style.height = '100mm';
+    document.body.appendChild(div);
+    var convert = div.offsetHeight * mm / 100;
+    div.parentNode.removeChild(div);
+    return convert;
+};
 
 class MCView {
   constructor() {
@@ -218,20 +249,33 @@ class MCView {
   }
 
   getMCForPagePos(pageX, pageY) {
-    var width = view.canvas.width;
+    var canvasWidth = view.canvas.width;
+    var leftMargin = view.range.leftMargin * canvasWidth;
+    leftMargin = Math.min(mmToPx(7), leftMargin);
+    var width = canvasWidth - leftMargin;
     var heigth = view.canvas.height;
     var mc = null;
-    view.range.controls.forEach(function(division) {
-      var x = width * division.x;
+    var i;
+    for(i in view.range.controls) {
+      var division = view.range.controls[i];
+      var deadZones = view.range.deadzones[i];
+
+      var x = leftMargin + width * division.x;
       var y = heigth * division.y;
       var w = width * division.w;
       var h = heigth * division.h;
 
-      if(pageX >= x && pageX <= x + w  &&
-         pageY >= y && pageY <= y + h) {
+      var wD = w - width * deadZones.x;
+      var hD = h - heigth * deadZones.y;
+      var xD = x + (w - wD) / 2;
+      var yD = y + (h  - hD) / 2;
+
+
+      if(pageX >= xD && pageX <= xD + wD  &&
+         pageY >= yD && pageY <= yD + hD) {
         mc = division.MCX;
       }
-    });
+    }
     return mc;
   }
 
@@ -263,8 +307,10 @@ class MCView {
 
         if(!found) {
           var mc = view.getMCForTouch(currTouch);
-          controller.touches.push({"touch":currTouch, "mc":mc});
-          controller.onChange();
+          if(mc !== null) {
+            controller.touches.push({"touch":currTouch, "mc":mc});
+            controller.onChange();
+          }
         }
       }
     });
@@ -281,6 +327,7 @@ class MCView {
 
     element.addEventListener('mouseup', function() {
        controller.mouseDown = 0;
+       controller.lastMouseMC = null;
        controller.onChange();
     });
 
@@ -318,6 +365,35 @@ class MCView {
       }
 
     });
+
+    element.addEventListener('click', function(event) {
+      console.log(document.getElementById('settings-overlay').classList);
+      if(document.getElementById('settings-overlay').classList.contains("collapsed")) {
+        var canvas = view.canvas;
+        var middle = canvas.height / 2;
+        var height = (canvas.height / 100) * 3;
+        var leftMargin = canvas.width * view.range.leftMargin;
+        leftMargin = Math.min(mmToPx(7), leftMargin);
+        var width = leftMargin * 0.75;
+
+        var area = function(x1, y1, x2, y2, x3, y3)
+        {
+           return Math.abs((x1*(y2-y3) + x2*(y3-y1)+
+                                        x3*(y1-y2))/2.0);
+        };
+
+        var a = area(0, middle - height, 0, middle + height, width, middle);
+        var a1 = area(event.pageX, event.pageY, 0, middle - height, 0, middle + height);
+        var a2 = area(event.pageX, event.pageY, 0, middle - height, width, middle);
+        var a3 = area(event.pageX, event.pageY, 0, middle + height, width, middle);
+
+        if(Math.abs((a1 + a2 + a3) - a) < 0.2) {
+          toggleSettings();
+        }
+
+        console.log(event);
+      }
+    });
   }
 
   redraw(model) {
@@ -326,19 +402,22 @@ class MCView {
     var info = view.getViewInfo();
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-    var width = canvas.width;
+    var canvasWidth = canvas.width;
+    var leftMargin = canvasWidth * view.range.leftMargin;
+    leftMargin = Math.min(mmToPx(7), leftMargin);
+    var width = canvasWidth - leftMargin;
     var heigth = canvas.height;
 
     ctx.font = '20px nonlinearfont';
     ctx.strokeStyle = "black";
-    ctx.fillStyle = "rgb(30,30,30)";
-    ctx.fillRect(0, 0, width, heigth);
+    ctx.fillStyle = new ColorScheme().backgroundColor;
+    ctx.fillRect(0, 0, canvasWidth, heigth);
 
     var i;
     for(i in info.controls) {
       var division = info.controls[i];
       var deadZones = view.range.deadzones[i];
-      var x = width * division.x;
+      var x = leftMargin + width * division.x;
       var y = heigth * division.y;
       var w = width * division.w;
       var h = heigth * division.h;
@@ -351,7 +430,7 @@ class MCView {
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.fillStyle = "#2b2b2b";
+      ctx.fillStyle = new ColorScheme().playZoneColor;
       var wD = w - width * deadZones.x;
       var hD = h - heigth * deadZones.y;
       var xD = x + (w - wD) / 2;
@@ -361,6 +440,35 @@ class MCView {
       ctx.fill();
       this.drawHandle(division, xD, yD, wD, hD);
     }
+
+    this.drawSettingsOpener();
+  }
+
+  drawSettingsOpener() {
+    var area = function(x1, y1, x2, y2, x3, y3) {
+      return Math.abs((x1*(y2-y3) + x2*(y3-y1)+
+                                    x3*(y1-y2))/2.0);
+    };
+
+    var canvas = view.canvas;
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.strokeStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().grayIndicator;
+    ctx.lineWidth = "3";
+
+    var middle = canvas.height / 2;
+    var height = (canvas.height / 100) * 3;
+    var leftMargin = canvas.width * view.range.leftMargin;
+    leftMargin = Math.min(mmToPx(7), leftMargin);
+    var width = leftMargin * 0.75;
+
+    ctx.moveTo(0, middle - height);
+    ctx.lineTo(0, middle + height);
+    ctx.lineTo(width, middle);
+    ctx.lineTo(0, middle - height);
+    ctx.stroke();
+    ctx.fill();
   }
 
   drawHandle(division, xD, yD, wD, hD) {
@@ -386,31 +494,46 @@ class MCView {
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var yVal = model.mcs[division.MCY - 243].paramValue;
     var yLabel = getUnicodeForMC(division.MCY);
+    var yName =  model.mcs[division.MCY - 243].givenName;
     var xLabel = getUnicodeForMC(division.MCX);
+    var xName = model.mcs[division.MCX - 243].givenName;
 
     var size = canvas.width / 200 * 2;
 
-    ctx.strokeStyle = "lightgray";
-    ctx.fillStyle = "lightgray";
+    ctx.strokeStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().labelColor;
     ctx.font = "20px nonlinearfont";
     var lineHeight=ctx.measureText("\uE001").width;
 
+    var offset = lineHeight;
+
+    var upperLeftFixPointX = x + offset;
+    var upperLeftFixPointY = y + offset;
+    var lowerRightFixPointX = x + w - offset;
+    var lowerRightFixPointY = y + h - offset * 1.3;
+
+    var getTextWidth = function(text) {
+      return view.canvas.getContext("2d").measureText(text).width;
+    };
+
     //X
-    var textMeasure = ctx.measureText(xLabel);
-    var valMeasure = ctx.measureText(Number(xVal).toFixed(1));
-    ctx.fillText(xLabel, x + w - textMeasure.width * 2, y + h - lineHeight * 2.5);
-    ctx.fillText(Number(xVal).toFixed(1), x + w - textMeasure.width * 1.5 - valMeasure.width / 2, y + h - lineHeight);
-
+    ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
+    ctx.font = "20px nonlinearfont2";
+    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight * 1.05);
+    ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
     //Y
-    textMeasure = ctx.measureText(yLabel);
-    valMeasure = ctx.measureText(Number(yVal).toFixed(1));
-    ctx.fillText(yLabel, x + textMeasure.width, y + lineHeight);
-    ctx.fillText(Number(yVal).toFixed(1), x + textMeasure.width * 1.5 - valMeasure.width / 2, y + lineHeight * 2.5);
-
+    ctx.fillStyle = new ColorScheme().labelColor;
+    ctx.font = "20px nonlinearfont";
+    ctx.fillText(yLabel, upperLeftFixPointX - getTextWidth(yLabel) / 2, upperLeftFixPointY);
+    ctx.font = "20px nonlinearfont2";
+    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.fillText(Number(yVal).toFixed(1), upperLeftFixPointX - getTextWidth(Number(yVal).toFixed(1)) / 2, upperLeftFixPointY + lineHeight * 1.05);
+    ctx.fillText(yName, upperLeftFixPointX + getTextWidth(yLabel), upperLeftFixPointY);
 
     ctx.beginPath();
     ctx.strokeStyle = "transparent";
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = new ColorScheme().blueIndicator;
 
     yTarget = 100 - yTarget;
     yVal = 100 - yVal;
@@ -422,7 +545,7 @@ class MCView {
     if(xTarget !== undefined && yTarget !== undefined && xTarget !== xVal || yTarget !== yVal) {
       ctx.beginPath();
       ctx.lineWidth = "3";
-      ctx.strokeStyle = "gray";
+      ctx.strokeStyle = new ColorScheme().grayIndicator;
       ctx.fillStyle = "transparent";
       ctx.arc(x + w / 100 * xTarget, y + h / 100 * yTarget, size, 0, 2*Math.PI, true);
       ctx.fill();
@@ -441,23 +564,33 @@ class MCView {
     var xVal = model.mcs[division.MCX - 243].paramValue;
     var xTarget = model.mcs[division.MCX - 243].targetValue;
     var xLabel = getUnicodeForMC(division.MCX);
+    var xName = model.mcs[division.MCX - 243].givenName;
 
     ctx.beginPath();
-    ctx.strokeStyle = "lightgray";
-    ctx.fillStyle = "lightgray";
+    ctx.strokeStyle = new ColorScheme().markerColor;
+    ctx.fillStyle = new ColorScheme().labelColor;
     ctx.font = "20px nonlinearfont";
-    var textMeasure = ctx.measureText(xLabel);
-    var valMeasure = ctx.measureText(String(Number(xVal).toFixed(1)));
 
     var lineHeight=ctx.measureText("\uE001").width;
-    ctx.fillText(xLabel, x + w / 2 - textMeasure.width / 2, y + h / 2 - lineHeight / 2);
-    ctx.fillText(Number(xVal).toFixed(1), x + w / 2 - valMeasure.width / 2, y + h / 2 + lineHeight);
+    var offset = lineHeight;
+    var lowerRightFixPointX = x + w - offset;
+    var lowerRightFixPointY = y + h - offset * 1.3;
+
+    var getTextWidth = function(text) {
+      return view.canvas.getContext("2d").measureText(text).width;
+    };
+
+    ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
+    ctx.font = "20px nonlinearfont2";
+    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight * 1.05);
+    ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
 
     if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
-      ctx.lineWidth = "10";
+      ctx.lineWidth = w / 200 * 1;
       ctx.fillStyle = "transparent";
-      ctx.strokeStyle = "grey";
+      ctx.strokeStyle = new ColorScheme().grayIndicator;
       ctx.moveTo(xD + wD / 100 * xTarget, yD + 1);
       ctx.lineTo(xD + wD / 100 * xTarget, yD + hD - 1);
       ctx.stroke();
@@ -467,7 +600,7 @@ class MCView {
     ctx.beginPath();
     ctx.fillStyle = "transparent";
     ctx.lineWidth = "5";
-    ctx.strokeStyle = "blue";
+    ctx.strokeStyle = new ColorScheme().blueIndicator;
     ctx.lineWidth = w / 200 * 1;
     ctx.moveTo(x + w / 100 * xVal, y + 1);
     ctx.lineTo(x + w / 100 * xVal, y + h - 1);
@@ -512,6 +645,7 @@ class MCController {
     this.lastMouseEvent = null;
     this.mouseDown = 0;
     this.userInputs = null;
+    this.lastMouseMC = null;
   }
 
   onChange() {
@@ -529,10 +663,12 @@ class MCController {
       var division = displayInformation.controls[i];
       var deadzone = view.range.deadzones[i];
       var activeInputs = [];
-      var cW = view.canvas.width;
+      var canvasWidth = view.canvas.width;
+      var leftMargin = canvasWidth * view.range.leftMargin;
+      leftMargin = Math.min(leftMargin, mmToPx(7));
+      var cW = canvasWidth - leftMargin;
       var cH = view.canvas.height;
-      var rect = view.canvas.getBoundingClientRect();
-      var dX = (cW * division.x);
+      var dX = leftMargin + (cW * division.x);
       var dY = (cH * division.y);
       var dW = cW * division.w;
       var dH = cH * division.h;
@@ -549,9 +685,17 @@ class MCController {
       for(var iI in this.userInputs) {
         var input = this.userInputs[iI];
 
-        if(input.x >= xD - padding && input.x <= Number(xD) + Number(wD) + padding &&
-           input.y >= yD - padding && input.y <= Number(yD) + Number(hD) + padding &&
-            input.mc === division.MCX || input.mc === division.MCY && input.mc !== null) {
+        if(input.mc !== division.MCX && input.mc !== division.MCY)
+          continue;
+
+
+        var cappedX = Math.max(Math.min(input.x, xD + wD + padding), xD - padding);
+        var cappedY = Math.max(Math.min(input.y, yD + hD + padding), yD - padding);
+
+        input.x = cappedX;
+        input.y = cappedY;
+
+        if(input.mc !== null) {
           activeInputs.push(input);
         }
       }
@@ -573,6 +717,8 @@ class MCController {
       if(division.MCX === 247) {
         x -= xD;
         x += (dW - wD) / 2;
+      } else {
+        x -= leftMargin;
       }
 
       if(inputCount > 0) {
@@ -610,7 +756,11 @@ class MCController {
 
     if(this.lastMouseEvent !== undefined) {
       if(this.mouseDown !== 0) {
-        activePositions.push(new Input(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY, view.getMCForPagePos(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY)));
+        if(this.lastMouseMC === null) {
+          this.lastMouseMC = view.getMCForPagePos(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY);
+        }
+
+        activePositions.push(new Input(this.lastMouseEvent.pageX, this.lastMouseEvent.pageY, this.lastMouseMC));
       }
     }
 
@@ -628,6 +778,16 @@ function onLoad() {
   var href = window.location.href;
   if(href.includes("settings")) {
     toggleSettings();
+  }
+
+  try {
+    var val = window.localStorage.getItem("smoothing");
+    if(val !== undefined) {
+      setInterpolation(val);
+      document.getElementById("interpolation-step").value = val;
+    }
+  } catch(err) {
+    console.log(err);
   }
 
   document.onkeypress = function(event) {
@@ -655,6 +815,8 @@ function onLoad() {
       });
     }, 50);
   });
+
+  view.redraw(model);
 }
 
 //UI Functionality
@@ -667,18 +829,9 @@ function toggleSettings() {
 function setInterpolation(val) {
   InterpolationStepSize = val;
   document.getElementById("interpolation-step-label").innerHTML = val;
-}
-
-function setDeadZoneY(val) {
-  view.range.deadzones.forEach(function(dz) {
-    dz.y = val / 10;
-  });
-  document.getElementById("y-deadzone-label").innerHTML = "Deadzone Y: " + Number(val*10).toFixed(1) + "%";
-}
-
-function setDeadZoneX(val) {
-  view.range.deadzones.forEach(function(dz) {
-    dz.x = val / 10;
-  });
-  document.getElementById("x-deadzone-label").innerHTML = "Deadzone X: " + Number(val*10).toFixed(1) + "%";
+  try {
+    window.localStorage.setItem("smoothing", val);
+  } catch(err) {
+    console.log(err);
+  }
 }

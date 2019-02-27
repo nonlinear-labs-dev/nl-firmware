@@ -14,6 +14,7 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.Renameable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.StoreSelectMode;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.Control;
@@ -819,30 +820,6 @@ public class PresetManager extends MapsLayout {
 					return false;
 
 		return true;
-	}
-
-	public String getLoadedPresetNumberString() {
-		Preset p = findLoadedPreset();
-
-		if (p != null) {
-			Bank b = p.getParent();
-
-			if (b != null) {
-				NumberFormat f = NumberFormat.getFormat("000");
-				String ret = b.getOrderNumber() + "-" + f.format(p.getNumber());
-
-				if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isModified())
-					ret += " *";
-
-				return ret;
-			}
-		} else {
-			String ret = "Init";
-			if (NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isModified())
-				ret += " *";
-			return ret;
-		}
-		return "";
 	}
 
 	public Preset getSelectedPreset() {

@@ -101,4 +101,9 @@ public class SystemSettings {
 		Setup.get().systemSettings.highlightChangedParameters.setValue(c);
 		NonMaps.theMaps.getServerProxy().setSetting("HighlightChangedParameters", netify(c.name()));
 	}
+
+	public void setCrashOnError(BooleanValues c) {
+		Setup.get().systemSettings.crashOnError.setValue(c);
+		NonMaps.theMaps.getServerProxy().setSetting("CrashOnError", netify(c.name()));		
+	}
 }

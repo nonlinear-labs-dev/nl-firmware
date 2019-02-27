@@ -8,6 +8,9 @@
 #include "libundo/undo/SwapData.h"
 #include "libundo/undo/Transaction.h"
 #include <assert.h>
+#include <device-settings/CrashOnError.h>
+#include <Application.h>
+#include <device-settings/Settings.h>
 
 template <typename Element> class UndoableVector
 {
@@ -57,7 +60,15 @@ template <typename Element> class UndoableVector
 
   Element *at(size_t idx) const
   {
-    return getElements().at(idx).get();
+      try {
+          return getElements().at(idx).get();
+      } catch(std::out_of_range& exception) {
+          if(Application::get().getSettings()->getSetting<CrashOnError>()->get()) {
+              std::rethrow_exception(std::current_exception());
+          } else {
+              return nullptr;
+          }
+      }
   }
 
   Element *first() const
