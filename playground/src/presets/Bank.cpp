@@ -363,8 +363,8 @@ void Bank::setAttachedDirection(UNDO::Transaction *transaction, const string &di
 {
   try
   {
-    int i = stoi(direction);
-    Bank::AttachmentDirection dir = static_cast<Bank::AttachmentDirection>(i);
+    auto i = stoi(direction);
+    auto dir = static_cast<Bank::AttachmentDirection>(i);
     transaction->addUndoSwap(this, m_attachDirection, to_string(dir));
   }
   catch(...)
