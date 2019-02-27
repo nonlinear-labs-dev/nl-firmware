@@ -27,6 +27,7 @@ class Uuid
   bool empty() const;
 
   static Uuid none();
+  static Uuid init();
 
  private:
   std::string id;
