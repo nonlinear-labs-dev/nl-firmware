@@ -822,33 +822,6 @@ public class PresetManager extends MapsLayout {
 		return true;
 	}
 
-	private String getBaseLoadedPresetNumberString() {		
-		EditBufferModel eb = EditBufferModel.get();
-		String ret = "";
-		Preset preset = findLoadedPreset();
-		Bank bank = preset != null ? preset.getParent() : null;
-		
-		if(eb.loadedPreset.getValue().equals("Init")) {
-			ret = "Init";
-		} else if(bank == null && preset == null) {
-			ret = "";
-		} else if(bank != null && preset != null) {
-			ret = bank.getOrderNumber() + "-" + NumberFormat.getFormat("000").format(preset.getNumber()); 
-		}
-
-		return ret;
-	}
-	
-	public String getLoadedPresetNumberString() {
-		boolean mod = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().isModified();
-		String ret = getBaseLoadedPresetNumberString();
-		
-		if(ret.isEmpty())
-			return ret;
-		
-		return ret += mod ? " *" : "";
-	}
-
 	public Preset getSelectedPreset() {
 		return findSelectedPreset();
 	}

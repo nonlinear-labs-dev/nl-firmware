@@ -2,7 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.presenters.PresetManagerProvider;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
@@ -18,7 +18,7 @@ public class CurrentPresetNumber extends Label {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		return NonMaps.theMaps.getNonLinearWorld().getPresetManager().getLoadedPresetNumberString();
+		return PresetManagerProvider.get().getPresenter().getLoadedPresetNumberString();
 	}
 
 	public double getDesiredWidth() {
