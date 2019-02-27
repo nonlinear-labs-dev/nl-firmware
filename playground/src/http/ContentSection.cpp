@@ -1,5 +1,7 @@
 #include "ContentSection.h"
 
+#include <device-settings/DebugLevel.h>
+
 ContentSection::ContentSection(UpdateDocumentContributor *parent)
     : UpdateDocumentContributor(parent)
 {
@@ -7,6 +9,7 @@ ContentSection::ContentSection(UpdateDocumentContributor *parent)
 
 ContentSection::~ContentSection()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void ContentSection::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)

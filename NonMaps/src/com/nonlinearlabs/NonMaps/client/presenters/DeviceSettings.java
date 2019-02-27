@@ -33,6 +33,11 @@ public class DeviceSettings {
 		public double sliderPosition = 0;
 	}
 
+	static public class HighlightChanged {
+		static public String[] options = {"On", "Off"};
+		public boolean value = false;
+	}
+
 	public VelocityCurve velocityCurve = new VelocityCurve();
 	public AftertouchCurve aftertouchCurve = new AftertouchCurve();
 	public BenderCurve benderCurve = new BenderCurve();
@@ -43,4 +48,5 @@ public class DeviceSettings {
 	public PresetGlitchSurpression presetGlitchSurpession = new PresetGlitchSurpression();
 	public EditSmoothingTime editSmoothingTime = new EditSmoothingTime();
 	public String deviceName = "";
+	public HighlightChanged highlightChangedParameters = new HighlightChanged();
 }

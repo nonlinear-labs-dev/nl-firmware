@@ -56,11 +56,9 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     auto bank = presetManager.addBank(transaction);
     bank->setX(transaction, x);
     bank->setY(transaction, y);
-    auto preset = bank->appendPreset(transaction);
-    preset->copyFrom(transaction, presetManager.getEditBuffer());
+    auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *presetManager.getEditBuffer()));
     bank->selectPreset(transaction, preset->getUuid());
     presetManager.selectBank(transaction, bank->getUuid());
-    presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
   });
 
   addAction("rename-bank", [&](shared_ptr<NetworkRequest> request) mutable {
@@ -284,7 +282,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
     {
       auto pm = Application::get().getPresetManager();
       auto eb = pm->getEditBuffer();
-      auto ebAsPreset = std::make_unique<Preset>(pm.get(), *eb);
+      auto ebAsPreset = std::make_unique<Preset>(pm, *eb);
       auto aUUID = request->get("p1");
       auto bUUID = request->get("p2");
       auto a = pm->findPreset(aUUID);

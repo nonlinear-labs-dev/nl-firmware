@@ -49,4 +49,8 @@ public class PresetManagerProvider {
 		clients.add(cb);
 		cb.apply(pm);
 	}
+	
+	public PresetManager getPresenter() {
+		return pm;
+	}
 }

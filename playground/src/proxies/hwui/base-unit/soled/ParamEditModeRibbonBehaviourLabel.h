@@ -22,5 +22,5 @@ class ParamEditModeRibbonBehaviourLabel : public Label
 
   void updateText(const Setting* s);
   shared_ptr<ParameterEditModeRibbonBehaviour> getSetting() const;
-  shared_ptr<Settings> getSettings() const;
+  Settings *getSettings() const;
 };

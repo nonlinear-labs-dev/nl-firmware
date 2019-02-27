@@ -23,6 +23,7 @@ class EditBuffer : public ParameterGroupSet
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
+  bool isZombie() const;
 
   void setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid);
   void undoableClear(UNDO::Transaction *transaction);

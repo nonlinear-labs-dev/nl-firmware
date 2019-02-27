@@ -192,6 +192,20 @@
 
 					<div class="eins-he">
 						<div class="w60p">
+							<p>Highlight Changed Parameters</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="highlightChangedOn" name="rad_hcp" 
+								value="true"></g:RadioButton>
+							<g:RadioButton ui:field="highlightChangedOff" name="rad_hcp" 
+								value="false"></g:RadioButton>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
 							<p>Show Context Menus</p>
 						</div>
 						<div class="w40p mw-fit-content">

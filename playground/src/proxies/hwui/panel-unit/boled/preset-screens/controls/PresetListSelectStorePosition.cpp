@@ -40,9 +40,11 @@ void PresetListSelectStorePosition::onBankChanged()
 {
   if(auto bank = Application::get().getPresetManager()->getBankAt(m_storeModeData->bankPos))
   {
-    if(m_selectedPreset != bank->getSelectedPreset())
+    Preset *selPresetInBank = bank->getSelectedPreset();
+
+    if(selPresetInBank != nullptr && m_selectedPreset != selPresetInBank)
     {
-      m_selectedPreset = bank->getSelectedPreset();
+      m_selectedPreset = selPresetInBank;
       m_storeModeData->presetPos = bank->getPresetPosition(m_selectedPreset);
     }
 
@@ -105,7 +107,7 @@ void PresetListSelectStorePosition::movePresetSelection(int moveBy)
 {
   auto pm = Application::get().getPresetManager();
 
-  sanitizeBankPosition(pm.get());
+  sanitizeBankPosition(pm);
 
   if(auto bank = pm->getBankAt(m_storeModeData->bankPos))
   {
@@ -149,7 +151,7 @@ void PresetListSelectStorePosition::moveBankSelection(int moveBy)
   auto pm = Application::get().getPresetManager();
   m_storeModeData->bankPos += moveBy;
 
-  sanitizeBankPosition(pm.get());
+  sanitizeBankPosition(pm);
   sanitizePresetPosition(pm->getBankAt(m_storeModeData->bankPos));
 
   onChange();

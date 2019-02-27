@@ -58,8 +58,11 @@ void PresetEditButtonMenu::renamePreset()
     {
       if(auto preset = bank->getSelectedPreset())
       {
-        auto scope = Application::get().getUndoScope()->startTransaction("Rename Preset");
-        preset->setName(scope->getTransaction(), newName);
+        if(preset->getName() != newName)
+        {
+          auto scope = Application::get().getUndoScope()->startTransaction("Rename Preset");
+          preset->setName(scope->getTransaction(), newName);
+        }
       }
     }
   });

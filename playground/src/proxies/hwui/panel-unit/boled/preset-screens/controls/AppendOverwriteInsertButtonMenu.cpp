@@ -167,8 +167,11 @@ void AppendOverwriteInsertButtonMenu::pushRenameScreen()
         {
           if(auto preset = bank->getSelectedPreset())
           {
-            auto scope = Application::get().getUndoScope()->startTransaction("Rename preset");
-            preset->setName(scope->getTransaction(), newName);
+            if(preset->getName() != newName)
+            {
+              auto scope = Application::get().getUndoScope()->startTransaction("Rename preset");
+              preset->setName(scope->getTransaction(), newName);
+            }
           }
         }
         animate();
@@ -209,6 +212,7 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
     preset->guessName(transaction);
 
   bank->selectPreset(scope->getTransaction(), preset->getUuid());
+  pm->selectBank(transaction, bank->getUuid());
 }
 
 void AppendOverwriteInsertButtonMenu::appendPreset(Bank* bank, bool modified)

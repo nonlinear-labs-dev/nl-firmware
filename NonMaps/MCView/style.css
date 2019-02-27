@@ -6,6 +6,14 @@
   unicode-range: U+E000-E201;
 }
 
+@font-face {
+  font-family: 'nonlinearfont2';
+	font-style: normal;
+	font-weight: 400;
+  src: url('./SourceSansProLW25-Regular.otf');
+}
+
+
 .collapsed {
   display: none;
 }
@@ -29,7 +37,7 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(13, 13, 13, 1);
+  background-color: rgba(13, 13, 13, 0.5);
   z-index: 200;
   cursor: pointer;
   position: fixed;
@@ -38,10 +46,13 @@ html, body {
   right: 0;
   bottom: 0;
   left: 0;
+  font-family: "nonlinearfont2";
 }
 
 #close {
   color: red;
+  width: 50%;
+  margin-left: 25%;
 }
 
 #close:hover {
@@ -54,12 +65,11 @@ html, body {
 
 .setting-item {
   background-color: rgb(100,100,100);
-  border-radius: 0.5;
   border-style: solid;
   border-width: thin;
   border-color: white;
-  display: inline-flex;
-  width: 100%;
+  width: 25%;
+  height: 100%;
 }
 
 #canvas {
@@ -85,13 +95,20 @@ html, body {
   background-color: green;
 }
 
-#interpolation-step-label #x-deadzone-label #y-deadzone-label {
-  color: white;
-  margin-left: 2%;
+#interpolation-step-label{
+  width: 100%;
+  text-align: center;
+  margin: 0;
 }
 
 .step-range {
-  margin-top: 3%;
-  margin-bottom: 3%;
-  width: 30%;
+  height: 50%;
+  width: 100%;
+  -webkit-appearance: slider-vertical;
+  writing-mode: bt-lr;
+}
+
+h1 {
+  overflow-wrap: break-word;
+  text-align: center;
 }

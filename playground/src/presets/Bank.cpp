@@ -1,10 +1,18 @@
 #include "Bank.h"
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 #include <serialization/PresetBankMetadataSerializer.h>
 #include <tools/FileSystem.h>
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
+
+string to_string(Bank::AttachmentDirection dir);
+
+EditBuffer *getEditBuffer()
+{
+  return Application::get().getPresetManager()->getEditBuffer();
+}
 
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
@@ -31,7 +39,10 @@ Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuid
   m_presets = other.m_presets;
 }
 
-Bank::~Bank() = default;
+Bank::~Bank()
+{
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+}
 
 SaveResult Bank::save(RefPtr<Gio::File> bankFolder)
 {
@@ -207,7 +218,9 @@ Preset *Bank::findSelectedPreset() const
 
 Preset *Bank::getPresetAt(size_t idx) const
 {
-  return m_presets.at(idx);
+  if(!m_presets.empty())
+    return m_presets.at(idx);
+  return nullptr;
 }
 
 void Bank::forEachPreset(std::function<void(Preset *)> cb) const
@@ -350,7 +363,16 @@ void Bank::setAttachedToBank(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::setAttachedDirection(UNDO::Transaction *transaction, const string &direction)
 {
-  transaction->addUndoSwap(this, m_attachDirection, direction);
+  try
+  {
+    auto i = stoi(direction);
+    auto dir = static_cast<Bank::AttachmentDirection>(i);
+    transaction->addUndoSwap(this, m_attachDirection, to_string(dir));
+  }
+  catch(...)
+  {
+    transaction->addUndoSwap(this, m_attachDirection, direction);
+  }
 }
 
 void Bank::setX(UNDO::Transaction *transaction, const string &x)
@@ -370,25 +392,32 @@ void Bank::updateLastModifiedTimestamp(UNDO::Transaction *transaction)
 
 Preset *Bank::appendPreset(UNDO::Transaction *transaction)
 {
-  return appendPreset(transaction, std::make_unique<Preset>(this));
+  updateLastModifiedTimestamp(transaction);
+  return m_presets.append(transaction, std::make_unique<Preset>(this));
 }
 
 Preset *Bank::appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  return m_presets.append(transaction, std::move(preset));
+  auto ret = m_presets.append(transaction, std::move(preset));
+  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
+  return ret;
 }
 
 Preset *Bank::prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  return m_presets.prepend(transaction, std::move(preset));
+  auto ret = m_presets.prepend(transaction, std::move(preset));
+  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
+  return ret;
 }
 
 Preset *Bank::insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  return m_presets.insert(transaction, pos, std::move(preset));
+  auto ret = m_presets.insert(transaction, pos, std::move(preset));
+  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
+  return ret;
 }
 
 void Bank::movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before)

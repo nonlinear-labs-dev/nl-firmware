@@ -1,6 +1,8 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -11,6 +13,7 @@ import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
@@ -29,7 +32,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.ChangeListener;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.ParameterCompareButton;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.ParameterContextMenu;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
@@ -93,15 +95,35 @@ public abstract class Parameter extends LayoutResizingVertical {
 		super.getStateHash(crc);
 		crc.eat(isSelected());
 		crc.eat(getParameterID());
-		crc.eat(ParameterCompareButton.inCompare);
+		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
+		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
 	}
 
 	public final boolean isBiPolar() {
 		return getValue().isBipolar();
 	}
-
+	
 	public abstract int getParameterID();
 
+	static private List<Integer> HardwareSourceIDS() {
+		return Arrays.asList(254, 259, 264, 269, 274, 279, 284, 289);
+	}
+	
+	private boolean shouldHightlightChanged() {
+		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
+		boolean highlight = Setup.get().systemSettings.highlightChangedParameters.isTrue();
+		boolean forceHighlight = Setup.get().systemSettings.forceHighlightChangedParameters.isTrue();
+				
+		if(HardwareSourceIDS().contains(getParameterID()))
+			return false;
+		
+		if(!bpm.isChanged())
+			return false;
+				
+		return highlight || forceHighlight;
+		
+	}
+	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 
@@ -113,9 +135,9 @@ public abstract class Parameter extends LayoutResizingVertical {
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
-		if (EditBufferModel.get().findParameter(getParameterID()).isChanged() && ParameterCompareButton.inCompare)
+		
+		if(shouldHightlightChanged())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
-
 	}
 
 	private RGB getParameterBackgroundColor() {

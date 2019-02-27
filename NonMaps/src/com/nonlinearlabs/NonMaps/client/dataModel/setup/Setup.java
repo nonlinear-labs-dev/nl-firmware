@@ -65,7 +65,7 @@ public class Setup {
 	public enum StripeBrightness {
 		off, percent_10, percent_25, percent_50
 	}
-
+	
 	private <T extends Enum<T>> EnumDataModelEntity<T> createEnumDataModelEntity(Class<T> c, T def) {
 		return new EnumDataModelEntity<T>(c, def);
 	}
@@ -128,7 +128,9 @@ public class Setup {
 		public ValueDataModelEntity transitionTime = new ValueDataModelEntity();
 		public EnumDataModelEntity<VelocityCurve> velocityCurve = createEnumDataModelEntity(VelocityCurve.class, VelocityCurve.normal);
 		public BooleanDataModelEntity benderRampBypass = new BooleanDataModelEntity();
-
+		public BooleanDataModelEntity highlightChangedParameters = new BooleanDataModelEntity();
+		public BooleanDataModelEntity forceHighlightChangedParameters = new BooleanDataModelEntity();
+		public BooleanDataModelEntity crashOnError = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {

@@ -15,6 +15,7 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
+#include <device-settings/HighlightChangedParametersSetting.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -239,6 +240,9 @@ bool ParameterEditLayout2::onButton(int i, bool down, ButtonModifiers modifiers)
 ParameterRecallLayout2::ParameterRecallLayout2()
     : super()
 {
+  Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+      BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
+
   m_buttonA = addControl(new Button("", BUTTON_A));
   m_buttonB = addControl(new Button("", BUTTON_B));
   m_buttonC = addControl(new Button("", BUTTON_C));
@@ -271,6 +275,12 @@ ParameterRecallLayout2::ParameterRecallLayout2()
       sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged));
 
   updateUI(false);
+}
+
+ParameterRecallLayout2::~ParameterRecallLayout2()
+{
+  Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+      BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
 }
 
 void ParameterRecallLayout2::init()

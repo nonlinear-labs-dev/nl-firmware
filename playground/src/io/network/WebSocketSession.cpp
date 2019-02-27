@@ -17,8 +17,10 @@ WebSocketSession::WebSocketSession()
 
 WebSocketSession::~WebSocketSession()
 {
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_messageLoop->quit();
   m_contextThread.join();
+  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void WebSocketSession::startListening()
@@ -66,7 +68,6 @@ void WebSocketSession::onWebSocketConnected(SoupSession *session, GAsyncResult *
 
   if(error)
   {
-    DebugLevel::warning(error->message);
     g_error_free(error);
     pThis->reconnect();
   }
@@ -74,8 +75,11 @@ void WebSocketSession::onWebSocketConnected(SoupSession *session, GAsyncResult *
 
 void WebSocketSession::reconnect()
 {
-  auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
-  sigTimeOut.connect_seconds_once(std::bind(&WebSocketSession::connect, this), 2);
+  if(!Application::get().isQuit())
+  {
+    auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
+    sigTimeOut.connect_seconds_once(std::bind(&WebSocketSession::connect, this), 2);
+  }
 }
 
 void WebSocketSession::connectWebSocket(SoupWebsocketConnection *connection)

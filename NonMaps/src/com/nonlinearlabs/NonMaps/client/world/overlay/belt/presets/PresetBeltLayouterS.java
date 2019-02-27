@@ -10,7 +10,6 @@ public class PresetBeltLayouterS extends PresetBeltLayouter {
 	public boolean doLayout(double w, double h) {
 		hide(layout.menu);
 		hide(layout.currentPreset);
-		hide(layout.compareButton);
 
 		double margin = getDefaultMargin();
 		double left = margin;

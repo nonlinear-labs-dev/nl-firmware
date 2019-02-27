@@ -221,12 +221,9 @@ void BankEditButtonMenu::deleteBank()
     pm->deleteBank(scope->getTransaction(), pm->getSelectedBankUuid());
   }
 
-  if(pm->getNumBanks() == 0)
-  {
-    auto hwui = Application::get().getHWUI();
-    hwui->setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Edit));
-    hwui->getPanelUnit().getEditPanel().getBoled().invalidate();
-  }
+  auto hwui = Application::get().getHWUI();
+  hwui->setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Select));
+  hwui->getPanelUnit().getEditPanel().getBoled().invalidate();
 }
 
 void BankEditButtonMenu::moveLeft()

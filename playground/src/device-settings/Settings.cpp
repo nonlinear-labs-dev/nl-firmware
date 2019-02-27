@@ -26,6 +26,7 @@
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/KioskModeSetting.h>
 #include <device-settings/BlockingMainThreadIndication.h>
+#include <device-settings/HighlightChangedParametersSetting.h>
 #include <device-settings/BenderRampBypass.h>
 #include <http/NetworkRequest.h>
 #include <http/UpdateDocumentMaster.h>
@@ -40,6 +41,7 @@
 #include <xml/VersionAttribute.h>
 #include <proxies/lpc/LPCProxy.h>
 #include "WifiSetting.h"
+#include "CrashOnError.h"
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -77,6 +79,9 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
   addSetting("BenderRampBypass", new BenderRampBypass(*this));
   addSetting("WifiSetting", new WifiSetting(*this));
+  addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
+  addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
+  addSetting("CrashOnError", new CrashOnError(*this));
 }
 
 Settings::~Settings()
