@@ -12,9 +12,11 @@ class AlsaMidiInput : public MidiInput
   AlsaMidiInput(const std::string &deviceName, Callback cb);
   ~AlsaMidiInput() override;
 
+  void start() override;
+  void stop() override;
+
  private:
   void open(const std::string &deviceName);
-  void start();
   void close();
   void doBackgroundWork();
 

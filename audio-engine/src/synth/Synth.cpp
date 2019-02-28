@@ -10,15 +10,6 @@
 
 Synth::Synth()
 {
-}
-
-Synth::~Synth()
-{
-  std::cout << "Samples processed by synth: " << m_pos << std::endl;
-}
-
-void Synth::start()
-{
   auto options = getOptions();
   auto outDeviceName = options->getAudioOutputDeviceName();
   m_out = std::make_unique<AudioOutput>(outDeviceName, [=](auto buf, auto length) { process(buf, length); });
@@ -34,10 +25,23 @@ void Synth::start()
   }
 }
 
+Synth::~Synth() = default;
+
+void Synth::start()
+{
+  m_in->start();
+  m_out->start();
+}
+
 void Synth::stop()
 {
-  m_in.reset();
-  m_out.reset();
+  m_in->stop();
+  m_out->stop();
+}
+
+const AudioOutput *Synth::getAudioOut() const
+{
+  return m_out.get();
 }
 
 void Synth::pushMidiEvent(const MidiEvent &event)

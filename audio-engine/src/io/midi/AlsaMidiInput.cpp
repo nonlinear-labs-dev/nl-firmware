@@ -6,7 +6,6 @@ AlsaMidiInput::AlsaMidiInput(const std::string &deviceName, Callback cb)
     , m_cancellable(Gio::Cancellable::create())
 {
   open(deviceName);
-  start();
 }
 
 AlsaMidiInput::~AlsaMidiInput()
@@ -26,7 +25,7 @@ void AlsaMidiInput::start()
   m_bgThread = std::thread([=]() { doBackgroundWork(); });
 }
 
-void AlsaMidiInput::close()
+void AlsaMidiInput::stop()
 {
   m_run = false;
 
@@ -34,7 +33,10 @@ void AlsaMidiInput::close()
 
   if(m_bgThread.joinable())
     m_bgThread.join();
+}
 
+void AlsaMidiInput::close()
+{
   if(auto h = std::exchange(m_handle, nullptr))
     snd_rawmidi_close(h);
 }

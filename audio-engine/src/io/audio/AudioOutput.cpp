@@ -8,7 +8,6 @@ AudioOutput::AudioOutput(const std::string& deviceName, Callback cb)
     : m_cb(cb)
 {
   open(deviceName);
-  start();
 }
 
 AudioOutput::~AudioOutput()
@@ -21,13 +20,13 @@ std::chrono::nanoseconds AudioOutput::getLatency() const
   return std::chrono::microseconds(static_cast<uint64_t>(m_latency));
 }
 
+double AudioOutput::getPerformance() const
+{
+  return m_performance * 100;
+}
+
 void AudioOutput::close()
 {
-  m_run = false;
-
-  if(m_bgThread.joinable())
-    m_bgThread.join();
-
   if(auto h = std::exchange(m_handle, nullptr))
     snd_pcm_close(h);
 }
@@ -76,6 +75,14 @@ void AudioOutput::start()
   m_bgThread = std::thread([=]() { doBackgroundWork(); });
 }
 
+void AudioOutput::stop()
+{
+  m_run = false;
+
+  if(m_bgThread.joinable())
+    m_bgThread.join();
+}
+
 void AudioOutput::prioritizeThread()
 {
   struct sched_param param;
@@ -117,8 +124,17 @@ void AudioOutput::doBackgroundWork()
 
   while(m_run)
   {
+    auto startDSP = std::chrono::high_resolution_clock::now();
     m_cb(audio, m_framesPerPeriod);
+    auto endDSP = std::chrono::high_resolution_clock::now();
     playback(audio, m_framesPerPeriod);
+    auto endPlayback = std::chrono::high_resolution_clock::now();
+
+    auto diffDSP = endDSP - startDSP;
+    auto diffAll = endPlayback - startDSP;
+    auto ratio = 1.0 * diffDSP / diffAll;
+    auto filterCoeff = 0.98;
+    m_performance = filterCoeff * m_performance + (1 - filterCoeff) * ratio;
   }
 }
 

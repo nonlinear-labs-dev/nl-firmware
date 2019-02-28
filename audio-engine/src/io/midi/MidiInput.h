@@ -11,6 +11,9 @@ class MidiInput
   MidiInput(Callback cb);
   virtual ~MidiInput();
 
+  virtual void start();
+  virtual void stop();
+
  protected:
   inline Callback &getCallback()
   {

@@ -5,4 +5,12 @@ MidiInput::MidiInput(Callback cb)
 {
 }
 
+void MidiInput::start()
+{
+}
+
+void MidiInput::stop()
+{
+}
+
 MidiInput::~MidiInput() = default;

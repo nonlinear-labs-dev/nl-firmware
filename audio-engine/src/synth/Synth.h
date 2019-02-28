@@ -18,6 +18,8 @@ class Synth
   void start();
   void stop();
 
+  const AudioOutput *getAudioOut() const;
+
  protected:
   virtual void doMidi(const MidiEvent &event) = 0;
   virtual void doAudio(SampleFrame *target, size_t numFrames) = 0;

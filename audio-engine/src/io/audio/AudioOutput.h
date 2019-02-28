@@ -13,13 +13,17 @@ class AudioOutput
   AudioOutput(const std::string &deviceName, Callback cb);
   ~AudioOutput();
 
+  void start();
+  void stop();
+
   std::chrono::nanoseconds getLatency() const;
+  double getPerformance() const;
 
   void prioritizeThread();
 
  private:
   void open(const std::string &deviceName);
-  void start();
+
   void close();
   void doBackgroundWork();
   void handleWriteError(snd_pcm_sframes_t result);
@@ -34,4 +38,6 @@ class AudioOutput
   snd_pcm_uframes_t m_framesPerPeriod = 0;
   snd_pcm_uframes_t m_ringBufferFrames = 0;
   snd_pcm_uframes_t m_framesProcessed = 0;
+
+  double m_performance = 0;
 };
