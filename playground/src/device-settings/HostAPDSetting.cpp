@@ -1,6 +1,8 @@
 #include <device-settings/DebugLevel.h>
 #include <device-settings/HostAPDSetting.h>
 #include <device-settings/Settings.h>
+#include <device-settings/AccessPointRestarter.h>
+
 #include <glibmm/fileutils.h>
 #include <glibmm/ustring.h>
 #include <tools/SpawnCommandLine.h>
@@ -9,7 +11,6 @@
 #include <functional>
 #include <sstream>
 #include <string>
-#include <thread>
 
 #if _DEVELOPMENT_PC
 static const char *c_fileName = "/home/hhoegelo/development/nl/playground/hostapd.conf";
@@ -65,45 +66,10 @@ void HostAPDSetting::saveToFile()
     }
 
     Glib::file_set_contents(c_fileName, out.str());
-    restartAccessPoint();
+    AccessPointRestarter::get().scheduleRestart();
   }
   catch(...)
   {
-  }
-}
-
-void HostAPDSetting::restartAccessPoint()
-{
-  static std::thread theThread;
-  static std::atomic<bool> threadFinished(false);
-
-  if(theThread.joinable())
-  {
-    if(threadFinished)
-    {
-      theThread.join();
-      restartAccessPoint();
-    }
-    else
-    {
-      static Expiration restart(bind(&HostAPDSetting::restartAccessPoint));
-      restart.refresh(std::chrono::seconds(1));
-    }
-  }
-  else
-  {
-    threadFinished = false;
-    theThread = thread([&]() {
-      DebugLevel::warning("Restarting Accesspoint...");
-
-#if _DEVELOPMENT_PC
-      std::this_thread::sleep_for(std::chrono::seconds(3));
-#else
-      SpawnCommandLine cmd("systemctl restart accesspoint");
-#endif
-      DebugLevel::warning("...Accesspoint restarted.");
-      threadFinished = true;
-    });
   }
 }
 
