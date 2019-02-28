@@ -14,9 +14,9 @@ Options::Options(int &argc, char **&argv)
   mainGroup.add_entry(samplerate, m_rate);
 
   Glib::OptionEntry polyphony;
-  samplerate.set_long_name("polyphony");
-  samplerate.set_short_name('p');
-  samplerate.set_description("Polyphonyu of the c15 audio engine");
+  polyphony.set_long_name("polyphony");
+  polyphony.set_short_name('p');
+  polyphony.set_description("Polyphony of the c15 audio engine");
   mainGroup.add_entry(polyphony, m_polyphony);
 
   Glib::OptionEntry latency;
