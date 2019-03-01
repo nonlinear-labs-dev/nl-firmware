@@ -30,6 +30,11 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParamsMacroControlSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallButton.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallModulationSourceLabel.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
+#include <proxies/hwui/HWUI.h>
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -51,9 +56,9 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
     , super1()
     , super2()
 {
-  addControl(new MCPositionButton(BUTTON_A));
-  addControl(new MCSelectButton(BUTTON_B));
-  addControl(new MCAmountButton(BUTTON_C));
+  m_mcPosButton = addControl(new MCPositionButton(BUTTON_A));
+  m_mcSelButton = addControl(new MCSelectButton(BUTTON_B));
+  m_mcAmtButton = addControl(new MCAmountButton(BUTTON_C));
 
   m_modeOverlay = addControl(new Overlay(Rect(0, 0, 256, 64)));
 
@@ -61,6 +66,9 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged));
+
+  Application::get().getHWUI()->onModifiersChanged(
+      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onModfiersChanged));
 }
 
 void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *, Parameter *newParam)
@@ -70,6 +78,21 @@ void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *,
   if(newParam)
     m_paramConnection = newParam->onParameterChanged(
         sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onCurrentParameterChanged));
+}
+
+void ModulateableParameterSelectLayout2::onModfiersChanged(ButtonModifiers modifiers)
+{
+  if(modifiers[SHIFT] && getCurrentParameter()->isChangedFromLoaded())
+  {
+    toggleMode(Mode::Recall);
+  }
+  else if(!modifiers[SHIFT])
+  {
+    if(m_mode == Mode::Recall)
+    {
+      toggleMode(m_lastMode);
+    }
+  }
 }
 
 void ModulateableParameterSelectLayout2::onCurrentParameterChanged(const Parameter *p)
@@ -125,6 +148,20 @@ bool ModulateableParameterSelectLayout2::onButton(int i, bool down, ButtonModifi
   {
     if(m->onButton(i, down, modifiers))
       return true;
+  }
+
+  if(m_mode == Mode::Recall && getCurrentParameter()->isChangedFromLoaded())
+  {
+    if(handleMCRecall(i, down))
+    {
+        toggleMode(Mode::Recall);
+        return true;
+    }
+
+    if(i == BUTTON_SHIFT)
+    {
+      return true;
+    }
   }
 
   if(down)
@@ -285,9 +322,14 @@ void ModulateableParameterSelectLayout2::installMcAmountScreen()
 
 void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
 {
+  m_lastMode = m_mode;
   m_mode = desiredMode;
 
   m_modeOverlay->clear();
+  m_mcAmtButton->setVisible(true);
+  m_mcSelButton->setVisible(true);
+  m_mcPosButton->setVisible(true);
+
   noHighlight();
   setDirty();
 
@@ -314,6 +356,45 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       m_modeOverlay->highlight<SelectedParameterKnubbelSlider>();
       highlight<ParameterNameLabel>();
       highlight<ParameterCarousel>();
+      break;
+
+    case Mode::Recall:
+      addModAmountSliders(m_modeOverlay);
+      if(auto mod = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
+      {
+        if(mod->isMacroControlAssignedAndChanged())
+        {
+          m_modeOverlay->addControl(new RecallMCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
+          m_modeOverlay->addControl(new RecallButton("Recall", BUTTON_A));
+        }
+        else
+        {
+          m_mcPosButton->setVisible(false);
+        }
+        if(mod->isModSourceChanged())
+        {
+          m_modeOverlay->addControl(new RecallModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
+          m_modeOverlay->addControl(new RecallButton("Recall", BUTTON_B));
+        }
+        else
+        {
+          m_mcSelButton->setVisible(false);
+        }
+        if(mod->isModAmountChanged())
+        {
+          m_modeOverlay->addControl(new RecallMCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
+          m_modeOverlay->addControl(new RecallButton("Recall", BUTTON_C));
+        }
+        else
+        {
+          m_mcAmtButton->setVisible(false);
+        }
+      }
+      else
+      {
+        throw std::runtime_error(to_string(__LINE__) + " has no modParam selected!");
+      }
+
       break;
 
     case Mode::MacroControlPosition:
@@ -392,6 +473,38 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
   }
 
   setAllDirty();
+}
+
+bool ModulateableParameterSelectLayout2::handleMCRecall(int i, bool down)
+{
+  if(down)
+  {
+    if(auto modP = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
+    {
+      switch(i)
+      {
+          case BUTTON_A:
+              if(modP->isMacroControlAssignedAndChanged()) {
+                  modP->undoableRecallMCPos();
+                  return true;
+              }
+              break;
+          case BUTTON_B:
+              if(modP->isModSourceChanged()) {
+                  modP->undoableRecallMCSource();
+                  return true;
+              }
+              break;
+          case BUTTON_C:
+              if(modP->isModAmountChanged()) {
+                  modP->undoableRecallMCAmount();
+                  return true;
+              }
+              break;
+      }
+    }
+  }
+  return false;
 }
 
 ModulateableParameterEditLayout2::ModulateableParameterEditLayout2()

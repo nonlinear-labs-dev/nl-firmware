@@ -53,7 +53,8 @@ class Parameter : public UpdateDocumentContributor,
   gint32 getID() const;
 
   PresetParameter *getOriginalParameter() const;
-  bool isChangedFromLoaded() const;
+
+    virtual bool isChangedFromLoaded() const;
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
 
