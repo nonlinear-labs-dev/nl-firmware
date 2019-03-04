@@ -235,6 +235,7 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   writer.writeTextElement("modSrc", to_string(static_cast<int>(m_modSource)));
   writer.writeTextElement("og-modAmount", to_string(getOriginalModulationAmount()));
   writer.writeTextElement("og-modSrc", to_string(static_cast<int>(getOriginalModulationSource())));
+  writer.writeTextElement("mcParameterID", getMacroControl() ? to_string(getMacroControl()->getID()) : "");
 
   if(shouldWriteDocProperties(knownRevision))
   {
@@ -301,7 +302,7 @@ void ModulateableParameter::exportReaktorParameter(stringstream &target) const
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount() const
 {
-  return stringizeModulationAmount( getModulationAmount());
+  return stringizeModulationAmount(getModulationAmount());
 }
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount(tControlPositionValue amount) const
@@ -486,7 +487,7 @@ bool ModulateableParameter::isMacroControlAssignedAndChanged() const
   if(auto myCurrMC = getMacroControl())
     return myCurrMC->isChangedFromLoaded();
 
-  return true;
+  return false;
 }
 
 PresetParameter *ModulateableParameter::getOriginalMC() const
@@ -511,36 +512,36 @@ Parameter *ModulateableParameter::getMacroControl() const
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID);
 }
 
-tControlPositionValue ModulateableParameter::getOriginalModulationAmount() const {
-    if(auto original = getOriginalParameter()) {
-        return original->getModulationAmount();
-    }
-    return 0.0;
+tControlPositionValue ModulateableParameter::getOriginalModulationAmount() const
+{
+  if(auto original = getOriginalParameter())
+  {
+    return original->getModulationAmount();
+  }
+  return 0.0;
 }
-ModulationSource ModulateableParameter::getOriginalModulationSource() const {
-    if(auto original = getOriginalParameter()) {
-        return original->getModulationSource();
-    }
-    return ModulationSource::NONE;
+ModulationSource ModulateableParameter::getOriginalModulationSource() const
+{
+  if(auto original = getOriginalParameter())
+  {
+    return original->getModulationSource();
+  }
+  return ModulationSource::NONE;
 }
 
 void ModulateableParameter::undoableRecallMCPos()
 {
-  auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto original = getOriginalMC();
-  auto transactionScope = scope.startTransaction("Recall MC Pos");
-  auto transaction = transactionScope->getTransaction();
-  if(original)
+
+  if(auto mc = getMacroControl())
   {
-    if(auto mc = getMacroControl())
-    {
-      mc->setCPFromHwui(transaction, original->getValue());
-    }
+    mc->undoableRecallFromPreset();
+    onChange(ChangeFlags::Generic);
   }
-  onChange(ChangeFlags::Generic);
 }
 void ModulateableParameter::undoableRecallMCSource()
 {
+  if(!isModSourceChanged())
+    return;
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
   auto transactionScope = scope.startTransaction("Recall MC Pos");
@@ -553,6 +554,8 @@ void ModulateableParameter::undoableRecallMCSource()
 }
 void ModulateableParameter::undoableRecallMCAmount()
 {
+  if(!isModAmountChanged())
+    return;
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
   auto transactionScope = scope.startTransaction("Recall MC Pos");

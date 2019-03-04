@@ -5,30 +5,32 @@ import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public class RecallArea extends OverlayLayout {
+public class MCPositionRecallArea extends OverlayLayout {
 
 	public RecallValue value;
 	public RecallButton button;
 	
-	protected RecallArea(BeltParameterLayout parent) {
+	protected MCPositionRecallArea(BeltParameterLayout parent) {
 		super(parent);
 		addChild(button = new RecallButton(this) {
 			@Override
-			public Control click(Position p) {
-				if(!isActive())
-					return null;
-				
+			public Control click(Position pos) {
 				EditBufferModel eb = EditBufferModel.get();
+				BasicParameterModel p = eb.findParameter(eb.selectedParameter.getValue());
+				if(p instanceof ModulateableParameter) {
+					ModulateableParameter modP = (ModulateableParameter)p;
+					if(modP.isMCPosChanged()) {
+						NonMaps.get().getServerProxy().recallMCPosForCurrentParameter();
+						getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
+						return this;
+					}
 
-				if(eb.findParameter(eb.selectedParameter.getValue()).isChanged()) {
-					NonMaps.get().getServerProxy().recallCurrentParameterFromPreset();
-					getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
-					return this;
 				}
 				return null;
 			}
@@ -41,8 +43,15 @@ public class RecallArea extends OverlayLayout {
 				if(!isActive())
 					return "";
 				
-				Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(eb.selectedParameter.getValue());
-				return param.getDecoratedValue(true, eb.findParameter(eb.selectedParameter.getValue()).originalValue.getValue());
+				BasicParameterModel bpm = eb.findParameter(eb.selectedParameter.getValue());
+				if(bpm instanceof ModulateableParameter) {
+					ModulateableParameter modP = (ModulateableParameter)bpm;
+					BasicParameterModel mc = eb.findParameter(modP.mcParameterID.getValue());
+					Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(modP.mcParameterID.getValue());
+					return param.getDecoratedValue(true, mc.originalValue.getValue());
+				}
+				
+				return "";
 			}
 		});
 	}
@@ -67,6 +76,11 @@ public class RecallArea extends OverlayLayout {
 	public boolean isChanged() {
 		EditBufferModel eb = EditBufferModel.get();
 		BasicParameterModel bpm = eb.findParameter(eb.selectedParameter.getValue());
-		return bpm.value.value.getValue() != bpm.originalValue.getValue();
+		if(bpm instanceof ModulateableParameter) {
+			ModulateableParameter modP = (ModulateableParameter)bpm;
+			return modP.isMCPosChanged();
+		}
+		return false;
 	}
 }
+

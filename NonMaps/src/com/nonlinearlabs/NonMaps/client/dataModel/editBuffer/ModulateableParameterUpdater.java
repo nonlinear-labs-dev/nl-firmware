@@ -19,6 +19,7 @@ public class ModulateableParameterUpdater extends ParameterUpdater {
 		String ogModSource = getChildText(root, "og-modSrc");
 		String modAmount = getChildText(root, "modAmount");
 		String ogModAmount = getChildText(root, "og-modAmount");
+		String mcParameterID = getChildText(root, "mcParameterID");
 		
 		if(!modSource.isEmpty()) {
 			modTarget.modSource.setValue(ModSource.values()[Integer.valueOf(modSource)]);
@@ -37,6 +38,11 @@ public class ModulateableParameterUpdater extends ParameterUpdater {
 		
 		if(!ogModAmount.isEmpty()) {
 			modTarget.ogModAmount.setValue(Double.valueOf(ogModAmount));
+			modTarget.notifyChanges();
+		}
+		
+		if(!mcParameterID.isEmpty()) {
+			modTarget.mcParameterID.setValue(Integer.valueOf(mcParameterID));
 			modTarget.notifyChanges();
 		}
 	}

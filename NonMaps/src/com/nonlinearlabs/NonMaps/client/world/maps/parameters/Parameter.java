@@ -99,14 +99,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
 		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
 		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
-		if(bpm instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter)bpm;
-			crc.eat(modP.modSource.getValue().ordinal());
-			crc.eat(modP.ogModSource.getValue().ordinal());
-		} else {
-			crc.eat(503);
-			crc.eat(569);
-		}
+		crc.eat(bpm.isChanged());
 	}
 
 	public final boolean isBiPolar() {

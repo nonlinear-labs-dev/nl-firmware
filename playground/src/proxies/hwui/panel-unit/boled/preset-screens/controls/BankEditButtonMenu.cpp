@@ -17,7 +17,6 @@
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 #include <device-info/DateTimeInfo.h>
 #include <xml/VersionAttribute.h>
-#include <proxies/hwui/panel-unit/boled/file/PleaseWaitLayout.h>
 #include <tools/TimeTools.h>
 
 static size_t s_lastSelectedButton = 0;

@@ -1,7 +1,14 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter.ModSource;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class EditorModeButton extends SVGImage {
@@ -10,6 +17,32 @@ public class EditorModeButton extends SVGImage {
 		super(parent, "MC_Edit_Active.svg", "MC_Edit_Enabled.svg");
 	}
 
+	@Override
+	public void draw(Context2d ctx, int invalidationMask) {
+		super.draw(ctx, invalidationMask);
+		if(isChanged()) {
+			Rect pixrect = getPixRect().copy();
+			pixrect.moveBy(1, 0);
+			pixrect.reduceHeightBy(-2);
+			pixrect.reduceWidthBy(-2);
+			pixrect.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, null, RGB.yellow());
+		}
+	}
+
+	private boolean isChanged() {
+		BasicParameterModel bpm = EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue());
+		if(bpm instanceof ModulateableParameter) {
+			ModulateableParameter modP = (ModulateableParameter)bpm;
+			boolean mcSelChanged = modP.ogModSource.getValue() != modP.modSource.getValue();
+			boolean mcAmtChanged = modP.modSource.getValue() != ModSource.None && modP.ogModAmount.getValue() != modP.modAmount.getValue();
+			boolean mcChanged = modP.modSource.getValue() != ModSource.None && modP.isMCPosChanged();
+
+			
+			return mcChanged || mcSelChanged || mcAmtChanged;
+		}
+		return false;
+	}
+	
 	@Override
 	public BeltParameterLayout getParent() {
 		return (BeltParameterLayout) super.getParent();

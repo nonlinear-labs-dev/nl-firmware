@@ -977,4 +977,16 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
+	
+	public void recallMCPosForCurrentParameter() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-for-current-mod-param");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+	
+	public void recallMcAmountForCurrentParameter() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-amount-for-current-mod-param");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
 }
