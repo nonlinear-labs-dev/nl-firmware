@@ -52,15 +52,17 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
 
   void setMode(Mode desiredMode);
   void toggleMode(Mode desiredMode);
+  bool isModeOf(std::vector<Mode> modes) const;
+
   bool hasModulationSource() const;
-  Button* m_mcPosButton, *m_mcSelButton, *m_mcAmtButton;
+  Button *m_mcPosButton, *m_mcSelButton, *m_mcAmtButton;
 
   Mode m_mode = Mode::ParameterValue;
   Mode m_lastMode = Mode::ParameterValue;
   Overlay *m_modeOverlay = nullptr;
   sigc::connection m_paramConnection;
 
-    bool handleMCRecall(int i, bool down);
+  bool handleMCRecall(int i, bool down);
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2

@@ -1,5 +1,6 @@
 #include "MCAmountLabel.h"
 #include <proxies/hwui/HWUI.h>
+#include <device-settings/DebugLevel.h>
 #include "Application.h"
 #include "parameters/ModulateableParameter.h"
 #include "presets/PresetManager.h"
@@ -30,12 +31,11 @@ void MCAmountLabel::onParameterSelected(Parameter *newParameter)
 
 void MCAmountLabel::update(const Parameter *parameter)
 {
-  if(const ModulateableParameter *mp = dynamic_cast<const ModulateableParameter *>(parameter))
+  if(const auto *mp = dynamic_cast<const ModulateableParameter *>(parameter))
   {
     if(mp->getModulationSource() != ModulationSource::NONE)
     {
       auto amount = mp->stringizeModulationAmount();
-
       if(isHighlight() && Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
       {
         setText({ amount + " F", 2 });

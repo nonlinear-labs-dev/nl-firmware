@@ -299,13 +299,13 @@ void ModulateableParameter::exportReaktorParameter(stringstream &target) const
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount() const
 {
-  return stringizeModulationAmount(getModulationAmount());
+  return stringizeModulationAmount( getModulationAmount());
 }
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount(tControlPositionValue amount) const
 {
-  LinearBipolar100PercentScaleConverter converter;
-  return converter.getDimension().stringize(converter.controlPositionToDisplay(amount));
+  return getValue().getScaleConverter()->getDimension().stringize(
+      getValue().getScaleConverter()->controlPositionToDisplay(amount));
 }
 
 DFBLayout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const
@@ -447,12 +447,19 @@ void ModulateableParameter::registerTests()
 
 bool ModulateableParameter::isChangedFromLoaded() const
 {
-  return isModSourceChanged() || isModAmountChanged() || isMacroControlAssignedAndChanged()
-      || Parameter::isChangedFromLoaded();
+  return isAnyModChanged() || Parameter::isChangedFromLoaded();
+}
+
+bool ModulateableParameter::isAnyModChanged() const
+{
+  return isModSourceChanged() || isModAmountChanged();
 }
 
 bool ModulateableParameter::isModAmountChanged() const
 {
+  if(getModulationSource() == ModulationSource::NONE)
+    return false;
+
   if(auto original = getOriginalParameter())
   {
     return original->getModulationAmount() != getModulationAmount();
@@ -474,17 +481,10 @@ bool ModulateableParameter::isMacroControlAssignedAndChanged() const
   if(getModulationSource() == ModulationSource::NONE)
     return false;
 
-  if(auto original = getOriginalParameter())
-  {
-    if(original->getModulationSource() == ModulationSource::NONE)
-      return false;
+  if(auto myCurrMC = getMacroControl())
+    return myCurrMC->isChangedFromLoaded();
 
-    auto myCurrMC = getMacroControl();
-    auto myOldMC = getOriginalMC();
-    if(myCurrMC && myOldMC)
-      return myCurrMC->getValue().getQuantizedClipped() != myOldMC->getValue();
-  }
-  return false;
+  return true;
 }
 
 PresetParameter *ModulateableParameter::getOriginalMC() const
@@ -511,33 +511,40 @@ Parameter *ModulateableParameter::getMacroControl() const
 
 void ModulateableParameter::undoableRecallMCPos()
 {
-    auto &scope = Application::get().getPresetManager()->getUndoScope();
-    auto original = getOriginalMC();
-    auto transactionScope = scope.startTransaction("Recall MC Pos");
-    auto transaction = transactionScope->getTransaction();
-    if(original) {
-        if(auto mc = getMacroControl()) {
-            mc->setCPFromHwui(transaction, original->getValue());
-        }
+  auto &scope = Application::get().getPresetManager()->getUndoScope();
+  auto original = getOriginalMC();
+  auto transactionScope = scope.startTransaction("Recall MC Pos");
+  auto transaction = transactionScope->getTransaction();
+  if(original)
+  {
+    if(auto mc = getMacroControl())
+    {
+      mc->setCPFromHwui(transaction, original->getValue());
     }
+  }
+  onChange(ChangeFlags::Generic);
 }
 void ModulateableParameter::undoableRecallMCSource()
 {
-    auto &scope = Application::get().getPresetManager()->getUndoScope();
-    auto original = getOriginalParameter();
-    auto transactionScope = scope.startTransaction("Recall MC Pos");
-    auto transaction = transactionScope->getTransaction();
-    if(original) {
-        setModulationSource(transaction, original->getModulationSource());
-    }
+  auto &scope = Application::get().getPresetManager()->getUndoScope();
+  auto original = getOriginalParameter();
+  auto transactionScope = scope.startTransaction("Recall MC Pos");
+  auto transaction = transactionScope->getTransaction();
+  if(original)
+  {
+    setModulationSource(transaction, original->getModulationSource());
+  }
+  onChange(ChangeFlags::Generic);
 }
 void ModulateableParameter::undoableRecallMCAmount()
 {
-    auto &scope = Application::get().getPresetManager()->getUndoScope();
-    auto original = getOriginalParameter();
-    auto transactionScope = scope.startTransaction("Recall MC Pos");
-    auto transaction = transactionScope->getTransaction();
-    if(original) {
-        setModulationAmount(transaction, original->getModulationAmount());
-    }
+  auto &scope = Application::get().getPresetManager()->getUndoScope();
+  auto original = getOriginalParameter();
+  auto transactionScope = scope.startTransaction("Recall MC Pos");
+  auto transaction = transactionScope->getTransaction();
+  if(original)
+  {
+    setModulationAmount(transaction, original->getModulationAmount());
+  }
+  onChange(ChangeFlags::Generic);
 }

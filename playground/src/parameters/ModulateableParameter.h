@@ -45,6 +45,7 @@ class ModulateableParameter : public Parameter
 
   virtual Glib::ustring stringizeModulationAmount() const;
   virtual Glib::ustring stringizeModulationAmount(tControlPositionValue amt) const;
+
   virtual double getModulationAmountFineDenominator() const;
   virtual double getModulationAmountCoarseDenominator() const;
 
@@ -58,6 +59,7 @@ class ModulateableParameter : public Parameter
   std::pair<tControlPositionValue, tControlPositionValue> getModulationRange(bool clipped) const;
 
   bool isChangedFromLoaded() const override;
+  bool isAnyModChanged() const;
   bool isModSourceChanged() const;
   bool isModAmountChanged() const;
   bool isMacroControlAssignedAndChanged() const;

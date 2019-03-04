@@ -33,7 +33,7 @@ void MCPositionLabel::updateTarget(const Parameter *parameter)
 {
   ensureDisconnectedModulationSourceIfApplicable(parameter);
 
-  if(const ModulateableParameter *modP = dynamic_cast<const ModulateableParameter *>(parameter))
+  if(const auto *modP = dynamic_cast<const ModulateableParameter *>(parameter))
   {
     auto src = modP->getModulationSource();
 

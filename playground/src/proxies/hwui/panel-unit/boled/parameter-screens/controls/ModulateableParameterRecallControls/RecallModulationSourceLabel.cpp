@@ -9,15 +9,19 @@
 RecallModulationSourceLabel::RecallModulationSourceLabel(Rect pos)
     : Label(pos)
 {
+  Glib::ustring text = "";
   if(auto modP
      = dynamic_cast<ModulateableParameter*>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
   {
     uint16_t id = MacroControlsGroup::modSrcToParamID(modP->getOriginalParameter()->getModulationSource());
     if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
     {
-      setText(mc->getShortName());
-      return;
+      text = mc->getShortName();
     }
+    if(text.empty())
+      text = "[-]";
+    setText(text);
+    return;
   }
-  setText("");
+  setText(text);
 }

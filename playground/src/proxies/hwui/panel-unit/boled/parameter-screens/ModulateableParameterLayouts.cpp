@@ -35,6 +35,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
 #include <proxies/hwui/HWUI.h>
+#include "ModulateableParameterLayouts.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -82,15 +83,22 @@ void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *,
 
 void ModulateableParameterSelectLayout2::onModfiersChanged(ButtonModifiers modifiers)
 {
-  if(modifiers[SHIFT] && getCurrentParameter()->isChangedFromLoaded())
+  auto modParam = dynamic_cast<const ModulateableParameter *>(getCurrentParameter());
+  auto inModRecallAbleMode
+      = isModeOf({ Mode::MacroControlAmount, Mode::MacroControlPosition, Mode::MacroControlSelection, Mode::Recall });
+
+  if(modParam && inModRecallAbleMode)
   {
-    toggleMode(Mode::Recall);
-  }
-  else if(!modifiers[SHIFT])
-  {
-    if(m_mode == Mode::Recall)
+    if(modifiers[SHIFT] && (modParam->isAnyModChanged() || modParam->isMacroControlAssignedAndChanged()))
     {
-      toggleMode(m_lastMode);
+      toggleMode(Mode::Recall);
+    }
+    else if(!modifiers[SHIFT])
+    {
+      if(m_mode == Mode::Recall)
+      {
+        toggleMode(m_lastMode);
+      }
     }
   }
 }
@@ -150,17 +158,24 @@ bool ModulateableParameterSelectLayout2::onButton(int i, bool down, ButtonModifi
       return true;
   }
 
-  if(m_mode == Mode::Recall && getCurrentParameter()->isChangedFromLoaded())
+  auto modParam = dynamic_cast<const ModulateableParameter *>(getCurrentParameter());
+  auto inModRecallAbleMode
+      = isModeOf({ Mode::MacroControlAmount, Mode::MacroControlPosition, Mode::MacroControlSelection, Mode::Recall });
+
+  if(modParam && inModRecallAbleMode)
   {
-    if(handleMCRecall(i, down))
+    if(m_mode == Mode::Recall && (modParam->isAnyModChanged() || modParam->isMacroControlAssignedAndChanged()))
     {
+      if(handleMCRecall(i, down))
+      {
         toggleMode(Mode::Recall);
         return true;
-    }
+      }
 
-    if(i == BUTTON_SHIFT)
-    {
-      return true;
+      if(i == BUTTON_SHIFT)
+      {
+        return true;
+      }
     }
   }
 
@@ -483,26 +498,39 @@ bool ModulateableParameterSelectLayout2::handleMCRecall(int i, bool down)
     {
       switch(i)
       {
-          case BUTTON_A:
-              if(modP->isMacroControlAssignedAndChanged()) {
-                  modP->undoableRecallMCPos();
-                  return true;
-              }
-              break;
-          case BUTTON_B:
-              if(modP->isModSourceChanged()) {
-                  modP->undoableRecallMCSource();
-                  return true;
-              }
-              break;
-          case BUTTON_C:
-              if(modP->isModAmountChanged()) {
-                  modP->undoableRecallMCAmount();
-                  return true;
-              }
-              break;
+        case BUTTON_A:
+          if(modP->isMacroControlAssignedAndChanged())
+          {
+            modP->undoableRecallMCPos();
+            return true;
+          }
+          break;
+        case BUTTON_B:
+          if(modP->isModSourceChanged())
+          {
+            modP->undoableRecallMCSource();
+            return true;
+          }
+          break;
+        case BUTTON_C:
+          if(modP->isModAmountChanged())
+          {
+            modP->undoableRecallMCAmount();
+            return true;
+          }
+          break;
       }
     }
+  }
+  return false;
+}
+
+bool ModulateableParameterSelectLayout2::isModeOf(vector<ModulateableParameterSelectLayout2::Mode> modes) const
+{
+  for(const auto &mode : modes)
+  {
+    if(mode == m_mode)
+      return true;
   }
   return false;
 }
