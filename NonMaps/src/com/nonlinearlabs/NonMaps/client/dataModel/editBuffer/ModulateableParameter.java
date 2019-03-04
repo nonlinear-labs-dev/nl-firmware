@@ -15,4 +15,11 @@ public class ModulateableParameter extends BasicParameterModel {
 	public StringDataModelEntity modAmountStringizer = new StringDataModelEntity();
 	public IntegerDataModelEntity modAmountCoarse = new IntegerDataModelEntity();
 	public IntegerDataModelEntity modAmountFine = new IntegerDataModelEntity();
+	public DoubleDataModelEntity ogModAmount = new DoubleDataModelEntity();
+	public EnumDataModelEntity<ModSource> ogModSource = new EnumDataModelEntity<ModSource>(ModSource.class, ModSource.None);
+
+	@Override
+	public boolean isChanged() {
+		return super.isChanged() || modAmount.getValue() != ogModAmount.getValue() || modSource.getValue() != ogModSource.getValue();
+	}
 }

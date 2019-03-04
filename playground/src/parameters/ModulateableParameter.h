@@ -66,6 +66,9 @@ class ModulateableParameter : public Parameter
   PresetParameter *getOriginalMC() const;
   Parameter *getMacroControl() const;
 
+  tControlPositionValue getOriginalModulationAmount() const;
+  ModulationSource getOriginalModulationSource() const;
+
   void undoableRecallMCPos();
   void undoableRecallMCSource();
   void undoableRecallMCAmount();

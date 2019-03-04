@@ -6,8 +6,8 @@ import com.nonlinearlabs.NonMaps.client.dataModel.ValueUpdater;
 
 public class ParameterUpdater extends Updater {
 
-	private Node root;
-	private BasicParameterModel target;
+	protected Node root;
+	protected BasicParameterModel target;
 
 	public ParameterUpdater(Node c, BasicParameterModel p) {
 		root = c;

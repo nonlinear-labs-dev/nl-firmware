@@ -232,7 +232,9 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   Parameter::writeDocProperties(writer, knownRevision);
 
   writer.writeTextElement("modAmount", to_string(m_modulationAmount));
-  writer.writeTextElement("modSrc", to_string(m_modSource));
+  writer.writeTextElement("modSrc", to_string(static_cast<int>(m_modSource)));
+  writer.writeTextElement("og-modAmount", to_string(getOriginalModulationAmount()));
+  writer.writeTextElement("og-modSrc", to_string(static_cast<int>(getOriginalModulationSource())));
 
   if(shouldWriteDocProperties(knownRevision))
   {
@@ -507,6 +509,19 @@ Parameter *ModulateableParameter::getMacroControl() const
 {
   auto myMCID = MacroControlsGroup::modSrcToParamID(getModulationSource());
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID);
+}
+
+tControlPositionValue ModulateableParameter::getOriginalModulationAmount() const {
+    if(auto original = getOriginalParameter()) {
+        return original->getModulationAmount();
+    }
+    return 0.0;
+}
+ModulationSource ModulateableParameter::getOriginalModulationSource() const {
+    if(auto original = getOriginalParameter()) {
+        return original->getModulationSource();
+    }
+    return ModulationSource::NONE;
 }
 
 void ModulateableParameter::undoableRecallMCPos()
