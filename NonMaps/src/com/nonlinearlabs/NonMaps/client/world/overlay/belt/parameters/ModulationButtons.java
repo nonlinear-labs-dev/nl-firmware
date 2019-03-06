@@ -54,8 +54,7 @@ public class ModulationButtons extends OverlayLayout {
 	private boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
 		if(bpm instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter)bpm;
-			return modP.ogModSource.getValue() != modP.modSource.getValue();
+			return ((ModulateableParameter)bpm).isModSourceChanged();
 		}
 		return false;
 	}

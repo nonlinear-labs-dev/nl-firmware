@@ -7,7 +7,6 @@ import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout.Mode;
 
 public class ModulateableParameter extends BasicParameterModel {
 	
