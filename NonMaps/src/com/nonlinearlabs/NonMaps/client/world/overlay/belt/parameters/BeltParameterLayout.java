@@ -24,13 +24,12 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCAmountRecallArea;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCPositionRecallArea;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.ParameterRecallArea;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.RecallArea;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
 public class BeltParameterLayout extends OverlayLayout implements SelectionListener {
 
-	enum Mode {
+	public enum Mode {
 		unmodulateableParameter, modulateableParameter, paramValue, mcValue, mcAmount, mcLower, mcUpper, mcSource
 	}
 

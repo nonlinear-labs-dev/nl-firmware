@@ -6,6 +6,8 @@ import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout.Mode;
 
 public class ModulateableParameter extends BasicParameterModel {
 	
@@ -50,5 +52,26 @@ public class ModulateableParameter extends BasicParameterModel {
 	@Override
 	public Updater getUpdater(Node c) {
 		return new ModulateableParameterUpdater(c, this);
+	}
+
+
+	public boolean isChanged(BeltParameterLayout.Mode mode) {
+		switch(mode) {
+		case mcAmount:
+			return isModAmountChanged();
+		case mcSource:
+			return isModSourceChanged();
+		case mcValue:
+			return isMCPosChanged();
+		case modulateableParameter:
+		case paramValue:
+		case unmodulateableParameter:
+			super.isChanged();
+		case mcUpper:
+		case mcLower:
+		default:
+			break;
+		}
+		return false;
 	}
 }
