@@ -30,17 +30,7 @@ public class EditorModeButton extends SVGImage {
 	}
 
 	private boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue());
-		if(bpm instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter)bpm;
-			boolean mcSelChanged = modP.ogModSource.getValue() != modP.modSource.getValue();
-			boolean mcAmtChanged = modP.modSource.getValue() != ModSource.None && modP.ogModAmount.getValue() != modP.modAmount.getValue();
-			boolean mcChanged = modP.modSource.getValue() != ModSource.None && modP.isMCPosChanged();
-
-			
-			return mcChanged || mcSelChanged || mcAmtChanged;
-		}
-		return false;
+		return EditBufferModel.get().getSelectedParameter().isChanged();
 	}
 	
 	@Override

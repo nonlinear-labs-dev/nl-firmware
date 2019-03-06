@@ -16,7 +16,7 @@ public class MCPositionRecallArea extends RecallArea {
 	@Override
 	public boolean isChanged() {
 		EditBufferModel eb = EditBufferModel.get();
-		BasicParameterModel bpm = eb.findParameter(eb.selectedParameter.getValue());
+		BasicParameterModel bpm = eb.getSelectedParameter();
 		if(bpm instanceof ModulateableParameter) {
 			ModulateableParameter modP = (ModulateableParameter)bpm;
 			return modP.isMCPosChanged();

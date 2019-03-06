@@ -28,10 +28,10 @@ public class ModulationButtons extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				BasicParameterModel bpm = EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue());
+				BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
 				if(bpm instanceof ModulateableParameter) {
 					ModulateableParameter modP = (ModulateableParameter)bpm;
-					if(modP.ogModSource.getValue() != modP.modSource.getValue())
+					if(modP.isModSourceChanged())
 						return "Original: " + modP.ogModSource.getValue().toString();
 				}
 				return "";
@@ -52,7 +52,7 @@ public class ModulationButtons extends OverlayLayout {
 	}
 
 	private boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue());
+		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
 		if(bpm instanceof ModulateableParameter) {
 			ModulateableParameter modP = (ModulateableParameter)bpm;
 			return modP.ogModSource.getValue() != modP.modSource.getValue();

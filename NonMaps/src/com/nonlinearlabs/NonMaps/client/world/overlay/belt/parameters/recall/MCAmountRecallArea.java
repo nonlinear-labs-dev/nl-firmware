@@ -15,11 +15,9 @@ public class MCAmountRecallArea extends RecallArea {
 		
 	@Override
 	public boolean isChanged() {		
-		EditBufferModel eb = EditBufferModel.get();
-		BasicParameterModel bpm = eb.findParameter(eb.selectedParameter.getValue());
+		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
 		if(bpm instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter)bpm;
-			return modP.ogModAmount.getValue() != modP.modAmount.getValue();
+			return ((ModulateableParameter)bpm).isModAmountChanged();
 		}
 		return false;
 	}

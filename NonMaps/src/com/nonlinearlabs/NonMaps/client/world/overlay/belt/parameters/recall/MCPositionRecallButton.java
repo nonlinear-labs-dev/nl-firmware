@@ -14,16 +14,13 @@ public class MCPositionRecallButton extends RecallButton {
 
 	@Override
 	public Control click(Position pos) {
-		EditBufferModel eb = EditBufferModel.get();
-		BasicParameterModel p = eb.findParameter(eb.selectedParameter.getValue());
+		BasicParameterModel p = EditBufferModel.get().getSelectedParameter();
 		if(p instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter)p;
-			if(modP.isMCPosChanged()) {
+			if(((ModulateableParameter)p).isMCPosChanged()) {
 				NonMaps.get().getServerProxy().recallMCPosForCurrentParameter();
 				getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return this;
 			}
-
 		}
 		return null;
 	}

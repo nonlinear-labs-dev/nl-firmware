@@ -26,24 +26,14 @@ class MCRadioButton extends SVGImage {
 	}
 
 	private boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().findParameter(EditBufferModel.get().selectedParameter.getValue());
+		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
+		
 		if(bpm instanceof ModulateableParameter) {
 			ModulateableParameter modP = (ModulateableParameter)bpm;
-			boolean mcChanged = modP.isMCPosChanged();
-			boolean mcAmtChanged = modP.ogModAmount.getValue() != modP.modAmount.getValue();
-			switch(mode) {
-			case mcAmount:
-				return mcAmtChanged;
-			case mcValue:
-				return mcChanged;
-			case mcLower:
-			case mcSource:
-			case mcUpper:
-			case modulateableParameter:
-			case paramValue:
-			case unmodulateableParameter:
-			default:
-				return false;
+			if(mode == Mode.mcAmount) {
+				return modP.ogModAmount.getValue() != modP.modAmount.getValue();
+			} else if(mode == Mode.mcValue) {
+				return modP.isMCPosChanged();
 			}
 		}
 		return false;

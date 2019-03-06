@@ -39,6 +39,14 @@ public class ModulateableParameter extends BasicParameterModel {
 		return false;
 	}
 	
+	public boolean isModAmountChanged() {
+		return ogModAmount.getValue() != modAmount.getValue();
+	}
+	
+	public boolean isModSourceChanged() {
+		return ogModSource.getValue() != modSource.getValue();
+	}
+	
 	@Override
 	public Updater getUpdater(Node c) {
 		return new ModulateableParameterUpdater(c, this);

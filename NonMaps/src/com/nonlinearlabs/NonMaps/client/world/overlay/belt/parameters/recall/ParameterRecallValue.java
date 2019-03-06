@@ -19,7 +19,6 @@ public class ParameterRecallValue extends RecallValue {
 			return "";
 		
 		Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(eb.selectedParameter.getValue());
-		return param.getDecoratedValue(true, eb.findParameter(eb.selectedParameter.getValue()).originalValue.getValue());
+		return param.getDecoratedValue(true, eb.getSelectedParameter().originalValue.getValue());
 	}
-
 }

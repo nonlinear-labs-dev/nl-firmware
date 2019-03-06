@@ -16,13 +16,12 @@ public class MCAmountRecallValue extends RecallValue {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		EditBufferModel eb = EditBufferModel.get();
 		
 		if(!isActive())
 			return "";
 		
-		BasicParameterModel bpm = eb.findParameter(eb.selectedParameter.getValue());
-		Parameter p = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(eb.selectedParameter.getValue());
+		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
+		Parameter p = NonMaps.get().getNonLinearWorld().getParameterEditor().getSelection();
 		if (p instanceof ModulatableParameter && bpm instanceof ModulateableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
 			return m.getModulationAmount().getDecoratedValue(true, ((ModulateableParameter)bpm).ogModAmount.getValue());
