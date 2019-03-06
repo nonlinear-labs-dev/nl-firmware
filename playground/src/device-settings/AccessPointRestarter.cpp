@@ -10,6 +10,7 @@ AccessPointRestarter &AccessPointRestarter::get()
 
 AccessPointRestarter::AccessPointRestarter()
     : m_throttler(std::chrono::seconds(1))
+    , m_done{false}
 {
 }
 

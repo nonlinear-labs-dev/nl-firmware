@@ -19,5 +19,5 @@ class AccessPointRestarter
 
   Throttler m_throttler;
   std::unique_ptr<std::thread> m_thread;
-  std::atomic<bool> m_done = false;
+  std::atomic<bool> m_done;
 };
