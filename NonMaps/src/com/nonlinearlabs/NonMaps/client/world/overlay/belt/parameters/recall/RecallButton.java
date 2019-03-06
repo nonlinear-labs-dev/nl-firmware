@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
+package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
@@ -9,7 +9,7 @@ import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-class RecallButton extends OverlayControl {
+public abstract class RecallButton extends OverlayControl {
 	boolean active;	
 	
 	public RecallButton(OverlayLayout parent) {

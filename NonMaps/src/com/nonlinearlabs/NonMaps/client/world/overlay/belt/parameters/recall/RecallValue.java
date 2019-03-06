@@ -1,4 +1,4 @@
-package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
+package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
@@ -6,7 +6,7 @@ import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-abstract class RecallValue extends Label {
+public abstract class RecallValue extends Label {
 
 	protected boolean active = false;
 	

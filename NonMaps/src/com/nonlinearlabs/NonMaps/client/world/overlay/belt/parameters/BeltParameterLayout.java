@@ -21,6 +21,10 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCAmountRecallArea;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCPositionRecallArea;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.ParameterRecallArea;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.RecallArea;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
@@ -51,7 +55,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private ParameterClippingLabel mcLowerClip;
 
 	private QuantizedClippedValue currentValue;
-	private RecallArea recallArea;
+	private ParameterRecallArea recallArea;
 	private MCPositionRecallArea mcPosRecall;
 	private MCAmountRecallArea mcAmtRecall;
 	
@@ -81,7 +85,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
 	
-		addChild(recallArea = new RecallArea(this));
+		addChild(recallArea = new ParameterRecallArea(this));
 		addChild(mcPosRecall = new MCPositionRecallArea(this));
 		addChild(mcAmtRecall = new MCAmountRecallArea(this));
 		
@@ -204,10 +208,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 			walkerX += r.width;
 		}	
 
-						
-
-		
-		
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
 
 		double dottedLineInset = 5;
