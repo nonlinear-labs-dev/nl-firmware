@@ -1,9 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
+import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.IntegerDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
 public class ModulateableParameter extends BasicParameterModel {
 	
@@ -35,5 +37,10 @@ public class ModulateableParameter extends BasicParameterModel {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public Updater getUpdater(Node c) {
+		return new ModulateableParameterUpdater(c, this);
 	}
 }

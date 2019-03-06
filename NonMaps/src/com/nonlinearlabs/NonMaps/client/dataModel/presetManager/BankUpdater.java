@@ -8,16 +8,23 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 public class BankUpdater extends Updater {
 
 	private int pos = 0;
+	private Bank bank;
 
-	public void update(Node xml, Bank dataModelBank) {
-		dataModelBank.name.setValue(getAttributeValue(xml, "name"));
-		dataModelBank.uuid.setValue(getAttributeValue(xml, "uuid"));
+	public BankUpdater(Node c, Bank target) {
+		super(c);
+		bank = target;
+	}
+	
+	@Override
+	public void doUpdate() {
+		bank.name.setValue(getAttributeValue(root, "name"));
+		bank.uuid.setValue(getAttributeValue(root, "uuid"));
 
-		ArrayList<Preset> existingPresets = new ArrayList<Preset>(dataModelBank.getPresets().getValue());
+		ArrayList<Preset> existingPresets = new ArrayList<Preset>(bank.getPresets().getValue());
 		existingPresets.forEach(p -> p.setDoomed());
-		super.processChildrenElements(xml, "preset", p -> updatePreset(existingPresets, p));
+		super.processChildrenElements(root, "preset", p -> updatePreset(existingPresets, p));
 		existingPresets.removeIf(p -> p.isDoomed());
-		dataModelBank.getPresets().setValue(existingPresets);
+		bank.getPresets().setValue(existingPresets);
 	}
 
 	private void updatePreset(ArrayList<Preset> existingPresets, Node p) {
@@ -28,9 +35,9 @@ public class BankUpdater extends Updater {
 		Preset preset = existingPresets.get(pos);
 		preset.revive();
 
-		if (didChange(p) || !preset.uuid.equals(uuid)) {
-			PresetUpdater updater = new PresetUpdater();
-			updater.update(p, preset);
+		if (didChange(p) || !preset.uuid.getValue().equals(uuid)) {
+			PresetUpdater updater = new PresetUpdater(p, preset);
+			updater.doUpdate();
 		}
 	}
 

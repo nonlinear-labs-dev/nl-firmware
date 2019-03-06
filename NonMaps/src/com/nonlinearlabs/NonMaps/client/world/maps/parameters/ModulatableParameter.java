@@ -6,6 +6,7 @@ import com.nonlinearlabs.NonMaps.client.Checksum;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.Tracer;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameterUpdater;
 import com.nonlinearlabs.NonMaps.client.tools.Pair;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
@@ -180,5 +181,4 @@ public abstract class ModulatableParameter extends Parameter {
 	public void modulationAmountDec(boolean fine) {
 		amount.dec(Initiator.EXPLICIT_USER_ACTION, fine);
 	}
-
 }

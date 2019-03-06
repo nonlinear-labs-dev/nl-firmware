@@ -7,11 +7,10 @@ import com.nonlinearlabs.NonMaps.client.dataModel.DataModelEntityBase;
 import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
 public class DeviceInfoUpdater extends Updater {
-	private Node deviceInformation;
 	private final HashMap<String, DataModelEntityBase> xmlNodeNameToDeviceInfo = createSettingMap();
 
 	public DeviceInfoUpdater(Node deviceInformation) {
-		this.deviceInformation = deviceInformation;
+		super(deviceInformation);
 	}
 
 	private HashMap<String, DataModelEntityBase> createSettingMap() {
@@ -28,8 +27,8 @@ public class DeviceInfoUpdater extends Updater {
 	}
 
 	public void doUpdate() {
-		if (didChange(deviceInformation)) {
-			Node info = deviceInformation.getFirstChild();
+		if (didChange(root)) {
+			Node info = root.getFirstChild();
 
 			while (info != null) {
 				if (info.getNodeType() == Node.ELEMENT_NODE) {

@@ -114,8 +114,8 @@ public class ServerProxy {
 			EditBufferUpdater ebu = new EditBufferUpdater(editBufferNode);
 			ebu.doUpdate();
 
-			PresetManagerUpdater pmu = new PresetManagerUpdater();
-			pmu.update(presetManagerNode, PresetManager.get());
+			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManager.get());
+			pmu.doUpdate();
 		}
 	}
 
