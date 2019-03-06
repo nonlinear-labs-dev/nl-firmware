@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.presenters;
 import com.nonlinearlabs.NonMaps.client.dataModel.Notifier;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
@@ -31,9 +30,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
 		presenter.displayValue = Stringizers.get().stringize(e.value.metaData.scaling.getValue(), e.value.value.getValue());
 		presenter.shortName = e.shortName.getValue();
-		presenter.isModulateable = e instanceof ModulateableParameter;
-		presenter.isModulationChanged = presenter.isModulateable ? ((ModulateableParameter)e).isModChanged() : false;
-		presenter.isChanged = e.isChanged();
 		
 		if (presenter.updateHash())
 			notifyChanges();
