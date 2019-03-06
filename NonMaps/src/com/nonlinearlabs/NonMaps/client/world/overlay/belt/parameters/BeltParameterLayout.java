@@ -558,5 +558,9 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		return new String[] { p.getDecoratedValue(true), p.getDecoratedValue(false) };
 	}
+	
+	public void onMCSelectionChanged() {
+		setupValue();
+	}
 
 }
