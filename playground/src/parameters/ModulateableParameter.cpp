@@ -235,7 +235,6 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   writer.writeTextElement("modSrc", to_string(static_cast<int>(m_modSource)));
   writer.writeTextElement("og-modAmount", to_string(getOriginalModulationAmount()));
   writer.writeTextElement("og-modSrc", to_string(static_cast<int>(getOriginalModulationSource())));
-  writer.writeTextElement("mcParameterID", getMacroControl() ? to_string(getMacroControl()->getID()) : "");
 
   if(shouldWriteDocProperties(knownRevision))
   {

@@ -1,7 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter.ModSource;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 
 public class ModulateableParameterUpdater extends ParameterUpdater {
 
@@ -19,10 +22,12 @@ public class ModulateableParameterUpdater extends ParameterUpdater {
 		String ogModSource = getChildText(root, "og-modSrc");
 		String modAmount = getChildText(root, "modAmount");
 		String ogModAmount = getChildText(root, "og-modAmount");
-		String mcParameterID = getChildText(root, "mcParameterID");
 		
 		if(!modSource.isEmpty()) {
 			modTarget.modSource.setValue(ModSource.values()[Integer.valueOf(modSource)]);
+			MacroControlParameter mc = NonMaps.get().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(MacroControls.values()[modTarget.modSource.getValue().ordinal()]);			
+			if(mc != null)
+				modTarget.mcParameterID.setValue(mc.getParameterID());
 			modTarget.notifyChanges();
 		}
 		
@@ -40,11 +45,5 @@ public class ModulateableParameterUpdater extends ParameterUpdater {
 			modTarget.ogModAmount.setValue(Double.valueOf(ogModAmount));
 			modTarget.notifyChanges();
 		}
-		
-		if(!mcParameterID.isEmpty()) {
-			modTarget.mcParameterID.setValue(Integer.valueOf(mcParameterID));
-			modTarget.notifyChanges();
-		}
 	}
-
 }
