@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.EnumDataModelEntity;
@@ -26,9 +27,14 @@ public class ModulateableParameter extends BasicParameterModel {
 	
 	@Override
 	public boolean isChanged() {
-		return super.isChanged() || modSource.getValue() != ogModSource.getValue() || modAmount.getValue() != ogModAmount.getValue();
+		return super.isChanged() || isModAmountChanged() || isModAmountChanged();
 	}
 
+	public boolean isModChanged() {
+		boolean ret = isModAmountChanged() || isModSourceChanged();
+		return ret;
+	}
+	
 
 	public boolean isMCPosChanged() {
 		if(!mcParameterID.getValue().toString().isEmpty()) {

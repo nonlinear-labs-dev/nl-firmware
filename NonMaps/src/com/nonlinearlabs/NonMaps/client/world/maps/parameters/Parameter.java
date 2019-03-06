@@ -472,8 +472,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getFullNameWithGroup() {
-		boolean changed = EditBufferModel.get().findParameter(getParameterID()).isChanged();
-		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
+		return getGroupName() + "   \u2013   " + getName().getLongName();
 	}
 
 	public String getGroupName() {

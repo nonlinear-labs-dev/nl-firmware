@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.presenters;
 
 import com.nonlinearlabs.NonMaps.client.Checksum;
-import com.nonlinearlabs.NonMaps.client.Tracer;
 
 public class ParameterPresenter {
 	public class Range {
@@ -15,7 +14,11 @@ public class ParameterPresenter {
 	public boolean bipolar = false;
 	public boolean selected = false;
 	public boolean locked = false;
+	public boolean isChanged = false;
 	public boolean isBoolean = false;
+	public boolean isModulateable = false;
+	public boolean isModulationChanged = false;
+	
 	public String shortName = "---";
 
 	public long hash = 0;
@@ -28,9 +31,6 @@ public class ParameterPresenter {
 
 	public void getHash(Checksum crc) {
 		crc.eat(hash);
-
-		if (shortName.contains("Offset +"))
-			Tracer.log("Parameter " + shortName + " added its hash of " + hash + " to checksum: " + crc.getHash());
 	}
 
 	public boolean updateHash() {
@@ -45,13 +45,14 @@ public class ParameterPresenter {
 		c.eat(isBoolean);
 		c.eat(shortName);
 		c.eat(displayValue);
-
+		c.eat(isModulateable);
+		c.eat(isModulationChanged);
+		c.eat(isChanged);
+		
 		long newHash = c.getHash();
 
 		if (hash != newHash) {
 			hash = newHash;
-			if (shortName.contains("Offset +"))
-				Tracer.log("Parameter " + shortName + " has new hash: " + hash);
 			return true;
 		}
 

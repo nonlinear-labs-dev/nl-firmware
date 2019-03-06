@@ -190,16 +190,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 					mcAmtRecall.doLayout(recallX - r.width / 6, recallY, recallWidth, third);
 					
 					
-					recallArea.setVisible(
-							!isOneOf(Mode.mcValue, 
-									Mode.mcAmount, 
-									Mode.mcSource, 
-									Mode.mcLower, 
-									Mode.mcUpper, 
-									Mode.paramValue));
-					
+					recallArea.setVisible(isOneOf(Mode.paramValue, Mode.modulateableParameter, Mode.unmodulateableParameter));
 					mcPosRecall.setVisible(isOneOf(Mode.mcValue));
-					
 					mcAmtRecall.setVisible(isOneOf(Mode.mcAmount));
 					
 				}
