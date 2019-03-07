@@ -42,9 +42,9 @@ void AudioOutput::open(const std::string& deviceName)
   snd_pcm_sw_params_alloca(&swparams);
 
   unsigned int sampleRate = getOptions()->getSampleRate();
-  unsigned int periods = 4;
+  unsigned int periods = 2;
 
-  auto timePerPeriod = 1.0 * getOptions()->getLatency() / (periods + 1);
+  auto timePerPeriod = 1.0 * getOptions()->getLatency() / (periods / 2);
 
   m_framesPerPeriod = timePerPeriod * sampleRate / 1000;
   m_ringBufferFrames = periods * m_framesPerPeriod;
@@ -64,8 +64,10 @@ void AudioOutput::open(const std::string& deviceName)
   snd_pcm_hw_params_get_period_time(hwparams, &m_latency, 0);
   snd_pcm_hw_params_get_periods(hwparams, &periods, 0);
 
-  m_latency *= periods + 1;
+  m_latency *= periods / 2;
 
+  std::cout << "Alsa Frames per Period: " << m_framesPerPeriod << std::endl;
+  std::cout << "Alsa Periods: " << periods << std::endl;
   std::cout << "Midi2Audio latency is: " << m_latency / 1000 << "ms." << std::endl;
 }
 
@@ -117,7 +119,7 @@ void AudioOutput::doBackgroundWork()
   snd_pcm_start(m_handle);
   playback(prefillAudio, prefillFrames);
 
-  auto framesPerCallback = m_framesPerPeriod;
+  const auto framesPerCallback = m_framesPerPeriod;
 
   SampleFrame audio[framesPerCallback];
   std::fill(audio, audio + framesPerCallback, SampleFrame{});
@@ -127,7 +129,7 @@ void AudioOutput::doBackgroundWork()
     auto startDSP = std::chrono::high_resolution_clock::now();
     m_cb(audio, m_framesPerPeriod);
     auto endDSP = std::chrono::high_resolution_clock::now();
-    playback(audio, m_framesPerPeriod);
+    playback(audio, framesPerCallback);
     auto endPlayback = std::chrono::high_resolution_clock::now();
 
     auto diffDSP = endDSP - startDSP;

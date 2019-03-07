@@ -35,7 +35,8 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
   /* Load Initial Preset (TCD zero for every Parameter) */
   loadInitialPreset();
 
-  testLoadPreset(4);
+  //testLoadPreset(4);
+  testLoadPreset(1);
 
   /* Examine functionality: TCD MIDI Input Log, observed Parameter, observed Signal */
 #if log_examine
@@ -63,8 +64,8 @@ void dsp_host::loadInitialPreset()
   /* passing TCD zeros to every parameter in every voice */
   evalMidi(0, 127, 127);  // select all voices
   evalMidi(1, 127, 127);  // select all parameters
-  evalMidi(2, 0, 0);  // set time to zero
-  evalMidi(47, 1, 1);  // enable preload (recall list mode)
+  evalMidi(2, 0, 0);      // set time to zero
+  evalMidi(47, 1, 1);     // enable preload (recall list mode)
   /* traverse parameters, each one receiving zero value */
   for(uint32_t i = 0; i < lst_recall_length; i++)
   {
@@ -80,9 +81,9 @@ void dsp_host::loadInitialPreset()
   evalMidi(47, 0, 2);  // apply preloaded values
 #if test_initialize_fx_sends
   /* temporarily initialize echo and reverb sends to 100% (because compability) */
-  evalMidi(1, 334 >> 7, 334 & 127);  // select echo send (ID 334)
+  evalMidi(1, 334 >> 7, 334 & 127);      // select echo send (ID 334)
   evalMidi(5, 16000 >> 7, 16000 & 127);  // set destination (16000 <-> 100%)
-  evalMidi(1, 336 >> 7, 336 & 127);  // select reverb send (ID 336)
+  evalMidi(1, 336 >> 7, 336 & 127);      // select reverb send (ID 336)
   evalMidi(5, 16000 >> 7, 16000 & 127);  // set destination (16000 <-> 100%)
 #endif
   /* should time be initialized? */
@@ -236,9 +237,9 @@ void dsp_host::tickMain()
 void dsp_host::evalMidi(uint32_t _status, uint32_t _data0, uint32_t _data1)
 {
   /* TCD MIDI evaluation */
-  int32_t i;  // parsing variable for signed integers
+  int32_t i;                                   // parsing variable for signed integers
   int32_t v = static_cast<int32_t>(m_voices);  // parsing variable representing number of voices as signed integer
-  float f;  // parsing variable for floating point values
+  float f;                                     // parsing variable for floating point values
   _status &= 127;
   /* TCD Log */
 #if log_examine
@@ -409,9 +410,9 @@ void dsp_host::evalMidi(uint32_t _status, uint32_t _data0, uint32_t _data1)
       /* 1.56: keyVoice */
       uint32_t state
           = m_decoder.unsigned14(_data0, _data1);  // retrieve state (encoding voice steal and starting voice)
-      m_stolen = state & 1;  // decode voice steal
-      m_decoder.m_voiceFrom = state >> 1;  // decode starting voice
-      preloadUpdate(1, 2);  // enable preloaded key event
+      m_stolen = state & 1;                        // decode voice steal
+      m_decoder.m_voiceFrom = state >> 1;          // decode starting voice
+      preloadUpdate(1, 2);                         // enable preloaded key event
       break;
 #endif
   }
@@ -566,7 +567,7 @@ void dsp_host::preloadUpdate(uint32_t _mode, uint32_t _listId)
       if(m_params.m_event.m_mono.m_preload > 0)
       {
         m_params.m_event.m_mono.m_preload = 0;  // reset preload counter
-        m_params.keyApplyMono();  // trigger env_engine
+        m_params.keyApplyMono();                // trigger env_engine
       }
       /* apply preloaded values - key events - poly */
       for(v = 0; v < m_voices; v++)
@@ -574,10 +575,10 @@ void dsp_host::preloadUpdate(uint32_t _mode, uint32_t _listId)
         if(m_params.m_event.m_poly[v].m_preload > 0)
         {
           m_params.m_event.m_poly[v].m_preload = 0;  // reset preload counter
-          m_params.keyApply(v);  // trigger env_engine
+          m_params.keyApply(v);                      // trigger env_engine
           keyApply(v);  // update comb filter delay smoother, phase, (determine voice steal)
           m_params.postProcessPoly_key(m_paramsignaldata[v], v);  // update key-related parameters/signals
-          setPolySlowFilterCoeffs(m_paramsignaldata[v], v);  // update filter coefficients
+          setPolySlowFilterCoeffs(m_paramsignaldata[v], v);       // update filter coefficients
         }
       }
 #endif
@@ -933,13 +934,13 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
             {
               /* NULL selected param */
               uint32_t tmp_p = static_cast<uint32_t>(m_test_selectedParam);  // cast as unsigned int
-              std::cout << "NULL Param (" << tmp_p << ")" << std::endl;  // print to terminal
+              std::cout << "NULL Param (" << tmp_p << ")" << std::endl;      // print to terminal
               /* TCD instructions */
-              evalMidi(0, 127, 127);  // select all voices
+              evalMidi(0, 127, 127);                 // select all voices
               evalMidi(1, tmp_p >> 7, tmp_p & 127);  // select corresponding param
-              evalMidi(5, 0, 0);  // send zero destination
-              evalMidi(0, 0, 0);  // select voice 0
-              evalMidi(1, 0, 0);  // select param 0
+              evalMidi(5, 0, 0);                     // send zero destination
+              evalMidi(0, 0, 0);                     // select voice 0
+              evalMidi(1, 0, 0);                     // select param 0
             }
           }
           else
@@ -1023,7 +1024,7 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
           // Trigger Test Tone
           m_test_tone_state = 1 - m_test_tone_state;
           std::cout << "triggered TEST_TONE_STATE(" << m_test_tone_state << ")" << std::endl;
-          evalMidi(8, 0, 4);  // select utility (test tone state)
+          evalMidi(8, 0, 4);                   // select utility (test tone state)
           evalMidi(24, 0, m_test_tone_state);  // update utility
           break;
         case 19:
@@ -1177,15 +1178,15 @@ void dsp_host::testNoteOn(uint32_t _pitch, uint32_t _velocity)
   uint32_t noteVel
       = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
   /* key event sequence */
-  evalMidi(47, 2, 1);  // enable preload (key event list mode)
+  evalMidi(47, 2, 1);              // enable preload (key event list mode)
   evalMidi(0, 0, m_test_voiceId);  // select voice: current
   //testParseDestination(par_key_phaseA);                   // phase a (see pe_defines.config.h)
   //testParseDestination(par_key_phaseB);                   // phase b (see pe_defines.config.h)
   testParseDestination(par_unisono_phase);  // unisono phase
-  testParseDestination(notePitch);  // note pitch
-  testParseDestination(par_voice_pan);  // voice pan (see pe_defines.config.h)
+  testParseDestination(notePitch);          // note pitch
+  testParseDestination(par_voice_pan);      // voice pan (see pe_defines.config.h)
   //evalMidi(5, 0, 0);                                      // env c rate: 0 (will be removed later - almost certainly)
-  evalMidi(5, 0, 0);  // voice steal: 0
+  evalMidi(5, 0, 0);                          // voice steal: 0
   evalMidi(23, noteVel >> 7, noteVel & 127);  // key down: velocity
 #if test_unisonCluster == 0
   evalMidi(47, 0, 2);  // apply preloaded values
@@ -1196,11 +1197,11 @@ void dsp_host::testNoteOn(uint32_t _pitch, uint32_t _velocity)
   //testParseDestination(par_key_phaseB);                   // phase b (see pe_defines.config.h)
   testParseDestination(par_unisono_phase);  // unisono phase
   testParseDestination(notePitch + 12000);  // note pitch (one octave apart)
-  testParseDestination(par_voice_pan);  // voice pan (see pe_defines.config.h)
+  testParseDestination(par_voice_pan);      // voice pan (see pe_defines.config.h)
   //evalMidi(5, 0, 0);                                      // env c rate: 0 (will be removed later - almost certainly)
-  evalMidi(5, 0, 0);  // voice steal: 0
+  evalMidi(5, 0, 0);                          // voice steal: 0
   evalMidi(23, noteVel >> 7, noteVel & 127);  // key down: velocity
-  evalMidi(47, 0, 2);  // apply preloaded values
+  evalMidi(47, 0, 2);                         // apply preloaded values
   /* take current voiceId and increase it (wrapped around polyphony) - sloppy approach */
   m_test_voiceId = (m_test_voiceId + 2) % m_voices;
 #endif
@@ -1215,13 +1216,13 @@ void dsp_host::testNewNoteOn(uint32_t _pitch, uint32_t _velocity)
   uint32_t noteVel
       = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
   m_test_unison_voices = static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_UN_V].m_index].m_signal) + 1;
-  evalMidi(47, 2, 1);  // enable preload (key event list mode)
+  evalMidi(47, 2, 1);              // enable preload (key event list mode)
   evalMidi(0, 0, m_test_voiceId);  // select voice: current
   for(uint32_t uIndex = 0; uIndex < m_test_unison_voices; uIndex++)
   {
-    testParseDestination(keyPos * 1000);  // base pitch (factor 1000 because of Scaling)
-    evalMidi(5, 0, uIndex);  // unison index
-    evalMidi(5, 0, 0);  // voice steal (0)
+    testParseDestination(keyPos * 1000);        // base pitch (factor 1000 because of Scaling)
+    evalMidi(5, 0, uIndex);                     // unison index
+    evalMidi(5, 0, 0);                          // voice steal (0)
     evalMidi(23, noteVel >> 7, noteVel & 127);  // key down: velocity
   }
   evalMidi(47, 0, 2);  // apply preloaded values
@@ -1241,8 +1242,8 @@ void dsp_host::testNoteOn156(uint32_t _pitch, uint32_t _velocity)
   m_test_unison_voices = static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_UN_V].m_index].m_signal) + 1;
   /* */
   evalMidi(55, 0, (m_test_voiceId << 1) + 0);  // new keyVoice (current voice, no steal)
-  testParseDestination(keyPos * 1000);  // base pitch (factor 1000 because of Scaling)
-  evalMidi(23, noteVel >> 7, noteVel & 127);  // key down: velocity
+  testParseDestination(keyPos * 1000);         // base pitch (factor 1000 because of Scaling)
+  evalMidi(23, noteVel >> 7, noteVel & 127);   // key down: velocity
   /* take current voiceId and increase it (wrapped around polyphony) - sloppy approach */
   m_test_voiceId = (m_test_voiceId + m_test_unison_voices) % m_voices;
 }
@@ -1263,19 +1264,19 @@ void dsp_host::testNoteOff(uint32_t _pitch, uint32_t _velocity)
   else
   {
     uint32_t usedVoiceId = static_cast<uint32_t>(checkVoiceId);  // copy valid voiceId
-    m_test_noteId[_pitch] = 0;  // clear voiceId assignment
+    m_test_noteId[_pitch] = 0;                                   // clear voiceId assignment
     /* prepare velocity */
     uint32_t noteVel
         = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
     /* key event sequence */
-    evalMidi(47, 2, 1);  // enable preload (key event list mode)
-    evalMidi(0, 0, usedVoiceId);  // select voice: used voice (by note number)
+    evalMidi(47, 2, 1);                        // enable preload (key event list mode)
+    evalMidi(0, 0, usedVoiceId);               // select voice: used voice (by note number)
     evalMidi(7, noteVel >> 7, noteVel & 127);  // key up: velocity
 #if test_unisonCluster == 0
     evalMidi(47, 0, 2);  // apply preloaded values
 #elif test_unisonCluster == 1
     evalMidi(7, noteVel >> 7, noteVel & 127);  // key up: velocity
-    evalMidi(47, 0, 2);  // apply preloaded values
+    evalMidi(47, 0, 2);                        // apply preloaded values
 #endif
   }
 }
@@ -1294,12 +1295,12 @@ void dsp_host::testNewNoteOff(uint32_t _pitch, uint32_t _velocity)
   else
   {
     uint32_t usedVoiceId = static_cast<uint32_t>(checkVoiceId);  // copy valid voiceId
-    m_test_noteId[_pitch] = 0;  // clear voiceId assignment
+    m_test_noteId[_pitch] = 0;                                   // clear voiceId assignment
     /* prepare velocity */
     uint32_t noteVel
         = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
     /* key event sequence */
-    evalMidi(47, 2, 1);  // enable preload (key event list mode)
+    evalMidi(47, 2, 1);           // enable preload (key event list mode)
     evalMidi(0, 0, usedVoiceId);  // select voice: used voice (by note number)
     for(uint32_t uIndex = 0; uIndex < m_test_unison_voices; uIndex++)
     {
@@ -1324,12 +1325,12 @@ void dsp_host::testNoteOff156(uint32_t _pitch, uint32_t _velocity)
   else
   {
     uint32_t usedVoiceId = static_cast<uint32_t>(checkVoiceId);  // copy valid voiceId
-    m_test_noteId[_pitch] = 0;  // clear voiceId assignment
+    m_test_noteId[_pitch] = 0;                                   // clear voiceId assignment
     /* prepare velocity */
     uint32_t noteVel
         = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
     /* key event sequence */
-    evalMidi(55, 0, (usedVoiceId << 1) + 0);  // new keyVoice (current voice, no steal)
+    evalMidi(55, 0, (usedVoiceId << 1) + 0);   // new keyVoice (current voice, no steal)
     evalMidi(7, noteVel >> 7, noteVel & 127);  // key up: velocity
   }
 }
@@ -1342,8 +1343,8 @@ void dsp_host::testSetGlobalTime(uint32_t _value)
   std::cout << "\nSET_TIME(" << _value << " (ms))" << std::endl;
   /* select all voices, params and update time */
   _value *= static_cast<uint32_t>(m_params.m_millisecond);  // convert time accordingly in samples
-  evalMidi(0, 127, 127);  // select all voices
-  evalMidi(1, 127, 127);  // select all params
+  evalMidi(0, 127, 127);                                    // select all voices
+  evalMidi(1, 127, 127);                                    // select all params
   if(_value < 16384)
   {
     /* T */
@@ -1354,7 +1355,7 @@ void dsp_host::testSetGlobalTime(uint32_t _value)
     /* TU + TL */
     uint32_t upper = _value >> 14;
     _value &= 16383;
-    evalMidi(34, upper >> 7, upper & 127);  // set time upper
+    evalMidi(34, upper >> 7, upper & 127);    // set time upper
     evalMidi(50, _value >> 7, _value & 127);  // set time lower
   }
   evalMidi(0, 0, 0);  // select voice 0
@@ -1368,7 +1369,7 @@ void dsp_host::testSetReference(uint32_t _value)
   uint32_t val = static_cast<uint32_t>(static_cast<float>(_value) * m_test_normalizeMidi * utility_definition[1][0]);
   std::cout << "\nSET_REFERENCE(" << val << ")" << std::endl;
   /* select and update reference utility */
-  evalMidi(8, 0, 1);  // select utility (reference tone)
+  evalMidi(8, 0, 1);                  // select utility (reference tone)
   evalMidi(24, val >> 7, val & 127);  // update utility
 }
 
@@ -1377,7 +1378,7 @@ void dsp_host::testSetToneFreq(uint32_t _value)
 {
   _value += 400;
   std::cout << "Set_TestTone_Frequency(" << _value << ") [Hz]" << std::endl;
-  evalMidi(8, 0, 2);  // select utility (test tone freq)
+  evalMidi(8, 0, 2);                        // select utility (test tone freq)
   evalMidi(24, _value >> 7, _value & 127);  // update utility
 }
 
@@ -1394,7 +1395,7 @@ void dsp_host::testSetToneAmp(uint32_t _value)
   {
     _value = static_cast<uint32_t>(val);
   }
-  evalMidi(8, 0, 3);  // select utility (test tone amp)
+  evalMidi(8, 0, 3);                        // select utility (test tone amp)
   evalMidi(24, _value >> 7, _value & 127);  // update utility
 }
 

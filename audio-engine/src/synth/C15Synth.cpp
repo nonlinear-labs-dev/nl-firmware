@@ -16,9 +16,9 @@ C15Synth::~C15Synth()
 void C15Synth::doMidi(const MidiEvent &event)
 {
 #if test_inputModeFlag
-  m_dsp->testMidi(event.data.raw8.d[0], event.data.raw8.d[1], event.data.raw8.d[2]);
+  m_dsp->testMidi(event.raw[0], event.raw[1], event.raw[2]);
 #else
-  m_dsp->evalMidi(event.data.raw8.d[0], event.data.raw8.d[1], event.data.raw8.d[2]);
+  m_dsp->evalMidi(event.raw[0], event.raw[1], event.raw[2]);
 #endif
 }
 

@@ -67,21 +67,24 @@ void AlsaMidiInput::doBackgroundWork()
     if(!m_run)
       break;
 
+    MidiEvent e;
+    int rawIdx = 0;
+
     while(m_run && snd_rawmidi_read(m_handle, &byte, 1) == 1)
     {
+      if(rawIdx < 3)
+        e.raw[rawIdx++] = byte;
+
       snd_seq_event_t event;
 
       if(snd_midi_event_encode_byte(parser, byte, &event) == 1)
       {
         if(event.type != SND_SEQ_EVENT_NONE)
         {
-          if(event.type == SND_SEQ_EVENT_NOTEON)
-          {
-            event.data.raw8.d[0] |= 0x90;
-          }
-
-          getCallback()(event);
+          getCallback()(e);
         }
+
+        rawIdx = 0;
       }
     }
   }

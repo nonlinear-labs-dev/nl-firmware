@@ -46,43 +46,44 @@ const AudioOutput *Synth::getAudioOut() const
 
 void Synth::pushMidiEvent(const MidiEvent &event)
 {
-  if(m_startTime == std::chrono::high_resolution_clock::time_point::min())
-    return;
-
   auto &c = m_midiRingBuffer.push(event);
-  auto now = std::chrono::high_resolution_clock::now();
-  auto age = now - m_startTime;
-  auto tsNano = std::chrono::duration_cast<std::chrono::nanoseconds>(age + m_out->getLatency());
-  c.time.tick = static_cast<snd_seq_tick_time_t>(1.0 * tsNano.count() * getOptions()->getSampleRate() / std::nano::den);
+  c.timestamp = std::chrono::high_resolution_clock::now() + m_out->getLatency();
 }
 
 void Synth::process(SampleFrame *target, size_t numFrames)
 {
-  if(m_startTime == std::chrono::high_resolution_clock::time_point::min())
-    m_startTime = std::chrono::high_resolution_clock::now();
+  constexpr auto nanoRec = 1.0 / std::nano::den;
+  const auto sr = getOptions()->getSampleRate();
+  const auto nanosToSamples = sr * nanoRec;
 
-  if(auto e = m_midiRingBuffer.peek())
+  auto now = std::chrono::high_resolution_clock::now();
+
+  uint32_t done = 0;
+
+  while(done < numFrames)
   {
-    auto eventPos = e->time.tick;
-
-    if(eventPos <= m_pos)
+    if(auto e = m_midiRingBuffer.peek())
     {
-      doMidi(*e);
-      m_midiRingBuffer.pop();
-      process(target, numFrames);
-      return;
+      auto eventPos = e->timestamp;
+      auto diffInNanos = eventPos - now;
+      auto diffInSamples = static_cast<int32_t>(diffInNanos.count() * nanosToSamples);
+
+      if(diffInSamples <= static_cast<int32_t>(done))
+      {
+        doMidi(*e);
+        m_midiRingBuffer.pop();
+      }
+      else
+      {
+        auto todoNow = std::min<size_t>(numFrames, static_cast<size_t>(diffInSamples) - done);
+        doAudio(target + done, todoNow);
+        done += todoNow;
+      }
     }
-
-    auto spanLength = std::min(numFrames, eventPos - m_pos);
-    doAudio(target, spanLength);
-    m_pos += spanLength;
-
-    if(auto leftOver = numFrames - spanLength)
-      process(target + spanLength, leftOver);
-  }
-  else
-  {
-    doAudio(target, numFrames);
-    m_pos += numFrames;
+    else
+    {
+      doAudio(target + done, numFrames);
+      done += numFrames;
+    }
   }
 }

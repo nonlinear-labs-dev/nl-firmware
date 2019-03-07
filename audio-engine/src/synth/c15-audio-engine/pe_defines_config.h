@@ -16,15 +16,15 @@
                                                     this is currently rather clumsy and needs treatment...
                                                     intended for cpu measuring purposes, see tests/renderer_performance.cpp
 */
-#define perf_measure 0  // skip the whole main tick function?
-#define perf_audio_params 0  // skip rendering of audio params?
-#define perf_fast_params 0  // skip rendering of fast params?
-#define perf_slow_params 0  // skip rendering of slow params?
-#define perf_poly_params 0  // skip rendering of poly params?
-#define perf_mono_params 0  // skip rendering of mono params?
+#define perf_measure 0          // skip the whole main tick function?
+#define perf_audio_params 0     // skip rendering of audio params?
+#define perf_fast_params 0      // skip rendering of fast params?
+#define perf_slow_params 0      // skip rendering of slow params?
+#define perf_poly_params 0      // skip rendering of poly params?
+#define perf_mono_params 0      // skip rendering of mono params?
 #define perf_post_processing 0  // skip post processing?
-#define perf_poly_engine 0  // skip rendering of poly audio engine component?
-#define perf_mono_engine 0  // skip rendering of mono audio engine component?
+#define perf_poly_engine 0      // skip rendering of poly audio engine component?
+#define perf_mono_engine 0      // skip rendering of mono audio engine component?
 
 /* Test Flags                                       THINGS TO DEFINE, testing candidates and new functionalities */
 
@@ -37,22 +37,21 @@
 #define test_key_update_pan 1  // (should pan values be updated on key? (probably yes)
 
 #define test_tone_initial_freq 500.0f  // Test Tone initial Frequency
-#define test_tone_initial_gain -6.0f  // Test Tone initial Gain (in decibel)
-#define test_tone_initial_state 0  // Test Tone initial State (0: disabled, 1: enabled)
+#define test_tone_initial_gain -6.0f   // Test Tone initial Gain (in decibel)
+#define test_tone_initial_state 0      // Test Tone initial State (0: disabled, 1: enabled)
 
-#define test_comb_decay_gate_mode                                                                                      \
-  1  // 0: apply in slow post processing (like prototype), 1: audio fade min, max by gate signal (recommended)
+#define test_comb_decay_gate_mode  1  // 0: apply in slow post processing (like prototype), 1: audio fade min, max by gate signal (recommended)
 
-#define test_svf_types 1  // 0: SVF first Proto NAN, 1: SVF noFIR, 2: SVF FIR, 3: SVF Original Primary (later)
+#define test_svf_types 1        // 0: SVF first Proto NAN, 1: SVF noFIR, 2: SVF FIR, 3: SVF Original Primary (later)
 #define test_svf_fm_limit 1.5f  // SVF fm clipping maximum
 
 #define test_fast_fold_asym 1  // 0: slow clock (producing audible artifacts), 1: fast clock (recommended)
 #define test_preload_update 1  // 0: non-optimized preload update, 1: optimized preload update (recommended)
-#define test_flushModeFlag 1  // 0: flushes ONLY Buffers, 1: flushes Buffers AND Filter State Variables
-#define test_inputModeFlag 1  // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
-#define test_whichEnvelope 1  // specify which env engine should be used: old (0) or new (1)
+#define test_flushModeFlag 1   // 0: flushes ONLY Buffers, 1: flushes Buffers AND Filter State Variables
+#define test_inputModeFlag 1   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
+#define test_whichEnvelope 1   // specify which env engine should be used: old (0) or new (1)
 
-#define test_reverbParams 1  // 0: fast rendering (like Reaktor), 1: slow rendering (experimental)
+#define test_reverbParams 1    // 0: fast rendering (like Reaktor), 1: slow rendering (experimental)
 #define test_reverbSmoother 1  // 0: no internal smoothers (experimental), 1: internal smoothers (like Reaktor)
 
 #define test_phase_reset 1  // 0: reset phase only, 1: reset phase, self- & cross-mix and feedback, chirp state var
@@ -61,14 +60,13 @@
 #define test_flanger_env_legato 1  // 0: retriggering flanger env, 1: legato (only trigger if no key is pressed)
 
 #define test_initialize_time 1  // leave at 1 until LPC transmits full init sequence (including time)
-#define test_initialize_fx_sends                                                                                       \
-  1  // leave at 1 until LPC can handle fx sends (echo, reverb) (inits sends to 100%, maintaining compability)
+#define test_initialize_fx_sends  1  // leave at 1 until LPC can handle fx sends (echo, reverb) (inits sends to 100%, maintaining compability)
 
 /* Log Settings                                     THINGS TO PRINT into the terminal: TCD MIDI Input, single Parameter, single Signal */
 
-#define log_examine 1  // Examine Mechanism (Log, Param, Signal) - 0: disabled, 1: enabled
-#define log_param_id 0  // Parameter ID of observed Parameter (internal ID, not TCD ID)
-#define log_signal_id 0  // Signal ID of observed Signal
+#define log_examine 1     // Examine Mechanism (Log, Param, Signal) - 0: disabled, 1: enabled
+#define log_param_id 0    // Parameter ID of observed Parameter (internal ID, not TCD ID)
+#define log_signal_id 0   // Signal ID of observed Signal
 #define log_force_mono 0  // force monophonic rendering (map any voice to id 0)
 
 #if test_inputModeFlag == 1
@@ -84,15 +82,15 @@
 
 /* Main Configuration                               (prepared for maximal 20 Voices) */
 
-#define dsp_poly_types 2  // two polyphony types (mono, poly) - (later, a dual type needs to be implemented)
-#define dsp_clock_types 4  // four different parameter types (sync, audio, fast, slow)
+#define dsp_poly_types 2         // two polyphony types (mono, poly) - (later, a dual type needs to be implemented)
+#define dsp_clock_types 4        // four different parameter types (sync, audio, fast, slow)
 #define dsp_number_of_voices 20  // maximum allowed number of voices
 
 const uint32_t dsp_clock_rates[2] = {
   // sub-audio clocks are defined in rates (Hz) now
 
   9600,  // fast rate is 9600 Hz
-  400  // slow rate is 400 Hz
+  400    // slow rate is 400 Hz
 
 };
 
@@ -100,8 +98,8 @@ const uint32_t dsp_clock_rates[2] = {
 
 /* Main Parameter Definition                        -> see Linux Engine LPC Status */
 
-#define sig_number_of_params 198  // see Linux Engine LPC Status / Overview, Parameter List
-#define sig_number_of_param_items 274  // number of required (single-voice) rendering items for all parameters
+#define sig_number_of_params 198        // see Linux Engine LPC Status / Overview, Parameter List
+#define sig_number_of_param_items 274   // number of required (single-voice) rendering items for all parameters
 #define sig_number_of_signal_items 136  // signals shared between the parameter and audio engine
 
 /* TCD List Handling */
@@ -114,8 +112,8 @@ const uint32_t dsp_clock_rates[2] = {
 
 /* Main Parameter Definition                        -> see Linux Engine 1.55 LPC Status */
 
-#define sig_number_of_params 197  // see Linux Engine 1.55 LPC Status / Overview, Parameter List
-#define sig_number_of_param_items 254  // number of required (single-voice) rendering items for all parameters
+#define sig_number_of_params 197        // see Linux Engine 1.55 LPC Status / Overview, Parameter List
+#define sig_number_of_param_items 254   // number of required (single-voice) rendering items for all parameters
 #define sig_number_of_signal_items 136  // signals shared between the parameter and audio engine
 
 /* TCD List Handling */
@@ -128,8 +126,8 @@ const uint32_t dsp_clock_rates[2] = {
 
 /* Main Parameter Definition                        -> see Linux Engine 1.56 LPC Status */
 
-#define sig_number_of_params 195  // see Linux Engine 1.56 LPC Status / Overview, Parameter List
-#define sig_number_of_param_items 214  // number of required (single-voice) rendering items for all parameters
+#define sig_number_of_params 195        // see Linux Engine 1.56 LPC Status / Overview, Parameter List
+#define sig_number_of_param_items 214   // number of required (single-voice) rendering items for all parameters
 #define sig_number_of_signal_items 136  // signals shared between the parameter and audio engine
 
 /* TCD List Handling */
@@ -154,15 +152,15 @@ const uint32_t dsp_clock_rates[2] = {
 
 /* Internal IDs of crucial TCD parameters */
 
-#define P_EA 0  // item pointer to (consecutive) envelope parameters A (internal ids)
+#define P_EA 0   // item pointer to (consecutive) envelope parameters A (internal ids)
 #define P_EB 17  // item pointer to (consecutive) envelope parameters B (internal ids)
 #define P_EC 34  // item pointer to (consecutive) envelope parameters C (internal ids)
 
 /* DSP Helper Values */
 
-#define dsp_samples_to_ms 1.e-3f  // 1000 ms = 1 s, therefore: 1 ms = 1 / 1000 s = 1e-3 s
+#define dsp_samples_to_ms 1.e-3f        // 1000 ms = 1 s, therefore: 1 ms = 1 / 1000 s = 1e-3 s
 #define dsp_init_pitch_reference 440.f  // standard Frequency of A3 Note
-#define dsp_expon_osc_pitch_from -20  // lowest logarithmic Pitch value for Oscillator unit
+#define dsp_expon_osc_pitch_from -20    // lowest logarithmic Pitch value for Oscillator unit
 #define dsp_expon_osc_pitch_range                                                                                      \
   150  // range of logarithmic Pitch value for Oscillator unit ([-20 ... 130] ST = 150 ST)
 #define dsp_expon_lin_pitch_from -150  // lowest logarithmic Pitch value for linear conversion
@@ -170,17 +168,17 @@ const uint32_t dsp_clock_rates[2] = {
   300  // range of logarithmic Pitch value for linear conversion ([-150 ... 150] ST = 300 ST)
 #define dsp_expon_level_from -300  // lowest logarithmic Level value for gain conversion (-300 dB)
 #define dsp_expon_level_range 400  // range of logarithmic Level value for gain conversion ([-300 ... 100] dB = 400 dB)
-#define dsp_expon_time_from -20  // lowest logarithmic Time value for time conversion (-20 dB)
-#define dsp_expon_time_range 110  // range of logarithmic Time value for time conversion ([-20 ... 90] dB = 110 dB)
+#define dsp_expon_time_from -20    // lowest logarithmic Time value for time conversion (-20 dB)
+#define dsp_expon_time_range 110   // range of logarithmic Time value for time conversion ([-20 ... 90] dB = 110 dB)
 #define dsp_expon_time_factor 104.0781f  // measured value to produce exactly time of 16000 (equals highest time)
 #define dsp_comb_max_freqFactor                                                                                        \
   19.0166f  // measured value of highest frequency factor for the Comb Filter to run without bypass (corresponding to Pitch of 119.99 ST)
 #define dsp_render_min 1.e-9f  // minimal rendered value for exponential transitions
-#define dsp_initial_time 10  // initial smoothing time (in milliseconds, no more than 340ms!)
+#define dsp_initial_time 10    // initial smoothing time (in milliseconds, no more than 340ms!)
 
 #define env_norm_peak 0.023766461f  // equals 1 / 42.0761 (taken from prototype)
 #define env_clip_peak 1.412537545f  // measured value for LevelKT Clipping, equals +3 dB (candidate)
-#define env_init_gateRelease                                                                                            \
+#define env_init_gateRelease                                                                                           \
   10  // release time of gate envelopes (in milliseconds) -- 1ms problematic (key up noise), 10ms okay (like prototype) \
       // (due to current comb decay gate implementation)
 #define env_highest_finite_time 16000.f  // highest allowed finite time

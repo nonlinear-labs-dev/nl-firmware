@@ -21,17 +21,19 @@ void TestMidiInput::doBackgroundWork(int distance)
   {
     for(int o = 0; o < 4; o++)
     {
-      auto notes = { 48, 51, 55, 58, 60, 58, 55, 51 };
+      auto notes = { 48, 51, 55, 58, 60, 63, 67, -48, -51, -55, -58, -60, -63, -67, 0, 0 };
 
       for(auto n : notes)
       {
-        snd_seq_event_t event;
-        event.type = SND_SEQ_EVENT_NOTEON;
-        event.data.note.channel = 0x90;
-        event.data.note.note = n + o * 12;
-        event.data.note.velocity = 100;
+        uint8_t noteOnOff = (n > 0) ? 0x90 : 0x00;
+        uint8_t pitch = static_cast<uint8_t>(std::abs(n));
+        uint8_t velocity = 100;
+        std::chrono::high_resolution_clock::time_point timestamp = {};
 
-        getCallback()(event);
+        MidiEvent event = { { noteOnOff, pitch, velocity }, timestamp };
+
+        if(n != 0)
+          getCallback()(event);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(distance));
 

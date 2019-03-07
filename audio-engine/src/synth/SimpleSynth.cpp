@@ -6,13 +6,15 @@
 
 void SimpleSynth::doMidi(const MidiEvent &event)
 {
-  if(event.type == SND_SEQ_EVENT_NOTEON)
+  if(event.raw[0] & 0x90)
   {
-    m_voices[event.data.note.note].phase = g_random_double_range(0, 1);
-    m_voices[event.data.note.note].vol = 0.9;
+    auto note = event.raw[1];
 
-    auto hertz = 440.f * powf(2.f, (event.data.note.note - 69) / 12.0f);
-    m_voices[event.data.note.note].inc = hertz / getOptions()->getSampleRate();
+    m_voices[note].phase = g_random_double_range(0, 1);
+    m_voices[note].vol = 0.9;
+
+    auto hertz = 440.f * powf(2.f, (note - 69) / 12.0f);
+    m_voices[note].inc = hertz / getOptions()->getSampleRate();
   }
 }
 

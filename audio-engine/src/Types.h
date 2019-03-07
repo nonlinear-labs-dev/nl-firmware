@@ -4,10 +4,16 @@
 #include <stdlib.h>
 #include <asoundlib.h>
 #include <iostream>
+#include <chrono>
 
 using Sample = float;
 using SamplePosition = uint64_t;
-using MidiEvent = snd_seq_event_t;
+
+struct MidiEvent
+{
+  uint8_t raw[3];
+  std::chrono::high_resolution_clock::time_point timestamp;
+};
 
 struct SampleFrame
 {
