@@ -72,8 +72,17 @@ void AlsaMidiInput::doBackgroundWork()
       snd_seq_event_t event;
 
       if(snd_midi_event_encode_byte(parser, byte, &event) == 1)
+      {
         if(event.type != SND_SEQ_EVENT_NONE)
+        {
+          if(event.type == SND_SEQ_EVENT_NOTEON)
+          {
+            event.data.raw8.d[0] |= 0x90;
+          }
+
           getCallback()(event);
+        }
+      }
     }
   }
 }
