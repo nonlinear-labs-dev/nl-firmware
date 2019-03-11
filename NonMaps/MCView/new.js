@@ -194,10 +194,10 @@ class MCModel {
 
 class RangeDivision {
   constructor() {
-    this.controls = [{"ID":0,"x":0,   "y":0,    "w":0.5,  "h":0.5,  "type":"xy",  "MCX":243,  "MCY":244},
-                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.5,  "type":"xy",  "MCX":247, "MCY":248},
-                     {"ID":2,"x":0,   "y":0.5,  "w":1,    "h":0.25, "type":"x",   "MCX":245,  "MCY":null},
-                     {"ID":3,"x":0,   "y":0.75, "w":1,    "h":0.25, "type":"x",   "MCX":246,  "MCY":null}];
+    this.controls = [{"ID":0,"x":0,   "y":0,    "w":0.5,  "h":0.62,  "type":"xy",  "MCX":243,  "MCY":244},
+                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.62,  "type":"xy",  "MCX":247, "MCY":248},
+                     {"ID":2,"x":0,   "y":0.62,  "w":1,    "h":0.19, "type":"x",   "MCX":245,  "MCY":null},
+                     {"ID":3,"x":0,   "y":0.81, "w":1,    "h":0.19, "type":"x",   "MCX":246,  "MCY":null}];
 
     this.deadzones = [{"ID":0,"x":0.025,"y":0.05},
                       {"ID":1,"x":0.025,"y":0.05},
@@ -815,8 +815,6 @@ function onLoad() {
       });
     }, 50);
   });
-
-  view.redraw(model);
 }
 
 //UI Functionality
