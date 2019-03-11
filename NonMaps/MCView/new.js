@@ -204,7 +204,7 @@ class RangeDivision {
                       {"ID":2,"x":0.025,"y":0.05},
                       {"ID":3,"x":0.025,"y":0.05}];
 
-    this.leftMargin = 0.03;
+    this.leftMargin = 0.02;
   }
 }
 
@@ -214,6 +214,7 @@ class ColorScheme {
     this.labelColor = "rgb(130, 130, 130)";
     this.blueIndicator = "rgb(50,140,255)";
     this.grayIndicator = "rgb(156,156,156)";
+    this.settingsHandle = "rgb(180,180,180)";
     this.backgroundColor = "rgb(30,30,30)";
     this.playZoneColor = "#2b2b2b";
   }
@@ -371,10 +372,10 @@ class MCView {
       if(document.getElementById('settings-overlay').classList.contains("collapsed")) {
         var canvas = view.canvas;
         var middle = canvas.height / 2;
-        var height = (canvas.height / 100) * 3;
+        var height = (canvas.height / 100) * 2.5;
         var leftMargin = canvas.width * view.range.leftMargin;
         leftMargin = Math.min(mmToPx(7), leftMargin);
-        var width = leftMargin * 0.75;
+        var width = leftMargin * 0.6;
 
         var area = function(x1, y1, x2, y2, x3, y3)
         {
@@ -454,14 +455,14 @@ class MCView {
     var ctx = canvas.getContext("2d");
     ctx.beginPath();
     ctx.strokeStyle = new ColorScheme().markerColor;
-    ctx.fillStyle = new ColorScheme().grayIndicator;
-    ctx.lineWidth = "3";
+    ctx.fillStyle = new ColorScheme().markerColor;
+    ctx.lineWidth = "1";
 
     var middle = canvas.height / 2;
-    var height = (canvas.height / 100) * 3;
+    var height = (canvas.height / 100) * 2.5;
     var leftMargin = canvas.width * view.range.leftMargin;
     leftMargin = Math.min(mmToPx(7), leftMargin);
-    var width = leftMargin * 0.75;
+    var width = leftMargin * 0.6;
 
     ctx.moveTo(0, middle - height);
     ctx.lineTo(0, middle + height);
@@ -782,11 +783,13 @@ function onLoad() {
 
   try {
     var val = window.localStorage.getItem("smoothing");
-    if(val !== undefined) {
+    if(val !== null) {
       setInterpolation(val);
       document.getElementById("interpolation-step").value = val;
     }
   } catch(err) {
+    setInterpolation(50);
+    document.getElementById("interpolation-step").value = 50;
     console.log(err);
   }
 
