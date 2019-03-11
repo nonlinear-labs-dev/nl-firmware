@@ -213,9 +213,20 @@ void EditBuffer::setModulationAmount(double amount)
   }
 }
 
-bool EditBuffer::hasLocks()
+bool EditBuffer::hasLocks() const
 {
   return searchForAnyParameterWithLock() != nullptr;
+}
+
+bool EditBuffer::anyParameterChanged() const {
+    for(auto& paramGroup: getParameterGroups()) {
+        for(auto& param: paramGroup->getParameters()) {
+            if(param->isChangedFromLoaded()) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void EditBuffer::undoableSelectParameter(Parameter *p)
