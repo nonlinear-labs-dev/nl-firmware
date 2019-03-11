@@ -116,9 +116,10 @@ h1 {
 
 .arrow-left {
   position: relative;
+  width: 5%;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -175%);
+  transform: translate(429%, -420%);
   border-style: solid;
   border-width: 35px 21px 35px 0;
   border-color: transparent #818181 transparent transparent;

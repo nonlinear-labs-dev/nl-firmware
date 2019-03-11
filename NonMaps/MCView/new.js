@@ -205,6 +205,27 @@ class RangeDivision {
                       {"ID":3,"x":0.025,"y":0.05}];
 
     this.leftMargin = 0.02;
+
+
+    try {
+      var val = window.localStorage.getItem("xy");
+      if(val !== null) {
+        if(val === "true") {
+          setCDXY(this);
+          document.getElementById("cd-x").checked = false;
+          document.getElementById("cd-xy").checked = true;
+        } else {
+          setCDX(this);
+          document.getElementById("cd-xy").checked = false;
+          document.getElementById("cd-x").checked = true;
+        }
+      }
+    } catch(err) {
+      setCDX(this);
+      document.getElementById("cd-x").checked = true;
+      document.getElementById("cd-xy").checked = false;
+      console.log(err);
+    }
   }
 }
 
@@ -715,7 +736,7 @@ class MCController {
       });
 
       //HUH?! TODO: Investigate
-      if(division.MCX === 247) {
+      if(division.type.startsWith("xy") && (division.MCX === 247 || division.MCX === 245)) {
         x -= xD;
         x += (dW - wD) / 2;
       } else {
@@ -775,12 +796,43 @@ var view;
 var controller;
 var serverProxy;
 
+function setCDX(range) {
+   range.controls[1]["MCX"] = 247;
+   range.controls[1]["MCY"] = 248;
+   range.controls[2]["MCX"] = 245;
+   range.controls[2]["MCY"] = null;
+   range.controls[3]["MCX"] = 246;
+   range.controls[3]["MCY"] = null;
+
+   try {
+     window.localStorage.setItem("xy", false);
+   } catch(err) {
+     console.log(err);
+   }
+}
+
+function setCDXY(range) {
+  range.controls[1]["MCX"] = 245;
+  range.controls[1]["MCY"] = 246;
+  range.controls[2]["MCX"] = 247;
+  range.controls[2]["MCY"] = null;
+  range.controls[3]["MCX"] = 248;
+  range.controls[3]["MCY"] = null;
+
+  try {
+    window.localStorage.setItem("xy", true);
+  } catch(err) {
+    console.log(err);
+  }
+}
+
 function onLoad() {
   var href = window.location.href;
   if(href.includes("settings")) {
     toggleSettings();
   }
 
+  //handle Settings Init and Events
   try {
     var val = window.localStorage.getItem("smoothing");
     if(val !== null) {
@@ -798,6 +850,20 @@ function onLoad() {
       toggleSettings();
     }
   }
+
+  var changeHandler = function() {
+    if( this.value === "x") {
+      setCDX(view.range);
+    } else if (this.value === "xy") {
+      setCDXY(view.range);
+    }
+  };
+
+  var radios = document.querySelectorAll('input[type=radio][name="mc-sel"]');
+  radios.forEach(function(radio) {
+    radio.addEventListener('change', changeHandler);
+  });
+  //End Events for Settings
 
   serverProxy = new ServerProxy(function() {
     model = new MCModel(serverProxy.webSocket);
@@ -838,5 +904,5 @@ function setInterpolation(val) {
 }
 
 function stub() {
-  
+
 }
