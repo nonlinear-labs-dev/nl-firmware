@@ -33,7 +33,7 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
+    this.webSocket = new WebSocket('ws://localhost:8080/ws-mc/');
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
@@ -454,9 +454,9 @@ class MCView {
     var canvas = view.canvas;
     var ctx = canvas.getContext("2d");
     ctx.beginPath();
-    ctx.strokeStyle = new ColorScheme().markerColor;
-    ctx.fillStyle = new ColorScheme().markerColor;
-    ctx.lineWidth = "1";
+    ctx.strokeStyle = new ColorScheme().labelColor;
+    ctx.fillStyle = new ColorScheme().labelColor;
+    ctx.lineWidth = "3";
 
     var middle = canvas.height / 2;
     var height = (canvas.height / 100) * 2.5;
@@ -835,4 +835,8 @@ function setInterpolation(val) {
   } catch(err) {
     console.log(err);
   }
+}
+
+function stub() {
+  
 }
