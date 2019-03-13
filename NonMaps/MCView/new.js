@@ -194,17 +194,38 @@ class MCModel {
 
 class RangeDivision {
   constructor() {
-    this.controls = [{"ID":0,"x":0,   "y":0,    "w":0.5,  "h":0.5,  "type":"xy",  "MCX":243,  "MCY":244},
-                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.5,  "type":"xy",  "MCX":247, "MCY":248},
-                     {"ID":2,"x":0,   "y":0.5,  "w":1,    "h":0.25, "type":"x",   "MCX":245,  "MCY":null},
-                     {"ID":3,"x":0,   "y":0.75, "w":1,    "h":0.25, "type":"x",   "MCX":246,  "MCY":null}];
+    this.controls = [{"ID":0,"x":0,   "y":0,    "w":0.5,  "h":0.62,  "type":"xy",  "MCX":243,  "MCY":244},
+                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.62,  "type":"xy",  "MCX":247, "MCY":248},
+                     {"ID":2,"x":0,   "y":0.62,  "w":1,    "h":0.19, "type":"x",   "MCX":245,  "MCY":null},
+                     {"ID":3,"x":0,   "y":0.81, "w":1,    "h":0.19, "type":"x",   "MCX":246,  "MCY":null}];
 
     this.deadzones = [{"ID":0,"x":0.025,"y":0.05},
                       {"ID":1,"x":0.025,"y":0.05},
                       {"ID":2,"x":0.025,"y":0.05},
                       {"ID":3,"x":0.025,"y":0.05}];
 
-    this.leftMargin = 0.03;
+    this.leftMargin = 0.02;
+
+
+    try {
+      var val = window.localStorage.getItem("xy");
+      if(val !== null) {
+        if(val === "true") {
+          setCDXY(this);
+          document.getElementById("cd-x").checked = false;
+          document.getElementById("cd-xy").checked = true;
+        } else {
+          setCDX(this);
+          document.getElementById("cd-xy").checked = false;
+          document.getElementById("cd-x").checked = true;
+        }
+      }
+    } catch(err) {
+      setCDX(this);
+      document.getElementById("cd-x").checked = true;
+      document.getElementById("cd-xy").checked = false;
+      console.log(err);
+    }
   }
 }
 
@@ -214,6 +235,7 @@ class ColorScheme {
     this.labelColor = "rgb(130, 130, 130)";
     this.blueIndicator = "rgb(50,140,255)";
     this.grayIndicator = "rgb(156,156,156)";
+    this.settingsHandle = "rgb(180,180,180)";
     this.backgroundColor = "rgb(30,30,30)";
     this.playZoneColor = "#2b2b2b";
   }
@@ -371,10 +393,10 @@ class MCView {
       if(document.getElementById('settings-overlay').classList.contains("collapsed")) {
         var canvas = view.canvas;
         var middle = canvas.height / 2;
-        var height = (canvas.height / 100) * 3;
+        var height = (canvas.height / 100) * 2.5;
         var leftMargin = canvas.width * view.range.leftMargin;
         leftMargin = Math.min(mmToPx(7), leftMargin);
-        var width = leftMargin * 0.75;
+        var width = leftMargin * 0.6;
 
         var area = function(x1, y1, x2, y2, x3, y3)
         {
@@ -453,15 +475,15 @@ class MCView {
     var canvas = view.canvas;
     var ctx = canvas.getContext("2d");
     ctx.beginPath();
-    ctx.strokeStyle = new ColorScheme().markerColor;
-    ctx.fillStyle = new ColorScheme().grayIndicator;
+    ctx.strokeStyle = new ColorScheme().labelColor;
+    ctx.fillStyle = new ColorScheme().labelColor;
     ctx.lineWidth = "3";
 
     var middle = canvas.height / 2;
-    var height = (canvas.height / 100) * 3;
+    var height = (canvas.height / 100) * 2.5;
     var leftMargin = canvas.width * view.range.leftMargin;
     leftMargin = Math.min(mmToPx(7), leftMargin);
-    var width = leftMargin * 0.75;
+    var width = leftMargin * 0.6;
 
     ctx.moveTo(0, middle - height);
     ctx.lineTo(0, middle + height);
@@ -714,7 +736,7 @@ class MCController {
       });
 
       //HUH?! TODO: Investigate
-      if(division.MCX === 247) {
+      if(division.type.startsWith("xy") && (division.MCX === 247 || division.MCX === 245)) {
         x -= xD;
         x += (dW - wD) / 2;
       } else {
@@ -774,19 +796,52 @@ var view;
 var controller;
 var serverProxy;
 
+function setCDX(range) {
+   range.controls[1]["MCX"] = 247;
+   range.controls[1]["MCY"] = 248;
+   range.controls[2]["MCX"] = 245;
+   range.controls[2]["MCY"] = null;
+   range.controls[3]["MCX"] = 246;
+   range.controls[3]["MCY"] = null;
+
+   try {
+     window.localStorage.setItem("xy", false);
+   } catch(err) {
+     console.log(err);
+   }
+}
+
+function setCDXY(range) {
+  range.controls[1]["MCX"] = 245;
+  range.controls[1]["MCY"] = 246;
+  range.controls[2]["MCX"] = 247;
+  range.controls[2]["MCY"] = null;
+  range.controls[3]["MCX"] = 248;
+  range.controls[3]["MCY"] = null;
+
+  try {
+    window.localStorage.setItem("xy", true);
+  } catch(err) {
+    console.log(err);
+  }
+}
+
 function onLoad() {
   var href = window.location.href;
   if(href.includes("settings")) {
     toggleSettings();
   }
 
+  //handle Settings Init and Events
   try {
     var val = window.localStorage.getItem("smoothing");
-    if(val !== undefined) {
+    if(val !== null) {
       setInterpolation(val);
       document.getElementById("interpolation-step").value = val;
     }
   } catch(err) {
+    setInterpolation(50);
+    document.getElementById("interpolation-step").value = 50;
     console.log(err);
   }
 
@@ -795,6 +850,20 @@ function onLoad() {
       toggleSettings();
     }
   }
+
+  var changeHandler = function() {
+    if( this.value === "x") {
+      setCDX(view.range);
+    } else if (this.value === "xy") {
+      setCDXY(view.range);
+    }
+  };
+
+  var radios = document.querySelectorAll('input[type=radio][name="mc-sel"]');
+  radios.forEach(function(radio) {
+    radio.addEventListener('change', changeHandler);
+  });
+  //End Events for Settings
 
   serverProxy = new ServerProxy(function() {
     model = new MCModel(serverProxy.webSocket);
@@ -815,8 +884,6 @@ function onLoad() {
       });
     }, 50);
   });
-
-  view.redraw(model);
 }
 
 //UI Functionality
@@ -834,4 +901,8 @@ function setInterpolation(val) {
   } catch(err) {
     console.log(err);
   }
+}
+
+function stub() {
+
 }
