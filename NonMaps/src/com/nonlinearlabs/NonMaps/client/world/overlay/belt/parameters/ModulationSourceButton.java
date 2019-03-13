@@ -33,7 +33,7 @@ public class ModulationSourceButton extends SVGImage {
 				else
 					m.setModulationSource(which, Initiator.EXPLICIT_USER_ACTION);
 			}
-
+			getParent().getParent().onMCSelectionChanged();
 			return this;
 		}
 		return null;
