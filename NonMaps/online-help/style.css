@@ -13,7 +13,7 @@ div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,text
 
 html {
 	color: #434343;
-	background-color: #fdfdfd;
+	background-color: #090909;
 	height: 100%;
 	overflow-y: scroll;
 	overflow-x: hidden;
@@ -1213,8 +1213,11 @@ a.blocked a.blocked:focus, a.blocked:link, a.blocked:visited, a.blocked:hover, a
 .mb05 {margin-bottom: 0.5em;}
 .mb05i {margin-bottom: 0.5em !important;}
 .mb1 {margin-bottom: 1em;}
+.mb1i {margin-bottom: 1em !important;}
 .mb2 {margin-bottom: 2em;}
+.mb2i {margin-bottom: 2em !important;}
 .mb3 {margin-bottom: 3em;}
+.mb3i {margin-bottom: 3em !important;}
 .mb5 {margin-bottom: 5em;}
 
 .p1 {padding: 1em;}

@@ -5,7 +5,7 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - 5. Synthesis Engine - 5.3 Using Hardware Sources</title>
+	<title>C15 - Help - 5. Synthesis Engine - 5.3 Using Hardware Sources</title>
 	
 	<link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../../style.css" type="text/css" />
@@ -18,7 +18,7 @@
 <body>
 	
 	<div id="header">
-		<h1><a href="../../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+		<h1><a href="../../index.html" title="Manual Contents">NONLINEAR LABS - C15 - Reference Manual</a></h1>
 	</div><!-- end header -->
 	
 	<div class="nav-bc">
@@ -27,7 +27,7 @@
 	
 	<div class="nav">
 			<p class="navleft"><a href="../structure/structure.html">5.2 Structure and Components</a></p>
-			<p class="navright"><a href="../../setup-c15/setup-system.html">6. Setup</a></p>
+			<p class="navright"><a href="../../setup-c15/setup-system.html">6. Setup (C15 System Settings)</a></p>
 	</div><!-- end nav -->
 	
 	<div id="main-content">	
@@ -38,7 +38,7 @@
 			<h3>5.3 Using Hardware Sources</h3>
 			
 			<h5>General Aspects</h5>
-			<p>The eight Hardware Sources of the C15 can be seen as special controllers, which are designed for live performance. While playing a certain sound, the Hardware Sources can be used for modulations, changing the sound character.<br />Four different types of Hardware Sources are provided, each type having its individual aspects (four Pedals, two Ribbons, one Bender, one Aftertouch). As for the (external) Pedals, their aspects strongly depend on the type of pedal that is used. The following section contemplates all relevant aspects of Hardware Sources and external controllers in general.</p>
+			<p>The eight Hardware Sources of the C15 can be seen as special controllers, which are designed for live performance. While playing a certain sound, the Hardware Sources can be used for modulations, changing the sound character.<br />Four different types of Hardware Sources are provided, each type having its individual aspects (four Pedals, two Ribbons, one Bender, one Aftertouch). As for the (external) pedals, their aspects strongly depend on the type of pedal that is used. The following section contemplates all relevant aspects of Hardware Sources and external controllers in general.</p>
 
 			<h5>Continuity</h5>
 			<p>Controllers can essentially behave in two different manners. There are switches (like a „Sustain Pedal“) and there are continuous controllers (like a „Volume Pedal“). Although continuous behavior may be preferred in most use cases and can be seen as a general recommendation, switches can also be used when integrating external pedals (providing only two states: on and off). All four integrated Hardware Sources are continuous.</p>
@@ -85,7 +85,7 @@
 					<td>non/zero/<br />center</td>
 					<td>external</td>
 					<td>no</td>
-					<td>Pin/<br />Assignment</td>
+					<td>Pin<br />Assignment</td>
 					<td>absolute</td>
 				</tr>
 				<tr>
@@ -95,7 +95,7 @@
 					<td>non/zero/<br />center</td>
 					<td>external</td>
 					<td>no</td>
-					<td>Pin/<br />Assignment</td>
+					<td>Pin<br />Assignment</td>
 					<td>absolute</td>
 				</tr>
 				<tr>
@@ -105,7 +105,7 @@
 					<td>non/zero/<br />center</td>
 					<td>external</td>
 					<td>no</td>
-					<td>Pin/<br />Assignment</td>
+					<td>Pin<br />Assignment</td>
 					<td>absolute</td>
 				</tr>
 				<tr>
@@ -115,7 +115,7 @@
 					<td>non/zero/<br />center</td>
 					<td>external</td>
 					<td>no</td>
-					<td>Pin/<br />Assignment</td>
+					<td>Pin<br />Assignment</td>
 					<td>absolute</td>
 				</tr>
 				<tr>
@@ -145,7 +145,7 @@
 					<td>non/<br />center</td>
 					<td>integrated</td>
 					<td>yes</td>
-					<td>Relative/<br />Factor</td>
+					<td>Relative<br />Factor</td>
 					<td>absolute/<br />relative</td>
 				</tr>
 				<tr>
@@ -155,7 +155,7 @@
 					<td>non/<br />center</td>
 					<td>integrated</td>
 					<td>yes</td>
-					<td>Relative/<br />Factor</td>
+					<td>Relative<br />Factor</td>
 					<td>absolute/<br />relative</td>
 				</tr>
 			</tbody></table>
@@ -169,8 +169,9 @@
 		
 		<img class="img-frame" src="images/pedal-setup.svg" alt="pedal-setup"><div class="mb2"></div>
 		
+		<span id="dia-link"></span>
 		<h5 class="mt2">Modulation Aspects</h5>
-		<p>As already mentioned, the modulation amount of a certain Hardware Source on a Macro Control depends on the source's Return Behavior (only returning sources allow for a continuous amount).<br />Furthermore, when a non-returning Ribbon is assigned to a Macro Control, the assignment will be bidirectional. In other words, the Ribbon will move the Macro Control and vice versa.<br />For better understanding, have a look at this interactive <a href="../../basic/modulation_basics.html">diagram.</a></p>
+		<p>As already mentioned, the modulation amount of a certain Hardware Source on a Macro Control depends on the source’s Return Behavior (only returning sources allow for a continuous amount).<br />Furthermore, when a non-returning Ribbon is assigned to a Macro Control, the assignment will be bidirectional. In other words, the Ribbon will move the Macro Control and vice versa. For a better understanding, have a look at this interactive <a href="images/modulation_basics.html">diagram.</a></p>
 	</div><!-- end txt -->
 	
 	<div class="txt-block">

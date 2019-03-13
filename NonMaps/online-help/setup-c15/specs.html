@@ -5,17 +5,20 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - 8. Specifications</title>
+	<title>C15 - Help - 8. Specifications</title>
 	
 	<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../style.css" type="text/css" />
 	<link rel="stylesheet" href="../fonts/source-sans-pro.css" type="text/css" />
+
+	<script src="../jq/jquery-1.7.1.min.js" type="text/javascript"></script>
+
 </head>
 
 <body>
 
 	<div id="header">
-		<h1><a href="../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+		<h1><a href="../index.html" title="Manual Contents">NONLINEAR LABS - C15 - Reference Manual</a></h1>
 	</div><!-- end header mb1 -->
 	
 	<div class="nav-bc">
@@ -37,19 +40,19 @@
 			<div class="spec">
 			<ul>
 				<li>2 Oscillators (sine wave, phase modulation, frequency randomization)</li>
-				<li>2 Shapers (sine curve, adjustable foldback and asymmetry)</li>
+				<li>2 Shapers (sine curve, adjustable foldback and asymetry)</li>
 				<li>Ring Modulator</li>
 				<li>Comb Filter (tunable, with allpass and lowpass)</li>
 				<li>State Variable Filter (multi-mode, 2-4 poles, FM)</li>
 				<li>Feedback Mixer (4 input signals, shaper for the sum)</li>
 				<li>Feedback bus with 4 destinations</li>
 				<li>Output Mixer (stereo, 4 input signals, shaper for the sum)</li>
-				<li>5 Stereo Effects: Cabinet (amp simulation), 8-pole Gap/Band Filter, Phaser/Flanger/Chorus, Echo, Reverb</li>
+				<li>5 Stereo Effects: Phaser/Flanger/Chorus, Cabinet (amp simulation), 8-pole Gap/Band Filter, Echo, Reverb</li>
 				<li>3 ADBDSR Envelopes, adjustable attack curve</li>
 				<li>Velocity sensitivities for envelope levels, attack times, and release times</li>
 				<li>4 Macro Controls, assignable to up to 86 target parameters</li>
 				<li>8 Hardware Sources, mappable to the 4 Macro Controls</li>
-				<li>Number of parameters: 317</li>
+				<li>Number of parameters: 328</li>
 				<li>Resolution of the parameters: typically 1000 steps (250 ... 15000 steps)</li>
 				<li>Resolution of key velocity, ribbons, bender, aftertouch, pedals: 4000 steps</li>
 				<li>20-voice polyphony, variable Unison settings</li>
@@ -57,7 +60,7 @@
 			</ul>
 			
 			<span id="idx_keybed"></span>
-			<h5 class="header mb2">Play Interface</h5>
+			<h5 class="header mb2">Hardware Features</h5>
 			<ul>
 				<li>61-key (5 octave) Fatar keybed with semi-weighted long-arm keys</li>
 				<li>Note-on and note-off velocity sensitivity</li>
@@ -68,6 +71,8 @@
 				<li>Control panel with an OLED display (128 x 32 dots) and four buttons</li>
 				<li>Output volume potentiometer (at the front)</li>
 				<li>Headphone level potentiometer (at the front)</li>
+				<li>The Base Unit can be used without the Panel Unit</li>
+				<li>Magnetic front panel foils replaceable to support future synthesis engines</li>
 			</ul>
 
 
@@ -76,7 +81,7 @@
 				<li>4 Selection panels, each with 24 buttons and LEDs</li>
 				<li>Labeling by exchangeable magnetic overlays</li>
 				<li>Edit panel with an OLED display (256 x 64 dots), an incremental encoder, and 18 buttons</li>
-				<li>The ribbons are also assignable for parameter editing.</li>
+				<li>The Ribbons are also assignable for parameter editing.</li>
 				<li>User-definable Init preset and Default values</li>
 				<li>Randomize function</li>
 				<li>Graphical user interface on any WiFi-enabled device running a browser, unique zoom-and-pan navigation, enabled for touch</li>
@@ -111,20 +116,50 @@
 			
 			<h5 class="header mb2">Dimensions</h5>
 			<ul>
-				<li>Base unit only: 900 x 290 x 100 mm (width x depth x height)</li>
-				<li>Including panel unit: 900 x 410 x 160 mm (width x depth x height)</li>
-				<li>Weight Including panel unit: 900 x 410 x 160 mm (width x depth x height)</li>
+				<li>Base Unit only: 900 x 290 x 100 mm (width x depth x height)</li>
+				<li>Including Panel Unit: 900 x 410 x 160 mm (width x depth x height)</li>
 			</ul>
 			
 			<h5 class="header mb2">Weight</h5>
 			<ul>
-				<li>Base unit: 10.5 kg</li>
-				<li>Panel unit: 3 kg</li>
+				<li>Base Unit: 10.5 kg</li>
+				<li>Panel Unit: 3 kg</li>
 			</ul>
 			</div>
 		</div><!-- end txt -->
 					
 	</div><!-- end main-content -->
+
+<!-- go-to-top -->
+<div id="totop"><a href="#"></a></div>
+
+<script>
+$(document).ready(function(){
+
+  // hide #totop first
+  $("#totop").hide();
+
+  // fade in #totop
+  $(function () {
+    $(window).scroll(function () {
+      if ($(this).scrollTop() > 500) {
+        $('#totop').fadeIn();
+      } else {
+        $('#totop').fadeOut();
+      }
+    });
+
+    // scroll body to 0px on click
+    $('#totop .fi-arrow-up').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+      }, 800);
+      return false;
+    });
+  });
+
+});
+</script>
 
 </body>
 </html>

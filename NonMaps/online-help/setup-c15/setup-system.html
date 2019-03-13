@@ -5,7 +5,7 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - 6. Setup (System Settings)</title>
+	<title>C15 - Help - 6. Setup (C15 System Settings)</title>
 	
 	<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../style.css" type="text/css" />
@@ -17,12 +17,12 @@
 <body>
 
 	<div id="header">
-		<h1><a href="../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+		<h1><a href="../index.html" title="Manual Contents">NONLINEAR LABS - C15 - Reference Manual</a></h1>
 	</div><!-- end header -->
 	
 	<span id="idx_sysset"></span>
 	<div class="nav-bc">
-		<p><a href="../index.html">Contents</a><b>6.&ensp;Setup (System Settings)</b></p>
+		<p><a href="../index.html">Contents</a><b>6.&ensp;Setup (C15 System Settings)</b></p>
 	</div><!-- end nav -->
 
 	<div class="nav">
@@ -35,12 +35,12 @@
 		<div class="txt-block">
 		
 		<span id="idx_presetind"></span>
-		<h2>6. C15 Setup (System Settings)</h2>
+		<h2>6. Setup (C15 System Settings)</h2>
 		
-		<p>The C15 also features a few global settings that are preset-independant. They are organized in the Setup menu and mainly define the interaction with peripherals (such as sensivities for velocities, external pedal integration or connected devices via Wi-Fi). Besides, the Setup menu allows for installing updates and transferring backups.<br />Chapter <a href="../interface/interface.html#idx_setup">4.12 Setup </a>provides all information on accessing and navigating the Setup menu both on the <span id="idx_panelunit-1"></span> Panel Unit and on the Graphical User Interface. The following passages explain all provided menu items.</p>
+		<p>The C15 also features a few global settings that are preset-independent. They are organized in the Setup menu and mainly define the interaction with peripherals (such as sensitivities for velocities, external pedal integration or connected devices via Wi-Fi). Besides, the Setup menu allows for installing updates and transferring backups.<br />Chapter <a href="../interface/interface.html#idx_setup">4.12 Setup Navigation </a>provides all information on accessing and navigating the Setup menu both on the <span id="idx_panelunit-1"></span> Panel Unit and on the Graphical User Interface. The following passages explain all provided menu items.</p>
 		
 		<span id="idx_devset"></span>
-		<h3>Device Settings [Hardware UI, Graphical UI]</h3>
+		<h3>Device Settings [Panel Unit, Graphical UI]</h3>
 		
 		<span id="idx_edsmtime"></span>
 		<h5>Edit Smoothing Time</h5>
@@ -48,30 +48,32 @@
 
 		<span id="idx_velcurve"></span>
 		<h5>Velocity Curve</h5>
-		<p>The Velocity Curve determines the sensivity of the instrument for key velocities. A soft setting increases the sensivity for low velocities, a hard setting increases the sensivity for high velocites. With the normal setting, the sensivity remains equal for all velocites.</p>
+		<p>The Velocity Curve determines the sensitivity of the instrument for key velocities. A soft setting increases the sensitivity for low velocities, a hard setting increases the sensitivity for high velocites. With the normal setting, the sensitivity remains equal for all velocites.</p>
 		<span id="idx_atcurve"></span>
 		<h5>Aftertouch Curve</h5>
-		<p>The Aftertouch Curve determines the sensivity of the instrument for Aftertouch gestures. A soft setting increases the sensivity for low aftertouch intensities, a hard setting increases the sensivity for high aftertouch intensities. With the normal setting, the sensivity remains equal throughout.</p>
+		<p>The Aftertouch Curve determines the sensitivity of the instrument for Aftertouch gestures. A soft setting increases the sensitivity for low aftertouch intensities, a hard setting increases the sensitivity for high aftertouch intensities. With the normal setting, the sensitivity remains equal throughout.</p>
 		<span id="idx_bendc"></span>
 		<h5>Bender Curve</h5>
-		<p>The Bender Curve determines the sensivity of the instrument for Bender gestures. A soft setting increases the sensivity for low bending intensities, a hard setting increases the sensivity for high bending intensities. With the normal setting, the sensivity remains equal throughout.</p>
+		<p>The Bender Curve determines the sensitivity of the instrument for Bender gestures. A soft setting increases the sensitivity for low bending intensities, a hard setting increases the sensitivity for high bending intensities. With the normal setting, the sensitivity remains equal throughout.</p>
 		<span id="idx_pedalset"></span>		
 		<h5>Pedal Settings</h5>
 		<p>As described in chapter <a href="../synth-engine/hw-sources/hwsources.html">5.3 Using Hardware Sources</a> the integration of pedals can be done manually. For each pedal, the circuit type can be chosen. Nevertheless, we recommend to connect pedals only when the instrument is switched off, in order to avoid a wrong and possibly harmful integration.</p>
 		<span id="idx_presup"></span>
 		<h5>Preset Glitch Suppression</h5>
-		<p>This option is currently not available, being still in development. The intention here is to avoid drastical changing pitches and other emerging artifacts, being provoked by a preset change. The suppression will be realized by clearing (flushing) all delay buffers when a new preset is loaded.</p>		
+		<p class="mb1i">This option can be enabled in order to avoid drastical changing pitches and other emerging artifacts, being provoked by a preset change. The suppression will be realized by clearing (flushing) all delay buffers when a new preset is loaded.</p>		
+		
+		<p class="note">Note that this feature is not fully implemented yet, as the suppression is not perfect in every case and can still produce small artifacts, depending on the preset change's circumstances. But in general, the effect is quite noticeable.</p>
 		
 		<span id="idx_guiset"></span>
 		<h3>GUI Settings [Graphical UI only]</h3>
 		
-		<p>A complete reference to the settings of the Graphical User Interface can be found in chapter <a href="../interface/interface.html#idx_guiset">4.15 GUI Settings</a>.</p>
+		<p>A complete reference to the settings of the Graphical User Interface can be found in chapter <a href="../interface/interface.html#idx_guiset">4.15 Graphical UI Functionality</a>.</p>
 		
 		
-		<h3>GUI Settings [Hardware UI only]</h3>
+		<h3>Hardware UI [Panel Unit only]</h3>
 		
 		<h5>Encoder Acceleration</h5>
-		<p>The Encoder in the Edit Panel can detect acceleration gestures and apply them to an item in focus accordingly. With sufficient acceleration, even high resolution parameters can be completely traversed with only one or a few turns of the encoder.</p>
+		<p>The Encoder in the Edit Panel can detect acceleration gestures and apply them to an item in focus accordingly. With sufficient acceleration, even high resolution parameters can be completely traversed with only one or a few turns of the Encoder.</p>
 		<h5>Ribbon Relative Factor</h5>
 		<p>Similarly, drag gestures on the two Ribbon touchstrips can be amplified by the Ribbon Relative Factor. This option is only effective, when a Ribbon is in relative mode.</p>
 		
@@ -80,7 +82,7 @@
 		<p>As described in chapter <a href="../interface/interface.html#idx_overviews">4.8 Overviews</a> the Flow Overview allows for a fast and easy impression on how signals of a preset are routed. However, blinking LEDs may distract the user in some cases, therefore the Flow Overview is optional.</p>
 
 		<span id="idx_sysinfo"></span>
-		<h3>System Info [Hardware UI, Graphical UI]</h3>
+		<h3>System Info [Panel Unit, Graphical UI]</h3>
 
 		<h5>Device Name</h5>
 		<p>The Device Name of the C15 instrument can be chosen by the user. It will appear in the meta data of presets and determine the SSID of the Wi-Fi network. In order to complete the renaming process, restart the instrument afterwards.</p>
@@ -101,19 +103,19 @@
 		<p>The final menu entry is an indicator for an available update, if a USB stick containing that update was plugged in. This can be used to test, if the update file is valid before actually updating (see Notes on Software Updates).</p>
 		
 		<span id="idx_about"></span>
-		<h3>About [Hardware UI, Graphical UI]</h3>
+		<h3>About [Panel Unit, Graphical UI]</h3>
 
 		<p>In the About section, the Nonlinear Labs developer team is listed.</p>
 
-		<h3>Backup</h3>
+		<h3>Backup [Panel Unit, Graphical UI]</h3>
 
 		<h5>USB Available [Panel Unit only]</h5>
 		<p>In order to backup all banks or restore a preexisting backup, a USB stick has to be plugged in. The "USB Available" indicator shows if a USB stick is currently present.</p>
 		
 		<h5>Save and Restore</h5>
-		<p>In order to save or restore all currently present banks to or from a backup file, enter one of these options. The backup file will be transferred to or from a present USB stick. The process may take some time, depending on the number of involved presets or banks.</p>
+		<p>In order to save or restore all current present banks to or from a backup file, enter one of these options. The backup file will be transferred to or from a present USB stick (if using the Panel Unit) or it will be downloaded on your browser (if using a mobile device and entering one of the provided context menus). The process may take some time, depending on the number of involved presets or banks.</p>
 				
-		<p class="note">Details on how to save or restore backups on the Hardware User Interface and the Graphical User Interface can be found in <a href="../interface/interface.html#idx_backups">chapter 4.13.</a></p>
+		<p class="note">Details on how to save or restore backups on the Hardware User Interface and the Graphical User Interface can be found in chapter <a href="../interface/interface.html#idx_backups">4.13 Backups</a></p>
 		</div><!-- end txt -->
 					
 	</div><!-- end main-content -->
