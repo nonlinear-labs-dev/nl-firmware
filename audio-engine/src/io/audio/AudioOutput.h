@@ -28,7 +28,9 @@ class AudioOutput
   void doBackgroundWork();
   void handleWriteError(snd_pcm_sframes_t result);
   void setThreadAffinity();
-  void playback(const SampleFrame *frames, size_t numFrames);
+  void playback(SampleFrame *frames, size_t numFrames);
+  template <typename T> snd_pcm_sframes_t playbackIntLE(const SampleFrame *frames, size_t numFrames);
+  snd_pcm_sframes_t playbackF32(SampleFrame *frames, size_t numFrames);
 
   Callback m_cb;
   snd_pcm_t *m_handle = nullptr;
@@ -38,6 +40,7 @@ class AudioOutput
   snd_pcm_uframes_t m_framesPerPeriod = 0;
   snd_pcm_uframes_t m_ringBufferFrames = 0;
   snd_pcm_uframes_t m_framesProcessed = 0;
+  snd_pcm_format_t m_format = SND_PCM_FORMAT_S32_LE;
 
   double m_performance = 0;
 };

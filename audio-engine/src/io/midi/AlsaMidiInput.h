@@ -19,6 +19,8 @@ class AlsaMidiInput : public MidiInput
   void open(const std::string &deviceName);
   void close();
   void doBackgroundWork();
+  void prioritizeThread();
+  void setThreadAffinity();
 
   Glib::RefPtr<Gio::Cancellable> m_cancellable;
   snd_rawmidi_t *m_handle = nullptr;

@@ -41,12 +41,30 @@ void AlsaMidiInput::close()
     snd_rawmidi_close(h);
 }
 
-void AlsaMidiInput::doBackgroundWork()
+void AlsaMidiInput::prioritizeThread()
 {
   struct sched_param param;
   param.sched_priority = 50;
-  if(pthread_setschedparam(pthread_self(), SCHED_FIFO, &param))
+
+  if(auto r = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param))
     std::cerr << "Could not set thread priority - consider 'sudo setcap 'cap_sys_nice=eip' <application>'" << std::endl;
+}
+
+void AlsaMidiInput::setThreadAffinity()
+{
+  int coreID = 1;
+
+  cpu_set_t set;
+  CPU_ZERO(&set);
+  CPU_SET(coreID, &set);
+  if(sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0)
+    std::cerr << "Could not set thread affinity" << std::endl;
+}
+
+void AlsaMidiInput::doBackgroundWork()
+{
+  prioritizeThread();
+  setThreadAffinity();
 
   uint8_t byte;
   snd_midi_event_t *parser = nullptr;

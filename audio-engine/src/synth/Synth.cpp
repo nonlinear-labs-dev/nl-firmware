@@ -75,15 +75,16 @@ void Synth::process(SampleFrame *target, size_t numFrames)
       }
       else
       {
-        auto todoNow = std::min<size_t>(numFrames, static_cast<size_t>(diffInSamples) - done);
+        auto todoNow = std::min<size_t>(numFrames, static_cast<size_t>(diffInSamples)) - done;
         doAudio(target + done, todoNow);
         done += todoNow;
       }
     }
     else
     {
-      doAudio(target + done, numFrames);
-      done += numFrames;
+      auto todoNow = numFrames - done;
+      doAudio(target + done, todoNow);
+      done += todoNow;
     }
   }
 }

@@ -6,11 +6,13 @@
 
 void SimpleSynth::doMidi(const MidiEvent &event)
 {
-  if(event.raw[0] & 0x90)
+  auto b = event.raw[0] & 0xF0;
+
+  if(b == 0x90)
   {
     auto note = event.raw[1];
 
-    m_voices[note].phase = g_random_double_range(0, 1);
+    m_voices[note].phase = 0;
     m_voices[note].vol = 0.9;
 
     auto hertz = 440.f * powf(2.f, (note - 69) / 12.0f);
@@ -20,7 +22,7 @@ void SimpleSynth::doMidi(const MidiEvent &event)
 
 void SimpleSynth::doAudio(SampleFrame *target, size_t numFrames)
 {
-  const float volumeDegradation = 1 / powf(80, 1.f / getOptions()->getSampleRate());
+  const float volumeDegradation = 1 / powf(20, 1.f / getOptions()->getSampleRate());
 
   for(size_t i = 0; i < numFrames; i++)
   {
@@ -37,8 +39,8 @@ void SimpleSynth::doAudio(SampleFrame *target, size_t numFrames)
 
       v.vol = v.vol * volumeDegradation + std::numeric_limits<float>::min();
 
-      target[i].left += sample;
-      target[i].right += sample;
+      target[i].left += 0.25f * sample;
+      target[i].right += 0.25f * sample;
     }
   }
 }

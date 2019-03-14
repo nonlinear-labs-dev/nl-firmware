@@ -35,8 +35,7 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
   /* Load Initial Preset (TCD zero for every Parameter) */
   loadInitialPreset();
 
-  //testLoadPreset(4);
-  testLoadPreset(1);
+  testLoadPreset(4);
 
   /* Examine functionality: TCD MIDI Input Log, observed Parameter, observed Signal */
 #if log_examine
