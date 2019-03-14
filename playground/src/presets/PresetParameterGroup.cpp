@@ -60,3 +60,12 @@ void PresetParameterGroup::writeDiff(Writer &writer, const std::string &groupId,
     }
   });
 }
+
+void PresetParameterGroup::writeDocument(Writer &writer) const
+{
+  for(auto &[id, pPtr] : m_parameters)
+  {
+    const auto param = static_cast<const PresetParameter *>(pPtr.get());
+    param->writeDocument(writer);
+  }
+}

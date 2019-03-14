@@ -198,6 +198,7 @@ Preset* AppendOverwriteInsertButtonMenu::overwritePreset(UNDO::Transaction* tran
     pm->selectBank(transaction, bank->getUuid());
   }
 
+  preset->onChange();
   return preset;
 }
 
@@ -213,6 +214,7 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
 
   bank->selectPreset(scope->getTransaction(), preset->getUuid());
   pm->selectBank(transaction, bank->getUuid());
+  preset->onChange();
 }
 
 void AppendOverwriteInsertButtonMenu::appendPreset(Bank* bank, bool modified)

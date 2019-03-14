@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AttributesOwner.h"
+#include "PresetParameterGroups.h"
 #include <memory>
 #include <unordered_map>
 #include <string>
@@ -19,10 +20,10 @@ class PresetParameter;
 class PresetParameterGroupsSerializer;
 class PresetSettingsSerializer;
 
-class Preset : public AttributesOwner
+class Preset : public PresetParameterGroups
 {
  private:
-  using super = AttributesOwner;
+  using super = PresetParameterGroups;
 
  public:
   Preset(UpdateDocumentContributor *parent);
@@ -32,6 +33,7 @@ class Preset : public AttributesOwner
 
   // supported interfaces
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDetailDocument(Writer &writer, tUpdateID knownRevision) const;
   void load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath);
   bool save(RefPtr<Gio::File> bankPath);
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
@@ -70,15 +72,10 @@ class Preset : public AttributesOwner
 
   Uuid m_uuid;
   Glib::ustring m_name;
-
-  using GroupPtr = std::unique_ptr<PresetParameterGroup>;
-
-  std::unordered_map<std::string, GroupPtr> m_parameterGroups;
   tUpdateID m_lastSavedUpdateID = 0;
   Signal<void> m_onChanged;
 
   friend class PresetSerializer;
-  friend class PresetSettingsSerializer;
   friend class PresetSettingsSerializer;
   friend class PresetParameterGroupsSerializer;
 };

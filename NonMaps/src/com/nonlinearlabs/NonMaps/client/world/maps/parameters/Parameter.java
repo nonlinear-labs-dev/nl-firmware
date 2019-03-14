@@ -97,6 +97,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		crc.eat(getParameterID());
 		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
 		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
+		crc.eat(EditBufferModel.get().findParameter(getParameterID()).isChanged());
 	}
 
 	public final boolean isBiPolar() {

@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
@@ -27,8 +28,11 @@ public class EditBufferUpdater extends Updater {
 			eb.isModified.setValue(Boolean.valueOf(isModified));
 			String changed = getAttributeValue(rootNode, "changed");
 			eb.isChanged.setValue(Boolean.valueOf(changed));
+			
+			processChildrenElements(getChild(rootNode, "original"), "param", child -> processOriginalParameter(child));
 		}
 
+		
 		processChangedChildrenElements(rootNode, "parameter-group", child -> processGroup(child));
 	}
 
@@ -40,4 +44,14 @@ public class EditBufferUpdater extends Updater {
 		updater.doUpdate();
 	}
 
+	private void processOriginalParameter(Node param) {
+		if(param != null) {
+			String id = getAttributeValue(param, "id");
+			String val = getAttributeValue(param, "value");
+			
+			if(!id.isEmpty() && !val.isEmpty()) {
+				EditBufferModel.get().findParameter(Integer.valueOf(id)).originalValue.setValue(Double.valueOf(val));
+			}
+		}
+	}
 }

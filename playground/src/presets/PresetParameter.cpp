@@ -10,7 +10,7 @@
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 
 PresetParameter::PresetParameter(int id)
-    : m_id(id)
+    : m_id{ id }
 {
 }
 
@@ -156,6 +156,11 @@ string PresetParameter::getInfo() const
   return "";
 }
 
+const int PresetParameter::getID() const
+{
+  return m_id;
+}
+
 enum RibbonReturnMode PresetParameter::getRibbonReturnMode() const
 {
   auto it = m_fields.find(Fields::RibbonReturnMode);
@@ -186,6 +191,15 @@ enum PedalModes PresetParameter::getPedalMode() const
     return static_cast<enum PedalModes>(stoi(it->second));
 
   return PedalModes::STAY;
+}
+
+void PresetParameter::writeDocument(Writer &writer) const
+{
+  writer.writeTag("param",
+                  { Attribute{ "id", to_string(m_id) }, Attribute{ "value", to_string(m_value) },
+                    Attribute{ "mod-src", to_string(static_cast<int>(getModulationSource())) },
+                    Attribute{ "mod-amt", to_string(getModulationAmount()) } },
+                  []() {});
 }
 
 string paramFieldToString(PresetParameter::Fields f)

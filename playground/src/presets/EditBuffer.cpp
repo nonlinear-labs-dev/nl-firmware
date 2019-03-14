@@ -284,12 +284,13 @@ void EditBuffer::setName(UNDO::Transaction *transaction, const ustring &name)
   transaction->addUndoSwap(this, m_name, name);
 }
 
-bool EditBuffer::isZombie() const {
+bool EditBuffer::isZombie() const
+{
 
-    if(getUUIDOfLastLoadedPreset() == Uuid::init())
-        return false;
+  if(getUUIDOfLastLoadedPreset() == Uuid::init())
+    return false;
 
-    return !getParent()->findPreset(getUUIDOfLastLoadedPreset());
+  return !getParent()->findPreset(getUUIDOfLastLoadedPreset());
 }
 
 void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
@@ -302,20 +303,30 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
   auto bankName = bank ? bank->getName(true) : "";
 
   writer.writeTag("edit-buffer",
-                  {
-                      Attribute("selected-parameter", m_selectedParameter ? m_selectedParameter->getID() : 0),
-                      Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()),
-                      Attribute("loaded-presets-name", getName()),
-                      Attribute("loaded-presets-bank-name", bankName),
-                      Attribute("preset-is-zombie", zombie),
-                      Attribute("is-modified", m_isModified),
-                      Attribute("hash", getHash()),
-                      Attribute("changed", changed),
-                  },
+                  { Attribute("selected-parameter", m_selectedParameter ? m_selectedParameter->getID() : 0),
+                    Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()),
+                    Attribute("loaded-presets-name", getName()), Attribute("loaded-presets-bank-name", bankName),
+                    Attribute("preset-is-zombie", zombie), Attribute("is-modified", m_isModified),
+                    Attribute("hash", getHash()), Attribute("changed", changed) },
                   [&]() {
                     if(changed)
                     {
                       super::writeDocument(writer, knownRevision);
+                    }
+                    if(auto originPreset = getOrigin())
+                    {
+                      writer.writeTag("original", [&]() { originPreset->writeDetailDocument(writer, knownRevision); });
+                    }
+                    else
+                    {
+                      writer.writeTag("original", [&]() {
+                        for(auto group : getParameterGroups())
+                        {
+                            for(auto& param: group->getParameters()) {
+                                writer.writeTag("param", {Attribute{"id", to_string(param->getID())}, Attribute{"value", to_string(param->getValue())}}, [](){});
+                            }
+                        }
+                      });
                     }
                   });
 }

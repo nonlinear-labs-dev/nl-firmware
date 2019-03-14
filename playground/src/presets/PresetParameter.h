@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include "AttributesOwner.h"
 #include <unordered_map>
 #include <type_traits>
 
@@ -37,6 +38,7 @@ class PresetParameter
   double getModulationAmount() const;
   std::string getGivenName() const;
   std::string getInfo() const;
+  const int getID() const;
   enum RibbonReturnMode getRibbonReturnMode() const;
   enum RibbonTouchBehaviour getRibbonTouchBehaviour() const;
   enum PedalModes getPedalMode() const;
@@ -49,6 +51,7 @@ class PresetParameter
 
   // algorithm
   void writeDiff(Writer &writer, int parameterID, const PresetParameter *other) const;
+  void writeDocument(Writer &writer) const;
 
  private:
   int m_id;

@@ -10,4 +10,6 @@ public class PresetUpdater extends Updater {
 		preset.uuid.setValue(getAttributeValue(xml, "uuid"));
 	}
 
+	protected void handlePresetParameters(Node xml, Preset preset) {
+	}
 }
