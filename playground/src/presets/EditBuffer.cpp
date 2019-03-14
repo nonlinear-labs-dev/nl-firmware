@@ -213,9 +213,24 @@ void EditBuffer::setModulationAmount(double amount)
   }
 }
 
-bool EditBuffer::hasLocks()
+bool EditBuffer::hasLocks() const
 {
   return searchForAnyParameterWithLock() != nullptr;
+}
+
+bool EditBuffer::anyParameterChanged() const
+{
+  for(auto &paramGroup : getParameterGroups())
+  {
+    for(auto &param : paramGroup->getParameters())
+    {
+      if(param->isChangedFromLoaded())
+      {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void EditBuffer::undoableSelectParameter(Parameter *p)
@@ -302,33 +317,41 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
   auto bank = origin ? dynamic_cast<const Bank *>(origin->getParent()) : nullptr;
   auto bankName = bank ? bank->getName(true) : "";
 
-  writer.writeTag("edit-buffer",
-                  { Attribute("selected-parameter", m_selectedParameter ? m_selectedParameter->getID() : 0),
-                    Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()),
-                    Attribute("loaded-presets-name", getName()), Attribute("loaded-presets-bank-name", bankName),
-                    Attribute("preset-is-zombie", zombie), Attribute("is-modified", m_isModified),
-                    Attribute("hash", getHash()), Attribute("changed", changed) },
-                  [&]() {
-                    if(changed)
-                    {
-                      super::writeDocument(writer, knownRevision);
-                    }
-                    if(auto originPreset = getOrigin())
-                    {
-                      writer.writeTag("original", [&]() { originPreset->writeDetailDocument(writer, knownRevision); });
-                    }
-                    else
-                    {
-                      writer.writeTag("original", [&]() {
-                        for(auto group : getParameterGroups())
-                        {
-                            for(auto& param: group->getParameters()) {
-                                writer.writeTag("param", {Attribute{"id", to_string(param->getID())}, Attribute{"value", to_string(param->getValue())}}, [](){});
-                            }
-                        }
-                      });
-                    }
-                  });
+  writer.writeTag(
+      "edit-buffer",
+      { Attribute("selected-parameter", m_selectedParameter ? m_selectedParameter->getID() : 0),
+        Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()), Attribute("loaded-presets-name", getName()),
+        Attribute("loaded-presets-bank-name", bankName), Attribute("preset-is-zombie", zombie),
+        Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed) },
+      [&]() {
+        if(changed)
+        {
+          super::writeDocument(writer, knownRevision);
+        }
+        if(auto originPreset = getOrigin())
+        {
+          writer.writeTag("original", [&]() { originPreset->writeDetailDocument(writer, knownRevision); });
+        }
+        else
+        {
+          writer.writeTag("original", [&]() {
+            for(auto group : getParameterGroups())
+            {
+              for(auto &param : group->getParameters())
+              {
+                writer.writeTag("param",
+                                {
+                                  Attribute{ "id", to_string(param->getID()) },
+                                  Attribute{ "value", to_string(param->getDefaultValue()) },
+                                  Attribute{ "mod-src", to_string(0) },
+                                  Attribute{ "mod-amt", to_string(0) }
+                                },
+                                []() {});
+              }
+            }
+          });
+        }
+      });
 }
 
 void EditBuffer::undoableLoadSelectedPreset()

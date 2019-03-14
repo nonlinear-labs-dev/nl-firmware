@@ -9,20 +9,19 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
 public class PresetSearchUpdater extends Updater {
 
-	private Document xml;
 	private Set<String> hits = new HashSet<String>();
 
 	public PresetSearchUpdater(Document xml) {
-		this.xml = xml;
+		super(xml.getFirstChild());
 	}
 
+	@Override
 	public void doUpdate() {
-		Node pm = this.xml.getFirstChild();
-		processPresetManager(pm);
+		processPresetManager();
 	}
 
-	private void processPresetManager(Node pm) {
-		super.processChildrenElements(pm, "banks", n -> processBanks(n));
+	private void processPresetManager() {
+		super.processChildrenElements(root, "banks", n -> processBanks(n));
 		PresetSearch.get().results.setValue(hits);
 	}
 

@@ -75,6 +75,10 @@ public class EditBufferModel {
 		return p;
 	}
 
+	public BasicParameterModel getSelectedParameter() {
+		return parameters.get(selectedParameter.getValue());
+	}
+	
 	public BasicParameterModel addParameter(int id) {
 		BasicParameterModel p = factory.create(id);
 

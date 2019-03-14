@@ -6,11 +6,10 @@ import com.nonlinearlabs.NonMaps.client.dataModel.ValueUpdater;
 
 public class ParameterUpdater extends Updater {
 
-	private Node root;
-	private BasicParameterModel target;
+	protected BasicParameterModel target;
 
 	public ParameterUpdater(Node c, BasicParameterModel p) {
-		root = c;
+		super(c);
 		target = p;
 	}
 
@@ -23,8 +22,9 @@ public class ParameterUpdater extends Updater {
 		if (!longName.isEmpty())
 			target.longName.setValue(longName);
 		
-		ValueUpdater vu = new ValueUpdater(target.value);
-		vu.update(root);
+		
+		ValueUpdater vu = new ValueUpdater(root, target.value);
+		vu.doUpdate();
 	}
 
 }

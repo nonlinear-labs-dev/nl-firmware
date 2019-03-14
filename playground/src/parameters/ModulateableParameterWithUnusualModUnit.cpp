@@ -31,8 +31,7 @@ void ModulateableParameterWithUnusualModUnit::writeDocProperties(
 
 Glib::ustring ModulateableParameterWithUnusualModUnit::stringizeModulationAmount() const
 {
-  return m_modAmountScaling->getDimension().stringize(
-      m_modAmountScaling->controlPositionToDisplay(getModulationAmount()));
+  return stringizeModulationAmount(getModulationAmount());
 }
 
 double ModulateableParameterWithUnusualModUnit::getModulationAmountFineDenominator() const
@@ -43,4 +42,9 @@ double ModulateableParameterWithUnusualModUnit::getModulationAmountFineDenominat
 double ModulateableParameterWithUnusualModUnit::getModulationAmountCoarseDenominator() const
 {
   return m_modAmountScaling->getCoarseDenominator(getValue());
+}
+
+Glib::ustring ModulateableParameterWithUnusualModUnit::stringizeModulationAmount(tControlPositionValue amount) const {
+    return m_modAmountScaling->getDimension().stringize(
+            m_modAmountScaling->controlPositionToDisplay(amount));
 }

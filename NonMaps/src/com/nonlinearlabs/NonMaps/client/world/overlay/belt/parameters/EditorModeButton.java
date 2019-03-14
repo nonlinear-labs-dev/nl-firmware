@@ -1,7 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
+import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 
 public class EditorModeButton extends SVGImage {
@@ -10,6 +14,22 @@ public class EditorModeButton extends SVGImage {
 		super(parent, "MC_Edit_Active.svg", "MC_Edit_Enabled.svg");
 	}
 
+	@Override
+	public void draw(Context2d ctx, int invalidationMask) {
+		super.draw(ctx, invalidationMask);
+		if(isChanged()) {
+			Rect pixrect = getPixRect().copy();
+			pixrect.moveBy(1, 0);
+			pixrect.reduceHeightBy(-2);
+			pixrect.reduceWidthBy(-2);
+			pixrect.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, null, RGB.yellow());
+		}
+	}
+
+	private boolean isChanged() {
+		return EditBufferModel.get().getSelectedParameter().isChanged();
+	}
+	
 	@Override
 	public BeltParameterLayout getParent() {
 		return (BeltParameterLayout) super.getParent();
