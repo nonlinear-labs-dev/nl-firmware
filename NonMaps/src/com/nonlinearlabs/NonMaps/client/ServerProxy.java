@@ -114,8 +114,8 @@ public class ServerProxy {
 			EditBufferUpdater ebu = new EditBufferUpdater(editBufferNode);
 			ebu.doUpdate();
 
-			PresetManagerUpdater pmu = new PresetManagerUpdater();
-			pmu.update(presetManagerNode, PresetManager.get());
+			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManager.get());
+			pmu.doUpdate();
 		}
 	}
 
@@ -974,6 +974,18 @@ public class ServerProxy {
 
 	public void recallCurrentParameterFromPreset() {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-current-from-preset");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+	
+	public void recallMCPosForCurrentParameter() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-for-current-mod-param");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+	
+	public void recallMcAmountForCurrentParameter() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-amount-for-current-mod-param");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}

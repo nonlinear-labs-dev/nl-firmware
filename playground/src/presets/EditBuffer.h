@@ -57,7 +57,8 @@ class EditBuffer : public ParameterGroupSet
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
-  bool hasLocks();
+  bool hasLocks() const;
+  bool anyParameterChanged() const;
 
   // CALLBACKS
   sigc::connection onSelectionChanged(slot<void, Parameter *, Parameter *> s);

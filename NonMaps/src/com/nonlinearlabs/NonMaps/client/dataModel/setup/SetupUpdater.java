@@ -9,11 +9,10 @@ import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.ValueUpdater;
 
 public class SetupUpdater extends Updater {
-	private Node settings;
 	private final HashMap<String, DataModelEntityBase> xmlNodeNameToSetting = createSettingMap();
 
 	public SetupUpdater(Node settings) {
-		this.settings = settings;
+		super(settings);
 	}
 
 	private HashMap<String, DataModelEntityBase> createSettingMap() {
@@ -56,7 +55,7 @@ public class SetupUpdater extends Updater {
 	}
 
 	public void doUpdate() {
-		Node setting = settings.getFirstChild();
+		Node setting = root.getFirstChild();
 
 		while (setting != null) {
 			if (setting.getNodeType() == Node.ELEMENT_NODE) {
@@ -68,9 +67,8 @@ public class SetupUpdater extends Updater {
 						s.fromString(getText(valueNode));
 
 						if (s instanceof ValueDataModelEntity) {
-							ValueUpdater u = new ValueUpdater((ValueDataModelEntity) s);
-							u.update(setting);
-
+							ValueUpdater u = new ValueUpdater(setting, (ValueDataModelEntity) s);
+							u.doUpdate();
 						}
 					}
 				}
