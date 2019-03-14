@@ -1,7 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.RGB;
@@ -27,7 +29,12 @@ public class EditorModeButton extends SVGImage {
 	}
 
 	private boolean isChanged() {
-		return EditBufferModel.get().getSelectedParameter().isChanged();
+		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
+		if(bpm instanceof ModulateableParameter) {
+			ModulateableParameter modP = (ModulateableParameter)bpm;
+			return modP.isModAmountChanged() || modP.isModSourceChanged() || modP.isMCPosChanged();
+		}
+		return false;
 	}
 	
 	@Override
