@@ -2,6 +2,7 @@
 #include "synth/SimpleSynth.h"
 #include "synth/C15Synth.h"
 #include "ui/CommandlinePerformanceWatch.h"
+#include "io/Log.h"
 
 #include <glibmm.h>
 #include <iostream>
@@ -42,6 +43,15 @@ int main(int args, char *argv[])
   connectSignals();
 
   theOptions = std::make_unique<Options>(args, argv);
+
+  if(theOptions->doMeasurePerformance())
+  {
+    auto synth = std::make_unique<C15Synth>();
+    synth->measurePerformance(std::chrono::seconds(5));  // warm up
+    auto result = synth->measurePerformance(std::chrono::seconds(5));
+    Log::info("Audio engine performs at", result, "x realtime.");
+    return EXIT_SUCCESS;
+  }
 
   //auto synth = std::make_unique<SimpleSynth>();
   auto synth = std::make_unique<C15Synth>();

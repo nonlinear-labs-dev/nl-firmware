@@ -13,6 +13,5 @@ class C15_CLI : public CommandLineInterface
   void processByte(char c) override;
 
  private:
-  C15Synth *m_synth;
   std::unordered_map<char, std::function<void()>> m_commands;
 };

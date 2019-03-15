@@ -20,6 +20,8 @@ class Synth
 
   const AudioOutput *getAudioOut() const;
 
+  double measurePerformance(std::chrono::seconds time);
+
  protected:
   virtual void doMidi(const MidiEvent &event) = 0;
   virtual void doAudio(SampleFrame *target, size_t numFrames) = 0;

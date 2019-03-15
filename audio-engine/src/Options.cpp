@@ -49,17 +49,17 @@ Options::Options(int &argc, char **&argv)
   fatalXRuns.set_description("Terminate program in case of alsa underrun or overrun");
   mainGroup.add_entry(fatalXRuns, m_fatalXRuns);
 
+  Glib::OptionEntry measurePerformance;
+  measurePerformance.set_long_name("measure-performance");
+  measurePerformance.set_short_name('e');
+  measurePerformance.set_description("Calculate performance of audio engine");
+  mainGroup.add_entry(measurePerformance, m_measurePerformance);
+
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
   if(!ctx.parse(argc, argv))
     std::cerr << ctx.get_summary();
-
-  if(m_audioOutputDeviceName.empty())
-  {
-    g_printerr("%s", ctx.get_help().c_str());
-    exit(-1);
-  }
 }
 
 int Options::testNotesDistance() const
@@ -95,4 +95,9 @@ int Options::getPolyphony() const
 double Options::getLatency() const
 {
   return m_latency;
+}
+
+bool Options::doMeasurePerformance()
+{
+  return m_measurePerformance;
 }

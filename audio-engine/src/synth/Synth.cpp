@@ -45,6 +45,16 @@ const AudioOutput *Synth::getAudioOut() const
   return m_out.get();
 }
 
+double Synth::measurePerformance(std::chrono::seconds time)
+{
+  auto start = std::chrono::high_resolution_clock::now();
+  auto numSamples = static_cast<size_t>(time.count() * getOptions()->getSampleRate());
+  std::vector<SampleFrame> samples(numSamples);
+  doAudio(samples.data(), numSamples);
+  auto timeUsed = std::chrono::high_resolution_clock::now() - start;
+  return 1.0 * time / timeUsed;
+}
+
 void Synth::pushMidiEvent(const MidiEvent &event)
 {
   auto &c = m_midiRingBuffer.push(event);
