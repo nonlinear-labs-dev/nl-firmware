@@ -1,13 +1,14 @@
 #include "AudioOutput.h"
 #include "main.h"
 #include "Options.h"
+#include "io/Log.h"
 #include <iostream>
 #include <algorithm>
 
 int checkAlsa(int res)
 {
   if(res != 0)
-    std::cout << "Alsa Error: " << snd_strerror(res) << std::endl;
+    Log::error("Alsa Error:", snd_strerror(res));
 
   return res;
 }
@@ -41,21 +42,19 @@ void AudioOutput::close()
 
 void AudioOutput::open(const std::string& deviceName)
 {
-  snd_pcm_open(&m_handle, deviceName.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
-
-  snd_pcm_hw_params_t* hwparams = NULL;
-  snd_pcm_sw_params_t* swparams = NULL;
-
-  snd_pcm_hw_params_alloca(&hwparams);
-  snd_pcm_sw_params_alloca(&swparams);
-
-  unsigned int sampleRate = getOptions()->getSampleRate();
+  unsigned int sampleRate = static_cast<unsigned int>(getOptions()->getSampleRate());
   unsigned int periods = 2;
-
   auto timePerPeriod = getOptions()->getLatency();
 
   m_framesPerPeriod = static_cast<snd_pcm_uframes_t>(timePerPeriod * sampleRate / 1000);
-  m_ringBufferFrames = periods * m_framesPerPeriod;
+
+  snd_pcm_open(&m_handle, deviceName.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
+
+  snd_pcm_hw_params_t* hwparams = nullptr;
+  snd_pcm_sw_params_t* swparams = nullptr;
+
+  snd_pcm_hw_params_alloca(&hwparams);
+  snd_pcm_sw_params_alloca(&swparams);
 
   checkAlsa(snd_pcm_hw_params_any(m_handle, hwparams));
   checkAlsa(snd_pcm_hw_params_set_access(m_handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED));
@@ -67,19 +66,23 @@ void AudioOutput::open(const std::string& deviceName)
   checkAlsa(snd_pcm_hw_params_get_format(hwparams, &m_format));
   checkAlsa(snd_pcm_hw_params_set_channels(m_handle, hwparams, 2));
   checkAlsa(snd_pcm_hw_params_set_rate_near(m_handle, hwparams, &sampleRate, nullptr));
+
   checkAlsa(snd_pcm_hw_params_set_periods(m_handle, hwparams, periods, 0));
+  checkAlsa(snd_pcm_hw_params_get_periods(hwparams, &periods, nullptr));
   checkAlsa(snd_pcm_hw_params_set_period_size_near(m_handle, hwparams, &m_framesPerPeriod, nullptr));
+
+  m_ringBufferFrames = periods * m_framesPerPeriod;
+
   checkAlsa(snd_pcm_hw_params_set_buffer_size_near(m_handle, hwparams, &m_ringBufferFrames));
   checkAlsa(snd_pcm_hw_params(m_handle, hwparams));
   checkAlsa(snd_pcm_sw_params_current(m_handle, swparams));
   checkAlsa(snd_pcm_sw_params(m_handle, swparams));
 
   checkAlsa(snd_pcm_hw_params_get_period_time(hwparams, &m_latency, nullptr));
-  checkAlsa(snd_pcm_hw_params_get_periods(hwparams, &periods, nullptr));
 
-  std::cout << "Alsa Frames per Period: " << m_framesPerPeriod << std::endl;
-  std::cout << "Alsa Periods: " << periods << std::endl;
-  std::cout << "Midi2Audio latency is: " << m_latency / 1000 << "ms." << std::endl;
+  Log::info("Alsa Frames per Period:", m_framesPerPeriod);
+  Log::info("Alsa Periods:", periods);
+  Log::info("Midi2Audio latency is:", m_latency / 1000, "ms.");
 }
 
 void AudioOutput::start()
@@ -170,7 +173,7 @@ void AudioOutput::playback(SampleFrame* frames, size_t numFrames)
       break;
 
     default:
-      std::cout << "Audio format not supported" << std::endl;
+      Log::error("Audio format not supported");
       break;
   }
 

@@ -17,7 +17,12 @@ class C15Synth : public Synth
   void resetDSP();
   void toggleTestTone();
   void selectTestToneFrequency();
+  void selectTestToneAmplitude();
+  void increase();
+  void decrease();
 
  private:
+  void changeSelectedValueBy(int i);
+
   std::unique_ptr<dsp_host> m_dsp;
 };

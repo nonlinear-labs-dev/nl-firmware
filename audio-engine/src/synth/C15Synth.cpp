@@ -2,6 +2,7 @@
 #include "c15-audio-engine/dsp_host.h"
 #include "main.h"
 #include "Options.h"
+#include "io/Log.h"
 
 C15Synth::C15Synth()
     : m_dsp(std::make_unique<dsp_host>())
@@ -35,31 +36,30 @@ void C15Synth::printAndResetTcdInputLog()
   auto cp = m_dsp->m_tcd_input_log;
   m_dsp->m_tcd_input_log.reset();
 
-  std::cout << std::endl << "TCD MIDI Input Log: (Length: " << cp.m_length << ")" << std::endl;
+  Log::info("TCD MIDI Input Log: (Length:", cp.m_length, ")");
 
   if(cp.m_length > 0)
   {
-    std::cout << "(elapsed Samples\t: Command Argument, ...) - Argument is always unsigned 14 bit" << std::endl;
-    uint32_t idx = cp.m_startPos;
+    Log::info("(elapsed Samples\t: Command Argument, ...) - Argument is always unsigned 14 bit");
+
     for(uint32_t i = 0; i < cp.m_length; i++)
     {
-      if(cp.m_entry[idx].m_time > 0)
-      {
-        std::cout << std::endl;
-        std::cout << cp.m_entry[idx].m_time << "\t: ";
-      }
-      std::cout << tcd_command_names[cp.m_entry[idx].m_cmdId] << " ";
-      std::cout << cp.m_entry[idx].m_arg << ", ";
-      idx = (idx + 1) % tcd_log_buffersize;
+      const auto &e = cp.m_entry[(cp.m_startPos + i) % tcd_log_buffersize];
+
+      if(e.m_time > 0)
+        Log::info(e.m_time, "\t: ", tcd_command_names[e.m_cmdId], e.m_arg, ", ");
+      else
+        Log::info(tcd_command_names[e.m_cmdId], e.m_arg, ", ");
     }
-    std::cout << std::endl << "\nEnd of TCD MIDI Input Log" << std::endl;
+
+    Log::info("End of TCD MIDI Input Log");
   }
 }
 
 void C15Synth::resetDSP()
 {
   m_dsp->resetDSP();
-  std::cout << std::endl << "DSP has been reset." << std::endl;
+  Log::info("DSP has been reset.");
 }
 
 void C15Synth::toggleTestTone()
@@ -67,11 +67,50 @@ void C15Synth::toggleTestTone()
   auto tmp = static_cast<float>(1 - m_dsp->m_test_tone.m_state);
   m_dsp->m_decoder.m_utilityId = 4;
   m_dsp->utilityUpdate(tmp);
-  std::cout << std::endl << "Test Tone toggled (" << m_dsp->m_test_tone.m_state << ")" << std::endl;
+  Log::info("Test Tone toggled:", m_dsp->m_test_tone.m_state);
 }
 
 void C15Synth::selectTestToneFrequency()
 {
   m_dsp->m_test_tone.m_focus = 0;
-  std::cout << std::endl << "Test Tone: Frequency:\t" << m_dsp->m_test_tone.a_frequency << " Hz" << std::endl;
+  Log::info("Test Tone: Frequency:\t", m_dsp->m_test_tone.a_frequency, "Hz");
+}
+
+void C15Synth::selectTestToneAmplitude()
+{
+  m_dsp->m_test_tone.m_focus = 1;
+  Log::info("Test Tone: Amplitude:\t", m_dsp->m_test_tone.a_amplitude, "dB");
+}
+
+void C15Synth::increase()
+{
+  changeSelectedValueBy(1);
+}
+
+void C15Synth::decrease()
+{
+  changeSelectedValueBy(-1);
+}
+
+void C15Synth::changeSelectedValueBy(int i)
+{
+  switch(m_dsp->m_test_tone.m_focus)
+  {
+    case 0:
+    {
+      m_dsp->m_decoder.m_utilityId = 2;
+      auto tmp = std::clamp(m_dsp->m_test_tone.a_frequency + i * 10.f, 0.f, 1000.f);
+      m_dsp->utilityUpdate(tmp);
+      Log::info("Test Tone: Frequency:\t", tmp, "Hz");
+    }
+    break;
+    case 1:
+    {
+      m_dsp->m_decoder.m_utilityId = 3;
+      auto tmp = std::clamp(m_dsp->m_test_tone.a_amplitude + i * 1.f, -60.f, 0.f);
+      m_dsp->utilityUpdate(tmp);
+      Log::info("Test Tone: Amplitude:\t", tmp, "dB");
+    }
+    break;
+  }
 }

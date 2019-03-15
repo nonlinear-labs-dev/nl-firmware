@@ -13,7 +13,7 @@ void SimpleSynth::doMidi(const MidiEvent &event)
     auto note = event.raw[1];
 
     m_voices[note].phase = 0;
-    m_voices[note].vol = 0.9;
+    m_voices[note].vol = 1.0;
 
     auto hertz = 440.f * powf(2.f, (note - 69) / 12.0f);
     m_voices[note].inc = hertz / getOptions()->getSampleRate();

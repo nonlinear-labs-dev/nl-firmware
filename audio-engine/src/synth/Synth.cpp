@@ -2,6 +2,7 @@
 #include "io/audio/AudioOutput.h"
 #include "io/midi/AlsaMidiInput.h"
 #include "io/midi/TestMidiInput.h"
+#include "io/Log.h"
 #include "Options.h"
 #include "main.h"
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include "io/Log.h"
 #include "dsp_host.h"
 
 /* default constructor - initialize (audio) signals */
@@ -22,12 +23,13 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
   m_params.init(_samplerate, _polyphony);
   m_decoder.init();
   /* init messages to terminal */
-  std::cout << std::endl << "DSP_HOST::MILESTONE:\t\t" << static_cast<float>(test_milestone) * 0.01f << std::endl;
-  std::cout << "DSP_HOST::INIT:\t\t\tsamplerate: " << m_samplerate << ", voices: " << m_voices << std::endl;
-  std::cout << "DSP_HOST::CLOCK_divisions:\t" << m_clockDivision[0] << ", " << m_clockDivision[1] << ", ";
-  std::cout << m_clockDivision[2] << ", " << m_clockDivision[3] << std::endl;
-  std::cout << "DSP_HOST::UPSAMPLE:\t\t" << m_upsampleFactor << std::endl;
-  std::cout << "DSP_HOST::SIZEOF:\t\t" << sizeof(dsp_host) << " bytes" << std::endl << std::endl;
+
+  Log::info("DSP_HOST::MILESTONE:\t\t", static_cast<float>(test_milestone) * 0.01f);
+  Log::info("DSP_HOST::INIT:\t\t\tsamplerate:", m_samplerate, ", voices:", m_voices);
+  Log::info("DSP_HOST::CLOCK_divisions:\t", m_clockDivision[0], ",", m_clockDivision[1], ",", m_clockDivision[2], ",",
+            m_clockDivision[3]);
+  Log::info("DSP_HOST::UPSAMPLE:\t\t", m_upsampleFactor);
+  Log::info("DSP_HOST::SIZEOF:\t\t", sizeof(dsp_host), "bytes");
 
   /* Audio Engine */
   initAudioEngine();
@@ -263,7 +265,7 @@ void dsp_host::evalMidi(uint32_t _status, uint32_t _data0, uint32_t _data1)
       }
       else
       {
-        std::cout << "ignored selectVoice(" << i << ")" << std::endl;
+        Log::info("ignored selectVoice(", i, ")");
       }
       break;
     case 2:
@@ -280,7 +282,7 @@ void dsp_host::evalMidi(uint32_t _status, uint32_t _data0, uint32_t _data1)
       }
       else
       {
-        std::cout << "ignored selectMultipleVoices(" << i << ")" << std::endl;
+        Log::info("ignored selectMultipleVoices(", i, ")");
       }
       break;
     case 3:
@@ -917,11 +919,11 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
       {
         case 1:
           /* Group Mode */
-          std::cout << "enabled GROUP mode" << std::endl;
+          Log::info("enabled GROUP mode");
           m_test_midiMode = 0;
           break;
         case 2:
-          std::cout << "enabled GLOBAL mode" << std::endl;
+          Log::info("enabled GLOBAL mode");
           m_test_midiMode = 1;
           m_test_selectedParam = -1;
           /* Global Mode */
@@ -933,7 +935,7 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
             {
               /* NULL selected param */
               uint32_t tmp_p = static_cast<uint32_t>(m_test_selectedParam);  // cast as unsigned int
-              std::cout << "NULL Param (" << tmp_p << ")" << std::endl;      // print to terminal
+              Log::info("NULL Param (", tmp_p, ")");                         // print to terminal
               /* TCD instructions */
               evalMidi(0, 127, 127);                 // select all voices
               evalMidi(1, tmp_p >> 7, tmp_p & 127);  // select corresponding param
@@ -945,98 +947,98 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
           else
           {
             /* Print Head */
-            std::cout << "print parameters: HEAD" << std::endl;
+            Log::info("print parameters: HEAD");
             testGetParamHeadData();
           }
           break;
         case 4:
           /* Print Body */
-          std::cout << "print parameters: BODY" << std::endl;
+          Log::info("print parameters: BODY");
           testGetParamRenderData();
           break;
         case 5:
           /* Print Signal */
-          std::cout << "print parameters: SIGNAL" << std::endl;
+          Log::info("print parameters: SIGNAL");
           testGetSignalData();
           break;
         case 6:
           /* Init */
-          std::cout << "triggered INIT" << std::endl;
+          Log::info("triggered INIT");
           testInit();
           break;
         case 7:
           /* Flush */
-          std::cout << "triggered FLUSH" << std::endl;
+          Log::info("triggered FLUSH");
           testReset(0);
           break;
         case 8:
           /* Preset 0 */
-          std::cout << "load PRESET 0" << std::endl;
+          Log::info("load PRESET 0");
           testLoadPreset(0);
           break;
         case 9:
           /* Preset 1 */
-          std::cout << "load PRESET 1" << std::endl;
+          Log::info("load PRESET 1");
           testLoadPreset(1);
           break;
         case 10:
           /* Preset 2 */
-          std::cout << "load PRESET 2" << std::endl;
+          Log::info("load PRESET 2");
           testLoadPreset(2);
           break;
         case 11:
           /* Preset 3 */
-          std::cout << "load PRESET 3" << std::endl;
+          Log::info("load PRESET 3");
           testLoadPreset(3);
           break;
         case 12:
           /* Preset 4 */
-          std::cout << "load PRESET 4" << std::endl;
+          Log::info("load PRESET 4");
           testLoadPreset(4);
           break;
         case 13:
           /* Preset 5 */
-          std::cout << "load PRESET 5" << std::endl;
+          Log::info("load PRESET 5");
           testLoadPreset(5);
           break;
         case 14:
           /* Preset 6 */
-          std::cout << "load PRESET 6" << std::endl;
+          Log::info("load PRESET 6");
           testLoadPreset(6);
           break;
         case 15:
           /* Preset 7 */
-          std::cout << "load PRESET 7" << std::endl;
+          Log::info("load PRESET 7");
           testLoadPreset(7);
           break;
         case 16:
           // Envelope Stop
-          std::cout << "triggered ENV_STOP" << std::endl;
+          Log::info("triggered ENV_STOP");
           testReset(1);
           break;
         case 17:
           // DSP Reset
-          std::cout << "triggered DSP_RESET" << std::endl;
+          Log::info("triggered DSP_RESET");
           testReset(2);
           break;
         case 18:
           // Trigger Test Tone
           m_test_tone_state = 1 - m_test_tone_state;
-          std::cout << "triggered TEST_TONE_STATE(" << m_test_tone_state << ")" << std::endl;
+          Log::info("triggered TEST_TONE_STATE(", m_test_tone_state, ")");
           evalMidi(8, 0, 4);                   // select utility (test tone state)
           evalMidi(24, 0, m_test_tone_state);  // update utility
           break;
         case 19:
           // Mute OSC A
           m_test_muteA = 1 - m_test_muteA;
-          std::cout << "OSC_A_Mute: " << m_test_muteA << std::endl;
+          Log::info("OSC_A_Mute:", m_test_muteA);
           evalMidi(8, 0, 5);
           evalMidi(24, 0, m_test_muteA);
           break;
         case 20:
           // Mute OSC B
           m_test_muteB = 1 - m_test_muteB;
-          std::cout << "OSC_B_Mute: " << m_test_muteB << std::endl;
+          Log::info("OSC_B_Mute:", m_test_muteB);
           evalMidi(8, 0, 6);
           evalMidi(24, 0, m_test_muteB);
           break;
@@ -1049,63 +1051,63 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
       {
         case 1:
           /* Env A */
-          std::cout << "selected ENVELOPE_A" << std::endl;
+          Log::info("selected ENVELOPE_A");
           break;
         case 2:
           /* Env B */
-          std::cout << "selected ENVELOPE_B" << std::endl;
+          Log::info("selected ENVELOPE_B");
           break;
         case 3:
           /* Env C */
-          std::cout << "selected ENVELOPE_C" << std::endl;
+          Log::info("selected ENVELOPE_C");
           break;
         case 4:
           /* Osc A */
-          std::cout << "selected OSCILLATOR_A" << std::endl;
+          Log::info("selected OSCILLATOR_A");
           break;
         case 5:
           /* Shp A */
-          std::cout << "selected SHAPER_A" << std::endl;
+          Log::info("selected SHAPER_A");
           break;
         case 6:
           /* Osc B */
-          std::cout << "selected OSCILLATOR_B" << std::endl;
+          Log::info("selected OSCILLATOR_B");
           break;
         case 7:
           /* Shp B */
-          std::cout << "selected SHAPER_B" << std::endl;
+          Log::info("selected SHAPER_B");
           break;
         case 8:
           /* Out Mix */
-          std::cout << "selected OUTPUT_MIXER" << std::endl;
+          Log::info("selected OUTPUT_MIXER");
           break;
         case 9:
           /* Comb Filter */
-          std::cout << "selected COMB_FILTER" << std::endl;
+          Log::info("selected COMB_FILTER");
           break;
         case 10:
           /* State Variable Filter */
-          std::cout << "selected STATE_VARIABLE_FILTER" << std::endl;
+          Log::info("selected STATE_VARIABLE_FILTER");
           break;
         case 11:
           /* Cabinet & Gap Filter */
-          std::cout << "selected CABINET_&_GAP_FILTER" << std::endl;
+          Log::info("selected CABINET_&_GAP_FILTER");
           break;
         case 12:
           /* Flanger */
-          std::cout << "selected FLANGER" << std::endl;
+          Log::info("selected FLANGER");
           break;
         case 13:
           /* Echo and Reverb */
-          std::cout << "selected ECHO_&_REVERB" << std::endl;
+          Log::info("selected ECHO_&_REVERB");
           break;
         case 16:
           /* FB Mix */
-          std::cout << "selected FEEDBACK MIXER" << std::endl;
+          Log::info("selected FEEDBACK MIXER");
           break;
         case 17:
           /* Master */
-          std::cout << "selected MASTER" << std::endl;
+          Log::info("selected MASTER");
           break;
       }
       break;
@@ -1126,11 +1128,11 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
             val = (2 * val) - 1;
           }
           val *= rng;
-          std::cout << "edit PARAM " << tcdId << " (" << val << ")" << std::endl;
+          Log::info("edit PARAM ", tcdId, "(", val, ")");
           /* get unison voices trigger and stop envelopes */
           if(tcdId == 249)
           {
-            std::cout << "\tEnvelope Stop" << std::endl;
+            Log::info("\tEnvelope Stop");
             resetEnv();
             val += 1;
           }
@@ -1258,7 +1260,7 @@ void dsp_host::testNoteOff(uint32_t _pitch, uint32_t _velocity)
       = static_cast<int32_t>(m_voices);  // number of voices represented as signed integer (for correct comparisons)
   if((checkVoiceId < 0) || (checkVoiceId >= v))
   {
-    std::cout << "detected Note Off that shouldn't have happened..." << std::endl;
+    Log::warning("detected Note Off that shouldn't have happened...");
   }
   else
   {
@@ -1289,7 +1291,7 @@ void dsp_host::testNewNoteOff(uint32_t _pitch, uint32_t _velocity)
       = static_cast<int32_t>(m_voices);  // number of voices represented as signed integer (for correct comparisons)
   if((checkVoiceId < 0) || (checkVoiceId >= v))
   {
-    std::cout << "detected Note Off that shouldn't have happened..." << std::endl;
+    Log::warning("detected Note Off that shouldn't have happened...");
   }
   else
   {
@@ -1319,7 +1321,7 @@ void dsp_host::testNoteOff156(uint32_t _pitch, uint32_t _velocity)
       = static_cast<int32_t>(m_voices);  // number of voices represented as signed integer (for correct comparisons)
   if((checkVoiceId < 0) || (checkVoiceId >= v))
   {
-    std::cout << "detected Note Off that shouldn't have happened..." << std::endl;
+    Log::warning("detected Note Off that shouldn't have happened...");
   }
   else
   {
@@ -1339,7 +1341,7 @@ void dsp_host::testNoteOff156(uint32_t _pitch, uint32_t _velocity)
 /* set transition time */
 void dsp_host::testSetGlobalTime(uint32_t _value)
 {
-  std::cout << "\nSET_TIME(" << _value << " (ms))" << std::endl;
+  Log::info("\nSET_TIME(", _value, "(ms))");
   /* select all voices, params and update time */
   _value *= static_cast<uint32_t>(m_params.m_millisecond);  // convert time accordingly in samples
   evalMidi(0, 127, 127);                                    // select all voices
@@ -1366,7 +1368,7 @@ void dsp_host::testSetReference(uint32_t _value)
 {
   /* prepare value */
   uint32_t val = static_cast<uint32_t>(static_cast<float>(_value) * m_test_normalizeMidi * utility_definition[1][0]);
-  std::cout << "\nSET_REFERENCE(" << val << ")" << std::endl;
+  Log::info("\nSET_REFERENCE(", val, ")");
   /* select and update reference utility */
   evalMidi(8, 0, 1);                  // select utility (reference tone)
   evalMidi(24, val >> 7, val & 127);  // update utility
@@ -1376,7 +1378,7 @@ void dsp_host::testSetReference(uint32_t _value)
 void dsp_host::testSetToneFreq(uint32_t _value)
 {
   _value += 400;
-  std::cout << "Set_TestTone_Frequency(" << _value << ") [Hz]" << std::endl;
+  Log::info("Set_TestTone_Frequency:", _value, "[Hz]");
   evalMidi(8, 0, 2);                        // select utility (test tone freq)
   evalMidi(24, _value >> 7, _value & 127);  // update utility
 }
@@ -1385,7 +1387,7 @@ void dsp_host::testSetToneFreq(uint32_t _value)
 void dsp_host::testSetToneAmp(uint32_t _value)
 {
   int32_t val = static_cast<int32_t>(_value) - 127;
-  std::cout << "Set_TestTone_Amplitude(" << val << ") [dB]" << std::endl;
+  Log::info("Set_TestTone_Amplitude:", val, "[dB]");
   if(val < 0)
   {
     _value = 8192 + static_cast<uint32_t>(val * -1);
@@ -1401,7 +1403,7 @@ void dsp_host::testSetToneAmp(uint32_t _value)
 /* preset recall approach */
 void dsp_host::testLoadPreset(uint32_t _presetId)
 {
-  std::cout << "\nRECALL(" << _presetId << ")" << std::endl;
+  Log::info("RECALL:", _presetId);
   /* run a recall sequence based on the given preset id (predefined presets in pe_defines_testconfig.h) */
   /* recall sequence - no flush */
   evalMidi(47, 1, 1);  // enable preload (recall list mode)
@@ -1416,7 +1418,7 @@ void dsp_host::testLoadPreset(uint32_t _presetId)
 /* trigger flush */
 void dsp_host::testReset(uint32_t _mode)
 {
-  std::cout << "\nRESET(" << _mode << ")" << std::endl;
+  Log::info("RESET:", _mode);
   /* pass the trigger TCD message */
   evalMidi(39, 0, _mode);  // flush/env_stop/dsp_reset
 }
@@ -1425,37 +1427,37 @@ void dsp_host::testReset(uint32_t _mode)
 void dsp_host::testGetSignalData()
 {
   /* print out the signal array to the terminal */
-  std::cout << "\nPARAM_SIGNAL:" << std::endl;
+  Log::info("PARAM_SIGNAL:");
   for(uint32_t p = 0; p < sig_number_of_signal_items; p++)
   {
-    std::cout << p << " - ";
+    Log::info<Log::LogMode::InsertSpaces>(p, "-");
     for(uint32_t v = 0; v < m_voices; v++)
     {
-      std::cout << m_paramsignaldata[v][p] << ", ";
+      Log::info<Log::LogMode::Plain>(m_paramsignaldata[v][p], ", ");
     }
-    std::cout << std::endl;
+    Log::info();
   }
   /* print out the left and right output signal to the terminal */
-  std::cout << "\nOUTPUT_SIGNAL: " << m_mainOut_L << ", " << m_mainOut_R << std::endl;
+  Log::info("OUTPUT_SIGNAL:", m_mainOut_L, ",", m_mainOut_R);
 }
 
 /* glance at parameter definition */
 void dsp_host::testGetParamHeadData()
 {
   /* print out the parameter definitions to the terminal */
-  std::cout << "\nPARAM_HEAD:" << std::endl;
+  Log::info("PARAM_HEAD:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     param_head *obj = &m_params.m_head[p];
-    std::cout << "id: " << obj->m_id << ", ";
-    std::cout << "index: " << obj->m_index << ", ";
-    std::cout << "size: " << obj->m_size << ", ";
-    std::cout << "clock: " << obj->m_clockType << ", ";
-    std::cout << "poly: " << obj->m_polyType << ", ";
-    std::cout << "scaleId: " << obj->m_scaleId << ", ";
-    std::cout << "postId: " << obj->m_postId << ", ";
-    std::cout << "norm: " << obj->m_normalize << ", ";
-    std::cout << "scaleArg: " << obj->m_scaleArg << std::endl;
+    Log::info<Log::LogMode::Plain>("id: ", obj->m_id, ", ");
+    Log::info<Log::LogMode::Plain>("index: ", obj->m_index, ", ");
+    Log::info<Log::LogMode::Plain>("size: ", obj->m_size, ", ");
+    Log::info<Log::LogMode::Plain>("clock: ", obj->m_clockType, ", ");
+    Log::info<Log::LogMode::Plain>("poly: ", obj->m_polyType, ", ");
+    Log::info<Log::LogMode::Plain>("scaleId: ", obj->m_scaleId, ", ");
+    Log::info<Log::LogMode::Plain>("postId: ", obj->m_postId, ", ");
+    Log::info<Log::LogMode::Plain>("norm: ", obj->m_normalize, ", ");
+    Log::info<Log::LogMode::AppendNewLine>("scaleArg: ", obj->m_scaleArg);
   }
 }
 
@@ -1463,7 +1465,7 @@ void dsp_host::testGetParamHeadData()
 void dsp_host::testGetParamRenderData()
 {
   /* print out the parameter rendering status to the terminal */
-  std::cout << "\nPARAM_BODY:" << std::endl;
+  Log::info("PARAM_BODY:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     param_head *obj = &m_params.m_head[p];
@@ -1471,11 +1473,11 @@ void dsp_host::testGetParamRenderData()
     for(uint32_t i = 0; i < obj->m_size; i++)
     {
       param_body *item = &m_params.m_body[index];
-      std::cout << "P(" << obj->m_id << ", " << i << "):\t";
-      std::cout << "state: " << item->m_state << ",\tpreload: " << item->m_preload;
-      std::cout << ",\tsignal: " << item->m_signal << ",\tdx:[" << item->m_dx[0] << ", " << item->m_dx[1] << "]";
-      std::cout << ",\tx: " << item->m_x << ",\tstart: " << item->m_start;
-      std::cout << ",\tdiff: " << item->m_diff << ",\tdest: " << item->m_dest << std::endl;
+      Log::info<Log::LogMode::Plain>("P(", obj->m_id, ", ", i, "):\t");
+      Log::info<Log::LogMode::Plain>("state: ", item->m_state, ",\tpreload: ", item->m_preload);
+      Log::info<Log::LogMode::Plain>(",\tsignal: ", item->m_signal, ",\tdx:[", item->m_dx[0], ", ", item->m_dx[1], "]");
+      Log::info<Log::LogMode::Plain>(",\tx: ", item->m_x, ",\tstart: ", item->m_start);
+      Log::info<Log::LogMode::AppendNewLine>(",\tdiff: ", item->m_diff, ",\tdest: ", item->m_dest);
       index++;
     }
   }
@@ -1516,7 +1518,7 @@ void dsp_host::testParseDestination(int32_t _value)
 void dsp_host::testInit()
 {
   /* */
-  std::cout << "\nINIT SEQUENCE" << std::endl;
+  Log::info("INIT SEQUENCE");
   evalMidi(0, 127, 127);  // select all voices
   evalMidi(1, 127, 127);  // select all parameters
   testSetGlobalTime(dsp_initial_time);
