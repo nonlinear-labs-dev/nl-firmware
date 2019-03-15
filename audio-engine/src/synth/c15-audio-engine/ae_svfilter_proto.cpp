@@ -1,0 +1,168 @@
+/******************************************************************************/
+/** @file           ae_svfilter.cpp
+    @date           2018-07-05
+    @version        1.0
+    @author         Anton Schmied
+    @brief          Combfilter with FIR Filter Version, FM and F are clipped with
+                    1.9 and only F is used for attenuation calculation
+    @todo
+*******************************************************************************/
+
+
+#include "ae_svfilter_proto.h"
+
+/******************************************************************************/
+/** @brief
+*******************************************************************************/
+
+ae_svfilter_proto::ae_svfilter_proto()
+{
+
+}
+
+
+
+/******************************************************************************/
+/** @brief
+*******************************************************************************/
+
+void ae_svfilter_proto::init(float _samplerate)
+{
+    m_out = 0.f;
+
+    m_warpConst_2PI = 6.28319f / _samplerate;
+
+    m_first_fir_stateVar = 0.f;
+    m_second_fir_stateVar = 0.f;
+    m_first_int1_stateVar = 0.f;
+    m_first_int2_stateVar = 0.f;
+    m_second_int1_stateVar = 0.f;
+    m_second_int2_stateVar = 0.f;
+
+    m_first_sv_sample = 0.f;
+    m_first_sat_stateVar = 0.f;
+    m_second_sat_stateVar = 0.f;
+}
+
+
+
+/******************************************************************************/
+/** @brief
+*******************************************************************************/
+
+void ae_svfilter_proto::apply(float _sampleA, float _sampleB, float _sampleComb, float *_signal)
+{
+    float tmpRes = _signal[SVF_RES];
+
+    //******************************** Sample Mix ****************************//
+    float tmpVar = _signal[SVF_AB];
+    float mixSample = _sampleB * (1.f - tmpVar) + _sampleA * tmpVar;
+    tmpVar = _signal[SVF_CMIX];
+    mixSample = mixSample * (1.f - std::abs(tmpVar)) + _sampleComb * tmpVar;
+
+
+    //************************** Frequency Modulation ************************//
+    float fmVar = _sampleA * _signal[SVF_FMAB] + _sampleB * (1.f - _signal[SVF_FMAB]);
+
+
+    //************************** 1st Stage SV FILTER *************************//
+    float inputSample = mixSample + (m_first_sat_stateVar * 0.1f);
+
+    float omega = _signal[SVF_F1_CUT] * m_warpConst_2PI;
+    omega = std::min(omega, test_svf_fm_limit);                     /// initially 1.9f
+
+    float attenuation = ((2.f + omega) * (2.f - omega) * tmpRes)
+                      / (((tmpRes * omega) + (2.f - omega)) * 2.f);
+
+    omega = (_signal[SVF_F1_CUT] + fmVar * _signal[SVF_F1_FM]) * m_warpConst_2PI;
+    omega = std::min(omega, test_svf_fm_limit);                     /// initially 1.9f
+
+    float firOut = (m_first_fir_stateVar + inputSample) * 0.25f;
+    m_first_fir_stateVar = inputSample + DNC_const;
+
+    tmpVar = firOut - (attenuation * m_first_int1_stateVar + m_first_int2_stateVar);
+
+    float int1Out = tmpVar * omega + m_first_int1_stateVar;
+    float int2Out = int1Out * omega + m_first_int2_stateVar;
+
+    float lowpassOutput  = int2Out + m_first_int2_stateVar;
+    float bandpassOutput = int1Out + int1Out;
+    float highpassOutput = inputSample - (int1Out * attenuation + lowpassOutput);
+
+    m_first_int1_stateVar = int1Out + DNC_const;
+    m_first_int2_stateVar = int2Out + DNC_const;
+
+    float outputSample_1 = lowpassOutput  * std::max(-(_signal[SVF_LBH_1]), 0.f);
+    outputSample_1 += (bandpassOutput * (1.f - std::abs(_signal[SVF_LBH_1])));
+    outputSample_1 += (highpassOutput * std::max(_signal[SVF_LBH_1], 0.f));
+
+
+    //************************** 1st Stage Parabol Sat ***********************//
+    m_first_sat_stateVar = std::clamp(bandpassOutput, -2.f, 2.f);
+    m_first_sat_stateVar *= (1.f - std::abs(m_first_sat_stateVar) * 0.25f);
+
+
+    //************************** 2nd Stage SV FILTER *************************//
+    inputSample = (outputSample_1 * _signal[SVF_PAR_3])
+                + (mixSample * _signal[SVF_PAR_4])
+                + (m_second_sat_stateVar * 0.1f);
+
+    omega = _signal[SVF_F2_CUT] * m_warpConst_2PI;
+    omega = std::min(omega, test_svf_fm_limit);             /// initially 1.9f
+
+    attenuation = ((2.f + omega) * (2.f - omega) * tmpRes)
+            / (((tmpRes * omega) + (2.f - omega)) * 2.f);
+
+    omega = (_signal[SVF_F2_CUT] + fmVar * _signal[SVF_F2_FM]) * m_warpConst_2PI;
+    omega = std::min(omega, test_svf_fm_limit);             /// initially 1.9f
+
+    firOut = (m_second_fir_stateVar + inputSample) * 0.25f;
+    m_second_fir_stateVar = inputSample + DNC_const;
+
+    tmpVar = firOut - (attenuation * m_second_int1_stateVar + m_second_int2_stateVar);
+
+    int1Out = tmpVar * omega + m_second_int1_stateVar;
+    int2Out = int1Out * omega + m_second_int2_stateVar;
+
+    lowpassOutput  = int2Out + m_second_int2_stateVar;
+    bandpassOutput = int1Out + int1Out;
+    highpassOutput = inputSample - (int1Out * attenuation + lowpassOutput);
+
+    m_second_int1_stateVar = int1Out + DNC_const;
+    m_second_int2_stateVar = int2Out + DNC_const;
+
+    tmpVar  =  lowpassOutput  * std::max(-(_signal[SVF_LBH_2]), 0.f);
+    tmpVar += (bandpassOutput * (1.f - std::abs(_signal[SVF_LBH_2])));
+    tmpVar += (highpassOutput * std::max(_signal[SVF_LBH_2], 0.f));
+
+
+    //************************* 2nd Stage Parabol Sat ************************//
+    m_second_sat_stateVar = std::clamp(bandpassOutput, -2.f, 2.f);
+    m_second_sat_stateVar *= (1.f - std::abs(m_second_sat_stateVar) * 0.25f);
+
+
+    //****************************** Crossfades ******************************//
+    m_out = (outputSample_1 * _signal[SVF_PAR_1]) + (tmpVar * _signal[SVF_PAR_2]);
+}
+
+
+
+/******************************************************************************/
+/** @brief
+*******************************************************************************/
+
+void ae_svfilter_proto::resetDSP()
+{
+    m_out = 0.f;
+
+    m_first_fir_stateVar = 0.f;
+    m_second_fir_stateVar = 0.f;
+    m_first_int1_stateVar = 0.f;
+    m_first_int2_stateVar = 0.f;
+    m_second_int1_stateVar = 0.f;
+    m_second_int2_stateVar = 0.f;
+
+    m_first_sv_sample = 0.f;
+    m_first_sat_stateVar = 0.f;
+    m_second_sat_stateVar = 0.f;
+}
