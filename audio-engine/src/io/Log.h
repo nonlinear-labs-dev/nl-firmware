@@ -50,7 +50,11 @@ class Log
       output<mode>("Error: ", args...);
   }
 
- private:
+  static void flush()
+  {
+    std::cout << std::flush;
+  }
+
   template <LogMode mode, typename... Args> static void output(const Args&... args)
   {
     constexpr auto addNewLine = mode == LogMode::AppendNewLine || mode == LogMode::InsertSpacesAndAppendNewLine;
@@ -65,5 +69,6 @@ class Log
       std::cout << std::endl;
   }
 
+ private:
   static Level s_level;
 };

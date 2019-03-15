@@ -105,7 +105,7 @@ void AudioOutput::prioritizeThread()
   param.sched_priority = 50;
 
   if(auto r = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param))
-    std::cerr << "Could not set thread priority - consider 'sudo setcap 'cap_sys_nice=eip' <application>'" << std::endl;
+    Log::warning("Could not set thread priority - consider 'sudo setcap 'cap_sys_nice=eip' <application>'");
 }
 
 void AudioOutput::setThreadAffinity()
@@ -116,7 +116,7 @@ void AudioOutput::setThreadAffinity()
   CPU_ZERO(&set);
   CPU_SET(coreID, &set);
   if(sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0)
-    std::cerr << "Could not set thread affinity" << std::endl;
+    Log::warning("Could not set thread affinity");
 }
 
 void AudioOutput::doBackgroundWork()

@@ -1,5 +1,6 @@
 #include "CommandlinePerformanceWatch.h"
 #include "io/audio/AudioOutput.h"
+#include "io/Log.h"
 #include <glibmm.h>
 
 CommandlinePerformanceWatch::CommandlinePerformanceWatch(const AudioOutput *device)
@@ -11,8 +12,9 @@ CommandlinePerformanceWatch::CommandlinePerformanceWatch(const AudioOutput *devi
 
 bool CommandlinePerformanceWatch::printPerformance()
 {
-  std::cout.setf(std::ios::fixed, std::ios::floatfield);
-  std::cout.precision(1);
-  std::cout << "\rPerformance: " << m_device->getPerformance() << "%" << std::flush;
+  char txt[256];
+  sprintf(txt, "%3.2f %%", m_device->getPerformance());
+  Log::output<Log::LogMode::InsertSpaces>("\rPerformance:", txt, "#>");
+  Log::flush();
   return true;
 }

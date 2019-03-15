@@ -1,4 +1,5 @@
 #include "AlsaMidiInput.h"
+#include "io/Log.h"
 #include <iostream>
 
 AlsaMidiInput::AlsaMidiInput(const std::string &deviceName, Callback cb)
@@ -16,7 +17,7 @@ AlsaMidiInput::~AlsaMidiInput()
 void AlsaMidiInput::open(const std::string &deviceName)
 {
   if(snd_rawmidi_open(&m_handle, nullptr, deviceName.c_str(), SND_RAWMIDI_NONBLOCK))
-    std::cerr << "Could not open midi device" << std::endl;
+    Log::error("Could not open midi device");
 }
 
 void AlsaMidiInput::start()
@@ -47,7 +48,7 @@ void AlsaMidiInput::prioritizeThread()
   param.sched_priority = 50;
 
   if(auto r = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param))
-    std::cerr << "Could not set thread priority - consider 'sudo setcap 'cap_sys_nice=eip' <application>'" << std::endl;
+    Log::warning("Could not set thread priority - consider 'sudo setcap 'cap_sys_nice=eip' <application>'");
 }
 
 void AlsaMidiInput::setThreadAffinity()
@@ -58,7 +59,7 @@ void AlsaMidiInput::setThreadAffinity()
   CPU_ZERO(&set);
   CPU_SET(coreID, &set);
   if(sched_setaffinity(0, sizeof(cpu_set_t), &set) < 0)
-    std::cerr << "Could not set thread affinity" << std::endl;
+    Log::warning("Could not set thread affinity");
 }
 
 void AlsaMidiInput::doBackgroundWork()

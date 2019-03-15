@@ -1,28 +1,35 @@
 #include "CommandLineInterface.h"
-#include <iostream>
+#include "io/Log.h"
 
 #include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <termios.h>
 
-int8_t getch()
+int kbhit()
 {
-  int ch;
-  struct termios old_t, tmp_t;
+  termios old_termios;
+  termios new_termios;
 
-  if(tcgetattr(STDIN_FILENO, &old_t))
-    return -1;
+  tcgetattr(0, &old_termios);
+  new_termios = old_termios;
+  cfmakeraw(&new_termios);
+  tcsetattr(0, TCSANOW, &new_termios);
 
-  memcpy(&tmp_t, &old_t, sizeof(old_t));
-  tmp_t.c_lflag &= ~ICANON & ~ECHO;
+  struct timeval tv = { 0L, 0L };
+  fd_set fds;
+  FD_ZERO(&fds);
+  FD_SET(0, &fds);
+  int r = select(1, &fds, nullptr, nullptr, &tv);
+  tcsetattr(0, TCSANOW, &old_termios);
+  return r;
+}
 
-  if(tcsetattr(STDIN_FILENO, TCSANOW, (const struct termios *) &tmp_t))
-    return -1;
-
-  ch = getchar();
-  tcsetattr(STDIN_FILENO, TCSANOW, (const struct termios *) &old_t);
-  return static_cast<int8_t>(ch);
+char getch()
+{
+  return static_cast<char>(getchar());
 }
 
 CommandLineInterface::CommandLineInterface()
@@ -31,16 +38,12 @@ CommandLineInterface::CommandLineInterface()
     Glib::signal_timeout().connect(sigc::mem_fun(this, &CommandLineInterface::onIO), 100);
 }
 
-CommandLineInterface::~CommandLineInterface()
-{
-}
+CommandLineInterface::~CommandLineInterface() = default;
 
 bool CommandLineInterface::onIO()
 {
-  auto c = getch();
-
-  if(c >= 0)
-    processByte(c);
+  if(kbhit())
+    this->processByte(getch());
 
   return true;
 }
