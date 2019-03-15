@@ -25,28 +25,28 @@ class Log
   template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
   static void debug(const Args&... args)
   {
-    if(s_level >= Level::Debug)
+    if(s_level <= Level::Debug)
       output<mode>("Debug: ", args...);
   }
 
   template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
   static void info(const Args&... args)
   {
-    if(s_level >= Level::Info)
+    if(s_level <= Level::Info)
       output<mode>("Info: ", args...);
   }
 
   template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
   static void warning(const Args&... args)
   {
-    if(s_level >= Level::Warning)
+    if(s_level <= Level::Warning)
       output<mode>("Warning: ", args...);
   }
 
   template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
   static void error(const Args&... args)
   {
-    if(s_level >= Level::Error)
+    if(s_level <= Level::Error)
       output<mode>("Error: ", args...);
   }
 
