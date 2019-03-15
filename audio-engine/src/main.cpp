@@ -11,7 +11,7 @@
 static Glib::RefPtr<Glib::MainLoop> theMainLoop;
 static std::unique_ptr<Options> theOptions;
 
-static void quit(int)
+void quit(int)
 {
   if(theMainLoop)
     theMainLoop->quit();

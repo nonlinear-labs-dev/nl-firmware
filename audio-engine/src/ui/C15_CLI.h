@@ -10,9 +10,9 @@ class C15_CLI : public CommandLineInterface
   C15_CLI(C15Synth *synth);
 
  protected:
-  void processLine(const std::string &line) override;
+  void processByte(char c) override;
 
  private:
   C15Synth *m_synth;
-  std::unordered_map<std::string, std::function<void()>> m_commands;
+  std::unordered_map<char, std::function<void()>> m_commands;
 };

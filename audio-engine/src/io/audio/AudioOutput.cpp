@@ -52,9 +52,9 @@ void AudioOutput::open(const std::string& deviceName)
   unsigned int sampleRate = getOptions()->getSampleRate();
   unsigned int periods = 2;
 
-  auto timePerPeriod = 1.0 * getOptions()->getLatency() / (periods / 2);
+  auto timePerPeriod = getOptions()->getLatency();
 
-  m_framesPerPeriod = timePerPeriod * sampleRate / 1000;
+  m_framesPerPeriod = static_cast<snd_pcm_uframes_t>(timePerPeriod * sampleRate / 1000);
   m_ringBufferFrames = periods * m_framesPerPeriod;
 
   checkAlsa(snd_pcm_hw_params_any(m_handle, hwparams));
@@ -76,8 +76,6 @@ void AudioOutput::open(const std::string& deviceName)
 
   checkAlsa(snd_pcm_hw_params_get_period_time(hwparams, &m_latency, nullptr));
   checkAlsa(snd_pcm_hw_params_get_periods(hwparams, &periods, nullptr));
-
-  m_latency *= periods / 2;
 
   std::cout << "Alsa Frames per Period: " << m_framesPerPeriod << std::endl;
   std::cout << "Alsa Periods: " << periods << std::endl;

@@ -1,27 +1,46 @@
 #include "CommandLineInterface.h"
+#include <iostream>
+
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+#include <string.h>
+
+int8_t getch()
+{
+  int ch;
+  struct termios old_t, tmp_t;
+
+  if(tcgetattr(STDIN_FILENO, &old_t))
+    return -1;
+
+  memcpy(&tmp_t, &old_t, sizeof(old_t));
+  tmp_t.c_lflag &= ~ICANON & ~ECHO;
+
+  if(tcsetattr(STDIN_FILENO, TCSANOW, (const struct termios *) &tmp_t))
+    return -1;
+
+  ch = getchar();
+  tcsetattr(STDIN_FILENO, TCSANOW, (const struct termios *) &old_t);
+  return static_cast<int8_t>(ch);
+}
 
 CommandLineInterface::CommandLineInterface()
-    : m_readersCancel(Gio::Cancellable::create())
 {
   if(isatty(fileno(stdin)))
-  {
-    m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
-    m_keyboardInput->read_line_async(mem_fun(this, &CommandLineInterface::onKeyboardLineRead), m_readersCancel);
-  }
+    Glib::signal_timeout().connect(sigc::mem_fun(this, &CommandLineInterface::onIO), 100);
 }
 
 CommandLineInterface::~CommandLineInterface()
 {
-  m_readersCancel->cancel();
 }
 
-void CommandLineInterface::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
+bool CommandLineInterface::onIO()
 {
-  std::string line;
+  auto c = getch();
 
-  if(m_keyboardInput->read_line_finish(res, line))
-    if(!line.empty())
-      processLine(line);
+  if(c >= 0)
+    processByte(c);
 
-  m_keyboardInput->read_line_async(mem_fun(this, &CommandLineInterface::onKeyboardLineRead), m_readersCancel);
+  return true;
 }

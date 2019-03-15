@@ -10,11 +10,9 @@ class CommandLineInterface
   virtual ~CommandLineInterface();
 
  protected:
-  virtual void processLine(const std::string &line) = 0;
+  virtual void processByte(char c) = 0;
 
  private:
-  void onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res);
-
-  Glib::RefPtr<Gio::Cancellable> m_readersCancel;
-  Glib::RefPtr<Gio::DataInputStream> m_keyboardInput;
+  void onKeyboardByteRead(Glib::RefPtr<Gio::AsyncResult> &res);
+  bool onIO();
 };
