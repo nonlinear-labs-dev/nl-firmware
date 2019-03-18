@@ -1,7 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
@@ -33,6 +32,6 @@ public abstract class RecallValue extends Label {
 		Context2d ctx = NonMaps.get().getCanvas().getContext2d();
 		String text = getDrawText(ctx);
 		ctx.setFont(getFontSizeInPixel() + "px 'Source Sans Pro LW25'");		
-		return Millimeter.toPixels(2) + ctx.measureText(text).getWidth() + Millimeter.toPixels(2);
+		return ctx.measureText(text).getWidth();
 	}
 }

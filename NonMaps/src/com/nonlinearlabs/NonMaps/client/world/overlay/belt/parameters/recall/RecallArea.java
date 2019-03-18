@@ -20,13 +20,13 @@ public abstract class RecallArea extends OverlayLayout {
 		button.setActive(isChanged());
 		value.setActive(isChanged());
 		
-		final double padding = Millimeter.toPixels(2);
+		final double padding = Millimeter.toPixels(6);
 		final double textWidth = value.calculateTextWidth() + padding;
 		final double buttonX = w / 2 - textWidth / 2;
 		final double buttonY = h / 4;
 		final double half = (h / 2);
 		
-		value.doLayout(0, buttonY, w, half);		
+		value.doLayout(0, buttonY + 1, w, half);		
 		button.doLayout(buttonX, buttonY, textWidth, half);
 	}
 	
