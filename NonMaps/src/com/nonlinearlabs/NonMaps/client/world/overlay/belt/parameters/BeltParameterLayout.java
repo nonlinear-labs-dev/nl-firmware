@@ -360,6 +360,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		boolean newModulateable = newSelection instanceof ModulatableParameter;
 
 		currentIncrementalChanger = null;
+		currentRecall.setVisible(false);
 
 		if (newModulateable)
 			setMode(Mode.modulateableParameter, true);
