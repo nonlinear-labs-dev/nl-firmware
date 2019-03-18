@@ -15,6 +15,7 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
 {
+
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool ignoreUuids)
