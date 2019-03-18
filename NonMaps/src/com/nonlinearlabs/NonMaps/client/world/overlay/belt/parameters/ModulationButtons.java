@@ -20,7 +20,7 @@ public class ModulationButtons extends OverlayLayout {
 
 		public OGLabel(OverlayLayout parent) {
 			super(parent);
-			setFontColor(new Gray(187));
+			setFontColor(new Gray(155));
 		}
 		
 		@Override
