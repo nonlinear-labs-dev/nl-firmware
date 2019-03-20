@@ -5,7 +5,6 @@
 #include <iostream>
 
 C15_CLI::C15_CLI(C15Synth *synth)
-    : m_synth(synth)
 {
   m_commands['c'] = [=] { synth->printAndResetTcdInputLog(); };
   m_commands['e'] = [=] { synth->resetDSP(); };

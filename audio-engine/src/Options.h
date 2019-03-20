@@ -14,6 +14,7 @@ class Options
   int getSampleRate() const;
   int getPolyphony() const;
   double getLatency() const;
+  bool doMeasurePerformance();
 
  private:
   Glib::ustring m_midiInputDeviceName;
@@ -23,4 +24,5 @@ class Options
   int m_rate = 48000;
   int m_polyphony = 20;
   double m_latency = 5;
+  bool m_measurePerformance = false;
 };
