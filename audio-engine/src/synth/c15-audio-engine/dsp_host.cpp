@@ -100,85 +100,57 @@ void dsp_host::loadInitialPreset()
 /* */
 void dsp_host::tickMain()
 {
-#if perf_measure == 0
   /* provide indices for items, voices and parameters */
   uint32_t i, v, p;
-#if perf_slow_params == 0
   /* first: evaluate slow clock status */
   if(m_clockPosition[3] == 0)
   {
-#if perf_mono_params == 0
     /* render slow mono parameters and perform mono post processing */
     for(p = 0; p < m_params.m_clockIds.m_data[3].m_data[0].m_length; p++)
     {
       i = m_params.m_head[m_params.m_clockIds.m_data[3].m_data[0].m_data[p]].m_index;
       m_params.tickItem(i);
     }
-#endif
-#if perf_post_processing == 0
     m_params.postProcessMono_slow(m_paramsignaldata[0]);
-#endif
     /* render slow poly parameters and perform poly slow post processing */
     for(v = 0; v < m_voices; v++)
     {
-#if perf_poly_params == 0
       for(p = 0; p < m_params.m_clockIds.m_data[3].m_data[1].m_length; p++)
       {
         i = m_params.m_head[m_params.m_clockIds.m_data[3].m_data[1].m_data[p]].m_index + v;
         m_params.tickItem(i);
       }
-#endif
-#if perf_post_processing == 0
       m_params.postProcessPoly_slow(m_paramsignaldata[v], v);
 
       /* slow polyphonic Trigger for Filter Coefficients */
       setPolySlowFilterCoeffs(m_paramsignaldata[v], v);
-#endif
     }
-
     /* slow monophonic Trigger for Filter Coefficients */
-#if perf_post_processing == 0
     setMonoSlowFilterCoeffs(m_paramsignaldata[0]);
-#endif
   }
-#endif
-#if perf_fast_params == 0
   /* second: evaluate fast clock status */
   if(m_clockPosition[2] == 0)
   {
-#if perf_mono_params == 0
     /* render fast mono parameters and perform mono post processing */
     for(p = 0; p < m_params.m_clockIds.m_data[2].m_data[0].m_length; p++)
     {
       i = m_params.m_head[m_params.m_clockIds.m_data[2].m_data[0].m_data[p]].m_index;
       m_params.tickItem(i);
     }
-#endif
-#if perf_post_processing == 0
     m_params.postProcessMono_fast(m_paramsignaldata[0]);
-#endif
     /* render fast poly parameters and perform poly fast post processing */
     for(v = 0; v < m_voices; v++)
     {
-#if perf_poly_params == 0
       for(p = 0; p < m_params.m_clockIds.m_data[2].m_data[1].m_length; p++)
       {
         i = m_params.m_head[m_params.m_clockIds.m_data[2].m_data[1].m_data[p]].m_index + v;
         m_params.tickItem(i);
       }
-#endif
-#if perf_post_processing == 0
       m_params.postProcessPoly_fast(m_paramsignaldata[v], v);
-#endif
     }
-#if perf_post_processing == 0
     /* fast monophonic Trigger for Filter Coefficients */
     setMonoFastFilterCoeffs(m_paramsignaldata[0]);
-#endif
   }
-#endif
-#if perf_audio_params == 0
-#if perf_mono_params == 0
   /* third: evaluate audio clock (always) - mono rendering and post processing, poly rendering and post processing */
   for(p = 0; p < m_params.m_clockIds.m_data[1].m_data[0].m_length; p++)
   {
@@ -186,19 +158,13 @@ void dsp_host::tickMain()
     i = m_params.m_head[m_params.m_clockIds.m_data[1].m_data[0].m_data[p]].m_index;
     m_params.tickItem(i);
   }
-#endif
-#endif
-#if perf_post_processing == 0
   m_params.postProcessMono_audio(m_paramsignaldata[0]);
-#endif
   /* Reset Outputmixer Sum Samples */
   m_outputmixer.m_out_L = 0.f;
   m_outputmixer.m_out_R = 0.f;
 
   for(v = 0; v < m_voices; v++)
   {
-#if perf_audio_params == 0
-#if perf_poly_params == 0
     /* this is the MAIN POLYPHONIC LOOP - rendering (and post processing) parameters, envelopes and the AUDIO_ENGINE */
     /* render poly audio parameters */
     for(p = 0; p < m_params.m_clockIds.m_data[1].m_data[1].m_length; p++)
@@ -206,22 +172,13 @@ void dsp_host::tickMain()
       i = m_params.m_head[m_params.m_clockIds.m_data[1].m_data[1].m_data[p]].m_index + v;
       m_params.tickItem(i);
     }
-#endif
-#endif
-#if perf_post_processing == 0
     /* post processing and envelope rendering */
     m_params.postProcessPoly_audio(m_paramsignaldata[v], v);
-#endif
-
-#if perf_poly_engine == 0
     /* AUDIO_ENGINE: poly dsp phase */
     makePolySound(m_paramsignaldata[v], v);
-#endif
   }
-#if perf_mono_engine == 0
   /* AUDIO_ENGINE: mono dsp phase */
   makeMonoSound(m_paramsignaldata[0]);
-#endif
 
   /* Examine Updates (Log) */
 #if log_examine
@@ -231,7 +188,6 @@ void dsp_host::tickMain()
   /* finally: update (fast and slow) clock positions */
   m_clockPosition[2] = (m_clockPosition[2] + 1) % m_clockDivision[2];
   m_clockPosition[3] = (m_clockPosition[3] + 1) % m_clockDivision[3];
-#endif
 }
 
 /* */

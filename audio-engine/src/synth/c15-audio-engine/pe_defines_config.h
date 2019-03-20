@@ -12,20 +12,6 @@
 
 #include <stdint.h>
 
-/* Performance Measure (Skip) Flags                 LEAVE EVERYTHING AT ZERO for usual operation !!!
-                                                    this is currently rather clumsy and needs treatment...
-                                                    intended for cpu measuring purposes, see tests/renderer_performance.cpp
-*/
-#define perf_measure 0          // skip the whole main tick function?
-#define perf_audio_params 0     // skip rendering of audio params?
-#define perf_fast_params 0      // skip rendering of fast params?
-#define perf_slow_params 0      // skip rendering of slow params?
-#define perf_poly_params 0      // skip rendering of poly params?
-#define perf_mono_params 0      // skip rendering of mono params?
-#define perf_post_processing 0  // skip post processing?
-#define perf_poly_engine 0      // skip rendering of poly audio engine component?
-#define perf_mono_engine 0      // skip rendering of mono audio engine component?
-
 /* Test Flags                                       THINGS TO DEFINE, testing candidates and new functionalities */
 
 #define test_milestone                                                                                                 \
@@ -48,7 +34,7 @@
 #define test_fast_fold_asym 1  // 0: slow clock (producing audible artifacts), 1: fast clock (recommended)
 #define test_preload_update 1  // 0: non-optimized preload update, 1: optimized preload update (recommended)
 #define test_flushModeFlag 1   // 0: flushes ONLY Buffers, 1: flushes Buffers AND Filter State Variables
-#define test_inputModeFlag 1   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
+#define test_inputModeFlag 0   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
 #define test_whichEnvelope 1   // specify which env engine should be used: old (0) or new (1)
 
 #define test_reverbParams 1    // 0: fast rendering (like Reaktor), 1: slow rendering (experimental)
