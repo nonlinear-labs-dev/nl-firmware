@@ -1,4 +1,5 @@
 #include "AudioOutput.h"
+#include "AudioWriter.h"
 #include "main.h"
 #include "Options.h"
 #include "io/Log.h"
@@ -64,13 +65,17 @@ void AudioOutput::open(const std::string& deviceName)
       if(checkAlsa(snd_pcm_hw_params_set_format(m_handle, hwparams, SND_PCM_FORMAT_S16_LE)))
         checkAlsa(snd_pcm_hw_params_set_format(m_handle, hwparams, SND_PCM_FORMAT_S24_3LE));
 
-  checkAlsa(snd_pcm_hw_params_get_format(hwparams, &m_format));
+  snd_pcm_format_t format = SND_PCM_FORMAT_UNKNOWN;
+  checkAlsa(snd_pcm_hw_params_get_format(hwparams, &format));
   checkAlsa(snd_pcm_hw_params_set_channels(m_handle, hwparams, 2));
   checkAlsa(snd_pcm_hw_params_set_rate_near(m_handle, hwparams, &sampleRate, nullptr));
 
   checkAlsa(snd_pcm_hw_params_set_periods(m_handle, hwparams, periods, 0));
   checkAlsa(snd_pcm_hw_params_get_periods(hwparams, &periods, nullptr));
   checkAlsa(snd_pcm_hw_params_set_period_size_near(m_handle, hwparams, &m_framesPerPeriod, nullptr));
+
+  unsigned int channels = 0;
+  checkAlsa(snd_pcm_hw_params_get_channels(hwparams, &channels));
 
   m_ringBufferFrames = periods * m_framesPerPeriod;
 
@@ -84,6 +89,8 @@ void AudioOutput::open(const std::string& deviceName)
   Log::info("Alsa Frames per Period:", m_framesPerPeriod);
   Log::info("Alsa Periods:", periods);
   Log::info("Midi2Audio latency is:", m_latency / 1000, "ms.");
+
+  m_writer = AudioWriterBase::create(m_handle, format, channels);
 }
 
 void AudioOutput::start()
@@ -157,107 +164,12 @@ void AudioOutput::doBackgroundWork()
 
 void AudioOutput::playback(SampleFrame* frames, size_t numFrames)
 {
-  snd_pcm_sframes_t res = 0;
-
-  switch(m_format)
-  {
-    case SND_PCM_FORMAT_S32_LE:
-      res = playbackIntLE<int32_t>(frames, numFrames);
-      break;
-
-    case SND_PCM_FORMAT_FLOAT:
-      res = playbackF32(frames, numFrames);
-      break;
-
-    case SND_PCM_FORMAT_S16_LE:
-      res = playbackIntLE<int16_t>(frames, numFrames);
-      break;
-
-    case SND_PCM_FORMAT_S24_3LE:
-      res = playbackInt24LE(frames, numFrames);
-      break;
-
-    default:
-      Log::error("Audio format not supported");
-      break;
-  }
+  snd_pcm_sframes_t res = m_writer->write(frames, numFrames);
 
   if(static_cast<snd_pcm_uframes_t>(res) != numFrames)
     handleWriteError(res);
   else
     m_framesProcessed += numFrames;
-}
-
-template <typename T> snd_pcm_sframes_t AudioOutput::playbackIntLE(const SampleFrame* frames, size_t numFrames)
-{
-  constexpr auto factor = static_cast<float>(std::numeric_limits<T>::max() - 1);
-
-  struct Converted
-  {
-    T left;
-    T right;
-  };
-
-  Converted converted[numFrames];
-
-  for(size_t f = 0; f < numFrames; f++)
-  {
-    for(size_t c = 0; c < 2; c++)
-    {
-      converted[f].left = static_cast<T>(frames[f].left * factor);
-      converted[f].right = static_cast<T>(frames[f].right * factor);
-    }
-  }
-
-  return snd_pcm_writei(m_handle, &converted, numFrames);
-}
-
-snd_pcm_sframes_t AudioOutput::playbackInt24LE(const SampleFrame* frames, size_t numFrames)
-{
-  constexpr auto factor = static_cast<float>(1 << 22);
-
-  struct __attribute__((packed)) Sample24
-  {
-    uint8_t a;
-    uint8_t b;
-    uint8_t c;
-  };
-
-  struct __attribute__((packed)) Converted
-  {
-    Sample24 left;
-    Sample24 right;
-  };
-
-  Converted converted[numFrames];
-
-  for(size_t f = 0; f < numFrames; f++)
-  {
-    for(size_t c = 0; c < 2; c++)
-    {
-      int32_t left = static_cast<int32_t>(frames[f].left * factor);
-      int32_t right = static_cast<int32_t>(frames[f].right * factor);
-
-      memcpy(&converted[f].left, &left, 3);
-      memcpy(&converted[f].right, &right, 3);
-    }
-  }
-
-  return snd_pcm_writei(m_handle, &converted, numFrames);
-}
-
-snd_pcm_sframes_t AudioOutput::playbackF32(SampleFrame* frames, size_t numFrames)
-{
-  for(size_t f = 0; f < numFrames; f++)
-  {
-    for(size_t c = 0; c < 2; c++)
-    {
-      frames[f].left = std::min(1.0f, frames[f].left);
-      frames[f].right = std::min(1.0f, frames[f].right);
-    }
-  }
-
-  return snd_pcm_writei(m_handle, frames, numFrames);
 }
 
 void AudioOutput::handleWriteError(snd_pcm_sframes_t result)

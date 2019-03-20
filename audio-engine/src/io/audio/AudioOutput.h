@@ -4,6 +4,9 @@
 #include <asoundlib.h>
 #include <functional>
 #include <thread>
+#include <memory>
+
+class AudioWriterBase;
 
 class AudioOutput
 {
@@ -41,7 +44,8 @@ class AudioOutput
   snd_pcm_uframes_t m_framesPerPeriod = 0;
   snd_pcm_uframes_t m_ringBufferFrames = 0;
   snd_pcm_uframes_t m_framesProcessed = 0;
-  snd_pcm_format_t m_format = SND_PCM_FORMAT_S32_LE;
+
+  std::unique_ptr<AudioWriterBase> m_writer;
 
   double m_performance = 0;
 };
