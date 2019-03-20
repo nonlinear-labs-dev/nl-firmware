@@ -29,7 +29,7 @@
 /* Test Flags                                       THINGS TO DEFINE, testing candidates and new functionalities */
 
 #define test_milestone                                                                                                 \
-  155  // Define Milestone:                                                                                            \
+  156  // Define Milestone:                                                                                            \
       // - 150 (Reaktor quasi-clone with internal envelope rendering and different TCD Key sequence),                  \
       // - 155 (internal unison handling, echo/reverb sends),                                                          \
       // - 156 (simplified TCD key sequence by new KeyVoice command, automatic internal unison loop)
@@ -48,7 +48,7 @@
 #define test_fast_fold_asym 1  // 0: slow clock (producing audible artifacts), 1: fast clock (recommended)
 #define test_preload_update 1  // 0: non-optimized preload update, 1: optimized preload update (recommended)
 #define test_flushModeFlag 1   // 0: flushes ONLY Buffers, 1: flushes Buffers AND Filter State Variables
-#define test_inputModeFlag 1   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
+#define test_inputModeFlag 0   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
 #define test_whichEnvelope 1   // specify which env engine should be used: old (0) or new (1)
 
 #define test_reverbParams 1    // 0: fast rendering (like Reaktor), 1: slow rendering (experimental)
