@@ -61,7 +61,8 @@ void AudioOutput::open(const std::string& deviceName)
 
   if(checkAlsa(snd_pcm_hw_params_set_format(m_handle, hwparams, SND_PCM_FORMAT_FLOAT)))
     if(checkAlsa(snd_pcm_hw_params_set_format(m_handle, hwparams, SND_PCM_FORMAT_S32_LE)))
-      checkAlsa(snd_pcm_hw_params_set_format(m_handle, hwparams, SND_PCM_FORMAT_S16_LE));
+      if(checkAlsa(snd_pcm_hw_params_set_format(m_handle, hwparams, SND_PCM_FORMAT_S16_LE)))
+        checkAlsa(snd_pcm_hw_params_set_format(m_handle, hwparams, SND_PCM_FORMAT_S24_3LE));
 
   checkAlsa(snd_pcm_hw_params_get_format(hwparams, &m_format));
   checkAlsa(snd_pcm_hw_params_set_channels(m_handle, hwparams, 2));
@@ -172,6 +173,10 @@ void AudioOutput::playback(SampleFrame* frames, size_t numFrames)
       res = playbackIntLE<int16_t>(frames, numFrames);
       break;
 
+    case SND_PCM_FORMAT_S24_3LE:
+      res = playbackInt24LE(frames, numFrames);
+      break;
+
     default:
       Log::error("Audio format not supported");
       break;
@@ -206,6 +211,41 @@ template <typename T> snd_pcm_sframes_t AudioOutput::playbackIntLE(const SampleF
 
   return snd_pcm_writei(m_handle, &converted, numFrames);
 }
+
+snd_pcm_sframes_t AudioOutput::playbackInt24LE(const SampleFrame* frames, size_t numFrames)
+{
+  constexpr auto factor = static_cast<float>(1 << 22);
+
+  struct __attribute__((packed)) Sample24
+  {
+    uint8_t a;
+    uint8_t b;
+    uint8_t c;
+  };
+
+  struct __attribute__((packed)) Converted
+  {
+    Sample24 left;
+    Sample24 right;
+  };
+
+  Converted converted[numFrames];
+
+  for(size_t f = 0; f < numFrames; f++)
+  {
+    for(size_t c = 0; c < 2; c++)
+    {
+      int32_t left = static_cast<int32_t>(frames[f].left * factor);
+      int32_t right = static_cast<int32_t>(frames[f].right * factor);
+
+      memcpy(&converted[f].left, &left, 3);
+      memcpy(&converted[f].right, &right, 3);
+    }
+  }
+
+  return snd_pcm_writei(m_handle, &converted, numFrames);
+}
+
 snd_pcm_sframes_t AudioOutput::playbackF32(SampleFrame* frames, size_t numFrames)
 {
   for(size_t f = 0; f < numFrames; f++)

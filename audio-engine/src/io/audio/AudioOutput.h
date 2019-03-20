@@ -31,6 +31,7 @@ class AudioOutput
   void playback(SampleFrame *frames, size_t numFrames);
   template <typename T> snd_pcm_sframes_t playbackIntLE(const SampleFrame *frames, size_t numFrames);
   snd_pcm_sframes_t playbackF32(SampleFrame *frames, size_t numFrames);
+  snd_pcm_sframes_t playbackInt24LE(const SampleFrame *frames, size_t numFrames);
 
   Callback m_cb;
   snd_pcm_t *m_handle = nullptr;
