@@ -139,7 +139,6 @@ class Parameter : public UpdateDocumentContributor,
 
   uint16_t m_id;
   QuantizedValue m_value;
-  tControlPositionValue m_originalValue;
   sigc::connection m_valueChangedConnection;
 
   friend class QuantizedValue;
