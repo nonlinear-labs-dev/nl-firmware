@@ -2,64 +2,48 @@
 #include <glibmm/optiongroup.h>
 #include <iostream>
 
+template <typename T>
+void add(Glib::OptionGroup &mainGroup, T &ref, const std::string &longName, const char shortName,
+         const std::string &desc, int flags = 0)
+{
+  Glib::OptionEntry o;
+  o.set_long_name(longName);
+  o.set_short_name(shortName);
+  o.set_description(desc);
+  o.set_flags(flags);
+  mainGroup.add_entry(o, ref);
+}
+
 Options::Options(int &argc, char **&argv)
 {
+  Glib::ustring additionalMidiDelayString;
+
   Glib::OptionGroup mainGroup("common", "common options");
   Glib::OptionContext ctx;
 
-  Glib::OptionEntry samplerate;
-  samplerate.set_long_name("sample-rate");
-  samplerate.set_short_name('r');
-  samplerate.set_description("Samplerate of audio engine");
-  mainGroup.add_entry(samplerate, m_rate);
-
-  Glib::OptionEntry polyphony;
-  polyphony.set_long_name("polyphony");
-  polyphony.set_short_name('p');
-  polyphony.set_description("Polyphony of the c15 audio engine");
-  mainGroup.add_entry(polyphony, m_polyphony);
-
-  Glib::OptionEntry latency;
-  latency.set_long_name("latency");
-  latency.set_short_name('l');
-  latency.set_description("Midi-In to Audio-Out round trip time");
-  mainGroup.add_entry(latency, m_latency);
-
-  Glib::OptionEntry midiIn;
-  midiIn.set_long_name("midi-in");
-  midiIn.set_short_name('m');
-  midiIn.set_description("Name of the alsa midi input device");
-  mainGroup.add_entry(midiIn, m_midiInputDeviceName);
-
-  Glib::OptionEntry audioOut;
-  audioOut.set_long_name("audio-out");
-  audioOut.set_short_name('a');
-  audioOut.set_description("Name of the alsa audio output device");
-  mainGroup.add_entry(audioOut, m_audioOutputDeviceName);
-
-  Glib::OptionEntry testNotes;
-  testNotes.set_long_name("test-notes");
-  testNotes.set_short_name('t');
-  testNotes.set_description("Generate midi notes in the given distance (ms) instead of using midi in");
-  mainGroup.add_entry(testNotes, m_testNotesTime);
-
-  Glib::OptionEntry fatalXRuns;
-  fatalXRuns.set_long_name("fatal-xruns");
-  fatalXRuns.set_short_name('f');
-  fatalXRuns.set_description("Terminate program in case of alsa underrun or overrun");
-  mainGroup.add_entry(fatalXRuns, m_fatalXRuns);
-
-  Glib::OptionEntry measurePerformance;
-  measurePerformance.set_long_name("measure-performance");
-  measurePerformance.set_short_name('e');
-  measurePerformance.set_description("Calculate performance of audio engine");
-  mainGroup.add_entry(measurePerformance, m_measurePerformance);
+  add(mainGroup, m_rate, "sample-rate", 'r', "Samplerate of audio engine");
+  add(mainGroup, m_polyphony, "polyphony", 'p', "Polyphony of the c15 audio engine");
+  add(mainGroup, m_midiInputDeviceName, "midi-in", 'm', "Name of the alsa midi input device");
+  add(mainGroup, m_audioOutputDeviceName, "audio-out", 'a', "Name of the alsa audio output device");
+  add(mainGroup, m_testNotesTime, "test-notes", 't',
+      "Generate midi notes in the given distance (ms) instead of using midi in");
+  add(mainGroup, m_fatalXRuns, "fatal-xruns", 'f', "Terminate program in case of alsa underrun or overrun");
+  add(mainGroup, m_measurePerformance, "measure-performance", 'e', "Calculate performance of audio engine");
+  add(mainGroup, additionalMidiDelayString, "additional-midi-delay", 'i',
+      "add this delay (in ns) to each incoming midi note");
+  add(mainGroup, m_framesPerPeriod, "frames-per-period", 's',
+      "configure alsa audio input with this number of frames per period");
+  add(mainGroup, m_numPeriods, "num-periods", 'n', "configure alsa audio input with this number of periods");
+  add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "configure alsa audio input with this ring buffer size");
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
   if(!ctx.parse(argc, argv))
     std::cerr << ctx.get_summary();
+
+  if(!additionalMidiDelayString.empty())
+    m_additionalMidiDelay = std::chrono::nanoseconds(std::stoi(additionalMidiDelayString));
 }
 
 int Options::testNotesDistance() const
@@ -77,9 +61,29 @@ std::string Options::getMidiInputDeviceName() const
   return m_midiInputDeviceName;
 }
 
+std::chrono::nanoseconds Options::getAdditionalMidiDelay() const
+{
+  return m_additionalMidiDelay;
+}
+
 std::string Options::getAudioOutputDeviceName() const
 {
   return m_audioOutputDeviceName;
+}
+
+int Options::getFramesPerPeriod() const
+{
+  return m_framesPerPeriod;
+}
+
+int Options::getNumPeriods() const
+{
+  return m_numPeriods;
+}
+
+int Options::getAlsaRingBufferSize() const
+{
+  return m_alsaBufferSize;
 }
 
 int Options::getSampleRate() const
@@ -90,11 +94,6 @@ int Options::getSampleRate() const
 int Options::getPolyphony() const
 {
   return m_polyphony;
-}
-
-double Options::getLatency() const
-{
-  return m_latency;
 }
 
 bool Options::doMeasurePerformance()

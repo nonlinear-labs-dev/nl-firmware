@@ -9,20 +9,32 @@ class Options
 
   int testNotesDistance() const;
   bool areXRunsFatal() const;
-  std::string getMidiInputDeviceName() const;
-  std::string getAudioOutputDeviceName() const;
   int getSampleRate() const;
   int getPolyphony() const;
-  double getLatency() const;
   bool doMeasurePerformance();
 
+  // alsa midi
+  std::string getMidiInputDeviceName() const;
+  std::chrono::nanoseconds getAdditionalMidiDelay() const;
+
+  // alsa audio
+  std::string getAudioOutputDeviceName() const;
+  int getFramesPerPeriod() const;
+  int getNumPeriods() const;
+  int getAlsaRingBufferSize() const;
+
  private:
-  Glib::ustring m_midiInputDeviceName;
-  Glib::ustring m_audioOutputDeviceName;
   int m_testNotesTime = 0;
   bool m_fatalXRuns = false;
   int m_rate = 48000;
   int m_polyphony = 20;
-  double m_latency = 5;
   bool m_measurePerformance = false;
+
+  Glib::ustring m_midiInputDeviceName;
+  std::chrono::nanoseconds m_additionalMidiDelay = std::chrono::nanoseconds::zero();
+
+  Glib::ustring m_audioOutputDeviceName;
+  int m_framesPerPeriod = 96;
+  int m_numPeriods = 2;
+  int m_alsaBufferSize = 96 * 2;
 };
