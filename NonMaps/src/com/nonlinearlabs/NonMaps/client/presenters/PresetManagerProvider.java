@@ -13,10 +13,12 @@ public class PresetManagerProvider {
 		return theInstance;
 	}
 
-	private LinkedList<Function<PresetManager, Boolean>> clients = new LinkedList<Function<PresetManager, Boolean>>();
-	private PresetManager pm = new PresetManager();
+	private LinkedList<Function<PresetManagerPresenter, Boolean>> clients;
+	private PresetManagerPresenter pm = null;
 
 	public PresetManagerProvider() {
+		pm = new PresetManagerPresenter();
+		clients  = new LinkedList<Function<PresetManagerPresenter, Boolean>>();
 		com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetManager.get().getBanks()
 				.onChange(b -> onBanksChanged(b));
 	}
@@ -26,8 +28,11 @@ public class PresetManagerProvider {
 
 		int numBanksBefore = pm.banks.size();
 		dmBanks.forEach((key, bank) -> {
-			if (!pm.banks.stream().anyMatch((b) -> b.uuid.equals(key))) {
-				pm.banks.add(new PresetManager.Bank(bank));
+			try {
+				if (!pm.banks.stream().anyMatch((b) -> b.uuid.equals(key))) {
+					pm.banks.add(new PresetManagerPresenter.Bank(bank));
+				}
+			} catch(Exception e) {
 			}
 		});
 
@@ -45,12 +50,12 @@ public class PresetManagerProvider {
 		clients.removeIf(listener -> !listener.apply(pm));
 	}
 
-	public void register(Function<PresetManager, Boolean> cb) {
+	public void register(Function<PresetManagerPresenter, Boolean> cb) {
 		clients.add(cb);
 		cb.apply(pm);
 	}
 	
-	public PresetManager getPresenter() {
+	public PresetManagerPresenter getPresenter() {
 		return pm;
 	}
 }
