@@ -15,7 +15,6 @@ import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.Tracer;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
@@ -98,8 +97,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		crc.eat(getParameterID());
 		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
 		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
-		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
-		crc.eat(bpm.isChanged());
+		crc.eat(EditBufferModel.get().findParameter(getParameterID()).isChanged());
 	}
 
 	public final boolean isBiPolar() {

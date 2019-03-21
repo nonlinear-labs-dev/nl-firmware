@@ -26,7 +26,10 @@ public class ModulateableParameter extends BasicParameterModel {
 	
 	@Override
 	public boolean isChanged() {
-		return super.isChanged() || modSource.getValue() != ogModSource.getValue() || modAmount.getValue() != ogModAmount.getValue();
+		boolean src = modSource.getValue() != ogModSource.getValue();
+		boolean amt = modAmount.getValue() != ogModAmount.getValue();
+		boolean val = super.isChanged();
+		return src || amt || val;
 	}
 
 

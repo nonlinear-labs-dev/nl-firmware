@@ -24,9 +24,16 @@ class PresetParameterGroup
   // accessors
   PresetParameter *findParameterByID(int id) const;
 
+  void writeDocument(Writer &writer) const;
+
   // transactions
   void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
   void copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other);
+
+  const std::unordered_map<int, ParameterPtr> &getParameters() const
+  {
+    return m_parameters;
+  }
 
   // algorithm
   void writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other) const;

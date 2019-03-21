@@ -15,24 +15,19 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
 {
+
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool ignoreUuids)
-    : super(parent, &other)
+    : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
 {
-  std::for_each(other.m_parameterGroups.begin(), other.m_parameterGroups.end(), [this](auto &a) {
-    m_parameterGroups[a.first] = std::make_unique<PresetParameterGroup>(*a.second.get());
-  });
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
-    : super(parent, &editBuffer)
+    : super(parent, editBuffer)
 {
-  for(auto &g : editBuffer.getParameterGroups())
-    m_parameterGroups[g->getID()] = std::make_unique<PresetParameterGroup>(*g);
-
   m_name = editBuffer.getName();
 }
 
@@ -245,7 +240,8 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("preset", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("changed", changed),
+  writer.writeTag("preset",
+                  { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("changed", changed) },
                   [&]() {
                     if(changed)
                     {
@@ -253,6 +249,11 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
                     }
                   });
 }
+
+
+void Preset::writeDetailDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const {
+    PresetParameterGroups::writeDocument(writer, knownRevision);
+};
 
 void Preset::writeDiff(Writer &writer, const Preset *other) const
 {

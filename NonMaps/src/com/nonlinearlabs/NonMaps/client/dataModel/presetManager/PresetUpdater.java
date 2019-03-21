@@ -17,4 +17,6 @@ public class PresetUpdater extends Updater {
 		target.uuid.setValue(getAttributeValue(root, "uuid"));
 	}
 
+	protected void handlePresetParameters(Node xml, Preset preset) {
+	}
 }
