@@ -108,17 +108,20 @@ html, body {
   margin-left: 45%;
   -webkit-appearance: slider-vertical;
   writing-mode: bt-lr;
+    margin-bottom: 5%;
 }
 
-h2 {
+h3 {
   overflow-wrap: break-word;
   text-align: center;
 }
 
 input[type="radio"] {
-    -ms-transform: scale(1.5);
-    -webkit-transform: scale(1.5);
-    transform: scale(1.5);
+    -ms-transform: scale(2) translateX(1.3px) translateY(1.3px);
+    -webkit-transform: scale(2) translateX(1.3px) translateY(1.3px);
+    transform: scale(2) translateX(1.3px) translateY(1.3px);
+    vertical-align: baseline;
+
 }
 
 .the-seperator {
@@ -141,5 +144,17 @@ input[type="radio"] {
 }
 
 .sel-input-form {
-  margin-left: 20%;
+  margin-left: 15%;
+}
+
+.radio-radio {
+  margin-right: 8%;
+  margin-bottom: 7%;
+}
+
+.radio-label {
+  vertical-align: middle;
+  font-size: large;
+  margin: 2%;
+  padding: 2%;
 }
