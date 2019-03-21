@@ -48,21 +48,21 @@ public class EditBufferUpdater extends Updater {
 		if(param != null) {
 			String id = getAttributeValue(param, "id");
 			String val = getAttributeValue(param, "value");
-			//String modSrc = getAttributeValue(param, "mod-src");
-			//String modAmt = getAttributeValue(param, "mod-amt");
+			String modSrc = getAttributeValue(param, "mod-src");
+			String modAmt = getAttributeValue(param, "mod-amt");
 			
 			if(!id.isEmpty()) {
 				BasicParameterModel bpm = EditBufferModel.get().findParameter(Integer.valueOf(id));
 				if(!val.isEmpty())
 					bpm.originalValue.setValue(Double.valueOf(val));
 				
-				/*if(bpm instanceof ModulateableParameter) {
+				if(bpm instanceof ModulateableParameter) {
 					ModulateableParameter modP = ((ModulateableParameter)bpm);
 					if(!modAmt.isEmpty())
 						modP.ogModAmount.setValue(Double.valueOf(modAmt));
 					if(!modSrc.isEmpty())
 						modP.ogModSource.setValue(ModSource.values()[Integer.valueOf(modSrc)]);
-				}*/
+				}
 			}
 		}
 	}

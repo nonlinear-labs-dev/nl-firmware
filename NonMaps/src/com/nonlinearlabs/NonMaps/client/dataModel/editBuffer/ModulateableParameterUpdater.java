@@ -19,9 +19,7 @@ public class ModulateableParameterUpdater extends ParameterUpdater {
 	public void doUpdate() {
 		super.doUpdate();
 		String modSource = getChildText(root, "modSrc");
-		String ogModSource = getChildText(root, "og-modSrc");
 		String modAmount = getChildText(root, "modAmount");
-		String ogModAmount = getChildText(root, "og-modAmount");
 		
 		if(!modSource.isEmpty()) {
 			modTarget.modSource.setValue(ModSource.values()[Integer.valueOf(modSource)]);
@@ -31,18 +29,8 @@ public class ModulateableParameterUpdater extends ParameterUpdater {
 			modTarget.notifyChanges();
 		}
 		
-		if(!ogModSource.isEmpty()) {
-			modTarget.ogModSource.setValue(ModSource.values()[Integer.valueOf(ogModSource)]);
-			modTarget.notifyChanges();
-		}
-		
 		if(!modAmount.isEmpty()) {
 			modTarget.modAmount.setValue(Double.valueOf(modAmount));
-			modTarget.notifyChanges();
-		}
-		
-		if(!ogModAmount.isEmpty()) {
-			modTarget.ogModAmount.setValue(Double.valueOf(ogModAmount));
 			modTarget.notifyChanges();
 		}
 	}
