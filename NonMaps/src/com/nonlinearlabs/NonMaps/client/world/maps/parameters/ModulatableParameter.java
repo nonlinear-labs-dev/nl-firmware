@@ -5,6 +5,8 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.Checksum;
 import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
@@ -165,6 +167,13 @@ public abstract class ModulatableParameter extends Parameter {
 		}
 
 		return "";
+	}
+	
+	@Override
+	public String getFullNameWithGroup() {
+		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
+		boolean changed = bpm.value.value.getValue() != bpm.originalValue.getValue();
+		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
 	}
 
 	public void applyModulation(Initiator initiator, double diff) {
