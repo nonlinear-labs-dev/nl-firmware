@@ -7,18 +7,17 @@
 		<script type="text/javascript"  src="new.js" ></script>
 	</head>
   <body id='body' onload="onLoad()">
-    <div class='overlay collapsed' id='settings-overlay' class='collapsed' onclick="toggleSettings();">
-
+    <div class='overlay collapsed' id='settings-overlay' class='collapsed' onclick="event.stopPropagation(); toggleSettings();">
+      <div class="triangle-left" onclick='event.stopPropagation(); toggleSettings();'>
+      </div>
       <div class="setting-item" onclick="event.stopPropagation(); stub();">
-        <div class="triangle-left" onclick='toggleSettings();'>
-        </div>
-        <h1>Smoothing</h1>
+        <h2>Smoothing</h2>
         <input orient="vertical" class="step-range" type="range" min="0" max="100" step="1" value="50" id="interpolation-step" onchange="setInterpolation(this.value);" oninput="setInterpolation(this.value);">
-        <h1 id="interpolation-step-label">50</h1>
+        <h2 id="interpolation-step-label">50</h2>
+        <hr class="the-seperator">
         <form class="sel-input-form">
-          <h2>Input for MCs C and D</h2>
-          <input type="radio" name="mc-sel" id="cd-x" value="x" checked>X<br>
-          <input type="radio" name="mc-sel" id="cd-xy" value="xy">X-Y
+          <input type="radio" name="mc-sel" id="cd-x" value="x" checked>C and D on Sliders<br>
+          <input type="radio" name="mc-sel" id="cd-xy" value="xy">C and D on X/Y
         </form>
 
         <div>

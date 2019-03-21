@@ -68,8 +68,9 @@ html, body {
   border-style: solid;
   border-width: thin;
   border-color: white;
-  width: 25%;
+  width: 15%;
   height: 100%;
+  overflow: visible;
 }
 
 #canvas {
@@ -102,43 +103,41 @@ html, body {
 }
 
 .step-range {
-  height: 50%;
+  height: 30%;
   width: 10%;
   margin-left: 45%;
   -webkit-appearance: slider-vertical;
   writing-mode: bt-lr;
 }
 
-h1 {
+h2 {
   overflow-wrap: break-word;
   text-align: center;
 }
 
+input[type="radio"] {
+    -ms-transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+}
+
+.the-seperator {
+  margin-top: 5%;
+  margin-bottom: 5%;
+  border: none;
+}
+
+
 .triangle-left {
-    width: 2%;
-    height: 0;
-    padding-top: 5%;
-    padding-bottom: 5%;
-    overflow: hidden;
-    position: absolute;
-    left: 23%;
-    top: 40%;
-}
-
-.triangle-left:hover:after {
-  border-right: 500px solid rgb(187,187,187);
-}
-
-.triangle-left:after {
-    content: "";
-    display: block;
-    width: 0;
-    height: 0;
-    margin-top:-500px;
-
-    border-top: 500px solid transparent;
-    border-bottom: 500px solid transparent;
-    border-right: 500px solid rgb(180,180,180);
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 25px solid transparent;
+  border-right: 20px solid #828282;
+  border-bottom: 25px solid transparent;
+  left: 15%;
+  top: 50%;
+  transform: translateX(-20px) translateY(-25px);
 }
 
 .sel-input-form {

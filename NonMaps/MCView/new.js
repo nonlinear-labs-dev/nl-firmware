@@ -33,7 +33,7 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
+    this.webSocket = new WebSocket('ws://192.168.0.2:8080/ws-mc/');
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
@@ -500,6 +500,8 @@ class MCView {
     leftMargin = Math.min(sevenMM, leftMargin);
     var width = leftMargin * 0.6;
 
+    height = Math.max(Math.min(50, height), 25);
+
     ctx.moveTo(0, middle - height);
     ctx.lineTo(0, middle + height);
     ctx.lineTo(width, middle);
@@ -872,6 +874,7 @@ function onLoad() {
     } else if (this.value === "xy") {
       setCDXY(view.range);
     }
+    view.redraw(model);
   };
 
   var radios = document.querySelectorAll('input[type=radio][name="mc-sel"]');
