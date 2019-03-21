@@ -1,8 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -11,7 +8,6 @@ import com.nonlinearlabs.NonMaps.client.tools.NLMath;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Range;
-import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
@@ -26,7 +22,6 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCAmountRecallArea;
-import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCAmountRecallValue;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCPositionRecallArea;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.ParameterRecallArea;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.RecallArea;
@@ -61,9 +56,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	private QuantizedClippedValue currentValue;
 	private RecallArea currentRecall;
-	
-	private List<Rect> debugRects;
-	
+		
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
 
@@ -93,8 +86,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(currentRecall = new ParameterRecallArea(this));
 		
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
-
-		debugRects = new ArrayList<Rect>();
 		
 		setupValue();
 	}
@@ -112,9 +103,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	public void draw(Context2d ctx, int invalidationMask) {
 		fixMode();
 		super.draw(ctx, invalidationMask);
-		for(Rect r: debugRects) {
-			r.drawDebug(ctx);
-		}
 	}
 
 	private void fixMode() {
@@ -132,7 +120,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		debugRects.clear();
 		super.doLayout(x, y, w, h);
 
 		double undoWidth = Millimeter.toPixels(30);
