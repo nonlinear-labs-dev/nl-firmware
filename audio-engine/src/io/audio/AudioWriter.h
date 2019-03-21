@@ -52,7 +52,7 @@ class AudioWriterBase
 
   inline static void convertSample(SampleInt24& out, const Sample in)
   {
-    constexpr auto factor = static_cast<float>(1 << 22);
+    constexpr auto factor = static_cast<float>(1 << 23) - 1;
     int32_t i = static_cast<int32_t>(in * factor);
     memcpy(&out, &i, 3);
   }
