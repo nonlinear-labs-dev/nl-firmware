@@ -23,5 +23,11 @@ public class MCPositionRecallArea extends RecallArea {
 		}
 		return false;
 	}
+	
+	@Override	
+	public void setVisibleForMode(BeltParameterLayout.Mode mode) {
+		setVisible(mode == BeltParameterLayout.Mode.mcValue);
+	}
+
 }
 

@@ -20,15 +20,17 @@ public abstract class RecallArea extends OverlayLayout {
 		button.setActive(isChanged());
 		value.setActive(isChanged());
 		
-		final double padding = Millimeter.toPixels(2);
+		final double padding = Millimeter.toPixels(6);
 		final double textWidth = value.calculateTextWidth() + padding;
 		final double buttonX = w / 2 - textWidth / 2;
-		final double buttonY = h / 6;
-		final double twothirds = (h / 3) * 2;
+		final double buttonY = h / 4;
+		final double half = (h / 2);
 		
-		value.doLayout(0, 0, w, h);		
-		button.doLayout(buttonX, buttonY, textWidth, twothirds);
+		value.doLayout(0, buttonY + 1, w, half);		
+		button.doLayout(buttonX, buttonY, textWidth, half);
 	}
+	
+	abstract public void setVisibleForMode(BeltParameterLayout.Mode mode);
 	
 	abstract public boolean isChanged();
 }

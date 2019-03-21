@@ -4,6 +4,7 @@ import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.ModulateableParameter;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout.Mode;
 
 public class MCAmountRecallArea extends RecallArea {
 		
@@ -22,4 +23,8 @@ public class MCAmountRecallArea extends RecallArea {
 		return false;
 	}
 
+	@Override
+	public void setVisibleForMode(Mode mode) {
+		setVisible(mode == Mode.mcAmount);
+	}
 }

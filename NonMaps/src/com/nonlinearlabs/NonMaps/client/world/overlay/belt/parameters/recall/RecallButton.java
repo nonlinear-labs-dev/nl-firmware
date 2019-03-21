@@ -28,7 +28,7 @@ public abstract class RecallButton extends OverlayControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		if(isActive()) {				
-			getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), 1, new Gray(77), null);
+			getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), 1, new Gray(77), new Gray(77).brighter(15));
 			drawTriangle(ctx, new Gray(77));
 		}
 	}
@@ -38,12 +38,15 @@ public abstract class RecallButton extends OverlayControl {
 		movedToRight = movedToRight.getReducedBy(movedToRight.getHeight() / 3);
 		
 		ctx.beginPath();
+		ctx.setLineWidth(1);
 		ctx.moveTo(movedToRight.getLeft(), movedToRight.getTop());
 		ctx.lineTo(movedToRight.getLeft() + Millimeter.toPixels(3), movedToRight.getCenterPoint().getY());
 		ctx.lineTo(movedToRight.getLeft(), movedToRight.getBottom());
 		ctx.lineTo(movedToRight.getLeft(), movedToRight.getTop());
 		ctx.setFillStyle(color.toString());
+		ctx.setStrokeStyle(color.brighter(15).toString());
 		ctx.closePath();
 		ctx.fill();
+		ctx.stroke();
 	}
 }
