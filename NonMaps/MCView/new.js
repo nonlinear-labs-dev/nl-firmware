@@ -241,6 +241,8 @@ class ColorScheme {
   }
 }
 
+var sevenMM = 7
+
 var mmToPx = function(mm) {
     var div = document.createElement('div');
     div.style.display = 'block';
@@ -250,6 +252,18 @@ var mmToPx = function(mm) {
     div.parentNode.removeChild(div);
     return convert;
 };
+
+var observer = new MutationObserver(function() {
+                  if (document.body) {
+                    sevenMM = mmToPx(7);
+                    observer.disconnect();
+                  }
+                });
+                observer.observe(document.documentElement, {childList: true});
+
+
+
+
 
 class MCView {
   constructor() {
@@ -270,10 +284,11 @@ class MCView {
     this.addEventsToElement(this.canvas);
   }
 
+
   getMCForPagePos(pageX, pageY) {
     var canvasWidth = view.canvas.width;
     var leftMargin = view.range.leftMargin * canvasWidth;
-    leftMargin = Math.min(mmToPx(7), leftMargin);
+    leftMargin = Math.min(sevenMM, leftMargin);
     var width = canvasWidth - leftMargin;
     var heigth = view.canvas.height;
     var mc = null;
@@ -395,7 +410,7 @@ class MCView {
         var middle = canvas.height / 2;
         var height = (canvas.height / 100) * 2.5;
         var leftMargin = canvas.width * view.range.leftMargin;
-        leftMargin = Math.min(mmToPx(7), leftMargin);
+        leftMargin = Math.min(sevenMM, leftMargin);
         var width = leftMargin * 0.6;
 
         var area = function(x1, y1, x2, y2, x3, y3)
@@ -426,7 +441,7 @@ class MCView {
     canvas.height = window.innerHeight;
     var canvasWidth = canvas.width;
     var leftMargin = canvasWidth * view.range.leftMargin;
-    leftMargin = Math.min(mmToPx(7), leftMargin);
+    leftMargin = Math.min(sevenMM, leftMargin);
     var width = canvasWidth - leftMargin;
     var heigth = canvas.height;
 
@@ -482,7 +497,7 @@ class MCView {
     var middle = canvas.height / 2;
     var height = (canvas.height / 100) * 2.5;
     var leftMargin = canvas.width * view.range.leftMargin;
-    leftMargin = Math.min(mmToPx(7), leftMargin);
+    leftMargin = Math.min(sevenMM, leftMargin);
     var width = leftMargin * 0.6;
 
     ctx.moveTo(0, middle - height);
@@ -687,7 +702,7 @@ class MCController {
       var activeInputs = [];
       var canvasWidth = view.canvas.width;
       var leftMargin = canvasWidth * view.range.leftMargin;
-      leftMargin = Math.min(leftMargin, mmToPx(7));
+      leftMargin = Math.min(leftMargin, sevenMM);
       var cW = canvasWidth - leftMargin;
       var cH = view.canvas.height;
       var dX = leftMargin + (cW * division.x);

@@ -114,13 +114,33 @@ h1 {
   text-align: center;
 }
 
-.arrow-left {
-  position: relative;
-  width: 5%;
-  top: 50%;
-  left: 50%;
-  transform: translate(429%, -420%);
-  border-style: solid;
-  border-width: 35px 21px 35px 0;
-  border-color: transparent #818181 transparent transparent;
+.triangle-left {
+    width: 2%;
+    height: 0;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    overflow: hidden;
+    position: absolute;
+    left: 23%;
+    top: 40%;
+}
+
+.triangle-left:hover:after {
+  border-right: 500px solid rgb(187,187,187);
+}
+
+.triangle-left:after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    margin-top:-500px;
+
+    border-top: 500px solid transparent;
+    border-bottom: 500px solid transparent;
+    border-right: 500px solid rgb(180,180,180);
+}
+
+.sel-input-form {
+  margin-left: 20%;
 }
