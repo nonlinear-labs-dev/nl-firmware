@@ -82,7 +82,7 @@ public class ModulationButtons extends OverlayLayout {
 		double sizeY = Millimeter.toPixels(4);
 		double spaceY = Millimeter.toPixels(2);
 		
-		originalSource.doLayout(0, 0, w, sizeY);
+		originalSource.doLayout(-buttonDim, 0, w + 2 * buttonDim, sizeY);
 		
 		double space = Math.min(xspace, yspace);
 		for (int y = 0; y < 2; y++) 
