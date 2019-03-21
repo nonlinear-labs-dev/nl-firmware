@@ -15,7 +15,7 @@ public class ParameterUpdater extends Updater {
 
 	public void doUpdate() {
 		String shortName = getChildText(root, "short-name");
-		String longName = getChildText(root, "short-name");		
+		String longName = getChildText(root, "long-name");		
 		if (!shortName.isEmpty())
 			target.shortName.setValue(shortName);
 
