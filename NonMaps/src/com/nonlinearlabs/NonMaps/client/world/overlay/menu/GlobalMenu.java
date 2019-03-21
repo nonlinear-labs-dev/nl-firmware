@@ -208,7 +208,7 @@ public class GlobalMenu extends OverlayLayout {
 			@Override
 			public Control mouseDown(Position eventPoint) {
 				getParent().toggle();
-				Window.open("/NonMaps/MCView/new.html", "", "");
+				Window.open("/NonMaps/MCView/index.html", "", "");
 				return this;
 			}
 
