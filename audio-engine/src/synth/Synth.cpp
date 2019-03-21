@@ -1,7 +1,9 @@
 #include "synth/Synth.h"
-#include "io/audio/AudioOutput.h"
+#include "io/audio/AlsaAudioOutput.h"
+#include "io/audio/AudioOutputMock.h"
 #include "io/midi/AlsaMidiInput.h"
 #include "io/midi/TestMidiInput.h"
+#include "io/midi/MidiInputMock.h"
 #include "io/Log.h"
 #include "Options.h"
 #include "main.h"
@@ -12,18 +14,20 @@
 Synth::Synth()
 {
   auto options = getOptions();
+  auto inDeviceName = options->getMidiInputDeviceName();
   auto outDeviceName = options->getAudioOutputDeviceName();
-  m_out = std::make_unique<AudioOutput>(outDeviceName, [=](auto buf, auto length) { process(buf, length); });
+
+  if(outDeviceName.empty())
+    m_out = std::make_unique<AudioOutputMock>();
+  else
+    m_out = std::make_unique<AlsaAudioOutput>(outDeviceName, [=](auto buf, auto length) { process(buf, length); });
 
   if(auto distance = options->testNotesDistance())
-  {
     m_in = std::make_unique<TestMidiInput>(distance, [=](auto event) { pushMidiEvent(event); });
-  }
+  else if(inDeviceName.empty())
+    m_in = std::make_unique<MidiInputMock>([=](auto) {});
   else
-  {
-    auto inDeviceName = options->getMidiInputDeviceName();
     m_in = std::make_unique<AlsaMidiInput>(inDeviceName, [=](auto event) { pushMidiEvent(event); });
-  }
 }
 
 Synth::~Synth() = default;
@@ -58,7 +62,7 @@ double Synth::measurePerformance(std::chrono::seconds time)
 void Synth::pushMidiEvent(const MidiEvent &event)
 {
   auto &c = m_midiRingBuffer.push(event);
-  c.timestamp = std::chrono::high_resolution_clock::now() + m_out->getLatency();
+  c.timestamp = std::chrono::high_resolution_clock::now() + getOptions()->getAdditionalMidiDelay();
 }
 
 void Synth::process(SampleFrame *target, size_t numFrames)
