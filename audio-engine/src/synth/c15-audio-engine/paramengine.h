@@ -15,13 +15,7 @@
 #include "pe_defines_params.h"
 #include "pe_exponentiator.h"
 #include "pe_defines_config.h"
-
-#if test_whichEnvelope == 0
-#include "pe_env_engine.h"
-#elif test_whichEnvelope == 1
 #include "pe_env_engine2.h"
-#endif
-
 #include "pe_key_event.h"
 #include "pe_lfo_engine.h"
 #include "pe_utilities.h"
@@ -92,11 +86,7 @@ struct paramengine
     exponentiator m_convert;
     param_utility m_utilities[sig_number_of_utilities];
     float m_env_c_clipFactor[dsp_number_of_voices];
-#if test_whichEnvelope == 0
-    env_engine m_envelopes;
-#elif test_whichEnvelope == 1
     env_engine2 m_new_envelopes;
-#endif
     poly_key_event m_event;
 #if test_comb_decay_gate_mode == 1
     float m_comb_decay_times[2];
@@ -140,19 +130,11 @@ struct paramengine
     void keyUp(const uint32_t _voiceId, float _velocity);                                   // key events: key up (note off) mechanism
     void keyApply(const uint32_t _voiceId);                                                 // key events: apply key event
     void keyApplyMono();                                                                    // key events: apply mono event
-#if test_whichEnvelope == 0
-    /* OLD envelope updates */
-    void envUpdateStart(const uint32_t _voiceId, const uint32_t _envId, const float _pitch, const float _velocity, const float _retriggerHardness);
-    void envUpdateStop(const uint32_t _voiceId, const uint32_t _envId, const float _pitch, const float _velocity);
-    void envUpdateTimes(const uint32_t _voiceId, const uint32_t _envId);
-    void envUpdateLevels(const uint32_t _voiceId, const uint32_t _envId);
-#elif test_whichEnvelope == 1
     /* NEW envelopes updates */
     void newEnvUpdateStart(const uint32_t _voiceId, const float _pitch, const float _velocity);
     void newEnvUpdateStop(const uint32_t _voiceId, const float _pitch, const float _velocity);
     void newEnvUpdateTimes(const uint32_t _voiceId);
     void newEnvUpdateLevels(const uint32_t _voiceId);
-#endif
     /* simplified polyphonic post processing approach (one function per clock) */
     void postProcessPoly_slow(float *_signal, const uint32_t _voiceId);                         // poly slow post processing (distribution, copy, env c event signal!)
     void postProcessPoly_fast(float *_signal, const uint32_t _voiceId);                         // poly fast post processing (distribution, copy)

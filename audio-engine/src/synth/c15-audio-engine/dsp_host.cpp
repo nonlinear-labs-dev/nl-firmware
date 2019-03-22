@@ -1737,7 +1737,6 @@ void dsp_host::resetDSP()
 *******************************************************************************/
 void dsp_host::flushDSP()
 {
-#if test_flushModeFlag == 1
   // reset: audio engine poly section (full flush included)
   for(uint32_t v = 0; v < m_voices; v++)
   {
@@ -1754,21 +1753,6 @@ void dsp_host::flushDSP()
   m_gapfilter.resetDSP();
   m_echo.resetDSP();
   m_reverb.resetDSP();
-#else
-  for(uint32_t v = 0; v < m_voices; v++)
-  {
-    std::fill(m_combfilter[v].m_buffer.begin(), m_combfilter[v].m_buffer.end(), 0.f);
-  }
-
-  std::fill(m_flanger.m_buffer_L.begin(), m_flanger.m_buffer_L.end(), 0.f);
-  std::fill(m_flanger.m_buffer_R.begin(), m_flanger.m_buffer_R.end(), 0.f);
-  std::fill(m_echo.m_buffer_L.begin(), m_echo.m_buffer_L.end(), 0.f);
-  std::fill(m_echo.m_buffer_R.begin(), m_echo.m_buffer_R.end(), 0.f);
-
-  std::fill(m_reverb.m_buffer_L.begin(), m_reverb.m_buffer_L.end(), 0.f);
-  std::fill(m_reverb.m_buffer_R.begin(), m_reverb.m_buffer_R.end(), 0.f);
-
-#endif
 }
 
 /******************************************************************************/
@@ -1778,18 +1762,7 @@ void dsp_host::flushDSP()
 /* */
 void dsp_host::resetEnv()
 {
-  // if present, reset old envelopes
-#if test_whichEnvelope == 0
-  uint32_t e;
-  // reset old envelopes (A, B, C, G, F) -- not tested yet!
-  for(e = 0; e < sig_number_of_env_items; e++)
-  {
-    m_params.m_envelopes.m_body[e].m_index = 0;
-    m_params.m_envelopes.m_body[e].m_signal = 0.f;
-    m_params.m_envelopes.m_body[e].m_start = 0.f;
-  }
-#elif test_whichEnvelope == 1
-  // if present, reset new envelopes
+  // reset new envelopes
   // iterate voices
   uint32_t v;
 
@@ -1826,7 +1799,6 @@ void dsp_host::resetEnv()
   m_params.m_new_envelopes.m_env_f.m_body[0].m_x = 0.f;
   m_params.m_new_envelopes.m_env_f.m_body[0].m_signal_magnitude = 0.f;
   m_params.m_new_envelopes.m_env_f.m_body[0].m_start_magnitude = 0.f;
-#endif
 }
 
 void dsp_host::muteOsc(uint32_t _oscId, uint32_t _state)
