@@ -47,7 +47,7 @@ class AudioWriterBase
 
   inline static void convertSample(SampleInt16& out, const Sample in)
   {
-    out = static_cast<SampleInt16>(in * (std::numeric_limits<int16_t>::max() - 1));
+    out = static_cast<SampleInt16>(in * std::numeric_limits<int16_t>::max());
   }
 
   inline static void convertSample(SampleInt24& out, const Sample in)
@@ -59,7 +59,7 @@ class AudioWriterBase
 
   inline static void convertSample(SampleInt32& out, const Sample in)
   {
-    out = static_cast<SampleInt32>(in * (std::numeric_limits<int32_t>::max() - 1));
+    out = static_cast<SampleInt32>(in * std::numeric_limits<int32_t>::max());
   }
 
   template <typename TargetFrame, int channels> snd_pcm_sframes_t write(const SampleFrame* frames, size_t numFrames)
