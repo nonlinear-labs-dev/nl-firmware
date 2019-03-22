@@ -67,6 +67,25 @@ void Synth::pushMidiEvent(const MidiEvent &event)
 
 void Synth::process(SampleFrame *target, size_t numFrames)
 {
+  if(getOptions()->getAdditionalMidiDelay() == std::chrono::nanoseconds::zero())
+    processAudioWithoutTimestampedMidi(target, numFrames);
+  else
+    processAudioWithTimestampedMidi(target, numFrames);
+}
+
+void Synth::processAudioWithoutTimestampedMidi(SampleFrame *target, size_t numFrames)
+{
+  while(auto e = m_midiRingBuffer.peek())
+  {
+    doMidi(*e);
+    m_midiRingBuffer.pop();
+  }
+
+  doAudio(target, numFrames);
+}
+
+void Synth::processAudioWithTimestampedMidi(SampleFrame *target, size_t numFrames)
+{
   constexpr auto nanoRec = 1.0 / std::nano::den;
   const auto sr = getOptions()->getSampleRate();
   const auto nanosToSamples = sr * nanoRec;
