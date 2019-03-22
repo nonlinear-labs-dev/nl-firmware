@@ -204,7 +204,7 @@ class RangeDivision {
                       {"ID":2,"x":0.025,"y":0.05},
                       {"ID":3,"x":0.025,"y":0.05}];
 
-    this.leftMargin = 0.02;
+    this.leftMargin = 0.015;
 
 
     try {
@@ -241,7 +241,7 @@ class ColorScheme {
   }
 }
 
-var sevenMM = 7
+var fiveMM = 5
 
 var mmToPx = function(mm) {
     var div = document.createElement('div');
@@ -255,7 +255,7 @@ var mmToPx = function(mm) {
 
 var observer = new MutationObserver(function() {
                   if (document.body) {
-                    sevenMM = mmToPx(7);
+                    fiveMM = mmToPx(5);
                     observer.disconnect();
                   }
                 });
@@ -288,7 +288,7 @@ class MCView {
   getMCForPagePos(pageX, pageY) {
     var canvasWidth = view.canvas.width;
     var leftMargin = view.range.leftMargin * canvasWidth;
-    leftMargin = Math.min(sevenMM, leftMargin);
+    leftMargin = Math.max(leftMargin, fiveMM);
     var width = canvasWidth - leftMargin;
     var heigth = view.canvas.height;
     var mc = null;
@@ -410,7 +410,7 @@ class MCView {
         var middle = canvas.height / 2;
         var height = (canvas.height / 100) * 2.5;
         var leftMargin = canvas.width * view.range.leftMargin;
-        leftMargin = Math.min(sevenMM, leftMargin);
+        leftMargin = Math.max(leftMargin, fiveMM);
         var width = leftMargin * 0.6;
 
         var area = function(x1, y1, x2, y2, x3, y3)
@@ -441,7 +441,7 @@ class MCView {
     canvas.height = window.innerHeight;
     var canvasWidth = canvas.width;
     var leftMargin = canvasWidth * view.range.leftMargin;
-    leftMargin = Math.min(sevenMM, leftMargin);
+    leftMargin = Math.max(leftMargin, fiveMM);
     var width = canvasWidth - leftMargin;
     var heigth = canvas.height;
 
@@ -497,8 +497,10 @@ class MCView {
     var middle = canvas.height / 2;
     var height = (canvas.height / 100) * 2.5;
     var leftMargin = canvas.width * view.range.leftMargin;
-    leftMargin = Math.min(sevenMM, leftMargin);
+    leftMargin = Math.max(leftMargin, fiveMM);
     var width = leftMargin * 0.6;
+
+    height = Math.max(Math.min(50, height), 25);
 
     ctx.moveTo(0, middle - height);
     ctx.lineTo(0, middle + height);
@@ -702,7 +704,7 @@ class MCController {
       var activeInputs = [];
       var canvasWidth = view.canvas.width;
       var leftMargin = canvasWidth * view.range.leftMargin;
-      leftMargin = Math.min(leftMargin, sevenMM);
+      leftMargin = Math.max(leftMargin, fiveMM);
       var cW = canvasWidth - leftMargin;
       var cH = view.canvas.height;
       var dX = leftMargin + (cW * division.x);
@@ -872,6 +874,7 @@ function onLoad() {
     } else if (this.value === "xy") {
       setCDXY(view.range);
     }
+    view.redraw(model);
   };
 
   var radios = document.querySelectorAll('input[type=radio][name="mc-sel"]');
