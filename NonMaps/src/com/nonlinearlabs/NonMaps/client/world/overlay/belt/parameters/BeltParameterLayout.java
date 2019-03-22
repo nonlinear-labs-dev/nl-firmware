@@ -56,10 +56,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	private QuantizedClippedValue currentValue;
 	private RecallArea currentRecall;
-		
+			
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
-
+		
 		addChild(modulationButtons = new ModulationButtons(this));
 		addChild(mcSourceDisplay = new MCSourceDisplay(this));
 		addChild(slider = new Sliders(this));
@@ -119,7 +119,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	}
 
 	@Override
-	public void doLayout(double x, double y, double w, double h) {
+	public void doLayout(double x, double y, double w, double h) {		
 		super.doLayout(x, y, w, h);
 
 		double undoWidth = Millimeter.toPixels(30);
@@ -162,8 +162,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(currentRecall, modulationButtonWidth, modulationButtonWidth, 1, 2);
-		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth * 0.7, 2, 1);
+		layouter.push(null, modulationButtonWidth, modulationButtonWidth, 0, 2);
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcLowerBoundRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);

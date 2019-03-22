@@ -27,7 +27,9 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 	}
 
 	public boolean isChanged() {
-		return value.value.getValue() != originalValue.getValue();
+		double roundedVal = (int) (value.value.getValue() * 1000);
+		double roundedOgVal = (int) (originalValue.getValue() * 1000);
+		return roundedVal != roundedOgVal;
 	}
 
 	public Updater getUpdater(Node c) {
