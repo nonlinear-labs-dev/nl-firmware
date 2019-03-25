@@ -86,7 +86,6 @@ void ae_soundgenerator::resetPhase(float _phase)
 {
    m_oscA_phase = _phase;
    m_oscB_phase = _phase;
-#if test_phase_reset == 1
    /* */
    m_oscA_selfmix = 0.f;
    m_oscA_crossmix = 0.f;
@@ -97,7 +96,6 @@ void ae_soundgenerator::resetPhase(float _phase)
    m_chiB_stateVar = 0.f;
    /* */
    m_feedback_phase = 0.f;
-#endif
 }
 
 

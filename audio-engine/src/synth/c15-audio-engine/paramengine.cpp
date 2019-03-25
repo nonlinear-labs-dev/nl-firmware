@@ -105,13 +105,8 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
     m_env_c_clipFactor[i] = 1.f;
     m_note_shift[i] = 0.f;
   }
-#if test_whichEnvelope == 0
-  m_envelopes.init(_voices, gateRelease);
-  /* debugging */
-#elif test_whichEnvelope == 1
   /* initializing and testing new envelopes here... */
   m_new_envelopes.init(_voices, gateRelease);
-#endif
   // initialize unison spread tables
   int32_t u_voice, u_index;
   for(i = 0; i < dsp_number_of_voices; i++)
@@ -401,44 +396,22 @@ void paramengine::keyApply(const uint32_t _voiceId)
   const float velocity = m_event.m_poly[_voiceId].m_velocity;
   if(m_event.m_poly[_voiceId].m_type == 0)
   {
-#if test_whichEnvelope == 0
-    /*
-         *      "OLD" ENVELOPES:
-         */
-    /* key up */
-    envUpdateStop(_voiceId, 0, pitch, velocity);  // Envelope A
-    envUpdateStop(_voiceId, 1, pitch, velocity);  // Envelope B
-    envUpdateStop(_voiceId, 2, pitch, velocity);  // Envelope C
-    m_envelopes.stopEnvelope(_voiceId, 3);        // Gate
-#elif test_whichEnvelope == 1
     /*
          *      "NEW" ENVELOPES:
          */
     /* key up */
     newEnvUpdateStop(_voiceId, pitch, velocity);  // all poly Envelopes at once
-#endif
 #if test_flanger_env_legato
     m_event.m_active--;  // track (decrease) number of active keys
 #endif
   }
   else
   {
-#if test_whichEnvelope == 0
-    /*
-         *      "OLD" ENVELOPES:
-         */
-    /* key down - now with retrigger hardness (currently const 0) */
-    envUpdateStart(_voiceId, 0, pitch, velocity, 0.f);  // Envelope A
-    envUpdateStart(_voiceId, 1, pitch, velocity, 0.f);  // Envelope B
-    envUpdateStart(_voiceId, 2, pitch, velocity, 0.f);  // Envelope C (should get retrigger hardness parameter later)
-    m_envelopes.startEnvelope(_voiceId, 3, 0.f, 0.f);   // Gate
-#elif test_whichEnvelope == 1
     /*
          *      "NEW" ENVELOPES:
          */
     /* key down */
     newEnvUpdateStart(_voiceId, pitch, velocity);
-#endif
 #if test_flanger_env_legato
     m_event.m_active++;  // track (increase) number of active keys
 #endif
@@ -448,25 +421,6 @@ void paramengine::keyApply(const uint32_t _voiceId)
 /* TCD Key Events - mono key mechanism */
 void paramengine::keyApplyMono()
 {
-#if test_whichEnvelope == 0
-  /*
-     *      "OLD" ENVELOPES:
-     */
-  /* Flanger Envelope (peak) update by mono velocity (only on key down) */
-#if test_flanger_env_legato == 0
-  if(m_event.m_mono.m_type == 1)
-  {
-    m_envelopes.setSegmentDest(0, 4, 1, m_event.m_mono.m_velocity);
-    m_envelopes.startEnvelope(0, 4, 0.f, 0.f);
-  }
-#elif test_flanger_env_legato == 1
-  if(m_event.m_mono.m_type == 1 && m_event.m_active == 0)
-  {
-    m_envelopes.setSegmentDest(0, 4, 1, m_event.m_mono.m_velocity);
-    m_envelopes.startEnvelope(0, 4, 0.f, 0.f);
-  }
-#endif
-#elif test_whichEnvelope == 1
   /*
      *      "NEW" ENVELOPES:
      */
@@ -483,119 +437,7 @@ void paramengine::keyApplyMono()
     m_new_envelopes.m_env_f.start(0);
   }
 #endif
-#endif
 }
-
-#if test_whichEnvelope == 0
-/*
- *      "OLD" ENVELOPES:
- */
-/* envelope updates - start procedure */
-void paramengine::envUpdateStart(const uint32_t _voiceId, const uint32_t _envId, const float _pitch,
-                                 const float _velocity, const float _retriggerHardness)
-{
-  /* provide envelope index (for parameter access) and segment parameters (time, dest) */
-  const uint32_t envIndex = m_envIds[_envId];
-  float time, dest;
-  /* determine envelope event parameters */
-  float timeKT = -m_body[m_head[envIndex + E_TKT].m_index].m_signal * _pitch;
-  float levelVel = -m_body[m_head[envIndex + E_LV].m_index].m_signal;
-  float attackVel = -m_body[m_head[envIndex + E_AV].m_index].m_signal * _velocity;
-  float levelKT = m_body[m_head[envIndex + E_LKT].m_index].m_signal * _pitch;
-  /* determine envelope peak level - clipped to max. +3dB (candidate) */
-  float peak = std::min(m_convert.eval_level(((1 - _velocity) * levelVel) + levelKT), env_clip_peak);
-  /* envelope event updates */
-  m_event.m_env[_envId].m_levelFactor[_voiceId] = peak;
-  m_event.m_env[_envId].m_timeFactor[_voiceId][0] = m_convert.eval_level(timeKT + attackVel) * m_millisecond;
-  m_event.m_env[_envId].m_timeFactor[_voiceId][1] = m_convert.eval_level(timeKT) * m_millisecond;
-  m_event.m_env[_envId].m_timeFactor[_voiceId][2] = m_event.m_env[_envId].m_timeFactor[_voiceId][1];
-  /* envelope segment updates (Attack - Time, Peak) */
-  time = m_body[m_head[envIndex + E_ATT].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][0];
-  m_envelopes.setSegmentDx(_voiceId, _envId, 1, 1 / (time + 1));
-  m_envelopes.setSegmentDest(_voiceId, _envId, 1, peak);
-  /* envelope segment updates (Decay1 - Time, Breakpoint Level) */
-  time = m_body[m_head[envIndex + E_DEC1].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][1];
-  m_envelopes.setSegmentDx(_voiceId, _envId, 2, 1 / (time + 1));
-  dest = peak * m_body[m_head[envIndex + E_BP].m_index].m_signal;
-  m_envelopes.setSegmentDest(_voiceId, _envId, 2, dest);
-  /* envelope segment updates (Decay2 - Time, Sustain Level) */
-  time = m_body[m_head[envIndex + E_DEC2].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][2];
-  m_envelopes.setSegmentDx(_voiceId, _envId, 3, 1 / (time + 1));
-  dest = peak * m_body[m_head[envIndex + E_SUS].m_index].m_signal;
-  m_envelopes.setSegmentDest(_voiceId, _envId, 3, dest);
-  /* trigger envelope start (passing envelope curvature) */
-  m_envelopes.startEnvelope(_voiceId, _envId, m_body[m_head[envIndex + E_AC].m_index].m_signal, _retriggerHardness);
-}
-
-/* envelope updates - stop procedure */
-void paramengine::envUpdateStop(const uint32_t _voiceId, const uint32_t _envId, const float _pitch,
-                                const float _velocity)
-{
-  /* provide envelope index (for parameter access) and segment parameter (time) */
-  const uint32_t envIndex = m_envIds[_envId];
-  float time;
-  /* determine envelope event parameters */
-  float timeKT = -m_body[m_head[envIndex + E_TKT].m_index].m_signal * _pitch;
-  float releaseVel = -m_body[m_head[envIndex + E_RV].m_index].m_signal * _velocity;
-  /* envelope event updates */
-  m_event.m_env[_envId].m_timeFactor[_voiceId][3] = m_convert.eval_level(timeKT + releaseVel) * m_millisecond;
-  /* envelope segment updates (Release - Time) - distinguish finite and infinite times */
-  if(m_body[m_head[envIndex + E_REL].m_index].m_signal <= env_highest_finite_time)
-  {
-    /* finite release time */
-    time = m_body[m_head[envIndex + E_REL].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][3];
-    m_envelopes.setSegmentDx(_voiceId, _envId, 4, 1 / (time + 1));
-  }
-  else
-  {
-    /* infinite release time */
-    m_envelopes.setSegmentDx(_voiceId, _envId, 4, 0);
-  }
-  /* trigger envelope stop */
-  m_envelopes.stopEnvelope(_voiceId, _envId);
-}
-
-/* envelope updates - times */
-void paramengine::envUpdateTimes(const uint32_t _voiceId, const uint32_t _envId)
-{
-  /* provide envelope index (for parameter access) and segment parameter (time) */
-  const uint32_t envIndex = m_envIds[_envId];
-  float time;
-  /* envelope segment updates (Attack - Time) */
-  time = m_body[m_head[envIndex + E_ATT].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][0];
-  m_envelopes.setSegmentDx(_voiceId, _envId, 1, 1 / (time + 1));
-  /* envelope segment updates (Decay1 - Time) */
-  time = m_body[m_head[envIndex + E_DEC1].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][1];
-  m_envelopes.setSegmentDx(_voiceId, _envId, 2, 1 / (time + 1));
-  /* envelope segment updates (Decay2 - Time) */
-  time = m_body[m_head[envIndex + E_DEC2].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][2];
-  m_envelopes.setSegmentDx(_voiceId, _envId, 3, 1 / (time + 1));
-  /* envelope segment updates (Release  Time) - distinguish finite and infinite times */
-  if(m_body[m_head[envIndex + E_REL].m_index].m_signal <= env_highest_finite_time)
-  {
-    /* finite release time */
-    time = m_body[m_head[envIndex + E_REL].m_index].m_signal * m_event.m_env[_envId].m_timeFactor[_voiceId][3];
-    m_envelopes.setSegmentDx(_voiceId, _envId, 4, 1 / (time + 1));
-  }
-  else
-  {
-    /* infinite release time */
-    m_envelopes.setSegmentDx(_voiceId, _envId, 4, 0);
-  }
-}
-
-/* envelope updates - levels */
-void paramengine::envUpdateLevels(const uint32_t _voiceId, const uint32_t _envId)
-{
-  /* provide envelope index (for parameter access) and segment parameter (peak) */
-  const uint32_t envIndex = m_envIds[_envId];
-  float peak = m_event.m_env[_envId].m_levelFactor[_voiceId];
-  /* envelope segment updates (Decay1 - Breakpoint Level) */
-  m_envelopes.setSegmentDest(_voiceId, _envId, 2, peak * m_body[m_head[envIndex + E_BP].m_index].m_signal);
-  /* envelope segment updates (Decay2 - Sustain Level) */
-  m_envelopes.setSegmentDest(_voiceId, _envId, 3, peak * m_body[m_head[envIndex + E_SUS].m_index].m_signal);
-}
-#elif test_whichEnvelope == 1
 /*
  *      "NEW" ENVELOPES:
  */
@@ -1034,7 +876,6 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
             .m_signal;  // determine decay2 segment destination according to peak level and parameter
   m_new_envelopes.m_env_c.setSegmentDest(_voiceId, 3, dest);  // update decay2 segment destinatino (no split behavior)
 }
-#endif
 
 /* Poly Post Processing - slow parameters */
 void paramengine::postProcessPoly_slow(float* _signal, const uint32_t _voiceId)
@@ -1063,21 +904,10 @@ void paramengine::postProcessPoly_slow(float* _signal, const uint32_t _voiceId)
   //_signal[p] = m_body[m_head[m_postIds.m_data[0].m_data[3].m_data[0].m_data[i]].m_index].m_signal;
   //}
   //}
-#if test_whichEnvelope == 0
-  /*
-     *      "OLD" ENVELOPES:
-     */
-  /* update envelope times */
-  envUpdateTimes(_voiceId, 0);  // Envelope A
-  envUpdateTimes(_voiceId, 1);  // Envelope B
-  envUpdateTimes(_voiceId, 2);  // Envelope C
-                                /* later: Envelope C trigger at slow clock? */
-#elif test_whichEnvelope == 1
   /*
      *      "NEW" ENVELOPES:
      */
   newEnvUpdateTimes(_voiceId);
-#endif
   /* Pitch Updates */
 #if test_milestone == 150
   const float notePitch = m_body[m_head[P_KEY_NP].m_index + _voiceId].m_signal + m_body[m_head[P_MA_T].m_index].m_signal
@@ -1225,20 +1055,10 @@ void paramengine::postProcessPoly_fast(float* _signal, const uint32_t _voiceId)
   //_signal[p] = m_body[m_head[m_postIds.m_data[0].m_data[2].m_data[0].m_data[i]].m_index].m_signal;
   //}
   //}
-#if test_whichEnvelope == 0
-  /*
-     *      "OLD" ENVELOPES:
-     */
-  /* update envelope levels */
-  envUpdateLevels(_voiceId, 0);  // Envelope A
-  envUpdateLevels(_voiceId, 1);  // Envelope B
-  envUpdateLevels(_voiceId, 2);  // Envelope C
-#elif test_whichEnvelope == 1
   /*
      *      "NEW" ENVELOPES:
      */
   newEnvUpdateLevels(_voiceId);
-#endif
   /* temporary variables */
   float tmp_lvl, tmp_pan, tmp_abs;
 #if test_milestone == 150
@@ -1331,28 +1151,9 @@ void paramengine::postProcessPoly_audio(float* _signal, const uint32_t _voiceId)
   //p = m_head[m_postIds.m_data[0].m_data[1].m_data[0].m_data[i]].m_postId;
   //_signal[p] = m_body[m_head[m_postIds.m_data[0].m_data[1].m_data[0].m_data[i]].m_index].m_signal;
   //}
-#if test_whichEnvelope == 0
-  /* "OLD" ENVELOPES: */
-  //m_envelopes.tickMono();
-#elif test_whichEnvelope == 1
   /* "NEW" ENVELOPES: */
   //m_new_envelopes.tickMono();
-#endif
   //}
-#if test_whichEnvelope == 0
-  /* "OLD" ENVELOPES: */
-  /* poly envelope ticking */
-  m_envelopes.tickPoly(_voiceId);
-  /* poly envelope distribution */
-  _signal[ENV_A_MAG] = m_envelopes.m_body[m_envelopes.m_head[0].m_index + _voiceId].m_signal
-      * m_body[m_head[P_EA_GAIN].m_index].m_signal;  // Envelope A Magnitude post Gain
-  _signal[ENV_A_TMB] = _signal[ENV_A_MAG];           // Envelope A Timbre (== Magnitude)
-  _signal[ENV_B_MAG] = m_envelopes.m_body[m_envelopes.m_head[1].m_index + _voiceId].m_signal
-      * m_body[m_head[P_EB_GAIN].m_index].m_signal;  // Envelope B Magnitude post Gain
-  _signal[ENV_B_TMB] = _signal[ENV_B_MAG];           // Envelope B Timbre (== Magnitude)
-  _signal[ENV_C_CLIP] = m_envelopes.m_body[m_envelopes.m_head[2].m_index + _voiceId].m_signal;  // Envelope C
-  _signal[ENV_G_SIG] = m_envelopes.m_body[m_envelopes.m_head[3].m_index + _voiceId].m_signal;   // Gate
-#elif test_whichEnvelope == 1
   /* "NEW" ENVELOPES: */
   /* poly envelope ticking */
   m_new_envelopes.tickPoly(_voiceId);
@@ -1367,7 +1168,6 @@ void paramengine::postProcessPoly_audio(float* _signal, const uint32_t _voiceId)
       * m_body[m_head[P_EB_GAIN].m_index].m_signal;                                   // Envelope B Timbre post Gain
   _signal[ENV_C_CLIP] = m_new_envelopes.m_env_c.m_body[_voiceId].m_signal_magnitude;  // Envelope C
   _signal[ENV_G_SIG] = m_new_envelopes.m_env_g.m_body[_voiceId].m_signal_magnitude;   // Gate
-#endif
   /* reconstruct unclipped envelope c signal by factor */
   _signal[ENV_C_UNCL] = _signal[ENV_C_CLIP] * m_env_c_clipFactor[_voiceId];
   /* Oscillator parameter post processing */
@@ -1551,7 +1351,6 @@ void paramengine::postProcessPoly_key(float* _signal, const uint32_t _voiceId)
       - m_svfResonanceCurve.applyCurve(
             std::clamp(unitPitch, 0.f, 1.f));  // NEW resonance handling directly in post processing
   _signal[SVF_RES] = std::max(res + res, 0.02f);
-#if test_key_update_pan == 1
   /* Output Mixer */
   float tmp_lvl, tmp_pan;
 #if test_milestone == 150
@@ -1587,7 +1386,6 @@ void paramengine::postProcessPoly_key(float* _signal, const uint32_t _voiceId)
   tmp_lvl = m_body[m_head[P_FBM_LVL].m_index].m_signal;
   tmp_pan = std::min(m_convert.eval_level(m_body[m_head[P_FBM_LKT].m_index].m_signal * (notePitch)), env_clip_peak);
   _signal[FBM_LVL] = tmp_lvl * tmp_pan;
-#endif
   /*   - determine Highpass Filter Frequency */
   _signal[FBM_HPF] = evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f);
 }
@@ -1614,11 +1412,7 @@ void paramengine::postProcessMono_slow(float* _signal)
   tmp_Rate = m_body[m_head[P_FLA_RTE].m_index].m_signal;
   m_flangerLFO.m_increment = m_reciprocal_samplerate * tmp_Rate;
   tmp_Rate *= m_flangerRateToDecay;
-#if test_whichEnvelope == 0
-  m_envelopes.setSegmentDx(0, 4, 2, tmp_Rate);  // not sure here
-#elif test_whichEnvelope == 1
   m_new_envelopes.m_env_f.setSegmentDx(0, 2, tmp_Rate);
-#endif
   /*   - Stereo Time */
   tmp_Center
       = m_body[m_head[P_FLA_TIME].m_index].m_signal * dsp_samples_to_ms * tmp_SR;  // time (in ms) is handled in samples
@@ -1820,16 +1614,9 @@ void paramengine::postProcessMono_audio(float* _signal)
   }
   /* mono envelope rendering */
   float tmp_env;
-#if test_whichEnvelope == 0
-  /* "OLD" ENVELOPES: */
-  m_envelopes.tickMono();
-  const uint32_t idx = m_envelopes.m_head[4].m_index;
-  tmp_env = (m_envelopes.m_body[idx].m_signal * 2.f) - 1.f;
-#elif test_whichEnvelope == 1
   /* "NEW" ENVELOPES: */
   m_new_envelopes.tickMono();
   tmp_env = (m_new_envelopes.m_env_f.m_body[0].m_signal_magnitude * 2.f) - 1.f;
-#endif
   /* - Flanger */
 #if test_flanger_phs == 2
   /*   - LFO/Envelope Rate, Phase */
