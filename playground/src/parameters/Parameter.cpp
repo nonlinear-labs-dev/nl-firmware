@@ -229,19 +229,24 @@ PresetParameter *Parameter::getOriginalParameter() const
 
 bool Parameter::isChangedFromLoaded() const
 {
-  const auto rawNow = getControlPositionValue();
-  const auto epsilon = 0.5 / getValue().getFineDenominator();
-  DebugLevel::gassy("Using", epsilon, "as epsilon for Parameter::isChangedFromLoaded!", getLongName());
-
-  if(auto originalParameter = getOriginalParameter())
-  {
-    return std::fabs(originalParameter->getValue() - rawNow) > epsilon;
-  }
-  else
-  {
-    return std::fabs(getDefaultValue() - rawNow) > epsilon;
-  }
+    return isValueChangedFromLoaded();
 }
+
+bool Parameter::isValueChangedFromLoaded() const {
+    const auto rawNow = getControlPositionValue();
+    const auto epsilon = 0.5 / getValue().getFineDenominator();
+    DebugLevel::gassy("Using", epsilon, "as epsilon for Parameter::isChangedFromLoaded!", getLongName());
+
+    if(auto originalParameter = getOriginalParameter())
+    {
+        return std::fabs(originalParameter->getValue() - rawNow) > epsilon;
+    }
+    else
+    {
+        return std::fabs(getDefaultValue() - rawNow) > epsilon;
+    }
+}
+
 
 bool Parameter::isBiPolar() const
 {

@@ -22,6 +22,10 @@ PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, uint16
 {
 }
 
+bool PhysicalControlParameter::isValueChangedFromLoaded() const {
+    return false;
+}
+
 bool PhysicalControlParameter::isChangedFromLoaded() const {
     return false;
 }

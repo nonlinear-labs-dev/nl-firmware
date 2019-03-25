@@ -12,6 +12,7 @@ class PhysicalControlParameter : public Parameter
   PhysicalControlParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
 
+  bool isValueChangedFromLoaded() const override;
   bool isChangedFromLoaded() const override;
   virtual void onChangeFromLpc(tControlPositionValue newValue);
   void registerTarget(ModulationRoutingParameter *target);

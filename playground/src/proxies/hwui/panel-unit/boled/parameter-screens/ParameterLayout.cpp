@@ -115,15 +115,7 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 
 void ParameterLayout2::handlePresetValueRecall()
 {
-  auto param = getCurrentEditParameter();
-  auto recall{false};
-
-  if(auto modP = dynamic_cast<ModulateableParameter*>(param))
-      recall = modP->Parameter::isChangedFromLoaded();
-  else
-      recall = param->isChangedFromLoaded();
-
-  if(recall)
+  if(getCurrentEditParameter()->isValueChangedFromLoaded())
     getOLEDProxy().setOverlay(new ParameterRecallLayout2());
 }
 
