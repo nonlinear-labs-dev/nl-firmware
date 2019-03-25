@@ -16,6 +16,7 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
+#include <parameters/ModulateableParameter.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -114,10 +115,16 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 
 void ParameterLayout2::handlePresetValueRecall()
 {
-  if(getCurrentEditParameter()->Parameter::isChangedFromLoaded())
-  {
+  auto param = getCurrentEditParameter();
+  auto recall{false};
+
+  if(auto modP = dynamic_cast<ModulateableParameter*>(param))
+      recall = modP->Parameter::isChangedFromLoaded();
+  else
+      recall = param->isChangedFromLoaded();
+
+  if(recall)
     getOLEDProxy().setOverlay(new ParameterRecallLayout2());
-  }
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2()

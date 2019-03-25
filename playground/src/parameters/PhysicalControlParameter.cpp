@@ -22,6 +22,11 @@ PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, uint16
 {
 }
 
+bool PhysicalControlParameter::isChangedFromLoaded() const {
+    return false;
+}
+
+
 void PhysicalControlParameter::onChangeFromLpc(tControlPositionValue newVal)
 {
   getValue().setRawValue(Initiator::EXPLICIT_LPC, getValue().clip(newVal));
