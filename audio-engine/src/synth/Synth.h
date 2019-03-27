@@ -21,6 +21,7 @@ class Synth
   const AudioOutput *getAudioOut() const;
 
   double measurePerformance(std::chrono::seconds time);
+  void resetPerformance();
 
  protected:
   virtual void doMidi(const MidiEvent &event) = 0;
