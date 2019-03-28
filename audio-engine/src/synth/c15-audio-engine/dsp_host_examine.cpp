@@ -65,7 +65,7 @@ std::ostream& operator<<(std::ostream& lhs, const examine_param& rhs)
     lhs << "Voice\tState\tPre\tSignal\t\tdx0\t\tdx1\t\tx\t\tStart\t\tDiff\t\tDest" << std::endl;
     for(uint32_t i = 0; i < rhs.m_size; i++)
     {
-        lhs << i << "\t" << rhs.m_state[i] << "\t" << rhs.m_preload[i] << "\t" << rhs.m_signal[i] << "\t\t";
+        lhs << i << "\t" << rhs.m_state[i] << "\t" << rhs.m_preload[i] << "\t" << rhs.mparams[i] << "\t\t";
         lhs << rhs.m_dx[i][0] << "\t\t" << rhs.m_dx[i][1] << "\t\t" << rhs.m_x[i] << "\t\t";
         lhs << rhs.m_start[i] << "\t\t" << rhs.m_diff[i] << "\t\t" << rhs.m_dest[i] << std::endl;
     }
