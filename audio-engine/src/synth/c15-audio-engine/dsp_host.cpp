@@ -1390,7 +1390,7 @@ void dsp_host::testGetSignalData()
     Log::info<Log::LogMode::InsertSpaces>(p, "-");
     for(uint32_t v = 0; v < m_voices; v++)
     {
-      Log::info<Log::LogMode::Plain>(m_paramsignaldata[v][p], ", ");
+      Log::info<Log::LogMode::Plain>(m_parameters.get(v, p), ", ");
     }
     Log::info();
   }
