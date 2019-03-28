@@ -7,8 +7,8 @@
     @todo
 *******************************************************************************/
 
-
 #include "ae_reverb.h"
+#include "ParameterStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -16,10 +16,7 @@
 
 ae_reverb::ae_reverb()
 {
-
 }
-
-
 
 /******************************************************************************/
 /** @brief
@@ -27,105 +24,103 @@ ae_reverb::ae_reverb()
 
 void ae_reverb::init(float _samplerate, uint32_t _upsampleFactor)
 {
-    m_out_L = 0.f;
-    m_out_R = 0.f;
-    m_out_FX = 0.f;
+  m_out_L = 0.f;
+  m_out_R = 0.f;
+  m_out_FX = 0.f;
 
-    m_slow_tick = 0;
-    m_slow_thrsh = 2 * _upsampleFactor - 1;
+  m_slow_tick = 0;
+  m_slow_thrsh = 2 * _upsampleFactor - 1;
 
-    //************************** Reverb Modulation ***************************//
-    m_mod_1a = 0.f;
-    m_mod_2a = 0.f;
-    m_mod_1b = 0.f;
-    m_mod_2b = 0.f;
-    m_lfo_omega_1 = 0.86306f * 2.f / _samplerate;
-    m_lfo_omega_2 = 0.6666f * 2.f / _samplerate;
+  //************************** Reverb Modulation ***************************//
+  m_mod_1a = 0.f;
+  m_mod_2a = 0.f;
+  m_mod_1b = 0.f;
+  m_mod_2b = 0.f;
+  m_lfo_omega_1 = 0.86306f * 2.f / _samplerate;
+  m_lfo_omega_2 = 0.6666f * 2.f / _samplerate;
 
-    //****************************** Loop Filter *****************************//
-    m_warpConst_PI = pi / _samplerate;
-    m_omegaClip_max = _samplerate / 2.f;
+  //****************************** Loop Filter *****************************//
+  m_warpConst_PI = pi / _samplerate;
+  m_omegaClip_max = _samplerate / 2.f;
 
-    m_lp_stateVar_L = 0.f;
-    m_lp_stateVar_R = 0.f;
-    m_hp_stateVar_L = 0.f;
-    m_hp_stateVar_R = 0.f;
+  m_lp_stateVar_L = 0.f;
+  m_lp_stateVar_R = 0.f;
+  m_hp_stateVar_L = 0.f;
+  m_hp_stateVar_R = 0.f;
 
-    //***************************** Delay Buffer *****************************//
-    m_buffer_indx = 0;
+  //***************************** Delay Buffer *****************************//
+  m_buffer_indx = 0;
 
-    m_buffer_sz_m1 = REVERB_BUFFER_SIZE * _upsampleFactor - 1;
-    m_buffer_sz_m2 = REVERB_BUFFER_SIZE * _upsampleFactor - 2;
+  m_buffer_sz_m1 = REVERB_BUFFER_SIZE * _upsampleFactor - 1;
+  m_buffer_sz_m2 = REVERB_BUFFER_SIZE * _upsampleFactor - 2;
 
-    m_buffer_L.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L1.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L2.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L3.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L4.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L5.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L6.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L7.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L8.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_L9.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L1.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L2.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L3.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L4.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L5.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L6.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L7.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L8.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_L9.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
 
-    m_buffer_R.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R1.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R2.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R3.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R4.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R5.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R6.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R7.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R8.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
-    m_buffer_R9.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R1.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R2.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R3.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R4.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R5.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R6.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R7.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R8.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
+  m_buffer_R9.resize(REVERB_BUFFER_SIZE * _upsampleFactor);
 
-    std::fill(m_buffer_L.begin(), m_buffer_L.end(), 0.f);
-    std::fill(m_buffer_L1.begin(), m_buffer_L1.end(), 0.f);
-    std::fill(m_buffer_L2.begin(), m_buffer_L2.end(), 0.f);
-    std::fill(m_buffer_L3.begin(), m_buffer_L3.end(), 0.f);
-    std::fill(m_buffer_L4.begin(), m_buffer_L4.end(), 0.f);
-    std::fill(m_buffer_L5.begin(), m_buffer_L5.end(), 0.f);
-    std::fill(m_buffer_L6.begin(), m_buffer_L6.end(), 0.f);
-    std::fill(m_buffer_L7.begin(), m_buffer_L7.end(), 0.f);
-    std::fill(m_buffer_L8.begin(), m_buffer_L8.end(), 0.f);
-    std::fill(m_buffer_L9.begin(), m_buffer_L9.end(), 0.f);
+  std::fill(m_buffer_L.begin(), m_buffer_L.end(), 0.f);
+  std::fill(m_buffer_L1.begin(), m_buffer_L1.end(), 0.f);
+  std::fill(m_buffer_L2.begin(), m_buffer_L2.end(), 0.f);
+  std::fill(m_buffer_L3.begin(), m_buffer_L3.end(), 0.f);
+  std::fill(m_buffer_L4.begin(), m_buffer_L4.end(), 0.f);
+  std::fill(m_buffer_L5.begin(), m_buffer_L5.end(), 0.f);
+  std::fill(m_buffer_L6.begin(), m_buffer_L6.end(), 0.f);
+  std::fill(m_buffer_L7.begin(), m_buffer_L7.end(), 0.f);
+  std::fill(m_buffer_L8.begin(), m_buffer_L8.end(), 0.f);
+  std::fill(m_buffer_L9.begin(), m_buffer_L9.end(), 0.f);
 
-    std::fill(m_buffer_R.begin(), m_buffer_R.end(), 0.f);
-    std::fill(m_buffer_R1.begin(), m_buffer_R1.end(), 0.f);
-    std::fill(m_buffer_R2.begin(), m_buffer_R2.end(), 0.f);
-    std::fill(m_buffer_R3.begin(), m_buffer_R3.end(), 0.f);
-    std::fill(m_buffer_R4.begin(), m_buffer_R4.end(), 0.f);
-    std::fill(m_buffer_R5.begin(), m_buffer_R5.end(), 0.f);
-    std::fill(m_buffer_R6.begin(), m_buffer_R6.end(), 0.f);
-    std::fill(m_buffer_R7.begin(), m_buffer_R7.end(), 0.f);
-    std::fill(m_buffer_R8.begin(), m_buffer_R8.end(), 0.f);
-    std::fill(m_buffer_R9.begin(), m_buffer_R9.end(), 0.f);
+  std::fill(m_buffer_R.begin(), m_buffer_R.end(), 0.f);
+  std::fill(m_buffer_R1.begin(), m_buffer_R1.end(), 0.f);
+  std::fill(m_buffer_R2.begin(), m_buffer_R2.end(), 0.f);
+  std::fill(m_buffer_R3.begin(), m_buffer_R3.end(), 0.f);
+  std::fill(m_buffer_R4.begin(), m_buffer_R4.end(), 0.f);
+  std::fill(m_buffer_R5.begin(), m_buffer_R5.end(), 0.f);
+  std::fill(m_buffer_R6.begin(), m_buffer_R6.end(), 0.f);
+  std::fill(m_buffer_R7.begin(), m_buffer_R7.end(), 0.f);
+  std::fill(m_buffer_R8.begin(), m_buffer_R8.end(), 0.f);
+  std::fill(m_buffer_R9.begin(), m_buffer_R9.end(), 0.f);
 
-    m_stateVar_L1 = 0.f;
-    m_stateVar_L2 = 0.f;
-    m_stateVar_L3 = 0.f;
-    m_stateVar_L4 = 0.f;
-    m_stateVar_L5 = 0.f;
-    m_stateVar_L6 = 0.f;
-    m_stateVar_L7 = 0.f;
-    m_stateVar_L8 = 0.f;
-    m_stateVar_L9 = 0.f;
+  m_stateVar_L1 = 0.f;
+  m_stateVar_L2 = 0.f;
+  m_stateVar_L3 = 0.f;
+  m_stateVar_L4 = 0.f;
+  m_stateVar_L5 = 0.f;
+  m_stateVar_L6 = 0.f;
+  m_stateVar_L7 = 0.f;
+  m_stateVar_L8 = 0.f;
+  m_stateVar_L9 = 0.f;
 
-    m_stateVar_R1 = 0.f;
-    m_stateVar_R2 = 0.f;
-    m_stateVar_R3 = 0.f;
-    m_stateVar_R4 = 0.f;
-    m_stateVar_R5 = 0.f;
-    m_stateVar_R6 = 0.f;
-    m_stateVar_R7 = 0.f;
-    m_stateVar_R8 = 0.f;
-    m_stateVar_R9 = 0.f;
+  m_stateVar_R1 = 0.f;
+  m_stateVar_R2 = 0.f;
+  m_stateVar_R3 = 0.f;
+  m_stateVar_R4 = 0.f;
+  m_stateVar_R5 = 0.f;
+  m_stateVar_R6 = 0.f;
+  m_stateVar_R7 = 0.f;
+  m_stateVar_R8 = 0.f;
+  m_stateVar_R9 = 0.f;
 
-    //******************************* Smoothing ******************************//
-    m_smooth_inc = 1.f / std::max(50.f * (0.001f * _samplerate / 2.f), 1.e-12f);            /// 50ms als DEfine Bitte!
+  //******************************* Smoothing ******************************//
+  m_smooth_inc = 1.f / std::max(50.f * (0.001f * _samplerate / 2.f), 1.e-12f);  /// 50ms als DEfine Bitte!
 }
-
-
 
 /******************************************************************************/
 /** @brief  Chorus
@@ -133,118 +128,115 @@ void ae_reverb::init(float _samplerate, uint32_t _upsampleFactor)
 
 void ae_reverb::set(ParameterStorage &params)
 {
-    float tmpVar;
-    float tmp_target;
+  float tmpVar;
+  float tmp_target;
 #if test_reverbSmoother == 1
 
-    tmpVar = _signal[REV_SIZE];
-//    tmp_target = _signal[REV_CHO] * (tmpVar * -200.f + 311.f);
-//    if (m_depth_target - tmp_target != 0.f)
-//    {
-//        m_depth_target = tmp_target;
-//        m_depth_base = m_depth;
-//        m_depth_diff = m_depth_target - m_depth_base;
-//        m_depth_ramp = 0.f;
-//    }
-    tmp_target = _signal[REV_CHO] * (tmpVar * -200.f + 311.f);
-    if (m_depth_target - tmp_target != 0.f)
-    {
-        m_depth_inc = (m_depth_target - m_depth) * m_smooth_inc;
-    }
+  tmpVar = params[REV_SIZE];
+  //    tmp_target = params[REV_CHO] * (tmpVar * -200.f + 311.f);
+  //    if (m_depth_target - tmp_target != 0.f)
+  //    {
+  //        m_depth_target = tmp_target;
+  //        m_depth_base = m_depth;
+  //        m_depth_diff = m_depth_target - m_depth_base;
+  //        m_depth_ramp = 0.f;
+  //    }
+  tmp_target = params[REV_CHO] * (tmpVar * -200.f + 311.f);
+  if(m_depth_target - tmp_target != 0.f)
+  {
+    m_depth_inc = (m_depth_target - m_depth) * m_smooth_inc;
+  }
 
-    tmp_target = tmpVar * (0.5f - std::abs(tmpVar) * -0.5f);
-    if (m_size_target - tmp_target != 0.f)
-    {
-        m_size_target = tmp_target;
-        m_size_base = m_size;
-        m_size_diff = m_size_target - m_size_base;
-        m_size_ramp = 0.f;
-    }
+  tmp_target = tmpVar * (0.5f - std::abs(tmpVar) * -0.5f);
+  if(m_size_target - tmp_target != 0.f)
+  {
+    m_size_target = tmp_target;
+    m_size_base = m_size;
+    m_size_diff = m_size_target - m_size_base;
+    m_size_ramp = 0.f;
+  }
 
-    tmp_target = _signal[REV_BAL];
-    if (m_bal_target - tmp_target != 0.f)
-    {
-        m_bal_target = tmp_target;
-        m_bal_base = m_bal;
-        m_bal_diff = m_bal_target - m_bal_base;
-        m_bal_ramp = 0.f;
-    }
+  tmp_target = params[REV_BAL];
+  if(m_bal_target - tmp_target != 0.f)
+  {
+    m_bal_target = tmp_target;
+    m_bal_base = m_bal;
+    m_bal_diff = m_bal_target - m_bal_base;
+    m_bal_ramp = 0.f;
+  }
 
-    tmpVar = _signal[REV_PRE];
-    tmp_target = std::round(tmpVar);
-    if (m_preDel_L_target - tmp_target != 0.f)
-    {
-        m_preDel_L_target = tmp_target;
-        m_preDel_L_base = m_preDel_L;
-        m_preDel_L_diff = m_preDel_L_target - m_preDel_L_base;
-        m_preDel_L_ramp = 0.f;
-    }
+  tmpVar = params[REV_PRE];
+  tmp_target = std::round(tmpVar);
+  if(m_preDel_L_target - tmp_target != 0.f)
+  {
+    m_preDel_L_target = tmp_target;
+    m_preDel_L_base = m_preDel_L;
+    m_preDel_L_diff = m_preDel_L_target - m_preDel_L_base;
+    m_preDel_L_ramp = 0.f;
+  }
 
-    tmp_target = std::round(tmpVar * 1.18933f);
-    if (m_preDel_R_target - tmp_target != 0.f)
-    {
-        m_preDel_R_target = tmp_target;
-        m_preDel_R_base = m_preDel_R;
-        m_preDel_R_diff = m_preDel_R_target - m_preDel_R_base;
-        m_preDel_R_ramp = 0.f;
-    }
+  tmp_target = std::round(tmpVar * 1.18933f);
+  if(m_preDel_R_target - tmp_target != 0.f)
+  {
+    m_preDel_R_target = tmp_target;
+    m_preDel_R_base = m_preDel_R;
+    m_preDel_R_diff = m_preDel_R_target - m_preDel_R_base;
+    m_preDel_R_ramp = 0.f;
+  }
 
+  tmp_target = std::clamp(params[REV_LPF], 0.1f, m_omegaClip_max);
+  tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
+  if(m_lp_omega_target - tmp_target != 0.f)
+  {
+    m_lp_omega_target = tmp_target;
+    m_lp_omega_base = m_lp_omega;
+    m_lp_omega_diff = m_lp_omega_target - m_lp_omega_base;
+    m_lp_omega_ramp = 0.f;
+  }
 
-    tmp_target = std::clamp(_signal[REV_LPF], 0.1f, m_omegaClip_max);
-    tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
-    if (m_lp_omega_target - tmp_target != 0.f)
-    {
-        m_lp_omega_target = tmp_target;
-        m_lp_omega_base = m_lp_omega;
-        m_lp_omega_diff = m_lp_omega_target - m_lp_omega_base;
-        m_lp_omega_ramp = 0.f;
-    }
-
-    tmp_target = std::clamp(_signal[REV_HPF], 0.1f, m_omegaClip_max);
-    tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
-    if (m_hp_omega_target - tmp_target != 0.f)
-    {
-        m_hp_omega_target = tmp_target;
-        m_hp_omega_base = m_hp_omega;
-        m_hp_omega_diff = m_hp_omega_target - m_hp_omega_base;
-        m_hp_omega_ramp = 0.f;
-    }
+  tmp_target = std::clamp(params[REV_HPF], 0.1f, m_omegaClip_max);
+  tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
+  if(m_hp_omega_target - tmp_target != 0.f)
+  {
+    m_hp_omega_target = tmp_target;
+    m_hp_omega_base = m_hp_omega;
+    m_hp_omega_diff = m_hp_omega_target - m_hp_omega_base;
+    m_hp_omega_ramp = 0.f;
+  }
 
 #endif
 
 #if test_reverbSmoother == 0
-    tmpVar = _signal[REV_SIZE];
-    m_depth = _signal[REV_CHO] * (tmpVar * -200.f + 311.f);         /// Smoothing??
+  tmpVar = params[REV_SIZE];
+  m_depth = params[REV_CHO] * (tmpVar * -200.f + 311.f);  /// Smoothing??
 
-    tmpVar = _signal[REV_SIZE];
-    tmpVar = tmpVar * (0.5f - std::abs(tmpVar) * -0.5f);            /// Smoothing??
-    m_absorb  = tmpVar * 0.334f + 0.666f;
-    m_fb_amnt = tmpVar * 0.667f + 0.333f;
+  tmpVar = params[REV_SIZE];
+  tmpVar = tmpVar * (0.5f - std::abs(tmpVar) * -0.5f);  /// Smoothing??
+  m_absorb = tmpVar * 0.334f + 0.666f;
+  m_fb_amnt = tmpVar * 0.667f + 0.333f;
 
-    tmpVar = _signal[REV_BAL];                                      /// Smoothing??
-    m_bal_full = tmpVar * (2.f - tmpVar);
-    tmpVar = 1.f - tmpVar;
-    m_bal_half = tmpVar * (2.f - tmpVar);
+  tmpVar = params[REV_BAL];  /// Smoothing??
+  m_bal_full = tmpVar * (2.f - tmpVar);
+  tmpVar = 1.f - tmpVar;
+  m_bal_half = tmpVar * (2.f - tmpVar);
 
-    tmpVar = _signal[REV_PRE];
-    m_preDel_L = std::round(tmpVar);                           /// Smoothing?
-    m_preDel_R = std::round(tmpVar * 1.18933f);                /// Smoothing?
+  tmpVar = params[REV_PRE];
+  m_preDel_L = std::round(tmpVar);             /// Smoothing?
+  m_preDel_R = std::round(tmpVar * 1.18933f);  /// Smoothing?
 
-    tmpVar = std::clamp(_signal[REV_LPF], 0.1f, m_omegaClip_max);
-    m_lp_omega = NlToolbox::Math::tan(tmpVar * m_warpConst_PI);     /// Smoothing??
+  tmpVar = std::clamp(params[REV_LPF], 0.1f, m_omegaClip_max);
+  m_lp_omega = NlToolbox::Math::tan(tmpVar * m_warpConst_PI);  /// Smoothing??
 
-    m_lp_a0 = 1.f / (m_lp_omega + 1.f);
-    m_lp_a1 = m_lp_omega - 1.f;
+  m_lp_a0 = 1.f / (m_lp_omega + 1.f);
+  m_lp_a1 = m_lp_omega - 1.f;
 
-    tmpVar = std::clamp(_signal[REV_HPF], 0.1f, m_omegaClip_max);
-    m_hp_omega = NlToolbox::Math::tan(tmpVar * m_warpConst_PI);     /// Smoothing??
+  tmpVar = std::clamp(params[REV_HPF], 0.1f, m_omegaClip_max);
+  m_hp_omega = NlToolbox::Math::tan(tmpVar * m_warpConst_PI);  /// Smoothing??
 
-    m_hp_a0 = 1.f / (m_hp_omega + 1.f);
-    m_hp_a1 = m_hp_omega - 1.f;
+  m_hp_a0 = 1.f / (m_hp_omega + 1.f);
+  m_hp_a1 = m_hp_omega - 1.f;
 #endif
 }
-
-
 
 /******************************************************************************/
 /** @brief
@@ -252,546 +244,509 @@ void ae_reverb::set(ParameterStorage &params)
 
 void ae_reverb::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
 {
-    float tmpVar;
-    int32_t ind_t0, ind_tm1, ind_tp1, ind_tp2;
-    float wetSample_L, wetSample_R;
+  float tmpVar;
+  int32_t ind_t0, ind_tm1, ind_tp1, ind_tp2;
+  float wetSample_L, wetSample_R;
 
-    //************************** Reverb Modulation ***************************//
-    if (!m_slow_tick)
-    {
+  //************************** Reverb Modulation ***************************//
+  if(!m_slow_tick)
+  {
 #if test_reverbSmoother == 1
 
-//        if(m_depth_ramp > 1.f)                                  // Depth Smth.
-//        {
-//            m_depth = m_depth_target;
-//        }
-//        else
-//        {
-//            m_depth = m_depth_base + (m_depth_diff * m_depth_ramp);
-//            m_depth_ramp += m_smooth_inc;
-//        }
-        if (m_depth_target - m_depth != 0.f)
-        {
-            m_depth += m_depth_inc;
-        }
-        else
-        {
-            m_depth = m_depth_target;
-        }
-
-        if(m_size_ramp > 1.f)                                   // Size Smth.
-        {
-            m_size = m_size_target;
-        }
-        else
-        {
-            m_size = m_size_base + (m_size_diff * m_size_ramp);
-            m_size_ramp += m_smooth_inc;
-        }
-        m_absorb  = m_size * 0.334f + 0.666f;
-        m_fb_amnt = m_size * 0.667f + 0.333f;
-
-        if(m_bal_ramp > 1.f)                                    // Balance Smth.
-        {
-            m_bal = m_bal_target;
-        }
-        else
-        {
-            m_bal = m_bal_base + (m_bal_diff * m_bal_ramp);
-            m_bal_ramp += m_smooth_inc;
-        }
-        tmpVar = m_bal;
-        m_bal_full = tmpVar * (2.f - tmpVar);
-        tmpVar = 1.f - tmpVar;
-        m_bal_half = tmpVar * (2.f - tmpVar);
-
-        if(m_preDel_L_ramp > 1.f)                               // PreDelay L Smth.
-        {
-            m_preDel_L = m_preDel_L_target;
-        }
-        else
-        {
-            m_preDel_L = m_preDel_L_base + (m_preDel_L_diff * m_preDel_L_ramp);
-            m_preDel_L_ramp += m_smooth_inc;
-        }
-
-        if(m_preDel_R_ramp > 1.f)                               // PreDelay R Smth.
-        {
-            m_preDel_R = m_preDel_R_target;
-        }
-        else
-        {
-            m_preDel_R = m_preDel_R_base + (m_preDel_R_diff * m_preDel_R_ramp);
-            m_preDel_R_ramp += m_smooth_inc;
-        }
-
-        if(m_lp_omega_ramp > 1.f)                                  // LP Omega Smth.
-        {
-            m_lp_omega = m_lp_omega_target;
-        }
-        else
-        {
-            m_lp_omega = m_lp_omega_base + (m_lp_omega_diff * m_lp_omega_ramp);
-            m_lp_omega_ramp += m_smooth_inc;
-        }
-        m_lp_a0 = 1.f / (m_lp_omega + 1.f);
-        m_lp_a1 = m_lp_omega - 1.f;
-
-        if(m_hp_omega_ramp > 1.f)                                  // HP Omega Smth.
-        {
-            m_hp_omega = m_hp_omega_target;
-        }
-        else
-        {
-            m_hp_omega = m_hp_omega_base + (m_hp_omega_diff * m_hp_omega_ramp);
-            m_hp_omega_ramp += m_smooth_inc;
-        }
-        m_hp_a0 = 1.f / (m_hp_omega + 1.f);
-        m_hp_a1 = m_hp_omega - 1.f;
-#endif
-
-        tmpVar = m_lfo_stateVar_1 + m_lfo_omega_1;
-        tmpVar = tmpVar - std::round(tmpVar);
-        m_lfo_stateVar_1 = tmpVar;
-
-        tmpVar = (8.f - std::abs(tmpVar) * 16.f) * tmpVar;
-        tmpVar += 1.f;
-        m_mod_1a = tmpVar * m_depth;
-        m_mod_2a = (1.f - tmpVar) * m_depth;
-
-        tmpVar = m_lfo_stateVar_2 + m_lfo_omega_2;
-        tmpVar = tmpVar - std::round(tmpVar);
-        m_lfo_stateVar_2 = tmpVar;
-
-        tmpVar = (8.f - std::abs(tmpVar) * 16.f) * tmpVar;
-        tmpVar += 1.f;
-        m_mod_1b = tmpVar * m_depth;
-        m_mod_2b = (1.f - tmpVar) * m_depth;
+    //        if(m_depth_ramp > 1.f)                                  // Depth Smth.
+    //        {
+    //            m_depth = m_depth_target;
+    //        }
+    //        else
+    //        {
+    //            m_depth = m_depth_base + (m_depth_diff * m_depth_ramp);
+    //            m_depth_ramp += m_smooth_inc;
+    //        }
+    if(m_depth_target - m_depth != 0.f)
+    {
+      m_depth += m_depth_inc;
+    }
+    else
+    {
+      m_depth = m_depth_target;
     }
 
-    m_slow_tick = (m_slow_tick + 1) & m_slow_thrsh;
+    if(m_size_ramp > 1.f)  // Size Smth.
+    {
+      m_size = m_size_target;
+    }
+    else
+    {
+      m_size = m_size_base + (m_size_diff * m_size_ramp);
+      m_size_ramp += m_smooth_inc;
+    }
+    m_absorb = m_size * 0.334f + 0.666f;
+    m_fb_amnt = m_size * 0.667f + 0.333f;
+
+    if(m_bal_ramp > 1.f)  // Balance Smth.
+    {
+      m_bal = m_bal_target;
+    }
+    else
+    {
+      m_bal = m_bal_base + (m_bal_diff * m_bal_ramp);
+      m_bal_ramp += m_smooth_inc;
+    }
+    tmpVar = m_bal;
+    m_bal_full = tmpVar * (2.f - tmpVar);
+    tmpVar = 1.f - tmpVar;
+    m_bal_half = tmpVar * (2.f - tmpVar);
+
+    if(m_preDel_L_ramp > 1.f)  // PreDelay L Smth.
+    {
+      m_preDel_L = m_preDel_L_target;
+    }
+    else
+    {
+      m_preDel_L = m_preDel_L_base + (m_preDel_L_diff * m_preDel_L_ramp);
+      m_preDel_L_ramp += m_smooth_inc;
+    }
+
+    if(m_preDel_R_ramp > 1.f)  // PreDelay R Smth.
+    {
+      m_preDel_R = m_preDel_R_target;
+    }
+    else
+    {
+      m_preDel_R = m_preDel_R_base + (m_preDel_R_diff * m_preDel_R_ramp);
+      m_preDel_R_ramp += m_smooth_inc;
+    }
+
+    if(m_lp_omega_ramp > 1.f)  // LP Omega Smth.
+    {
+      m_lp_omega = m_lp_omega_target;
+    }
+    else
+    {
+      m_lp_omega = m_lp_omega_base + (m_lp_omega_diff * m_lp_omega_ramp);
+      m_lp_omega_ramp += m_smooth_inc;
+    }
+    m_lp_a0 = 1.f / (m_lp_omega + 1.f);
+    m_lp_a1 = m_lp_omega - 1.f;
+
+    if(m_hp_omega_ramp > 1.f)  // HP Omega Smth.
+    {
+      m_hp_omega = m_hp_omega_target;
+    }
+    else
+    {
+      m_hp_omega = m_hp_omega_base + (m_hp_omega_diff * m_hp_omega_ramp);
+      m_hp_omega_ramp += m_smooth_inc;
+    }
+    m_hp_a0 = 1.f / (m_hp_omega + 1.f);
+    m_hp_a1 = m_hp_omega - 1.f;
+#endif
+
+    tmpVar = m_lfo_stateVar_1 + m_lfo_omega_1;
+    tmpVar = tmpVar - std::round(tmpVar);
+    m_lfo_stateVar_1 = tmpVar;
+
+    tmpVar = (8.f - std::abs(tmpVar) * 16.f) * tmpVar;
+    tmpVar += 1.f;
+    m_mod_1a = tmpVar * m_depth;
+    m_mod_2a = (1.f - tmpVar) * m_depth;
+
+    tmpVar = m_lfo_stateVar_2 + m_lfo_omega_2;
+    tmpVar = tmpVar - std::round(tmpVar);
+    m_lfo_stateVar_2 = tmpVar;
+
+    tmpVar = (8.f - std::abs(tmpVar) * 16.f) * tmpVar;
+    tmpVar += 1.f;
+    m_mod_1b = tmpVar * m_depth;
+    m_mod_2b = (1.f - tmpVar) * m_depth;
+  }
+
+  m_slow_tick = (m_slow_tick + 1) & m_slow_thrsh;
+
+  //************************************************************************//
+  //**************************** Left Channel ******************************//
+  wetSample_L = _rawSample_L * params[REV_SND] * params[REV_FEED];
+
+  //****************************** Asym 2 L ********************************//
+  m_buffer_L[m_buffer_indx] = wetSample_L;
+
+  tmpVar = std::clamp(m_preDel_L, 0.f, static_cast<float>(m_buffer_sz_m1));  /// this can be in a setter!
+
+  ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
+  tmpVar = tmpVar - static_cast<float>(ind_t0);
 
-    //************************************************************************//
-    //**************************** Left Channel ******************************//
-    wetSample_L  = _rawSample_L * _signal[REV_SND] * _signal[REV_FEED];
+  ind_tm1 = ind_t0 + 1;
 
+  ind_t0 = m_buffer_indx - ind_t0;
+  ind_tm1 = m_buffer_indx - ind_tm1;
 
-    //****************************** Asym 2 L ********************************//
-    m_buffer_L[m_buffer_indx] = wetSample_L;
+  ind_t0 &= m_buffer_sz_m1;
+  ind_tm1 &= m_buffer_sz_m1;
 
-    tmpVar = std::clamp(m_preDel_L, 0.f, static_cast<float>(m_buffer_sz_m1));      /// this can be in a setter!
+  wetSample_L = m_buffer_L[ind_t0] + tmpVar * (m_buffer_L[ind_tm1] - m_buffer_L[ind_t0]);
 
-    ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
-    tmpVar = tmpVar - static_cast<float>(ind_t0);
+  wetSample_L += (m_stateVar_R9 * m_fb_amnt);
 
-    ind_tm1 = ind_t0 + 1;
+  //**************************** Loop Filter L *****************************//
+  wetSample_L = (wetSample_L - m_lp_stateVar_L * m_lp_a1) * m_lp_a0;
+  tmpVar = m_lp_stateVar_L;
+  m_lp_stateVar_L = wetSample_L;
 
-    ind_t0  = m_buffer_indx - ind_t0;
-    ind_tm1 = m_buffer_indx - ind_tm1;
+  wetSample_L = (wetSample_L + tmpVar) * m_lp_omega;
 
-    ind_t0  &= m_buffer_sz_m1;
-    ind_tm1 &= m_buffer_sz_m1;
+  wetSample_L = (wetSample_L - m_hp_stateVar_L * m_hp_a1) * m_hp_a0;
+  tmpVar = m_hp_stateVar_L;
+  m_hp_stateVar_L = wetSample_L;
 
-    wetSample_L = m_buffer_L[ind_t0] + tmpVar * (m_buffer_L[ind_tm1] - m_buffer_L[ind_t0]);
+  wetSample_L = wetSample_L - tmpVar;
 
-    wetSample_L += (m_stateVar_R9 * m_fb_amnt);
+  //****************************** Del 4p L1 *******************************//
+  tmpVar = m_stateVar_L1 * m_absorb;
+  wetSample_L += (tmpVar * REV_G_1);
 
+  m_buffer_L1[m_buffer_indx] = wetSample_L;
 
-    //**************************** Loop Filter L *****************************//
-    wetSample_L = (wetSample_L - m_lp_stateVar_L * m_lp_a1) * m_lp_a0;
-    tmpVar = m_lp_stateVar_L;
-    m_lp_stateVar_L = wetSample_L;
+  wetSample_L = wetSample_L * -REV_G_1 + tmpVar;
 
-    wetSample_L = (wetSample_L + tmpVar) * m_lp_omega;
+  tmpVar = REV_DEL_L1 + m_mod_2a;
+  tmpVar = std::clamp(tmpVar, 1.f, static_cast<float>(m_buffer_sz_m2));
 
-    wetSample_L = (wetSample_L - m_hp_stateVar_L * m_hp_a1) * m_hp_a0;
-    tmpVar = m_hp_stateVar_L;
-    m_hp_stateVar_L = wetSample_L;
+  ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
+  tmpVar = tmpVar - static_cast<float>(ind_t0);
 
-    wetSample_L = wetSample_L - tmpVar;
+  ind_tm1 = std::max(ind_t0, 1) - 1;
+  ind_tp1 = ind_t0 + 1;
+  ind_tp2 = ind_t0 + 2;
 
+  ind_tm1 = m_buffer_indx - ind_tm1;
+  ind_t0 = m_buffer_indx - ind_t0;
+  ind_tp1 = m_buffer_indx - ind_tp1;
+  ind_tp2 = m_buffer_indx - ind_tp2;
 
-    //****************************** Del 4p L1 *******************************//
-    tmpVar = m_stateVar_L1 * m_absorb;
-    wetSample_L += (tmpVar * REV_G_1);
+  ind_tm1 &= m_buffer_sz_m1;
+  ind_t0 &= m_buffer_sz_m1;
+  ind_tp1 &= m_buffer_sz_m1;
+  ind_tp2 &= m_buffer_sz_m1;
 
-    m_buffer_L1[m_buffer_indx] = wetSample_L;
+  m_stateVar_L1 = NlToolbox::Math::interpolRT(tmpVar, m_buffer_L1[ind_tm1], m_buffer_L1[ind_t0], m_buffer_L1[ind_tp1],
+                                              m_buffer_L1[ind_tp2]);
 
-    wetSample_L = wetSample_L * -REV_G_1 + tmpVar;
+  //***************************** Del 1p L2 ******************************//
+  tmpVar = m_stateVar_L2 * m_absorb;
+  wetSample_L = wetSample_L + (tmpVar * REV_G_2);
 
-    tmpVar = REV_DEL_L1 + m_mod_2a;
-    tmpVar = std::clamp(tmpVar, 1.f, static_cast<float>(m_buffer_sz_m2));
+  m_buffer_L2[m_buffer_indx] = wetSample_L;
 
-    ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
-    tmpVar = tmpVar - static_cast<float>(ind_t0);
+  wetSample_L = wetSample_L * -REV_G_2 + tmpVar;
 
-    ind_tm1 = std::max(ind_t0, 1) - 1;
-    ind_tp1 = ind_t0 + 1;
-    ind_tp2 = ind_t0 + 2;
+  ind_t0 = m_buffer_indx - REV_DEL_L2;
+  ind_t0 &= m_buffer_sz_m1;
 
-    ind_tm1 = m_buffer_indx - ind_tm1;
-    ind_t0  = m_buffer_indx - ind_t0;
-    ind_tp1 = m_buffer_indx - ind_tp1;
-    ind_tp2 = m_buffer_indx - ind_tp2;
+  m_stateVar_L2 = m_buffer_L2[ind_t0];
 
-    ind_tm1 &= m_buffer_sz_m1;
-    ind_t0  &= m_buffer_sz_m1;
-    ind_tp1 &= m_buffer_sz_m1;
-    ind_tp2 &= m_buffer_sz_m1;
+  //***************************** Del 1p L3 ******************************//
+  tmpVar = m_stateVar_L3 * m_absorb;
+  wetSample_L = wetSample_L + (tmpVar * REV_G_3);
 
-    m_stateVar_L1 = NlToolbox::Math::interpolRT(tmpVar,
-                                                m_buffer_L1[ind_tm1],
-                                                m_buffer_L1[ind_t0],
-                                                m_buffer_L1[ind_tp1],
-                                                m_buffer_L1[ind_tp2]);
+  m_buffer_L3[m_buffer_indx] = wetSample_L;
 
+  wetSample_L = wetSample_L * -REV_G_3 + tmpVar;
 
-    //***************************** Del 1p L2 ******************************//
-    tmpVar = m_stateVar_L2 * m_absorb;
-    wetSample_L = wetSample_L + (tmpVar * REV_G_2);
+  ind_t0 = m_buffer_indx - REV_DEL_L3;
+  ind_t0 &= m_buffer_sz_m1;
 
-    m_buffer_L2[m_buffer_indx] = wetSample_L;
+  m_stateVar_L3 = m_buffer_L3[ind_t0];
 
-    wetSample_L = wetSample_L * -REV_G_2 + tmpVar;
+  //***************************** Del 1p L4 ******************************//
+  tmpVar = m_stateVar_L4 * m_absorb;
+  wetSample_L = wetSample_L + (tmpVar * REV_G_4);
 
-    ind_t0  = m_buffer_indx - REV_DEL_L2;
-    ind_t0 &= m_buffer_sz_m1;
+  m_buffer_L4[m_buffer_indx] = wetSample_L;
 
-    m_stateVar_L2 = m_buffer_L2[ind_t0];
+  float wetSample_L2 = wetSample_L * -REV_G_4 + tmpVar;
 
+  ind_t0 = m_buffer_indx - REV_DEL_L4;
+  ind_t0 &= m_buffer_sz_m1;
 
-    //***************************** Del 1p L3 ******************************//
-    tmpVar = m_stateVar_L3 * m_absorb;
-    wetSample_L = wetSample_L + (tmpVar * REV_G_3);
+  m_stateVar_L4 = m_buffer_L4[ind_t0];
 
-    m_buffer_L3[m_buffer_indx] = wetSample_L;
+  //***************************** Del 1p L5 ******************************//
+  tmpVar = m_stateVar_L5 * m_absorb;
+  wetSample_L = wetSample_L2 + (tmpVar * REV_G_4);
 
-    wetSample_L = wetSample_L * -REV_G_3 + tmpVar;
+  m_buffer_L5[m_buffer_indx] = wetSample_L;
 
-    ind_t0  = m_buffer_indx - REV_DEL_L3;
-    ind_t0 &= m_buffer_sz_m1;
+  wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
 
-    m_stateVar_L3 = m_buffer_L3[ind_t0];
+  ind_t0 = m_buffer_indx - REV_DEL_L5;
+  ind_t0 &= m_buffer_sz_m1;
 
+  m_stateVar_L5 = m_buffer_L5[ind_t0];
 
-    //***************************** Del 1p L4 ******************************//
-    tmpVar = m_stateVar_L4 * m_absorb;
-    wetSample_L = wetSample_L + (tmpVar * REV_G_4);
+  //***************************** Del 1p L6 ******************************//
+  tmpVar = m_stateVar_L6 * m_absorb;
+  wetSample_L = wetSample_L + (tmpVar * REV_G_4);
 
-    m_buffer_L4[m_buffer_indx] = wetSample_L;
+  m_buffer_L6[m_buffer_indx] = wetSample_L;
 
-    float wetSample_L2 = wetSample_L * -REV_G_4 + tmpVar;
+  wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
 
-    ind_t0  = m_buffer_indx - REV_DEL_L4;
-    ind_t0 &= m_buffer_sz_m1;
+  ind_t0 = m_buffer_indx - REV_DEL_L6;
+  ind_t0 &= m_buffer_sz_m1;
 
-    m_stateVar_L4 = m_buffer_L4[ind_t0];
+  m_stateVar_L6 = m_buffer_L6[ind_t0];
 
+  //***************************** Del 1p L7 ******************************//
+  tmpVar = m_stateVar_L7 * m_absorb;
+  wetSample_L = wetSample_L + (tmpVar * REV_G_4);
 
-    //***************************** Del 1p L5 ******************************//
-    tmpVar = m_stateVar_L5 * m_absorb;
-    wetSample_L = wetSample_L2 + (tmpVar * REV_G_4);
+  m_buffer_L7[m_buffer_indx] = wetSample_L;
 
-    m_buffer_L5[m_buffer_indx] = wetSample_L;
+  wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
 
-    wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
+  ind_t0 = m_buffer_indx - REV_DEL_L7;
+  ind_t0 &= m_buffer_sz_m1;
 
-    ind_t0  = m_buffer_indx - REV_DEL_L5;
-    ind_t0 &= m_buffer_sz_m1;
+  m_stateVar_L7 = m_buffer_L7[ind_t0];
 
-    m_stateVar_L5 = m_buffer_L5[ind_t0];
+  //***************************** Del 1p L8 ******************************//
+  tmpVar = m_stateVar_L8 * m_absorb;
+  wetSample_L = wetSample_L + (tmpVar * REV_G_4);
 
+  m_buffer_L8[m_buffer_indx] = wetSample_L;
 
-    //***************************** Del 1p L6 ******************************//
-    tmpVar = m_stateVar_L6 * m_absorb;
-    wetSample_L = wetSample_L + (tmpVar * REV_G_4);
+  wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
 
-    m_buffer_L6[m_buffer_indx] = wetSample_L;
+  ind_t0 = m_buffer_indx - REV_DEL_L8;
+  ind_t0 &= m_buffer_sz_m1;
 
-    wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
+  m_stateVar_L8 = m_buffer_L8[ind_t0];
 
-    ind_t0  = m_buffer_indx - REV_DEL_L6;
-    ind_t0 &= m_buffer_sz_m1;
+  //************************************************************************//
+  //*************************** Right Channel ******************************//
+  wetSample_R = _rawSample_R * params[REV_SND] * params[REV_FEED];
 
-    m_stateVar_L6 = m_buffer_L6[ind_t0];
+  //****************************** Asym 2 R ********************************//
+  m_buffer_R[m_buffer_indx] = wetSample_R;
 
+  tmpVar = std::clamp(m_preDel_R, 0.f, static_cast<float>(m_buffer_sz_m1));
 
-    //***************************** Del 1p L7 ******************************//
-    tmpVar = m_stateVar_L7 * m_absorb;
-    wetSample_L = wetSample_L + (tmpVar * REV_G_4);
+  ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
+  tmpVar = tmpVar - static_cast<float>(ind_t0);
 
-    m_buffer_L7[m_buffer_indx] = wetSample_L;
+  ind_tm1 = ind_t0 + 1;
 
-    wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
+  ind_t0 = m_buffer_indx - ind_t0;
+  ind_tm1 = m_buffer_indx - ind_tm1;
 
-    ind_t0  = m_buffer_indx - REV_DEL_L7;
-    ind_t0 &= m_buffer_sz_m1;
+  ind_t0 &= m_buffer_sz_m1;
+  ind_tm1 &= m_buffer_sz_m1;
 
-    m_stateVar_L7 = m_buffer_L7[ind_t0];
+  wetSample_R = m_buffer_R[ind_t0] + tmpVar * (m_buffer_R[ind_tm1] - m_buffer_R[ind_t0]);
 
+  wetSample_R += (m_stateVar_L9 * m_fb_amnt);
 
-    //***************************** Del 1p L8 ******************************//
-    tmpVar = m_stateVar_L8 * m_absorb;
-    wetSample_L = wetSample_L + (tmpVar * REV_G_4);
+  //**************************** Loop Filter R *****************************//
+  wetSample_R = (wetSample_R - m_lp_stateVar_R * m_lp_a1) * m_lp_a0;
+  tmpVar = m_lp_stateVar_R;
+  m_lp_stateVar_R = wetSample_R;
 
-    m_buffer_L8[m_buffer_indx] = wetSample_L;
+  wetSample_R = (wetSample_R + tmpVar) * m_lp_omega;
 
-    wetSample_L = wetSample_L * -REV_G_4 + tmpVar;
+  wetSample_R = (wetSample_R - m_hp_stateVar_R * m_hp_a1) * m_hp_a0;
+  tmpVar = m_hp_stateVar_R;
+  m_hp_stateVar_R = wetSample_R;
 
-    ind_t0  = m_buffer_indx - REV_DEL_L8;
-    ind_t0 &= m_buffer_sz_m1;
+  wetSample_R = wetSample_R - tmpVar;
 
-    m_stateVar_L8 = m_buffer_L8[ind_t0];
+  //****************************** Del 4p R1 *******************************//
+  tmpVar = m_stateVar_R1 * m_absorb;
+  wetSample_R += (tmpVar * REV_G_1);
 
+  m_buffer_R1[m_buffer_indx] = wetSample_R;
 
-    //************************************************************************//
-    //*************************** Right Channel ******************************//
-    wetSample_R  = _rawSample_R * _signal[REV_SND] * _signal[REV_FEED];
+  wetSample_R = wetSample_R * -REV_G_1 + tmpVar;
 
+  tmpVar = REV_DEL_R1 + m_mod_2b;
+  tmpVar = std::clamp(tmpVar, 1.f, static_cast<float>(m_buffer_sz_m2));
 
-    //****************************** Asym 2 R ********************************//
-    m_buffer_R[m_buffer_indx] = wetSample_R;
+  ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
+  tmpVar = tmpVar - static_cast<float>(ind_t0);
 
-    tmpVar = std::clamp(m_preDel_R, 0.f, static_cast<float>(m_buffer_sz_m1));
+  ind_tm1 = std::max(ind_t0, 1) - 1;
+  ind_tp1 = ind_t0 + 1;
+  ind_tp2 = ind_t0 + 2;
 
-    ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
-    tmpVar = tmpVar - static_cast<float>(ind_t0);
+  ind_tm1 = m_buffer_indx - ind_tm1;
+  ind_t0 = m_buffer_indx - ind_t0;
+  ind_tp1 = m_buffer_indx - ind_tp1;
+  ind_tp2 = m_buffer_indx - ind_tp2;
 
-    ind_tm1 = ind_t0 + 1;
+  ind_tm1 &= m_buffer_sz_m1;
+  ind_t0 &= m_buffer_sz_m1;
+  ind_tp1 &= m_buffer_sz_m1;
+  ind_tp2 &= m_buffer_sz_m1;
 
-    ind_t0  = m_buffer_indx - ind_t0;
-    ind_tm1 = m_buffer_indx - ind_tm1;
+  m_stateVar_R1 = NlToolbox::Math::interpolRT(tmpVar, m_buffer_R1[ind_tm1], m_buffer_R1[ind_t0], m_buffer_R1[ind_tp1],
+                                              m_buffer_R1[ind_tp2]);
 
-    ind_t0  &= m_buffer_sz_m1;
-    ind_tm1 &= m_buffer_sz_m1;
+  //***************************** Del 1p R2 ******************************//
+  tmpVar = m_stateVar_R2 * m_absorb;
+  wetSample_R = wetSample_R + (tmpVar * REV_G_2);
 
-    wetSample_R = m_buffer_R[ind_t0] + tmpVar * (m_buffer_R[ind_tm1] - m_buffer_R[ind_t0]);
+  m_buffer_R2[m_buffer_indx] = wetSample_R;
 
-    wetSample_R += (m_stateVar_L9 * m_fb_amnt);
+  wetSample_R = wetSample_R * -REV_G_2 + tmpVar;
 
+  ind_t0 = m_buffer_indx - REV_DEL_R2;
+  ind_t0 &= m_buffer_sz_m1;
 
-    //**************************** Loop Filter R *****************************//
-    wetSample_R = (wetSample_R - m_lp_stateVar_R * m_lp_a1) * m_lp_a0;
-    tmpVar = m_lp_stateVar_R;
-    m_lp_stateVar_R = wetSample_R;
+  m_stateVar_R2 = m_buffer_R2[ind_t0];
 
-    wetSample_R = (wetSample_R + tmpVar) * m_lp_omega;
+  //***************************** Del 1p R3 ******************************//
+  tmpVar = m_stateVar_R3 * m_absorb;
+  wetSample_R = wetSample_R + (tmpVar * REV_G_3);
 
-    wetSample_R = (wetSample_R - m_hp_stateVar_R * m_hp_a1) * m_hp_a0;
-    tmpVar = m_hp_stateVar_R;
-    m_hp_stateVar_R = wetSample_R;
+  m_buffer_R3[m_buffer_indx] = wetSample_R;
 
-    wetSample_R = wetSample_R - tmpVar;
+  wetSample_R = wetSample_R * -REV_G_3 + tmpVar;
 
+  ind_t0 = m_buffer_indx - REV_DEL_R3;
+  ind_t0 &= m_buffer_sz_m1;
 
-    //****************************** Del 4p R1 *******************************//
-    tmpVar = m_stateVar_R1 * m_absorb;
-    wetSample_R += (tmpVar * REV_G_1);
+  m_stateVar_R3 = m_buffer_R3[ind_t0];
 
-    m_buffer_R1[m_buffer_indx] = wetSample_R;
+  //***************************** Del 1p R4 ******************************//
+  tmpVar = m_stateVar_R4 * m_absorb;
+  wetSample_R = wetSample_R + (tmpVar * REV_G_4);
 
-    wetSample_R = wetSample_R * -REV_G_1 + tmpVar;
+  m_buffer_R4[m_buffer_indx] = wetSample_R;
 
-    tmpVar = REV_DEL_R1 + m_mod_2b;
-    tmpVar = std::clamp(tmpVar, 1.f, static_cast<float>(m_buffer_sz_m2));
+  float wetSample_R2 = wetSample_R * -REV_G_4 + tmpVar;
 
-    ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
-    tmpVar = tmpVar - static_cast<float>(ind_t0);
+  ind_t0 = m_buffer_indx - REV_DEL_R4;
+  ind_t0 &= m_buffer_sz_m1;
 
-    ind_tm1 = std::max(ind_t0, 1) - 1;
-    ind_tp1 = ind_t0 + 1;
-    ind_tp2 = ind_t0 + 2;
+  m_stateVar_R4 = m_buffer_R4[ind_t0];
 
-    ind_tm1 = m_buffer_indx - ind_tm1;
-    ind_t0  = m_buffer_indx - ind_t0;
-    ind_tp1 = m_buffer_indx - ind_tp1;
-    ind_tp2 = m_buffer_indx - ind_tp2;
+  //***************************** Del 1p R5 ******************************//
+  tmpVar = m_stateVar_R5 * m_absorb;
+  wetSample_R = wetSample_R2 + (tmpVar * REV_G_4);
 
-    ind_tm1 &= m_buffer_sz_m1;
-    ind_t0  &= m_buffer_sz_m1;
-    ind_tp1 &= m_buffer_sz_m1;
-    ind_tp2 &= m_buffer_sz_m1;
+  m_buffer_R5[m_buffer_indx] = wetSample_R;
 
-    m_stateVar_R1 = NlToolbox::Math::interpolRT(tmpVar,
-                                                m_buffer_R1[ind_tm1],
-                                                m_buffer_R1[ind_t0],
-                                                m_buffer_R1[ind_tp1],
-                                                m_buffer_R1[ind_tp2]);
+  wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
 
+  ind_t0 = m_buffer_indx - REV_DEL_R5;
+  ind_t0 &= m_buffer_sz_m1;
 
-    //***************************** Del 1p R2 ******************************//
-    tmpVar = m_stateVar_R2 * m_absorb;
-    wetSample_R = wetSample_R + (tmpVar * REV_G_2);
+  m_stateVar_R5 = m_buffer_R5[ind_t0];
 
-    m_buffer_R2[m_buffer_indx] = wetSample_R;
+  //***************************** Del 1p R6 ******************************//
+  tmpVar = m_stateVar_R6 * m_absorb;
+  wetSample_R = wetSample_R + (tmpVar * REV_G_4);
 
-    wetSample_R = wetSample_R * -REV_G_2 + tmpVar;
+  m_buffer_R6[m_buffer_indx] = wetSample_R;
 
-    ind_t0  = m_buffer_indx - REV_DEL_R2;
-    ind_t0 &= m_buffer_sz_m1;
+  wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
 
-    m_stateVar_R2 = m_buffer_R2[ind_t0];
+  ind_t0 = m_buffer_indx - REV_DEL_R6;
+  ind_t0 &= m_buffer_sz_m1;
 
+  m_stateVar_R6 = m_buffer_R6[ind_t0];
 
-    //***************************** Del 1p R3 ******************************//
-    tmpVar = m_stateVar_R3 * m_absorb;
-    wetSample_R = wetSample_R + (tmpVar * REV_G_3);
+  //***************************** Del 1p R7 ******************************//
+  tmpVar = m_stateVar_R7 * m_absorb;
+  wetSample_R = wetSample_R + (tmpVar * REV_G_4);
 
-    m_buffer_R3[m_buffer_indx] = wetSample_R;
+  m_buffer_R7[m_buffer_indx] = wetSample_R;
 
-    wetSample_R = wetSample_R * -REV_G_3 + tmpVar;
+  wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
 
-    ind_t0  = m_buffer_indx - REV_DEL_R3;
-    ind_t0 &= m_buffer_sz_m1;
+  ind_t0 = m_buffer_indx - REV_DEL_R7;
+  ind_t0 &= m_buffer_sz_m1;
 
-    m_stateVar_R3 = m_buffer_R3[ind_t0];
+  m_stateVar_R7 = m_buffer_R7[ind_t0];
 
+  //***************************** Del 1p R8 ******************************//
+  tmpVar = m_stateVar_R8 * m_absorb;
+  wetSample_R = wetSample_R + (tmpVar * REV_G_4);
 
-    //***************************** Del 1p R4 ******************************//
-    tmpVar = m_stateVar_R4 * m_absorb;
-    wetSample_R = wetSample_R + (tmpVar * REV_G_4);
+  m_buffer_R8[m_buffer_indx] = wetSample_R;
 
-    m_buffer_R4[m_buffer_indx] = wetSample_R;
+  wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
 
-    float wetSample_R2 = wetSample_R * -REV_G_4 + tmpVar;
+  ind_t0 = m_buffer_indx - REV_DEL_R8;
+  ind_t0 &= m_buffer_sz_m1;
 
-    ind_t0  = m_buffer_indx - REV_DEL_R4;
-    ind_t0 &= m_buffer_sz_m1;
+  m_stateVar_R8 = m_buffer_R8[ind_t0];
 
-    m_stateVar_R4 = m_buffer_R4[ind_t0];
+  //************************************************************************//
+  //*************************** Feedback Delay *****************************//
+  //****************************** Del 4p L9 *******************************//
+  m_buffer_L9[m_buffer_indx] = wetSample_L;
 
+  tmpVar = REV_DEL_L9 + m_mod_1a;
+  tmpVar = std::clamp(tmpVar, 0.f, static_cast<float>(m_buffer_sz_m2));
 
-    //***************************** Del 1p R5 ******************************//
-    tmpVar = m_stateVar_R5 * m_absorb;
-    wetSample_R = wetSample_R2 + (tmpVar * REV_G_4);
+  ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
+  tmpVar = tmpVar - static_cast<float>(ind_t0);
 
-    m_buffer_R5[m_buffer_indx] = wetSample_R;
+  ind_tm1 = std::max(ind_t0, 1) - 1;
+  ind_tp1 = ind_t0 + 1;
+  ind_tp2 = ind_t0 + 2;
 
-    wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
+  ind_tm1 = m_buffer_indx - ind_tm1;
+  ind_t0 = m_buffer_indx - ind_t0;
+  ind_tp1 = m_buffer_indx - ind_tp1;
+  ind_tp2 = m_buffer_indx - ind_tp2;
 
-    ind_t0  = m_buffer_indx - REV_DEL_R5;
-    ind_t0 &= m_buffer_sz_m1;
+  ind_tm1 &= m_buffer_sz_m1;
+  ind_t0 &= m_buffer_sz_m1;
+  ind_tp1 &= m_buffer_sz_m1;
+  ind_tp2 &= m_buffer_sz_m1;
 
-    m_stateVar_R5 = m_buffer_R5[ind_t0];
+  m_stateVar_L9 = NlToolbox::Math::interpolRT(tmpVar, m_buffer_L9[ind_tm1], m_buffer_L9[ind_t0], m_buffer_L9[ind_tp1],
+                                              m_buffer_L9[ind_tp2]);
 
+  //***************************** Del 4p R9 ******************************//
+  m_buffer_R9[m_buffer_indx] = wetSample_R;
 
+  tmpVar = REV_DEL_R9 + m_mod_1b;
+  tmpVar = std::clamp(tmpVar, 0.f, static_cast<float>(m_buffer_sz_m2));
 
-    //***************************** Del 1p R6 ******************************//
-    tmpVar = m_stateVar_R6 * m_absorb;
-    wetSample_R = wetSample_R + (tmpVar * REV_G_4);
+  ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
+  tmpVar = tmpVar - static_cast<float>(ind_t0);
 
-    m_buffer_R6[m_buffer_indx] = wetSample_R;
+  ind_tm1 = std::max(ind_t0, 1) - 1;
+  ind_tp1 = ind_t0 + 1;
+  ind_tp2 = ind_t0 + 2;
 
-    wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
+  ind_tm1 = m_buffer_indx - ind_tm1;
+  ind_t0 = m_buffer_indx - ind_t0;
+  ind_tp1 = m_buffer_indx - ind_tp1;
+  ind_tp2 = m_buffer_indx - ind_tp2;
 
-    ind_t0  = m_buffer_indx - REV_DEL_R6;
-    ind_t0 &= m_buffer_sz_m1;
+  ind_tm1 &= m_buffer_sz_m1;
+  ind_t0 &= m_buffer_sz_m1;
+  ind_tp1 &= m_buffer_sz_m1;
+  ind_tp2 &= m_buffer_sz_m1;
 
-    m_stateVar_R6 = m_buffer_R6[ind_t0];
+  m_stateVar_R9 = NlToolbox::Math::interpolRT(tmpVar, m_buffer_R9[ind_tm1], m_buffer_R9[ind_t0], m_buffer_R9[ind_tp1],
+                                              m_buffer_R9[ind_tp2]);
 
+  m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
 
-    //***************************** Del 1p R7 ******************************//
-    tmpVar = m_stateVar_R7 * m_absorb;
-    wetSample_R = wetSample_R + (tmpVar * REV_G_4);
+  //************************************************************************//
+  //**************************** Output Mixer ******************************//
+  wetSample_L = wetSample_L * m_bal_full + wetSample_L2 * m_bal_half;
+  wetSample_R = wetSample_R * m_bal_full + wetSample_R2 * m_bal_half;
 
-    m_buffer_R7[m_buffer_indx] = wetSample_R;
+  m_out_L = _rawSample_L * params[REV_DRY] + wetSample_L * params[REV_WET];
+  m_out_R = _rawSample_R * params[REV_DRY] + wetSample_R * params[REV_WET];
 
-    wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
-
-    ind_t0  = m_buffer_indx - REV_DEL_R7;
-    ind_t0 &= m_buffer_sz_m1;
-
-    m_stateVar_R7 = m_buffer_R7[ind_t0];
-
-
-    //***************************** Del 1p R8 ******************************//
-    tmpVar = m_stateVar_R8 * m_absorb;
-    wetSample_R = wetSample_R + (tmpVar * REV_G_4);
-
-    m_buffer_R8[m_buffer_indx] = wetSample_R;
-
-    wetSample_R = wetSample_R * -REV_G_4 + tmpVar;
-
-    ind_t0  = m_buffer_indx - REV_DEL_R8;
-    ind_t0 &= m_buffer_sz_m1;
-
-    m_stateVar_R8 = m_buffer_R8[ind_t0];
-
-
-    //************************************************************************//
-    //*************************** Feedback Delay *****************************//
-    //****************************** Del 4p L9 *******************************//
-    m_buffer_L9[m_buffer_indx] = wetSample_L;
-
-    tmpVar = REV_DEL_L9 + m_mod_1a;
-    tmpVar = std::clamp(tmpVar, 0.f, static_cast<float>(m_buffer_sz_m2));
-
-    ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
-    tmpVar = tmpVar - static_cast<float>(ind_t0);
-
-    ind_tm1 = std::max(ind_t0, 1) - 1;
-    ind_tp1 = ind_t0 + 1;
-    ind_tp2 = ind_t0 + 2;
-
-    ind_tm1 = m_buffer_indx - ind_tm1;
-    ind_t0  = m_buffer_indx - ind_t0;
-    ind_tp1 = m_buffer_indx - ind_tp1;
-    ind_tp2 = m_buffer_indx - ind_tp2;
-
-    ind_tm1 &= m_buffer_sz_m1;
-    ind_t0  &= m_buffer_sz_m1;
-    ind_tp1 &= m_buffer_sz_m1;
-    ind_tp2 &= m_buffer_sz_m1;
-
-    m_stateVar_L9 = NlToolbox::Math::interpolRT(tmpVar,
-                                                m_buffer_L9[ind_tm1],
-                                                m_buffer_L9[ind_t0],
-                                                m_buffer_L9[ind_tp1],
-                                                m_buffer_L9[ind_tp2]);
-
-
-    //***************************** Del 4p R9 ******************************//
-    m_buffer_R9[m_buffer_indx] = wetSample_R;
-
-    tmpVar = REV_DEL_R9 + m_mod_1b;
-    tmpVar = std::clamp(tmpVar, 0.f, static_cast<float>(m_buffer_sz_m2));
-
-    ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
-    tmpVar = tmpVar - static_cast<float>(ind_t0);
-
-    ind_tm1 = std::max(ind_t0, 1) - 1;
-    ind_tp1 = ind_t0 + 1;
-    ind_tp2 = ind_t0 + 2;
-
-    ind_tm1 = m_buffer_indx - ind_tm1;
-    ind_t0  = m_buffer_indx - ind_t0;
-    ind_tp1 = m_buffer_indx - ind_tp1;
-    ind_tp2 = m_buffer_indx - ind_tp2;
-
-    ind_tm1 &= m_buffer_sz_m1;
-    ind_t0  &= m_buffer_sz_m1;
-    ind_tp1 &= m_buffer_sz_m1;
-    ind_tp2 &= m_buffer_sz_m1;
-
-    m_stateVar_R9 = NlToolbox::Math::interpolRT(tmpVar,
-                                                m_buffer_R9[ind_tm1],
-                                                m_buffer_R9[ind_t0],
-                                                m_buffer_R9[ind_tp1],
-                                                m_buffer_R9[ind_tp2]);
-
-    m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
-
-
-    //************************************************************************//
-    //**************************** Output Mixer ******************************//
-    wetSample_L = wetSample_L * m_bal_full + wetSample_L2 * m_bal_half;
-    wetSample_R = wetSample_R * m_bal_full + wetSample_R2 * m_bal_half;
-
-    m_out_L = _rawSample_L * _signal[REV_DRY] + wetSample_L * _signal[REV_WET];
-    m_out_R = _rawSample_R * _signal[REV_DRY] + wetSample_R * _signal[REV_WET];
-
-    m_out_FX = ((_rawSample_L + _rawSample_R) * (1.f - _signal[FBM_REV]))
-            + ((wetSample_L + wetSample_R) * _signal[FBM_REV]);
+  m_out_FX
+      = ((_rawSample_L + _rawSample_R) * (1.f - params[FBM_REV])) + ((wetSample_L + wetSample_R) * params[FBM_REV]);
 }
 
 /******************************************************************************/
@@ -800,58 +755,58 @@ void ae_reverb::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &
 
 void ae_reverb::resetDSP()
 {
-    m_out_L = 0.f;
-    m_out_R = 0.f;
-    m_out_FX = 0.f;
+  m_out_L = 0.f;
+  m_out_R = 0.f;
+  m_out_FX = 0.f;
 
-    //****************************** Loop Filter *****************************//
+  //****************************** Loop Filter *****************************//
 
-    m_lp_stateVar_L = 0.f;
-    m_lp_stateVar_R = 0.f;
-    m_hp_stateVar_L = 0.f;
-    m_hp_stateVar_R = 0.f;
+  m_lp_stateVar_L = 0.f;
+  m_lp_stateVar_R = 0.f;
+  m_hp_stateVar_L = 0.f;
+  m_hp_stateVar_R = 0.f;
 
-    //***************************** Delay Buffer *****************************//
+  //***************************** Delay Buffer *****************************//
 
-    std::fill(m_buffer_L.begin(), m_buffer_L.end(), 0.f);
-    std::fill(m_buffer_L1.begin(), m_buffer_L1.end(), 0.f);
-    std::fill(m_buffer_L2.begin(), m_buffer_L2.end(), 0.f);
-    std::fill(m_buffer_L3.begin(), m_buffer_L3.end(), 0.f);
-    std::fill(m_buffer_L4.begin(), m_buffer_L4.end(), 0.f);
-    std::fill(m_buffer_L5.begin(), m_buffer_L5.end(), 0.f);
-    std::fill(m_buffer_L6.begin(), m_buffer_L6.end(), 0.f);
-    std::fill(m_buffer_L7.begin(), m_buffer_L7.end(), 0.f);
-    std::fill(m_buffer_L8.begin(), m_buffer_L8.end(), 0.f);
-    std::fill(m_buffer_L9.begin(), m_buffer_L9.end(), 0.f);
+  std::fill(m_buffer_L.begin(), m_buffer_L.end(), 0.f);
+  std::fill(m_buffer_L1.begin(), m_buffer_L1.end(), 0.f);
+  std::fill(m_buffer_L2.begin(), m_buffer_L2.end(), 0.f);
+  std::fill(m_buffer_L3.begin(), m_buffer_L3.end(), 0.f);
+  std::fill(m_buffer_L4.begin(), m_buffer_L4.end(), 0.f);
+  std::fill(m_buffer_L5.begin(), m_buffer_L5.end(), 0.f);
+  std::fill(m_buffer_L6.begin(), m_buffer_L6.end(), 0.f);
+  std::fill(m_buffer_L7.begin(), m_buffer_L7.end(), 0.f);
+  std::fill(m_buffer_L8.begin(), m_buffer_L8.end(), 0.f);
+  std::fill(m_buffer_L9.begin(), m_buffer_L9.end(), 0.f);
 
-    std::fill(m_buffer_R.begin(), m_buffer_R.end(), 0.f);
-    std::fill(m_buffer_R1.begin(), m_buffer_R1.end(), 0.f);
-    std::fill(m_buffer_R2.begin(), m_buffer_R2.end(), 0.f);
-    std::fill(m_buffer_R3.begin(), m_buffer_R3.end(), 0.f);
-    std::fill(m_buffer_R4.begin(), m_buffer_R4.end(), 0.f);
-    std::fill(m_buffer_R5.begin(), m_buffer_R5.end(), 0.f);
-    std::fill(m_buffer_R6.begin(), m_buffer_R6.end(), 0.f);
-    std::fill(m_buffer_R7.begin(), m_buffer_R7.end(), 0.f);
-    std::fill(m_buffer_R8.begin(), m_buffer_R8.end(), 0.f);
-    std::fill(m_buffer_R9.begin(), m_buffer_R9.end(), 0.f);
+  std::fill(m_buffer_R.begin(), m_buffer_R.end(), 0.f);
+  std::fill(m_buffer_R1.begin(), m_buffer_R1.end(), 0.f);
+  std::fill(m_buffer_R2.begin(), m_buffer_R2.end(), 0.f);
+  std::fill(m_buffer_R3.begin(), m_buffer_R3.end(), 0.f);
+  std::fill(m_buffer_R4.begin(), m_buffer_R4.end(), 0.f);
+  std::fill(m_buffer_R5.begin(), m_buffer_R5.end(), 0.f);
+  std::fill(m_buffer_R6.begin(), m_buffer_R6.end(), 0.f);
+  std::fill(m_buffer_R7.begin(), m_buffer_R7.end(), 0.f);
+  std::fill(m_buffer_R8.begin(), m_buffer_R8.end(), 0.f);
+  std::fill(m_buffer_R9.begin(), m_buffer_R9.end(), 0.f);
 
-    m_stateVar_L1 = 0.f;
-    m_stateVar_L2 = 0.f;
-    m_stateVar_L3 = 0.f;
-    m_stateVar_L4 = 0.f;
-    m_stateVar_L5 = 0.f;
-    m_stateVar_L6 = 0.f;
-    m_stateVar_L7 = 0.f;
-    m_stateVar_L8 = 0.f;
-    m_stateVar_L9 = 0.f;
+  m_stateVar_L1 = 0.f;
+  m_stateVar_L2 = 0.f;
+  m_stateVar_L3 = 0.f;
+  m_stateVar_L4 = 0.f;
+  m_stateVar_L5 = 0.f;
+  m_stateVar_L6 = 0.f;
+  m_stateVar_L7 = 0.f;
+  m_stateVar_L8 = 0.f;
+  m_stateVar_L9 = 0.f;
 
-    m_stateVar_R1 = 0.f;
-    m_stateVar_R2 = 0.f;
-    m_stateVar_R3 = 0.f;
-    m_stateVar_R4 = 0.f;
-    m_stateVar_R5 = 0.f;
-    m_stateVar_R6 = 0.f;
-    m_stateVar_R7 = 0.f;
-    m_stateVar_R8 = 0.f;
-    m_stateVar_R9 = 0.f;
+  m_stateVar_R1 = 0.f;
+  m_stateVar_R2 = 0.f;
+  m_stateVar_R3 = 0.f;
+  m_stateVar_R4 = 0.f;
+  m_stateVar_R5 = 0.f;
+  m_stateVar_R6 = 0.f;
+  m_stateVar_R7 = 0.f;
+  m_stateVar_R8 = 0.f;
+  m_stateVar_R9 = 0.f;
 }

@@ -8,6 +8,7 @@
 *******************************************************************************/
 
 #include "ae_cabinet.h"
+#include "ParameterStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -125,7 +126,7 @@ void ae_cabinet::set(ParameterStorage &params)
   float tmpVar;
 
   //*************************** Biquad Highpass ****************************//
-  float frequency = _signal[CAB_HPF];
+  float frequency = params[CAB_HPF];
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
 
@@ -146,7 +147,7 @@ void ae_cabinet::set(ParameterStorage &params)
   m_hp_b1 = m_hp_b1 / tmpVar;
 
   //*************************** Biquad Lowpass 1 ***************************//
-  frequency = _signal[CAB_LPF];
+  frequency = params[CAB_LPF];
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
 
@@ -167,7 +168,7 @@ void ae_cabinet::set(ParameterStorage &params)
   m_lp1_b1 = m_lp1_b1 / tmpVar;
 
   //*************************** Biquad Lowpass 2 ***************************//
-  frequency = _signal[CAB_LPF] * 1.333f;
+  frequency = params[CAB_LPF] * 1.333f;
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
   tmpVar = NlToolbox::Math::cos(frequency);
@@ -187,8 +188,8 @@ void ae_cabinet::set(ParameterStorage &params)
   m_lp2_b1 = m_lp2_b1 / tmpVar;
 
   //**************************** Tilt Lowshelves ***************************//
-  float tilt = std::pow(10.f, _signal[CAB_TILT] * 0.025f);
-  //    float tilt = std::pow(1.059192f, _signal[CAB_TILT]);       // alternative to pow(10.f, _signal[CAB_TILT] / 40.f)
+  float tilt = std::pow(10.f, params[CAB_TILT] * 0.025f);
+  //    float tilt = std::pow(1.059192f, params[CAB_TILT]);       // alternative to pow(10.f, params[CAB_TILT] / 40.f)
 
   tmpVar = tilt + 1.f / tilt + 2.f;
   tmpVar = std::sqrt(tilt * tmpVar) * m_tiltOmegaSin;
@@ -206,8 +207,8 @@ void ae_cabinet::set(ParameterStorage &params)
   m_ls1_b1 = m_ls1_b1 / coeff;
   m_ls1_b2 = m_ls1_b2 / coeff;
 
-  tilt = std::pow(10.f, _signal[CAB_TILT] * -0.025f);
-  //    tilt = std::pow(1.059192f, _signal[CAB_TILT] * -1.f);          // alternative to pow(10.f, _signal[CAB_TILT] / 40.f * -1.f)
+  tilt = std::pow(10.f, params[CAB_TILT] * -0.025f);
+  //    tilt = std::pow(1.059192f, params[CAB_TILT] * -1.f);          // alternative to pow(10.f, params[CAB_TILT] / 40.f * -1.f)
 
   tmpVar = tilt + 1.f / tilt + 2.f;
   tmpVar = std::sqrt(tilt * tmpVar) * m_tiltOmegaSin;
@@ -235,8 +236,8 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, ParameterStorage 
   float tmpVar;
 
   //********************************* Drive ********************************//
-  float sample_L = _rawSample_L * _signal[CAB_DRV];
-  float sample_R = _rawSample_R * _signal[CAB_DRV];
+  float sample_L = _rawSample_L * params[CAB_DRV];
+  float sample_R = _rawSample_R * params[CAB_DRV];
 
   //************************** Biquad Highpass L ***************************//
   tmpVar = m_hp_b0 * sample_L;
@@ -295,30 +296,30 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, ParameterStorage 
   sample_R = tmpVar;
 
   //******************************* Shaper L *******************************//
-  sample_L *= _signal[CAB_PRESAT];
+  sample_L *= params[CAB_PRESAT];
   tmpVar = sample_L;
 
   sample_L = NlToolbox::Math::sinP3_wrap(sample_L);
-  sample_L = NlToolbox::Others::threeRanges(sample_L, tmpVar, _signal[CAB_FLD]);
+  sample_L = NlToolbox::Others::threeRanges(sample_L, tmpVar, params[CAB_FLD]);
 
   tmpVar = sample_L * sample_L - m_hp30_stateVar_L;
   m_hp30_stateVar_L = tmpVar * m_hp30_b0 + m_hp30_stateVar_L + DNC_const;
 
-  sample_L = NlToolbox::Others::parAsym(sample_L, tmpVar, _signal[CAB_ASM]);
-  sample_L *= _signal[CAB_SAT];
+  sample_L = NlToolbox::Others::parAsym(sample_L, tmpVar, params[CAB_ASM]);
+  sample_L *= params[CAB_SAT];
 
   //******************************* Shaper R *******************************//
-  sample_R *= _signal[CAB_PRESAT];
+  sample_R *= params[CAB_PRESAT];
   tmpVar = sample_R;
 
   sample_R = NlToolbox::Math::sinP3_wrap(sample_R);
-  sample_R = NlToolbox::Others::threeRanges(sample_R, tmpVar, _signal[CAB_FLD]);
+  sample_R = NlToolbox::Others::threeRanges(sample_R, tmpVar, params[CAB_FLD]);
 
   tmpVar = sample_R * sample_R - m_hp30_stateVar_R;
   m_hp30_stateVar_R = tmpVar * m_hp30_b0 + m_hp30_stateVar_R + DNC_const;
 
-  sample_R = NlToolbox::Others::parAsym(sample_R, tmpVar, _signal[CAB_ASM]);
-  sample_R *= _signal[CAB_SAT];
+  sample_R = NlToolbox::Others::parAsym(sample_R, tmpVar, params[CAB_ASM]);
+  sample_R *= params[CAB_SAT];
 
   //*************************** Tilt Lowshelf L2 ***************************//
   tmpVar = m_ls2_b0 * sample_L;
@@ -403,8 +404,8 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, ParameterStorage 
   sample_R = tmpVar;
 
   //******************************* Crossfade ******************************//
-  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, sample_L, _signal[CAB_DRY], _signal[CAB_WET]);
-  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, sample_R, _signal[CAB_DRY], _signal[CAB_WET]);
+  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, sample_L, params[CAB_DRY], params[CAB_WET]);
+  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, sample_R, params[CAB_DRY], params[CAB_WET]);
 }
 
 /******************************************************************************/

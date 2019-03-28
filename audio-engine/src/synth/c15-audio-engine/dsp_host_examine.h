@@ -57,7 +57,7 @@ struct examine_param
     //
     uint32_t m_state[dsp_number_of_voices] = {};
     uint32_t m_preload[dsp_number_of_voices] = {};
-    float m_signal[dsp_number_of_voices] = {};
+    float mparams[dsp_number_of_voices] = {};
     float m_dx[dsp_number_of_voices][2] = {};
     float m_x[dsp_number_of_voices] = {};
     float m_start[dsp_number_of_voices] = {};
