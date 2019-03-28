@@ -92,6 +92,18 @@ void C15Synth::decrease()
   changeSelectedValueBy(-1);
 }
 
+double C15Synth::measurePerformance(std::chrono::seconds time)
+{
+  for(int i = 0; i < getOptions()->getPolyphony(); i++)
+  {
+    m_dsp->evalMidi(1, 0, 53);
+    m_dsp->evalMidi(5, 62, 64);
+    m_dsp->evalMidi(1, 0, 83);
+    m_dsp->evalMidi(5, 62, 64);
+  }
+  return Synth::measurePerformance(time);
+}
+
 void C15Synth::changeSelectedValueBy(int i)
 {
   switch(m_dsp->m_test_tone.m_focus)
