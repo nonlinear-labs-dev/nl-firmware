@@ -8,18 +8,18 @@ class ParameterStorage
  public:
   ParameterStorage() = default;
 
-  inline float &operator[](int param)
+  inline float &operator[](uint32_t param)
   {
     return m_boundVoice[param];
   }
 
-  ParameterStorage &bindToVoice(int v)
+  inline ParameterStorage &bindToVoice(uint32_t v)
   {
     m_boundVoice = m_paramsignaldata[v];
     return *this;
   }
 
-  float get(int voice, int param)
+  inline float get(uint32_t voice, uint32_t param)
   {
     return m_paramsignaldata[voice][param];
   }
