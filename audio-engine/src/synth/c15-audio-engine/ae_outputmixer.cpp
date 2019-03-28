@@ -58,7 +58,7 @@ void ae_outputmixer::init(float _samplerate, uint32_t _numOfVoices)
 /** @brief
 *******************************************************************************/
 
-void ae_outputmixer::combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter, float *_signal, uint32_t _voiceID)
+void ae_outputmixer::combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter, ParameterStorage &params, uint32_t _voiceID)
 {
     //******************************* Left Mix *******************************//
     float mainSample = _signal[OUT_A_L] * _sampleA
@@ -109,7 +109,7 @@ void ae_outputmixer::combine(float _sampleA, float _sampleB, float _sampleComb, 
 /** @brief
 *******************************************************************************/
 
-void ae_outputmixer::filter_level(float *_signal)
+void ae_outputmixer::filter_level(ParameterStorage &params)
 {
     float tmpVar  = m_hp_b0 * m_out_L;          // HP L
     tmpVar += m_hp_b1 * m_hp_stateVar_L1;

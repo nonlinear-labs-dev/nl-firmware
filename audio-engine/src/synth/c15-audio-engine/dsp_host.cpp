@@ -1540,7 +1540,7 @@ void dsp_host::initAudioEngine()
 /**
 *******************************************************************************/
 
-void dsp_host::makePolySound(float *_signal, uint32_t _voiceID)
+void dsp_host::makePolySound(ParameterStorage &params, uint32_t _voiceID)
 {
   m_soundgenerator[_voiceID].generate(m_feedbackmixer[_voiceID].m_out, _signal);
 
@@ -1561,7 +1561,7 @@ void dsp_host::makePolySound(float *_signal, uint32_t _voiceID)
 /**
 *******************************************************************************/
 
-void dsp_host::makeMonoSound(float *_signal)
+void dsp_host::makeMonoSound(ParameterStorage &params)
 {
   float mst_gain = _signal[MST_VOL] * m_raised_cos_table[m_table_indx];
 
@@ -1631,7 +1631,7 @@ void dsp_host::makeMonoSound(float *_signal)
 /**
 *******************************************************************************/
 
-inline void dsp_host::setPolySlowFilterCoeffs(float *_signal, uint32_t _voiceID)
+inline void dsp_host::setPolySlowFilterCoeffs(ParameterStorage &params, uint32_t _voiceID)
 {
   m_soundgenerator[_voiceID].set(_signal);
   m_combfilter[_voiceID].set(_signal, static_cast<float>(m_samplerate));
@@ -1642,7 +1642,7 @@ inline void dsp_host::setPolySlowFilterCoeffs(float *_signal, uint32_t _voiceID)
 /**
 *******************************************************************************/
 
-inline void dsp_host::setMonoSlowFilterCoeffs(float *_signal)
+inline void dsp_host::setMonoSlowFilterCoeffs(ParameterStorage &params)
 {
   m_flanger.set_slow(_signal);
   m_cabinet.set(_signal);
@@ -1658,7 +1658,7 @@ inline void dsp_host::setMonoSlowFilterCoeffs(float *_signal)
 /**
 *******************************************************************************/
 
-inline void dsp_host::setMonoFastFilterCoeffs(float *_signal)
+inline void dsp_host::setMonoFastFilterCoeffs(ParameterStorage &params)
 {
   m_flanger.set_fast(_signal);
   /* reverb setter (if reverb params render with fast clock) - see pe_defines.config.h */

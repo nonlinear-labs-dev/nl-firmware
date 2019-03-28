@@ -125,7 +125,7 @@ void ae_gapfilter::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_gapfilter::set(float *_signal)
+void ae_gapfilter::set(ParameterStorage &params)
 {
     float tmpVar_1, tmpVar_2;
 
@@ -315,7 +315,7 @@ void ae_gapfilter::set(float *_signal)
 /** @brief
 *******************************************************************************/
 
-void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, float *_signal)
+void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
 {
     float tmpVar;
 

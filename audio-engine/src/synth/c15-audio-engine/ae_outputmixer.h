@@ -27,8 +27,8 @@ struct ae_outputmixer
     std::vector<float> m_hp30hz_stateVar_R;
 
     void init(float _samplerate, uint32_t _numOfVoices);
-    void combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter, float *_signal, uint32_t _voiceID);
-    void filter_level(float *_signal);
+    void combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter, ParameterStorage &params, uint32_t _voiceID);
+    void filter_level(ParameterStorage &params);
     void resetDSP();
 
 

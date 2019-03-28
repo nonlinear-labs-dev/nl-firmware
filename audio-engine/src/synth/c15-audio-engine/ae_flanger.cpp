@@ -114,7 +114,7 @@ void ae_flanger::init(float _samplerate, uint32_t _upsampleFactor)
 /** @brief
 *******************************************************************************/
 
-void ae_flanger::set_slow(float *_signal)
+void ae_flanger::set_slow(ParameterStorage &params)
 {
     float omega = std::clamp(_signal[FLA_LPF], m_freqClip_min, m_freqClip_max);
     omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
@@ -130,7 +130,7 @@ void ae_flanger::set_slow(float *_signal)
 /** @brief
 *******************************************************************************/
 
-void ae_flanger::set_fast(float *_signal)
+void ae_flanger::set_fast(ParameterStorage &params)
 {
     float tmpVar = _signal[FLA_APF_L];                              // AP L
     tmpVar = std::clamp(tmpVar, m_freqClip_min, m_freqClip_max);
@@ -169,7 +169,7 @@ void ae_flanger::set_fast(float *_signal)
 /** @brief
 *******************************************************************************/
 
-void ae_flanger::apply(float _rawSample_L, float _rawSample_R, float *_signal)
+void ae_flanger::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
 {
     float tmpVar_1, tmpVar_2;
 

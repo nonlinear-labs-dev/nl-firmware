@@ -79,7 +79,7 @@ void ae_combfilter::setDelaySmoother()
 /** @brief
 *******************************************************************************/
 
-void ae_combfilter::apply(float _sampleA, float _sampleB, float *_signal)
+void ae_combfilter::apply(float _sampleA, float _sampleB, ParameterStorage &params)
 {
     float tmpVar;
 
@@ -223,7 +223,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, float *_signal)
 /** @brief
 *******************************************************************************/
 
-void ae_combfilter::set(float *_signal, float _samplerate)
+void ae_combfilter::set(ParameterStorage &params, float _samplerate)
 {
     //********************** Highpass Coefficients *************************//
     float frequency = _signal[CMB_FRQ];

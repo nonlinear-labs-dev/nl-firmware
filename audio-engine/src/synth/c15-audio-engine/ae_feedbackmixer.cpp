@@ -54,7 +54,7 @@ void ae_feedbackmixer::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_feedbackmixer::set(float *_signal)
+void ae_feedbackmixer::set(ParameterStorage &params)
 {
     float omega = std::clamp(_signal[FBM_HPF], m_freqClip_min, m_freqClip_max);
     omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
@@ -70,7 +70,7 @@ void ae_feedbackmixer::set(float *_signal)
 /** @brief
 *******************************************************************************/
 
-void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleFX, float *_signal)
+void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleFX, ParameterStorage &params)
 {
     float tmpVar = _sampleFX * _signal[FBM_FX] + _sampleComb * _signal[FBM_CMB] + _sampleSVF * _signal[FBM_SVF];
 

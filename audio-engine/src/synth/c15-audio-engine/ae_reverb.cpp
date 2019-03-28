@@ -131,7 +131,7 @@ void ae_reverb::init(float _samplerate, uint32_t _upsampleFactor)
 /** @brief  Chorus
 *******************************************************************************/
 
-void ae_reverb::set(float *_signal)
+void ae_reverb::set(ParameterStorage &params)
 {
     float tmpVar;
     float tmp_target;
@@ -250,7 +250,7 @@ void ae_reverb::set(float *_signal)
 /** @brief
 *******************************************************************************/
 
-void ae_reverb::apply(float _rawSample_L, float _rawSample_R, float *_signal)
+void ae_reverb::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
 {
     float tmpVar;
     int32_t ind_t0, ind_tm1, ind_tp1, ind_tp2;

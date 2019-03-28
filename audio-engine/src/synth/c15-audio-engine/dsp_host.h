@@ -149,13 +149,13 @@ public:
     ae_test_tone m_test_tone;
 
     void initAudioEngine();
-    void makePolySound(float *_signal, uint32_t _voiceID);
-    void makeMonoSound(float *_signal);
+    void makePolySound(ParameterStorage &params, uint32_t _voiceID);
+    void makeMonoSound(ParameterStorage &params);
 
     // inline?
-    inline void setPolySlowFilterCoeffs(float *_signal, uint32_t _voiceID);
-    inline void setMonoSlowFilterCoeffs(float *_signal);
-    inline void setMonoFastFilterCoeffs(float *_signal);
+    inline void setPolySlowFilterCoeffs(ParameterStorage &params, uint32_t _voiceID);
+    inline void setMonoSlowFilterCoeffs(ParameterStorage &params);
+    inline void setMonoFastFilterCoeffs(ParameterStorage &params);
 
     /*fadepoint for flushing*/
     bool m_flush;

@@ -82,7 +82,7 @@ void ae_echo::init(float _samplerate, uint32_t _upsampleFactor)
 /******************************************************************************/
 /** @brief
 *******************************************************************************/
-void ae_echo::set(float *_signal)
+void ae_echo::set(ParameterStorage &params)
 {
     float omega = std::clamp(_signal[DLY_LPF], m_freqClip_min, m_freqClip_max);
     omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
@@ -98,7 +98,7 @@ void ae_echo::set(float *_signal)
 /** @brief
 *******************************************************************************/
 
-void ae_echo::apply(float _rawSample_L, float _rawSample_R, float *_signal)
+void ae_echo::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
 {
     float tmpVar;
 
