@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall;
 
-import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout.Mode;
@@ -15,11 +14,7 @@ public class ParameterRecallArea extends RecallArea {
 	
 	@Override
 	public boolean isChanged() {
-		EditBufferModel eb = EditBufferModel.get();
-		BasicParameterModel bpm = eb.getSelectedParameter();
-		if(bpm != null)
-			return bpm.value.value.getValue() != bpm.originalValue.getValue();
-		return false;
+		return EditBufferModel.get().getSelectedParameter().isValueChanged();
 	}
 
 	@Override

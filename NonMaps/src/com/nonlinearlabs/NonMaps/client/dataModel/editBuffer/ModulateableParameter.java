@@ -23,12 +23,11 @@ public class ModulateableParameter extends BasicParameterModel {
 	public IntegerDataModelEntity mcParameterID = new IntegerDataModelEntity();
 	public EnumDataModelEntity<ModSource> ogModSource = new EnumDataModelEntity<ModSource>(ModSource.class, ModSource.None);
 	
-	
 	@Override
 	public boolean isChanged() {
 		boolean src = modSource.getValue() != ogModSource.getValue();
 		boolean amt = modAmount.getValue() != ogModAmount.getValue();
-		boolean val = super.isChanged();
+		boolean val = isValueChanged();
 		return src || amt || val;
 	}
 

@@ -54,7 +54,8 @@ class Parameter : public UpdateDocumentContributor,
 
   PresetParameter *getOriginalParameter() const;
 
-    virtual bool isChangedFromLoaded() const;
+  virtual bool isChangedFromLoaded() const;
+  virtual bool isValueChangedFromLoaded() const;
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
 
