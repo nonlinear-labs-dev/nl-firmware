@@ -471,10 +471,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	public String getFullNameWithGroup() {
 		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
-		boolean changed = false;
-		if(!(bpm instanceof com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.PhysicalControlParameter))
-			changed = bpm.isChanged();
-		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
+		return getGroupName() + "   \u2013   " + getName().getLongName() + (bpm.isChanged() ? " *" : "");
 	}
 
 	public String getGroupName() {

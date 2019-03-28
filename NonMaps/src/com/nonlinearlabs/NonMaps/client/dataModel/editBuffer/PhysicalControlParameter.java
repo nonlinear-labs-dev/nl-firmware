@@ -5,4 +5,9 @@ public class PhysicalControlParameter extends BasicParameterModel {
 	public boolean isValueChanged() {
 		return false;
 	}
+	
+	@Override
+	public boolean isChanged() {
+		return false;
+	}
 }
