@@ -462,9 +462,11 @@ bool ModulateableParameter::isModAmountChanged() const
   if(getModulationSource() == ModulationSource::NONE)
     return false;
 
-  if(auto original = getOriginalParameter())
-  {
-    return original->getModulationAmount() != getModulationAmount();
+  if(auto original = getOriginalParameter()) {
+      const auto denominator = getValue().getFineDenominator();
+      const int rawNow = static_cast<const int>(getModulationAmount() * denominator);
+      const auto epsilon = 0.5 / denominator;
+      return std::fabs((int) (original->getModulationAmount() * denominator) - rawNow) > epsilon;
   }
   return false;
 }

@@ -233,16 +233,17 @@ bool Parameter::isChangedFromLoaded() const
 }
 
 bool Parameter::isValueChangedFromLoaded() const {
-    const auto rawNow = getControlPositionValue();
-    const auto epsilon = 0.5 / getValue().getFineDenominator();
+    const auto denominator = getValue().getFineDenominator();
+    const int rawNow = static_cast<const int>(getControlPositionValue() * denominator);
+    const auto epsilon = 0.5 / denominator;
 
     if(auto originalParameter = getOriginalParameter())
     {
-        return std::fabs(originalParameter->getValue() - rawNow) > epsilon;
+        return std::fabs((int)(originalParameter->getValue() * denominator) - rawNow) > epsilon;
     }
     else
     {
-        return std::fabs(getDefaultValue() - rawNow) > epsilon;
+        return std::fabs((int)(getDefaultValue() * denominator) - rawNow) > epsilon;
     }
 }
 

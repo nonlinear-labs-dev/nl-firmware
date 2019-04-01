@@ -25,8 +25,8 @@ public class ModulateableParameter extends BasicParameterModel {
 	
 	@Override
 	public boolean isChanged() {
-		boolean src = modSource.getValue() != ogModSource.getValue();
-		boolean amt = modAmount.getValue() != ogModAmount.getValue();
+		boolean src = isModSourceChanged();
+		boolean amt = isModAmountChanged();
 		boolean val = isValueChanged();
 		return src || amt || val;
 	}
@@ -43,7 +43,10 @@ public class ModulateableParameter extends BasicParameterModel {
 	}
 	
 	public boolean isModAmountChanged() {
-		return ogModAmount.getValue() != modAmount.getValue();
+		int denominator = Math.max(value.metaData.fineDenominator.getValue(), 1000);
+		int ogRounded = (int)(ogModAmount.getValue() * denominator);
+		int nowRounded = (int)(modAmount.getValue() * denominator);
+		return ogRounded != nowRounded;
 	}
 	
 	public boolean isModSourceChanged() {
