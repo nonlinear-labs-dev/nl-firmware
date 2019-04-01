@@ -270,6 +270,7 @@ caption {
 /*****************************/
 
 .nav-bc {
+	background-color: #222;
 	margin: 1em 0em 0.5em 0em; 
 	padding: .2em;
 	text-align: center;
