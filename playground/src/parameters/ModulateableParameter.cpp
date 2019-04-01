@@ -306,8 +306,14 @@ Glib::ustring ModulateableParameter::stringizeModulationAmount() const
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount(tControlPositionValue amount) const
 {
-  return getValue().getScaleConverter()->getDimension().stringize(
-      getValue().getScaleConverter()->controlPositionToDisplay(amount));
+  auto converter = getValue().getScaleConverter();
+  if(!converter->isBiPolar())
+  {
+    DebugLevel::warning("Using LinearBipolar100PercentScaleConverter For Parameter:", getLongName(), "because ValueScaleConverter is not bipolar");
+    converter = ScaleConverter::get<LinearBipolar100PercentScaleConverter>();
+  }
+
+  return converter->getDimension().stringize(converter->controlPositionToDisplay(amount));
 }
 
 DFBLayout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const

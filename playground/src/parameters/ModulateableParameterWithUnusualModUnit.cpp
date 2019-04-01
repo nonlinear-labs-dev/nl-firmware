@@ -1,6 +1,7 @@
 #include "ModulateableParameterWithUnusualModUnit.h"
 #include <xml/Writer.h>
 #include <math.h>
+#include <device-settings/DebugLevel.h>
 
 ModulateableParameterWithUnusualModUnit::ModulateableParameterWithUnusualModUnit(
     ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, const ScaleConverter *modAmountScaling,
@@ -45,6 +46,9 @@ double ModulateableParameterWithUnusualModUnit::getModulationAmountCoarseDenomin
 }
 
 Glib::ustring ModulateableParameterWithUnusualModUnit::stringizeModulationAmount(tControlPositionValue amount) const {
+    if(!m_modAmountScaling->isBiPolar())
+        DebugLevel::warning("Explicit Mod-Amount scaling not BiPolar!");
+
     return m_modAmountScaling->getDimension().stringize(
             m_modAmountScaling->controlPositionToDisplay(amount));
 }
