@@ -463,10 +463,11 @@ bool ModulateableParameter::isModAmountChanged() const
     return false;
 
   if(auto original = getOriginalParameter()) {
-      const auto denominator = getValue().getFineDenominator();
-      const int rawNow = static_cast<const int>(getModulationAmount() * denominator);
+      const int denominator = std::max((int)getValue().getFineDenominator(), 1000);
+      const int roundedNow = static_cast<const int>(getModulationAmount() * denominator);
+      const int roundedOG = static_cast<const int>(original->getModulationAmount() * denominator);
       const auto epsilon = 0.5 / denominator;
-      return std::fabs((int) (original->getModulationAmount() * denominator) - rawNow) > epsilon;
+      return std::fabs(roundedOG - roundedNow) > epsilon;
   }
   return false;
 }
