@@ -187,7 +187,7 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return "Open Help";
+				return "Open Manual";
 			}
 
 			@Override
