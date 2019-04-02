@@ -233,7 +233,7 @@ bool Parameter::isChangedFromLoaded() const
 }
 
 bool Parameter::isValueChangedFromLoaded() const {
-    const int denominator = std::max((int)getValue().getFineDenominator(), 1000);
+    const int denominator = static_cast<const int>(getValue().getFineDenominator());
     const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
     const auto epsilon = 0.5 / denominator;
 

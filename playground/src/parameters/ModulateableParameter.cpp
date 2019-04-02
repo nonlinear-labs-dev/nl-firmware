@@ -463,7 +463,7 @@ bool ModulateableParameter::isModAmountChanged() const
     return false;
 
   if(auto original = getOriginalParameter()) {
-      const int denominator = std::max((int)getValue().getFineDenominator(), 1000);
+      const int denominator = static_cast<const int>(getValue().getFineDenominator());
       const int roundedNow = static_cast<const int>(getModulationAmount() * denominator);
       const int roundedOG = static_cast<const int>(original->getModulationAmount() * denominator);
       const auto epsilon = 0.5 / denominator;

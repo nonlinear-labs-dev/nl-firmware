@@ -43,7 +43,7 @@ public class ModulateableParameter extends BasicParameterModel {
 	}
 	
 	public boolean isModAmountChanged() {
-		int denominator = Math.max(value.metaData.fineDenominator.getValue(), 1000);
+		int denominator = value.metaData.fineDenominator.getValue();
 		int ogRounded = (int)(ogModAmount.getValue() * denominator);
 		int nowRounded = (int)(modAmount.getValue() * denominator);
 		return ogRounded != nowRounded;
