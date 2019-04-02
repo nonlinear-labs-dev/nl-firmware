@@ -46,9 +46,6 @@ double ModulateableParameterWithUnusualModUnit::getModulationAmountCoarseDenomin
 }
 
 Glib::ustring ModulateableParameterWithUnusualModUnit::stringizeModulationAmount(tControlPositionValue amount) const {
-    if(!m_modAmountScaling->isBiPolar())
-        DebugLevel::warning("Explicit Mod-Amount scaling not BiPolar!");
-
     return m_modAmountScaling->getDimension().stringize(
             m_modAmountScaling->controlPositionToDisplay(amount));
 }
