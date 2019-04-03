@@ -235,17 +235,16 @@ bool Parameter::isChangedFromLoaded() const
 bool Parameter::isValueChangedFromLoaded() const {
     const int denominator = static_cast<const int>(getValue().getFineDenominator());
     const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
-    const auto epsilon = 0.5 / denominator;
 
     if(auto originalParameter = getOriginalParameter())
     {
         const int roundedOG = static_cast<const int>(originalParameter->getValue() * denominator);
-        return std::fabs(roundedOG - roundedNow) > epsilon;
+        return roundedOG != roundedNow;
     }
     else
     {
         const int roundedDefault = static_cast<const int>(getDefaultValue() * denominator);
-        return std::fabs(roundedDefault - roundedNow) > epsilon;
+        return roundedDefault != roundedNow;
     }
 }
 
