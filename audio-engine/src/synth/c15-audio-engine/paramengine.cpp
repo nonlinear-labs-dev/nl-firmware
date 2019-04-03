@@ -1460,7 +1460,7 @@ void paramengine::postProcessPoly_key(float* _signal, const uint32_t _voiceId)
   const uint32_t uVoice = static_cast<uint32_t>(m_body[m_head[P_UN_V].m_index].m_signal);
   const uint32_t uIndex = m_unison_index[_voiceId];
   const float basePitch = m_body[m_head[P_KEY_BP].m_index + _voiceId].m_signal;
-  const float notePitch = basePitch + m_body[m_head[P_MA_SH].m_index].m_signal
+  const float notePitch = basePitch + m_body[m_head[P_MA_T].m_index].m_signal
       + (m_body[m_head[P_UN_DET].m_index].m_signal * m_unison_detune[uVoice][uIndex]) + m_note_shift[_voiceId];
 #endif
   float keyTracking, unitPitch, envMod, unitSign, unitSpread, unitMod;
