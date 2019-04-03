@@ -1,8 +1,10 @@
 package com.nonlinearlabs.NonMaps.client.dataModel.editBuffer;
 
+import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.NonMaps.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.NonMaps.client.dataModel.Notifier;
 import com.nonlinearlabs.NonMaps.client.dataModel.StringDataModelEntity;
+import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 
 public class BasicParameterModel extends Notifier<BasicParameterModel> {
@@ -24,8 +26,18 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		return this;
 	}
 
+	public boolean isValueChanged() {
+		double roundedVal = (int) (value.value.getValue() * 1000);
+		double roundedOgVal = (int) (originalValue.getValue() * 1000);
+		return roundedVal != roundedOgVal;
+	}
+	
 	public boolean isChanged() {
-		return value.value.getValue() != originalValue.getValue();
+		return isValueChanged();
+	}
+
+	public Updater getUpdater(Node c) {
+		return new ParameterUpdater(c, this);
 	}
 
 }

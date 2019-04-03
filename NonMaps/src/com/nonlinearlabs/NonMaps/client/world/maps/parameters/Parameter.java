@@ -97,6 +97,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		crc.eat(getParameterID());
 		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
 		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
+		crc.eat(EditBufferModel.get().findParameter(getParameterID()).isChanged());
 	}
 
 	public final boolean isBiPolar() {
@@ -469,8 +470,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getFullNameWithGroup() {
-		boolean changed = EditBufferModel.get().findParameter(getParameterID()).isChanged();
-		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
+		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
+		return getGroupName() + "   \u2013   " + getName().getLongName() + (bpm.isChanged() ? " *" : "");
 	}
 
 	public String getGroupName() {

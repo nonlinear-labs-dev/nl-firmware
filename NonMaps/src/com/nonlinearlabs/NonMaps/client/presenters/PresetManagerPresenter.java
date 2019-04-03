@@ -7,7 +7,7 @@ import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 
-public class PresetManager {
+public class PresetManagerPresenter {
 	public static class Bank {
 
 		public static class Preset {
@@ -26,6 +26,12 @@ public class PresetManager {
 		public String uuid;
 	}
 
+	public ArrayList<Bank> banks;
+
+	public PresetManagerPresenter() {
+		banks = new ArrayList<Bank>();
+	}
+	
 	public String getBaseLoadedPresetNumberString() {		
 		EditBufferModel eb = EditBufferModel.get();
 		String ret = "";
@@ -53,5 +59,4 @@ public class PresetManager {
 		return ret += mod ? " *" : "";
 	}
 	
-	public ArrayList<Bank> banks = new ArrayList<Bank>();
 }

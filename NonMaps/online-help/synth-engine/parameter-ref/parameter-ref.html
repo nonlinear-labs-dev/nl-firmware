@@ -5,7 +5,7 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - 9. Parameter Reference</title>
+	<title>C15 - Manual - 9. Parameter Reference</title>
 	
 	<link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../../style.css" type="text/css" />
@@ -17,7 +17,7 @@
 <body>
 	
 	<div id="header">
-		<h1><a href="../../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+		<h1><a href="../../index.html" title="Manual Contents">NONLINEAR LABS - C15 - Reference Manual</a></h1>
 	</div><!-- end header -->
 	
 	<div class="nav-bc">
@@ -26,7 +26,7 @@
 	
 	<div class="nav">
 			<p class="navleft"><a href="../../setup-c15/specs.html">8.&ensp;Specifications</a></p>
-			<p class="navright"><a href="../../interface/shortcuts.html">10.&ensp;Keyboard Shortcuts</a></p>
+			<p class="navright"><a href="../../interface/shortcuts.html">10.&ensp;Shortcuts for the Graphical User Interface</a></p>
 	</div><!-- end nav -->
 	
 	<div id="main-content">	
@@ -36,7 +36,7 @@
 			<h2>9. Parameter Reference</h2>
 
 			<div class="txt-block">
-				The table below provides links to detailed informations for all parameters of the C15 synth engine. They are grouped according to the 4 parameter panels on the hardware and are respectively color-coded.<br />The used signs and symbols are explained in this <a href="legend.html">legend</a>.
+				<p>The table below provides links to detailed information for all parameters of the C15 synth engine. They are grouped according to the 4 Parameter Panels on the Panel Unit and are respectively color-coded. The used signs and symbols are explained in this <a href="legend.html">legend</a>.</p>
 			</div><!-- end txt -->	
 				
 				<span id="paramgrpoup"></span>
@@ -66,7 +66,7 @@
 					<tr>
 						<td><a class="mix-bg" href="#03-Envelope-C">Envelope C</a></td>
 						<td><a class="oscb-bg" href="#06-Oscillator-B">Oscillator B</a></td>
-						<td><a class="mix-bg" href="#10-Feedback-Mixer">Feedback Mixer</a></td>
+						<td><a class="fbmix-bg" href="#10-Feedback-Mixer">Feedback Mixer</a></td>
 						<td><a class="fx-bg" href="#14-Gap-Filter">Gap Filter</a></td>
 					</tr>
 <!-- 					zeile 4 -->		
@@ -131,67 +131,68 @@
 				
 					<div class="param-block" id="Envelope-A-Attack-Time">		
 						<img src="images/01_Envelope_A/Envelope_A_0.0-Attack_Time.png" alt="Envelope_A_0.0-Attack_Time">
-						<p>Key tracking of the attack, decay and release times. The value determines how much shorter the times get for higher notes.</p>
+						<p>Time of the (polynomial) Attack segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Attack-Velocity">		
 						<img src="images/01_Envelope_A/Envelope_A_0.1-Attack_Velocity.png" alt="Envelope_A_0.1-Attack_Velocity">
-						<p>Key tracking of the envelope’s peak, breakpoint and sustain levels [dB per semitone].<br />Positive values:<br />higher levels for higher notes (+1.0 = +12 dB per octave).<br />Negative values:<br />lower levels for higher notes (-1.0 = -12 dB per octave).<br />Origin at C3 = 60 semitones.</p>
+						<p>Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction of the Attack time by high Note-On velocities.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Attack-Curve">		
 						<img src="images/01_Envelope_A/Envelope_A_0.2-Attack_Curve.png" alt="Envelope_A_0.2-Attack_Curve">
-						<p>Time of the second (exponential) Decay segment in milliseconds.</p>
+						<p>Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: accelerating slope)</p>
 					</div>	
 						
 					<div class="param-block" id="Envelope-A-Decay-1-Time">		
 						<img src="images/01_Envelope_A/Envelope_A_1.0-Decay_1_Time.png" alt="Envelope_A_1.0-Decay_1_Time">
-						<p>Level of the Breakpoint between the two Decay segments.</p>
+						<p>Time of the first (linear) Decay segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Breakpoint-Level">		
 						<img src="images/01_Envelope_A/Envelope_A_2.0-Breakpoint_Level.png" alt="Envelope_A_2.0-Breakpoint_Level">
-						<p>Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the Release time by high Note-O  velocities.</p>
+						<p>Level of the Breakpoint between the two Decay segments.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Decay-2-Time">		
 						<img src="images/01_Envelope_A/Envelope_A_3.0-Decay_2_Time.png" alt="Envelope_A_3.0-Decay_2_Time">
-						<p>Time of the (exponential) Release segment in millisec- onds (infinite at maximum).</p>
+						<p>Time of the second (exponential) Decay segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Sustain-Level">		
 						<img src="images/01_Envelope_A/Envelope_A_4.0-Sustain_Level.png" alt="Envelope_A_4.0-Sustain_Level">
-						<p>Gain [in dB] of the envelope signal. As this signal mod- ulates the Oscillator and Shaper A, the Gain influences the level and the amount of phase modulation and distortion.</p>
+						<p>Sustain level (target of the second Decay segment).</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Release-Time">		
 						<img src="images/01_Envelope_A/Envelope_A_5.0-Release_Time.png" alt="Envelope_A_5.0-Release_Time">
-						<p>Sustain level (target of the second Decay segment).</p>
+						<p>Time of the (exponential) Release segment in milliseconds (infinite at maximum).</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Release-Velocity">		
 						<img src="images/01_Envelope_A/Envelope_A_5.1-Release_Velocity.png" alt="Envelope_A_5.1-Release_Velocity">
-						<p>Time of the (polynomial) Attack segment in milliseconds.</p>
+						<p>Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the Release time by high Note-Off velocities.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Level-Velocity">		
 						<img src="images/01_Envelope_A/Envelope_A_6.0-Level_Velocity.png" alt="Envelope_A_6.0-Level_Velocity">
-						<p>Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: accelerating slope)</p>
+						<p>Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].</p>
 					</div>	
 					
 					<div class="param-block" id="Envelope-A-Level-Key-Trk">		
 						<img src="images/01_Envelope_A/Envelope_A_7.0-Level_Key_Trk.png" alt="Envelope_A_7.0-Level_Key_Trk">
-						<p>Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction of the Attack time by high Note-On velocities.</p>
+						<p>Key tracking of the envelope’s peak, breakpoint and sustain levels [dB per semitone].<br />Positive values: higher levels for higher notes (+1.0 = +12 dB per octave).<br />Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).<br />Origin at C3 = 60 semitones.
+</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-A-Time-Key-Trk">		
 						<img src="images/01_Envelope_A/Envelope_A_7.1-Time_Key_Trk.png" alt="Envelope_A_7.1-Time_Key_Trk">
-						<p>Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].</p>
+						<p>Key tracking of the attack, decay and release times.<br />The value determines how much shorter the times get for higher notes.</p>
 					</div>	
 					
 					<div class="param-block" id="Envelope-A-Gain">		
 						<img src="images/01_Envelope_A/Envelope_A_8.0-Gain.png" alt="Envelope_A_8.0-Gain">
-						<p>Time of the first (linear) Decay segment in milliseconds.</p>
+						<p>Gain [in dB] of the envelope signal. As this signal modulates the Oscillator and Shaper A, the Gain influences the level and the amount of phase modulation and distortion.</p>
 					</div>	
 					
 			</div><!-- end param-container -->
@@ -204,67 +205,67 @@
 				
 					<div class="param-block" id="Envelope-B-Attack-Time">		
 						<img src="images/02_Envelope_B/Envelope_B_0.0-Attack_Time.png" alt="Envelope_B_0.0-Attack_Time">
-						<p>Key tracking of the attack, decay and release times. The value determines how much shorter the times get for higher notes.</p>
+						<p>Time of the (polynomial) Attack segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Attack-Velocity">		
 						<img src="images/02_Envelope_B/Envelope_B_0.1-Attack_Velocity.png" alt="Envelope_B_0.1-Attack_Velocity">
-						<p>Key tracking of the envelope’s peak, breakpoint and sustain levels [dB per semitone].<br />Positive values:<br />higher levels for higher notes (+1.0 = +12 dB per octave).<br />Negative values:<br />lower levels for higher notes (-1.0 = -12 dB per octave).<br />Origin at C3 = 60 semitones.</p>
+						<p>Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction of the Attack time by high Note-On velocities.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Attack-Curve">		
 						<img src="images/02_Envelope_B/Envelope_B_0.2-Attack_Curve.png" alt="Envelope_B_0.2-Attack_Curve">
-						<p>Time of the second (exponential) Decay segment in milliseconds.</p>
+						<p>Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: accelerating slope)</p>
 					</div>	
 						
 					<div class="param-block" id="Envelope-B-Decay-1-Time">		
 						<img src="images/02_Envelope_B/Envelope_B_1.0-Decay_1_Time.png" alt="Envelope_B_1.0-Decay_1_Time">
-						<p>Level of the Breakpoint between the two Decay segments.</p>
+						<p>Time of the first (linear) Decay segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Breakpoint-Level">		
 						<img src="images/02_Envelope_B/Envelope_B_2.0-Breakpoint_Level.png" alt="Envelope_B_2.0-Breakpoint_Level">
-						<p>Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the Release time by high Note-O  velocities.</p>
+						<p>Level of the Breakpoint between the two Decay segments.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Decay-2-Time">		
 						<img src="images/02_Envelope_B/Envelope_B_3.0-Decay_2_Time.png" alt="Envelope_B_3.0-Decay_2_Time">
-						<p>Time of the (exponential) Release segment in millisec- onds (infinite at maximum).</p>
+						<p>Time of the second (exponential) Decay segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Sustain-Level">		
 						<img src="images/02_Envelope_B/Envelope_B_4.0-Sustain_Level.png" alt="Envelope_B_4.0-Sustain_Level">
-						<p>Gain [in dB] of the envelope signal. As this signal mod- ulates the Oscillator and Shaper A, the Gain influences the level and the amount of phase modulation and distortion.</p>
+						<p>Sustain level (target of the second Decay segment).</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Release-Time">		
 						<img src="images/02_Envelope_B/Envelope_B_5.0-Release_Time.png" alt="Envelope_B_5.0-Release_Time">
-						<p>Sustain level (target of the second Decay segment).</p>
+						<p>Time of the (exponential) Release segment in milliseconds (infinite at maximum).</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Release-Velocity">		
 						<img src="images/02_Envelope_B/Envelope_B_5.1-Release_Velocity.png" alt="Envelope_B_5.1-Release_Velocity">
-						<p>Time of the (polynomial) Attack segment in milliseconds.</p>
+						<p>Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the Release time by high Note-Off velocities.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Level-Velocity">		
 						<img src="images/02_Envelope_B/Envelope_B_6.0-Level_Velocity.png" alt="Envelope_B_6.0-Level_Velocity">
-						<p>Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: accelerating slope)</p>
+						<p>Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].</p>					
 					</div>	
 					
 					<div class="param-block" id="Envelope-B-Level-Key-Trk">		
 						<img src="images/02_Envelope_B/Envelope_B_7.0-Level_Key_Trk.png" alt="Envelope_B_7.0-Level_Key_Trk">
-						<p>Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction of the Attack time by high Note-On velocities.</p>
+						<p>Key tracking of the envelope’s peak, breakpoint and sustain levels [dB per semitone].<br />Positive values: higher levels for higher notes (+1.0 = +12 dB per octave).<br />Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).<br />Origin at C3 = 60 semitones.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-B-Time-Key-Trk">		
 						<img src="images/02_Envelope_B/Envelope_B_7.1-Time_Key_Trk.png" alt="Envelope_B_7.1-Time_Key_Trk">
-						<p>Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].</p>
+						<p>Key tracking of the attack, decay and release times.<br />The value determines how much shorter the times get for higher notes.</p>
 					</div>	
 					
 					<div class="param-block" id="Envelope-B-Gain">		
 						<img src="images/02_Envelope_B/Envelope_B_8.0-Gain.png" alt="Envelope_B_8.0-Gain">
-						<p>Time of the first (linear) Decay segment in milliseconds.</p>
+						<p>Gain [in dB] of the envelope signal. As this signal modulates the Oscillator and Shaper A, the Gain influences the level and the amount of phase modulation and distortion.</p>
 					</div>	
 	
 			</div><!-- end param-container -->
@@ -277,62 +278,63 @@
 				
 					<div class="param-block" id="Envelope-C-Attack-Time">		
 						<img src="images/03_Envelope_C/Envelope_C_0.0-Attack_Time.png" alt="Envelope_C_0.0-Attack_Time">
-						<p>Key tracking of the attack, decay and release times. The value determines how much shorter the times get for higher notes.</p>
+						<p>Time of the (polynomial) Attack segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Attack-Velocity">		
 						<img src="images/03_Envelope_C/Envelope_C_0.1-Attack_Velocity.png" alt="Envelope_C_0.1-Attack_Velocity">
-						<p>Key tracking of the envelope’s peak, breakpoint and sustain levels [dB per semitone].<br />Positive values:<br />higher levels for higher notes (+1.0 = +12 dB per octave).<br />Negative values:<br />lower levels for higher notes (-1.0 = -12 dB per octave).<br />Origin at C3 = 60 semitones.</p>
+						<p>Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction of the Attack time by high Note-On velocities.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Attack-Curve">		
 						<img src="images/03_Envelope_C/Envelope_C_0.2-Attack_Curve.png" alt="Envelope_C_0.2-Attack_Curve">
-						<p>Time of the second (exponential) Decay segment in milliseconds.</p>
+						<p>Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: accelerating slope)</p>
 					</div>	
 						
 					<div class="param-block" id="Envelope-C-Decay-1-Time">		
 						<img src="images/03_Envelope_C/Envelope_C_1.0-Decay_1_Time.png" alt="Envelope_C_1.0-Decay_1_Time">
-						<p>Level of the Breakpoint between the two Decay segments.</p>
+						<p>Time of the first (linear) Decay segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Breakpoint-Level">		
 						<img src="images/03_Envelope_C/Envelope_C_1.1-Breakpoint_Level.png" alt="Envelope_C_2.0-Breakpoint_Level">
-						<p>Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the Release time by high Note-O  velocities.</p>
+						<p>Level of the Breakpoint between the two Decay segments.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Decay-2-Time">		
 						<img src="images/03_Envelope_C/Envelope_C_2.0-Decay_2_Time.png" alt="Envelope_C_3.0-Decay_2_Time">
-						<p>Time of the (exponential) Release segment in millisec- onds (infinite at maximum).</p>
+						<p>Time of the second (exponential) Decay segment in milliseconds.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Sustain-Level">		
 						<img src="images/03_Envelope_C/Envelope_C_2.1-Sustain_Level.png" alt="Envelope_C_4.0-Sustain_Level">
-						<p>Gain [in dB] of the envelope signal. As this signal mod- ulates the Oscillator and Shaper A, the Gain influences the level and the amount of phase modulation and distortion.</p>
+						<p>Sustain level (target of the second Decay segment).</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Release-Time">		
 						<img src="images/03_Envelope_C/Envelope_C_3.0-Release_Time.png" alt="Envelope_C_5.0-Release_Time">
-						<p>Sustain level (target of the second Decay segment).</p>
+						<p>Time of the (exponential) Release segment in milliseconds (infinite at maximum).</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Release-Velocity">		
 						<img src="images/03_Envelope_C/Envelope_C_3.1-Release_Velocity.png" alt="Envelope_C_5.1-Release_Velocity">
-						<p>Time of the (polynomial) Attack segment in milliseconds.</p>
+						<p>Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the Release time by high Note-Off velocities.</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Level-Velocity">		
 						<img src="images/03_Envelope_C/Envelope_C_4.0-Level_Velocity.png" alt="Envelope_C_6.0-Level_Velocity">
-						<p>Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: accelerating slope)</p>
+						<p>Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].</p>	
 					</div>	
 					
 					<div class="param-block" id="Envelope-C-Level-Key-Trk">		
 						<img src="images/03_Envelope_C/Envelope_C_5.0-Level_Key_Trk.png" alt="Envelope_C_7.0-Level_Key_Trk">
-						<p>Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction of the Attack time by high Note-On velocities.</p>
+						<p>Key tracking of the envelope’s peak, breakpoint and sustain levels [dB per semitone].<br />Positive values: higher levels for higher notes (+1.0 = +12 dB per octave).<br />Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).<br />Origin at C3 = 60 semitones.
+</p>
 					</div>	
 	
 					<div class="param-block" id="Envelope-C-Time-Key-Trk">		
 						<img src="images/03_Envelope_C/Envelope_C_5.1-Time_Key_Trk.png" alt="Envelope_C_7.1-Time_Key_Trk">
-						<p>Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].</p>
+						<p>Key tracking of the attack, decay and release times.<br />The value determines how much shorter the times get for higher notes.</p>
 					</div>	
 	
 			</div><!-- end param-container -->
@@ -350,12 +352,12 @@
 	
 					<div class="param-block">		
 						<img src="images/04_Oscillator_A/Oscillator_A_0.1-Pitch_-_Env_C.png" alt="Oscillator_A_0.1-Pitch_-_Env_C">
-						<p>Amount of pitch modulation by Envelope C [in semitones].</p>
+						<p>Amount of pitch modulation by Envelope C<br />[in semitones].</p>
 					</div>	
 						
 					<div class="param-block">		
 						<img src="images/04_Oscillator_A/Oscillator_A_0.2-Pitch_-_Key_Trk.png" alt="Oscillator_A_0.2-Pitch_-_Key_Trk">
-						<p>Key tracking of the oscillator pitch. It’s the scaling factor between the key position of a received MIDI note (relative to C3 = 60 semitones) and the pitch of the oscillator. At 100.0 %, the pitch follows the equal-tempered scale (when the Scale group is equal--tempered as well). At values slightly larger than 100.0 %, the tuning will be stretched. At 50.0 %, a quartertone scale emerges and at 0.0 %, the pitch is constant for all keys.</p>
+						<p>Key tracking of the oscillator pitch. It’s the scaling factor between the key position (relative to C3 = 60 semitones) and the pitch of the oscillator.<br />At 100.0 %, the pitch follows the equal-tempered scale. At values slightly larger than 100.0 %, the tuning will be stretched.<br />At 50.0 %, a quartertone scale emerges and at 0.0 %, the pitch is constant for all keys.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -380,8 +382,7 @@
 	
 					<div class="param-block">		
 						<img src="images/04_Oscillator_A/Oscillator_A_3.1-PM_Self_-_Env_A.png" alt="Oscillator_A_3.1-PM_Self_-_Env_A">
-						<p>Envelope (A) amount for the phase modulation by Oscillator & Shaper A (local feedback).
-	At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
+						<p>Envelope (A) amount for the phase modulation by Oscillator & Shaper A (local feedback). At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -396,13 +397,12 @@
 	
 					<div class="param-block">		
 						<img src="images/04_Oscillator_A/Oscillator_A_4.1-PM_B_-_Env_B.png" alt="Oscillator_A_4.1-PM_B_-_Env_B">
-						<p>Envelope (B) amount for the pahse modulation by Oscillator & Shaper B (cross feedback).
-	At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
+						<p>Envelope (B) amount for the phase modulation by Oscillator & Shaper B (cross feedback). At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
 					</div>	
 		
 					<div class="param-block">		
 						<img src="images/04_Oscillator_A/Oscillator_A_4.2-PM_B_-_Shaper.png" alt="Oscillator_A_4.2-PM_B_-_Shaper">
-						<p>Mix amount of Shaper B in the signal being used for phase modulation (B -> A). At zero, the output signal of Oscillator B is used. At negative values, the signal from the Shaper is inverted.</p>
+						<p>Mix amount of Shaper B in the signal being used for phase modulation (B > A). At zero, the output signal of Oscillator B is used. At negative values, the signal from the Shaper is inverted.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -412,8 +412,7 @@
 		
 					<div class="param-block">		
 						<img src="images/04_Oscillator_A/Oscillator_A_5.1-PM_FB_-_Env_C.png" alt="Oscillator_A_5.1-PM_FB_-_Env_C">
-						<p>Envelope (C) amount for the phase modulation by the Feedback signal.
-	At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
+						<p>Envelope (C) amount for the phase modulation by the Feedback signal. At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -441,7 +440,7 @@
 					
 					<div class="param-block">		
 						<img src="images/05_Shaper_A/Shaper_A_1.0-Fold.png" alt="Shaper_A_1.0-Fold">
-						<p>Amount of folding back of the shaper curve for high input amplitudes. 0.0 %: flat saturation, no folding 100 %: fully folded back (periodic sine curve) A higher amount of folding leads to a softer but more nasal sound.</p>
+						<p>Amount of folding back of the shaper curve for high input amplitudes.<br />0.0 %: flat saturation, no folding <br />100 %: fully folded back (periodic sine curve)<br />A higher amount of folding leads to a softer but more nasal sound.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -477,17 +476,17 @@
 				
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_0.0-Pitch.png" alt="Oscillator_B_0.0-Pitch">
-						<p>Pitch (logarithmic frequency) of Oscillator A at C3 (MIDI note 60) [in semitones, based on MIDI note numbers]. The range below zero is shaped in the way that -20 corresponds to 0 Hz.</p>
+						<p>Pitch (logarithmic frequency) of Oscillator B at C3 (MIDI note 60) [in semitones, based on MIDI note numbers]. The range below zero is shaped in the way that -20 corresponds to 0 Hz.</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_0.1-Pitch_-_Env_C.png" alt="Oscillator_B_0.1-Pitch_-_Env_C">
-						<p>Amount of pitch modulation by Envelope C [in semitones].</p>
+						<p>Amount of pitch modulation by Envelope C<br />[in semitones].</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_0.2-Pitch_-_Key_Trk.png" alt="Oscillator_B_0.2-Pitch_-_Key_Trk">
-						<p>Key tracking of the oscillator pitch. It’s the scaling factor between the key position of a received MIDI note (relative to C3 = 60 semitones) and the pitch of the oscillator. At 100.0 %, the pitch follows the equal-tempered scale (when the Scale group is equal--tempered as well). At values slightly larger than 100.0 %, the tuning will be stretched. At 50.0 %, a quartertone scale emerges and at 0.0 %, the pitch is constant for all keys.</p>
+						<p>Key tracking of the oscillator pitch. It’s the scaling factor between the key position of a received MIDI note (relative to C3 = 60 semitones) and the pitch of the oscillator.<br />At 100.0 %, the pitch follows the equal-tempered scale. At values slightly larger than 100.0 %, the tuning will be stretched.<br />At 50.0 %, a quartertone scale emerges and at 0.0 %, the pitch is constant for all keys.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -505,34 +504,32 @@
 					</div>	
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_3.0-PM_Self.png" alt="Oscillator_B_3.0-PM_Self">
-						<p>Amount of phase modulation by Oscillator & Shaper A (local feedback).</p>
+						<p>Amount of phase modulation by Oscillator & Shaper B (local feedback).</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_3.1-PM_Self_-_Env_B.png" alt="Oscillator_B_3.1-PM_Self_-_Env_B">
-						<p>Envelope (A) amount for the phase modulation by Oscillator & Shaper A (local feedback).
-	At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
+						<p>Envelope (B) amount for the phase modulation by Oscillator & Shaper B (local feedback). At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_3.2-PM_Self_-_Shaper.png" alt="Oscillator_B_3.2-PM_Self_-_Shaper">
-						<p>Mix amount of Shaper A in the signal being used for phase modulation (self). At zero, the output signal of Oscillator A is used. At negative values, the signal from the Shaper is inverted.</p>
+						<p>Mix amount of Shaper B in the signal being used for phase modulation (self). At zero, the output signal of Oscillator B is used. At negative values, the signal from the Shaper is inverted.</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_4.0-PM_A.png" alt="Oscillator_B_4.0-PM_A">
-						<p>Amount of phase modulation by Oscillator & Shaper B (cross feedback).</p>
+						<p>Amount of phase modulation by Oscillator & Shaper A (cross feedback).</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_4.1-PM_A_-_Env_A.png" alt="Oscillator_B_4.1-PM_A_-_Env_A">
-						<p>Envelope (B) amount for the pahse modulation by Oscillator & Shaper B (cross feedback).
-	At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
+						<p>Envelope (A) amount for the phase modulation by Oscillator & Shaper A (cross feedback). At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_4.2-PM_A_-_Shaper.png" alt="Oscillator_B_4.2-PM_A_-_Shaper">
-						<p>Mix amount of Shaper B in the signal being used for phase modulation (B -> A). At zero, the output signal of Oscillator B is used. At negative values, the signal from the Shaper is inverted.</p>
+						<p>Mix amount of Shaper A in the signal being used for phase modulation (A > B). At zero, the output signal of Oscillator A is used. At negative values, the signal from the Shaper is inverted.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -542,8 +539,7 @@
 					
 					<div class="param-block">		
 						<img src="images/06_Oscillator_B/Oscillator_B_5.1-PM_FB_-_Env_C.png" alt="Oscillator_B_5.1-PM_FB_-_Env_C">
-						<p>Envelope (C) amount for the phase modulation by the Feedback signal.
-	At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
+						<p>Envelope (C) amount for the phase modulation by the Feedback signal. At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -571,7 +567,7 @@
 					
 					<div class="param-block">		
 						<img src="images/07_Shaper_B/Shaper_B_1.0-Fold.png" alt="Shaper_B_1.0-Fold">
-						<p>Amount of folding back of the shaper curve for high input amplitudes. 0.0 %: flat saturation, no folding 100 %: fully folded back (periodic sine curve) A higher amount of folding leads to a softer but more nasal sound.</p>
+						<p>Amount of folding back of the shaper curve for high input amplitudes.<br />0.0 %: flat saturation, no folding<br />100 %: fully folded back (periodic sine curve)<br />A higher amount of folding leads to a softer but more nasal sound.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -580,12 +576,12 @@
 					</div>	
 					<div class="param-block">		
 						<img src="images/07_Shaper_B/Shaper_B_3.0-Mix.png" alt="Shaper_B_3.0-Mix">
-						<p>Mix amount of Shaper A in the signal sent to the Filters and to the Output Mixer. At zero, it is the input signal of the Shaper - behind FB Mix. At negative values, the signal from the Shaper is inverted.</p>
+						<p>Mix amount of Shaper B in the signal sent to the Filters and to the Output Mixer. At zero, it is the input signal of the Shaper - behind FB Mix. At negative values, the signal from the Shaper is inverted.</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/07_Shaper_B/Shaper_B_4.0-FB_Mix.png" alt="Shaper_B_4.0-FB_Mix">
-						<p>Crossfades between Oscillator & Shaper A (at zero) and the Feedback signal for the signal A.</p>
+						<p>Crossfades between Oscillator & Shaper B (at zero) and the Feedback signal for the signal B.</p>
 					</div>	
 					<div class="param-block">		
 						<img src="images/07_Shaper_B/Shaper_B_4.1-FB_-_Env_C.png" alt="Shaper_B_4.1-FB_-_Env_C">
@@ -622,22 +618,22 @@
 	
 					<div class="param-block">		
 						<img src="images/08_Comb_Filter/Comb_Filter_1.2-Pitch_-_Key_Trk.png" alt="Comb_Filter_1.2-Pitch_-_Key_Trk">
-						<p>Key scaling of the tuning of the Comb Filter (delay). 0.0 %: same tuning for all keys 100.0 %: full tracking with keys, origin at C3 = 60 semitones</p>
+						<p>Key scaling of the tuning of the Comb Filter (delay).<br />0.0 %: same tuning for all keys<br />100.0 %: full tracking with keys, origin at C3 = 60 semitones</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/08_Comb_Filter/Comb_Filter_2.0-Decay.png" alt="Comb_Filter_2.0-Decay">
-						<p>Amount of the internal feedback noticeable as the decay time of the impules response [logarithmic scaling]. At negative values, the feedback signal is inverted, which shifts the fundamental resonance down by one octave.</p>
+						<p>Amount of the internal feedback noticeable as the decay time of the impulse response [logarithmic scaling]. At negative values, the feedback signal is inverted, which shifts the fundamental resonance down by one octave.</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/08_Comb_Filter/Comb_Filter_2.1-Decay_-_Gate.png" alt="Comb_Filter_2.1-Decay_-_Gate">
-						<p>Amount of gating applied to the decay time. It reduces the decay time when the key is released (Note-off). 0.0 % same decay time in the release phase 100.0 %: the decay time is set to zero at the release of the key</p>
+						<p>Amount of gating applied to the decay time. It reduces the decay time when the key is released (Note-off).<br />0.0 %: same decay time in the release phase<br />100.0 %: the decay time is set to zero at the release of the key</p>
 					</div>	
 					
 					<div class="param-block">		
 						<img src="images/08_Comb_Filter/Comb_Filter_2.2-Decay_-_Key_Trk.png" alt="Comb_Filter_2.2-Decay_-_Key_Trk">
-						<p>Key scaling of the decay time. 0.0 %: equal time for all keys 100.0 %: shortening to half time per octave, origin at C3 = 60 semitones</p>
+						<p>Key scaling of the decay time.<br />0.0 %: equal time for all keys<br />100.0 %: shortening to half time per octave, origin at C3 = 60 semitones</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -652,7 +648,7 @@
 					
 					<div class="param-block">	
 						<img src="images/08_Comb_Filter/Comb_Filter_3.2-Allpass_-_Key_Trk.png" alt="Comb_Filter_3.2-Allpass_-_Key_Trk">
-						<p>Key scaling of the allpass filter frequency. 0.0 %: same tuning for all keys 100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
+						<p>Key scaling of the allpass filter frequency.<br />0.0 %: same tuning for all keys<br />100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -672,7 +668,7 @@
 					
 					<div class="param-block">	
 						<img src="images/08_Comb_Filter/Comb_Filter_4.2-Hi_Cut_-_Key_Trk.png" alt="Comb_Filter_4.2-Hi_Cut_-_Key_Trk">
-						<p>Key scaling of the lowpass cutoff frequency. 0.0 %: same cutoff for all keys 100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
+						<p>Key scaling of the lowpass cutoff frequency.<br />0.0 %: same cutoff for all keys<br />100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -715,7 +711,7 @@
 					
 					<div class="param-block">		
 						<img src="images/09_State_Variable_Filter/State_Variable_Filter_2.2-Cutoff_-_Key_Trk.png" alt="State_Variable_Filter_2.2-Cutoff_-_Key_Trk">
-						<p>Key scaling of the filter cutoffs. 0.0 %: no influence 100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
+						<p>Key scaling of the filter cutoffs.<br />0.0 %: no influence<br />100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -730,7 +726,7 @@
 					
 					<div class="param-block">		
 						<img src="images/09_State_Variable_Filter/State_Variable_Filter_3.2-Reson_-_Key_Trk.png" alt="State_Variable_Filter_3.2-Reson_-_Key_Trk">
-						<p>Key scaling of the filter resonance. 0.0 %: no influence 100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
+						<p>Key scaling of the filter resonance.<br />0.0 %: no influence<br />100.0 %: full tracking with the keys, origin at C3 = 60 semitones</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -740,7 +736,7 @@
 					
 					<div class="param-block">	
 						<img src="images/09_State_Variable_Filter/State_Variable_Filter_4.1-L_-_B_-_H.png" alt="State_Variable_Filter_4.1-L_-_B_-_H">
-						<p>Crossfades between the lowpass, bandpass and highpass outputs of the two filter stages. (first stage -> second stage: LP -> LP, BP -> LP, HP -> LP, HP -> BP, HP -> HP)</p>
+						<p>Crossfades between the lowpass, bandpass and highpass outputs of the two filter stages.<br />(first stage > second stage: LP > LP, BP > LP, HP > LP, HP > BP, HP > HP)</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -750,12 +746,12 @@
 					
 					<div class="param-block">	
 						<img src="images/09_State_Variable_Filter/State_Variable_Filter_5.0-FM.png" alt="State_Variable_Filter_5.0-FM">
-						<p>Amount of modulation of the cutoff frequencies by the output signals of Oscillator & Shaper A and B, with the FFM A-B knob determining their mix. The amount is relative to the cutoff frequency.</p>
+						<p>Amount of modulation of the cutoff frequencies by the output signals of Oscillator & Shaper A and B, with the FM A-B knob determining their mix. The amount is relative to the cutoff frequency.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/09_State_Variable_Filter/State_Variable_Filter_5.1-FM_-_A-B.png" alt="State_Variable_Filter_5.1-FM_-_A-B">
-						<p>The signal for the FM (cutoff frequency modulation) of the State Variable Filter as a crossfade between the outputs of Oscillator & Shaper A and Oscillator & Shaper B.</p>
+						<p>The signal for the FM (cutoff frequency modulation) of the State Variable Filter as a crossfade between the outputs of Oscillator & Shaper A and Oscillator & Shaper&nbsp;B.</p>
 					</div>	
 					
 			</div><!-- end param-container -->
@@ -778,12 +774,12 @@
 					
 					<div class="param-block">	
 						<img src="images/10_Feedback_Mixer/Feedback_Mixer_2.0-Effects.png" alt="Feedback_Mixer_2.0-Effects">
-						<p>Feedback mix factor for the output of the Effects chain. The reverb amount in the feedback can be set by the “Reverb Amount” fader independantly. Since the signal is monophonic, such feedback will cause intermodulation between the voices.</p>
+						<p>Feedback mix factor for the output of the Effects chain. The reverb amount in the feedback can be set by the “Reverb Amount” fader independently. Since the signal is monophonic, such feedback will cause intermodulation between the voices.</p>
 					</div>	
 	
 					<div class="param-block">		
 						<img src="images/10_Feedback_Mixer/Feedback_Mixer_3.0-Reverb_Amount.png" alt="Feedback_Mixer_3.0-Reverb_Amount">
-						<p>Controls the amount of reverb in the feedback independantly from the Mix in the Reverb section. 0.0 %: dry, no reverb signal 50.0 %: mix of 50 % dry and 50 % wet signal 100.0 %: wet, 100 % reverb signal</p>
+						<p>Controls the amount of reverb in the feedback independently from the Mix in the Reverb section.<br />0.0 %: dry, no reverb signal<br />50.0 %: mix of 50 % dry and 50 % wet signal<br />100.0 %: wet, 100 % reverb signal</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -793,7 +789,7 @@
 					
 					<div class="param-block">		
 						<img src="images/10_Feedback_Mixer/Feedback_Mixer_4.1-Fold.png" alt="Feedback_Mixer_4.1-Fold">
-						<p>Amount of folding back of the shaper curve for high input amplitudes. 0.0 %: flat saturation, no folding 100.0 %: fully folded back (periodic sine curve) A higher amount of folding leads to a softer but more nasal sound.</p>
+						<p>Amount of folding back of the shaper curve for high input amplitudes.<br />0.0 %: flat saturation, no folding<br />100.0 %: fully folded back (periodic sine curve)<br />A higher amount of folding leads to a softer but more nasal sound.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -808,7 +804,7 @@
 					
 					<div class="param-block">		
 						<img src="images/10_Feedback_Mixer/Feedback_Mixer_5.1-Level_-_Key_Trk.png" alt="Feedback_Mixer_5.1-Level_-_Key_Trk">
-						<p>Key scaling of the feedback level [in dB per semitone]. positive values: higher level for higher notes (+ 1.0 = + 12 dB per octave) negative values: lower level for higher notes (- 1.0 = - 12 dB per octave) origin at C3 = 60 semitones</p>
+						<p>Key scaling of the feedback level [in dB per semitone].<br />Positive values: higher level for higher notes (+ 1.0 = + 12 dB per octave)<br />Negative values: lower level for higher notes (- 1.0 = - 12 dB per octave)<br />origin at C3 = 60 semitones</p>
 					</div>	
 									
 			</div><!-- end param-container -->
@@ -821,22 +817,22 @@
 				
 					<div class="param-block">	
 						<img src="images/11_Output_Mixer/Output_Mixer_0.0-A_-_Level.png" alt="Output_Mixer_0.0-A_-_Level">
-						<p>Output mix factor for the signal from Oscillator & Shaper A.</p>
+						<p>Output mix factor for the signal from Oscillator & Shaper&nbsp;A.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/11_Output_Mixer/Output_Mixer_0.1-A_-_Pan.png" alt="Output_Mixer_0.1-A_-_Pan">
-						<p>Output mix factor for the signal from Oscillator & Shaper A.</p>
+						<p>Pan position of the signal from Oscillator & Shaper A in the output mix.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/11_Output_Mixer/Output_Mixer_1.0-B_-_Level.png" alt="Output_Mixer_1.0-B_-_Level">
-						<p>Output mix factor for the signal from Oscillator & Shaper B.</p>
+						<p>Output mix factor for the signal from Oscillator & Shaper&nbsp;B.</p>
 					</div>	
 	
 					<div class="param-block">		
 						<img src="images/11_Output_Mixer/Output_Mixer_1.1-B_-_Pan.png" alt="Output_Mixer_1.1-B_-_Pan">
-						<p>Output mix factor for the signal from Oscillator & Shaper B.</p>
+						<p>Pan position of the signal from Oscillator & Shaper B in the output mix.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -866,7 +862,7 @@
 			
 					<div class="param-block">		
 						<img src="images/11_Output_Mixer/Output_Mixer_4.1-Fold.png" alt="Output_Mixer_4.1-Fold">
-						<p>Amount of folding back of the shaper curve for high input amplitudes. 0.0 %: flat saturation, no folding 100.0 %: fully folded back (periodic sine curve) A higher amount of folding leads to a softer but more nasal sound.</p>
+						<p>Amount of folding back of the shaper curve for high input amplitudes.<br />0.0 %: flat saturation, no folding<br />100.0 %: fully folded back (periodic sine curve)<br />A higher amount of folding leads to a softer but more nasal sound.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -914,7 +910,7 @@
 					
 					<div class="param-block">		
 						<img src="images/12_Flanger/Flanger_2.1-Time.png" alt="Flanger_2.1-Time">
-						<p>Mean value of the delay times in the left and right channel. The “Stereo” parameter allows to create a time offset between the channels. When the time of the Flanger is set to zero, the overall effect is determined by the phase shifting of the allpass.</p>
+						<p>Mean value of the delay times in the left and right channel.<br />The “Stereo” parameter allows to create a time offset between the channels.<br />When the time of the Flanger is set to zero, the overall effect is determined by the phase shifting of the allpass.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -929,7 +925,7 @@
 					
 					<div class="param-block">		
 						<img src="images/12_Flanger/Flanger_3.1-Allpass_Tune.png" alt="Flanger_3.1-Allpass_Tune">
-						<p>Mean center frequency of the 4-pole allpass filters which are in series with the delays. Their frequency-dependant phase shifts can create a “Phaser” effect. The phase shift is minimized by setting this control to its maximum. When the time of the flanger is set to zero, the allpass becomes the dominant part.</p>
+						<p>Mean center frequency of the 4-pole allpass filters which are in series with the delays. Their frequency-dependent phase shifts can create a “Phaser” effect. The phase shift is minimized by setting this control to its maximum. When the time of the flanger is set to zero, the allpass becomes the dominant part.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -939,8 +935,7 @@
 			
 					<div class="param-block">		
 						<img src="images/12_Flanger/Flanger_4.1-Cross_FB.png" alt="Flanger_4.1-Cross_FB">
-						<p>Amount of the cross feedback between the left and the right channel, increasing the complexity of the resulting signal. At negative values, the cross feedback is inverted and will emphasize other frequencies than in the non-inverted mode. 0.0 %: no cross feedback
-	+/- 100.0 %: all feedback is cross feedback</p>
+						<p>Amount of the cross feedback between the left and the right channel, increasing the complexity of the resulting signal. At negative values, the cross feedback is inverted and will emphasize other frequencies than in the non-inverted mode.<br />0.0 %: no cross feedback<br />+/- 100.0 %: all feedback is cross feedback</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -968,7 +963,7 @@
 					
 					<div class="param-block">	
 						<img src="images/13_Cabinet/Cabinet_0.1-Fold.png" alt="Cabinet_0.1-Fold">
-						<p>Amount of folding back of the shaper curve for high input amplitudes. 0.0 %: flat saturation, no folding 100.0 %: fully folded back (periodic sine curve) A higher amount of folding leads to a softer but more nasal sound.</p>
+						<p>Amount of folding back of the shaper curve for high input amplitudes.<br />0.0 %: flat saturation, no folding<br />100.0 %: fully folded back (periodic sine curve)<br />A higher amount of folding leads to a softer but more nasal sound.</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -978,7 +973,7 @@
 	
 					<div class="param-block">		
 						<img src="images/13_Cabinet/Cabinet_1.0-Tilt.png" alt="Cabinet_1.0-Tilt">
-						<p>Controls two inverted shelving EQs before and after the distortion stage. negative: more distortions at high frequencies positive: more distortions at low frequencies</p>
+						<p>Controls two inverted shelving EQs before and after the distortion stage.<br />Negative: more distortions at high frequencies<br />Positive: more distortions at low frequencies</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -1016,7 +1011,7 @@
 					
 					<div class="param-block">	
 						<img src="images/14_Gap_Filter/Gap_Filter_0.1-Stereo.png" alt="Gap_Filter_0.1-Stereo">
-						<p>Sets the differencebetween the center frequencies of the left and of the right channel [in semitones].</p>
+						<p>Sets the difference between the center frequencies of the left and of the right channel [in semitones].</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -1026,8 +1021,7 @@
 	
 					<div class="param-block">		
 						<img src="images/14_Gap_Filter/Gap_Filter_1.1-Balance.png" alt="Gap_Filter_1.1-Balance">
-						<p>Balance between the levels of the ranges above and below the gap.
-	In the center position both ranges are equally weighted. Negative values boost the lower range and attenuate the higher range, positive values have the opposite effect.</p>
+						<p>Balance between the levels of the ranges above and below the gap.<br />In the center position both ranges are equally weighted. Negative values boost the lower range and attenuate the higher range, positive values have the opposite effect.</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -1050,7 +1044,7 @@
 				
 					<div class="param-block">	
 						<img src="images/15_Echo/Echo_0.0-Time.png" alt="Echo_0.0-Time">
-						<p>Mean delay time [in milliseconds]. (As there can be an offset between the left and right channel, this controls shows the mean time.)</p>
+						<p>Mean delay time [in milliseconds]. (As there can be an offset between the left and right channel, this control shows the mean time.)</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -1065,7 +1059,7 @@
 	
 					<div class="param-block">		
 						<img src="images/15_Echo/Echo_1.1-Cross_FB.png" alt="Echo_1.1-Cross_FB">
-						<p>Amount of the cross feedback between the left and right channel. 0.0 %: no cross feedback 100.0 %: all feedback is cross feedback</p>
+						<p>Amount of the cross feedback between the left and right channel.<br />0.0 %: no cross feedback<br />100.0 %: all feedback is cross feedback</p>
 					</div>	
 					
 					<div class="param-block">		
@@ -1121,7 +1115,7 @@
 					
 					<div class="param-block">	
 						<img src="images/19_Macro_Controls/Macro_Control_0.0-(A).png" alt="Macro_Control_0.0-(A)">
-						<p></p>
+						<p>The info text of Macro Control A is user-definable and defaults to an empty string.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -1131,7 +1125,7 @@
 				
 					<div class="param-block">	
 						<img src="images/19_Macro_Controls/Macro_Control_1.0-(B).png" alt="Macro_Control_1.0-(B)">
-						<p></p>
+						<p>The info text of Macro Control B is user-definable and defaults to an empty string.</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -1141,7 +1135,7 @@
 					
 					<div class="param-block">	
 						<img src="images/19_Macro_Controls/Macro_Control_2.0-(C).png" alt="Macro_Control_2.0-(C)">
-						<p></p>
+						<p>The info text of Macro Control C is user-definable and defaults to an empty string.</p>
 					</div>	
 	
 					<div class="param-block">		
@@ -1151,7 +1145,7 @@
 				
 					<div class="param-block">	
 						<img src="images/19_Macro_Controls/Macro_Control_3.0-(D).png" alt="Macro_Control_3.0-(D)">
-						<p></p>
+						<p>The info text of Macro Control D is user-definable and defaults to an empty string.</p>
 					</div>	
 					
 					<div class="param-block">	
@@ -1169,42 +1163,42 @@
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Source_0.0-Pedal_1.png" alt="Hardware_Source_0.0-Pedal_1">
-						<p>This control is the parameter representation of the “Pedal 1” Hardware Source. If a pedal is connected, it will directly follow the external control.</p>
+						<p>This control is the parameter representation of the “Pedal 1” Hardware Source. If a pedal is connected, it will directly follow the external control. If the source's return behavior is set to “Center”, the parameter will be bipolar.</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Source_1.0-Pedal_2.png" alt="Hardware_Source_1.0-Pedal_2">
-						<p>This control is the parameter representation of the “Pedal 2” Hardware Source. If a pedal is connected, it will directly follow the external control.</p>
+						<p>This control is the parameter representation of the “Pedal 2” Hardware Source. If a pedal is connected, it will directly follow the external control. If the source's return behavior is set to “Center”, the parameter will be bipolar.</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Source_2.0-Pedal_3.png" alt="Hardware_Source_2.0-Pedal_3">
-						<p>This control is the parameter representation of the “Pedal 3” Hardware Source. If a pedal is connected, it will directly follow the external control.</p>
+						<p>This control is the parameter representation of the “Pedal 3” Hardware Source. If a pedal is connected, it will directly follow the external control. If the source's return behavior is set to “Center”, the parameter will be bipolar.</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Source_3.0-Pedal_4.png" alt="Hardware_Source_3.0-Pedal_4">
-						<p>This control is the parameter representation of the “Pedal 4” Hardware Source. If a pedal is connected, it will directly follow the external control.</p>
+						<p>This control is the parameter representation of the “Pedal 4” Hardware Source. If a pedal is connected, it will directly follow the external control. If the source's return behavior is set to “Center”, the parameter will be bipolar.</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Source_4.0-Bender.png" alt="Hardware_Source_4.0-Bender">
-						<p>This control is the parameter repreesnetation of the “Bender” Hardware Source. It will directly follow the Bender.</p>
+						<p>This control is the parameter representation of the “Bender” Hardware Source. It will directly follow the Bender.</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Source_5.0-Aftertouch.png" alt="Hardware_Source_5.0-Aftertouch">
-						<p>This control is the parameter represenetation of the “Aftertouch” Hardware Source. It will directly follow the aftertouch gestures.</p>
+						<p>This control is the parameter representation of the “Aftertouch” Hardware Source. It will directly follow the aftertouch gestures.</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Source_6.0-Ribbon_1.png" alt="Hardware_Source_6.0-Ribbon_1">
-						<p>This control is the parameter represenetation of the “Ribbon 1” Hardware Source. It will directly follow Ribbon and vice versa.</p>
+						<p>This control is the parameter representation of the “Ribbon 1” Hardware Source. It will directly follow the Ribbon and vice versa. If the source's return behavior is set to “Center”, the parameter will be bipolar.</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Source_7.0-Ribbon_2.png" alt="Hardware_Source_7.0-Ribbon_2">
-						<p>This control is the parameter represenetation of the “Ribbon 2” Hardware Source. It will directly follow Ribbon and vice versa.</p>
+						<p>This control is the parameter representation of the “Ribbon 2” Hardware Source. It will directly follow the Ribbon and vice versa. If the source's return behavior is set to “Center”, the parameter will be bipolar.</p>
 					</div>	
 					
 																	
@@ -1218,162 +1212,162 @@
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_0.1-Pedal_1_to_(A).png" alt="Hardware_Amount_0.1-Ped_1_to_(A)">
-						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control A. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control A.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Amount_0.2-Pedal_1_to_(B).png" alt="Hardware_Amount_0.2-Ped_1_to_(B)">
-						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control B. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control B.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_0.3-Pedal_1_to_(C).png" alt="Hardware_Amount_0.3-Ped_1_to_(C)">
-						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control C. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control C.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_0.4-Pedal_1_to_(D).png" alt="Hardware_Amount_0.4-Ped_1_to_(D)">
-						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control D. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 1” Hardware Source on Macro Control D.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_1.1-Pedal_2_to_(A).png" alt="Hardware_Amount_1.1-Ped_2_to_(A)">
-						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control A. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control A.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Amount_1.2-Pedal_2_to_(B).png" alt="Hardware_Amount_1.2-Ped_2_to_(B)">
-						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control B. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control B.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_1.3-Pedal_2_to_(C).png" alt="Hardware_Amount_1.3-Ped_2_to_(C)">
-						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control C. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control C.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_1.4-Pedal_2_to_(D).png" alt="Hardware_Amount_1.4-Ped_2_to_(D)">
-						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control D. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 2” Hardware Source on Macro Control D.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_2.1-Pedal_3_to_(A).png" alt="Hardware_Amount_2.1-Ped_3_to_(A)">
-						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control A. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control A.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_2.2-Pedal_3_to_(B).png" alt="Hardware_Amount_2.2-Ped_3_to_(B)">
-						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control B. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control B.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_2.3-Pedal_3_to_(C).png" alt="Hardware_Amount_2.3-Ped_3_to_(C)">
-						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control C. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control C.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Amount_2.4-Pedal_3_to_(D).png" alt="Hardware_Amount_2.4-Ped_3_to_(D)">
-						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control D. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 3” Hardware Source on Macro Control D.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_3.1-Pedal_4_to_(A).png" alt="Hardware_Amount_3.1-Ped_4_to_(A)">
-						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control A. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control A.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_3.2-Pedal_4_to_(B).png" alt="Hardware_Amount_3.2-Ped_4_to_(B)">
-						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control B. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control B.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_3.3-Pedal_4_to_(C).png" alt="Hardware_Amount_3.3-Ped_4_to_(C)">
-						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control C. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control C.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Amount_3.4-Pedal_4_to_(D).png" alt="Hardware_Amount_3.4-Ped_4_to_(D)">
-						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control D. If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Pedal 4” Hardware Source on Macro Control D.<br />If the pedal is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like.<br />Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_4.1-Bender_to_(A).png" alt="Hardware_Amount_4.1-Bend_to_(A)">
-						<p>Determines the influence of the “Bender” Hardware Source on Macro Control A. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Bender” Hardware Source on Macro Control A.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_4.2-Bender_to_(B).png" alt="Hardware_Amount_4.2-Bend_to_(B)">
-						<p>Determines the influence of the “Bender” Hardware Source on Macro Control B. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Bender” Hardware Source on Macro Control B.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 								
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_4.3-Bender_to_(C).png" alt="Hardware_Amount_4.3-Bend_to_(C)">
-						<p>Determines the influence of the “Bender” Hardware Source on Macro Control C. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Bender” Hardware Source on Macro Control C.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_4.4-Bender_to_(D).png" alt="Hardware_Amount_4.4-Bend_to_(D)">
-						<p>Determines the influence of the “Bender” Hardware Source on Macro Control D. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Bender” Hardware Source on Macro Control D.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_5.1-Aftertouch_to_(A).png" alt="Hardware_Amount_5.1-AT_to_(A)">
-						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control A. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control A.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Amount_5.2-Aftertouch_to_(B).png" alt="Hardware_Amount_5.2-AT_to_(B)">
-						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control B. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control B.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_5.3-Aftertouch_to_(C).png" alt="Hardware_Amount_5.3-AT_to_(C)">
-						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control C. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control C.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_5.4-Aftertouch_to_(D).png" alt="Hardware_Amount_5.4-AT_to_(D)">
-						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control D. The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Aftertouch” Hardware Source on Macro Control D.<br />The amount can be adjusted continuously [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_6.1-Ribbon_1_to_(A).png" alt="Hardware_Amount_6.1-Rib_1_to_(A)">
-						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control A. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control A. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Amount_6.2-Ribbon_1_to_(B).png" alt="Hardware_Amount_6.2-Rib_1_to_(B)">
-						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control B. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control B. If the Ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_6.3-Ribbon_1_to_(C).png" alt="Hardware_Amount_6.3-Rib_1_to_(C)">
-						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control C. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control C. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_6.4-Ribbon_1_to_(D).png" alt="Hardware_Amount_6.4-Rib_1_to_(D)">
-						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control D. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 1” Hardware Source on Macro Control D. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 				
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_7.1-Ribbon_2_to_(A).png" alt="Hardware_Amount_7.1-Rib_2_to_(A)">
-						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control A. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control A. If the Ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_7.2-Ribbon_2_to_(B).png" alt="Hardware_Amount_7.2-Rib_2_to_(B)">
-						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control B. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control B. If the Ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 					
 					<div class="param-block">	
 	<img src="images/20_HW_Sources/Hardware_Amount_7.3-Ribbon_2_to_(C).png" alt="Hardware_Amount_7.3-Rib_2_to_(C)">
-						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control C. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control C. If the Ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 	
 					<div class="param-block">		
 	<img src="images/20_HW_Sources/Hardware_Amount_7.4-Ribbon_2_to_(D).png" alt="Hardware_Amount_7.4-Rib_2_to_(D)">
-						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control D. If the ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % / 100.0 %).</p>
+						<p>Determines the influence of the “Ribbon 2” Hardware Source on Macro Control D. If the Ribbon is a returning Hardware Source, the amount can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 % ... 100.0 %).</p>
 					</div>	
 																	
 			</div><!-- end param-container -->
@@ -1401,7 +1395,7 @@
 	
 					<div class="param-block">		
 						<img src="images/17_Unison/Unison_0.3-Pan.png" alt="Unison_0.3-Pan">
-						<p>Voice panning insied of a group of unison voices. At 100.0 %, the voices are spread over the full stereo base.</p>
+						<p>Voice panning inside of a group of unison voices.<br />At 100.0 %, the voices are spread over the full stereo base.</p>
 					</div>	
 																	
 			</div><!-- end param-container -->
@@ -1429,57 +1423,57 @@
 					
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.01-Offset_+1.png" alt="Scale_0.01-Offset_+1">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the first key following the base key [in cents].<br />At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.02-Offset_+2.png" alt="Scale_0.02-Offset_+2">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the second key following the base key [in cents].<br />At zero, the interval to the base key would be the major second of the equally tempered scale.</p>
 					</div>	
 	
 					<div class="param-block">		
 						<img src="images/18_Master/Scale_0.03-Offset_+3.png" alt="Scale_0.03-Offset_+3">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the third key following the base key [in cents].<br />At zero, the interval to the base key would be the minor third of the equally tempered scale.</p>
 					</div>	
 				
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.04-Offset_+4.png" alt="Scale_0.04-Offset_+4">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 4th key following the base key [in cents].<br />At zero, the interval to the base key would be the major third of the equally tempered scale.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.05-Offset_+5.png" alt="Scale_0.05-Offset_+5">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 5th key following the base key [in cents].<br />At zero, the interval to the base key would be the quarter of the equally tempered scale.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.06-Offset_+6.png" alt="Scale_0.06-Offset_+6">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 6th key following the base key [in cents].<br />At zero, the interval to the base key would be the tritone of the equally tempered scale.</p>
 					</div>	
 	
 					<div class="param-block">		
 						<img src="images/18_Master/Scale_0.07-Offset_+7.png" alt="Scale_0.07-Offset_+7">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 7th key following the base key [in cents].<br />At zero, the interval to the base key would be the fifth of the equally tempered scale.</p>
 					</div>	
 				
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.08-Offset_+8.png" alt="Scale_0.08-Offset_+8">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 8th key following the base key [in cents].<br />At zero, the interval to the base key would be the minor sixth of the equally tempered scale.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.09-Offset_+9.png" alt="Scale_0.09-Offset_+9">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 9th key following the base key [in cents].<br />At zero, the interval to the base key would be the major sixth of the equally tempered scale.</p>
 					</div>	
 					
 					<div class="param-block">	
 						<img src="images/18_Master/Scale_0.10-Offset_+10.png" alt="Scale_0.10-Offset_+10">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 10th key following the base key [in cents].<br />At zero, the interval to the base key would be the minor seventh of the equally tempered scale.</p>
 					</div>	
 	
 					<div class="param-block">		
 						<img src="images/18_Master/Scale_0.11-Offset_+11.png" alt="Scale_0.11-Offset_+11">
-						<p>Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the minor second of the equally tempered scale.</p>
+						<p>Offset of the 11th key following the base key [in cents].<br />At zero, the interval to the base key would be the major seventh of the equally tempered scale. </p>
 					</div>	
 																	
 			</div><!-- end param-container -->

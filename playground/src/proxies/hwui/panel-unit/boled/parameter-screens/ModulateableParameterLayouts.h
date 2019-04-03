@@ -33,6 +33,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   virtual bool switchToNormalMode() override;
 
  private:
+  void onModfiersChanged(ButtonModifiers modifiers);
   void onSelectedParameterChanged(Parameter *oldParam, Parameter *newParam);
   void onCurrentParameterChanged(const Parameter *p);
   void fixModeIfNecessary(const Parameter *p);
@@ -45,16 +46,23 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
     MacroControlAmount,
     CarouselUpperBound,
     CarouselParameterValue,
-    CarouselLowerBound
+    CarouselLowerBound,
+    Recall
   };
 
   void setMode(Mode desiredMode);
   void toggleMode(Mode desiredMode);
+  bool isModeOf(std::vector<Mode> modes) const;
+
   bool hasModulationSource() const;
+  Button *m_mcPosButton, *m_mcSelButton, *m_mcAmtButton;
 
   Mode m_mode = Mode::ParameterValue;
+  Mode m_lastMode = Mode::ParameterValue;
   Overlay *m_modeOverlay = nullptr;
   sigc::connection m_paramConnection;
+
+  bool handleMCRecall(int i, bool down);
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2

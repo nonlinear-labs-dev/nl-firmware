@@ -1,0 +1,30 @@
+<html>
+  <head>
+    	<title>C15 - MC View</title>
+    	<meta name="viewport" content="width=device-width, user-scalable=no">
+      <link rel="stylesheet" href="style.css">
+      <link rel="shortcut icon" href="favicon.ico">
+		<script type="text/javascript"  src="new.js" ></script>
+	</head>
+  <body id='body' onload="onLoad()">
+    <div class='overlay collapsed' id='settings-overlay' class='collapsed' onclick="event.stopPropagation(); toggleSettings();">
+      <div class="triangle-left" onclick='event.stopPropagation(); toggleSettings();'>
+      </div>
+      <div class="setting-item" onclick="event.stopPropagation(); stub();">
+        <h3 style="margin-bottom: 4%;">Smoothing</h3>
+        <input orient="vertical" class="step-range" type="range" min="0" max="100" step="1" value="50" id="interpolation-step" onchange="setInterpolation(this.value);" oninput="setInterpolation(this.value);">
+        <h3 id="interpolation-step-label">50</h3>
+        <hr class="the-seperator">
+        <form class="sel-input-form">
+          <label class="radio-label"><input class="radio-radio" type="radio" name="mc-sel" id="cd-x" value="x" checked>C and D on Sliders</label>
+          <br>
+          <label class="radio-label"><input class="radio-radio" type="radio" name="mc-sel" id="cd-xy" value="xy">C and D on X/Y</label>
+        </form>
+        <div>
+      </div>
+      </div>
+    </div>
+    <canvas id="canvas"></canvas>
+    </div>
+  </body>
+</html>

@@ -15,6 +15,7 @@ class ModulateableParameterWithUnusualModUnit : public ModulateableParameter
   virtual void undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc, ButtonModifiers modifiers) override;
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
   virtual Glib::ustring stringizeModulationAmount() const override;
+  virtual Glib::ustring stringizeModulationAmount(tControlPositionValue amount) const override;
   virtual double getModulationAmountFineDenominator() const override;
   virtual double getModulationAmountCoarseDenominator() const override;
 

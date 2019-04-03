@@ -8,17 +8,16 @@ MCPositionButton::MCPositionButton(int id)
 }
 
 MCPositionButton::~MCPositionButton()
-{
-}
+= default;
 
 void MCPositionButton::update(const Parameter *parameter)
 {
-  if(const ModulateableParameter *p = dynamic_cast<const ModulateableParameter *>(parameter))
+  if(const auto *p = dynamic_cast<const ModulateableParameter *>(parameter))
   {
     if(p->getModulationSource() == ModulationSource::NONE)
       setText("");
     else
-      setText("MC Pos");
+      setText({"MC Pos"s + (p->isMacroControlAssignedAndChanged() ? "*" : "")});
   }
   else
   {

@@ -200,6 +200,26 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
       }
     }
   });
+
+  addAction("recall-mc-for-current-mod-param", [=](auto request) {
+    if(auto selParam = editBuffer->getSelected())
+    {
+      if(auto modP = dynamic_cast<ModulateableParameter*>(selParam))
+      {
+        modP->undoableRecallMCPos();
+      }
+    }
+  });
+
+  addAction("recall-mc-amount-for-current-mod-param", [=](auto request) {
+    if(auto selParam = editBuffer->getSelected())
+    {
+      if(auto modP = dynamic_cast<ModulateableParameter*>(selParam))
+      {
+        modP->undoableRecallMCAmount();
+      }
+    }
+  });
 }
 
 EditBufferActions::~EditBufferActions()

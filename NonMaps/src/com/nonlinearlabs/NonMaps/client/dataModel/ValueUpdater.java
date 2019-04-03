@@ -6,16 +6,18 @@ import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 public class ValueUpdater extends Updater {
 	private ValueDataModelEntity target;
 
-	public ValueUpdater(ValueDataModelEntity target) {
+	public ValueUpdater(Node root, ValueDataModelEntity target) {
+		super(root);
 		this.target = target;
 	}
 
-	public void update(Node node) {
-		String coarse = getChildText(node, "coarse-denominator");
-		String fine = getChildText(node, "fine-denominator");
-		String bipolar = getChildText(node, "bipolar");
-		String scaling = getChildText(node, "scaling");
-		String defaultValue = getChildText(node, "default");
+	@Override
+	public void doUpdate() {
+		String coarse = getChildText(root, "coarse-denominator");
+		String fine = getChildText(root, "fine-denominator");
+		String bipolar = getChildText(root, "bipolar");
+		String scaling = getChildText(root, "scaling");
+		String defaultValue = getChildText(root, "default");
 
 		if (!bipolar.isEmpty()) {
 			BooleanDataModelEntity bp = target.metaData.bipolar;
@@ -34,7 +36,7 @@ public class ValueUpdater extends Updater {
 		if (!defaultValue.isEmpty())
 			target.metaData.defaultValue.setValue(Double.parseDouble(defaultValue));
 
-		String value = getChildText(node, "value");
+		String value = getChildText(root, "value");
 		target.value.setValue(Double.parseDouble(value));
 
 		target.notifyChanges();

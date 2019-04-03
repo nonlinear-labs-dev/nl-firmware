@@ -44,6 +44,8 @@ class ModulateableParameter : public Parameter
   virtual void exportReaktorParameter(stringstream &target) const override;
 
   virtual Glib::ustring stringizeModulationAmount() const;
+  virtual Glib::ustring stringizeModulationAmount(tControlPositionValue amt) const;
+
   virtual double getModulationAmountFineDenominator() const;
   virtual double getModulationAmountCoarseDenominator() const;
 
@@ -55,6 +57,21 @@ class ModulateableParameter : public Parameter
   void *getAmountCookie();
 
   std::pair<tControlPositionValue, tControlPositionValue> getModulationRange(bool clipped) const;
+
+  bool isChangedFromLoaded() const override;
+  bool isAnyModChanged() const;
+  bool isModSourceChanged() const;
+  bool isModAmountChanged() const;
+  bool isMacroControlAssignedAndChanged() const;
+  PresetParameter *getOriginalMC() const;
+  Parameter *getMacroControl() const;
+
+  tControlPositionValue getOriginalModulationAmount() const;
+  ModulationSource getOriginalModulationSource() const;
+
+  void undoableRecallMCPos();
+  void undoableRecallMCSource();
+  void undoableRecallMCAmount();
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;

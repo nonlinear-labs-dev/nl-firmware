@@ -6,31 +6,25 @@ import com.nonlinearlabs.NonMaps.client.dataModel.ValueUpdater;
 
 public class ParameterUpdater extends Updater {
 
-	private Node root;
-	private BasicParameterModel target;
+	protected BasicParameterModel target;
 
 	public ParameterUpdater(Node c, BasicParameterModel p) {
-		root = c;
+		super(c);
 		target = p;
 	}
 
 	public void doUpdate() {
 		String shortName = getChildText(root, "short-name");
-		String longName = getChildText(root, "short-name");
-		String og = getChildText(root, "og-value");
-		
+		String longName = getChildText(root, "long-name");		
 		if (!shortName.isEmpty())
 			target.shortName.setValue(shortName);
 
 		if (!longName.isEmpty())
 			target.longName.setValue(longName);
 		
-		if(!og.isEmpty()) {
-			target.originalValue.setValue(Double.valueOf(og));
-		}
 		
-		ValueUpdater vu = new ValueUpdater(target.value);
-		vu.update(root);
+		ValueUpdater vu = new ValueUpdater(root, target.value);
+		vu.doUpdate();
 	}
 
 }

@@ -21,12 +21,16 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedCli
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.Belt;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCAmountRecallArea;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.MCPositionRecallArea;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.ParameterRecallArea;
+import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.recall.RecallArea;
 import com.nonlinearlabs.NonMaps.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.NonMaps.client.world.pointer.TouchPinch;
 
 public class BeltParameterLayout extends OverlayLayout implements SelectionListener {
 
-	enum Mode {
+	public enum Mode {
 		unmodulateableParameter, modulateableParameter, paramValue, mcValue, mcAmount, mcLower, mcUpper, mcSource
 	}
 
@@ -51,11 +55,11 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private ParameterClippingLabel mcLowerClip;
 
 	private QuantizedClippedValue currentValue;
-	private RecallArea recallArea;
-	
+	private RecallArea currentRecall;
+			
 	public BeltParameterLayout(Belt parent) {
 		super(parent);
-
+		
 		addChild(modulationButtons = new ModulationButtons(this));
 		addChild(mcSourceDisplay = new MCSourceDisplay(this));
 		addChild(slider = new Sliders(this));
@@ -79,10 +83,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
 	
-		addChild(recallArea = new RecallArea(this));
+		addChild(currentRecall = new ParameterRecallArea(this));
 		
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
-
+		
 		setupValue();
 	}
 
@@ -115,7 +119,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	}
 
 	@Override
-	public void doLayout(double x, double y, double w, double h) {
+	public void doLayout(double x, double y, double w, double h) {		
 		super.doLayout(x, y, w, h);
 
 		double undoWidth = Millimeter.toPixels(30);
@@ -126,12 +130,14 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		double editorModeLeft = (Millimeter.toPixels(70) / 4) + (buttonDim / 2);
 		double modSrcDim = Millimeter.toPixels(10);
-		double modulationButtonsDim = Millimeter.toPixels(25);
-		double modulationButtonsLeft = Millimeter.toPixels(19.5 - 22.5 / 2);
-		double sliderLeft = modulationButtonsLeft + modulationButtonsDim + Millimeter.toPixels(10);
+		double modulationButtonsDimX = Millimeter.toPixels(25);
+		double modulationButtonsDimY = Millimeter.toPixels(30);
 
-		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDim) / 2, modulationButtonsDim,
-				modulationButtonsDim);
+		double modulationButtonsLeft = Millimeter.toPixels(19.5 - 22.5 / 2);
+		double sliderLeft = modulationButtonsLeft + modulationButtonsDimX + Millimeter.toPixels(10);
+
+		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDimY) / 2, modulationButtonsDimX,
+				modulationButtonsDimY);
 		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
@@ -155,7 +161,9 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
-		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth * 0.75, 2, 1);
+		layouter.push(currentRecall, modulationButtonWidth, modulationButtonWidth, 1, 2);
+		layouter.push(valueDisplay, modulationButtonWidth, sliderWidth * 0.7, 2, 1);
+		layouter.push(null, modulationButtonWidth, modulationButtonWidth, 0, 2);
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcLowerBoundRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
@@ -166,27 +174,15 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double walkerX = sliderLeft;
 
 		double modAndParamValueYValue = h / 2.3;
-
+		
 		for (HarmonicLayouter.Result r : layouter.layout(sliderWidth)) {
 			if (r.record.attached != null) {
 				OverlayControl c = (OverlayControl) r.record.attached;
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
-				if(c instanceof ValueDisplay) {
-					double recallWidth = buttonDim * 7;
-					double recallY = upperElementsY + Math.abs(modAndParamValueYValue - third) / 4;
-					double recallX = walkerX + r.width / 2 - recallWidth;
-					
-					recallArea.doLayout(recallX, recallY, recallWidth, third);
-					recallArea.setVisible(!isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
-				}
 			}
 			walkerX += r.width;
 		}	
 
-						
-
-		
-		
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
 
 		double dottedLineInset = 5;
@@ -201,6 +197,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	}
 
 	protected void showAndHideChildren() {
+		instantiateRecall();
+		
 		modulationButtons.setVisible(
 				isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
 		mcSourceDisplay.setVisible(isOneOf(Mode.modulateableParameter));
@@ -227,11 +225,40 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.hasContextMenu()
-				&& existsMoreThanOneItemInContextMenu(p);
-		
-		recallArea.setVisible(isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
+				&& existsMoreThanOneItemInContextMenu(p);		
 		
 		contextMenu.setVisible(ctxMenuVisible);
+		currentRecall.setVisibleForMode(mode);
+	}
+
+	private void instantiateRecall() {		
+		switch(mode) {
+		case mcAmount:
+			if(!(currentRecall instanceof MCAmountRecallArea)) {
+				removeChild(currentRecall);
+				addChild(currentRecall = new MCAmountRecallArea(this));
+			}
+			break;
+		case mcValue:
+			if(!(currentRecall instanceof MCPositionRecallArea)) {
+				removeChild(currentRecall);
+				addChild(currentRecall = new MCPositionRecallArea(this));
+			}
+			break;
+		case modulateableParameter:
+		case paramValue:
+		case unmodulateableParameter:
+			if(!(currentRecall instanceof ParameterRecallArea)) {
+				removeChild(currentRecall);
+				addChild(currentRecall = new ParameterRecallArea(this));
+			}
+			break;
+		case mcLower:
+		case mcUpper:
+		case mcSource:
+		default:
+			break;
+		}
 	}
 
 	private boolean existsMoreThanOneItemInContextMenu(Parameter p) {
@@ -320,6 +347,7 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		boolean newModulateable = newSelection instanceof ModulatableParameter;
 
 		currentIncrementalChanger = null;
+		currentRecall.setVisible(false);
 
 		if (newModulateable)
 			setMode(Mode.modulateableParameter, true);
@@ -557,6 +585,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		}
 
 		return new String[] { p.getDecoratedValue(true), p.getDecoratedValue(false) };
+	}
+	
+	public void onMCSelectionChanged() {
+		setupValue();
 	}
 
 }

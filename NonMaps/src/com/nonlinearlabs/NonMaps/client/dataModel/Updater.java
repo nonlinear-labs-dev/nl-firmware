@@ -5,7 +5,13 @@ import java.util.function.Consumer;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 
-public class Updater {
+public abstract class Updater {
+	protected Node root;
+	
+	public Updater(Node n) {
+		root = n;
+	}
+	
 	protected Node getChild(Node node, String... path) {
 		return getChild(node, 0, path);
 	}
@@ -75,4 +81,5 @@ public class Updater {
 		}
 	}
 
+	abstract public void doUpdate();
 }

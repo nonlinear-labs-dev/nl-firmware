@@ -8,12 +8,16 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 
 public class PresetManagerUpdater extends Updater {
 
-	public PresetManagerUpdater() {
+	protected PresetManager target;
+	
+	public PresetManagerUpdater(Node c, PresetManager pm) {
+		super(c);
+		target = pm;
 	}
 
-	public void update(Node xml, PresetManager pm) {
-		if (didChange(xml))
-			processChildrenElements(xml, "banks", t -> updateBanks(pm, t));
+	public void doUpdate() {
+		if (didChange(root))
+			processChildrenElements(root, "banks", t -> updateBanks(target, t));
 	}
 
 	private void updateBanks(PresetManager pm, Node banks) {
@@ -40,8 +44,8 @@ public class PresetManagerUpdater extends Updater {
 			b.revive();
 
 			if (dirty) {
-				BankUpdater updater = new BankUpdater();
-				updater.update(bank, b);
+				BankUpdater updater = new BankUpdater(bank, b);
+				updater.doUpdate();
 			}
 		}
 	}

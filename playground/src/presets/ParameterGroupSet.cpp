@@ -80,7 +80,7 @@ ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::getParameterGroupByID(c
 ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup(ParameterGroup *p)
 {
   p->init();
-  g_assert(getParameterGroupByID(p->getID()) == NULL);
+  g_assert(getParameterGroupByID(p->getID()) == nullptr);
   auto wrapped = tParameterGroupPtr(p);
   m_parameterGroups.append(wrapped);
   return wrapped;

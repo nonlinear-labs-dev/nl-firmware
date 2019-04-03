@@ -5,7 +5,7 @@
 	<meta name="author" content="Nonlinear Labs" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<title>NONLINEAR LABS - C15 - Synth Engine - Structure - Reverb</title>
+	<title>C15 - Manual - Synth Engine - Structure - Reverb</title>
 	
 	<link rel="shortcut icon" href="../../../images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="../../../style.css" type="text/css" />
@@ -15,21 +15,25 @@
 <body>
 	
 	<div id="header">
-		<h1><a href="../../../index.html" title="Manual Index">NONLINEAR LABS - C15 - Reference Manual</a></h1>
+		<h1><a href="../../../index.html" title="Manual Contents">NONLINEAR LABS - C15 - Reference Manual</a></h1>
 	</div><!-- end header -->
 	
 		<div class="nav-bc">
 			<p><a href="../../../index.html">Contents</a><a href="../../synth-engine.html">5. Synth Engine</a><a href="../structure.html">5.2. Structure</a><b>Reverb</b></p>
 		</div><!-- end nav-bc -->
-	
+
+	<div class="nav">
+			<p class="navleft"><a href="echo.html">Echo</a></p>
+			<p class="navright"><a href="other.html">Post Processing and other Parameter Groups</a></p>
+	</div><!-- end nav -->
+
 	<div id="main-content">	
 				
 		<div class="txt-block">
 
-			<h4 class="center-txt">Reverb</h4>
-			<p class="center-txt"><a href="../structure.html#block-medium">back to Structure</a></p>
+			<h4 class="center-txt mb2i">Reverb</h4>
 			
-<p>Finally, the signal is passed to the Reverb unit, providing another spatial effect in terms of hall, room or reverberation. The Size parameter determines how long it takes for a signal to fade out, which has a profound impact on the perceived room size.<br />A Pre Delay parameter can also have a strong influence in the size perception. The local feedback behavior is determined by a Color parameter, affecting its brightness and a Chorus parameter which can lead to a less static feedback behavior. The Reverb signal can be blended into the mix by a separate amount parameter.<br />The resulting signal (a mixture of the Output Mix and the Effects section) can be amplified or attenuated by a Master Level parameter, before it passes through a soft clipper, preventing the signal from being clipped at the D/A converter.</p>
+<p>Finally, the signal is passed to the Reverb unit, providing another spatial effect in terms of hall, room or reverberation.<br /><br />The Size parameter determines how long it takes for a signal to fade out, which has a profound impact on the perceived room size. A Pre Delay parameter can also have a strong influence in the size perception.<br /><br />The local feedback behavior is determined by a Color parameter, affecting its brightness and a Chorus parameter which can lead to a less static feedback behavior.<br /><br />The Reverb signal can be blended into the mix by a separate amount parameter.</p>
 
 		</div><!-- end txt -->
 
