@@ -306,8 +306,8 @@ Glib::ustring ModulateableParameter::stringizeModulationAmount() const
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount(tControlPositionValue amount) const
 {
-  return getValue().getScaleConverter()->getDimension().stringize(
-      getValue().getScaleConverter()->controlPositionToDisplay(amount));
+  LinearBipolar100PercentScaleConverter converter;
+  return converter.getDimension().stringize(converter.controlPositionToDisplay(amount));
 }
 
 DFBLayout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const

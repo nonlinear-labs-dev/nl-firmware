@@ -1,6 +1,7 @@
 #include "ModulateableParameterWithUnusualModUnit.h"
 #include <xml/Writer.h>
 #include <math.h>
+#include <device-settings/DebugLevel.h>
 
 ModulateableParameterWithUnusualModUnit::ModulateableParameterWithUnusualModUnit(
     ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, const ScaleConverter *modAmountScaling,
