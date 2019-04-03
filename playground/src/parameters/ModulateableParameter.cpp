@@ -464,7 +464,10 @@ bool ModulateableParameter::isModAmountChanged() const
 
   if(auto original = getOriginalParameter())
   {
-    return original->getModulationAmount() != getModulationAmount();
+    const int denominator = static_cast<const int>(getValue().getFineDenominator());
+    const int roundedNow = static_cast<const int>(getModulationAmount() * denominator);
+    const int roundedOG = static_cast<const int>(original->getModulationAmount() * denominator);
+    return roundedOG != roundedNow;
   }
   return false;
 }
