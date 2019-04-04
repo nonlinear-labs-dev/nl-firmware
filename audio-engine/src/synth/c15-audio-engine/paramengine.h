@@ -63,9 +63,60 @@ struct param_utility
   float m_scaleArg;
 };
 
+struct Parameters
+{
+
+  inline param_head &getHead(uint32_t id)
+  {
+    return m_head[id];
+  }
+
+  inline param_body &getBody(uint32_t id)
+  {
+    return m_body[id];
+  }
+
+  inline float getSignal(uint32_t paramId) const
+  {
+    return m_body[m_head[paramId].m_index].m_signal;
+  }
+
+  inline float getSignal(uint32_t paramId, uint32_t voice) const
+  {
+    return m_body[m_head[paramId].m_index + voice].m_signal;
+  }
+
+ private:
+  param_head m_head[sig_number_of_params];
+  param_body m_body[sig_number_of_param_items];
+};
+
 /* */
 struct paramengine
 {
+
+  Parameters m_parameters;
+
+  inline param_head &getHead(uint32_t id)
+  {
+    return m_parameters.getHead(id);
+  }
+
+  inline param_body &getBody(uint32_t id)
+  {
+    return m_parameters.getBody(id);
+  }
+
+  inline float getSignal(uint32_t paramId) const
+  {
+    return m_parameters.getSignal(paramId);
+  }
+
+  inline float getSignal(uint32_t paramId, uint32_t voice) const
+  {
+    return m_parameters.getSignal(paramId, voice);
+  }
+
   /* local variables */
   uint32_t m_samplerate;
   uint32_t m_preload = 0;
@@ -83,8 +134,6 @@ struct paramengine
   /* local data structures */
   clock_id_list m_clockIds;
   dual_clock_id_list m_postIds;
-  param_head m_head[sig_number_of_params];
-  param_body m_body[sig_number_of_param_items];
   exponentiator m_convert;
   param_utility m_utilities[sig_number_of_utilities];
   float m_env_c_clipFactor[dsp_number_of_voices];

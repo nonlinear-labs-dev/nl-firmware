@@ -57,7 +57,7 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
   for(p = 0; p < sig_number_of_params; p++)
   {
     /* provide parameter reference */
-    param_head* obj = &m_head[p];
+    param_head* obj = &getHead(p);
     /* declarations according to parameter definition */
     obj->m_index = i;  // index points to first voice/item in (rendering) array
     obj->m_clockType = static_cast<uint32_t>(param_definition[p][1]);  // clock type (sync/audio/fast/slow)
@@ -247,21 +247,21 @@ float paramengine::scale(const uint32_t _scaleId, const float _scaleArg, float _
 void paramengine::setDx(const uint32_t _voiceId, const uint32_t _paramId, float _value)
 {
   /* provide object reference */
-  param_head* obj = &m_head[_paramId];
+  param_head* obj = &getHead(_paramId);
   const uint32_t index = obj->m_index + _voiceId;
   /* handle by clock type and clip to fit [0 ... 1] range */
   _value = std::min(_value * m_timeFactors[obj->m_clockType], 1.f);
   /* pass value to (rendering) item */
-  m_body[index].m_dx[0] = _value;
+  getBody(index).m_dx[0] = _value;
 }
 
 /* TCD mechanism - destination updates */
 void paramengine::setDest(const uint32_t _voiceId, const uint32_t _paramId, float _value)
 {
   /* provide object and (rendering) item references */
-  param_head* obj = &m_head[_paramId];
+  param_head* obj = &getHead(_paramId);
   const uint32_t index = obj->m_index + _voiceId;
-  param_body* item = &m_body[index];
+  param_body* item = &getBody(index);
   /* normalize and scale destination argument, pass result to (rendering) item */
   _value *= obj->m_normalize;
   item->m_dest = scale(obj->m_scaleId, obj->m_scaleArg, _value);
@@ -288,9 +288,9 @@ void paramengine::setDest(const uint32_t _voiceId, const uint32_t _paramId, floa
 void paramengine::applyPreloaded(const uint32_t _voiceId, const uint32_t _paramId)
 {
   /* provide object and (rendering) item references */
-  param_head* obj = &m_head[_paramId];
+  param_head* obj = &getHead(_paramId);
   const uint32_t index = obj->m_index + _voiceId;
-  param_body* item = &m_body[index];
+  param_body* item = &getBody(index);
   /* apply according to preload status */
   if(item->m_preload > 0)
   {
@@ -311,7 +311,7 @@ void paramengine::applyPreloaded(const uint32_t _voiceId, const uint32_t _paramI
 void paramengine::applyDest(const uint32_t _index)
 {
   /* provide (rendering) item reference */
-  param_body* item = &m_body[_index];
+  param_body* item = &getBody(_index);
   /* construct segment and set rendering state */
   item->m_start = item->m_signal;
   item->m_diff = item->m_dest - item->m_start;
@@ -323,14 +323,14 @@ void paramengine::applyDest(const uint32_t _index)
 void paramengine::applySync(const uint32_t _index)
 {
   /* just update signal, no reference for one-liner */
-  m_body[_index].m_signal = m_body[_index].m_dest;
+  getBody(_index).m_signal = getBody(_index).m_dest;
 }
 
 /* parameter rendering */
 void paramengine::tickItem(const uint32_t _index)
 {
   /* provide (rendering) item reference */
-  param_body* item = &m_body[_index];
+  param_body* item = &getBody(_index);
   /* render when state is true */
   if(item->m_state == 1)
   {
@@ -375,7 +375,7 @@ void paramengine::keyApply(const uint32_t _voiceId)
 {
   if(m_event.m_poly[_voiceId].m_type == 1)
   {
-    m_note_shift[_voiceId] = m_body[m_head[P_MA_SH].m_index].m_signal;
+    m_note_shift[_voiceId] = getSignal(P_MA_SH);
   }
   /* apply key event (update envelopes according to event type) */
 #if test_milestone == 150
@@ -388,11 +388,10 @@ void paramengine::keyApply(const uint32_t _voiceId)
       + (m_body[m_head[P_UN_DET].m_index].m_signal * m_unison_detune[uVoice][uIndex])
       + m_body[m_head[P_MA_T].m_index].m_signal + m_note_shift[_voiceId];
 #elif test_milestone == 156
-  const uint32_t uVoice = static_cast<uint32_t>(m_body[m_head[P_UN_V].m_index].m_signal);
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
-  const float pitch = m_body[m_head[P_KEY_BP].m_index + _voiceId].m_signal
-      + (m_body[m_head[P_UN_DET].m_index].m_signal * m_unison_detune[uVoice][uIndex])
-      + m_body[m_head[P_MA_T].m_index].m_signal + m_note_shift[_voiceId];
+  const float pitch = getSignal(P_KEY_BP, _voiceId) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
+      + getSignal(P_MA_T) + m_note_shift[_voiceId];
 #endif
   const float velocity = m_event.m_poly[_voiceId].m_velocity;
   if(m_event.m_poly[_voiceId].m_type == 0)
