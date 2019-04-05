@@ -1173,7 +1173,7 @@ void dsp_host::testNewNoteOn(uint32_t _pitch, uint32_t _velocity)
   int32_t keyPos = static_cast<int32_t>(_pitch) - 60;
   uint32_t noteVel
       = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
-  m_test_unison_voices = static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_UN_V].m_index].m_signal) + 1;
+  m_test_unison_voices = static_cast<uint32_t>(m_params.getSignal(P_UN_V)) + 1;
   evalMidi(47, 2, 1);              // enable preload (key event list mode)
   evalMidi(0, 0, m_test_voiceId);  // select voice: current
   for(uint32_t uIndex = 0; uIndex < m_test_unison_voices; uIndex++)
@@ -1197,7 +1197,7 @@ void dsp_host::testNoteOn156(uint32_t _pitch, uint32_t _velocity)
   int32_t keyPos = static_cast<int32_t>(_pitch) - 60;
   uint32_t noteVel
       = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
-  m_test_unison_voices = static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_UN_V].m_index].m_signal) + 1;
+  m_test_unison_voices = static_cast<uint32_t>(m_params.getSignal(P_UN_V)) + 1;
   /* */
   evalMidi(55, 0, (m_test_voiceId << 1) + 0);  // new keyVoice (current voice, no steal)
   testParseDestination(keyPos * 1000);         // base pitch (factor 1000 because of Scaling)
@@ -1405,7 +1405,7 @@ void dsp_host::testGetParamHeadData()
   Log::info("PARAM_HEAD:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
-    param_head *obj = &m_params.m_head[p];
+    param_head *obj = &m_params.getHead(p);
     Log::info<Log::LogMode::Plain>("id: ", obj->m_id, ", ");
     Log::info<Log::LogMode::Plain>("index: ", obj->m_index, ", ");
     Log::info<Log::LogMode::Plain>("size: ", obj->m_size, ", ");
@@ -1425,11 +1425,11 @@ void dsp_host::testGetParamRenderData()
   Log::info("PARAM_BODY:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
-    param_head *obj = &m_params.m_head[p];
+    param_head *obj = &m_params.getHead(p);
     uint32_t index = obj->m_index;
     for(uint32_t i = 0; i < obj->m_size; i++)
     {
-      param_body *item = &m_params.m_body[index];
+      param_body *item = &m_params.getBody(index);
       Log::info<Log::LogMode::Plain>("P(", obj->m_id, ", ", i, "):\t");
       Log::info<Log::LogMode::Plain>("state: ", item->m_state, ",\tpreload: ", item->m_preload);
       Log::info<Log::LogMode::Plain>(",\tsignal: ", item->m_signal, ",\tdx:[", item->m_dx[0], ", ", item->m_dx[1], "]");
