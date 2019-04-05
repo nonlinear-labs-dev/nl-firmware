@@ -318,9 +318,9 @@ bool EditBuffer::isZombie() const
   return !getParent()->findPreset(getUUIDOfLastLoadedPreset());
 }
 
-void EditBuffer::fakePresetDetails(Writer &writer, tUpdateID knownRevision) const
+void EditBuffer::fakePresetDetails(Writer &writer, tUpdateID knownRevision, bool force) const
 {
-  bool changed = knownRevision < getUpdateIDOfLastChange();
+  bool changed = force || knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("original", Attribute("changed", changed), [&]() {
     if(changed)
@@ -360,9 +360,9 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                       super::writeDocument(writer, knownRevision);
 
                     if(auto originPreset = getOrigin())
-                      originPreset->writeDetailDocument(writer, knownRevision);
+                      originPreset->writeDetailDocument(writer, knownRevision, changed);
                     else
-                      fakePresetDetails(writer, knownRevision);
+                      fakePresetDetails(writer, knownRevision, changed);
                   });
 }
 
