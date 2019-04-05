@@ -26,12 +26,8 @@ PresetParameterGroups::PresetParameterGroups(UpdateDocumentContributor *parent, 
 
 void PresetParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
-  bool changed = knownRevision < getUpdateIDOfLastChange();
-  if(changed)
-  {
-    for(auto &pair : m_parameterGroups)
-      pair.second->writeDocument(writer);
+  for(auto &pair : m_parameterGroups)
+    pair.second->writeDocument(writer);
 
-    AttributesOwner::writeDocument(writer, knownRevision);
-  }
+  AttributesOwner::writeDocument(writer, knownRevision);
 }

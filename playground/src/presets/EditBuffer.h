@@ -104,6 +104,7 @@ class EditBuffer : public ParameterGroupSet
   friend class EditBufferActions;
 
   Uuid m_lastLoadedPreset;
+  tUpdateID m_updateIdWhenLastLoadedPresetChanged = 0;
   Glib::ustring m_name;
 
   DelayedJob m_deferedJobs;

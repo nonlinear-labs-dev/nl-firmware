@@ -360,9 +360,10 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                       super::writeDocument(writer, knownRevision);
 
                     if(auto originPreset = getOrigin())
-                      originPreset->writeDetailDocument(writer, knownRevision, changed);
+                      originPreset->writeDetailDocument(writer, knownRevision,
+                                                        knownRevision < m_updateIdWhenLastLoadedPresetChanged);
                     else
-                      fakePresetDetails(writer, knownRevision, changed);
+                      fakePresetDetails(writer, knownRevision, knownRevision < m_updateIdWhenLastLoadedPresetChanged);
                   });
 }
 
@@ -422,6 +423,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Pre
   transaction->addSimpleCommand([=](auto) {
     swap->swapWith(m_lastLoadedPreset);
     m_signalPresetLoaded.send();
+    m_updateIdWhenLastLoadedPresetChanged = onChange();
   });
 }
 
@@ -468,7 +470,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     swap->swapWith(m_lastLoadedPreset);
     m_signalPresetLoaded.send();
-    onChange();
+    m_updateIdWhenLastLoadedPresetChanged = onChange();
   });
 
   resetModifiedIndicator(transaction);
