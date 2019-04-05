@@ -379,11 +379,11 @@ void paramengine::keyApply(const uint32_t _voiceId)
   }
   /* apply key event (update envelopes according to event type) */
 #if test_milestone == 150
-  const float pitch = m_body[m_head[P_KEY_NP].m_index + _voiceId].m_signal + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const float pitch = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(m_body[m_head[P_KEY_IDX].m_index + _voiceId].m_signal);
-  const float pitch = m_body[m_head[P_KEY_BP].m_index + _voiceId].m_signal
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
+  const float pitch = getSignal(P_KEY_BP, _voiceId)
       + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
@@ -831,13 +831,15 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
   {
     /* spread values of mono parameters to all voices of shared signal array */
     p = getHead(m_postIds.m_data[1].m_data[3].m_data[0].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[1].m_data[3].m_data[0].m_data[i]).m_index).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[1].m_data[3].m_data[0].m_data[i]).m_index).m_signal;
+    params[p] = getSignal(m_postIds.m_data[1].m_data[3].m_data[0].m_data[i]);
   }
   /* automatic poly to poly copy - each voice */
   for(i = 0; i < m_postIds.m_data[0].m_data[3].m_data[1].m_length; i++)
   {
     p = getHead(m_postIds.m_data[0].m_data[3].m_data[1].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[0].m_data[3].m_data[1].m_data[i]).m_index + _voiceId).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[0].m_data[3].m_data[1].m_data[i]).m_index + _voiceId).m_signal;
+    params[p] = getSignal(m_postIds.m_data[0].m_data[3].m_data[1].m_data[i], _voiceId);
   }
   /* automatic mono to mono copy (effect parameters) - only for voice 0 */
   //if(_voiceId == 0)
@@ -855,11 +857,11 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
   /* Pitch Updates */
 #if test_milestone == 150
   const float notePitch
-      = m_body[m_head[P_KEY_NP].m_index + _voiceId].m_signal + getSignal(P_MA_T) + m_note_shift[_voiceId];
+      = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(m_body[m_head[P_KEY_IDX].m_index + _voiceId].m_signal);
-  const float notePitch = m_body[m_head[P_KEY_BP].m_index + _voiceId].m_signal
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
+  const float notePitch = getSignal(P_KEY_BP, _voiceId)
       + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
@@ -976,13 +978,15 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
   {
     /* spread values of mono parameters to all voices of shared signal array */
     p = getHead(m_postIds.m_data[1].m_data[2].m_data[0].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[1].m_data[2].m_data[0].m_data[i]).m_index).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[1].m_data[2].m_data[0].m_data[i]).m_index).m_signal;
+    params[p] = getSignal(m_postIds.m_data[1].m_data[2].m_data[0].m_data[i]);
   }
   /* automatic poly to poly copy - each voice */
   for(i = 0; i < m_postIds.m_data[0].m_data[2].m_data[1].m_length; i++)
   {
     p = getHead(m_postIds.m_data[0].m_data[2].m_data[1].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[0].m_data[2].m_data[1].m_data[i]).m_index + _voiceId).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[0].m_data[2].m_data[1].m_data[i]).m_index + _voiceId).m_signal;
+    params[p] = getSignal(m_postIds.m_data[0].m_data[2].m_data[1].m_data[i], _voiceId);
   }
   /* automatic mono to mono copy (effect parameters) - only for voice 0 */
   //if(_voiceId == 0)
@@ -1001,11 +1005,11 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
   float tmp_lvl, tmp_pan, tmp_abs;
 #if test_milestone == 150
   const float notePitch
-      = m_body[m_head[P_KEY_NP].m_index + _voiceId].m_signal + getSignal(P_MA_T) + m_note_shift[_voiceId];
+      = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(m_body[m_head[P_KEY_IDX].m_index + _voiceId].m_signal);
-  const float basePitch = m_body[m_head[P_KEY_BP].m_index + _voiceId].m_signal;
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
+  const float basePitch = getSignal(P_KEY_BP, _voiceId);
   const float notePitch = basePitch + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(P_MA_T)
       + m_note_shift[_voiceId];
 #elif test_milestone == 156
@@ -1029,7 +1033,7 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
   params[SVF_PAR_4] = tmp_abs;
   /* Output Mixer */
 #if test_milestone == 150
-  const float poly_pan = m_body[m_head[P_KEY_VP].m_index + _voiceId].m_signal;
+  const float poly_pan = getSignal(P_KEY_VP, _voiceId);
 #elif test_milestone == 155
   const float poly_pan
       = (getSignal(P_OM_KP) * (basePitch - 6.f)) + (getSignal(P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
@@ -1073,13 +1077,15 @@ void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t
   {
     /* spread values of mono parameters to all voices of shared signal array */
     p = getHead(m_postIds.m_data[1].m_data[1].m_data[0].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[1].m_data[1].m_data[0].m_data[i]).m_index).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[1].m_data[1].m_data[0].m_data[i]).m_index).m_signal;
+    params[p] = getSignal(m_postIds.m_data[1].m_data[1].m_data[0].m_data[i]);
   }
   /* automatic poly to poly copy - each voice */
   for(i = 0; i < m_postIds.m_data[0].m_data[1].m_data[1].m_length; i++)
   {
     p = getHead(m_postIds.m_data[0].m_data[1].m_data[1].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[0].m_data[1].m_data[1].m_data[i]).m_index + _voiceId).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[0].m_data[1].m_data[1].m_data[i]).m_index + _voiceId).m_signal;
+    params[p] = getSignal(m_postIds.m_data[0].m_data[1].m_data[1].m_data[i], _voiceId);
   }
   /* automatic mono to mono copy (effect parameters) and mono envelope ticking - only for voice 0 */
   //if(_voiceId == 0)
@@ -1172,7 +1178,7 @@ void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t
   params[UN_PHS] = 0.f;
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(m_body[m_head[P_KEY_IDX].m_index + _voiceId].m_signal);
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
   params[UN_PHS] = getSignal(P_UN_PHS) * m_unison_phase[uVoice][uIndex];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
@@ -1187,11 +1193,11 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
   /* Pitch Updates */
 #if test_milestone == 150
   const float notePitch
-      = m_body[m_head[P_KEY_NP].m_index + _voiceId].m_signal + getSignal(P_MA_T) + m_note_shift[_voiceId];
+      = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(m_body[m_head[P_KEY_IDX].m_index + _voiceId].m_signal);
-  const float basePitch = m_body[m_head[P_KEY_BP].m_index + _voiceId].m_signal;
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
+  const float basePitch = getSignal(P_KEY_BP, _voiceId);
   const float notePitch = basePitch + getSignal(P_MA_SH) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
       + m_note_shift[_voiceId];
 #elif test_milestone == 156
@@ -1288,7 +1294,7 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
   /* Output Mixer */
   float tmp_lvl, tmp_pan;
 #if test_milestone == 150
-  const float poly_pan = m_body[m_head[P_KEY_VP].m_index + _voiceId].m_signal;
+  const float poly_pan = getSignal(P_KEY_VP, _voiceId);
 #elif test_milestone == 155
   const float poly_pan
       = (getSignal(P_OM_KP) * (basePitch - 6.f)) + (getSignal(P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
@@ -1333,7 +1339,8 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
   for(i = 0; i < m_postIds.m_data[0].m_data[3].m_data[0].m_length; i++)
   {
     p = getHead(m_postIds.m_data[0].m_data[3].m_data[0].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[0].m_data[3].m_data[0].m_data[i]).m_index).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[0].m_data[3].m_data[0].m_data[i]).m_index).m_signal;
+    params[p] = getSignal(m_postIds.m_data[0].m_data[3].m_data[0].m_data[i]);
   }
   /* Effect Parameter Post Processing */
   float tmp_Gap, tmp_Center, tmp_Stereo, tmp_Rate;
@@ -1420,7 +1427,8 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
   for(i = 0; i < m_postIds.m_data[0].m_data[2].m_data[0].m_length; i++)
   {
     p = getHead(m_postIds.m_data[0].m_data[2].m_data[0].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[0].m_data[2].m_data[0].m_data[i]).m_index).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[0].m_data[2].m_data[0].m_data[i]).m_index).m_signal;
+    params[p] = getSignal(m_postIds.m_data[0].m_data[2].m_data[0].m_data[i]);
   }
   /* Explicit Post Processing */
   /* provide temporary variables */
@@ -1541,7 +1549,8 @@ void paramengine::postProcessMono_audio(ParameterStorage& params)
   for(i = 0; i < m_postIds.m_data[0].m_data[1].m_data[0].m_length; i++)
   {
     p = getHead(m_postIds.m_data[0].m_data[1].m_data[0].m_data[i]).m_postId;
-    params[p] = getBody(getHead(m_postIds.m_data[0].m_data[1].m_data[0].m_data[i]).m_index).m_signal;
+    //params[p] = getBody(getHead(m_postIds.m_data[0].m_data[1].m_data[0].m_data[i]).m_index).m_signal;
+    params[p] = getSignal(m_postIds.m_data[0].m_data[1].m_data[0].m_data[i]);
   }
   /* mono envelope rendering */
   float tmp_env;

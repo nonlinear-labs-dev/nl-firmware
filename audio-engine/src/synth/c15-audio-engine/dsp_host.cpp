@@ -721,7 +721,7 @@ void dsp_host::keyApply(uint32_t _voiceId)
 
     /* determine note steal */
 #if test_milestone < 156
-    if(static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_KEY_VS].m_index].m_signal) == 1)
+    if(static_cast<uint32_t>(m_params.getSignal(P_KEY_VS)) == 1)
     {
       /* AUDIO_ENGINE: trigger voice-steal */
     }
@@ -751,7 +751,7 @@ void dsp_host::keyApply(uint32_t _voiceId)
     //float phaseA = m_params.m_body[m_params.m_head[P_KEY_PA].m_index + _voiceId].m_signal;
     //float phaseB = m_params.m_body[m_params.m_head[P_KEY_PB].m_index + _voiceId].m_signal;
 #if test_milestone == 150
-    const float startPhase = m_params.m_body[m_params.m_head[P_KEY_PH].m_index + _voiceId].m_signal;
+    const float startPhase = m_params.getSignal(P_KEY_PH, _voiceId);
 #elif test_milestone == 155
     const float startPhase = 0.f;
 #elif test_milestone == 156
