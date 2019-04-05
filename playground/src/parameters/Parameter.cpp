@@ -222,32 +222,38 @@ PresetParameter *Parameter::getOriginalParameter() const
   auto pm = Application::get().getPresetManager();
   if(auto presetLoadedFrom = pm->getEditBuffer()->getOrigin())
   {
-    return presetLoadedFrom->findParameterByID(getID());
+    try
+    {
+      return presetLoadedFrom->findParameterByID(getID());
+    }
+    catch(...)
+    {
+    }
   }
   return nullptr;
 }
 
 bool Parameter::isChangedFromLoaded() const
 {
-    return isValueChangedFromLoaded();
+  return isValueChangedFromLoaded();
 }
 
-bool Parameter::isValueChangedFromLoaded() const {
-    const int denominator = static_cast<const int>(getValue().getFineDenominator());
-    const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
+bool Parameter::isValueChangedFromLoaded() const
+{
+  const int denominator = static_cast<const int>(getValue().getFineDenominator());
+  const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
 
-    if(auto originalParameter = getOriginalParameter())
-    {
-        const int roundedOG = static_cast<const int>(originalParameter->getValue() * denominator);
-        return roundedOG != roundedNow;
-    }
-    else
-    {
-        const int roundedDefault = static_cast<const int>(getDefaultValue() * denominator);
-        return roundedDefault != roundedNow;
-    }
+  if(auto originalParameter = getOriginalParameter())
+  {
+    const int roundedOG = static_cast<const int>(originalParameter->getValue() * denominator);
+    return roundedOG != roundedNow;
+  }
+  else
+  {
+    const int roundedDefault = static_cast<const int>(getDefaultValue() * denominator);
+    return roundedDefault != roundedNow;
+  }
 }
-
 
 bool Parameter::isBiPolar() const
 {

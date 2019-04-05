@@ -56,7 +56,11 @@ size_t EditBuffer::getHash() const
 
 const Preset *EditBuffer::getOrigin() const
 {
-  return static_cast<const PresetManager *>(getParent())->findPreset(m_lastLoadedPreset);
+  if(m_originCache && m_originCache->getUuid() == m_lastLoadedPreset)
+    return m_originCache;
+
+  m_originCache = static_cast<const PresetManager *>(getParent())->findPreset(m_lastLoadedPreset);
+  return m_originCache;
 }
 
 void EditBuffer::resetModifiedIndicator(UNDO::Transaction *transaction)
@@ -233,6 +237,12 @@ bool EditBuffer::anyParameterChanged() const
   return false;
 }
 
+void EditBuffer::resetOriginIf(const Preset *p)
+{
+  if(m_originCache == p)
+    m_originCache = nullptr;
+}
+
 void EditBuffer::undoableSelectParameter(Parameter *p)
 {
   if(p != m_selectedParameter)
@@ -310,16 +320,21 @@ bool EditBuffer::isZombie() const
 
 void EditBuffer::fakePresetDetails(Writer &writer, tUpdateID knownRevision) const
 {
-  writer.writeTag("original", [&]() {
-    for(auto &group : getParameterGroups())
+  bool changed = knownRevision < getUpdateIDOfLastChange();
+
+  writer.writeTag("original", Attribute("changed", changed), [&]() {
+    if(changed)
     {
-      for(auto &param : group->getParameters())
+      for(auto &group : getParameterGroups())
       {
-        writer.writeTag("param",
-                        { Attribute{ "id", to_string(param->getID()) },
-                          Attribute{ "value", to_string(param->getDefaultValue()) },
-                          Attribute{ "mod-src", to_string(0) }, Attribute{ "mod-amt", to_string(0) } },
-                        []() {});
+        for(auto &param : group->getParameters())
+        {
+          writer.writeTag("param",
+                          { Attribute{ "id", to_string(param->getID()) },
+                            Attribute{ "value", to_string(param->getDefaultValue()) },
+                            Attribute{ "mod-src", to_string(0) }, Attribute{ "mod-amt", to_string(0) } },
+                          []() {});
+        }
       }
     }
   });
@@ -342,17 +357,12 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                     Attribute("hash", getHash()), Attribute("changed", changed) },
                   [&]() {
                     if(changed)
-                    {
                       super::writeDocument(writer, knownRevision);
-                    }
+
                     if(auto originPreset = getOrigin())
-                    {
-                      writer.writeTag("original", [&]() { originPreset->writeDetailDocument(writer, knownRevision); });
-                    }
+                      originPreset->writeDetailDocument(writer, knownRevision);
                     else
-                    {
                       fakePresetDetails(writer, knownRevision);
-                    }
                   });
 }
 
