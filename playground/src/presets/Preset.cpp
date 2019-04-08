@@ -15,7 +15,6 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
 {
-
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool ignoreUuids)
@@ -33,6 +32,9 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
 
 Preset::~Preset()
 {
+  if(auto pm = Application::get().getPresetManager())
+    if(auto eb = pm->getEditBuffer())
+      eb->resetOriginIf(this);
 }
 
 void Preset::load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath)
@@ -241,8 +243,7 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("preset",
-                  { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("changed", changed) },
-                  [&]() {
+                  { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("changed", changed) }, [&]() {
                     if(changed)
                     {
                       AttributesOwner::writeDocument(writer, knownRevision);
@@ -250,9 +251,14 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
                   });
 }
 
+void Preset::writeDetailDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision, bool force) const
+{
+  bool changed = force || knownRevision < getUpdateIDOfLastChange();
 
-void Preset::writeDetailDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const {
-    PresetParameterGroups::writeDocument(writer, knownRevision);
+  writer.writeTag("original", Attribute("changed", changed), [&]() {
+    if(changed)
+      PresetParameterGroups::writeDocument(writer, knownRevision);
+  });
 };
 
 void Preset::writeDiff(Writer &writer, const Preset *other) const
