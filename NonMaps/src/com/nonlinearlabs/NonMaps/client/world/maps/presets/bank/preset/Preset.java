@@ -50,11 +50,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private static final PresetColorPack standardColor = new PresetColorPack(new Gray(0), new Gray(25), new Gray(77));
 	private static final PresetColorPack renamedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
 	private static final PresetColorPack selectedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
-	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
-			new Gray(77));
+	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),new Gray(77));
 	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
-	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), RGB.blue(),
-			new Gray(255));
+	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),new Gray(255));
+	private static final PresetColorPack filterMatchHighlightedLoaded = new PresetColorPack(new Gray(0), RGB.blue(),new Gray(255));
 
 	public Preset(Bank parent) {
 		super(parent);
@@ -101,9 +100,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public Bank getParent() {
 		return (Bank) super.getParent();
 	}
-
+	
 	private void onSearchHighlight() {
-		select();
+		
 	}
 	
 	@Override
@@ -203,7 +202,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (isSearchOpen) {
 			if (isCurrentFilterMatch)
-				currentPack = filterMatchHighlighted;
+				currentPack = loaded ? filterMatchHighlightedLoaded : filterMatchHighlighted;
 			else if (isInFilterSet)
 				currentPack = loaded ? filterMatchLoaded : filterMatch;
 			else
