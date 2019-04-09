@@ -235,9 +235,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		Rect r = getPixRect().copy();
 		r.fill(ctx, currentPresetColorPack.fill);
 		r.stroke(ctx, currentPresetColorPack.highlightStrokeWidth, currentPresetColorPack.highlight);
-		r.reduceHeightBy(2 * cp);
-		r.reduceWidthBy(2 * cp);
-		r.stroke(ctx, cp, currentPresetColorPack.contour);
+		r.reduceHeightBy(2 * currentPresetColorPack.highlightStrokeWidth);
+		r.reduceWidthBy(2 * currentPresetColorPack.highlightStrokeWidth);
+		r.stroke(ctx, currentPresetColorPack.highlightStrokeWidth, currentPresetColorPack.contour);
 
 		super.draw(ctx, invalidationMask);
 		r.fill(ctx, currentPresetColorPack.overlay);
