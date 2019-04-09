@@ -101,27 +101,29 @@ void dsp_host::loadInitialPreset()
 void dsp_host::tickMain()
 {
   /* provide indices for items, voices and parameters */
-  uint32_t i, v, p;
+  uint32_t i, v;
+  std::vector<uint32_t>* list;
   /* first: evaluate slow clock status */
   if(m_clockPosition[3] == 0)
   {
     /* render slow mono parameters and perform mono post processing */
-    for(p = 0; p < m_params.m_clockIds.m_data[3].m_data[0].m_length; p++)
+    list = &m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_MONO);
+    for(auto it = list->cbegin(); it != list->cend(); it++)
     {
-      i = m_params.getHead(m_params.m_clockIds.m_data[3].m_data[0].m_data[p]).m_index;
-      m_params.tickItem(i);
+        i = m_params.getHead(*it).m_index;
+        m_params.tickItem(i);
     }
     m_params.postProcessMono_slow(m_parameters.bindToVoice(0));
     /* render slow poly parameters and perform poly slow post processing */
+    list = &m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_POLY);
     for(v = 0; v < m_voices; v++)
     {
-      for(p = 0; p < m_params.m_clockIds.m_data[3].m_data[1].m_length; p++)
+      for(auto it = list->cbegin(); it != list->cend(); it++)
       {
-        i = m_params.getHead(m_params.m_clockIds.m_data[3].m_data[1].m_data[p]).m_index + v;
-        m_params.tickItem(i);
+          i = m_params.getHead(*it).m_index + v;
+          m_params.tickItem(i);
       }
       m_params.postProcessPoly_slow(m_parameters.bindToVoice(v), v);
-
       /* slow polyphonic Trigger for Filter Coefficients */
       setPolySlowFilterCoeffs(m_parameters.bindToVoice(v), v);
     }
@@ -132,19 +134,21 @@ void dsp_host::tickMain()
   if(m_clockPosition[2] == 0)
   {
     /* render fast mono parameters and perform mono post processing */
-    for(p = 0; p < m_params.m_clockIds.m_data[2].m_data[0].m_length; p++)
+    list = &m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_MONO);
+    for(auto it = list->cbegin(); it != list->cend(); it++)
     {
-      i = m_params.getHead(m_params.m_clockIds.m_data[2].m_data[0].m_data[p]).m_index;
-      m_params.tickItem(i);
+        i = m_params.getHead(*it).m_index;
+        m_params.tickItem(i);
     }
     m_params.postProcessMono_fast(m_parameters.bindToVoice(0));
     /* render fast poly parameters and perform poly fast post processing */
+    list = &m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_POLY);
     for(v = 0; v < m_voices; v++)
     {
-      for(p = 0; p < m_params.m_clockIds.m_data[2].m_data[1].m_length; p++)
+      for(auto it = list->cbegin(); it != list->cend(); it++)
       {
-        i = m_params.getHead(m_params.m_clockIds.m_data[2].m_data[1].m_data[p]).m_index + v;
-        m_params.tickItem(i);
+          i = m_params.getHead(*it).m_index + v;
+          m_params.tickItem(i);
       }
       m_params.postProcessPoly_fast(m_parameters.bindToVoice(v), v);
     }
@@ -152,25 +156,26 @@ void dsp_host::tickMain()
     setMonoFastFilterCoeffs(m_parameters.bindToVoice(0));
   }
   /* third: evaluate audio clock (always) - mono rendering and post processing, poly rendering and post processing */
-  for(p = 0; p < m_params.m_clockIds.m_data[1].m_data[0].m_length; p++)
+  list = &m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_MONO);
+  for(auto it = list->cbegin(); it != list->cend(); it++)
   {
-    /* render mono audio parameters */
-    i = m_params.getHead(m_params.m_clockIds.m_data[1].m_data[0].m_data[p]).m_index;
-    m_params.tickItem(i);
+      i = m_params.getHead(*it).m_index;
+      m_params.tickItem(i);
   }
   m_params.postProcessMono_audio(m_parameters.bindToVoice(0));
   /* Reset Outputmixer Sum Samples */
   m_outputmixer.m_out_L = 0.f;
   m_outputmixer.m_out_R = 0.f;
 
+  /* this is the MAIN POLYPHONIC LOOP - rendering (and post processing) parameters, envelopes and the AUDIO_ENGINE */
+  list = &m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_POLY);
   for(v = 0; v < m_voices; v++)
   {
-    /* this is the MAIN POLYPHONIC LOOP - rendering (and post processing) parameters, envelopes and the AUDIO_ENGINE */
     /* render poly audio parameters */
-    for(p = 0; p < m_params.m_clockIds.m_data[1].m_data[1].m_length; p++)
+    for(auto it = list->cbegin(); it != list->cend(); it++)
     {
-      i = m_params.getHead(m_params.m_clockIds.m_data[1].m_data[1].m_data[p]).m_index + v;
-      m_params.tickItem(i);
+        i = m_params.getHead(*it).m_index + v;
+        m_params.tickItem(i);
     }
     /* post processing and envelope rendering */
     m_params.postProcessPoly_audio(m_parameters.bindToVoice(v), v);
