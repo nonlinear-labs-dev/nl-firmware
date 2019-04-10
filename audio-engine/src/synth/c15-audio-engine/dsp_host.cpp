@@ -115,7 +115,7 @@ void dsp_host::tickMain()
     {
       for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_POLY))
       {
-          auto i = m_params.getHead(it).m_index;
+          auto i = m_params.getHead(it).m_index + v;
           m_params.tickItem(i);
       }
       m_params.postProcessPoly_slow(m_parameters.bindToVoice(v), v);
@@ -140,7 +140,7 @@ void dsp_host::tickMain()
     {
       for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_POLY))
       {
-          auto i = m_params.getHead(it).m_index;
+          auto i = m_params.getHead(it).m_index + v;
           m_params.tickItem(i);
       }
       m_params.postProcessPoly_fast(m_parameters.bindToVoice(v), v);
@@ -165,7 +165,7 @@ void dsp_host::tickMain()
     /* render poly audio parameters */
     for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_POLY))
     {
-        auto i = m_params.getHead(it).m_index;
+        auto i = m_params.getHead(it).m_index + v;
         m_params.tickItem(i);
     }
     /* post processing and envelope rendering */
