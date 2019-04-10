@@ -100,27 +100,22 @@ void dsp_host::loadInitialPreset()
 /* */
 void dsp_host::tickMain()
 {
-  /* provide indices for items, voices and parameters */
-  uint32_t i, v;
-  std::vector<uint32_t>* list;
   /* first: evaluate slow clock status */
   if(m_clockPosition[3] == 0)
   {
     /* render slow mono parameters and perform mono post processing */
-    list = &m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_MONO);
-    for(auto it = list->cbegin(); it != list->cend(); it++)
+    for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_MONO))
     {
-        i = m_params.getHead(*it).m_index;
+        auto i = m_params.getHead(it).m_index;
         m_params.tickItem(i);
     }
     m_params.postProcessMono_slow(m_parameters.bindToVoice(0));
     /* render slow poly parameters and perform poly slow post processing */
-    list = &m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_POLY);
-    for(v = 0; v < m_voices; v++)
+    for(uint32_t v = 0; v < m_voices; v++)
     {
-      for(auto it = list->cbegin(); it != list->cend(); it++)
+      for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_POLY))
       {
-          i = m_params.getHead(*it).m_index + v;
+          auto i = m_params.getHead(it).m_index;
           m_params.tickItem(i);
       }
       m_params.postProcessPoly_slow(m_parameters.bindToVoice(v), v);
@@ -134,20 +129,18 @@ void dsp_host::tickMain()
   if(m_clockPosition[2] == 0)
   {
     /* render fast mono parameters and perform mono post processing */
-    list = &m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_MONO);
-    for(auto it = list->cbegin(); it != list->cend(); it++)
+    for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_MONO))
     {
-        i = m_params.getHead(*it).m_index;
+        auto i = m_params.getHead(it).m_index;
         m_params.tickItem(i);
     }
     m_params.postProcessMono_fast(m_parameters.bindToVoice(0));
     /* render fast poly parameters and perform poly fast post processing */
-    list = &m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_POLY);
-    for(v = 0; v < m_voices; v++)
+    for(uint32_t v = 0; v < m_voices; v++)
     {
-      for(auto it = list->cbegin(); it != list->cend(); it++)
+      for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_POLY))
       {
-          i = m_params.getHead(*it).m_index + v;
+          auto i = m_params.getHead(it).m_index;
           m_params.tickItem(i);
       }
       m_params.postProcessPoly_fast(m_parameters.bindToVoice(v), v);
@@ -156,10 +149,9 @@ void dsp_host::tickMain()
     setMonoFastFilterCoeffs(m_parameters.bindToVoice(0));
   }
   /* third: evaluate audio clock (always) - mono rendering and post processing, poly rendering and post processing */
-  list = &m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_MONO);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_MONO))
   {
-      i = m_params.getHead(*it).m_index;
+      auto i = m_params.getHead(it).m_index;
       m_params.tickItem(i);
   }
   m_params.postProcessMono_audio(m_parameters.bindToVoice(0));
@@ -168,13 +160,12 @@ void dsp_host::tickMain()
   m_outputmixer.m_out_R = 0.f;
 
   /* this is the MAIN POLYPHONIC LOOP - rendering (and post processing) parameters, envelopes and the AUDIO_ENGINE */
-  list = &m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_POLY);
-  for(v = 0; v < m_voices; v++)
+  for(uint32_t v = 0; v < m_voices; v++)
   {
     /* render poly audio parameters */
-    for(auto it = list->cbegin(); it != list->cend(); it++)
+    for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_POLY))
     {
-        i = m_params.getHead(*it).m_index + v;
+        auto i = m_params.getHead(it).m_index;
         m_params.tickItem(i);
     }
     /* post processing and envelope rendering */

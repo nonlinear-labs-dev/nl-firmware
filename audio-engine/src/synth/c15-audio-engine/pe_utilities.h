@@ -78,7 +78,7 @@ struct new_clock_id_list
         m_data[_clockType][_polyType].push_back(_id);
     }
 
-    inline std::vector<uint32_t> &get(uint32_t _clockType, uint32_t _polyType)
+    inline const std::vector<uint32_t> &get(uint32_t _clockType, uint32_t _polyType) const
     {
         return m_data[_clockType][_polyType];
     }
@@ -94,7 +94,7 @@ struct new_dual_clock_id_list
         m_data[_spreadType][_clockType][_polyType].push_back(_id);
     }
 
-    inline std::vector<uint32_t> &get(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType)
+    inline const std::vector<uint32_t> &get(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType) const
     {
         return m_data[_spreadType][_clockType][_polyType];
     }

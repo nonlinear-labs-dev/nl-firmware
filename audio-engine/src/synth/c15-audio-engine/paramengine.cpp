@@ -43,20 +43,18 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
   m_flangerRateToDecay *= NlToolbox::Constants::twopi * m_reciprocal_samplerate;
   m_revColorCurve1.setCurve(66.f, 137.f, 130.f);  // initialize control shaper for the reverb internal lowpass (color)
   m_revColorCurve2.setCurve(29.f, 29.f, 85.f);    // initialize control shaper for the reverb internal highpass (color)
-  /* provide indices for further definitions */
-  uint32_t i, p;
+
   /* initialize envelope events */
-  for(i = 0; i < sig_number_of_env_events; i++)
+  for(uint32_t i = 0; i < sig_number_of_env_events; i++)
   {
     m_event.m_env[i].init();
   }
   /* First Run: initialize parameters by definition (see pe_defines_params.h) */
-  for(p = 0; p < sig_number_of_params; p++)
+  for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     /* provide parameter reference */
     param_head* obj = &getHead(p);
-    /* declarations according to parameter definition */
-    // //obj->m_index = i;  // index points to first voice/item in (rendering) array
+    /* declarations according to parameter definition (index is determined in second run) */
     obj->m_clockType = static_cast<uint32_t>(param_definition[p][1]);  // clock type (sync/audio/fast/slow)
     obj->m_polyType = static_cast<uint32_t>(param_definition[p][2]);   // poly type (mono/poly)
     obj->m_size = m_routePolyphony[obj->m_polyType];                   // determine (rendering) size
@@ -87,27 +85,25 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
     }
   }
   /* Second Run: set up ordered param_body indices */
-  i = 0;
+  uint32_t index = 0;
   for(uint32_t clockType = 0; clockType < dsp_clock_types; clockType++)
   {
-      auto list = &m_parameters.getClockIds(clockType, PARAM_MONO);
-      for(auto it = list->cbegin(); it != list->cend(); it++)
+      for(auto &it : m_parameters.getClockIds(clockType, PARAM_MONO))
       {
-          m_parameters.getHead(*it).m_index = i;
-          i += 1;
+          m_parameters.getHead(it).m_index = index;
+          index += 1;
       }
   }
   for(uint32_t clockType = 0; clockType < dsp_clock_types; clockType++)
   {
-      auto list = &m_parameters.getClockIds(clockType, PARAM_POLY);
-      for(auto it = list->cbegin(); it != list->cend(); it++)
+      for(auto &it : m_parameters.getClockIds(clockType, PARAM_POLY))
       {
-          m_parameters.getHead(*it).m_index = i;
-          i += _voices;
+          m_parameters.getHead(it).m_index = index;
+          index += _voices;
       }
   }
   /* initialize global utility parameters */
-  for(i = 0; i < sig_number_of_utilities; i++)
+  for(uint32_t i = 0; i < sig_number_of_utilities; i++)
   {
     m_utilities[i].m_normalize = 1.f / utility_definition[i][0];
     m_utilities[i].m_scaleId = static_cast<uint32_t>(utility_definition[i][1]);
@@ -116,7 +112,7 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
   /* initialize envelopes */
   float gateRelease = 1.f / ((env_init_gateRelease * m_millisecond) + 1.f);
   /* initialize clip factors for envelope c */
-  for(i = 0; i < dsp_number_of_voices; i++)
+  for(uint32_t i = 0; i < dsp_number_of_voices; i++)
   {
     m_env_c_clipFactor[i] = 1.f;
     m_note_shift[i] = 0.f;
@@ -125,27 +121,27 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
   m_new_envelopes.init(_voices, gateRelease);
   // initialize unison spread tables
   int32_t u_voice, u_index;
-  for(i = 0; i < dsp_number_of_voices; i++)
+  for(uint32_t i = 0; i < dsp_number_of_voices; i++)
   {
     // prepare for unison voice
     u_voice = static_cast<int32_t>(i) + 1;
     // unison detune
     u_index = -(static_cast<int32_t>(i) >> 1);
-    for(p = 0; p <= i; p++)
+    for(uint32_t p = 0; p <= i; p++)
     {
       m_unison_detune[i][p] = static_cast<float>(u_index);
       u_index += 1;
     }
     // unison phase and pan
     u_index = -static_cast<int32_t>(i);
-    for(p = 0; p <= i; p++)
+    for(uint32_t p = 0; p <= i; p++)
     {
       m_unison_phase[i][p] = static_cast<float>(u_index) / static_cast<float>(2 * u_voice);
       m_unison_pan[i][p] = static_cast<float>(u_index) / static_cast<float>(i < 1 ? 1 : i);
       u_index += 2;
     }
     // zero padding
-    for(p = i + 1; p < dsp_number_of_voices; p++)
+    for(uint32_t p = i + 1; p < dsp_number_of_voices; p++)
     {
       m_unison_detune[i][p] = 0.f;
       m_unison_phase[i][p] = 0.f;
@@ -840,22 +836,31 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t _voiceId)
 {
   /* provide indices for distributions */
-  uint32_t p;
+  //uint32_t p;
   /* automatic mono to poly distribution */
-  auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_SLOW, PARAM_MONO);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_SLOW, PARAM_MONO);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_SLOW, PARAM_MONO))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_POLY);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_POLY);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it, _voiceId);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_POLY))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it, _voiceId);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it, _voiceId);
   }
-
   /*
      *      "NEW" ENVELOPES:
      */
@@ -978,22 +983,31 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
 void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t _voiceId)
 {
   /* provide indices for distributions */
-  uint32_t p;
+  //uint32_t p;
   /* automatic mono to poly distribution */
-  auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_FAST, PARAM_MONO);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_FAST, PARAM_MONO);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_FAST, PARAM_MONO))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_POLY);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_POLY);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it, _voiceId);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_POLY))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it, _voiceId);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it, _voiceId);
   }
-
   /*
      *      "NEW" ENVELOPES:
      */
@@ -1068,20 +1082,30 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
 void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t _voiceId)
 {
   /* provide indices for distributions */
-  uint32_t p;
+  //uint32_t p;
   /* automatic mono to poly distribution */
-  auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_AUDIO, PARAM_MONO);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_AUDIO, PARAM_MONO);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_AUDIO, PARAM_MONO))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_POLY);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_POLY);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it, _voiceId);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_POLY))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it, _voiceId);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it, _voiceId);
   }
   /* "NEW" ENVELOPES: */
   //m_new_envelopes.tickMono();
@@ -1322,13 +1346,18 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
 void paramengine::postProcessMono_slow(ParameterStorage& params)
 {
   /* provide indices for distributions */
-  uint32_t p;
+  //uint32_t p;
   /* automatic mono to mono copy (always voice zero) */
-  auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_MONO);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_MONO);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_MONO))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it);
   }
   /* Effect Parameter Post Processing */
   float tmp_Gap, tmp_Center, tmp_Stereo, tmp_Rate;
@@ -1410,13 +1439,18 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
 void paramengine::postProcessMono_fast(ParameterStorage& params)
 {
   /* provide indices for distributions */
-  uint32_t p;
+  //uint32_t p;
   /* automatic mono to mono copy (always voice zero) */
-  auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_MONO);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_MONO);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_MONO))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it);
   }
   /* Explicit Post Processing */
   /* provide temporary variables */
@@ -1532,13 +1566,18 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
 void paramengine::postProcessMono_audio(ParameterStorage& params)
 {
   /* provide indices for distributions */
-  uint32_t p;
+  //uint32_t p;
   /* automatic mono to mono copy (always voice zero) */
-  auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_MONO);
-  for(auto it = list->cbegin(); it != list->cend(); it++)
+  //auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_MONO);
+  //for(auto it = list->cbegin(); it != list->cend(); it++)
+  //{
+  //    p = getHead(*it).m_postId;
+  //    params[p] = getSignal(*it);
+  //}
+  for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_MONO))
   {
-      p = getHead(*it).m_postId;
-      params[p] = getSignal(*it);
+      auto p = getHead(it).m_postId;
+      params[p] = getSignal(it);
   }
   /* mono envelope rendering */
   float tmp_env;
