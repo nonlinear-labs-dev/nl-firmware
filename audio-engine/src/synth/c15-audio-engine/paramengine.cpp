@@ -835,27 +835,13 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 /* Poly Post Processing - slow parameters */
 void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t _voiceId)
 {
-  /* provide indices for distributions */
-  //uint32_t p;
   /* automatic mono to poly distribution */
-  //auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_SLOW, PARAM_MONO);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_SLOW, PARAM_MONO))
   {
       auto p = getHead(it).m_postId;
       params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  //list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_POLY);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it, _voiceId);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_POLY))
   {
       auto p = getHead(it).m_postId;
@@ -982,27 +968,13 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
 /* Poly Post Processing - fast parameters */
 void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t _voiceId)
 {
-  /* provide indices for distributions */
-  //uint32_t p;
   /* automatic mono to poly distribution */
-  //auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_FAST, PARAM_MONO);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_FAST, PARAM_MONO))
   {
       auto p = getHead(it).m_postId;
       params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  //list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_POLY);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it, _voiceId);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_POLY))
   {
       auto p = getHead(it).m_postId;
@@ -1081,27 +1053,13 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
 /* Poly Post Processing - audio parameters */
 void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t _voiceId)
 {
-  /* provide indices for distributions */
-  //uint32_t p;
   /* automatic mono to poly distribution */
-  //auto list = &m_parameters.getPostIds(PARAM_SPREAD, PARAM_AUDIO, PARAM_MONO);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_AUDIO, PARAM_MONO))
   {
       auto p = getHead(it).m_postId;
       params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  //list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_POLY);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it, _voiceId);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_POLY))
   {
       auto p = getHead(it).m_postId;
@@ -1345,15 +1303,7 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
 /* Mono Post Processing - slow parameters */
 void paramengine::postProcessMono_slow(ParameterStorage& params)
 {
-  /* provide indices for distributions */
-  //uint32_t p;
   /* automatic mono to mono copy (always voice zero) */
-  //auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_MONO);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_SLOW, PARAM_MONO))
   {
       auto p = getHead(it).m_postId;
@@ -1438,15 +1388,7 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
 /* Mono Post Processing - fast parameters */
 void paramengine::postProcessMono_fast(ParameterStorage& params)
 {
-  /* provide indices for distributions */
-  //uint32_t p;
   /* automatic mono to mono copy (always voice zero) */
-  //auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_MONO);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_FAST, PARAM_MONO))
   {
       auto p = getHead(it).m_postId;
@@ -1565,15 +1507,7 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
 /* Mono Post Processing - audio parameters */
 void paramengine::postProcessMono_audio(ParameterStorage& params)
 {
-  /* provide indices for distributions */
-  //uint32_t p;
   /* automatic mono to mono copy (always voice zero) */
-  //auto list = &m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_MONO);
-  //for(auto it = list->cbegin(); it != list->cend(); it++)
-  //{
-  //    p = getHead(*it).m_postId;
-  //    params[p] = getSignal(*it);
-  //}
   for(auto &it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_AUDIO, PARAM_MONO))
   {
       auto p = getHead(it).m_postId;
