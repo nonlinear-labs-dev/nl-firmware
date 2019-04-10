@@ -46,15 +46,14 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private boolean isInFilterSet = false;
 	private boolean isCurrentFilterMatch = false;
 
-	private static final PresetColorPack loadedColor = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
-	private static final PresetColorPack standardColor = new PresetColorPack(new Gray(0), new Gray(25), new Gray(77));
-	private static final PresetColorPack renamedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
-	private static final PresetColorPack selectedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
-	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
-			new Gray(77));
-	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
-	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), RGB.blue(),
-			new Gray(255));
+	private static final PresetColorPack loadedColor = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77), 1);
+	private static final PresetColorPack standardColor = new PresetColorPack(new Gray(0), new Gray(25), new Gray(77), 1);
+	private static final PresetColorPack renamedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77), 1);
+	private static final PresetColorPack selectedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77), 1);
+	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),new Gray(77), 1);
+	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77), 1);
+	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),new Gray(255), 5);
+	private static final PresetColorPack filterMatchHighlightedLoaded = new PresetColorPack(new Gray(0), RGB.blue(),new Gray(255), 5);
 
 	public Preset(Bank parent) {
 		super(parent);
@@ -101,9 +100,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public Bank getParent() {
 		return (Bank) super.getParent();
 	}
-
+	
 	private void onSearchHighlight() {
-		select();
+		
 	}
 	
 	@Override
@@ -203,7 +202,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (isSearchOpen) {
 			if (isCurrentFilterMatch)
-				currentPack = filterMatchHighlighted;
+				currentPack = loaded ? filterMatchHighlightedLoaded : filterMatchHighlighted;
 			else if (isInFilterSet)
 				currentPack = loaded ? filterMatchLoaded : filterMatch;
 			else
@@ -224,16 +223,21 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		PresetColorPack currentPresetColorPack = getActiveColorPack();
 
+
 		double cp = getConturPixels();
 		cp = Math.ceil(cp);
 		cp = Math.max(1, cp);
 
+		if(currentPresetColorPack.highlightStrokeWidth == 1) {
+			currentPresetColorPack.highlightStrokeWidth = cp;
+		}
+		
 		Rect r = getPixRect().copy();
 		r.fill(ctx, currentPresetColorPack.fill);
-		r.stroke(ctx, cp, currentPresetColorPack.highlight);
-		r.reduceHeightBy(2 * cp);
-		r.reduceWidthBy(2 * cp);
-		r.stroke(ctx, cp, currentPresetColorPack.contour);
+		r.stroke(ctx, currentPresetColorPack.highlightStrokeWidth, currentPresetColorPack.highlight);
+		r.reduceHeightBy(2 * currentPresetColorPack.highlightStrokeWidth);
+		r.reduceWidthBy(2 * currentPresetColorPack.highlightStrokeWidth);
+		r.stroke(ctx, currentPresetColorPack.highlightStrokeWidth, currentPresetColorPack.contour);
 
 		super.draw(ctx, invalidationMask);
 		r.fill(ctx, currentPresetColorPack.overlay);
