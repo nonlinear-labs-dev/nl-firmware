@@ -3,7 +3,6 @@
 #include "DimmingModulationModeButton.h"
 
 class Application;
-class ModulateableParameter;
 
 class MCAmountButton : public DimmingModulationModeButton
 {
@@ -15,6 +14,4 @@ class MCAmountButton : public DimmingModulationModeButton
   virtual ~MCAmountButton();
 
   void update(const Parameter *parameter) override;
-private:
-    mutable const ModulateableParameter* m_lastCastedUpdateParam;
 };

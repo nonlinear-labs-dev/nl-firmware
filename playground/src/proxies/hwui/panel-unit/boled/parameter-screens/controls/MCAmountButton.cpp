@@ -7,22 +7,17 @@ MCAmountButton::MCAmountButton(int id)
 {
 }
 
-MCAmountButton::~MCAmountButton() = default;
+MCAmountButton::~MCAmountButton()
+= default;
 
 void MCAmountButton::update(const Parameter *parameter)
 {
-
-  if(m_lastCastedUpdateParam == nullptr || m_lastCastedUpdateParam != parameter)
+  if(const auto *p = dynamic_cast<const ModulateableParameter *>(parameter))
   {
-      m_lastCastedUpdateParam = dynamic_cast<const ModulateableParameter*>(parameter);
-  }
-
-  if(m_lastCastedUpdateParam)
-  {
-    if(m_lastCastedUpdateParam->getModulationSource() == ModulationSource::NONE)
+    if(p->getModulationSource() == ModulationSource::NONE)
       setText("");
     else
-      setText({ "MC Amt"s + (m_lastCastedUpdateParam->isModAmountChanged() ? "*" : "") });
+      setText({"MC Amt"s + (p->isModAmountChanged() ? "*" : "")});
   }
   else
   {
