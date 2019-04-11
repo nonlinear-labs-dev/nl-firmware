@@ -142,8 +142,10 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		double reduce = toXPixels(getAttachArea());
 		r = r.getReducedBy(2 * reduce);
 		r.drawRoundedRect(ctx, Rect.ROUNDING_TOP, toXPixels(6), toXPixels(3), null, getColorBankSelect());
-
-		drawFinalizingItems();
+	
+		for(Control c: presetList.getChildren()) {
+			c.drawPost(ctx, invalidationMask);
+		}
 		
 		drawDropIndicator(ctx);
 	}
@@ -909,38 +911,4 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		
 		return null;
 	}
-
-	protected List<Runnable> finalizeDraw = new ArrayList<>();
-	
-	public void addSearchRectOverlay(Rect r, Context2d ctx, double d, RGB highlight) {
-		
-		final class DrawRunnable implements Runnable {
-			protected Rect m_rect;
-			protected double m_width;
-			protected RGB m_color;
-			protected Context2d m_ctx;
-			
-			public DrawRunnable(Rect r, double w, RGB c, Context2d ctx) {
-				m_rect = r;
-				m_width = w;
-				m_color = c;
-				m_ctx = ctx;
-			}
-			
-			@Override
-			public void run() {
-				m_rect.stroke(m_ctx, m_width, m_color);
-			}	
-		}
-		
-		finalizeDraw.add(new DrawRunnable(r, d, highlight, ctx));
-	}
-	
-	private void drawFinalizingItems() {
-		for(Runnable r: finalizeDraw) {
-			r.run();
-		}
-		finalizeDraw.clear();
-	}
-
 }

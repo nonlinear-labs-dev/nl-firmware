@@ -234,12 +234,19 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		r.reduceHeightBy(2 * cp);
 		r.reduceWidthBy(2 * cp);
 		r.stroke(ctx, cp, currentPresetColorPack.contour);
-
-		if(isCurrentFilterMatch)
-			getParent().addSearchRectOverlay(r, ctx, cp * 1.5, currentPresetColorPack.highlight);
 		
 		super.draw(ctx, invalidationMask);
 		r.fill(ctx, currentPresetColorPack.overlay);
+	}
+	
+	@Override
+	public void drawPost(Context2d ctx, int invalidationMask) {
+		if(isCurrentFilterMatch) {
+			double cp = getConturPixels();
+			cp = Math.ceil(cp);
+			cp = Math.max(1, cp);
+			getPixRect().stroke(ctx, cp * 1.75, getActiveColorPack().highlight);
+		}
 	}
 
 	public boolean isSelected() {
