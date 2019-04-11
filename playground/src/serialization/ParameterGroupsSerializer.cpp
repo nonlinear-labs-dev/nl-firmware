@@ -1,3 +1,4 @@
+#include <device-settings/DebugLevel.h>
 #include "xml/Attributes.h"
 #include "xml/Writer.h"
 #include "xml/Reader.h"
@@ -29,6 +30,11 @@ void ParameterGroupsSerializer::readTagContent(Reader &reader) const
 {
   reader.onTag(ParameterGroupSerializer::getTagName(), [&](const Attributes &attr) mutable {
     auto group = m_paramGroups->getParameterGroupByID(attr.get("id"));
-    return new ParameterGroupSerializer(group);
+    if(group) {
+        return new ParameterGroupSerializer(group);
+    } else {
+        DebugLevel::error("could not parse parameter group");
+        throw std::runtime_error("could not parse parameter group");
+    }
   });
 }

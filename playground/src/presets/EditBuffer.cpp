@@ -332,7 +332,7 @@ void EditBuffer::fakePresetDetails(Writer &writer, tUpdateID knownRevision, bool
           writer.writeTag("param",
                           { Attribute{ "id", to_string(param->getID()) },
                             Attribute{ "value", to_string(param->getDefaultValue()) },
-                            Attribute{ "mod-src", to_string(0) }, Attribute{ "mod-amt", to_string(0) } },
+                            Attribute{ "mod-src", "0" }, Attribute{ "mod-amt", "0" } },
                           []() {});
         }
       }

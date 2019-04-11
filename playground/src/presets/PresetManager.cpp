@@ -673,6 +673,33 @@ void PresetManager::stress(int numTransactions)
       20);
 }
 
+void PresetManager::stressParam(Parameter *param)
+{
+  auto scope = getUndoScope().startTransaction("Stress All Parameters");
+  auto trans = scope->getTransaction();
+  if(m_editBuffer->getSelected() != param)
+  {
+    m_editBuffer->undoableSelectParameter(trans, param);
+  }
+  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers{});
+}
+
+void PresetManager::stressAllParams(int numParamChangedForEachParameter)
+{
+  Glib::MainContext::get_default()->signal_timeout().connect_once([=]() {
+    for(auto &group : m_editBuffer->getParameterGroups())
+    {
+      for(auto &param : group->getParameters())
+      {
+        for(auto i = 0; i < numParamChangedForEachParameter; i++)
+        {
+          stressParam(param);
+        }
+      }
+    }
+  }, 20);
+}
+
 void PresetManager::stressBlocking(int numTransactions)
 {
   int parameterId = g_random_int_range(0, 200);
