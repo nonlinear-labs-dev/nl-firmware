@@ -111,7 +111,8 @@ void dsp_host::tickMain()
         m_params.tickItem(i);
     }
 #else
-    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_MONO); it != m_params.m_parameters.end(PARAM_SLOW, PARAM_MONO); it++)
+    auto end = m_params.m_parameters.end(PARAM_SLOW, PARAM_MONO);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_MONO); it != end; it++)
     {
         m_params.newTickItem(it);
     }
@@ -127,7 +128,8 @@ void dsp_host::tickMain()
           m_params.tickItem(i);
       }
 #else
-    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_POLY, v); it != m_params.m_parameters.end(PARAM_SLOW, PARAM_POLY, v); it += m_voices)
+    end = m_params.m_parameters.end(PARAM_SLOW, PARAM_POLY, v);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_POLY, v); it != end; it += m_voices)
     {
         m_params.newTickItem(it);
     }
@@ -150,7 +152,8 @@ void dsp_host::tickMain()
         m_params.tickItem(i);
     }
 #else
-    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_MONO); it != m_params.m_parameters.end(PARAM_FAST, PARAM_MONO); it++)
+    auto end = m_params.m_parameters.end(PARAM_FAST, PARAM_MONO);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_MONO); it != end; it++)
     {
         m_params.newTickItem(it);
     }
@@ -166,7 +169,8 @@ void dsp_host::tickMain()
           m_params.tickItem(i);
       }
 #else
-    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_POLY, v); it != m_params.m_parameters.end(PARAM_FAST, PARAM_POLY, v); it += m_voices)
+    end = m_params.m_parameters.end(PARAM_FAST, PARAM_POLY, v);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_POLY, v); it != end; it += m_voices)
     {
         m_params.newTickItem(it);
     }
@@ -184,7 +188,8 @@ void dsp_host::tickMain()
       m_params.tickItem(i);
   }
 #else
-    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_MONO); it != m_params.m_parameters.end(PARAM_AUDIO, PARAM_MONO); it++)
+    auto end = m_params.m_parameters.end(PARAM_AUDIO, PARAM_MONO);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_MONO); it != end; it++)
     {
         m_params.newTickItem(it);
     }
@@ -205,7 +210,8 @@ void dsp_host::tickMain()
         m_params.tickItem(i);
     }
 #else
-    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_POLY, v); it != m_params.m_parameters.end(PARAM_AUDIO, PARAM_POLY, v); it += m_voices)
+    end = m_params.m_parameters.end(PARAM_AUDIO, PARAM_POLY, v);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_POLY, v); it != end; it += m_voices)
     {
         m_params.newTickItem(it);
     }
