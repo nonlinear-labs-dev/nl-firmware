@@ -25,7 +25,7 @@ enum class PARAM_CLOCK_TYPES
   PARAM_SLOW = 3
 };
 
-enum PARAM_POLY_TYPES
+enum class PARAM_POLY_TYPES
 {
   PARAM_MONO = 0,
   PARAM_POLY = 1
@@ -62,7 +62,7 @@ struct polyDual_id_list
   dual_id_list m_data[dsp_poly_types];
   /* list operations */
   void reset();
-  void add(const uint32_t _polyId, const uint32_t _listId, const uint32_t _id);
+  void add(const PARAM_POLY_TYPES _polyId, const uint32_t _listId, const uint32_t _id);
 };
 
 struct poly_id_list
@@ -71,7 +71,7 @@ struct poly_id_list
   id_list m_data[dsp_poly_types];
   /* list operations */
   void reset();
-  void add(const uint32_t _polyId, const uint32_t _id);
+  void add(const PARAM_POLY_TYPES _polyId, const uint32_t _id);
 };
 
 struct env_id_list
@@ -95,14 +95,14 @@ struct dual_env_id_list
 
 struct new_clock_id_list
 {
-  inline void add(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType, uint32_t _id)
+  inline void add(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
   {
-    m_data[static_cast<int>(_clockType)][_polyType].push_back(_id);
+    m_data[static_cast<int>(_clockType)][static_cast<int>(_polyType)].push_back(_id);
   }
 
-  inline const std::vector<uint32_t> &get(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType) const
+  inline const std::vector<uint32_t> &get(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType) const
   {
-    return m_data[static_cast<int>(_clockType)][_polyType];
+    return m_data[static_cast<int>(_clockType)][static_cast<int>(_polyType)];
   }
 
  private:
@@ -111,14 +111,15 @@ struct new_clock_id_list
 
 struct new_dual_clock_id_list
 {
-  inline void add(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType, uint32_t _polyType, uint32_t _id)
+  inline void add(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
   {
-    m_data[_spreadType][static_cast<int>(_clockType)][_polyType].push_back(_id);
+    m_data[_spreadType][static_cast<int>(_clockType)][static_cast<int>(_polyType)].push_back(_id);
   }
 
-  inline const std::vector<uint32_t> &get(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType, uint32_t _polyType) const
+  inline const std::vector<uint32_t> &get(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType,
+                                          PARAM_POLY_TYPES _polyType) const
   {
-    return m_data[_spreadType][static_cast<int>(_clockType)][_polyType];
+    return m_data[_spreadType][static_cast<int>(_clockType)][static_cast<int>(_polyType)];
   }
 
  private:

@@ -33,7 +33,7 @@ struct param_head
   uint32_t m_index;
   uint32_t m_size;
   PARAM_CLOCK_TYPES m_clockType;
-  uint32_t m_polyType;
+  PARAM_POLY_TYPES m_polyType;
   uint32_t m_scaleId;
   uint32_t m_postId;
   float m_normalize;
@@ -90,45 +90,45 @@ struct Parameters
     return m_body[m_head[paramId].m_index + voice].m_signal;
   }
 
-  inline void addClockId(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType, uint32_t _id)
+  inline void addClockId(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
   {
     m_clockIds.add(_clockType, _polyType, _id);
   }
 
-  inline const std::vector<uint32_t> &getClockIds(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType) const
+  inline const std::vector<uint32_t> &getClockIds(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType) const
   {
     return m_clockIds.get(_clockType, _polyType);
   }
 
-  inline void addPostId(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType, uint32_t _polyType, uint32_t _id)
+  inline void addPostId(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
   {
     m_postIds.add(_spreadType, _clockType, _polyType, _id);
   }
 
   inline const std::vector<uint32_t> &getPostIds(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType,
-                                                 uint32_t _polyType) const
+                                                 PARAM_POLY_TYPES _polyType) const
   {
     return m_postIds.get(_spreadType, _clockType, _polyType);
   }
 #if PARAM_ITERATOR == 1
-  inline param_body *begin(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType)
+  inline param_body *begin(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType)
   {
-    return &m_body[m_start[static_cast<int>(_clockType)][_polyType]];
+    return &m_body[m_start[static_cast<int>(_clockType)][static_cast<int>(_polyType)]];
   }
 
-  inline param_body *begin(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType, uint32_t _voiceId)
+  inline param_body *begin(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _voiceId)
   {
-    return &m_body[m_start[static_cast<int>(_clockType)][_polyType] + _voiceId];
+    return &m_body[m_start[static_cast<int>(_clockType)][static_cast<int>(_polyType)] + _voiceId];
   }
 
-  inline param_body *end(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType)
+  inline param_body *end(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType)
   {
-    return &m_body[m_end[static_cast<int>(_clockType)][_polyType]];
+    return &m_body[m_end[static_cast<int>(_clockType)][static_cast<int>(_polyType)]];
   }
 
-  inline param_body *end(PARAM_CLOCK_TYPES _clockType, uint32_t _polyType, uint32_t _voiceId)
+  inline param_body *end(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _voiceId)
   {
-    return &m_body[m_end[static_cast<int>(_clockType)][_polyType] + _voiceId];
+    return &m_body[m_end[static_cast<int>(_clockType)][static_cast<int>(_polyType)] + _voiceId];
   }
 #endif
  private:

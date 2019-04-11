@@ -64,8 +64,8 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
     param_head* obj = &getHead(p);
     /* declarations according to parameter definition (index is determined in second run) */
     obj->m_clockType = static_cast<PARAM_CLOCK_TYPES>(param_definition[p][1]);  // clock type (sync/audio/fast/slow)
-    obj->m_polyType = static_cast<uint32_t>(param_definition[p][2]);            // poly type (mono/poly)
-    obj->m_size = m_routePolyphony[obj->m_polyType];                            // determine (rendering) size
+    obj->m_polyType = static_cast<PARAM_POLY_TYPES>(param_definition[p][2]);    // poly type (mono/poly)
+    obj->m_size = m_routePolyphony[static_cast<uint32_t>(obj->m_polyType)];     // determine (rendering) size
     obj->m_normalize = 1.f / param_definition[p][3];                            // TCD range
     obj->m_scaleId = static_cast<uint32_t>(param_definition[p][4]);             // TCD scale id
     obj->m_scaleArg = param_definition[p][5];                                   // TCD scale argument
@@ -97,29 +97,33 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
   for(uint32_t clockType = 0; clockType < dsp_clock_types; clockType++)
   {
 #if PARAM_ITERATOR == 1
-    m_parameters.m_start[clockType][PARAM_MONO] = index;  // find start position in body array (mono)
+    m_parameters.m_start[clockType][static_cast<uint32_t>(PARAM_POLY_TYPES::PARAM_MONO)]
+        = index;  // find start position in body array (mono)
 #endif
-    for(auto& it : m_parameters.getClockIds(static_cast<PARAM_CLOCK_TYPES>(clockType), PARAM_MONO))
+    for(auto& it : m_parameters.getClockIds(static_cast<PARAM_CLOCK_TYPES>(clockType), PARAM_POLY_TYPES::PARAM_MONO))
     {
       m_parameters.getHead(it).m_index = index;
       index += 1;
     }
 #if PARAM_ITERATOR == 1
-    m_parameters.m_end[clockType][PARAM_MONO] = index;  // find end position in body array (mono)
+    m_parameters.m_end[clockType][static_cast<uint32_t>(PARAM_POLY_TYPES::PARAM_MONO)]
+        = index;  // find end position in body array (mono)
 #endif
   }
   for(uint32_t clockType = 0; clockType < dsp_clock_types; clockType++)
   {
 #if PARAM_ITERATOR == 1
-    m_parameters.m_start[clockType][PARAM_POLY] = index;  // find start position in body array (poly)
+    m_parameters.m_start[clockType][static_cast<uint32_t>(PARAM_POLY_TYPES::PARAM_POLY)]
+        = index;  // find start position in body array (poly)
 #endif
-    for(auto& it : m_parameters.getClockIds(static_cast<PARAM_CLOCK_TYPES>(clockType), PARAM_POLY))
+    for(auto& it : m_parameters.getClockIds(static_cast<PARAM_CLOCK_TYPES>(clockType), PARAM_POLY_TYPES::PARAM_POLY))
     {
       m_parameters.getHead(it).m_index = index;
       index += _voices;
     }
 #if PARAM_ITERATOR == 1
-    m_parameters.m_end[clockType][PARAM_POLY] = index;  // find end position in body array (poly)
+    m_parameters.m_end[clockType][static_cast<uint32_t>(PARAM_POLY_TYPES::PARAM_POLY)]
+        = index;  // find end position in body array (poly)
 #endif
   }
   /* initialize global utility parameters */
@@ -836,13 +840,13 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t _voiceId)
 {
   /* automatic mono to poly distribution */
-  for(auto& it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_MONO))
+  for(auto& it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY))
+  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_POLY))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it, _voiceId);
@@ -968,13 +972,13 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
 void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t _voiceId)
 {
   /* automatic mono to poly distribution */
-  for(auto& it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_MONO))
+  for(auto& it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY))
+  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_POLY))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it, _voiceId);
@@ -1052,13 +1056,13 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
 void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t _voiceId)
 {
   /* automatic mono to poly distribution */
-  for(auto& it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_MONO))
+  for(auto& it : m_parameters.getPostIds(PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it);
   }
   /* automatic poly to poly copy - each voice */
-  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY))
+  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_POLY))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it, _voiceId);
@@ -1301,7 +1305,7 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
 void paramengine::postProcessMono_slow(ParameterStorage& params)
 {
   /* automatic mono to mono copy (always voice zero) */
-  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_MONO))
+  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it);
@@ -1386,7 +1390,7 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
 void paramengine::postProcessMono_fast(ParameterStorage& params)
 {
   /* automatic mono to mono copy (always voice zero) */
-  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_MONO))
+  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it);
@@ -1505,7 +1509,7 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
 void paramengine::postProcessMono_audio(ParameterStorage& params)
 {
   /* automatic mono to mono copy (always voice zero) */
-  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_MONO))
+  for(auto& it : m_parameters.getPostIds(PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
     params[p] = getSignal(it);
