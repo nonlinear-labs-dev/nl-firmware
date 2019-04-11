@@ -182,7 +182,7 @@ struct paramengine
   {
     return m_parameters.getSignal(paramId, voice);
   }
-
+#if PARAM_ITERATOR == 1
   inline void newTickItem(param_body* item)
   {
       /* render when state is true */
@@ -199,7 +199,7 @@ struct paramengine
         item->m_x += item->m_dx[1];
       }
   }
-
+#endif
   /* local variables */
   uint32_t m_samplerate;
   uint32_t m_preload = 0;
