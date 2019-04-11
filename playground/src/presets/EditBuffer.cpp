@@ -639,3 +639,7 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, Glib::ustr
       mc->setLastMCViewUUID(uuid);
     }
 }
+
+UpdateDocumentContributor::tUpdateID EditBuffer::getUpdateIdWhenLastLoadedPresetChanged() const {
+    return m_updateIdWhenLastLoadedPresetChanged;
+}
