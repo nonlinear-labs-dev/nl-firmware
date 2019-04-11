@@ -52,6 +52,7 @@ struct param_body
   float m_start = 0.f;
   float m_diff = 0.f;
   float m_dest = 0.f;
+  void tick();
 };
 
 /* */
@@ -182,24 +183,6 @@ struct paramengine
   {
     return m_parameters.getSignal(paramId, voice);
   }
-#if PARAM_ITERATOR == 1
-  inline void newTickItem(param_body* item)
-  {
-      /* render when state is true */
-      if(item->m_state == 1)
-      {
-        /* stop on final sample */
-        if(item->m_x >= 1)
-        {
-          item->m_x = 1;
-          item->m_state = 0;
-        }
-        /* update signal (and x) */
-        item->m_signal = item->m_start + (item->m_diff * item->m_x);
-        item->m_x += item->m_dx[1];
-      }
-  }
-#endif
   /* local variables */
   uint32_t m_samplerate;
   uint32_t m_preload = 0;
@@ -254,8 +237,6 @@ struct paramengine
   void applyPreloaded(const uint32_t _voiceId, const uint32_t _paramId);         // param apply preloaded
   void applyDest(const uint32_t _index);                                         // param apply dest (non-sync types)
   void applySync(const uint32_t _index);                                         // param apply dest (sync types)
-  /* rendering */
-  void tickItem(const uint32_t _index);  // parameter rendering
   /* key events */
   void keyDown(const uint32_t _voiceId, float _velocity);  // key events: key down (note on) mechanism
   void keyUp(const uint32_t _voiceId, float _velocity);    // key events: key up (note off) mechanism

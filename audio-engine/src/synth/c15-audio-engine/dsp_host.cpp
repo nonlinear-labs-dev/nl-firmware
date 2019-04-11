@@ -108,13 +108,13 @@ void dsp_host::tickMain()
     for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_MONO))
     {
         auto i = m_params.getHead(it).m_index;
-        m_params.tickItem(i);
+        m_params.getBody(i).tick();
     }
 #else
     auto end = m_params.m_parameters.end(PARAM_SLOW, PARAM_MONO);
     for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_MONO); it != end; it++)
     {
-        m_params.newTickItem(it);
+        it->tick();
     }
 #endif
     m_params.postProcessMono_slow(m_parameters.bindToVoice(0));
@@ -125,13 +125,13 @@ void dsp_host::tickMain()
       for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_POLY))
       {
           auto i = m_params.getHead(it).m_index + v;
-          m_params.tickItem(i);
+          m_params.getBody(i).tick();
       }
 #else
     end = m_params.m_parameters.end(PARAM_SLOW, PARAM_POLY, v);
     for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_POLY, v); it != end; it += m_voices)
     {
-        m_params.newTickItem(it);
+        it->tick();
     }
 #endif
       m_params.postProcessPoly_slow(m_parameters.bindToVoice(v), v);
@@ -149,13 +149,13 @@ void dsp_host::tickMain()
     for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_MONO))
     {
         auto i = m_params.getHead(it).m_index;
-        m_params.tickItem(i);
+        m_params.getBody(i).tick();
     }
 #else
     auto end = m_params.m_parameters.end(PARAM_FAST, PARAM_MONO);
     for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_MONO); it != end; it++)
     {
-        m_params.newTickItem(it);
+        it->tick();
     }
 #endif
     m_params.postProcessMono_fast(m_parameters.bindToVoice(0));
@@ -166,13 +166,13 @@ void dsp_host::tickMain()
       for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_POLY))
       {
           auto i = m_params.getHead(it).m_index + v;
-          m_params.tickItem(i);
+          m_params.getBody(i).tick();
       }
 #else
     end = m_params.m_parameters.end(PARAM_FAST, PARAM_POLY, v);
     for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_POLY, v); it != end; it += m_voices)
     {
-        m_params.newTickItem(it);
+        it->tick();
     }
 #endif
       m_params.postProcessPoly_fast(m_parameters.bindToVoice(v), v);
@@ -185,13 +185,13 @@ void dsp_host::tickMain()
   for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_MONO))
   {
       auto i = m_params.getHead(it).m_index;
-      m_params.tickItem(i);
+      m_params.getBody(i).tick();
   }
 #else
     auto end = m_params.m_parameters.end(PARAM_AUDIO, PARAM_MONO);
     for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_MONO); it != end; it++)
     {
-        m_params.newTickItem(it);
+        it->tick();
     }
 #endif
   m_params.postProcessMono_audio(m_parameters.bindToVoice(0));
@@ -207,13 +207,13 @@ void dsp_host::tickMain()
     for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_POLY))
     {
         auto i = m_params.getHead(it).m_index + v;
-        m_params.tickItem(i);
+        m_params.getBody(i).tick();
     }
 #else
     end = m_params.m_parameters.end(PARAM_AUDIO, PARAM_POLY, v);
     for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_POLY, v); it != end; it += m_voices)
     {
-        m_params.newTickItem(it);
+        it->tick();
     }
 #endif
     /* post processing and envelope rendering */
