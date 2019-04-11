@@ -12,6 +12,9 @@
 
 #include <stdint.h>
 
+/* Param Interface Testing */
+#define PARAM_ITERATOR 1 // 0: render param bodies by clockIds; 1: render param bodies by direct iteration
+
 /* Test Flags                                       THINGS TO DEFINE, testing candidates and new functionalities */
 
 #define test_milestone                                                                                                 \
