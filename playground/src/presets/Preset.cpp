@@ -253,11 +253,8 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
 
 void Preset::writeDetailDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision, bool force) const
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  bool changed = force || knownRevision < eb->getUpdateIdWhenLastLoadedPresetChanged();
-
-  writer.writeTag("original", Attribute("changed", changed), [&]() {
-    if(changed)
+  writer.writeTag("original", Attribute("changed", force), [&]() {
+    if(force)
       PresetParameterGroups::writeDocument(writer, knownRevision);
   });
 };

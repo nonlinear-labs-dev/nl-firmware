@@ -318,10 +318,8 @@ bool EditBuffer::isZombie() const
   return !getParent()->findPreset(getUUIDOfLastLoadedPreset());
 }
 
-void EditBuffer::fakePresetDetails(Writer &writer, tUpdateID knownRevision, bool force) const
+void EditBuffer::fakePresetDetails(Writer &writer, bool changed) const
 {
-  bool changed = force || knownRevision < m_updateIdWhenLastLoadedPresetChanged;
-
   writer.writeTag("original", Attribute("changed", changed), [&]() {
     if(changed)
     {
@@ -360,10 +358,9 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                       super::writeDocument(writer, knownRevision);
 
                     if(auto originPreset = getOrigin())
-                      originPreset->writeDetailDocument(writer, knownRevision,
-                                                        knownRevision < m_updateIdWhenLastLoadedPresetChanged);
+                      originPreset->writeDetailDocument(writer, knownRevision, knownRevision < m_updateIdWhenLastLoadedPresetChanged);
                     else
-                      fakePresetDetails(writer, knownRevision, knownRevision < m_updateIdWhenLastLoadedPresetChanged);
+                      fakePresetDetails(writer, knownRevision < m_updateIdWhenLastLoadedPresetChanged);
                   });
 }
 
@@ -638,8 +635,4 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, Glib::ustr
       mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
       mc->setLastMCViewUUID(uuid);
     }
-}
-
-UpdateDocumentContributor::tUpdateID EditBuffer::getUpdateIdWhenLastLoadedPresetChanged() const {
-    return m_updateIdWhenLastLoadedPresetChanged;
 }
