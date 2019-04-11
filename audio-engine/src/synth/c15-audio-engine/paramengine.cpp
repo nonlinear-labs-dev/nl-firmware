@@ -17,6 +17,14 @@ std::ostream& operator<<(std::ostream& lhs, const param_body& rhs)
   return lhs;
 }
 
+// continuous load rendeing (at any time)
+void param_body::tick()
+{
+    m_x = std::min(m_x, 1.f);
+    m_signal = m_start + (m_diff * m_x);
+    m_x += m_dx[1];
+}
+
 /* proper init */
 void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
 {
@@ -347,26 +355,6 @@ void paramengine::applySync(const uint32_t _index)
 {
   /* just update signal, no reference for one-liner */
   getBody(_index).m_signal = getBody(_index).m_dest;
-}
-
-/* parameter rendering */
-void paramengine::tickItem(const uint32_t _index)
-{
-  /* provide (rendering) item reference */
-  param_body* item = &getBody(_index);
-  /* render when state is true */
-  if(item->m_state == 1)
-  {
-    /* stop on final sample */
-    if(item->m_x >= 1)
-    {
-      item->m_x = 1;
-      item->m_state = 0;
-    }
-    /* update signal (and x) */
-    item->m_signal = item->m_start + (item->m_diff * item->m_x);
-    item->m_x += item->m_dx[1];
-  }
 }
 
 /* TCD Key Events - keyDown */
