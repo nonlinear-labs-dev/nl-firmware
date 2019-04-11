@@ -61,7 +61,7 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     /* provide parameter reference */
-    param_head* obj = &getHead(p);
+    param_head* obj = &getHead(static_cast<ParameterLabel>(p));
     /* declarations according to parameter definition (index is determined in second run) */
     obj->m_clockType = static_cast<PARAM_CLOCK_TYPES>(param_definition[p][1]);  // clock type (sync/audio/fast/slow)
     obj->m_polyType = static_cast<PARAM_POLY_TYPES>(param_definition[p][2]);    // poly type (mono/poly)
@@ -81,7 +81,7 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
         obj->m_postId = static_cast<SignalLabel>(param_definition[p][6]);  // post processing id
         /* determine automatic post processing (copy, distribution) */
         m_parameters.addPostId(static_cast<PARAM_SPREAD_TYPES>(param_definition[p][7]), obj->m_clockType,
-                               obj->m_polyType, p);
+                               obj->m_polyType, static_cast<ParameterLabel>(p));
       }
       else
       {
@@ -103,7 +103,7 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
 #endif
     for(auto& it : m_parameters.getClockIds(static_cast<PARAM_CLOCK_TYPES>(clockType), PARAM_POLY_TYPES::PARAM_MONO))
     {
-      m_parameters.getHead(it).m_index = index;
+      m_parameters.getHead(static_cast<ParameterLabel>(it)).m_index = index;
       index += 1;
     }
 #if PARAM_ITERATOR == 1
@@ -119,7 +119,7 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
 #endif
     for(auto& it : m_parameters.getClockIds(static_cast<PARAM_CLOCK_TYPES>(clockType), PARAM_POLY_TYPES::PARAM_POLY))
     {
-      m_parameters.getHead(it).m_index = index;
+      m_parameters.getHead(static_cast<ParameterLabel>(it)).m_index = index;
       index += _voices;
     }
 #if PARAM_ITERATOR == 1
@@ -280,7 +280,7 @@ float paramengine::scale(const uint32_t _scaleId, const float _scaleArg, float _
 }
 
 /* TCD mechanism - time updates */
-void paramengine::setDx(const uint32_t _voiceId, const uint32_t _paramId, float _value)
+void paramengine::setDx(const uint32_t _voiceId, const ParameterLabel _paramId, float _value)
 {
   /* provide object reference */
   param_head* obj = &getHead(_paramId);
@@ -292,7 +292,7 @@ void paramengine::setDx(const uint32_t _voiceId, const uint32_t _paramId, float 
 }
 
 /* TCD mechanism - destination updates */
-void paramengine::setDest(const uint32_t _voiceId, const uint32_t _paramId, float _value)
+void paramengine::setDest(const uint32_t _voiceId, const ParameterLabel _paramId, float _value)
 {
   /* provide object and (rendering) item references */
   param_head* obj = &getHead(_paramId);
@@ -321,7 +321,7 @@ void paramengine::setDest(const uint32_t _voiceId, const uint32_t _paramId, floa
 }
 
 /* TCD mechanism - preload functionality */
-void paramengine::applyPreloaded(const uint32_t _voiceId, const uint32_t _paramId)
+void paramengine::applyPreloaded(const uint32_t _voiceId, const ParameterLabel _paramId)
 {
   /* provide object and (rendering) item references */
   param_head* obj = &getHead(_paramId);
@@ -391,21 +391,24 @@ void paramengine::keyApply(const uint32_t _voiceId)
 {
   if(m_event.m_poly[_voiceId].m_type == 1)
   {
-    m_note_shift[_voiceId] = getSignal(P_MA_SH);
+    m_note_shift[_voiceId] = getSignal(ParameterLabel::P_MA_SH);
   }
   /* apply key event (update envelopes according to event type) */
 #if test_milestone == 150
-  const float pitch = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const float pitch
+      = getSignal(ParameterLabel::P_KEY_NP, _voiceId) + getSignal(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
-  const float pitch = getSignal(P_KEY_BP, _voiceId) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(ParameterLabel::P_KEY_IDX, _voiceId));
+  const float pitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId)
+      + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(ParameterLabel::P_MA_T)
+      + m_note_shift[_voiceId];
 #elif test_milestone == 156
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
-  const float pitch = getSignal(P_KEY_BP, _voiceId) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const float pitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId)
+      + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(ParameterLabel::P_MA_T)
+      + m_note_shift[_voiceId];
 #endif
   const float velocity = m_event.m_poly[_voiceId].m_velocity;
   if(m_event.m_poly[_voiceId].m_type == 0)
@@ -466,12 +469,17 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
 
   /* envelope a update */
 
-  timeKT = -0.5f * getSignal(P_EA_TKT) * _pitch;  // determine time key tracking according to pitch and parameter
-  levelVel = -getSignal(P_EA_LV);                 // get level velocity parameter
-  attackVel = -getSignal(P_EA_AV) * _velocity;    // determine attack velocity accorindg to velocity and parameter
-  decay1Vel = -getSignal(P_EA_D1V) * _velocity;   // determine decay1 velocity accorindg to velocity and parameter
-  decay2Vel = -getSignal(P_EA_D2V) * _velocity;   // determine decay2 velocity accorindg to velocity and parameter
-  levelKT = getSignal(P_EA_LKT) * _pitch;         // determine level key tracking according to pitch and parameter
+  timeKT = -0.5f * getSignal(ParameterLabel::P_EA_TKT)
+      * _pitch;                                    // determine time key tracking according to pitch and parameter
+  levelVel = -getSignal(ParameterLabel::P_EA_LV);  // get level velocity parameter
+  attackVel = -getSignal(ParameterLabel::P_EA_AV)
+      * _velocity;  // determine attack velocity accorindg to velocity and parameter
+  decay1Vel = -getSignal(ParameterLabel::P_EA_D1V)
+      * _velocity;  // determine decay1 velocity accorindg to velocity and parameter
+  decay2Vel = -getSignal(ParameterLabel::P_EA_D2V)
+      * _velocity;  // determine decay2 velocity accorindg to velocity and parameter
+  levelKT
+      = getSignal(ParameterLabel::P_EA_LKT) * _pitch;  // determine level key tracking according to pitch and parameter
   peak = std::min(m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT),
                   env_clip_peak);  // determine peak level according to velocity and level parameters (max +3dB)
 
@@ -483,12 +491,14 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
   m_event.m_env[0].m_timeFactor[_voiceId][2] = m_convert.eval_level(timeKT + decay2Vel)
       * m_millisecond;  // determine time factor for decay2 segment (without actual decay2 time)
 
-  m_new_envelopes.m_env_a.setSplitValue(getSignal(P_EA_SPL));  // update the split behavior by corresponding parameter
-  m_new_envelopes.m_env_a.setAttackCurve(getSignal(P_EA_AC));  // update the attack curve by corresponding parameter
+  m_new_envelopes.m_env_a.setSplitValue(
+      getSignal(ParameterLabel::P_EA_SPL));  // update the split behavior by corresponding parameter
+  m_new_envelopes.m_env_a.setAttackCurve(
+      getSignal(ParameterLabel::P_EA_AC));  // update the attack curve by corresponding parameter
   m_new_envelopes.m_env_a.setPeakLevel(_voiceId,
                                        peak);  // update the current peak level (for magnitude/timbre crossfades)
 
-  time = getSignal(P_EA_ATT)
+  time = getSignal(ParameterLabel::P_EA_ATT)
       * m_event.m_env[0]
             .m_timeFactor[_voiceId][0];  // determine attack segment time according to time factor and parameter
   m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 1, 1.f / (time + 1.f));  // update attack segment time
@@ -496,29 +506,36 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
                                          peak);  // update attack segment destination (peak level) (no split behavior)
 
   // determine decay1 segment time according to time factor and parameter
-  time = getSignal(P_EA_DEC1) * m_event.m_env[0].m_timeFactor[_voiceId][1];
+  time = getSignal(ParameterLabel::P_EA_DEC1) * m_event.m_env[0].m_timeFactor[_voiceId][1];
   m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 2, 1.f / (time + 1.f));  // update decay1 segment time
   // determine decay1 segment destination according to peak level and parameter
-  dest = peak * getSignal(P_EA_BP);
+  dest = peak * getSignal(ParameterLabel::P_EA_BP);
   m_new_envelopes.m_env_a.setSegmentDest(_voiceId, 2, true,
                                          dest);  // update decay1 segment destination (split behavior)
 
-  time = getSignal(P_EA_DEC2)
+  time = getSignal(ParameterLabel::P_EA_DEC2)
       * m_event.m_env[0]
             .m_timeFactor[_voiceId][2];  // determine decay2 segment time according to time factor and parameter
   m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 3, 1.f / (time + 1.f));  // update decay2 segment time
-  dest = peak * getSignal(P_EA_SUS);  // determine decay2 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EA_SUS);  // determine decay2 segment destination according to peak level and parameter
   m_new_envelopes.m_env_a.setSegmentDest(_voiceId, 3, true,
                                          dest);  // update decay2 segment destination (split behavior)
 
   /* envelope b update */
 
-  timeKT = -0.5f * getSignal(P_EB_TKT) * _pitch;  // determine time key tracking according to pitch and parameter
-  levelVel = -getSignal(P_EB_LV);                 // get level velocity parameter
-  attackVel = -getSignal(P_EB_AV) * _velocity;    // determine attack velocity accorindg to velocity and parameter
-  decay1Vel = -getSignal(P_EB_D1V) * _velocity;   // determine decay1 velocity accorindg to velocity and parameter
-  decay2Vel = -getSignal(P_EB_D2V) * _velocity;   // determine decay2 velocity accorindg to velocity and parameter
-  levelKT = getSignal(P_EB_LKT) * _pitch;         // determine level key tracking according to pitch and parameter
+  timeKT = -0.5f * getSignal(ParameterLabel::P_EB_TKT)
+      * _pitch;                                    // determine time key tracking according to pitch and parameter
+  levelVel = -getSignal(ParameterLabel::P_EB_LV);  // get level velocity parameter
+  attackVel = -getSignal(ParameterLabel::P_EB_AV)
+      * _velocity;  // determine attack velocity accorindg to velocity and parameter
+  decay1Vel = -getSignal(ParameterLabel::P_EB_D1V)
+      * _velocity;  // determine decay1 velocity accorindg to velocity and parameter
+  decay2Vel = -getSignal(ParameterLabel::P_EB_D2V)
+      * _velocity;  // determine decay2 velocity accorindg to velocity and parameter
+  levelKT
+      = getSignal(ParameterLabel::P_EB_LKT) * _pitch;  // determine level key tracking according to pitch and parameter
   peak = std::min(m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT),
                   env_clip_peak);  // determine peak level according to velocity and level parameters (max +3dB)
 
@@ -530,40 +547,49 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
   m_event.m_env[1].m_timeFactor[_voiceId][2] = m_convert.eval_level(timeKT + decay2Vel)
       * m_millisecond;  // determine time factor for decay2 segment (without actual decay2 time)
 
-  m_new_envelopes.m_env_b.setSplitValue(getSignal(P_EB_SPL));  // update the split behavior by corresponding parameter
-  m_new_envelopes.m_env_b.setAttackCurve(getSignal(P_EB_AC));  // update the attack curve by corresponding parameter
+  m_new_envelopes.m_env_b.setSplitValue(
+      getSignal(ParameterLabel::P_EB_SPL));  // update the split behavior by corresponding parameter
+  m_new_envelopes.m_env_b.setAttackCurve(
+      getSignal(ParameterLabel::P_EB_AC));  // update the attack curve by corresponding parameter
   m_new_envelopes.m_env_b.setPeakLevel(_voiceId,
                                        peak);  // update the current peak level (for magnitude/timbre crossfades)
 
-  time = getSignal(P_EB_ATT)
+  time = getSignal(ParameterLabel::P_EB_ATT)
       * m_event.m_env[1]
             .m_timeFactor[_voiceId][0];  // determine attack segment time according to time factor and parameter
   m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 1, 1.f / (time + 1.f));  // update attack segment time
   m_new_envelopes.m_env_b.setSegmentDest(_voiceId, 1, false,
                                          peak);  // update attack segment destination (peak level) (no split behavior)
 
-  time = getSignal(P_EB_DEC1)
+  time = getSignal(ParameterLabel::P_EB_DEC1)
       * m_event.m_env[1]
             .m_timeFactor[_voiceId][1];  // determine decay1 segment time according to time factor and parameter
   m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 2, 1.f / (time + 1.f));  // update decay1 segment time
-  dest = peak * getSignal(P_EB_BP);  // determine decay1 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EB_BP);  // determine decay1 segment destination according to peak level and parameter
   m_new_envelopes.m_env_b.setSegmentDest(_voiceId, 2, true,
                                          dest);  // update decay1 segment destination (split behavior)
 
-  time = getSignal(P_EB_DEC2)
+  time = getSignal(ParameterLabel::P_EB_DEC2)
       * m_event.m_env[1]
             .m_timeFactor[_voiceId][2];  // determine decay2 segment time according to time factor and parameter
   m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 3, 1.f / (time + 1.f));  // update decay2 segment time
-  dest = peak * getSignal(P_EB_SUS);  // determine decay2 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EB_SUS);  // determine decay2 segment destination according to peak level and parameter
   m_new_envelopes.m_env_b.setSegmentDest(_voiceId, 3, true,
                                          dest);  // update decay2 segment destination (split behavior)
 
   /* envelope c update */
 
-  timeKT = -0.5f * getSignal(P_EC_TKT) * _pitch;  // determine time key tracking according to pitch and parameter
-  levelVel = -getSignal(P_EC_LV);                 // get level velocity parameter
-  attackVel = -getSignal(P_EC_AV) * _velocity;    // determine attack velocity accorindg to velocity and parameter
-  levelKT = getSignal(P_EC_LKT) * _pitch;         // determine level key tracking according to pitch and parameter
+  timeKT = -0.5f * getSignal(ParameterLabel::P_EC_TKT)
+      * _pitch;                                    // determine time key tracking according to pitch and parameter
+  levelVel = -getSignal(ParameterLabel::P_EC_LV);  // get level velocity parameter
+  attackVel = -getSignal(ParameterLabel::P_EC_AV)
+      * _velocity;  // determine attack velocity accorindg to velocity and parameter
+  levelKT
+      = getSignal(ParameterLabel::P_EC_LKT) * _pitch;  // determine level key tracking according to pitch and parameter
   unclipped
       = m_convert.eval_level(((1.f - _velocity) * levelVel)
                              + levelKT);  // determine unclipped peak level according to velocity and level parameters
@@ -580,29 +606,34 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
       = m_event.m_env[2]
             .m_timeFactor[_voiceId][1];  // determine time factor for decay2 segment (without actual decay2 time)
 
-  m_new_envelopes.m_env_c.setAttackCurve(getSignal(P_EC_AC));  // update the attack curve by corresponding parameter
+  m_new_envelopes.m_env_c.setAttackCurve(
+      getSignal(ParameterLabel::P_EC_AC));  // update the attack curve by corresponding parameter
   m_new_envelopes.m_env_c.setRetriggerHardness(
-      getSignal(P_EC_RH));  // update the retrigger hardness by corresponding parameter
+      getSignal(ParameterLabel::P_EC_RH));  // update the retrigger hardness by corresponding parameter
 
-  time = getSignal(P_EC_ATT)
+  time = getSignal(ParameterLabel::P_EC_ATT)
       * m_event.m_env[2]
             .m_timeFactor[_voiceId][0];  // determine attack segment time according to time factor and parameter
   m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 1, 1.f / (time + 1.f));  // update attack segment time
   m_new_envelopes.m_env_c.setSegmentDest(_voiceId, 1,
                                          peak);  // update attack segment destination (peak level) (no split behavior)
 
-  time = getSignal(P_EC_DEC1)
+  time = getSignal(ParameterLabel::P_EC_DEC1)
       * m_event.m_env[2]
             .m_timeFactor[_voiceId][1];  // determine decay1 segment time according to time factor and parameter
   m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 2, 1.f / (time + 1.f));  // update decay1 segment time
-  dest = peak * getSignal(P_EC_BP);  // determine decay1 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EC_BP);  // determine decay1 segment destination according to peak level and parameter
   m_new_envelopes.m_env_c.setSegmentDest(_voiceId, 2, dest);  // update decay1 segment destination (no split behavior)
 
-  time = getSignal(P_EC_DEC2)
+  time = getSignal(ParameterLabel::P_EC_DEC2)
       * m_event.m_env[2]
             .m_timeFactor[_voiceId][2];  // determine decay2 segment time according to time factor and parameter
   m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 3, 1.f / (time + 1.f));  // update decay2 segment time
-  dest = peak * getSignal(P_EC_SUS);  // determine decay2 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EC_SUS);  // determine decay2 segment destination according to peak level and parameter
   m_new_envelopes.m_env_c.setSegmentDest(_voiceId, 3, dest);  // update decay2 segment destination (no split behavior)
 
   /* start envelopes */
@@ -622,16 +653,19 @@ void paramengine::newEnvUpdateStop(const uint32_t _voiceId, const float _pitch, 
 
   /* envelope a update */
 
-  timeKT = -getSignal(P_EA_TKT) * _pitch;        // determine time key tracking according to pitch and parameter
-  releaseVel = -getSignal(P_EA_RV) * _velocity;  // determine release velocity according to velocity and parameter
+  timeKT
+      = -getSignal(ParameterLabel::P_EA_TKT) * _pitch;  // determine time key tracking according to pitch and parameter
+  releaseVel = -getSignal(ParameterLabel::P_EA_RV)
+      * _velocity;  // determine release velocity according to velocity and parameter
 
   m_event.m_env[0].m_timeFactor[_voiceId][3] = m_convert.eval_level(timeKT + releaseVel)
       * m_millisecond;  // determine time factor for release segment (without actual release time)
 
-  if(getSignal(P_EA_REL) <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
+  if(getSignal(ParameterLabel::P_EA_REL)
+     <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
   {
     /* finite release time */
-    time = getSignal(P_EA_REL)
+    time = getSignal(ParameterLabel::P_EA_REL)
         * m_event.m_env[0]
               .m_timeFactor[_voiceId][3];  //      determine release segment time according to time factor and parameter
     m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 4, 1.f / (time + 1.f));  //      update release segment time
@@ -644,16 +678,19 @@ void paramengine::newEnvUpdateStop(const uint32_t _voiceId, const float _pitch, 
 
   /* envelope b update */
 
-  timeKT = -getSignal(P_EB_TKT) * _pitch;        // determine time key tracking according to pitch and parameter
-  releaseVel = -getSignal(P_EB_RV) * _velocity;  // determine release velocity according to velocity and parameter
+  timeKT
+      = -getSignal(ParameterLabel::P_EB_TKT) * _pitch;  // determine time key tracking according to pitch and parameter
+  releaseVel = -getSignal(ParameterLabel::P_EB_RV)
+      * _velocity;  // determine release velocity according to velocity and parameter
 
   m_event.m_env[1].m_timeFactor[_voiceId][3] = m_convert.eval_level(timeKT + releaseVel)
       * m_millisecond;  // determine time factor for release segment (without actual release time)
 
-  if(getSignal(P_EB_REL) <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
+  if(getSignal(ParameterLabel::P_EB_REL)
+     <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
   {
     /* finite release time */
-    time = getSignal(P_EB_REL)
+    time = getSignal(ParameterLabel::P_EB_REL)
         * m_event.m_env[1]
               .m_timeFactor[_voiceId][3];  //      determine release segment time according to time factor and parameter
     m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 4, 1.f / (time + 1.f));  //      update release segment time
@@ -666,16 +703,19 @@ void paramengine::newEnvUpdateStop(const uint32_t _voiceId, const float _pitch, 
 
   /* envelope c update */
 
-  timeKT = -getSignal(P_EC_TKT) * _pitch;        // determine time key tracking according to pitch and parameter
-  releaseVel = -getSignal(P_EC_RV) * _velocity;  // determine release velocity according to velocity and parameter
+  timeKT
+      = -getSignal(ParameterLabel::P_EC_TKT) * _pitch;  // determine time key tracking according to pitch and parameter
+  releaseVel = -getSignal(ParameterLabel::P_EC_RV)
+      * _velocity;  // determine release velocity according to velocity and parameter
 
   m_event.m_env[2].m_timeFactor[_voiceId][3] = m_convert.eval_level(timeKT + releaseVel)
       * m_millisecond;  // determine time factor for release segment (without actual release time)
 
-  if(getSignal(P_EC_REL) <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
+  if(getSignal(ParameterLabel::P_EC_REL)
+     <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
   {
     /* finite release time */
-    time = getSignal(P_EC_REL)
+    time = getSignal(ParameterLabel::P_EC_REL)
         * m_event.m_env[2]
               .m_timeFactor[_voiceId][3];  //      determine release segment time according to time factor and parameter
     m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 4, 1.f / (time + 1.f));  //      update release segment time
@@ -703,25 +743,26 @@ void paramengine::newEnvUpdateTimes(const uint32_t _voiceId)
 
   /* envelope a update */
 
-  time = getSignal(P_EA_ATT)
+  time = getSignal(ParameterLabel::P_EA_ATT)
       * m_event.m_env[0]
             .m_timeFactor[_voiceId][0];  // determine attack segment time according to time factor and parameter
   m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 1, 1.f / (time + 1.f));  // update attack segment time
 
-  time = getSignal(P_EA_DEC1)
+  time = getSignal(ParameterLabel::P_EA_DEC1)
       * m_event.m_env[0]
             .m_timeFactor[_voiceId][1];  // determine decay1 segment time according to time factor and parameter
   m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 2, 1.f / (time + 1.f));  // update decay1 segment time
 
-  time = getSignal(P_EA_DEC2)
+  time = getSignal(ParameterLabel::P_EA_DEC2)
       * m_event.m_env[0]
             .m_timeFactor[_voiceId][2];  // determine decay2 segment time according to time factor and parameter
   m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 3, 1.f / (time + 1.f));  // update decay2 segment time
 
-  if(getSignal(P_EA_REL) <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
+  if(getSignal(ParameterLabel::P_EA_REL)
+     <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
   {
     /* finite release time */
-    time = getSignal(P_EA_REL)
+    time = getSignal(ParameterLabel::P_EA_REL)
         * m_event.m_env[0]
               .m_timeFactor[_voiceId][3];  //      determine release segment time according to time factor and parameter
     m_new_envelopes.m_env_a.setSegmentDx(_voiceId, 4, 1.f / (time + 1.f));  //      update release segment time
@@ -734,25 +775,26 @@ void paramengine::newEnvUpdateTimes(const uint32_t _voiceId)
 
   /* envelope b update */
 
-  time = getSignal(P_EB_ATT)
+  time = getSignal(ParameterLabel::P_EB_ATT)
       * m_event.m_env[1]
             .m_timeFactor[_voiceId][0];  // determine attack segment time according to time factor and parameter
   m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 1, 1.f / (time + 1.f));  // update attack segment time
 
-  time = getSignal(P_EB_DEC1)
+  time = getSignal(ParameterLabel::P_EB_DEC1)
       * m_event.m_env[1]
             .m_timeFactor[_voiceId][1];  // determine decay1 segment time according to time factor and parameter
   m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 2, 1.f / (time + 1.f));  // update decay1 segment time
 
-  time = getSignal(P_EB_DEC2)
+  time = getSignal(ParameterLabel::P_EB_DEC2)
       * m_event.m_env[1]
             .m_timeFactor[_voiceId][2];  // determine decay2 segment time according to time factor and parameter
   m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 3, 1.f / (time + 1.f));  // update decay2 segment time
 
-  if(getSignal(P_EB_REL) <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
+  if(getSignal(ParameterLabel::P_EB_REL)
+     <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
   {
     /* finite release time */
-    time = getSignal(P_EB_REL)
+    time = getSignal(ParameterLabel::P_EB_REL)
         * m_event.m_env[1]
               .m_timeFactor[_voiceId][3];  //      determine release segment time according to time factor and parameter
     m_new_envelopes.m_env_b.setSegmentDx(_voiceId, 4, 1.f / (time + 1.f));  //      update release segment time
@@ -765,25 +807,26 @@ void paramengine::newEnvUpdateTimes(const uint32_t _voiceId)
 
   /* envelope c update */
 
-  time = getSignal(P_EC_ATT)
+  time = getSignal(ParameterLabel::P_EC_ATT)
       * m_event.m_env[2]
             .m_timeFactor[_voiceId][0];  // determine attack segment time according to time factor and parameter
   m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 1, 1.f / (time + 1.f));  // update attack segment time
 
-  time = getSignal(P_EC_DEC1)
+  time = getSignal(ParameterLabel::P_EC_DEC1)
       * m_event.m_env[2]
             .m_timeFactor[_voiceId][1];  // determine decay1 segment time according to time factor and parameter
   m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 2, 1.f / (time + 1.f));  // update decay1 segment time
 
-  time = getSignal(P_EC_DEC2)
+  time = getSignal(ParameterLabel::P_EC_DEC2)
       * m_event.m_env[2]
             .m_timeFactor[_voiceId][2];  // determine decay2 segment time according to time factor and parameter
   m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 3, 1.f / (time + 1.f));  // update decay2 segment time
 
-  if(getSignal(P_EC_REL) <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
+  if(getSignal(ParameterLabel::P_EC_REL)
+     <= env_highest_finite_time)  // if the release time is meant to be finite (tcd: [0 ... 16000]):
   {
     /* finite release time */
-    time = getSignal(P_EC_REL)
+    time = getSignal(ParameterLabel::P_EC_REL)
         * m_event.m_env[2]
               .m_timeFactor[_voiceId][3];  //      determine release segment time according to time factor and parameter
     m_new_envelopes.m_env_c.setSegmentDx(_voiceId, 4, 1.f / (time + 1.f));  //      update release segment time
@@ -806,11 +849,15 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 
   peak = m_event.m_env[0].m_levelFactor[_voiceId];  // get envelope peak level (was determined by last key down)
 
-  dest = peak * getSignal(P_EA_BP);  // determine decay1 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EA_BP);  // determine decay1 segment destination according to peak level and parameter
   m_new_envelopes.m_env_a.setSegmentDest(_voiceId, 2, true,
                                          dest);  // update decay1 segment destination (split behavior)
 
-  dest = peak * getSignal(P_EA_SUS);  // determine decay2 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EA_SUS);  // determine decay2 segment destination according to peak level and parameter
   m_new_envelopes.m_env_a.setSegmentDest(_voiceId, 3, true,
                                          dest);  // update decay2 segment destinatino (split behavior)
 
@@ -818,11 +865,15 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 
   peak = m_event.m_env[1].m_levelFactor[_voiceId];  // get envelope peak level (was determined by last key down)
 
-  dest = peak * getSignal(P_EB_BP);  // determine decay1 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EB_BP);  // determine decay1 segment destination according to peak level and parameter
   m_new_envelopes.m_env_b.setSegmentDest(_voiceId, 2, true,
                                          dest);  // update decay1 segment destination (split behavior)
 
-  dest = peak * getSignal(P_EB_SUS);  // determine decay2 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EB_SUS);  // determine decay2 segment destination according to peak level and parameter
   m_new_envelopes.m_env_b.setSegmentDest(_voiceId, 3, true,
                                          dest);  // update decay2 segment destinatino (split behavior)
 
@@ -830,10 +881,14 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 
   peak = m_event.m_env[2].m_levelFactor[_voiceId];  // get envelope peak level (was determined by last key down)
 
-  dest = peak * getSignal(P_EC_BP);  // determine decay1 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EC_BP);  // determine decay1 segment destination according to peak level and parameter
   m_new_envelopes.m_env_c.setSegmentDest(_voiceId, 2, dest);  // update decay1 segment destination (no split behavior)
 
-  dest = peak * getSignal(P_EC_SUS);  // determine decay2 segment destination according to peak level and parameter
+  dest = peak
+      * getSignal(
+             ParameterLabel::P_EC_SUS);  // determine decay2 segment destination according to peak level and parameter
   m_new_envelopes.m_env_c.setSegmentDest(_voiceId, 3, dest);  // update decay2 segment destinatino (no split behavior)
 }
 
@@ -860,49 +915,52 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
   newEnvUpdateTimes(_voiceId);
   /* Pitch Updates */
 #if test_milestone == 150
-  const float notePitch = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch
+      = getSignal(ParameterLabel::P_KEY_NP, _voiceId) + getSignal(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
-  const float notePitch = getSignal(P_KEY_BP, _voiceId) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(ParameterLabel::P_KEY_IDX, _voiceId));
+  const float notePitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId)
+      + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(ParameterLabel::P_MA_T)
+      + m_note_shift[_voiceId];
 #elif test_milestone == 156
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
-  const float notePitch = getSignal(P_KEY_BP, _voiceId) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId)
+      + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(ParameterLabel::P_MA_T)
+      + m_note_shift[_voiceId];
 #endif
   float keyTracking, unitPitch, envMod, unitSign, unitSpread, unitMod;
   /* Oscillator A */
   /* - Oscillator A Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Osc Pitch, Envelope C) */
-  keyTracking = getSignal(P_OA_PKT);
-  unitPitch = getSignal(P_OA_P);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_OA_PEC);
+  keyTracking = getSignal(ParameterLabel::P_OA_PKT);
+  unitPitch = getSignal(ParameterLabel::P_OA_P);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OA_PEC);
   params[SignalLabel::OSC_A_FRQ] = evalNyquist(m_pitch_reference * unitPitch
                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
   /* - Oscillator A Fluctuation (Envelope C) */
-  envMod = getSignal(P_OA_FEC);
-  params[SignalLabel::OSC_A_FLUEC]
-      = getSignal(P_OA_F) * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
+  envMod = getSignal(ParameterLabel::P_OA_FEC);
+  params[SignalLabel::OSC_A_FLUEC] = getSignal(ParameterLabel::P_OA_F)
+      * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
   /* - Oscillator A Chirp Frequency in Hz */
-  params[SignalLabel::OSC_A_CHI] = evalNyquist(getSignal(P_OA_CHI) * 440.f);
+  params[SignalLabel::OSC_A_CHI] = evalNyquist(getSignal(ParameterLabel::P_OA_CHI) * 440.f);
   /* Oscillator B */
   /* - Oscillator B Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Osc Pitch, Envelope C) */
-  keyTracking = getSignal(P_OB_PKT);
-  unitPitch = getSignal(P_OB_P);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_OB_PEC);
+  keyTracking = getSignal(ParameterLabel::P_OB_PKT);
+  unitPitch = getSignal(ParameterLabel::P_OB_P);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OB_PEC);
   params[SignalLabel::OSC_B_FRQ] = evalNyquist(m_pitch_reference * unitPitch
                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
   /* - Oscillator B Fluctuation (Envelope C) */
-  envMod = getSignal(P_OB_FEC);
-  params[SignalLabel::OSC_B_FLUEC]
-      = getSignal(P_OB_F) * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
+  envMod = getSignal(ParameterLabel::P_OB_FEC);
+  params[SignalLabel::OSC_B_FLUEC] = getSignal(ParameterLabel::P_OB_F)
+      * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
   /* - Oscillator B Chirp Frequency in Hz */
-  params[SignalLabel::OSC_B_CHI] = evalNyquist(getSignal(P_OB_CHI) * 440.f);
+  params[SignalLabel::OSC_B_CHI] = evalNyquist(getSignal(ParameterLabel::P_OB_CHI) * 440.f);
   /* Comb Filter */
   /* - Comb Filter Pitch as Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Comb Pitch) */
-  keyTracking = getSignal(P_CMB_PKT);
-  unitPitch = getSignal(P_CMB_P);
+  keyTracking = getSignal(ParameterLabel::P_CMB_PKT);
+  unitPitch = getSignal(ParameterLabel::P_CMB_P);
   // as a tonal component, the reference tone frequency is applied (instead of const 440 Hz)
   params[SignalLabel::CMB_FRQ]
       = evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)));
@@ -911,34 +969,35 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
       ? 1.f
       : 0.f;  // check for bypassing comb filter, max_freqFactor corresponds to Pitch of 119.99 ST
   /* - Comb Filter Decay Time (Base Pitch, Master Tune, Gate Env, Dec Time, Key Tracking, Gate Amount) */
-  keyTracking = getSignal(P_CMB_DKT);
-  unitSign = 0.001f * (getSignal(P_CMB_D) < 0 ? -1.f : 1.f);
+  keyTracking = getSignal(ParameterLabel::P_CMB_DKT);
+  unitSign = 0.001f * (getSignal(ParameterLabel::P_CMB_D) < 0 ? -1.f : 1.f);
 #if test_comb_decay_gate_mode == 0
   // apply decay time directly
-  envMod = 1.f - ((1.f - params[SignalLabel::ENV_G_SIG]) * m_combDecayCurve.applyCurve(getSignal(P_CMB_DG)));
-  unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getSignal(P_CMB_D)) * envMod);
+  envMod = 1.f
+      - ((1.f - params[SignalLabel::ENV_G_SIG]) * m_combDecayCurve.applyCurve(getSignal(ParameterLabel::P_CMB_DG)));
+  unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getSignal(ParameterLabel::P_CMB_D)) * envMod);
   params[SignalLabel::CMB_DEC] = m_convert.eval_level(unitPitch) * unitSign;
 #elif test_comb_decay_gate_mode == 1
   // determine decay times min, max before crossfading them by gate signal (audio post processing)
-  envMod = 1.f - m_combDecayCurve.applyCurve(getSignal(P_CMB_DG));
-  unitMod = std::abs(getSignal(P_CMB_D));
+  envMod = 1.f - m_combDecayCurve.applyCurve(getSignal(ParameterLabel::P_CMB_DG));
+  unitMod = std::abs(getSignal(ParameterLabel::P_CMB_D));
   unitPitch = (-0.5f * notePitch * keyTracking);
   m_comb_decay_times[0] = m_convert.eval_level(unitPitch + (unitMod * envMod)) * unitSign;
   m_comb_decay_times[1] = m_convert.eval_level(unitPitch + unitMod) * unitSign;
 #endif
   /* - Comb Filter Allpass Frequency (Base Pitch, Master Tune, Key Tracking, AP Tune, Env C) */
-  keyTracking = getSignal(P_CMB_APKT);
-  unitPitch = getSignal(P_CMB_APT);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_CMB_APEC);
+  keyTracking = getSignal(ParameterLabel::P_CMB_APKT);
+  unitPitch = getSignal(ParameterLabel::P_CMB_APT);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_APEC);
   params[SignalLabel::CMB_APF]
       = evalNyquist(440.f * unitPitch
                     * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
                                                + envMod));  // not sure if APF needs Nyquist Clipping?
   //params[SignalLabel::CMB_APF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently APF without Nyquist Clipping
   /* - Comb Filter Lowpass ('Hi Cut') Frequency (Base Pitch, Master Tune, Key Tracking, Hi Cut, Env C) */
-  keyTracking = getSignal(P_CMB_LPKT);
-  unitPitch = getSignal(P_CMB_LP);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_CMB_LPEC);
+  keyTracking = getSignal(ParameterLabel::P_CMB_LPKT);
+  unitPitch = getSignal(ParameterLabel::P_CMB_LP);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_LPEC);
   params[SignalLabel::CMB_LPF]
       = evalNyquist(440.f * unitPitch
                     * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
@@ -946,13 +1005,13 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
   //params[SignalLabel::CMB_LPF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently LPF without Nyquist Clipping
   /* State Variable Filter */
   /* - Cutoff Frequencies */
-  keyTracking = getSignal(P_SVF_CKT);  // get Key Tracking
+  keyTracking = getSignal(ParameterLabel::P_SVF_CKT);  // get Key Tracking
   envMod = params[SignalLabel::ENV_C_UNCL]
-      * getSignal(P_SVF_CEC);  // get Envelope C Modulation (amount * envelope_c_signal)
+      * getSignal(ParameterLabel::P_SVF_CEC);  // get Envelope C Modulation (amount * envelope_c_signal)
   // as a tonal component, the Reference Tone frequency is applied (instead of const 440 Hz)
-  unitPitch = m_pitch_reference * getSignal(P_SVF_CUT);
-  unitSpread = getSignal(P_SVF_SPR);  // get the Spread parameter (already scaled to 50%)
-  unitMod = getSignal(P_SVF_FM);      // get the FM parameter
+  unitPitch = m_pitch_reference * getSignal(ParameterLabel::P_SVF_CUT);
+  unitSpread = getSignal(ParameterLabel::P_SVF_SPR);  // get the Spread parameter (already scaled to 50%)
+  unitMod = getSignal(ParameterLabel::P_SVF_FM);      // get the FM parameter
   /*   now, calculate the actual filter frequencies and put them in the shared signal array */
   params[SignalLabel::SVF_F1_CUT]
       = evalNyquist(unitPitch
@@ -965,9 +1024,9 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
   params[SignalLabel::SVF_F1_FM] = params[SignalLabel::SVF_F1_CUT] * unitMod;  // SVF upper 2PF FM Amount (Frequency)
   params[SignalLabel::SVF_F2_FM] = params[SignalLabel::SVF_F2_CUT] * unitMod;  // SVF lower 2PF FM Amount (Frequency)
   /* - Resonance */
-  keyTracking = getSignal(P_SVF_RKT) * m_svfResFactor;
-  envMod = params[SignalLabel::ENV_C_CLIP] * getSignal(P_SVF_REC);
-  unitPitch = getSignal(P_SVF_RES) + envMod + (notePitch * keyTracking);
+  keyTracking = getSignal(ParameterLabel::P_SVF_RKT) * m_svfResFactor;
+  envMod = params[SignalLabel::ENV_C_CLIP] * getSignal(ParameterLabel::P_SVF_REC);
+  unitPitch = getSignal(ParameterLabel::P_SVF_RES) + envMod + (notePitch * keyTracking);
   //params[SignalLabel::SVF_RES] = m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f));
   float res = 1.f
       - m_svfResonanceCurve.applyCurve(
@@ -1002,27 +1061,28 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
   /* temporary variables */
   float tmp_lvl, tmp_pan, tmp_abs;
 #if test_milestone == 150
-  const float notePitch = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch
+      = getSignal(ParameterLabel::P_KEY_NP, _voiceId) + getSignal(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
-  const float basePitch = getSignal(P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(P_MA_T)
-      + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(ParameterLabel::P_KEY_IDX, _voiceId));
+  const float basePitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId);
+  const float notePitch = basePitch + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex])
+      + getSignal(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 156
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
-  const float basePitch = getSignal(P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex]) + getSignal(P_MA_T)
-      + m_note_shift[_voiceId];
+  const float basePitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId);
+  const float notePitch = basePitch + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex])
+      + getSignal(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
 #endif
   /* State Variable Filter */
   /* - LBH */
-  tmp_lvl = getSignal(P_SVF_LBH);
+  tmp_lvl = getSignal(ParameterLabel::P_SVF_LBH);
   params[SignalLabel::SVF_LBH_1] = m_svfLBH1Curve.applyCurve(tmp_lvl);
   params[SignalLabel::SVF_LBH_2] = m_svfLBH2Curve.applyCurve(tmp_lvl);
   /* - Parallel */
-  tmp_lvl = getSignal(P_SVF_PAR);
+  tmp_lvl = getSignal(ParameterLabel::P_SVF_PAR);
   tmp_abs = std::abs(tmp_lvl);
   params[SignalLabel::SVF_PAR_1] = 0.7f * tmp_abs;
   params[SignalLabel::SVF_PAR_2] = (0.7f * tmp_lvl) + (1.f - tmp_abs);
@@ -1030,37 +1090,37 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
   params[SignalLabel::SVF_PAR_4] = tmp_abs;
   /* Output Mixer */
 #if test_milestone == 150
-  const float poly_pan = getSignal(P_KEY_VP, _voiceId);
+  const float poly_pan = getSignal(ParameterLabel::P_KEY_VP, _voiceId);
 #elif test_milestone == 155
-  const float poly_pan
-      = (getSignal(P_OM_KP) * (basePitch - 6.f)) + (getSignal(P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
+  const float poly_pan = (getSignal(ParameterLabel::P_OM_KP) * (basePitch - 6.f))
+      + (getSignal(ParameterLabel::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
 #elif test_milestone == 156
-  const float poly_pan
-      = (getSignal(P_OM_KP) * (basePitch - 6.f)) + (getSignal(P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
+  const float poly_pan = (getSignal(ParameterLabel::P_OM_KP) * (basePitch - 6.f))
+      + (getSignal(ParameterLabel::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
 #endif
   /* - Branch A */
-  tmp_lvl = getSignal(P_OM_AL);
-  tmp_pan = std::clamp(getSignal(P_OM_AP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_AL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_AP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_A_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_A_R] = tmp_lvl * tmp_pan;
   /* - Branch B */
-  tmp_lvl = getSignal(P_OM_BL);
-  tmp_pan = std::clamp(getSignal(P_OM_BP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_BL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_BP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_B_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_B_R] = tmp_lvl * tmp_pan;
   /* - Comb Filter */
-  tmp_lvl = getSignal(P_OM_CL);
-  tmp_pan = std::clamp(getSignal(P_OM_CP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_CL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_CP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_CMB_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_CMB_R] = tmp_lvl * tmp_pan;
   /* - State Variable Filter */
-  tmp_lvl = getSignal(P_OM_SL);
-  tmp_pan = std::clamp(getSignal(P_OM_SP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_SL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_SP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_SVF_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_SVF_R] = tmp_lvl * tmp_pan;
   /* - Feedback Mixer */
-  tmp_lvl = getSignal(P_FBM_LVL);
-  tmp_pan = std::min(m_convert.eval_level(getSignal(P_FBM_LKT) * (notePitch)), env_clip_peak);
+  tmp_lvl = getSignal(ParameterLabel::P_FBM_LVL);
+  tmp_pan = std::min(m_convert.eval_level(getSignal(ParameterLabel::P_FBM_LKT) * (notePitch)), env_clip_peak);
   params[SignalLabel::FBM_LVL] = tmp_lvl * tmp_pan;
 }
 
@@ -1089,13 +1149,13 @@ void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t
   m_new_envelopes.tickPoly(_voiceId);
   /* poly envelope distribution */
   params[SignalLabel::ENV_A_MAG] = m_new_envelopes.m_env_a.m_body[_voiceId].m_signal_magnitude
-      * getSignal(P_EA_GAIN);  // Envelope A Magnitude post Gain
-  params[SignalLabel::ENV_A_TMB]
-      = m_new_envelopes.m_env_a.m_body[_voiceId].m_signal_timbre * getSignal(P_EA_GAIN);  // Envelope A Timbre post Gain
+      * getSignal(ParameterLabel::P_EA_GAIN);  // Envelope A Magnitude post Gain
+  params[SignalLabel::ENV_A_TMB] = m_new_envelopes.m_env_a.m_body[_voiceId].m_signal_timbre
+      * getSignal(ParameterLabel::P_EA_GAIN);  // Envelope A Timbre post Gain
   params[SignalLabel::ENV_B_MAG] = m_new_envelopes.m_env_b.m_body[_voiceId].m_signal_magnitude
-      * getSignal(P_EB_GAIN);  // Envelope B Magnitude post Gain
-  params[SignalLabel::ENV_B_TMB]
-      = m_new_envelopes.m_env_b.m_body[_voiceId].m_signal_timbre * getSignal(P_EB_GAIN);  // Envelope B Timbre post Gain
+      * getSignal(ParameterLabel::P_EB_GAIN);  // Envelope B Magnitude post Gain
+  params[SignalLabel::ENV_B_TMB] = m_new_envelopes.m_env_b.m_body[_voiceId].m_signal_timbre
+      * getSignal(ParameterLabel::P_EB_GAIN);  // Envelope B Timbre post Gain
   params[SignalLabel::ENV_C_CLIP] = m_new_envelopes.m_env_c.m_body[_voiceId].m_signal_magnitude;  // Envelope C
   params[SignalLabel::ENV_G_SIG] = m_new_envelopes.m_env_g.m_body[_voiceId].m_signal_magnitude;   // Gate
   /* reconstruct unclipped envelope c signal by factor */
@@ -1104,65 +1164,65 @@ void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t
   float tmp_amt, tmp_env;
   /* Oscillator A */
   /* - Oscillator A - PM Self */
-  tmp_amt = getSignal(P_OA_PMS);
-  tmp_env = getSignal(P_OA_PMSEA);
+  tmp_amt = getSignal(ParameterLabel::P_OA_PMS);
+  tmp_env = getSignal(ParameterLabel::P_OA_PMSEA);
   params[SignalLabel::OSC_A_PMSEA]
       = NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_A_TMB], tmp_env)
       * tmp_amt;  // Osc A PM Self (Env A)
   /* - Oscillator A - PM B */
-  tmp_amt = getSignal(P_OA_PMB);
-  tmp_env = getSignal(P_OA_PMBEB);
+  tmp_amt = getSignal(ParameterLabel::P_OA_PMB);
+  tmp_env = getSignal(ParameterLabel::P_OA_PMBEB);
   params[SignalLabel::OSC_A_PMBEB]
       = NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_B_TMB], tmp_env)
       * tmp_amt;  // Osc A PM B (Env B)
   /* - Oscillator A - PM FB */
-  tmp_amt = getSignal(P_OA_PMF);
-  tmp_env = getSignal(P_OA_PMFEC);
+  tmp_amt = getSignal(ParameterLabel::P_OA_PMF);
+  tmp_env = getSignal(ParameterLabel::P_OA_PMFEC);
   params[SignalLabel::OSC_A_PMFEC]
       = NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], tmp_env)
       * tmp_amt;  // Osc A PM FB (Env C)
   /* Shaper A */
   /* - Shaper A Drive (Envelope A) */
-  tmp_amt = getSignal(P_SA_DRV);
-  tmp_env = getSignal(P_SA_DEA);
+  tmp_amt = getSignal(ParameterLabel::P_SA_DRV);
+  tmp_env = getSignal(ParameterLabel::P_SA_DEA);
   params[SignalLabel::SHP_A_DRVEA]
       = (NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_A_TMB], tmp_env) * tmp_amt) + 0.18f;
   /* - Shaper A Feedback Mix (Envelope C) */
-  tmp_env = getSignal(P_SA_FBEC);
+  tmp_env = getSignal(ParameterLabel::P_SA_FBEC);
   params[SignalLabel::SHP_A_FBEC] = NlToolbox::Crossfades::unipolarCrossFade(params[SignalLabel::ENV_G_SIG],
                                                                              params[SignalLabel::ENV_C_CLIP], tmp_env);
   /* Oscillator B */
   /* - Oscillator B - PM Self */
-  tmp_amt = getSignal(P_OB_PMS);
-  tmp_env = getSignal(P_OB_PMSEB);
+  tmp_amt = getSignal(ParameterLabel::P_OB_PMS);
+  tmp_env = getSignal(ParameterLabel::P_OB_PMSEB);
   params[SignalLabel::OSC_B_PMSEB]
       = NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_B_TMB], tmp_env)
       * tmp_amt;  // Osc B PM Self (Env B)
   /* - Oscillator B - PM A */
-  tmp_amt = getSignal(P_OB_PMA);
-  tmp_env = getSignal(P_OB_PMAEA);
+  tmp_amt = getSignal(ParameterLabel::P_OB_PMA);
+  tmp_env = getSignal(ParameterLabel::P_OB_PMAEA);
   params[SignalLabel::OSC_B_PMAEA]
       = NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_A_TMB], tmp_env)
       * tmp_amt;  // Osc B PM A (Env A)
   /* - Oscillator B - PM FB */
-  tmp_amt = getSignal(P_OB_PMF);
-  tmp_env = getSignal(P_OB_PMFEC);
+  tmp_amt = getSignal(ParameterLabel::P_OB_PMF);
+  tmp_env = getSignal(ParameterLabel::P_OB_PMFEC);
   params[SignalLabel::OSC_B_PMFEC]
       = NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], tmp_env)
       * tmp_amt;  // Osc B PM FB (Env C)
   /* Shaper B */
   /* - Shaper B Drive (Envelope B) */
-  tmp_amt = getSignal(P_SB_DRV);
-  tmp_env = getSignal(P_SB_DEB);
+  tmp_amt = getSignal(ParameterLabel::P_SB_DRV);
+  tmp_env = getSignal(ParameterLabel::P_SB_DEB);
   params[SignalLabel::SHP_B_DRVEB]
       = (NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_B_TMB], tmp_env) * tmp_amt) + 0.18f;
   /* - Shaper B Feedback Mix (Envelope C) */
-  tmp_env = getSignal(P_SB_FBEC);
+  tmp_env = getSignal(ParameterLabel::P_SB_FBEC);
   params[SignalLabel::SHP_B_FBEC] = NlToolbox::Crossfades::unipolarCrossFade(params[SignalLabel::ENV_G_SIG],
                                                                              params[SignalLabel::ENV_C_CLIP], tmp_env);
   /* Comb Filter */
   /* - Comb Filter Pitch Envelope C, converted into Frequency Factor */
-  tmp_amt = getSignal(P_CMB_PEC);
+  tmp_amt = getSignal(ParameterLabel::P_CMB_PEC);
   params[SignalLabel::CMB_FEC] = m_convert.eval_lin_pitch(69.f - (tmp_amt * params[SignalLabel::ENV_C_UNCL]));
   /* Decay Time - Gate Signal crossfading */
 #if test_comb_decay_gate_mode == 1
@@ -1173,13 +1233,13 @@ void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t
 #if test_milestone == 150
   params[SignalLabel::UN_PHS] = 0.f;
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
-  params[SignalLabel::UN_PHS] = getSignal(P_UN_PHS) * m_unison_phase[uVoice][uIndex];
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(ParameterLabel::P_KEY_IDX, _voiceId));
+  params[SignalLabel::UN_PHS] = getSignal(ParameterLabel::P_UN_PHS) * m_unison_phase[uVoice][uIndex];
 #elif test_milestone == 156
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
-  params[SignalLabel::UN_PHS] = getSignal(P_UN_PHS) * m_unison_phase[uVoice][uIndex];
+  params[SignalLabel::UN_PHS] = getSignal(ParameterLabel::P_UN_PHS) * m_unison_phase[uVoice][uIndex];
 #endif
 }
 
@@ -1188,51 +1248,52 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
 {
   /* Pitch Updates */
 #if test_milestone == 150
-  const float notePitch = getSignal(P_KEY_NP, _voiceId) + getSignal(P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch
+      = getSignal(ParameterLabel::P_KEY_NP, _voiceId) + getSignal(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getSignal(P_KEY_IDX, _voiceId));
-  const float basePitch = getSignal(P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + getSignal(P_MA_SH) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getSignal(ParameterLabel::P_KEY_IDX, _voiceId));
+  const float basePitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId);
+  const float notePitch = basePitch + getSignal(ParameterLabel::P_MA_SH)
+      + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + m_note_shift[_voiceId];
 #elif test_milestone == 156
-  const uint32_t uVoice = static_cast<uint32_t>(getSignal(P_UN_V));
+  const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
-  const float basePitch = getSignal(P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + getSignal(P_MA_SH) + (getSignal(P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + m_note_shift[_voiceId];
+  const float basePitch = getSignal(ParameterLabel::P_KEY_BP, _voiceId);
+  const float notePitch = basePitch + getSignal(ParameterLabel::P_MA_SH)
+      + (getSignal(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + m_note_shift[_voiceId];
 #endif
   float keyTracking, unitPitch, envMod, unitSign, unitSpread, unitMod;
   /* Oscillator A */
   /* - Oscillator A Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Osc Pitch, Envelope C) */
-  keyTracking = getSignal(P_OA_PKT);
-  unitPitch = getSignal(P_OA_P);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_OA_PEC);
+  keyTracking = getSignal(ParameterLabel::P_OA_PKT);
+  unitPitch = getSignal(ParameterLabel::P_OA_P);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OA_PEC);
   params[SignalLabel::OSC_A_FRQ] = evalNyquist(m_pitch_reference * unitPitch
                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
   /* - Oscillator A Fluctuation (Envelope C) */
-  envMod = getSignal(P_OA_FEC);
-  params[SignalLabel::OSC_A_FLUEC]
-      = getSignal(P_OA_F) * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
+  envMod = getSignal(ParameterLabel::P_OA_FEC);
+  params[SignalLabel::OSC_A_FLUEC] = getSignal(ParameterLabel::P_OA_F)
+      * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
   /* - Oscillator A Chirp Frequency in Hz */
-  params[SignalLabel::OSC_A_CHI] = evalNyquist(getSignal(P_OA_CHI) * 440.f);
+  params[SignalLabel::OSC_A_CHI] = evalNyquist(getSignal(ParameterLabel::P_OA_CHI) * 440.f);
   /* Oscillator B */
   /* - Oscillator B Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Osc Pitch, Envelope C) */
-  keyTracking = getSignal(P_OB_PKT);
-  unitPitch = getSignal(P_OB_P);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_OB_PEC);
+  keyTracking = getSignal(ParameterLabel::P_OB_PKT);
+  unitPitch = getSignal(ParameterLabel::P_OB_P);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OB_PEC);
   params[SignalLabel::OSC_B_FRQ] = evalNyquist(m_pitch_reference * unitPitch
                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
   /* - Oscillator B Fluctuation (Envelope C) */
-  envMod = getSignal(P_OB_FEC);
-  params[SignalLabel::OSC_B_FLUEC]
-      = getSignal(P_OB_F) * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
+  envMod = getSignal(ParameterLabel::P_OB_FEC);
+  params[SignalLabel::OSC_B_FLUEC] = getSignal(ParameterLabel::P_OB_F)
+      * NlToolbox::Crossfades::unipolarCrossFade(1.f, params[SignalLabel::ENV_C_CLIP], envMod);
   /* - Oscillator B Chirp Frequency in Hz */
-  params[SignalLabel::OSC_B_CHI] = evalNyquist(getSignal(P_OB_CHI) * 440.f);
+  params[SignalLabel::OSC_B_CHI] = evalNyquist(getSignal(ParameterLabel::P_OB_CHI) * 440.f);
   /* Comb Filter */
   /* - Comb Filter Pitch as Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Comb Pitch) */
-  keyTracking = getSignal(P_CMB_PKT);
-  unitPitch = getSignal(P_CMB_P);
+  keyTracking = getSignal(ParameterLabel::P_CMB_PKT);
+  unitPitch = getSignal(ParameterLabel::P_CMB_P);
   // as a tonal component, the reference tone frequency is applied (instead of const 440 Hz)
   params[SignalLabel::CMB_FRQ]
       = evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)));
@@ -1241,24 +1302,25 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
       ? 1.f
       : 0.f;  // check for bypassing comb filter, max_freqFactor corresponds to Pitch of 119.99 ST
   /* - Comb Filter Decay Time (Base Pitch, Master Tune, Gate Env, Dec Time, Key Tracking, Gate Amount) */
-  keyTracking = getSignal(P_CMB_DKT);
-  envMod = 1.f - ((1.f - params[SignalLabel::ENV_G_SIG]) * m_combDecayCurve.applyCurve(getSignal(P_CMB_DG)));
-  unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getSignal(P_CMB_D)) * envMod);
-  unitSign = getSignal(P_CMB_D) < 0 ? -1.f : 1.f;
+  keyTracking = getSignal(ParameterLabel::P_CMB_DKT);
+  envMod = 1.f
+      - ((1.f - params[SignalLabel::ENV_G_SIG]) * m_combDecayCurve.applyCurve(getSignal(ParameterLabel::P_CMB_DG)));
+  unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getSignal(ParameterLabel::P_CMB_D)) * envMod);
+  unitSign = getSignal(ParameterLabel::P_CMB_D) < 0 ? -1.f : 1.f;
   params[SignalLabel::CMB_DEC] = 0.001f * m_convert.eval_level(unitPitch) * unitSign;
   /* - Comb Filter Allpass Frequency (Base Pitch, Master Tune, Key Tracking, AP Tune, Env C) */
-  keyTracking = getSignal(P_CMB_APKT);
-  unitPitch = getSignal(P_CMB_APT);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_CMB_APEC);
+  keyTracking = getSignal(ParameterLabel::P_CMB_APKT);
+  unitPitch = getSignal(ParameterLabel::P_CMB_APT);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_APEC);
   params[SignalLabel::CMB_APF]
       = evalNyquist(440.f * unitPitch
                     * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
                                                + envMod));  // not sure if APF needs Nyquist Clipping?
   //params[SignalLabel::CMB_APF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently APF without Nyquist Clipping
   /* - Comb Filter Lowpass ('Hi Cut') Frequency (Base Pitch, Master Tune, Key Tracking, Hi Cut, Env C) */
-  keyTracking = getSignal(P_CMB_LPKT);
-  unitPitch = getSignal(P_CMB_LP);
-  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(P_CMB_LPEC);
+  keyTracking = getSignal(ParameterLabel::P_CMB_LPKT);
+  unitPitch = getSignal(ParameterLabel::P_CMB_LP);
+  envMod = params[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_LPEC);
   params[SignalLabel::CMB_LPF]
       = evalNyquist(440.f * unitPitch
                     * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
@@ -1266,13 +1328,13 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
   //params[SignalLabel::CMB_LPF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently LPF without Nyquist Clipping
   /* State Variable Filter */
   /* - Cutoff Frequencies */
-  keyTracking = getSignal(P_SVF_CKT);  // get Key Tracking
+  keyTracking = getSignal(ParameterLabel::P_SVF_CKT);  // get Key Tracking
   envMod = params[SignalLabel::ENV_C_UNCL]
-      * getSignal(P_SVF_CEC);  // get Envelope C Modulation (amount * envelope_c_signal)
+      * getSignal(ParameterLabel::P_SVF_CEC);  // get Envelope C Modulation (amount * envelope_c_signal)
   // as a tonal component, the Reference Tone frequency is applied (instead of const 440 Hz)
-  unitPitch = m_pitch_reference * getSignal(P_SVF_CUT);
-  unitSpread = getSignal(P_SVF_SPR);  // get the Spread parameter (already scaled to 50%)
-  unitMod = getSignal(P_SVF_FM);      // get the FM parameter
+  unitPitch = m_pitch_reference * getSignal(ParameterLabel::P_SVF_CUT);
+  unitSpread = getSignal(ParameterLabel::P_SVF_SPR);  // get the Spread parameter (already scaled to 50%)
+  unitMod = getSignal(ParameterLabel::P_SVF_FM);      // get the FM parameter
   /*   now, calculate the actual filter frequencies and put them in the shared signal array */
   params[SignalLabel::SVF_F1_CUT]
       = evalNyquist(unitPitch
@@ -1285,9 +1347,9 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
   params[SignalLabel::SVF_F1_FM] = params[SignalLabel::SVF_F1_CUT] * unitMod;  // SVF upper 2PF FM Amount (Frequency)
   params[SignalLabel::SVF_F2_FM] = params[SignalLabel::SVF_F2_CUT] * unitMod;  // SVF lower 2PF FM Amount (Frequency)
   /* - Resonance */
-  keyTracking = getSignal(P_SVF_RKT) * m_svfResFactor;
-  envMod = params[SignalLabel::ENV_C_CLIP] * getSignal(P_SVF_REC);
-  unitPitch = getSignal(P_SVF_RES) + envMod + (notePitch * keyTracking);
+  keyTracking = getSignal(ParameterLabel::P_SVF_RKT) * m_svfResFactor;
+  envMod = params[SignalLabel::ENV_C_CLIP] * getSignal(ParameterLabel::P_SVF_REC);
+  unitPitch = getSignal(ParameterLabel::P_SVF_RES) + envMod + (notePitch * keyTracking);
   //params[SignalLabel::SVF_RES] = m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f));
   float res = 1.f
       - m_svfResonanceCurve.applyCurve(
@@ -1296,37 +1358,37 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
   /* Output Mixer */
   float tmp_lvl, tmp_pan;
 #if test_milestone == 150
-  const float poly_pan = getSignal(P_KEY_VP, _voiceId);
+  const float poly_pan = getSignal(ParameterLabel::P_KEY_VP, _voiceId);
 #elif test_milestone == 155
-  const float poly_pan
-      = (getSignal(P_OM_KP) * (basePitch - 6.f)) + (getSignal(P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
+  const float poly_pan = (getSignal(ParameterLabel::P_OM_KP) * (basePitch - 6.f))
+      + (getSignal(ParameterLabel::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
 #elif test_milestone == 156
-  const float poly_pan
-      = (getSignal(P_OM_KP) * (basePitch - 6.f)) + (getSignal(P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
+  const float poly_pan = (getSignal(ParameterLabel::P_OM_KP) * (basePitch - 6.f))
+      + (getSignal(ParameterLabel::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
 #endif
   /* - Branch A */
-  tmp_lvl = getSignal(P_OM_AL);
-  tmp_pan = std::clamp(getSignal(P_OM_AP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_AL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_AP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_A_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_A_R] = tmp_lvl * tmp_pan;
   /* - Branch B */
-  tmp_lvl = getSignal(P_OM_BL);
-  tmp_pan = std::clamp(getSignal(P_OM_BP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_BL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_BP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_B_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_B_R] = tmp_lvl * tmp_pan;
   /* - Comb Filter */
-  tmp_lvl = getSignal(P_OM_CL);
-  tmp_pan = std::clamp(getSignal(P_OM_CP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_CL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_CP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_CMB_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_CMB_R] = tmp_lvl * tmp_pan;
   /* - State Variable Filter */
-  tmp_lvl = getSignal(P_OM_SL);
-  tmp_pan = std::clamp(getSignal(P_OM_SP) + poly_pan, 0.f, 1.f);
+  tmp_lvl = getSignal(ParameterLabel::P_OM_SL);
+  tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_SP) + poly_pan, 0.f, 1.f);
   params[SignalLabel::OUT_SVF_L] = tmp_lvl * (1.f - tmp_pan);
   params[SignalLabel::OUT_SVF_R] = tmp_lvl * tmp_pan;
   /* - Feedback Mixer */
-  tmp_lvl = getSignal(P_FBM_LVL);
-  tmp_pan = std::min(m_convert.eval_level(getSignal(P_FBM_LKT) * (notePitch)), env_clip_peak);
+  tmp_lvl = getSignal(ParameterLabel::P_FBM_LVL);
+  tmp_pan = std::min(m_convert.eval_level(getSignal(ParameterLabel::P_FBM_LKT) * (notePitch)), env_clip_peak);
   params[SignalLabel::FBM_LVL] = tmp_lvl * tmp_pan;
   /*   - determine Highpass Filter Frequency */
   params[SignalLabel::FBM_HPF] = evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f);
@@ -1348,30 +1410,32 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
   /* - Flanger */
 #if test_flanger_phs == 0
   /*   - LFO/Envelope Rate, Phase */
-  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(P_FLA_PHS);
+  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(ParameterLabel::P_FLA_PHS);
 #endif
-  tmp_Rate = getSignal(P_FLA_RTE);
+  tmp_Rate = getSignal(ParameterLabel::P_FLA_RTE);
   m_flangerLFO.m_increment = m_reciprocal_samplerate * tmp_Rate;
   tmp_Rate *= m_flangerRateToDecay;
   m_new_envelopes.m_env_f.setSegmentDx(0, 2, tmp_Rate);
   /*   - Stereo Time */
-  tmp_Center = getSignal(P_FLA_TIME) * dsp_samples_to_ms * tmp_SR;  // time (in ms) is handled in samples
-  tmp_Stereo = getSignal(P_FLA_STE) * 0.01f;
+  tmp_Center
+      = getSignal(ParameterLabel::P_FLA_TIME) * dsp_samples_to_ms * tmp_SR;  // time (in ms) is handled in samples
+  tmp_Stereo = getSignal(ParameterLabel::P_FLA_STE) * 0.01f;
   params[SignalLabel::FLA_TL] = tmp_Center * (1.f + tmp_Stereo);
   params[SignalLabel::FLA_TR] = tmp_Center * (1.f - tmp_Stereo);
   /*   - Hi Cut Frequency */
-  params[SignalLabel::FLA_LPF] = evalNyquist(getSignal(P_FLA_LPF) * 440.f);
+  params[SignalLabel::FLA_LPF] = evalNyquist(getSignal(ParameterLabel::P_FLA_LPF) * 440.f);
   /* - Cabinet */
   /*   - Hi Cut Frequency in Hz (Hi Cut == Lowpass) */
-  params[SignalLabel::CAB_LPF] = evalNyquist(getSignal(P_CAB_LPF) * 440.f);
+  params[SignalLabel::CAB_LPF] = evalNyquist(getSignal(ParameterLabel::P_CAB_LPF) * 440.f);
   /*   - Lo Cut Frequency in Hz (Lo Cut == Highpass) */
-  params[SignalLabel::CAB_HPF] = evalNyquist(getSignal(P_CAB_HPF) * 440.f);  // nyquist clipping not necessary...
+  params[SignalLabel::CAB_HPF]
+      = evalNyquist(getSignal(ParameterLabel::P_CAB_HPF) * 440.f);  // nyquist clipping not necessary...
   /*   - Tilt to Shelving EQs */
-  params[SignalLabel::CAB_TILT] = getSignal(P_CAB_TILT);
+  params[SignalLabel::CAB_TILT] = getSignal(ParameterLabel::P_CAB_TILT);
   /* - Gap Filter */
-  tmp_Gap = (getSignal(P_GAP_MIX) < 0.f ? -1.f : 1.f) * getSignal(P_GAP_GAP);
-  tmp_Center = getSignal(P_GAP_CNT);
-  tmp_Stereo = getSignal(P_GAP_STE);
+  tmp_Gap = (getSignal(ParameterLabel::P_GAP_MIX) < 0.f ? -1.f : 1.f) * getSignal(ParameterLabel::P_GAP_GAP);
+  tmp_Center = getSignal(ParameterLabel::P_GAP_CNT);
+  tmp_Stereo = getSignal(ParameterLabel::P_GAP_STE);
   /*   - Left LP Frequency in Hz */
   params[SignalLabel::GAP_LFL] = evalNyquist(m_convert.eval_lin_pitch(tmp_Center - tmp_Gap - tmp_Stereo)
                                              * 440.f);  // nyquist clipping not necessary...
@@ -1384,17 +1448,17 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
   params[SignalLabel::GAP_HFR] = evalNyquist(m_convert.eval_lin_pitch(tmp_Center + tmp_Gap + tmp_Stereo) * 440.f);
   /* - Echo */
   /*   - Time and Stereo */
-  tmp_Center = getSignal(P_DLY_TIME) * tmp_SR;  // time is handled in samples
-  tmp_Stereo = getSignal(P_DLY_STE) * m_dlyNormStereo;
+  tmp_Center = getSignal(ParameterLabel::P_DLY_TIME) * tmp_SR;  // time is handled in samples
+  tmp_Stereo = getSignal(ParameterLabel::P_DLY_STE) * m_dlyNormStereo;
   params[SignalLabel::DLY_TL] = tmp_Center * (1.f + tmp_Stereo);
   params[SignalLabel::DLY_TR] = tmp_Center * (1.f - tmp_Stereo);
   /*   - High Cut Frequency */
-  params[SignalLabel::DLY_LPF] = evalNyquist(getSignal(P_DLY_LPF) * 440.f);
+  params[SignalLabel::DLY_LPF] = evalNyquist(getSignal(ParameterLabel::P_DLY_LPF) * 440.f);
   /* - Reverb (if slow rendering is enabled - see pe_defines_config.h) */
 #if test_reverbParams == 1
   float tmp_val, tmp_fb, tmp_dry, tmp_wet;
   /*   - Size to Size, Feedback, Balance */
-  tmp_val = getSignal(P_REV_SIZE);
+  tmp_val = getSignal(ParameterLabel::P_REV_SIZE);
   tmp_val *= 2.f - std::abs(tmp_val);
   params[SignalLabel::REV_SIZE] = tmp_val;
   tmp_fb = tmp_val * (0.6f + (0.4f * std::abs(tmp_val)));
@@ -1402,13 +1466,13 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
   tmp_fb = tmp_val * (1.3f - (0.3f * std::abs(tmp_val)));
   params[SignalLabel::REV_BAL] = 0.9f * tmp_fb;
   /*   - Pre Delay */
-  params[SignalLabel::REV_PRE] = getSignal(P_REV_PRE) * 200.f * m_millisecond;
+  params[SignalLabel::REV_PRE] = getSignal(ParameterLabel::P_REV_PRE) * 200.f * m_millisecond;
   /*   - Color to Filter Frequencies (HPF, LPF) */
-  tmp_val = getSignal(P_REV_COL);
+  tmp_val = getSignal(ParameterLabel::P_REV_COL);
   params[SignalLabel::REV_LPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve1.applyCurve(tmp_val)) * 440.f);
   params[SignalLabel::REV_HPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve2.applyCurve(tmp_val)) * 440.f);
   /*   - Mix to Dry, Wet */
-  tmp_val = getSignal(P_REV_MIX);
+  tmp_val = getSignal(ParameterLabel::P_REV_MIX);
   tmp_dry = 1.f - tmp_val;
   tmp_dry = (2.f - tmp_dry) * tmp_dry;
   params[SignalLabel::REV_DRY] = tmp_dry;
@@ -1435,45 +1499,45 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
   /* - Flanger */
 #if test_flanger_phs == 1
   /*   - LFO/Envelope Rate, Phase */
-  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(P_FLA_PHS);
+  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(ParameterLabel::P_FLA_PHS);
 #endif
   /*   - Feedback and Cross Feedback */
-  tmp_fb = m_flaFeedbackCurve.applyCurve(getSignal(P_FLA_FB));
-  tmp_val = getSignal(P_FLA_CFB);
+  tmp_fb = m_flaFeedbackCurve.applyCurve(getSignal(ParameterLabel::P_FLA_FB));
+  tmp_val = getSignal(ParameterLabel::P_FLA_CFB);
   params[SignalLabel::FLA_FB_LOC] = tmp_fb * (1.f - std::abs(tmp_val));
   params[SignalLabel::FLA_FB_CR] = tmp_fb * tmp_val;
   /*   - Dry and Wet Amounts */
-  tmp_val = getSignal(P_FLA_MIX);
+  tmp_val = getSignal(ParameterLabel::P_FLA_MIX);
   params[SignalLabel::FLA_DRY] = 1.f - std::abs(tmp_val);
   params[SignalLabel::FLA_WET] = tmp_val;
   /*   - Allpass Frequencies */
-  tmp_val = getSignal(P_FLA_APM);
-  tmp_dry = getSignal(P_FLA_APT);
+  tmp_val = getSignal(ParameterLabel::P_FLA_APM);
+  tmp_dry = getSignal(ParameterLabel::P_FLA_APT);
   params[SignalLabel::FLA_APF_L]
       = evalNyquist(m_convert.eval_lin_pitch((params[SignalLabel::FLA_LFO_L] * tmp_val) + tmp_dry) * 440.f);
   params[SignalLabel::FLA_APF_R]
       = evalNyquist(m_convert.eval_lin_pitch((params[SignalLabel::FLA_LFO_R] * tmp_val) + tmp_dry) * 440.f);
   /* - Cabinet */
   /*   - Tilt to Saturation Levels (pre, post Shaper) */
-  tmp_val = std::max(m_cabTiltFloor, m_convert.eval_level(0.5f * getSignal(P_CAB_TILT)));
+  tmp_val = std::max(m_cabTiltFloor, m_convert.eval_level(0.5f * getSignal(ParameterLabel::P_CAB_TILT)));
   params[SignalLabel::CAB_PRESAT] = 0.1588f / tmp_val;
   params[SignalLabel::CAB_SAT] = tmp_val;
   /*   - Cab Level and Dry/Wet Mix Levels */
-  params[SignalLabel::CAB_DRY] = 1.f - getSignal(P_CAB_MIX);
-  params[SignalLabel::CAB_WET] = getSignal(P_CAB_LVL) * getSignal(P_CAB_MIX);
+  params[SignalLabel::CAB_DRY] = 1.f - getSignal(ParameterLabel::P_CAB_MIX);
+  params[SignalLabel::CAB_WET] = getSignal(ParameterLabel::P_CAB_LVL) * getSignal(ParameterLabel::P_CAB_MIX);
   /* - Gap Filter */
-  tmp_val = std::abs(getSignal(P_GAP_MIX));
+  tmp_val = std::abs(getSignal(ParameterLabel::P_GAP_MIX));
   tmp_wet = NlToolbox::Math::sin(NlToolbox::Constants::halfpi * tmp_val);
   tmp_dry = NlToolbox::Math::sin(NlToolbox::Constants::halfpi * (1.f - tmp_val));
-  tmp_val = getSignal(P_GAP_BAL);
+  tmp_val = getSignal(ParameterLabel::P_GAP_BAL);
   tmp_hi_par = 0.5f + (0.5f * tmp_val);
   tmp_lo_par = 1.f - tmp_hi_par;
   tmp_hi_par = NlToolbox::Math::sin(NlToolbox::Constants::halfpi * tmp_hi_par) * NlToolbox::Constants::sqrt_two;
   tmp_lo_par = NlToolbox::Math::sin(NlToolbox::Constants::halfpi * tmp_lo_par) * NlToolbox::Constants::sqrt_two;
   tmp_val *= tmp_val;
-  tmp_hi_ser = getSignal(P_GAP_BAL) > 0.f ? tmp_val : 0.f;
-  tmp_lo_ser = getSignal(P_GAP_BAL) > 0.f ? 0.f : tmp_val;
-  if(getSignal(P_GAP_MIX) > 0.f)
+  tmp_hi_ser = getSignal(ParameterLabel::P_GAP_BAL) > 0.f ? tmp_val : 0.f;
+  tmp_lo_ser = getSignal(ParameterLabel::P_GAP_BAL) > 0.f ? 0.f : tmp_val;
+  if(getSignal(ParameterLabel::P_GAP_MIX) > 0.f)
   {
     /* parallel mode */
     /* - HP to LP input signal */
@@ -1504,19 +1568,19 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
   }
   /* - Echo */
   /*   - Feedback and Cross Feedback */
-  tmp_fb = getSignal(P_DLY_FB);
-  tmp_val = getSignal(P_DLY_CFB);
+  tmp_fb = getSignal(ParameterLabel::P_DLY_FB);
+  tmp_val = getSignal(ParameterLabel::P_DLY_CFB);
   params[SignalLabel::DLY_FB_LOC] = tmp_fb * (1.f - tmp_val);
   params[SignalLabel::DLY_FB_CR] = tmp_fb * tmp_val;
   /*   - Dry and Wet Mix Amounts */
-  tmp_val = getSignal(P_DLY_MIX);
+  tmp_val = getSignal(ParameterLabel::P_DLY_MIX);
   params[SignalLabel::DLY_WET] = (2.f * tmp_val) - (tmp_val * tmp_val);
   tmp_val = 1.f - tmp_val;
   params[SignalLabel::DLY_DRY] = (2.f * tmp_val) - (tmp_val * tmp_val);
   /* - Reverb (if fast rendering is enabled - see pe_defines_config.h) */
 #if test_reverbParams == 0
   /*   - Size to Size, Feedback, Balance */
-  tmp_val = getSignal(P_REV_SIZE);
+  tmp_val = getSignal(ParameterLabel::P_REV_SIZE);
   tmp_val *= 2.f - std::abs(tmp_val);
   params[SignalLabel::REV_SIZE] = tmp_val;
   tmp_fb = tmp_val * (0.6f + (0.4f * std::abs(tmp_val)));
@@ -1524,13 +1588,13 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
   tmp_fb = tmp_val * (1.3f - (0.3f * std::abs(tmp_val)));
   params[SignalLabel::REV_BAL] = 0.9f * tmp_fb;
   /*   - Pre Delay */
-  params[SignalLabel::REV_PRE] = getSignal(P_REV_PRE) * 200.f * m_millisecond;
+  params[SignalLabel::REV_PRE] = getSignal(ParameterLabel::P_REV_PRE) * 200.f * m_millisecond;
   /*   - Color to Filter Frequencies (HPF, LPF) */
-  tmp_val = getSignal(P_REV_COL);
+  tmp_val = getSignal(ParameterLabel::P_REV_COL);
   params[SignalLabel::REV_LPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve1.applyCurve(tmp_val)) * 440.f);
   params[SignalLabel::REV_HPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve2.applyCurve(tmp_val)) * 440.f);
   /*   - Mix to Dry, Wet */
-  tmp_val = getSignal(P_REV_MIX);
+  tmp_val = getSignal(ParameterLabel::P_REV_MIX);
   tmp_dry = 1.f - tmp_val;
   tmp_dry = (2.f - tmp_dry) * tmp_dry;
   params[SignalLabel::REV_DRY] = tmp_dry;
@@ -1558,11 +1622,11 @@ void paramengine::postProcessMono_audio(ParameterStorage& params)
   /* - Flanger */
 #if test_flanger_phs == 2
   /*   - LFO/Envelope Rate, Phase */
-  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(P_FLA_PHS);
+  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(ParameterLabel::P_FLA_PHS);
 #endif
   /*   - render LFO, crossfade flanger envelope and pass left and right signals to array */
   m_flangerLFO.tick();
-  float tmp_wet = getSignal(P_FLA_ENV);
+  float tmp_wet = getSignal(ParameterLabel::P_FLA_ENV);
   float tmp_dry = 1.f - tmp_wet;
   params[SignalLabel::FLA_LFO_L] = (tmp_dry * m_flangerLFO.m_left) + (tmp_wet * tmp_env);
   params[SignalLabel::FLA_LFO_R] = (tmp_dry * m_flangerLFO.m_right) + (tmp_wet * tmp_env);

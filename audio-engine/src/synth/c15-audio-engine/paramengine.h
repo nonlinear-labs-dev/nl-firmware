@@ -70,9 +70,9 @@ struct Parameters
   uint32_t m_start[dsp_clock_types][dsp_poly_types];
   uint32_t m_end[dsp_clock_types][dsp_poly_types];
 #endif
-  inline param_head &getHead(uint32_t id)
+  inline param_head &getHead(ParameterLabel id)
   {
-    return m_head[id];
+    return m_head[static_cast<uint32_t>(id)];
   }
 
   inline param_body &getBody(uint32_t id)
@@ -80,14 +80,14 @@ struct Parameters
     return m_body[id];
   }
 
-  inline float getSignal(uint32_t paramId) const
+  inline float getSignal(ParameterLabel paramId) const
   {
-    return m_body[m_head[paramId].m_index].m_signal;
+    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index].m_signal;
   }
 
-  inline float getSignal(uint32_t paramId, uint32_t voice) const
+  inline float getSignal(ParameterLabel paramId, uint32_t voice) const
   {
-    return m_body[m_head[paramId].m_index + voice].m_signal;
+    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index + voice].m_signal;
   }
 
   inline void addClockId(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
@@ -101,13 +101,13 @@ struct Parameters
   }
 
   inline void addPostId(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType,
-                        uint32_t _id)
+                        ParameterLabel _id)
   {
     m_postIds.add(_spreadType, _clockType, _polyType, _id);
   }
 
-  inline const std::vector<uint32_t> &getPostIds(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType,
-                                                 PARAM_POLY_TYPES _polyType) const
+  inline const std::vector<ParameterLabel> &getPostIds(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType,
+                                                       PARAM_POLY_TYPES _polyType) const
   {
     return m_postIds.get(_spreadType, _clockType, _polyType);
   }
@@ -145,7 +145,7 @@ struct paramengine
 
   Parameters m_parameters;
 
-  inline param_head &getHead(uint32_t id)
+  inline param_head &getHead(ParameterLabel id)
   {
     return m_parameters.getHead(id);
   }
@@ -155,12 +155,12 @@ struct paramengine
     return m_parameters.getBody(id);
   }
 
-  inline float getSignal(uint32_t paramId) const
+  inline float getSignal(ParameterLabel paramId) const
   {
     return m_parameters.getSignal(paramId);
   }
 
-  inline float getSignal(uint32_t paramId, uint32_t voice) const
+  inline float getSignal(ParameterLabel paramId, uint32_t voice) const
   {
     return m_parameters.getSignal(paramId, voice);
   }
@@ -212,12 +212,12 @@ struct paramengine
   /* helper */
   float evalNyquist(float _freq);
   /* TCD mechanism */
-  float scale(const uint32_t _scaleId, const float _scaleArg, float _value);     // provided tcd scale functions
-  void setDx(const uint32_t _voiceId, const uint32_t _paramId, float _value);    // param dx update
-  void setDest(const uint32_t _voiceId, const uint32_t _paramId, float _value);  // param dest update
-  void applyPreloaded(const uint32_t _voiceId, const uint32_t _paramId);         // param apply preloaded
-  void applyDest(const uint32_t _index);                                         // param apply dest (non-sync types)
-  void applySync(const uint32_t _index);                                         // param apply dest (sync types)
+  float scale(const uint32_t _scaleId, const float _scaleArg, float _value);           // provided tcd scale functions
+  void setDx(const uint32_t _voiceId, const ParameterLabel _paramId, float _value);    // param dx update
+  void setDest(const uint32_t _voiceId, const ParameterLabel _paramId, float _value);  // param dest update
+  void applyPreloaded(const uint32_t _voiceId, const ParameterLabel _paramId);         // param apply preloaded
+  void applyDest(const uint32_t _index);  // param apply dest (non-sync types)
+  void applySync(const uint32_t _index);  // param apply dest (sync types)
   /* key events */
   void keyDown(const uint32_t _voiceId, float _velocity);  // key events: key down (note on) mechanism
   void keyUp(const uint32_t _voiceId, float _velocity);    // key events: key up (note off) mechanism

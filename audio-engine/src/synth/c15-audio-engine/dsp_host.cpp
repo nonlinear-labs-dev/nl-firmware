@@ -44,7 +44,7 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
 #if log_examine
   m_tcd_input_log.reset();
 
-  m_param_status.m_selected = log_param_id;
+  m_param_status.m_selected = static_cast<ParameterLabel>(log_param_id);
   m_param_status.m_id = m_params.getHead(m_param_status.m_selected).m_id;
   m_param_status.m_index = m_params.getHead(m_param_status.m_selected).m_index;
   m_param_status.m_size = m_params.getHead(m_param_status.m_selected).m_size;
@@ -71,7 +71,7 @@ void dsp_host::loadInitialPreset()
   /* traverse parameters, each one receiving zero value */
   for(uint32_t i = 0; i < lst_recall_length; i++)
   {
-    if(paramIds_recall[i] == P_UN_V)  /// Unison Voices
+    if(paramIds_recall[i] == ParameterLabel::P_UN_V)  /// Unison Voices
     {
       evalMidi(5, 0, 1);  // send destination 1
     }
@@ -466,10 +466,12 @@ void dsp_host::paramSelectionUpdate()
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     /* only TRUE TCD IDs (< 16383) */
-    if(m_params.getHead(p).m_id < 16383)
+    auto paramID = static_cast<ParameterLabel>(p);
+
+    if(m_params.getHead(paramID).m_id < 16383)
     {
-      s = m_decoder.selectionEvent(m_decoder.m_paramFrom, m_decoder.m_paramTo, m_params.getHead(p).m_id);
-      m_decoder.m_selectedParams.add(m_params.getHead(p).m_polyType, s, p);
+      s = m_decoder.selectionEvent(m_decoder.m_paramFrom, m_decoder.m_paramTo, m_params.getHead(paramID).m_id);
+      m_decoder.m_selectedParams.add(m_params.getHead(paramID).m_polyType, s, paramID);
     }
   }
 }
@@ -511,9 +513,11 @@ void dsp_host::preloadUpdate(uint32_t _mode, uint32_t _listId)
       /* apply preloaded values - parameters */
       for(p = 0; p < sig_number_of_params; p++)
       {
-        for(v = 0; v < m_params.getHead(p).m_size; v++)
+        auto paramID = static_cast<ParameterLabel>(p);
+
+        for(v = 0; v < m_params.getHead(paramID).m_size; v++)
         {
-          m_params.applyPreloaded(v, p);
+          m_params.applyPreloaded(v, paramID);
         }
       }
 #if test_preload_update == 0
@@ -559,7 +563,7 @@ void dsp_host::preloadUpdate(uint32_t _mode, uint32_t _listId)
           //m_params.postProcessPoly_slow(m_paramsignaldata[v], v);
           keyApply(v);
           //std::cout << "Voice: " << v;
-          //std::cout << " Pitch: " << m_params.m_body[m_params.m_head[P_KEY_NP].m_index + v].m_signal;
+          //std::cout << " Pitch: " << m_params.m_body[m_params.m_head[ParameterLabel::P_KEY_NP].m_index + v].m_signal;
           //std::cout << " Comb:\t";
           //for(uint32_t t = CMB_AB; t <= CMB_PMAB; t++)
           //{
@@ -772,7 +776,7 @@ void dsp_host::keyApply(uint32_t _voiceId)
 
     /* determine note steal */
 #if test_milestone < 156
-    if(static_cast<uint32_t>(m_params.getSignal(P_KEY_VS)) == 1)
+    if(static_cast<uint32_t>(m_params.getSignal(ParameterLabel::P_KEY_VS)) == 1)
     {
       /* AUDIO_ENGINE: trigger voice-steal */
     }
@@ -792,17 +796,17 @@ void dsp_host::keyApply(uint32_t _voiceId)
 #endif
     /* OLD approach of phase reset - over shared array */
     /* update and reset oscillator phases */
-    //m_paramsignaldata[_voiceId][OSC_A_PHS] = m_params.m_body[m_params.m_head[P_KEY_PA].m_index + _voiceId].m_signal;  // POLY PHASE_A -> OSC_A Phase
+    //m_paramsignaldata[_voiceId][OSC_A_PHS] = m_params.m_body[m_params.m_head[ParameterLabel::P_KEY_PA].m_index + _voiceId].m_signal;  // POLY PHASE_A -> OSC_A Phase
 
     /* AUDIO_ENGINE: reset oscillator phases */
     //resetOscPhase(m_paramsignaldata[_voiceId], _voiceId);
     /* NEW approach of phase reset - no array involved - still only unisono phase */
 
     /* NEW UNISONO PHASE FUNCTIONALITY, Osc Phases are now offsets */
-    //float phaseA = m_params.m_body[m_params.m_head[P_KEY_PA].m_index + _voiceId].m_signal;
-    //float phaseB = m_params.m_body[m_params.m_head[P_KEY_PB].m_index + _voiceId].m_signal;
+    //float phaseA = m_params.m_body[m_params.m_head[ParameterLabel::P_KEY_PA].m_index + _voiceId].m_signal;
+    //float phaseB = m_params.m_body[m_params.m_head[ParameterLabel::P_KEY_PB].m_index + _voiceId].m_signal;
 #if test_milestone == 150
-    const float startPhase = m_params.getSignal(P_KEY_PH, _voiceId);
+    const float startPhase = m_params.getSignal(ParameterLabel::P_KEY_PH, _voiceId);
 #elif test_milestone == 155
     const float startPhase = 0.f;
 #elif test_milestone == 156
@@ -818,7 +822,7 @@ void dsp_host::keyApply(uint32_t _voiceId)
 void dsp_host::keyUp156(const float _velocity)
 {
   uint32_t voiceId = m_decoder.m_voiceFrom;
-  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getSignal(P_UN_V));
+  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getSignal(ParameterLabel::P_UN_V));
 
   for(uint32_t v = 0; v < unisonVoices; v++)
   {
@@ -832,8 +836,8 @@ void dsp_host::keyUp156(const float _velocity)
 void dsp_host::keyDown156(const float _velocity)
 {
   uint32_t voiceId = m_decoder.m_voiceFrom;
-  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getSignal(P_UN_V));
-  const uint32_t index = m_params.getHead(P_KEY_BP).m_index + voiceId;
+  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getSignal(ParameterLabel::P_UN_V));
+  const uint32_t index = m_params.getHead(ParameterLabel::P_KEY_BP).m_index + voiceId;
   const float pitch = m_params.getBody(index).m_dest;
   //
   for(uint32_t v = 0; v < unisonVoices; v++)
@@ -1224,7 +1228,7 @@ void dsp_host::testNewNoteOn(uint32_t _pitch, uint32_t _velocity)
   int32_t keyPos = static_cast<int32_t>(_pitch) - 60;
   uint32_t noteVel
       = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
-  m_test_unison_voices = static_cast<uint32_t>(m_params.getSignal(P_UN_V)) + 1;
+  m_test_unison_voices = static_cast<uint32_t>(m_params.getSignal(ParameterLabel::P_UN_V)) + 1;
   evalMidi(47, 2, 1);              // enable preload (key event list mode)
   evalMidi(0, 0, m_test_voiceId);  // select voice: current
   for(uint32_t uIndex = 0; uIndex < m_test_unison_voices; uIndex++)
@@ -1248,7 +1252,7 @@ void dsp_host::testNoteOn156(uint32_t _pitch, uint32_t _velocity)
   int32_t keyPos = static_cast<int32_t>(_pitch) - 60;
   uint32_t noteVel
       = static_cast<uint32_t>(static_cast<float>(_velocity) * m_test_normalizeMidi * utility_definition[0][0]);
-  m_test_unison_voices = static_cast<uint32_t>(m_params.getSignal(P_UN_V)) + 1;
+  m_test_unison_voices = static_cast<uint32_t>(m_params.getSignal(ParameterLabel::P_UN_V)) + 1;
   /* */
   evalMidi(55, 0, (m_test_voiceId << 1) + 0);  // new keyVoice (current voice, no steal)
   testParseDestination(keyPos * 1000);         // base pitch (factor 1000 because of Scaling)

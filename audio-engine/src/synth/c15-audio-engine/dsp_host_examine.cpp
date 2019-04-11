@@ -55,7 +55,7 @@ std::ostream& operator<<(std::ostream& lhs, const examine_tcd_input_log& rhs)
 
 std::ostream& operator<<(std::ostream& lhs, const examine_param& rhs)
 {
-  lhs << std::endl << "Examine Parameter (" << rhs.m_selected << "):\n" << std::endl;
+  lhs << std::endl << "Examine Parameter (" << static_cast<uint32_t>(rhs.m_selected) << "):\n" << std::endl;
   lhs << "ID\tIndex\tSize\tClock\tPoly\tScale\tArg\tPost\tNorm" << std::endl;
   lhs << rhs.m_id << "\t" << rhs.m_index << "\t" << rhs.m_size << "\t" << rhs.m_clockType << "\t";
   lhs << rhs.m_polyType << "\t" << rhs.m_scaleId << "\t" << rhs.m_scaleArg << "\t";

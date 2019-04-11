@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <ostream>
 #include "pe_defines_config.h"
+#include "pe_defines_labels.h"
 
 const uint32_t tcd_log_buffersize = 1000;
 
@@ -43,7 +44,7 @@ std::ostream& operator<<(std::ostream& lhs, const examine_tcd_input_log& rhs);
 
 struct examine_param
 {
-  uint32_t m_selected = 0;
+  ParameterLabel m_selected = ParameterLabel::P_EA_ATT;
   //
   uint32_t m_id;
   uint32_t m_index;
