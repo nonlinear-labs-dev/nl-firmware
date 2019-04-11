@@ -1,6 +1,7 @@
 #include <iostream>
 #include "io/Log.h"
 #include "dsp_host.h"
+#include "pe_utilities.h"
 
 /* default constructor - initialize (audio) signals */
 dsp_host::dsp_host()
@@ -47,7 +48,7 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
   m_param_status.m_id = m_params.getHead(m_param_status.m_selected).m_id;
   m_param_status.m_index = m_params.getHead(m_param_status.m_selected).m_index;
   m_param_status.m_size = m_params.getHead(m_param_status.m_selected).m_size;
-  m_param_status.m_clockType = m_params.getHead(m_param_status.m_selected).m_clockType;
+  m_param_status.m_clockType = static_cast<uint32_t>(m_params.getHead(m_param_status.m_selected).m_clockType);
   m_param_status.m_polyType = m_params.getHead(m_param_status.m_selected).m_polyType;
   m_param_status.m_scaleId = m_params.getHead(m_param_status.m_selected).m_scaleId;
   m_param_status.m_postId = m_params.getHead(m_param_status.m_selected).m_postId;
@@ -107,14 +108,14 @@ void dsp_host::tickMain()
 #if PARAM_ITERATOR == 0
     for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_MONO))
     {
-        auto i = m_params.getHead(it).m_index;
-        m_params.getBody(i).tick();
+      auto i = m_params.getHead(it).m_index;
+      m_params.getBody(i).tick();
     }
 #else
-    auto end = m_params.m_parameters.end(PARAM_SLOW, PARAM_MONO);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_MONO); it != end; it++)
+    auto end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_MONO);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_MONO); it != end; it++)
     {
-        it->tick();
+      it->tick();
     }
 #endif
     m_params.postProcessMono_slow(m_parameters.bindToVoice(0));
@@ -124,15 +125,16 @@ void dsp_host::tickMain()
 #if PARAM_ITERATOR == 0
       for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_POLY))
       {
-          auto i = m_params.getHead(it).m_index + v;
-          m_params.getBody(i).tick();
+        auto i = m_params.getHead(it).m_index + v;
+        m_params.getBody(i).tick();
       }
 #else
-    end = m_params.m_parameters.end(PARAM_SLOW, PARAM_POLY, v);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_POLY, v); it != end; it += m_voices)
-    {
+      end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY, v);
+      for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY, v); it != end;
+          it += m_voices)
+      {
         it->tick();
-    }
+      }
 #endif
       m_params.postProcessPoly_slow(m_parameters.bindToVoice(v), v);
       /* slow polyphonic Trigger for Filter Coefficients */
@@ -148,14 +150,14 @@ void dsp_host::tickMain()
 #if PARAM_ITERATOR == 0
     for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_MONO))
     {
-        auto i = m_params.getHead(it).m_index;
-        m_params.getBody(i).tick();
+      auto i = m_params.getHead(it).m_index;
+      m_params.getBody(i).tick();
     }
 #else
-    auto end = m_params.m_parameters.end(PARAM_FAST, PARAM_MONO);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_MONO); it != end; it++)
+    auto end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_MONO);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_MONO); it != end; it++)
     {
-        it->tick();
+      it->tick();
     }
 #endif
     m_params.postProcessMono_fast(m_parameters.bindToVoice(0));
@@ -165,15 +167,16 @@ void dsp_host::tickMain()
 #if PARAM_ITERATOR == 0
       for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_POLY))
       {
-          auto i = m_params.getHead(it).m_index + v;
-          m_params.getBody(i).tick();
+        auto i = m_params.getHead(it).m_index + v;
+        m_params.getBody(i).tick();
       }
 #else
-    end = m_params.m_parameters.end(PARAM_FAST, PARAM_POLY, v);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_POLY, v); it != end; it += m_voices)
-    {
+      end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY, v);
+      for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY, v); it != end;
+          it += m_voices)
+      {
         it->tick();
-    }
+      }
 #endif
       m_params.postProcessPoly_fast(m_parameters.bindToVoice(v), v);
     }
@@ -184,15 +187,15 @@ void dsp_host::tickMain()
 #if PARAM_ITERATOR == 0
   for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_MONO))
   {
-      auto i = m_params.getHead(it).m_index;
-      m_params.getBody(i).tick();
+    auto i = m_params.getHead(it).m_index;
+    m_params.getBody(i).tick();
   }
 #else
-    auto end = m_params.m_parameters.end(PARAM_AUDIO, PARAM_MONO);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_MONO); it != end; it++)
-    {
-        it->tick();
-    }
+  auto end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_MONO);
+  for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_MONO); it != end; it++)
+  {
+    it->tick();
+  }
 #endif
   m_params.postProcessMono_audio(m_parameters.bindToVoice(0));
   /* Reset Outputmixer Sum Samples */
@@ -206,14 +209,15 @@ void dsp_host::tickMain()
 #if PARAM_ITERATOR == 0
     for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_POLY))
     {
-        auto i = m_params.getHead(it).m_index + v;
-        m_params.getBody(i).tick();
+      auto i = m_params.getHead(it).m_index + v;
+      m_params.getBody(i).tick();
     }
 #else
-    end = m_params.m_parameters.end(PARAM_AUDIO, PARAM_POLY, v);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_POLY, v); it != end; it += m_voices)
+    end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY, v);
+    for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY, v); it != end;
+        it += m_voices)
     {
-        it->tick();
+      it->tick();
     }
 #endif
     /* post processing and envelope rendering */
