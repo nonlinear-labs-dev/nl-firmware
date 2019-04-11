@@ -139,6 +139,7 @@ class Parameter : public UpdateDocumentContributor,
   Signal<void, const Parameter *> m_signalParamChanged;
 
   uint16_t m_id;
+  mutable PresetParameter* m_cachedOGParam;
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
 
