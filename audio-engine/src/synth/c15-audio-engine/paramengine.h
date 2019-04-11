@@ -100,12 +100,13 @@ struct Parameters
     return m_clockIds.get(_clockType, _polyType);
   }
 
-  inline void addPostId(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
+  inline void addPostId(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType,
+                        uint32_t _id)
   {
     m_postIds.add(_spreadType, _clockType, _polyType, _id);
   }
 
-  inline const std::vector<uint32_t> &getPostIds(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType,
+  inline const std::vector<uint32_t> &getPostIds(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType,
                                                  PARAM_POLY_TYPES _polyType) const
   {
     return m_postIds.get(_spreadType, _clockType, _polyType);

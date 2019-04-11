@@ -31,7 +31,7 @@ enum class PARAM_POLY_TYPES
   PARAM_POLY = 1
 };
 
-enum PARAM_SPREAD_TYPES
+enum class PARAM_SPREAD_TYPES
 {
   PARAM_SINGLE = 0,
   PARAM_SPREAD = 1
@@ -111,15 +111,17 @@ struct new_clock_id_list
 
 struct new_dual_clock_id_list
 {
-  inline void add(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
+  inline void add(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType,
+                  uint32_t _id)
   {
-    m_data[_spreadType][static_cast<int>(_clockType)][static_cast<int>(_polyType)].push_back(_id);
+    m_data[static_cast<uint32_t>(_spreadType)][static_cast<int>(_clockType)][static_cast<int>(_polyType)].push_back(
+        _id);
   }
 
-  inline const std::vector<uint32_t> &get(uint32_t _spreadType, PARAM_CLOCK_TYPES _clockType,
+  inline const std::vector<uint32_t> &get(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType,
                                           PARAM_POLY_TYPES _polyType) const
   {
-    return m_data[_spreadType][static_cast<int>(_clockType)][static_cast<int>(_polyType)];
+    return m_data[static_cast<uint32_t>(_spreadType)][static_cast<int>(_clockType)][static_cast<int>(_polyType)];
   }
 
  private:
