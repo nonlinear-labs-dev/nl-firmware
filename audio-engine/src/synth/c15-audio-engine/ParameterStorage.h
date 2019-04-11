@@ -1,6 +1,8 @@
 #pragma once
 
 #include "pe_defines_config.h"
+#include "dsp_defines_signallabels.h"
+
 #include <stdlib.h>
 
 class ParameterStorage
@@ -8,9 +10,9 @@ class ParameterStorage
  public:
   ParameterStorage() = default;
 
-  inline float &operator[](uint32_t param)
+  inline float &operator[](SignalLabel param)
   {
-    return m_boundVoice[param];
+    return m_boundVoice[static_cast<uint32_t>(param)];
   }
 
   inline ParameterStorage &bindToVoice(uint32_t v)

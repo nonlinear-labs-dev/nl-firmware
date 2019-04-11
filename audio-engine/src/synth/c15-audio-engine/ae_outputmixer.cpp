@@ -57,40 +57,40 @@ void ae_outputmixer::combine(float _sampleA, float _sampleB, float _sampleComb, 
                              ParameterStorage &params, uint32_t _voiceID)
 {
   //******************************* Left Mix *******************************//
-  float mainSample = params[OUT_A_L] * _sampleA + params[OUT_B_L] * _sampleB + params[OUT_CMB_L] * _sampleComb
-      + params[OUT_SVF_L] * _sampleSVFilter;
+  float mainSample = params[SignalLabel::OUT_A_L] * _sampleA + params[SignalLabel::OUT_B_L] * _sampleB
+      + params[SignalLabel::OUT_CMB_L] * _sampleComb + params[SignalLabel::OUT_SVF_L] * _sampleSVFilter;
 
   //************************* Left Sample Shaper ***************************//
-  mainSample *= params[OUT_DRV];
+  mainSample *= params[SignalLabel::OUT_DRV];
   float tmpVar = mainSample;
 
   mainSample = NlToolbox::Math::sinP3_wrap(mainSample);
-  mainSample = NlToolbox::Others::threeRanges(mainSample, tmpVar, params[OUT_FLD]);
+  mainSample = NlToolbox::Others::threeRanges(mainSample, tmpVar, params[SignalLabel::OUT_FLD]);
 
   tmpVar = mainSample * mainSample;
   tmpVar = tmpVar - m_hp30hz_stateVar_L[_voiceID];
   m_hp30hz_stateVar_L[_voiceID] = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar_L[_voiceID] + DNC_const;
 
-  mainSample = NlToolbox::Others::parAsym(mainSample, tmpVar, params[OUT_ASM]);
+  mainSample = NlToolbox::Others::parAsym(mainSample, tmpVar, params[SignalLabel::OUT_ASM]);
 
   m_out_L += mainSample;
 
   //****************************** Right Mix *******************************//
-  mainSample = params[OUT_A_R] * _sampleA + params[OUT_B_R] * _sampleB + params[OUT_CMB_R] * _sampleComb
-      + params[OUT_SVF_R] * _sampleSVFilter;
+  mainSample = params[SignalLabel::OUT_A_R] * _sampleA + params[SignalLabel::OUT_B_R] * _sampleB
+      + params[SignalLabel::OUT_CMB_R] * _sampleComb + params[SignalLabel::OUT_SVF_R] * _sampleSVFilter;
 
   //************************ Right Sample Shaper ***************************//
-  mainSample *= params[OUT_DRV];
+  mainSample *= params[SignalLabel::OUT_DRV];
   tmpVar = mainSample;
 
   mainSample = NlToolbox::Math::sinP3_wrap(mainSample);
-  mainSample = NlToolbox::Others::threeRanges(mainSample, tmpVar, params[OUT_FLD]);
+  mainSample = NlToolbox::Others::threeRanges(mainSample, tmpVar, params[SignalLabel::OUT_FLD]);
 
   tmpVar = mainSample * mainSample;
   tmpVar = tmpVar - m_hp30hz_stateVar_R[_voiceID];
   m_hp30hz_stateVar_R[_voiceID] = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar_R[_voiceID] + DNC_const;
 
-  mainSample = NlToolbox::Others::parAsym(mainSample, tmpVar, params[OUT_ASM]);
+  mainSample = NlToolbox::Others::parAsym(mainSample, tmpVar, params[SignalLabel::OUT_ASM]);
 
   m_out_R += mainSample;
 }
@@ -115,8 +115,8 @@ void ae_outputmixer::filter_level(ParameterStorage &params)
   m_hp_stateVar_R1 = m_out_R + DNC_const;
   m_hp_stateVar_R2 = tmpVar + DNC_const;
 
-  m_out_L *= params[OUT_LVL];
-  m_out_R *= params[OUT_LVL];
+  m_out_L *= params[SignalLabel::OUT_LVL];
+  m_out_R *= params[SignalLabel::OUT_LVL];
 }
 
 /******************************************************************************/

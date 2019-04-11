@@ -51,7 +51,7 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
   m_param_status.m_clockType = static_cast<uint32_t>(m_params.getHead(m_param_status.m_selected).m_clockType);
   m_param_status.m_polyType = static_cast<uint32_t>(m_params.getHead(m_param_status.m_selected).m_polyType);
   m_param_status.m_scaleId = m_params.getHead(m_param_status.m_selected).m_scaleId;
-  m_param_status.m_postId = m_params.getHead(m_param_status.m_selected).m_postId;
+  m_param_status.m_postId = static_cast<uint32_t>(m_params.getHead(m_param_status.m_selected).m_postId);
   m_param_status.m_normalize = m_params.getHead(m_param_status.m_selected).m_normalize;
   m_param_status.m_scaleArg = m_params.getHead(m_param_status.m_selected).m_scaleArg;
 
@@ -1614,7 +1614,7 @@ void dsp_host::makePolySound(ParameterStorage &params, uint32_t _voiceID)
 
 void dsp_host::makeMonoSound(ParameterStorage &params)
 {
-  float mst_gain = params[MST_VOL] * m_raised_cos_table[m_table_indx];
+  float mst_gain = params[SignalLabel::MST_VOL] * m_raised_cos_table[m_table_indx];
 
   //****************************** Mono Modules ****************************//
   m_outputmixer.filter_level(params);

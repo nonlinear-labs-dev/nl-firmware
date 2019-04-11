@@ -35,7 +35,7 @@ struct param_head
   PARAM_CLOCK_TYPES m_clockType;
   PARAM_POLY_TYPES m_polyType;
   uint32_t m_scaleId;
-  uint32_t m_postId;
+  SignalLabel m_postId;
   float m_normalize;
   float m_scaleArg;
 };

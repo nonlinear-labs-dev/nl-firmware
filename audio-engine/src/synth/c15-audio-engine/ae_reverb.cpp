@@ -132,8 +132,8 @@ void ae_reverb::set(ParameterStorage &params)
   float tmp_target;
 #if test_reverbSmoother == 1
 
-  tmpVar = params[REV_SIZE];
-  //    tmp_target = params[REV_CHO] * (tmpVar * -200.f + 311.f);
+  tmpVar = params[SignalLabel::REV_SIZE];
+  //    tmp_target = params[SignalLabel::REV_CHO] * (tmpVar * -200.f + 311.f);
   //    if (m_depth_target - tmp_target != 0.f)
   //    {
   //        m_depth_target = tmp_target;
@@ -141,7 +141,7 @@ void ae_reverb::set(ParameterStorage &params)
   //        m_depth_diff = m_depth_target - m_depth_base;
   //        m_depth_ramp = 0.f;
   //    }
-  tmp_target = params[REV_CHO] * (tmpVar * -200.f + 311.f);
+  tmp_target = params[SignalLabel::REV_CHO] * (tmpVar * -200.f + 311.f);
   if(m_depth_target - tmp_target != 0.f)
   {
     m_depth_inc = (m_depth_target - m_depth) * m_smooth_inc;
@@ -156,7 +156,7 @@ void ae_reverb::set(ParameterStorage &params)
     m_size_ramp = 0.f;
   }
 
-  tmp_target = params[REV_BAL];
+  tmp_target = params[SignalLabel::REV_BAL];
   if(m_bal_target - tmp_target != 0.f)
   {
     m_bal_target = tmp_target;
@@ -165,7 +165,7 @@ void ae_reverb::set(ParameterStorage &params)
     m_bal_ramp = 0.f;
   }
 
-  tmpVar = params[REV_PRE];
+  tmpVar = params[SignalLabel::REV_PRE];
   tmp_target = std::round(tmpVar);
   if(m_preDel_L_target - tmp_target != 0.f)
   {
@@ -184,7 +184,7 @@ void ae_reverb::set(ParameterStorage &params)
     m_preDel_R_ramp = 0.f;
   }
 
-  tmp_target = std::clamp(params[REV_LPF], 0.1f, m_omegaClip_max);
+  tmp_target = std::clamp(params[SignalLabel::REV_LPF], 0.1f, m_omegaClip_max);
   tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
   if(m_lp_omega_target - tmp_target != 0.f)
   {
@@ -194,7 +194,7 @@ void ae_reverb::set(ParameterStorage &params)
     m_lp_omega_ramp = 0.f;
   }
 
-  tmp_target = std::clamp(params[REV_HPF], 0.1f, m_omegaClip_max);
+  tmp_target = std::clamp(params[SignalLabel::REV_HPF], 0.1f, m_omegaClip_max);
   tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
   if(m_hp_omega_target - tmp_target != 0.f)
   {
@@ -207,30 +207,30 @@ void ae_reverb::set(ParameterStorage &params)
 #endif
 
 #if test_reverbSmoother == 0
-  tmpVar = params[REV_SIZE];
-  m_depth = params[REV_CHO] * (tmpVar * -200.f + 311.f);  /// Smoothing??
+  tmpVar = params[SignalLabel::REV_SIZE];
+  m_depth = params[SignalLabel::REV_CHO] * (tmpVar * -200.f + 311.f);  /// Smoothing??
 
-  tmpVar = params[REV_SIZE];
+  tmpVar = params[SignalLabel::REV_SIZE];
   tmpVar = tmpVar * (0.5f - std::abs(tmpVar) * -0.5f);  /// Smoothing??
   m_absorb = tmpVar * 0.334f + 0.666f;
   m_fb_amnt = tmpVar * 0.667f + 0.333f;
 
-  tmpVar = params[REV_BAL];  /// Smoothing??
+  tmpVar = params[SignalLabel::REV_BAL];  /// Smoothing??
   m_bal_full = tmpVar * (2.f - tmpVar);
   tmpVar = 1.f - tmpVar;
   m_bal_half = tmpVar * (2.f - tmpVar);
 
-  tmpVar = params[REV_PRE];
+  tmpVar = params[SignalLabel::REV_PRE];
   m_preDel_L = std::round(tmpVar);             /// Smoothing?
   m_preDel_R = std::round(tmpVar * 1.18933f);  /// Smoothing?
 
-  tmpVar = std::clamp(params[REV_LPF], 0.1f, m_omegaClip_max);
+  tmpVar = std::clamp(params[SignalLabel::REV_LPF], 0.1f, m_omegaClip_max);
   m_lp_omega = NlToolbox::Math::tan(tmpVar * m_warpConst_PI);  /// Smoothing??
 
   m_lp_a0 = 1.f / (m_lp_omega + 1.f);
   m_lp_a1 = m_lp_omega - 1.f;
 
-  tmpVar = std::clamp(params[REV_HPF], 0.1f, m_omegaClip_max);
+  tmpVar = std::clamp(params[SignalLabel::REV_HPF], 0.1f, m_omegaClip_max);
   m_hp_omega = NlToolbox::Math::tan(tmpVar * m_warpConst_PI);  /// Smoothing??
 
   m_hp_a0 = 1.f / (m_hp_omega + 1.f);
@@ -365,7 +365,7 @@ void ae_reverb::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &
 
   //************************************************************************//
   //**************************** Left Channel ******************************//
-  wetSample_L = _rawSample_L * params[REV_SND] * params[REV_FEED];
+  wetSample_L = _rawSample_L * params[SignalLabel::REV_SND] * params[SignalLabel::REV_FEED];
 
   //****************************** Asym 2 L ********************************//
   m_buffer_L[m_buffer_indx] = wetSample_L;
@@ -524,7 +524,7 @@ void ae_reverb::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &
 
   //************************************************************************//
   //*************************** Right Channel ******************************//
-  wetSample_R = _rawSample_R * params[REV_SND] * params[REV_FEED];
+  wetSample_R = _rawSample_R * params[SignalLabel::REV_SND] * params[SignalLabel::REV_FEED];
 
   //****************************** Asym 2 R ********************************//
   m_buffer_R[m_buffer_indx] = wetSample_R;
@@ -742,11 +742,11 @@ void ae_reverb::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &
   wetSample_L = wetSample_L * m_bal_full + wetSample_L2 * m_bal_half;
   wetSample_R = wetSample_R * m_bal_full + wetSample_R2 * m_bal_half;
 
-  m_out_L = _rawSample_L * params[REV_DRY] + wetSample_L * params[REV_WET];
-  m_out_R = _rawSample_R * params[REV_DRY] + wetSample_R * params[REV_WET];
+  m_out_L = _rawSample_L * params[SignalLabel::REV_DRY] + wetSample_L * params[SignalLabel::REV_WET];
+  m_out_R = _rawSample_R * params[SignalLabel::REV_DRY] + wetSample_R * params[SignalLabel::REV_WET];
 
-  m_out_FX
-      = ((_rawSample_L + _rawSample_R) * (1.f - params[FBM_REV])) + ((wetSample_L + wetSample_R) * params[FBM_REV]);
+  m_out_FX = ((_rawSample_L + _rawSample_R) * (1.f - params[SignalLabel::FBM_REV]))
+      + ((wetSample_L + wetSample_R) * params[SignalLabel::FBM_REV]);
 }
 
 /******************************************************************************/
