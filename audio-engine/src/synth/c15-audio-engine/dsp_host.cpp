@@ -104,20 +104,34 @@ void dsp_host::tickMain()
   if(m_clockPosition[3] == 0)
   {
     /* render slow mono parameters and perform mono post processing */
+#if PARAM_ITERATOR == 0
     for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_MONO))
     {
         auto i = m_params.getHead(it).m_index;
         m_params.tickItem(i);
     }
+#else
+    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_MONO); it != m_params.m_parameters.end(PARAM_SLOW, PARAM_MONO); it++)
+    {
+        m_params.newTickItem(it);
+    }
+#endif
     m_params.postProcessMono_slow(m_parameters.bindToVoice(0));
     /* render slow poly parameters and perform poly slow post processing */
     for(uint32_t v = 0; v < m_voices; v++)
     {
+#if PARAM_ITERATOR == 0
       for(const auto &it : m_params.m_parameters.getClockIds(PARAM_SLOW, PARAM_POLY))
       {
           auto i = m_params.getHead(it).m_index + v;
           m_params.tickItem(i);
       }
+#else
+    for(param_body* it = m_params.m_parameters.begin(PARAM_SLOW, PARAM_POLY, v); it != m_params.m_parameters.end(PARAM_SLOW, PARAM_POLY, v); it += m_voices)
+    {
+        m_params.newTickItem(it);
+    }
+#endif
       m_params.postProcessPoly_slow(m_parameters.bindToVoice(v), v);
       /* slow polyphonic Trigger for Filter Coefficients */
       setPolySlowFilterCoeffs(m_parameters.bindToVoice(v), v);
@@ -129,31 +143,52 @@ void dsp_host::tickMain()
   if(m_clockPosition[2] == 0)
   {
     /* render fast mono parameters and perform mono post processing */
+#if PARAM_ITERATOR == 0
     for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_MONO))
     {
         auto i = m_params.getHead(it).m_index;
         m_params.tickItem(i);
     }
+#else
+    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_MONO); it != m_params.m_parameters.end(PARAM_FAST, PARAM_MONO); it++)
+    {
+        m_params.newTickItem(it);
+    }
+#endif
     m_params.postProcessMono_fast(m_parameters.bindToVoice(0));
     /* render fast poly parameters and perform poly fast post processing */
     for(uint32_t v = 0; v < m_voices; v++)
     {
+#if PARAM_ITERATOR == 0
       for(auto &it : m_params.m_parameters.getClockIds(PARAM_FAST, PARAM_POLY))
       {
           auto i = m_params.getHead(it).m_index + v;
           m_params.tickItem(i);
       }
+#else
+    for(param_body* it = m_params.m_parameters.begin(PARAM_FAST, PARAM_POLY, v); it != m_params.m_parameters.end(PARAM_FAST, PARAM_POLY, v); it += m_voices)
+    {
+        m_params.newTickItem(it);
+    }
+#endif
       m_params.postProcessPoly_fast(m_parameters.bindToVoice(v), v);
     }
     /* fast monophonic Trigger for Filter Coefficients */
     setMonoFastFilterCoeffs(m_parameters.bindToVoice(0));
   }
   /* third: evaluate audio clock (always) - mono rendering and post processing, poly rendering and post processing */
+#if PARAM_ITERATOR == 0
   for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_MONO))
   {
       auto i = m_params.getHead(it).m_index;
       m_params.tickItem(i);
   }
+#else
+    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_MONO); it != m_params.m_parameters.end(PARAM_AUDIO, PARAM_MONO); it++)
+    {
+        m_params.newTickItem(it);
+    }
+#endif
   m_params.postProcessMono_audio(m_parameters.bindToVoice(0));
   /* Reset Outputmixer Sum Samples */
   m_outputmixer.m_out_L = 0.f;
@@ -163,11 +198,18 @@ void dsp_host::tickMain()
   for(uint32_t v = 0; v < m_voices; v++)
   {
     /* render poly audio parameters */
+#if PARAM_ITERATOR == 0
     for(auto &it : m_params.m_parameters.getClockIds(PARAM_AUDIO, PARAM_POLY))
     {
         auto i = m_params.getHead(it).m_index + v;
         m_params.tickItem(i);
     }
+#else
+    for(param_body* it = m_params.m_parameters.begin(PARAM_AUDIO, PARAM_POLY, v); it != m_params.m_parameters.end(PARAM_AUDIO, PARAM_POLY, v); it += m_voices)
+    {
+        m_params.newTickItem(it);
+    }
+#endif
     /* post processing and envelope rendering */
     m_params.postProcessPoly_audio(m_parameters.bindToVoice(v), v);
     /* AUDIO_ENGINE: poly dsp phase */

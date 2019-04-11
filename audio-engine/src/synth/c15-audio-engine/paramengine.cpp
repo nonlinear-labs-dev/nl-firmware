@@ -88,19 +88,31 @@ void paramengine::init(uint32_t _sampleRate, uint32_t _voices)
   uint32_t index = 0;
   for(uint32_t clockType = 0; clockType < dsp_clock_types; clockType++)
   {
+#if PARAM_ITERATOR == 1
+      m_parameters.m_start[clockType][PARAM_MONO] = index; // find start position in body array (mono)
+#endif
       for(auto &it : m_parameters.getClockIds(clockType, PARAM_MONO))
       {
           m_parameters.getHead(it).m_index = index;
           index += 1;
       }
+#if PARAM_ITERATOR == 1
+      m_parameters.m_end[clockType][PARAM_MONO] = index; // find end position in body array (mono)
+#endif
   }
   for(uint32_t clockType = 0; clockType < dsp_clock_types; clockType++)
   {
+#if PARAM_ITERATOR == 1
+      m_parameters.m_start[clockType][PARAM_POLY] = index; // find start position in body array (poly)
+#endif
       for(auto &it : m_parameters.getClockIds(clockType, PARAM_POLY))
       {
           m_parameters.getHead(it).m_index = index;
           index += _voices;
       }
+#if PARAM_ITERATOR == 1
+      m_parameters.m_end[clockType][PARAM_POLY] = index; // find end position in body array (poly)
+#endif
   }
   /* initialize global utility parameters */
   for(uint32_t i = 0; i < sig_number_of_utilities; i++)

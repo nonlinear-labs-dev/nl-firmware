@@ -65,52 +65,75 @@ struct param_utility
 
 struct Parameters
 {
+#if PARAM_ITERATOR == 1
+    uint32_t m_start[dsp_clock_types][dsp_poly_types];
+    uint32_t m_end[dsp_clock_types][dsp_poly_types];
+#endif
+    inline param_head &getHead(uint32_t id)
+    {
+        return m_head[id];
+    }
 
-  inline param_head &getHead(uint32_t id)
-  {
-    return m_head[id];
-  }
+    inline param_body &getBody(uint32_t id)
+    {
+        return m_body[id];
+    }
 
-  inline param_body &getBody(uint32_t id)
-  {
-    return m_body[id];
-  }
+    inline float getSignal(uint32_t paramId) const
+    {
+        return m_body[m_head[paramId].m_index].m_signal;
+    }
 
-  inline float getSignal(uint32_t paramId) const
-  {
-    return m_body[m_head[paramId].m_index].m_signal;
-  }
+    inline float getSignal(uint32_t paramId, uint32_t voice) const
+    {
+        return m_body[m_head[paramId].m_index + voice].m_signal;
+    }
 
-  inline float getSignal(uint32_t paramId, uint32_t voice) const
-  {
-    return m_body[m_head[paramId].m_index + voice].m_signal;
-  }
+    inline void addClockId(uint32_t _clockType, uint32_t _polyType, uint32_t _id)
+    {
+        m_clockIds.add(_clockType, _polyType, _id);
+    }
 
-  inline void addClockId(uint32_t _clockType, uint32_t _polyType, uint32_t _id)
-  {
-      m_clockIds.add(_clockType, _polyType, _id);
-  }
+    inline const std::vector<uint32_t> &getClockIds(uint32_t _clockType, uint32_t _polyType) const
+    {
+        return m_clockIds.get(_clockType, _polyType);
+    }
 
-  inline const std::vector<uint32_t> &getClockIds(uint32_t _clockType, uint32_t _polyType) const
-  {
-      return m_clockIds.get(_clockType, _polyType);
-  }
+    inline void addPostId(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType, uint32_t _id)
+    {
+        m_postIds.add(_spreadType, _clockType, _polyType, _id);
+    }
 
-  inline void addPostId(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType, uint32_t _id)
-  {
-      m_postIds.add(_spreadType, _clockType, _polyType, _id);
-  }
+    inline const std::vector<uint32_t> &getPostIds(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType) const
+    {
+        return m_postIds.get(_spreadType, _clockType, _polyType);
+    }
+#if PARAM_ITERATOR == 1
+    inline param_body* begin(uint32_t _clockType, uint32_t _polyType)
+    {
+        return &m_body[m_start[_clockType][_polyType]];
+    }
 
-  inline const std::vector<uint32_t> &getPostIds(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType) const
-  {
-      return m_postIds.get(_spreadType, _clockType, _polyType);
-  }
+    inline param_body* begin(uint32_t _clockType, uint32_t _polyType, uint32_t _voiceId)
+    {
+        return &m_body[m_start[_clockType][_polyType] + _voiceId];
+    }
 
+    inline param_body* end(uint32_t _clockType, uint32_t _polyType)
+    {
+        return &m_body[m_end[_clockType][_polyType]];
+    }
+
+    inline param_body* end(uint32_t _clockType, uint32_t _polyType, uint32_t _voiceId)
+    {
+        return &m_body[m_end[_clockType][_polyType] + _voiceId];
+    }
+#endif
 private:
-  param_head m_head[sig_number_of_params];
-  param_body m_body[sig_number_of_param_items];
-  new_clock_id_list m_clockIds;
-  new_dual_clock_id_list m_postIds;
+    param_head m_head[sig_number_of_params];
+    param_body m_body[sig_number_of_param_items];
+    new_clock_id_list m_clockIds;
+    new_dual_clock_id_list m_postIds;
 };
 
 /* improving code readability */
@@ -158,6 +181,23 @@ struct paramengine
   inline float getSignal(uint32_t paramId, uint32_t voice) const
   {
     return m_parameters.getSignal(paramId, voice);
+  }
+
+  inline void newTickItem(param_body* item)
+  {
+      /* render when state is true */
+      if(item->m_state == 1)
+      {
+        /* stop on final sample */
+        if(item->m_x >= 1)
+        {
+          item->m_x = 1;
+          item->m_state = 0;
+        }
+        /* update signal (and x) */
+        item->m_signal = item->m_start + (item->m_diff * item->m_x);
+        item->m_x += item->m_dx[1];
+      }
   }
 
   /* local variables */
