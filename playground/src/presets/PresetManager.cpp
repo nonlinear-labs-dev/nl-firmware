@@ -673,10 +673,8 @@ void PresetManager::stress(int numTransactions)
       20);
 }
 
-void PresetManager::stressParam(Parameter *param)
+void PresetManager::stressParam(UNDO::Transaction* trans, Parameter *param)
 {
-  auto scope = getUndoScope().startTransaction("Stress All Parameters");
-  auto trans = scope->getTransaction();
   if(m_editBuffer->getSelected() != param)
   {
     m_editBuffer->undoableSelectParameter(trans, param);
@@ -686,18 +684,23 @@ void PresetManager::stressParam(Parameter *param)
 
 void PresetManager::stressAllParams(int numParamChangedForEachParameter)
 {
-  Glib::MainContext::get_default()->signal_timeout().connect_once([=]() {
-    for(auto &group : m_editBuffer->getParameterGroups())
-    {
-      for(auto &param : group->getParameters())
-      {
-        for(auto i = 0; i < numParamChangedForEachParameter; i++)
+
+  Glib::MainContext::get_default()->signal_timeout().connect_once(
+      [=]() {
+        auto scope = getUndoScope().startTransaction("Stress All Parameters");
+        auto trans = scope->getTransaction();
+        for(auto &group : m_editBuffer->getParameterGroups())
         {
-          stressParam(param);
+          for(auto &param : group->getParameters())
+          {
+            for(auto i = 0; i < numParamChangedForEachParameter; i++)
+            {
+              stressParam(trans, param);
+            }
+          }
         }
-      }
-    }
-  }, 20);
+      },
+      20);
 }
 
 void PresetManager::stressBlocking(int numTransactions)

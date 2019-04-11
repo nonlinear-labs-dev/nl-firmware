@@ -177,7 +177,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       }
       else if(line == "stress-change-all")
       {
-          Application::get().getPresetManager()->stressAllParams(1000);
+          Application::get().getPresetManager()->stressAllParams(500);
       }
       else if(line == "stress-pm")
       {

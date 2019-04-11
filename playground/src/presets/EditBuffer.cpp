@@ -320,7 +320,7 @@ bool EditBuffer::isZombie() const
 
 void EditBuffer::fakePresetDetails(Writer &writer, tUpdateID knownRevision, bool force) const
 {
-  bool changed = force || knownRevision < getUpdateIDOfLastChange();
+  bool changed = force || knownRevision < m_updateIdWhenLastLoadedPresetChanged;
 
   writer.writeTag("original", Attribute("changed", changed), [&]() {
     if(changed)
@@ -330,8 +330,8 @@ void EditBuffer::fakePresetDetails(Writer &writer, tUpdateID knownRevision, bool
         for(auto &param : group->getParameters())
         {
           writer.writeTag("param",
-                          { Attribute{ "id", to_string(param->getID()) },
-                            Attribute{ "value", to_string(param->getDefaultValue()) },
+                          { Attribute{ "id", param->getID() },
+                            Attribute{ "value", param->getDefaultValue() },
                             Attribute{ "mod-src", "0" }, Attribute{ "mod-amt", "0" } },
                           []() {});
         }

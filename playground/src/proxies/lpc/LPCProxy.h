@@ -10,6 +10,7 @@
 #include <memory>
 #include <tools/Throttler.h>
 #include <io/network/WebSocketSession.h>
+#include <device-settings/DebugLevel.h>
 
 class Application;
 class Parameter;
@@ -103,6 +104,7 @@ class LPCProxy
 
   int m_lpcSoftwareVersion = 0;
   Signal<void, int> m_signalLPCSoftwareVersionChanged;
+  std::shared_ptr<DebugLevel> m_debugSetting;
 
   Throttler m_throttledRelativeParameterChange;
   gint32 m_throttledRelativeParameterAccumulator = 0;
