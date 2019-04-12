@@ -936,8 +936,9 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   keyTracking = getSignal(ParameterLabel::P_OA_PKT);
   unitPitch = getSignal(ParameterLabel::P_OA_P);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OA_PEC);
-  signals[SignalLabel::OSC_A_FRQ] = evalNyquist(m_pitch_reference * unitPitch
-                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
+  signals.set(
+      SignalLabel::OSC_A_FRQ,
+      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getSignal(ParameterLabel::P_OA_FEC);
   signals.set(SignalLabel::OSC_A_FLUEC,
@@ -978,7 +979,7 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   envMod = 1.f
       - ((1.f - signals[SignalLabel::ENV_G_SIG]) * m_combDecayCurve.applyCurve(getSignal(ParameterLabel::P_CMB_DG)));
   unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getSignal(ParameterLabel::P_CMB_D)) * envMod);
-  signals[SignalLabel::CMB_DEC] = m_convert.eval_level(unitPitch) * unitSign;
+  signals.set(SignalLabel::CMB_DEC, m_convert.eval_level(unitPitch) * unitSign);
 #elif test_comb_decay_gate_mode == 1
   // determine decay times min, max before crossfading them by gate signal (audio post processing)
   envMod = 1.f - m_combDecayCurve.applyCurve(getSignal(ParameterLabel::P_CMB_DG));
@@ -994,14 +995,14 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   signals.set(SignalLabel::CMB_APF,
               evalNyquist(440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
   // not sure if APF needs Nyquist Clipping?
-  //signals[SignalLabel::CMB_APF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently APF without Nyquist Clipping
+  //signals.set(SignalLabel::CMB_APF, 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod));                   // currently APF without Nyquist Clipping
   /* - Comb Filter Lowpass ('Hi Cut') Frequency (Base Pitch, Master Tune, Key Tracking, Hi Cut, Env C) */
   keyTracking = getSignal(ParameterLabel::P_CMB_LPKT);
   unitPitch = getSignal(ParameterLabel::P_CMB_LP);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_LPEC);
   signals.set(SignalLabel::CMB_LPF,
               evalNyquist(440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
-  //signals[SignalLabel::CMB_LPF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently LPF without Nyquist Clipping
+  //signals.set(SignalLabel::CMB_LPF, 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod));                   // currently LPF without Nyquist Clipping
   /* State Variable Filter */
   /* - Cutoff Frequencies */
   keyTracking = getSignal(ParameterLabel::P_SVF_CKT);  // get Key Tracking
@@ -1031,7 +1032,7 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   keyTracking = getSignal(ParameterLabel::P_SVF_RKT) * m_svfResFactor;
   envMod = signals[SignalLabel::ENV_C_CLIP] * getSignal(ParameterLabel::P_SVF_REC);
   unitPitch = getSignal(ParameterLabel::P_SVF_RES) + envMod + (notePitch * keyTracking);
-  //signals[SignalLabel::SVF_RES] = m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f));
+  //signals.set(SignalLabel::SVF_RES, m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f)));
   float res = 1.f
       - m_svfResonanceCurve.applyCurve(
             std::clamp(unitPitch, 0.f, 1.f));  // NEW resonance handling directly in post processing
@@ -1088,10 +1089,10 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   /* - Parallel */
   tmp_lvl = getSignal(ParameterLabel::P_SVF_PAR);
   tmp_abs = std::abs(tmp_lvl);
-  signals[SignalLabel::SVF_PAR_1] = 0.7f * tmp_abs;
-  signals[SignalLabel::SVF_PAR_2] = (0.7f * tmp_lvl) + (1.f - tmp_abs);
-  signals[SignalLabel::SVF_PAR_3] = 1.f - tmp_abs;
-  signals[SignalLabel::SVF_PAR_4] = tmp_abs;
+  signals.set(SignalLabel::SVF_PAR_1, 0.7f * tmp_abs);
+  signals.set(SignalLabel::SVF_PAR_2, (0.7f * tmp_lvl) + (1.f - tmp_abs));
+  signals.set(SignalLabel::SVF_PAR_3, 1.f - tmp_abs);
+  signals.set(SignalLabel::SVF_PAR_4, tmp_abs);
   /* Output Mixer */
 #if test_milestone == 150
   const float poly_pan = getSignal(ParameterLabel::P_KEY_VP, _voiceId);
@@ -1105,27 +1106,27 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   /* - Branch A */
   tmp_lvl = getSignal(ParameterLabel::P_OM_AL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_AP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_A_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_A_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_A_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_A_R, tmp_lvl * tmp_pan);
   /* - Branch B */
   tmp_lvl = getSignal(ParameterLabel::P_OM_BL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_BP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_B_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_B_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_B_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_B_R, tmp_lvl * tmp_pan);
   /* - Comb Filter */
   tmp_lvl = getSignal(ParameterLabel::P_OM_CL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_CP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_CMB_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_CMB_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_CMB_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_CMB_R, tmp_lvl * tmp_pan);
   /* - State Variable Filter */
   tmp_lvl = getSignal(ParameterLabel::P_OM_SL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_SP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_SVF_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_SVF_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_SVF_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_SVF_R, tmp_lvl * tmp_pan);
   /* - Feedback Mixer */
   tmp_lvl = getSignal(ParameterLabel::P_FBM_LVL);
   tmp_pan = std::min(m_convert.eval_level(getSignal(ParameterLabel::P_FBM_LKT) * (notePitch)), env_clip_peak);
-  signals[SignalLabel::FBM_LVL] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::FBM_LVL, tmp_lvl * tmp_pan);
 }
 
 /* Poly Post Processing - audio parameters */
@@ -1136,14 +1137,14 @@ void paramengine::postProcessPoly_audio(SignalStorage& signals, const uint32_t _
                                          PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it);
+    signals.set(p, getSignal(it));
   }
   /* automatic poly to poly copy - each voice */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_AUDIO,
                                          PARAM_POLY_TYPES::PARAM_POLY))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it, _voiceId);
+    signals.set(p, getSignal(it, _voiceId));
   }
   /* "NEW" ENVELOPES: */
   //m_new_envelopes.tickMono();
@@ -1152,98 +1153,109 @@ void paramengine::postProcessPoly_audio(SignalStorage& signals, const uint32_t _
   /* poly envelope ticking */
   m_new_envelopes.tickPoly(_voiceId);
   /* poly envelope distribution */
-  signals[SignalLabel::ENV_A_MAG] = m_new_envelopes.m_env_a.m_body[_voiceId].m_signal_magnitude
-      * getSignal(ParameterLabel::P_EA_GAIN);  // Envelope A Magnitude post Gain
-  signals[SignalLabel::ENV_A_TMB] = m_new_envelopes.m_env_a.m_body[_voiceId].m_signal_timbre
-      * getSignal(ParameterLabel::P_EA_GAIN);  // Envelope A Timbre post Gain
-  signals[SignalLabel::ENV_B_MAG] = m_new_envelopes.m_env_b.m_body[_voiceId].m_signal_magnitude
-      * getSignal(ParameterLabel::P_EB_GAIN);  // Envelope B Magnitude post Gain
-  signals[SignalLabel::ENV_B_TMB] = m_new_envelopes.m_env_b.m_body[_voiceId].m_signal_timbre
-      * getSignal(ParameterLabel::P_EB_GAIN);  // Envelope B Timbre post Gain
-  signals[SignalLabel::ENV_C_CLIP] = m_new_envelopes.m_env_c.m_body[_voiceId].m_signal_magnitude;  // Envelope C
-  signals[SignalLabel::ENV_G_SIG] = m_new_envelopes.m_env_g.m_body[_voiceId].m_signal_magnitude;   // Gate
+
+  // Envelope A Magnitude post Gain
+  signals.set(SignalLabel::ENV_A_MAG,
+              m_new_envelopes.m_env_a.m_body[_voiceId].m_signal_magnitude * getSignal(ParameterLabel::P_EA_GAIN));
+  // Envelope A Timbre post Gain
+  signals.set(SignalLabel::ENV_A_TMB,
+              m_new_envelopes.m_env_a.m_body[_voiceId].m_signal_timbre * getSignal(ParameterLabel::P_EA_GAIN));
+  // Envelope B Magnitude post Gain
+  signals.set(SignalLabel::ENV_B_MAG,
+              m_new_envelopes.m_env_b.m_body[_voiceId].m_signal_magnitude * getSignal(ParameterLabel::P_EB_GAIN));
+  // Envelope B Timbre post Gain
+  signals.set(SignalLabel::ENV_B_TMB,
+              m_new_envelopes.m_env_b.m_body[_voiceId].m_signal_timbre * getSignal(ParameterLabel::P_EB_GAIN));
+  signals.set(SignalLabel::ENV_C_CLIP, m_new_envelopes.m_env_c.m_body[_voiceId].m_signal_magnitude);  // Envelope C
+  signals.set(SignalLabel::ENV_G_SIG, m_new_envelopes.m_env_g.m_body[_voiceId].m_signal_magnitude);   // Gate
   /* reconstruct unclipped envelope c signal by factor */
-  signals[SignalLabel::ENV_C_UNCL] = signals[SignalLabel::ENV_C_CLIP] * m_env_c_clipFactor[_voiceId];
+  signals.set(SignalLabel::ENV_C_UNCL, signals[SignalLabel::ENV_C_CLIP] * m_env_c_clipFactor[_voiceId]);
   /* Oscillator parameter post processing */
   float tmp_amt, tmp_env;
   /* Oscillator A */
   /* - Oscillator A - PM Self */
   tmp_amt = getSignal(ParameterLabel::P_OA_PMS);
   tmp_env = getSignal(ParameterLabel::P_OA_PMSEA);
-  signals[SignalLabel::OSC_A_PMSEA]
-      = NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_A_TMB], tmp_env)
-      * tmp_amt;  // Osc A PM Self (Env A)
+
+  // Osc A PM Self (Env A)
+  signals.set(SignalLabel::OSC_A_PMSEA,
+              NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_A_TMB], tmp_env) * tmp_amt);
   /* - Oscillator A - PM B */
   tmp_amt = getSignal(ParameterLabel::P_OA_PMB);
   tmp_env = getSignal(ParameterLabel::P_OA_PMBEB);
-  signals[SignalLabel::OSC_A_PMBEB]
-      = NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_B_TMB], tmp_env)
-      * tmp_amt;  // Osc A PM B (Env B)
+  // Osc A PM B (Env B)
+  signals.set(SignalLabel::OSC_A_PMBEB,
+              NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_B_TMB], tmp_env) * tmp_amt);
   /* - Oscillator A - PM FB */
   tmp_amt = getSignal(ParameterLabel::P_OA_PMF);
   tmp_env = getSignal(ParameterLabel::P_OA_PMFEC);
-  signals[SignalLabel::OSC_A_PMFEC]
-      = NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], tmp_env)
-      * tmp_amt;  // Osc A PM FB (Env C)
+  // Osc A PM FB (Env C)
+  signals.set(SignalLabel::OSC_A_PMFEC,
+              NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], tmp_env) * tmp_amt);
   /* Shaper A */
   /* - Shaper A Drive (Envelope A) */
   tmp_amt = getSignal(ParameterLabel::P_SA_DRV);
   tmp_env = getSignal(ParameterLabel::P_SA_DEA);
-  signals[SignalLabel::SHP_A_DRVEA]
-      = (NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_A_TMB], tmp_env) * tmp_amt) + 0.18f;
+  signals.set(SignalLabel::SHP_A_DRVEA,
+              (NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_A_TMB], tmp_env) * tmp_amt)
+                  + 0.18f);
   /* - Shaper A Feedback Mix (Envelope C) */
   tmp_env = getSignal(ParameterLabel::P_SA_FBEC);
-  signals[SignalLabel::SHP_A_FBEC] = NlToolbox::Crossfades::unipolarCrossFade(
-      signals[SignalLabel::ENV_G_SIG], signals[SignalLabel::ENV_C_CLIP], tmp_env);
+  signals.set(SignalLabel::SHP_A_FBEC,
+              NlToolbox::Crossfades::unipolarCrossFade(signals[SignalLabel::ENV_G_SIG],
+                                                       signals[SignalLabel::ENV_C_CLIP], tmp_env));
   /* Oscillator B */
   /* - Oscillator B - PM Self */
   tmp_amt = getSignal(ParameterLabel::P_OB_PMS);
   tmp_env = getSignal(ParameterLabel::P_OB_PMSEB);
-  signals[SignalLabel::OSC_B_PMSEB]
-      = NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_B_TMB], tmp_env)
-      * tmp_amt;  // Osc B PM Self (Env B)
+  // Osc B PM Self (Env B)
+  signals.set(SignalLabel::OSC_B_PMSEB,
+              NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_B_TMB], tmp_env) * tmp_amt);
   /* - Oscillator B - PM A */
   tmp_amt = getSignal(ParameterLabel::P_OB_PMA);
   tmp_env = getSignal(ParameterLabel::P_OB_PMAEA);
-  signals[SignalLabel::OSC_B_PMAEA]
-      = NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_A_TMB], tmp_env)
-      * tmp_amt;  // Osc B PM A (Env A)
+  // Osc B PM A (Env A)
+  signals.set(SignalLabel::OSC_B_PMAEA,
+              NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_A_TMB], tmp_env) * tmp_amt);
   /* - Oscillator B - PM FB */
   tmp_amt = getSignal(ParameterLabel::P_OB_PMF);
   tmp_env = getSignal(ParameterLabel::P_OB_PMFEC);
-  signals[SignalLabel::OSC_B_PMFEC]
-      = NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], tmp_env)
-      * tmp_amt;  // Osc B PM FB (Env C)
+  // Osc B PM FB (Env C)
+  signals.set(SignalLabel::OSC_B_PMFEC,
+              NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], tmp_env) * tmp_amt);
   /* Shaper B */
   /* - Shaper B Drive (Envelope B) */
   tmp_amt = getSignal(ParameterLabel::P_SB_DRV);
   tmp_env = getSignal(ParameterLabel::P_SB_DEB);
-  signals[SignalLabel::SHP_B_DRVEB]
-      = (NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_B_TMB], tmp_env) * tmp_amt) + 0.18f;
+  signals.set(SignalLabel::SHP_B_DRVEB,
+              (NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_B_TMB], tmp_env) * tmp_amt)
+                  + 0.18f);
   /* - Shaper B Feedback Mix (Envelope C) */
   tmp_env = getSignal(ParameterLabel::P_SB_FBEC);
-  signals[SignalLabel::SHP_B_FBEC] = NlToolbox::Crossfades::unipolarCrossFade(
-      signals[SignalLabel::ENV_G_SIG], signals[SignalLabel::ENV_C_CLIP], tmp_env);
+  signals.set(SignalLabel::SHP_B_FBEC,
+              NlToolbox::Crossfades::unipolarCrossFade(signals[SignalLabel::ENV_G_SIG],
+                                                       signals[SignalLabel::ENV_C_CLIP], tmp_env));
   /* Comb Filter */
   /* - Comb Filter Pitch Envelope C, converted into Frequency Factor */
   tmp_amt = getSignal(ParameterLabel::P_CMB_PEC);
-  signals[SignalLabel::CMB_FEC] = m_convert.eval_lin_pitch(69.f - (tmp_amt * signals[SignalLabel::ENV_C_UNCL]));
+  signals.set(SignalLabel::CMB_FEC, m_convert.eval_lin_pitch(69.f - (tmp_amt * signals[SignalLabel::ENV_C_UNCL])));
   /* Decay Time - Gate Signal crossfading */
 #if test_comb_decay_gate_mode == 1
-  signals[SignalLabel::CMB_DEC] = NlToolbox::Crossfades::unipolarCrossFade(m_comb_decay_times[0], m_comb_decay_times[1],
-                                                                           signals[SignalLabel::ENV_G_SIG]);
+  signals.set(SignalLabel::CMB_DEC,
+              NlToolbox::Crossfades::unipolarCrossFade(m_comb_decay_times[0], m_comb_decay_times[1],
+                                                       signals[SignalLabel::ENV_G_SIG]));
 #endif
   /* Unison Phase */
 #if test_milestone == 150
-  signals[SignalLabel::UN_PHS] = 0.f;
+  signals.set(SignalLabel::UN_PHS, 0.f);
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
   const uint32_t uIndex = static_cast<uint32_t>(getSignal(ParameterLabel::P_KEY_IDX, _voiceId));
-  signals[SignalLabel::UN_PHS] = getSignal(ParameterLabel::P_UN_PHS) * m_unison_phase[uVoice][uIndex];
+  signals.set(SignalLabel::UN_PHS, getSignal(ParameterLabel::P_UN_PHS) * m_unison_phase[uVoice][uIndex]);
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getSignal(ParameterLabel::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
-  signals[SignalLabel::UN_PHS] = getSignal(ParameterLabel::P_UN_PHS) * m_unison_phase[uVoice][uIndex];
+  signals.set(SignalLabel::UN_PHS, getSignal(ParameterLabel::P_UN_PHS) * m_unison_phase[uVoice][uIndex]);
 #endif
 }
 
@@ -1273,63 +1285,64 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   keyTracking = getSignal(ParameterLabel::P_OA_PKT);
   unitPitch = getSignal(ParameterLabel::P_OA_P);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OA_PEC);
-  signals[SignalLabel::OSC_A_FRQ] = evalNyquist(m_pitch_reference * unitPitch
-                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
+  signals.set(
+      SignalLabel::OSC_A_FRQ,
+      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getSignal(ParameterLabel::P_OA_FEC);
-  signals[SignalLabel::OSC_A_FLUEC] = getSignal(ParameterLabel::P_OA_F)
-      * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod);
+  signals.set(SignalLabel::OSC_A_FLUEC,
+              getSignal(ParameterLabel::P_OA_F)
+                  * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod));
   /* - Oscillator A Chirp Frequency in Hz */
-  signals[SignalLabel::OSC_A_CHI] = evalNyquist(getSignal(ParameterLabel::P_OA_CHI) * 440.f);
+  signals.set(SignalLabel::OSC_A_CHI, evalNyquist(getSignal(ParameterLabel::P_OA_CHI) * 440.f));
   /* Oscillator B */
   /* - Oscillator B Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Osc Pitch, Envelope C) */
   keyTracking = getSignal(ParameterLabel::P_OB_PKT);
   unitPitch = getSignal(ParameterLabel::P_OB_P);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OB_PEC);
-  signals[SignalLabel::OSC_B_FRQ] = evalNyquist(m_pitch_reference * unitPitch
-                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
+  signals.set(
+      SignalLabel::OSC_B_FRQ,
+      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
   /* - Oscillator B Fluctuation (Envelope C) */
   envMod = getSignal(ParameterLabel::P_OB_FEC);
-  signals[SignalLabel::OSC_B_FLUEC] = getSignal(ParameterLabel::P_OB_F)
-      * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod);
+  signals.set(SignalLabel::OSC_B_FLUEC,
+              getSignal(ParameterLabel::P_OB_F)
+                  * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod));
   /* - Oscillator B Chirp Frequency in Hz */
-  signals[SignalLabel::OSC_B_CHI] = evalNyquist(getSignal(ParameterLabel::P_OB_CHI) * 440.f);
+  signals.set(SignalLabel::OSC_B_CHI, evalNyquist(getSignal(ParameterLabel::P_OB_CHI) * 440.f));
   /* Comb Filter */
   /* - Comb Filter Pitch as Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Comb Pitch) */
   keyTracking = getSignal(ParameterLabel::P_CMB_PKT);
   unitPitch = getSignal(ParameterLabel::P_CMB_P);
   // as a tonal component, the reference tone frequency is applied (instead of const 440 Hz)
-  signals[SignalLabel::CMB_FRQ]
-      = evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)));
+  signals.set(SignalLabel::CMB_FRQ,
+              evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking))));
   /* - Comb Filter Bypass (according to Pitch parameter - without key tracking or reference freq) */
-  signals[SignalLabel::CMB_BYP] = unitPitch > dsp_comb_max_freqFactor
-      ? 1.f
-      : 0.f;  // check for bypassing comb filter, max_freqFactor corresponds to Pitch of 119.99 ST
+  // check for bypassing comb filter, max_freqFactor corresponds to Pitch of 119.99 ST
+  signals.set(SignalLabel::CMB_BYP, unitPitch > dsp_comb_max_freqFactor ? 1.f : 0.f);
   /* - Comb Filter Decay Time (Base Pitch, Master Tune, Gate Env, Dec Time, Key Tracking, Gate Amount) */
   keyTracking = getSignal(ParameterLabel::P_CMB_DKT);
   envMod = 1.f
       - ((1.f - signals[SignalLabel::ENV_G_SIG]) * m_combDecayCurve.applyCurve(getSignal(ParameterLabel::P_CMB_DG)));
   unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getSignal(ParameterLabel::P_CMB_D)) * envMod);
   unitSign = getSignal(ParameterLabel::P_CMB_D) < 0 ? -1.f : 1.f;
-  signals[SignalLabel::CMB_DEC] = 0.001f * m_convert.eval_level(unitPitch) * unitSign;
+  signals.set(SignalLabel::CMB_DEC, 0.001f * m_convert.eval_level(unitPitch) * unitSign);
   /* - Comb Filter Allpass Frequency (Base Pitch, Master Tune, Key Tracking, AP Tune, Env C) */
   keyTracking = getSignal(ParameterLabel::P_CMB_APKT);
   unitPitch = getSignal(ParameterLabel::P_CMB_APT);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_APEC);
-  signals[SignalLabel::CMB_APF]
-      = evalNyquist(440.f * unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
-                                               + envMod));  // not sure if APF needs Nyquist Clipping?
-  //signals[SignalLabel::CMB_APF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently APF without Nyquist Clipping
+  // not sure if APF needs Nyquist Clipping?
+  signals.set(SignalLabel::CMB_APF,
+              evalNyquist(440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+  //signals.set(SignalLabel::CMB_APF, 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod));                   // currently APF without Nyquist Clipping
   /* - Comb Filter Lowpass ('Hi Cut') Frequency (Base Pitch, Master Tune, Key Tracking, Hi Cut, Env C) */
   keyTracking = getSignal(ParameterLabel::P_CMB_LPKT);
   unitPitch = getSignal(ParameterLabel::P_CMB_LP);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_LPEC);
-  signals[SignalLabel::CMB_LPF]
-      = evalNyquist(440.f * unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
-                                               + envMod));  // not sure if LPF needs Nyquist Clipping?
-  //signals[SignalLabel::CMB_LPF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently LPF without Nyquist Clipping
+  // not sure if LPF needs Nyquist Clipping?
+  signals.set(SignalLabel::CMB_LPF,
+              evalNyquist(440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+  //signals.set(SignalLabel::CMB_LPF, 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod));                   // currently LPF without Nyquist Clipping
   /* State Variable Filter */
   /* - Cutoff Frequencies */
   keyTracking = getSignal(ParameterLabel::P_SVF_CKT);  // get Key Tracking
@@ -1340,25 +1353,27 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   unitSpread = getSignal(ParameterLabel::P_SVF_SPR);  // get the Spread parameter (already scaled to 50%)
   unitMod = getSignal(ParameterLabel::P_SVF_FM);      // get the FM parameter
   /*   now, calculate the actual filter frequencies and put them in the shared signal array */
-  signals[SignalLabel::SVF_F1_CUT]
-      = evalNyquist(unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod
-                                               + unitSpread));  // SVF upper 2PF Cutoff Frequency
-  signals[SignalLabel::SVF_F2_CUT]
-      = evalNyquist(unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod
-                                               - unitSpread));                   // SVF lower 2PF Cutoff Frequency
-  signals[SignalLabel::SVF_F1_FM] = signals[SignalLabel::SVF_F1_CUT] * unitMod;  // SVF upper 2PF FM Amount (Frequency)
-  signals[SignalLabel::SVF_F2_FM] = signals[SignalLabel::SVF_F2_CUT] * unitMod;  // SVF lower 2PF FM Amount (Frequency)
+  // SVF upper 2PF Cutoff Frequency
+  signals.set(
+      SignalLabel::SVF_F1_CUT,
+      evalNyquist(unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod + unitSpread)));
+  // SVF lower 2PF Cutoff Frequency
+  signals.set(
+      SignalLabel::SVF_F2_CUT,
+      evalNyquist(unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod - unitSpread)));
+  signals.set(SignalLabel::SVF_F1_FM,
+              signals[SignalLabel::SVF_F1_CUT] * unitMod);  // SVF upper 2PF FM Amount (Frequency)
+  signals.set(SignalLabel::SVF_F2_FM,
+              signals[SignalLabel::SVF_F2_CUT] * unitMod);  // SVF lower 2PF FM Amount (Frequency)
   /* - Resonance */
   keyTracking = getSignal(ParameterLabel::P_SVF_RKT) * m_svfResFactor;
   envMod = signals[SignalLabel::ENV_C_CLIP] * getSignal(ParameterLabel::P_SVF_REC);
   unitPitch = getSignal(ParameterLabel::P_SVF_RES) + envMod + (notePitch * keyTracking);
-  //signals[SignalLabel::SVF_RES] = m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f));
+  //signals.set(SignalLabel::SVF_RES, m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f)));
   float res = 1.f
       - m_svfResonanceCurve.applyCurve(
             std::clamp(unitPitch, 0.f, 1.f));  // NEW resonance handling directly in post processing
-  signals[SignalLabel::SVF_RES] = std::max(res + res, 0.02f);
+  signals.set(SignalLabel::SVF_RES, std::max(res + res, 0.02f));
   /* Output Mixer */
   float tmp_lvl, tmp_pan;
 #if test_milestone == 150
@@ -1373,29 +1388,29 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   /* - Branch A */
   tmp_lvl = getSignal(ParameterLabel::P_OM_AL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_AP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_A_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_A_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_A_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_A_R, tmp_lvl * tmp_pan);
   /* - Branch B */
   tmp_lvl = getSignal(ParameterLabel::P_OM_BL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_BP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_B_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_B_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_B_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_B_R, tmp_lvl * tmp_pan);
   /* - Comb Filter */
   tmp_lvl = getSignal(ParameterLabel::P_OM_CL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_CP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_CMB_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_CMB_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_CMB_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_CMB_R, tmp_lvl * tmp_pan);
   /* - State Variable Filter */
   tmp_lvl = getSignal(ParameterLabel::P_OM_SL);
   tmp_pan = std::clamp(getSignal(ParameterLabel::P_OM_SP) + poly_pan, 0.f, 1.f);
-  signals[SignalLabel::OUT_SVF_L] = tmp_lvl * (1.f - tmp_pan);
-  signals[SignalLabel::OUT_SVF_R] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::OUT_SVF_L, tmp_lvl * (1.f - tmp_pan));
+  signals.set(SignalLabel::OUT_SVF_R, tmp_lvl * tmp_pan);
   /* - Feedback Mixer */
   tmp_lvl = getSignal(ParameterLabel::P_FBM_LVL);
   tmp_pan = std::min(m_convert.eval_level(getSignal(ParameterLabel::P_FBM_LKT) * (notePitch)), env_clip_peak);
-  signals[SignalLabel::FBM_LVL] = tmp_lvl * tmp_pan;
+  signals.set(SignalLabel::FBM_LVL, tmp_lvl * tmp_pan);
   /*   - determine Highpass Filter Frequency */
-  signals[SignalLabel::FBM_HPF] = evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f);
+  signals.set(SignalLabel::FBM_HPF, evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f));
 }
 
 /* Mono Post Processing - slow parameters */
@@ -1406,7 +1421,7 @@ void paramengine::postProcessMono_slow(SignalStorage& signals)
                                          PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it);
+    signals.set(p, getSignal(it));
   }
   /* Effect Parameter Post Processing */
   float tmp_Gap, tmp_Center, tmp_Stereo, tmp_Rate;
@@ -1424,65 +1439,67 @@ void paramengine::postProcessMono_slow(SignalStorage& signals)
   tmp_Center
       = getSignal(ParameterLabel::P_FLA_TIME) * dsp_samples_to_ms * tmp_SR;  // time (in ms) is handled in samples
   tmp_Stereo = getSignal(ParameterLabel::P_FLA_STE) * 0.01f;
-  signals[SignalLabel::FLA_TL] = tmp_Center * (1.f + tmp_Stereo);
-  signals[SignalLabel::FLA_TR] = tmp_Center * (1.f - tmp_Stereo);
+  signals.set(SignalLabel::FLA_TL, tmp_Center * (1.f + tmp_Stereo));
+  signals.set(SignalLabel::FLA_TR, tmp_Center * (1.f - tmp_Stereo));
   /*   - Hi Cut Frequency */
-  signals[SignalLabel::FLA_LPF] = evalNyquist(getSignal(ParameterLabel::P_FLA_LPF) * 440.f);
+  signals.set(SignalLabel::FLA_LPF, evalNyquist(getSignal(ParameterLabel::P_FLA_LPF) * 440.f));
   /* - Cabinet */
   /*   - Hi Cut Frequency in Hz (Hi Cut == Lowpass) */
-  signals[SignalLabel::CAB_LPF] = evalNyquist(getSignal(ParameterLabel::P_CAB_LPF) * 440.f);
+  signals.set(SignalLabel::CAB_LPF, evalNyquist(getSignal(ParameterLabel::P_CAB_LPF) * 440.f));
   /*   - Lo Cut Frequency in Hz (Lo Cut == Highpass) */
-  signals[SignalLabel::CAB_HPF]
-      = evalNyquist(getSignal(ParameterLabel::P_CAB_HPF) * 440.f);  // nyquist clipping not necessary...
+  signals.set(SignalLabel::CAB_HPF,
+              evalNyquist(getSignal(ParameterLabel::P_CAB_HPF) * 440.f));  // nyquist clipping not necessary...
   /*   - Tilt to Shelving EQs */
-  signals[SignalLabel::CAB_TILT] = getSignal(ParameterLabel::P_CAB_TILT);
+  signals.set(SignalLabel::CAB_TILT, getSignal(ParameterLabel::P_CAB_TILT));
   /* - Gap Filter */
   tmp_Gap = (getSignal(ParameterLabel::P_GAP_MIX) < 0.f ? -1.f : 1.f) * getSignal(ParameterLabel::P_GAP_GAP);
   tmp_Center = getSignal(ParameterLabel::P_GAP_CNT);
   tmp_Stereo = getSignal(ParameterLabel::P_GAP_STE);
   /*   - Left LP Frequency in Hz */
-  signals[SignalLabel::GAP_LFL] = evalNyquist(m_convert.eval_lin_pitch(tmp_Center - tmp_Gap - tmp_Stereo)
-                                              * 440.f);  // nyquist clipping not necessary...
+  // nyquist clipping not necessary...
+  signals.set(SignalLabel::GAP_LFL, evalNyquist(m_convert.eval_lin_pitch(tmp_Center - tmp_Gap - tmp_Stereo) * 440.f));
   /*   - Left HP Frequency in Hz */
-  signals[SignalLabel::GAP_HFL] = evalNyquist(m_convert.eval_lin_pitch(tmp_Center + tmp_Gap - tmp_Stereo) * 440.f);
+  signals.set(SignalLabel::GAP_HFL, evalNyquist(m_convert.eval_lin_pitch(tmp_Center + tmp_Gap - tmp_Stereo) * 440.f));
   /*   - Right LP Frequency in Hz */
-  signals[SignalLabel::GAP_LFR] = evalNyquist(m_convert.eval_lin_pitch(tmp_Center - tmp_Gap + tmp_Stereo)
-                                              * 440.f);  // nyquist clipping not necessary...
+  // nyquist clipping not necessary...
+  signals.set(SignalLabel::GAP_LFR, evalNyquist(m_convert.eval_lin_pitch(tmp_Center - tmp_Gap + tmp_Stereo) * 440.f));
   /*   - Right HP Frequency in Hz */
-  signals[SignalLabel::GAP_HFR] = evalNyquist(m_convert.eval_lin_pitch(tmp_Center + tmp_Gap + tmp_Stereo) * 440.f);
+  signals.set(SignalLabel::GAP_HFR, evalNyquist(m_convert.eval_lin_pitch(tmp_Center + tmp_Gap + tmp_Stereo) * 440.f));
   /* - Echo */
   /*   - Time and Stereo */
   tmp_Center = getSignal(ParameterLabel::P_DLY_TIME) * tmp_SR;  // time is handled in samples
   tmp_Stereo = getSignal(ParameterLabel::P_DLY_STE) * m_dlyNormStereo;
-  signals[SignalLabel::DLY_TL] = tmp_Center * (1.f + tmp_Stereo);
-  signals[SignalLabel::DLY_TR] = tmp_Center * (1.f - tmp_Stereo);
+  signals.set(SignalLabel::DLY_TL, tmp_Center * (1.f + tmp_Stereo));
+  signals.set(SignalLabel::DLY_TR, tmp_Center * (1.f - tmp_Stereo));
   /*   - High Cut Frequency */
-  signals[SignalLabel::DLY_LPF] = evalNyquist(getSignal(ParameterLabel::P_DLY_LPF) * 440.f);
+  signals.set(SignalLabel::DLY_LPF, evalNyquist(getSignal(ParameterLabel::P_DLY_LPF) * 440.f));
   /* - Reverb (if slow rendering is enabled - see pe_defines_config.h) */
 #if test_reverbParams == 1
   float tmp_val, tmp_fb, tmp_dry, tmp_wet;
   /*   - Size to Size, Feedback, Balance */
   tmp_val = getSignal(ParameterLabel::P_REV_SIZE);
   tmp_val *= 2.f - std::abs(tmp_val);
-  signals[SignalLabel::REV_SIZE] = tmp_val;
+  signals.set(SignalLabel::REV_SIZE, tmp_val);
   tmp_fb = tmp_val * (0.6f + (0.4f * std::abs(tmp_val)));
-  signals[SignalLabel::REV_FEED] = 4.32f - (3.32f * tmp_fb);
+  signals.set(SignalLabel::REV_FEED, 4.32f - (3.32f * tmp_fb));
   tmp_fb = tmp_val * (1.3f - (0.3f * std::abs(tmp_val)));
-  signals[SignalLabel::REV_BAL] = 0.9f * tmp_fb;
+  signals.set(SignalLabel::REV_BAL, 0.9f * tmp_fb);
   /*   - Pre Delay */
-  signals[SignalLabel::REV_PRE] = getSignal(ParameterLabel::P_REV_PRE) * 200.f * m_millisecond;
+  signals.set(SignalLabel::REV_PRE, getSignal(ParameterLabel::P_REV_PRE) * 200.f * m_millisecond);
   /*   - Color to Filter Frequencies (HPF, LPF) */
   tmp_val = getSignal(ParameterLabel::P_REV_COL);
-  signals[SignalLabel::REV_LPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve1.applyCurve(tmp_val)) * 440.f);
-  signals[SignalLabel::REV_HPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve2.applyCurve(tmp_val)) * 440.f);
+  signals.set(SignalLabel::REV_LPF,
+              evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve1.applyCurve(tmp_val)) * 440.f));
+  signals.set(SignalLabel::REV_HPF,
+              evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve2.applyCurve(tmp_val)) * 440.f));
   /*   - Mix to Dry, Wet */
   tmp_val = getSignal(ParameterLabel::P_REV_MIX);
   tmp_dry = 1.f - tmp_val;
   tmp_dry = (2.f - tmp_dry) * tmp_dry;
-  signals[SignalLabel::REV_DRY] = tmp_dry;
+  signals.set(SignalLabel::REV_DRY, tmp_dry);
   tmp_wet = tmp_val;
   tmp_wet = (2.f - tmp_wet) * tmp_wet;
-  signals[SignalLabel::REV_WET] = tmp_wet;
+  signals.set(SignalLabel::REV_WET, tmp_wet);
 #endif
 }
 
@@ -1494,7 +1511,7 @@ void paramengine::postProcessMono_fast(SignalStorage& signals)
                                          PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it);
+    signals.set(p, getSignal(it));
   }
   /* Explicit Post Processing */
   /* provide temporary variables */
@@ -1508,27 +1525,27 @@ void paramengine::postProcessMono_fast(SignalStorage& signals)
   /*   - Feedback and Cross Feedback */
   tmp_fb = m_flaFeedbackCurve.applyCurve(getSignal(ParameterLabel::P_FLA_FB));
   tmp_val = getSignal(ParameterLabel::P_FLA_CFB);
-  signals[SignalLabel::FLA_FB_LOC] = tmp_fb * (1.f - std::abs(tmp_val));
-  signals[SignalLabel::FLA_FB_CR] = tmp_fb * tmp_val;
+  signals.set(SignalLabel::FLA_FB_LOC, tmp_fb * (1.f - std::abs(tmp_val)));
+  signals.set(SignalLabel::FLA_FB_CR, tmp_fb * tmp_val);
   /*   - Dry and Wet Amounts */
   tmp_val = getSignal(ParameterLabel::P_FLA_MIX);
-  signals[SignalLabel::FLA_DRY] = 1.f - std::abs(tmp_val);
-  signals[SignalLabel::FLA_WET] = tmp_val;
+  signals.set(SignalLabel::FLA_DRY, 1.f - std::abs(tmp_val));
+  signals.set(SignalLabel::FLA_WET, tmp_val);
   /*   - Allpass Frequencies */
   tmp_val = getSignal(ParameterLabel::P_FLA_APM);
   tmp_dry = getSignal(ParameterLabel::P_FLA_APT);
-  signals[SignalLabel::FLA_APF_L]
-      = evalNyquist(m_convert.eval_lin_pitch((signals[SignalLabel::FLA_LFO_L] * tmp_val) + tmp_dry) * 440.f);
-  signals[SignalLabel::FLA_APF_R]
-      = evalNyquist(m_convert.eval_lin_pitch((signals[SignalLabel::FLA_LFO_R] * tmp_val) + tmp_dry) * 440.f);
+  signals.set(SignalLabel::FLA_APF_L,
+              evalNyquist(m_convert.eval_lin_pitch((signals[SignalLabel::FLA_LFO_L] * tmp_val) + tmp_dry) * 440.f));
+  signals.set(SignalLabel::FLA_APF_R,
+              evalNyquist(m_convert.eval_lin_pitch((signals[SignalLabel::FLA_LFO_R] * tmp_val) + tmp_dry) * 440.f));
   /* - Cabinet */
   /*   - Tilt to Saturation Levels (pre, post Shaper) */
   tmp_val = std::max(m_cabTiltFloor, m_convert.eval_level(0.5f * getSignal(ParameterLabel::P_CAB_TILT)));
-  signals[SignalLabel::CAB_PRESAT] = 0.1588f / tmp_val;
-  signals[SignalLabel::CAB_SAT] = tmp_val;
+  signals.set(SignalLabel::CAB_PRESAT, 0.1588f / tmp_val);
+  signals.set(SignalLabel::CAB_SAT, tmp_val);
   /*   - Cab Level and Dry/Wet Mix Levels */
-  signals[SignalLabel::CAB_DRY] = 1.f - getSignal(ParameterLabel::P_CAB_MIX);
-  signals[SignalLabel::CAB_WET] = getSignal(ParameterLabel::P_CAB_LVL) * getSignal(ParameterLabel::P_CAB_MIX);
+  signals.set(SignalLabel::CAB_DRY, 1.f - getSignal(ParameterLabel::P_CAB_MIX));
+  signals.set(SignalLabel::CAB_WET, getSignal(ParameterLabel::P_CAB_LVL) * getSignal(ParameterLabel::P_CAB_MIX));
   /* - Gap Filter */
   tmp_val = std::abs(getSignal(ParameterLabel::P_GAP_MIX));
   tmp_wet = NlToolbox::Math::sin(NlToolbox::Constants::halfpi * tmp_val);
@@ -1545,66 +1562,68 @@ void paramengine::postProcessMono_fast(SignalStorage& signals)
   {
     /* parallel mode */
     /* - HP to LP input signal */
-    signals[SignalLabel::GAP_HPLP] = 0.f;
+    signals.set(SignalLabel::GAP_HPLP, 0.f);
     /* - LP input signal */
-    signals[SignalLabel::GAP_INLP] = 1.f;
+    signals.set(SignalLabel::GAP_INLP, 1.f);
     /* - HP output signal */
-    signals[SignalLabel::GAP_HPOUT] = tmp_wet * tmp_hi_par;
+    signals.set(SignalLabel::GAP_HPOUT, tmp_wet * tmp_hi_par);
     /* - LP output signal */
-    signals[SignalLabel::GAP_LPOUT] = tmp_wet * tmp_lo_par;
+    signals.set(SignalLabel::GAP_LPOUT, tmp_wet * tmp_lo_par);
     /* - Main output signal */
-    signals[SignalLabel::GAP_INOUT] = tmp_dry;
+    signals.set(SignalLabel::GAP_INOUT, tmp_dry);
   }
   else
   {
     /* serial mode */
     tmp_val = tmp_wet * tmp_hi_ser;
     /* - HP to LP input signal */
-    signals[SignalLabel::GAP_HPLP] = 1.f - tmp_lo_ser;
+    signals.set(SignalLabel::GAP_HPLP, 1.f - tmp_lo_ser);
     /* - LP input signal */
-    signals[SignalLabel::GAP_INLP] = tmp_lo_ser;
+    signals.set(SignalLabel::GAP_INLP, tmp_lo_ser);
     /* - HP output signal */
-    signals[SignalLabel::GAP_HPOUT] = signals[SignalLabel::GAP_HPLP] * tmp_val;
+    signals.set(SignalLabel::GAP_HPOUT, signals[SignalLabel::GAP_HPLP] * tmp_val);
     /* - LP output signal */
-    signals[SignalLabel::GAP_LPOUT] = tmp_wet - tmp_val;
+    signals.set(SignalLabel::GAP_LPOUT, tmp_wet - tmp_val);
     /* - Main output signal */
-    signals[SignalLabel::GAP_INOUT] = (tmp_val * tmp_lo_ser) + tmp_dry;
+    signals.set(SignalLabel::GAP_INOUT, (tmp_val * tmp_lo_ser) + tmp_dry);
   }
   /* - Echo */
   /*   - Feedback and Cross Feedback */
   tmp_fb = getSignal(ParameterLabel::P_DLY_FB);
   tmp_val = getSignal(ParameterLabel::P_DLY_CFB);
-  signals[SignalLabel::DLY_FB_LOC] = tmp_fb * (1.f - tmp_val);
-  signals[SignalLabel::DLY_FB_CR] = tmp_fb * tmp_val;
+  signals.set(SignalLabel::DLY_FB_LOC, tmp_fb * (1.f - tmp_val));
+  signals.set(SignalLabel::DLY_FB_CR, tmp_fb * tmp_val);
   /*   - Dry and Wet Mix Amounts */
   tmp_val = getSignal(ParameterLabel::P_DLY_MIX);
-  signals[SignalLabel::DLY_WET] = (2.f * tmp_val) - (tmp_val * tmp_val);
+  signals.set(SignalLabel::DLY_WET, (2.f * tmp_val) - (tmp_val * tmp_val));
   tmp_val = 1.f - tmp_val;
-  signals[SignalLabel::DLY_DRY] = (2.f * tmp_val) - (tmp_val * tmp_val);
+  signals.set(SignalLabel::DLY_DRY, (2.f * tmp_val) - (tmp_val * tmp_val));
   /* - Reverb (if fast rendering is enabled - see pe_defines_config.h) */
 #if test_reverbParams == 0
   /*   - Size to Size, Feedback, Balance */
   tmp_val = getSignal(ParameterLabel::P_REV_SIZE);
   tmp_val *= 2.f - std::abs(tmp_val);
-  signals[SignalLabel::REV_SIZE] = tmp_val;
+  signals.set(SignalLabel::REV_SIZE, tmp_val);
   tmp_fb = tmp_val * (0.6f + (0.4f * std::abs(tmp_val)));
-  signals[SignalLabel::REV_FEED] = 4.32f - (3.32f * tmp_fb);
+  signals.set(SignalLabel::REV_FEED, 4.32f - (3.32f * tmp_fb));
   tmp_fb = tmp_val * (1.3f - (0.3f * std::abs(tmp_val)));
-  signals[SignalLabel::REV_BAL] = 0.9f * tmp_fb;
+  signals.set(SignalLabel::REV_BAL, 0.9f * tmp_fb);
   /*   - Pre Delay */
-  signals[SignalLabel::REV_PRE] = getSignal(ParameterLabel::P_REV_PRE) * 200.f * m_millisecond;
+  signals.set(SignalLabel::REV_PRE, getSignal(ParameterLabel::P_REV_PRE) * 200.f * m_millisecond);
   /*   - Color to Filter Frequencies (HPF, LPF) */
   tmp_val = getSignal(ParameterLabel::P_REV_COL);
-  signals[SignalLabel::REV_LPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve1.applyCurve(tmp_val)) * 440.f);
-  signals[SignalLabel::REV_HPF] = evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve2.applyCurve(tmp_val)) * 440.f);
+  signals.set(SignalLabel::REV_LPF,
+              evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve1.applyCurve(tmp_val)) * 440.f));
+  signals.set(SignalLabel::REV_HPF,
+              evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve2.applyCurve(tmp_val)) * 440.f));
   /*   - Mix to Dry, Wet */
   tmp_val = getSignal(ParameterLabel::P_REV_MIX);
   tmp_dry = 1.f - tmp_val;
   tmp_dry = (2.f - tmp_dry) * tmp_dry;
-  signals[SignalLabel::REV_DRY] = tmp_dry;
+  signals.set(SignalLabel::REV_DRY, tmp_dry);
   tmp_wet = tmp_val;
   tmp_wet = (2.f - tmp_wet) * tmp_wet;
-  signals[SignalLabel::REV_WET] = tmp_wet;
+  signals.set(SignalLabel::REV_WET, tmp_wet);
 #endif
 }
 
@@ -1616,7 +1635,7 @@ void paramengine::postProcessMono_audio(SignalStorage& signals)
                                          PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it);
+    signals.set(p, getSignal(it));
   }
   /* mono envelope rendering */
   float tmp_env;
@@ -1632,8 +1651,8 @@ void paramengine::postProcessMono_audio(SignalStorage& signals)
   m_flangerLFO.tick();
   float tmp_wet = getSignal(ParameterLabel::P_FLA_ENV);
   float tmp_dry = 1.f - tmp_wet;
-  signals[SignalLabel::FLA_LFO_L] = (tmp_dry * m_flangerLFO.m_left) + (tmp_wet * tmp_env);
-  signals[SignalLabel::FLA_LFO_R] = (tmp_dry * m_flangerLFO.m_right) + (tmp_wet * tmp_env);
+  signals.set(SignalLabel::FLA_LFO_L, (tmp_dry * m_flangerLFO.m_left) + (tmp_wet * tmp_env));
+  signals.set(SignalLabel::FLA_LFO_R, (tmp_dry * m_flangerLFO.m_right) + (tmp_wet * tmp_env));
 }
 
 void paramengine::testLevelVelocity()
