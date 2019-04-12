@@ -900,14 +900,14 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
                                          PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it);
+    signals.set(p, getSignal(it));
   }
   /* automatic poly to poly copy - each voice */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_SLOW,
                                          PARAM_POLY_TYPES::PARAM_POLY))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it, _voiceId);
+    signals.set(p, getSignal(it, _voiceId));
   }
   /*
      *      "NEW" ENVELOPES:
@@ -940,34 +940,36 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
                                                 * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getSignal(ParameterLabel::P_OA_FEC);
-  signals[SignalLabel::OSC_A_FLUEC] = getSignal(ParameterLabel::P_OA_F)
-      * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod);
+  signals.set(SignalLabel::OSC_A_FLUEC,
+              getSignal(ParameterLabel::P_OA_F)
+                  * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod));
   /* - Oscillator A Chirp Frequency in Hz */
-  signals[SignalLabel::OSC_A_CHI] = evalNyquist(getSignal(ParameterLabel::P_OA_CHI) * 440.f);
+  signals.set(SignalLabel::OSC_A_CHI, evalNyquist(getSignal(ParameterLabel::P_OA_CHI) * 440.f));
   /* Oscillator B */
   /* - Oscillator B Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Osc Pitch, Envelope C) */
   keyTracking = getSignal(ParameterLabel::P_OB_PKT);
   unitPitch = getSignal(ParameterLabel::P_OB_P);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_OB_PEC);
-  signals[SignalLabel::OSC_B_FRQ] = evalNyquist(m_pitch_reference * unitPitch
-                                                * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod));
+  signals.set(
+      SignalLabel::OSC_B_FRQ,
+      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
   /* - Oscillator B Fluctuation (Envelope C) */
   envMod = getSignal(ParameterLabel::P_OB_FEC);
-  signals[SignalLabel::OSC_B_FLUEC] = getSignal(ParameterLabel::P_OB_F)
-      * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod);
+  signals.set(SignalLabel::OSC_B_FLUEC,
+              getSignal(ParameterLabel::P_OB_F)
+                  * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals[SignalLabel::ENV_C_CLIP], envMod));
   /* - Oscillator B Chirp Frequency in Hz */
-  signals[SignalLabel::OSC_B_CHI] = evalNyquist(getSignal(ParameterLabel::P_OB_CHI) * 440.f);
+  signals.set(SignalLabel::OSC_B_CHI, evalNyquist(getSignal(ParameterLabel::P_OB_CHI) * 440.f));
   /* Comb Filter */
   /* - Comb Filter Pitch as Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Comb Pitch) */
   keyTracking = getSignal(ParameterLabel::P_CMB_PKT);
   unitPitch = getSignal(ParameterLabel::P_CMB_P);
   // as a tonal component, the reference tone frequency is applied (instead of const 440 Hz)
-  signals[SignalLabel::CMB_FRQ]
-      = evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)));
+  signals.set(SignalLabel::CMB_FRQ,
+              evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking))));
   /* - Comb Filter Bypass (according to Pitch parameter - without key tracking or reference freq) */
-  signals[SignalLabel::CMB_BYP] = unitPitch > dsp_comb_max_freqFactor
-      ? 1.f
-      : 0.f;  // check for bypassing comb filter, max_freqFactor corresponds to Pitch of 119.99 ST
+  signals.set(SignalLabel::CMB_BYP, unitPitch > dsp_comb_max_freqFactor ? 1.f : 0.f);
+  // check for bypassing comb filter, max_freqFactor corresponds to Pitch of 119.99 ST
   /* - Comb Filter Decay Time (Base Pitch, Master Tune, Gate Env, Dec Time, Key Tracking, Gate Amount) */
   keyTracking = getSignal(ParameterLabel::P_CMB_DKT);
   unitSign = 0.001f * (getSignal(ParameterLabel::P_CMB_D) < 0 ? -1.f : 1.f);
@@ -989,19 +991,16 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   keyTracking = getSignal(ParameterLabel::P_CMB_APKT);
   unitPitch = getSignal(ParameterLabel::P_CMB_APT);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_APEC);
-  signals[SignalLabel::CMB_APF]
-      = evalNyquist(440.f * unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
-                                               + envMod));  // not sure if APF needs Nyquist Clipping?
+  signals.set(SignalLabel::CMB_APF,
+              evalNyquist(440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+  // not sure if APF needs Nyquist Clipping?
   //signals[SignalLabel::CMB_APF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently APF without Nyquist Clipping
   /* - Comb Filter Lowpass ('Hi Cut') Frequency (Base Pitch, Master Tune, Key Tracking, Hi Cut, Env C) */
   keyTracking = getSignal(ParameterLabel::P_CMB_LPKT);
   unitPitch = getSignal(ParameterLabel::P_CMB_LP);
   envMod = signals[SignalLabel::ENV_C_UNCL] * getSignal(ParameterLabel::P_CMB_LPEC);
-  signals[SignalLabel::CMB_LPF]
-      = evalNyquist(440.f * unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking)
-                                               + envMod));  // not sure if LPF needs Nyquist Clipping?
+  signals.set(SignalLabel::CMB_LPF,
+              evalNyquist(440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
   //signals[SignalLabel::CMB_LPF] = 440.f * unitPitch * m_convert.eval_lin_pitch(69.f + (basePitch * keyTracking) + envMod);                   // currently LPF without Nyquist Clipping
   /* State Variable Filter */
   /* - Cutoff Frequencies */
@@ -1013,16 +1012,21 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   unitSpread = getSignal(ParameterLabel::P_SVF_SPR);  // get the Spread parameter (already scaled to 50%)
   unitMod = getSignal(ParameterLabel::P_SVF_FM);      // get the FM parameter
   /*   now, calculate the actual filter frequencies and put them in the shared signal array */
-  signals[SignalLabel::SVF_F1_CUT]
-      = evalNyquist(unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod
-                                               + unitSpread));  // SVF upper 2PF Cutoff Frequency
-  signals[SignalLabel::SVF_F2_CUT]
-      = evalNyquist(unitPitch
-                    * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod
-                                               - unitSpread));                   // SVF lower 2PF Cutoff Frequency
-  signals[SignalLabel::SVF_F1_FM] = signals[SignalLabel::SVF_F1_CUT] * unitMod;  // SVF upper 2PF FM Amount (Frequency)
-  signals[SignalLabel::SVF_F2_FM] = signals[SignalLabel::SVF_F2_CUT] * unitMod;  // SVF lower 2PF FM Amount (Frequency)
+
+  // SVF upper 2PF Cutoff Frequency
+  signals.set(
+      SignalLabel::SVF_F1_CUT,
+      evalNyquist(unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod + unitSpread)));
+
+  // SVF lower 2PF Cutoff Frequency
+  signals.set(
+      SignalLabel::SVF_F2_CUT,
+      evalNyquist(unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod - unitSpread)));
+
+  // SVF upper 2PF FM Amount (Frequency)
+  signals.set(SignalLabel::SVF_F1_FM, signals[SignalLabel::SVF_F1_CUT] * unitMod);
+  // SVF lower 2PF FM Amount (Frequency)
+  signals.set(SignalLabel::SVF_F2_FM, signals[SignalLabel::SVF_F2_CUT] * unitMod);
   /* - Resonance */
   keyTracking = getSignal(ParameterLabel::P_SVF_RKT) * m_svfResFactor;
   envMod = signals[SignalLabel::ENV_C_CLIP] * getSignal(ParameterLabel::P_SVF_REC);
@@ -1031,10 +1035,10 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   float res = 1.f
       - m_svfResonanceCurve.applyCurve(
             std::clamp(unitPitch, 0.f, 1.f));  // NEW resonance handling directly in post processing
-  signals[SignalLabel::SVF_RES] = std::max(res + res, 0.02f);
+  signals.set(SignalLabel::SVF_RES, std::max(res + res, 0.02f));
   /* - Feedback Mixer */
   /*   - determine Highpass Filter Frequency */
-  signals[SignalLabel::FBM_HPF] = evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f);
+  signals.set(SignalLabel::FBM_HPF, evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f));
 }
 
 /* Poly Post Processing - fast parameters */
@@ -1045,14 +1049,14 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
                                          PARAM_POLY_TYPES::PARAM_MONO))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it);
+    signals.set(p, getSignal(it));
   }
   /* automatic poly to poly copy - each voice */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_FAST,
                                          PARAM_POLY_TYPES::PARAM_POLY))
   {
     auto p = getHead(it).m_postId;
-    signals[p] = getSignal(it, _voiceId);
+    signals.set(p, getSignal(it, _voiceId));
   }
   /*
      *      "NEW" ENVELOPES:
@@ -1079,8 +1083,8 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   /* State Variable Filter */
   /* - LBH */
   tmp_lvl = getSignal(ParameterLabel::P_SVF_LBH);
-  signals[SignalLabel::SVF_LBH_1] = m_svfLBH1Curve.applyCurve(tmp_lvl);
-  signals[SignalLabel::SVF_LBH_2] = m_svfLBH2Curve.applyCurve(tmp_lvl);
+  signals.set(SignalLabel::SVF_LBH_1, m_svfLBH1Curve.applyCurve(tmp_lvl));
+  signals.set(SignalLabel::SVF_LBH_2, m_svfLBH2Curve.applyCurve(tmp_lvl));
   /* - Parallel */
   tmp_lvl = getSignal(ParameterLabel::P_SVF_PAR);
   tmp_abs = std::abs(tmp_lvl);

@@ -10,7 +10,7 @@ class SignalStorage
  public:
   SignalStorage() = default;
 
-  inline float &operator[](SignalLabel param)
+  inline const float &operator[](SignalLabel param) const
   {
     return m_boundVoice[static_cast<uint32_t>(param)];
   }
@@ -24,6 +24,16 @@ class SignalStorage
   inline float get(uint32_t voice, uint32_t param)
   {
     return m_paramsignaldata[voice][param];
+  }
+
+  inline void set(SignalLabel param, float value)
+  {
+    m_boundVoice[static_cast<uint32_t>(param)] = value;
+  }
+
+  inline void set(SignalLabel param, uint32_t voice, float value)
+  {
+    m_paramsignaldata[voice][static_cast<uint32_t>(param)] = value;
   }
 
  private:
