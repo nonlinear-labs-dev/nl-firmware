@@ -822,7 +822,7 @@ void dsp_host::keyApply(uint32_t _voiceId)
 void dsp_host::keyUp156(const float _velocity)
 {
   uint32_t voiceId = m_decoder.m_voiceFrom;
-  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getSignal(ParameterLabel::P_UN_V));
+  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(ParameterLabel::P_UN_V));
 
   for(uint32_t v = 0; v < unisonVoices; v++)
   {
@@ -836,7 +836,7 @@ void dsp_host::keyUp156(const float _velocity)
 void dsp_host::keyDown156(const float _velocity)
 {
   uint32_t voiceId = m_decoder.m_voiceFrom;
-  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getSignal(ParameterLabel::P_UN_V));
+  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(ParameterLabel::P_UN_V));
   const uint32_t index = m_params.getHead(ParameterLabel::P_KEY_BP).m_index + voiceId;
   const float pitch = m_params.getBody(index).m_dest;
   //
@@ -1736,7 +1736,7 @@ void dsp_host::examineParameter()
     param_body *par = &m_params.getBody(m_param_status.m_index);
     m_param_status.m_state[v] = par->m_state;
     m_param_status.m_preload[v] = par->m_preload;
-    m_param_status.mparams[v] = par->m_signal;
+    m_param_status.mparams[v] = par->m_value;
     m_param_status.m_dx[v][0] = par->m_dx[0];
     m_param_status.m_dx[v][1] = par->m_dx[1];
     m_param_status.m_x[v] = par->m_x;

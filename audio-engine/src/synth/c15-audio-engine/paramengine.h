@@ -46,7 +46,7 @@ struct param_body
   /* */
   uint32_t m_state = 0;
   uint32_t m_preload = 0;
-  float m_signal = 0.f;
+  float m_value = 0.f;
   float m_dx[2] = { 0.f, 0.f };
   float m_x = 0.f;
   float m_start = 0.f;
@@ -80,14 +80,14 @@ struct Parameters
     return m_body[id];
   }
 
-  inline float getSignal(ParameterLabel paramId) const
+  inline float getParameterValue(ParameterLabel paramId) const
   {
-    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index].m_signal;
+    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index].m_value;
   }
 
-  inline float getSignal(ParameterLabel paramId, uint32_t voice) const
+  inline float getParameterValue(ParameterLabel paramId, uint32_t voice) const
   {
-    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index + voice].m_signal;
+    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index + voice].m_value;
   }
 
   inline void addClockId(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
@@ -155,14 +155,14 @@ struct paramengine
     return m_parameters.getBody(id);
   }
 
-  inline float getSignal(ParameterLabel paramId) const
+  inline float getParameterValue(ParameterLabel paramId) const
   {
-    return m_parameters.getSignal(paramId);
+    return m_parameters.getParameterValue(paramId);
   }
 
-  inline float getSignal(ParameterLabel paramId, uint32_t voice) const
+  inline float getParameterValue(ParameterLabel paramId, uint32_t voice) const
   {
-    return m_parameters.getSignal(paramId, voice);
+    return m_parameters.getParameterValue(paramId, voice);
   }
   /* local variables */
   uint32_t m_samplerate;
