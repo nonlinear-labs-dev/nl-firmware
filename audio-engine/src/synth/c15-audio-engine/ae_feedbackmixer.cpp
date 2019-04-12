@@ -50,7 +50,7 @@ void ae_feedbackmixer::init(float _samplerate)
 
 void ae_feedbackmixer::set(SignalStorage &signals)
 {
-  float omega = std::clamp(signals[SignalLabel::FBM_HPF], m_freqClip_min, m_freqClip_max);
+  float omega = std::clamp(signals.get(SignalLabel::FBM_HPF), m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
 
   m_hp_a1 = (1.f - omega) / (1.f + omega);
@@ -64,8 +64,8 @@ void ae_feedbackmixer::set(SignalStorage &signals)
 
 void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleFX, SignalStorage &signals)
 {
-  float tmpVar = _sampleFX * signals[SignalLabel::FBM_FX] + _sampleComb * signals[SignalLabel::FBM_CMB]
-      + _sampleSVF * signals[SignalLabel::FBM_SVF];
+  float tmpVar = _sampleFX * signals.get(SignalLabel::FBM_FX) + _sampleComb * signals.get(SignalLabel::FBM_CMB)
+      + _sampleSVF * signals.get(SignalLabel::FBM_SVF);
 
   m_out = m_hp_b0 * tmpVar;  // HP
   m_out += m_hp_b1 * m_hp_stateVar_1;
@@ -74,19 +74,19 @@ void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleF
   m_hp_stateVar_1 = tmpVar + DNC_const;
   m_hp_stateVar_2 = m_out + DNC_const;
 
-  m_out *= signals[SignalLabel::FBM_DRV];
+  m_out *= signals.get(SignalLabel::FBM_DRV);
 
   tmpVar = m_out;
   m_out = NlToolbox::Math::sinP3_wrap(m_out);
-  m_out = NlToolbox::Others::threeRanges(m_out, tmpVar, signals[SignalLabel::FBM_FLD]);
+  m_out = NlToolbox::Others::threeRanges(m_out, tmpVar, signals.get(SignalLabel::FBM_FLD));
 
   tmpVar = m_out * m_out;
   tmpVar -= m_hp30hz_stateVar;  // HP 30Hz
   m_hp30hz_stateVar = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar + NlToolbox::Constants::DNC_const;
 
-  m_out = NlToolbox::Others::parAsym(m_out, tmpVar, signals[SignalLabel::FBM_ASM]);
+  m_out = NlToolbox::Others::parAsym(m_out, tmpVar, signals.get(SignalLabel::FBM_ASM));
 
-  m_out = m_out * signals[SignalLabel::FBM_LVL];
+  m_out = m_out * signals.get(SignalLabel::FBM_LVL);
 }
 
 /******************************************************************************/

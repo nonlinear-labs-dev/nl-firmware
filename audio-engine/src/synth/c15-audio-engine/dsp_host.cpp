@@ -1620,7 +1620,7 @@ void dsp_host::makePolySound(SignalStorage &signals, uint32_t _voiceID)
 
 void dsp_host::makeMonoSound(SignalStorage &signals)
 {
-  float mst_gain = signals[SignalLabel::MST_VOL] * m_raised_cos_table[m_table_indx];
+  float mst_gain = signals.get(SignalLabel::MST_VOL) * m_raised_cos_table[m_table_indx];
 
   //****************************** Mono Modules ****************************//
   m_outputmixer.filter_level(signals);
