@@ -39,6 +39,7 @@ enum class EnvelopeLabel
 /* 'normal' Parameter Labels - access parameter with m_head[ID] - maybe, the rendering index would be much more efficient? */
 enum class ParameterLabel
 {
+  P_INVALID = -1,
   P_EA_ATT = 0,
   P_EA_DEC1 = 1,
   P_EA_BP = 2,

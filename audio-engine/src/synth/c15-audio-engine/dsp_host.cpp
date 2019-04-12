@@ -1127,13 +1127,13 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
       /* control edits */
       if(m_test_midiMode == 0)
       {
-        int32_t pId = testParamRouting[m_test_selectedGroup][_id - 1];
+        auto pId = testParamRouting[m_test_selectedGroup][_id - 1];
         /* group edits */
-        if(pId > -1)
+        if(pId != ParameterLabel::P_INVALID)
         {
-          uint32_t tcdId = static_cast<uint32_t>(param_definition[pId][0]);
-          uint32_t rng = static_cast<uint32_t>(param_definition[pId][9]);
-          uint32_t pol = static_cast<uint32_t>(param_definition[pId][8]);
+          uint32_t tcdId = static_cast<uint32_t>(param_definition[static_cast<uint32_t>(pId)][0]);
+          uint32_t rng = static_cast<uint32_t>(param_definition[static_cast<uint32_t>(pId)][9]);
+          uint32_t pol = static_cast<uint32_t>(param_definition[static_cast<uint32_t>(pId)][8]);
           float val = _value * m_test_normalizeMidi;
           if(pol > 0)
           {
@@ -1460,14 +1460,15 @@ void dsp_host::testGetParamHeadData()
   Log::info("PARAM_HEAD:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
-    param_head *obj = &m_params.getHead(p);
+    auto parameterId = static_cast<ParameterLabel>(p);
+    param_head *obj = &m_params.getHead(parameterId);
     Log::info<Log::LogMode::Plain>("id: ", obj->m_id, ", ");
     Log::info<Log::LogMode::Plain>("index: ", obj->m_index, ", ");
     Log::info<Log::LogMode::Plain>("size: ", obj->m_size, ", ");
-    Log::info<Log::LogMode::Plain>("clock: ", obj->m_clockType, ", ");
-    Log::info<Log::LogMode::Plain>("poly: ", obj->m_polyType, ", ");
-    Log::info<Log::LogMode::Plain>("scaleId: ", obj->m_scaleId, ", ");
-    Log::info<Log::LogMode::Plain>("postId: ", obj->m_postId, ", ");
+    Log::info<Log::LogMode::Plain>("clock: ", static_cast<uint32_t>(obj->m_clockType), ", ");
+    Log::info<Log::LogMode::Plain>("poly: ", static_cast<uint32_t>(obj->m_polyType), ", ");
+    Log::info<Log::LogMode::Plain>("scaleId: ", static_cast<uint32_t>(obj->m_scaleId), ", ");
+    Log::info<Log::LogMode::Plain>("postId: ", static_cast<uint32_t>(obj->m_postId), ", ");
     Log::info<Log::LogMode::Plain>("norm: ", obj->m_normalize, ", ");
     Log::info<Log::LogMode::AppendNewLine>("scaleArg: ", obj->m_scaleArg);
   }
@@ -1480,7 +1481,8 @@ void dsp_host::testGetParamRenderData()
   Log::info("PARAM_BODY:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
-    param_head *obj = &m_params.getHead(p);
+    auto parameterId = static_cast<ParameterLabel>(p);
+    param_head *obj = &m_params.getHead(parameterId);
     uint32_t index = obj->m_index;
     for(uint32_t i = 0; i < obj->m_size; i++)
     {
