@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "ae_gapfilter.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -120,7 +120,7 @@ void ae_gapfilter::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_gapfilter::set(ParameterStorage &params)
+void ae_gapfilter::set(SignalStorage &params)
 {
   float tmpVar_1, tmpVar_2;
 
@@ -305,7 +305,7 @@ void ae_gapfilter::set(ParameterStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
+void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, SignalStorage &params)
 {
   float tmpVar;
 

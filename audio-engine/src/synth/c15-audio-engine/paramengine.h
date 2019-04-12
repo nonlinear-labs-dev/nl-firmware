@@ -23,7 +23,7 @@
 #include "dsp_defines_signallabels.h"
 #include "nltoolbox.h"
 
-class ParameterStorage;
+class SignalStorage;
 
 /* */
 struct param_head
@@ -230,19 +230,19 @@ struct paramengine
   void newEnvUpdateLevels(const uint32_t _voiceId);
   /* simplified polyphonic post processing approach (one function per clock) */
   void postProcessPoly_slow(
-      ParameterStorage &params,
+      SignalStorage &params,
       const uint32_t _voiceId);  // poly slow post processing (distribution, copy, env c event signal!)
-  void postProcessPoly_fast(ParameterStorage &params,
+  void postProcessPoly_fast(SignalStorage &params,
                             const uint32_t _voiceId);  // poly fast post processing (distribution, copy)
   void postProcessPoly_audio(
-      ParameterStorage &params,
+      SignalStorage &params,
       const uint32_t _voiceId);  // poly audio post processing (distribution, copy, envelopes, param combination)
   void postProcessPoly_key(
-      ParameterStorage &params,
+      SignalStorage &params,
       const uint32_t _voiceId);  // NEW poly key post processing (only required signals should be updated)
-  void postProcessMono_slow(ParameterStorage &params);   // mono slow post processing
-  void postProcessMono_fast(ParameterStorage &params);   // mono fast post processing
-  void postProcessMono_audio(ParameterStorage &params);  // mono audio post processing
+  void postProcessMono_slow(SignalStorage &params);   // mono slow post processing
+  void postProcessMono_fast(SignalStorage &params);   // mono fast post processing
+  void postProcessMono_audio(SignalStorage &params);  // mono audio post processing
   /* temporary tests */
   void testLevelVelocity();
   const float roundingValues[65] = {

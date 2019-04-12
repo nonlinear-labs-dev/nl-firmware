@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "ae_echo.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -74,7 +74,7 @@ void ae_echo::init(float _samplerate, uint32_t _upsampleFactor)
 /******************************************************************************/
 /** @brief
 *******************************************************************************/
-void ae_echo::set(ParameterStorage &params)
+void ae_echo::set(SignalStorage &params)
 {
   float omega = std::clamp(params[SignalLabel::DLY_LPF], m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
@@ -88,7 +88,7 @@ void ae_echo::set(ParameterStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_echo::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
+void ae_echo::apply(float _rawSample_L, float _rawSample_R, SignalStorage &params)
 {
   float tmpVar;
 

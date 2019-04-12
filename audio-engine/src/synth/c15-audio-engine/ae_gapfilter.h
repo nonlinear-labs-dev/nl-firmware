@@ -12,7 +12,7 @@
 #include "nltoolbox.h"
 #include "dsp_defines_signallabels.h"
 
-class ParameterStorage;
+class SignalStorage;
 
 struct ae_gapfilter
 {
@@ -21,8 +21,8 @@ struct ae_gapfilter
   float m_out_L, m_out_R;
 
   void init(float _samplerate);
-  void apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params);
-  void set(ParameterStorage &params);
+  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &params);
+  void set(SignalStorage &params);
   void resetDSP();
 
   float m_warpConst_2PI;

@@ -8,7 +8,7 @@
 #include <math.h>
 #include "paramengine.h"
 #include "io/Log.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 std::ostream& operator<<(std::ostream& lhs, const param_body& rhs)
 {
@@ -893,7 +893,7 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 }
 
 /* Poly Post Processing - slow parameters */
-void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t _voiceId)
+void paramengine::postProcessPoly_slow(SignalStorage& params, const uint32_t _voiceId)
 {
   /* automatic mono to poly distribution */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_SLOW,
@@ -1038,7 +1038,7 @@ void paramengine::postProcessPoly_slow(ParameterStorage& params, const uint32_t 
 }
 
 /* Poly Post Processing - fast parameters */
-void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t _voiceId)
+void paramengine::postProcessPoly_fast(SignalStorage& params, const uint32_t _voiceId)
 {
   /* automatic mono to poly distribution */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_FAST,
@@ -1125,7 +1125,7 @@ void paramengine::postProcessPoly_fast(ParameterStorage& params, const uint32_t 
 }
 
 /* Poly Post Processing - audio parameters */
-void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t _voiceId)
+void paramengine::postProcessPoly_audio(SignalStorage& params, const uint32_t _voiceId)
 {
   /* automatic mono to poly distribution */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SPREAD, PARAM_CLOCK_TYPES::PARAM_AUDIO,
@@ -1244,7 +1244,7 @@ void paramengine::postProcessPoly_audio(ParameterStorage& params, const uint32_t
 }
 
 /* Poly KEY Post Processing */
-void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _voiceId)
+void paramengine::postProcessPoly_key(SignalStorage& params, const uint32_t _voiceId)
 {
   /* Pitch Updates */
 #if test_milestone == 150
@@ -1395,7 +1395,7 @@ void paramengine::postProcessPoly_key(ParameterStorage& params, const uint32_t _
 }
 
 /* Mono Post Processing - slow parameters */
-void paramengine::postProcessMono_slow(ParameterStorage& params)
+void paramengine::postProcessMono_slow(SignalStorage& params)
 {
   /* automatic mono to mono copy (always voice zero) */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_SLOW,
@@ -1483,7 +1483,7 @@ void paramengine::postProcessMono_slow(ParameterStorage& params)
 }
 
 /* Mono Post Processing - fast parameters */
-void paramengine::postProcessMono_fast(ParameterStorage& params)
+void paramengine::postProcessMono_fast(SignalStorage& params)
 {
   /* automatic mono to mono copy (always voice zero) */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_FAST,
@@ -1605,7 +1605,7 @@ void paramengine::postProcessMono_fast(ParameterStorage& params)
 }
 
 /* Mono Post Processing - audio parameters */
-void paramengine::postProcessMono_audio(ParameterStorage& params)
+void paramengine::postProcessMono_audio(SignalStorage& params)
 {
   /* automatic mono to mono copy (always voice zero) */
   for(auto& it : m_parameters.getPostIds(PARAM_SPREAD_TYPES::PARAM_SINGLE, PARAM_CLOCK_TYPES::PARAM_AUDIO,

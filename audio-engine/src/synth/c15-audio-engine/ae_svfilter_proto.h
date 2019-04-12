@@ -13,7 +13,7 @@
 #include "nltoolbox.h"
 #include "dsp_defines_signallabels.h"
 
-class ParameterStorage;
+class SignalStorage;
 using namespace NlToolbox::Constants;
 
 #include "pe_defines_config.h"  /// for testing the clipping limits
@@ -27,7 +27,7 @@ class ae_svfilter_proto
   float m_warpConst_2PI;
 
   void init(float _samplerate);
-  void apply(float _sampleA, float _sampleB, float _sampleComb, ParameterStorage &params);
+  void apply(float _sampleA, float _sampleB, float _sampleComb, SignalStorage &params);
   void resetDSP();
 
   //**************************** State Variables ****************************//

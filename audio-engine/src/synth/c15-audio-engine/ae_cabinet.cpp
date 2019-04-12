@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "ae_cabinet.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -121,7 +121,7 @@ void ae_cabinet::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_cabinet::set(ParameterStorage &params)
+void ae_cabinet::set(SignalStorage &params)
 {
   float tmpVar;
 
@@ -231,7 +231,7 @@ void ae_cabinet::set(ParameterStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
+void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &params)
 {
   float tmpVar;
 

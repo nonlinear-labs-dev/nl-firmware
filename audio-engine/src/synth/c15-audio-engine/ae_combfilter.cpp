@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "ae_combfilter.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -72,7 +72,7 @@ void ae_combfilter::setDelaySmoother()
 /** @brief
 *******************************************************************************/
 
-void ae_combfilter::apply(float _sampleA, float _sampleB, ParameterStorage &params)
+void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &params)
 {
   float tmpVar;
 
@@ -206,7 +206,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, ParameterStorage &para
 /** @brief
 *******************************************************************************/
 
-void ae_combfilter::set(ParameterStorage &params, float _samplerate)
+void ae_combfilter::set(SignalStorage &params, float _samplerate)
 {
   //********************** Highpass Coefficients *************************//
   float frequency = params[SignalLabel::CMB_FRQ];

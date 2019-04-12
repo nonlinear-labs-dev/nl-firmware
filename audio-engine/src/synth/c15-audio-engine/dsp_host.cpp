@@ -1595,7 +1595,7 @@ void dsp_host::initAudioEngine()
 /**
 *******************************************************************************/
 
-void dsp_host::makePolySound(ParameterStorage &params, uint32_t _voiceID)
+void dsp_host::makePolySound(SignalStorage &params, uint32_t _voiceID)
 {
   m_soundgenerator[_voiceID].generate(m_feedbackmixer[_voiceID].m_out, params);
 
@@ -1616,7 +1616,7 @@ void dsp_host::makePolySound(ParameterStorage &params, uint32_t _voiceID)
 /**
 *******************************************************************************/
 
-void dsp_host::makeMonoSound(ParameterStorage &params)
+void dsp_host::makeMonoSound(SignalStorage &params)
 {
   float mst_gain = params[SignalLabel::MST_VOL] * m_raised_cos_table[m_table_indx];
 
@@ -1686,7 +1686,7 @@ void dsp_host::makeMonoSound(ParameterStorage &params)
 /**
 *******************************************************************************/
 
-inline void dsp_host::setPolySlowFilterCoeffs(ParameterStorage &params, uint32_t _voiceID)
+inline void dsp_host::setPolySlowFilterCoeffs(SignalStorage &params, uint32_t _voiceID)
 {
   m_soundgenerator[_voiceID].set(params);
   m_combfilter[_voiceID].set(params, static_cast<float>(m_samplerate));
@@ -1697,7 +1697,7 @@ inline void dsp_host::setPolySlowFilterCoeffs(ParameterStorage &params, uint32_t
 /**
 *******************************************************************************/
 
-inline void dsp_host::setMonoSlowFilterCoeffs(ParameterStorage &params)
+inline void dsp_host::setMonoSlowFilterCoeffs(SignalStorage &params)
 {
   m_flanger.set_slow(params);
   m_cabinet.set(params);
@@ -1713,7 +1713,7 @@ inline void dsp_host::setMonoSlowFilterCoeffs(ParameterStorage &params)
 /**
 *******************************************************************************/
 
-inline void dsp_host::setMonoFastFilterCoeffs(ParameterStorage &params)
+inline void dsp_host::setMonoFastFilterCoeffs(SignalStorage &params)
 {
   m_flanger.set_fast(params);
   /* reverb setter (if reverb params render with fast clock) - see pe_defines.config.h */

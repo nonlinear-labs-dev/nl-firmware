@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "ae_reverb.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -126,7 +126,7 @@ void ae_reverb::init(float _samplerate, uint32_t _upsampleFactor)
 /** @brief  Chorus
 *******************************************************************************/
 
-void ae_reverb::set(ParameterStorage &params)
+void ae_reverb::set(SignalStorage &params)
 {
   float tmpVar;
   float tmp_target;
@@ -242,7 +242,7 @@ void ae_reverb::set(ParameterStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_reverb::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
+void ae_reverb::apply(float _rawSample_L, float _rawSample_R, SignalStorage &params)
 {
   float tmpVar;
   int32_t ind_t0, ind_tm1, ind_tp1, ind_tp2;

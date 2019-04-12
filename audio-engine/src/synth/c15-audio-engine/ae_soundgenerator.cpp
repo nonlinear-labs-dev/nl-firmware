@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "ae_soundgenerator.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -54,7 +54,7 @@ void ae_soundgenerator::init(float _samplerate, uint32_t _vn)
 /******************************************************************************/
 /** @brief
 *******************************************************************************/
-void ae_soundgenerator::set(ParameterStorage &params)
+void ae_soundgenerator::set(SignalStorage &params)
 {
   //*************************** Chirp Filter A *****************************//
   m_chiA_omega = params[SignalLabel::OSC_A_CHI] * m_warpConst_PI;
@@ -95,7 +95,7 @@ void ae_soundgenerator::resetPhase(float _phase)
 /** @brief
 *******************************************************************************/
 
-void ae_soundgenerator::generate(float _feedbackSample, ParameterStorage &params)
+void ae_soundgenerator::generate(float _feedbackSample, SignalStorage &params)
 {
   float tmpVar;
 

@@ -11,7 +11,7 @@
 #include "dsp_defines_signallabels.h"
 #include "nltoolbox.h"
 
-class ParameterStorage;
+class SignalStorage;
 using namespace NlToolbox::Constants;
 
 struct ae_feedbackmixer
@@ -19,8 +19,8 @@ struct ae_feedbackmixer
   ae_feedbackmixer();  // Default Constructor
 
   void init(float _samplerate);
-  void set(ParameterStorage &params);
-  void apply(float _sampleComb, float _sampleSVF, float _sampleFX, ParameterStorage &params);
+  void set(SignalStorage &params);
+  void apply(float _sampleComb, float _sampleSVF, float _sampleFX, SignalStorage &params);
   void resetDSP();
 
   float m_out;

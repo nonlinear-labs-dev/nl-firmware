@@ -9,7 +9,7 @@
 *******************************************************************************/
 
 #include "ae_svfilter_proto.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -45,7 +45,7 @@ void ae_svfilter_proto::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_svfilter_proto::apply(float _sampleA, float _sampleB, float _sampleComb, ParameterStorage &params)
+void ae_svfilter_proto::apply(float _sampleA, float _sampleB, float _sampleComb, SignalStorage &params)
 {
   float tmpRes = params[SignalLabel::SVF_RES];
 

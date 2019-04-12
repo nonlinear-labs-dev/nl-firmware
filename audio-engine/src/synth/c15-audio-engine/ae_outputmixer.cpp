@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "ae_outputmixer.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -54,7 +54,7 @@ void ae_outputmixer::init(float _samplerate, uint32_t _numOfVoices)
 *******************************************************************************/
 
 void ae_outputmixer::combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter,
-                             ParameterStorage &params, uint32_t _voiceID)
+                             SignalStorage &params, uint32_t _voiceID)
 {
   //******************************* Left Mix *******************************//
   float mainSample = params[SignalLabel::OUT_A_L] * _sampleA + params[SignalLabel::OUT_B_L] * _sampleB
@@ -99,7 +99,7 @@ void ae_outputmixer::combine(float _sampleA, float _sampleB, float _sampleComb, 
 /** @brief
 *******************************************************************************/
 
-void ae_outputmixer::filter_level(ParameterStorage &params)
+void ae_outputmixer::filter_level(SignalStorage &params)
 {
   float tmpVar = m_hp_b0 * m_out_L;  // HP L
   tmpVar += m_hp_b1 * m_hp_stateVar_L1;

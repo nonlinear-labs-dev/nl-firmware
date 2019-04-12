@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "ae_flanger.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -103,7 +103,7 @@ void ae_flanger::init(float _samplerate, uint32_t _upsampleFactor)
 /** @brief
 *******************************************************************************/
 
-void ae_flanger::set_slow(ParameterStorage &params)
+void ae_flanger::set_slow(SignalStorage &params)
 {
   float omega = std::clamp(params[SignalLabel::FLA_LPF], m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
@@ -117,7 +117,7 @@ void ae_flanger::set_slow(ParameterStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_flanger::set_fast(ParameterStorage &params)
+void ae_flanger::set_fast(SignalStorage &params)
 {
   float tmpVar = params[SignalLabel::FLA_APF_L];  // AP L
   tmpVar = std::clamp(tmpVar, m_freqClip_min, m_freqClip_max);
@@ -154,7 +154,7 @@ void ae_flanger::set_fast(ParameterStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_flanger::apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params)
+void ae_flanger::apply(float _rawSample_L, float _rawSample_R, SignalStorage &params)
 {
   float tmpVar_1, tmpVar_2;
 

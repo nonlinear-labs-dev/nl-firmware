@@ -13,7 +13,7 @@
 #include "dsp_defines_signallabels.h"
 #include <vector>
 
-class ParameterStorage;
+class SignalStorage;
 using namespace NlToolbox::Constants;
 
 struct ae_outputmixer
@@ -28,9 +28,9 @@ struct ae_outputmixer
   std::vector<float> m_hp30hz_stateVar_R;
 
   void init(float _samplerate, uint32_t _numOfVoices);
-  void combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter, ParameterStorage &params,
+  void combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter, SignalStorage &params,
                uint32_t _voiceID);
-  void filter_level(ParameterStorage &params);
+  void filter_level(SignalStorage &params);
   void resetDSP();
 
   //*************************** Highpass Filters ****************************//

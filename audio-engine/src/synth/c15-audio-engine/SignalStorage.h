@@ -5,17 +5,17 @@
 
 #include <stdlib.h>
 
-class ParameterStorage
+class SignalStorage
 {
  public:
-  ParameterStorage() = default;
+  SignalStorage() = default;
 
   inline float &operator[](SignalLabel param)
   {
     return m_boundVoice[static_cast<uint32_t>(param)];
   }
 
-  inline ParameterStorage &bindToVoice(uint32_t v)
+  inline SignalStorage &bindToVoice(uint32_t v)
   {
     m_boundVoice = m_paramsignaldata[v];
     return *this;

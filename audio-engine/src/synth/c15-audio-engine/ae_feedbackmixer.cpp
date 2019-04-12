@@ -7,7 +7,7 @@
 *******************************************************************************/
 
 #include "ae_feedbackmixer.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 
 /******************************************************************************/
 /** @brief
@@ -48,7 +48,7 @@ void ae_feedbackmixer::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_feedbackmixer::set(ParameterStorage &params)
+void ae_feedbackmixer::set(SignalStorage &params)
 {
   float omega = std::clamp(params[SignalLabel::FBM_HPF], m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
@@ -62,7 +62,7 @@ void ae_feedbackmixer::set(ParameterStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleFX, ParameterStorage &params)
+void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleFX, SignalStorage &params)
 {
   float tmpVar = _sampleFX * params[SignalLabel::FBM_FX] + _sampleComb * params[SignalLabel::FBM_CMB]
       + _sampleSVF * params[SignalLabel::FBM_SVF];
