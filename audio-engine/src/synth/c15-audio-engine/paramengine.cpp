@@ -1273,13 +1273,13 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_UN_V));
   const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_KEY_IDX, _voiceId));
   const float basePitch = getParameterValue(ParameterLabel::P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + getParameterValue(ParameterLabel::P_MA_SH)
+  const float notePitch = basePitch + getParameterValue(ParameterLabel::P_MA_T)
       + (getParameterValue(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + m_note_shift[_voiceId];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
   const float basePitch = getParameterValue(ParameterLabel::P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + getParameterValue(ParameterLabel::P_MA_SH)
+  const float notePitch = basePitch + getParameterValue(ParameterLabel::P_MA_T)
       + (getParameterValue(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + m_note_shift[_voiceId];
 #endif
   float keyTracking, unitPitch, envMod, unitSign, unitSpread, unitMod;
