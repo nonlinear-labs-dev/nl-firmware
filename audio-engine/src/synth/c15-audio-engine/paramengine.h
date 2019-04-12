@@ -23,7 +23,7 @@
 #include "dsp_defines_signallabels.h"
 #include "nltoolbox.h"
 
-class ParameterStorage;
+class SignalStorage;
 
 /* */
 struct param_head
@@ -32,10 +32,10 @@ struct param_head
   uint32_t m_id;
   uint32_t m_index;
   uint32_t m_size;
-  uint32_t m_clockType;
-  uint32_t m_polyType;
+  PARAM_CLOCK_TYPES m_clockType;
+  PARAM_POLY_TYPES m_polyType;
   uint32_t m_scaleId;
-  uint32_t m_postId;
+  SignalLabel m_postId;
   float m_normalize;
   float m_scaleArg;
 };
@@ -46,7 +46,7 @@ struct param_body
   /* */
   uint32_t m_state = 0;
   uint32_t m_preload = 0;
-  float m_signal = 0.f;
+  float m_value = 0.f;
   float m_dx[2] = { 0.f, 0.f };
   float m_x = 0.f;
   float m_start = 0.f;
@@ -67,95 +67,76 @@ struct param_utility
 struct Parameters
 {
 #if PARAM_ITERATOR == 1
-    uint32_t m_start[dsp_clock_types][dsp_poly_types];
-    uint32_t m_end[dsp_clock_types][dsp_poly_types];
+  uint32_t m_start[dsp_clock_types][dsp_poly_types];
+  uint32_t m_end[dsp_clock_types][dsp_poly_types];
 #endif
-    inline param_head &getHead(uint32_t id)
-    {
-        return m_head[id];
-    }
+  inline param_head &getHead(ParameterLabel id)
+  {
+    return m_head[static_cast<uint32_t>(id)];
+  }
 
-    inline param_body &getBody(uint32_t id)
-    {
-        return m_body[id];
-    }
+  inline param_body &getBody(uint32_t id)
+  {
+    return m_body[id];
+  }
 
-    inline float getSignal(uint32_t paramId) const
-    {
-        return m_body[m_head[paramId].m_index].m_signal;
-    }
+  inline float getParameterValue(ParameterLabel paramId) const
+  {
+    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index].m_value;
+  }
 
-    inline float getSignal(uint32_t paramId, uint32_t voice) const
-    {
-        return m_body[m_head[paramId].m_index + voice].m_signal;
-    }
+  inline float getParameterValue(ParameterLabel paramId, uint32_t voice) const
+  {
+    return m_body[m_head[static_cast<uint32_t>(paramId)].m_index + voice].m_value;
+  }
 
-    inline void addClockId(uint32_t _clockType, uint32_t _polyType, uint32_t _id)
-    {
-        m_clockIds.add(_clockType, _polyType, _id);
-    }
+  inline void addClockId(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
+  {
+    m_clockIds.add(_clockType, _polyType, _id);
+  }
 
-    inline const std::vector<uint32_t> &getClockIds(uint32_t _clockType, uint32_t _polyType) const
-    {
-        return m_clockIds.get(_clockType, _polyType);
-    }
+  inline const std::vector<uint32_t> &getClockIds(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType) const
+  {
+    return m_clockIds.get(_clockType, _polyType);
+  }
 
-    inline void addPostId(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType, uint32_t _id)
-    {
-        m_postIds.add(_spreadType, _clockType, _polyType, _id);
-    }
+  inline void addPostId(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType,
+                        ParameterLabel _id)
+  {
+    m_postIds.add(_spreadType, _clockType, _polyType, _id);
+  }
 
-    inline const std::vector<uint32_t> &getPostIds(uint32_t _spreadType, uint32_t _clockType, uint32_t _polyType) const
-    {
-        return m_postIds.get(_spreadType, _clockType, _polyType);
-    }
+  inline const std::vector<ParameterLabel> &getPostIds(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType,
+                                                       PARAM_POLY_TYPES _polyType) const
+  {
+    return m_postIds.get(_spreadType, _clockType, _polyType);
+  }
 #if PARAM_ITERATOR == 1
-    inline param_body* begin(uint32_t _clockType, uint32_t _polyType)
-    {
-        return &m_body[m_start[_clockType][_polyType]];
-    }
+  inline param_body *begin(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType)
+  {
+    return &m_body[m_start[static_cast<int>(_clockType)][static_cast<int>(_polyType)]];
+  }
 
-    inline param_body* begin(uint32_t _clockType, uint32_t _polyType, uint32_t _voiceId)
-    {
-        return &m_body[m_start[_clockType][_polyType] + _voiceId];
-    }
+  inline param_body *begin(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _voiceId)
+  {
+    return &m_body[m_start[static_cast<int>(_clockType)][static_cast<int>(_polyType)] + _voiceId];
+  }
 
-    inline param_body* end(uint32_t _clockType, uint32_t _polyType)
-    {
-        return &m_body[m_end[_clockType][_polyType]];
-    }
+  inline param_body *end(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType)
+  {
+    return &m_body[m_end[static_cast<int>(_clockType)][static_cast<int>(_polyType)]];
+  }
 
-    inline param_body* end(uint32_t _clockType, uint32_t _polyType, uint32_t _voiceId)
-    {
-        return &m_body[m_end[_clockType][_polyType] + _voiceId];
-    }
+  inline param_body *end(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _voiceId)
+  {
+    return &m_body[m_end[static_cast<int>(_clockType)][static_cast<int>(_polyType)] + _voiceId];
+  }
 #endif
-private:
-    param_head m_head[sig_number_of_params];
-    param_body m_body[sig_number_of_param_items];
-    new_clock_id_list m_clockIds;
-    new_dual_clock_id_list m_postIds;
-};
-
-/* improving code readability */
-enum PARAM_CLOCK_TYPES
-{
-    PARAM_SYNC = 0,
-    PARAM_AUDIO = 1,
-    PARAM_FAST = 2,
-    PARAM_SLOW = 3
-};
-
-enum PARAM_POLY_TYPES
-{
-    PARAM_MONO = 0,
-    PARAM_POLY = 1
-};
-
-enum PARAM_SPREAD_TYPES
-{
-    PARAM_SINGLE = 0,
-    PARAM_SPREAD = 1
+ private:
+  param_head m_head[sig_number_of_params];
+  param_body m_body[sig_number_of_param_items];
+  new_clock_id_list m_clockIds;
+  new_dual_clock_id_list m_postIds;
 };
 
 /* */
@@ -164,7 +145,7 @@ struct paramengine
 
   Parameters m_parameters;
 
-  inline param_head &getHead(uint32_t id)
+  inline param_head &getHead(ParameterLabel id)
   {
     return m_parameters.getHead(id);
   }
@@ -174,14 +155,14 @@ struct paramengine
     return m_parameters.getBody(id);
   }
 
-  inline float getSignal(uint32_t paramId) const
+  inline float getParameterValue(ParameterLabel paramId) const
   {
-    return m_parameters.getSignal(paramId);
+    return m_parameters.getParameterValue(paramId);
   }
 
-  inline float getSignal(uint32_t paramId, uint32_t voice) const
+  inline float getParameterValue(ParameterLabel paramId, uint32_t voice) const
   {
-    return m_parameters.getSignal(paramId, voice);
+    return m_parameters.getParameterValue(paramId, voice);
   }
   /* local variables */
   uint32_t m_samplerate;
@@ -231,12 +212,12 @@ struct paramengine
   /* helper */
   float evalNyquist(float _freq);
   /* TCD mechanism */
-  float scale(const uint32_t _scaleId, const float _scaleArg, float _value);     // provided tcd scale functions
-  void setDx(const uint32_t _voiceId, const uint32_t _paramId, float _value);    // param dx update
-  void setDest(const uint32_t _voiceId, const uint32_t _paramId, float _value);  // param dest update
-  void applyPreloaded(const uint32_t _voiceId, const uint32_t _paramId);         // param apply preloaded
-  void applyDest(const uint32_t _index);                                         // param apply dest (non-sync types)
-  void applySync(const uint32_t _index);                                         // param apply dest (sync types)
+  float scale(const uint32_t _scaleId, const float _scaleArg, float _value);           // provided tcd scale functions
+  void setDx(const uint32_t _voiceId, const ParameterLabel _paramId, float _value);    // param dx update
+  void setDest(const uint32_t _voiceId, const ParameterLabel _paramId, float _value);  // param dest update
+  void applyPreloaded(const uint32_t _voiceId, const ParameterLabel _paramId);         // param apply preloaded
+  void applyDest(const uint32_t _index);  // param apply dest (non-sync types)
+  void applySync(const uint32_t _index);  // param apply dest (sync types)
   /* key events */
   void keyDown(const uint32_t _voiceId, float _velocity);  // key events: key down (note on) mechanism
   void keyUp(const uint32_t _voiceId, float _velocity);    // key events: key up (note off) mechanism
@@ -249,19 +230,19 @@ struct paramengine
   void newEnvUpdateLevels(const uint32_t _voiceId);
   /* simplified polyphonic post processing approach (one function per clock) */
   void postProcessPoly_slow(
-      ParameterStorage &params,
+      SignalStorage &signals,
       const uint32_t _voiceId);  // poly slow post processing (distribution, copy, env c event signal!)
-  void postProcessPoly_fast(ParameterStorage &params,
+  void postProcessPoly_fast(SignalStorage &signals,
                             const uint32_t _voiceId);  // poly fast post processing (distribution, copy)
   void postProcessPoly_audio(
-      ParameterStorage &params,
+      SignalStorage &signals,
       const uint32_t _voiceId);  // poly audio post processing (distribution, copy, envelopes, param combination)
   void postProcessPoly_key(
-      ParameterStorage &params,
+      SignalStorage &signals,
       const uint32_t _voiceId);  // NEW poly key post processing (only required signals should be updated)
-  void postProcessMono_slow(ParameterStorage &params);   // mono slow post processing
-  void postProcessMono_fast(ParameterStorage &params);   // mono fast post processing
-  void postProcessMono_audio(ParameterStorage &params);  // mono audio post processing
+  void postProcessMono_slow(SignalStorage &signals);   // mono slow post processing
+  void postProcessMono_fast(SignalStorage &signals);   // mono fast post processing
+  void postProcessMono_audio(SignalStorage &signals);  // mono audio post processing
   /* temporary tests */
   void testLevelVelocity();
   const float roundingValues[65] = {

@@ -15,7 +15,7 @@
 #include "pe_defines_config.h"
 #include "paramengine.h"
 #include "tcd_decoder.h"
-#include "ParameterStorage.h"
+#include "SignalStorage.h"
 #include "dsp_host_examine.h"
 
 /* for testing purposes */
@@ -56,7 +56,7 @@ class dsp_host
   uint32_t m_stolen = 0;
 #endif
 
-  ParameterStorage m_parameters;
+  SignalStorage m_parameters;
 
   /* main signal output (left, right) */
   float m_mainOut_R, m_mainOut_L;  // final stereo (monophonic) audio (output) signal
@@ -151,13 +151,13 @@ class dsp_host
   ae_test_tone m_test_tone;
 
   void initAudioEngine();
-  void makePolySound(ParameterStorage &params, uint32_t _voiceID);
-  void makeMonoSound(ParameterStorage &params);
+  void makePolySound(SignalStorage &signals, uint32_t _voiceID);
+  void makeMonoSound(SignalStorage &signals);
 
   // inline?
-  inline void setPolySlowFilterCoeffs(ParameterStorage &params, uint32_t _voiceID);
-  inline void setMonoSlowFilterCoeffs(ParameterStorage &params);
-  inline void setMonoFastFilterCoeffs(ParameterStorage &params);
+  inline void setPolySlowFilterCoeffs(SignalStorage &signals, uint32_t _voiceID);
+  inline void setMonoSlowFilterCoeffs(SignalStorage &signals);
+  inline void setMonoFastFilterCoeffs(SignalStorage &signals);
 
   /*fadepoint for flushing*/
   bool m_flush;

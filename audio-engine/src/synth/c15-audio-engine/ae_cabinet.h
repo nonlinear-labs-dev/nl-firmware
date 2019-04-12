@@ -12,7 +12,7 @@
 #include "nltoolbox.h"
 #include "dsp_defines_signallabels.h"
 
-class ParameterStorage;
+class SignalStorage;
 
 using namespace NlToolbox::Constants;
 
@@ -26,8 +26,8 @@ struct ae_cabinet
   float m_freqClip_max, m_freqClip_min;
 
   void init(float _samplerate);
-  void apply(float _rawSample_L, float _rawSample_R, ParameterStorage &params);
-  void set(ParameterStorage &params);
+  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &signals);
+  void set(SignalStorage &signals);
   void resetDSP();
 
   //**************************** Biquad Highpass ****************************//

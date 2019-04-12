@@ -16,7 +16,7 @@
 #include "dsp_defines_signallabels.h"
 #include "pe_defines_config.h"
 
-class ParameterStorage;
+class SignalStorage;
 
 struct ae_soundgenerator
 {
@@ -25,8 +25,8 @@ struct ae_soundgenerator
   float m_out_A, m_out_B;  // Generated Samples
 
   void init(float _samplerate, uint32_t _vn);
-  void generate(float _feedbackSample, ParameterStorage &params);
-  void set(ParameterStorage &params);
+  void generate(float _feedbackSample, SignalStorage &signals);
+  void set(SignalStorage &signals);
   void resetPhase(float _phase);
   void resetDSP();
 
