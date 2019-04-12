@@ -19,8 +19,8 @@ struct ae_feedbackmixer
   ae_feedbackmixer();  // Default Constructor
 
   void init(float _samplerate);
-  void set(SignalStorage &params);
-  void apply(float _sampleComb, float _sampleSVF, float _sampleFX, SignalStorage &params);
+  void set(SignalStorage &signals);
+  void apply(float _sampleComb, float _sampleSVF, float _sampleFX, SignalStorage &signals);
   void resetDSP();
 
   float m_out;

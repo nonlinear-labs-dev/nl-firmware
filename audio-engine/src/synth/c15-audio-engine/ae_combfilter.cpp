@@ -72,18 +72,18 @@ void ae_combfilter::setDelaySmoother()
 /** @brief
 *******************************************************************************/
 
-void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &params)
+void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals)
 {
   float tmpVar;
 
   //**************************** AB Sample Mix ****************************//
-  tmpVar = params[SignalLabel::CMB_AB];  // AB Mix is inverted, so crossfade mix is as well (currently)
+  tmpVar = signals[SignalLabel::CMB_AB];  // AB Mix is inverted, so crossfade mix is as well (currently)
   m_out = _sampleB * (1.f - tmpVar) + _sampleA * tmpVar;
 
   //****************** AB Ssample Phase Mdulation Mix ********************//
-  tmpVar = params[SignalLabel::CMB_PMAB];
+  tmpVar = signals[SignalLabel::CMB_PMAB];
   float phaseMod = _sampleA * (1.f - tmpVar) + _sampleB * tmpVar;
-  phaseMod *= params[SignalLabel::CMB_PM];
+  phaseMod *= signals[SignalLabel::CMB_PM];
 
   //************************** 1-Pole Highpass ****************************//
   tmpVar = m_hpCoeff_b0 * m_out;
@@ -158,7 +158,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &params)
 
   m_delayStateVar = tmpVar;
 
-  tmpVar *= params[SignalLabel::CMB_FEC];
+  tmpVar *= signals[SignalLabel::CMB_FEC];
   tmpVar += (phaseMod * tmpVar);
 
   //******************************* Delay ********************************//
@@ -195,7 +195,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &params)
 
   m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
 
-  tmpVar = params[SignalLabel::CMB_BYP];  // Bypass
+  tmpVar = signals[SignalLabel::CMB_BYP];  // Bypass
   m_out = tmpVar * holdsample + (1.f - tmpVar) * m_out;
 
   //****************************** Decay ********************************//
@@ -206,10 +206,10 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_combfilter::set(SignalStorage &params, float _samplerate)
+void ae_combfilter::set(SignalStorage &signals, float _samplerate)
 {
   //********************** Highpass Coefficients *************************//
-  float frequency = params[SignalLabel::CMB_FRQ];
+  float frequency = signals[SignalLabel::CMB_FRQ];
   frequency *= 0.125f;
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_2);
 
@@ -221,7 +221,7 @@ void ae_combfilter::set(SignalStorage &params, float _samplerate)
   m_hpCoeff_b1 = m_hpCoeff_b0 * -1.f;
 
   //*********************** Lowpass Coefficient **************************//
-  frequency = params[SignalLabel::CMB_LPF];
+  frequency = signals[SignalLabel::CMB_LPF];
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_4);
   frequency *= m_warpConst_PI;
 
@@ -234,11 +234,11 @@ void ae_combfilter::set(SignalStorage &params, float _samplerate)
   m_lpCoeff = (1.f - frequency) / (1.f + frequency);
 
   //********************** Allpass Coefficients **************************//
-  frequency = params[SignalLabel::CMB_APF];
+  frequency = signals[SignalLabel::CMB_APF];
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_2);
   frequency *= m_warpConst_2PI;
 
-  float resonance = params[SignalLabel::CMB_APR] * 1.99f - 1.f;
+  float resonance = signals[SignalLabel::CMB_APR] * 1.99f - 1.f;
   resonance = NlToolbox::Math::sin(frequency) * (1.f - resonance);
 
   float tmpVar = 1.f / (1.f + resonance);
@@ -247,7 +247,7 @@ void ae_combfilter::set(SignalStorage &params, float _samplerate)
   m_apCoeff_2 = (1.f - resonance) * tmpVar;
 
   //*************************** Delaytime ********************************//
-  frequency = params[SignalLabel::CMB_FRQ];
+  frequency = signals[SignalLabel::CMB_FRQ];
 
   if(frequency < m_delayFreqClip)
   {
@@ -319,8 +319,8 @@ void ae_combfilter::set(SignalStorage &params, float _samplerate)
   m_delaySamples = m_delaySamples * tmpVar + m_delaySamples;
 
   //**************************** Decay Gain ******************************//
-  tmpVar = params[SignalLabel::CMB_DEC];
-  frequency = params[SignalLabel::CMB_FRQ] * std::abs(tmpVar);
+  tmpVar = signals[SignalLabel::CMB_DEC];
+  frequency = signals[SignalLabel::CMB_FRQ] * std::abs(tmpVar);
 
   frequency = std::max(frequency, DNC_const);
   frequency = (1.f / frequency) * -6.28318f;

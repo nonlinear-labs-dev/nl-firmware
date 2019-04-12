@@ -120,16 +120,16 @@ void ae_gapfilter::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_gapfilter::set(SignalStorage &params)
+void ae_gapfilter::set(SignalStorage &signals)
 {
   float tmpVar_1, tmpVar_2;
 
   //************************** Biquad Highpass L ***************************//
-  float frequency = params[SignalLabel::GAP_HFL];
+  float frequency = signals[SignalLabel::GAP_HFL];
   tmpVar_1 = (frequency - m_freqScale_min) * (1.f / (m_freqScale_max - m_freqScale_min));
   tmpVar_1 = std::clamp(frequency, -1.f, 1.f);
 
-  float resonance = params[SignalLabel::GAP_RES] * tmpVar_1;
+  float resonance = signals[SignalLabel::GAP_RES] * tmpVar_1;
 
   tmpVar_1 = std::clamp(frequency, m_freqClip_min, m_freqClip_max);  // L1
   tmpVar_1 *= m_warpConst_2PI;
@@ -167,11 +167,11 @@ void ae_gapfilter::set(SignalStorage &params)
   m_hp_l2_b1 = m_hp_l2_b1 / tmpVar_2;
 
   //************************** Biquad Highpass R ***************************//
-  frequency = params[SignalLabel::GAP_HFR];
+  frequency = signals[SignalLabel::GAP_HFR];
   tmpVar_1 = (frequency - m_freqScale_min) * (1.f / (m_freqScale_max - m_freqScale_min));
   tmpVar_1 = std::clamp(tmpVar_1, -1.f, 1.f);
 
-  resonance = params[SignalLabel::GAP_RES] * tmpVar_1;
+  resonance = signals[SignalLabel::GAP_RES] * tmpVar_1;
 
   tmpVar_1 = std::clamp(frequency, m_freqClip_min, m_freqClip_max);  // R1
   tmpVar_1 *= m_warpConst_2PI;
@@ -209,11 +209,11 @@ void ae_gapfilter::set(SignalStorage &params)
   m_hp_r2_b1 = m_hp_r2_b1 / tmpVar_2;
 
   //*************************** Biquad Lowpass L ***************************//
-  frequency = params[SignalLabel::GAP_LFL];
+  frequency = signals[SignalLabel::GAP_LFL];
   tmpVar_1 = (frequency - m_freqScale_min) * (1.f / (m_freqScale_max - m_freqScale_min));
   tmpVar_1 = std::clamp(tmpVar_1, -1.f, 1.f);
 
-  resonance = params[SignalLabel::GAP_RES] * tmpVar_1;
+  resonance = signals[SignalLabel::GAP_RES] * tmpVar_1;
 
   tmpVar_1 = std::clamp(frequency, m_freqClip_min, m_freqClip_max);  // L1
   tmpVar_1 *= m_warpConst_2PI;
@@ -255,11 +255,11 @@ void ae_gapfilter::set(SignalStorage &params)
   m_lp_l2_b1 = m_lp_l2_b1 / tmpVar_2;
 
   //*************************** Biquad Lowpass R ***************************//
-  frequency = params[SignalLabel::GAP_LFR];
+  frequency = signals[SignalLabel::GAP_LFR];
   tmpVar_1 = (frequency - m_freqScale_min) * (1.f / (m_freqScale_max - m_freqScale_min));
   tmpVar_1 = std::clamp(tmpVar_1, -1.f, 1.f);
 
-  resonance = params[SignalLabel::GAP_RES] * tmpVar_1;
+  resonance = signals[SignalLabel::GAP_RES] * tmpVar_1;
 
   tmpVar_1 = std::clamp(frequency, m_freqClip_min, m_freqClip_max);  // R1
   tmpVar_1 *= m_warpConst_2PI;
@@ -305,7 +305,7 @@ void ae_gapfilter::set(SignalStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, SignalStorage &params)
+void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, SignalStorage &signals)
 {
   float tmpVar;
 
@@ -335,7 +335,7 @@ void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, SignalStorage &
   hp_sample = tmpVar;
 
   //****************************** Lowpass L ******************************//
-  tmpVar = hp_sample * params[SignalLabel::GAP_HPLP] + _rawSample_L * params[SignalLabel::GAP_INLP];
+  tmpVar = hp_sample * signals[SignalLabel::GAP_HPLP] + _rawSample_L * signals[SignalLabel::GAP_INLP];
 
   float lp_sample = m_lp_l1_b0 * tmpVar;  // L1
   lp_sample += m_lp_l1_b1 * m_lp_l1_stateVar_1;
@@ -359,9 +359,9 @@ void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, SignalStorage &
   m_lp_l2_stateVar_4 = m_lp_l2_stateVar_3 + NlToolbox::Constants::DNC_const;
   m_lp_l2_stateVar_3 = tmpVar + NlToolbox::Constants::DNC_const;
 
-  lp_sample = tmpVar * params[SignalLabel::GAP_LPOUT];
-  hp_sample *= params[SignalLabel::GAP_HPOUT];
-  m_out_L = hp_sample + lp_sample + (_rawSample_L * params[SignalLabel::GAP_INOUT]);
+  lp_sample = tmpVar * signals[SignalLabel::GAP_LPOUT];
+  hp_sample *= signals[SignalLabel::GAP_HPOUT];
+  m_out_L = hp_sample + lp_sample + (_rawSample_L * signals[SignalLabel::GAP_INOUT]);
 
   //***************************** Highpass R ******************************//
   hp_sample = m_hp_r1_b0 * _rawSample_R;  // R1
@@ -389,7 +389,7 @@ void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, SignalStorage &
   hp_sample = tmpVar;
 
   //****************************** Lowpass R ******************************//
-  tmpVar = hp_sample * params[SignalLabel::GAP_HPLP] + _rawSample_R * params[SignalLabel::GAP_INLP];
+  tmpVar = hp_sample * signals[SignalLabel::GAP_HPLP] + _rawSample_R * signals[SignalLabel::GAP_INLP];
 
   lp_sample = m_lp_r1_b0 * tmpVar;  // R1
   lp_sample += m_lp_r1_b1 * m_lp_r1_stateVar_1;
@@ -413,9 +413,9 @@ void ae_gapfilter::apply(float _rawSample_L, float _rawSample_R, SignalStorage &
   m_lp_r2_stateVar_4 = m_lp_r2_stateVar_3 + NlToolbox::Constants::DNC_const;
   m_lp_r2_stateVar_3 = tmpVar + NlToolbox::Constants::DNC_const;
 
-  lp_sample = tmpVar * params[SignalLabel::GAP_LPOUT];
-  hp_sample *= params[SignalLabel::GAP_HPOUT];
-  m_out_R = hp_sample + lp_sample + (_rawSample_R * params[SignalLabel::GAP_INOUT]);
+  lp_sample = tmpVar * signals[SignalLabel::GAP_LPOUT];
+  hp_sample *= signals[SignalLabel::GAP_HPOUT];
+  m_out_R = hp_sample + lp_sample + (_rawSample_R * signals[SignalLabel::GAP_INOUT]);
 }
 
 /******************************************************************************/

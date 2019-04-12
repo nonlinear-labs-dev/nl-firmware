@@ -26,8 +26,8 @@ struct ae_echo
   float m_out_L, m_out_R;
 
   void init(float _samplerate, uint32_t _upsampleFactor);
-  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &params);
-  void set(SignalStorage &params);
+  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &signals);
+  void set(SignalStorage &signals);
   void resetDSP();
 
   float m_warpConst_PI;

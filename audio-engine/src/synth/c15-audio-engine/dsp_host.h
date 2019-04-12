@@ -151,13 +151,13 @@ class dsp_host
   ae_test_tone m_test_tone;
 
   void initAudioEngine();
-  void makePolySound(SignalStorage &params, uint32_t _voiceID);
-  void makeMonoSound(SignalStorage &params);
+  void makePolySound(SignalStorage &signals, uint32_t _voiceID);
+  void makeMonoSound(SignalStorage &signals);
 
   // inline?
-  inline void setPolySlowFilterCoeffs(SignalStorage &params, uint32_t _voiceID);
-  inline void setMonoSlowFilterCoeffs(SignalStorage &params);
-  inline void setMonoFastFilterCoeffs(SignalStorage &params);
+  inline void setPolySlowFilterCoeffs(SignalStorage &signals, uint32_t _voiceID);
+  inline void setMonoSlowFilterCoeffs(SignalStorage &signals);
+  inline void setMonoFastFilterCoeffs(SignalStorage &signals);
 
   /*fadepoint for flushing*/
   bool m_flush;

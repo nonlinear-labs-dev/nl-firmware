@@ -34,8 +34,8 @@ struct ae_combfilter
   float m_freqClip_24576;
 
   void init(float _samplerate, uint32_t _upsampleFactor);
-  void apply(float _sampleA, float _sampleB, SignalStorage &params);
-  void set(SignalStorage &params, float _samplerate);
+  void apply(float _sampleA, float _sampleB, SignalStorage &signals);
+  void set(SignalStorage &signals, float _samplerate);
   void setDelaySmoother();
   void resetDSP();
 

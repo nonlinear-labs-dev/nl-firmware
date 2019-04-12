@@ -1595,38 +1595,38 @@ void dsp_host::initAudioEngine()
 /**
 *******************************************************************************/
 
-void dsp_host::makePolySound(SignalStorage &params, uint32_t _voiceID)
+void dsp_host::makePolySound(SignalStorage &signals, uint32_t _voiceID)
 {
-  m_soundgenerator[_voiceID].generate(m_feedbackmixer[_voiceID].m_out, params);
+  m_soundgenerator[_voiceID].generate(m_feedbackmixer[_voiceID].m_out, signals);
 
-  m_combfilter[_voiceID].apply(m_soundgenerator[_voiceID].m_out_A, m_soundgenerator[_voiceID].m_out_B, params);
+  m_combfilter[_voiceID].apply(m_soundgenerator[_voiceID].m_out_A, m_soundgenerator[_voiceID].m_out_B, signals);
 
   m_svfilter[_voiceID].apply(m_soundgenerator[_voiceID].m_out_A, m_soundgenerator[_voiceID].m_out_B,
-                             m_combfilter[_voiceID].m_out, params);
+                             m_combfilter[_voiceID].m_out, signals);
 
-  m_feedbackmixer[_voiceID].apply(m_combfilter[_voiceID].m_out, m_svfilter[_voiceID].m_out, m_reverb.m_out_FX, params);
+  m_feedbackmixer[_voiceID].apply(m_combfilter[_voiceID].m_out, m_svfilter[_voiceID].m_out, m_reverb.m_out_FX, signals);
 
   m_soundgenerator[_voiceID].m_feedback_phase = m_feedbackmixer[_voiceID].m_out;
 
   m_outputmixer.combine(m_soundgenerator[_voiceID].m_out_A, m_soundgenerator[_voiceID].m_out_B,
-                        m_combfilter[_voiceID].m_out, m_svfilter[_voiceID].m_out, params, _voiceID);
+                        m_combfilter[_voiceID].m_out, m_svfilter[_voiceID].m_out, signals, _voiceID);
 }
 
 /******************************************************************************/
 /**
 *******************************************************************************/
 
-void dsp_host::makeMonoSound(SignalStorage &params)
+void dsp_host::makeMonoSound(SignalStorage &signals)
 {
-  float mst_gain = params[SignalLabel::MST_VOL] * m_raised_cos_table[m_table_indx];
+  float mst_gain = signals[SignalLabel::MST_VOL] * m_raised_cos_table[m_table_indx];
 
   //****************************** Mono Modules ****************************//
-  m_outputmixer.filter_level(params);
-  m_flanger.apply(m_outputmixer.m_out_L, m_outputmixer.m_out_R, params);
-  m_cabinet.apply(m_flanger.m_out_L, m_flanger.m_out_R, params);
-  m_gapfilter.apply(m_cabinet.m_out_L, m_cabinet.m_out_R, params);
-  m_echo.apply(m_gapfilter.m_out_L, m_gapfilter.m_out_R, params);
-  m_reverb.apply(m_echo.m_out_L, m_echo.m_out_R, params);
+  m_outputmixer.filter_level(signals);
+  m_flanger.apply(m_outputmixer.m_out_L, m_outputmixer.m_out_R, signals);
+  m_cabinet.apply(m_flanger.m_out_L, m_flanger.m_out_R, signals);
+  m_gapfilter.apply(m_cabinet.m_out_L, m_cabinet.m_out_R, signals);
+  m_echo.apply(m_gapfilter.m_out_L, m_gapfilter.m_out_R, signals);
+  m_reverb.apply(m_echo.m_out_L, m_echo.m_out_R, signals);
 
   //******************************* Soft Clip ******************************//
   //****************************** Left Channel ****************************//
@@ -1686,26 +1686,26 @@ void dsp_host::makeMonoSound(SignalStorage &params)
 /**
 *******************************************************************************/
 
-inline void dsp_host::setPolySlowFilterCoeffs(SignalStorage &params, uint32_t _voiceID)
+inline void dsp_host::setPolySlowFilterCoeffs(SignalStorage &signals, uint32_t _voiceID)
 {
-  m_soundgenerator[_voiceID].set(params);
-  m_combfilter[_voiceID].set(params, static_cast<float>(m_samplerate));
-  m_feedbackmixer[_voiceID].set(params);
+  m_soundgenerator[_voiceID].set(signals);
+  m_combfilter[_voiceID].set(signals, static_cast<float>(m_samplerate));
+  m_feedbackmixer[_voiceID].set(signals);
 }
 
 /******************************************************************************/
 /**
 *******************************************************************************/
 
-inline void dsp_host::setMonoSlowFilterCoeffs(SignalStorage &params)
+inline void dsp_host::setMonoSlowFilterCoeffs(SignalStorage &signals)
 {
-  m_flanger.set_slow(params);
-  m_cabinet.set(params);
-  m_gapfilter.set(params);
-  m_echo.set(params);
+  m_flanger.set_slow(signals);
+  m_cabinet.set(signals);
+  m_gapfilter.set(signals);
+  m_echo.set(signals);
   /* reverb setter (if reverb params render with slow clock) - see pe_defines.config.h */
 #if test_reverbParams == 1
-  m_reverb.set(params);
+  m_reverb.set(signals);
 #endif
 }
 
@@ -1713,9 +1713,9 @@ inline void dsp_host::setMonoSlowFilterCoeffs(SignalStorage &params)
 /**
 *******************************************************************************/
 
-inline void dsp_host::setMonoFastFilterCoeffs(SignalStorage &params)
+inline void dsp_host::setMonoFastFilterCoeffs(SignalStorage &signals)
 {
-  m_flanger.set_fast(params);
+  m_flanger.set_fast(signals);
   /* reverb setter (if reverb params render with fast clock) - see pe_defines.config.h */
 #if test_reverbParams == 0
   m_reverb.set(_signal);

@@ -42,23 +42,23 @@ void ae_svfilter::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_svfilter::apply(float _sampleA, float _sampleB, float _sampleComb, SignalStorage &params)
+void ae_svfilter::apply(float _sampleA, float _sampleB, float _sampleComb, SignalStorage &signals)
 {
-  float tmpRes = params[SignalLabel::SVF_RES];
+  float tmpRes = signals[SignalLabel::SVF_RES];
 
   //******************************** Sample Mix ****************************//
-  float tmpVar = params[SignalLabel::SVF_AB];
+  float tmpVar = signals[SignalLabel::SVF_AB];
   float mixSample = _sampleB * (1.f - tmpVar) + _sampleA * tmpVar;
-  tmpVar = params[SignalLabel::SVF_CMIX];
+  tmpVar = signals[SignalLabel::SVF_CMIX];
   mixSample = mixSample * (1.f - std::abs(tmpVar)) + _sampleComb * tmpVar;
 
   //************************** Frequency Modulation ************************//
-  float fmVar = _sampleA * params[SignalLabel::SVF_FMAB] + _sampleB * (1.f - params[SignalLabel::SVF_FMAB]);
+  float fmVar = _sampleA * signals[SignalLabel::SVF_FMAB] + _sampleB * (1.f - signals[SignalLabel::SVF_FMAB]);
 
   //************************** 1st Stage SV FILTER *************************//
   float inputSample = mixSample + (m_first_sat_stateVar * 0.1f);
 
-  float omega = (params[SignalLabel::SVF_F1_CUT] + fmVar * params[SignalLabel::SVF_F1_FM]) * m_warpConst_2PI;
+  float omega = (signals[SignalLabel::SVF_F1_CUT] + fmVar * signals[SignalLabel::SVF_F1_FM]) * m_warpConst_2PI;
   omega = std::clamp(omega, 0.f, test_svf_fm_limit);  /// initially 1.5f
 
   float attenuation = ((2.f + omega) * (2.f - omega) * tmpRes) / (((tmpRes * omega) + (2.f - omega)) * 2.f);
@@ -70,19 +70,19 @@ void ae_svfilter::apply(float _sampleA, float _sampleB, float _sampleComb, Signa
   m_first_int1_stateVar = bandpassOutput + DNC_const;
   m_first_int2_stateVar = lowpassOutput + DNC_const;
 
-  float outputSample_1 = lowpassOutput * std::max(-(params[SignalLabel::SVF_LBH_1]), 0.f);
-  outputSample_1 += (bandpassOutput * (1.f - std::abs(params[SignalLabel::SVF_LBH_1])));
-  outputSample_1 += (highpassOutput * std::max(params[SignalLabel::SVF_LBH_1], 0.f));
+  float outputSample_1 = lowpassOutput * std::max(-(signals[SignalLabel::SVF_LBH_1]), 0.f);
+  outputSample_1 += (bandpassOutput * (1.f - std::abs(signals[SignalLabel::SVF_LBH_1])));
+  outputSample_1 += (highpassOutput * std::max(signals[SignalLabel::SVF_LBH_1], 0.f));
 
   //************************** 1st Stage Parabol Sat ***********************//
   m_first_sat_stateVar = std::clamp(bandpassOutput, -2.f, 2.f);
   m_first_sat_stateVar *= (1.f - std::abs(m_first_sat_stateVar) * 0.25f);
 
   //************************** 2nd Stage SV FILTER *************************//
-  inputSample = (outputSample_1 * params[SignalLabel::SVF_PAR_3]) + (mixSample * params[SignalLabel::SVF_PAR_4])
+  inputSample = (outputSample_1 * signals[SignalLabel::SVF_PAR_3]) + (mixSample * signals[SignalLabel::SVF_PAR_4])
       + (m_second_sat_stateVar * 0.1f);
 
-  omega = (params[SignalLabel::SVF_F2_CUT] + fmVar * params[SignalLabel::SVF_F2_FM]) * m_warpConst_2PI;
+  omega = (signals[SignalLabel::SVF_F2_CUT] + fmVar * signals[SignalLabel::SVF_F2_FM]) * m_warpConst_2PI;
   omega = std::clamp(omega, 0.f, test_svf_fm_limit);  /// initially 1.5f
 
   attenuation = ((2.f + omega) * (2.f - omega) * tmpRes) / (((tmpRes * omega) + (2.f - omega)) * 2.f);
@@ -94,16 +94,16 @@ void ae_svfilter::apply(float _sampleA, float _sampleB, float _sampleComb, Signa
   m_second_int1_stateVar = bandpassOutput + DNC_const;
   m_second_int2_stateVar = lowpassOutput + DNC_const;
 
-  tmpVar = lowpassOutput * std::max(-(params[SignalLabel::SVF_LBH_2]), 0.f);
-  tmpVar += (bandpassOutput * (1.f - std::abs(params[SignalLabel::SVF_LBH_2])));
-  tmpVar += (highpassOutput * std::max(params[SignalLabel::SVF_LBH_2], 0.f));
+  tmpVar = lowpassOutput * std::max(-(signals[SignalLabel::SVF_LBH_2]), 0.f);
+  tmpVar += (bandpassOutput * (1.f - std::abs(signals[SignalLabel::SVF_LBH_2])));
+  tmpVar += (highpassOutput * std::max(signals[SignalLabel::SVF_LBH_2], 0.f));
 
   //************************* 2nd Stage Parabol Sat ************************//
   m_second_sat_stateVar = std::clamp(bandpassOutput, -2.f, 2.f);
   m_second_sat_stateVar *= (1.f - std::abs(m_second_sat_stateVar) * 0.25f);
 
   //****************************** Crossfades ******************************//
-  m_out = (outputSample_1 * params[SignalLabel::SVF_PAR_1]) + (tmpVar * params[SignalLabel::SVF_PAR_2]);
+  m_out = (outputSample_1 * signals[SignalLabel::SVF_PAR_1]) + (tmpVar * signals[SignalLabel::SVF_PAR_2]);
 }
 
 /******************************************************************************/

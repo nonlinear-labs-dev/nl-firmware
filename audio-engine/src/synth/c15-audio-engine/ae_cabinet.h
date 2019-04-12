@@ -26,8 +26,8 @@ struct ae_cabinet
   float m_freqClip_max, m_freqClip_min;
 
   void init(float _samplerate);
-  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &params);
-  void set(SignalStorage &params);
+  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &signals);
+  void set(SignalStorage &signals);
   void resetDSP();
 
   //**************************** Biquad Highpass ****************************//

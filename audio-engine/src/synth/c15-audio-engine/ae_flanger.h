@@ -25,9 +25,9 @@ struct ae_flanger
   float m_out_L, m_out_R;
 
   void init(float _samplerate, uint32_t _upsampleFactor);
-  void set_slow(SignalStorage &params);
-  void set_fast(SignalStorage &params);
-  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &params);
+  void set_slow(SignalStorage &signals);
+  void set_fast(SignalStorage &signals);
+  void apply(float _rawSample_L, float _rawSample_R, SignalStorage &signals);
   void resetDSP();
 
   float m_warpConst_PI, m_warpConst_2PI;

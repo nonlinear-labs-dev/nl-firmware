@@ -230,19 +230,19 @@ struct paramengine
   void newEnvUpdateLevels(const uint32_t _voiceId);
   /* simplified polyphonic post processing approach (one function per clock) */
   void postProcessPoly_slow(
-      SignalStorage &params,
+      SignalStorage &signals,
       const uint32_t _voiceId);  // poly slow post processing (distribution, copy, env c event signal!)
-  void postProcessPoly_fast(SignalStorage &params,
+  void postProcessPoly_fast(SignalStorage &signals,
                             const uint32_t _voiceId);  // poly fast post processing (distribution, copy)
   void postProcessPoly_audio(
-      SignalStorage &params,
+      SignalStorage &signals,
       const uint32_t _voiceId);  // poly audio post processing (distribution, copy, envelopes, param combination)
   void postProcessPoly_key(
-      SignalStorage &params,
+      SignalStorage &signals,
       const uint32_t _voiceId);  // NEW poly key post processing (only required signals should be updated)
-  void postProcessMono_slow(SignalStorage &params);   // mono slow post processing
-  void postProcessMono_fast(SignalStorage &params);   // mono fast post processing
-  void postProcessMono_audio(SignalStorage &params);  // mono audio post processing
+  void postProcessMono_slow(SignalStorage &signals);   // mono slow post processing
+  void postProcessMono_fast(SignalStorage &signals);   // mono fast post processing
+  void postProcessMono_audio(SignalStorage &signals);  // mono audio post processing
   /* temporary tests */
   void testLevelVelocity();
   const float roundingValues[65] = {

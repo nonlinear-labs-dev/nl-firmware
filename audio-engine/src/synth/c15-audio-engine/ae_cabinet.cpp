@@ -121,12 +121,12 @@ void ae_cabinet::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_cabinet::set(SignalStorage &params)
+void ae_cabinet::set(SignalStorage &signals)
 {
   float tmpVar;
 
   //*************************** Biquad Highpass ****************************//
-  float frequency = params[SignalLabel::CAB_HPF];
+  float frequency = signals[SignalLabel::CAB_HPF];
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
 
@@ -147,7 +147,7 @@ void ae_cabinet::set(SignalStorage &params)
   m_hp_b1 = m_hp_b1 / tmpVar;
 
   //*************************** Biquad Lowpass 1 ***************************//
-  frequency = params[SignalLabel::CAB_LPF];
+  frequency = signals[SignalLabel::CAB_LPF];
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
 
@@ -168,7 +168,7 @@ void ae_cabinet::set(SignalStorage &params)
   m_lp1_b1 = m_lp1_b1 / tmpVar;
 
   //*************************** Biquad Lowpass 2 ***************************//
-  frequency = params[SignalLabel::CAB_LPF] * 1.333f;
+  frequency = signals[SignalLabel::CAB_LPF] * 1.333f;
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
   tmpVar = NlToolbox::Math::cos(frequency);
@@ -188,8 +188,8 @@ void ae_cabinet::set(SignalStorage &params)
   m_lp2_b1 = m_lp2_b1 / tmpVar;
 
   //**************************** Tilt Lowshelves ***************************//
-  float tilt = std::pow(10.f, params[SignalLabel::CAB_TILT] * 0.025f);
-  //    float tilt = std::pow(1.059192f, params[SignalLabel::CAB_TILT]);       // alternative to pow(10.f, params[SignalLabel::CAB_TILT] / 40.f)
+  float tilt = std::pow(10.f, signals[SignalLabel::CAB_TILT] * 0.025f);
+  //    float tilt = std::pow(1.059192f, signals[SignalLabel::CAB_TILT]);       // alternative to pow(10.f, signals[SignalLabel::CAB_TILT] / 40.f)
 
   tmpVar = tilt + 1.f / tilt + 2.f;
   tmpVar = std::sqrt(tilt * tmpVar) * m_tiltOmegaSin;
@@ -207,8 +207,8 @@ void ae_cabinet::set(SignalStorage &params)
   m_ls1_b1 = m_ls1_b1 / coeff;
   m_ls1_b2 = m_ls1_b2 / coeff;
 
-  tilt = std::pow(10.f, params[SignalLabel::CAB_TILT] * -0.025f);
-  //    tilt = std::pow(1.059192f, params[SignalLabel::CAB_TILT] * -1.f);          // alternative to pow(10.f, params[SignalLabel::CAB_TILT] / 40.f * -1.f)
+  tilt = std::pow(10.f, signals[SignalLabel::CAB_TILT] * -0.025f);
+  //    tilt = std::pow(1.059192f, signals[SignalLabel::CAB_TILT] * -1.f);          // alternative to pow(10.f, signals[SignalLabel::CAB_TILT] / 40.f * -1.f)
 
   tmpVar = tilt + 1.f / tilt + 2.f;
   tmpVar = std::sqrt(tilt * tmpVar) * m_tiltOmegaSin;
@@ -231,13 +231,13 @@ void ae_cabinet::set(SignalStorage &params)
 /** @brief
 *******************************************************************************/
 
-void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &params)
+void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &signals)
 {
   float tmpVar;
 
   //********************************* Drive ********************************//
-  float sample_L = _rawSample_L * params[SignalLabel::CAB_DRV];
-  float sample_R = _rawSample_R * params[SignalLabel::CAB_DRV];
+  float sample_L = _rawSample_L * signals[SignalLabel::CAB_DRV];
+  float sample_R = _rawSample_R * signals[SignalLabel::CAB_DRV];
 
   //************************** Biquad Highpass L ***************************//
   tmpVar = m_hp_b0 * sample_L;
@@ -296,30 +296,30 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &pa
   sample_R = tmpVar;
 
   //******************************* Shaper L *******************************//
-  sample_L *= params[SignalLabel::CAB_PRESAT];
+  sample_L *= signals[SignalLabel::CAB_PRESAT];
   tmpVar = sample_L;
 
   sample_L = NlToolbox::Math::sinP3_wrap(sample_L);
-  sample_L = NlToolbox::Others::threeRanges(sample_L, tmpVar, params[SignalLabel::CAB_FLD]);
+  sample_L = NlToolbox::Others::threeRanges(sample_L, tmpVar, signals[SignalLabel::CAB_FLD]);
 
   tmpVar = sample_L * sample_L - m_hp30_stateVar_L;
   m_hp30_stateVar_L = tmpVar * m_hp30_b0 + m_hp30_stateVar_L + DNC_const;
 
-  sample_L = NlToolbox::Others::parAsym(sample_L, tmpVar, params[SignalLabel::CAB_ASM]);
-  sample_L *= params[SignalLabel::CAB_SAT];
+  sample_L = NlToolbox::Others::parAsym(sample_L, tmpVar, signals[SignalLabel::CAB_ASM]);
+  sample_L *= signals[SignalLabel::CAB_SAT];
 
   //******************************* Shaper R *******************************//
-  sample_R *= params[SignalLabel::CAB_PRESAT];
+  sample_R *= signals[SignalLabel::CAB_PRESAT];
   tmpVar = sample_R;
 
   sample_R = NlToolbox::Math::sinP3_wrap(sample_R);
-  sample_R = NlToolbox::Others::threeRanges(sample_R, tmpVar, params[SignalLabel::CAB_FLD]);
+  sample_R = NlToolbox::Others::threeRanges(sample_R, tmpVar, signals[SignalLabel::CAB_FLD]);
 
   tmpVar = sample_R * sample_R - m_hp30_stateVar_R;
   m_hp30_stateVar_R = tmpVar * m_hp30_b0 + m_hp30_stateVar_R + DNC_const;
 
-  sample_R = NlToolbox::Others::parAsym(sample_R, tmpVar, params[SignalLabel::CAB_ASM]);
-  sample_R *= params[SignalLabel::CAB_SAT];
+  sample_R = NlToolbox::Others::parAsym(sample_R, tmpVar, signals[SignalLabel::CAB_ASM]);
+  sample_R *= signals[SignalLabel::CAB_SAT];
 
   //*************************** Tilt Lowshelf L2 ***************************//
   tmpVar = m_ls2_b0 * sample_L;
@@ -404,10 +404,10 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &pa
   sample_R = tmpVar;
 
   //******************************* Crossfade ******************************//
-  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, sample_L, params[SignalLabel::CAB_DRY],
-                                             params[SignalLabel::CAB_WET]);
-  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, sample_R, params[SignalLabel::CAB_DRY],
-                                             params[SignalLabel::CAB_WET]);
+  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, sample_L, signals[SignalLabel::CAB_DRY],
+                                             signals[SignalLabel::CAB_WET]);
+  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, sample_R, signals[SignalLabel::CAB_DRY],
+                                             signals[SignalLabel::CAB_WET]);
 }
 
 /******************************************************************************/
