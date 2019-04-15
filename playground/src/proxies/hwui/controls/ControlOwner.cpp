@@ -113,7 +113,7 @@ void ControlOwner::highlight(shared_ptr<Control> c)
 
 void ControlOwner::noHighlight()
 {
-  for(auto c : getControls())
+  for(auto &c : getControls())
     c->setHighlight(false);
 }
 
@@ -122,14 +122,7 @@ void ControlOwner::highlightButtonWithCaption(const Glib::ustring &caption)
   forEach([&caption](tControlPtr ctrl) {
     if(auto b = dynamic_pointer_cast<Button>(ctrl))
     {
-      if(b->getText().text == caption)
-      {
-        b->setHighlight(true);
-      }
-      else
-      {
-        b->setHighlight(false);
-      }
+        b->setHighlight(b->getText().text == caption);
     }
   });
 }
