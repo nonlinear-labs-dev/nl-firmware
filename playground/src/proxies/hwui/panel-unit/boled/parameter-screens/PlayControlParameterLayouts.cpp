@@ -27,12 +27,14 @@ PlayControlParameterLayout2::PlayControlParameterLayout2()
     : super()
 {
   addControl(new PhysicalControlSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-  m_selectButton = addControl(new Button("Select", BUTTON_A));
 
   if(s_instanceCount == 0)
+  {
     s_mode = Mode::ValueEdit;
+  }
 
-  m_selectButton->setHighlight(s_mode == Mode::Select);
+  auto selectButton = addControl(new Button("Select", BUTTON_A));
+  selectButton->setHighlight(s_mode == Mode::Select);
   s_instanceCount++;
 }
 
