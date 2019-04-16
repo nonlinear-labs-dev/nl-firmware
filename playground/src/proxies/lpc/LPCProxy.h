@@ -10,7 +10,6 @@
 #include <memory>
 #include <tools/Throttler.h>
 #include <io/network/WebSocketSession.h>
-#include <device-settings/DebugLevel.h>
 
 class Application;
 class Parameter;

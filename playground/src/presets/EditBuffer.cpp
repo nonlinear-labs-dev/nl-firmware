@@ -38,8 +38,9 @@ EditBuffer::~EditBuffer()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
-void EditBuffer::initRecallValues(UNDO::Transaction *transaction) {
-    initRecallValues(transaction, getParent()->findPreset(m_lastLoadedPreset));
+void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
+{
+  initRecallValues(transaction, getParent()->findPreset(m_lastLoadedPreset));
 }
 
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *p)
@@ -338,25 +339,6 @@ bool EditBuffer::isZombie() const
   return !getParent()->findPreset(getUUIDOfLastLoadedPreset());
 }
 
-void EditBuffer::fakePresetDetails(Writer &writer, bool changed) const
-{
-  writer.writeTag("original", Attribute("changed", changed), [&]() {
-    if(changed)
-    {
-      for(auto &group : getParameterGroups())
-      {
-        for(auto &param : group->getParameters())
-        {
-          writer.writeTag("param",
-                          { Attribute{ "id", param->getID() }, Attribute{ "value", param->getDefaultValue() },
-                            Attribute{ "mod-src", "0" }, Attribute{ "mod-amt", "0" } },
-                          []() {});
-        }
-      }
-    }
-  });
-}
-
 void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   auto changed = knownRevision < ParameterGroupSet::getUpdateIDOfLastChange();
@@ -404,18 +386,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   lpc->toggleSuppressParameterChanges(transaction);
 
   copyFrom(transaction, preset);
-  try
-  {
-    undoableSetLoadedPresetInfo(transaction, preset);
-  }
-  catch(std::runtime_error &e)
-  {
-    DebugLevel::error(e.what());
-  }
-  catch(std::exception &e)
-  {
-    DebugLevel::error(e.what());
-  }
+  undoableSetLoadedPresetInfo(transaction, preset);
 
   if(auto bank = static_cast<Bank *>(preset->getParent()))
   {

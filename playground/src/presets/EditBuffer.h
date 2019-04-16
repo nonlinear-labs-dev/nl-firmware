@@ -53,8 +53,6 @@ class EditBuffer : public ParameterGroupSet
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
 
-  void fakePresetDetails(Writer &w, bool force) const;
-
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;

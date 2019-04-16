@@ -31,7 +31,6 @@ class Preset : public PresetParameterGroups
 
   // supported interfaces
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  void writeDetailDocument(Writer &writer, tUpdateID knownRevision, bool changed) const;
   void load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath);
   bool save(RefPtr<Gio::File> bankPath);
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;

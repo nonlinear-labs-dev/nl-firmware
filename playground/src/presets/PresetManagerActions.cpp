@@ -165,7 +165,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
       auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
       auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
-      transaction->addSimpleCommand([newPreset](auto) { static auto x = newPreset; }); //FOO
+      transaction->addSimpleCommand([newPreset](auto) { static auto x = newPreset; }); // Input Bitte: wo speichere ich das Preset vernünftig ab so das ich bei UNDO kein mist baue?
       editBuffer->copyFrom(transaction, newPreset.get());
       editBuffer->undoableSetLoadedPresetInfo(transaction, newPreset.get());
     }
