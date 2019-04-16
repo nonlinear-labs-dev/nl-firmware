@@ -29,7 +29,7 @@ public class EditBufferUpdater extends Updater {
 			String changed = getAttributeValue(root, "changed");
 			eb.isChanged.setValue(Boolean.valueOf(changed));
 
-			processChangedChildrenElements(root, "original", c -> processOriginal(c));
+			processChangedChildrenElements(root, "recall-data", c -> processOriginal(c));
 		}
 
 		processChangedChildrenElements(root, "parameter-group", child -> processGroup(child));

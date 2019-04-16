@@ -25,12 +25,12 @@ EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
-    , m_recallSet{ this }
+    , m_recallSet(this, *this)
 {
   m_selectedParameter = nullptr;
   m_hashOnStore = getHash();
   ParameterGroupSet::init();
-  m_recallSet.init((ParameterGroupSet*)this);
+  m_recallSet.init((ParameterGroupSet *) this);
 }
 
 EditBuffer::~EditBuffer()
@@ -38,32 +38,20 @@ EditBuffer::~EditBuffer()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
-void EditBuffer::init()
-{
-  //initRecallValues();
-}
-
-void EditBuffer::initRecallValues()
-{
-  if(auto bank = getParent()->findBankWithPreset(m_lastLoadedPreset))
-  {
-    if(auto preset = bank->findPreset(m_lastLoadedPreset))
-    {
-      m_recallSet.init(preset);
-      return;
-    }
-  } else {
-      m_recallSet.init(this);
-  }
-}
-
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *p)
 {
   if(p != nullptr)
-  {
     m_recallSet.copyParamSet(transaction, p);
-    onChange();
-  }
+  else
+    m_recallSet.onPresetDeleted(
+        transaction);  //Preset was deleted -> we will just pretend the current EditBuffer has the state we are interested in
+
+  onChange();
+}
+
+const Glib::ustring &EditBuffer::getRecallOrigin() const
+{
+  return m_recallSet.m_origin;
 }
 
 Glib::ustring EditBuffer::getName() const
@@ -93,7 +81,7 @@ const Preset *EditBuffer::getOrigin() const
   return m_originCache;
 }
 
-PresetParameterGroups &EditBuffer::getRecallParameterSet()
+RecallParameterGroups &EditBuffer::getRecallParameterSet()
 {
   return m_recallSet;
 }
@@ -382,13 +370,11 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                     Attribute("hash", getHash()), Attribute("changed", changed) },
                   [&]() {
                     if(changed)
+                    {
                       super::writeDocument(writer, knownRevision);
+                    }
 
-                    if(auto originPreset = getOrigin())
-                      originPreset->writeDetailDocument(writer, knownRevision,
-                                                        knownRevision < m_updateIdWhenLastLoadedPresetChanged);
-                    else
-                      fakePresetDetails(writer, knownRevision < m_updateIdWhenLastLoadedPresetChanged);
+                    m_recallSet.writeDocument(writer, knownRevision);
                   });
 }
 
@@ -415,7 +401,18 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   lpc->toggleSuppressParameterChanges(transaction);
 
   copyFrom(transaction, preset);
-  undoableSetLoadedPresetInfo(transaction, preset);
+  try
+  {
+    undoableSetLoadedPresetInfo(transaction, preset);
+  }
+  catch(std::runtime_error &e)
+  {
+    DebugLevel::error(e.what());
+  }
+  catch(std::exception &e)
+  {
+    DebugLevel::error(e.what());
+  }
 
   if(auto bank = static_cast<Bank *>(preset->getParent()))
   {

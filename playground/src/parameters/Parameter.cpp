@@ -530,8 +530,8 @@ void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
-  auto origin = original ? "Preset" : "Editbuffer";
-  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), origin);
+  auto originStr = Application::get().getPresetManager()->getEditBuffer()->getRecallOrigin();
+  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), originStr);
   auto transaction = transactionScope->getTransaction();
   if(original)
     setCPFromHwui(transaction, original->getValue());

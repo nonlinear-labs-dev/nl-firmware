@@ -11,14 +11,12 @@
 class EditBuffer;
 class Bank;
 class PresetSerializer;
-class PresetSettingsSerializer;
 class ParameterGroupsSerializer;
 class SearchQuery;
 
 class PresetParameterGroup;
 class PresetParameter;
 class PresetParameterGroupsSerializer;
-class PresetSettingsSerializer;
 
 class Preset : public PresetParameterGroups
 {
@@ -77,5 +75,7 @@ class Preset : public PresetParameterGroups
 
   friend class PresetSerializer;
   friend class PresetSettingsSerializer;
+  friend class RecallEditBufferSerializer;
   friend class PresetParameterGroupsSerializer;
+  friend class RecallParameterGroups;
 };

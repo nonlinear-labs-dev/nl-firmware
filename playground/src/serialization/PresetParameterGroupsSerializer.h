@@ -2,12 +2,12 @@
 
 #include <serialization/Serializer.h>
 
-class PresetParameterGroups;
+class Preset;
 
 class PresetParameterGroupsSerializer : public Serializer
 {
  public:
-  PresetParameterGroupsSerializer(PresetParameterGroups *preset);
+  PresetParameterGroupsSerializer(Preset *preset);
 
   static Glib::ustring getTagName();
 
@@ -15,5 +15,5 @@ class PresetParameterGroupsSerializer : public Serializer
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  PresetParameterGroups *m_parameterGroups;
+  Preset *m_preset;
 };

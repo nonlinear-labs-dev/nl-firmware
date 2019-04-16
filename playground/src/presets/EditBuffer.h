@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ParameterGroupSet.h"
-#include "PresetParameterGroups.h"
+#include "RecallParameterGroups.h"
 #include <tools/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
@@ -18,7 +18,6 @@ class EditBuffer : public ParameterGroupSet
  public:
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
-  void init() override;
 
   Glib::ustring getName() const;
   size_t getHash() const;
@@ -54,7 +53,7 @@ class EditBuffer : public ParameterGroupSet
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
 
-    void fakePresetDetails(Writer &w, bool force) const;
+  void fakePresetDetails(Writer &w, bool force) const;
 
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
 
@@ -78,9 +77,9 @@ class EditBuffer : public ParameterGroupSet
   void sendToLPC();
 
   //RECALL
-  PresetParameterGroups &getRecallParameterSet();
-  void initRecallValues();
-  void initRecallValues(UNDO::Transaction *t, const Preset* p);
+  RecallParameterGroups &getRecallParameterSet();
+  void initRecallValues(UNDO::Transaction *t, const Preset *p);
+  const Glib::ustring& getRecallOrigin() const;
 
  private:
   Parameter *searchForAnyParameterWithLock() const;
@@ -108,7 +107,9 @@ class EditBuffer : public ParameterGroupSet
   Parameter *m_selectedParameter = nullptr;
 
   friend class EditBufferSerializer;
+  friend class RecallEditBufferSerializer;
   friend class EditBufferActions;
+  friend class PresetParameterGroups;
 
   Uuid m_lastLoadedPreset;
   tUpdateID m_updateIdWhenLastLoadedPresetChanged = 0;
@@ -120,7 +121,7 @@ class EditBuffer : public ParameterGroupSet
   size_t m_hashOnStore;
 
   mutable Preset *m_originCache = nullptr;
-  PresetParameterGroups m_recallSet;
+  RecallParameterGroups m_recallSet;
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
