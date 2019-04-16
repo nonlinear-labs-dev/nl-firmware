@@ -26,7 +26,6 @@ Parameter::Parameter(ParameterGroup *group, uint16_t id, const ScaleConverter *s
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
-    , m_cachedOGParam{ nullptr }
 {
 }
 
@@ -120,7 +119,6 @@ void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPos
 {
   setIndirect(transaction, value);
   m_lastSnapshotedValue = value;
-  m_cachedOGParam = nullptr;
 }
 
 void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
@@ -133,7 +131,6 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
       tDisplayValue newVal = m_value.getRawValue();
       swapData->swapWith(newVal);
       m_value.setRawValue(Initiator::INDIRECT, newVal);
-      m_cachedOGParam = nullptr;
     });
   }
 }
@@ -191,7 +188,6 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, const Pr
 {
   tControlPositionValue v = value ? value->getValue() : m_value.getFactoryDefaultValue();
   undoableSetDefaultValue(transaction, v);
-  m_cachedOGParam = nullptr;
 }
 
 void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value)
@@ -223,21 +219,9 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 
 PresetParameter *Parameter::getOriginalParameter() const
 {
-  if(m_cachedOGParam)
-    return m_cachedOGParam;
-
-  auto pm = Application::get().getPresetManager();
-  if(auto presetLoadedFrom = pm->getEditBuffer()->getOrigin())
-  {
-    try
-    {
-      m_cachedOGParam = presetLoadedFrom->findParameterByID(getID());
-    }
-    catch(...)
-    {
-    }
-  }
-  return m_cachedOGParam;
+  auto ret = Application::get().getPresetManager()->getEditBuffer()->getRecallParameterSet().findParameterByID(getID());
+  assert(ret != nullptr && "originalParameter is null and should not be");
+  return ret;
 }
 
 bool Parameter::isChangedFromLoaded() const
@@ -549,7 +533,7 @@ void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
-  auto origin = original ? "Preset" : "Init-Sound";
+  auto origin = original ? "Preset" : "Editbuffer";
   auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), origin);
   auto transaction = transactionScope->getTransaction();
   if(original)
