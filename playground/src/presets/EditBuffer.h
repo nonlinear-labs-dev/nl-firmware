@@ -18,6 +18,7 @@ class EditBuffer : public ParameterGroupSet
  public:
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
+  void init() override;
 
   Glib::ustring getName() const;
   size_t getHash() const;

@@ -165,6 +165,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
       auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
       auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
+      transaction->addSimpleCommand([newPreset](auto) { static auto x = newPreset; }); //FOO
       editBuffer->copyFrom(transaction, newPreset.get());
       editBuffer->undoableSetLoadedPresetInfo(transaction, newPreset.get());
     }

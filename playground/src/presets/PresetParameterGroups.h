@@ -6,6 +6,7 @@
 
 class EditBuffer;
 class Preset;
+class ParameterGroupSet;
 
 class PresetParameterGroups : public AttributesOwner
 {
@@ -13,8 +14,9 @@ class PresetParameterGroups : public AttributesOwner
   PresetParameterGroups(UpdateDocumentContributor* parent);
   PresetParameterGroups(UpdateDocumentContributor* parent, const Preset& other);
   PresetParameterGroups(UpdateDocumentContributor* parent, const EditBuffer& editbuffer);
-  void init(const EditBuffer& editbuffer);
-  void init(const Preset& preset);
+  void init(const ParameterGroupSet* other);
+  void init(const EditBuffer* editbuffer);
+  void init(const Preset* preset);
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
   PresetParameter* findParameterByID(int id);
   const PresetParameter* findParameterByID(int id) const;
@@ -24,4 +26,6 @@ class PresetParameterGroups : public AttributesOwner
  protected:
   using GroupPtr = std::unique_ptr<PresetParameterGroup>;
   std::unordered_map<std::string, GroupPtr> m_parameterGroups;
+
+  friend class PresetParameterGroupsSerializer;
 };

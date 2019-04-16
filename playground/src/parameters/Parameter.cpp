@@ -238,11 +238,8 @@ bool Parameter::isValueChangedFromLoaded() const
   {
     const int roundedOG = static_cast<const int>(originalParameter->getValue() * denominator);
     return roundedOG != roundedNow;
-  }
-  else
-  {
-    const int roundedDefault = static_cast<const int>(getDefaultValue() * denominator);
-    return roundedDefault != roundedNow;
+  } else {
+      return false;
   }
 }
 

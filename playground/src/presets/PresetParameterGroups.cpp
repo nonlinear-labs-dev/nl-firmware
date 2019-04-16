@@ -12,13 +12,13 @@ PresetParameterGroups::PresetParameterGroups(UpdateDocumentContributor *parent)
 PresetParameterGroups::PresetParameterGroups(UpdateDocumentContributor *parent, const Preset &other)
     : PresetParameterGroups(parent)
 {
-  init(other);
+  init(&other);
 }
 
 PresetParameterGroups::PresetParameterGroups(UpdateDocumentContributor *parent, const EditBuffer &editbuffer)
     : PresetParameterGroups(parent)
 {
-  init(editbuffer);
+  init(&editbuffer);
 }
 
 void PresetParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
@@ -44,15 +44,21 @@ const PresetParameter *PresetParameterGroups::findParameterByID(int id) const
   return nullptr;
 }
 
-void PresetParameterGroups::init(const EditBuffer &editbuffer)
+void PresetParameterGroups::init(const ParameterGroupSet* other)
 {
-  for(auto &g : editbuffer.getParameterGroups())
+    for(auto& g: other->getParameterGroups())
+        m_parameterGroups[g->getID()] = std::make_unique<PresetParameterGroup>(*g);
+}
+
+void PresetParameterGroups::init(const EditBuffer *editbuffer)
+{
+  for(auto &g : editbuffer->getParameterGroups())
     m_parameterGroups[g->getID()] = std::make_unique<PresetParameterGroup>(*g);
 }
 
-void PresetParameterGroups::init(const Preset &preset)
+void PresetParameterGroups::init(const Preset *preset)
 {
-  std::for_each(preset.m_parameterGroups.begin(), preset.m_parameterGroups.end(), [this](auto &a) {
+  std::for_each(preset->m_parameterGroups.begin(), preset->m_parameterGroups.end(), [this](auto &a) {
     m_parameterGroups[a.first] = std::make_unique<PresetParameterGroup>(*a.second.get());
   });
 }
@@ -62,7 +68,7 @@ void PresetParameterGroups::copyParamSet(UNDO::Transaction *transaction, const P
   for(auto &pair : m_parameterGroups)
   {
     std::unique_ptr<PresetParameterGroup> &group = pair.second;
-    auto& otherGroup = other->m_parameterGroups.at(pair.first);
+    auto &otherGroup = other->m_parameterGroups.at(pair.first);
     group->copyFrom(transaction, otherGroup.get());
   }
 }

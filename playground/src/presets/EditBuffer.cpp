@@ -29,14 +29,18 @@ EditBuffer::EditBuffer(PresetManager *parent)
 {
   m_selectedParameter = nullptr;
   m_hashOnStore = getHash();
-  init();
-
-  initRecallValues();
+  ParameterGroupSet::init();
+  m_recallSet.init((ParameterGroupSet*)this);
 }
 
 EditBuffer::~EditBuffer()
 {
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+}
+
+void EditBuffer::init()
+{
+  //initRecallValues();
 }
 
 void EditBuffer::initRecallValues()
@@ -48,14 +52,18 @@ void EditBuffer::initRecallValues()
       m_recallSet.init(preset);
       return;
     }
+  } else {
+      m_recallSet.init(this);
   }
-  m_recallSet.init(*this);
 }
 
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *p)
 {
   if(p != nullptr)
+  {
     m_recallSet.copyParamSet(transaction, p);
+    onChange();
+  }
 }
 
 Glib::ustring EditBuffer::getName() const

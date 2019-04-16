@@ -5,6 +5,7 @@
 #include "presets/EditBuffer.h"
 #include "xml/Reader.h"
 #include "xml/Writer.h"
+#include "PresetParameterGroupsSerializer.h"
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
@@ -41,6 +42,9 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
     for(auto p : g->getParameters())
       if(p->isLocked())
         writer.writeTextElement("locked-parameter", to_string(p->getID()));
+
+  PresetParameterGroupsSerializer recall(&m_editBuffer->m_recallSet);
+  recall.write(writer);
 }
 
 void EditBufferSerializer::readTagContent(Reader &reader) const
@@ -67,4 +71,7 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
   reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
     m_editBuffer->findParameterByID(stoi(text))->undoableLock(reader.getTransaction());
   });
+
+  reader.onTag(PresetParameterGroupsSerializer::getTagName(),
+               [&](auto) mutable { return new PresetParameterGroupsSerializer(&m_editBuffer->m_recallSet); });
 }
