@@ -7,6 +7,7 @@
 RecallParameterGroups::RecallParameterGroups(UpdateDocumentContributor *parent, const EditBuffer &editbuffer)
     : PresetParameterGroups(parent, editbuffer)
 {
+    m_lastChangeID = -1;
 }
 
 PresetParameter *RecallParameterGroups::findParameterByID(int id)
@@ -33,16 +34,19 @@ void RecallParameterGroups::copyParamSet(UNDO::Transaction *transaction, const P
   }
 
   transaction->addUndoSwap(m_origin, s_presetString);
+
+  m_lastChangeID = onChange();
 }
 
 void RecallParameterGroups::onPresetDeleted(UNDO::Transaction *transaction)
 {
   transaction->addUndoSwap(m_origin, s_ebString);
+  m_lastChangeID = onChange();
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-  writer.writeTag("recall-data", Attribute{"changed", "1"}, [this, &writer] {
+  writer.writeTag("recall-data", Attribute{ "changed", m_lastChangeID > knownRevision }, [this, &writer] {
     for(auto &pair : m_parameterGroups)
       pair.second->writeDocument(writer);
   });

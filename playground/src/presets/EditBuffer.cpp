@@ -38,6 +38,10 @@ EditBuffer::~EditBuffer()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
+void EditBuffer::initRecallValues(UNDO::Transaction *transaction) {
+    initRecallValues(transaction, getParent()->findPreset(m_lastLoadedPreset));
+}
+
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *p)
 {
   if(p != nullptr)
@@ -372,9 +376,8 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                     if(changed)
                     {
                       super::writeDocument(writer, knownRevision);
+                      m_recallSet.writeDocument(writer, knownRevision);
                     }
-
-                    m_recallSet.writeDocument(writer, knownRevision);
                   });
 }
 

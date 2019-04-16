@@ -78,8 +78,9 @@ class EditBuffer : public ParameterGroupSet
 
   //RECALL
   RecallParameterGroups &getRecallParameterSet();
+  void initRecallValues(UNDO::Transaction *t);
   void initRecallValues(UNDO::Transaction *t, const Preset *p);
-  const Glib::ustring& getRecallOrigin() const;
+  const Glib::ustring &getRecallOrigin() const;
 
  private:
   Parameter *searchForAnyParameterWithLock() const;

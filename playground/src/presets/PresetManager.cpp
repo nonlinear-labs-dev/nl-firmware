@@ -75,6 +75,8 @@ void PresetManager::init()
   hwui->getPanelUnit().getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndMode());
   hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
 
+  m_editBuffer->initRecallValues(transaction);
+
   onChange();
 }
 

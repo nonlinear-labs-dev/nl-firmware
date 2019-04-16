@@ -22,6 +22,7 @@ class RecallParameterGroups : public PresetParameterGroups
   Glib::ustring m_origin = "EditBuffer";
   Glib::ustring s_ebString = "EditBuffer";
   Glib::ustring s_presetString = "Preset";
+  tUpdateID m_lastChangeID;
 
   friend class EditBuffer;
   friend class RecallEditBufferSerializer;

@@ -270,6 +270,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 				updatePreset(node);
 				updateSelection(node);
 			} else {
+				Tracer.log(node.toString());
 				Tracer.log("did not change parameters in parameter editor from update doc, because it says the changes can be omitted");
 			}
 		}
