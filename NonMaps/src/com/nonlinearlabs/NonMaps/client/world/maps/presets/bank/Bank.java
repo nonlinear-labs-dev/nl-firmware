@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
@@ -141,7 +142,11 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		double reduce = toXPixels(getAttachArea());
 		r = r.getReducedBy(2 * reduce);
 		r.drawRoundedRect(ctx, Rect.ROUNDING_TOP, toXPixels(6), toXPixels(3), null, getColorBankSelect());
-
+	
+		for(Control c: presetList.getChildren()) {
+			c.drawPost(ctx, invalidationMask);
+		}
+		
 		drawDropIndicator(ctx);
 	}
 
@@ -906,5 +911,4 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		
 		return null;
 	}
-
 }
