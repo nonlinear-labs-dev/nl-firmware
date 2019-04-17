@@ -12,31 +12,31 @@ class SignalStorage
 
   inline SignalStorage &bindToVoice(uint32_t v)
   {
-    m_boundVoice = m_paramsignaldata[v];
+    m_boundVoice = m_sigIdsignaldata[v];
     return *this;
   }
 
-  inline const float &get(Signals param) const
+  inline const float &get(Signals sigId) const
   {
-    return m_boundVoice[static_cast<uint32_t>(param)];
+    return m_boundVoice[static_cast<uint32_t>(sigId)];
   }
 
-  inline const float &get(uint32_t voice, uint32_t param) const
+  inline const float &get(uint32_t voice, uint32_t sigId) const
   {
-    return m_paramsignaldata[voice][param];
+    return m_sigIdsignaldata[voice][sigId];
   }
 
-  inline void set(Signals param, float value)
+  inline void set(Signals sigId, float value)
   {
-    m_boundVoice[static_cast<uint32_t>(param)] = value;
+    m_boundVoice[static_cast<uint32_t>(sigId)] = value;
   }
 
-  inline void set(Signals param, uint32_t voice, float value)
+  inline void set(Signals sigId, uint32_t voice, float value)
   {
-    m_paramsignaldata[voice][static_cast<uint32_t>(param)] = value;
+    m_sigIdsignaldata[voice][static_cast<uint32_t>(sigId)] = value;
   }
 
  private:
-  float m_paramsignaldata[dsp_number_of_voices][sig_number_of_signal_items] = {};
-  float *m_boundVoice = m_paramsignaldata[0];
+  float m_sigIdsignaldata[dsp_number_of_voices][sig_number_of_signal_items] = {};
+  float *m_boundVoice = m_sigIdsignaldata[0];
 };
