@@ -44,7 +44,7 @@ std::ostream& operator<<(std::ostream& lhs, const examine_tcd_input_log& rhs);
 
 struct examine_param
 {
-  ParameterLabel m_selected = ParameterLabel::P_EA_ATT;
+  Parameters m_selected = Parameters::P_EA_ATT;
   //
   uint32_t m_id;
   uint32_t m_index;

@@ -86,7 +86,7 @@ uint32_t decoder::selectionEvent(const uint32_t _from, const uint32_t _to, const
 
 /* decoder list traversal                                                   -- recall, key event */
 
-ParameterLabel decoder::traverseRecall()
+Parameters decoder::traverseRecall()
 {
   /* monophonic implementation                                            -- compatible with current Reaktor5 Rendering Engine */
   const auto id = m_listTraversal[0].m_data[m_listIndex];         // get current
@@ -94,7 +94,7 @@ ParameterLabel decoder::traverseRecall()
   return id;                                                      // return current
 }
 
-ParameterLabel decoder::traverseKeyEvent()
+Parameters decoder::traverseKeyEvent()
 {
   /* polyphonic implementation                                            -- Voice selection needs to be done by sender for first Voice, then it automatically raises for Unison clusters */
   const auto id = m_listTraversal[1].m_data[m_listIndex];         // get current

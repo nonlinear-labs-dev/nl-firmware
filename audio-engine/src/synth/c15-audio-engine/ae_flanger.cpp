@@ -105,7 +105,7 @@ void ae_flanger::init(float _samplerate, uint32_t _upsampleFactor)
 
 void ae_flanger::set_slow(SignalStorage &signals)
 {
-  float omega = std::clamp(signals.get(SignalLabel::FLA_LPF), m_freqClip_min, m_freqClip_max);
+  float omega = std::clamp(signals.get(Signals::FLA_LPF), m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
 
   m_lp_a1 = (1.f - omega) / (1.f + omega);
@@ -119,7 +119,7 @@ void ae_flanger::set_slow(SignalStorage &signals)
 
 void ae_flanger::set_fast(SignalStorage &signals)
 {
-  float tmpVar = signals.get(SignalLabel::FLA_APF_L);  // AP L
+  float tmpVar = signals.get(Signals::FLA_APF_L);  // AP L
   tmpVar = std::clamp(tmpVar, m_freqClip_min, m_freqClip_max);
 
   tmpVar *= m_warpConst_2PI;
@@ -134,7 +134,7 @@ void ae_flanger::set_fast(SignalStorage &signals)
   m_ap_b1_L *= tmpVar;
   m_ap_b0_L *= tmpVar;
 
-  tmpVar = signals.get(SignalLabel::FLA_APF_R);  // AP R
+  tmpVar = signals.get(Signals::FLA_APF_R);  // AP R
   tmpVar = std::clamp(tmpVar, m_freqClip_min, m_freqClip_max);
 
   tmpVar *= m_warpConst_2PI;
@@ -158,14 +158,14 @@ void ae_flanger::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
 {
   float tmpVar_1, tmpVar_2;
 
-  float tmod = signals.get(SignalLabel::FLA_TMOD) - m_lp2hz_stateVar_D;  // 2Hz LP TMOD
+  float tmod = signals.get(Signals::FLA_TMOD) - m_lp2hz_stateVar_D;  // 2Hz LP TMOD
   tmod = tmod * m_lp2hz_b0 + m_lp2hz_stateVar_D;
 
   m_lp2hz_stateVar_D = tmod + DNC_const;
 
   //**************************** Left Channel *****************************//
-  tmpVar_1 = _rawSample_L + (m_stateVar_L * signals.get(SignalLabel::FLA_FB_LOC))
-      + (m_stateVar_R * signals.get(SignalLabel::FLA_FB_CR));
+  tmpVar_1 = _rawSample_L + (m_stateVar_L * signals.get(Signals::FLA_FB_LOC))
+      + (m_stateVar_R * signals.get(Signals::FLA_FB_CR));
 
   tmpVar_2 = m_lp_b0 * tmpVar_1;  // LP L
   tmpVar_2 += m_lp_b1 * m_lp_stateVar_L1;
@@ -176,12 +176,12 @@ void ae_flanger::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
 
   m_buffer_L[m_buffer_indx] = tmpVar_2;
 
-  tmpVar_1 = signals.get(SignalLabel::FLA_TL) - m_lp2hz_stateVar_TL;  // 2Hz LP TL
+  tmpVar_1 = signals.get(Signals::FLA_TL) - m_lp2hz_stateVar_TL;  // 2Hz LP TL
   tmpVar_1 = tmpVar_1 * m_lp2hz_b0 + m_lp2hz_stateVar_TL;
 
   m_lp2hz_stateVar_TL = tmpVar_1 + DNC_const;
 
-  tmpVar_1 = tmpVar_1 + tmpVar_1 * tmod * signals.get(SignalLabel::FLA_LFO_L);
+  tmpVar_1 = tmpVar_1 + tmpVar_1 * tmod * signals.get(Signals::FLA_LFO_L);
 
   int32_t ind_t0 = static_cast<int32_t>(std::round(tmpVar_1 - 0.5f));
   tmpVar_1 = tmpVar_1 - static_cast<float>(ind_t0);
@@ -237,12 +237,12 @@ void ae_flanger::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
 
   m_stateVar_L += DNC_const;
 
-  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, tmpVar_2, signals.get(SignalLabel::FLA_DRY),
-                                             signals.get(SignalLabel::FLA_WET));
+  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, tmpVar_2, signals.get(Signals::FLA_DRY),
+                                             signals.get(Signals::FLA_WET));
 
   //*************************** Right Channel *****************************//
-  tmpVar_1 = _rawSample_R + (m_stateVar_R * signals.get(SignalLabel::FLA_FB_LOC))
-      + (m_stateVar_L * signals.get(SignalLabel::FLA_FB_CR));
+  tmpVar_1 = _rawSample_R + (m_stateVar_R * signals.get(Signals::FLA_FB_LOC))
+      + (m_stateVar_L * signals.get(Signals::FLA_FB_CR));
 
   tmpVar_2 = m_lp_b0 * tmpVar_1;  // LP L
   tmpVar_2 += m_lp_b1 * m_lp_stateVar_R1;
@@ -253,12 +253,12 @@ void ae_flanger::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
 
   m_buffer_R[m_buffer_indx] = tmpVar_2;
 
-  tmpVar_1 = signals.get(SignalLabel::FLA_TR) - m_lp2hz_stateVar_TR;  // 2Hz LP TR
+  tmpVar_1 = signals.get(Signals::FLA_TR) - m_lp2hz_stateVar_TR;  // 2Hz LP TR
   tmpVar_1 = tmpVar_1 * m_lp2hz_b0 + m_lp2hz_stateVar_TR;
 
   m_lp2hz_stateVar_TR = tmpVar_1 + DNC_const;
 
-  tmpVar_1 = tmpVar_1 + tmpVar_1 * tmod * signals.get(SignalLabel::FLA_LFO_R);
+  tmpVar_1 = tmpVar_1 + tmpVar_1 * tmod * signals.get(Signals::FLA_LFO_R);
 
   ind_t0 = static_cast<int32_t>(std::round(tmpVar_1 - 0.5f));
   tmpVar_1 = tmpVar_1 - static_cast<float>(ind_t0);
@@ -314,8 +314,8 @@ void ae_flanger::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
 
   m_stateVar_R += DNC_const;
 
-  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, tmpVar_2, signals.get(SignalLabel::FLA_DRY),
-                                             signals.get(SignalLabel::FLA_WET));
+  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, tmpVar_2, signals.get(Signals::FLA_DRY),
+                                             signals.get(Signals::FLA_WET));
 
   m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
 }

@@ -9,7 +9,7 @@
 
 #pragma once
 
-enum class SignalLabel
+enum class Signals
 {
 
   /* Envelope Signals                 -- polyphonic */

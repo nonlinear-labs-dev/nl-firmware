@@ -77,13 +77,13 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
   float tmpVar;
 
   //**************************** AB Sample Mix ****************************//
-  tmpVar = signals.get(SignalLabel::CMB_AB);  // AB Mix is inverted, so crossfade mix is as well (currently)
+  tmpVar = signals.get(Signals::CMB_AB);  // AB Mix is inverted, so crossfade mix is as well (currently)
   m_out = _sampleB * (1.f - tmpVar) + _sampleA * tmpVar;
 
   //****************** AB Ssample Phase Mdulation Mix ********************//
-  tmpVar = signals.get(SignalLabel::CMB_PMAB);
+  tmpVar = signals.get(Signals::CMB_PMAB);
   float phaseMod = _sampleA * (1.f - tmpVar) + _sampleB * tmpVar;
-  phaseMod *= signals.get(SignalLabel::CMB_PM);
+  phaseMod *= signals.get(Signals::CMB_PM);
 
   //************************** 1-Pole Highpass ****************************//
   tmpVar = m_hpCoeff_b0 * m_out;
@@ -158,7 +158,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
 
   m_delayStateVar = tmpVar;
 
-  tmpVar *= signals.get(SignalLabel::CMB_FEC);
+  tmpVar *= signals.get(Signals::CMB_FEC);
   tmpVar += (phaseMod * tmpVar);
 
   //******************************* Delay ********************************//
@@ -195,7 +195,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
 
   m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
 
-  tmpVar = signals.get(SignalLabel::CMB_BYP);  // Bypass
+  tmpVar = signals.get(Signals::CMB_BYP);  // Bypass
   m_out = tmpVar * holdsample + (1.f - tmpVar) * m_out;
 
   //****************************** Decay ********************************//
@@ -209,7 +209,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
 void ae_combfilter::set(SignalStorage &signals, float _samplerate)
 {
   //********************** Highpass Coefficients *************************//
-  float frequency = signals.get(SignalLabel::CMB_FRQ);
+  float frequency = signals.get(Signals::CMB_FRQ);
   frequency *= 0.125f;
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_2);
 
@@ -221,7 +221,7 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_hpCoeff_b1 = m_hpCoeff_b0 * -1.f;
 
   //*********************** Lowpass Coefficient **************************//
-  frequency = signals.get(SignalLabel::CMB_LPF);
+  frequency = signals.get(Signals::CMB_LPF);
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_4);
   frequency *= m_warpConst_PI;
 
@@ -234,11 +234,11 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_lpCoeff = (1.f - frequency) / (1.f + frequency);
 
   //********************** Allpass Coefficients **************************//
-  frequency = signals.get(SignalLabel::CMB_APF);
+  frequency = signals.get(Signals::CMB_APF);
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_2);
   frequency *= m_warpConst_2PI;
 
-  float resonance = signals.get(SignalLabel::CMB_APR) * 1.99f - 1.f;
+  float resonance = signals.get(Signals::CMB_APR) * 1.99f - 1.f;
   resonance = NlToolbox::Math::sin(frequency) * (1.f - resonance);
 
   float tmpVar = 1.f / (1.f + resonance);
@@ -247,7 +247,7 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_apCoeff_2 = (1.f - resonance) * tmpVar;
 
   //*************************** Delaytime ********************************//
-  frequency = signals.get(SignalLabel::CMB_FRQ);
+  frequency = signals.get(Signals::CMB_FRQ);
 
   if(frequency < m_delayFreqClip)
   {
@@ -319,8 +319,8 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_delaySamples = m_delaySamples * tmpVar + m_delaySamples;
 
   //**************************** Decay Gain ******************************//
-  tmpVar = signals.get(SignalLabel::CMB_DEC);
-  frequency = signals.get(SignalLabel::CMB_FRQ) * std::abs(tmpVar);
+  tmpVar = signals.get(Signals::CMB_DEC);
+  frequency = signals.get(Signals::CMB_FRQ) * std::abs(tmpVar);
 
   frequency = std::max(frequency, DNC_const);
   frequency = (1.f / frequency) * -6.28318f;
