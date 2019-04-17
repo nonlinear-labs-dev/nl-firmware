@@ -44,7 +44,7 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
 #if log_examine
   m_tcd_input_log.reset();
 
-  m_param_status.m_selected = static_cast<ParameterLabel>(log_param_id);
+  m_param_status.m_selected = static_cast<Parameters>(log_param_id);
   m_param_status.m_id = m_params.getHead(m_param_status.m_selected).m_id;
   m_param_status.m_index = m_params.getHead(m_param_status.m_selected).m_index;
   m_param_status.m_size = m_params.getHead(m_param_status.m_selected).m_size;
@@ -71,7 +71,7 @@ void dsp_host::loadInitialPreset()
   /* traverse parameters, each one receiving zero value */
   for(uint32_t i = 0; i < lst_recall_length; i++)
   {
-    if(paramIds_recall[i] == ParameterLabel::P_UN_V)  /// Unison Voices
+    if(paramIds_recall[i] == Parameters::P_UN_V)  /// Unison Voices
     {
       evalMidi(5, 0, 1);  // send destination 1
     }
@@ -112,8 +112,8 @@ void dsp_host::tickMain()
       m_params.getBody(i).tick();
     }
 #else
-    auto end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO);
+    auto end = m_params.m_parameters.end(ClockTypes::Slow, PolyTypes::Mono);
+    for(param_body* it = m_params.m_parameters.begin(ClockTypes::Slow, PolyTypes::Mono);
         it != end; it++)
     {
       it->tick();
@@ -130,8 +130,8 @@ void dsp_host::tickMain()
         m_params.getBody(i).tick();
       }
 #else
-      end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_POLY, v);
-      for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_POLY, v);
+      end = m_params.m_parameters.end(ClockTypes::Slow, PolyTypes::Poly, v);
+      for(param_body* it = m_params.m_parameters.begin(ClockTypes::Slow, PolyTypes::Poly, v);
           it != end; it += m_voices)
       {
         it->tick();
@@ -155,8 +155,8 @@ void dsp_host::tickMain()
       m_params.getBody(i).tick();
     }
 #else
-    auto end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_MONO);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_MONO);
+    auto end = m_params.m_parameters.end(ClockTypes::Fast, PolyTypes::Mono);
+    for(param_body* it = m_params.m_parameters.begin(ClockTypes::Fast, PolyTypes::Mono);
         it != end; it++)
     {
       it->tick();
@@ -173,8 +173,8 @@ void dsp_host::tickMain()
         m_params.getBody(i).tick();
       }
 #else
-      end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_POLY, v);
-      for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_POLY, v);
+      end = m_params.m_parameters.end(ClockTypes::Fast, PolyTypes::Poly, v);
+      for(param_body* it = m_params.m_parameters.begin(ClockTypes::Fast, PolyTypes::Poly, v);
           it != end; it += m_voices)
       {
         it->tick();
@@ -193,8 +193,8 @@ void dsp_host::tickMain()
     m_params.getBody(i).tick();
   }
 #else
-  auto end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_MONO);
-  for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_MONO);
+  auto end = m_params.m_parameters.end(ClockTypes::Audio, PolyTypes::Mono);
+  for(param_body* it = m_params.m_parameters.begin(ClockTypes::Audio, PolyTypes::Mono);
       it != end; it++)
   {
     it->tick();
@@ -216,8 +216,8 @@ void dsp_host::tickMain()
       m_params.getBody(i).tick();
     }
 #else
-    end = m_params.m_parameters.end(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_POLY, v);
-    for(param_body* it = m_params.m_parameters.begin(PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_POLY, v);
+    end = m_params.m_parameters.end(ClockTypes::Audio, PolyTypes::Poly, v);
+    for(param_body* it = m_params.m_parameters.begin(ClockTypes::Audio, PolyTypes::Poly, v);
         it != end; it += m_voices)
     {
       it->tick();
@@ -466,7 +466,7 @@ void dsp_host::paramSelectionUpdate()
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     /* only TRUE TCD IDs (< 16383) */
-    auto paramID = static_cast<ParameterLabel>(p);
+    auto paramID = static_cast<Parameters>(p);
 
     if(m_params.getHead(paramID).m_id < 16383)
     {
@@ -513,7 +513,7 @@ void dsp_host::preloadUpdate(uint32_t _mode, uint32_t _listId)
       /* apply preloaded values - parameters */
       for(p = 0; p < sig_number_of_params; p++)
       {
-        auto paramID = static_cast<ParameterLabel>(p);
+        auto paramID = static_cast<Parameters>(p);
 
         for(v = 0; v < m_params.getHead(paramID).m_size; v++)
         {
@@ -828,7 +828,7 @@ void dsp_host::keyApply(uint32_t _voiceId)
 void dsp_host::keyUp156(const float _velocity)
 {
   uint32_t voiceId = m_decoder.m_voiceFrom;
-  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(ParameterLabel::P_UN_V));
+  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(Parameters::P_UN_V));
 
   for(uint32_t v = 0; v < unisonVoices; v++)
   {
@@ -842,8 +842,8 @@ void dsp_host::keyUp156(const float _velocity)
 void dsp_host::keyDown156(const float _velocity)
 {
   uint32_t voiceId = m_decoder.m_voiceFrom;
-  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(ParameterLabel::P_UN_V));
-  const uint32_t index = m_params.getHead(ParameterLabel::P_KEY_BP).m_index + voiceId;
+  const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(Parameters::P_UN_V));
+  const uint32_t index = m_params.getHead(Parameters::P_KEY_BP).m_index + voiceId;
   const float pitch = m_params.getBody(index).m_dest;
   //
   for(uint32_t v = 0; v < unisonVoices; v++)
@@ -1626,7 +1626,7 @@ void dsp_host::makePolySound(SignalStorage &signals, uint32_t _voiceID)
 
 void dsp_host::makeMonoSound(SignalStorage &signals)
 {
-  float mst_gain = signals.get(SignalLabel::MST_VOL) * m_raised_cos_table[m_table_indx];
+  float mst_gain = signals.get(Signals::MST_VOL) * m_raised_cos_table[m_table_indx];
 
   //****************************** Mono Modules ****************************//
   m_outputmixer.filter_level(signals);

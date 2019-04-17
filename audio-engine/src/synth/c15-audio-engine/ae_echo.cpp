@@ -76,7 +76,7 @@ void ae_echo::init(float _samplerate, uint32_t _upsampleFactor)
 *******************************************************************************/
 void ae_echo::set(SignalStorage &signals)
 {
-  float omega = std::clamp(signals.get(SignalLabel::DLY_LPF), m_freqClip_min, m_freqClip_max);
+  float omega = std::clamp(signals.get(Signals::DLY_LPF), m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
 
   m_lp_a1 = (1.f - omega) / (1.f + omega);
@@ -93,12 +93,12 @@ void ae_echo::apply(float _rawSample_L, float _rawSample_R, SignalStorage &signa
   float tmpVar;
 
   //***************************** Left Channel *****************************//
-  tmpVar = (_rawSample_L * signals.get(SignalLabel::DLY_SND)) + (m_stateVar_L * signals.get(SignalLabel::DLY_FB_LOC))
-      + (m_stateVar_R * signals.get(SignalLabel::DLY_FB_CR));
+  tmpVar = (_rawSample_L * signals.get(Signals::DLY_SND)) + (m_stateVar_L * signals.get(Signals::DLY_FB_LOC))
+      + (m_stateVar_R * signals.get(Signals::DLY_FB_CR));
 
   m_buffer_L[m_buffer_indx] = tmpVar;
 
-  tmpVar = signals.get(SignalLabel::DLY_TL) - m_lp2hz_stateVar_L;  // 2Hz LP
+  tmpVar = signals.get(Signals::DLY_TL) - m_lp2hz_stateVar_L;  // 2Hz LP
   tmpVar = tmpVar * m_lp2hz_b0 + m_lp2hz_stateVar_L;
 
   m_lp2hz_stateVar_L = tmpVar + DNC_const;
@@ -139,16 +139,16 @@ void ae_echo::apply(float _rawSample_L, float _rawSample_R, SignalStorage &signa
 
   m_stateVar_L += DNC_const;
 
-  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, m_out_L, signals.get(SignalLabel::DLY_DRY),
-                                             signals.get(SignalLabel::DLY_WET));
+  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, m_out_L, signals.get(Signals::DLY_DRY),
+                                             signals.get(Signals::DLY_WET));
 
   //**************************** Right Channel *****************************//
-  tmpVar = (_rawSample_R * signals.get(SignalLabel::DLY_SND)) + (m_stateVar_R * signals.get(SignalLabel::DLY_FB_LOC))
-      + (m_stateVar_L * signals.get(SignalLabel::DLY_FB_CR));
+  tmpVar = (_rawSample_R * signals.get(Signals::DLY_SND)) + (m_stateVar_R * signals.get(Signals::DLY_FB_LOC))
+      + (m_stateVar_L * signals.get(Signals::DLY_FB_CR));
 
   m_buffer_R[m_buffer_indx] = tmpVar;
 
-  tmpVar = signals.get(SignalLabel::DLY_TR) - m_lp2hz_stateVar_R;  // 2Hz LP
+  tmpVar = signals.get(Signals::DLY_TR) - m_lp2hz_stateVar_R;  // 2Hz LP
   tmpVar = tmpVar * m_lp2hz_b0 + m_lp2hz_stateVar_R;
 
   m_lp2hz_stateVar_R = tmpVar + DNC_const;
@@ -189,8 +189,8 @@ void ae_echo::apply(float _rawSample_L, float _rawSample_R, SignalStorage &signa
 
   m_stateVar_R += DNC_const;  /// Brauchen wir das wirklich?
 
-  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, m_out_R, signals.get(SignalLabel::DLY_DRY),
-                                             signals.get(SignalLabel::DLY_WET));
+  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, m_out_R, signals.get(Signals::DLY_DRY),
+                                             signals.get(Signals::DLY_WET));
 
   m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
 }

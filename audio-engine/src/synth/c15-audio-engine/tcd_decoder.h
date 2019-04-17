@@ -35,8 +35,8 @@ struct decoder
   int32_t m_event[5];                      // TCD Selection Event
 
   dual_id_list<uint32_t> m_selectedVoices;                       // ID List of selected Voices
-  polyDual_id_list<ParameterLabel> m_selectedParams;             // ID List of selected Parameters
-  id_list<ParameterLabel> m_listTraversal[lst_number_of_lists];  // ID Lists for Preset Recall and Key Events
+  polyDual_id_list<Parameters> m_selectedParams;             // ID List of selected Parameters
+  id_list<Parameters> m_listTraversal[lst_number_of_lists];  // ID Lists for Preset Recall and Key Events
 
   /* decoder functions */
 
@@ -55,6 +55,6 @@ struct decoder
   uint32_t selectionEvent(const uint32_t _from, const uint32_t _to,
                           const uint32_t _id);  // TCD Voice and Parameter selection event evaluation
 
-  ParameterLabel traverseRecall();    // TCD List traversal: Preset Recall Events
-  ParameterLabel traverseKeyEvent();  // TCD List traversal: Key Events
+  Parameters traverseRecall();    // TCD List traversal: Preset Recall Events
+  Parameters traverseKeyEvent();  // TCD List traversal: Key Events
 };

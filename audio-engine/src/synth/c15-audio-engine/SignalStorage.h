@@ -16,7 +16,7 @@ class SignalStorage
     return *this;
   }
 
-  inline const float &get(SignalLabel param) const
+  inline const float &get(Signals param) const
   {
     return m_boundVoice[static_cast<uint32_t>(param)];
   }
@@ -26,12 +26,12 @@ class SignalStorage
     return m_paramsignaldata[voice][param];
   }
 
-  inline void set(SignalLabel param, float value)
+  inline void set(Signals param, float value)
   {
     m_boundVoice[static_cast<uint32_t>(param)] = value;
   }
 
-  inline void set(SignalLabel param, uint32_t voice, float value)
+  inline void set(Signals param, uint32_t voice, float value)
   {
     m_paramsignaldata[voice][static_cast<uint32_t>(param)] = value;
   }

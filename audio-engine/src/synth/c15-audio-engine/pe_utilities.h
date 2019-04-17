@@ -18,24 +18,24 @@
 #include "pe_defines_labels.h"
 
 /* improving code readability */
-enum class PARAM_CLOCK_TYPES
+enum class ClockTypes
 {
-  PARAM_SYNC = 0,
-  PARAM_AUDIO = 1,
-  PARAM_FAST = 2,
-  PARAM_SLOW = 3
+  Sync = 0,
+  Audio = 1,
+  Fast = 2,
+  Slow = 3
 };
 
-enum class PARAM_POLY_TYPES
+enum class PolyTypes
 {
-  PARAM_MONO = 0,
-  PARAM_POLY = 1
+  Mono = 0,
+  Poly = 1
 };
 
-enum class PARAM_SPREAD_TYPES
+enum class SpreadTypes
 {
-  PARAM_SINGLE = 0,
-  PARAM_SPREAD = 1
+  Single = 0,
+  Spread = 1
 };
 
 template <typename T> struct id_list
@@ -89,7 +89,7 @@ template <typename T> struct polyDual_id_list
     }
   }
 
-  void add(const PARAM_POLY_TYPES _polyId, const uint32_t _listId, const T _id)
+  void add(const PolyTypes _polyId, const uint32_t _listId, const T _id)
   {
     m_data[static_cast<uint32_t>(_polyId)].add(_listId, _id);
   }
@@ -109,7 +109,7 @@ template <typename T> struct poly_id_list
     }
   }
 
-  void add(const PARAM_POLY_TYPES _polyId, const T _id)
+  void add(const PolyTypes _polyId, const T _id)
   {
     m_data[static_cast<uint32_t>(_polyId)].add(_id);
   }
@@ -136,12 +136,12 @@ struct dual_env_id_list
 
 struct new_clock_id_list
 {
-  inline void add(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType, uint32_t _id)
+  inline void add(ClockTypes _clockType, PolyTypes _polyType, uint32_t _id)
   {
     m_data[static_cast<int>(_clockType)][static_cast<int>(_polyType)].push_back(_id);
   }
 
-  inline const std::vector<uint32_t> &get(PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType) const
+  inline const std::vector<uint32_t> &get(ClockTypes _clockType, PolyTypes _polyType) const
   {
     return m_data[static_cast<int>(_clockType)][static_cast<int>(_polyType)];
   }
@@ -152,19 +152,17 @@ struct new_clock_id_list
 
 struct new_dual_clock_id_list
 {
-  inline void add(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType, PARAM_POLY_TYPES _polyType,
-                  ParameterLabel _id)
+  inline void add(SpreadTypes _spreadType, ClockTypes _clockType, PolyTypes _polyType, Parameters _id)
   {
     m_data[static_cast<uint32_t>(_spreadType)][static_cast<int>(_clockType)][static_cast<int>(_polyType)].push_back(
         _id);
   }
 
-  inline const std::vector<ParameterLabel> &get(PARAM_SPREAD_TYPES _spreadType, PARAM_CLOCK_TYPES _clockType,
-                                                PARAM_POLY_TYPES _polyType) const
+  inline const std::vector<Parameters> &get(SpreadTypes _spreadType, ClockTypes _clockType, PolyTypes _polyType) const
   {
     return m_data[static_cast<uint32_t>(_spreadType)][static_cast<int>(_clockType)][static_cast<int>(_polyType)];
   }
 
  private:
-  std::vector<ParameterLabel> m_data[dsp_spread_types][dsp_clock_types][dsp_poly_types];
+  std::vector<Parameters> m_data[dsp_spread_types][dsp_clock_types][dsp_poly_types];
 };

@@ -126,7 +126,7 @@ void ae_cabinet::set(SignalStorage &signals)
   float tmpVar;
 
   //*************************** Biquad Highpass ****************************//
-  float frequency = signals.get(SignalLabel::CAB_HPF);
+  float frequency = signals.get(Signals::CAB_HPF);
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
 
@@ -147,7 +147,7 @@ void ae_cabinet::set(SignalStorage &signals)
   m_hp_b1 = m_hp_b1 / tmpVar;
 
   //*************************** Biquad Lowpass 1 ***************************//
-  frequency = signals.get(SignalLabel::CAB_LPF);
+  frequency = signals.get(Signals::CAB_LPF);
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
 
@@ -168,7 +168,7 @@ void ae_cabinet::set(SignalStorage &signals)
   m_lp1_b1 = m_lp1_b1 / tmpVar;
 
   //*************************** Biquad Lowpass 2 ***************************//
-  frequency = signals.get(SignalLabel::CAB_LPF) * 1.333f;
+  frequency = signals.get(Signals::CAB_LPF) * 1.333f;
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
   tmpVar = NlToolbox::Math::cos(frequency);
@@ -188,7 +188,7 @@ void ae_cabinet::set(SignalStorage &signals)
   m_lp2_b1 = m_lp2_b1 / tmpVar;
 
   //**************************** Tilt Lowshelves ***************************//
-  float tilt = std::pow(10.f, signals.get(SignalLabel::CAB_TILT) * 0.025f);
+  float tilt = std::pow(10.f, signals.get(Signals::CAB_TILT) * 0.025f);
   //    float tilt = std::pow(1.059192f, signals.get(SignalLabel::CAB_TILT));       // alternative to pow(10.f, signals.get(SignalLabel::CAB_TILT) / 40.f)
 
   tmpVar = tilt + 1.f / tilt + 2.f;
@@ -207,7 +207,7 @@ void ae_cabinet::set(SignalStorage &signals)
   m_ls1_b1 = m_ls1_b1 / coeff;
   m_ls1_b2 = m_ls1_b2 / coeff;
 
-  tilt = std::pow(10.f, signals.get(SignalLabel::CAB_TILT) * -0.025f);
+  tilt = std::pow(10.f, signals.get(Signals::CAB_TILT) * -0.025f);
   //    tilt = std::pow(1.059192f, signals.get(SignalLabel::CAB_TILT) * -1.f);          // alternative to pow(10.f, signals.get(SignalLabel::CAB_TILT) / 40.f * -1.f)
 
   tmpVar = tilt + 1.f / tilt + 2.f;
@@ -236,8 +236,8 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
   float tmpVar;
 
   //********************************* Drive ********************************//
-  float sample_L = _rawSample_L * signals.get(SignalLabel::CAB_DRV);
-  float sample_R = _rawSample_R * signals.get(SignalLabel::CAB_DRV);
+  float sample_L = _rawSample_L * signals.get(Signals::CAB_DRV);
+  float sample_R = _rawSample_R * signals.get(Signals::CAB_DRV);
 
   //************************** Biquad Highpass L ***************************//
   tmpVar = m_hp_b0 * sample_L;
@@ -296,30 +296,30 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
   sample_R = tmpVar;
 
   //******************************* Shaper L *******************************//
-  sample_L *= signals.get(SignalLabel::CAB_PRESAT);
+  sample_L *= signals.get(Signals::CAB_PRESAT);
   tmpVar = sample_L;
 
   sample_L = NlToolbox::Math::sinP3_wrap(sample_L);
-  sample_L = NlToolbox::Others::threeRanges(sample_L, tmpVar, signals.get(SignalLabel::CAB_FLD));
+  sample_L = NlToolbox::Others::threeRanges(sample_L, tmpVar, signals.get(Signals::CAB_FLD));
 
   tmpVar = sample_L * sample_L - m_hp30_stateVar_L;
   m_hp30_stateVar_L = tmpVar * m_hp30_b0 + m_hp30_stateVar_L + DNC_const;
 
-  sample_L = NlToolbox::Others::parAsym(sample_L, tmpVar, signals.get(SignalLabel::CAB_ASM));
-  sample_L *= signals.get(SignalLabel::CAB_SAT);
+  sample_L = NlToolbox::Others::parAsym(sample_L, tmpVar, signals.get(Signals::CAB_ASM));
+  sample_L *= signals.get(Signals::CAB_SAT);
 
   //******************************* Shaper R *******************************//
-  sample_R *= signals.get(SignalLabel::CAB_PRESAT);
+  sample_R *= signals.get(Signals::CAB_PRESAT);
   tmpVar = sample_R;
 
   sample_R = NlToolbox::Math::sinP3_wrap(sample_R);
-  sample_R = NlToolbox::Others::threeRanges(sample_R, tmpVar, signals.get(SignalLabel::CAB_FLD));
+  sample_R = NlToolbox::Others::threeRanges(sample_R, tmpVar, signals.get(Signals::CAB_FLD));
 
   tmpVar = sample_R * sample_R - m_hp30_stateVar_R;
   m_hp30_stateVar_R = tmpVar * m_hp30_b0 + m_hp30_stateVar_R + DNC_const;
 
-  sample_R = NlToolbox::Others::parAsym(sample_R, tmpVar, signals.get(SignalLabel::CAB_ASM));
-  sample_R *= signals.get(SignalLabel::CAB_SAT);
+  sample_R = NlToolbox::Others::parAsym(sample_R, tmpVar, signals.get(Signals::CAB_ASM));
+  sample_R *= signals.get(Signals::CAB_SAT);
 
   //*************************** Tilt Lowshelf L2 ***************************//
   tmpVar = m_ls2_b0 * sample_L;
@@ -404,10 +404,10 @@ void ae_cabinet::apply(float _rawSample_L, float _rawSample_R, SignalStorage &si
   sample_R = tmpVar;
 
   //******************************* Crossfade ******************************//
-  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, sample_L, signals.get(SignalLabel::CAB_DRY),
-                                             signals.get(SignalLabel::CAB_WET));
-  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, sample_R, signals.get(SignalLabel::CAB_DRY),
-                                             signals.get(SignalLabel::CAB_WET));
+  m_out_L = NlToolbox::Crossfades::crossFade(_rawSample_L, sample_L, signals.get(Signals::CAB_DRY),
+                                             signals.get(Signals::CAB_WET));
+  m_out_R = NlToolbox::Crossfades::crossFade(_rawSample_R, sample_R, signals.get(Signals::CAB_DRY),
+                                             signals.get(Signals::CAB_WET));
 }
 
 /******************************************************************************/
