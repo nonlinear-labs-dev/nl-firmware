@@ -4,6 +4,7 @@
 #include <ostream>
 #include "pe_defines_config.h"
 #include "pe_defines_labels.h"
+#include "dsp_defines_signallabels.h"
 
 const uint32_t tcd_log_buffersize = 1000;
 
@@ -71,7 +72,7 @@ std::ostream& operator<<(std::ostream& lhs, const examine_param& rhs);
 
 struct examine_signal
 {
-  uint32_t m_selected = 0;
+  Signals m_selected = Signals::ENV_A_MAG;
   uint32_t m_size = 0;
   float m_value[dsp_number_of_voices] = {};
   float m_left = 0.f;

@@ -12,6 +12,7 @@
 #include <vector>
 #include "nltoolbox.h"
 #include "dsp_defines_signallabels.h"
+#include "ParallelData.h"
 
 class SignalStorage;
 
@@ -23,7 +24,7 @@ struct ae_combfilter
 {
   ae_combfilter();  // Default Contructor
 
-  float m_out;  // Generated Sample
+  FloatVector m_out;  // Generated Sample
   float m_decayStateVar;
 
   float m_sampleInterval;
@@ -36,33 +37,33 @@ struct ae_combfilter
   void init(float _samplerate, uint32_t _upsampleFactor);
   void apply(float _sampleA, float _sampleB, SignalStorage &signals);
   void set(SignalStorage &signals, float _samplerate);
-  void setDelaySmoother();
+  void setDelaySmoother(uint32_t voice);
   void resetDSP();
 
   //**************************** Highpass Filter ****************************//
-  float m_hpCoeff_b0, m_hpCoeff_b1, m_hpCoeff_a1;
-  float m_hpInStateVar, m_hpOutStateVar;
+  FloatVector m_hpCoeff_b0, m_hpCoeff_b1, m_hpCoeff_a1;
+  FloatVector m_hpInStateVar, m_hpOutStateVar;
 
   //***************************** Lowpass Filter ****************************//
-  float m_lpCoeff;
-  float m_lpStateVar;
+  FloatVector m_lpCoeff;
+  FloatVector m_lpStateVar;
 
   //***************************** Allpass Filter ****************************//
-  float m_apCoeff_1, m_apCoeff_2;
-  float m_apStateVar_1;  // Allpass State Variables
-  float m_apStateVar_2;
-  float m_apStateVar_3;
-  float m_apStateVar_4;
+  FloatVector m_apCoeff_1, m_apCoeff_2;
+  FloatVector m_apStateVar_1;  // Allpass State Variables
+  FloatVector m_apStateVar_2;
+  FloatVector m_apStateVar_3;
+  FloatVector m_apStateVar_4;
 
   //****************************** Delay/ Decay *****************************//
-  int32_t m_buffer_indx;
+  Int32Vector m_buffer_indx;
   int32_t m_buffer_sz_m1;
-  std::vector<float> m_buffer;
+  std::vector<FloatVector> m_buffer;
 
-  float m_delaySamples;
+  FloatVector m_delaySamples;
   float m_delayFreqClip;
   float m_delayConst;
-  float m_delayStateVar;
+  FloatVector m_delayStateVar;
 
   float m_decayGain;
 };

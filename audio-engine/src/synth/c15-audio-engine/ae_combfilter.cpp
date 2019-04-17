@@ -63,9 +63,9 @@ void ae_combfilter::init(float _samplerate, uint32_t _upsampleFactor)
 /** @brief
 *******************************************************************************/
 
-void ae_combfilter::setDelaySmoother()
+void ae_combfilter::setDelaySmoother(uint32_t voice)
 {
-  m_delayStateVar = m_delaySamples;
+  m_delayStateVar[voice] = m_delaySamples[voice];
 }
 
 /******************************************************************************/
@@ -74,26 +74,24 @@ void ae_combfilter::setDelaySmoother()
 
 void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals)
 {
-  float tmpVar;
-
   //**************************** AB Sample Mix ****************************//
-  tmpVar = signals.get(Signals::CMB_AB);  // AB Mix is inverted, so crossfade mix is as well (currently)
-  m_out = _sampleB * (1.f - tmpVar) + _sampleA * tmpVar;
+  auto tmpCmbAB = signals.get<Signals::CMB_AB>();  // AB Mix is inverted, so crossfade mix is as well (currently)
+  m_out = _sampleB * (1.f - tmpCmbAB) + _sampleA * tmpCmbAB;
 
   //****************** AB Ssample Phase Mdulation Mix ********************//
-  tmpVar = signals.get(Signals::CMB_PMAB);
-  float phaseMod = _sampleA * (1.f - tmpVar) + _sampleB * tmpVar;
-  phaseMod *= signals.get(Signals::CMB_PM);
+  auto tmpCmbPMAB = signals.get<Signals::CMB_PMAB>();
+  float phaseMod = _sampleA * (1.f - tmpCmbPMAB) + _sampleB * tmpCmbPMAB;
+  phaseMod *= signals.get<Signals::CMB_PM>();
 
   //************************** 1-Pole Highpass ****************************//
-  tmpVar = m_hpCoeff_b0 * m_out;
-  tmpVar += (m_hpCoeff_b1 * m_hpInStateVar);
-  tmpVar += (m_hpCoeff_a1 * m_hpOutStateVar);
+  auto tmpHP = m_hpCoeff_b0 * m_out;
+  tmpHP += (m_hpCoeff_b1 * m_hpInStateVar);
+  tmpHP += (m_hpCoeff_a1 * m_hpOutStateVar);
 
   m_hpInStateVar = m_out + DNC_const;
-  m_hpOutStateVar = tmpVar + DNC_const;
+  m_hpOutStateVar = tmpHP + DNC_const;
 
-  m_out = tmpVar;
+  m_out = tmpHP;
   m_out += m_decayStateVar;
 
   //*************************** 1-Pole Lowpass ****************************//
@@ -103,7 +101,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
   m_lpStateVar = m_out;
 
   //******************************* Allpass *******************************//
-  tmpVar = m_out;
+  auto tmpOut = m_out;
 
   m_out *= m_apCoeff_2;
   m_out += (m_apStateVar_1 * m_apCoeff_1);
@@ -115,51 +113,54 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
   m_out += DNC_const;
 
   m_apStateVar_2 = m_apStateVar_1;
-  m_apStateVar_1 = tmpVar;
+  m_apStateVar_1 = tmpOut;
 
   m_apStateVar_4 = m_apStateVar_3;
   m_apStateVar_3 = m_out;
 
   //****************************** Para D ********************************//
-  if(std::abs(m_out) > 0.501187f)
+  for(uint32_t v = 0; v < dsp_number_of_voices; v++)
   {
-    if(m_out > 0.f)
+    if(std::abs(m_out[v]) > 0.501187f)
     {
-      m_out -= 0.501187f;
-      tmpVar = m_out;
+      if(m_out[v] > 0.f)
+      {
+        m_out -= 0.501187f;
+        auto tmpVar = m_out;
 
-      m_out = std::min(m_out, 2.98815f);
-      m_out *= (1.f - m_out * 0.167328f);
+        m_out = std::min(m_out, 2.98815f);
+        m_out *= (1.f - m_out * 0.167328f);
 
-      m_out *= 0.7488f;
-      tmpVar *= 0.2512f;
+        m_out *= 0.7488f;
+        tmpVar *= 0.2512f;
 
-      m_out += (tmpVar + 0.501187f);
-    }
-    else
-    {
-      m_out += 0.501187f;
-      tmpVar = m_out;
+        m_out += (tmpVar + 0.501187f);
+      }
+      else
+      {
+        m_out += 0.501187f;
+        auto tmpVar = m_out;
 
-      m_out = std::max(m_out, -2.98815f);
-      m_out *= (1.f - std::abs(m_out) * 0.167328f);
+        m_out = std::max(m_out, -2.98815f);
+        m_out *= (1.f - std::abs(m_out) * 0.167328f);
 
-      m_out *= 0.7488f;
-      tmpVar *= 0.2512f;
+        m_out *= 0.7488f;
+        tmpVar *= 0.2512f;
 
-      m_out += (tmpVar - 0.501187f);
+        m_out += (tmpVar - 0.501187f);
+      }
     }
   }
 
   //***************************** SmoothB ********************************//
-  tmpVar = m_delaySamples - m_delayStateVar;
-  tmpVar *= m_delayConst;
-  tmpVar += m_delayStateVar;
+  auto tmpSmooth = m_delaySamples - m_delayStateVar;
+  tmpSmooth *= m_delayConst;
+  tmpSmooth += m_delayStateVar;
 
-  m_delayStateVar = tmpVar;
+  m_delayStateVar = tmpSmooth;
 
-  tmpVar *= signals.get(Signals::CMB_FEC);
-  tmpVar += (phaseMod * tmpVar);
+  tmpSmooth *= signals.get<Signals::CMB_FEC>();
+  tmpSmooth += (phaseMod * tmpSmooth);
 
   //******************************* Delay ********************************//
   float holdsample = m_out;  // for Bypass
@@ -168,15 +169,15 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
 
   /// hier kommt voicestealing hin!!
 
-  tmpVar -= 1.f;
-  tmpVar = std::clamp(tmpVar, 1.f, 8189.f);
+  tmpSmooth -= 1.f;
+  tmpSmooth = std::clamp(tmpSmooth, 1.f, 8189.f);
 
-  int32_t ind_t0 = static_cast<int32_t>(std::round(tmpVar - 0.5f));
-  tmpVar = tmpVar - static_cast<float>(ind_t0);
+  auto ind_t0 = std::round<int32_t>(tmpSmooth - 0.5f);
+  tmpSmooth = tmpSmooth - static_cast<FloatVector>(ind_t0);
 
-  int32_t ind_tm1 = ind_t0 - 1;
-  int32_t ind_tp1 = ind_t0 + 1;
-  int32_t ind_tp2 = ind_t0 + 2;
+  auto ind_tm1 = ind_t0 - 1u;
+  auto ind_tp1 = ind_t0 + 1u;
+  auto ind_tp2 = ind_t0 + 2u;
 
   ind_tm1 = m_buffer_indx - ind_tm1;
   ind_t0 = m_buffer_indx - ind_t0;
@@ -195,8 +196,8 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
 
   m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
 
-  tmpVar = signals.get(Signals::CMB_BYP);  // Bypass
-  m_out = tmpVar * holdsample + (1.f - tmpVar) * m_out;
+  auto tmpByp = signals.get<Signals::CMB_BYP>();  // Bypass
+  m_out = tmpByp * holdsample + (1.f - tmpByp) * m_out;
 
   //****************************** Decay ********************************//
   m_decayStateVar = m_out * m_decayGain;
@@ -209,7 +210,7 @@ void ae_combfilter::apply(float _sampleA, float _sampleB, SignalStorage &signals
 void ae_combfilter::set(SignalStorage &signals, float _samplerate)
 {
   //********************** Highpass Coefficients *************************//
-  float frequency = signals.get(Signals::CMB_FRQ);
+  float frequency = signals.get<Signals::CMB_FRQ>();
   frequency *= 0.125f;
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_2);
 
@@ -221,7 +222,7 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_hpCoeff_b1 = m_hpCoeff_b0 * -1.f;
 
   //*********************** Lowpass Coefficient **************************//
-  frequency = signals.get(Signals::CMB_LPF);
+  frequency = signals.get<Signals::CMB_LPF>();
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_4);
   frequency *= m_warpConst_PI;
 
@@ -234,11 +235,11 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_lpCoeff = (1.f - frequency) / (1.f + frequency);
 
   //********************** Allpass Coefficients **************************//
-  frequency = signals.get(Signals::CMB_APF);
+  frequency = signals.get<Signals::CMB_APF>();
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_2);
   frequency *= m_warpConst_2PI;
 
-  float resonance = signals.get(Signals::CMB_APR) * 1.99f - 1.f;
+  float resonance = signals.get<Signals::CMB_APR>() * 1.99f - 1.f;
   resonance = NlToolbox::Math::sin(frequency) * (1.f - resonance);
 
   float tmpVar = 1.f / (1.f + resonance);
@@ -247,7 +248,7 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_apCoeff_2 = (1.f - resonance) * tmpVar;
 
   //*************************** Delaytime ********************************//
-  frequency = signals.get(Signals::CMB_FRQ);
+  frequency = signals.get<Signals::CMB_FRQ>();
 
   if(frequency < m_delayFreqClip)
   {
@@ -319,8 +320,8 @@ void ae_combfilter::set(SignalStorage &signals, float _samplerate)
   m_delaySamples = m_delaySamples * tmpVar + m_delaySamples;
 
   //**************************** Decay Gain ******************************//
-  tmpVar = signals.get(Signals::CMB_DEC);
-  frequency = signals.get(Signals::CMB_FRQ) * std::abs(tmpVar);
+  tmpVar = signals.get<Signals::CMB_DEC>();
+  frequency = signals.get<Signals::CMB_FRQ>() * std::abs(tmpVar);
 
   frequency = std::max(frequency, DNC_const);
   frequency = (1.f / frequency) * -6.28318f;

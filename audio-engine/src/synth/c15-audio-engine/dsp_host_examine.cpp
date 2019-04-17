@@ -75,7 +75,7 @@ std::ostream& operator<<(std::ostream& lhs, const examine_param& rhs)
 
 std::ostream& operator<<(std::ostream& lhs, const examine_signal& rhs)
 {
-  lhs << std::endl << "Examine Signal (" << rhs.m_selected << "):\n" << std::endl;
+  lhs << std::endl << "Examine Signal (" << static_cast<uint32_t>(rhs.m_selected) << "):\n" << std::endl;
 
   for(uint32_t i = 0; i < rhs.m_size; i++)
   {
