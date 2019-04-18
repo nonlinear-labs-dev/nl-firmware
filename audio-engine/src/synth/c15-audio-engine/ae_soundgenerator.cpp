@@ -46,8 +46,8 @@ void ae_soundgenerator::init(float _samplerate)
 
   for(int vn = 0; vn < dsp_number_of_voices; vn++)
   {
-    m_OscA_randVal_int = vn + 1;
-    m_OscB_randVal_int = vn + 1 + 111;
+    m_OscA_randVal_int[vn] = vn + 1;
+    m_OscB_randVal_int[vn] = vn + 1 + 111;
   }
 }
 

@@ -26,7 +26,8 @@ struct ae_svfilter_fir
   float m_warpConst_2PI;
 
   void init(float _samplerate);
-  void apply(float _sampleA, float _sampleB, float _sampleComb, SignalStorage &signals);
+  void apply(const FloatVector &_sampleA, const FloatVector &_sampleB, const FloatVector &_sampleComb,
+             SignalStorage &signals);
   void resetDSP();
 
   //**************************** State Variables ****************************//

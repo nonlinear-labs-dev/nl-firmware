@@ -47,7 +47,6 @@ struct ae_soundgenerator
 
   Int32Vector m_OscA_randVal_int;
   FloatVector m_OscA_randVal_float;
-  UInt32Vector m_OscA_mute;
 
   //*********************** Oscillator B Variables **************************//
   FloatVector m_oscB_selfmix;
