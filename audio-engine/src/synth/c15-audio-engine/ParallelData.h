@@ -256,35 +256,6 @@ template <typename T, size_t size> inline ParallelData<T, size> keepFractional(c
   return ret;
 }
 
-#if 0
-
-template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(const ParallelData<T, size> &_x)
-{
-  auto a = _x + _x;
-  a = std::abs(a);
-  a = 0.5f - a;
-
-  auto x_square = a * a;
-  return a * ((2.26548f * x_square - 5.13274f) * x_square + 3.14159f);
-}
-
-template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(ParallelData<T, size> _x)
-{
-  _x += -0.25f;
-
-  ParallelData<T, size> factors(1.f);
-
-  auto cmpRes = _x >= 0.0f;
-  auto maskedShiftedAmounts = factors & cmpRes;
-  auto maskedAmounts = maskedShiftedAmounts - 0.5f;
-  auto withAddedAmounts = _x + maskedAmounts;
-  auto trunced = trunc(withAddedAmounts);
-  _x -= trunced;
-
-  return sinP3_noWrap(_x);
-}
-
-#elif 1
 template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(ParallelData<T, size> _x)
 {
   ParallelData<T, size> ret;
@@ -305,33 +276,6 @@ template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(Par
   return ret;
 }
 
-#else
-
-template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(ParallelData<T, size> _x)
-{
-  ParallelData<T, size> ret;
-
-  for(size_t i = 0; i < size; i++)
-    ret[i] = SineWaveTables::sine16384.wrapped(_x[i]);
-
-  return ret;
-}
-
-template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(ParallelData<T, size> _x)
-{
-  ParallelData<T, size> ret;
-
-  _x += 0.25f;
-
-  for(size_t i = 0; i < size; i++)
-    ret[i] = SineWaveTables::sine16384.unwrapped(_x[i]);
-
-  return ret;
-}
-
-#endif
-
-#if 1
 template <typename T, size_t size>
 inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, const ParallelData<T, size> &ctrlSample,
                                          const float &foldAmnt)
@@ -356,44 +300,6 @@ inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, co
 
   return ret;
 }
-
-#else
-
-template <size_t size>
-inline ParallelData<float, size> threeRanges(const ParallelData<float, size> &sample,
-                                             const ParallelData<float, size> &ctrlSample,
-                                             const ParallelData<float, size> &foldAmnt)
-{
-  ParallelData<float, size> ret;
-
-  auto tooSmall = ctrlSample < -0.25f;
-  auto tooLarge = ctrlSample > 0.25f;
-
-  ParallelData<float, size> smallFactors = ParallelData<float, size>(1.0f) & tooSmall;
-  ParallelData<float, size> largeFactors = ParallelData<float, size>(-1.0f) & tooLarge;
-
-  ParallelData<float, size> foldFactor = ParallelData<float, size>(-1.0f) & tooLarge;
-
-  for(size_t i = 0; i < size; i++)
-  {
-    if(ctrlSample[i] < -0.25f)
-    {
-      ret[i] = (sample[i] + 1.f) * foldAmnt[i] - 1.f;
-    }
-    else if(ctrlSample[i] > 0.25f)
-    {
-      ret[i] = (sample[i] - 1.f) * foldAmnt[i] + 1.f;
-    }
-    else
-    {
-      ret[i] = sample[i];
-    }
-  }
-
-  return ret;
-}
-
-#endif
 
 template <typename T, size_t size>
 inline ParallelData<T, size> parAsym(const ParallelData<T, size> &sample, const ParallelData<T, size> &sample_square,
