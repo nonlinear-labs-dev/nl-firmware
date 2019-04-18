@@ -123,12 +123,8 @@ void dsp_host::tickMain()
     for(uint32_t v = 0; v < m_voices; v++)
     {
 #if PARAM_ITERATOR == 0
-<<<<<<< HEAD
-      for(const auto &it :
-          m_params.m_parameters.getClockIds(PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_POLY))
-=======
+
       for(const auto &it : m_params.m_parameters.getClockIds(ClockTypes::Slow, PolyTypes::Poly))
->>>>>>> dsp_optimization
       {
         auto i = m_params.getHead(static_cast<Parameters>(it)).m_index + v;
         m_params.getBody(i).tick();
