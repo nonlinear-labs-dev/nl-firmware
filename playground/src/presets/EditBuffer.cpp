@@ -25,12 +25,10 @@ EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
-    , m_recallSet(this, *this)
+    , m_recallSet(this)
 {
   m_selectedParameter = nullptr;
   m_hashOnStore = getHash();
-  ParameterGroupSet::init();
-  m_recallSet.init((ParameterGroupSet *) this);
 }
 
 EditBuffer::~EditBuffer()
@@ -48,8 +46,7 @@ void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *
   if(p != nullptr)
     m_recallSet.copyParamSet(transaction, p);
   else
-    m_recallSet.onPresetDeleted(
-        transaction);  //Preset was deleted -> we will just pretend the current EditBuffer has the state we are interested in
+    m_recallSet.onPresetDeleted(transaction);
 
   onChange();
 }
@@ -358,8 +355,8 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
                     if(changed)
                     {
                       super::writeDocument(writer, knownRevision);
-                      m_recallSet.writeDocument(writer, knownRevision);
                     }
+                    m_recallSet.writeDocument(writer, knownRevision);
                   });
 }
 

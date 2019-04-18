@@ -18,8 +18,6 @@ class ParameterGroupSet : public AttributesOwner
   ParameterGroupSet(UpdateDocumentContributor *parent);
   ~ParameterGroupSet() override;
 
-  virtual void init();
-
   typedef ParameterGroup *tParameterGroupPtr;
 
   size_t countParameters() const;

@@ -219,7 +219,8 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 
 PresetParameter *Parameter::getOriginalParameter() const
 {
-  auto ret = Application::get().getPresetManager()->getEditBuffer()->getRecallParameterSet().findParameterByID(getID());
+  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
+  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
   assert(ret != nullptr && "originalParameter is null and should not be");
   return ret;
 }
@@ -233,14 +234,8 @@ bool Parameter::isValueChangedFromLoaded() const
 {
   const int denominator = static_cast<const int>(getValue().getFineDenominator());
   const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
-
-  if(auto originalParameter = getOriginalParameter())
-  {
-    const int roundedOG = static_cast<const int>(originalParameter->getValue() * denominator);
-    return roundedOG != roundedNow;
-  } else {
-      return false;
-  }
+  const int roundedOG = static_cast<const int>(getOriginalParameter()->getValue() * denominator);
+  return roundedOG != roundedNow;
 }
 
 bool Parameter::isBiPolar() const
@@ -530,7 +525,8 @@ void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
-  auto originStr = Application::get().getPresetManager()->getEditBuffer()->getRecallOrigin();
+  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
+  auto originStr = eb->getRecallOrigin();
   auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), originStr);
   auto transaction = transactionScope->getTransaction();
   if(original)

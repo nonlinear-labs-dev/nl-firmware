@@ -8,7 +8,7 @@ class EditBuffer;
 class RecallParameterGroups : public PresetParameterGroups
 {
  public:
-  RecallParameterGroups(UpdateDocumentContributor *parent, const EditBuffer &editbuffer);
+  RecallParameterGroups(EditBuffer *editBuffer);
 
   PresetParameter *findParameterByID(int id);
   const PresetParameter *findParameterByID(int id) const;

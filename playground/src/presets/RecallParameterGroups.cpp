@@ -4,18 +4,16 @@
 #include "libundo/undo/Transaction.h"
 #include "xml/Writer.h"
 
-RecallParameterGroups::RecallParameterGroups(UpdateDocumentContributor *parent, const EditBuffer &editbuffer)
-    : PresetParameterGroups(parent, editbuffer)
+RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
+    : PresetParameterGroups(editBuffer, *editBuffer)
 {
-    m_lastChangeID = -1;
+  for(auto &g : editBuffer->getParameterGroups())
+    m_parameterGroups[g->getID()] = std::make_unique<PresetParameterGroup>(*g);
+
+  m_lastChangeID = -1;
 }
 
 PresetParameter *RecallParameterGroups::findParameterByID(int id)
-{
-  return const_cast<PresetParameter *>(const_cast<const RecallParameterGroups *>(this)->findParameterByID(id));
-}
-
-const PresetParameter *RecallParameterGroups::findParameterByID(int id) const
 {
   for(auto &pair : m_parameterGroups)
   {
@@ -23,6 +21,11 @@ const PresetParameter *RecallParameterGroups::findParameterByID(int id) const
       return param;
   }
   return nullptr;
+}
+
+const PresetParameter *RecallParameterGroups::findParameterByID(int id) const
+{
+  return const_cast<RecallParameterGroups *>(this)->findParameterByID(id);
 }
 
 void RecallParameterGroups::copyParamSet(UNDO::Transaction *transaction, const Preset *other)
@@ -46,9 +49,13 @@ void RecallParameterGroups::onPresetDeleted(UNDO::Transaction *transaction)
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-  writer.writeTag("recall-data", Attribute{ "changed", m_lastChangeID > knownRevision }, [this, &writer] {
-    for(auto &pair : m_parameterGroups)
-      pair.second->writeDocument(writer);
+  auto changed = m_lastChangeID > knownRevision;
+  writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, changed] {
+    if(changed)
+    {
+      for(auto &pair : m_parameterGroups)
+        pair.second->writeDocument(writer);
+    }
   });
 
   AttributesOwner::writeDocument(writer, knownRevision);
