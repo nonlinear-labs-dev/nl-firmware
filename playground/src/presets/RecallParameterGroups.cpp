@@ -6,11 +6,10 @@
 
 RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : PresetParameterGroups(editBuffer, *editBuffer)
+    , m_origin{ "EditBuffer" }
 {
   for(auto &g : editBuffer->getParameterGroups())
     m_parameterGroups[g->getID()] = std::make_unique<PresetParameterGroup>(*g);
-
-  m_lastChangeID = -1;
 }
 
 PresetParameter *RecallParameterGroups::findParameterByID(int id)
@@ -36,20 +35,18 @@ void RecallParameterGroups::copyParamSet(UNDO::Transaction *transaction, const P
     m_parameterGroups.at(pair.first)->copyFrom(transaction, othergroup.get());
   }
 
-  transaction->addUndoSwap(m_origin, s_presetString);
-
-  m_lastChangeID = onChange();
+  transaction->addUndoSwap(m_origin, Glib::ustring("Preset"));
+  transaction->addSimpleCommand([this](auto) { onChange(); });
 }
 
 void RecallParameterGroups::onPresetDeleted(UNDO::Transaction *transaction)
 {
-  transaction->addUndoSwap(m_origin, s_ebString);
-  m_lastChangeID = onChange();
+  transaction->addUndoSwap(m_origin, Glib::ustring("EditBuffer"));
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-  auto changed = m_lastChangeID > knownRevision;
+  auto changed = getUpdateIDOfLastChange() > knownRevision;
   writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, changed] {
     if(changed)
     {

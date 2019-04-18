@@ -17,12 +17,8 @@ class RecallParameterGroups : public PresetParameterGroups
 
   void copyParamSet(UNDO::Transaction *transaction, const Preset *other);
   void onPresetDeleted(UNDO::Transaction* transaction);
-
  private:
-  Glib::ustring m_origin = "EditBuffer";
-  Glib::ustring s_ebString = "EditBuffer";
-  Glib::ustring s_presetString = "Preset";
-  tUpdateID m_lastChangeID;
+  Glib::ustring m_origin;
 
   friend class EditBuffer;
   friend class RecallEditBufferSerializer;
