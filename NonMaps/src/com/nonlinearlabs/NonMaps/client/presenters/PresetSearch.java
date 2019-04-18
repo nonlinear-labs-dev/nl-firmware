@@ -9,4 +9,5 @@ public class PresetSearch {
 	public boolean searchInComments = true;
 	public boolean searchInDeviceNames = true;
 	public boolean zoomToAllMatches = true;
+	public boolean loadPreset = true;
 }

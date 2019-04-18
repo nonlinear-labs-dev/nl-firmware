@@ -47,6 +47,7 @@
 				<div class="eins-he">
 					<div class="w100p">
 						<g:CheckBox ui:field="zoomToAllMatches" text="Zoom to all matches"></g:CheckBox>
+						<g:CheckBox ui:field="loadPreset" text="Load Highlighted Preset"></g:CheckBox>
 					</div>
 				</div><!-- end eins-he -->
 

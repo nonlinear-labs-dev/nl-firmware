@@ -24,6 +24,7 @@ public class PresetSearch {
 		query.setValue("");
 		results.setValue(new HashSet<String>());
 		currentFilterMatch.setValue("");
+		loadPreset.setValue(false);
 	}
 
 	public BooleanDataModelEntity searchActive = new BooleanDataModelEntity(BooleanValues.off);
@@ -36,4 +37,5 @@ public class PresetSearch {
 			SearchQueryCombination.class, SearchQueryCombination.AND);
 	public StringSetDataModelEntity results = new StringSetDataModelEntity();
 	public StringDataModelEntity currentFilterMatch = new StringDataModelEntity();
+	public BooleanDataModelEntity loadPreset = new BooleanDataModelEntity(BooleanValues.off);
 }
