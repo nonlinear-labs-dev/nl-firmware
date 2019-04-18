@@ -32,7 +32,7 @@ public class PresetSearch extends Composite {
 	TextBox search;
 
 	@UiField
-	CheckBox searchCriteriaName, searchCriteriaComment, searchCriteriaDeviceName, zoomToAllMatches;
+	CheckBox searchCriteriaName, searchCriteriaComment, searchCriteriaDeviceName, zoomToAllMatches, loadPreset;
 
 	@UiField
 	Label numMatches;
@@ -69,6 +69,8 @@ public class PresetSearch extends Composite {
 
 		zoomToAllMatches.addClickHandler(b -> getUseCases().toggleZoomToAllMatches());
 
+		loadPreset.addClickHandler(b -> getUseCases().toggleLoadPreset());
+		
 		prev.addClickHandler(b -> getUseCases().highlightPrev());
 		next.addClickHandler(b -> getUseCases().highlightNext());
 
@@ -97,6 +99,7 @@ public class PresetSearch extends Composite {
 		searchCriteriaDeviceName.setValue(t.searchInDeviceNames);
 		zoomToAllMatches.setValue(t.zoomToAllMatches);
 		numMatches.setText(t.numMatches);
+		loadPreset.setValue(t.loadPreset);
 		return isAttached();
 	}
 

@@ -84,6 +84,12 @@ public class PresetSearchProvider {
 			notifyClients();
 			return true;
 		});
+		
+		getModel().loadPreset.onChange(r -> {
+			presenter.loadPreset = r == BooleanValues.on;
+			notifyClients();
+			return true;
+		});
 	}
 
 	public com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch getModel() {
