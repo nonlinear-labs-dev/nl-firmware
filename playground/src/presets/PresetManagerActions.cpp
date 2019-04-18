@@ -158,7 +158,6 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
 
         if(!reader.read<PresetSerializer>(&p))
         {
-          transaction->rollBack();
           http->respond("Invalid File!");
           DebugLevel::warning("Could not read Preset xml!");
           return;
