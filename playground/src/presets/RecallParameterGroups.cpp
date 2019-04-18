@@ -42,7 +42,6 @@ void RecallParameterGroups::copyParamSet(UNDO::Transaction *transaction, const P
 void RecallParameterGroups::onPresetDeleted(UNDO::Transaction *transaction)
 {
   transaction->addUndoSwap(m_origin, Glib::ustring("EditBuffer"));
-  transaction->addSimpleCommand([this](auto) { onChange(); });
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
