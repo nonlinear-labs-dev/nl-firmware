@@ -37,14 +37,13 @@ void RecallParameterGroups::copyParamSet(UNDO::Transaction *transaction, const P
   }
 
   transaction->addUndoSwap(m_origin, s_presetString);
-
-  m_lastChangeID = onChange();
+  transaction->addSimpleCommand([this](auto) { m_lastChangeID = onChange(); });
 }
 
 void RecallParameterGroups::onPresetDeleted(UNDO::Transaction *transaction)
 {
   transaction->addUndoSwap(m_origin, s_ebString);
-  m_lastChangeID = onChange();
+  transaction->addSimpleCommand([this](auto) { m_lastChangeID = onChange(); });
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const

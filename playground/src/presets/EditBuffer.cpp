@@ -48,7 +48,9 @@ void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *
   else
     m_recallSet.onPresetDeleted(transaction);
 
-  onChange();
+  transaction->addSimpleCommand([this](auto) {
+    onChange();
+  });
 }
 
 const Glib::ustring &EditBuffer::getRecallOrigin() const
