@@ -69,9 +69,9 @@ void ae_outputmixer::combine(const FloatVector &_sampleA, const FloatVector &_sa
   tmpSampleQuad = tmpSampleQuad - m_hp30hz_stateVar_L;
   m_hp30hz_stateVar_L = tmpSampleQuad * m_hp30hz_b0 + m_hp30hz_stateVar_L + DNC_const;
 
-  mainSample = NlToolbox::Others::parAsym(mainSample, tmpVar, signals.get<Signals::OUT_ASM>());
+  mainSample = parAsym(mainSample, tmpSampleQuad, signals.get<Signals::OUT_ASM>());
 
-  m_out_L += mainSample;
+  m_out_L += sumUp(mainSample);
 
   //****************************** Right Mix *******************************//
   mainSample = signals.get<Signals::OUT_A_R>() * _sampleA + signals.get<Signals::OUT_B_R>() * _sampleB
@@ -79,18 +79,18 @@ void ae_outputmixer::combine(const FloatVector &_sampleA, const FloatVector &_sa
 
   //************************ Right Sample Shaper ***************************//
   mainSample *= signals.get<Signals::OUT_DRV>();
-  tmpVar = mainSample;
+  auto tmpVar = mainSample;
 
-  mainSample = NlToolbox::Math::sinP3_wrap(mainSample);
-  mainSample = NlToolbox::Others::threeRanges(mainSample, tmpVar, signals.get<Signals::OUT_FLD>());
+  mainSample = sinP3_wrap(mainSample);
+  mainSample = threeRanges(mainSample, tmpVar, signals.get<Signals::OUT_FLD>());
 
   tmpVar = mainSample * mainSample;
-  tmpVar = tmpVar - m_hp30hz_stateVar_R[_voiceID];
-  m_hp30hz_stateVar_R[_voiceID] = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar_R[_voiceID] + DNC_const;
+  tmpVar = tmpVar - m_hp30hz_stateVar_R;
+  m_hp30hz_stateVar_R = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar_R + DNC_const;
 
-  mainSample = NlToolbox::Others::parAsym(mainSample, tmpVar, signals.get<Signals::OUT_ASM>());
+  mainSample = parAsym(mainSample, tmpVar, signals.get<Signals::OUT_ASM>());
 
-  m_out_R += mainSample;
+  m_out_R += sumUp(mainSample);
 }
 
 /******************************************************************************/
@@ -128,8 +128,8 @@ void ae_outputmixer::resetDSP()
 
   //**************************** 30 Hz Highpass ****************************//
 
-  std::fill(m_hp30hz_stateVar_L.begin(), m_hp30hz_stateVar_L.end(), 0.f);
-  std::fill(m_hp30hz_stateVar_R.begin(), m_hp30hz_stateVar_R.end(), 0.f);
+  m_hp30hz_stateVar_L = 0.0f;
+  m_hp30hz_stateVar_R = 0.0f;
 
   //*************************** 1 pole Highpass ****************************//
 

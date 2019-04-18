@@ -151,7 +151,7 @@ class dsp_host
   ae_test_tone m_test_tone;
 
   void initAudioEngine();
-  void makePolySound(SignalStorage &signals, uint32_t _voiceID);
+  void makePolySound(SignalStorage &signals);
   void makeMonoSound(SignalStorage &signals);
 
   // inline?

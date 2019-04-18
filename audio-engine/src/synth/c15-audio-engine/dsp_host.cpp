@@ -220,9 +220,10 @@ void dsp_host::tickMain()
 #endif
     /* post processing and envelope rendering */
     m_params.postProcessPoly_audio(m_parameters, v);
-    /* AUDIO_ENGINE: poly dsp phase */
-    makePolySound(m_parameters, v);
   }
+
+  /* AUDIO_ENGINE: poly dsp phase */
+  makePolySound(m_parameters);
   /* AUDIO_ENGINE: mono dsp phase */
   makeMonoSound(m_parameters);
 
@@ -1599,7 +1600,7 @@ void dsp_host::initAudioEngine()
 /**
 *******************************************************************************/
 
-void dsp_host::makePolySound(SignalStorage &signals, uint32_t _voiceID)
+void dsp_host::makePolySound(SignalStorage &signals)
 {
   m_soundgenerator.generate(m_feedbackmixer.m_out, signals);
   m_combfilter.apply(m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, signals);
@@ -1850,16 +1851,13 @@ void dsp_host::resetEnv()
 
 void dsp_host::muteOsc(uint32_t _oscId, uint32_t _state)
 {
-  for(uint32_t v = 0; v < m_voices; v++)
+  switch(_oscId)
   {
-    switch(_oscId)
-    {
-      case 0:
-        m_soundgenerator[v].m_OscA_mute = _state;
-        break;
-      case 1:
-        m_soundgenerator[v].m_OscB_mute = _state;
-        break;
-    }
+    case 0:
+      m_soundgenerator.m_mute_state_A = _state ? 0 : 1;
+      break;
+    case 1:
+      m_soundgenerator.m_mute_state_B = _state ? 0 : 1;
+      break;
   }
 }

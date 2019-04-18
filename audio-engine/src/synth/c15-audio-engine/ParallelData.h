@@ -241,7 +241,7 @@ namespace std
 
 template <typename T, size_t size>
 inline ParallelData<T, size> unipolarCrossFade(const ParallelData<T, size> &_sample1,
-                                               const ParallelData<T, size> &_sample2, const ParallelData<T, size> &_mix)
+                                               const ParallelData<T, size> &_sample2, const float &_mix)
 {
   return (1.f - _mix) * _sample1 + _mix * _sample2;
 }
@@ -404,7 +404,7 @@ inline ParallelData<T, size> parAsym(const ParallelData<T, size> &sample, const 
 
 template <typename T, size_t size>
 inline ParallelData<T, size> bipolarCrossFade(const ParallelData<T, size> &_sample1,
-                                              const ParallelData<T, size> &_sample2, const ParallelData<T, size> &_mix)
+                                              const ParallelData<T, size> &_sample2, const T &_mix)
 {
   return (1.f - std::abs(_mix)) * _sample1 + _mix * _sample2;
 }

@@ -45,33 +45,33 @@ void ae_svfilter::init(float _samplerate)
 void ae_svfilter::apply(const FloatVector &_sampleA, const FloatVector &_sampleB, const FloatVector &_sampleComb,
                         SignalStorage &signals)
 {
-  float tmpRes = signals.get<Signals::SVF_RES>();
+  auto tmpRes = signals.get<Signals::SVF_RES>();
 
   //******************************** Sample Mix ****************************//
-  float tmpVar = signals.get<Signals::SVF_AB>();
-  float mixSample = _sampleB * (1.f - tmpVar) + _sampleA * tmpVar;
-  tmpVar = signals.get<Signals::SVF_CMIX>();
-  mixSample = mixSample * (1.f - std::abs(tmpVar)) + _sampleComb * tmpVar;
+  auto tmpAB = signals.get<Signals::SVF_AB>();
+  auto mixSample = _sampleB * (1.f - tmpAB) + _sampleA * tmpAB;
+  auto tmpCMIX = signals.get<Signals::SVF_CMIX>();
+  mixSample = mixSample * (1.f - std::abs(tmpCMIX)) + _sampleComb * tmpCMIX;
 
   //************************** Frequency Modulation ************************//
-  float fmVar = _sampleA * signals.get<Signals::SVF_FMAB>() + _sampleB * (1.f - signals.get<Signals::SVF_FMAB>());
+  auto fmVar = _sampleA * signals.get<Signals::SVF_FMAB>() + _sampleB * (1.f - signals.get<Signals::SVF_FMAB>());
 
   //************************** 1st Stage SV FILTER *************************//
-  float inputSample = mixSample + (m_first_sat_stateVar * 0.1f);
+  auto inputSample = mixSample + (m_first_sat_stateVar * 0.1f);
 
-  float omega = (signals.get<Signals::SVF_F1_CUT>() + fmVar * signals.get<Signals::SVF_F1_FM>()) * m_warpConst_2PI;
+  auto omega = (signals.get<Signals::SVF_F1_CUT>() + fmVar * signals.get<Signals::SVF_F1_FM>()) * m_warpConst_2PI;
   omega = std::clamp(omega, 0.f, test_svf_fm_limit);  /// initially 1.5f
 
-  float attenuation = ((2.f + omega) * (2.f - omega) * tmpRes) / (((tmpRes * omega) + (2.f - omega)) * 2.f);
+  auto attenuation = ((2.f + omega) * (2.f - omega) * tmpRes) / (((tmpRes * omega) + (2.f - omega)) * 2.f);
 
-  float highpassOutput = inputSample - (m_first_int1_stateVar * attenuation + m_first_int2_stateVar);
-  float bandpassOutput = highpassOutput * omega + m_first_int1_stateVar;
-  float lowpassOutput = bandpassOutput * omega + m_first_int2_stateVar;
+  auto highpassOutput = inputSample - (m_first_int1_stateVar * attenuation + m_first_int2_stateVar);
+  auto bandpassOutput = highpassOutput * omega + m_first_int1_stateVar;
+  auto lowpassOutput = bandpassOutput * omega + m_first_int2_stateVar;
 
   m_first_int1_stateVar = bandpassOutput + DNC_const;
   m_first_int2_stateVar = lowpassOutput + DNC_const;
 
-  float outputSample_1 = lowpassOutput * std::max(-(signals.get<Signals::SVF_LBH_1>()), 0.f);
+  auto outputSample_1 = lowpassOutput * std::max(-(signals.get<Signals::SVF_LBH_1>()), 0.f);
   outputSample_1 += (bandpassOutput * (1.f - std::abs(signals.get<Signals::SVF_LBH_1>())));
   outputSample_1 += (highpassOutput * std::max(signals.get<Signals::SVF_LBH_1>(), 0.f));
 
@@ -95,7 +95,7 @@ void ae_svfilter::apply(const FloatVector &_sampleA, const FloatVector &_sampleB
   m_second_int1_stateVar = bandpassOutput + DNC_const;
   m_second_int2_stateVar = lowpassOutput + DNC_const;
 
-  tmpVar = lowpassOutput * std::max(-(signals.get<Signals::SVF_LBH_2>()), 0.f);
+  auto tmpVar = lowpassOutput * std::max(-(signals.get<Signals::SVF_LBH_2>()), 0.f);
   tmpVar += (bandpassOutput * (1.f - std::abs(signals.get<Signals::SVF_LBH_2>())));
   tmpVar += (highpassOutput * std::max(signals.get<Signals::SVF_LBH_2>(), 0.f));
 
