@@ -1266,11 +1266,11 @@ void paramengine::postProcessPoly_audio(SignalStorage& signals, const uint32_t _
 #endif
   /* Unison Phase */
 #if test_milestone == 150
-  signals.set(Signals::UN_PHS, 0.f);
+  signals.set<Signals::UN_PHS>(_voiceId, 0.f);
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
-  signals.set(Signals::UN_PHS, getParameterValue(Parameters::P_UN_PHS) * m_unison_phase[uVoice][uIndex]);
+  signals.set<Signals::UN_PHS>(_voiceId, getParameterValue(Parameters::P_UN_PHS) * m_unison_phase[uVoice][uIndex]);
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
