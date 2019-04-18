@@ -34,7 +34,7 @@
 #define test_svf_fm_limit 1.5f  // SVF fm clipping maximum
 
 #define test_preload_update 1  // 0: non-optimized preload update, 1: optimized preload update (recommended)
-#define test_inputModeFlag 1   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
+#define test_inputModeFlag 0   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
 
 #define test_reverbParams 1    // 0: fast rendering (like Reaktor), 1: slow rendering (experimental)
 #define test_reverbSmoother 1  // 0: no internal smoothers (experimental), 1: internal smoothers (like Reaktor)
