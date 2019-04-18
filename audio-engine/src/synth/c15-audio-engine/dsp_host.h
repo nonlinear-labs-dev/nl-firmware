@@ -127,21 +127,21 @@ class dsp_host
   void examineSignal();
 
   /* Audio Engine */
-  ae_soundgenerator m_soundgenerator[dsp_number_of_voices];
-  ae_combfilter m_combfilter[dsp_number_of_voices];
+  ae_soundgenerator m_soundgenerator;
+  ae_combfilter m_combfilter;
 
   /// Activate the SV Filter in pe_defines_config.h -> test_svf_types
 #if test_svf_types == 0  /// Proto
-  ae_svfilter_proto m_svfilter[dsp_number_of_voices];
+  ae_svfilter_proto m_svfilter;
 #elif test_svf_types == 1  /// noFir
-  ae_svfilter m_svfilter[dsp_number_of_voices];
+  ae_svfilter m_svfilter;
 #elif test_svf_types == 2  /// Fir
-  ae_svfilter_fir m_svfilter[dsp_number_of_voices];
+  ae_svfilter_fir m_svfilter;
 #elif test_svf_types == 3  /// Primary
 
 #endif
 
-  ae_feedbackmixer m_feedbackmixer[dsp_number_of_voices];
+  ae_feedbackmixer m_feedbackmixer;
   ae_outputmixer m_outputmixer;
   ae_cabinet m_cabinet;
   ae_gapfilter m_gapfilter;
@@ -151,7 +151,7 @@ class dsp_host
   ae_test_tone m_test_tone;
 
   void initAudioEngine();
-  void makePolySound(SignalStorage &signals, uint32_t _voiceID);
+  void makePolySound(SignalStorage &signals);
   void makeMonoSound(SignalStorage &signals);
 
   // inline?

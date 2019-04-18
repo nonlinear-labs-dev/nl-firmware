@@ -132,7 +132,7 @@ void ae_reverb::set(SignalStorage &signals)
   float tmp_target;
 #if test_reverbSmoother == 1
 
-  tmpVar = signals.get(Signals::REV_SIZE);
+  tmpVar = signals.get<Signals::REV_SIZE>();
   //    tmp_target = signals.get(SignalLabel::REV_CHO) * (tmpVar * -200.f + 311.f);
   //    if (m_depth_target - tmp_target != 0.f)
   //    {
@@ -141,7 +141,7 @@ void ae_reverb::set(SignalStorage &signals)
   //        m_depth_diff = m_depth_target - m_depth_base;
   //        m_depth_ramp = 0.f;
   //    }
-  tmp_target = signals.get(Signals::REV_CHO) * (tmpVar * -200.f + 311.f);
+  tmp_target = signals.get<Signals::REV_CHO>() * (tmpVar * -200.f + 311.f);
   if(m_depth_target - tmp_target != 0.f)
   {
     m_depth_inc = (m_depth_target - m_depth) * m_smooth_inc;
@@ -156,7 +156,7 @@ void ae_reverb::set(SignalStorage &signals)
     m_size_ramp = 0.f;
   }
 
-  tmp_target = signals.get(Signals::REV_BAL);
+  tmp_target = signals.get<Signals::REV_BAL>();
   if(m_bal_target - tmp_target != 0.f)
   {
     m_bal_target = tmp_target;
@@ -165,7 +165,7 @@ void ae_reverb::set(SignalStorage &signals)
     m_bal_ramp = 0.f;
   }
 
-  tmpVar = signals.get(Signals::REV_PRE);
+  tmpVar = signals.get<Signals::REV_PRE>();
   tmp_target = std::round(tmpVar);
   if(m_preDel_L_target - tmp_target != 0.f)
   {
@@ -184,7 +184,7 @@ void ae_reverb::set(SignalStorage &signals)
     m_preDel_R_ramp = 0.f;
   }
 
-  tmp_target = std::clamp(signals.get(Signals::REV_LPF), 0.1f, m_omegaClip_max);
+  tmp_target = std::clamp(signals.get<Signals::REV_LPF>(), 0.1f, m_omegaClip_max);
   tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
   if(m_lp_omega_target - tmp_target != 0.f)
   {
@@ -194,7 +194,7 @@ void ae_reverb::set(SignalStorage &signals)
     m_lp_omega_ramp = 0.f;
   }
 
-  tmp_target = std::clamp(signals.get(Signals::REV_HPF), 0.1f, m_omegaClip_max);
+  tmp_target = std::clamp(signals.get<Signals::REV_HPF>(), 0.1f, m_omegaClip_max);
   tmp_target = NlToolbox::Math::tan(tmp_target * m_warpConst_PI);
   if(m_hp_omega_target - tmp_target != 0.f)
   {
@@ -365,7 +365,7 @@ void ae_reverb::apply(float _rawSample_L, float _rawSample_R, SignalStorage &sig
 
   //************************************************************************//
   //**************************** Left Channel ******************************//
-  wetSample_L = _rawSample_L * signals.get(Signals::REV_SND) * signals.get(Signals::REV_FEED);
+  wetSample_L = _rawSample_L * signals.get<Signals::REV_SND>() * signals.get<Signals::REV_FEED>();
 
   //****************************** Asym 2 L ********************************//
   m_buffer_L[m_buffer_indx] = wetSample_L;
@@ -524,7 +524,7 @@ void ae_reverb::apply(float _rawSample_L, float _rawSample_R, SignalStorage &sig
 
   //************************************************************************//
   //*************************** Right Channel ******************************//
-  wetSample_R = _rawSample_R * signals.get(Signals::REV_SND) * signals.get(Signals::REV_FEED);
+  wetSample_R = _rawSample_R * signals.get<Signals::REV_SND>() * signals.get<Signals::REV_FEED>();
 
   //****************************** Asym 2 R ********************************//
   m_buffer_R[m_buffer_indx] = wetSample_R;
@@ -742,11 +742,11 @@ void ae_reverb::apply(float _rawSample_L, float _rawSample_R, SignalStorage &sig
   wetSample_L = wetSample_L * m_bal_full + wetSample_L2 * m_bal_half;
   wetSample_R = wetSample_R * m_bal_full + wetSample_R2 * m_bal_half;
 
-  m_out_L = _rawSample_L * signals.get(Signals::REV_DRY) + wetSample_L * signals.get(Signals::REV_WET);
-  m_out_R = _rawSample_R * signals.get(Signals::REV_DRY) + wetSample_R * signals.get(Signals::REV_WET);
+  m_out_L = _rawSample_L * signals.get<Signals::REV_DRY>() + wetSample_L * signals.get<Signals::REV_WET>();
+  m_out_R = _rawSample_R * signals.get<Signals::REV_DRY>() + wetSample_R * signals.get<Signals::REV_WET>();
 
-  m_out_FX = ((_rawSample_L + _rawSample_R) * (1.f - signals.get(Signals::FBM_REV)))
-      + ((wetSample_L + wetSample_R) * signals.get(Signals::FBM_REV));
+  m_out_FX = ((_rawSample_L + _rawSample_R) * (1.f - signals.get<Signals::FBM_REV>()))
+      + ((wetSample_L + wetSample_R) * signals.get<Signals::FBM_REV>());
 }
 
 /******************************************************************************/

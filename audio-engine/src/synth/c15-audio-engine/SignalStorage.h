@@ -2,41 +2,59 @@
 
 #include "pe_defines_config.h"
 #include "dsp_defines_signallabels.h"
-
+#include "SignalInfo.h"
+#include "ParallelData.h"
 #include <stdlib.h>
+#include <type_traits>
 
 class SignalStorage
 {
  public:
   SignalStorage() = default;
 
-  inline SignalStorage &bindToVoice(uint32_t v)
+  template <Signals s> inline std::enable_if_t<SignalInfo::MonoSignals::Contains<s>::value, const float &> get() const
   {
-    m_boundVoice = m_sigIdsignaldata[v];
-    return *this;
+    return m_paramsignaldataM[SignalInfo::MonoSignals::IndexMapper<s>::value];
   }
 
-  inline const float &get(Signals sigId) const
+  template <Signals s>
+  inline std::enable_if_t<SignalInfo::PolySignals::Contains<s>::value, const FloatVector &> get() const
   {
-    return m_boundVoice[static_cast<uint32_t>(sigId)];
+    return m_paramsignaldataP[SignalInfo::PolySignals::IndexMapper<s>::value];
   }
 
-  inline const float &get(uint32_t voice, uint32_t sigId) const
+  template <Signals s> inline void set(std::enable_if_t<SignalInfo::MonoSignals::Contains<s>::value, float> value)
   {
-    return m_sigIdsignaldata[voice][sigId];
+    m_paramsignaldataM[SignalInfo::MonoSignals::IndexMapper<s>::value] = value;
   }
 
-  inline void set(Signals sigId, float value)
+  template <Signals s>
+  inline std::enable_if_t<SignalInfo::PolySignals::Contains<s>::value, void> set(uint32_t voice, float value)
   {
-    m_boundVoice[static_cast<uint32_t>(sigId)] = value;
+    m_paramsignaldataP[SignalInfo::PolySignals::IndexMapper<s>::value][voice] = value;
   }
 
-  inline void set(Signals sigId, uint32_t voice, float value)
+  inline const float &getOld(Signals s) const
   {
-    m_sigIdsignaldata[voice][static_cast<uint32_t>(sigId)] = value;
+    return m_paramsignaldataM[SignalInfo::MonoSignals::mapToIndex(s)];
+  }
+
+  inline const float &getOld(uint32_t voice, Signals s) const
+  {
+    return m_paramsignaldataP[SignalInfo::PolySignals::mapToIndex(s)][voice];
+  }
+
+  inline void setOld(Signals s, float value)
+  {
+    m_paramsignaldataM[SignalInfo::MonoSignals::mapToIndex(s)] = value;
+  }
+
+  inline void setOld(Signals s, uint32_t voice, float value)
+  {
+    m_paramsignaldataP[SignalInfo::PolySignals::mapToIndex(s)][voice] = value;
   }
 
  private:
-  float m_sigIdsignaldata[dsp_number_of_voices][sig_number_of_signal_items] = {};
-  float *m_boundVoice = m_sigIdsignaldata[0];
+  FloatVector m_paramsignaldataP[SignalInfo::PolySignals::size] = {};
+  float m_paramsignaldataM[SignalInfo::MonoSignals::size] = {};
 };

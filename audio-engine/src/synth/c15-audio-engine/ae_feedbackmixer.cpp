@@ -48,24 +48,25 @@ void ae_feedbackmixer::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_feedbackmixer::set(SignalStorage &signals)
+void ae_feedbackmixer::set(SignalStorage &signals, uint32_t _voiceID)
 {
-  float omega = std::clamp(signals.get(Signals::FBM_HPF), m_freqClip_min, m_freqClip_max);
+  auto omega = std::clamp(signals.get<Signals::FBM_HPF>()[_voiceID], m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
 
-  m_hp_a1 = (1.f - omega) / (1.f + omega);
-  m_hp_b0 = 1.f / (1.f + omega);
-  m_hp_b1 = (1.f / (1.f + omega)) * -1.f;
+  m_hp_a1[_voiceID] = (1.f - omega) / (1.f + omega);
+  m_hp_b0[_voiceID] = 1.f / (1.f + omega);
+  m_hp_b1[_voiceID] = (1.f / (1.f + omega)) * -1.f;
 }
 
 /******************************************************************************/
 /** @brief
 *******************************************************************************/
 
-void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleFX, SignalStorage &signals)
+void ae_feedbackmixer::apply(const FloatVector &_sampleComb, const FloatVector &_sampleSVF,
+                             const FloatVector &_sampleFX, SignalStorage &signals)
 {
-  float tmpVar = _sampleFX * signals.get(Signals::FBM_FX) + _sampleComb * signals.get(Signals::FBM_CMB)
-      + _sampleSVF * signals.get(Signals::FBM_SVF);
+  auto tmpVar = _sampleFX * signals.get<Signals::FBM_FX>() + _sampleComb * signals.get<Signals::FBM_CMB>()
+      + _sampleSVF * signals.get<Signals::FBM_SVF>();
 
   m_out = m_hp_b0 * tmpVar;  // HP
   m_out += m_hp_b1 * m_hp_stateVar_1;
@@ -74,19 +75,18 @@ void ae_feedbackmixer::apply(float _sampleComb, float _sampleSVF, float _sampleF
   m_hp_stateVar_1 = tmpVar + DNC_const;
   m_hp_stateVar_2 = m_out + DNC_const;
 
-  m_out *= signals.get(Signals::FBM_DRV);
+  m_out *= signals.get<Signals::FBM_DRV>();
 
   tmpVar = m_out;
-  m_out = NlToolbox::Math::sinP3_wrap(m_out);
-  m_out = NlToolbox::Others::threeRanges(m_out, tmpVar, signals.get(Signals::FBM_FLD));
+  m_out = sinP3_wrap(m_out);
+  m_out = threeRanges(m_out, tmpVar, signals.get<Signals::FBM_FLD>());
 
   tmpVar = m_out * m_out;
   tmpVar -= m_hp30hz_stateVar;  // HP 30Hz
   m_hp30hz_stateVar = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar + NlToolbox::Constants::DNC_const;
 
-  m_out = NlToolbox::Others::parAsym(m_out, tmpVar, signals.get(Signals::FBM_ASM));
-
-  m_out = m_out * signals.get(Signals::FBM_LVL);
+  m_out = parAsym(m_out, tmpVar, signals.get<Signals::FBM_ASM>());
+  m_out = m_out * signals.get<Signals::FBM_LVL>();
 }
 
 /******************************************************************************/
