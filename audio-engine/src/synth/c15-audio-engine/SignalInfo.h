@@ -2,6 +2,7 @@
 
 #include "dsp_defines_signallabels.h"
 #include <initializer_list>
+#include <unordered_map>
 
 namespace SignalInfo
 {
@@ -39,31 +40,34 @@ namespace SignalInfo
 
     static constexpr auto size = sizeof...(IDs);
 
+    static const std::unordered_map<Signals, int> s_map;
+
     static inline bool contains(Signals id)
     {
-      std::initializer_list<Signals> ids{ IDs... };
-
-      for(auto i : ids)
-        if(i == id)
-          return true;
-
-      return false;
+      return s_map.count(id) > 0;
     }
 
     static inline int mapToIndex(Signals id)
     {
+      return s_map.at(id);
+    }
+
+    static std::unordered_map<Signals, int> createMap()
+    {
+      std::unordered_map<Signals, int> ret;
+
       int index = 0;
       std::initializer_list<Signals> ids{ IDs... };
 
       for(auto i : ids)
-        if(i == id)
-          return index;
-        else
-          index++;
+        ret[i] = index++;
 
-      return 0;
+      return ret;
     }
   };
+
+  template <Signals... IDs>
+  const std::unordered_map<Signals, int> SignalList<IDs...>::s_map = SignalList<IDs...>::createMap();
 
   using PolySignals
       = SignalList<Signals::ENV_A_MAG, Signals::ENV_A_TMB, Signals::ENV_B_MAG, Signals::ENV_B_TMB, Signals::ENV_C_CLIP,
