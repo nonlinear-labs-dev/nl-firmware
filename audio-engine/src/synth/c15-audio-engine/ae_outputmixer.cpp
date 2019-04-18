@@ -31,10 +31,8 @@ void ae_outputmixer::init(float _samplerate, uint32_t _numOfVoices)
   m_hp30hz_b0 = (6.28319f / _samplerate) * 30.f;
   m_hp30hz_b0 = std::min(m_hp30hz_b0, 0.8f);
 
-  m_hp30hz_stateVar_L.resize(_numOfVoices);
-  std::fill(m_hp30hz_stateVar_L.begin(), m_hp30hz_stateVar_L.end(), 0.f);
-  m_hp30hz_stateVar_R.resize(_numOfVoices);
-  std::fill(m_hp30hz_stateVar_R.begin(), m_hp30hz_stateVar_R.end(), 0.f);
+  m_hp30hz_stateVar_L = 0.f;
+  m_hp30hz_stateVar_R = 0.f;
 
   //*************************** 1 pole Highpass ****************************//
   float omega = NlToolbox::Math::tan(12.978f * NlToolbox::Constants::pi / static_cast<float>(_samplerate));
@@ -53,23 +51,23 @@ void ae_outputmixer::init(float _samplerate, uint32_t _numOfVoices)
 /** @brief
 *******************************************************************************/
 
-void ae_outputmixer::combine(float _sampleA, float _sampleB, float _sampleComb, float _sampleSVFilter,
-                             SignalStorage &signals, uint32_t _voiceID)
+void ae_outputmixer::combine(const FloatVector &_sampleA, const FloatVector &_sampleB, const FloatVector &_sampleComb,
+                             const FloatVector &_sampleSVFilter, SignalStorage &signals)
 {
   //******************************* Left Mix *******************************//
-  float mainSample = signals.get<Signals::OUT_A_L>() * _sampleA + signals.get<Signals::OUT_B_L>() * _sampleB
+  auto mainSample = signals.get<Signals::OUT_A_L>() * _sampleA + signals.get<Signals::OUT_B_L>() * _sampleB
       + signals.get<Signals::OUT_CMB_L>() * _sampleComb + signals.get<Signals::OUT_SVF_L>() * _sampleSVFilter;
 
   //************************* Left Sample Shaper ***************************//
   mainSample *= signals.get<Signals::OUT_DRV>();
-  float tmpVar = mainSample;
+  auto tmpSample = mainSample;
 
-  mainSample = NlToolbox::Math::sinP3_wrap(mainSample);
-  mainSample = NlToolbox::Others::threeRanges(mainSample, tmpVar, signals.get<Signals::OUT_FLD>());
+  mainSample = sinP3_wrap(tmpSample);
+  mainSample = threeRanges(mainSample, tmpSample, signals.get<Signals::OUT_FLD>());
 
-  tmpVar = mainSample * mainSample;
-  tmpVar = tmpVar - m_hp30hz_stateVar_L[_voiceID];
-  m_hp30hz_stateVar_L[_voiceID] = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar_L[_voiceID] + DNC_const;
+  auto tmpSampleQuad = mainSample * mainSample;
+  tmpSampleQuad = tmpSampleQuad - m_hp30hz_stateVar_L;
+  m_hp30hz_stateVar_L = tmpSampleQuad * m_hp30hz_b0 + m_hp30hz_stateVar_L + DNC_const;
 
   mainSample = NlToolbox::Others::parAsym(mainSample, tmpVar, signals.get<Signals::OUT_ASM>());
 

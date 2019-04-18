@@ -24,7 +24,7 @@ ae_soundgenerator::ae_soundgenerator()
 /** @brief
 *******************************************************************************/
 
-void ae_soundgenerator::init(float _samplerate, uint32_t _vn)
+void ae_soundgenerator::init(float _samplerate)
 {
   m_out_A = 0.f;
   m_out_B = 0.f;
@@ -44,58 +44,61 @@ void ae_soundgenerator::init(float _samplerate, uint32_t _vn)
   m_chiB_a0 = 0.f;
   m_chiB_a1 = 0.f;
 
-  m_OscA_randVal_int = static_cast<int32_t>(_vn) + 1;
-  m_OscB_randVal_int = static_cast<int32_t>(_vn) + 1 + 111;
+  for(int vn = 0; vn < dsp_number_of_voices; vn++)
+  {
+    m_OscA_randVal_int = vn + 1;
+    m_OscB_randVal_int = vn + 1 + 111;
+  }
 
-  m_OscA_mute = 0;
-  m_OscB_mute = 0;
+  m_OscA_mute = 0u;
+  m_OscB_mute = 0u;
 }
 
 /******************************************************************************/
 /** @brief
 *******************************************************************************/
-void ae_soundgenerator::set(SignalStorage &signals)
+void ae_soundgenerator::set(SignalStorage &signals, uint32_t voice)
 {
   //*************************** Chirp Filter A *****************************//
-  m_chiA_omega = signals.get<Signals::OSC_A_CHI>() * m_warpConst_PI;
-  m_chiA_omega = NlToolbox::Math::tan(m_chiA_omega);
+  m_chiA_omega[voice] = signals.get<Signals::OSC_A_CHI>() * m_warpConst_PI;
+  m_chiA_omega[voice] = NlToolbox::Math::tan(m_chiA_omega[voice]);
 
-  m_chiA_a0 = 1.f / (m_chiA_omega + 1.f);
-  m_chiA_a1 = m_chiA_omega - 1.f;
+  m_chiA_a0[voice] = 1.f / (m_chiA_omega[voice] + 1.f);
+  m_chiA_a1[voice] = m_chiA_omega[voice] - 1.f;
 
   //*************************** Chirp Filter B *****************************//
-  m_chiB_omega = signals.get<Signals::OSC_B_CHI>() * m_warpConst_PI;
-  m_chiB_omega = NlToolbox::Math::tan(m_chiB_omega);
+  m_chiB_omega[voice] = signals.get<Signals::OSC_B_CHI>() * m_warpConst_PI;
+  m_chiB_omega[voice] = NlToolbox::Math::tan(m_chiB_omega[voice]);
 
-  m_chiB_a0 = 1.f / (m_chiB_omega + 1.f);
-  m_chiB_a1 = m_chiB_omega - 1.f;
+  m_chiB_a0[voice] = 1.f / (m_chiB_omega[voice] + 1.f);
+  m_chiB_a1[voice] = m_chiB_omega[voice] - 1.f;
 }
 
 /******************************************************************************/
 /** @brief
 *******************************************************************************/
 
-void ae_soundgenerator::resetPhase(float _phase)
+void ae_soundgenerator::resetPhase(float _phase, uint32_t _voiceID)
 {
-  m_oscA_phase = _phase;
-  m_oscB_phase = _phase;
+  m_oscA_phase[_voiceID] = _phase;
+  m_oscB_phase[_voiceID] = _phase;
   /* */
-  m_oscA_selfmix = 0.f;
-  m_oscA_crossmix = 0.f;
-  m_chiA_stateVar = 0.f;
+  m_oscA_selfmix[_voiceID] = 0.f;
+  m_oscA_crossmix[_voiceID] = 0.f;
+  m_chiA_stateVar[_voiceID] = 0.f;
   /* */
-  m_oscB_selfmix = 0.f;
-  m_oscB_crossmix = 0.f;
-  m_chiB_stateVar = 0.f;
+  m_oscB_selfmix[_voiceID] = 0.f;
+  m_oscB_crossmix[_voiceID] = 0.f;
+  m_chiB_stateVar[_voiceID] = 0.f;
   /* */
-  m_feedback_phase = 0.f;
+  m_feedback_phase[_voiceID] = 0.f;
 }
 
 /******************************************************************************/
 /** @brief
 *******************************************************************************/
 
-void ae_soundgenerator::generate(float _feedbackSample, SignalStorage &signals)
+void ae_soundgenerator::generate(const FloatVector &_feedbackSample, SignalStorage &signals)
 {
   float tmpVar;
 
@@ -116,7 +119,7 @@ void ae_soundgenerator::generate(float _feedbackSample, SignalStorage &signals)
   oscSampleA += m_oscA_phase;
 
   oscSampleA += signals.get<Signals::OSC_A_PHS>() + signals.get<Signals::UN_PHS>();  // NEW Phase Offset
-  oscSampleA += (-0.25f);                                                                // Wrap
+  oscSampleA += (-0.25f);                                                            // Wrap
   oscSampleA -= NlToolbox::Conversion::float2int(oscSampleA);
 
   if(std::abs(m_oscA_phase_stateVar - oscSampleA) > 0.5f)  // Check edge
@@ -153,7 +156,7 @@ void ae_soundgenerator::generate(float _feedbackSample, SignalStorage &signals)
   oscSampleB += m_oscB_phase;
 
   oscSampleB += signals.get<Signals::OSC_B_PHS>() + signals.get<Signals::UN_PHS>();  // NEW Phase Offset
-  oscSampleB += (-0.25f);                                                                // Warp
+  oscSampleB += (-0.25f);                                                            // Warp
   oscSampleB -= NlToolbox::Conversion::float2int(oscSampleB);
 
   if(std::abs(m_oscB_phase_stateVar - oscSampleB) > 0.5f)  // Check edge

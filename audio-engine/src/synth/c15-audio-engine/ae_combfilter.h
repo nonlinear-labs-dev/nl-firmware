@@ -25,7 +25,7 @@ struct ae_combfilter
   ae_combfilter();  // Default Contructor
 
   FloatVector m_out;  // Generated Sample
-  float m_decayStateVar;
+  FloatVector m_decayStateVar;
 
   float m_sampleInterval;
   float m_warpConst_PI;
@@ -35,8 +35,8 @@ struct ae_combfilter
   float m_freqClip_24576;
 
   void init(float _samplerate, uint32_t _upsampleFactor);
-  void apply(float _sampleA, float _sampleB, SignalStorage &signals);
-  void set(SignalStorage &signals, float _samplerate);
+  void apply(const FloatVector &_sampleA, const FloatVector &_sampleB, SignalStorage &signals);
+  void set(SignalStorage &signals, float _samplerate, uint32_t _voiceID);
   void setDelaySmoother(uint32_t voice);
   void resetDSP();
 
@@ -56,7 +56,7 @@ struct ae_combfilter
   FloatVector m_apStateVar_4;
 
   //****************************** Delay/ Decay *****************************//
-  Int32Vector m_buffer_indx;
+  int32_t m_buffer_indx;
   int32_t m_buffer_sz_m1;
   std::vector<FloatVector> m_buffer;
 
@@ -65,5 +65,5 @@ struct ae_combfilter
   float m_delayConst;
   FloatVector m_delayStateVar;
 
-  float m_decayGain;
+  FloatVector m_decayGain;
 };

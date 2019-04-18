@@ -933,14 +933,16 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   /* - Oscillator A Frequency in Hz (Base Pitch, Master Tune, Key Tracking, Osc Pitch, Envelope C) */
   keyTracking = getParameterValue(Parameters::P_OA_PKT);
   unitPitch = getParameterValue(Parameters::P_OA_P);
-  envMod = signals.get<Signals::ENV_C_UNCL>() * getParameterValue(Parameters::P_OA_PEC);
+  envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OA_PEC);
   signals.set<Signals::OSC_A_FRQ>(
+      _voiceId,
       evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OA_FEC);
   signals.set<Signals::OSC_A_FLUEC>(
+      _voiceId,
       getParameterValue(Parameters::P_OA_F)
-      * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals.get<Signals::ENV_C_CLIP>(), envMod));
+          * NlToolbox::Crossfades::unipolarCrossFade(1.f, signals.get<Signals::ENV_C_CLIP>()[_voiceId], envMod));
   /* - Oscillator A Chirp Frequency in Hz */
   signals.set<Signals::OSC_A_CHI>(evalNyquist(getParameterValue(Parameters::P_OA_CHI) * 440.f));
   /* Oscillator B */

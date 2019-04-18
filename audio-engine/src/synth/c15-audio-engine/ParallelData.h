@@ -207,6 +207,16 @@ namespace std
     return ret;
   }
 
+  template <typename T, size_t size> inline ParallelData<T, size> max(const ParallelData<T, size> &in, T a)
+  {
+    ParallelData<T, size> ret;
+
+    for(size_t i = 0; i < size; i++)
+      ret[i] = std::max(in[i], a);
+
+    return ret;
+  }
+
   template <typename T, size_t size> inline ParallelData<T, size> clamp(const ParallelData<T, size> &in, T min, T max)
   {
     ParallelData<T, size> ret;
@@ -246,7 +256,7 @@ template <typename T, size_t size> inline ParallelData<T, size> keepFractional(c
   return ret;
 }
 
-#if 1
+#if 0
 
 template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(const ParallelData<T, size> &_x)
 {
@@ -274,7 +284,7 @@ template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(Paral
   return sinP3_noWrap(_x);
 }
 
-#elif 0
+#elif 1
 template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(ParallelData<T, size> _x)
 {
   ParallelData<T, size> ret;
@@ -324,7 +334,7 @@ template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(Par
 #if 1
 template <typename T, size_t size>
 inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, const ParallelData<T, size> &ctrlSample,
-                                         const ParallelData<T, size> &foldAmnt)
+                                         const float &foldAmnt)
 {
   ParallelData<T, size> ret;
 
@@ -332,11 +342,11 @@ inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, co
   {
     if(ctrlSample[i] < -0.25f)
     {
-      ret[i] = (sample[i] + 1.f) * foldAmnt[i] - 1.f;
+      ret[i] = (sample[i] + 1.f) * foldAmnt - 1.f;
     }
     else if(ctrlSample[i] > 0.25f)
     {
-      ret[i] = (sample[i] - 1.f) * foldAmnt[i] + 1.f;
+      ret[i] = (sample[i] - 1.f) * foldAmnt + 1.f;
     }
     else
     {
@@ -387,7 +397,7 @@ inline ParallelData<float, size> threeRanges(const ParallelData<float, size> &sa
 
 template <typename T, size_t size>
 inline ParallelData<T, size> parAsym(const ParallelData<T, size> &sample, const ParallelData<T, size> &sample_square,
-                                     const ParallelData<T, size> &asymAmnt)
+                                     const float &asymAmnt)
 {
   return ((1.f - asymAmnt) * sample) + (2.f * asymAmnt * sample_square);
 }

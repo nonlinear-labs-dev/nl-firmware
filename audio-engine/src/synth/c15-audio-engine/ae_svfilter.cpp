@@ -42,7 +42,8 @@ void ae_svfilter::init(float _samplerate)
 /** @brief
 *******************************************************************************/
 
-void ae_svfilter::apply(float _sampleA, float _sampleB, float _sampleComb, SignalStorage &signals)
+void ae_svfilter::apply(const FloatVector &_sampleA, const FloatVector &_sampleB, const FloatVector &_sampleComb,
+                        SignalStorage &signals)
 {
   float tmpRes = signals.get<Signals::SVF_RES>();
 
