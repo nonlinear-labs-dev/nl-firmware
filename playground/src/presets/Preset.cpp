@@ -251,16 +251,6 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
                   });
 }
 
-void Preset::writeDetailDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision, bool force) const
-{
-  bool changed = force || knownRevision < getUpdateIDOfLastChange();
-
-  writer.writeTag("original", Attribute("changed", changed), [&]() {
-    if(changed)
-      PresetParameterGroups::writeDocument(writer, knownRevision);
-  });
-};
-
 void Preset::writeDiff(Writer &writer, const Preset *other) const
 {
   char txt[256];

@@ -144,29 +144,34 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   addAction("load-preset-from-xml", [&](shared_ptr<NetworkRequest> request) mutable {
     if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto scope = presetManager.getUndoScope().startTransaction("Load Compare Buffer");
-      auto transaction = scope->getTransaction();
-      auto xml = http->get("xml", "");
-
-      MemoryInStream stream(xml, false);
-      XmlReader reader(stream, transaction);
       auto editBuffer = presetManager.getEditBuffer();
 
-      auto newPreset = std::make_shared<Preset>(editBuffer);
+      Preset p(editBuffer);
 
-      if(!reader.read<PresetSerializer>(newPreset.get()))
       {
-        transaction->rollBack();
-        http->respond("Invalid File!");
-        DebugLevel::warning("Could not read Preset xml!");
-        return;
+        auto scope = presetManager.getUndoScope().startTrashTransaction();
+        auto transaction = scope->getTransaction();
+        auto xml = http->get("xml", "");
+
+        MemoryInStream stream(xml, false);
+        XmlReader reader(stream, transaction);
+
+        if(!reader.read<PresetSerializer>(&p))
+        {
+          http->respond("Invalid File!");
+          DebugLevel::warning("Could not read Preset xml!");
+          return;
+        }
       }
 
-      LPCParameterChangeSurpressor lpcParameterChangeSupressor(transaction);
+      auto loadscope = presetManager.getUndoScope().startTransaction("Load Compare Buffer");
+      auto loadtransaction = loadscope->getTransaction();
+
+      LPCParameterChangeSurpressor lpcParameterChangeSupressor(loadtransaction);
       auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
       auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
-      editBuffer->copyFrom(transaction, newPreset.get());
-      editBuffer->undoableSetLoadedPresetInfo(transaction, newPreset.get());
+      editBuffer->copyFrom(loadtransaction, &p);
+      editBuffer->undoableSetLoadedPresetInfo(loadtransaction, &p);
     }
   });
 

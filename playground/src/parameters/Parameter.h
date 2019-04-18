@@ -52,10 +52,6 @@ class Parameter : public UpdateDocumentContributor,
   ParameterGroup *getParentGroup();
   gint32 getID() const;
 
-  PresetParameter *getOriginalParameter() const;
-
-  virtual bool isChangedFromLoaded() const;
-  virtual bool isValueChangedFromLoaded() const;
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
 
@@ -122,7 +118,12 @@ class Parameter : public UpdateDocumentContributor,
 
   void check();
 
+  //Recall
   void undoableRecallFromPreset();
+  PresetParameter *getOriginalParameter() const;
+
+  virtual bool isChangedFromLoaded() const;
+  virtual bool isValueChangedFromLoaded() const;
 
  protected:
   virtual void sendToLpc() const;

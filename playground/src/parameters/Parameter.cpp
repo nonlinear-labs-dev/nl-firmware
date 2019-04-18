@@ -219,18 +219,10 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 
 PresetParameter *Parameter::getOriginalParameter() const
 {
-  auto pm = Application::get().getPresetManager();
-  if(auto presetLoadedFrom = pm->getEditBuffer()->getOrigin())
-  {
-    try
-    {
-      return presetLoadedFrom->findParameterByID(getID());
-    }
-    catch(...)
-    {
-    }
-  }
-  return nullptr;
+  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
+  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
+  assert(ret != nullptr && "originalParameter is null and should not be");
+  return ret;
 }
 
 bool Parameter::isChangedFromLoaded() const
@@ -242,17 +234,8 @@ bool Parameter::isValueChangedFromLoaded() const
 {
   const int denominator = static_cast<const int>(getValue().getFineDenominator());
   const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
-
-  if(auto originalParameter = getOriginalParameter())
-  {
-    const int roundedOG = static_cast<const int>(originalParameter->getValue() * denominator);
-    return roundedOG != roundedNow;
-  }
-  else
-  {
-    const int roundedDefault = static_cast<const int>(getDefaultValue() * denominator);
-    return roundedDefault != roundedNow;
-  }
+  const int roundedOG = static_cast<const int>(getOriginalParameter()->getValue() * denominator);
+  return roundedOG != roundedNow;
 }
 
 bool Parameter::isBiPolar() const
@@ -542,8 +525,9 @@ void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
-  auto origin = original ? "Preset" : "Init-Sound";
-  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), origin);
+  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
+  auto originStr = eb->getRecallOrigin();
+  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), originStr);
   auto transaction = transactionScope->getTransaction();
   if(original)
     setCPFromHwui(transaction, original->getValue());

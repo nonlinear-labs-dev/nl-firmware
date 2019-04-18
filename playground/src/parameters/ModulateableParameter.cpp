@@ -492,22 +492,6 @@ bool ModulateableParameter::isMacroControlAssignedAndChanged() const
   return false;
 }
 
-PresetParameter *ModulateableParameter::getOriginalMC() const
-{
-  if(auto original = getOriginalParameter())
-  {
-    if(original->getModulationSource() == ModulationSource::NONE)
-      return nullptr;
-
-    auto originalMCID = MacroControlsGroup::modSrcToParamID(original->getModulationSource());
-    if(auto origin = Application::get().getPresetManager()->getEditBuffer()->getOrigin())
-    {
-      return origin->findParameterByID(originalMCID);
-    }
-  }
-  return nullptr;
-}
-
 Parameter *ModulateableParameter::getMacroControl() const
 {
   auto myMCID = MacroControlsGroup::modSrcToParamID(getModulationSource());

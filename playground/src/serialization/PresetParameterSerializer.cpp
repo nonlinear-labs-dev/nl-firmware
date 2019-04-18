@@ -35,14 +35,23 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
     reader.onTextElement("value", [&](const Glib::ustring &text, const Attributes &attr) mutable {
       auto v = stod(text);
       auto converted = ParameterImportConversions::get().convert(m_param->m_id, v, reader.getFileVersion());
-      converted = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(m_param->m_id)->getValue().getQuantizedValue(converted, true);
+      converted = Application::get()
+                      .getPresetManager()
+                      ->getEditBuffer()
+                      ->findParameterByID(m_param->m_id)
+                      ->getValue()
+                      .getQuantizedValue(converted, true);
       m_param->setValue(reader.getTransaction(), converted);
     });
 
     reader.onTextElement("modAmount", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
-      auto v = stod(text);
-      auto converted = ParameterImportConversions::get().convertMCAmount(m_param->m_id, v, reader.getFileVersion());
-      m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, std::to_string(converted));
+      double value = 0;
+      if(!text.empty())
+      {
+        auto v = stod(text);
+        value = ParameterImportConversions::get().convertMCAmount(m_param->m_id, v, reader.getFileVersion());
+      }
+      m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, std::to_string(value));
     });
 
     reader.onTextElement("modSrc", [=, &reader](const Glib::ustring &text, const Attributes &attr) {

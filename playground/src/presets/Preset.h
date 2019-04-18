@@ -11,14 +11,12 @@
 class EditBuffer;
 class Bank;
 class PresetSerializer;
-class PresetSettingsSerializer;
 class ParameterGroupsSerializer;
 class SearchQuery;
 
 class PresetParameterGroup;
 class PresetParameter;
 class PresetParameterGroupsSerializer;
-class PresetSettingsSerializer;
 
 class Preset : public PresetParameterGroups
 {
@@ -33,7 +31,6 @@ class Preset : public PresetParameterGroups
 
   // supported interfaces
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  void writeDetailDocument(Writer &writer, tUpdateID knownRevision, bool force) const;
   void load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath);
   bool save(RefPtr<Gio::File> bankPath);
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
@@ -77,5 +74,7 @@ class Preset : public PresetParameterGroups
 
   friend class PresetSerializer;
   friend class PresetSettingsSerializer;
+  friend class RecallEditBufferSerializer;
   friend class PresetParameterGroupsSerializer;
+  friend class RecallParameterGroups;
 };

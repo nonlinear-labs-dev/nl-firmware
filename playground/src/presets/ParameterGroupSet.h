@@ -18,8 +18,6 @@ class ParameterGroupSet : public AttributesOwner
   ParameterGroupSet(UpdateDocumentContributor *parent);
   ~ParameterGroupSet() override;
 
-  virtual void init();
-
   typedef ParameterGroup *tParameterGroupPtr;
 
   size_t countParameters() const;
@@ -37,7 +35,7 @@ class ParameterGroupSet : public AttributesOwner
 
  protected:
   void copyFrom(UNDO::Transaction *transaction, const Preset *other);
-  virtual tParameterGroupPtr appendParameterGroup(ParameterGroup *p);
+  tParameterGroupPtr appendParameterGroup(ParameterGroup *p);
 
  private:
   IntrusiveList<tParameterGroupPtr> m_parameterGroups;

@@ -40,13 +40,13 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
-      getMappings().forEachButton([&](int buttonId, const list<int> parameters) {
+      getMappings().forEachButton([&](int buttonId, const list<int>& parameters) {
         Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
             BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
         letChangedButtonsBlink(buttonId, parameters, states);
       });
     else
-      getMappings().forEachButton([&](int buttonId, const list<int> parameters) {
+      getMappings().forEachButton([&](int buttonId, const list<int>& parameters) {
         Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
             BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
         setStateForButton(buttonId, parameters, states);

@@ -31,41 +31,37 @@
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
 {
+    appendParameterGroup(new EnvelopeAGroup(this));
+    appendParameterGroup(new EnvelopeBGroup(this));
+    appendParameterGroup(new EnvelopeCGroup(this));
+    appendParameterGroup(new OscillatorAGroup(this));
+    appendParameterGroup(new ShaperAGroup(this));
+    appendParameterGroup(new OscillatorBGroup(this));
+    appendParameterGroup(new ShaperBGroup(this));
+    appendParameterGroup(new FBMixerGroup(this));
+    appendParameterGroup(new CombFilterGroup(this));
+    appendParameterGroup(new SVFilterGroup(this));
+    appendParameterGroup(new OutputMixerGroup(this));
+    appendParameterGroup(new FlangerGroup(this));
+    appendParameterGroup(new CabinetGroup(this));
+    appendParameterGroup(new GapFilterGroup(this));
+    appendParameterGroup(new EchoGroup(this));
+    appendParameterGroup(new ReverbGroup(this));
+    appendParameterGroup(new MasterGroup(this));
+    appendParameterGroup(new UnisonGroup(this));
+
+    auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
+    auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this));
+    appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
+
+    appendParameterGroup(new ScaleGroup(this));
+
+    m_idToParameterMap = getParametersSortedById();
 }
 
 ParameterGroupSet::~ParameterGroupSet()
 {
   m_parameterGroups.deleteItems();
-}
-
-void ParameterGroupSet::init()
-{
-  appendParameterGroup(new EnvelopeAGroup(this));
-  appendParameterGroup(new EnvelopeBGroup(this));
-  appendParameterGroup(new EnvelopeCGroup(this));
-  appendParameterGroup(new OscillatorAGroup(this));
-  appendParameterGroup(new ShaperAGroup(this));
-  appendParameterGroup(new OscillatorBGroup(this));
-  appendParameterGroup(new ShaperBGroup(this));
-  appendParameterGroup(new FBMixerGroup(this));
-  appendParameterGroup(new CombFilterGroup(this));
-  appendParameterGroup(new SVFilterGroup(this));
-  appendParameterGroup(new OutputMixerGroup(this));
-  appendParameterGroup(new FlangerGroup(this));
-  appendParameterGroup(new CabinetGroup(this));
-  appendParameterGroup(new GapFilterGroup(this));
-  appendParameterGroup(new EchoGroup(this));
-  appendParameterGroup(new ReverbGroup(this));
-  appendParameterGroup(new MasterGroup(this));
-  appendParameterGroup(new UnisonGroup(this));
-
-  auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
-  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this));
-  appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
-
-  appendParameterGroup(new ScaleGroup(this));
-
-  m_idToParameterMap = getParametersSortedById();
 }
 
 ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::getParameterGroupByID(const Glib::ustring &id) const
