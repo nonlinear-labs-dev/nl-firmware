@@ -895,12 +895,15 @@ void paramengine::newEnvUpdateLevels(const uint32_t _voiceId)
 /* Poly Post Processing - slow parameters */
 void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _voiceId)
 {
-  /* automatic mono to poly distribution */
-  for(auto& it : m_parameters.getPostIds(SpreadTypes::Spread, ClockTypes::Slow, PolyTypes::Mono))
+  if(_voiceId == 0)
   {
-    auto p = getHead(it).m_postId;
-    signals.setOld(p, getParameterValue(it));
+    for(auto& it : m_parameters.getPostIds(SpreadTypes::Spread, ClockTypes::Slow, PolyTypes::Mono))
+    {
+      auto p = getHead(it).m_postId;
+      signals.setOld(p, getParameterValue(it));
+    }
   }
+
   /* automatic poly to poly copy - each voice */
   for(auto& it : m_parameters.getPostIds(SpreadTypes::Single, ClockTypes::Slow, PolyTypes::Poly))
   {
@@ -1047,12 +1050,15 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
 /* Poly Post Processing - fast parameters */
 void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _voiceId)
 {
-  /* automatic mono to poly distribution */
-  for(auto& it : m_parameters.getPostIds(SpreadTypes::Spread, ClockTypes::Fast, PolyTypes::Mono))
+  if(_voiceId == 0)
   {
-    auto p = getHead(it).m_postId;
-    signals.setOld(p, getParameterValue(it));
+    for(auto& it : m_parameters.getPostIds(SpreadTypes::Spread, ClockTypes::Fast, PolyTypes::Mono))
+    {
+      auto p = getHead(it).m_postId;
+      signals.setOld(p, getParameterValue(it));
+    }
   }
+
   /* automatic poly to poly copy - each voice */
   for(auto& it : m_parameters.getPostIds(SpreadTypes::Single, ClockTypes::Fast, PolyTypes::Poly))
   {
@@ -1132,11 +1138,13 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
 /* Poly Post Processing - audio parameters */
 void paramengine::postProcessPoly_audio(SignalStorage& signals, const uint32_t _voiceId)
 {
-  /* automatic mono to poly distribution */
-  for(auto& it : m_parameters.getPostIds(SpreadTypes::Spread, ClockTypes::Audio, PolyTypes::Mono))
+  if(_voiceId == 0)
   {
-    auto p = getHead(it).m_postId;
-    signals.setOld(p, getParameterValue(it));
+    for(auto& it : m_parameters.getPostIds(SpreadTypes::Spread, ClockTypes::Audio, PolyTypes::Mono))
+    {
+      auto p = getHead(it).m_postId;
+      signals.setOld(p, getParameterValue(it));
+    }
   }
   /* automatic poly to poly copy - each voice */
   for(auto& it : m_parameters.getPostIds(SpreadTypes::Single, ClockTypes::Audio, PolyTypes::Poly))
