@@ -408,14 +408,14 @@ const ParameterDefinition param_definition[sig_number_of_params] = {
   { 211, Parameters::P_FLA_TMOD, ClockTypes::Fast, PolyTypes::Mono, 8000, 4, 1, Signals::FLA_TMOD, SpreadTypes::Single,
     1, 8000 },  // 162 FLANGER_TIME_MOD
 #if test_flanger_phs == 0
-  { 213, ParameterLabel::P_FLA_PHS, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO, 80, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 14400 },  // 163 FLANGER_PHASE
+  { 213, Parameters::P_FLA_PHS, ClockTypes::Slow, PolyTypes::Mono, 80, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 14400 },  // 163 FLANGER_PHASE
 #elif test_flanger_phs == 1
   { 213, Parameters::P_FLA_PHS, ClockTypes::Fast, PolyTypes::Mono, 80, 0, 0, Signals::Invalid, SpreadTypes::Single, 0,
     14400 },  // 163 FLANGER_PHASE
 #elif test_flanger_phs == 2
-  { 213, ParameterLabel::P_FLA_PHS, PARAM_CLOCK_TYPES::PARAM_AUDIO, PARAM_POLY_TYPES::PARAM_MONO, 80, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 14400 },  // 163 FLANGER_PHASE
+  { 213, Parameters::P_FLA_PHS, ClockTypes::Audio, PolyTypes::Mono, 80, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 14400 },  // 163 FLANGER_PHASE
 #endif
   { 214, Parameters::P_FLA_RTE, ClockTypes::Audio, PolyTypes::Mono, 16000, 4, 10, Signals::Invalid, SpreadTypes::Single,
     0, 16000 },  // 164 FLANGER_RATE (audio)
@@ -432,11 +432,11 @@ const ParameterDefinition param_definition[sig_number_of_params] = {
   { 223, Parameters::P_FLA_MIX, ClockTypes::Fast, PolyTypes::Mono, 8000, 0, 0, Signals::Invalid, SpreadTypes::Single, 1,
     8000 },  // 170 FLANGER_MIX
 #if test_flanger_env == 0
-  { 307, ParameterLabel::P_FLA_ENV, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO, 16000, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 16000 },  // 171 FLANGER_ENVELOPE
+  { 307, Parameters::P_FLA_ENV, ClockTypes::Slow, PolyTypes::Mono, 16000, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 16000 },  // 171 FLANGER_ENVELOPE
 #elif test_flanger_env == 1
-  { 307, ParameterLabel::P_FLA_ENV, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO, 16000, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 16000 },  // 171 FLANGER_ENVELOPE
+  { 307, Parameters::P_FLA_ENV, ClockTypes::Slow, PolyTypes::Mono, 16000, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 16000 },  // 171 FLANGER_ENVELOPE
 #elif test_flanger_env == 2
   { 307, Parameters::P_FLA_ENV, ClockTypes::Audio, PolyTypes::Mono, 16000, 0, 0, Signals::Invalid, SpreadTypes::Single,
     0, 16000 },  // 171 FLANGER_ENVELOPE
@@ -467,14 +467,14 @@ const ParameterDefinition param_definition[sig_number_of_params] = {
 //       ID      CLOCK   POLY    RANGE   SCALE   (ARG)   POST    SPREAD  POL     FACTOR
 #if test_reverbParams == 0
   /* should the parameters run with fast clock? (except chorus) - see pe_defines_config.h */
-  { 235, ParameterLabel::P_REV_SIZE, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_MONO, 16000, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 16000 },  // 181 REVERB_SIZE
-  { 237, ParameterLabel::P_REV_PRE, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_MONO, 16000, 5, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 16000 },  // 182 REVERB_PRE_DELAY
-  { 238, ParameterLabel::P_REV_COL, PARAM_CLOCK_TYPES::PARAM_FAST, PARAM_POLY_TYPES::PARAM_MONO, 16000, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 16000 },  // 183 REVERB_COLOR
-  { 240, ParameterLabel::P_REV_CHO, PARAM_CLOCK_TYPES::PARAM_SLOW, PARAM_POLY_TYPES::PARAM_MONO, 16000, 4, 1,
-    SignalLabel::REV_CHO, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 16000 },  // 184 REVERB_CHORUS
+  { 235, Parameters::P_REV_SIZE, ClockTypes::Fast, PolyTypes::Mono, 16000, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 16000 },  // 181 REVERB_SIZE
+  { 237, Parameters::P_REV_PRE, ClockTypes::Fast, PolyTypes::Mono, 16000, 5, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 16000 },  // 182 REVERB_PRE_DELAY
+  { 238, Parameters::P_REV_COL, ClockTypes::Fast, PolyTypes::Mono, 16000, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 16000 },  // 183 REVERB_COLOR
+  { 240, Parameters::P_REV_CHO, ClockTypes::Slow, PolyTypes::Mono, 16000, 4, 1,
+    Signals::REV_CHO, SpreadTypes::Single, 0, 16000 },  // 184 REVERB_CHORUS
 #elif test_reverbParams == 1
   /* should the parameters run with slow clock? - see pe_defines_config.h */
   { 235, Parameters::P_REV_SIZE, ClockTypes::Slow, PolyTypes::Mono, 16000, 0, 0, Signals::Invalid, SpreadTypes::Single,
@@ -514,21 +514,21 @@ const ParameterDefinition param_definition[sig_number_of_params] = {
 // - - - POLY KEY EVENT - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //       ID      CLOCK   POLY    RANGE   SCALE   (ARG)   POST    SPREAD  POL     FACTOR
 #if test_milestone == 150
-  { 400, ParameterLabel::P_KEY_PH, PARAM_CLOCK_TYPES::PARAM_SYNC, PARAM_POLY_TYPES::PARAM_POLY, 14400, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 1, 7200 },  // 194 KEY_UNISON_PHASE
-  { 406, ParameterLabel::P_KEY_NP, PARAM_CLOCK_TYPES::PARAM_SYNC, PARAM_POLY_TYPES::PARAM_POLY, 1000, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 1, 1000 },  // 195 KEY_NOTE_PITCH
-  { 407, ParameterLabel::P_KEY_VP, PARAM_CLOCK_TYPES::PARAM_SYNC, PARAM_POLY_TYPES::PARAM_POLY, 8000, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 1, 8000 },  // 196 KEY_VOICE_PAN
-  { 409, ParameterLabel::P_KEY_VS, PARAM_CLOCK_TYPES::PARAM_SYNC, PARAM_POLY_TYPES::PARAM_POLY, 1, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 1 }  // 197 KEY_VOICE_STEAL
+  { 400, Parameters::P_KEY_PH, ClockTypes::Sync, PolyTypes::Poly, 14400, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 1, 7200 },  // 194 KEY_UNISON_PHASE
+  { 406, Parameters::P_KEY_NP, ClockTypes::Sync, PolyTypes::Poly, 1000, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 1, 1000 },  // 195 KEY_NOTE_PITCH
+  { 407, Parameters::P_KEY_VP, ClockTypes::Sync, PolyTypes::Poly, 8000, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 1, 8000 },  // 196 KEY_VOICE_PAN
+  { 409, Parameters::P_KEY_VS, ClockTypes::Sync, PolyTypes::Poly, 1, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 1 }  // 197 KEY_VOICE_STEAL
 #elif test_milestone == 155
-  { 416, ParameterLabel::P_KEY_BP, PARAM_CLOCK_TYPES::PARAM_SYNC, PARAM_POLY_TYPES::PARAM_POLY, 1000, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 1, 1000 },  // 194 KEY_BASE_PITCH
-  { 417, ParameterLabel::P_KEY_IDX, PARAM_CLOCK_TYPES::PARAM_SYNC, PARAM_POLY_TYPES::PARAM_POLY, 1, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 1 },  // 195 KEY_UNISON_IDX
-  { 418, ParameterLabel::P_KEY_STL, PARAM_CLOCK_TYPES::PARAM_SYNC, PARAM_POLY_TYPES::PARAM_POLY, 1, 0, 0,
-    SignalLabel::Invalid, PARAM_SPREAD_TYPES::PARAM_SINGLE, 0, 1 }  // 196 KEY_VOICE_STEAL
+  { 416, Parameters::P_KEY_BP, ClockTypes::Sync, PolyTypes::Poly, 1000, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 1, 1000 },  // 194 KEY_BASE_PITCH
+  { 417, Parameters::P_KEY_IDX, ClockTypes::Sync, PolyTypes::Poly, 1, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 1 },  // 195 KEY_UNISON_IDX
+  { 418, Parameters::P_KEY_STL, ClockTypes::Sync, PolyTypes::Poly, 1, 0, 0,
+    Signals::Invalid, SpreadTypes::Single, 0, 1 }  // 196 KEY_VOICE_STEAL
 #elif test_milestone == 156
   { 416, Parameters::P_KEY_BP, ClockTypes::Sync, PolyTypes::Poly, 1000, 0, 0, Signals::Invalid, SpreadTypes::Single, 1,
     1000 }  // 194 KEY_BASE_PITCH

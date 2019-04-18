@@ -395,14 +395,14 @@ void paramengine::keyApply(const uint32_t _voiceId)
   }
   /* apply key event (update envelopes according to event type) */
 #if test_milestone == 150
-  const float pitch = getParameterValue(ParameterLabel::P_KEY_NP, _voiceId) + getParameterValue(ParameterLabel::P_MA_T)
+  const float pitch = getParameterValue(Parameters::P_KEY_NP, _voiceId) + getParameterValue(Parameters::P_MA_T)
       + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_KEY_IDX, _voiceId));
-  const float pitch = getParameterValue(ParameterLabel::P_KEY_BP, _voiceId)
-      + (getParameterValue(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + getParameterValue(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
+  const float pitch = getParameterValue(Parameters::P_KEY_BP, _voiceId)
+      + (getParameterValue(Parameters::P_UN_DET) * m_unison_detune[uVoice][uIndex])
+      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
@@ -916,14 +916,14 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   newEnvUpdateTimes(_voiceId);
   /* Pitch Updates */
 #if test_milestone == 150
-  const float notePitch = getParameterValue(ParameterLabel::P_KEY_NP, _voiceId)
-      + getParameterValue(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId)
+      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_KEY_IDX, _voiceId));
-  const float notePitch = getParameterValue(ParameterLabel::P_KEY_BP, _voiceId)
-      + (getParameterValue(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + getParameterValue(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
+  const float notePitch = getParameterValue(Parameters::P_KEY_BP, _voiceId)
+      + (getParameterValue(Parameters::P_UN_DET) * m_unison_detune[uVoice][uIndex])
+      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
@@ -982,8 +982,8 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   // apply decay time directly
   envMod = 1.f
       - ((1.f - signals.get(SignalLabel::ENV_G_SIG))
-         * m_combDecayCurve.applyCurve(getParameterValue(ParameterLabel::P_CMB_DG)));
-  unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getParameterValue(ParameterLabel::P_CMB_D)) * envMod);
+         * m_combDecayCurve.applyCurve(getParameterValue(Parameters::P_CMB_DG)));
+  unitPitch = (-0.5f * notePitch * keyTracking) + (std::abs(getParameterValue(Parameters::P_CMB_D)) * envMod);
   signals.set(SignalLabel::CMB_DEC, m_convert.eval_level(unitPitch) * unitSign);
 #elif test_comb_decay_gate_mode == 1
   // determine decay times min, max before crossfading them by gate signal (audio post processing)
@@ -1072,14 +1072,14 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   /* temporary variables */
   float tmp_lvl, tmp_pan, tmp_abs;
 #if test_milestone == 150
-  const float notePitch = getParameterValue(ParameterLabel::P_KEY_NP, _voiceId)
-      + getParameterValue(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId)
+      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_KEY_IDX, _voiceId));
-  const float basePitch = getParameterValue(ParameterLabel::P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + (getParameterValue(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex])
-      + getParameterValue(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
+  const float basePitch = getParameterValue(Parameters::P_KEY_BP, _voiceId);
+  const float notePitch = basePitch + (getParameterValue(Parameters::P_UN_DET) * m_unison_detune[uVoice][uIndex])
+      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
@@ -1101,10 +1101,10 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   signals.set<Signals::SVF_PAR_4>(tmp_abs);
   /* Output Mixer */
 #if test_milestone == 150
-  const float poly_pan = getParameterValue(ParameterLabel::P_KEY_VP, _voiceId);
+  const float poly_pan = getParameterValue(Parameters::P_KEY_VP, _voiceId);
 #elif test_milestone == 155
-  const float poly_pan = (getParameterValue(ParameterLabel::P_OM_KP) * (basePitch - 6.f))
-      + (getParameterValue(ParameterLabel::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
+  const float poly_pan = (getParameterValue(Parameters::P_OM_KP) * (basePitch - 6.f))
+      + (getParameterValue(Parameters::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
 #elif test_milestone == 156
   const float poly_pan = (getParameterValue(Parameters::P_OM_KP) * (basePitch - 6.f))
       + (getParameterValue(Parameters::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
@@ -1266,11 +1266,11 @@ void paramengine::postProcessPoly_audio(SignalStorage& signals, const uint32_t _
 #endif
   /* Unison Phase */
 #if test_milestone == 150
-  signals.set(SignalLabel::UN_PHS, 0.f);
+  signals.set(Signals::UN_PHS, 0.f);
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_KEY_IDX, _voiceId));
-  signals.set(SignalLabel::UN_PHS, getParameterValue(ParameterLabel::P_UN_PHS) * m_unison_phase[uVoice][uIndex]);
+  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
+  signals.set(Signals::UN_PHS, getParameterValue(Parameters::P_UN_PHS) * m_unison_phase[uVoice][uIndex]);
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
@@ -1283,14 +1283,14 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
 {
   /* Pitch Updates */
 #if test_milestone == 150
-  const float notePitch = getParameterValue(ParameterLabel::P_KEY_NP, _voiceId)
-      + getParameterValue(ParameterLabel::P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId)
+      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
 #elif test_milestone == 155
-  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_UN_V));
-  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(ParameterLabel::P_KEY_IDX, _voiceId));
-  const float basePitch = getParameterValue(ParameterLabel::P_KEY_BP, _voiceId);
-  const float notePitch = basePitch + getParameterValue(ParameterLabel::P_MA_T)
-      + (getParameterValue(ParameterLabel::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + m_note_shift[_voiceId];
+  const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
+  const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
+  const float basePitch = getParameterValue(Parameters::P_KEY_BP, _voiceId);
+  const float notePitch = basePitch + getParameterValue(Parameters::P_MA_T)
+      + (getParameterValue(Parameters::P_UN_DET) * m_unison_detune[uVoice][uIndex]) + m_note_shift[_voiceId];
 #elif test_milestone == 156
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = m_unison_index[_voiceId];
@@ -1402,10 +1402,10 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   /* Output Mixer */
   float tmp_lvl, tmp_pan;
 #if test_milestone == 150
-  const float poly_pan = getParameterValue(ParameterLabel::P_KEY_VP, _voiceId);
+  const float poly_pan = getParameterValue(Parameters::P_KEY_VP, _voiceId);
 #elif test_milestone == 155
-  const float poly_pan = (getParameterValue(ParameterLabel::P_OM_KP) * (basePitch - 6.f))
-      + (getParameterValue(ParameterLabel::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
+  const float poly_pan = (getParameterValue(Parameters::P_OM_KP) * (basePitch - 6.f))
+      + (getParameterValue(Parameters::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
 #elif test_milestone == 156
   const float poly_pan = (getParameterValue(Parameters::P_OM_KP) * (basePitch - 6.f))
       + (getParameterValue(Parameters::P_UN_PAN) * m_unison_pan[uVoice][uIndex]);
@@ -1453,7 +1453,7 @@ void paramengine::postProcessMono_slow(SignalStorage& signals)
   /* - Flanger */
 #if test_flanger_phs == 0
   /*   - LFO/Envelope Rate, Phase */
-  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(ParameterLabel::P_FLA_PHS);
+  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(Parameters::P_FLA_PHS);
 #endif
   tmp_Rate = getParameterValue(Parameters::P_FLA_RTE);
   m_flangerLFO.m_increment = m_reciprocal_samplerate * tmp_Rate;
@@ -1622,7 +1622,7 @@ void paramengine::postProcessMono_fast(SignalStorage& signals)
   /* - Reverb (if fast rendering is enabled - see pe_defines_config.h) */
 #if test_reverbParams == 0
   /*   - Size to Size, Feedback, Balance */
-  tmp_val = getParameterValue(ParameterLabel::P_REV_SIZE);
+  tmp_val = getParameterValue(Parameters::P_REV_SIZE);
   tmp_val *= 2.f - std::abs(tmp_val);
   signals.set(SignalLabel::REV_SIZE, tmp_val);
   tmp_fb = tmp_val * (0.6f + (0.4f * std::abs(tmp_val)));
@@ -1630,15 +1630,15 @@ void paramengine::postProcessMono_fast(SignalStorage& signals)
   tmp_fb = tmp_val * (1.3f - (0.3f * std::abs(tmp_val)));
   signals.set(SignalLabel::REV_BAL, 0.9f * tmp_fb);
   /*   - Pre Delay */
-  signals.set(SignalLabel::REV_PRE, getParameterValue(ParameterLabel::P_REV_PRE) * 200.f * m_millisecond);
+  signals.set(SignalLabel::REV_PRE, getParameterValue(Parameters::P_REV_PRE) * 200.f * m_millisecond);
   /*   - Color to Filter Frequencies (HPF, LPF) */
-  tmp_val = getParameterValue(ParameterLabel::P_REV_COL);
+  tmp_val = getParameterValue(Parameters::P_REV_COL);
   signals.set(SignalLabel::REV_LPF,
               evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve1.applyCurve(tmp_val)) * 440.f));
   signals.set(SignalLabel::REV_HPF,
               evalNyquist(m_convert.eval_lin_pitch(m_revColorCurve2.applyCurve(tmp_val)) * 440.f));
   /*   - Mix to Dry, Wet */
-  tmp_val = getParameterValue(ParameterLabel::P_REV_MIX);
+  tmp_val = getParameterValue(Parameters::P_REV_MIX);
   tmp_dry = 1.f - tmp_val;
   tmp_dry = (2.f - tmp_dry) * tmp_dry;
   signals.set(SignalLabel::REV_DRY, tmp_dry);
@@ -1665,7 +1665,7 @@ void paramengine::postProcessMono_audio(SignalStorage& signals)
   /* - Flanger */
 #if test_flanger_phs == 2
   /*   - LFO/Envelope Rate, Phase */
-  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(ParameterLabel::P_FLA_PHS);
+  m_flangerLFO.m_phaseOffset = m_flaNormPhase * getSignal(Parameters::P_FLA_PHS);
 #endif
   /*   - render LFO, crossfade flanger envelope and pass left and right signals to array */
   m_flangerLFO.tick();

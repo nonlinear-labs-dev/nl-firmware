@@ -109,13 +109,13 @@ const Parameters paramIds_recall[lst_recall_length] = {
 
 #if test_milestone == 150
 
-const ParameterLabel paramIds_keyEvent[lst_keyEvent_length]
-    = { ParameterLabel::P_KEY_PH, ParameterLabel::P_KEY_NP, ParameterLabel::P_KEY_VP, ParameterLabel::P_KEY_VS };
+const Parameters paramIds_keyEvent[lst_keyEvent_length]
+    = { Parameters::P_KEY_PH, Parameters::P_KEY_NP, Parameters::P_KEY_VP, Parameters::P_KEY_VS };
 
 #elif test_milestone == 155
 
-const ParameterLabel paramIds_keyEvent[lst_keyEvent_length]
-    = { ParameterLabel::P_KEY_BP, ParameterLabel::P_KEY_IDX, ParameterLabel::P_KEY_STL };
+const Parameters paramIds_keyEvent[lst_keyEvent_length]
+    = { Parameters::P_KEY_BP, Parameters::P_KEY_IDX, Parameters::P_KEY_STL };
 
 #elif test_milestone == 156
 
