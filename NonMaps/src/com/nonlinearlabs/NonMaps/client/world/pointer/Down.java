@@ -36,8 +36,9 @@ abstract public class Down extends Gesture implements Gesture.HasPosition {
 	public Control applyTo(Control receiver) {
 		Control ret = receiver.mouseDown(getPosition());
 
-		if (ret != null)
+		if (ret != null) {
 			setReceiver(receiver);
+		}
 
 		return ret;
 	}

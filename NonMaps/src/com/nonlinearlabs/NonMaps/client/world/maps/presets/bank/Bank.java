@@ -2,7 +2,6 @@ package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
@@ -98,7 +97,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean skipChildOnLayout(MapsControl c) {
 		return c instanceof Tape;
@@ -142,11 +141,11 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		double reduce = toXPixels(getAttachArea());
 		r = r.getReducedBy(2 * reduce);
 		r.drawRoundedRect(ctx, Rect.ROUNDING_TOP, toXPixels(6), toXPixels(3), null, getColorBankSelect());
-	
-		for(Control c: presetList.getChildren()) {
+
+		for (Control c : presetList.getChildren()) {
 			c.drawPost(ctx, invalidationMask);
 		}
-		
+
 		drawDropIndicator(ctx);
 	}
 
@@ -410,16 +409,20 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	@Override
 	public Control click(Position eventPoint) {
+		for (Tape t : tapes)
+			if (t.getPixRect().contains(eventPoint))
+				return null;
+
 		return this;
 	}
 
 	public void setCollapsed(boolean min) {
-		if(collapsed != min) {
+		if (collapsed != min) {
 			collapsed = min;
 			requestLayout();
 		}
 	}
-	
+
 	public void toggleMinMax() {
 		collapsed = !collapsed;
 		requestLayout();
@@ -886,29 +889,29 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		Bank rightSlave = getRightSlave();
 		Bank masterTop = getMasterTop();
 		Bank masterLeft = getMasterLeft();
-		
-		switch(orientation) {
+
+		switch (orientation) {
 		case East:
-			if(rightSlave != null)
+			if (rightSlave != null)
 				return rightSlave.getTape(Orientation.West);
 			break;
 		case North:
-			if(masterTop != null)
-				return masterTop.getTape(Orientation.South); 
+			if (masterTop != null)
+				return masterTop.getTape(Orientation.South);
 			break;
 		case South:
-			if(bottomSlave != null)
+			if (bottomSlave != null)
 				return bottomSlave.getTape(Orientation.North);
 			break;
 		case West:
-			if(masterLeft != null)
+			if (masterLeft != null)
 				return masterLeft.getTape(Orientation.East);
 			break;
 		default:
 			break;
-		
+
 		}
-		
+
 		return null;
 	}
 }

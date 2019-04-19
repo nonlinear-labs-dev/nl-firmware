@@ -13,10 +13,13 @@ class RecallParameterGroups : public PresetParameterGroups
   PresetParameter *findParameterByID(int id);
   const PresetParameter *findParameterByID(int id) const;
 
+  void copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other);
+
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   void copyParamSet(UNDO::Transaction *transaction, const Preset *other);
-  void onPresetDeleted(UNDO::Transaction* transaction);
+  void onPresetDeleted(UNDO::Transaction *transaction);
+
  private:
   Glib::ustring m_origin;
 

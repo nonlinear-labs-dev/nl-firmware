@@ -27,6 +27,12 @@ const PresetParameter *RecallParameterGroups::findParameterByID(int id) const
   return const_cast<RecallParameterGroups *>(this)->findParameterByID(id);
 }
 
+void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
+{
+  transaction->addUndoSwap(m_origin, Glib::ustring("EditBuffer"));
+  PresetParameterGroups::copyFromParameterGroupSet(transaction, other);
+}
+
 void RecallParameterGroups::copyParamSet(UNDO::Transaction *transaction, const Preset *other)
 {
   for(auto &pair : other->m_parameterGroups)

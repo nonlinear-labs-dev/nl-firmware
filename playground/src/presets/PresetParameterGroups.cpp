@@ -22,6 +22,14 @@ PresetParameterGroups::PresetParameterGroups(UpdateDocumentContributor *parent, 
     m_parameterGroups[g->getID()] = std::make_unique<PresetParameterGroup>(*g);
 }
 
+void PresetParameterGroups::copyFromParameterGroupSet(UNDO::Transaction *transaction, const ParameterGroupSet *other)
+{
+  for(auto &g : other->getParameterGroups())
+    m_parameterGroups[g->getID()]->copyFrom(transaction, g);
+
+  AttributesOwner::copyFrom(transaction, other);
+}
+
 void PresetParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   for(auto &pair : m_parameterGroups)
