@@ -28,6 +28,7 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
     : super(parent, editBuffer)
 {
   m_name = editBuffer.getName();
+  m_uuid = editBuffer.getUUIDOfLastLoadedPreset();
 }
 
 Preset::~Preset()
@@ -253,30 +254,54 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
 
 void Preset::writeDiff(Writer &writer, const Preset *other) const
 {
-  char txt[256];
   auto pm = Application::get().getPresetManager();
-  std::string aPositionString;
-  std::string bPositionString;
 
-  if(auto b = dynamic_cast<Bank *>(getParent()))
-  {
-    sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(getUuid()) + 1);
-    aPositionString = txt;
-  }
+  auto posString = [&](const Preset *p) {
+    char txt[256];
+    std::string ret;
+    if(auto b = dynamic_cast<Bank *>(p->getParent()))
+    {
+      sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(p->getUuid()) + 1);
+      ret = txt;
+    }
+    else
+      ret = "Edit Buffer";
+    return ret;
+  };
 
-  if(auto b = dynamic_cast<Bank *>(other->getParent()))
-  {
-    sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(other->getUuid()) + 1);
-    bPositionString = txt;
-  }
+  auto enabled = [&](const Preset *p) {
+    auto eb = pm->getEditBuffer();
+    auto ebUUID = eb->getUUIDOfLastLoadedPreset();
+    auto isLoaded = p->getUuid() == ebUUID;
+    auto ret = !isLoaded;
+    return ret ? "true" : "false";
+  };
 
   writer.writeTag("diff", [&] {
-    writer.writeTextElement("position", "", Attribute("a", aPositionString), Attribute("b", bPositionString));
+    writer.writeTextElement("position", "", Attribute("a", posString(this)), Attribute("b", posString(other)));
     writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
+    writer.writeTextElement("enabled", "", Attribute("a", enabled(this)), Attribute("b", enabled(other)));
 
     super::writeDiff(writer, other);
 
-    for(auto &group : m_parameterGroups)
-      group.second->writeDiff(writer, group.first, other->findParameterGroup(group.first));
+    writeGroups(writer, other);
   });
+}
+
+void Preset::writeGroups(Writer &writer, const Preset *other) const
+{
+  for(auto id : { "Env A", "Env B", "Env C",    "Osc A", "Sh A",   "Osc B",  "Sh B",   "FB",  "Comb", "SVF", "Mixer",
+                  "Flang", "Cab",   "Gap Filt", "Echo",  "Reverb", "Master", "Unison", "MCs", "CS",   "MCM", "Scale" })
+  {
+    auto it = m_parameterGroups.find(id);
+    if(it != m_parameterGroups.end())
+    {
+      auto &group = it->second;
+      group->writeDiff(writer, id, other->findParameterGroup(id));
+    }
+    else
+    {
+      g_assert_not_reached();
+    }
+  }
 }

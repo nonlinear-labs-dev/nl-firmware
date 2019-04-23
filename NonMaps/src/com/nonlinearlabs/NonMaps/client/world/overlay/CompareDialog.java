@@ -169,10 +169,14 @@ public class CompareDialog extends GWTDialog {
 			}
 
 			if (colorNode != null) {
-				table.setText(row, 0, "Color");
-				table.setText(row, 1, colorNode.getAttributes().getNamedItem("a").getNodeValue());
-				table.setText(row, 2, colorNode.getAttributes().getNamedItem("b").getNodeValue());
-				row++;
+				String colora = colorNode.getAttributes().getNamedItem("a").getNodeValue();
+				String colorb = colorNode.getAttributes().getNamedItem("b").getNodeValue();
+				if(!colora.isEmpty() && !colorb.isEmpty()) {
+					table.setText(row, 0, "Color");
+					table.setText(row, 1, colora);
+					table.setText(row, 2, colorb);
+					row++;
+				}
 			}
 
 			writeParameterGroups(row);
@@ -288,24 +292,17 @@ public class CompareDialog extends GWTDialog {
 	}
 
 	public void update() {
-		updateLoadButtonStates();
 	}
 
 	private void updateLoadButtonStates() {
 		if (xml != null) {
-			loadPresetA.setEnabled(true);
-			loadPresetB.setEnabled(true);
-			/*-
-			
 			Element root = xml.getDocumentElement();
-			Node hashNode = ServerProxy.getChild(root, "hash");
-			String a = hashNode.getAttributes().getNamedItem("a").getNodeValue();
-			String b = hashNode.getAttributes().getNamedItem("b").getNodeValue();
-			String ebHash = NonMaps.get().getNonLinearWorld().getParameterEditor().getHash();
+			Node enabled = ServerProxy.getChild(root, "enabled");
+			String a = enabled.getAttributes().getNamedItem("a").getNodeValue();
+			String b = enabled.getAttributes().getNamedItem("b").getNodeValue();
 			
-			loadPresetA.setEnabled(!(presetAXml == null || a.equals(ebHash)));
-			loadPresetB.setEnabled(!(presetBXml == null || b.equals(ebHash)));
-			-*/
+			loadPresetA.setEnabled(a.equals("true"));
+			loadPresetB.setEnabled(b.equals("true"));
 		}
 	}
 
@@ -323,6 +320,8 @@ public class CompareDialog extends GWTDialog {
 			@Override
 			public void onClick(ClickEvent event) {
 				NonMaps.get().getServerProxy().loadPresetFromXML(presetAXml);
+				loadPresetA.setEnabled(false);
+				loadPresetB.setEnabled(true);
 			}
 		});
 
@@ -331,6 +330,8 @@ public class CompareDialog extends GWTDialog {
 			@Override
 			public void onClick(ClickEvent event) {
 				NonMaps.get().getServerProxy().loadPresetFromXML(presetBXml);
+				loadPresetA.setEnabled(true);
+				loadPresetB.setEnabled(false);
 			}
 		});
 	}

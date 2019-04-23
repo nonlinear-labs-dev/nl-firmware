@@ -66,6 +66,7 @@ class Preset : public PresetParameterGroups
   EditBuffer *getEditBuffer();
   size_t getHash() const = delete;
   void updateBanksLastModifiedTimestamp(UNDO::Transaction *transaction);
+  void writeGroups(Writer &w, const Preset *preset) const;
 
   Uuid m_uuid;
   Glib::ustring m_name;
