@@ -14,6 +14,7 @@
 
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
+    , m_name("New Preset")
 {
 }
 
