@@ -47,6 +47,9 @@ public abstract class Control {
 
 	public void draw(Context2d ctx, int invalidationMask) {
 	}
+	
+	public void drawPost(Context2d ctx, int invalidationMask) {
+	}
 
 	public void calcPixRect(Position parentsReference, double currentZoom) {
 	}

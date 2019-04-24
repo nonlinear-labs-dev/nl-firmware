@@ -120,7 +120,7 @@ ModulationSource PresetParameter::getModulationSource() const
 {
   auto it = m_fields.find(Fields::ModSource);
 
-  if(it != m_fields.end())
+  if(it != m_fields.end() && !it->second.empty())
     return static_cast<ModulationSource>(stoi(it->second));
 
   return ModulationSource::NONE;
@@ -130,7 +130,7 @@ double PresetParameter::getModulationAmount() const
 {
   auto it = m_fields.find(Fields::ModAmount);
 
-  if(it != m_fields.end())
+  if(it != m_fields.end() && !it->second.empty())
     return stod(it->second);
 
   return 0.0;
@@ -165,7 +165,7 @@ enum RibbonReturnMode PresetParameter::getRibbonReturnMode() const
 {
   auto it = m_fields.find(Fields::RibbonReturnMode);
 
-  if(it != m_fields.end())
+  if(it != m_fields.end() && !it->second.empty())
     return static_cast<enum RibbonReturnMode>(stoi(it->second));
 
   using RRM = enum RibbonReturnMode;
@@ -176,7 +176,7 @@ enum RibbonTouchBehaviour PresetParameter::getRibbonTouchBehaviour() const
 {
   auto it = m_fields.find(Fields::RibbonTouchBehaviour);
 
-  if(it != m_fields.end())
+  if(it != m_fields.end() && !it->second.empty())
     return static_cast<enum RibbonTouchBehaviour>(stoi(it->second));
 
   using RTB = enum RibbonTouchBehaviour;
@@ -187,7 +187,7 @@ enum PedalModes PresetParameter::getPedalMode() const
 {
   auto it = m_fields.find(Fields::PedalMode);
 
-  if(it != m_fields.end())
+  if(it != m_fields.end() && !it->second.empty())
     return static_cast<enum PedalModes>(stoi(it->second));
 
   return PedalModes::STAY;

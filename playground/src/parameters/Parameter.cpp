@@ -181,7 +181,7 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *
 
 void Parameter::copyTo(UNDO::Transaction *transaction, PresetParameter *other) const
 {
-  other->setValue(transaction, getControlPositionValue());
+  other->setValue(transaction, getValue().getRawValue());
 }
 
 void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *value)
@@ -219,33 +219,24 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 
 PresetParameter *Parameter::getOriginalParameter() const
 {
-  auto pm = Application::get().getPresetManager();
-  if(auto presetLoadedFrom = pm->getEditBuffer()->getOrigin())
-  {
-    return presetLoadedFrom->findParameterByID(getID());
-  }
-  return nullptr;
+  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
+  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
+  assert(ret != nullptr && "originalParameter is null and should not be");
+  return ret;
 }
 
 bool Parameter::isChangedFromLoaded() const
 {
-    return isValueChangedFromLoaded();
+  return isValueChangedFromLoaded();
 }
 
-bool Parameter::isValueChangedFromLoaded() const {
-    const auto rawNow = getControlPositionValue();
-    const auto epsilon = 0.5 / getValue().getFineDenominator();
-
-    if(auto originalParameter = getOriginalParameter())
-    {
-        return std::fabs(originalParameter->getValue() - rawNow) > epsilon;
-    }
-    else
-    {
-        return std::fabs(getDefaultValue() - rawNow) > epsilon;
-    }
+bool Parameter::isValueChangedFromLoaded() const
+{
+  const int denominator = static_cast<const int>(getValue().getFineDenominator());
+  const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
+  const int roundedOG = static_cast<const int>(getOriginalParameter()->getValue() * denominator);
+  return roundedOG != roundedNow;
 }
-
 
 bool Parameter::isBiPolar() const
 {
@@ -534,8 +525,9 @@ void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
-  auto origin = original ? "Preset" : "Init-Sound";
-  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), origin);
+  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
+  auto originStr = eb->getRecallOrigin();
+  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), originStr);
   auto transaction = transactionScope->getTransaction();
   if(original)
     setCPFromHwui(transaction, original->getValue());

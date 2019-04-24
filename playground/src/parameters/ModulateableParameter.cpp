@@ -306,8 +306,8 @@ Glib::ustring ModulateableParameter::stringizeModulationAmount() const
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount(tControlPositionValue amount) const
 {
-  return getValue().getScaleConverter()->getDimension().stringize(
-      getValue().getScaleConverter()->controlPositionToDisplay(amount));
+  LinearBipolar100PercentScaleConverter converter;
+  return converter.getDimension().stringize(converter.controlPositionToDisplay(amount));
 }
 
 DFBLayout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const
@@ -464,7 +464,10 @@ bool ModulateableParameter::isModAmountChanged() const
 
   if(auto original = getOriginalParameter())
   {
-    return original->getModulationAmount() != getModulationAmount();
+    const int denominator = static_cast<const int>(getValue().getFineDenominator());
+    const int roundedNow = static_cast<const int>(getModulationAmount() * denominator);
+    const int roundedOG = static_cast<const int>(original->getModulationAmount() * denominator);
+    return roundedOG != roundedNow;
   }
   return false;
 }
@@ -487,22 +490,6 @@ bool ModulateableParameter::isMacroControlAssignedAndChanged() const
     return myCurrMC->isChangedFromLoaded();
 
   return false;
-}
-
-PresetParameter *ModulateableParameter::getOriginalMC() const
-{
-  if(auto original = getOriginalParameter())
-  {
-    if(original->getModulationSource() == ModulationSource::NONE)
-      return nullptr;
-
-    auto originalMCID = MacroControlsGroup::modSrcToParamID(original->getModulationSource());
-    if(auto origin = Application::get().getPresetManager()->getEditBuffer()->getOrigin())
-    {
-      return origin->findParameterByID(originalMCID);
-    }
-  }
-  return nullptr;
 }
 
 Parameter *ModulateableParameter::getMacroControl() const

@@ -25,6 +25,11 @@ public class PresetSearch {
 	public static PresetSearch get() {
 		return theSearch;
 	}
+	
+	public void toggleLoadPreset() {
+		getModel().loadPreset.setValue(!getModel().loadPreset.getBool());
+		refresh();
+	}
 
 	public void setCombinationAnd() {
 		if (getModel().combination.setValue(SearchQueryCombination.AND))
@@ -37,11 +42,13 @@ public class PresetSearch {
 	}
 
 	public void resetQuery() {
+		getModel().loadPreset.setValue(false);
 		if (getModel().query.setValue(""))
 			refresh();
 	}
 
 	public void setQuery(String b) {
+		getModel().loadPreset.setValue(false);
 		if (getModel().query.setValue(b))
 			refresh();
 	}

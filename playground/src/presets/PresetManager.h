@@ -17,6 +17,7 @@
 class Bank;
 class Preset;
 class EditBuffer;
+class Parameter;
 
 class PresetManager : public ContentSection
 {
@@ -30,6 +31,8 @@ class PresetManager : public ContentSection
 
   // debug
   void stress(int numTransactions);
+  void stressAllParams(int numParamChangedForEachParameter);
+  void stressParam(UNDO::Transaction* transaction, Parameter* param);
   void stressBlocking(int numTransactions);
   void stressLoad(int numTransactions);
 

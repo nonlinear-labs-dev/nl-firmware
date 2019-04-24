@@ -21,8 +21,6 @@
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
 
-const int c_testTimePerFrequency = 5000;
-
 LPCProxy::LPCProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID())
     , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))

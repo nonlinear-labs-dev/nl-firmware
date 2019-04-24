@@ -53,9 +53,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
 			new Gray(77));
 	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
-	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), RGB.blue(),
-			new Gray(255));
-
+	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),new Gray(255));
+	private static final PresetColorPack filterMatchHighlightedLoaded = new PresetColorPack(new Gray(0), RGB.blue(),new Gray(255));
+	
+	
 	public Preset(Bank parent) {
 		super(parent);
 
@@ -82,13 +83,20 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			return true;
 		});
 
+		PresetSearch.get().loadPreset.onChange(r -> {
+			if(isCurrentFilterMatch && r.equals(BooleanValues.on)) {
+				onSearchHighlight(true);
+			}
+			return true;
+		});
+		
 		PresetSearch.get().currentFilterMatch.onChange(r -> {
 			boolean isFilterMatch = r.equals(uuid);
 			if (isCurrentFilterMatch != isFilterMatch) {
 				isCurrentFilterMatch = isFilterMatch;
 				
 				if(isCurrentFilterMatch) {
-					onSearchHighlight();
+					onSearchHighlight(PresetSearch.get().loadPreset.getBool());
 				}
 				
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -102,8 +110,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return (Bank) super.getParent();
 	}
 
-	private void onSearchHighlight() {
-		select();
+	private void onSearchHighlight(boolean loadActive) {
+		if(loadActive) {
+			load();
+		}
 	}
 	
 	@Override
@@ -203,7 +213,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (isSearchOpen) {
 			if (isCurrentFilterMatch)
-				currentPack = filterMatchHighlighted;
+				currentPack = loaded ? filterMatchHighlightedLoaded : filterMatchHighlighted;
 			else if (isInFilterSet)
 				currentPack = loaded ? filterMatchLoaded : filterMatch;
 			else
@@ -223,7 +233,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public void draw(Context2d ctx, int invalidationMask) {
 
 		PresetColorPack currentPresetColorPack = getActiveColorPack();
-
+		
 		double cp = getConturPixels();
 		cp = Math.ceil(cp);
 		cp = Math.max(1, cp);
@@ -234,9 +244,19 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		r.reduceHeightBy(2 * cp);
 		r.reduceWidthBy(2 * cp);
 		r.stroke(ctx, cp, currentPresetColorPack.contour);
-
+		
 		super.draw(ctx, invalidationMask);
 		r.fill(ctx, currentPresetColorPack.overlay);
+	}
+	
+	@Override
+	public void drawPost(Context2d ctx, int invalidationMask) {
+		if(isCurrentFilterMatch) {
+			double cp = getConturPixels();
+			cp = Math.ceil(cp);
+			cp = Math.max(1, cp);
+			getPixRect().stroke(ctx, cp * 1.75, getActiveColorPack().highlight);
+		}
 	}
 
 	public boolean isSelected() {

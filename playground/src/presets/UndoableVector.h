@@ -60,15 +60,21 @@ template <typename Element> class UndoableVector
 
   Element *at(size_t idx) const
   {
-      try {
-          return getElements().at(idx).get();
-      } catch(std::out_of_range& exception) {
-          if(Application::get().getSettings()->getSetting<CrashOnError>()->get()) {
-              std::rethrow_exception(std::current_exception());
-          } else {
-              return nullptr;
-          }
+    try
+    {
+      return getElements().at(idx).get();
+    }
+    catch(std::out_of_range &)
+    {
+      if(Application::get().getSettings()->getSetting<CrashOnError>()->get())
+      {
+        std::rethrow_exception(std::current_exception());
       }
+      else
+      {
+        return nullptr;
+      }
+    }
   }
 
   Element *first() const

@@ -690,7 +690,6 @@ class MCController {
   onChange() {
     this.userInputs = this.collectInputs();
     this.inputsToTargets();
-    view.redraw(model);
   }
 
   inputsToTargets() {
@@ -887,19 +886,18 @@ function onLoad() {
     model = new MCModel(serverProxy.webSocket);
     view = new MCView();
     controller = new MCController();
-    window.requestAnimationFrame(function() { view.redraw(model); });
     setInterval(function() {
+      var changed = false;
       model.mcs.forEach(function(mc){
-        var changed = false;
         if(mc !== undefined && mc.targetValue !== undefined && mc.paramValue !== undefined) {
           if(Number(mc.paramValue).toFixed(1) === Number(mc.targetValue).toFixed(1)) {
             mc.targetValue = undefined;
             changed = true;
           }
         }
-        if(changed)
-          view.redraw(model);
       });
+      if(changed)
+        view.redraw(model);
     }, 50);
   });
 }

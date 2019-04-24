@@ -63,7 +63,6 @@ class ModulateableParameter : public Parameter
   bool isModSourceChanged() const;
   bool isModAmountChanged() const;
   bool isMacroControlAssignedAndChanged() const;
-  PresetParameter *getOriginalMC() const;
   Parameter *getMacroControl() const;
 
   tControlPositionValue getOriginalModulationAmount() const;
