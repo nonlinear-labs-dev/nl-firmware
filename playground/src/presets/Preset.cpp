@@ -24,11 +24,14 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
 {
 }
 
-Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
+Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, bool copyUUID)
     : super(parent, editBuffer)
 {
   m_name = editBuffer.getName();
-  m_uuid = editBuffer.getUUIDOfLastLoadedPreset();
+  if(copyUUID)
+    m_uuid = editBuffer.getUUIDOfLastLoadedPreset();
+  else
+      m_uuid.generate();
 }
 
 Preset::~Preset()
