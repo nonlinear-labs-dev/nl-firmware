@@ -275,18 +275,37 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
     return ret;
   };
 
-  auto enabled = [&](const Preset *p) {
-    auto eb = pm->getEditBuffer();
-    const auto ebUUID = eb->getUUIDOfLastLoadedPreset();
-    const auto isLoaded = p->getUuid() == ebUUID;
-    const auto isEditBuffer = posString(p) == "Edit Buffer";
-    return isEditBuffer ? eb->anyParameterChanged() : !isLoaded;
+  auto eb = pm->getEditBuffer();
+  const auto ebUUID = eb->getUUIDOfLastLoadedPreset();
+
+  auto getButtonStatesPresets = [&](const Preset*p,const Preset*other) {
+      std::pair<bool, bool> active;
+      auto ebChanged = eb->anyParameterChanged();
+      active.first = p->getUuid() != ebUUID || ebChanged;
+      active.second = other->getUuid() != ebUUID || ebChanged;
+      return active;
   };
 
+  auto getButtonStates = [&](const Preset *p, const Preset *other) {
+    std::pair<bool, bool> active;
+    auto isLoaded = (p->getUuid() == ebUUID);
+    active.first = !isLoaded || eb->anyParameterChanged();
+    active.second = eb->anyParameterChanged() & !active.first;
+    return active;
+  };
+
+
   writer.writeTag("diff", [&] {
+
+    std::pair<bool, bool> buttonStates;
+    if(posString(this) == "Edit Buffer" || posString(other) == "Edit Buffer")
+        buttonStates = getButtonStates(this, other);
+    else
+        buttonStates = getButtonStatesPresets(this, other);
+
     writer.writeTextElement("position", "", Attribute("a", posString(this)), Attribute("b", posString(other)));
     writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
-    writer.writeTextElement("enabled", "", Attribute("a", enabled(this)), Attribute("b", enabled(other)));
+    writer.writeTextElement("enabled", "", Attribute("a", buttonStates.first), Attribute("b", buttonStates.second));
 
     super::writeDiff(writer, other);
 
