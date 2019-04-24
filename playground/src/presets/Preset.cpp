@@ -277,12 +277,10 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
   auto enabled = [&](const Preset *p) {
     auto eb = pm->getEditBuffer();
-    auto ebUUID = eb->getUUIDOfLastLoadedPreset();
-    auto isLoaded = p->getUuid() == ebUUID;
-    auto isEditBuffer = posString(p) == "Edit Buffer";
-    auto loadEnabledEditbuffer = isLoaded && eb->anyParameterChanged();
-    auto loadEnabledPreset = !isLoaded;
-    return isEditBuffer ? loadEnabledEditbuffer : loadEnabledPreset;
+    const auto ebUUID = eb->getUUIDOfLastLoadedPreset();
+    const auto isLoaded = p->getUuid() == ebUUID;
+    const auto isEditBuffer = posString(p) == "Edit Buffer";
+    return isEditBuffer ? eb->anyParameterChanged() : !isLoaded;
   };
 
   writer.writeTag("diff", [&] {
