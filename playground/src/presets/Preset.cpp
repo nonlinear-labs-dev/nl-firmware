@@ -28,10 +28,11 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, 
     : super(parent, editBuffer)
 {
   m_name = editBuffer.getName();
+
   if(copyUUID)
     m_uuid = editBuffer.getUUIDOfLastLoadedPreset();
   else
-      m_uuid.generate();
+    m_uuid.generate();
 }
 
 Preset::~Preset()
@@ -276,11 +277,10 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
     auto eb = pm->getEditBuffer();
     auto ebUUID = eb->getUUIDOfLastLoadedPreset();
     auto isLoaded = p->getUuid() == ebUUID;
-    auto loadEnabledEditbuffer = isLoaded && eb->anyParameterChanged();
     auto isEditBuffer = posString(p) == "Edit Buffer";
-    auto loadEnabledPreset = !isLoaded || !loadEnabledEditbuffer;
-    auto ret = isEditBuffer ? loadEnabledEditbuffer : loadEnabledPreset;
-    return ret ? "true" : "false";
+    auto loadEnabledEditbuffer = isLoaded && eb->anyParameterChanged();
+    auto loadEnabledPreset = !isLoaded;
+    return isEditBuffer ? loadEnabledEditbuffer : loadEnabledPreset;
   };
 
   writer.writeTag("diff", [&] {

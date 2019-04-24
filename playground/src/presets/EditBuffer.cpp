@@ -59,7 +59,7 @@ Glib::ustring EditBuffer::getName() const
   if(auto o = getOrigin())
     return o->getName();
 
-  return "";
+  return m_name;
 }
 
 size_t EditBuffer::getHash() const

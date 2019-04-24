@@ -301,8 +301,8 @@ public class CompareDialog extends GWTDialog {
 			String a = enabled.getAttributes().getNamedItem("a").getNodeValue();
 			String b = enabled.getAttributes().getNamedItem("b").getNodeValue();
 			
-			loadPresetA.setEnabled(a.equals("true"));
-			loadPresetB.setEnabled(b.equals("true"));
+			loadPresetA.setEnabled(a.equals("1"));
+			loadPresetB.setEnabled(b.equals("1"));
 		}
 	}
 

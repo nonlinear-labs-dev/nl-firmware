@@ -35,6 +35,8 @@ tControlPositionValue PresetParameter::getValue() const
 
 void PresetParameter::setValue(UNDO::Transaction *transaction, tControlPositionValue v)
 {
+  v = std::min<tControlPositionValue>(1, std::max<tControlPositionValue>(v, -1));
+
   transaction->addUndoSwap(m_value, v);
 }
 
