@@ -1,5 +1,6 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -184,17 +185,49 @@ public class CompareDialog extends GWTDialog {
 		}
 	}
 
+	ArrayList<String> getParameterGroupOrder() {
+		ArrayList<String> order = new ArrayList<>();
+		order.add("Envelope A");
+		order.add("Envelope B");
+		order.add("Envelope C");
+		order.add("Oscillator A");
+		order.add("Shaper A");
+		order.add("Oscillator B");
+		order.add("Shaper B");
+		order.add("Feedback Mixer");
+		order.add("Comb Filter");
+		order.add("State Variable Filter");
+		order.add("Output Mixer");
+		order.add("Flanger");
+		order.add("Cabinet");
+		order.add("Gap Filter");
+		order.add("Echo");
+		order.add("Reverb");
+		order.add("Master");
+		order.add("Unison");
+		order.add("Macro Control");
+		order.add("Scale");
+		return order;
+	}
+	
+	Node findParameterGroupNodeByName(NodeList list, String name) {
+		for (int numGroup = 0; numGroup < list.getLength(); numGroup++) {
+			Node node = list.item(numGroup);
+			if(node.getNodeType() == Node.ELEMENT_NODE)
+				if(node.getAttributes().getNamedItem("name").getNodeValue().equals(name))
+					return node;
+		}
+		return null;
+	}
+	
 	public void writeParameterGroups(int row) {
 		NodeList groups = xml.getElementsByTagName("group");
-		int numGroups = groups.getLength();
 
-		for (int numGroup = 0; numGroup < numGroups; numGroup++) {
-			Node group = groups.item(numGroup);
-
-			if (group.getNodeType() == Node.ELEMENT_NODE) {
+		for(String id: getParameterGroupOrder()) {
+			Node group = findParameterGroupNodeByName(groups, id);
+			if(group != null)
 				row = writeParameterGroup(row, group);
-			}
-		}
+		}	
 	}
 
 	public int writeParameterGroup(int row, Node group) {

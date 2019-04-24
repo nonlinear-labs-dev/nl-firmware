@@ -1,3 +1,5 @@
+#include <utility>
+
 #include <presets/Preset.h>
 #include "Bank.h"
 #include <presets/PresetManager.h>
@@ -45,7 +47,7 @@ Preset::~Preset()
 void Preset::load(UNDO::Transaction *transaction, RefPtr<Gio::File> presetPath)
 {
   auto strUUID = getUuid();
-  Serializer::read<PresetSerializer>(transaction, presetPath, strUUID.raw(), this);
+  Serializer::read<PresetSerializer>(transaction, std::move(presetPath), strUUID.raw(), this);
   m_lastSavedUpdateID = getUpdateIDOfLastChange();
 }
 
@@ -55,7 +57,7 @@ bool Preset::save(RefPtr<Gio::File> bankPath)
   {
     PresetSerializer serializer(this);
     auto strUUID = getUuid().raw();
-    serializer.write(bankPath, strUUID);
+    serializer.write(std::move(bankPath), strUUID);
     m_lastSavedUpdateID = getUpdateIDOfLastChange();
     return true;
   }
@@ -296,18 +298,8 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
 void Preset::writeGroups(Writer &writer, const Preset *other) const
 {
-  for(auto id : { "Env A", "Env B", "Env C",    "Osc A", "Sh A",   "Osc B",  "Sh B",   "FB",  "Comb", "SVF",  "Mixer",
-                  "Flang", "Cab",   "Gap Filt", "Echo",  "Reverb", "Master", "Unison", "MCs", "MCM",  "Scale" })
+  for(auto &g : m_parameterGroups)
   {
-    auto it = m_parameterGroups.find(id);
-    if(it != m_parameterGroups.end())
-    {
-      auto &group = it->second;
-      group->writeDiff(writer, id, other->findParameterGroup(id));
-    }
-    else
-    {
-      g_assert_not_reached();
-    }
+    g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first));
   }
 }
