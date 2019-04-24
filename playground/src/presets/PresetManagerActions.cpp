@@ -297,6 +297,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
       auto stream = request->createStream("text/xml", false);
       XmlWriter writer(stream);
       a->writeDiff(writer, b);
+      return true;
     }
   }
 

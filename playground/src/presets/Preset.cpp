@@ -257,10 +257,10 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
   auto pm = Application::get().getPresetManager();
 
   auto posString = [&](const Preset *p) {
-    char txt[256];
     std::string ret;
     if(auto b = dynamic_cast<Bank *>(p->getParent()))
     {
+      char txt[256];
       sprintf(txt, "%zu-%03zu", pm->getBankPosition(b->getUuid()) + 1, b->getPresetPosition(p->getUuid()) + 1);
       ret = txt;
     }
@@ -273,7 +273,10 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
     auto eb = pm->getEditBuffer();
     auto ebUUID = eb->getUUIDOfLastLoadedPreset();
     auto isLoaded = p->getUuid() == ebUUID;
-    auto ret = !isLoaded;
+    auto loadEnabledEditbuffer = isLoaded && eb->anyParameterChanged();
+    auto isEditBuffer = posString(p) == "Edit Buffer";
+    auto loadEnabledPreset = !isLoaded || !loadEnabledEditbuffer;
+    auto ret = isEditBuffer ? loadEnabledEditbuffer : loadEnabledPreset;
     return ret ? "true" : "false";
   };
 
@@ -290,8 +293,8 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
 void Preset::writeGroups(Writer &writer, const Preset *other) const
 {
-  for(auto id : { "Env A", "Env B", "Env C",    "Osc A", "Sh A",   "Osc B",  "Sh B",   "FB",  "Comb", "SVF", "Mixer",
-                  "Flang", "Cab",   "Gap Filt", "Echo",  "Reverb", "Master", "Unison", "MCs", "CS",   "MCM", "Scale" })
+  for(auto id : { "Env A", "Env B", "Env C",    "Osc A", "Sh A",   "Osc B",  "Sh B",   "FB",  "Comb", "SVF",  "Mixer",
+                  "Flang", "Cab",   "Gap Filt", "Echo",  "Reverb", "Master", "Unison", "MCs", "MCM",  "Scale" })
   {
     auto it = m_parameterGroups.find(id);
     if(it != m_parameterGroups.end())
