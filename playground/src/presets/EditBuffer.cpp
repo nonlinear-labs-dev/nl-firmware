@@ -47,10 +47,6 @@ void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *
     m_recallSet.copyParamSet(transaction, p);
   else
     m_recallSet.onPresetDeleted(transaction);
-
-  transaction->addSimpleCommand([this](auto) {
-      m_signalRecallValues.send();
-  });
 }
 
 const Glib::ustring &EditBuffer::getRecallOrigin() const
@@ -134,8 +130,9 @@ connection EditBuffer::onLocksChanged(slot<void> s)
   return m_signalLocksChanged.connectAndInit(s);
 }
 
-connection EditBuffer::onRecallValuesChanged(slot<void> s) {
-    return m_signalRecallValues.connect(s);
+connection EditBuffer::onRecallValuesChanged(slot<void> s)
+{
+  return m_recallSet.m_signalRecallValues.connect(s);
 }
 
 UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)

@@ -103,7 +103,6 @@ class EditBuffer : public ParameterGroupSet
   Signal<void> m_signalChange;
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
-  Signal<void> m_signalRecallValues;
 
   Parameter *m_selectedParameter = nullptr;
 
