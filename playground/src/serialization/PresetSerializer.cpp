@@ -7,6 +7,7 @@ PresetSerializer::PresetSerializer(Preset *preset, bool ignoreUUIDs)
     : Serializer(getTagName())
     , m_preset(preset)
     , m_ignoreUUIDs(ignoreUUIDs)
+    , m_presetLock(preset)
 {
 }
 
