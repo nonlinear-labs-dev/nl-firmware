@@ -13,19 +13,19 @@ class DeviceInformation : public ContentSection
   DeviceInformation(UpdateDocumentContributor *parent);
   virtual ~DeviceInformation();
 
-  virtual void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
+  virtual void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   virtual Glib::ustring getPrefix() const override;
 
   Glib::ustring getSoftwareVersion() const;
 
-  typedef shared_ptr<DeviceInformationItem> tItem;
+  typedef std::shared_ptr<DeviceInformationItem> tItem;
   typedef std::list<tItem> tItemList;
 
-  template <typename T> shared_ptr<T> getItem()
+  template <typename T> std::shared_ptr<T> getItem()
   {
     for(auto &s : m_items)
-      if(shared_ptr<T> r = dynamic_pointer_cast<T>(s))
+      if(std::shared_ptr<T> r = std::dynamic_pointer_cast<T>(s))
         return r;
 
     return nullptr;

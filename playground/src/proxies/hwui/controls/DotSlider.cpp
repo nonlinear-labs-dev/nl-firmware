@@ -80,12 +80,12 @@ int DotSlider::getHandlePixelPosition()
 
   if(isBiPolar())
   {
-    auto v = max(min(getValue(), 1.0), -1.0);
+    auto v = std::max(std::min(getValue(), 1.0), -1.0);
     return r.getCenter().getX() + ceil(v * usableWidth * 0.5);
   }
   else
   {
-    auto v = max(min(getValue(), 1.0), 0.0);
+    auto v = std::max(std::min(getValue(), 1.0), 0.0);
     if(hasBorder())
       return r.getLeft() + c_borderLeft + c_handleWidth / 2 + ceil(v * usableWidth);
     else

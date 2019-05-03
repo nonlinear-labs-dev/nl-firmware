@@ -11,7 +11,7 @@ class Font;
 class Oleds
 {
  public:
-  typedef shared_ptr<Font> tFont;
+  typedef std::shared_ptr<Font> tFont;
 
   virtual ~Oleds();
 
@@ -30,9 +30,9 @@ class Oleds
   Oleds(const Oleds &other);
   Oleds &operator=(const Oleds &);
 
-  typedef pair<Glib::ustring, int> tKey;
+  typedef std::pair<Glib::ustring, int> tKey;
 
-  list<OLEDProxy *> m_proxies;
+  std::list<OLEDProxy *> m_proxies;
   std::map<tKey, tFont> m_fonts;
   Throttler m_throttler;
 };

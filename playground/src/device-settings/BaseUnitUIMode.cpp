@@ -27,14 +27,14 @@ bool BaseUnitUIMode::set(BaseUnitUIModes m)
   return false;
 }
 
-const vector<Glib::ustring> &BaseUnitUIMode::enumToString() const
+const std::vector<Glib::ustring> &BaseUnitUIMode::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "play", "parameter-edit", "banks", "presets" };
+  static std::vector<Glib::ustring> s_modeNames = { "play", "parameter-edit", "banks", "presets" };
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &BaseUnitUIMode::enumToDisplayString() const
+const std::vector<Glib::ustring> &BaseUnitUIMode::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "Play", "Parameter Edit", "Banks", "Presets" };
+  static std::vector<Glib::ustring> s_modeNames = { "Play", "Parameter Edit", "Banks", "Presets" };
   return s_modeNames;
 }

@@ -6,7 +6,7 @@
 class Throttler
 {
  public:
-  using Task = function<void()>;
+  using Task = std::function<void()>;
 
   Throttler(Expiration::Duration maxDelay);
 

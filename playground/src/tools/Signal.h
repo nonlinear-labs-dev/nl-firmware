@@ -5,7 +5,6 @@
 #include <sigc++/signal.h>
 
 using namespace Glib;
-using namespace std;
 using namespace sigc;
 
 template <typename tFirst, typename... tArgs> class Signal : public sigc::signal<tFirst, tArgs...>
@@ -56,11 +55,11 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
   Signal(const Signal &other);
   Signal &operator=(const Signal &);
 
-  typedef function<void()> tCallback;
+  typedef std::function<void()> tCallback;
   typedef tCallback tRecord;
-  typedef list<tCallback> tInitRecords;
+  typedef std::list<tCallback> tInitRecords;
   tInitRecords m_initRecords;
-  atomic<bool> m_initCallbackScheduled;
+  std::atomic<bool> m_initCallbackScheduled;
   sigc::connection m_initCallbackConnection;
 
   tCallback m_deferedSend;

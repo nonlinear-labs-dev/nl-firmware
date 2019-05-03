@@ -7,7 +7,7 @@ class ParameterImportConversions
  public:
   static ParameterImportConversions &get();
 
-  typedef function<tControlPositionValue(tControlPositionValue)> tConverter;
+  typedef std::function<tControlPositionValue(tControlPositionValue)> tConverter;
   typedef int tFileVersion;
   typedef uint16_t tParameterID;
 

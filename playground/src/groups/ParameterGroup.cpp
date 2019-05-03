@@ -71,9 +71,9 @@ ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(gint32 id) const
   return getParameterByID(id);
 }
 
-map<int, pair<tDisplayValue, Glib::ustring>> &getDefaultValues()
+std::map<int, std::pair<tDisplayValue, Glib::ustring>> &getDefaultValues()
 {
-  static map<int, pair<tDisplayValue, Glib::ustring>> m;
+  static std::map<int, std::pair<tDisplayValue, Glib::ustring>> m;
 
   if(m.empty())
   {
@@ -93,21 +93,21 @@ map<int, pair<tDisplayValue, Glib::ustring>> &getDefaultValues()
 
         auto slashPos = def.find('/');
 
-        pair<tDisplayValue, Glib::ustring> e;
+        std::pair<tDisplayValue, Glib::ustring> e;
         e.second = def;
 
         if(slashPos != Glib::ustring::npos)
         {
           Glib::ustring first = def.substr(0, slashPos);
           Glib::ustring second = def.substr(slashPos + 1);
-          e.first = stod(first) / stod(second);
+          e.first = std::stod(first) / std::stod(second);
         }
         else
         {
-          e.first = stod(def);
+          e.first = std::stod(def);
         }
 
-        m[stoi(id)] = e;
+        m[std::stoi(id)] = e;
       }
     }
   }

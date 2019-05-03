@@ -15,7 +15,7 @@ class MacroControlParameter : public Parameter
   MacroControlParameter(ParameterGroup *group, uint16_t id);
   ~MacroControlParameter() override;
 
-  typedef set<ModulateableParameter *> tTargets;
+  typedef std::set<ModulateableParameter *> tTargets;
 
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
   void writeDifferences(Writer &writer, Parameter *other) const override;
@@ -50,7 +50,7 @@ class MacroControlParameter : public Parameter
   const tTargets &getTargets() const;
   sigc::connection onTargetListChanged(sigc::slot<void> cb);
 
-  bool isSourceOfTargetIn(const list<gint32> &ids) const;
+  bool isSourceOfTargetIn(const std::list<gint32> &ids) const;
   bool isSourceOf(gint32 id) const;
 
   void onSelected() override;

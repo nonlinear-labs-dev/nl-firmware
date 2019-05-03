@@ -15,7 +15,7 @@ namespace UNDO
   {
   }
 
-  chrono::steady_clock::duration ContinuousTransaction::getAge() const
+  std::chrono::steady_clock::duration ContinuousTransaction::getAge() const
   {
     return steady_clock::now() - m_creationTimestamp;
   }

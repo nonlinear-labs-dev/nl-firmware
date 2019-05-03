@@ -27,7 +27,7 @@ void UndoList::assignTransactions(UNDO::Transaction *tip)
   {
     walker = lastToShow;
   }
-  else if(auto entry = dynamic_pointer_cast<UndoListEntry>(*it))
+  else if(auto entry = std::dynamic_pointer_cast<UndoListEntry>(*it))
   {
     entry->assignTransaction(nullptr, false, false);
     it++;
@@ -37,7 +37,7 @@ void UndoList::assignTransactions(UNDO::Transaction *tip)
   {
     auto ctrl = *it;
 
-    if(auto entry = dynamic_pointer_cast<UndoListEntry>(ctrl))
+    if(auto entry = std::dynamic_pointer_cast<UndoListEntry>(ctrl))
     {
       entry->assignTransaction(walker, walker == tip, walker == current);
 

@@ -18,14 +18,14 @@ void BenderCurve::sendToLPC() const
   Application::get().getLPCProxy()->sendSetting(BENDER_CURVE, (uint16_t)(get()));
 }
 
-const vector<Glib::ustring> &BenderCurve::enumToString() const
+const std::vector<Glib::ustring> &BenderCurve::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "soft", "normal", "hard" };
+  static std::vector<Glib::ustring> s_modeNames = { "soft", "normal", "hard" };
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &BenderCurve::enumToDisplayString() const
+const std::vector<Glib::ustring> &BenderCurve::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "Soft", "Normal", "Hard" };
+  static std::vector<Glib::ustring> s_modeNames = { "Soft", "Normal", "Hard" };
   return s_modeNames;
 }

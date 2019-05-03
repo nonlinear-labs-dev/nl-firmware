@@ -1,7 +1,7 @@
 #include "Writer.h"
 #include <libsoup/soup.h>
 
-Writer::Writer(shared_ptr<OutStream> out)
+Writer::Writer(std::shared_ptr<OutStream> out)
     : m_out(out)
 {
 }

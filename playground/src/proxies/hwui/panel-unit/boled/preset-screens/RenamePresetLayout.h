@@ -11,8 +11,8 @@ class RenamePresetLayout : public RenameLayout
   typedef RenameLayout super;
 
  public:
-  typedef function<void(const Glib::ustring &)> tCommitCB;
-  typedef function<void(void)> tCancelCB;
+  typedef std::function<void(const Glib::ustring &)> tCommitCB;
+  typedef std::function<void(void)> tCancelCB;
   RenamePresetLayout(tCommitCB commitCB, tCancelCB cancelCB = nullptr);
 
  protected:

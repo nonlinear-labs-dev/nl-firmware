@@ -22,11 +22,11 @@ class VelocityCurve : public EnumSetting<VelocityCurves>
 
   void sendToLPC() const override;
 
-  const vector<Glib::ustring> &enumToDisplayString() const override;
+  const std::vector<Glib::ustring> &enumToDisplayString() const override;
 
  private:
   VelocityCurve(const VelocityCurve &other);
   VelocityCurve &operator=(const VelocityCurve &);
 
-  const vector<Glib::ustring> &enumToString() const override;
+  const std::vector<Glib::ustring> &enumToString() const override;
 };

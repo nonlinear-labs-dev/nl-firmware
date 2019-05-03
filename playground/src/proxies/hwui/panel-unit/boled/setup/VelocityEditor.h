@@ -14,6 +14,6 @@ class VelocityEditor : public MenuEditor
   virtual ~VelocityEditor();
 
   void incSetting(int inc) override;
-  const vector<ustring> &getDisplayStrings() const override;
+  const std::vector<ustring> &getDisplayStrings() const override;
   int getSelectedIndex() const override;
 };

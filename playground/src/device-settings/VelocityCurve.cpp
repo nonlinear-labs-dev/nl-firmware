@@ -18,14 +18,14 @@ void VelocityCurve::sendToLPC() const
   Application::get().getLPCProxy()->sendSetting(VELOCITY_CURVE, (uint16_t)(get()));
 }
 
-const vector<Glib::ustring> &VelocityCurve::enumToString() const
+const std::vector<Glib::ustring> &VelocityCurve::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "very-soft", "soft", "normal", "hard", "very-hard" };
+  static std::vector<Glib::ustring> s_modeNames = { "very-soft", "soft", "normal", "hard", "very-hard" };
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &VelocityCurve::enumToDisplayString() const
+const std::vector<Glib::ustring> &VelocityCurve::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "Very Soft", "Soft", "Normal", "Hard", "Very Hard" };
+  static std::vector<Glib::ustring> s_modeNames = { "Very Soft", "Soft", "Normal", "Hard", "Very Hard" };
   return s_modeNames;
 }

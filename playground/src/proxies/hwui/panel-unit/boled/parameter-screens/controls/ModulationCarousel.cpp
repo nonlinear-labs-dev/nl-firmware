@@ -60,7 +60,7 @@ bool ModulationCarousel::onRotary(int inc, ButtonModifiers modifiers)
 {
   for(const auto &c : getControls())
     if(c->isHighlight())
-      if(auto a = dynamic_pointer_cast<RotaryEncoder::Receiver>(c))
+      if(auto a = std::dynamic_pointer_cast<RotaryEncoder::Receiver>(c))
         return a->onRotary(inc, modifiers);
 
   return false;

@@ -2,7 +2,7 @@
 #include "Application.h"
 #include <device-settings/DebugLevel.h>
 
-ButtonRepeat::ButtonRepeat(function<void()> cb)
+ButtonRepeat::ButtonRepeat(std::function<void()> cb)
 {
   cb();
 
@@ -15,7 +15,7 @@ ButtonRepeat::~ButtonRepeat()
 {
 }
 
-bool ButtonRepeat::onButtonRepeatInitialTimeoutElapsed(function<void()> cb)
+bool ButtonRepeat::onButtonRepeatInitialTimeoutElapsed(std::function<void()> cb)
 {
   cb();
 
@@ -26,7 +26,7 @@ bool ButtonRepeat::onButtonRepeatInitialTimeoutElapsed(function<void()> cb)
   return false;
 }
 
-bool ButtonRepeat::onButtonRepeatRegularTimeoutElapsed(function<void()> cb)
+bool ButtonRepeat::onButtonRepeatRegularTimeoutElapsed(std::function<void()> cb)
 {
   cb();
   return true;

@@ -26,7 +26,7 @@ MemoryInStream::MemoryInStream(SoupBuffer *buffer, bool zipped)
 {
 }
 
-MemoryInStream::MemoryInStream(vector<uint8_t> buffer, bool zipped)
+MemoryInStream::MemoryInStream(std::vector<uint8_t> buffer, bool zipped)
     : m_buffer(buffer)
 {
   if(GInputStream *memStream = g_memory_input_stream_new_from_data(m_buffer.data(), m_buffer.size(), nullptr))

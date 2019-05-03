@@ -38,20 +38,7 @@ EditBuffer::~EditBuffer()
 
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
 {
-  initRecallValues(transaction, getParent()->findPreset(m_lastLoadedPreset));
-}
-
-void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *p)
-{
-  if(p != nullptr)
-    m_recallSet.copyParamSet(transaction, p);
-  else
-    m_recallSet.onPresetDeleted(transaction);
-}
-
-const Glib::ustring &EditBuffer::getRecallOrigin() const
-{
-  return m_recallSet.m_origin;
+  m_recallSet.copyFromEditBuffer(transaction, this);
 }
 
 Glib::ustring EditBuffer::getName() const
@@ -187,7 +174,7 @@ sigc::connection EditBuffer::onSelectionChanged(slot<void, Parameter *, Paramete
 
 void EditBuffer::undoableSelectParameter(const Glib::ustring &id)
 {
-  if(auto p = findParameterByID(stoi(id)))
+  if(auto p = findParameterByID(std::stoi(id)))
     undoableSelectParameter(p);
 }
 
@@ -199,7 +186,7 @@ void EditBuffer::undoableSelectParameter(uint16_t id)
 
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id)
 {
-  if(auto p = findParameterByID(stoi(id)))
+  if(auto p = findParameterByID(std::stoi(id)))
     undoableSelectParameter(transaction, p);
 }
 
@@ -268,7 +255,7 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
 {
   if(p != m_selectedParameter)
   {
-    auto scope = getUndoScope().startContinuousTransaction(&m_selectedParameter, chrono::hours(1), "Select '%0'",
+    auto scope = getUndoScope().startContinuousTransaction(&m_selectedParameter, std::chrono::hours(1), "Select '%0'",
                                                            p->getGroupAndParameterName());
     undoableSelectParameter(scope->getTransaction(), p);
   }
@@ -421,7 +408,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Pre
     m_updateIdWhenLastLoadedPresetChanged = onChange();
   });
 
-  initRecallValues(transaction, preset);
+  initRecallValues(transaction);
 }
 
 void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
@@ -444,7 +431,7 @@ void EditBuffer::undoableClear(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator)
 {
-  UNDO::ActionCommand::tAction sendEditBuffer(bind(&EditBuffer::sendToLPC, this));
+  UNDO::ActionCommand::tAction sendEditBuffer(std::bind(&EditBuffer::sendToLPC, this));
   transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
@@ -457,7 +444,7 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
-  UNDO::ActionCommand::tAction sendEditBuffer(bind(&EditBuffer::sendToLPC, this));
+  UNDO::ActionCommand::tAction sendEditBuffer(std::bind(&EditBuffer::sendToLPC, this));
   transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
 
   for(auto group : getParameterGroups())
@@ -531,7 +518,7 @@ bool EditBuffer::readReaktorPresetHeader(std::istringstream &input) const
 
   if(std::getline(input, version))
   {
-    if(stoi(version) == 1)
+    if(std::stoi(version) == 1)
     {
       Glib::ustring rangeMin;
       std::getline(input, rangeMin);
@@ -580,10 +567,10 @@ bool EditBuffer::undoableImportReaktorParameter(UNDO::Transaction *transaction, 
 
 Glib::ustring EditBuffer::exportReaktorPreset()
 {
-  stringstream str;
-  str << "1" << endl;
-  str << "65535" << endl;
-  str << "-65536" << endl;
+  std::stringstream str;
+  str << "1" << std::endl;
+  str << "65535" << std::endl;
+  str << "-65536" << std::endl;
 
   for(auto paramIt : getParametersSortedById())
   {

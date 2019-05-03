@@ -16,5 +16,5 @@ class ArrowDown : public ButtonMenuButton
   ArrowDown(const ArrowDown& other);
   ArrowDown& operator=(const ArrowDown&);
 
-  shared_ptr<Font> getFont() const override;
+  std::shared_ptr<Font> getFont() const override;
 };

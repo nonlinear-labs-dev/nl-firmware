@@ -62,7 +62,7 @@ namespace UNDO
     void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
     long traverseTree() const;
-    void traverse(function<void(const Transaction *)> cb) const;
+    void traverse(std::function<void(const Transaction *)> cb) const;
 
     template <typename T> void addUndoSwap(UpdateDocumentContributor *c, T &target, const T &newValue)
     {

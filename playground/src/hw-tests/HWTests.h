@@ -17,11 +17,11 @@ class HWTests : public ContentSection
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  private:
-  void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
+  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   void initialize();
 
   bool m_init;
 
-  typedef shared_ptr<HWTest> tTest;
-  set<tTest> m_availableTests;
+  typedef std::shared_ptr<HWTest> tTest;
+  std::set<tTest> m_availableTests;
 };

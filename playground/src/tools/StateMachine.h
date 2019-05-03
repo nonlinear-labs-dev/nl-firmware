@@ -65,9 +65,9 @@ template <typename tStates, typename tEvents, tStates initalState, tStates inval
  private:
   tStates m_currentState;
 
-  typedef map<tEvents, tStates> tActions;
-  typedef map<tStates, tActions> tTraversals;
-  typedef map<tStates, tHandler> tHandlers;
+  typedef std::map<tEvents, tStates> tActions;
+  typedef std::map<tStates, tActions> tTraversals;
+  typedef std::map<tStates, tHandler> tHandlers;
 
   tTraversals m_traversals;
   tHandlers m_handlers;

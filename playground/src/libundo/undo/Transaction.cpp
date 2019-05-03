@@ -253,7 +253,7 @@ namespace UNDO
 
   Glib::ustring Transaction::getSuccessorsString() const
   {
-    stringstream str;
+    std::stringstream str;
 
     for(const auto &s : m_successors)
     {
@@ -274,7 +274,7 @@ namespace UNDO
     return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
   }
 
-  void Transaction::traverse(function<void(const UNDO::Transaction *)> cb) const
+  void Transaction::traverse(std::function<void(const UNDO::Transaction *)> cb) const
   {
     std::vector<const Transaction *> list{ this };
     unsigned long long index = 0;

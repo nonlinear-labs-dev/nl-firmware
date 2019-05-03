@@ -16,6 +16,6 @@ class PresetListHeaderArrow : public Label
  protected:
   void setBackgroundColor(FrameBuffer &fb) const override;
   void setFontColor(FrameBuffer &fb) const override;
-  shared_ptr<Font> getFont() const override;
+  std::shared_ptr<Font> getFont() const override;
   Font::Justification getJustification() const override;
 };

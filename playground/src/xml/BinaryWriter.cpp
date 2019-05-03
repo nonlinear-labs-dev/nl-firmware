@@ -1,6 +1,6 @@
 #include <xml/BinaryWriter.h>
 
-BinaryWriter::BinaryWriter(shared_ptr<OutStream> out)
+BinaryWriter::BinaryWriter(std::shared_ptr<OutStream> out)
     : Writer(out)
 {
 }
@@ -10,7 +10,7 @@ BinaryWriter::~BinaryWriter()
 }
 
 void BinaryWriter::implWriteTextElement(const Glib::ustring &name, const Glib::ustring &text,
-                                        const initializer_list<Attribute> &attributes)
+                                        const std::initializer_list<Attribute> &attributes)
 {
   writeToStream("X", 1);
   writeRawString(name);
@@ -18,7 +18,7 @@ void BinaryWriter::implWriteTextElement(const Glib::ustring &name, const Glib::u
   writeRawAttributes(attributes);
 }
 
-void BinaryWriter::writeRawAttributes(const initializer_list<Attribute> &attributes)
+void BinaryWriter::writeRawAttributes(const std::initializer_list<Attribute> &attributes)
 {
   uint32_t numAttributes = attributes.size();
   writeToStream((const char *) &numAttributes, 4);
@@ -34,7 +34,7 @@ void BinaryWriter::writeRawString(const Glib::ustring &str)
   writeToStream(str.raw().data(), len);
 }
 
-void BinaryWriter::implWriteTag(const Glib::ustring &name, const initializer_list<Attribute> &attributes,
+void BinaryWriter::implWriteTag(const Glib::ustring &name, const std::initializer_list<Attribute> &attributes,
                                 const tTagContentWriter &w)
 {
   writeToStream("T", 1);

@@ -16,9 +16,9 @@ class ScopedGuard
     }
   };
 
-  shared_ptr<Lock> lock();
+  std::shared_ptr<Lock> lock();
   bool isLocked() const;
 
  private:
-  weak_ptr<Lock> m_currentLock;
+  std::weak_ptr<Lock> m_currentLock;
 };

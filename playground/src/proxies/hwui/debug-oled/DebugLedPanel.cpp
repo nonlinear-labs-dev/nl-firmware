@@ -30,7 +30,7 @@ DebugLedPanel::~DebugLedPanel()
 bool DebugLedPanel::setLedState(int ledId, bool onOrOff)
 {
   for(auto c : getControls())
-    if(auto led = dynamic_pointer_cast<DebugLed>(c))
+    if(auto led = std::dynamic_pointer_cast<DebugLed>(c))
       if(led->getId() == ledId)
       {
         led->setLedState(onOrOff);

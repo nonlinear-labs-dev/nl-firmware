@@ -9,16 +9,16 @@ PresetStoreModeSetting::~PresetStoreModeSetting()
 {
 }
 
-const vector<Glib::ustring> &PresetStoreModeSetting::enumToString() const
+const std::vector<Glib::ustring> &PresetStoreModeSetting::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "append", "overwrite", "insert" };
+  static std::vector<Glib::ustring> s_modeNames = { "append", "overwrite", "insert" };
 
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &PresetStoreModeSetting::enumToDisplayString() const
+const std::vector<Glib::ustring> &PresetStoreModeSetting::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "Append", "Overwrite", "Insert" };
+  static std::vector<Glib::ustring> s_modeNames = { "Append", "Overwrite", "Insert" };
 
   return s_modeNames;
 }

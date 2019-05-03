@@ -14,7 +14,7 @@ PresetListContent::~PresetListContent()
 {
 }
 
-bool PresetListContent::animateSelectedPreset(function<void()> cb)
+bool PresetListContent::animateSelectedPreset(std::function<void()> cb)
 {
   if(m_secondPreset)
   {

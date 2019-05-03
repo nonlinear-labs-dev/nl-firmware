@@ -20,11 +20,11 @@ class AftertouchCurve : public EnumSetting<AftertouchCurves>
 
   void sendToLPC() const override;
 
-  const vector<Glib::ustring> &enumToDisplayString() const override;
+  const std::vector<Glib::ustring> &enumToDisplayString() const override;
 
  private:
   AftertouchCurve(const AftertouchCurve &other);
   AftertouchCurve &operator=(const AftertouchCurve &);
 
-  const vector<Glib::ustring> &enumToString() const override;
+  const std::vector<Glib::ustring> &enumToString() const override;
 };

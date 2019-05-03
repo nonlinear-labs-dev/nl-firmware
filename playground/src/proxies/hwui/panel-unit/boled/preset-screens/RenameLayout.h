@@ -26,12 +26,12 @@ class RenameLayout : public DFBLayout
 
   virtual void cancel();
 
-  shared_ptr<TextEditUsageMode> m_textUsageMode;
+  std::shared_ptr<TextEditUsageMode> m_textUsageMode;
 
  private:
   virtual void onTextChanged(const ustring &text);
   void replaceUsageMode();
   void addLetters();
   void addControlKeys();
-  shared_ptr<UsageMode> m_oldUsageMode;
+  std::shared_ptr<UsageMode> m_oldUsageMode;
 };

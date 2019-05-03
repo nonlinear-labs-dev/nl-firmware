@@ -18,7 +18,7 @@ void RandomizeAmount::load(const Glib::ustring &text)
 {
   try
   {
-    set(stof(text));
+    set(std::stof(text));
   }
   catch(...)
   {

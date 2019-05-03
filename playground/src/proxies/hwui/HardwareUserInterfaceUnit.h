@@ -16,9 +16,9 @@ class HardwareUserInterfaceUnit
 
   void setUsageMode(UsageMode* mode);
 
-  void restoreUsageMode(shared_ptr<UsageMode> mode);
-  shared_ptr<UsageMode> getUsageMode();
-  shared_ptr<const UsageMode> getUsageMode() const;
+  void restoreUsageMode(std::shared_ptr<UsageMode> mode);
+  std::shared_ptr<UsageMode> getUsageMode();
+  std::shared_ptr<const UsageMode> getUsageMode() const;
 
   virtual bool onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool state);
 
@@ -26,5 +26,5 @@ class HardwareUserInterfaceUnit
   HardwareUserInterfaceUnit(const HardwareUserInterfaceUnit& other) = delete;
   HardwareUserInterfaceUnit& operator=(const HardwareUserInterfaceUnit&) = delete;
 
-  shared_ptr<UsageMode> m_usageMode;
+  std::shared_ptr<UsageMode> m_usageMode;
 };

@@ -28,7 +28,7 @@ void HWTests::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
 }
 
-void HWTests::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+void HWTests::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
   initialize();
 
@@ -53,7 +53,7 @@ void HWTests::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::
       writer.writeTag("div", [&]() {
         writer.writeTextElement("span", test->getName());
 
-        stringstream onclick;
+        std::stringstream onclick;
         onclick << "$.get('" << '/' << getPrefix() << '/' << test->getFileName() << "');";
 
         if(test->getState() != HWTest::RUNNING)
@@ -88,7 +88,7 @@ void HWTests::initialize()
 
     while(RefPtr<Gio::FileInfo> fileInfo = childrenEnumerator->next_file())
     {
-      shared_ptr<HWTest> test(new HWTest(fileInfo));
+      std::shared_ptr<HWTest> test(new HWTest(fileInfo));
 
       test->onTestChanged([=]() {
 

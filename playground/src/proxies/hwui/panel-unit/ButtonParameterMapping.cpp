@@ -116,7 +116,7 @@ ButtonParameterMapping::~ButtonParameterMapping()
 {
 }
 
-void ButtonParameterMapping::addMapping(int buttonID, initializer_list<int> parameterIDs)
+void ButtonParameterMapping::addMapping(int buttonID, std::initializer_list<int> parameterIDs)
 {
   for(int paramID : parameterIDs)
   {
@@ -125,10 +125,10 @@ void ButtonParameterMapping::addMapping(int buttonID, initializer_list<int> para
   }
 
   g_assert(m_buttonIDToParam.find(buttonID) == m_buttonIDToParam.end());
-  m_buttonIDToParam[buttonID] = list<int>(parameterIDs);
+  m_buttonIDToParam[buttonID] = std::list<int>(parameterIDs);
 }
 
-void ButtonParameterMapping::forEachButton(function<void(int, const list<int> &)> cb)
+void ButtonParameterMapping::forEachButton(std::function<void(int, const std::list<int> &)> cb)
 {
   for(auto &a : m_buttonIDToParam)
     cb(a.first, a.second);
@@ -151,5 +151,5 @@ std::list<int> ButtonParameterMapping::findParameters(int button) const
   if(it != m_buttonIDToParam.end())
     return it->second;
 
-  return list<int>();
+  return std::list<int>();
 }

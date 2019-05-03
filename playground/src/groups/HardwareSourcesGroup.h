@@ -13,7 +13,7 @@ class HardwareSourcesGroup : public ParameterGroup
   virtual ~HardwareSourcesGroup();
 
   typedef PhysicalControlParameter* tPhysicalControlParameter;
-  typedef list<tPhysicalControlParameter> tPhysicalControlParameters;
+  typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;
   tPhysicalControlParameters getPhysicalControlParameters();
 
   constexpr static int getUpperRibbonParameterID()

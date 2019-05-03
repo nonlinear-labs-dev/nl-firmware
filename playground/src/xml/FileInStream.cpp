@@ -101,7 +101,7 @@ ustring FileInStream::read()
 
 std::vector<uint8_t> FileInStream::readAll()
 {
-  vector<uint8_t> ret;
+  std::vector<uint8_t> ret;
 
   while(m_stream)
   {

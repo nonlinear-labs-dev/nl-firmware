@@ -14,5 +14,5 @@ class UndoTransactionNameControl : public UndoEntryLabel
   virtual void assignTransaction(UNDO::Transaction *transaction, bool selected, bool current) override;
 
  private:
-  StringAndSuffix shortenStringIfNeccessary(shared_ptr<Font> font, const StringAndSuffix &text) const override;
+  StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font, const StringAndSuffix &text) const override;
 };

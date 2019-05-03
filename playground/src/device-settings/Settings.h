@@ -15,8 +15,8 @@ class Settings : public ContentSection
   typedef ContentSection super;
 
  public:
-  typedef shared_ptr<Setting> tSettingPtr;
-  typedef map<Glib::ustring, tSettingPtr> tMap;
+  typedef std::shared_ptr<Setting> tSettingPtr;
+  typedef std::map<Glib::ustring, tSettingPtr> tMap;
 
   Settings(UpdateDocumentMaster *master);
   virtual ~Settings();
@@ -28,10 +28,10 @@ class Settings : public ContentSection
   void setSetting(const Glib::ustring &key, const Glib::ustring &value);
   void addSetting(const Glib::ustring &key, Setting *s);
 
-  template <typename T> shared_ptr<T> getSetting()
+  template <typename T> std::shared_ptr<T> getSetting()
   {
     for(auto s : m_settings)
-      if(shared_ptr<T> r = dynamic_pointer_cast<T>(s.second))
+      if(std::shared_ptr<T> r = std::dynamic_pointer_cast<T>(s.second))
         return r;
 
     return nullptr;
@@ -39,7 +39,7 @@ class Settings : public ContentSection
 
   const tMap &getSettings() const;
 
-  void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
+  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
 
   void sendToLPC();

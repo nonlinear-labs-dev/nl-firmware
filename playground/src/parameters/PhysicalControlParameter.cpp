@@ -100,7 +100,7 @@ size_t PhysicalControlParameter::getHash() const
 
 Glib::ustring PhysicalControlParameter::generateName() const
 {
-  auto it = max_element(m_targets.begin(), m_targets.end(),
+  auto it = std::max_element(m_targets.begin(), m_targets.end(),
                         [](const ModulationRoutingParameter *a, const ModulationRoutingParameter *b) {
                           auto fa = fabs(a->getControlPositionValue());
                           auto fb = fabs(b->getControlPositionValue());
@@ -179,7 +179,7 @@ void PhysicalControlParameter::setUiSelectedModulationRouter(int pos)
     invalidate();
 
     if(auto u
-       = dynamic_pointer_cast<PanelUnitParameterEditMode>(Application::get().getHWUI()->getPanelUnit().getUsageMode()))
+       = std::dynamic_pointer_cast<PanelUnitParameterEditMode>(Application::get().getHWUI()->getPanelUnit().getUsageMode()))
     {
       u->bruteForceUpdateLeds();
     }
@@ -217,12 +217,12 @@ bool PhysicalControlParameter::hasBehavior() const
 
 Glib::ustring PhysicalControlParameter::getCurrentBehavior() const
 {
-  throw bad_function_call();
+  throw std::bad_function_call();
 }
 
 void PhysicalControlParameter::undoableStepBehavior(UNDO::Transaction *transaction, int direction)
 {
-  throw bad_function_call();
+  throw std::bad_function_call();
 }
 
 void PhysicalControlParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)

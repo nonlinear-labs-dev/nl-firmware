@@ -10,7 +10,7 @@ static TestDriver<TextCropper> tests;
 void TextCropper::registerTests()
 {
   g_test_add_func("/TextCropper/shortenStringIfNeccessary", []() {
-    auto font = make_shared<Font>("./resources/Emphase_9_Regular.ttf", 9);
+    auto font = std::make_shared<Font>("./resources/Emphase_9_Regular.ttf", 9);
 
     auto testShortenStringIfNeccessary = [font](std::string in, int len, std::string expected) {
       auto shortened = TextCropper::shortenStringIfNeccessary(font, in, len);
@@ -37,14 +37,14 @@ void TextCropper::registerTests()
   });
 };
 
-Glib::ustring TextCropper::shortenStringIfNeccessary(shared_ptr<Font> font, const Glib::ustring &text, double maxWidth)
+Glib::ustring TextCropper::shortenStringIfNeccessary(std::shared_ptr<Font> font, const Glib::ustring &text, double maxWidth)
 {
   if(font->getStringWidth(text) > maxWidth)
     return preserveEndShorten(font, text, maxWidth);
   return text;
 }
 
-ustring TextCropper::preserveEndShorten(const shared_ptr<Font> &font, const ustring &text, double maxWidth)
+ustring TextCropper::preserveEndShorten(const std::shared_ptr<Font> &font, const ustring &text, double maxWidth)
 {
   const auto textLen = text.length();
   const auto min = 0;
@@ -66,7 +66,7 @@ ustring TextCropper::preserveEndShorten(const shared_ptr<Font> &font, const ustr
   return rigidSplit(font, text, maxWidth);
 }
 
-Glib::ustring TextCropper::rigidSplit(const shared_ptr<Font> &font, const ustring &text, const double maxWidth)
+Glib::ustring TextCropper::rigidSplit(const std::shared_ptr<Font> &font, const ustring &text, const double maxWidth)
 {
 
   ustring front;
@@ -97,7 +97,7 @@ Glib::ustring TextCropper::edgeCases(const int min, const ustring::size_type len
   return "";
 }
 
-Glib::ustring TextCropper::spaceBasedCropping(const ustring &text, const shared_ptr<Font> &font, double maxWidth)
+Glib::ustring TextCropper::spaceBasedCropping(const ustring &text, const std::shared_ptr<Font> &font, double maxWidth)
 {
   const auto &c = text;
   if(maxWidth == 0)

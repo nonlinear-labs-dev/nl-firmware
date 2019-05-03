@@ -58,7 +58,7 @@ Label::StringAndSuffix Label::getText() const
   return m_text;
 }
 
-Label::StringAndSuffix Label::shortenStringIfNeccessary(shared_ptr<Font> font, const Label::StringAndSuffix &text) const
+Label::StringAndSuffix Label::shortenStringIfNeccessary(std::shared_ptr<Font> font, const Label::StringAndSuffix &text) const
 {
   return text;
 }
@@ -141,7 +141,7 @@ void Label::drawSuffix(FrameBuffer &fb, int fullWidth, const Glib::ustring &firs
   }
 }
 
-shared_ptr<Font> Label::getFont() const
+std::shared_ptr<Font> Label::getFont() const
 {
   return Oleds::get().getFont("Emphase_9_Regular", getFontHeight());
 }

@@ -19,7 +19,7 @@ void AftertouchEditor::incSetting(int inc)
   Application::get().getSettings()->getSetting<AftertouchCurve>()->inc(inc, false);
 }
 
-const vector<ustring> &AftertouchEditor::getDisplayStrings() const
+const std::vector<ustring> &AftertouchEditor::getDisplayStrings() const
 {
   return Application::get().getSettings()->getSetting<AftertouchCurve>()->enumToDisplayString();
 }

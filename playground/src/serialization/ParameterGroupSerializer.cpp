@@ -42,7 +42,7 @@ void ParameterGroupSerializer::readTagContent(Reader &reader) const
     }
 
     reader.onTag(ParameterSerializer::getTagName(), [&](auto attr) mutable {
-      auto p = m_parameterById.find(stoi(attr.get("id")));
+      auto p = m_parameterById.find(std::stoi(attr.get("id")));
       if(p != m_parameterById.end())
       {
         auto param = p->second;

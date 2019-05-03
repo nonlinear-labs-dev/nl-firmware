@@ -525,7 +525,7 @@ bool ModulateableParameterSelectLayout2::handleMCRecall(int i, bool down)
   return false;
 }
 
-bool ModulateableParameterSelectLayout2::isModeOf(vector<ModulateableParameterSelectLayout2::Mode> modes) const
+bool ModulateableParameterSelectLayout2::isModeOf(std::vector<ModulateableParameterSelectLayout2::Mode> modes) const
 {
   for(const auto &mode : modes)
   {

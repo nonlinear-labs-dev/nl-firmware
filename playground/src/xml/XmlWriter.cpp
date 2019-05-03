@@ -1,7 +1,7 @@
 #include "XmlWriter.h"
 #include <libsoup/soup.h>
 
-XmlWriter::XmlWriter(shared_ptr<OutStream> out)
+XmlWriter::XmlWriter(std::shared_ptr<OutStream> out)
     : super(out)
     , m_stackSize(0)
 {
@@ -13,7 +13,7 @@ XmlWriter::~XmlWriter()
 }
 
 void XmlWriter::implWriteTextElement(const Glib::ustring &name, const Glib::ustring &text,
-                                     const initializer_list<Attribute> &attributes)
+                                     const std::initializer_list<Attribute> &attributes)
 {
   writeToStream(Glib::ustring(m_stackSize, ' '));
   writeToStream("<");
@@ -28,7 +28,7 @@ void XmlWriter::implWriteTextElement(const Glib::ustring &name, const Glib::ustr
   writeToStream(">\n");
 }
 
-void XmlWriter::implWriteTag(const Glib::ustring &name, const initializer_list<Attribute> &attributes,
+void XmlWriter::implWriteTag(const Glib::ustring &name, const std::initializer_list<Attribute> &attributes,
                              const tTagContentWriter &w)
 {
   writeToStream(Glib::ustring(m_stackSize, ' '));

@@ -13,27 +13,27 @@ Clipboard::Clipboard(UpdateDocumentContributor *parent)
     : ContentSection(parent)
     , m_actions("/clipboard/")
 {
-  m_actions.addAction("copy-bank", [=](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("copy-bank", [=](std::shared_ptr<NetworkRequest> request) {
     copyBank(request->get("bank"));
     request->okAndComplete();
   });
 
-  m_actions.addAction("cut-preset", [=](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("cut-preset", [=](std::shared_ptr<NetworkRequest> request) {
     cutPreset(request->get("preset"));
     request->okAndComplete();
   });
 
-  m_actions.addAction("copy-preset", [=](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("copy-preset", [=](std::shared_ptr<NetworkRequest> request) {
     copyPreset(request->get("preset"));
     request->okAndComplete();
   });
 
-  m_actions.addAction("copy-presets", [=](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("copy-presets", [=](std::shared_ptr<NetworkRequest> request) {
     copyPresets(request->get("presets-csv"));
     request->okAndComplete();
   });
 
-  m_actions.addAction("paste-on-background", [=](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("paste-on-background", [=](std::shared_ptr<NetworkRequest> request) {
     auto x = request->get("x");
     auto y = request->get("y");
 
@@ -47,7 +47,7 @@ Clipboard::Clipboard(UpdateDocumentContributor *parent)
     request->okAndComplete();
   });
 
-  m_actions.addAction("paste-on-bank", [=](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("paste-on-bank", [=](std::shared_ptr<NetworkRequest> request) {
     if(containsBank())
       pasteBankOnBank("Paste Bank", request->get("bank"));
     else if(containsPreset())
@@ -58,7 +58,7 @@ Clipboard::Clipboard(UpdateDocumentContributor *parent)
     request->okAndComplete();
   });
 
-  m_actions.addAction("paste-on-preset", [=](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("paste-on-preset", [=](std::shared_ptr<NetworkRequest> request) {
     if(containsBank())
       pasteBankOnPreset("Paste Bank", request->get("preset"));
     else if(containsPreset())
@@ -74,7 +74,7 @@ Clipboard::~Clipboard()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
-void Clipboard::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+void Clipboard::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
   ContentSection::handleHTTPRequest(request, path);
 

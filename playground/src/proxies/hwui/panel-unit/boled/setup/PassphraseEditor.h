@@ -14,7 +14,7 @@ class PassphraseEditor : public MenuEditor
   virtual ~PassphraseEditor();
 
   void incSetting(int inc) override;
-  const vector<ustring> &getDisplayStrings() const override;
+  const std::vector<ustring> &getDisplayStrings() const override;
   int getSelectedIndex() const override;
   bool onButton(int i, bool down, ButtonModifiers modifiers) override;
 

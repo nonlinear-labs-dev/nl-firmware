@@ -15,7 +15,7 @@ class PresetInfoCaption : public Label
 
  private:
   virtual void setFontColor(FrameBuffer &fb) const override;
-  virtual shared_ptr<Font> getFont() const override;
+  virtual std::shared_ptr<Font> getFont() const override;
   virtual int getFontHeight() const override;
 
   void onBankSelection();

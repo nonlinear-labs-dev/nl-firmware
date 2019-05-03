@@ -20,11 +20,11 @@ class BooleanSetting : public EnumSetting<BooleanSettings>
   void toggle();
 
   bool get() const;
-  const vector<Glib::ustring> &enumToDisplayString() const override;
+  const std::vector<Glib::ustring> &enumToDisplayString() const override;
 
  private:
   BooleanSetting(const BooleanSetting &other) = delete;
   BooleanSetting &operator=(const BooleanSetting &) = delete;
 
-  const vector<Glib::ustring> &enumToString() const override;
+  const std::vector<Glib::ustring> &enumToString() const override;
 };

@@ -31,8 +31,8 @@ class SetupLayout : public DFBLayout
   void addView(Control *c, bool focussed);
   void setEditor(Control *c);
 
-  shared_ptr<SetupSelectionEntries> ensureSelectionEntries();
-  shared_ptr<ViewEntries> ensureViewEntries();
+  std::shared_ptr<SetupSelectionEntries> ensureSelectionEntries();
+  std::shared_ptr<ViewEntries> ensureViewEntries();
   void addBreadcrumb();
   void addSelectionEntries();
   void addValueViews();
@@ -43,7 +43,7 @@ class SetupLayout : public DFBLayout
   void onEnterInSelectionMode(ButtonModifiers modifiers);
   void onEnterInEditMode();
 
-  unique_ptr<NavTree::Setup> m_tree;
+  std::unique_ptr<NavTree::Setup> m_tree;
   FocusAndMode m_focusAndMode;
   SetupEditor *m_editor;
 };

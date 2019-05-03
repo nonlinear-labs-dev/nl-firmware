@@ -15,7 +15,7 @@ class Clipboard : public ContentSection
   Clipboard(UpdateDocumentContributor *parent);
   virtual ~Clipboard();
 
-  void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
+  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
   void writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const override;
 

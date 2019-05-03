@@ -50,40 +50,40 @@ void BankEditButtonMenu::rebuildMenu(size_t numBanks)
 
 void BankEditButtonMenu::rebuildFullMenu()
 {
-  addButton("New", bind(&BankEditButtonMenu::newBank, this));
+  addButton("New", std::bind(&BankEditButtonMenu::newBank, this));
 
   if(USBStickAvailableView::usbIsReady())
   {
-    addButton("Export ...", bind(&BankEditButtonMenu::exportBank, this));
-    addButton("Import ...", bind(&BankEditButtonMenu::importBank, this));
+    addButton("Export ...", std::bind(&BankEditButtonMenu::exportBank, this));
+    addButton("Import ...", std::bind(&BankEditButtonMenu::importBank, this));
   }
 
-  addButton("Rename", bind(&BankEditButtonMenu::renameBank, this));
-  addButton("Copy", bind(&BankEditButtonMenu::copyBank, this));
+  addButton("Rename", std::bind(&BankEditButtonMenu::renameBank, this));
+  addButton("Copy", std::bind(&BankEditButtonMenu::copyBank, this));
 
   if(Application::get().getClipboard()->hasContent())
   {
-    addButton("Paste", bind(&BankEditButtonMenu::pasteBank, this));
+    addButton("Paste", std::bind(&BankEditButtonMenu::pasteBank, this));
   }
 
-  addButton("Delete", bind(&BankEditButtonMenu::deleteBank, this));
-  addButton("Move Left", bind(&BankEditButtonMenu::moveLeft, this));
-  addButton("Move Right", bind(&BankEditButtonMenu::moveRight, this));
+  addButton("Delete", std::bind(&BankEditButtonMenu::deleteBank, this));
+  addButton("Move Left", std::bind(&BankEditButtonMenu::moveLeft, this));
+  addButton("Move Right", std::bind(&BankEditButtonMenu::moveRight, this));
 }
 
 void BankEditButtonMenu::rebuildNoBankAvailableMenu()
 {
 
-  addButton("New", bind(&BankEditButtonMenu::newBank, this));
+  addButton("New", std::bind(&BankEditButtonMenu::newBank, this));
 
   if(USBStickAvailableView::usbIsReady())
   {
-    addButton("Import ...", bind(&BankEditButtonMenu::importBank, this));
+    addButton("Import ...", std::bind(&BankEditButtonMenu::importBank, this));
   }
 
   if(Application::get().getClipboard()->hasContent())
   {
-    addButton("Paste", bind(&BankEditButtonMenu::pasteBank, this));
+    addButton("Paste", std::bind(&BankEditButtonMenu::pasteBank, this));
   }
 }
 
@@ -100,8 +100,8 @@ void BankEditButtonMenu::newBank()
   auto transaction = scope->getTransaction();
   auto newBank = pm->addBank(transaction);
   auto pos = pm->calcDefaultBankPositionFor(newBank);
-  newBank->setX(transaction, std::to_string(pos.first));
-  newBank->setY(transaction, std::to_string(pos.second));
+  newBank->setX(transaction, to_string(pos.first));
+  newBank->setY(transaction, to_string(pos.second));
   pm->selectBank(transaction, newBank->getUuid());
 
   Application::get().getHWUI()->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Presets, UIMode::Select));
@@ -118,7 +118,7 @@ BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(std::experime
 bool BankEditButtonMenu::applicableBackupFilesFilter(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  string end = ".xml";
+  std::string end = ".xml";
   return !std::equal(end.rbegin(), end.rend(), fileName.rbegin());
 }
 

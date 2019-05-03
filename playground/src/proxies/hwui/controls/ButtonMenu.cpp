@@ -23,7 +23,7 @@ void ButtonMenu::setHighlight(bool isHighlight)
   if(isHighlight)
   {
     forEach([](tControlPtr c) {
-      if(!dynamic_pointer_cast<ButtonMenuButton>(c))
+      if(!std::dynamic_pointer_cast<ButtonMenuButton>(c))
         c->setHighlight(true);
     });
   }
@@ -168,7 +168,7 @@ size_t ButtonMenu::getItemToShowAtPlace(size_t place) const
         return items[place];
   }
 
-  throw exception();
+  throw std::exception();
 }
 
 void ButtonMenu::selectButton(size_t i)

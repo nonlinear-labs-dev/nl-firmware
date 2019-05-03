@@ -12,7 +12,7 @@
 static TestDriver<RotaryEncoder> tester;
 
 RotaryEncoder::RotaryEncoder()
-    : m_throttler(chrono::milliseconds(2))
+    : m_throttler(std::chrono::milliseconds(2))
 {
   Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Rotary,
                                                               sigc::mem_fun(this, &RotaryEncoder::onMessage));

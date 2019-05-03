@@ -27,8 +27,8 @@ class ParameterDB
 
   void read();
   void parseCSVRow(const std::string &row);
-  vector<std::string> textRowToVector(const std::string &row) const;
-  void importParsedRow(vector<std::string> &&items);
+  std::vector<std::string> textRowToVector(const std::string &row) const;
+  void importParsedRow(std::vector<std::string> &&items);
   tControlPositionValue parseSignalPathIndication(const std::string &c) const;
 
   struct ParameterSpec

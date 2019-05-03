@@ -21,7 +21,7 @@ void NoteShift::load(const Glib::ustring &text)
 {
   try
   {
-    set(stoi(text));
+    set(std::stoi(text));
   }
   catch(...)
   {

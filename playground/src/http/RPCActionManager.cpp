@@ -27,7 +27,7 @@ bool RPCActionManager::matches(const Glib::ustring &path) const
   return path.find(m_basePath) == 0;
 }
 
-bool RPCActionManager::handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request)
+bool RPCActionManager::handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request)
 {
   const auto &it = m_actions.find(path.substr(m_basePath.length()));
 
@@ -42,7 +42,7 @@ bool RPCActionManager::handleRequest(const Glib::ustring &path, shared_ptr<Netwo
   return false;
 }
 
-bool RPCActionManager::handleRequest(shared_ptr<NetworkRequest> request)
+bool RPCActionManager::handleRequest(std::shared_ptr<NetworkRequest> request)
 {
   return handleRequest(request->getPath(), request);
 }

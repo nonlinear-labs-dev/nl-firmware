@@ -76,7 +76,7 @@ class LPCProxy
   void onWebSocketMessage(WebSocketSession::tMessage msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);
 
-  typedef shared_ptr<MessageComposer> tMessageComposerPtr;
+  typedef std::shared_ptr<MessageComposer> tMessageComposerPtr;
   void queueToLPC(tMessageComposerPtr cmp);
 
   gint16 separateSignedBitToComplementary(uint16_t v) const;
@@ -94,12 +94,12 @@ class LPCProxy
   void onLPCConnected();
 
   bool m_suppressParamChanges = false;
-  shared_ptr<MessageParser> m_msgParser;
+  std::shared_ptr<MessageParser> m_msgParser;
 
   int m_lastTouchedRibbon;
   Signal<void, int> m_signalRibbonTouched;
 
-  unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
+  std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
   int m_lpcSoftwareVersion = 0;
   Signal<void, int> m_signalLPCSoftwareVersionChanged;

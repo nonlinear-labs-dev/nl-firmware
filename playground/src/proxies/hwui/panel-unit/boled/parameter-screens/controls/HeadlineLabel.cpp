@@ -13,7 +13,7 @@ HeadlineLabel::HeadlineLabel(const Rect &pos)
       mem_fun(this, &HeadlineLabel::updateMc));
 }
 
-shared_ptr<Font> HeadlineLabel::getFont() const
+std::shared_ptr<Font> HeadlineLabel::getFont() const
 {
   return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
 }

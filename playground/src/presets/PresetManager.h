@@ -21,7 +21,7 @@ class Parameter;
 
 class PresetManager : public ContentSection
 {
-  using SaveSubTask = function<SaveResult()>;
+  using SaveSubTask = std::function<SaveResult()>;
 
  public:
   PresetManager(UpdateDocumentContributor *parent);
@@ -35,11 +35,12 @@ class PresetManager : public ContentSection
   void stressParam(UNDO::Transaction* transaction, Parameter* param);
   void stressBlocking(int numTransactions);
   void stressLoad(int numTransactions);
+  void incAllParamsFine();
 
   // supported interfaces
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
   Glib::ustring getPrefix() const override;
-  void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
+  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   template <typename Mgr> Mgr &findActionManager()
@@ -113,7 +114,7 @@ class PresetManager : public ContentSection
   Glib::ustring getBaseName(const ustring &basedOn) const;
   void scheduleAutoLoadSelectedPreset();
 
-  list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
+  std::list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
   SaveResult saveMetadata(RefPtr<Gio::File> pmFolder);
   SaveResult saveInitSound(RefPtr<Gio::File> pmFolder);
   SaveResult saveBanks(RefPtr<Gio::File> pmFolder);
@@ -132,7 +133,7 @@ class PresetManager : public ContentSection
 
   UndoableVector<Bank> m_banks;
 
-  typedef shared_ptr<RPCActionManager> tRPCActionManagerPtr;
+  typedef std::shared_ptr<RPCActionManager> tRPCActionManagerPtr;
   std::list<tRPCActionManagerPtr> m_actionManagers;
   std::unique_ptr<EditBuffer> m_editBuffer;
   std::unique_ptr<Preset> m_initSound;
@@ -148,7 +149,7 @@ class PresetManager : public ContentSection
   tUpdateID m_lastSavedInitSoundUpdateID = 0;
   tUpdateID m_lastSavedMetaDataUpdateID = 0;
 
-  list<SaveSubTask> m_saveTasks;
+  std::list<SaveSubTask> m_saveTasks;
   bool m_saveRequestDuringSave = false;
 
   friend class PresetManagerSerializer;

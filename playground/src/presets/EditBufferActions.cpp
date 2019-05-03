@@ -16,42 +16,42 @@ IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* e
 EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     : super("/presets/param-editor/")
 {
-  addAction("sync-lpc", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("sync-lpc", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Application::get().getSettings()->sendToLPC();
     Application::get().getLPCProxy()->sendEditBuffer();
   });
 
-  addAction("select-param", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("select-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring id = request->get("id");
     editBuffer->undoableSelectParameter(id);
   });
 
-  addAction("set-param", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto id = stoi(request->get("id"));
-    auto value = stod(request->get("value"));
+  addAction("set-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto id = std::stoi(request->get("id"));
+    auto value = std::stod(request->get("value"));
     editBuffer->setParameter(id, value);
   });
 
-  addAction("set-mod-amount", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto amount = stod(request->get("amount"));
+  addAction("set-mod-amount", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto amount = std::stod(request->get("amount"));
     editBuffer->setModulationAmount(amount);
   });
 
-  addAction("set-mod-src", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto src = stoi(request->get("source"));
+  addAction("set-mod-src", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto src = std::stoi(request->get("source"));
     editBuffer->setModulationSource(static_cast<ModulationSource>(src));
   });
 
-  addAction("reset", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("reset", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Init Sound");
     editBuffer->undoableInitSound(scope->getTransaction());
   });
 
-  addAction("rename-mc", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("rename-mc", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring parameterId = request->get("id");
     Glib::ustring newName = request->get("new-name");
 
-    size_t id = stoull(parameterId);
+    size_t id = std::stoull(parameterId);
 
     if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id)))
     {
@@ -59,7 +59,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("reset-scale", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("reset-scale", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Reset Scale Group");
 
     for(auto scaleParam : getScaleParameters(editBuffer))
@@ -69,11 +69,11 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("set-macrocontrol-info", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("set-macrocontrol-info", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring parameterId = request->get("id");
     Glib::ustring info = request->get("info");
 
-    size_t id = stoull(parameterId);
+    size_t id = std::stoull(parameterId);
 
     if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id)))
     {
@@ -81,13 +81,13 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("import-reaktor-preset", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("import-reaktor-preset", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring preset = request->get("preset");
     editBuffer->undoableImportReaktorPreset(preset);
   });
 
-  addAction("download-editbuffer-as-text", [=](shared_ptr<NetworkRequest> request) mutable {
-    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+  addAction("download-editbuffer-as-text", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto stream = request->createStream("application/x-reaktor-table", false);
       auto quotedFileName = boost::replace_all_copy(editBuffer->getName().raw(), "\"", "'");
@@ -98,8 +98,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("open-editbuffer-as-text", [=](shared_ptr<NetworkRequest> request) mutable {
-    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+  addAction("open-editbuffer-as-text", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto stream = request->createStream("text/plain", false);
       Glib::ustring preset = editBuffer->exportReaktorPreset();
@@ -107,8 +107,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("set-ribbon-touch-behaviour", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto parameterId = stoi(request->get("id"));
+  addAction("set-ribbon-touch-behaviour", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto parameterId = std::stoi(request->get("id"));
     Glib::ustring mode = request->get("mode");
 
     if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(parameterId)))
@@ -118,8 +118,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("set-ribbon-return-mode", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto parameterId = stoi(request->get("id"));
+  addAction("set-ribbon-return-mode", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto parameterId = std::stoi(request->get("id"));
     Glib::ustring mode = request->get("mode");
 
     if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(parameterId)))
@@ -129,8 +129,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("set-pedal-mode", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto parameterId = stoi(request->get("id"));
+  addAction("set-pedal-mode", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto parameterId = std::stoi(request->get("id"));
     Glib::ustring mode = request->get("mode");
 
     if(auto param = dynamic_cast<PedalParameter*>(editBuffer->findParameterByID(parameterId)))
@@ -140,8 +140,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("reset-modulation", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto parameterId = stoi(request->get("id"));
+  addAction("reset-modulation", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto parameterId = std::stoi(request->get("id"));
 
     if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(parameterId)))
     {
@@ -149,23 +149,23 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("randomize-sound", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("randomize-sound", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Randomize Sound");
     editBuffer->undoableRandomize(scope->getTransaction(), Initiator::EXPLICIT_WEBUI);
   });
 
-  addAction("init-sound", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("init-sound", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Init Sound");
     editBuffer->undoableInitSound(scope->getTransaction());
   });
 
-  addAction("set-modamount-and-value", [=](shared_ptr<NetworkRequest> request) mutable {
-    auto id = stoi(request->get("id"));
+  addAction("set-modamount-and-value", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto id = std::stoi(request->get("id"));
 
     if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(id)))
     {
-      auto modAmount = stod(request->get("mod-amount"));
-      auto value = stod(request->get("value"));
+      auto modAmount = std::stod(request->get("mod-amount"));
+      auto value = std::stod(request->get("value"));
 
       auto scope = editBuffer->getUndoScope().startContinuousTransaction(
           param->getAmountCookie(), "Set Modulation Amount for '%0'", param->getGroupAndParameterName());
@@ -175,23 +175,23 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("unlock-all-groups", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("unlock-all-groups", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Unlock all Groups");
     editBuffer->undoableUnlockAllGroups(scope->getTransaction());
   });
 
-  addAction("lock-all-groups", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("lock-all-groups", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Unlock all Groups");
     editBuffer->undoableLockAllGroups(scope->getTransaction());
   });
 
-  addAction("toggle-group-lock", [=](shared_ptr<NetworkRequest> request) mutable {
+  addAction("toggle-group-lock", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto groupId = request->get("group");
     auto scope = editBuffer->getUndoScope().startTransaction("Toggle Group Lock");
     editBuffer->undoableToggleGroupLock(scope->getTransaction(), groupId);
   });
 
-  addAction("recall-current-from-preset", [=](shared_ptr<NetworkRequest> request) {
+  addAction("recall-current-from-preset", [=](std::shared_ptr<NetworkRequest> request) {
     if(auto selParam = editBuffer->getSelected())
     {
       if(selParam->isChangedFromLoaded())

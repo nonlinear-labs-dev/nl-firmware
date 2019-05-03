@@ -18,5 +18,5 @@ class ParameterGroupSerializer : public Serializer
   void readTagContent(Reader &reader) const;
 
   ParameterGroup *m_paramGroup = nullptr;
-  map<gint32, Parameter *> m_parameterById;
+  std::map<gint32, Parameter *> m_parameterById;
 };

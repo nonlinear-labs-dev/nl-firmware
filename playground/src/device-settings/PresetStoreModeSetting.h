@@ -25,6 +25,6 @@ class PresetStoreModeSetting : public EnumSetting<PresetStoreModeSettings>
   PresetStoreModeSetting(const PresetStoreModeSetting &other);
   PresetStoreModeSetting &operator=(const PresetStoreModeSetting &);
 
-  const vector<Glib::ustring> &enumToString() const override;
-  const vector<Glib::ustring> &enumToDisplayString() const override;
+  const std::vector<Glib::ustring> &enumToString() const override;
+  const std::vector<Glib::ustring> &enumToDisplayString() const override;
 };

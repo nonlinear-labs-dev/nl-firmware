@@ -89,7 +89,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range(getStackTrace("Element is not in vector"));
+    throw std::out_of_range(getStackTrace("Element is not in std::vector"));
   }
 
   size_t getIndexOf(const Element *e) const
@@ -99,7 +99,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range(getStackTrace("Element is not in vector"));
+    throw std::out_of_range(getStackTrace("Element is not in std::vector"));
   }
 
   size_t size() const
@@ -114,7 +114,6 @@ template <typename Element> class UndoableVector
 
   Element *find(const Uuid &uuid) const
   {
-    using namespace std;
     auto ret = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
 
     if(ret != m_elements.end())
@@ -125,7 +124,6 @@ template <typename Element> class UndoableVector
 
   Element *findNear(const Uuid &uuid, int seek) const
   {
-    using namespace std;
     auto ret = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
 
     while(seek > 0 && ret != m_elements.end())

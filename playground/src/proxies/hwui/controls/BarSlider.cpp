@@ -38,7 +38,7 @@ bool BarSlider::redraw(FrameBuffer &fb)
 
     setSliderColor(fb);
 
-    v = max(min(v, 1.0f), -1.0f);
+    v = std::max(std::min(v, 1.0f), -1.0f);
 
     if(v >= 0)
     {
@@ -55,7 +55,7 @@ bool BarSlider::redraw(FrameBuffer &fb)
   }
   else
   {
-    v = max(min(v, 1.0f), 0.0f);
+    v = std::max(std::min(v, 1.0f), 0.0f);
     int width = ceil(smaller.getWidth() * v);
     setSliderColor(fb);
     fb.fillRect(smaller.getLeft(), smaller.getTop(), width, smaller.getHeight());

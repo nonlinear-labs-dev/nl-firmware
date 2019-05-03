@@ -32,9 +32,9 @@ bool BackgroundJob::isRunning()
   return !m_close;
 }
 
-FileCrawlerJob::FileCrawlerJob(string dir, FileCrawlerJob::tFilterFunction filter, BackgroundJob::tCallback cb)
-    : BackgroundJob(cb)
-    , fileFilter(filter)
+FileCrawlerJob::FileCrawlerJob(std::string dir, FileCrawlerJob::tFilterFunction filter, BackgroundJob::tCallback cb)
+    : BackgroundJob(std::move(cb))
+    , fileFilter(std::move(filter))
 {
   it = std::experimental::filesystem::recursive_directory_iterator(fs::path(dir.c_str()));
 }

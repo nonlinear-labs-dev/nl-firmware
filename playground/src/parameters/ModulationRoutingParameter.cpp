@@ -59,11 +59,11 @@ void ModulationRoutingParameter::applyLpcPhysicalControl(tControlPositionValue d
 {
   auto amount = getControlPositionValue();
 
-  if(std::abs(amount) > numeric_limits<tDisplayValue>::epsilon())
+  if(std::abs(amount) > std::numeric_limits<tDisplayValue>::epsilon())
   {
     tControlPositionValue result = diff * amount;
 
-    if(std::abs(result) > numeric_limits<tDisplayValue>::epsilon())
+    if(std::abs(result) > std::numeric_limits<tDisplayValue>::epsilon())
       m_tgtParameter->applyLpcPhysicalControl(result);
   }
 }
@@ -72,7 +72,7 @@ void ModulationRoutingParameter::applyAbsoluteLpcPhysicalControl(tControlPositio
 {
   auto amount = getControlPositionValue();
 
-  if(std::abs(amount) > numeric_limits<tDisplayValue>::epsilon())
+  if(std::abs(amount) > std::numeric_limits<tDisplayValue>::epsilon())
   {
     m_tgtParameter->applyAbsoluteLpcPhysicalControl(v);
   }

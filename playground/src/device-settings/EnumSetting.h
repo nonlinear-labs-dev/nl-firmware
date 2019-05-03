@@ -106,8 +106,8 @@ template <typename TEnum> class EnumSetting : public Setting
     return enumToDisplayString()[idx];
   }
 
-  virtual const vector<Glib::ustring> &enumToString() const = 0;
-  virtual const vector<Glib::ustring> &enumToDisplayString() const = 0;
+  virtual const std::vector<Glib::ustring> &enumToString() const = 0;
+  virtual const std::vector<Glib::ustring> &enumToDisplayString() const = 0;
 
   std::shared_ptr<tEnum> scopedOverlay(tEnum value)
   {

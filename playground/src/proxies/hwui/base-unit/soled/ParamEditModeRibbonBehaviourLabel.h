@@ -21,6 +21,6 @@ class ParamEditModeRibbonBehaviourLabel : public Label
   ParamEditModeRibbonBehaviourLabel& operator=(const ParamEditModeRibbonBehaviourLabel&) = delete;
 
   void updateText(const Setting* s);
-  shared_ptr<ParameterEditModeRibbonBehaviour> getSetting() const;
+  std::shared_ptr<ParameterEditModeRibbonBehaviour> getSetting() const;
   Settings *getSettings() const;
 };

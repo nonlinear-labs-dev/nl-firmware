@@ -58,20 +58,20 @@ class Application
   Glib::ustring m_selfPath;
   RefPtr<MainLoop> m_theMainLoop;
 
-  unique_ptr<Options> m_options;
-  unique_ptr<WebSocketSession> m_websocketSession;
-  unique_ptr<HTTPServer> m_http;
-  unique_ptr<Settings> m_settings;
-  unique_ptr<UndoScope> m_undoScope;
-  unique_ptr<PresetManager> m_presetManager;
-  unique_ptr<LPCProxy> m_lpcProxy;
-  unique_ptr<HWUI> m_hwui;
-  unique_ptr<HWTests> m_hwtests;
+  std::unique_ptr<Options> m_options;
+  std::unique_ptr<WebSocketSession> m_websocketSession;
+  std::unique_ptr<HTTPServer> m_http;
+  std::unique_ptr<Settings> m_settings;
+  std::unique_ptr<UndoScope> m_undoScope;
+  std::unique_ptr<PresetManager> m_presetManager;
+  std::unique_ptr<LPCProxy> m_lpcProxy;
+  std::unique_ptr<HWUI> m_hwui;
+  std::unique_ptr<HWTests> m_hwtests;
 
-  unique_ptr<WatchDog> m_watchDog;
-  unique_ptr<WatchDog> m_aggroWatchDog;
-  unique_ptr<DeviceInformation> m_deviceInformation;
-  unique_ptr<Clipboard> m_clipboard;
+  std::unique_ptr<WatchDog> m_watchDog;
+  std::unique_ptr<WatchDog> m_aggroWatchDog;
+  std::unique_ptr<DeviceInformation> m_deviceInformation;
+  std::unique_ptr<Clipboard> m_clipboard;
 
   bool m_heartbeatState;
   bool m_isQuit;

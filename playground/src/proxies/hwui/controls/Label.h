@@ -53,14 +53,14 @@ class Label : public Control
   virtual bool setText(const StringAndSuffix &text);
   virtual StringAndSuffix getText() const;
 
-  virtual shared_ptr<Font> getFont() const;
+  virtual std::shared_ptr<Font> getFont() const;
   void setFontColor(FrameBuffer::Colors fontColor);
 
  protected:
   virtual Font::Justification getJustification() const;
   virtual int getFontHeight() const;
 
-  virtual StringAndSuffix shortenStringIfNeccessary(shared_ptr<Font> font, const StringAndSuffix &text) const;
+  virtual StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font, const StringAndSuffix &text) const;
 
   virtual void setFontColor(FrameBuffer &fb) const;
   virtual void setSuffixFontColor(FrameBuffer &fb) const;

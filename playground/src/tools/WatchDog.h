@@ -14,7 +14,7 @@ class WatchDog
   WatchDog();
   ~WatchDog();
 
-  typedef function<void(int, int)> tCB;
+  typedef std::function<void(int, int)> tCB;
 
   void run(std::chrono::steady_clock::duration timeout);
   void run(std::chrono::steady_clock::duration timeout, tCB cb);

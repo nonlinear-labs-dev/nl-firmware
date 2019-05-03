@@ -230,10 +230,10 @@ bool inCluster(const ClusterEnforcement::tTreeNodePtr& node)
   return node->top || node->bottom || node->left || node->right;
 }
 
-vector<ClusterEnforcement::tTreeNodePtr>
+std::vector<ClusterEnforcement::tTreeNodePtr>
     prepareNodeVector(const std::map<Uuid, ClusterEnforcement::tTreeNodePtr>& nodeMap)
 {
-  vector<ClusterEnforcement::tTreeNodePtr> ret;
+  std::vector<ClusterEnforcement::tTreeNodePtr> ret;
   for(auto x : nodeMap)
     ret.push_back(x.second);
   return ret;
@@ -253,13 +253,13 @@ bool handleBothBanksInCluster(const ClusterEnforcement::tTreeNodePtr& lhs, const
   }
   else
   {
-    return stoi(lhs->master->bank->getX()) < stoi(rhs->master->bank->getX());
+    return std::stoi(lhs->master->bank->getX()) < std::stoi(rhs->master->bank->getX());
   }
 }
 
-vector<Bank*> buildVectorFromNodeVector(const vector<ClusterEnforcement::tTreeNodePtr>& nodeVec)
+std::vector<Bank*> buildVectorFromNodeVector(const std::vector<ClusterEnforcement::tTreeNodePtr>& nodeVec)
 {
-  auto ret = vector<Bank*>();
+  auto ret = std::vector<Bank*>();
   for(const auto& x : nodeVec)
     ret.push_back(x->bank);
   return ret;
@@ -277,7 +277,7 @@ void ClusterEnforcement::sortBankNumbers()
   Application::get().getPresetManager()->sortBanks(transaction, newBanks);
 }
 
-vector<Bank*> ClusterEnforcement::sortBanks()
+std::vector<Bank*> ClusterEnforcement::sortBanks()
 {
   buildClusterStructure();
   auto treeNodes = prepareNodeVector(m_uuidToTreeNode);
@@ -293,7 +293,7 @@ vector<Bank*> ClusterEnforcement::sortBanks()
     else if(lhsInCluster && rhsInCluster)
       return handleBothBanksInCluster(lhs, rhs);
     else
-      return stoi(lhs->bank->getX()) < stoi(rhs->bank->getX());
+      return std::stoi(lhs->bank->getX()) < std::stoi(rhs->bank->getX());
   });
 
   return buildVectorFromNodeVector(treeNodes);

@@ -26,7 +26,7 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
 
   void setup() override;
   int findButtonForParameter(Parameter *param) const;
-  list<int> getButtonAssignments(int button) const;
+  std::list<int> getButtonAssignments(int button) const;
   virtual void setupFocusAndMode(FocusAndMode focusAndMode) override;
 
   static const int NUM_LEDS = 96;
@@ -37,16 +37,16 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
   ButtonParameterMapping &getMappings();
 
  private:
-  typedef array<bool, NUM_LEDS> tLedStates;
+  typedef std::array<bool, NUM_LEDS> tLedStates;
 
   void onParamSelectionChanged(Parameter *oldParam, Parameter *newParam);
 
-  bool tryParameterToggleOnMacroControl(vector<gint32> ids, Parameter *selParam);
+  bool tryParameterToggleOnMacroControl(std::vector<gint32> ids, Parameter *selParam);
 
-  tAction createParameterSelectAction(vector<gint32> toggleAudioIDs);
+  tAction createParameterSelectAction(std::vector<gint32> toggleAudioIDs);
   tAction createParameterSelectAction(gint32 audioID);
 
-  bool toggleParameterSelection(const vector<gint32> ids, bool state);
+  bool toggleParameterSelection(const std::vector<gint32> ids, bool state);
   bool setParameterSelection(gint32 audioID, bool state);
 
   bool isShowingParameterScreen() const;
@@ -64,13 +64,13 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
 
   void setLedStates(const tLedStates &states);
 
-  shared_ptr<Layout> getCurrentBoledLayout() const;
+  std::shared_ptr<Layout> getCurrentBoledLayout() const;
   const BOLED &getBoled() const;
   BOLED &getBoled();
   bool handleMacroControlButton(bool state, int mcParamId);
   void assertAllButtonsAssigned();
 
-  bool doMacroControlAssignment(list<gint32> ids);
+  bool doMacroControlAssignment(std::list<gint32> ids);
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
 
   ButtonParameterMapping m_mappings;

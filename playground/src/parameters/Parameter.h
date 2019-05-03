@@ -7,6 +7,7 @@
 #include "value/QuantizedValue.h"
 #include <proxies/hwui/HWUIEnums.h>
 #include <tools/FlagOwner.h>
+#include <presets/recall/RecallParameter.h>
 
 class Layout;
 class DFBLayout;
@@ -83,7 +84,7 @@ class Parameter : public UpdateDocumentContributor,
   void undoableUnlock(UNDO::Transaction *transaction);
   bool isLocked() const;
 
-  virtual void exportReaktorParameter(stringstream &target) const;
+  virtual void exportReaktorParameter(std::stringstream &target) const;
 
   tTcdValue getTcdValue() const;
   tDisplayValue getDisplayValue() const;
@@ -120,7 +121,7 @@ class Parameter : public UpdateDocumentContributor,
 
   //Recall
   void undoableRecallFromPreset();
-  PresetParameter *getOriginalParameter() const;
+  const RecallParameter * getOriginalParameter() const;
 
   virtual bool isChangedFromLoaded() const;
   virtual bool isValueChangedFromLoaded() const;

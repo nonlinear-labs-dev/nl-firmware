@@ -23,7 +23,7 @@ void ExpectParamaterJob::implRun()
 
   xmlDoc *doc = xmlParseMemory(msg->response_body->data, msg->response_body->length);
 
-  stringstream path;
+  std::stringstream path;
   path << "/nonlinear-world/preset-manager/edit-buffer/parameter-group/parameter[@id='" << m_ID << "']/value";
 
   string pathStr = path.str();
@@ -42,7 +42,7 @@ void ExpectParamaterJob::implRun()
       case 1:
       {
         string res = (const char *) xmlNodeGetContent(xpathObj->nodesetval->nodeTab[0]);
-        float gotValue = stod(res);
+        float gotValue = std::stod(res);
         float diff = fabs(gotValue - m_value);
         result = diff == 0.0f;
 

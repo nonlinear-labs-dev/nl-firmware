@@ -5,7 +5,7 @@
 #include <device-settings/DebugLevel.h>
 #include <memory>
 
-ServedJournal::ServedJournal(HTTPServer &server, shared_ptr<HTTPRequest> request)
+ServedJournal::ServedJournal(HTTPServer &server, std::shared_ptr<HTTPRequest> request)
     : ServedStream(server, request)
 {
 }

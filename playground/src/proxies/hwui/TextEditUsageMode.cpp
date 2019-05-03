@@ -69,7 +69,7 @@ ustring TextEditUsageMode::getKeyLabel(int buttonID) const
 
     return stringizeSpecialChar(uni);
   }
-  catch(out_of_range ex)
+  catch(std::out_of_range ex)
   {
     DebugLevel::error("there is no label for button", buttonID);
   }
@@ -195,7 +195,7 @@ bool TextEditUsageMode::onButtonPressed(gint32 buttonID, ButtonModifiers modifie
       return handleSpecialChar(uni);
     }
   }
-  catch(out_of_range ex)
+  catch(std::out_of_range ex)
   {
   }
 
@@ -208,7 +208,7 @@ void TextEditUsageMode::handleShiftButton(bool state)
   chooseLayout();
 }
 
-void TextEditUsageMode::installButtonRepeat(function<void()> cb)
+void TextEditUsageMode::installButtonRepeat(std::function<void()> cb)
 {
   m_buttonRepeat.reset(new ButtonRepeat(cb));
 }

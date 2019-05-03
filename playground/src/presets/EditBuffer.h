@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ParameterGroupSet.h"
-#include "RecallParameterGroups.h"
+#include "presets/recall/RecallParameterGroups.h"
 #include <tools/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
@@ -78,8 +78,6 @@ class EditBuffer : public ParameterGroupSet
   //RECALL
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
-  void initRecallValues(UNDO::Transaction *t, const Preset *p);
-  const Glib::ustring &getRecallOrigin() const;
 
  private:
   Parameter *searchForAnyParameterWithLock() const;

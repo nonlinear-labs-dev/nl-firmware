@@ -13,7 +13,7 @@ SetParameterJob::~SetParameterJob()
 
 string SetParameterJob::getURL() const
 {
-  stringstream str;
+  std::stringstream str;
   str << BASE_URL << "/presets/param-editor/set-params?" << m_ID << "=" << m_value;
   DEBUG("Set parameter " << m_ID << " to " << m_value);
   return str.str();

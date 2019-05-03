@@ -21,7 +21,7 @@ class SelectedParamValueWithFrame : public SelectedParameterValue
   SelectedParamValueWithFrame(const SelectedParamValueWithFrame& other) = delete;
   SelectedParamValueWithFrame& operator=(const SelectedParamValueWithFrame&) = delete;
 
-  shared_ptr<Font> getFont() const override;
+  std::shared_ptr<Font> getFont() const override;
   int getFontHeight() const override;
 
   void setSuffixFontColor(FrameBuffer& fb) const override;

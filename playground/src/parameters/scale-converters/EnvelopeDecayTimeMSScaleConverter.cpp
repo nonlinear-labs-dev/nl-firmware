@@ -32,7 +32,7 @@ tControlPositionValue EnvelopeDecayTimeMSScaleConverter::tcdToControlPosition(tT
 
 Glib::ustring EnvelopeDecayTimeMSScaleConverter::controlPositionToDisplayJS() const
 {
-  stringstream s;
+  std::stringstream s;
   s << "var e = 0;";
   s << "if(cpValue < 0.01) e = 11.3 * cpValue;";
   s << "else e = 0.1 * Math.exp(Math.log(16000) - Math.log(0.1) * cpValue);";

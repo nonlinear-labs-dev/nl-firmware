@@ -25,7 +25,7 @@ bool NetworkRequest::isOracle() const
 
 void NetworkRequest::addKeyValuePairToMap(const char *key, const char *value, tKeyValues *map)
 {
-  map->insert(make_pair(key, value));
+  map->insert(std::make_pair(key, value));
 }
 
 void NetworkRequest::forEach(std::function<void(const Glib::ustring &key, const Glib::ustring &val)> cb)

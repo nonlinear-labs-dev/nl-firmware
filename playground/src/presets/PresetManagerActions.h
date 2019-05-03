@@ -19,10 +19,10 @@ class PresetManagerActions : public RPCActionManager
   PresetManagerActions(PresetManager& presetManager);
   virtual ~PresetManagerActions();
 
-  bool handleRequest(const Glib::ustring& path, shared_ptr<NetworkRequest> request) override;
+  bool handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request) override;
 
  private:
-  void handleImportBackupFile(UNDO::Transaction* transaction, SoupBuffer* buffer, shared_ptr<HTTPRequest> http);
+  void handleImportBackupFile(UNDO::Transaction* transaction, SoupBuffer* buffer, std::shared_ptr<HTTPRequest> http);
 
   typedef Preset* tPresetPtr;
 };

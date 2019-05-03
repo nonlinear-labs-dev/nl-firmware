@@ -75,7 +75,7 @@ void ParameterSerializer::readTagContent(Reader &reader) const
   if(m_param && !m_param->isLocked())
   {
     reader.onTextElement("value", [&](const Glib::ustring &text, const Attributes &attr) mutable {
-      auto v = stod(text);
+      auto v = std::stod(text);
       auto converted = ParameterImportConversions::get().convert(m_param->getID(), v, reader.getFileVersion());
       m_param->loadFromPreset(reader.getTransaction(), converted);
     });
@@ -91,7 +91,7 @@ void ParameterSerializer::tryLoadModulateableParameter(Reader &reader) const
   if(auto p = dynamic_cast<ModulateableParameter *>(m_param))
   {
     reader.onTextElement("modAmount", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
-      auto v = stod(text);
+      auto v = std::stod(text);
       auto converted = ParameterImportConversions::get().convertMCAmount(m_param->getID(), v, reader.getFileVersion());
       p->setModulationAmount(reader.getTransaction(), converted);
     });
@@ -106,7 +106,7 @@ void ParameterSerializer::loadModulationAmount(Reader &reader, const Glib::ustri
 {
   if(auto p = dynamic_cast<ModulateableParameter *>(m_param))
   {
-    int i = stoi(text);
+    int i = std::stoi(text);
 
     if(i == -1)
       i = 0;
@@ -139,12 +139,12 @@ void ParameterSerializer::tryLoadHardwareSourceParameter(Reader &reader) const
     if(auto ribbon = dynamic_cast<RibbonParameter *>(p))
     {
       reader.onTextElement("ribbon-touch-behaviour", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
-        int mode = stoi(text);
+        int mode = std::stoi(text);
         ribbon->undoableSetRibbonTouchBehaviour(reader.getTransaction(), (RibbonTouchBehaviour) mode);
       });
 
       reader.onTextElement("ribbon-return-mode", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
-        int mode = stoi(text);
+        int mode = std::stoi(text);
         ribbon->undoableSetRibbonReturnMode(reader.getTransaction(), (RibbonReturnMode) mode);
       });
     }
@@ -152,7 +152,7 @@ void ParameterSerializer::tryLoadHardwareSourceParameter(Reader &reader) const
     if(auto pedal = dynamic_cast<PedalParameter *>(p))
     {
       reader.onTextElement("pedalMode", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
-        int mode = stoi(text);
+        int mode = std::stoi(text);
         pedal->undoableSetPedalMode(reader.getTransaction(), (PedalModes) mode);
       });
     }

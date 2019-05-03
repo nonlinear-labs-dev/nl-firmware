@@ -21,5 +21,5 @@ class BankNameLabel : public Label
   void setFontColor(FrameBuffer &fb) const override;
   Font::Justification getJustification() const override;
   int getXOffset() const override;
-  virtual StringAndSuffix shortenStringIfNeccessary(shared_ptr<Font> font, const StringAndSuffix &text) const override;
+  virtual StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font, const StringAndSuffix &text) const override;
 };

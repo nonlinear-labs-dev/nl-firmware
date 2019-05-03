@@ -32,14 +32,14 @@ DebugLevels DebugLevel::getLevel()
   return lastSetLevel;
 }
 
-const vector<Glib::ustring> &DebugLevel::enumToString() const
+const std::vector<Glib::ustring> &DebugLevel::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "debug", "silent", "error", "warning", "info", "gassy" };
+  static std::vector<Glib::ustring> s_modeNames = { "debug", "silent", "error", "warning", "info", "gassy" };
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &DebugLevel::enumToDisplayString() const
+const std::vector<Glib::ustring> &DebugLevel::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "Debug", "Silent", "Error", "Warning", "Info", "Gassy" };
+  static std::vector<Glib::ustring> s_modeNames = { "Debug", "Silent", "Error", "Warning", "Info", "Gassy" };
   return s_modeNames;
 }

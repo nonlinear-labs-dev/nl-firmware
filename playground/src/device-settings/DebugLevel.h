@@ -91,7 +91,7 @@ class DebugLevel : public EnumSetting<DebugLevels>
 
   template <typename... tArgs> static void output(const tArgs&... args)
   {
-    stringstream str;
+    std::stringstream str;
     printTrace(str, args...);
     g_printerr("%s\n", str.str().c_str());
   }
@@ -100,24 +100,24 @@ class DebugLevel : public EnumSetting<DebugLevels>
   DebugLevel(const DebugLevel& other);
   DebugLevel& operator=(const DebugLevel&);
 
-  const vector<Glib::ustring>& enumToString() const override;
-  const vector<Glib::ustring>& enumToDisplayString() const override;
+  const std::vector<Glib::ustring>& enumToString() const override;
+  const std::vector<Glib::ustring>& enumToDisplayString() const override;
 
   template <typename... tArgs> static void printTrace(DebugLevels level, tArgs&... args)
   {
-    stringstream str;
+    std::stringstream str;
     str << level << " ";
     printTrace(str, args...);
   }
 
   template <typename tFirst, typename... tArgs>
-  static void printTrace(stringstream& str, const tFirst& first, const tArgs&... args)
+  static void printTrace(std::stringstream& str, const tFirst& first, const tArgs&... args)
   {
     str << first << " ";
     printTrace(str, args...);
   }
 
-  template <typename tFirst> static void printTrace(stringstream& str, const tFirst& first)
+  template <typename tFirst> static void printTrace(std::stringstream& str, const tFirst& first)
   {
     str << first;
     g_printerr("%8" G_GUINT64_FORMAT ": %s\n", getTimestamp(), str.str().c_str());

@@ -28,7 +28,7 @@ void HardwareUserInterfaceUnit::setUsageMode(UsageMode *mode)
   m_usageMode->setup();
 }
 
-void HardwareUserInterfaceUnit::restoreUsageMode(shared_ptr<UsageMode> mode)
+void HardwareUserInterfaceUnit::restoreUsageMode(std::shared_ptr<UsageMode> mode)
 {
   m_usageMode = mode;
 
@@ -36,12 +36,12 @@ void HardwareUserInterfaceUnit::restoreUsageMode(shared_ptr<UsageMode> mode)
     m_usageMode->bruteForceUpdateLeds();
 }
 
-shared_ptr<UsageMode> HardwareUserInterfaceUnit::getUsageMode()
+std::shared_ptr<UsageMode> HardwareUserInterfaceUnit::getUsageMode()
 {
   return m_usageMode;
 }
 
-shared_ptr<const UsageMode> HardwareUserInterfaceUnit::getUsageMode() const
+std::shared_ptr<const UsageMode> HardwareUserInterfaceUnit::getUsageMode() const
 {
   return m_usageMode;
 }

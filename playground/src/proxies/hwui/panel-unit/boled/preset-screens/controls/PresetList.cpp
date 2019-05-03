@@ -145,7 +145,7 @@ std::pair<size_t, size_t> PresetList::getSelectedPosition() const
   {
     auto bankPos = pm->getBankPosition(b->getUuid());
     auto presetPos = b->getPresetPosition(b->getSelectedPreset());
-    return make_pair(bankPos, presetPos);
+    return std::make_pair(bankPos, presetPos);
   }
   return { -1, -1 };
 }

@@ -13,7 +13,7 @@ class PrevUndoTransactionSiblingControl : public UndoEntryLabel
 
   virtual void assignTransaction(UNDO::Transaction *transaction, bool selected, bool current) override;
 
-  shared_ptr<Font> getFont() const override;
+  std::shared_ptr<Font> getFont() const override;
   void setFontColor(FrameBuffer &fb) const override;
 
  private:

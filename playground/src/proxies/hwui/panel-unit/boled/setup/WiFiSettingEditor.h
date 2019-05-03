@@ -13,6 +13,6 @@ class WiFiSettingEditor : public MenuEditor
   ~WiFiSettingEditor() override;
 
   void incSetting(int inc) override;
-  const vector<ustring> &getDisplayStrings() const override;
+  const std::vector<ustring> &getDisplayStrings() const override;
   int getSelectedIndex() const override;
 };

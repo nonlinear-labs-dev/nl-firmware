@@ -10,5 +10,5 @@ class TextEditControl : public ControlWithChildren
   typedef ControlWithChildren super;
 
  public:
-  TextEditControl(const Rect &pos, shared_ptr<TextEditUsageMode> textUsageMode);
+  TextEditControl(const Rect &pos, std::shared_ptr<TextEditUsageMode> textUsageMode);
 };

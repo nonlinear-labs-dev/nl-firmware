@@ -77,7 +77,7 @@ int Job::parseInt(const string &cmd, const string &name, int def) const
   if(pos != string::npos)
   {
     string sub = cmd.substr(pos + name.length() + 1);
-    return stoi(sub);
+    return std::stoi(sub);
   }
 
   return def;
@@ -90,7 +90,7 @@ float Job::parseFloat(const string &cmd, const string &name, float def) const
   if(pos != string::npos)
   {
     string sub = cmd.substr(pos + name.length() + 1);
-    return stod(sub);
+    return std::stod(sub);
   }
 
   return def;

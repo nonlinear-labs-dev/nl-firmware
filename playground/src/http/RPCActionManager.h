@@ -12,14 +12,14 @@ class RPCActionManager
   virtual ~RPCActionManager();
 
   bool matches(const Glib::ustring &path) const;
-  virtual bool handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request);
-  bool handleRequest(shared_ptr<NetworkRequest> request);
+  virtual bool handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request);
+  bool handleRequest(std::shared_ptr<NetworkRequest> request);
   const Glib::ustring &getBasePath() const;
 
-  typedef function<void(shared_ptr<NetworkRequest> request)> tAction;
+  typedef std::function<void(std::shared_ptr<NetworkRequest> request)> tAction;
   void addAction(const Glib::ustring &path, tAction action);
 
  private:
   Glib::ustring m_basePath;
-  map<Glib::ustring, tAction> m_actions;
+  std::map<Glib::ustring, tAction> m_actions;
 };
