@@ -14,11 +14,7 @@ RecallMCAmountLabel::RecallMCAmountLabel(Rect pos)
   {
     if(auto originalParam = modP->getOriginalParameter())
     {
-      auto ogModAmt = originalParam->getRecallModulationAmount();
-
-      if(modP->isBiPolar())
-        ogModAmt *= 2;
-
+      auto ogModAmt = originalParam->getModulationAmount();
       setText(modP->stringizeModulationAmount(ogModAmt));
       return;
     }

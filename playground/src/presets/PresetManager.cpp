@@ -572,6 +572,11 @@ connection PresetManager::onNumBanksChanged(sigc::slot<void, size_t> cb)
   return m_sigNumBanksChanged.connectAndInit(cb, getNumBanks());
 }
 
+connection PresetManager::onRestoreHappened(sigc::slot<void> cb)
+{
+  return m_sigRestoreHappened.connect(cb);
+}
+
 std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *bank) const
 {
   const Bank *rightMost = nullptr;
@@ -672,7 +677,7 @@ void PresetManager::stress(int numTransactions)
       20);
 }
 
-void PresetManager::stressParam(UNDO::Transaction* trans, Parameter *param)
+void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
 {
   if(m_editBuffer->getSelected() != param)
   {
