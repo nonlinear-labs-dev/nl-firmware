@@ -33,7 +33,7 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
   if(m_param)
   {
     reader.onTextElement("value", [&](const Glib::ustring &text, const Attributes &attr) mutable {
-      auto v = stod(text);
+      auto v = std::stod(text);
       auto converted = ParameterImportConversions::get().convert(m_param->m_id, v, reader.getFileVersion());
       converted = Application::get()
                       .getPresetManager()
@@ -48,10 +48,10 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
       double value = 0;
       if(!text.empty())
       {
-        auto v = stod(text);
+        auto v = std::stod(text);
         value = ParameterImportConversions::get().convertMCAmount(m_param->m_id, v, reader.getFileVersion());
       }
-      m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, std::to_string(value));
+      m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, to_string(value));
     });
 
     reader.onTextElement("modSrc", [=, &reader](const Glib::ustring &text, const Attributes &attr) {

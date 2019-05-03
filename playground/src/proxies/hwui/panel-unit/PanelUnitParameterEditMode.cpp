@@ -116,19 +116,19 @@ void PanelUnitParameterEditMode::setup()
   });
 
   setupButtonConnection(75,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 243));
+                        std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 243));
   FOR_TESTS(assignedAudioIDs.insert(243));
 
   setupButtonConnection(79,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 244));
+                        std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 244));
   FOR_TESTS(assignedAudioIDs.insert(244));
 
   setupButtonConnection(83,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 245));
+                        std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 245));
   FOR_TESTS(assignedAudioIDs.insert(245));
 
   setupButtonConnection(87,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 246));
+                        std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 246));
   FOR_TESTS(assignedAudioIDs.insert(246));
 
   assertAllButtonsAssigned();
@@ -223,7 +223,7 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(int button) cons
   return m_mappings.findParameters(button);
 }
 
-UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(vector<gint32> toggleAudioIDs)
+UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::vector<gint32> toggleAudioIDs)
 {
 #if _TESTS
 
@@ -238,16 +238,16 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(vecto
 
 #endif
 
-  return bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
+  return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
 
 UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(gint32 audioID)
 {
-  return bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, vector<gint32>(audioID),
+  return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, std::vector<gint32>(audioID),
               std::placeholders::_3);
 }
 
-bool PanelUnitParameterEditMode::toggleParameterSelection(const vector<gint32> ids, bool state)
+bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> ids, bool state)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto firstParameterInList = editBuffer->findParameterByID(ids.front());
@@ -325,18 +325,18 @@ bool PanelUnitParameterEditMode::switchToNormalModeInCurrentParameterLayout()
 {
   auto layout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout();
 
-  if(auto p = dynamic_pointer_cast<ModulateableParameterLayout2>(layout))
+  if(auto p = std::dynamic_pointer_cast<ModulateableParameterLayout2>(layout))
   {
     return p->switchToNormalMode();
   }
   return false;
 }
 
-bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(vector<gint32> ids, Parameter *selParam)
+bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(std::vector<gint32> ids, Parameter *selParam)
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(selParam))
   {
-    list<gint32> a;
+    std::list<gint32> a;
     for(auto x : ids)
     {
       a.push_back(x);
@@ -385,10 +385,10 @@ bool PanelUnitParameterEditMode::isShowingParameterScreen() const
 {
   auto layout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout();
 
-  if(dynamic_pointer_cast<ParameterLayout2>(layout))
+  if(std::dynamic_pointer_cast<ParameterLayout2>(layout))
     return true;
 
-  if(dynamic_pointer_cast<ParameterInfoLayout>(layout))
+  if(std::dynamic_pointer_cast<ParameterInfoLayout>(layout))
     return true;
 
   return false;
@@ -396,7 +396,7 @@ bool PanelUnitParameterEditMode::isShowingParameterScreen() const
 
 void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 {
-  if(dynamic_pointer_cast<PresetManagerLayout>(getCurrentBoledLayout()) != nullptr)
+  if(std::dynamic_pointer_cast<PresetManagerLayout>(getCurrentBoledLayout()) != nullptr)
   {
     std::cerr << "Current Boled Layout == PresetManagerLayout!" << std::endl;
   }
@@ -509,7 +509,7 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, int select
     states[button] = true;
 }
 
-shared_ptr<Layout> PanelUnitParameterEditMode::getCurrentBoledLayout() const
+std::shared_ptr<Layout> PanelUnitParameterEditMode::getCurrentBoledLayout() const
 {
   return getBoled().getLayout();
 }

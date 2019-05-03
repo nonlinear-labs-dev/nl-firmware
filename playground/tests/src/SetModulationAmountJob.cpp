@@ -12,7 +12,7 @@ SetModulationAmountJob::~SetModulationAmountJob()
 
 string SetModulationAmountJob::getURL() const
 {
-  stringstream str;
+  std::stringstream str;
   str << BASE_URL << "/presets/param-editor/set-mod-amount?amount=" << m_value;
   return str.str();
 }

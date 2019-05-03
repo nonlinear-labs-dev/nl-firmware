@@ -36,7 +36,7 @@ tDisplayValue ParabolicScaleConverter::controlPositionToDisplay(const tControlPo
 
 Glib::ustring ParabolicScaleConverter::controlPositionToDisplayJS() const
 {
-  stringstream s;
+  std::stringstream s;
   s << "return $wnd.formatDimension(cpValue * cpValue * " << m_displayRange.getRangeWidth() << " + "
     << m_displayRange.getMin() << ", \"" << getDimension().getStingizerJS() << "\", withUnit);";
   return s.str();

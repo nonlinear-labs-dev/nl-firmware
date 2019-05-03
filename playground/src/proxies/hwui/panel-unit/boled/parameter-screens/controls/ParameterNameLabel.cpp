@@ -103,7 +103,7 @@ void ParameterNameLabel::setFontColor(FrameBuffer &fb) const
     fb.setColor(FrameBuffer::Colors::C128);
 }
 
-shared_ptr<Font> ParameterNameLabel::getFont() const
+std::shared_ptr<Font> ParameterNameLabel::getFont() const
 {
   return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
 }

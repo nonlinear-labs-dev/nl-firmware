@@ -46,7 +46,7 @@
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
     , m_actions(*this)
-    , m_saveJob(5000, bind(&Settings::save, this))
+    , m_saveJob(5000, std::bind(&Settings::save, this))
 {
   addSetting("AutoLoadSelectedPreset", new AutoLoadSelectedPreset(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsLPCWriteFallback(*this));
@@ -139,7 +139,7 @@ void Settings::save()
 {
   SettingsSerializer serializer(*this);
 
-  shared_ptr<OutStream> out(new FileOutStream(Application::get().getOptions()->getSettingsFile(), false));
+  std::shared_ptr<OutStream> out(new FileOutStream(Application::get().getOptions()->getSettingsFile(), false));
   XmlWriter writer(out);
   serializer.write(writer, VersionAttribute::get());
 }
@@ -190,7 +190,7 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
   });
 }
 
-void Settings::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
   m_actions.handleRequest(request);
 }

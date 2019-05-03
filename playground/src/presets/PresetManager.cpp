@@ -27,7 +27,7 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent)
     , m_editBuffer(std::make_unique<EditBuffer>(this))
     , m_initSound(std::make_unique<Preset>(this))
     , m_autoLoadThrottler(std::chrono::milliseconds(200))
-    , m_saveJob(bind(mem_fun(this, &PresetManager::doSaveTask)))
+    , m_saveJob(std::bind(mem_fun(this, &PresetManager::doSaveTask)))
 {
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
   m_actionManagers.emplace_back(new BankActions(*this));
@@ -91,7 +91,7 @@ UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
   return UpdateDocumentContributor::onChange(flags);
 }
 
-void PresetManager::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+void PresetManager::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
   ContentSection::handleHTTPRequest(request, path);
 
@@ -103,14 +103,14 @@ void PresetManager::handleHTTPRequest(shared_ptr<NetworkRequest> request, const 
   DebugLevel::warning("could not handle request", path);
 }
 
-list<PresetManager::SaveSubTask> PresetManager::createListOfSaveSubTasks()
+std::list<PresetManager::SaveSubTask> PresetManager::createListOfSaveSubTasks()
 {
   auto path = Application::get().getOptions()->getPresetManagerPath();
   auto file = Gio::File::create_for_path(path);
   g_file_make_directory_with_parents(file->gobj(), nullptr, nullptr);
 
-  return { bind(&PresetManager::saveMetadata, this, file), bind(&PresetManager::saveInitSound, this, file),
-           bind(&PresetManager::saveBanks, this, file) };
+  return { std::bind(&PresetManager::saveMetadata, this, file), std::bind(&PresetManager::saveInitSound, this, file),
+           std::bind(&PresetManager::saveBanks, this, file) };
 }
 
 SaveResult PresetManager::saveMetadata(RefPtr<Gio::File> pmFolder)
@@ -588,8 +588,8 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *
         return;
       }
 
-      auto x = stod(other->getX());
-      auto currentX = stod(rightMost->getX());
+      auto x = std::stod(other->getX());
+      auto currentX = std::stod(rightMost->getX());
 
       if(x > currentX)
         rightMost = other;
@@ -597,7 +597,7 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *
   });
 
   if(rightMost)
-    return std::make_pair(stod(rightMost->getX()) + 300, stod(rightMost->getY()));
+    return std::make_pair(std::stod(rightMost->getX()) + 300, std::stod(rightMost->getY()));
 
   return std::make_pair(0.0, 0.0);
 }

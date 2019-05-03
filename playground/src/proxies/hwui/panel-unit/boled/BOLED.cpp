@@ -90,7 +90,7 @@ void BOLED::setupPresetScreen(FocusAndMode focusAndMode)
       break;
 
     default:
-      if(auto e = dynamic_pointer_cast<PresetManagerLayout>(getLayout()))
+      if(auto e = std::dynamic_pointer_cast<PresetManagerLayout>(getLayout()))
         e->setFocusAndMode(focusAndMode);
       else
         reset(new PresetManagerLayout(focusAndMode));
@@ -106,7 +106,7 @@ void BOLED::setupBankScreen(FocusAndMode focusAndMode)
       break;
 
     default:
-      if(auto e = dynamic_pointer_cast<PresetManagerLayout>(getLayout()))
+      if(auto e = std::dynamic_pointer_cast<PresetManagerLayout>(getLayout()))
         e->setFocusAndMode(focusAndMode);
       else
         reset(new PresetManagerLayout(focusAndMode));
@@ -115,7 +115,7 @@ void BOLED::setupBankScreen(FocusAndMode focusAndMode)
 
 bool BOLED::onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool state)
 {
-  if(shared_ptr<DFBLayout> l = dynamic_pointer_cast<DFBLayout>(getLayout()))
+  if(std::shared_ptr<DFBLayout> l = std::dynamic_pointer_cast<DFBLayout>(getLayout()))
     if(l->onButton(buttonID, state, modifiers))
       return true;
 
@@ -124,7 +124,7 @@ bool BOLED::onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool sta
 
 void BOLED::onRotary(signed char i)
 {
-  if(shared_ptr<DFBLayout> l = dynamic_pointer_cast<DFBLayout>(getLayout()))
+  if(std::shared_ptr<DFBLayout> l = std::dynamic_pointer_cast<DFBLayout>(getLayout()))
     l->onRotary(i, Application::get().getHWUI()->getButtonModifiers());
 }
 

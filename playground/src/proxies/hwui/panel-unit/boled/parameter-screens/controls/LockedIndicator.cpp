@@ -37,7 +37,7 @@ void LockedIndicator::setFontColor(FrameBuffer &fb) const
   fb.setColor(FrameBuffer::Colors::C255);
 }
 
-shared_ptr<Font> LockedIndicator::getFont() const
+std::shared_ptr<Font> LockedIndicator::getFont() const
 {
   return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
 }

@@ -19,14 +19,14 @@ void BooleanSetting::toggle()
   set(get() ? BooleanSettings::BOOLEAN_SETTING_FALSE : BooleanSettings::BOOLEAN_SETTING_TRUE);
 }
 
-const vector<Glib::ustring> &BooleanSetting::enumToString() const
+const std::vector<Glib::ustring> &BooleanSetting::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "on", "off" };
+  static std::vector<Glib::ustring> s_modeNames = { "on", "off" };
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &BooleanSetting::enumToDisplayString() const
+const std::vector<Glib::ustring> &BooleanSetting::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "On", "Off" };
+  static std::vector<Glib::ustring> s_modeNames = { "On", "Off" };
   return s_modeNames;
 }

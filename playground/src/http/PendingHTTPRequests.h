@@ -10,11 +10,10 @@ class PendingHTTPRequests
   PendingHTTPRequests();
   virtual ~PendingHTTPRequests();
 
-  typedef shared_ptr<NetworkRequest> tRequest;
-  typedef set<tRequest> tMessageSet;
+  typedef std::shared_ptr<NetworkRequest> tRequest;
+  typedef std::set<tRequest> tMessageSet;
   void addPendingMessage(tRequest msg);
   tMessageSet expropriateFromPendingMessages();
-  bool removeIfExists(tRequest msg);
   bool removeIfExists(SoupMessage *msg);
 
  private:

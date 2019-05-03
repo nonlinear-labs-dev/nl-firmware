@@ -9,12 +9,12 @@ class TextEditControlLetter : public Label
   typedef Label super;
 
  public:
-  TextEditControlLetter(shared_ptr<TextEditUsageMode> textUsageMode, int relativeToCursor, const Rect &pos);
+  TextEditControlLetter(std::shared_ptr<TextEditUsageMode> textUsageMode, int relativeToCursor, const Rect &pos);
 
   virtual bool redraw(FrameBuffer &fb);
   StringAndSuffix getText() const override;
 
  private:
-  shared_ptr<TextEditUsageMode> m_textUsageMode;
+  std::shared_ptr<TextEditUsageMode> m_textUsageMode;
   int m_relativeToCursor;
 };

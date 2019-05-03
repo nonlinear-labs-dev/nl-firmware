@@ -1,7 +1,7 @@
 #include "RenameLetter.h"
 #include <proxies/hwui/TextEditUsageMode.h>
 
-RenameLetter::RenameLetter(shared_ptr<TextEditUsageMode> mode, int buttonID, const Rect &pos)
+RenameLetter::RenameLetter(std::shared_ptr<TextEditUsageMode> mode, int buttonID, const Rect &pos)
     : super(pos)
     , m_mode(mode)
     , m_buttonID(buttonID)

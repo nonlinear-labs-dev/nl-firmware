@@ -16,7 +16,7 @@ namespace DETAIL
       setFontColor(color);
     }
 
-    virtual shared_ptr<Font> getFont() const override
+    virtual std::shared_ptr<Font> getFont() const override
     {
       return m_font;
     }

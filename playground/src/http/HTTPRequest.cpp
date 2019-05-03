@@ -50,9 +50,9 @@ Glib::ustring HTTPRequest::getPath()
   return soup_uri_get_path(uri);
 }
 
-shared_ptr<OutStream> HTTPRequest::createStream(const Glib::ustring &contentType, bool zip)
+std::shared_ptr<OutStream> HTTPRequest::createStream(const Glib::ustring &contentType, bool zip)
 {
-  return shared_ptr<OutStream>(new SoupOutStream(m_message, contentType, zip));
+  return std::shared_ptr<OutStream>(new SoupOutStream(m_message, contentType, zip));
 }
 
 void HTTPRequest::pause()

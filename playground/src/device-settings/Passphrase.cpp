@@ -14,7 +14,7 @@ void Passphrase::dice()
 {
   static const std::string dict = "abcdefghkmnpqrstuvwxyzABCDEFGHKMNPQRSTUVWXYZ123456789";
 
-  string r;
+  std::string r;
 
   for(int i = 0; i < 8; i++)
     r += dict[g_random_int_range(0, dict.length())];

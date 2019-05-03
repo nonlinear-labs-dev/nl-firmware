@@ -4,7 +4,7 @@
 
 const int c_letterWidth = 8;
 
-TextEditControl::TextEditControl(const Rect &pos, shared_ptr<TextEditUsageMode> textUsageMode)
+TextEditControl::TextEditControl(const Rect &pos, std::shared_ptr<TextEditUsageMode> textUsageMode)
     : super(pos)
 {
   int numLetters = pos.getWidth() / c_letterWidth;

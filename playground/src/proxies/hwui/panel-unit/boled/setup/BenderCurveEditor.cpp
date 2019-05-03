@@ -19,7 +19,7 @@ void BenderCurveEditor::incSetting(int inc)
   Application::get().getSettings()->getSetting<BenderCurve>()->inc(inc, false);
 }
 
-const vector<ustring> &BenderCurveEditor::getDisplayStrings() const
+const std::vector<ustring> &BenderCurveEditor::getDisplayStrings() const
 {
   return Application::get().getSettings()->getSetting<BenderCurve>()->enumToDisplayString();
 }

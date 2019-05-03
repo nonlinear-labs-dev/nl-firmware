@@ -37,16 +37,16 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
       return;
 
-    array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
+    std::array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
-      getMappings().forEachButton([&](int buttonId, const list<int>& parameters) {
+      getMappings().forEachButton([&](int buttonId, const std::list<int>& parameters) {
         Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
             BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
         letChangedButtonsBlink(buttonId, parameters, states);
       });
     else
-      getMappings().forEachButton([&](int buttonId, const list<int>& parameters) {
+      getMappings().forEachButton([&](int buttonId, const std::list<int>& parameters) {
         Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
             BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
         setStateForButton(buttonId, parameters, states);
@@ -56,8 +56,8 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
   });
 }
 
-void PanelUnitPresetMode::letChangedButtonsBlink(int buttonId, const list<int> parameters,
-                                                 array<TwoStateLED::LedState, numLeds>& states)
+void PanelUnitPresetMode::letChangedButtonsBlink(int buttonId, const std::list<int> parameters,
+                                                 std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto currentParams = getMappings().findParameters(buttonId);
@@ -71,8 +71,8 @@ void PanelUnitPresetMode::letChangedButtonsBlink(int buttonId, const list<int> p
   states[buttonId] = anyChanged ? TwoStateLED::BLINK : TwoStateLED::OFF;
 }
 
-void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parameters,
-                                            array<TwoStateLED::LedState, numLeds>& states)
+void PanelUnitPresetMode::setStateForButton(int buttonId, const std::list<int> parameters,
+                                            std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
@@ -100,7 +100,7 @@ void PanelUnitPresetMode::setStateForButton(int buttonId, const list<int> parame
   }
 }
 
-void PanelUnitPresetMode::applyStateToLeds(array<TwoStateLED::LedState, numLeds>& states)
+void PanelUnitPresetMode::applyStateToLeds(std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto& panelUnit = Application::get().getHWUI()->getPanelUnit();
   for(int i = 0; i < numLeds; i++)

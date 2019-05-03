@@ -7,7 +7,7 @@
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
 
-string to_string(Bank::AttachmentDirection dir);
+std::string to_string(Bank::AttachmentDirection dir);
 
 EditBuffer *getEditBuffer()
 {
@@ -149,7 +149,7 @@ const Uuid &Bank::getUuid() const
   return m_uuid;
 }
 
-string Bank::getName(bool withFallback) const
+std::string Bank::getName(bool withFallback) const
 {
   if(m_name.empty())
     return "<Untitled Bank>";
@@ -157,12 +157,12 @@ string Bank::getName(bool withFallback) const
   return m_name;
 }
 
-string Bank::getX() const
+std::string Bank::getX() const
 {
   return m_x;
 }
 
-string Bank::getY() const
+std::string Bank::getY() const
 {
   return m_y;
 }
@@ -182,7 +182,7 @@ const Uuid &Bank::getAttachedToBankUuid() const
   return m_attachedToBankWithUuid;
 }
 
-string Bank::getAttachDirection() const
+std::string Bank::getAttachDirection() const
 {
   return m_attachDirection;
 }
@@ -331,7 +331,7 @@ void Bank::invalidate()
   onChange(ChangeFlags::Generic);
 }
 
-void Bank::setName(UNDO::Transaction *transaction, const string &name)
+void Bank::setName(UNDO::Transaction *transaction, const std::string &name)
 {
   transaction->addUndoSwap(this, m_name, name);
   updateLastModifiedTimestamp(transaction);
@@ -362,11 +362,11 @@ void Bank::setAttachedToBank(UNDO::Transaction *transaction, const Uuid &uuid)
   transaction->addUndoSwap(this, m_attachedToBankWithUuid, uuid);
 }
 
-void Bank::setAttachedDirection(UNDO::Transaction *transaction, const string &direction)
+void Bank::setAttachedDirection(UNDO::Transaction *transaction, const std::string &direction)
 {
   try
   {
-    auto i = stoi(direction);
+    auto i = std::stoi(direction);
     auto dir = static_cast<Bank::AttachmentDirection>(i);
     transaction->addUndoSwap(this, m_attachDirection, to_string(dir));
   }
@@ -376,12 +376,12 @@ void Bank::setAttachedDirection(UNDO::Transaction *transaction, const string &di
   }
 }
 
-void Bank::setX(UNDO::Transaction *transaction, const string &x)
+void Bank::setX(UNDO::Transaction *transaction, const std::string &x)
 {
   transaction->addUndoSwap(this, m_x, x);
 }
 
-void Bank::setY(UNDO::Transaction *transaction, const string &y)
+void Bank::setY(UNDO::Transaction *transaction, const std::string &y)
 {
   transaction->addUndoSwap(this, m_y, y);
 }
@@ -498,7 +498,7 @@ void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other, bool igno
   updateLastModifiedTimestamp(transaction);
 }
 
-string to_string(Bank::AttachmentDirection dir)
+std::string to_string(Bank::AttachmentDirection dir)
 {
   static_assert(Bank::AttachmentDirection::none == 0,
                 "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
@@ -526,7 +526,7 @@ string to_string(Bank::AttachmentDirection dir)
   return "";
 }
 
-Bank::AttachmentDirection toAttachDirection(const string &str)
+Bank::AttachmentDirection toAttachDirection(const std::string &str)
 {
   if(str == "top")
     return Bank::AttachmentDirection::top;
@@ -563,7 +563,7 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
         if(presetsBaseName == baseName)
         {
           auto number = matchInfo.fetch(2);
-          int newNumber = stoi(number);
+          int newNumber = std::stoi(number);
           h = std::max(h, newNumber);
           hadMatch = true;
         }

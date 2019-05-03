@@ -16,7 +16,7 @@ class MemoryInStream : public InStream
 
   virtual bool eof() const;
   virtual ustring read() override;
-  virtual vector<uint8_t> readAll() override;
+  virtual std::vector<uint8_t> readAll() override;
 
   bool isBufferCorrectC15Backup();
 

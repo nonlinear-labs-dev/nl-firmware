@@ -14,14 +14,14 @@ class MacroControlMappingGroup : public ParameterGroup
   virtual ~MacroControlMappingGroup();
 
   typedef ModulationRoutingParameter *tModRoutingParam;
-  typedef list<tModRoutingParam> tModRoutingParams;
+  typedef std::list<tModRoutingParam> tModRoutingParams;
   tModRoutingParams getModulationRoutingParametersFor(const MacroControlParameter *mc);
   tModRoutingParams getModulationRoutingParametersFor(const PhysicalControlParameter *src);
   const ModulationRoutingParameter *getModulationRoutingParameterFor(const PhysicalControlParameter *src,
                                                                      const MacroControlParameter *mc);
 
   typedef PhysicalControlParameter *tPhysicalControlParameter;
-  typedef list<tPhysicalControlParameter> tPhysicalControlParameters;
+  typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;
   tPhysicalControlParameters getPhysicalControlParameters();
 
   void init();

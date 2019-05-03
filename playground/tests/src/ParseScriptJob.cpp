@@ -22,11 +22,11 @@ ParseScriptJob::~ParseScriptJob()
 {
 }
 
-static string parseCommand(const string& line)
+static std::string parseCommand(const std::string& line)
 {
   size_t spacePos = line.find(' ');
 
-  if(spacePos == string::npos)
+  if(spacePos == std::string::npos)
     return line;
 
   return line.substr(0, spacePos);
@@ -34,9 +34,9 @@ static string parseCommand(const string& line)
 
 static Job* createJob(const string& line, Job* parent)
 {
-  typedef function<Job*(Job*, const string&)> tConstructor;
+  typedef std::function<Job*(Job*, const string&)> tConstructor;
 
-  static map<string, tConstructor> knownCommands = {
+  static std::map<string, tConstructor> knownCommands = {
     { "start-playground", [](Job* parent, const string& cmd) { return new StartPlaygroundJob(parent); } },
     { "set-defaults", [](Job* parent, const string& cmd) { return new SetDefaultsJob(parent); } },
     { "set-parameter", [](Job* parent, const string& cmd) { return new SetParameterJob(parent, cmd); } },
@@ -64,7 +64,7 @@ void ParseScriptJob::implRun()
   string script = getRoot()->findChild<LoadScriptJob>()->getContent();
   auto exe = getRoot()->findChild<ExecuteScriptJob>();
 
-  stringstream str(script);
+  std::stringstream str(script);
   string line;
   int lineNumber = 1;
 

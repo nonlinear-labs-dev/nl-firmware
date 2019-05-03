@@ -83,7 +83,7 @@ void HTTPServer::unpauseMessage(SoupMessage *msg)
   soup_server_unpause_message(m_server, msg);
 }
 
-void HTTPServer::handleRequest(shared_ptr<NetworkRequest> request)
+void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
 {
   Glib::ustring path = request->getPath();
 
@@ -97,13 +97,13 @@ void HTTPServer::handleRequest(shared_ptr<NetworkRequest> request)
   }
   else if(path == "/C15-journal.tar.gz")
   {
-    tServedStream file(new ServedJournal(*this, dynamic_pointer_cast<HTTPRequest>(request)));
+    tServedStream file(new ServedJournal(*this, std::dynamic_pointer_cast<HTTPRequest>(request)));
     m_servedStreams.push_back(file);
     file->startServing();
   }
   else
   {
-    if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
+    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       if(isIndexPageAlias(path))
       {
@@ -126,7 +126,7 @@ bool HTTPServer::isIndexPageAlias(const Glib::ustring &path)
   return path.empty() || path == "/";
 }
 
-void HTTPServer::redirectToIndexPage(shared_ptr<HTTPRequest> request) const
+void HTTPServer::redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const
 {
   request->moved("/NonMaps/war/NonMaps.html");
 }
@@ -142,7 +142,7 @@ Glib::ustring HTTPServer::getPathFromMessage(SoupMessage *msg)
   return soup_uri_get_path(uri);
 }
 
-void HTTPServer::serveStaticFile(shared_ptr<HTTPRequest> request)
+void HTTPServer::serveStaticFile(std::shared_ptr<HTTPRequest> request)
 {
   tServedStream file(new ServedFile(*this, request));
   m_servedStreams.push_back(file);
@@ -172,7 +172,7 @@ void HTTPServer::serverCallback(SoupServer *server, SoupMessage *msg, const char
   try
   {
     g_signal_connect(msg, "finished", G_CALLBACK(&HTTPServer::messageFinishedCB), pThis);
-    shared_ptr<NetworkRequest> request(new HTTPRequest(msg));
+    std::shared_ptr<NetworkRequest> request(new HTTPRequest(msg));
     pThis->handleRequest(request);
   }
   catch(MarkupError &err)

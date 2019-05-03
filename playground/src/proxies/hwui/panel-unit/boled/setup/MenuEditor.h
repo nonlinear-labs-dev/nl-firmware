@@ -20,7 +20,7 @@ class MenuEditor : public ControlWithChildren, public SetupEditor
 
  protected:
   virtual void incSetting(int inc) = 0;
-  virtual const vector<ustring> &getDisplayStrings() const = 0;
+  virtual const std::vector<ustring> &getDisplayStrings() const = 0;
   virtual int getSelectedIndex() const = 0;
   void onSettingChanged(const Setting *s);
   void updateOnSettingChanged();

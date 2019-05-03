@@ -17,7 +17,7 @@ void MCPositionButton::update(const Parameter *parameter)
     if(p->getModulationSource() == ModulationSource::NONE)
       setText("");
     else
-      setText({"MC Pos"s + (p->isMacroControlAssignedAndChanged() ? "*" : "")});
+      setText({std::string("MC Pos") + (p->isMacroControlAssignedAndChanged() ? "*" : "")});
   }
   else
   {

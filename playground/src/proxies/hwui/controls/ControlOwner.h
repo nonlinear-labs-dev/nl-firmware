@@ -21,35 +21,35 @@ class ControlOwner : public Uncopyable
 
   void setAllDirty();
 
-  typedef shared_ptr<Control> tControlPtr;
-  typedef list<tControlPtr> tControls;
+  typedef std::shared_ptr<Control> tControlPtr;
+  typedef std::list<tControlPtr> tControls;
 
   const tControls &getControls() const;
 
   template <typename T> void highlight()
   {
     for(auto c : getControls())
-      if(dynamic_pointer_cast<T>(c))
+      if(std::dynamic_pointer_cast<T>(c))
         highlight(c);
   }
 
   template <typename T> void lowlight()
   {
     for(auto c : getControls())
-      if(auto cc = dynamic_pointer_cast<T>(c))
+      if(auto cc = std::dynamic_pointer_cast<T>(c))
         cc->setHighlight(false);
   }
 
-  template <typename T> shared_ptr<T> findControlOfType()
+  template <typename T> std::shared_ptr<T> findControlOfType()
   {
     for(auto c : getControls())
-      if(auto p = dynamic_pointer_cast<T>(c))
+      if(auto p = std::dynamic_pointer_cast<T>(c))
         return p;
 
     return nullptr;
   }
 
-  void highlight(shared_ptr<Control> c);
+  void highlight(std::shared_ptr<Control> c);
   void noHighlight();
   void highlightButtonWithCaption(const Glib::ustring &caption);
 
@@ -70,10 +70,10 @@ class ControlOwner : public Uncopyable
   virtual void clear();
   size_t getNumChildren() const;
 
-  typedef function<bool(tControlPtr)> tIfCallback;
+  typedef std::function<bool(tControlPtr)> tIfCallback;
   void forEach(tIfCallback cb) const;
 
-  typedef function<void(tControlPtr)> tCallback;
+  typedef std::function<void(tControlPtr)> tCallback;
   void forEach(tCallback cb) const;
 
   tControlPtr first();

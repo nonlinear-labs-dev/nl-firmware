@@ -31,7 +31,7 @@ class ScaleConverter
 
   template <typename T> static const ScaleConverter *get()
   {
-    static map<int, unique_ptr<ScaleConverter>> s_converters;
+    static std::map<int, std::unique_ptr<ScaleConverter>> s_converters;
 
     auto key = typeid(T).hash_code();
     auto it = s_converters.find(key);
@@ -39,7 +39,7 @@ class ScaleConverter
     if(it == s_converters.end())
     {
       auto ret = new T();
-      s_converters[key] = unique_ptr<T>(ret);
+      s_converters[key] = std::unique_ptr<T>(ret);
       return ret;
     }
     return it->second.get();

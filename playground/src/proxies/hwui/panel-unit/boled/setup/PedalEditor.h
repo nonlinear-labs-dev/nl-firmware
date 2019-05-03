@@ -12,13 +12,13 @@ class PedalEditor : public MenuEditor
   typedef MenuEditor super;
 
  public:
-  PedalEditor(shared_ptr<PedalType> m);
+  PedalEditor(std::shared_ptr<PedalType> m);
   virtual ~PedalEditor();
 
   virtual void incSetting(int inc) override;
-  virtual const vector<ustring> &getDisplayStrings() const override;
+  virtual const std::vector<ustring> &getDisplayStrings() const override;
   virtual int getSelectedIndex() const override;
 
  private:
-  shared_ptr<PedalType> m_mode;
+  std::shared_ptr<PedalType> m_mode;
 };

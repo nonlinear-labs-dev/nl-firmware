@@ -49,7 +49,7 @@ Glib::ustring TimeScaleConverter::controlPositionToDisplayJS() const
   auto log_min = m_displayRange.getMin() == 0 ? 0.0 : log(m_displayRange.getMin());
   auto log_max = log(m_displayRange.getMax());
   auto logDiff = (log_max - log_min);
-  stringstream s;
+  std::stringstream s;
   s << "var e = Math.exp(" << log_min << " + cpValue * " << logDiff << ");";
 
   if(m_displayRange.getMin() == 0.0)

@@ -13,7 +13,7 @@ class SymbolLabel : public Label
   virtual ~SymbolLabel();
 
  protected:
-  virtual shared_ptr<Font> getFont() const override;
+  virtual std::shared_ptr<Font> getFont() const override;
   virtual int getFontHeight() const override;
 
  private:

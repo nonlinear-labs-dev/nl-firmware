@@ -27,7 +27,7 @@ void FileInfoContent::initializeFileInfosFromFile()
   const auto filePath = std::regex_replace(m_file.path().parent_path().string(), std::regex("/mnt/usb-stick"), "");
 
   infoFields["filename"]->setInfo(m_file.path().filename().string());
-  infoFields["path"]->setInfo(filePath.empty() ? "/" : std::to_string(filePath));
+  infoFields["path"]->setInfo(filePath.empty() ? "/" : to_string(filePath));
   infoFields["date"]->setInfo(writeTimeToString(std::experimental::filesystem::last_write_time(m_file.path())));
   infoFields["size"]->setInfo(FileTools::bytesToHumanreadable(std::experimental::filesystem::file_size(m_file.path())));
 

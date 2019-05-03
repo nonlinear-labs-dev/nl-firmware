@@ -18,7 +18,7 @@ class PresetListContent : public ControlWithChildren
   virtual ~PresetListContent();
 
   void setup(Bank *bank, size_t focussedPresetPos);
-  bool animateSelectedPreset(function<void()> cb);
+  bool animateSelectedPreset(std::function<void()> cb);
 
  private:
   Preset *getPresetAtPosition(Bank *bank, int pos) const;

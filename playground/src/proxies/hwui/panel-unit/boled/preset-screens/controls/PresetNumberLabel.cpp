@@ -50,7 +50,7 @@ void PresetNumberLabel::update(int presetNumber, bool selected, bool loaded)
   }
 }
 
-shared_ptr<Font> PresetNumberLabel::getFont() const
+std::shared_ptr<Font> PresetNumberLabel::getFont() const
 {
   return Oleds::get().getFont("Emphase_9_NUM_Regular", getFontHeight());
 }

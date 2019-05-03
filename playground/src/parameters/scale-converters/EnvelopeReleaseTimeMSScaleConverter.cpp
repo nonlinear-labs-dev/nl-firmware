@@ -15,7 +15,7 @@ tDisplayValue EnvelopeReleaseTimeMSScaleConverter::controlPositionToDisplay(cons
   if(cpValue < (1 / 101.0))
     return 11.3 * cpValue;
   else if(cpValue > 100 / 101.0)
-    return numeric_limits<tDisplayValue>::infinity();
+    return std::numeric_limits<tDisplayValue>::infinity();
 
   return 0.1 * exp((log(16000) - log(0.1)) * cpValue * 1.01);
 }
@@ -37,7 +37,7 @@ tControlPositionValue EnvelopeReleaseTimeMSScaleConverter::tcdToControlPosition(
 
 Glib::ustring EnvelopeReleaseTimeMSScaleConverter::controlPositionToDisplayJS() const
 {
-  stringstream s;
+  std::stringstream s;
   s << "var e = 0;";
   s << "if(cpValue < 1 / 101.0) e = 11.3 * cpValue;";
   s << "else if(cpValue > 100 / 101.0) e = Number.POSITIVE_INFINITY;";

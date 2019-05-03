@@ -48,7 +48,7 @@ bool WatchDog::isDebuggerPreset()
   return false;
 }
 
-void WatchDog::run(chrono::steady_clock::duration timeout)
+void WatchDog::run(std::chrono::steady_clock::duration timeout)
 {
   run(timeout, [=](int numWarnings, int msInactive) {
     const int maxNumWarnings = 10;
@@ -65,7 +65,7 @@ void WatchDog::run(chrono::steady_clock::duration timeout)
   });
 }
 
-void WatchDog::run(chrono::steady_clock::duration timeout, tCB cb)
+void WatchDog::run(std::chrono::steady_clock::duration timeout, tCB cb)
 {
   m_timeout = timeout;
 
@@ -73,7 +73,7 @@ void WatchDog::run(chrono::steady_clock::duration timeout, tCB cb)
 
   m_run = true;
 
-  m_bg = thread([=]() { doBackgroundCheck(cb); });
+  m_bg = std::thread([=]() { doBackgroundCheck(cb); });
 
   m_regularTimer.refresh(m_timeout, Glib::PRIORITY_HIGH);
 }

@@ -70,7 +70,7 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
   reader.loadElement("hash-on-store", m_editBuffer->m_hashOnStore);
 
   reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
-    m_editBuffer->findParameterByID(stoi(text))->undoableLock(reader.getTransaction());
+    m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
   });
 
   reader.onTag(RecallEditBufferSerializer::getTagName(),

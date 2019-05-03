@@ -56,7 +56,7 @@ class QuantizedValue : public ClippedValue
   Glib::ustring getDisplayString() const;
   virtual size_t getHash() const override;
 
-  unique_ptr<IncrementalChanger> startUserEdit(Initiator initiator);
+  std::unique_ptr<IncrementalChanger> startUserEdit(Initiator initiator);
 
   virtual void onClippedValueChanged(Initiator initiator, tControlPositionValue oldClippedValue,
                                      tControlPositionValue newClippedValue) override;

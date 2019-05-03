@@ -12,7 +12,7 @@ SelectParameterJob::~SelectParameterJob()
 
 string SelectParameterJob::getURL() const
 {
-  stringstream str;
+  std::stringstream str;
   str << BASE_URL << "/presets/param-editor/select-param?id=" << m_ID;
   return str.str();
 }

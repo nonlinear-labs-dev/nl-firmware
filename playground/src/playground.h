@@ -8,6 +8,7 @@
 #include <memory>
 #include <stdio.h>
 #include <iostream>
+#include <iomanip>
 
 #define TRACE_LOC_AND_ARGS(loc, arg) std::cout << loc << ": " << arg << std::endl
 #define TRACE(arg) TRACE_LOC_AND_ARGS(G_STRLOC, arg)
@@ -22,7 +23,7 @@ void printLastFunctions();
 #include "Compatibility.h"
 
 using namespace Glib;
-using namespace std;
+//using namespace std;
 using namespace sigc;
 
 typedef gint32 tAudioControlValue;
@@ -45,10 +46,10 @@ namespace std
     target = str;
     return res;
   }
-}
-template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std::string to_string(const T& e)
-{
-  return to_string(static_cast<int>(e));
+  template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std::string to_string(const T& e)
+  {
+    return to_string(static_cast<int>(e));
+  }
 }
 
 template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true>
@@ -62,6 +63,18 @@ template <class T> inline void hash_combine(std::size_t& seed, const T& v)
 {
   std::hash<T> hasher;
   seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+template <typename T> inline std::string to_string(const T& t)
+{
+  return std::to_string(t);
+}
+
+inline std::string to_string(double d)
+{
+  std::stringstream ss;
+  ss << std::setprecision(std::numeric_limits<double>::max_digits10) << d;
+  return ss.str();
 }
 
 typedef gint16 tTcdValue;

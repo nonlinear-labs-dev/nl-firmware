@@ -25,7 +25,7 @@ void ParameterDB::read()
 {
   RowStream in(Application::get().getResourcePath() + "ParameterList.csv");
   in.eatRow();
-  in.forEach(bind(&ParameterDB::parseCSVRow, this, std::placeholders::_1));
+  in.forEach(std::bind(&ParameterDB::parseCSVRow, this, std::placeholders::_1));
 }
 
 void ParameterDB::parseCSVRow(const std::string &row)
@@ -44,7 +44,7 @@ std::vector<std::string> ParameterDB::textRowToVector(const std::string &row) co
   typedef boost::escaped_list_separator<char> tSeparator;
   typedef boost::tokenizer<tSeparator> tTokenizer;
   tTokenizer tok(row, tSeparator('\\', ',', '\"'));
-  return vector<std::string>(tok.begin(), tok.end());
+  return std::vector<std::string>(tok.begin(), tok.end());
 }
 
 std::string sanitize(const std::string &in)
@@ -57,9 +57,9 @@ std::string sanitize(const std::string &in)
   return mod;
 }
 
-void ParameterDB::importParsedRow(vector<std::string> &&items)
+void ParameterDB::importParsedRow(std::vector<std::string> &&items)
 {
-  int id = stoi(items[0]);
+  int id = std::stoi(items[0]);
   m_spec[id] = { sanitize(items[4]), sanitize(items[8]), parseSignalPathIndication(items[11]) };
 }
 
@@ -67,7 +67,7 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
 {
   try
   {
-    return stod(c);
+    return std::stod(c);
   }
   catch(...)
   {

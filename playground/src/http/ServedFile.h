@@ -10,7 +10,7 @@ class HTTPRequest;
 class ServedFile : public ServedStream
 {
  public:
-  ServedFile(HTTPServer &server, shared_ptr<HTTPRequest> request);
+  ServedFile(HTTPServer &server, std::shared_ptr<HTTPRequest> request);
   virtual ~ServedFile();
 
   void startServing();

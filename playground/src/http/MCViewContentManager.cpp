@@ -14,6 +14,7 @@ void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
   m_webSockets.emplace_back(std::make_shared<WebsocketConnection>(connection));
   for(auto& param: Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCs")->getParameters()) {
       if(auto mc = dynamic_cast<MacroControlParameter*>(param)) {
+          using namespace std::string_literals;
           const auto idString = to_string(mc->getID());
           const auto valueD = mc->getValue().getClippedValue();
           const auto value = to_string(valueD);
@@ -27,7 +28,7 @@ void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 void MCViewContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type, GBytes *message,
                                               MCViewContentManager *pThis)
 {
-  shared_ptr<WebSocketRequest> request(new WebSocketRequest(self, message));
+  std::shared_ptr<WebSocketRequest> request(new WebSocketRequest(self, message));
   pThis->handleRequest(request);
 }
 
@@ -35,8 +36,8 @@ void MCViewContentManager::handleRequest(std::shared_ptr<WebSocketRequest> reque
 {
   if(request->getPath().find("set-mc") != Glib::ustring::npos)
   {
-    auto id = stoi(request->get("id"));
-    auto value = stod(request->get("value"));
+    auto id = std::stoi(request->get("id"));
+    auto value = std::stod(request->get("value"));
     auto uuid = request->get("uuid");
     Application::get().getPresetManager()->getEditBuffer()->setMacroControlValueFromMCView(id, value, uuid);
   }

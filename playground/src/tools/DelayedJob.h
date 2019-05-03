@@ -6,7 +6,7 @@ class DelayedJob
 {
  private:
  public:
-  typedef function<void()> tJob;
+  typedef std::function<void()> tJob;
 
   DelayedJob(int maxDelayMS, tJob job);
   virtual ~DelayedJob();

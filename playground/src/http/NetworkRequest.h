@@ -20,7 +20,7 @@ class NetworkRequest
   virtual void pause() = 0;
   virtual void unpause() = 0;
   virtual void okAndComplete() = 0;
-  virtual shared_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) = 0;
+  virtual std::shared_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) = 0;
   virtual bool isOracle() const;
 
  protected:

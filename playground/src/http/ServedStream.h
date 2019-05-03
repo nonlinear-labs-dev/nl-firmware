@@ -9,7 +9,7 @@ class HTTPRequest;
 class ServedStream
 {
  public:
-  ServedStream(HTTPServer &server, shared_ptr<HTTPRequest> request);
+  ServedStream(HTTPServer &server, std::shared_ptr<HTTPRequest> request);
   virtual ~ServedStream();
 
   virtual void startServing() = 0;
@@ -19,7 +19,7 @@ class ServedStream
   void sendNotFoundResponse();
   void startResponseFromStream(Glib::RefPtr<Gio::InputStream> stream);
 
-  shared_ptr<HTTPRequest> m_request;
+  std::shared_ptr<HTTPRequest> m_request;
   RefPtr<Gio::Cancellable> m_cancellable;
 
  private:

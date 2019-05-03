@@ -41,7 +41,7 @@ class ModulateableParameter : public Parameter
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
   void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
 
-  virtual void exportReaktorParameter(stringstream &target) const override;
+  virtual void exportReaktorParameter(std::stringstream &target) const override;
 
   virtual Glib::ustring stringizeModulationAmount() const;
   virtual Glib::ustring stringizeModulationAmount(tControlPositionValue amt) const;

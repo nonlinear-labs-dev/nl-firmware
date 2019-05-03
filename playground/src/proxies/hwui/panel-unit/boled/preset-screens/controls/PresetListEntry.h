@@ -17,7 +17,7 @@ class PresetListEntry : public ControlWithChildren
   typedef ControlWithChildren super;
 
  public:
-  using tCallback = function<void()>;
+  using tCallback = std::function<void()>;
 
   PresetListEntry(const Rect &pos);
   virtual ~PresetListEntry();

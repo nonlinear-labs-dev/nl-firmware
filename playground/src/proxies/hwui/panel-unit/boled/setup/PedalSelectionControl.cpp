@@ -10,7 +10,7 @@ class SmallerParamValueLabel : public ParameterValueLabel
  public:
   using ParameterValueLabel::ParameterValueLabel;
 
-  shared_ptr<Font> getFont() const
+  std::shared_ptr<Font> getFont() const
   {
     return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
   }

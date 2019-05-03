@@ -19,7 +19,7 @@ class Attributes
   Glib::ustring get(const Glib::ustring &key, Glib::ustring defValue = "") const;
 
  private:
-  map<size_t, Glib::ustring> m_attributes;
+  std::map<size_t, Glib::ustring> m_attributes;
 
   std::hash<Glib::ustring> m_hash;
 };

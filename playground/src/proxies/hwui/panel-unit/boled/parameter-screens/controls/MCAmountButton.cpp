@@ -17,7 +17,7 @@ void MCAmountButton::update(const Parameter *parameter)
     if(p->getModulationSource() == ModulationSource::NONE)
       setText("");
     else
-      setText({"MC Amt"s + (p->isModAmountChanged() ? "*" : "")});
+      setText({std::string("MC Amt") + (p->isModAmountChanged() ? "*" : "")});
   }
   else
   {

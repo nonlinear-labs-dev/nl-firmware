@@ -46,7 +46,7 @@ void Serializer::write(RefPtr<Gio::File> folder, const std::string &name)
   {
     auto title = folder->get_path() + "/" + name + ".binary";
     PerformanceTimer timer(title.c_str(), 0);
-    auto out = make_shared<CommitableFileOutStream>(title, false);
+    auto out = std::make_shared<CommitableFileOutStream>(title, false);
     BinaryWriter writer(out);
     write(writer, VersionAttribute::get());
     out->commit();

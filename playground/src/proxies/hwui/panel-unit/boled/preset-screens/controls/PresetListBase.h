@@ -17,7 +17,7 @@ class PresetListBase : public ControlWithChildren
   virtual ~PresetListBase();
 
   bool redraw(FrameBuffer &fb) override;
-  bool animateSelectedPreset(function<void()> cb);
+  bool animateSelectedPreset(std::function<void()> cb);
 
   void setBankFocus();
 

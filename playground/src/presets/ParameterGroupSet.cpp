@@ -117,9 +117,9 @@ size_t ParameterGroupSet::countParameters() const
   return count;
 }
 
-map<int, Parameter *> ParameterGroupSet::getParametersSortedById() const
+std::map<int, Parameter *> ParameterGroupSet::getParametersSortedById() const
 {
-  map<int, Parameter *> sorted;
+  std::map<int, Parameter *> sorted;
 
   for(auto group : getParameterGroups())
     for(auto param : group->getParameters())

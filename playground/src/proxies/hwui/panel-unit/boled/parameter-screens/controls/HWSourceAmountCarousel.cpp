@@ -86,7 +86,7 @@ void HWSourceAmountCarousel::onMacroControlChanged(const Parameter *param)
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
   {
     forEach([=](tControlPtr c) {
-      if(auto miniSlider = dynamic_pointer_cast<MiniParameterBarSlider>(c))
+      if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
         if(auto p = dynamic_cast<ModulationRoutingParameter *>(miniSlider->getParameter()))
           miniSlider->setHighlight(isHighlight()
                                    || (mc->getUiSelectedHardwareSource() == p->getSourceParameter()->getID()));

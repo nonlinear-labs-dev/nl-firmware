@@ -21,7 +21,7 @@ class PedalParameter : public PhysicalControlParameter
   void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
   void loadDefault(UNDO::Transaction *transaction) override;
 
-  shared_ptr<PedalType> getAssociatedPedalTypeSetting() const;
+  std::shared_ptr<PedalType> getAssociatedPedalTypeSetting() const;
 
  protected:
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;

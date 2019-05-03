@@ -18,7 +18,7 @@
 #include <presets/Preset.h>
 #include <device-settings/DebugLevel.h>
 
-static const auto c_invalidSnapshotValue = numeric_limits<tControlPositionValue>::max();
+static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
 Parameter::Parameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
                      tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
@@ -379,7 +379,7 @@ void Parameter::writeToLPC(MessageComposer &cmp) const
 
 void Parameter::undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value)
 {
-  auto tcdValue = stoi(value);
+  auto tcdValue = std::stoi(value);
   auto cpValue = m_value.getScaleConverter()->tcdToControlPosition(tcdValue);
   loadFromPreset(transaction, cpValue);
 }
@@ -402,9 +402,9 @@ void Parameter::onPresetSentToLpc() const
 {
 }
 
-void Parameter::exportReaktorParameter(stringstream &target) const
+void Parameter::exportReaktorParameter(std::stringstream &target) const
 {
-  target << getTcdValue() << endl;
+  target << getTcdValue() << std::endl;
 }
 
 DFBLayout *Parameter::createLayout(FocusAndMode focusAndMode) const

@@ -44,8 +44,8 @@ bool UndoListEntry::redraw(FrameBuffer &fb)
 
 void UndoListEntry::assignTransaction(UNDO::Transaction *transaction, bool selected, bool current)
 {
-  forEach([&](shared_ptr<Control> ptr) {
-    if(auto p = dynamic_pointer_cast<UndoTransactionClient>(ptr))
+  forEach([&](std::shared_ptr<Control> ptr) {
+    if(auto p = std::dynamic_pointer_cast<UndoTransactionClient>(ptr))
       p->assignTransaction(transaction, selected, current);
   });
 

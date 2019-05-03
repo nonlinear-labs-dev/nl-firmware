@@ -4,7 +4,7 @@
 #include "Application.h"
 #include <device-settings/DebugLevel.h>
 
-ServedStream::ServedStream(HTTPServer &server, shared_ptr<HTTPRequest> request)
+ServedStream::ServedStream(HTTPServer &server, std::shared_ptr<HTTPRequest> request)
     : m_server(server)
     , m_request(request)
 {

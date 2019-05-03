@@ -9,11 +9,11 @@ class RecursionGuard
   };
 
  public:
-  typedef shared_ptr<Lock> tLock;
-  shared_ptr<Lock> lock();
+  typedef std::shared_ptr<Lock> tLock;
+  std::shared_ptr<Lock> lock();
 
   bool isLocked() const;
 
  private:
-  weak_ptr<Lock> m_lock;
+  std::weak_ptr<Lock> m_lock;
 };

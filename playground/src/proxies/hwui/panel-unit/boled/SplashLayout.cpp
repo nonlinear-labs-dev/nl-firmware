@@ -18,7 +18,7 @@ namespace DETAIL
    public:
     using super::super;
 
-    shared_ptr<Font> getFont() const override
+    std::shared_ptr<Font> getFont() const override
     {
       return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
     }

@@ -39,7 +39,7 @@ void PresetInfoCaption::onBankChanged()
     {
       auto presetNumber = bank->getPresetPosition(selectedPreset->getUuid()) + 1;
 
-      ostringstream presetPosStr;
+      std::ostringstream presetPosStr;
       presetPosStr.width(3);
       presetPosStr.fill('0');
       presetPosStr << presetNumber;
@@ -69,7 +69,7 @@ void PresetInfoCaption::setFontColor(FrameBuffer &fb) const
   fb.setColor(FrameBuffer::Colors::C43);
 }
 
-shared_ptr<Font> PresetInfoCaption::getFont() const
+std::shared_ptr<Font> PresetInfoCaption::getFont() const
 {
   return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
 }

@@ -56,12 +56,12 @@ bool Uuid::operator<(const Uuid &other) const
   return id < other.id;
 }
 
-const string &Uuid::raw() const
+const std::string &Uuid::raw() const
 {
   return id;
 }
 
-string &Uuid::raw()
+std::string &Uuid::raw()
 {
   return id;
 }

@@ -31,7 +31,7 @@ void SetupSelectionEntries::assignDownwards(tEntries::iterator entryIt, tControl
 {
   if(entryIt != m_entries.end() && controlIt != getControls().end())
   {
-    auto p = dynamic_pointer_cast<SetupSelectionEntry>(*controlIt);
+    auto p = std::dynamic_pointer_cast<SetupSelectionEntry>(*controlIt);
     p->assign(*entryIt, selectMode);
     *entryIt = nullptr;
     assignDownwards(++entryIt, ++controlIt, selectMode);

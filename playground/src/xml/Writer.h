@@ -9,10 +9,10 @@
 class Writer
 {
  public:
-  Writer(shared_ptr<OutStream> out);
+  Writer(std::shared_ptr<OutStream> out);
   virtual ~Writer();
 
-  typedef function<void()> tTagContentWriter;
+  typedef std::function<void()> tTagContentWriter;
 
   void writeTextElement(const Glib::ustring &name, const Glib::ustring &text)
   {
@@ -101,7 +101,7 @@ class Writer
   void writeToStream(const Glib::ustring &str);
   void writeToStream(const char *buf, size_t numBytes);
 
-  void writeAttributes(const initializer_list<Attribute> &attr)
+  void writeAttributes(const std::initializer_list<Attribute> &attr)
   {
     for(auto &a : attr)
     {
@@ -111,9 +111,9 @@ class Writer
 
  private:
   virtual void implWriteTextElement(const Glib::ustring &name, const Glib::ustring &text,
-                                    const initializer_list<Attribute> &attributes)
+                                    const std::initializer_list<Attribute> &attributes)
       = 0;
-  virtual void implWriteTag(const Glib::ustring &name, const initializer_list<Attribute> &attributes,
+  virtual void implWriteTag(const Glib::ustring &name, const std::initializer_list<Attribute> &attributes,
                             const tTagContentWriter &w)
       = 0;
   virtual void implWriteAttribute(const Attribute &a) = 0;
@@ -138,5 +138,5 @@ class Writer
     writeAttributes(attributes...);
   }
 
-  shared_ptr<OutStream> m_out;
+  std::shared_ptr<OutStream> m_out;
 };

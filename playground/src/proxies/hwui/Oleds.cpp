@@ -63,7 +63,7 @@ Oleds::tFont Oleds::getFont(const Glib::ustring &name, int height)
     return it->second;
 
   Glib::ustring path = Application::get().getResourcePath() + name + ".ttf";
-  auto font = make_shared<Font>(path, height);
+  auto font = std::make_shared<Font>(path, height);
   m_fonts[key] = font;
   return font;
 }

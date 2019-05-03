@@ -43,7 +43,7 @@ template <typename tValue> class ValueRange
     tInValue clippedIn = clip ? inRange.clip(in) : in;
     auto res = (clippedIn - inRange.getMin()) * outRangeWidth / inRangeWidth + getMin();
 
-    if(numeric_limits<tValue>::is_integer)
+    if(std::numeric_limits<tValue>::is_integer)
       return lround(res);
 
     return res;
@@ -54,7 +54,7 @@ template <typename tValue> class ValueRange
   {
     tInValue inRangeWidth = inRange.getRangeWidth();
     tValue outRangeWidth = getRangeWidth();
-    stringstream s;
+    std::stringstream s;
 
     double cpMin = 0;
 

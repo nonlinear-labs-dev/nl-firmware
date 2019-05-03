@@ -4,7 +4,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/MenuEditorEntry.h>
 #include <proxies/hwui/panel-unit/boled/setup/PedalEditor.h>
 
-PedalEditor::PedalEditor(shared_ptr<PedalType> m)
+PedalEditor::PedalEditor(std::shared_ptr<PedalType> m)
     : m_mode(m)
 {
   m_mode->onChange(mem_fun(this, &PedalEditor::onSettingChanged));
@@ -19,7 +19,7 @@ void PedalEditor::incSetting(int inc)
   m_mode->inc(inc, false);
 }
 
-const vector<ustring> &PedalEditor::getDisplayStrings() const
+const std::vector<ustring> &PedalEditor::getDisplayStrings() const
 {
   return m_mode->enumToDisplayString();
 }

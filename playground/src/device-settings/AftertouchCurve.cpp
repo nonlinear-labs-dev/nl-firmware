@@ -18,14 +18,14 @@ void AftertouchCurve::sendToLPC() const
   Application::get().getLPCProxy()->sendSetting(AFTERTOUCH_CURVE, (uint16_t)(get()));
 }
 
-const vector<Glib::ustring> &AftertouchCurve::enumToString() const
+const std::vector<Glib::ustring> &AftertouchCurve::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "soft", "normal", "hard" };
+  static std::vector<Glib::ustring> s_modeNames = { "soft", "normal", "hard" };
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &AftertouchCurve::enumToDisplayString() const
+const std::vector<Glib::ustring> &AftertouchCurve::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "Soft", "Normal", "Hard" };
+  static std::vector<Glib::ustring> s_modeNames = { "Soft", "Normal", "Hard" };
   return s_modeNames;
 }

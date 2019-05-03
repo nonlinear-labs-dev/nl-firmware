@@ -17,7 +17,7 @@ class ContentSection : public UpdateDocumentContributor
   virtual Glib::ustring getPrefix() const = 0;
 
   /*! write the xml to the message */
-  virtual void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path);
+  virtual void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path);
 
   bool contains(const Glib::ustring &path) const;
 };

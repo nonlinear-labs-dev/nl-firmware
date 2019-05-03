@@ -9,7 +9,7 @@
 SettingsActions::SettingsActions(Settings &settings)
     : super("/settings/")
 {
-  addAction("set-setting", [&](shared_ptr<NetworkRequest> request) {
+  addAction("set-setting", [&](std::shared_ptr<NetworkRequest> request) {
     Glib::ustring key = request->get("key");
     Glib::ustring value = request->get("value");
 
@@ -21,12 +21,12 @@ SettingsActions::SettingsActions(Settings &settings)
     }
   });
 
-  addAction("inc-test-display", [&](shared_ptr<NetworkRequest> request) {
+  addAction("inc-test-display", [&](std::shared_ptr<NetworkRequest> request) {
     auto &app = Application::get();
     auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
     auto &soled = app.getHWUI()->getBaseUnit().getPlayPanel().getSOLED();
-    auto panelTestLayout = dynamic_pointer_cast<TestLayout>(boled.getLayout());
-    auto baseTestLayout = dynamic_pointer_cast<TestLayout>(soled.getLayout());
+    auto panelTestLayout = std::dynamic_pointer_cast<TestLayout>(boled.getLayout());
+    auto baseTestLayout = std::dynamic_pointer_cast<TestLayout>(soled.getLayout());
 
     if(panelTestLayout && baseTestLayout)
     {

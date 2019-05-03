@@ -128,7 +128,7 @@ namespace NavTree
       return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
 
-    list<unique_ptr<Node>> children;
+    std::list<std::unique_ptr<Node>> children;
   };
 
   struct Velocity : EditableLeaf
@@ -707,7 +707,7 @@ namespace NavTree
       }
     }
 
-    list<unique_ptr<Node>>::iterator focus;
+    std::list<std::unique_ptr<Node>>::iterator focus;
   };
 }
 
@@ -980,7 +980,7 @@ void SetupLayout::finishLists()
     r->finish();
 }
 
-shared_ptr<SetupSelectionEntries> SetupLayout::ensureSelectionEntries()
+std::shared_ptr<SetupSelectionEntries> SetupLayout::ensureSelectionEntries()
 {
   if(auto r = findControlOfType<SetupSelectionEntries>())
     return r;
@@ -989,7 +989,7 @@ shared_ptr<SetupSelectionEntries> SetupLayout::ensureSelectionEntries()
   return ensureSelectionEntries();
 }
 
-shared_ptr<ViewEntries> SetupLayout::ensureViewEntries()
+std::shared_ptr<ViewEntries> SetupLayout::ensureViewEntries()
 {
   if(auto r = findControlOfType<ViewEntries>())
     return r;

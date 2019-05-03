@@ -81,7 +81,7 @@ void EditBufferSnapshotMaker::addSnapshot(UNDO::Transaction *transaction, tParam
       for(auto &record : params)
       {
         auto currentValue = record.parameter->getControlPositionValue();
-        swap(currentValue, record.snapshotValue);
+        std::swap(currentValue, record.snapshotValue);
         record.parameter->getValue().setRawValue(Initiator::EXPLICIT_OTHER, currentValue);
         record.parameter->sendToLpc();
       }

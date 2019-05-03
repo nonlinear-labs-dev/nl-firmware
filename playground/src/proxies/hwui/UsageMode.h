@@ -6,7 +6,7 @@
 #include <map>
 #include <set>
 
-using namespace std;
+//using namespace std;
 
 class Application;
 
@@ -23,7 +23,7 @@ class UsageMode : public Uncopyable
   virtual void bruteForceUpdateLeds();
 
  protected:
-  typedef function<bool(gint32 button, ButtonModifiers modifiers, bool state)> tAction;
+  typedef std::function<bool(gint32 button, ButtonModifiers modifiers, bool state)> tAction;
 
   void setupButtonConnection(gint32 buttonID, tAction action);
 
@@ -31,7 +31,7 @@ class UsageMode : public Uncopyable
   const Application &getApp() const;
 
 #if _TESTS
-  set<gint32> assignedAudioIDs;
+  std::set<gint32> assignedAudioIDs;
 #endif
 
  private:

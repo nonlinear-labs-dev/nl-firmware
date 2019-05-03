@@ -18,7 +18,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   PanelUnit();
   virtual ~PanelUnit();
 
-  typedef shared_ptr<TwoStateLED> tLed;
+  typedef std::shared_ptr<TwoStateLED> tLed;
 
   void setupFocusAndMode();
   virtual void setupFocusAndMode(FocusAndMode focusAndMode) override;
@@ -40,6 +40,6 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   void onBBBBConnected();
 
   EditPanel m_editPanel;
-  vector<tLed> m_leds;
+  std::vector<tLed> m_leds;
   MacroControlAssignmentStateMachine m_macroControlAssignmentStateMachine;
 };

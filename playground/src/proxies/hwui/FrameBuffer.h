@@ -109,7 +109,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   long getIndex(tCoordinate x, tCoordinate y) const;
 
   Colors m_currentColor = C43;
-  vector<tPixel> m_backBuffer;
+  std::vector<tPixel> m_backBuffer;
   std::stack<Rect> m_clips;
   std::stack<Point> m_offsets;
 };

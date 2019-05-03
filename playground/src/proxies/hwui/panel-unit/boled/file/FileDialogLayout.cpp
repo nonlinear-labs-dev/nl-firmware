@@ -102,7 +102,7 @@ void FileDialogLayout::updateLabels()
 {
   if(fileCount != 0)
     positionLabel->setText(
-        { "[" + std::to_string(fileList->getSelectedIndex() + 1) + "/" + std::to_string(fileCount) + "]" });
+        { "[" + to_string(fileList->getSelectedIndex() + 1) + "/" + to_string(fileCount) + "]" });
   else
     positionLabel->setText("[0/0]");
 }

@@ -49,7 +49,7 @@ class TextEditUsageMode : public UsageMode
   gunichar getCharForButton(int buttonID) const;
   void toggleCapsLock();
   void toggleSymbol();
-  void installButtonRepeat(function<void()> cb);
+  void installButtonRepeat(std::function<void()> cb);
 
   void updateLeds();
   void chooseLayout();
@@ -67,7 +67,7 @@ class TextEditUsageMode : public UsageMode
   bool m_symbolState = false;
   bool m_shiftState = false;
 
-  typedef tuple<gunichar, gunichar, gunichar, gunichar> tButtonAssignment;
-  map<int, tButtonAssignment> m_buttonMap;
-  unique_ptr<ButtonRepeat> m_buttonRepeat;
+  typedef std::tuple<gunichar, gunichar, gunichar, gunichar> tButtonAssignment;
+  std::map<int, tButtonAssignment> m_buttonMap;
+  std::unique_ptr<ButtonRepeat> m_buttonRepeat;
 };

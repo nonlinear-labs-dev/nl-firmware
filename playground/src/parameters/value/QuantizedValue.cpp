@@ -222,9 +222,9 @@ void QuantizedValue::applyModulation(tControlPositionValue delta)
   setRawValue(Initiator::INDIRECT, getRawValue() + delta);
 }
 
-unique_ptr<QuantizedValue::IncrementalChanger> QuantizedValue::startUserEdit(Initiator initiator)
+std::unique_ptr<QuantizedValue::IncrementalChanger> QuantizedValue::startUserEdit(Initiator initiator)
 {
-  return unique_ptr<QuantizedValue::IncrementalChanger>(new IncrementalChanger(initiator, *this));
+  return std::unique_ptr<QuantizedValue::IncrementalChanger>(new IncrementalChanger(initiator, *this));
 }
 
 void QuantizedValue::onRawValueChanged(Initiator initiator, tValueType oldRawValue, tValueType newRawValue)

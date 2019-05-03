@@ -74,7 +74,7 @@ bool Reader::onStartElement(size_t nameHash, const Attributes &attributes)
   if(m_treeDepth == 0 && m_fileVersion == 0)
   {
     auto strVersion = attributes.get("version", "0");
-    m_fileVersion = stoi(strVersion);
+    m_fileVersion = std::stoi(strVersion);
     m_versionCheck = m_sigFileVersionRead.send(m_fileVersion);
   }
 

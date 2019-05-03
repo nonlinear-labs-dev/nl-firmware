@@ -28,7 +28,7 @@ class ParameterGroupSet : public AttributesOwner
     return m_parameterGroups;
   }
 
-  map<int, Parameter *> getParametersSortedById() const;
+  std::map<int, Parameter *> getParametersSortedById() const;
   Parameter *findParameterByID(int id) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -39,5 +39,5 @@ class ParameterGroupSet : public AttributesOwner
 
  private:
   IntrusiveList<tParameterGroupPtr> m_parameterGroups;
-  map<int, Parameter *> m_idToParameterMap;
+  std::map<int, Parameter *> m_idToParameterMap;
 };

@@ -37,7 +37,7 @@ tControlPositionValue ParabolicGainDbScaleConverter::tcdToControlPosition(tTcdVa
 
 Glib::ustring ParabolicGainDbScaleConverter::controlPositionToDisplayJS() const
 {
-  stringstream s;
+  std::stringstream s;
   s << "return $wnd.formatDimension(cpValue == 0 ? -128 : (20 * Math.log (4 * cpValue * cpValue) / Math.log(10)), \""
     << getDimension().getStingizerJS() << "\", withUnit);";
   return s.str();

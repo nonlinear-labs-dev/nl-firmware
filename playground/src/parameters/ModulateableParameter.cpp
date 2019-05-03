@@ -253,7 +253,7 @@ void ModulateableParameter::loadDefault(UNDO::Transaction *transaction)
 void ModulateableParameter::undoableLoadPackedModulationInfo(UNDO::Transaction *transaction,
                                                              const Glib::ustring &packedModulationInfo)
 {
-  auto bits = stoul(packedModulationInfo);
+  auto bits = std::stoul(packedModulationInfo);
   auto modSrc = (bits & 0xC000) >> 14;
   auto modAmount = bits & 0x1FFF;
   auto negative = bits & 0x2000;
@@ -288,7 +288,7 @@ double ModulateableParameter::getModulationAmountCoarseDenominator() const
   return getValue().getCoarseDenominator();
 }
 
-void ModulateableParameter::exportReaktorParameter(stringstream &target) const
+void ModulateableParameter::exportReaktorParameter(std::stringstream &target) const
 {
   super::exportReaktorParameter(target);
   auto packedModulationInfo = getModulationSourceAndAmountPacked();
@@ -296,7 +296,7 @@ void ModulateableParameter::exportReaktorParameter(stringstream &target) const
   if(m_modSource == ModulationSource::NONE)
     packedModulationInfo = 0x2000;
 
-  target << packedModulationInfo << endl;
+  target << packedModulationInfo << std::endl;
 }
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount() const

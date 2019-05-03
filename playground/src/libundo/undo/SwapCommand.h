@@ -3,7 +3,7 @@
 #include "Command.h"
 #include <functional>
 
-using namespace std;
+//using namespace std;
 
 namespace UNDO
 {

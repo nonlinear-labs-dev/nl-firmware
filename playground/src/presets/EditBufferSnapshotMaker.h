@@ -22,7 +22,7 @@ class EditBufferSnapshotMaker : public sigc::trackable
     tControlPositionValue snapshotValue;
   };
 
-  using tParams = list<Record>;
+  using tParams = std::list<Record>;
 
   tParams collectDirtyParameters(EditBuffer *editBuffer);
   void addSnapshot(UNDO::Transaction *transaction, tParams &&params);

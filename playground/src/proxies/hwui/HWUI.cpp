@@ -267,7 +267,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         try
         {
-          int i = stoi(line);
+          int i = std::stoi(line);
           if(i < m_buttonStates.size())
           {
             if(line.back() == 'u')

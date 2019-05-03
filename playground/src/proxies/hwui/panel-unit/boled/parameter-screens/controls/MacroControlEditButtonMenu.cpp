@@ -31,19 +31,19 @@ void MacroControlEditButtonMenu::setup()
   clear();
   clearActions();
 
-  addButton("Smoothing", bind(&MacroControlEditButtonMenu::smoothing, this));
-  addButton("Rename", bind(&MacroControlEditButtonMenu::rename, this));
-  addButton("Mod Reset", bind(&MacroControlEditButtonMenu::reset, this));
+  addButton("Smoothing", std::bind(&MacroControlEditButtonMenu::smoothing, this));
+  addButton("Rename", std::bind(&MacroControlEditButtonMenu::rename, this));
+  addButton("Mod Reset", std::bind(&MacroControlEditButtonMenu::reset, this));
 
   if(eb->getSelected()->getParentGroup()->areAllParametersLocked())
-    addButton("Unlock Group", bind(&MacroControlEditButtonMenu::unlockGroup, this));
+    addButton("Unlock Group", std::bind(&MacroControlEditButtonMenu::unlockGroup, this));
   else
-    addButton("Lock Group", bind(&MacroControlEditButtonMenu::lockGroup, this));
+    addButton("Lock Group", std::bind(&MacroControlEditButtonMenu::lockGroup, this));
 
-  addButton("Lock all", bind(&MacroControlEditButtonMenu::lockAll, this));
+  addButton("Lock all", std::bind(&MacroControlEditButtonMenu::lockAll, this));
 
   if(eb->hasLocks())
-    addButton("Unlock all", bind(&MacroControlEditButtonMenu::unlockAll, this));
+    addButton("Unlock all", std::bind(&MacroControlEditButtonMenu::unlockAll, this));
 
   auto mcGroup = eb->getParameterGroupByID("MCs");
   mcGroup->onGroupChanged(mem_fun(this, &MacroControlEditButtonMenu::onGroupChanged));

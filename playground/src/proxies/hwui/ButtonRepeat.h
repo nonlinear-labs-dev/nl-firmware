@@ -5,12 +5,12 @@
 class ButtonRepeat : public sigc::trackable
 {
  public:
-  ButtonRepeat(function<void()> cb);
+  ButtonRepeat(std::function<void()> cb);
   ~ButtonRepeat();
 
  private:
-  bool onButtonRepeatInitialTimeoutElapsed(function<void()> cb);
-  bool onButtonRepeatRegularTimeoutElapsed(function<void()> cb);
+  bool onButtonRepeatInitialTimeoutElapsed(std::function<void()> cb);
+  bool onButtonRepeatRegularTimeoutElapsed(std::function<void()> cb);
 
   sigc::connection m_buttonRepeat;
 };

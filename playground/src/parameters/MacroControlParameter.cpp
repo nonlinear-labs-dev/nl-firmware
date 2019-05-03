@@ -29,7 +29,7 @@ MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID())
     , mcviewThrottler{ Expiration::Duration(5) }
-    , m_lastMCViewUuid{ "NONE"s }
+    , m_lastMCViewUuid{ "NONE" }
 {
 }
 
@@ -122,7 +122,7 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
   const auto idString = to_string(getID());
   const auto valueD = getValue().getClippedValue();
   const auto value = to_string(valueD);
-  const auto uuid = initiatior == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid.c_str() : "NONE"s;
+  const auto uuid = initiatior == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid.c_str() : "NONE";
 
   if(valueD != lastBroadcastedControlPosition)
   {
@@ -304,7 +304,7 @@ sigc::connection MacroControlParameter::onTargetListChanged(sigc::slot<void> cb)
   return m_targetListChanged.connect(cb);
 }
 
-bool MacroControlParameter::isSourceOfTargetIn(const list<gint32> &ids) const
+bool MacroControlParameter::isSourceOfTargetIn(const std::list<gint32> &ids) const
 {
   for(auto t : m_targets)
     for(int id : ids)

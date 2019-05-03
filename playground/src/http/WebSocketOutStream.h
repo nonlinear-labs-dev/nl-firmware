@@ -16,5 +16,5 @@ class WebSocketOutStream : public OutStream
   void implWrite(const Glib::ustring &str) override;
   void implWrite(const void *buf, size_t numBytes) override;
   SoupWebsocketConnection *m_connection = nullptr;
-  stringstream m_text;
+  std::stringstream m_text;
 };

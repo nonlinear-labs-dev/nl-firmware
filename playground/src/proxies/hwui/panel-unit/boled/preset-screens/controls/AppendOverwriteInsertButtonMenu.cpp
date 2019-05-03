@@ -24,10 +24,10 @@ void AppendOverwriteInsertButtonMenu::buildMenu()
   clearActions();
 
   auto pm = Application::get().getPresetManager();
-  addButton("Append", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
+  addButton("Append", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
   if(pm->getSelectedBank() && pm->getSelectedBank()->getNumPresets() != 0)
-    addButton("Overwrite", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
-  addButton("Insert", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
+    addButton("Overwrite", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
+  addButton("Insert", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
 
   auto setting = Application::get().getSettings()->getSetting<PresetStoreModeSetting>()->get();
   selectButton(enumToIndex(setting));

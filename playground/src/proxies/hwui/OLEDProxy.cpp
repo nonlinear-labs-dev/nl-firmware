@@ -20,7 +20,7 @@ const Rect &OLEDProxy::getPosInFrameBuffer() const
 
 void OLEDProxy::invalidate()
 {
-  if(auto l = dynamic_pointer_cast<DFBLayout>(getLayout()))
+  if(auto l = std::dynamic_pointer_cast<DFBLayout>(getLayout()))
     l->setDirty();
   else
     DebugLevel::warning("Oled proxy has NO screen set !??");

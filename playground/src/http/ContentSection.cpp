@@ -12,7 +12,7 @@ ContentSection::~ContentSection()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
-void ContentSection::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+void ContentSection::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
 }
 

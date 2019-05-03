@@ -4,7 +4,7 @@
 #include <glibmm.h>
 #include <stdlib.h>
 
-using namespace std;
+//using namespace std;
 
 namespace UNDO
 {
