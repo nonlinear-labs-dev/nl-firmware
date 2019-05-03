@@ -177,7 +177,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       }
       else if(line == "stress-change-all")
       {
-          Application::get().getPresetManager()->stressAllParams(500);
+        Application::get().getPresetManager()->stressAllParams(500);
       }
       else if(line == "stress-pm")
       {
@@ -201,6 +201,10 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
           Application::get().getPresetManager()->stressBlocking(1000);
         }
         Application::get().runWatchDog();
+      }
+      else if(line == "inc-all-fine")
+      {
+        Application::get().getPresetManager()->incAllParamsFine();
       }
       else if(line.at(0) == '!')
       {

@@ -35,6 +35,7 @@ class PresetManager : public ContentSection
   void stressParam(UNDO::Transaction* transaction, Parameter* param);
   void stressBlocking(int numTransactions);
   void stressLoad(int numTransactions);
+  void incAllParamsFine();
 
   // supported interfaces
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;

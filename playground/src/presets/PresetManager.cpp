@@ -754,3 +754,20 @@ void PresetManager::stressLoad(int numTransactions)
       },
       20);
 }
+
+void PresetManager::incAllParamsFine()
+{
+    Glib::MainContext::get_default()->signal_timeout().connect_once(
+            [=]() {
+                auto scope = getUndoScope().startTransaction("Inc All Parameters Fine");
+                auto trans = scope->getTransaction();
+                for(auto &group : m_editBuffer->getParameterGroups())
+                {
+                    for(auto &param : group->getParameters())
+                    {
+                        param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
+                    }
+                }
+            },
+            20);
+}
