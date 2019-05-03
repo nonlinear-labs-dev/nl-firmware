@@ -104,6 +104,7 @@ class PresetManager : public ContentSection
   // signals
   sigc::connection onBankSelection(sigc::slot<void> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
+  sigc::connection onRestoreHappened(sigc::slot<void> cb);
 
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
@@ -139,6 +140,7 @@ class PresetManager : public ContentSection
   ScopedGuard m_isLoading;
   Signal<void> m_sigBankSelection;
   Signal<void, size_t> m_sigNumBanksChanged;
+  Signal<void> m_sigRestoreHappened;
 
   Throttler m_autoLoadThrottler;
 

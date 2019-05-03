@@ -10,6 +10,10 @@ PresetManagerSerializer::PresetManagerSerializer(PresetManager *pm)
 {
 }
 
+PresetManagerSerializer::~PresetManagerSerializer() {
+    m_pm->m_sigRestoreHappened.send();
+}
+
 ustring PresetManagerSerializer::getTagName()
 {
   return "preset-manager";
