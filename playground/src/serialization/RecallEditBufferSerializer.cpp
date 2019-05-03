@@ -1,6 +1,7 @@
 #include <presets/EditBuffer.h>
 #include "RecallEditBufferSerializer.h"
 #include "PresetParameterGroupSerializer.h"
+#include "RecallParameterSerializer.h"
 
 RecallEditBufferSerializer::RecallEditBufferSerializer(EditBuffer *edit)
     : Serializer(getTagName())
@@ -8,28 +9,27 @@ RecallEditBufferSerializer::RecallEditBufferSerializer(EditBuffer *edit)
 {
 }
 
-Glib::ustring RecallEditBufferSerializer::getTagName() {
-    return "recall-parameters";
+Glib::ustring RecallEditBufferSerializer::getTagName()
+{
+  return "recall-parameters";
 }
 
-void RecallEditBufferSerializer::writeTagContent(Writer &writer) const {
-    for(auto &paramGroup : m_editBuffer->m_recallSet.m_parameterGroups)
-    {
-        PresetParameterGroupSerializer group(paramGroup.second.get());
-        group.write(writer, Attribute("id", paramGroup.first));
-    }
-    writer.writeTextElement("origin", m_editBuffer->m_recallSet.m_origin);
+void RecallEditBufferSerializer::writeTagContent(Writer &writer) const
+{
+  for(auto &paramGroup : m_editBuffer->m_recallSet.m_parameters)
+  {
+    RecallParameterSerializer serializer(paramGroup.second.get());
+    serializer.write(writer, Attribute("id", paramGroup.first));
+  }
 }
 
-void RecallEditBufferSerializer::readTagContent(Reader &reader) const {
-    reader.onTag(PresetParameterGroupSerializer::getTagName(), [&](const Attributes &attr) mutable {
-        auto id = attr.get("id");
-        auto group = std::make_unique<PresetParameterGroup>();
-        auto serializer = new PresetParameterGroupSerializer(group.get());
-        m_editBuffer->m_recallSet.m_parameterGroups[id] = std::move(group);
-        return serializer;
-    });
-    reader.onTextElement("origin", [this](const ustring &text, const Attributes &attr) {
-        m_editBuffer->m_recallSet.m_origin = text;
-    });
+void RecallEditBufferSerializer::readTagContent(Reader &reader) const
+{
+  reader.onTag(RecallParameterSerializer::getTagName(), [&](const Attributes &attr) mutable {
+    auto id = std::stoi(attr.get("id"));
+    auto group = std::make_unique<RecallParameter>(&m_editBuffer->m_recallSet, id);
+    auto serializer = new RecallParameterSerializer(group.get());
+    m_editBuffer->m_recallSet.m_parameters.at(id) = std::move(group);
+    return serializer;
+  });
 }

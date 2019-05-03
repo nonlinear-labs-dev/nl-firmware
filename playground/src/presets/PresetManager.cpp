@@ -74,9 +74,6 @@ void PresetManager::init()
   auto hwui = Application::get().getHWUI();
   hwui->getPanelUnit().getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndMode());
   hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
-
-  m_editBuffer->initRecallValues(transaction);
-
   onChange();
 }
 

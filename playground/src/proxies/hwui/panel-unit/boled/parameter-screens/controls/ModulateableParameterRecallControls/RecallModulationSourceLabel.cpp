@@ -13,7 +13,7 @@ RecallModulationSourceLabel::RecallModulationSourceLabel(Rect pos)
   if(auto modP
      = dynamic_cast<ModulateableParameter*>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
   {
-    uint16_t id = MacroControlsGroup::modSrcToParamID(modP->getOriginalParameter()->getModulationSource());
+    uint16_t id = MacroControlsGroup::modSrcToParamID(modP->getOriginalParameter()->getRecallModSource());
     if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
     {
       text = mc->getShortName();

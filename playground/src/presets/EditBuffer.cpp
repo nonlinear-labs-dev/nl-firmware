@@ -38,20 +38,7 @@ EditBuffer::~EditBuffer()
 
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
 {
-  initRecallValues(transaction, getParent()->findPreset(m_lastLoadedPreset));
-}
-
-void EditBuffer::initRecallValues(UNDO::Transaction *transaction, const Preset *p)
-{
-  if(p != nullptr)
-    m_recallSet.copyParamSet(transaction, p);
-  else
-    m_recallSet.onPresetDeleted(transaction);
-}
-
-const Glib::ustring &EditBuffer::getRecallOrigin() const
-{
-  return m_recallSet.m_origin;
+  m_recallSet.copyFromEditBuffer(transaction, this);
 }
 
 Glib::ustring EditBuffer::getName() const
@@ -421,7 +408,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Pre
     m_updateIdWhenLastLoadedPresetChanged = onChange();
   });
 
-  initRecallValues(transaction, preset);
+  initRecallValues(transaction);
 }
 
 void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)

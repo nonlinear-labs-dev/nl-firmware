@@ -217,7 +217,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
   return m_value.getNextStepValue(incs, modifiers);
 }
 
-PresetParameter *Parameter::getOriginalParameter() const
+const RecallParameter * Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   auto ret = eb->getRecallParameterSet().findParameterByID(getID());
@@ -234,7 +234,7 @@ bool Parameter::isValueChangedFromLoaded() const
 {
   const int denominator = static_cast<const int>(getValue().getFineDenominator());
   const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
-  const int roundedOG = static_cast<const int>(getOriginalParameter()->getValue() * denominator);
+  const int roundedOG = static_cast<const int>(getOriginalParameter()->getRecallValue() * denominator);
   return roundedOG != roundedNow;
 }
 
@@ -334,7 +334,6 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
 {
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
-  writer.writeTextElement("og-value", to_string(getOriginalParameter()->getValue()));
 
   if(shouldWriteDocProperties(knownRevision))
   {
@@ -522,11 +521,10 @@ void Parameter::undoableRecallFromPreset()
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  auto originStr = eb->getRecallOrigin();
-  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), originStr);
+  auto transactionScope = scope.startTransaction("Recall %0 value", getLongName());
   auto transaction = transactionScope->getTransaction();
   if(original)
-    setCPFromHwui(transaction, original->getValue());
+    setCPFromHwui(transaction, original->getRecallValue());
   else
     setDefaultFromHwui(transaction);
 }

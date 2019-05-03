@@ -7,6 +7,7 @@
 #include "value/QuantizedValue.h"
 #include <proxies/hwui/HWUIEnums.h>
 #include <tools/FlagOwner.h>
+#include <presets/recall/RecallParameter.h>
 
 class Layout;
 class DFBLayout;
@@ -120,7 +121,7 @@ class Parameter : public UpdateDocumentContributor,
 
   //Recall
   void undoableRecallFromPreset();
-  PresetParameter *getOriginalParameter() const;
+  const RecallParameter * getOriginalParameter() const;
 
   virtual bool isChangedFromLoaded() const;
   virtual bool isValueChangedFromLoaded() const;
