@@ -16,10 +16,10 @@ Glib::ustring RecallEditBufferSerializer::getTagName()
 
 void RecallEditBufferSerializer::writeTagContent(Writer &writer) const
 {
-  for(auto &paramGroup : m_editBuffer->m_recallSet.m_parameters)
+  for(auto &param : m_editBuffer->m_recallSet.m_parameters)
   {
-    RecallParameterSerializer serializer(paramGroup.second.get());
-    serializer.write(writer, Attribute("id", paramGroup.first));
+    RecallParameterSerializer serializer(param.second.get());
+    serializer.write(writer, Attribute("id", param.first));
   }
 }
 
@@ -27,9 +27,7 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
 {
   reader.onTag(RecallParameterSerializer::getTagName(), [&](const Attributes &attr) mutable {
     auto id = std::stoi(attr.get("id"));
-    auto group = std::make_unique<RecallParameter>(&m_editBuffer->m_recallSet, id);
-    auto serializer = new RecallParameterSerializer(group.get());
-    m_editBuffer->m_recallSet.m_parameters.at(id) = std::move(group);
+    auto serializer = new RecallParameterSerializer(m_editBuffer->m_recallSet.m_parameters.at(id).get());
     return serializer;
   });
 }
