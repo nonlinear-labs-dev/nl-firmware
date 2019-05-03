@@ -23,7 +23,6 @@ void printLastFunctions();
 #include "Compatibility.h"
 
 using namespace Glib;
-//using namespace std;
 using namespace sigc;
 
 typedef gint32 tAudioControlValue;

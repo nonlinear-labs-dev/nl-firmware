@@ -6,8 +6,6 @@
 #include <map>
 #include <set>
 
-//using namespace std;
-
 class Application;
 
 class UsageMode : public Uncopyable

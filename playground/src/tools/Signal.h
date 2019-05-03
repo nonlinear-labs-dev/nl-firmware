@@ -5,7 +5,6 @@
 #include <sigc++/signal.h>
 
 using namespace Glib;
-//using namespace std;
 using namespace sigc;
 
 template <typename tFirst, typename... tArgs> class Signal : public sigc::signal<tFirst, tArgs...>

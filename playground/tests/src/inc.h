@@ -9,6 +9,5 @@
 #include <string>
 #include <libsoup/soup.h>
 
-//using namespace std;
 using namespace Glib;
 using namespace sigc;

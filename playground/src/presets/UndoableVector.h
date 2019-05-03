@@ -114,7 +114,6 @@ template <typename Element> class UndoableVector
 
   Element *find(const Uuid &uuid) const
   {
-    //using namespace std;
     auto ret = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
 
     if(ret != m_elements.end())
@@ -125,7 +124,6 @@ template <typename Element> class UndoableVector
 
   Element *findNear(const Uuid &uuid, int seek) const
   {
-    //using namespace std;
     auto ret = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
 
     while(seek > 0 && ret != m_elements.end())
