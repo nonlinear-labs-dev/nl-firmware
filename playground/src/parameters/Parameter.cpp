@@ -217,7 +217,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
   return m_value.getNextStepValue(incs, modifiers);
 }
 
-const RecallParameter * Parameter::getOriginalParameter() const
+const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   auto ret = eb->getRecallParameterSet().findParameterByID(getID());
@@ -233,8 +233,8 @@ bool Parameter::isChangedFromLoaded() const
 bool Parameter::isValueChangedFromLoaded() const
 {
   const int denominator = static_cast<const int>(getValue().getFineDenominator());
-  const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
-  const int roundedOG = static_cast<const int>(getOriginalParameter()->getRecallValue() * denominator);
+  const int roundedNow = static_cast<const int>(std::round(getControlPositionValue() * denominator));
+  const int roundedOG = static_cast<const int>(std::round(getOriginalParameter()->getRecallValue() * denominator));
   return roundedOG != roundedNow;
 }
 

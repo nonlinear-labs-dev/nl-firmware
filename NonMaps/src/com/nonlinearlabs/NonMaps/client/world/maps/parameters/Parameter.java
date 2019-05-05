@@ -103,28 +103,28 @@ public abstract class Parameter extends LayoutResizingVertical {
 	public final boolean isBiPolar() {
 		return getValue().isBipolar();
 	}
-	
+
 	public abstract int getParameterID();
 
 	static private List<Integer> HardwareSourceIDS() {
 		return Arrays.asList(254, 259, 264, 269, 274, 279, 284, 289);
 	}
-	
+
 	private boolean shouldHightlightChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
 		boolean highlight = Setup.get().systemSettings.highlightChangedParameters.isTrue();
 		boolean forceHighlight = Setup.get().systemSettings.forceHighlightChangedParameters.isTrue();
-				
-		if(HardwareSourceIDS().contains(getParameterID()))
+
+		if (HardwareSourceIDS().contains(getParameterID()))
 			return false;
-		
-		if(!bpm.isChanged())
+
+		if (!bpm.isChanged())
 			return false;
-				
+
 		return highlight || forceHighlight;
-		
+
 	}
-	
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 
@@ -136,8 +136,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
-		
-		if(shouldHightlightChanged())
+
+		if (shouldHightlightChanged())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
 	}
 
