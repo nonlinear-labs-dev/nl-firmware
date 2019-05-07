@@ -450,8 +450,59 @@ void PresetManager::moveBank(UNDO::Transaction *transaction, const Bank *bankToM
 
 void PresetManager::deleteBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
+  handleDockingOnBankDelete(transaction, uuid);
+
   m_banks.remove(transaction, uuid);
   m_sigNumBanksChanged.send(getNumBanks());
+}
+
+bool handleMaster(Bank *master, Bank *bottom, Bank *right, UNDO::Transaction *transaction, Bank::AttachmentDirection dir)
+{
+  if(master)
+  {
+    if(bottom)
+    {
+      bottom->setAttachedToBank(transaction, master->getUuid());
+      bottom->setAttachedDirection(transaction, std::to_string(static_cast<int>(dir)));
+
+      if(right)
+      {
+        right->setAttachedToBank(transaction, bottom->getUuid());
+        right->setAttachedDirection(transaction, std::to_string(static_cast<int>(Bank::AttachmentDirection::left)));
+        return true;
+      }
+    }
+    else if(right)
+    {
+      right->setAttachedToBank(transaction, master->getUuid());
+      right->setAttachedDirection(transaction, std::to_string(static_cast<int>(Bank::AttachmentDirection::left)));
+      return true;
+    }
+  }
+  return false;
+}
+
+void PresetManager::handleDockingOnBankDelete(UNDO::Transaction *transaction, const Uuid &uuid)
+{
+  auto bankToDelete = m_banks.find(uuid);
+  if(bankToDelete)
+  {
+    auto slaveBottom = bankToDelete->getSlaveBottom();
+    auto slaveRight = bankToDelete->getSlaveRight();
+    auto masterTop = bankToDelete->getMasterTop();
+    auto masterLeft = bankToDelete->getMasterLeft();
+
+    if(handleMaster(masterTop, slaveBottom, slaveRight, transaction, Bank::AttachmentDirection::top))
+    {
+    }
+    else if(handleMaster(masterLeft, slaveBottom, slaveRight, transaction, Bank::AttachmentDirection::left))
+    {
+    }
+    else if(slaveBottom && slaveRight)
+    {
+      slaveRight->setAttachedToBank(transaction, slaveBottom->getUuid());
+    }
+  }
 }
 
 void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
@@ -759,17 +810,17 @@ void PresetManager::stressLoad(int numTransactions)
 
 void PresetManager::incAllParamsFine()
 {
-    Glib::MainContext::get_default()->signal_timeout().connect_once(
-            [=]() {
-                auto scope = getUndoScope().startTransaction("Inc All Parameters Fine");
-                auto trans = scope->getTransaction();
-                for(auto &group : m_editBuffer->getParameterGroups())
-                {
-                    for(auto &param : group->getParameters())
-                    {
-                        param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
-                    }
-                }
-            },
-            20);
+  Glib::MainContext::get_default()->signal_timeout().connect_once(
+      [=]() {
+        auto scope = getUndoScope().startTransaction("Inc All Parameters Fine");
+        auto trans = scope->getTransaction();
+        for(auto &group : m_editBuffer->getParameterGroups())
+        {
+          for(auto &param : group->getParameters())
+          {
+            param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
+          }
+        }
+      },
+      20);
 }
