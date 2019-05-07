@@ -10,6 +10,7 @@
 #include <parameters/scale-converters/LinearBipolar24DbScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar48DbScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
+#include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 
 EnvelopeAGroup::EnvelopeAGroup(ParameterGroupSet *parent)
     : ParameterGroup(parent, "Env A", "Envelope A", "Envelope A", "Envelope A")
@@ -40,7 +41,7 @@ void EnvelopeAGroup::init()
       new ModulateableParameter(this, 8, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
 
   appendParameter(
-      new ModulateableParameter(this, 10, ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>(), 0.53, 101, 1010));
+      new ModulateableParameterWithUnusualModDenominator(this, 10, ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>(), 0.53, 101, 1010, 100, 1000));
 
   appendParameter(
       new ModulateableParameterWithUnusualModUnit(this, 12, ScaleConverter::get<LinearBipolar24DbScaleConverter>(),
