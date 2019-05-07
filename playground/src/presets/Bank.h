@@ -91,9 +91,14 @@ class Bank : public AttributesOwner
   void updateLastModifiedTimestamp(UNDO::Transaction *transaction);
 
   Preset *appendPreset(UNDO::Transaction *transaction);
-  Preset *appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset, bool load = false);
-  Preset *prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset, bool load = false);
-  Preset *insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset, bool load = false);
+  Preset *appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
+  Preset *prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
+  Preset *insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
+
+  Preset *appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
+  Preset *prependAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
+  Preset *insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
+
   void movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before);
   void movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, Bank *tgtBank,
                               const Preset *presetAnchor);

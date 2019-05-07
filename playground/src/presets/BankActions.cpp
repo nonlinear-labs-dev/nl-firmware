@@ -256,7 +256,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
       auto transaction = transactionScope->getTransaction();
       auto newPreset = std::make_unique<Preset>(tgtBank, *m_presetManager.getEditBuffer());
-      auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset), true);
+      auto tgtPreset = tgtBank->insertAndLoadPreset(transaction, anchorPos, std::move(newPreset));
       tgtPreset->setName(transaction, name);
 
       if(!uuid.empty())
@@ -279,7 +279,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
       auto transaction = transactionScope->getTransaction();
       auto newPreset = std::make_unique<Preset>(tgtBank, *m_presetManager.getEditBuffer());
-      auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset), true);
+      auto tgtPreset = tgtBank->insertAndLoadPreset(transaction, anchorPos, std::move(newPreset));
       tgtPreset->setName(transaction, name);
 
       if(!uuid.empty())
@@ -326,7 +326,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto transaction = scope->getTransaction();
       auto newName = guessNameBasedOnEditBuffer();
       auto newPreset = std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer());
-      auto tgtPreset = bank->appendPreset(transaction, std::move(newPreset), true);
+      auto tgtPreset = bank->appendAndLoadPreset(transaction, std::move(newPreset));
 
       tgtPreset->setName(transaction, newName);
 
@@ -351,7 +351,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto transaction = scope->getTransaction();
 
         auto newPreset = std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer());
-        auto tgtPreset = bank->appendPreset(transaction, std::move(newPreset), true);
+        auto tgtPreset = bank->appendAndLoadPreset(transaction, std::move(newPreset));
 
         bank->selectPreset(transaction, tgtPreset->getUuid());
         m_presetManager.selectBank(transaction, bank->getUuid());
@@ -380,8 +380,8 @@ BankActions::BankActions(PresetManager &presetManager)
       auto scope = m_presetManager.getUndoScope().startTransaction("Insert preset");
       auto transaction = scope->getTransaction();
       auto desiredPresetPos = bank->getPresetPosition(selUuid) + 1;
-      auto newPreset = bank->insertPreset(transaction, desiredPresetPos,
-                                          std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer()), true);
+      auto newPreset = bank->insertAndLoadPreset(transaction, desiredPresetPos,
+                                          std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer()));
 
       if(!uuid.empty())
         newPreset->setUuid(transaction, uuid);
@@ -540,7 +540,7 @@ BankActions::BankActions(PresetManager &presetManager)
 
     for(auto uuid : strs)
       if(auto src = presetManager.findPreset(uuid))
-        newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *src, true), false);
+        newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *src, true));
 
     if(newBank->getNumPresets() > 0)
       newBank->selectPreset(transaction, newBank->getPresetAt(0)->getUuid());
@@ -574,7 +574,7 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         if(auto src = presetManager.findPreset(uuid))
         {
-          bank->appendPreset(transaction, std::make_unique<Preset>(bank, *src, true), false);
+          bank->appendPreset(transaction, std::make_unique<Preset>(bank, *src, true));
 
           if(bank == src->getParent())
             bank->deletePreset(transaction, uuid);

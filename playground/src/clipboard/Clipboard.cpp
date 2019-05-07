@@ -282,7 +282,7 @@ void Clipboard::pasteBankOnBank(const Glib::ustring &transactionName, const Uuid
     auto source = dynamic_cast<const Bank *>(content);
     source->forEachPreset([&](auto preset) {
       auto newPreset = std::make_unique<Preset>(target, *preset, true);
-        target->appendPreset(transaction, std::move(newPreset), false);
+        target->appendPreset(transaction, std::move(newPreset));
     });
 
     doCut(transaction);
