@@ -107,7 +107,7 @@ void AppendOverwriteInsertButtonMenu::createBankAndStore()
   auto transactionScope = scope.startTransaction("Create Bank and Store Preset");
   auto transaction = transactionScope->getTransaction();
   auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *pm->getEditBuffer()), true);
   bank->selectPreset(transaction, preset->getUuid());
   pm->selectBank(transaction, bank->getUuid());
   Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
@@ -205,7 +205,8 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
   auto pm = Application::get().getPresetManager();
   auto scope = Application::get().getUndoScope()->startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
-  auto preset = bank->insertPreset(scope->getTransaction(), pos, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
+  auto preset = bank->insertPreset(scope->getTransaction(), pos, std::make_unique<Preset>(bank, *pm->getEditBuffer()),
+                                   true);
 
   if(modified)
     preset->guessName(transaction);
