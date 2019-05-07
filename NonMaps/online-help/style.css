@@ -848,6 +848,55 @@ th {
 	background-color: #262626;
 }
 
+/*****************************/
+/* !number list */
+/*****************************/
+
+.nmb ul {
+	list-style: none outside;
+	margin: 1em 0em 0em 0em;
+}
+
+.nmb ul li {
+	margin: 0.5em 0em 0.5em 0em;
+}
+
+.nmb ol {
+	list-style-type: none;
+	counter-reset: item;
+	margin: 1em 0em 0em 1.3em;
+}
+
+.nmb ol li {
+	margin: 0em 0em 0.5em 0em;
+}
+
+.nmb-eng ol li {
+	margin: 0.1em 0em 0.1em 0em;
+}
+
+.nmb ol li ol {
+	margin: 0em 0em 0em 1.5em;
+}
+
+.nmb ol li ol li {
+	margin: 0.1em 0em 0.1em 0.5em;
+}
+
+.nmb li::before {
+	counter-increment: item;
+	content:  "." counters(item, ".");
+	display: inline-block;
+	width: 1em;
+	margin-left: -1.5em;
+	margin-right: 0.5em;
+	text-align: right;
+	direction: rtl;
+}
+
+.nmb .fett::before {
+	font-weight: 400;
+}
 
 /*****************************/
 /* !diverse */
