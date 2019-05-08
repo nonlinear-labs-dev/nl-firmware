@@ -398,25 +398,40 @@ Preset *Bank::appendPreset(UNDO::Transaction *transaction)
 Preset *Bank::appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  auto ret = m_presets.append(transaction, std::move(preset));
-  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
-  return ret;
+  return m_presets.append(transaction, std::move(preset));
+}
+
+Preset *Bank::appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
+{
+  auto newPreset = appendPreset(transaction, std::move(preset));
+  getEditBuffer()->undoableLoad(transaction, newPreset);
+  return newPreset;
 }
 
 Preset *Bank::prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  auto ret = m_presets.prepend(transaction, std::move(preset));
-  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
-  return ret;
+  return m_presets.prepend(transaction, std::move(preset));
+}
+
+Preset *Bank::prependAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
+{
+  auto newPreset = prependPreset(transaction, std::move(preset));
+  getEditBuffer()->undoableLoad(transaction, newPreset);
+  return newPreset;
 }
 
 Preset *Bank::insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  auto ret = m_presets.insert(transaction, pos, std::move(preset));
-  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
-  return ret;
+  return m_presets.insert(transaction, pos, std::move(preset));
+}
+
+Preset *Bank::insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
+{
+  auto newPreset = insertPreset(transaction, pos, std::move(preset));
+  getEditBuffer()->undoableLoad(transaction, newPreset);
+  return newPreset;
 }
 
 void Bank::movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before)
