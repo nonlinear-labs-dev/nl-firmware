@@ -538,7 +538,7 @@ BankActions::BankActions(PresetManager &presetManager)
     std::vector<std::string> strs;
     boost::split(strs, csv, boost::is_any_of(","));
 
-    for(auto uuid : strs)
+    for(const auto &uuid : strs)
       if(auto src = presetManager.findPreset(uuid))
         newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *src, true));
 
@@ -709,14 +709,10 @@ BankActions::BankActions(PresetManager &presetManager)
         if(droppedAt == "North")
         {
           droppedOntoBank->attachBank(transaction, draggedBank->getUuid(), Bank::AttachmentDirection::top);
-          draggedBank->getClusterMaster()->setX(transaction, x);
-          draggedBank->getClusterMaster()->setY(transaction, y);
         }
         else if(droppedAt == "West")
         {
           droppedOntoBank->attachBank(transaction, draggedBank->getUuid(), Bank::AttachmentDirection::left);
-          draggedBank->getClusterMaster()->setX(transaction, x);
-          draggedBank->getClusterMaster()->setY(transaction, y);
         }
         else if(droppedAt == "South")
         {
@@ -726,6 +722,9 @@ BankActions::BankActions(PresetManager &presetManager)
         {
           draggedBank->attachBank(transaction, droppedOntoBank->getUuid(), Bank::AttachmentDirection::left);
         }
+
+          draggedBank->setX(transaction, x);
+          draggedBank->setY(transaction, y);
 
         m_presetManager.sanitizeBankClusterRelations(transaction);
       }

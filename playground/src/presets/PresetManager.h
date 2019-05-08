@@ -32,7 +32,7 @@ class PresetManager : public ContentSection
   // debug
   void stress(int numTransactions);
   void stressAllParams(int numParamChangedForEachParameter);
-  void stressParam(UNDO::Transaction* transaction, Parameter* param);
+  void stressParam(UNDO::Transaction *transaction, Parameter *param);
   void stressBlocking(int numTransactions);
   void stressLoad(int numTransactions);
   void incAllParamsFine();
@@ -85,6 +85,7 @@ class PresetManager : public ContentSection
   Bank *addBank(UNDO::Transaction *transaction, std::unique_ptr<Bank> bank);
   void moveBank(UNDO::Transaction *transaction, const Bank *bankToMove, const Bank *moveBefore);
   void deleteBank(UNDO::Transaction *transaction, const Uuid &uuid);
+  void handleDockingOnBankDelete(UNDO::Transaction *transaction, const Uuid &uuid);
   void selectBank(UNDO::Transaction *transaction, const Uuid &uuid);
   bool selectPreviousBank(UNDO::Transaction *transaction);
   bool selectNextBank(UNDO::Transaction *transaction);
