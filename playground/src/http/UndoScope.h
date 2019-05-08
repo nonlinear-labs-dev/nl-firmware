@@ -13,9 +13,6 @@ class UndoScope : public UNDO::Scope
   virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
   sigc::connection onUndoScopeChanged(slot<void> cb);
 
- protected:
-  virtual void onAddTransaction(UNDO::Transaction *transaction);
-
  private:
   Signal<void> m_sigUndoScopeChanged;
 };

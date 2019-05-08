@@ -387,6 +387,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
+  EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
   super::copyFrom(transaction, preset);
   resetModifiedIndicator(transaction, getHash());
 }

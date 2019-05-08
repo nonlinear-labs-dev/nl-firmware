@@ -25,9 +25,6 @@ class ModulateableParameter : public Parameter
   void undoableSelectModSource(UNDO::Transaction *transaction, ModulationSource src);
   void undoableSetModAmount(UNDO::Transaction *transaction, double amount);
 
-  void undoableIncrementMCSelect(int inc);
-  void undoableIncrementMCAmount(int inc);
-
   void undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc);
   virtual void undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc, ButtonModifiers modifiers);
 
@@ -64,9 +61,6 @@ class ModulateableParameter : public Parameter
   bool isModAmountChanged() const;
   bool isMacroControlAssignedAndChanged() const;
   Parameter *getMacroControl() const;
-
-  tControlPositionValue getOriginalModulationAmount() const;
-  ModulationSource getOriginalModulationSource() const;
 
   void undoableRecallMCPos();
   void undoableRecallMCSource();
