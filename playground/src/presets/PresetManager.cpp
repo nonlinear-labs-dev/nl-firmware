@@ -456,7 +456,8 @@ void PresetManager::deleteBank(UNDO::Transaction *transaction, const Uuid &uuid)
   m_sigNumBanksChanged.send(getNumBanks());
 }
 
-bool handleMaster(Bank *master, Bank *bottom, Bank *right, UNDO::Transaction *transaction, Bank::AttachmentDirection dir)
+bool handleMaster(Bank *master, Bank *bottom, Bank *right, UNDO::Transaction *transaction,
+                  Bank::AttachmentDirection dir)
 {
   if(master)
   {
@@ -469,8 +470,8 @@ bool handleMaster(Bank *master, Bank *bottom, Bank *right, UNDO::Transaction *tr
       {
         right->setAttachedToBank(transaction, bottom->getUuid());
         right->setAttachedDirection(transaction, std::to_string(static_cast<int>(Bank::AttachmentDirection::left)));
-        return true;
       }
+      return true;
     }
     else if(right)
     {
@@ -501,6 +502,18 @@ void PresetManager::handleDockingOnBankDelete(UNDO::Transaction *transaction, co
     else if(slaveBottom && slaveRight)
     {
       slaveRight->setAttachedToBank(transaction, slaveBottom->getUuid());
+      slaveBottom->setX(transaction, bankToDelete->getX());
+      slaveBottom->setY(transaction, bankToDelete->getY());
+    }
+    else if(slaveBottom)
+    {
+      slaveBottom->setX(transaction, bankToDelete->getX());
+      slaveBottom->setY(transaction, bankToDelete->getY());
+    }
+    else if(slaveRight)
+    {
+      slaveRight->setX(transaction, bankToDelete->getX());
+      slaveRight->setY(transaction, bankToDelete->getY());
     }
   }
 }
