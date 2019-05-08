@@ -1,11 +1,6 @@
 #include "UndoScope.h"
 #include "xml/Writer.h"
 
-void UndoScope::onAddTransaction(UNDO::Transaction* transaction)
-{
-  UNDO::Scope::onAddTransaction(transaction);
-}
-
 UndoScope::tUpdateID UndoScope::onChange(uint64_t flags)
 {
   auto i = super::onChange(flags);
