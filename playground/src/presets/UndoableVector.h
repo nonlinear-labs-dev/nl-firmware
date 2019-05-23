@@ -144,7 +144,7 @@ template <typename Element> class UndoableVector
     return nullptr;
   }
 
-  void select(UNDO::Transaction *transaction, const Uuid &uuid, std::function<void()> cb = nullptr)
+  bool select(UNDO::Transaction *transaction, const Uuid &uuid, std::function<void()> cb = nullptr)
   {
     Checker checker(this);
     if(m_selection != uuid)
@@ -156,7 +156,9 @@ template <typename Element> class UndoableVector
         if(cb)
           cb();
       });
+      return true;
     }
+    return false;
   }
 
   Element *append(UNDO::Transaction *transaction, ElementPtr p)
