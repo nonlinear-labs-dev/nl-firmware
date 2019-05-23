@@ -345,8 +345,8 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  m_presets.select(transaction, uuid, [this] { invalidate(); });
-  static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
+  if(m_presets.select(transaction, uuid, [this] { invalidate(); }))
+    static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
 }
 
 void Bank::ensurePresetSelection(UNDO::Transaction *transaction)
