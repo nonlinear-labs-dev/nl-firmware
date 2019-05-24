@@ -28,6 +28,7 @@ class PresetManager : public ContentSection
   ~PresetManager() override;
 
   void init();
+  void invalidate();
 
   // debug
   void stress(int numTransactions);
@@ -132,7 +133,7 @@ class PresetManager : public ContentSection
   bool selectBank(UNDO::Transaction *transaction, size_t idx);
   void invalidateAllBanks();
 
-  UndoableVector<Bank> m_banks;
+  UndoableVector<PresetManager, Bank> m_banks;
 
   typedef std::shared_ptr<RPCActionManager> tRPCActionManagerPtr;
   std::list<tRPCActionManagerPtr> m_actionManagers;
@@ -141,7 +142,7 @@ class PresetManager : public ContentSection
 
   ScopedGuard m_isLoading;
   Signal<void> m_sigBankSelection;
-  Signal<void, size_t> m_sigNumBanksChanged;
+  SignalWithCache<void, size_t> m_sigNumBanksChanged;
   Signal<void> m_sigRestoreHappened;
 
   Throttler m_autoLoadThrottler;

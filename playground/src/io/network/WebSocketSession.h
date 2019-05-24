@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include <proxies/hwui/buttons.h>
 #include <libsoup/soup.h>
 #include <functional>
 #include <memory>
@@ -39,6 +40,21 @@ class WebSocketSession
 #if _DEVELOPMENT_PC
   struct DebugScriptEntry
   {
+    DebugScriptEntry(std::chrono::milliseconds delay, Domain domain, tMessage msg)
+        : delay(delay)
+        , domain(domain)
+        , msg(msg)
+    {
+    }
+
+    DebugScriptEntry(std::chrono::milliseconds delay, Buttons b, bool down)
+        : delay(delay)
+        , domain(Domain::Buttons)
+    {
+      uint16_t m = b | (down ? 0x80 : 0x00);
+      msg = Glib::Bytes::create(&m, 2);
+    }
+
     std::chrono::milliseconds delay;
     Domain domain;
     tMessage msg;

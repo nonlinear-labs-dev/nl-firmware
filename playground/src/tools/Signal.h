@@ -3,6 +3,8 @@
 #include "playground.h"
 #include <atomic>
 #include <sigc++/signal.h>
+#include <type_traits>
+#include <tuple>
 
 using namespace Glib;
 using namespace sigc;
@@ -106,4 +108,24 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
 
     return false;
   }
+};
+
+template <typename tFirst, typename... tArgs> class SignalWithCache : public Signal<tFirst, tArgs...>
+{
+ public:
+  using super = Signal<tFirst, tArgs...>;
+  using super::super;
+
+  typename super::result_type send(tArgs... args)
+  {
+    auto newValue = std::make_tuple(args...);
+    if(newValue != m_cache)
+    {
+      m_cache = newValue;
+      super::send(args...);
+    }
+  }
+
+ private:
+  std::tuple<tArgs...> m_cache;
 };

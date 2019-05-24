@@ -23,7 +23,7 @@ constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
 PresetManager::PresetManager(UpdateDocumentContributor *parent)
     : ContentSection(parent)
-    , m_banks(nullptr)
+    , m_banks(*this, nullptr)
     , m_editBuffer(std::make_unique<EditBuffer>(this))
     , m_initSound(std::make_unique<Preset>(this))
     , m_autoLoadThrottler(std::chrono::milliseconds(200))
@@ -77,6 +77,11 @@ void PresetManager::init()
   onChange();
 }
 
+void PresetManager::invalidate()
+{
+  onChange(ChangeFlags::Generic);
+}
+
 Glib::ustring PresetManager::getPrefix() const
 {
   return "presets";
@@ -85,7 +90,9 @@ Glib::ustring PresetManager::getPrefix() const
 UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
 {
   scheduleSave();
-  return UpdateDocumentContributor::onChange(flags);
+  auto ret = UpdateDocumentContributor::onChange(flags);
+  m_sigNumBanksChanged.send(getNumBanks());
+  return ret;
 }
 
 void PresetManager::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
@@ -431,16 +438,12 @@ size_t PresetManager::getPreviousBankPosition() const
 
 Bank *PresetManager::addBank(UNDO::Transaction *transaction)
 {
-  auto ret = m_banks.append(transaction, std::make_unique<Bank>(this));
-  m_sigNumBanksChanged.send(getNumBanks());
-  return ret;
+  return m_banks.append(transaction, std::make_unique<Bank>(this));
 }
 
 Bank *PresetManager::addBank(UNDO::Transaction *transaction, std::unique_ptr<Bank> bank)
 {
-  auto ret = m_banks.append(transaction, std::move(bank));
-  m_sigNumBanksChanged.send(getNumBanks());
-  return ret;
+  return m_banks.append(transaction, std::move(bank));
 }
 
 void PresetManager::moveBank(UNDO::Transaction *transaction, const Bank *bankToMove, const Bank *moveBefore)
@@ -451,9 +454,7 @@ void PresetManager::moveBank(UNDO::Transaction *transaction, const Bank *bankToM
 void PresetManager::deleteBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   handleDockingOnBankDelete(transaction, uuid);
-
   m_banks.remove(transaction, uuid);
-  m_sigNumBanksChanged.send(getNumBanks());
 }
 
 bool handleMaster(Bank *master, Bank *bottom, Bank *right, UNDO::Transaction *transaction,

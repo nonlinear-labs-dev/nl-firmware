@@ -12,7 +12,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 
-template <typename Element> class UndoableVector
+template <typename Owner, typename Element> class UndoableVector
 {
  public:
   using ElementPtr = std::unique_ptr<Element>;
@@ -21,8 +21,9 @@ template <typename Element> class UndoableVector
 
   static constexpr size_t invalidPosition = std::numeric_limits<size_t>::max();
 
-  UndoableVector(CloneFactory &&f)
-      : m_factory(f)
+  UndoableVector(Owner &owner, CloneFactory &&f)
+      : m_owner(owner)
+      , m_factory(f)
       , m_selection(Uuid::none())
   {
   }
@@ -40,6 +41,7 @@ template <typename Element> class UndoableVector
     else
       m_selection = Uuid::none();
 
+    m_owner.invalidate();
     return *this;
   }
 
@@ -67,13 +69,9 @@ template <typename Element> class UndoableVector
     catch(std::out_of_range &)
     {
       if(Application::get().getSettings()->getSetting<CrashOnError>()->get())
-      {
         std::rethrow_exception(std::current_exception());
-      }
       else
-      {
         return nullptr;
-      }
     }
   }
 
@@ -152,6 +150,7 @@ template <typename Element> class UndoableVector
       transaction->addSimpleCommand([this, cb, swap = UNDO::createSwapData(uuid)](auto) {
         Checker checker(this);
         swap->swapWith(m_selection);
+        invalidateAllChildren();
 
         if(cb)
           cb();
@@ -398,6 +397,7 @@ template <typename Element> class UndoableVector
  private:
   void invalidateAllChildren()
   {
+    m_owner.invalidate();
     forEach([&](auto a) { a->invalidate(); });
   }
 
@@ -430,6 +430,7 @@ template <typename Element> class UndoableVector
 #endif
   }
 
+  Owner &m_owner;
   CloneFactory m_factory;
   Elements m_elements;
   Uuid m_selection;

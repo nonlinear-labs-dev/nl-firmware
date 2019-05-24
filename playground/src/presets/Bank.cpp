@@ -17,8 +17,8 @@ EditBuffer *getEditBuffer()
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
     , m_attachedToBankWithUuid(Uuid::none())
-    , m_presets(std::bind(&Bank::clonePreset, this, std::placeholders::_1))
     , m_name("<Untitled Bank>")
+    , m_presets(*this, std::bind(&Bank::clonePreset, this, std::placeholders::_1))
 {
 }
 

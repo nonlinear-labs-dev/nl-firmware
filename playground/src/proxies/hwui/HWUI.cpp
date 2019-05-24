@@ -215,8 +215,6 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         using Msg = Glib::Bytes;
 
         auto w = Application::get().getWebSocketSession();
-        auto incButtonDown = BUTTON_INC | 0x80;
-        auto incButtonUp = BUTTON_INC | 0x00;
         auto step = 16000 / 50;
         uint16_t pedalMove[4] = {};
         pedalMove[0] = MessageParser::PARAM;
@@ -227,8 +225,8 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         auto delay = 20ms;
 
         w->simulateReceivedDebugMessage({ delay, Domain::Lpc, Msg::create(&pedalMove, 8) });
-        w->simulateReceivedDebugMessage({ delay, Domain::Buttons, Msg::create(&incButtonDown, 1) });
-        w->simulateReceivedDebugMessage({ delay, Domain::Buttons, Msg::create(&incButtonUp, 1) });
+        w->simulateReceivedDebugMessage({ delay, BUTTON_INC, true });
+        w->simulateReceivedDebugMessage({ delay, BUTTON_INC, false });
 
         for(int i = 0; i < 10; i++)
         {
