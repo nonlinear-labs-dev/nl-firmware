@@ -150,7 +150,7 @@ template <typename Owner, typename Element> class UndoableVector
       transaction->addSimpleCommand([this, swap = UNDO::createSwapData(uuid)](auto) {
         Checker checker(this);
         swap->swapWith(m_selection);
-        invalidateAllChildren();
+        m_owner.invalidate();
       });
       return true;
     }

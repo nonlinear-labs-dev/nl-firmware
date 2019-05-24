@@ -522,7 +522,8 @@ void PresetManager::handleDockingOnBankDelete(UNDO::Transaction *transaction, co
 
 void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  m_banks.select(transaction, uuid);
+  if(m_banks.select(transaction, uuid))
+    onPresetSelectionChanged();
 }
 
 void PresetManager::onPresetSelectionChanged()
