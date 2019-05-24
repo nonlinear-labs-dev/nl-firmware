@@ -105,7 +105,7 @@ class PresetManager : public ContentSection
                      std::vector<SearchQuery::Fields> &&fieldsToSearch) const;
 
   // signals
-  sigc::connection onBankSelection(sigc::slot<void> cb);
+  sigc::connection onBankSelection(sigc::slot<void, Uuid> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
 
@@ -141,7 +141,7 @@ class PresetManager : public ContentSection
   std::unique_ptr<Preset> m_initSound;
 
   ScopedGuard m_isLoading;
-  Signal<void> m_sigBankSelection;
+  SignalWithCache<void, Uuid> m_sigBankSelection;
   SignalWithCache<void, size_t> m_sigNumBanksChanged;
   Signal<void> m_sigRestoreHappened;
 

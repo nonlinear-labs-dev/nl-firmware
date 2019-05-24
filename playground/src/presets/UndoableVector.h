@@ -142,18 +142,15 @@ template <typename Owner, typename Element> class UndoableVector
     return nullptr;
   }
 
-  bool select(UNDO::Transaction *transaction, const Uuid &uuid, std::function<void()> cb = nullptr)
+  bool select(UNDO::Transaction *transaction, const Uuid &uuid)
   {
     Checker checker(this);
     if(m_selection != uuid)
     {
-      transaction->addSimpleCommand([this, cb, swap = UNDO::createSwapData(uuid)](auto) {
+      transaction->addSimpleCommand([this, swap = UNDO::createSwapData(uuid)](auto) {
         Checker checker(this);
         swap->swapWith(m_selection);
         invalidateAllChildren();
-
-        if(cb)
-          cb();
       });
       return true;
     }
@@ -192,6 +189,9 @@ template <typename Owner, typename Element> class UndoableVector
           m_elements.erase(it);
           invalidateAllChildren();
         });
+
+    if(!getSelected())
+      select(transaction, raw->getUuid());
 
     return raw;
   }

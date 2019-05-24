@@ -20,7 +20,7 @@ PresetList::PresetList(const Rect &pos, bool showBankArrows)
 
 PresetList::~PresetList() = default;
 
-void PresetList::onBankSelectionChanged()
+void PresetList::onBankSelectionChanged(const Uuid &selectedBank)
 {
   m_bankChangedConnection.disconnect();
 

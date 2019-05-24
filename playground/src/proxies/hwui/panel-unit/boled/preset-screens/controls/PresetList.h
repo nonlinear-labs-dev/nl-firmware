@@ -18,7 +18,7 @@ class PresetList : public PresetListBase
   std::pair<size_t, size_t> getSelectedPosition() const override;
 
  private:
-  void onBankSelectionChanged();
+  void onBankSelectionChanged(const Uuid &selectedBank);
   void onBankChanged();
   void onEditBufferChanged();
 

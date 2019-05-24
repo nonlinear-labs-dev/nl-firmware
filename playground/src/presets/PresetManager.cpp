@@ -92,6 +92,7 @@ UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
   scheduleSave();
   auto ret = UpdateDocumentContributor::onChange(flags);
   m_sigNumBanksChanged.send(getNumBanks());
+  m_sigBankSelection.send(getSelectedBankUuid());
   return ret;
 }
 
@@ -521,11 +522,7 @@ void PresetManager::handleDockingOnBankDelete(UNDO::Transaction *transaction, co
 
 void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  m_banks.select(transaction, uuid, [this] {
-    onPresetSelectionChanged();
-    onChange();
-    this->m_sigBankSelection.send();
-  });
+  m_banks.select(transaction, uuid);
 }
 
 void PresetManager::onPresetSelectionChanged()
@@ -627,9 +624,9 @@ Glib::ustring PresetManager::getBaseName(const ustring &basedOn) const
   return basedOn;
 }
 
-connection PresetManager::onBankSelection(sigc::slot<void> cb)
+connection PresetManager::onBankSelection(sigc::slot<void, Uuid> cb)
 {
-  return m_sigBankSelection.connectAndInit(cb);
+  return m_sigBankSelection.connectAndInit(cb, m_banks.getSelectedUuid());
 }
 
 connection PresetManager::onNumBanksChanged(sigc::slot<void, size_t> cb)
