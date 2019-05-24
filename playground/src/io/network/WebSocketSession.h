@@ -8,6 +8,7 @@
 #include <tools/Expiration.h>
 #include <thread>
 #include <tools/ContextBoundMessageQueue.h>
+#include <chrono>
 
 class WebSocketSession
 {
@@ -34,6 +35,20 @@ class WebSocketSession
   void sendMessage(Domain d, tMessage msg);
   sigc::connection onMessageReceived(Domain d, const sigc::slot<void, tMessage> &cb);
   sigc::connection onConnectionEstablished(const sigc::slot<void> &cb);
+
+#if _DEVELOPMENT_PC
+  struct DebugScriptEntry
+  {
+    std::chrono::milliseconds delay;
+    Domain domain;
+    tMessage msg;
+  };
+
+  std::list<DebugScriptEntry> debugScriptEntries;
+  Expiration debugScriptExpiration;
+
+  void simulateReceivedDebugMessage(DebugScriptEntry &&e);
+#endif
 
  private:
   void connect();
