@@ -688,6 +688,12 @@ void PresetManager::resolveCyclicAttachments(UNDO::Transaction *transaction)
   }
 }
 
+void PresetManager::ensureBankSelection(UNDO::Transaction *transaction)
+{
+  if(!getSelectedBank() && getNumBanks() > 0)
+    selectBank(transaction, getBankAt(0)->getUuid());
+}
+
 void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();

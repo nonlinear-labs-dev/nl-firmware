@@ -190,9 +190,6 @@ template <typename Owner, typename Element> class UndoableVector
           invalidateAllChildren();
         });
 
-    if(!getSelected())
-      select(transaction, raw->getUuid());
-
     return raw;
   }
 

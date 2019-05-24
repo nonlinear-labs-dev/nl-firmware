@@ -98,6 +98,7 @@ class PresetManager : public ContentSection
   void setOrderNumber(UNDO::Transaction *transaction, const Uuid &bank, size_t targetPos);
   void sanitizeBankClusterRelations(UNDO::Transaction *transaction);
   void resolveCyclicAttachments(UNDO::Transaction *transaction);
+  void ensureBankSelection(UNDO::Transaction *transaction);
 
   // algorithms
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;
