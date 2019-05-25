@@ -37,7 +37,7 @@ void PresetListEntry::setPreset(Preset *preset, bool selected)
     onPresetChanged(nullptr);
 }
 
-void PresetListEntry::onPresetChanged(Preset *preset)
+void PresetListEntry::onPresetChanged(const Preset *preset)
 {
   if(preset)
   {

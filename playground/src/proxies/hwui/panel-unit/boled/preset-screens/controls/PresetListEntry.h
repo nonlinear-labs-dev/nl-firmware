@@ -29,7 +29,7 @@ class PresetListEntry : public ControlWithChildren
  private:
   bool animationProgress();
   void doAnimationCallback();
-  void onPresetChanged(Preset *preset);
+  void onPresetChanged(const Preset *preset);
 
   float m_animationProgress;
   tCallback m_animationCallback;
