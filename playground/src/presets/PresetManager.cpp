@@ -69,6 +69,7 @@ void PresetManager::init()
     loadMetadataAndSendEditBufferToLpc(transaction, file);
     loadInitSound(transaction, file);
     loadBanks(transaction, file);
+    fixMissingPresetSelections(transaction);
   }
 
   auto hwui = Application::get().getHWUI();
@@ -318,6 +319,11 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> 
     auto bankFolder = pmFolder->get_child(bank->getUuid().raw());
     bank->load(transaction, bankFolder, currentBank++, numBanks);
   });
+}
+
+void PresetManager::fixMissingPresetSelections(UNDO::Transaction *transaction)
+{
+  m_banks.forEach([&](auto bank) { bank->ensurePresetSelection(transaction); });
 }
 
 Bank *PresetManager::findBank(const Uuid &uuid) const
