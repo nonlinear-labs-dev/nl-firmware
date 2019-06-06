@@ -93,4 +93,3 @@ ENDIF()
 
 configure_file(${PROJECT_SOURCE_DIR}/systemd/audio-engine.service.in ${PROJECT_BINARY_DIR}/systemd/audio-engine.service @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/audio-engine.service DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init)
-install(FILES ${PROJECT_SOURCE_DIR}/systemd/run-audio-engine.sh DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine PERMISSIONS WORLD_EXECUTE)
