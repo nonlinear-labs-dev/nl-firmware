@@ -823,6 +823,7 @@ void dsp_host::keyApply(uint32_t _voiceId)
 
 void dsp_host::keyUp156(const float _velocity)
 {
+#if test_preload_update != 2
   uint32_t voiceId = m_decoder.m_voiceFrom;
   const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(Parameters::P_UN_V));
 
@@ -833,10 +834,44 @@ void dsp_host::keyUp156(const float _velocity)
   }
 
   preloadUpdate(2, 0);
+#else
+    // preparation
+    uint32_t voiceId = m_decoder.m_voiceFrom;
+    const uint32_t uVoice = static_cast<uint32_t>(m_params.getParameterValue(Parameters::P_UN_V));
+    const uint32_t unisonVoices = 1 + uVoice;
+    uint32_t index = m_params.getHead(Parameters::P_KEY_BP).m_index + voiceId;
+    const float velocity = m_params.scale(
+                            m_params.m_utilities[0].m_scaleId,
+                            m_params.m_utilities[0].m_scaleArg,
+                            _velocity * m_params.m_utilities[0].m_normalize);
+    m_params.m_event.m_mono.m_velocity = velocity;
+    m_params.m_event.m_mono.m_type = 0;
+    // disable preload
+    m_params.getBody(index).m_preload = 0;
+    m_params.m_preload = 0;
+    m_decoder.m_listId = 0;
+    // unison loop
+    for(uint32_t v = 0; v < unisonVoices; v++)
+    {
+        m_params.m_event.m_poly[voiceId].m_velocity = velocity;
+        m_params.m_event.m_poly[voiceId].m_type = 0;
+        float notePitch = m_params.getBody(index).m_value
+            + (m_params.getParameterValue(Parameters::P_UN_DET) * m_params.m_unison_detune[uVoice][v])
+            + m_params.getParameterValue(Parameters::P_MA_T) + m_params.m_note_shift[voiceId];
+        m_params.newEnvUpdateStop(voiceId, notePitch, velocity);
+        // increment voice id
+        voiceId++;
+        index++;
+    }
+#if test_flanger_env_legato == 1
+    m_params.m_event.m_active--;
+#endif
+#endif
 }
 
 void dsp_host::keyDown156(const float _velocity)
 {
+#if test_preload_update != 2
   uint32_t voiceId = m_decoder.m_voiceFrom;
   const uint32_t unisonVoices = 1 + static_cast<uint32_t>(m_params.getParameterValue(Parameters::P_UN_V));
   const uint32_t index = m_params.getHead(Parameters::P_KEY_BP).m_index + voiceId;
@@ -855,6 +890,83 @@ void dsp_host::keyDown156(const float _velocity)
   }
 
   preloadUpdate(2, 0);
+#else
+    // preparation
+    uint32_t voiceId = m_decoder.m_voiceFrom;
+    const uint32_t uVoice = static_cast<uint32_t>(m_params.getParameterValue(Parameters::P_UN_V));
+    const uint32_t unisonVoices = 1 + uVoice;
+    uint32_t index = m_params.getHead(Parameters::P_KEY_BP).m_index + voiceId;
+    const float pitch = m_params.getBody(index).m_dest;
+    const float velocity = m_params.scale(
+                            m_params.m_utilities[0].m_scaleId,
+                            m_params.m_utilities[0].m_scaleArg,
+                            _velocity * m_params.m_utilities[0].m_normalize);
+    m_params.m_event.m_mono.m_velocity = velocity;
+    m_params.m_event.m_mono.m_type = 1;
+    // disable preload
+    m_params.getBody(index).m_preload = 0;
+    m_params.m_preload = 0;
+    m_decoder.m_listId = 0;
+    // unison loop
+    for(uint32_t v = 0; v < unisonVoices; v++)
+    {
+        m_params.m_note_shift[voiceId] = m_params.getParameterValue(Parameters::P_MA_SH);
+        m_params.getBody(index).m_value = pitch;
+        m_params.m_unison_index[voiceId] = v;
+        m_params.m_event.m_poly[voiceId].m_velocity = velocity;
+        m_params.m_event.m_poly[voiceId].m_type = 1;
+        float notePitch = pitch
+            + (m_params.getParameterValue(Parameters::P_UN_DET) * m_params.m_unison_detune[uVoice][v])
+            + m_params.getParameterValue(Parameters::P_MA_T) + m_params.m_note_shift[voiceId];
+        m_params.postProcessPoly_key(m_parameters, voiceId);
+        setPolySlowFilterCoeffs(m_parameters, voiceId);
+        m_combfilter.setDelaySmoother(voiceId);
+
+        //
+#if test_milestone < 156
+        if(static_cast<uint32_t>(m_params.getParameterValue(Parameters::P_KEY_VS)) == 1)
+        {
+          /* AUDIO_ENGINE: trigger voice-steal */
+        }
+        else
+        {
+          /* AUDIO_ENGINE: trigger non-voice-steal */
+        }
+#if test_milestone == 150
+        const float startPhase = m_params.getParameterValue(Parameters::P_KEY_PH, voiceId);
+#else
+        const float startPhase = 0.f;
+#endif
+#elif test_milestone == 156
+        if(m_stolen == 1)
+        {
+          /* AUDIO_ENGINE: trigger voice-steal */
+        }
+        else
+        {
+          /* AUDIO_ENGINE: trigger non-voice-steal */
+        }
+        const float startPhase = 0.f;
+#endif
+        m_soundgenerator.resetPhase(startPhase, voiceId);
+        m_params.newEnvUpdateStart(voiceId, notePitch, velocity);
+        // increment voice id
+        voiceId++;
+        index++;
+    }
+    // keyApplyMono
+#if test_flanger_env_legato == 0
+    m_params.m_new_envelopes.m_env_f.setSegmentDest(0, 1, velocity);
+    m_params.m_new_envelopes.m_env_f.start(0);
+#elif test_flanger_env_legato == 1
+    if(m_params.m_event.m_active == 0)
+    {
+        m_params.m_new_envelopes.m_env_f.setSegmentDest(0, 1, velocity);
+        m_params.m_new_envelopes.m_env_f.start(0);
+    }
+    m_params.m_event.m_active++;
+#endif
+#endif
 }
 
 #endif

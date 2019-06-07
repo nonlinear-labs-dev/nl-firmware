@@ -33,7 +33,7 @@
 #define test_svf_types 1        // 0: SVF first Proto NAN, 1: SVF noFIR, 2: SVF FIR, 3: SVF Original Primary (later)
 #define test_svf_fm_limit 1.5f  // SVF fm clipping maximum
 
-#define test_preload_update 1  // 0: non-optimized preload update, 1: optimized preload update (recommended)
+#define test_preload_update 2  // 0: non-optimized preload update, 1: optimized preload update (but key glitches), 2: fixed preload update (recommended)
 #define test_inputModeFlag 0   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
 
 #define test_reverbParams 1    // 0: fast rendering (like Reaktor), 1: slow rendering (experimental)
