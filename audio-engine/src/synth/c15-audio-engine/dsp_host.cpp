@@ -844,8 +844,8 @@ void dsp_host::keyUp156(const float _velocity)
                             m_params.m_utilities[0].m_scaleId,
                             m_params.m_utilities[0].m_scaleArg,
                             _velocity * m_params.m_utilities[0].m_normalize);
-    m_params.m_event.m_mono.m_velocity = velocity;
-    m_params.m_event.m_mono.m_type = 0;
+    //m_params.m_event.m_mono.m_velocity = velocity;
+    //m_params.m_event.m_mono.m_type = 0;
     // disable preload
     m_params.getBody(index).m_preload = 0;
     m_params.m_preload = 0;
@@ -853,8 +853,8 @@ void dsp_host::keyUp156(const float _velocity)
     // unison loop
     for(uint32_t v = 0; v < unisonVoices; v++)
     {
-        m_params.m_event.m_poly[voiceId].m_velocity = velocity;
-        m_params.m_event.m_poly[voiceId].m_type = 0;
+        //m_params.m_event.m_poly[voiceId].m_velocity = velocity;
+        //m_params.m_event.m_poly[voiceId].m_type = 0;
         float notePitch = m_params.getBody(index).m_value
             + (m_params.getParameterValue(Parameters::P_UN_DET) * m_params.m_unison_detune[uVoice][v])
             + m_params.getParameterValue(Parameters::P_MA_T) + m_params.m_note_shift[voiceId];
@@ -901,8 +901,8 @@ void dsp_host::keyDown156(const float _velocity)
                             m_params.m_utilities[0].m_scaleId,
                             m_params.m_utilities[0].m_scaleArg,
                             _velocity * m_params.m_utilities[0].m_normalize);
-    m_params.m_event.m_mono.m_velocity = velocity;
-    m_params.m_event.m_mono.m_type = 1;
+    //m_params.m_event.m_mono.m_velocity = velocity;
+    //m_params.m_event.m_mono.m_type = 1;
     // disable preload
     m_params.getBody(index).m_preload = 0;
     m_params.m_preload = 0;
@@ -913,8 +913,8 @@ void dsp_host::keyDown156(const float _velocity)
         m_params.m_note_shift[voiceId] = m_params.getParameterValue(Parameters::P_MA_SH);
         m_params.getBody(index).m_value = pitch;
         m_params.m_unison_index[voiceId] = v;
-        m_params.m_event.m_poly[voiceId].m_velocity = velocity;
-        m_params.m_event.m_poly[voiceId].m_type = 1;
+        //m_params.m_event.m_poly[voiceId].m_velocity = velocity;
+        //m_params.m_event.m_poly[voiceId].m_type = 1;
         float notePitch = pitch
             + (m_params.getParameterValue(Parameters::P_UN_DET) * m_params.m_unison_detune[uVoice][v])
             + m_params.getParameterValue(Parameters::P_MA_T) + m_params.m_note_shift[voiceId];
