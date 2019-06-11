@@ -823,14 +823,16 @@ void dsp_host::keyUp156(const float _velocity)
   preloadUpdate(2, 0);
 #else
     // preparation
-    uint32_t voiceId = m_decoder.m_voiceFrom;
+    const uint32_t voiceId = m_decoder.m_voiceFrom;
     const uint32_t uVoice = static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_UN_V].m_index].m_signal);
     const uint32_t unisonVoices = 1 + uVoice;
-    uint32_t index = m_params.m_head[P_UN_V].m_index + voiceId;
+    const uint32_t index = m_params.m_head[P_UN_V].m_index + voiceId;
     const float velocity = m_params.scale(
                             m_params.m_utilities[0].m_scaleId,
                             m_params.m_utilities[0].m_scaleArg,
                             _velocity * m_params.m_utilities[0].m_normalize);
+    const float uniDetune = m_params.m_body[m_params.m_head[P_UN_DET].m_index].m_signal;
+    const float masterTune = m_params.m_body[m_params.m_head[P_MA_T].m_index].m_signal;
     //m_params.m_event.m_mono.m_velocity = velocity;
     //m_params.m_event.m_mono.m_type = 0;
     // disable preload
@@ -838,17 +840,20 @@ void dsp_host::keyUp156(const float _velocity)
     m_params.m_preload = 0;
     m_decoder.m_listId = 0;
     // unison loop
+    /** !! !! !!
+     * NOTE that at Milestone 1.56, the LPC still performs the Voice Allocation,
+     * und Unison Clusters are GUARANTEED to always be within the allowed number of Voices,
+     * never rising above or wrapping around. Example: Unison Voices = 3 --> possible Unison Clusters:
+     * [0,1,2], [3,4,5], [6,7,8], [9,10,11], [12,13,14], [15,16,17] < 20
+     * !! !! !! **/
     for(uint32_t v = 0; v < unisonVoices; v++)
     {
         //m_params.m_event.m_poly[voiceId].m_velocity = velocity;
         //m_params.m_event.m_poly[voiceId].m_type = 0;
-        float notePitch = m_params.m_body[index].m_signal
-                + (m_params.m_body[m_params.m_head[P_UN_DET].m_index].m_signal * m_params.m_unison_detune[uVoice][v])
-                + m_params.m_body[m_params.m_head[P_MA_T].m_index].m_signal + m_params.m_note_shift[voiceId];
-        m_params.newEnvUpdateStop(voiceId, notePitch, velocity);
-        // increment voice id
-        voiceId++;
-        index++;
+        float notePitch = m_params.m_body[index + v].m_signal
+                + (uniDetune * m_params.m_unison_detune[uVoice][v])
+                + masterTune + m_params.m_note_shift[voiceId + v];
+        m_params.newEnvUpdateStop(voiceId + v, notePitch, velocity);
     }
 #if test_flanger_env_legato == 1
     m_params.m_event.m_active--;
@@ -879,15 +884,18 @@ void dsp_host::keyDown156(const float _velocity)
   preloadUpdate(2, 0);
 #else
     // preparation
-    uint32_t voiceId = m_decoder.m_voiceFrom;
+    const uint32_t voiceId = m_decoder.m_voiceFrom;
     const uint32_t uVoice = static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_UN_V].m_index].m_signal);
     const uint32_t unisonVoices = 1 + uVoice;
-    uint32_t index = m_params.m_head[P_KEY_BP].m_index + voiceId;
+    const uint32_t index = m_params.m_head[P_KEY_BP].m_index + voiceId;
     const float pitch = m_params.m_body[index].m_dest;
     const float velocity = m_params.scale(
                             m_params.m_utilities[0].m_scaleId,
                             m_params.m_utilities[0].m_scaleArg,
                             _velocity * m_params.m_utilities[0].m_normalize);
+    const float noteShift = m_params.m_body[m_params.m_head[P_MA_SH].m_index].m_signal;
+    const float uniDetune = m_params.m_body[m_params.m_head[P_UN_DET].m_index].m_signal;
+    const float masterTune = m_params.m_body[m_params.m_head[P_MA_T].m_index].m_signal;
     //m_params.m_event.m_mono.m_velocity = velocity;
     //m_params.m_event.m_mono.m_type = 1;
     // disable preload
@@ -895,19 +903,25 @@ void dsp_host::keyDown156(const float _velocity)
     m_params.m_preload = 0;
     m_decoder.m_listId = 0;
     // unison loop
+    /** !! !! !!
+     * NOTE that at Milestone 1.56, the LPC still performs the Voice Allocation,
+     * und Unison Clusters are GUARANTEED to always be within the allowed number of Voices,
+     * never rising above or wrapping around. Example: Unison Voices = 3 --> possible Unison Clusters:
+     * [0,1,2], [3,4,5], [6,7,8], [9,10,11], [12,13,14], [15,16,17] < 20
+     * !! !! !! **/
     for(uint32_t v = 0; v < unisonVoices; v++)
     {
-        m_params.m_note_shift[voiceId] = m_params.m_body[m_params.m_head[P_MA_SH].m_index].m_signal;
-        m_params.m_body[index].m_signal = pitch;
-        m_params.m_unison_index[voiceId] = v;
+        m_params.m_note_shift[voiceId + v] = noteShift;
+        m_params.m_body[index + v].m_signal = pitch;
+        m_params.m_unison_index[voiceId + v] = v;
         //m_params.m_event.m_poly[voiceId].m_velocity = velocity;
         //m_params.m_event.m_poly[voiceId].m_type = 1;
         float notePitch = pitch
-            + (m_params.m_body[m_params.m_head[P_UN_DET].m_index].m_signal * m_params.m_unison_detune[uVoice][v])
-            + m_params.m_body[m_params.m_head[P_MA_T].m_index].m_signal + m_params.m_note_shift[voiceId];
-        m_params.postProcessPoly_key(m_paramsignaldata[voiceId], voiceId);
-        setPolySlowFilterCoeffs(m_paramsignaldata[voiceId], voiceId);
-        m_combfilter[voiceId].setDelaySmoother();
+            + (uniDetune * m_params.m_unison_detune[uVoice][v])
+            + masterTune + m_params.m_note_shift[voiceId + v];
+        m_params.postProcessPoly_key(m_paramsignaldata[voiceId + v], voiceId + v);
+        setPolySlowFilterCoeffs(m_paramsignaldata[voiceId + v], voiceId + v);
+        m_combfilter[voiceId + v].setDelaySmoother();
 #if test_milestone < 156
         if(static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_KEY_VS].m_index].m_signal) == 1)
         {
@@ -918,7 +932,7 @@ void dsp_host::keyDown156(const float _velocity)
             /* AUDIO_ENGINE: trigger non-voice-steal */
         }
 #if test_milestone == 150
-        const float startPhase = m_params.m_body[m_params.m_head[P_KEY_PH].m_index + voiceId].m_signal;
+        const float startPhase = m_params.m_body[m_params.m_head[P_KEY_PH].m_index + voiceId + v].m_signal;
 #else
         const float startPhase = 0.f;
 #endif
@@ -933,11 +947,8 @@ void dsp_host::keyDown156(const float _velocity)
         }
         const float startPhase = 0.f;
 #endif
-        m_soundgenerator[voiceId].resetPhase(startPhase);
-        m_params.newEnvUpdateStart(voiceId, notePitch, velocity);
-        // increment voice id
-        voiceId++;
-        index++;
+        m_soundgenerator[voiceId + v].resetPhase(startPhase);
+        m_params.newEnvUpdateStart(voiceId + v, notePitch, velocity);
     }
     // key apply mono
 #if test_flanger_env_legato == 0
