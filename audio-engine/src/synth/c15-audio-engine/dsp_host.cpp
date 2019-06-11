@@ -848,12 +848,13 @@ void dsp_host::keyUp156(const float _velocity)
      * !! !! !! **/
     for(uint32_t v = 0; v < unisonVoices; v++)
     {
-        //m_params.m_event.m_poly[voiceId].m_velocity = velocity;
-        //m_params.m_event.m_poly[voiceId].m_type = 0;
+        const uint32_t voicePos = voiceId + v;
+        //m_params.m_event.m_poly[voicePos].m_velocity = velocity;
+        //m_params.m_event.m_poly[voicePos].m_type = 0;
         float notePitch = m_params.m_body[index + v].m_signal
                 + (uniDetune * m_params.m_unison_detune[uVoice][v])
-                + masterTune + m_params.m_note_shift[voiceId + v];
-        m_params.newEnvUpdateStop(voiceId + v, notePitch, velocity);
+                + masterTune + m_params.m_note_shift[voicePos];
+        m_params.newEnvUpdateStop(voicePos, notePitch, velocity);
     }
 #if test_flanger_env_legato == 1
     m_params.m_event.m_active--;
@@ -911,17 +912,18 @@ void dsp_host::keyDown156(const float _velocity)
      * !! !! !! **/
     for(uint32_t v = 0; v < unisonVoices; v++)
     {
-        m_params.m_note_shift[voiceId + v] = noteShift;
+        const uint32_t voicePos = voiceId + v;
+        m_params.m_note_shift[voicePos] = noteShift;
         m_params.m_body[index + v].m_signal = pitch;
-        m_params.m_unison_index[voiceId + v] = v;
-        //m_params.m_event.m_poly[voiceId].m_velocity = velocity;
-        //m_params.m_event.m_poly[voiceId].m_type = 1;
+        m_params.m_unison_index[voicePos] = v;
+        //m_params.m_event.m_poly[voicePos].m_velocity = velocity;
+        //m_params.m_event.m_poly[voicePos].m_type = 1;
         float notePitch = pitch
             + (uniDetune * m_params.m_unison_detune[uVoice][v])
-            + masterTune + m_params.m_note_shift[voiceId + v];
-        m_params.postProcessPoly_key(m_paramsignaldata[voiceId + v], voiceId + v);
-        setPolySlowFilterCoeffs(m_paramsignaldata[voiceId + v], voiceId + v);
-        m_combfilter[voiceId + v].setDelaySmoother();
+            + masterTune + m_params.m_note_shift[voicePos];
+        m_params.postProcessPoly_key(m_paramsignaldata[voicePos], voicePos);
+        setPolySlowFilterCoeffs(m_paramsignaldata[voicePos], voicePos);
+        m_combfilter[voicePos].setDelaySmoother();
 #if test_milestone < 156
         if(static_cast<uint32_t>(m_params.m_body[m_params.m_head[P_KEY_VS].m_index].m_signal) == 1)
         {
@@ -932,7 +934,7 @@ void dsp_host::keyDown156(const float _velocity)
             /* AUDIO_ENGINE: trigger non-voice-steal */
         }
 #if test_milestone == 150
-        const float startPhase = m_params.m_body[m_params.m_head[P_KEY_PH].m_index + voiceId + v].m_signal;
+        const float startPhase = m_params.m_body[m_params.m_head[P_KEY_PH].m_index + voicePos].m_signal;
 #else
         const float startPhase = 0.f;
 #endif
@@ -947,8 +949,8 @@ void dsp_host::keyDown156(const float _velocity)
         }
         const float startPhase = 0.f;
 #endif
-        m_soundgenerator[voiceId + v].resetPhase(startPhase);
-        m_params.newEnvUpdateStart(voiceId + v, notePitch, velocity);
+        m_soundgenerator[voicePos].resetPhase(startPhase);
+        m_params.newEnvUpdateStart(voicePos, notePitch, velocity);
     }
     // key apply mono
 #if test_flanger_env_legato == 0
