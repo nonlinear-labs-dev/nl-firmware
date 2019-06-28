@@ -12,6 +12,6 @@ CommentJob::~CommentJob()
 
 void CommentJob::implRun()
 {
-  cout << m_cmd << endl;
+  std::cout << m_cmd << std::endl;
   getParent()->onChildFinished(this, true);
 }

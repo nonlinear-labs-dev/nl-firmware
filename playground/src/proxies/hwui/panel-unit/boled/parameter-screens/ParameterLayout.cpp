@@ -250,7 +250,7 @@ ParameterRecallLayout2::ParameterRecallLayout2()
   if(auto p = getCurrentParameter())
   {
     auto originalParam = p->getOriginalParameter();
-    auto originalValue = originalParam ? originalParam->getValue() : p->getDefaultValue();
+    auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
 
     if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
       m_slider = addControl(
@@ -370,7 +370,7 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
     {
       auto sc = p->getValue().getScaleConverter();
       auto originalParam = p->getOriginalParameter();
-      auto originalValue = originalParam ? originalParam->getValue() : p->getDefaultValue();
+      auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
       auto displayValue = sc->controlPositionToDisplay(originalValue);
       auto displayString = sc->getDimension().stringize(displayValue);
       m_leftValue->setText(displayString);

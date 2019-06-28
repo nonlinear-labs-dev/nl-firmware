@@ -10,7 +10,7 @@ FileNameHeadlineLabel::FileNameHeadlineLabel(const Glib::ustring &str, const Rec
   super::setFontColor(FrameBuffer::Colors::C179);
 }
 
-shared_ptr<Font> FileNameHeadlineLabel::getFont() const
+std::shared_ptr<Font> FileNameHeadlineLabel::getFont() const
 {
   return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
 }

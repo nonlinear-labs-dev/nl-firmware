@@ -2,6 +2,8 @@
 
 #include <proxies/hwui/controls/Label.h>
 
+class Uuid;
+
 class PresetInfoCaption : public Label
 {
  private:
@@ -15,10 +17,10 @@ class PresetInfoCaption : public Label
 
  private:
   virtual void setFontColor(FrameBuffer &fb) const override;
-  virtual shared_ptr<Font> getFont() const override;
+  virtual std::shared_ptr<Font> getFont() const override;
   virtual int getFontHeight() const override;
 
-  void onBankSelection();
+  void onBankSelection(const Uuid &selectedBank);
   void onBankChanged();
 
   sigc::connection m_bankConnection;

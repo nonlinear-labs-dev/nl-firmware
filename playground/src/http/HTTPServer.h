@@ -23,7 +23,7 @@ class HTTPServer
 
   void init();
 
-  virtual void handleRequest(shared_ptr<NetworkRequest> request);
+  virtual void handleRequest(std::shared_ptr<NetworkRequest> request);
   virtual void onMessageFinished(SoupMessage *msg);
 
   void pauseMessage(SoupMessage *msg);
@@ -46,11 +46,11 @@ class HTTPServer
   void startServer();
   void initializeServer();
 
-  void serveStaticFile(shared_ptr<HTTPRequest> request);
+  void serveStaticFile(std::shared_ptr<HTTPRequest> request);
 
   static bool isIndexPageAlias(const Glib::ustring &path);
   static Glib::ustring getPathFromMessage(SoupMessage *msg);
-  void redirectToIndexPage(shared_ptr<HTTPRequest> request) const;
+  void redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const;
 
   static bool isStaticFileURL(const Glib::ustring &path);
   void deliverJournal(std::shared_ptr<HTTPRequest> request) const;
@@ -59,9 +59,9 @@ class HTTPServer
   ContentManager m_contentManager;
   MCViewContentManager m_mcviewManager;
 
-  typedef shared_ptr<ServedStream> tServedStream;
-  typedef shared_ptr<HTTPRequest> tHTTPRequest;
-  list<tServedStream> m_servedStreams;
+  typedef std::shared_ptr<ServedStream> tServedStream;
+  typedef std::shared_ptr<HTTPRequest> tHTTPRequest;
+  std::list<tServedStream> m_servedStreams;
 
-  shared_ptr<AvahiService> m_avahi;
+  std::shared_ptr<AvahiService> m_avahi;
 };

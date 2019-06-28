@@ -7,7 +7,7 @@ namespace attribute_detail
 {
   template <typename tValue> inline ustring toString(const tValue &v)
   {
-    stringstream str;
+    std::stringstream str;
     str << v;
     return str.str();
   }

@@ -21,6 +21,6 @@ class PresetInfoLayout : public InfoLayout
   virtual void addInfoLabel() override;
   virtual Scrollable* createScrollableContent() override;
 
-  void onBankChanged(shared_ptr<PresetBank> bank);
+  void onBankChanged(std::shared_ptr<PresetBank> bank);
   void onPresetSelectionChanged();
 };

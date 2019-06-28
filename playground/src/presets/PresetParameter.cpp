@@ -35,6 +35,7 @@ tControlPositionValue PresetParameter::getValue() const
 
 void PresetParameter::setValue(UNDO::Transaction *transaction, tControlPositionValue v)
 {
+  v = ScaleConverter::getControlPositionRangeBipolar().clip(v);
   transaction->addUndoSwap(m_value, v);
 }
 
@@ -48,15 +49,17 @@ void PresetParameter::setField(UNDO::Transaction *transaction, Fields field, con
 
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
   assert(m_id == other->m_id);
-  transaction->addUndoSwap(m_value, other->m_value);
-  transaction->addUndoSwap(m_fields, other->m_fields);
+  transaction->addUndoSwap(eb, m_value, other->m_value);
+  transaction->addUndoSwap(eb, m_fields, other->m_fields);
 }
 
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter *other)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
   assert(m_id == other->getID());
-  transaction->addUndoSwap(m_fields, {});
+  transaction->addUndoSwap(eb, m_fields, {});
   other->copyTo(transaction, this);
 }
 
@@ -121,7 +124,7 @@ ModulationSource PresetParameter::getModulationSource() const
   auto it = m_fields.find(Fields::ModSource);
 
   if(it != m_fields.end() && !it->second.empty())
-    return static_cast<ModulationSource>(stoi(it->second));
+    return static_cast<ModulationSource>(std::stoi(it->second));
 
   return ModulationSource::NONE;
 }
@@ -131,12 +134,12 @@ double PresetParameter::getModulationAmount() const
   auto it = m_fields.find(Fields::ModAmount);
 
   if(it != m_fields.end() && !it->second.empty())
-    return stod(it->second);
+    return std::stod(it->second);
 
   return 0.0;
 }
 
-string PresetParameter::getGivenName() const
+std::string PresetParameter::getGivenName() const
 {
   auto it = m_fields.find(Fields::GivenName);
 
@@ -146,7 +149,7 @@ string PresetParameter::getGivenName() const
   return "";
 }
 
-string PresetParameter::getInfo() const
+std::string PresetParameter::getInfo() const
 {
   auto it = m_fields.find(Fields::Info);
 
@@ -166,7 +169,7 @@ enum RibbonReturnMode PresetParameter::getRibbonReturnMode() const
   auto it = m_fields.find(Fields::RibbonReturnMode);
 
   if(it != m_fields.end() && !it->second.empty())
-    return static_cast<enum RibbonReturnMode>(stoi(it->second));
+    return static_cast<enum RibbonReturnMode>(std::stoi(it->second));
 
   using RRM = enum RibbonReturnMode;
   return RRM::RETURN;
@@ -177,7 +180,7 @@ enum RibbonTouchBehaviour PresetParameter::getRibbonTouchBehaviour() const
   auto it = m_fields.find(Fields::RibbonTouchBehaviour);
 
   if(it != m_fields.end() && !it->second.empty())
-    return static_cast<enum RibbonTouchBehaviour>(stoi(it->second));
+    return static_cast<enum RibbonTouchBehaviour>(std::stoi(it->second));
 
   using RTB = enum RibbonTouchBehaviour;
   return RTB::ABSOLUTE;
@@ -188,7 +191,7 @@ enum PedalModes PresetParameter::getPedalMode() const
   auto it = m_fields.find(Fields::PedalMode);
 
   if(it != m_fields.end() && !it->second.empty())
-    return static_cast<enum PedalModes>(stoi(it->second));
+    return static_cast<enum PedalModes>(std::stoi(it->second));
 
   return PedalModes::STAY;
 }
@@ -202,7 +205,7 @@ void PresetParameter::writeDocument(Writer &writer) const
                   []() {});
 }
 
-string paramFieldToString(PresetParameter::Fields f)
+std::string paramFieldToString(PresetParameter::Fields f)
 {
   switch(f)
   {

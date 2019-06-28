@@ -32,7 +32,7 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
   {
     auto bankPos = pm->getBankPosition(bank->getUuid()) + 1;
     auto presetPos = bank->getPresetPosition(uuid) + 1;
-    ostringstream presetPosStr;
+    std::ostringstream presetPosStr;
     presetPosStr.width(3);
     presetPosStr.fill('0');
     presetPosStr << presetPos;

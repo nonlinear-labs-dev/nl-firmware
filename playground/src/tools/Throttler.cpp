@@ -1,7 +1,7 @@
 #include "Throttler.h"
 
 Throttler::Throttler(Expiration::Duration maxDelay)
-    : m_expiration(bind(&Throttler::delayedCallback, this))
+    : m_expiration(std::bind(&Throttler::delayedCallback, this))
     , m_maxDelay(maxDelay)
 {
 }

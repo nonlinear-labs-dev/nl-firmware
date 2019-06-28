@@ -13,7 +13,7 @@ class ButtonMenu : public ControlWithChildren
   ButtonMenu(const Rect &rect, size_t numButtonPlaces = 5);
   virtual ~ButtonMenu();
 
-  using Action = function<void()>;
+  using Action = std::function<void()>;
 
   size_t addButton(const Glib::ustring &caption, Action action);
   virtual void selectButton(size_t i);
@@ -42,7 +42,7 @@ class ButtonMenu : public ControlWithChildren
     Action action;
   };
 
-  vector<Item> m_items;
+  std::vector<Item> m_items;
   size_t m_selected;
   size_t m_numButtonPlaces;
 };

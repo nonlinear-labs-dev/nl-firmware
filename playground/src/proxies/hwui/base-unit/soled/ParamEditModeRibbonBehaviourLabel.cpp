@@ -27,7 +27,7 @@ void ParamEditModeRibbonBehaviourLabel::updateText(const Setting* s)
   }
 }
 
-shared_ptr<ParameterEditModeRibbonBehaviour> ParamEditModeRibbonBehaviourLabel::getSetting() const
+std::shared_ptr<ParameterEditModeRibbonBehaviour> ParamEditModeRibbonBehaviourLabel::getSetting() const
 {
   return getSettings()->getSetting<ParameterEditModeRibbonBehaviour>();
 }

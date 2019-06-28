@@ -10,7 +10,7 @@ class FileInStream : public InStream
   virtual ~FileInStream();
 
   ustring read() override;
-  vector<uint8_t> readAll() override;
+  std::vector<uint8_t> readAll() override;
   bool eof() const;
 
  private:

@@ -24,10 +24,10 @@ void AppendOverwriteInsertButtonMenu::buildMenu()
   clearActions();
 
   auto pm = Application::get().getPresetManager();
-  addButton("Append", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
+  addButton("Append", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
   if(pm->getSelectedBank() && pm->getSelectedBank()->getNumPresets() != 0)
-    addButton("Overwrite", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
-  addButton("Insert", bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
+    addButton("Overwrite", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
+  addButton("Insert", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
 
   auto setting = Application::get().getSettings()->getSetting<PresetStoreModeSetting>()->get();
   selectButton(enumToIndex(setting));
@@ -107,7 +107,7 @@ void AppendOverwriteInsertButtonMenu::createBankAndStore()
   auto transactionScope = scope.startTransaction("Create Bank and Store Preset");
   auto transaction = transactionScope->getTransaction();
   auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
+  auto preset = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
   bank->selectPreset(transaction, preset->getUuid());
   pm->selectBank(transaction, bank->getUuid());
   Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
@@ -205,7 +205,7 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
   auto pm = Application::get().getPresetManager();
   auto scope = Application::get().getUndoScope()->startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
-  auto preset = bank->insertPreset(scope->getTransaction(), pos, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
+  auto preset = bank->insertAndLoadPreset(scope->getTransaction(), pos, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
 
   if(modified)
     preset->guessName(transaction);

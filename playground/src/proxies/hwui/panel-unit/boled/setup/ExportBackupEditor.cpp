@@ -84,7 +84,7 @@ void ExportBackupEditor::exportBanks()
   const auto timeSinceEpoch = std::chrono::system_clock::now().time_since_epoch();
   const auto timeStamp = std::chrono::duration_cast<std::chrono::seconds>(timeSinceEpoch).count();
   const auto humanReadableTime = TimeTools::getDisplayStringFromStamp(timeStamp);
-  const auto timeStringWithoutWhiteSpaces = StringTools::replaceAll(std::to_string(humanReadableTime), " ", "-");
+  const auto timeStringWithoutWhiteSpaces = StringTools::replaceAll(to_string(humanReadableTime), " ", "-");
   const auto finalDateString = StringTools::replaceAll(timeStringWithoutWhiteSpaces, ":", "-");
   const auto targetNameWithStamp(std::string("/mnt/usb-stick/") + finalDateString.c_str() + c_backupTargetFile);
 

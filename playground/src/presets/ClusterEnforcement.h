@@ -67,7 +67,7 @@ class ClusterEnforcement
   virtual ~ClusterEnforcement();
   void enforceClusterRuleOfOne(UNDO::Transaction *transaction);
   void sanitizeBankThatWillBeDeleted(UNDO::Transaction *transaction, Bank *bank);
-  vector<Bank *> sortBanks();
+  std::vector<Bank *> sortBanks();
 
   static void sortBankNumbers();
 

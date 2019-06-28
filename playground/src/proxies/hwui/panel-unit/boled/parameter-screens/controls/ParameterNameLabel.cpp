@@ -14,6 +14,9 @@ ParameterNameLabel::ParameterNameLabel(const Rect &pos)
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
+
+    Application::get().getPresetManager()->getEditBuffer()->onRecallValuesChanged(
+            sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
 }
 
 ParameterNameLabel::~ParameterNameLabel()
@@ -100,7 +103,7 @@ void ParameterNameLabel::setFontColor(FrameBuffer &fb) const
     fb.setColor(FrameBuffer::Colors::C128);
 }
 
-shared_ptr<Font> ParameterNameLabel::getFont() const
+std::shared_ptr<Font> ParameterNameLabel::getFont() const
 {
   return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
 }

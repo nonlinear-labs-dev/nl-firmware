@@ -54,7 +54,7 @@ Glib::ustring CombDecayBipolarMsScaleConverter::controlPositionToDisplayJS() con
   auto logDiff = (log_max - log_min);
 
   Glib::ustring dimensionStringizer = getDimension().getStingizerJS();
-  stringstream s;
+  std::stringstream s;
 
   s << "return $wnd.formatDimension((cpValue < 0 ? -1 : 1) * (cpValue == 0 ? 0 : Math.exp(" << log_min
     << " + Math.abs(cpValue) * " << logDiff << ")), \"" << dimensionStringizer << "\", withUnit);";

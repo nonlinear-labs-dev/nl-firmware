@@ -24,7 +24,7 @@ class DFBLayout : public Layout, public ControlOwner
   FrameBuffer &getFrameBuffer();
 
  protected:
-  void installButtonRepeat(function<void()> cb);
+  void installButtonRepeat(std::function<void()> cb);
   void removeButtonRepeat();
 
   bool isResolutionFine() const;
@@ -33,6 +33,6 @@ class DFBLayout : public Layout, public ControlOwner
 
  private:
   bool m_clear = true;
-  unique_ptr<ButtonRepeat> m_buttonRepeat;
+  std::unique_ptr<ButtonRepeat> m_buttonRepeat;
   OLEDProxy &m_oled;
 };

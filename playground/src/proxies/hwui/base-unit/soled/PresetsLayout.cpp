@@ -26,7 +26,7 @@ class ShortenLabel : public Label
   }
 
  protected:
-  StringAndSuffix shortenStringIfNeccessary(shared_ptr<Font> font, const StringAndSuffix &text) const override
+  StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font, const StringAndSuffix &text) const override
   {
     return TextCropper::shortenStringIfNeccessary(font, text.text, getPosition().getWidth());
   }
@@ -58,7 +58,7 @@ PresetsLayout::~PresetsLayout()
 {
 }
 
-void PresetsLayout::onBankSelected()
+void PresetsLayout::onBankSelected(const Uuid &selectedBank)
 {
   m_connection.disconnect();
 

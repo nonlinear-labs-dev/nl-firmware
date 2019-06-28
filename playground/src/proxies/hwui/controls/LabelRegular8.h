@@ -13,7 +13,7 @@ class LabelRegular8 : public Label
   virtual ~LabelRegular8();
 
  protected:
-  virtual shared_ptr<Font> getFont() const override;
+  virtual std::shared_ptr<Font> getFont() const override;
   virtual int getFontHeight() const override;
 
  private:

@@ -29,9 +29,7 @@ ModulateableParameter::ModulateableParameter(ParameterGroup *group, uint16_t id,
 {
 }
 
-ModulateableParameter::~ModulateableParameter()
-{
-}
+ModulateableParameter::~ModulateableParameter() = default;
 
 size_t ModulateableParameter::getHash() const
 {
@@ -59,13 +57,13 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
 
   auto scaled = static_cast<gint16>(round(m_modulationAmount * getModulationAmountFineDenominator()));
   auto abs = (scaled < 0) ? -scaled : scaled;
-  gint16 src = static_cast<gint16>(getModulationSource());
+  auto src = static_cast<gint16>(getModulationSource());
 
   g_assert(src > 0);
   src--;
 
-  gint16 sign = static_cast<gint16>((scaled < 0) ? 1 : 0);
-  uint16_t toSend = static_cast<uint16_t>((src << 14) | (sign << 13) | (abs));
+  auto sign = static_cast<gint16>((scaled < 0) ? 1 : 0);
+  auto toSend = static_cast<uint16_t>((src << 14) | (sign << 13) | (abs));
 
   return toSend;
 }
@@ -167,19 +165,6 @@ void ModulateableParameter::undoableSetModAmount(UNDO::Transaction *transaction,
   setModulationAmount(transaction, amount);
 }
 
-void ModulateableParameter::undoableIncrementMCSelect(int inc)
-{
-  auto scope = getUndoScope().startTransaction("Set MC Select for '%0'", getLongName());
-  undoableIncrementMCSelect(scope->getTransaction(), inc);
-}
-
-void ModulateableParameter::undoableIncrementMCAmount(int inc)
-{
-  auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
-                                                         getGroupAndParameterName());
-  undoableIncrementMCAmount(scope->getTransaction(), inc, ButtonModifiers());
-}
-
 void *ModulateableParameter::getAmountCookie()
 {
   return &m_modulationAmount;
@@ -209,7 +194,7 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transac
   while(src >= numChoices)
     src -= numChoices;
 
-  setModulationSource(std::move(transaction), (ModulationSource) src);
+  setModulationSource(transaction, (ModulationSource) src);
 }
 
 void ModulateableParameter::undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc,
@@ -233,8 +218,6 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
 
   writer.writeTextElement("modAmount", to_string(m_modulationAmount));
   writer.writeTextElement("modSrc", to_string(static_cast<int>(m_modSource)));
-  writer.writeTextElement("og-modAmount", to_string(getOriginalModulationAmount()));
-  writer.writeTextElement("og-modSrc", to_string(static_cast<int>(getOriginalModulationSource())));
 
   if(shouldWriteDocProperties(knownRevision))
   {
@@ -253,7 +236,7 @@ void ModulateableParameter::loadDefault(UNDO::Transaction *transaction)
 void ModulateableParameter::undoableLoadPackedModulationInfo(UNDO::Transaction *transaction,
                                                              const Glib::ustring &packedModulationInfo)
 {
-  auto bits = stoul(packedModulationInfo);
+  auto bits = std::stoul(packedModulationInfo);
   auto modSrc = (bits & 0xC000) >> 14;
   auto modAmount = bits & 0x1FFF;
   auto negative = bits & 0x2000;
@@ -288,7 +271,7 @@ double ModulateableParameter::getModulationAmountCoarseDenominator() const
   return getValue().getCoarseDenominator();
 }
 
-void ModulateableParameter::exportReaktorParameter(stringstream &target) const
+void ModulateableParameter::exportReaktorParameter(std::stringstream &target) const
 {
   super::exportReaktorParameter(target);
   auto packedModulationInfo = getModulationSourceAndAmountPacked();
@@ -296,7 +279,7 @@ void ModulateableParameter::exportReaktorParameter(stringstream &target) const
   if(m_modSource == ModulationSource::NONE)
     packedModulationInfo = 0x2000;
 
-  target << packedModulationInfo << endl;
+  target << packedModulationInfo << std::endl;
 }
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount() const
@@ -466,7 +449,7 @@ bool ModulateableParameter::isModAmountChanged() const
   {
     const int denominator = static_cast<const int>(getValue().getFineDenominator());
     const int roundedNow = static_cast<const int>(getModulationAmount() * denominator);
-    const int roundedOG = static_cast<const int>(original->getModulationAmount() * denominator);
+    const int roundedOG = static_cast<const int>(original->getRecallModulationAmount() * denominator);
     return roundedOG != roundedNow;
   }
   return false;
@@ -476,7 +459,7 @@ bool ModulateableParameter::isModSourceChanged() const
 {
   if(auto original = getOriginalParameter())
   {
-    return original->getModulationSource() != getModulationSource();
+    return original->getRecallModSource() != getModulationSource();
   }
   return false;
 }
@@ -498,26 +481,8 @@ Parameter *ModulateableParameter::getMacroControl() const
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID);
 }
 
-tControlPositionValue ModulateableParameter::getOriginalModulationAmount() const
-{
-  if(auto original = getOriginalParameter())
-  {
-    return original->getModulationAmount();
-  }
-  return 0.0;
-}
-ModulationSource ModulateableParameter::getOriginalModulationSource() const
-{
-  if(auto original = getOriginalParameter())
-  {
-    return original->getModulationSource();
-  }
-  return ModulationSource::NONE;
-}
-
 void ModulateableParameter::undoableRecallMCPos()
 {
-
   if(auto mc = getMacroControl())
   {
     mc->undoableRecallFromPreset();
@@ -534,7 +499,7 @@ void ModulateableParameter::undoableRecallMCSource()
   auto transaction = transactionScope->getTransaction();
   if(original)
   {
-    setModulationSource(transaction, original->getModulationSource());
+    setModulationSource(transaction, original->getRecallModSource());
   }
   onChange(ChangeFlags::Generic);
 }
@@ -548,7 +513,7 @@ void ModulateableParameter::undoableRecallMCAmount()
   auto transaction = transactionScope->getTransaction();
   if(original)
   {
-    setModulationAmount(transaction, original->getModulationAmount());
+    setModulationAmount(transaction, original->getRecallModulationAmount());
   }
   onChange(ChangeFlags::Generic);
 }

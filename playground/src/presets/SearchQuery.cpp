@@ -6,7 +6,7 @@
 
 TestDriver<SearchQuery> driver;
 
-typedef list<Glib::ustring> tStrings;
+typedef std::list<Glib::ustring> tStrings;
 
 static SearchQuery::Mode fromString(const Glib::ustring &mode)
 {
@@ -75,7 +75,7 @@ std::vector<SearchQuery::Fields> SearchQuery::getFields() const
   return m_searchFields;
 }
 
-bool SearchQuery::iterate(function<bool(const ustring &, const std::vector<Fields> &)> cb) const
+bool SearchQuery::iterate(std::function<bool(const ustring &, const std::vector<Fields> &)> cb) const
 {
   bool match = false;
 

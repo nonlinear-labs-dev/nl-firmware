@@ -1,7 +1,7 @@
 #include "TextEditControlLetter.h"
 #include <proxies/hwui/TextEditUsageMode.h>
 
-TextEditControlLetter::TextEditControlLetter(shared_ptr<TextEditUsageMode> textUsageMode, int relativeToCursor,
+TextEditControlLetter::TextEditControlLetter(std::shared_ptr<TextEditUsageMode> textUsageMode, int relativeToCursor,
                                              const Rect &pos)
     : super(pos)
     , m_textUsageMode(textUsageMode)

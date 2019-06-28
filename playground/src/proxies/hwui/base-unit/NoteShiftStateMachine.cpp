@@ -9,7 +9,7 @@ NoteShiftStateMachine::NoteShiftStateMachine()
     m_plusButtonState(false)
     , m_minusButtonState(false)
 {
-  m_resetTimeout.setCallback(bind(&NoteShiftStateMachine::traverse, this, NOTE_SHIFT_EVENT_RESET_TIMEOUT));
+  m_resetTimeout.setCallback(std::bind(&NoteShiftStateMachine::traverse, this, NOTE_SHIFT_EVENT_RESET_TIMEOUT));
 
   registerTraversal(NOTE_SHIFT_STATE_INITIAL, NOTE_SHIFT_EVENT_PLUS_PRESSED,
                     NOTE_SHIFT_STATE_WAIT_FOR_INC_OCTAVE_OR_DEC_SEMITONE);

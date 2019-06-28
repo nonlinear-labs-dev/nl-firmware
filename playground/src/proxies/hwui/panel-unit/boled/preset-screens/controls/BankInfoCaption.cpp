@@ -17,7 +17,7 @@ BankInfoCaption::~BankInfoCaption()
 {
 }
 
-void BankInfoCaption::onBankSelection()
+void BankInfoCaption::onBankSelection(const Uuid &selectedBank)
 {
   m_bankConnection.disconnect();
 
@@ -33,7 +33,7 @@ void BankInfoCaption::onBankChanged()
   if(auto bank = pm->getSelectedBank())
   {
     auto bankNumber = pm->getBankPosition(bank->getUuid()) + 1;
-    setText({ std::to_string(bankNumber) });
+    setText({ to_string(bankNumber) });
   }
 }
 
@@ -53,7 +53,7 @@ void BankInfoCaption::setFontColor(FrameBuffer &fb) const
   fb.setColor(FrameBuffer::Colors::C43);
 }
 
-shared_ptr<Font> BankInfoCaption::getFont() const
+std::shared_ptr<Font> BankInfoCaption::getFont() const
 {
   return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
 }

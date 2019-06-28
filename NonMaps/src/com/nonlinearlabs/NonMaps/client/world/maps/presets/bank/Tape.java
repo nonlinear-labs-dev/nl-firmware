@@ -343,6 +343,7 @@ public class Tape extends MapsControl {
 			nonPos.snapTo(PresetManager.getSnapGridResolution());
 			NonMaps.get().getServerProxy().dockBanks(getParent(), orientation, other, nonPos);
 			other.getClusterMaster().moveTo(nonPos);
+						
 			requestLayout();
 			return this;
 		}

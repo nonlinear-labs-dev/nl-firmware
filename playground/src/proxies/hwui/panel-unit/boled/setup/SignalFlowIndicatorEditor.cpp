@@ -20,7 +20,7 @@ void SignalFlowIndicatorEditor::incSetting(int inc)
   Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->inc(inc, false);
 }
 
-const vector<ustring> &SignalFlowIndicatorEditor::getDisplayStrings() const
+const std::vector<ustring> &SignalFlowIndicatorEditor::getDisplayStrings() const
 {
   return Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->enumToDisplayString();
 }

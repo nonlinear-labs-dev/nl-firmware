@@ -10,7 +10,7 @@ class InfoLabel : public Label
  public:
   InfoLabel(const Rect &pos, const Glib::ustring &text = "");
 
-  virtual shared_ptr<Font> getFont() const override;
+  virtual std::shared_ptr<Font> getFont() const override;
   virtual int getFontHeight() const override;
   virtual void setFontColor(FrameBuffer &fb) const override;
   virtual bool redraw(FrameBuffer &fb) override;

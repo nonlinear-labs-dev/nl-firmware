@@ -10,7 +10,7 @@ class RowStream
   virtual ~RowStream();
 
   bool eatRow();
-  void forEach(function<void(const std::string &)> cb);
+  void forEach(std::function<void(const std::string &)> cb);
 
  private:
   bool pop(std::string &line);

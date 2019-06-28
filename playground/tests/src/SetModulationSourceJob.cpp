@@ -12,7 +12,7 @@ SetModulationSourceJob::~SetModulationSourceJob()
 
 string SetModulationSourceJob::getURL() const
 {
-  stringstream str;
+  std::stringstream str;
   str << BASE_URL << "/presets/param-editor/set-mod-src?source=" << m_value;
   return str.str();
 }

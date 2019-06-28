@@ -18,7 +18,7 @@
 #include <presets/Preset.h>
 #include <device-settings/DebugLevel.h>
 
-static const auto c_invalidSnapshotValue = numeric_limits<tControlPositionValue>::max();
+static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
 Parameter::Parameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
                      tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
@@ -217,7 +217,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
   return m_value.getNextStepValue(incs, modifiers);
 }
 
-PresetParameter *Parameter::getOriginalParameter() const
+const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   auto ret = eb->getRecallParameterSet().findParameterByID(getID());
@@ -233,8 +233,8 @@ bool Parameter::isChangedFromLoaded() const
 bool Parameter::isValueChangedFromLoaded() const
 {
   const int denominator = static_cast<const int>(getValue().getFineDenominator());
-  const int roundedNow = static_cast<const int>(getControlPositionValue() * denominator);
-  const int roundedOG = static_cast<const int>(getOriginalParameter()->getValue() * denominator);
+  const int roundedNow = static_cast<const int>(std::round(getControlPositionValue() * denominator));
+  const int roundedOG = static_cast<const int>(std::round(getOriginalParameter()->getRecallValue() * denominator));
   return roundedOG != roundedNow;
 }
 
@@ -335,11 +335,6 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
 
-  if(auto ogParam = getOriginalParameter())
-    writer.writeTextElement("og-value", to_string(ogParam->getValue()));
-  else
-    writer.writeTextElement("og-value", to_string(getDefaultValue()));
-
   if(shouldWriteDocProperties(knownRevision))
   {
     writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
@@ -383,7 +378,7 @@ void Parameter::writeToLPC(MessageComposer &cmp) const
 
 void Parameter::undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value)
 {
-  auto tcdValue = stoi(value);
+  auto tcdValue = std::stoi(value);
   auto cpValue = m_value.getScaleConverter()->tcdToControlPosition(tcdValue);
   loadFromPreset(transaction, cpValue);
 }
@@ -406,9 +401,9 @@ void Parameter::onPresetSentToLpc() const
 {
 }
 
-void Parameter::exportReaktorParameter(stringstream &target) const
+void Parameter::exportReaktorParameter(std::stringstream &target) const
 {
-  target << getTcdValue() << endl;
+  target << getTcdValue() << std::endl;
 }
 
 DFBLayout *Parameter::createLayout(FocusAndMode focusAndMode) const
@@ -526,11 +521,10 @@ void Parameter::undoableRecallFromPreset()
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  auto originStr = eb->getRecallOrigin();
-  auto transactionScope = scope.startTransaction("Recall %0 value from %1", getLongName(), originStr);
+  auto transactionScope = scope.startTransaction("Recall %0 value", getLongName());
   auto transaction = transactionScope->getTransaction();
   if(original)
-    setCPFromHwui(transaction, original->getValue());
+    setCPFromHwui(transaction, original->getRecallValue());
   else
     setDefaultFromHwui(transaction);
 }

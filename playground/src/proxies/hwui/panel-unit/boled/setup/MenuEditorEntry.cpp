@@ -9,7 +9,7 @@ MenuEditorEntry::~MenuEditorEntry()
 {
 }
 
-void MenuEditorEntry::assign(const vector<Glib::ustring> &entries, int idx, bool selected)
+void MenuEditorEntry::assign(const std::vector<Glib::ustring> &entries, int idx, bool selected)
 {
   if(idx < 0 || idx >= entries.size())
     setText("");

@@ -22,9 +22,9 @@ void PassphraseEditor::incSetting(int inc)
   updateOnSettingChanged();
 }
 
-const vector<ustring> &PassphraseEditor::getDisplayStrings() const
+const std::vector<ustring> &PassphraseEditor::getDisplayStrings() const
 {
-  static vector<ustring> r = { "Cancel", "Create New" };
+  static std::vector<ustring> r = { "Cancel", "Create New" };
   return r;
 }
 

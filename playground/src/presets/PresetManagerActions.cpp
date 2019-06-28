@@ -34,7 +34,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     : RPCActionManager("/presets/")
     , m_presetManager(presetManager)
 {
-  addAction("new-bank", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("new-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto x = request->get("x");
     auto y = request->get("y");
     auto name = request->get("name");
@@ -47,7 +47,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     presetManager.selectBank(scope->getTransaction(), bank->getUuid());
   });
 
-  addAction("new-bank-from-edit-buffer", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("new-bank-from-edit-buffer", [&](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring x = request->get("x");
     Glib::ustring y = request->get("y");
 
@@ -56,12 +56,12 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     auto bank = presetManager.addBank(transaction);
     bank->setX(transaction, x);
     bank->setY(transaction, y);
-    auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *presetManager.getEditBuffer()));
+    auto preset = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *presetManager.getEditBuffer()));
     bank->selectPreset(transaction, preset->getUuid());
     presetManager.selectBank(transaction, bank->getUuid());
   });
 
-  addAction("rename-bank", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("rename-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
     auto newName = request->get("name");
 
@@ -75,7 +75,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("select-bank", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("select-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
 
     if(auto bank = presetManager.findBank(uuid))
@@ -87,7 +87,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("delete-bank", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("delete-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
 
     if(auto bank = presetManager.findBank(uuid))
@@ -103,8 +103,8 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("find-unique-preset-name", [&](shared_ptr<NetworkRequest> request) mutable {
-    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+  addAction("find-unique-preset-name", [&](std::shared_ptr<NetworkRequest> request) mutable {
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       Glib::ustring basedOn = request->get("based-on");
       Glib::ustring result = presetManager.createPresetNameBasedOn(basedOn);
@@ -112,20 +112,20 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("store-init", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("store-init", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = presetManager.getUndoScope().startTransaction("Store Init");
     auto transaction = scope->getTransaction();
     presetManager.storeInitSound(transaction);
   });
 
-  addAction("reset-init", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("reset-init", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = presetManager.getUndoScope().startTransaction("Reset Init");
     auto transaction = scope->getTransaction();
     presetManager.resetInitSound(transaction);
   });
 
-  addAction("import-all-banks", [&](shared_ptr<NetworkRequest> request) mutable {
-    if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
+  addAction("import-all-banks", [&](std::shared_ptr<NetworkRequest> request) mutable {
+    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
       auto scope = presetManager.getUndoScope().startTransaction("Import all Banks");
@@ -141,8 +141,8 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("load-preset-from-xml", [&](shared_ptr<NetworkRequest> request) mutable {
-    if(auto http = dynamic_pointer_cast<HTTPRequest>(request))
+  addAction("load-preset-from-xml", [&](std::shared_ptr<NetworkRequest> request) mutable {
+    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto editBuffer = presetManager.getEditBuffer();
 
@@ -175,7 +175,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("move-cluster", [&](shared_ptr<NetworkRequest> request) mutable {
+  addAction("move-cluster", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = presetManager.getUndoScope().startTransaction("Moved Banks");
     auto transaction = scope->getTransaction();
 
@@ -208,7 +208,7 @@ PresetManagerActions::~PresetManagerActions()
 }
 
 void PresetManagerActions::handleImportBackupFile(UNDO::Transaction *transaction, SoupBuffer *buffer,
-                                                  shared_ptr<HTTPRequest> http)
+                                                  std::shared_ptr<HTTPRequest> http)
 {
   if(auto lock = m_presetManager.getLoadingLock())
   {
@@ -229,14 +229,14 @@ void PresetManagerActions::handleImportBackupFile(UNDO::Transaction *transaction
   }
 }
 
-bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request)
+bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request)
 {
   if(super::handleRequest(path, request))
     return true;
 
   if(path.find("/presets/search-preset") == 0)
   {
-    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       Glib::ustring query = request->get("query");
       Glib::ustring mode = request->get("combine");
@@ -263,7 +263,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
 
   if(path.find("/presets/download-banks") == 0)
   {
-    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
       boled.setOverlay(new SplashLayout());
@@ -283,11 +283,11 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
 
   if(path.find("/presets/get-diff") == 0)
   {
-    if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto pm = Application::get().getPresetManager();
       auto eb = pm->getEditBuffer();
-      auto ebAsPreset = std::make_unique<Preset>(pm, *eb);
+      auto ebAsPreset = std::make_unique<Preset>(pm, *eb, true);
       auto aUUID = request->get("p1");
       auto bUUID = request->get("p2");
       auto a = pm->findPreset(aUUID);
@@ -297,6 +297,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, shared_ptr<N
       auto stream = request->createStream("text/xml", false);
       XmlWriter writer(stream);
       a->writeDiff(writer, b);
+      return true;
     }
   }
 

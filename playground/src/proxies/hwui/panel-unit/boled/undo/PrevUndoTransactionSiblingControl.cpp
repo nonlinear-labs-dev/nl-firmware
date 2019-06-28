@@ -39,7 +39,7 @@ void PrevUndoTransactionSiblingControl::setBold(bool bold)
   }
 }
 
-shared_ptr<Font> PrevUndoTransactionSiblingControl::getFont() const
+std::shared_ptr<Font> PrevUndoTransactionSiblingControl::getFont() const
 {
   if(m_bold)
     return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());

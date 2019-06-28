@@ -35,7 +35,7 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
 
   auto um = Application::get().getHWUI()->getPanelUnit().getUsageMode();
 
-  if(shared_ptr<PanelUnitParameterEditMode> edit = dynamic_pointer_cast<PanelUnitParameterEditMode>(um))
+  if(std::shared_ptr<PanelUnitParameterEditMode> edit = std::dynamic_pointer_cast<PanelUnitParameterEditMode>(um))
   {
     if(selectedParameter)
     {
@@ -56,10 +56,10 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
   setDirty();
 }
 
-void ParameterCarousel::setupChildControls(const shared_ptr<PanelUnitParameterEditMode>& edit,
+void ParameterCarousel::setupChildControls(const std::shared_ptr<PanelUnitParameterEditMode>& edit,
                                            Parameter* selectedParameter, int button)
 {
-  list<int> buttonAssignments = edit->getButtonAssignments(button);
+  std::list<int> buttonAssignments = edit->getButtonAssignments(button);
 
   if(buttonAssignments.size() > 1)
   {
@@ -67,7 +67,7 @@ void ParameterCarousel::setupChildControls(const shared_ptr<PanelUnitParameterEd
   }
 }
 
-void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const list<int>& buttonAssignments)
+void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const std::list<int>& buttonAssignments)
 {
   const int ySpaceing = 3;
   const int miniParamHeight = 12;
@@ -96,10 +96,10 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const l
 
 void ParameterCarousel::antiTurn()
 {
-  auto foundCtrl = dynamic_pointer_cast<MiniParameter>(*getControls().rbegin());
+  auto foundCtrl = std::dynamic_pointer_cast<MiniParameter>(*getControls().rbegin());
   for(auto ctrl : getControls())
   {
-    if(auto p = dynamic_pointer_cast<MiniParameter>(ctrl))
+    if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))
     {
       if(p->isSelected())
       {
@@ -117,7 +117,7 @@ void ParameterCarousel::turn()
   bool found = false;
   bool handled = false;
   tIfCallback cb = ([&](tControlPtr ctrl) -> bool {
-    if(auto p = dynamic_pointer_cast<MiniParameter>(ctrl))
+    if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))
     {
       if(found)
       {
@@ -139,7 +139,7 @@ void ParameterCarousel::turn()
   forEach(cb);
 
   if(!handled)
-    if(auto p = dynamic_pointer_cast<MiniParameter>(first()))
+    if(auto p = std::dynamic_pointer_cast<MiniParameter>(first()))
       Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
           to_string(p->getParameter()->getID()));
 }

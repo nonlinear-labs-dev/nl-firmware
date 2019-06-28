@@ -7,7 +7,7 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 
-RenameDeviceLayout::RenameDeviceLayout(shared_ptr<Layout> restore)
+RenameDeviceLayout::RenameDeviceLayout(std::shared_ptr<Layout> restore)
     : m_restore(restore)
 {
 }

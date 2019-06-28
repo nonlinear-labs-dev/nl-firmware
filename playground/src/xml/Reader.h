@@ -14,8 +14,8 @@ class Reader
   Reader(InStream &in, UNDO::Transaction *transaction);
   virtual ~Reader();
 
-  typedef function<void(const ustring &text, const Attributes &attr)> tTextElementCB;
-  typedef function<Serializer *(const Attributes &attr)> tTagElementCB;
+  typedef std::function<void(const ustring &text, const Attributes &attr)> tTextElementCB;
+  typedef std::function<Serializer *(const Attributes &attr)> tTagElementCB;
 
   void onTextElement(size_t nameHash, tTextElementCB cb);
   void onTextElement(const ustring &name, tTextElementCB cb);
@@ -41,7 +41,7 @@ class Reader
   {
     onTextElement(nameHash, [&](const ustring &text, const Attributes &attr) mutable {
       T foo;
-      stringstream str;
+      std::stringstream str;
       str << text;
       str >> foo;
       auto scope = UNDO::createSwapData(foo);
@@ -87,8 +87,8 @@ class Reader
   InStream &m_in;
   UNDO::Transaction *m_transaction;
 
-  typedef map<size_t, tTextElementCB> tTextElementCallbacks;
-  typedef map<size_t, tTagElementCB> tTagElementCallbacks;
+  typedef std::map<size_t, tTextElementCB> tTextElementCallbacks;
+  typedef std::map<size_t, tTagElementCB> tTagElementCallbacks;
 
   struct StackEntry
   {
@@ -101,11 +101,11 @@ class Reader
     tTagElementCallbacks m_tagCallbacks;
     size_t m_treeDepth;
 
-    typedef shared_ptr<Serializer> tSerializer;
+    typedef std::shared_ptr<Serializer> tSerializer;
     tSerializer serializer;
   };
 
-  list<StackEntry> m_stack;
+  std::list<StackEntry> m_stack;
   size_t m_treeDepth;
   std::hash<ustring> m_hash;
   int m_fileVersion = 0;

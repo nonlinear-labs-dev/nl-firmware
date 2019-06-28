@@ -1,11 +1,11 @@
 #include "RecursionGuard.h"
 
-shared_ptr<RecursionGuard::Lock> RecursionGuard::lock()
+std::shared_ptr<RecursionGuard::Lock> RecursionGuard::lock()
 {
   if(m_lock.lock())
     return nullptr;
 
-  shared_ptr<RecursionGuard::Lock> ret(new Lock());
+  std::shared_ptr<RecursionGuard::Lock> ret(new Lock());
   m_lock = ret;
   return ret;
 }

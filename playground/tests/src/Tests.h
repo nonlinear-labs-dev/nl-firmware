@@ -20,7 +20,7 @@ class Tests : public Job
   void onChildFinished(Job *child, bool success) override;
 
   virtual Job *getRoot() override;
-  shared_ptr<Options> getOptions();
+  std::shared_ptr<Options> getOptions();
 
  private:
   Tests(const Tests &other) = delete;
@@ -28,7 +28,7 @@ class Tests : public Job
 
   void startTest();
 
-  shared_ptr<Options> m_options;
+  std::shared_ptr<Options> m_options;
   RefPtr<MainLoop> m_theMainLoop;
-  unique_ptr<Job> m_test;
+  std::unique_ptr<Job> m_test;
 };

@@ -16,7 +16,7 @@ class BankActions : public RPCActionManager
   BankActions(PresetManager &presetManager);
   virtual ~BankActions();
 
-  bool handleRequest(const Glib::ustring &path, shared_ptr<NetworkRequest> request) override;
+  bool handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request) override;
 
   Bank *importBank(InStream &stream, Glib::ustring x = "", Glib::ustring y = "", const Glib::ustring &fileName = "");
 
@@ -26,7 +26,7 @@ class BankActions : public RPCActionManager
   void dropPresets(UNDO::Transaction *transaction, const Glib::ustring &anchorUUID, int offset,
                    const Glib::ustring &csv);
   void insertBank(Bank *bank, Bank *targetBank, size_t insertPos);
-  void insertBank(shared_ptr<NetworkRequest> request, size_t offset);
+  void insertBank(std::shared_ptr<NetworkRequest> request, size_t offset);
   Glib::ustring guessNameBasedOnEditBuffer() const;
 
   PresetManager &m_presetManager;

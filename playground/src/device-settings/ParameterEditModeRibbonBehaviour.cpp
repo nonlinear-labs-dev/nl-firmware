@@ -34,14 +34,14 @@ void ParameterEditModeRibbonBehaviour::sendToLPC() const
   Application::get().getLPCProxy()->sendSetting(PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR, v);
 }
 
-const vector<Glib::ustring> &ParameterEditModeRibbonBehaviour::enumToString() const
+const std::vector<Glib::ustring> &ParameterEditModeRibbonBehaviour::enumToString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "relative", "absolute" };
+  static std::vector<Glib::ustring> s_modeNames = { "relative", "absolute" };
   return s_modeNames;
 }
 
-const vector<Glib::ustring> &ParameterEditModeRibbonBehaviour::enumToDisplayString() const
+const std::vector<Glib::ustring> &ParameterEditModeRibbonBehaviour::enumToDisplayString() const
 {
-  static vector<Glib::ustring> s_modeNames = { "Relative", "Absolute" };
+  static std::vector<Glib::ustring> s_modeNames = { "Relative", "Absolute" };
   return s_modeNames;
 }

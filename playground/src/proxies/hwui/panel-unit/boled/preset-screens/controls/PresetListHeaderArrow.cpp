@@ -47,7 +47,7 @@ Font::Justification PresetListHeaderArrow::getJustification() const
   return Font::Justification::Center;
 }
 
-shared_ptr<Font> PresetListHeaderArrow::getFont() const
+std::shared_ptr<Font> PresetListHeaderArrow::getFont() const
 {
   return Oleds::get().getFont("Emphase_9_Symbol", getFontHeight());
 }

@@ -17,7 +17,7 @@ namespace UNDO
     ContinuousTransaction(Scope &scope, void *id, const Glib::ustring &name, size_t depth);
     virtual ~ContinuousTransaction();
 
-    chrono::steady_clock::duration getAge() const;
+    std::chrono::steady_clock::duration getAge() const;
     void *getID() const;
     void setIsNested();
 

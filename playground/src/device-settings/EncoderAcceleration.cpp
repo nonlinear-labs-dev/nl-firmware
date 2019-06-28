@@ -22,7 +22,7 @@ void EncoderAcceleration::load(const Glib::ustring &text)
 {
   try
   {
-    set(stod(text));
+    set(std::stod(text));
   }
   catch(...)
   {

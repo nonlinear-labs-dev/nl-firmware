@@ -9,7 +9,7 @@
 
 namespace UNDO
 {
-  using chrono::steady_clock;
+  using std::chrono::steady_clock;
 
   class TransactionCreationScope;
   class Transaction;
@@ -21,7 +21,7 @@ namespace UNDO
 
     constexpr static steady_clock::duration getStandardContinuousTransactionTimeout()
     {
-      return chrono::seconds(2);
+      return std::chrono::seconds(2);
     }
 
     Scope(UpdateDocumentContributor *parent);
@@ -78,7 +78,7 @@ namespace UNDO
     void eraseBranch(Transaction *branch);
 
     Glib::ustring getPrefix() const override;
-    void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
+    void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
     void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
    protected:

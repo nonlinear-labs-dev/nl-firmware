@@ -21,25 +21,27 @@ class Parameter;
 
 class PresetManager : public ContentSection
 {
-  using SaveSubTask = function<SaveResult()>;
+  using SaveSubTask = std::function<SaveResult()>;
 
  public:
   PresetManager(UpdateDocumentContributor *parent);
   ~PresetManager() override;
 
   void init();
+  void invalidate();
 
   // debug
   void stress(int numTransactions);
   void stressAllParams(int numParamChangedForEachParameter);
-  void stressParam(UNDO::Transaction* transaction, Parameter* param);
+  void stressParam(UNDO::Transaction *transaction, Parameter *param);
   void stressBlocking(int numTransactions);
   void stressLoad(int numTransactions);
+  void incAllParamsFine();
 
   // supported interfaces
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
   Glib::ustring getPrefix() const override;
-  void handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
+  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   template <typename Mgr> Mgr &findActionManager()
@@ -84,6 +86,7 @@ class PresetManager : public ContentSection
   Bank *addBank(UNDO::Transaction *transaction, std::unique_ptr<Bank> bank);
   void moveBank(UNDO::Transaction *transaction, const Bank *bankToMove, const Bank *moveBefore);
   void deleteBank(UNDO::Transaction *transaction, const Uuid &uuid);
+  void handleDockingOnBankDelete(UNDO::Transaction *transaction, const Uuid &uuid);
   void selectBank(UNDO::Transaction *transaction, const Uuid &uuid);
   bool selectPreviousBank(UNDO::Transaction *transaction);
   bool selectNextBank(UNDO::Transaction *transaction);
@@ -95,6 +98,7 @@ class PresetManager : public ContentSection
   void setOrderNumber(UNDO::Transaction *transaction, const Uuid &bank, size_t targetPos);
   void sanitizeBankClusterRelations(UNDO::Transaction *transaction);
   void resolveCyclicAttachments(UNDO::Transaction *transaction);
+  void ensureBankSelection(UNDO::Transaction *transaction);
 
   // algorithms
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;
@@ -102,17 +106,19 @@ class PresetManager : public ContentSection
                      std::vector<SearchQuery::Fields> &&fieldsToSearch) const;
 
   // signals
-  sigc::connection onBankSelection(sigc::slot<void> cb);
+  sigc::connection onBankSelection(sigc::slot<void, Uuid> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
+  sigc::connection onRestoreHappened(sigc::slot<void> cb);
 
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
   void loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
+  void fixMissingPresetSelections(UNDO::Transaction *transaction);
   Glib::ustring getBaseName(const ustring &basedOn) const;
   void scheduleAutoLoadSelectedPreset();
 
-  list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
+  std::list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
   SaveResult saveMetadata(RefPtr<Gio::File> pmFolder);
   SaveResult saveInitSound(RefPtr<Gio::File> pmFolder);
   SaveResult saveBanks(RefPtr<Gio::File> pmFolder);
@@ -129,16 +135,17 @@ class PresetManager : public ContentSection
   bool selectBank(UNDO::Transaction *transaction, size_t idx);
   void invalidateAllBanks();
 
-  UndoableVector<Bank> m_banks;
+  UndoableVector<PresetManager, Bank> m_banks;
 
-  typedef shared_ptr<RPCActionManager> tRPCActionManagerPtr;
+  typedef std::shared_ptr<RPCActionManager> tRPCActionManagerPtr;
   std::list<tRPCActionManagerPtr> m_actionManagers;
   std::unique_ptr<EditBuffer> m_editBuffer;
   std::unique_ptr<Preset> m_initSound;
 
   ScopedGuard m_isLoading;
-  Signal<void> m_sigBankSelection;
-  Signal<void, size_t> m_sigNumBanksChanged;
+  SignalWithCache<void, Uuid> m_sigBankSelection;
+  SignalWithCache<void, size_t> m_sigNumBanksChanged;
+  Signal<void> m_sigRestoreHappened;
 
   Throttler m_autoLoadThrottler;
 
@@ -146,7 +153,7 @@ class PresetManager : public ContentSection
   tUpdateID m_lastSavedInitSoundUpdateID = 0;
   tUpdateID m_lastSavedMetaDataUpdateID = 0;
 
-  list<SaveSubTask> m_saveTasks;
+  std::list<SaveSubTask> m_saveTasks;
   bool m_saveRequestDuringSave = false;
 
   friend class PresetManagerSerializer;

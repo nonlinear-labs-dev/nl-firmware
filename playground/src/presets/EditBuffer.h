@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ParameterGroupSet.h"
-#include "RecallParameterGroups.h"
+#include "presets/recall/RecallParameterGroups.h"
 #include <tools/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
@@ -68,6 +68,7 @@ class EditBuffer : public ParameterGroupSet
   sigc::connection onChange(slot<void> s);
   sigc::connection onPresetLoaded(slot<void> s);
   sigc::connection onLocksChanged(slot<void> s);
+  sigc::connection onRecallValuesChanged(slot<void> s);
 
   void undoableImportReaktorPreset(const Glib::ustring &preset);
   void undoableImportReaktorPreset(UNDO::Transaction *transaction, const Glib::ustring &preset);
@@ -78,8 +79,6 @@ class EditBuffer : public ParameterGroupSet
   //RECALL
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
-  void initRecallValues(UNDO::Transaction *t, const Preset *p);
-  const Glib::ustring &getRecallOrigin() const;
 
  private:
   Parameter *searchForAnyParameterWithLock() const;
@@ -99,7 +98,7 @@ class EditBuffer : public ParameterGroupSet
   void checkModified();
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
-  Signal<void, bool> m_signalModificationState;
+  SignalWithCache<void, bool> m_signalModificationState;
   Signal<void> m_signalChange;
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;

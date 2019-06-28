@@ -31,7 +31,7 @@ ContentManager::WebsocketConnection::~WebsocketConnection()
   g_object_unref(ws);
 }
 
-void ContentManager::WebsocketConnection::onWebsocketRequestDone(shared_ptr<WebSocketRequest> request, tUpdateID oldID,
+void ContentManager::WebsocketConnection::onWebsocketRequestDone(std::shared_ptr<WebSocketRequest> request, tUpdateID oldID,
                                                                  tUpdateID newId)
 {
   if(oldID == lastSelfIssuedUpdateId)
@@ -70,7 +70,7 @@ bool ContentManager::WebsocketConnection::canOmitOracles(int currentUpdateId) co
 }
 
 ContentManager::ContentManager()
-    : m_lastUpdateSentAt(chrono::steady_clock::now())
+    : m_lastUpdateSentAt(std::chrono::steady_clock::now())
 {
 }
 
@@ -96,7 +96,7 @@ void ContentManager::addContentSection(tContentSectionPtr section)
   m_sections.insert(section);
 }
 
-void ContentManager::handleRequest(shared_ptr<NetworkRequest> request)
+void ContentManager::handleRequest(std::shared_ptr<NetworkRequest> request)
 {
   auto oldUpdateID = getUpdateIDOfLastChange();
 
@@ -131,9 +131,9 @@ void ContentManager::handleRequest(shared_ptr<NetworkRequest> request)
     }
   }
 
-  if(auto httpRequest = dynamic_pointer_cast<HTTPRequest>(request))
+  if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
   {
-    int clientsUpdateID = stoi(request->get("updateID", ""));
+    int clientsUpdateID = std::stoi(request->get("updateID", ""));
 
     tUpdateID updateIDOfLastChange = getUpdateIDOfLastChange();
 
@@ -154,10 +154,10 @@ void ContentManager::handleRequest(shared_ptr<NetworkRequest> request)
   }
 }
 
-void ContentManager::onUpdateIdChangedByNetworkRequest(shared_ptr<NetworkRequest> request, tUpdateID oldUpdateID,
+void ContentManager::onUpdateIdChangedByNetworkRequest(std::shared_ptr<NetworkRequest> request, tUpdateID oldUpdateID,
                                                        tUpdateID newUpdateID)
 {
-  if(auto causer = dynamic_pointer_cast<WebSocketRequest>(request))
+  if(auto causer = std::dynamic_pointer_cast<WebSocketRequest>(request))
   {
     for(const auto &ws : m_webSockets)
     {
@@ -186,7 +186,7 @@ void ContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type
 {
   try
   {
-    shared_ptr<NetworkRequest> request(new WebSocketRequest(self, message));
+    std::shared_ptr<NetworkRequest> request(new WebSocketRequest(self, message));
     pThis->handleRequest(request);
   }
   catch(...)
@@ -211,7 +211,7 @@ bool ContentManager::feedWebSocket(tWebsocketConnection c)
     if(c->getLastSentUpdateId() != currentUpdateId)
     {
       DebugLevel::info("Updating websocket", c->getConnection(), "with document for updateID", currentUpdateId);
-      shared_ptr<OutStream> stream(new WebSocketOutStream(c->getConnection()));
+      std::shared_ptr<OutStream> stream(new WebSocketOutStream(c->getConnection()));
       XmlWriter writer(stream);
       writeDocument(writer, c->getLastSentUpdateId(), c->canOmitOracles(currentUpdateId));
       c->setLastSentUpdateId(currentUpdateId);
@@ -227,7 +227,7 @@ bool ContentManager::feedWebSocket(tWebsocketConnection c)
   return false;
 }
 
-bool ContentManager::tryHandlingContentSectionRequest(tContentSectionPtr section, shared_ptr<NetworkRequest> request)
+bool ContentManager::tryHandlingContentSectionRequest(tContentSectionPtr section, std::shared_ptr<NetworkRequest> request)
 {
   Glib::ustring path = request->getPath();
 
@@ -240,16 +240,16 @@ bool ContentManager::tryHandlingContentSectionRequest(tContentSectionPtr section
   return false;
 }
 
-void ContentManager::delayResponseUntilChanged(shared_ptr<HTTPRequest> request)
+void ContentManager::delayResponseUntilChanged(std::shared_ptr<HTTPRequest> request)
 {
   addPendingMessage(request);
   request->pause();
 }
 
-void ContentManager::deliverResponse(shared_ptr<HTTPRequest> request,
+void ContentManager::deliverResponse(std::shared_ptr<HTTPRequest> request,
                                      UpdateDocumentContributor::tUpdateID clientsUpdateID)
 {
-  shared_ptr<OutStream> stream = request->createStream("text/xml", false);
+  std::shared_ptr<OutStream> stream = request->createStream("text/xml", false);
   request->setHeader("updateID", to_string(getUpdateIDOfLastChange()));
 
   XmlWriter writer(stream);
@@ -272,7 +272,7 @@ void ContentManager::writeDocument(Writer &writer, tUpdateID knownRevision, bool
                   });
 }
 
-void ContentManager::deliverContentSectionResponse(tContentSectionPtr section, shared_ptr<NetworkRequest> request)
+void ContentManager::deliverContentSectionResponse(tContentSectionPtr section, std::shared_ptr<NetworkRequest> request)
 {
   section->handleHTTPRequest(request, request->getPath());
 }

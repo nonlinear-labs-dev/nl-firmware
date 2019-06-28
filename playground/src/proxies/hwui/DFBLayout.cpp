@@ -80,7 +80,7 @@ void DFBLayout::setDirty()
   Oleds::get().setDirty();
 }
 
-void DFBLayout::installButtonRepeat(function<void()> cb)
+void DFBLayout::installButtonRepeat(std::function<void()> cb)
 {
   m_buttonRepeat.reset(new ButtonRepeat(cb));
 }

@@ -7,7 +7,7 @@
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
 
-string to_string(Bank::AttachmentDirection dir);
+std::string to_string(Bank::AttachmentDirection dir);
 
 EditBuffer *getEditBuffer()
 {
@@ -17,7 +17,8 @@ EditBuffer *getEditBuffer()
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
     , m_attachedToBankWithUuid(Uuid::none())
-    , m_presets(std::bind(&Bank::clonePreset, this, std::placeholders::_1))
+    , m_name("<Untitled Bank>")
+    , m_presets(*this, std::bind(&Bank::clonePreset, this, std::placeholders::_1))
 {
 }
 
@@ -148,7 +149,7 @@ const Uuid &Bank::getUuid() const
   return m_uuid;
 }
 
-string Bank::getName(bool withFallback) const
+std::string Bank::getName(bool withFallback) const
 {
   if(m_name.empty())
     return "<Untitled Bank>";
@@ -156,12 +157,12 @@ string Bank::getName(bool withFallback) const
   return m_name;
 }
 
-string Bank::getX() const
+std::string Bank::getX() const
 {
   return m_x;
 }
 
-string Bank::getY() const
+std::string Bank::getY() const
 {
   return m_y;
 }
@@ -181,7 +182,7 @@ const Uuid &Bank::getAttachedToBankUuid() const
   return m_attachedToBankWithUuid;
 }
 
-string Bank::getAttachDirection() const
+std::string Bank::getAttachDirection() const
 {
   return m_attachDirection;
 }
@@ -330,7 +331,7 @@ void Bank::invalidate()
   onChange(ChangeFlags::Generic);
 }
 
-void Bank::setName(UNDO::Transaction *transaction, const string &name)
+void Bank::setName(UNDO::Transaction *transaction, const std::string &name)
 {
   transaction->addUndoSwap(this, m_name, name);
   updateLastModifiedTimestamp(transaction);
@@ -344,10 +345,8 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  m_presets.select(transaction, uuid, [this] {
+  if(m_presets.select(transaction, uuid))
     static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
-    invalidate();
-  });
 }
 
 void Bank::ensurePresetSelection(UNDO::Transaction *transaction)
@@ -361,11 +360,11 @@ void Bank::setAttachedToBank(UNDO::Transaction *transaction, const Uuid &uuid)
   transaction->addUndoSwap(this, m_attachedToBankWithUuid, uuid);
 }
 
-void Bank::setAttachedDirection(UNDO::Transaction *transaction, const string &direction)
+void Bank::setAttachedDirection(UNDO::Transaction *transaction, const std::string &direction)
 {
   try
   {
-    auto i = stoi(direction);
+    auto i = std::stoi(direction);
     auto dir = static_cast<Bank::AttachmentDirection>(i);
     transaction->addUndoSwap(this, m_attachDirection, to_string(dir));
   }
@@ -375,12 +374,12 @@ void Bank::setAttachedDirection(UNDO::Transaction *transaction, const string &di
   }
 }
 
-void Bank::setX(UNDO::Transaction *transaction, const string &x)
+void Bank::setX(UNDO::Transaction *transaction, const std::string &x)
 {
   transaction->addUndoSwap(this, m_x, x);
 }
 
-void Bank::setY(UNDO::Transaction *transaction, const string &y)
+void Bank::setY(UNDO::Transaction *transaction, const std::string &y)
 {
   transaction->addUndoSwap(this, m_y, y);
 }
@@ -399,25 +398,40 @@ Preset *Bank::appendPreset(UNDO::Transaction *transaction)
 Preset *Bank::appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  auto ret = m_presets.append(transaction, std::move(preset));
-  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
-  return ret;
+  return m_presets.append(transaction, std::move(preset));
+}
+
+Preset *Bank::appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
+{
+  auto newPreset = appendPreset(transaction, std::move(preset));
+  getEditBuffer()->undoableLoad(transaction, newPreset);
+  return newPreset;
 }
 
 Preset *Bank::prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  auto ret = m_presets.prepend(transaction, std::move(preset));
-  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
-  return ret;
+  return m_presets.prepend(transaction, std::move(preset));
+}
+
+Preset *Bank::prependAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
+{
+  auto newPreset = prependPreset(transaction, std::move(preset));
+  getEditBuffer()->undoableLoad(transaction, newPreset);
+  return newPreset;
 }
 
 Preset *Bank::insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
-  auto ret = m_presets.insert(transaction, pos, std::move(preset));
-  getEditBuffer()->undoableSetLoadedPresetInfo(transaction, ret);
-  return ret;
+  return m_presets.insert(transaction, pos, std::move(preset));
+}
+
+Preset *Bank::insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
+{
+  auto newPreset = insertPreset(transaction, pos, std::move(preset));
+  getEditBuffer()->undoableLoad(transaction, newPreset);
+  return newPreset;
 }
 
 void Bank::movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before)
@@ -497,7 +511,7 @@ void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other, bool igno
   updateLastModifiedTimestamp(transaction);
 }
 
-string to_string(Bank::AttachmentDirection dir)
+std::string to_string(Bank::AttachmentDirection dir)
 {
   static_assert(Bank::AttachmentDirection::none == 0,
                 "Nicht den Enum ändern ohne diese Funktion und Java Seite zu ändern!");
@@ -525,7 +539,7 @@ string to_string(Bank::AttachmentDirection dir)
   return "";
 }
 
-Bank::AttachmentDirection toAttachDirection(const string &str)
+Bank::AttachmentDirection toAttachDirection(const std::string &str)
 {
   if(str == "top")
     return Bank::AttachmentDirection::top;
@@ -562,7 +576,7 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
         if(presetsBaseName == baseName)
         {
           auto number = matchInfo.fetch(2);
-          int newNumber = stoi(number);
+          int newNumber = std::stoi(number);
           h = std::max(h, newNumber);
           hadMatch = true;
         }

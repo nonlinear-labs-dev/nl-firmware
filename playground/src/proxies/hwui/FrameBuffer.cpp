@@ -22,7 +22,7 @@ FrameBuffer::StackScopeGuard::StackScopeGuard(FrameBuffer *fb)
 FrameBuffer::StackScopeGuard::StackScopeGuard(StackScopeGuard &&other)
     : m_fb(nullptr)
 {
-  swap(m_fb, other.m_fb);
+  std::swap(m_fb, other.m_fb);
 }
 
 FrameBuffer::StackScopeGuard::~StackScopeGuard()

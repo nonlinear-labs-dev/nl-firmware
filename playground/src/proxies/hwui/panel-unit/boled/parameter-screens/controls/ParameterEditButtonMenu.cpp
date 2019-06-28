@@ -32,15 +32,15 @@ void ParameterEditButtonMenu::setup()
   clearActions();
 
   if(eb->getSelected()->getParentGroup()->areAllParametersLocked())
-    addButton("Unlock Group", bind(&ParameterEditButtonMenu::toggleGroupLock, this));
+    addButton("Unlock Group", std::bind(&ParameterEditButtonMenu::toggleGroupLock, this));
   else
-    addButton("Lock Group", bind(&ParameterEditButtonMenu::toggleGroupLock, this));
+    addButton("Lock Group", std::bind(&ParameterEditButtonMenu::toggleGroupLock, this));
 
   if(eb->getSelected()->getParentGroup()->areAllParametersLocked() == false)
-    addButton("Lock all", bind(&ParameterEditButtonMenu::lockAll, this));
+    addButton("Lock all", std::bind(&ParameterEditButtonMenu::lockAll, this));
 
   if(eb->hasLocks())
-    addButton("Unlock all", bind(&ParameterEditButtonMenu::unlockAll, this));
+    addButton("Unlock all", std::bind(&ParameterEditButtonMenu::unlockAll, this));
 
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged));
 

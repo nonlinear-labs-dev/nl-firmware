@@ -94,6 +94,11 @@ class Bank : public AttributesOwner
   Preset *appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
   Preset *prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
   Preset *insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
+
+  Preset *appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
+  Preset *prependAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
+  Preset *insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
+
   void movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before);
   void movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, Bank *tgtBank,
                               const Preset *presetAnchor);
@@ -136,7 +141,7 @@ class Bank : public AttributesOwner
   std::string m_attachDirection;
   std::map<std::string, std::string> m_attributes;
 
-  UndoableVector<Preset> m_presets;
+  UndoableVector<Bank, Preset> m_presets;
 
   uint64_t m_lastChangedTimestamp = 0;
   tUpdateID m_metadataLastSavedForUpdateID = 0;

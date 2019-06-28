@@ -46,7 +46,7 @@ void RenameLayout::replaceUsageMode()
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
   panelUnit.setUsageMode(new TextEditUsageMode(getInitialText()));
   auto newUsageMode = panelUnit.getUsageMode();
-  m_textUsageMode = dynamic_pointer_cast<TextEditUsageMode>(newUsageMode);
+  m_textUsageMode = std::dynamic_pointer_cast<TextEditUsageMode>(newUsageMode);
 }
 
 void RenameLayout::addLetters()

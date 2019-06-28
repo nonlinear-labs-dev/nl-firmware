@@ -12,7 +12,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 
-template <typename Element> class UndoableVector
+template <typename Owner, typename Element> class UndoableVector
 {
  public:
   using ElementPtr = std::unique_ptr<Element>;
@@ -21,8 +21,9 @@ template <typename Element> class UndoableVector
 
   static constexpr size_t invalidPosition = std::numeric_limits<size_t>::max();
 
-  UndoableVector(CloneFactory &&f)
-      : m_factory(f)
+  UndoableVector(Owner &owner, CloneFactory &&f)
+      : m_owner(owner)
+      , m_factory(f)
       , m_selection(Uuid::none())
   {
   }
@@ -40,6 +41,7 @@ template <typename Element> class UndoableVector
     else
       m_selection = Uuid::none();
 
+    m_owner.invalidate();
     return *this;
   }
 
@@ -67,13 +69,9 @@ template <typename Element> class UndoableVector
     catch(std::out_of_range &)
     {
       if(Application::get().getSettings()->getSetting<CrashOnError>()->get())
-      {
         std::rethrow_exception(std::current_exception());
-      }
       else
-      {
         return nullptr;
-      }
     }
   }
 
@@ -89,7 +87,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range(getStackTrace("Element is not in vector"));
+    throw std::out_of_range(getStackTrace("Element is not in std::vector"));
   }
 
   size_t getIndexOf(const Element *e) const
@@ -99,7 +97,7 @@ template <typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range(getStackTrace("Element is not in vector"));
+    throw std::out_of_range(getStackTrace("Element is not in std::vector"));
   }
 
   size_t size() const
@@ -114,7 +112,6 @@ template <typename Element> class UndoableVector
 
   Element *find(const Uuid &uuid) const
   {
-    using namespace std;
     auto ret = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
 
     if(ret != m_elements.end())
@@ -125,7 +122,6 @@ template <typename Element> class UndoableVector
 
   Element *findNear(const Uuid &uuid, int seek) const
   {
-    using namespace std;
     auto ret = find_if(m_elements.begin(), m_elements.end(), [&](const auto &b) { return b->getUuid() == uuid; });
 
     while(seek > 0 && ret != m_elements.end())
@@ -146,19 +142,19 @@ template <typename Element> class UndoableVector
     return nullptr;
   }
 
-  void select(UNDO::Transaction *transaction, const Uuid &uuid, std::function<void()> cb = nullptr)
+  bool select(UNDO::Transaction *transaction, const Uuid &uuid)
   {
     Checker checker(this);
     if(m_selection != uuid)
     {
-      transaction->addSimpleCommand([this, cb, swap = UNDO::createSwapData(uuid)](auto) {
+      transaction->addSimpleCommand([this, swap = UNDO::createSwapData(uuid)](auto) {
         Checker checker(this);
         swap->swapWith(m_selection);
-
-        if(cb)
-          cb();
+        m_owner.invalidate();
       });
+      return true;
     }
+    return false;
   }
 
   Element *append(UNDO::Transaction *transaction, ElementPtr p)
@@ -398,6 +394,7 @@ template <typename Element> class UndoableVector
  private:
   void invalidateAllChildren()
   {
+    m_owner.invalidate();
     forEach([&](auto a) { a->invalidate(); });
   }
 
@@ -430,6 +427,7 @@ template <typename Element> class UndoableVector
 #endif
   }
 
+  Owner &m_owner;
   CloneFactory m_factory;
   Elements m_elements;
   Uuid m_selection;

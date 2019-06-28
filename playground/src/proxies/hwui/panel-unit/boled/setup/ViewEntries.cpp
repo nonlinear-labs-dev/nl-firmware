@@ -17,7 +17,7 @@ ViewEntries::~ViewEntries()
 
 void ViewEntries::addEntry(Control *child, bool focussed)
 {
-  m_entries.push_back(make_pair(child, focussed));
+  m_entries.push_back(std::make_pair(child, focussed));
 }
 
 void ViewEntries::assignDownwards(tEntries::iterator entryIt, int idx)

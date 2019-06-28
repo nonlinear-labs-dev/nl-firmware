@@ -20,6 +20,6 @@ class BinaryReader : public Reader
   uint32_t readUInt();
   Glib::ustring readRawString();
 
-  vector<uint8_t> m_buffer;
-  vector<uint8_t>::iterator m_it;
+  std::vector<uint8_t> m_buffer;
+  std::vector<uint8_t>::iterator m_it;
 };

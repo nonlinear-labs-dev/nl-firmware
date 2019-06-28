@@ -40,7 +40,7 @@ bool PresetListBase::redraw(FrameBuffer &fb)
   return true;
 }
 
-bool PresetListBase::animateSelectedPreset(function<void()> cb)
+bool PresetListBase::animateSelectedPreset(std::function<void()> cb)
 {
   return m_content->animateSelectedPreset(cb);
 }

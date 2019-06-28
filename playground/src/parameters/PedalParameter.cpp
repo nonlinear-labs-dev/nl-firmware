@@ -147,7 +147,7 @@ uint16_t PedalParameter::mapParameterIdToLPCSetting() const
       return LPCSettingIDs::PEDAL_4_MODE;
   }
 
-  throw exception();
+  throw std::exception();
 }
 
 ReturnMode PedalParameter::getReturnMode() const
@@ -240,7 +240,7 @@ DFBLayout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
   return super::createLayout(focusAndMode);
 }
 
-shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
+std::shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
 {
   int key = 1;
 
@@ -252,7 +252,7 @@ shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
     key = 4;
 
   auto str = ustring::format("Pedal", key, "Type");
-  return dynamic_pointer_cast<PedalType>(Application::get().getSettings()->getSetting(str));
+  return std::dynamic_pointer_cast<PedalType>(Application::get().getSettings()->getSetting(str));
 }
 
 void PedalParameter::loadDefault(UNDO::Transaction *transaction)

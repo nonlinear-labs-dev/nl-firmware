@@ -89,20 +89,20 @@ Glib::ustring
 bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
-  string endA = ".xml.zip";
-  string endB = ".xml.tar.gz";
+  std::string endA = ".xml.zip";
+  std::string endB = ".xml.tar.gz";
   return !(std::equal(endA.rbegin(), endA.rend(), fileName.rbegin())
            || std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
 }
 
 void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem::directory_entry file)
 {
+  using namespace std::chrono_literals;
   auto &app = Application::get();
   auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
 
   if(file != std::experimental::filesystem::directory_entry())
   {
-
     auto path = generateFileDialogCompliantNameFromPath(file);
 
     FileInStream in(path, true);

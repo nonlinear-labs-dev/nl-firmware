@@ -34,7 +34,7 @@ Job *Tests::getRoot()
   return this;
 }
 
-shared_ptr<Options> Tests::getOptions()
+std::shared_ptr<Options> Tests::getOptions()
 {
   return m_options;
 }

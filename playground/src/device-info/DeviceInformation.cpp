@@ -21,7 +21,7 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
   m_items.emplace_back(new OSVersion(this));
   m_items.emplace_back(new DateTimeInfo(this));
 
-  m_actions.addAction("refresh-rt-software-version", [](shared_ptr<NetworkRequest> request) {
+  m_actions.addAction("refresh-rt-software-version", [](std::shared_ptr<NetworkRequest> request) {
     Application::get().getLPCProxy()->requestLPCSoftwareVersion();
     request->okAndComplete();
   });
@@ -32,7 +32,7 @@ DeviceInformation::~DeviceInformation()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
-void DeviceInformation::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+void DeviceInformation::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
   ContentSection::handleHTTPRequest(request, path);
 
@@ -51,7 +51,7 @@ Glib::ustring DeviceInformation::getPrefix() const
 Glib::ustring DeviceInformation::getSoftwareVersion() const
 {
   for(auto a : m_items)
-    if(auto b = dynamic_pointer_cast<SoftwareVersion>(a))
+    if(auto b = std::dynamic_pointer_cast<SoftwareVersion>(a))
       return b->get();
 
   return "";

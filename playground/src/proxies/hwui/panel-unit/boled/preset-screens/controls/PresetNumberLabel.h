@@ -19,5 +19,5 @@ class PresetNumberLabel : public PresetLabel
   int getXOffset() const override;
 
  private:
-  shared_ptr<Font> getFont() const override;
+  std::shared_ptr<Font> getFont() const override;
 };

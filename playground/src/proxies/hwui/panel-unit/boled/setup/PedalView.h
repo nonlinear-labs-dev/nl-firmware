@@ -10,7 +10,7 @@ class PedalView : public SetupLabel
   typedef SetupLabel base_type;
 
  public:
-  PedalView(shared_ptr<PedalType> s);
+  PedalView(std::shared_ptr<PedalType> s);
   virtual ~PedalView();
 
  private:

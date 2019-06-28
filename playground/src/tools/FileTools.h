@@ -21,7 +21,7 @@ namespace FileTools
   {
     auto fileName = desiredName;
     if(depth != 0)
-      fileName.append(std::to_string(depth));
+      fileName.append(to_string(depth));
 
     for(auto& p : fs::directory_iterator(directoryPath.c_str()))
     {

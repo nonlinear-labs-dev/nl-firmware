@@ -36,7 +36,7 @@ tDisplayValue
 
 Glib::ustring BipolarParabolic100PercentScaleConverter::controlPositionToDisplayJS() const
 {
-  stringstream s;
+  std::stringstream s;
   s << "return $wnd.formatDimension(cpValue * Math.abs(cpValue) * 100, \"" << getDimension().getStingizerJS()
     << "\", withUnit);";
   return s.str();

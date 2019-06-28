@@ -6,7 +6,7 @@
 #define BASE_URL "http://localhost:8080"
 #define URL(path) BASE_URL path
 
-#define TRACE(arg) cout << arg << endl
+#define TRACE(arg) std::cout << arg << std::endl
 #define DEBUG(arg)
 //#define DEBUG( arg ) TRACE(arg)
 #define WARN(arg) TRACE(arg)
@@ -15,8 +15,8 @@ class Job
 {
  private:
  public:
-  typedef shared_ptr<Job> tChild;
-  typedef list<tChild> tChildren;
+  typedef std::shared_ptr<Job> tChild;
+  typedef std::list<tChild> tChildren;
 
   Job(Job *parent);
   virtual ~Job();
@@ -28,11 +28,11 @@ class Job
     add(new T(this));
   }
 
-  template <typename T> shared_ptr<T> findChild()
+  template <typename T> std::shared_ptr<T> findChild()
   {
     for(auto c : m_children)
     {
-      if(auto t = dynamic_pointer_cast<T>(c))
+      if(auto t = std::dynamic_pointer_cast<T>(c))
         return t;
 
       if(auto t = c->findChild<T>())
@@ -41,7 +41,7 @@ class Job
 
     for(auto c : m_finishedChildren)
     {
-      if(auto t = dynamic_pointer_cast<T>(c))
+      if(auto t = std::dynamic_pointer_cast<T>(c))
         return t;
 
       if(auto t = c->findChild<T>())

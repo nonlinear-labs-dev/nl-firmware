@@ -32,16 +32,16 @@ void PresetEditButtonMenu::onClipboardChanged()
   clear();
   clearActions();
 
-  addButton("Rename", bind(&PresetEditButtonMenu::renamePreset, this));
-  addButton("Cut", bind(&PresetEditButtonMenu::cutPreset, this));
-  addButton("Copy", bind(&PresetEditButtonMenu::copyPreset, this));
+  addButton("Rename", std::bind(&PresetEditButtonMenu::renamePreset, this));
+  addButton("Cut", std::bind(&PresetEditButtonMenu::cutPreset, this));
+  addButton("Copy", std::bind(&PresetEditButtonMenu::copyPreset, this));
 
   if(Application::get().getClipboard()->hasContent())
   {
-    addButton("Paste", bind(&PresetEditButtonMenu::pasteClipboard, this));
+    addButton("Paste", std::bind(&PresetEditButtonMenu::pasteClipboard, this));
   }
 
-  addButton("Delete", bind(&PresetEditButtonMenu::deletePreset, this));
+  addButton("Delete", std::bind(&PresetEditButtonMenu::deletePreset, this));
   selectButton(s_lastSelection);
 }
 

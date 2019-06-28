@@ -10,7 +10,7 @@ ArrowUp::~ArrowUp()
 {
 }
 
-shared_ptr<Font> ArrowUp::getFont() const
+std::shared_ptr<Font> ArrowUp::getFont() const
 {
   return Oleds::get().getFont("Emphase_8_Symbol", getFontHeight());
 }

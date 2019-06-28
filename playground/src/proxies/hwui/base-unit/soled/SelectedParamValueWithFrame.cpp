@@ -9,7 +9,7 @@
 
 SelectedParamValueWithFrame::SelectedParamValueWithFrame(const Rect &rect)
     : super(rect)
-    , m_showParameterName(bind(&SelectedParamValueWithFrame::showName, this))
+    , m_showParameterName(std::bind(&SelectedParamValueWithFrame::showName, this))
 {
 }
 
@@ -31,7 +31,7 @@ bool SelectedParamValueWithFrame::redraw(FrameBuffer &fb)
   return true;
 }
 
-shared_ptr<Font> SelectedParamValueWithFrame::getFont() const
+std::shared_ptr<Font> SelectedParamValueWithFrame::getFont() const
 {
   return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
 }

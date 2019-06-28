@@ -295,7 +295,7 @@ namespace UNDO
     return m_undoActions.getBasePath().substr(1);
   }
 
-  void Scope::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+  void Scope::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
   {
     m_undoActions.handleRequest(path, request);
   }

@@ -26,6 +26,6 @@ class ParameterEditModeRibbonBehaviour : public EnumSetting<ParameterEditModeRib
 
   void sendToLPC() const override;
 
-  const vector<Glib::ustring> &enumToString() const override;
-  const vector<Glib::ustring> &enumToDisplayString() const override;
+  const std::vector<Glib::ustring> &enumToString() const override;
+  const std::vector<Glib::ustring> &enumToDisplayString() const override;
 };

@@ -10,7 +10,7 @@ SymbolLabel::~SymbolLabel()
 {
 }
 
-shared_ptr<Font> SymbolLabel::getFont() const
+std::shared_ptr<Font> SymbolLabel::getFont() const
 {
   return Oleds::get().getFont("Emphase_8_Symbol", getFontHeight());
 }

@@ -15,7 +15,7 @@ bool RowStream::eatRow()
   return pop(waste);
 }
 
-void RowStream::forEach(function<void(const std::string &)> cb)
+void RowStream::forEach(std::function<void(const std::string &)> cb)
 {
   std::string row;
 
@@ -50,7 +50,7 @@ bool RowStream::pop(std::string &line)
 bool RowStream::iterateQuotes(const std::string &buffer, bool insideQuote) const
 {
   auto lastQuote = buffer.find_first_of('"');
-  while(lastQuote != string::npos)
+  while(lastQuote != std::string::npos)
   {
     insideQuote = !insideQuote;
     lastQuote = buffer.find_first_of('"', lastQuote + 1);

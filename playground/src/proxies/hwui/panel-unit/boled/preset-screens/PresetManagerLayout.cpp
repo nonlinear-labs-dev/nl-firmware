@@ -306,7 +306,7 @@ void PresetManagerLayout::updateAutoLoadButton(const Setting *setting)
   }
 }
 
-bool PresetManagerLayout::animateSelectedPreset(function<void()> cb)
+bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
 {
   return m_presets->animateSelectedPreset(std::move(cb));
 }

@@ -23,11 +23,11 @@ constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
 PresetManager::PresetManager(UpdateDocumentContributor *parent)
     : ContentSection(parent)
-    , m_banks(nullptr)
+    , m_banks(*this, nullptr)
     , m_editBuffer(std::make_unique<EditBuffer>(this))
     , m_initSound(std::make_unique<Preset>(this))
     , m_autoLoadThrottler(std::chrono::milliseconds(200))
-    , m_saveJob(bind(mem_fun(this, &PresetManager::doSaveTask)))
+    , m_saveJob(std::bind(&PresetManager::doSaveTask, this))
 {
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
   m_actionManagers.emplace_back(new BankActions(*this));
@@ -69,15 +69,18 @@ void PresetManager::init()
     loadMetadataAndSendEditBufferToLpc(transaction, file);
     loadInitSound(transaction, file);
     loadBanks(transaction, file);
+    fixMissingPresetSelections(transaction);
   }
 
   auto hwui = Application::get().getHWUI();
   hwui->getPanelUnit().getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndMode());
   hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
-
-  m_editBuffer->initRecallValues(transaction);
-
   onChange();
+}
+
+void PresetManager::invalidate()
+{
+  onChange(ChangeFlags::Generic);
 }
 
 Glib::ustring PresetManager::getPrefix() const
@@ -88,10 +91,13 @@ Glib::ustring PresetManager::getPrefix() const
 UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
 {
   scheduleSave();
-  return UpdateDocumentContributor::onChange(flags);
+  auto ret = UpdateDocumentContributor::onChange(flags);
+  m_sigNumBanksChanged.send(getNumBanks());
+  m_sigBankSelection.send(getSelectedBankUuid());
+  return ret;
 }
 
-void PresetManager::handleHTTPRequest(shared_ptr<NetworkRequest> request, const Glib::ustring &path)
+void PresetManager::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
   ContentSection::handleHTTPRequest(request, path);
 
@@ -103,14 +109,14 @@ void PresetManager::handleHTTPRequest(shared_ptr<NetworkRequest> request, const 
   DebugLevel::warning("could not handle request", path);
 }
 
-list<PresetManager::SaveSubTask> PresetManager::createListOfSaveSubTasks()
+std::list<PresetManager::SaveSubTask> PresetManager::createListOfSaveSubTasks()
 {
   auto path = Application::get().getOptions()->getPresetManagerPath();
   auto file = Gio::File::create_for_path(path);
   g_file_make_directory_with_parents(file->gobj(), nullptr, nullptr);
 
-  return { bind(&PresetManager::saveMetadata, this, file), bind(&PresetManager::saveInitSound, this, file),
-           bind(&PresetManager::saveBanks, this, file) };
+  return { std::bind(&PresetManager::saveMetadata, this, file), std::bind(&PresetManager::saveInitSound, this, file),
+           std::bind(&PresetManager::saveBanks, this, file) };
 }
 
 SaveResult PresetManager::saveMetadata(RefPtr<Gio::File> pmFolder)
@@ -315,6 +321,11 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> 
   });
 }
 
+void PresetManager::fixMissingPresetSelections(UNDO::Transaction *transaction)
+{
+  m_banks.forEach([&](auto bank) { bank->ensurePresetSelection(transaction); });
+}
+
 Bank *PresetManager::findBank(const Uuid &uuid) const
 {
   return m_banks.find(uuid);
@@ -434,16 +445,12 @@ size_t PresetManager::getPreviousBankPosition() const
 
 Bank *PresetManager::addBank(UNDO::Transaction *transaction)
 {
-  auto ret = m_banks.append(transaction, std::make_unique<Bank>(this));
-  m_sigNumBanksChanged.send(getNumBanks());
-  return ret;
+  return m_banks.append(transaction, std::make_unique<Bank>(this));
 }
 
 Bank *PresetManager::addBank(UNDO::Transaction *transaction, std::unique_ptr<Bank> bank)
 {
-  auto ret = m_banks.append(transaction, std::move(bank));
-  m_sigNumBanksChanged.send(getNumBanks());
-  return ret;
+  return m_banks.append(transaction, std::move(bank));
 }
 
 void PresetManager::moveBank(UNDO::Transaction *transaction, const Bank *bankToMove, const Bank *moveBefore)
@@ -453,17 +460,76 @@ void PresetManager::moveBank(UNDO::Transaction *transaction, const Bank *bankToM
 
 void PresetManager::deleteBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
+  handleDockingOnBankDelete(transaction, uuid);
   m_banks.remove(transaction, uuid);
-  m_sigNumBanksChanged.send(getNumBanks());
+}
+
+bool handleMaster(Bank *master, Bank *bottom, Bank *right, UNDO::Transaction *transaction,
+                  Bank::AttachmentDirection dir)
+{
+  if(master)
+  {
+    if(bottom)
+    {
+      bottom->setAttachedToBank(transaction, master->getUuid());
+      bottom->setAttachedDirection(transaction, std::to_string(static_cast<int>(dir)));
+
+      if(right)
+      {
+        right->setAttachedToBank(transaction, bottom->getUuid());
+        right->setAttachedDirection(transaction, std::to_string(static_cast<int>(Bank::AttachmentDirection::left)));
+      }
+      return true;
+    }
+    else if(right)
+    {
+      right->setAttachedToBank(transaction, master->getUuid());
+      right->setAttachedDirection(transaction, std::to_string(static_cast<int>(Bank::AttachmentDirection::left)));
+      return true;
+    }
+  }
+  return false;
+}
+
+void PresetManager::handleDockingOnBankDelete(UNDO::Transaction *transaction, const Uuid &uuid)
+{
+  auto bankToDelete = m_banks.find(uuid);
+  if(bankToDelete)
+  {
+    auto slaveBottom = bankToDelete->getSlaveBottom();
+    auto slaveRight = bankToDelete->getSlaveRight();
+    auto masterTop = bankToDelete->getMasterTop();
+    auto masterLeft = bankToDelete->getMasterLeft();
+
+    if(handleMaster(masterTop, slaveBottom, slaveRight, transaction, Bank::AttachmentDirection::top))
+    {
+    }
+    else if(handleMaster(masterLeft, slaveBottom, slaveRight, transaction, Bank::AttachmentDirection::left))
+    {
+    }
+    else if(slaveBottom && slaveRight)
+    {
+      slaveRight->setAttachedToBank(transaction, slaveBottom->getUuid());
+      slaveBottom->setX(transaction, bankToDelete->getX());
+      slaveBottom->setY(transaction, bankToDelete->getY());
+    }
+    else if(slaveBottom)
+    {
+      slaveBottom->setX(transaction, bankToDelete->getX());
+      slaveBottom->setY(transaction, bankToDelete->getY());
+    }
+    else if(slaveRight)
+    {
+      slaveRight->setX(transaction, bankToDelete->getX());
+      slaveRight->setY(transaction, bankToDelete->getY());
+    }
+  }
 }
 
 void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  m_banks.select(transaction, uuid, [this] {
+  if(m_banks.select(transaction, uuid))
     onPresetSelectionChanged();
-    onChange();
-    this->m_sigBankSelection.send();
-  });
 }
 
 void PresetManager::onPresetSelectionChanged()
@@ -565,14 +631,19 @@ Glib::ustring PresetManager::getBaseName(const ustring &basedOn) const
   return basedOn;
 }
 
-connection PresetManager::onBankSelection(sigc::slot<void> cb)
+connection PresetManager::onBankSelection(sigc::slot<void, Uuid> cb)
 {
-  return m_sigBankSelection.connectAndInit(cb);
+  return m_sigBankSelection.connectAndInit(cb, m_banks.getSelectedUuid());
 }
 
 connection PresetManager::onNumBanksChanged(sigc::slot<void, size_t> cb)
 {
   return m_sigNumBanksChanged.connectAndInit(cb, getNumBanks());
+}
+
+connection PresetManager::onRestoreHappened(sigc::slot<void> cb)
+{
+  return m_sigRestoreHappened.connect(cb);
 }
 
 std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *bank) const
@@ -588,8 +659,8 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *
         return;
       }
 
-      auto x = stod(other->getX());
-      auto currentX = stod(rightMost->getX());
+      auto x = std::stod(other->getX());
+      auto currentX = std::stod(rightMost->getX());
 
       if(x > currentX)
         rightMost = other;
@@ -597,7 +668,7 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *
   });
 
   if(rightMost)
-    return std::make_pair(stod(rightMost->getX()) + 300, stod(rightMost->getY()));
+    return std::make_pair(std::stod(rightMost->getX()) + 300, std::stod(rightMost->getY()));
 
   return std::make_pair(0.0, 0.0);
 }
@@ -622,6 +693,12 @@ void PresetManager::resolveCyclicAttachments(UNDO::Transaction *transaction)
   {
     bank->resolveCyclicAttachments(transaction);
   }
+}
+
+void PresetManager::ensureBankSelection(UNDO::Transaction *transaction)
+{
+  if(!getSelectedBank() && getNumBanks() > 0)
+    selectBank(transaction, getBankAt(0)->getUuid());
 }
 
 void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -675,7 +752,7 @@ void PresetManager::stress(int numTransactions)
       20);
 }
 
-void PresetManager::stressParam(UNDO::Transaction* trans, Parameter *param)
+void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
 {
   if(m_editBuffer->getSelected() != param)
   {
@@ -750,6 +827,23 @@ void PresetManager::stressLoad(int numTransactions)
               numSteps--;
             });
           });
+        }
+      },
+      20);
+}
+
+void PresetManager::incAllParamsFine()
+{
+  Glib::MainContext::get_default()->signal_timeout().connect_once(
+      [=]() {
+        auto scope = getUndoScope().startTransaction("Inc All Parameters Fine");
+        auto trans = scope->getTransaction();
+        for(auto &group : m_editBuffer->getParameterGroups())
+        {
+          for(auto &param : group->getParameters())
+          {
+            param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
+          }
         }
       },
       20);

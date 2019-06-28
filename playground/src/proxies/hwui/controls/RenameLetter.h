@@ -10,7 +10,7 @@ class RenameLetter : public LabelRegular8
   typedef LabelRegular8 super;
 
  public:
-  RenameLetter(shared_ptr<TextEditUsageMode> mode, int buttonID, const Rect &pos);
+  RenameLetter(std::shared_ptr<TextEditUsageMode> mode, int buttonID, const Rect &pos);
 
   StringAndSuffix getText() const override;
   bool redraw(FrameBuffer &fb) override;
@@ -19,6 +19,6 @@ class RenameLetter : public LabelRegular8
   int getXOffset() const override;
   bool highlightLetter() const;
 
-  shared_ptr<TextEditUsageMode> m_mode;
+  std::shared_ptr<TextEditUsageMode> m_mode;
   int m_buttonID;
 };
