@@ -65,8 +65,9 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 add_executable(playground ${SOURCE_FILES})
 
-TARGET_LINK_LIBRARIES(playground pthread)
-TARGET_LINK_LIBRARIES(playground stdc++fs)
+target_link_libraries(playground pthread)
+target_link_libraries(playground stdc++fs)
+target_link_libraries(playground nltools)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})
@@ -146,13 +147,26 @@ install(FILES ${PARAMETER_DESCRIPTIONS}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/parameter-descriptions
   )
 
+install(FILES ${PARAMETER_DESCRIPTIONS}
+  DESTINATION ${CMAKE_BINARY_DIR}/playground/resources/parameter-descriptions
+  )
+
 install(FILES ${VERSION_INFOS}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/version-infos
+  )
+
+install(FILES ${VERSION_INFOS}
+  DESTINATION ${CMAKE_BINARY_DIR}/playground/resources/version-infos
   )
 
 install(DIRECTORY resources
   USE_SOURCE_PERMISSIONS
   DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
+  )
+
+install(DIRECTORY resources
+  USE_SOURCE_PERMISSIONS
+  DESTINATION ${CMAKE_BINARY_DIR}/playground
   )
 
 install(TARGETS playground

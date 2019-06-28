@@ -63,7 +63,8 @@ IF(DEV_PC)
     TARGET_COMPILE_DEFINITIONS(audio-engine PRIVATE test_inputModeFlag=1)
 ENDIF(DEV_PC)
 
-TARGET_LINK_LIBRARIES(audio-engine pthread)
+target_link_libraries(audio-engine pthread)
+target_link_libraries(audio-engine nltools)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})

@@ -67,7 +67,8 @@ filter_items(SOURCE_FILES "/ui/")
 
 add_executable(bbbb ${SOURCE_FILES})
 
-TARGET_LINK_LIBRARIES(bbbb pthread)
+target_link_libraries(bbbb pthread)
+target_link_libraries(bbbb nltools)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})
