@@ -12,19 +12,8 @@
 
 #include <stdint.h>
 
-/* Performance Measure (Skip) Flags                 LEAVE EVERYTHING AT ZERO for usual operation !!!
-                                                    this is currently rather clumsy and needs treatment...
-                                                    intended for cpu measuring purposes, see tests/renderer_performance.cpp
-*/
-#define perf_measure 0          // skip the whole main tick function?
-#define perf_audio_params 0     // skip rendering of audio params?
-#define perf_fast_params 0      // skip rendering of fast params?
-#define perf_slow_params 0      // skip rendering of slow params?
-#define perf_poly_params 0      // skip rendering of poly params?
-#define perf_mono_params 0      // skip rendering of mono params?
-#define perf_post_processing 0  // skip post processing?
-#define perf_poly_engine 0      // skip rendering of poly audio engine component?
-#define perf_mono_engine 0      // skip rendering of mono audio engine component?
+/* Param Interface Testing */
+#define PARAM_ITERATOR 1  // 0: render param bodies by clockIds; 1: render param bodies by direct iteration (default)
 
 /* Test Flags                                       THINGS TO DEFINE, testing candidates and new functionalities */
 
@@ -34,33 +23,33 @@
       // - 155 (internal unison handling, echo/reverb sends),                                                          \
       // - 156 (simplified TCD key sequence by new KeyVoice command, automatic internal unison loop)
 
-#define test_key_update_pan 1  // (should pan values be updated on key? (probably yes)
-
 #define test_tone_initial_freq 500.0f  // Test Tone initial Frequency
 #define test_tone_initial_gain -6.0f   // Test Tone initial Gain (in decibel)
 #define test_tone_initial_state 0      // Test Tone initial State (0: disabled, 1: enabled)
 
-#define test_comb_decay_gate_mode  1  // 0: apply in slow post processing (like prototype), 1: audio fade min, max by gate signal (recommended)
+#define test_comb_decay_gate_mode                                                                                      \
+  1  // 0: apply in slow post processing (like prototype), 1: audio fade min, max by gate signal (recommended)
 
 #define test_svf_types 1        // 0: SVF first Proto NAN, 1: SVF noFIR, 2: SVF FIR, 3: SVF Original Primary (later)
 #define test_svf_fm_limit 1.5f  // SVF fm clipping maximum
 
-#define test_fast_fold_asym 1  // 0: slow clock (producing audible artifacts), 1: fast clock (recommended)
-#define test_preload_update 2  // 0: non-optimized preload update, 1: optimized preload update (but key glitches), 2: fixed preload update (recommended)
-#define test_flushModeFlag 1   // 0: flushes ONLY Buffers, 1: flushes Buffers AND Filter State Variables
-#define test_inputModeFlag 0   // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
-#define test_whichEnvelope 1   // specify which env engine should be used: old (0) or new (1)
+#define test_preload_update                                                                                            \
+  2  // 0: non-optimized preload update, 1: optimized preload update (but key glitches), 2: fixed preload update (recommended)
+
+#ifndef test_inputModeFlag
+#define test_inputModeFlag 0  // 0: receive TCD MIDI, 1: receive Remote MIDI (and produce TCD internally)
+#endif
 
 #define test_reverbParams 1    // 0: fast rendering (like Reaktor), 1: slow rendering (experimental)
 #define test_reverbSmoother 1  // 0: no internal smoothers (experimental), 1: internal smoothers (like Reaktor)
 
-#define test_phase_reset 1  // 0: reset phase only, 1: reset phase, self- & cross-mix and feedback, chirp state var
-#define test_flanger_phs 1  // 0: slow (default, artifacts), 1: fast (seems okay), 2: audio (optimum)
-#define test_flanger_env 2  // 0: slow (default, artifacts), 1: fast (artifacts), 2: audio (recommended)
+#define test_flanger_phs 1         // 0: slow (default, artifacts), 1: fast (seems okay), 2: audio (optimum)
+#define test_flanger_env 2         // 0: slow (default, artifacts), 1: fast (artifacts), 2: audio (recommended)
 #define test_flanger_env_legato 1  // 0: retriggering flanger env, 1: legato (only trigger if no key is pressed)
 
 #define test_initialize_time 1  // leave at 1 until LPC transmits full init sequence (including time)
-#define test_initialize_fx_sends  1  // leave at 1 until LPC can handle fx sends (echo, reverb) (inits sends to 100%, maintaining compability)
+#define test_initialize_fx_sends                                                                                       \
+  1  // leave at 1 until LPC can handle fx sends (echo, reverb) (inits sends to 100%, maintaining compability)
 
 /* Log Settings                                     THINGS TO PRINT into the terminal: TCD MIDI Input, single Parameter, single Signal */
 
@@ -84,6 +73,7 @@
 
 #define dsp_poly_types 2         // two polyphony types (mono, poly) - (later, a dual type needs to be implemented)
 #define dsp_clock_types 4        // four different parameter types (sync, audio, fast, slow)
+#define dsp_spread_types 2       // two (mono) spread types (single: mono->mono, spread: mono->poly)
 #define dsp_number_of_voices 20  // maximum allowed number of voices
 
 const uint32_t dsp_clock_rates[2] = {
