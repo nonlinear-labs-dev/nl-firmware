@@ -16,7 +16,7 @@ void exponentiator::init()
         m_linear_pitch_table[i] = pow(m_freqBase, exp);
     }
     /* construct oscillator pitch table */
-    m_oscillator_pitch_table[0] = 0;                // set first table element to zero
+    m_oscillator_pitch_table[0] = 0.f;              // set first table element to zero
     /* construct hyperfloor part of oscillator pitch table (second till 19th element) */
     for(i = 1; i < 20; i++)
     {
@@ -34,7 +34,7 @@ void exponentiator::init()
         m_oscillator_pitch_table[i] = pow(m_freqBase, exp);
     }
     /* construct level table */
-    m_level_table[0] = 0;                           // set first table element to zero
+    m_level_table[0] = 0.f;                         // set first table element to zero
     for(i = 1; i <= dsp_expon_level_range; i++)
     {
         /* determine exponent of equation */
@@ -43,7 +43,7 @@ void exponentiator::init()
         m_level_table[i] = pow(m_gainBase, exp);
     }
     /* construct time table */
-    m_time_table[0] = 0;                            // set first table element to zero
+    m_time_table[0] = 0.f;                          // set first table element to zero
     for(i = 1; i <= dsp_expon_time_range; i++)
     {
         /* determine exponent of equation */

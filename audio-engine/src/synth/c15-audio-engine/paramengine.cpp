@@ -252,7 +252,7 @@ float paramengine::scale(const uint32_t _scaleId, const float _scaleArg, float _
       break;
     case 8:
       /* exponential, osc-pitch scaling (argument is offset) */
-      result = m_convert.eval_osc_pitch(_value + _scaleArg);  // includes hyperbolic floor, oscillators only
+      result = m_convert.eval_osc_pitch(_value + _scaleArg);  // includes hyperbolic floor, oscillators only (now redundant)
       break;
     case 9:
       /* exponential, lin-pitch scaling (argument is offset) */
@@ -951,7 +951,7 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OA_PEC);
   signals.set<Signals::OSC_A_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OA_FEC);
   signals.set<Signals::OSC_A_FLUEC>(
@@ -967,7 +967,7 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OB_PEC);
   signals.set<Signals::OSC_B_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator B Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OB_FEC);
   signals.set<Signals::OSC_B_FLUEC>(
@@ -1323,7 +1323,7 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OA_PEC);
   signals.set<Signals::OSC_A_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OA_FEC);
   signals.set<Signals::OSC_A_FLUEC>(
@@ -1339,7 +1339,7 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OB_PEC);
   signals.set<Signals::OSC_B_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator B Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OB_FEC);
   signals.set<Signals::OSC_B_FLUEC>(

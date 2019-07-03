@@ -153,7 +153,7 @@ const ParameterDefinition param_definition[sig_number_of_params] = {
 
   // - - - OSCILLATOR A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   //       ID      CLOCK   POLY    RANGE   SCALE   (ARG)   POST    SPREAD  POL     FACTOR
-  { 53, Parameters::P_OA_P, ClockTypes::Slow, PolyTypes::Mono, 100, 8, -20, Signals::Invalid, SpreadTypes::Single, 0,
+  { 53, Parameters::P_OA_P, ClockTypes::Slow, PolyTypes::Mono, 100, 0, -20, Signals::Invalid, SpreadTypes::Single, 0,
     15000 },  // 51  OSC_A_PITCH
   { 55, Parameters::P_OA_PKT, ClockTypes::Slow, PolyTypes::Mono, 10000, 0, 0, Signals::Invalid, SpreadTypes::Single, 0,
     10000 },  // 52  OSC_A_PITCH_KEYTRACK
@@ -205,7 +205,7 @@ const ParameterDefinition param_definition[sig_number_of_params] = {
 
   // - - - OSCILLATOR B - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   //       ID      CLOCK   POLY    RANGE   SCALE   (ARG)   POST    SPREAD  POL     FACTOR
-  { 83, Parameters::P_OB_P, ClockTypes::Slow, PolyTypes::Mono, 100, 8, -20, Signals::Invalid, SpreadTypes::Single, 0,
+  { 83, Parameters::P_OB_P, ClockTypes::Slow, PolyTypes::Mono, 100, 0, -20, Signals::Invalid, SpreadTypes::Single, 0,
     15000 },  // 74  OSC_B_PITCH
   { 85, Parameters::P_OB_PKT, ClockTypes::Slow, PolyTypes::Mono, 10000, 0, 0, Signals::Invalid, SpreadTypes::Single, 0,
     10000 },  // 75  OSC_B_PITCH_KEYTRACK
