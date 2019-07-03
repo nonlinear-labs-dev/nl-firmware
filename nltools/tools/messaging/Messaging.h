@@ -44,14 +44,11 @@ namespace nltools
 
     class Message;
 
-    class Messaging
-    {
-     public:
-      using tMessage = std::unique_ptr<Message>;
-      using Callback = std::function<void(const Message *)>;
+    using tMessage = std::unique_ptr<Message>;
+    using MessageReceiveCallback = std::function<void(const Message *)>;
 
-      static void send(Senders sender, Receivers receiver, tMessage msg);
-      static sigc::connection receive(Senders sender, Receivers receiver, Callback cb);
-    };
+    void send(Senders sender, Receivers receiver, tMessage msg);
+    sigc::connection receive(Senders sender, Receivers receiver, MessageReceiveCallback cb);
+    sigc::connection receive(Senders sender, Receivers receiver, MessageType type, MessageReceiveCallback cb);
   }
 }

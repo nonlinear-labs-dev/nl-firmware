@@ -17,7 +17,7 @@ void intendedUsage_Receiving()
   using namespace nltools::msg;
 
   // receiving messages
-  auto connection = Messaging::receive(Senders::Playground, Receivers::AudioEngine, [](auto msg) {
+  auto connection = receive(Senders::Playground, Receivers::AudioEngine, [](auto msg) {
     // do fancy stuff with msg
   });
 
@@ -33,7 +33,7 @@ void intendedUsage_Receiving_OO()
   {
     FooBar()
     {
-      Messaging::receive(Senders::Playground, Receivers::AudioEngine, sigc::mem_fun(this, &FooBar::onMessage));
+      receive(Senders::Playground, Receivers::AudioEngine, sigc::mem_fun(this, &FooBar::onMessage));
     }
 
     void onMessage(const Message *msg)

@@ -25,7 +25,7 @@ namespace nltools
 
     void MessageComposer::send()
     {
-      Messaging::send(m_sender, m_receiver, std::move(m_theMessage));
+      nltools::msg::send(m_sender, m_receiver, std::move(m_theMessage));
     }
   }
 }
