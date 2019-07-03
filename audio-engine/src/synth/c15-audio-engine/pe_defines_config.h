@@ -23,6 +23,11 @@
       // - 155 (internal unison handling, echo/reverb sends),                                                          \
       // - 156 (simplified TCD key sequence by new KeyVoice command, automatic internal unison loop)
 
+// +3dB clipping candidates (can be disabled for test and comparison purposes)
+#define test_env_ab_3db_clip 1          //
+#define test_env_c_3db_clip 1           //
+#define test_fbm_kt_3db_clip 1          //
+
 #define test_tone_initial_freq 500.0f  // Test Tone initial Frequency
 #define test_tone_initial_gain -6.0f   // Test Tone initial Gain (in decibel)
 #define test_tone_initial_state 0      // Test Tone initial State (0: disabled, 1: enabled)

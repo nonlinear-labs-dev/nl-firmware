@@ -480,8 +480,12 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
       * _velocity;  // determine decay2 velocity accorindg to velocity and parameter
   levelKT = getParameterValue(Parameters::P_EA_LKT)
       * _pitch;  // determine level key tracking according to pitch and parameter
+#if test_env_ab_3db_clip == 0
+  peak = m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT);
+#elif test_env_ab_3db_clip == 1
   peak = std::min(m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT),
                   env_clip_peak);  // determine peak level according to velocity and level parameters (max +3dB)
+#endif
 
   m_event.m_env[0].m_levelFactor[_voiceId] = peak;  // remember peak level
   m_event.m_env[0].m_timeFactor[_voiceId][0] = m_convert.eval_level(timeKT + attackVel)
@@ -536,8 +540,12 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
       * _velocity;  // determine decay2 velocity accorindg to velocity and parameter
   levelKT = getParameterValue(Parameters::P_EB_LKT)
       * _pitch;  // determine level key tracking according to pitch and parameter
+#if test_env_ab_3db_clip == 0
+  peak = m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT);
+#elif test_env_ab_3db_clip == 1
   peak = std::min(m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT),
                   env_clip_peak);  // determine peak level according to velocity and level parameters (max +3dB)
+#endif
 
   m_event.m_env[1].m_levelFactor[_voiceId] = peak;  // remember peak level
   m_event.m_env[1].m_timeFactor[_voiceId][0] = m_convert.eval_level(timeKT + attackVel)
@@ -593,7 +601,11 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
   unclipped
       = m_convert.eval_level(((1.f - _velocity) * levelVel)
                              + levelKT);  // determine unclipped peak level according to velocity and level parameters
+#if test_env_c_3db_clip == 0
+  peak = unclipped;
+#elif test_env_c_3db_clip == 1
   peak = std::min(unclipped, env_clip_peak);  // determine clipped peak level (max +3dB)
+#endif
   m_env_c_clipFactor[_voiceId]
       = unclipped / peak;  // determine unclipped / clipped peak factor in order to reconstruct unclipped signal later
 
@@ -1131,7 +1143,11 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   signals.set<Signals::OUT_SVF_R>(_voiceId, tmp_lvl * tmp_pan);
   /* - Feedback Mixer */
   tmp_lvl = getParameterValue(Parameters::P_FBM_LVL);
+#if test_fbm_kt_3db_clip == 0
+  tmp_pan = m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch));
+#elif test_fbm_kt_3db_clip == 1
   tmp_pan = std::min(m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch)), env_clip_peak);
+#endif
   signals.set<Signals::FBM_LVL>(_voiceId, tmp_lvl * tmp_pan);
 }
 
@@ -1433,7 +1449,11 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   signals.set<Signals::OUT_SVF_R>(_voiceId, tmp_lvl * tmp_pan);
   /* - Feedback Mixer */
   tmp_lvl = getParameterValue(Parameters::P_FBM_LVL);
+#if test_fbm_kt_3db_clip == 0
+  tmp_pan = m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch));
+#elif test_fbm_kt_3db_clip == 1
   tmp_pan = std::min(m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch)), env_clip_peak);
+#endif
   signals.set<Signals::FBM_LVL>(_voiceId, tmp_lvl * tmp_pan);
   /*   - determine Highpass Filter Frequency */
   signals.set<Signals::FBM_HPF>(_voiceId, evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f));
