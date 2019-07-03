@@ -2,7 +2,9 @@
 #include "synth/SimpleSynth.h"
 #include "synth/C15Synth.h"
 #include "ui/CommandlinePerformanceWatch.h"
-#include "io/Log.h"
+
+#include <logging/Log.h>
+#include <messaging/Messaging.h>
 
 #include <glibmm.h>
 #include <iostream>
@@ -39,6 +41,7 @@ void runMainLoop()
 int main(int args, char *argv[])
 {
   Glib::init();
+  nltools::msg::init(nltools::msg::Participants::AudioEngine);
 
   connectSignals();
 
@@ -49,7 +52,7 @@ int main(int args, char *argv[])
     auto synth = std::make_unique<C15Synth>();
     synth->measurePerformance(std::chrono::seconds(5));  // warm up
     auto result = synth->measurePerformance(std::chrono::seconds(5));
-    Log::info("Audio engine performs at", result, "x realtime.");
+    nltools::Log::info("Audio engine performs at", result, "x realtime.");
     return EXIT_SUCCESS;
   }
 

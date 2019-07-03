@@ -25,7 +25,7 @@ namespace nltools
     // Types:
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 
-    enum class Receivers
+    enum class Participants
     {
       Lpc,
       Oled,
@@ -68,48 +68,32 @@ namespace nltools
       }
 
       // send raw bytes to receiver
-      void send(Receivers receiver, SerializedMessage msg);
+      void send(Participants receiver, SerializedMessage msg);
 
-      template <typename Msg>
-      sigc::connection receive(Receivers receiver, MessageType type, std::function<void(const Msg &)> cb)
+      template <typename Msg> sigc::connection receive(MessageType type, std::function<void(const Msg &)> cb)
       {
-        return receive(receiver, type, [=](const SerializedMessage &s) { cb(detail::deserialize<Msg>(s)); });
+        return receiveSerialized(type, [=](const SerializedMessage &s) { cb(detail::deserialize<Msg>(s)); });
       }
 
-      sigc::connection receive(Receivers receiver, MessageType type, std::function<void(const SerializedMessage &)> cb);
-
-      // map ParameterType to Parameter-class
-      template <MessageType type> struct MessageTypeMap
-      {
-      };
-
-      template <> struct MessageTypeMap<MessageType::Parameter>
-      {
-        using Message = ParameterChangedMessage;
-      };
-
-      template <> struct MessageTypeMap<MessageType::Preset>
-      {
-        using Message = PresetChangedMessage;
-      };
+      sigc::connection receiveSerialized(MessageType type, std::function<void(const SerializedMessage &)> cb);
     }
+
+    // Client has to call this on startup
+    void init(Participants self);
 
     // wait at most timeOut for the connection to be established
     // return true if there is a connection to receiver
-    bool waitForConnection(Receivers receiver, std::chrono::milliseconds timeOut = std::chrono::seconds(10));
+    bool waitForConnection(Participants receiver, std::chrono::milliseconds timeOut = std::chrono::seconds(10));
 
     // Send msg to receiver. If there is no receiver, does nothing.
-    template <typename Msg> void send(Receivers receiver, const Msg &msg)
+    template <typename Msg> void send(Participants receiver, const Msg &msg)
     {
       detail::send(receiver, detail::serialize<Msg>(msg));
     }
 
-    // receive messages of type in cb
-    template <MessageType type, Receivers receiver>
-    sigc::connection receive(std::function<void(const typename detail::MessageTypeMap<type>::Message &)> cb)
+    template <typename M> sigc::connection receive(std::function<void(const M &)> cb)
     {
-      return detail::receive<typename detail::MessageTypeMap<type>::Message>(receiver, type,
-                                                                             [=](const auto &s) { cb(s); });
+      return detail::receive<M>(M::theType, [=](const auto &s) { cb(s); });
     }
   }
 }

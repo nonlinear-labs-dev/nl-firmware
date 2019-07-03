@@ -12,55 +12,23 @@ namespace nltools
   {
     namespace detail
     {
-      using OutChannels = std::map<Receivers, std::unique_ptr<OutChannel>>;
-      using InChannels = std::list<std::unique_ptr<InChannel>>;
+      using OutChannels = std::map<Participants, std::unique_ptr<OutChannel>>;
       using Signals = std::map<MessageType, sigc::signal<void, const SerializedMessage &>>;
 
       static OutChannels createOutChannels()
       {
         OutChannels ret;
-        ret[Receivers::AudioEngine]
+        ret[Participants::AudioEngine]
             = std::make_unique<ws::WebSocketOutChannel>("localhost", Ports::AudioEngineWebSocket);
-        ret[Receivers::Playground] = std::make_unique<ws::WebSocketOutChannel>("localhost", Ports::PlaygroundWebSocket);
+        ret[Participants::Playground]
+            = std::make_unique<ws::WebSocketOutChannel>("localhost", Ports::PlaygroundWebSocket);
         return ret;
-      }
-
-      static InChannels createInChannels(Receivers receiver, std::function<void(const SerializedMessage &)> cb)
-      {
-        InChannels ret;
-
-        switch(receiver)
-        {
-          case Receivers::AudioEngine:
-            ret.push_back(std::make_unique<ws::WebSocketInChannel>(cb, Ports::AudioEngineWebSocket));
-            break;
-
-          case Receivers::Playground:
-            ret.push_back(std::make_unique<ws::WebSocketInChannel>(cb, Ports::PlaygroundWebSocket));
-            break;
-
-          default:
-            nltools::error("Cannot create input channel!");
-        }
-
-        return ret;
-      }
-
-      static OutChannel *getOutChannel(Receivers r)
-      {
-        static OutChannels outChannels = createOutChannels();
-        return outChannels.at(r).get();
       }
 
       static Signals &getSignals()
       {
         static Signals signals;
         return signals;
-      }
-
-      static sigc::connection connectReceiver(MessageType type, std::function<void(const SerializedMessage &)> cb)
-      {
-        return getSignals()[type].connect(cb);
       }
 
       static void notifyClients(const SerializedMessage &s)
@@ -71,21 +39,55 @@ namespace nltools
         getSignals()[type](s);
       }
 
-      void send(nltools::msg::Receivers receiver, SerializedMessage msg)
+      static std::unique_ptr<InChannel> createInChannel(Participants whoAmI)
+      {
+        auto cb = [](const auto &s) { notifyClients(s); };
+
+        switch(whoAmI)
+        {
+          case Participants::AudioEngine:
+            return std::make_unique<ws::WebSocketInChannel>(cb, Ports::AudioEngineWebSocket);
+
+          case Participants::Playground:
+            return std::make_unique<ws::WebSocketInChannel>(cb, Ports::PlaygroundWebSocket);
+
+          default:
+            nltools::Log::error("Cannot create input channel!");
+        }
+
+        return nullptr;
+      }
+
+      static OutChannel *getOutChannel(Participants r)
+      {
+        static OutChannels outChannels = createOutChannels();
+        return outChannels.at(r).get();
+      }
+
+      static sigc::connection connectReceiver(MessageType type, std::function<void(const SerializedMessage &)> cb)
+      {
+        return getSignals()[type].connect(cb);
+      }
+
+      void send(nltools::msg::Participants receiver, SerializedMessage msg)
       {
         getOutChannel(receiver)->send(msg);
       }
 
-      sigc::connection receive(Receivers receiver, MessageType type, std::function<void(const SerializedMessage &)> cb)
+      sigc::connection receiveSerialized(MessageType type, std::function<void(const SerializedMessage &)> cb)
       {
-        static InChannels inChannels = createInChannels(receiver, [](const auto &s) { notifyClients(s); });
         return connectReceiver(type, cb);
       }
     }
 
-    bool waitForConnection(Receivers receiver, std::chrono::milliseconds timeOut)
+    bool waitForConnection(Participants receiver, std::chrono::milliseconds timeOut)
     {
       return detail::getOutChannel(receiver)->waitForConnection(timeOut);
+    }
+
+    void init(Participants self)
+    {
+      static auto inChannel = detail::createInChannel(self);
     }
   }
 }

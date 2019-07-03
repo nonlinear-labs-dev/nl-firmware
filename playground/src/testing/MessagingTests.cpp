@@ -14,21 +14,18 @@ struct MessagingTests
     g_test_add_func("/Messaging/send-receive", [] {
       using namespace nltools::msg;
       int numReceivedMessages = 0;
-      auto parameterChangedConnection
-          = receive<MessageType::Parameter, Receivers::Playground>([&](const auto &msg) { numReceivedMessages++; });
 
-      auto presetChangedConnectionc = receive<MessageType::Preset, Receivers::Playground>(
-          [&](const auto &msg) { nltools::notify("Got preset message from audioEngine!"); });
+      ParameterChangedMessage msgToSend(12, 0.3);
+      waitForConnection(Participants::Playground);
 
-      ParameterChangedMessage msgToSend;
+      auto c = receive<ParameterChangedMessage>([&](const auto &msg) { numReceivedMessages++; });
 
-      waitForConnection(Receivers::AudioEngine);
-      send(Receivers::AudioEngine, msgToSend);
+      send(Participants::Playground, msgToSend);
 
       Expiration exp;
-      exp.refresh(12s);
+      exp.refresh(2s);
 
-      while(exp.isPending() && numReceivedMessages == 0)
+      while(exp.isPending() && numReceivedMessages < 1)
         g_main_context_iteration(nullptr, TRUE);
 
       g_assert(numReceivedMessages == 1);

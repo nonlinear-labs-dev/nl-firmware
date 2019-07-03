@@ -3,14 +3,14 @@
 #include "main.h"
 #include "Options.h"
 #include "io/HighPriorityTask.h"
-#include "io/Log.h"
+#include <logging/Log.h>
 #include <iostream>
 #include <algorithm>
 
 int checkAlsa(int res)
 {
   if(res != 0)
-    Log::error("Alsa Error:", snd_strerror(res));
+    nltools::Log::error("Alsa Error:", snd_strerror(res));
 
   return res;
 }
@@ -73,9 +73,9 @@ void AlsaAudioOutput::open(const std::string& deviceName)
   checkAlsa(snd_pcm_sw_params_current(m_handle, swparams));
   checkAlsa(snd_pcm_sw_params(m_handle, swparams));
 
-  Log::info("Alsa periods:", periods);
-  Log::info("Alsa frames per period:", framesPerPeriod);
-  Log::info("Alsa ringbuffer size:", ringBufferSize);
+  nltools::Log::info("Alsa periods:", periods);
+  nltools::Log::info("Alsa frames per period:", framesPerPeriod);
+  nltools::Log::info("Alsa ringbuffer size:", ringBufferSize);
 
   m_numFramesPerPeriod = framesPerPeriod;
 

@@ -42,7 +42,7 @@ namespace nltools
 
         if(error)
         {
-          nltools::error(error->message);
+          nltools::Log::error(error->message);
           g_error_free(error);
         }
 

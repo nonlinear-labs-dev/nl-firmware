@@ -1,9 +1,10 @@
 #include <io/files/FileIOSender.h>
+#include <logging/Log.h>
 
 FileIOSender::FileIOSender(const char *path)
     : m_path(path)
 {
-  TRACE("open file for writing: " << path);
+  nltools::Log::notify("open file for writing: ", path);
 
   try
   {
@@ -12,7 +13,7 @@ FileIOSender::FileIOSender(const char *path)
   }
   catch(...)
   {
-    TRACE("Could not open file for writing: " << path);
+    nltools::Log::error("could not open file for writing: ", path);
   }
 }
 
@@ -34,7 +35,7 @@ void FileIOSender::send(tMessage msg)
     }
     catch(Glib::Error &err)
     {
-      TRACE("Exception: " << m_path << " -> " << err.what());
+      nltools::Log::error("Exception: ", m_path, " -> ", err.what());
     }
   }
 }

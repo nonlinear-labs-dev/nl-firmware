@@ -6,6 +6,7 @@
 #include <chrono>
 #include "device-settings/DebugLevel.h"
 #include "profiling/Profiler.h"
+#include <messaging/Messaging.h>
 
 void printStackTrace(int i)
 {
@@ -85,6 +86,8 @@ void setupLocale()
 int main(int numArgs, char** argv)
 {
   Gio::init();
+  nltools::msg::init(nltools::msg::Participants::Playground);
+
   setupLocale();
 
   ::signal(SIGSEGV, printStackTrace);

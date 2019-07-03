@@ -7,6 +7,7 @@ class WatchDog;
 class HTTPServer;
 class PresetManager;
 class LPCProxy;
+class AudioEngineProxy;
 class HWUI;
 class Options;
 class HWTests;
@@ -34,6 +35,7 @@ class Application
   HTTPServer *getHTTPServer();
   Options *getOptions();
   LPCProxy *getLPCProxy() const;
+  AudioEngineProxy *getAudioEngineProxy() const;
   HWTests *getHWTests();
   HWUI *getHWUI();
   const HWUI *getHWUI() const;
@@ -65,6 +67,7 @@ class Application
   std::unique_ptr<UndoScope> m_undoScope;
   std::unique_ptr<PresetManager> m_presetManager;
   std::unique_ptr<LPCProxy> m_lpcProxy;
+  std::unique_ptr<AudioEngineProxy> m_audioEngineProxy;
   std::unique_ptr<HWUI> m_hwui;
   std::unique_ptr<HWTests> m_hwtests;
 

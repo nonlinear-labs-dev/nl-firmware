@@ -1,5 +1,5 @@
 #include "CommandLineInterface.h"
-#include "io/Log.h"
+#include <logging/Log.h>
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -4,6 +4,7 @@
 #include <Application.h>
 #include <Options.h>
 #include <string.h>
+#include <logging/Log.h>
 
 ToOledsBridge::ToOledsBridge()
     : super(new FrameBufferSender(), new WebSocketReceiver(Domain::Oled))
@@ -57,9 +58,9 @@ bool ToOledsBridge::printTurnaroundTime()
   auto maxIt = std::max_element(m_timeStamps.begin(), m_timeStamps.end(), [](auto a, auto b) { return a.ms < b.ms; });
 
   if(maxIt != m_timeStamps.end())
-    TRACE("Max turn around time in past 5 seconds: " << maxIt->ms << "ms.");
+    nltools::Log::notify("Max turn around time in past 5 seconds: ", maxIt->ms, "ms.");
   else
-    TRACE("No encoder event in past 5 seconds.");
+    nltools::Log::notify("No encoder event in past 5 seconds.");
 
   return true;
 }

@@ -69,6 +69,7 @@ add_executable(bbbb ${SOURCE_FILES})
 
 target_link_libraries(bbbb pthread)
 target_link_libraries(bbbb nltools)
+include_directories(audio-engine ${CMAKE_SOURCE_DIR}/nltools/tools/include/)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})

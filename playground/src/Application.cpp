@@ -13,6 +13,7 @@
 #include "proxies/hwui/debug-oled/DebugOLED.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/lpc/LPCProxy.h"
+#include "proxies/audio-engine/AudioEngineProxy.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <tools/WatchDog.h>
@@ -44,6 +45,7 @@ Application::Application(int numArgs, char **argv)
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_presetManager(new PresetManager(m_http->getUpdateDocumentMaster()))
     , m_lpcProxy(new LPCProxy())
+    , m_audioEngineProxy(new AudioEngineProxy)
     , m_hwui(new HWUI())
     , m_hwtests(new HWTests(m_http->getUpdateDocumentMaster()))
     , m_watchDog(new WatchDog)
@@ -194,6 +196,11 @@ Options *Application::getOptions()
 LPCProxy *Application::getLPCProxy() const
 {
   return m_lpcProxy.get();
+}
+
+AudioEngineProxy *Application::getAudioEngineProxy() const
+{
+  return m_audioEngineProxy.get();
 }
 
 Settings *Application::getSettings()

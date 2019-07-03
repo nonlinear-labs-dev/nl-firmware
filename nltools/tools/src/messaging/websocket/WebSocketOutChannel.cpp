@@ -30,6 +30,9 @@ namespace nltools
 
       void WebSocketOutChannel::send(const SerializedMessage &msg)
       {
+        if(!m_connection)
+          return;
+
         m_backgroundContextQueue->pushMessage([=]() {
           if(m_connection)
           {
@@ -88,7 +91,7 @@ namespace nltools
 
         if(error)
         {
-          nltools::error(error->message);
+          nltools::Log::info(error->message);
           g_error_free(error);
           pThis->reconnect();
         }
@@ -126,12 +129,12 @@ namespace nltools
 
         if(error)
         {
-          nltools::error(error->message);
+          nltools::Log::error(error->message);
           g_error_free(error);
         }
 
         if(!ret)
-          nltools::warn("setting socket option NODELAY failed");
+          nltools::Log::warning("setting socket option NODELAY failed");
 
         m_connection.reset(connection);
       }

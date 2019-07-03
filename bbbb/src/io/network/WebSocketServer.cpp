@@ -1,5 +1,6 @@
 #include <io/network/WebSocketServer.h>
 #include <netinet/tcp.h>
+#include <logging/Log.h>
 
 WebSocketServer::WebSocketServer()
     : m_server(soup_server_new(nullptr, nullptr), g_object_unref)
@@ -12,7 +13,7 @@ WebSocketServer::WebSocketServer()
 
   if(error)
   {
-    TRACE(error->message);
+    nltools::Log::error(error->message);
     g_error_free(error);
   }
 }
@@ -49,13 +50,13 @@ void WebSocketServer::connectWebSocket(SoupWebsocketConnection *connection)
 
   if(error)
   {
-    TRACE(error->message);
+    nltools::Log::error(error->message);
     g_error_free(error);
   }
 
   if(!ret)
   {
-    TRACE("setting socket option NODELAY failed");
+    nltools::Log::warning("setting socket option NODELAY failed");
   }
 
   m_connections.push_back(tWebSocketPtr(connection, g_object_unref));
@@ -74,7 +75,7 @@ void WebSocketServer::sendMessage(tMessage msg)
       return false;
     }
 
-    TRACE("connection state: " << state);
+    nltools::Log::notify("connection state: ", state);
     return true;
   });
 }
