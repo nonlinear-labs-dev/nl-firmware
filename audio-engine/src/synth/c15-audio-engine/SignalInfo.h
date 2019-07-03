@@ -77,9 +77,9 @@ namespace SignalInfo
                    Signals::OSC_B_FRQ, Signals::OSC_B_FLUEC, Signals::OSC_B_PMSEB, Signals::OSC_B_PMFEC,
                    Signals::SHP_B_DRVEB, Signals::SHP_B_FBEC, Signals::CMB_FRQ, Signals::CMB_BYP, Signals::CMB_FEC,
                    Signals::CMB_DEC, Signals::CMB_APF, Signals::CMB_LPF, Signals::SVF_F1_CUT, Signals::SVF_F2_FM,
-                   Signals::SVF_RES, Signals::FBM_LVL, Signals::FBM_HPF, Signals::OUT_A_L, Signals::OUT_A_R,
-                   Signals::OUT_B_L, Signals::OUT_B_R, Signals::OUT_CMB_L, Signals::OUT_CMB_R, Signals::OUT_SVF_L,
-                   Signals::OUT_SVF_R>;
+                   Signals::SVF_RES, Signals::SVF_RES_DAMP, Signals::SVF_RES_FMAX, Signals::FBM_LVL, Signals::FBM_HPF,
+                   Signals::OUT_A_L, Signals::OUT_A_R, Signals::OUT_B_L, Signals::OUT_B_R, Signals::OUT_CMB_L,
+                   Signals::OUT_CMB_R, Signals::OUT_SVF_L, Signals::OUT_SVF_R>;
 
   using MonoSignals = SignalList<
       Signals::OSC_A_PMSSH, Signals::OSC_A_PMBSH, Signals::OSC_A_PHS, Signals::OSC_A_CHI, Signals::SHP_A_FLD,
