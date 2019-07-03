@@ -2,12 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(playground)
 
 set(LIBS
-  glibmm-2.4
-  giomm-2.4
-  glib-2.0
-  gio-2.0
   gio-unix-2.0
-  libsoup-2.4
   uuid
   avahi-glib
   avahi-gobject
@@ -68,6 +63,7 @@ add_executable(playground ${SOURCE_FILES})
 target_link_libraries(playground pthread)
 target_link_libraries(playground stdc++fs)
 target_link_libraries(playground nltools)
+include_directories(playground ${CMAKE_SOURCE_DIR}/nltools/tools/include/)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})

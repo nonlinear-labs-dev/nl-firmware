@@ -1,14 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(audio-engine)
 
-set(LIBS
-  glibmm-2.4
-  giomm-2.4
-  glib-2.0
-  gio-2.0
-  alsa
-  )
-
+set(LIBS alsa)
 
 EXEC_PROGRAM("sh"
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -65,6 +58,7 @@ ENDIF(DEV_PC)
 
 target_link_libraries(audio-engine pthread)
 target_link_libraries(audio-engine nltools)
+include_directories(audio-engine ${CMAKE_SOURCE_DIR}/nltools/tools/include/)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})

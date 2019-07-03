@@ -4,10 +4,16 @@
 #include "Options.h"
 #include "io/Log.h"
 
+#include <messaging/Message.h>
+#include <logging/Log.h>
+
 C15Synth::C15Synth()
     : m_dsp(std::make_unique<dsp_host>())
 {
   m_dsp->init(getOptions()->getSampleRate(), getOptions()->getPolyphony());
+
+  using namespace nltools::msg;
+  receive<MessageType::Parameter, Receivers::AudioEngine>(sigc::mem_fun(this, &C15Synth::onParameterMessage));
 }
 
 C15Synth::~C15Synth() = default;
@@ -125,4 +131,9 @@ void C15Synth::changeSelectedValueBy(int i)
     }
     break;
   }
+}
+
+void C15Synth::onParameterMessage(const nltools::msg::ParameterChangedMessage &msg)
+{
+  nltools::notify("got parameter message!");
 }
