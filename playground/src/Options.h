@@ -14,7 +14,8 @@ class Options
   Glib::ustring getKioskModeFile() const;
   Glib::ustring getHardwareTestsFolder() const;
   Glib::ustring getBBBB() const;
-  bool sendBBBBTurnaroundTimestamps();
+
+  Glib::ustring getSelfPath() const;
 
  private:
   void setDefaults();
@@ -25,5 +26,5 @@ class Options
   Glib::ustring m_settingsFile;
   Glib::ustring m_kioskModeFile;
   Glib::ustring m_bbbb = "127.0.0.1";
-  bool m_doTimeStamps = false;
+  Glib::ustring m_selfPath;
 };

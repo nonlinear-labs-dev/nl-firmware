@@ -23,14 +23,19 @@ FileIOSender::~FileIOSender()
 
 void FileIOSender::send(tMessage msg)
 {
+  gsize len = 0;
+  auto data = reinterpret_cast<const char *>(msg->get_data(len));
+  write(data, len);
+}
+
+void FileIOSender::write(const char *bytes, size_t numBytes)
+{
   if(m_channel)
   {
     try
     {
-      gsize len = 0;
-      auto data = reinterpret_cast<const char *>(msg->get_data(len));
-      gsize bytesWritten = 0;
-      m_channel->write(data, static_cast<gssize>(len), bytesWritten);
+      gsize numBytesWritten = 0;
+      m_channel->write(bytes, static_cast<gssize>(numBytes), numBytesWritten);
       m_channel->flush();
     }
     catch(Glib::Error &err)

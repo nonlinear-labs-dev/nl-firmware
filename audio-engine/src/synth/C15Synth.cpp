@@ -12,7 +12,8 @@ C15Synth::C15Synth()
 {
   m_dsp->init(getOptions()->getSampleRate(), getOptions()->getPolyphony());
 
-  nltools::msg::receive<nltools::msg::ParameterChangedMessage>(sigc::mem_fun(this, &C15Synth::onParameterMessage));
+  using namespace nltools::msg;
+  receive<ParameterChangedMessage, EndPoint::AudioEngine>(sigc::mem_fun(this, &C15Synth::onParameterMessage));
 }
 
 C15Synth::~C15Synth() = default;
@@ -134,8 +135,8 @@ void C15Synth::changeSelectedValueBy(int i)
 
 static void sendMessageToPlayground()
 {
-  nltools::msg::waitForConnection(nltools::msg::Participants::Playground);
-  nltools::msg::send(nltools::msg::Participants::Playground, nltools::msg::ParameterChangedMessage());
+  nltools::msg::waitForConnection(nltools::msg::EndPoint::Playground);
+  nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::ParameterChangedMessage());
   nltools::Log::notify("sent parameter message!");
 }
 

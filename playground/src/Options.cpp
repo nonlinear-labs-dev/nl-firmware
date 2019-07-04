@@ -3,6 +3,7 @@
 #include "device-settings/DebugLevel.h"
 
 Options::Options(int &argc, char **&argv)
+    : m_selfPath(argv[0])
 {
   setDefaults();
 
@@ -21,12 +22,6 @@ Options::Options(int &argc, char **&argv)
   bbbb.set_short_name('b');
   bbbb.set_description("IP of the device running the BeagleBoneBlackBridge (bbbb)");
   mainGroup.add_entry(bbbb, m_bbbb);
-
-  Glib::OptionEntry doTimestamps;
-  doTimestamps.set_long_name("timestamps");
-  doTimestamps.set_short_name('t');
-  doTimestamps.set_description("measure turn around time encoder -> playground -> oled");
-  mainGroup.add_entry(doTimestamps, m_doTimeStamps);
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
@@ -88,9 +83,9 @@ Glib::ustring Options::getBBBB() const
   return m_bbbb;
 }
 
-bool Options::sendBBBBTurnaroundTimestamps()
+Glib::ustring Options::getSelfPath() const
 {
-  return m_doTimeStamps;
+  return m_selfPath;
 }
 
 Glib::ustring Options::getSettingsFile() const

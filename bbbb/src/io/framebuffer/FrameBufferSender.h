@@ -16,6 +16,7 @@ class FrameBufferSender : public Sender
   virtual ~FrameBufferSender();
 
   void send(tMessage msg) override;
+  void send(const void *data, size_t numBytes);
 
  private:
   using tPixel = uint8_t;

@@ -21,7 +21,6 @@ class RotaryEncoder
   virtual ~RotaryEncoder();
 
   void fake(tIncrement amount);
-  int64_t resetOldestPendingTimestamp();
   sigc::connection onRotaryChanged(sigc::slot<void, tIncrement> slot);
 
   static void registerTests();
@@ -31,13 +30,10 @@ class RotaryEncoder
   void open();
   tIncrement speedUp(tIncrement inc);
   void applyIncrement(tIncrement currentInc);
-  void onTimeStampedMessage(WebSocketSession::tMessage msg);
 
   Signal<void, tIncrement> m_signalRotaryChanged;
   Throttler m_throttler;
   int m_accumulatedIncs = 0;
-
-  int64_t m_oldestPendingTimestamp = 0;
 
   sigc::connection m_stress;
 };

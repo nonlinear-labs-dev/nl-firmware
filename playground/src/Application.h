@@ -20,7 +20,7 @@ class WebSocketSession;
 class Application
 {
  public:
-  Application(int numArgs, char **argv);
+  Application(std::unique_ptr<Options> options);
   virtual ~Application();
 
   Glib::ustring getSelfPath() const;
@@ -33,7 +33,7 @@ class Application
 
   PresetManager *getPresetManager() const;
   HTTPServer *getHTTPServer();
-  Options *getOptions();
+  const Options *getOptions() const;
   LPCProxy *getLPCProxy() const;
   AudioEngineProxy *getAudioEngineProxy() const;
   HWTests *getHWTests();
@@ -54,13 +54,12 @@ class Application
 
  private:
   bool heartbeat();
-  static char *initStatic(Application *app, char *argv);
+  static std::unique_ptr<Options> initStatic(Application *app, std::unique_ptr<Options> options);
 
   static Application *theApp;
-  Glib::ustring m_selfPath;
+  std::unique_ptr<Options> m_options;
   RefPtr<MainLoop> m_theMainLoop;
 
-  std::unique_ptr<Options> m_options;
   std::unique_ptr<WebSocketSession> m_websocketSession;
   std::unique_ptr<HTTPServer> m_http;
   std::unique_ptr<Settings> m_settings;

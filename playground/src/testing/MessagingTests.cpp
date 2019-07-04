@@ -16,11 +16,11 @@ struct MessagingTests
       int numReceivedMessages = 0;
 
       ParameterChangedMessage msgToSend(12, 0.3);
-      assert(waitForConnection(Participants::Playground));
+      assert(waitForConnection(EndPoint::Playground));
 
-      auto c = receive<ParameterChangedMessage>([&](const auto &msg) { numReceivedMessages++; });
+      auto c = receive<ParameterChangedMessage, EndPoint::Playground>([&](const auto &msg) { numReceivedMessages++; });
 
-      send(Participants::Playground, msgToSend);
+      send(EndPoint::Playground, msgToSend);
 
       Expiration exp;
       exp.refresh(2s);
@@ -37,12 +37,12 @@ struct MessagingTests
       int numSendMessages = 10000;
 
       ParameterChangedMessage msgToSend(12, 0.3);
-      assert(waitForConnection(Participants::Playground));
+      assert(waitForConnection(EndPoint::Playground));
 
-      auto c = receive<ParameterChangedMessage>([&](const auto &msg) { numReceivedMessages++; });
+      auto c = receive<ParameterChangedMessage, EndPoint::Playground>([&](const auto &msg) { numReceivedMessages++; });
 
       for(int i = 0; i < numSendMessages; i++)
-        send(Participants::Playground, msgToSend);
+        send(EndPoint::Playground, msgToSend);
 
       Expiration exp;
       exp.refresh(60s);

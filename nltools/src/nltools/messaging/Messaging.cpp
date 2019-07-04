@@ -13,34 +13,38 @@ namespace nltools
   {
     namespace detail
     {
-      using OutChannels = std::map<Participants, std::unique_ptr<OutChannel>>;
-      using InChannelPtr = std::unique_ptr<InChannel>;
-      using Signals = std::map<MessageType, sigc::signal<void, const SerializedMessage &>>;
+      using OutChannels = std::map<EndPoint, std::unique_ptr<OutChannel>>;
+      using InChannels = std::map<EndPoint, std::unique_ptr<InChannel>>;
+      using Signals = std::map<std::pair<MessageType, EndPoint>, sigc::signal<void, const SerializedMessage &>>;
 
       static OutChannels outChannels;
-      static InChannelPtr inChannel;
+      static InChannels inChannels;
       static Signals signals;
 
-      static void notifyClients(const SerializedMessage &s)
+      static void notifyClients(const SerializedMessage &s, EndPoint endPoint)
       {
         gsize numBytes = 0;
         auto data = reinterpret_cast<const uint16_t *>(s->get_data(numBytes));
         auto type = static_cast<MessageType>(data[0]);
-        signals[type](s);
+        signals[std::make_pair(type, endPoint)](s);
       }
 
-      static void createInChannel(const Configuration &conf)
+      static void createInChannels(const Configuration &conf)
       {
-        auto cb = [](const auto &s) { notifyClients(s); };
-        parseURI(conf.inChannel.uri, [=](auto scheme, auto, auto, auto port) {
-          assert(scheme == "ws");  // Currently, only web sockets are supported
-          inChannel = std::make_unique<ws::WebSocketInChannel>(cb, port);
-        });
+        for(const auto &c : conf.offerEndpoints)
+        {
+          auto cb = [peer = c.peer](const auto &s) { notifyClients(s, peer); };
+
+          parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
+            assert(scheme == "ws");  // Currently, only web sockets are supported
+            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port);
+          });
+        }
       }
 
       static void createOutChannels(const Configuration &conf)
       {
-        for(const auto &c : conf.outChannels)
+        for(const auto &c : conf.useEndpoints)
         {
           parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
             assert(scheme == "ws");  // Currently, only web sockets are supported
@@ -49,31 +53,50 @@ namespace nltools
         }
       }
 
-      static sigc::connection connectReceiver(MessageType type, std::function<void(const SerializedMessage &)> cb)
+      static sigc::connection connectReceiver(MessageType type, EndPoint endPoint,
+                                              std::function<void(const SerializedMessage &)> cb)
       {
-        return signals[type].connect(cb);
+        return signals[std::make_pair(type, endPoint)].connect(cb);
       }
 
-      void send(nltools::msg::Participants receiver, SerializedMessage msg)
+      void send(nltools::msg::EndPoint receiver, SerializedMessage msg)
       {
         outChannels.at(receiver)->send(msg);
       }
 
-      sigc::connection receiveSerialized(MessageType type, std::function<void(const SerializedMessage &)> cb)
+      sigc::connection receiveSerialized(MessageType type, EndPoint receivingEndPoint,
+                                         std::function<void(const SerializedMessage &)> cb)
       {
-        return connectReceiver(type, cb);
+        return connectReceiver(type, receivingEndPoint, cb);
       }
     }
 
-    bool waitForConnection(Participants receiver, std::chrono::milliseconds timeOut)
+    bool waitForConnection(EndPoint receiver, std::chrono::milliseconds timeOut)
     {
       return detail::outChannels.at(receiver)->waitForConnection(timeOut);
     }
 
+    ChannelConfiguration::ChannelConfiguration(EndPoint p)
+        : peer(p)
+        , uri(concat("ws://", "localhost", ":", getPortFor(p)))
+    {
+    }
+
+    ChannelConfiguration::ChannelConfiguration(EndPoint p, const std::string &hostName)
+        : peer(p)
+        , uri(concat("ws://", hostName, ":", getPortFor(p)))
+    {
+    }
+
     void init(const Configuration &conf)
     {
-      detail::createInChannel(conf);
+      detail::createInChannels(conf);
       detail::createOutChannels(conf);
+    }
+
+    uint getPortFor(EndPoint p)
+    {
+      return static_cast<uint>(p) + 40100;
     }
   }
 }

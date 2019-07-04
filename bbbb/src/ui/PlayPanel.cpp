@@ -95,7 +95,7 @@ PlayPanel::~PlayPanel()
 {
 }
 
-void PlayPanel::setFrameBuffer(WebSocketServer::tMessage msg)
+void PlayPanel::setFrameBuffer(const nltools::msg::SetOLEDMessage &msg)
 {
   m_boled.setBuffer(msg);
 }

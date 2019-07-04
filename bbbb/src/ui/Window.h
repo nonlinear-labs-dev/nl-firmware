@@ -9,6 +9,15 @@
 #include "Ribbon.h"
 #include "LowerRibbon.h"
 
+namespace nltools
+{
+  namespace msg
+  {
+    struct SetPanelLEDMessage;
+    struct SetOLEDMessage;
+  }
+}
+
 class Window : public Gtk::Window
 {
  public:
@@ -16,9 +25,8 @@ class Window : public Gtk::Window
   virtual ~Window();
 
  private:
-  void onFrameBufferMessageReceived(WebSocketServer::tMessage msg);
-  void onTimeStampedFrameBufferMessageReceived(WebSocketServer::tMessage msg);
-  void onPanelLEDsMessageReceived(WebSocketServer::tMessage msg);
+  void onFrameBufferMessageReceived(const nltools::msg::SetOLEDMessage &msg);
+  void onPanelLEDsMessageReceived(const nltools::msg::SetPanelLEDMessage &msg);
   WebSocketServer::tMessage m_frameBuffer;
 
   Gtk::VBox m_box;

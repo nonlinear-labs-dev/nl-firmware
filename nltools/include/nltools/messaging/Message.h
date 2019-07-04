@@ -14,19 +14,31 @@ namespace nltools
 
     struct ParameterChangedMessage : Message<MessageType::Parameter>
     {
-      ParameterChangedMessage(uint16_t id = 0, double controlPosition = 0)
+      ParameterChangedMessage(uint16_t id = 0, float controlPosition = 0)
           : parameterId(id)
           , controlPosition(controlPosition)
       {
       }
 
       uint16_t parameterId;
-      double controlPosition;
+      float controlPosition;
     };
 
-    struct PresetChangedMessage : Message<MessageType::Preset>
+    struct SetRibbonLEDMessage : Message<MessageType::SetRibbonLED>
     {
-      double values[380];
+      uint8_t id;
+      uint8_t brightness;
+    };
+
+    struct SetPanelLEDMessage : Message<MessageType::SetPanelLED>
+    {
+      uint8_t id;
+      bool on;
+    };
+
+    struct SetOLEDMessage : Message<MessageType::SetOLED>
+    {
+      uint8_t pixels[256][96];
     };
   }
 }

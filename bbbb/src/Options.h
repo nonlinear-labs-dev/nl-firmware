@@ -8,9 +8,4 @@ class Options
  public:
   Options(int &argc, char **&argv);
   virtual ~Options();
-
-  bool doTimeStamps() const;
-
- private:
-  bool m_doTimeStamps = false;
 };

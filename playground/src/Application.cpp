@@ -23,10 +23,10 @@
 
 Application *Application::theApp = nullptr;
 
-char *Application::initStatic(Application *app, char *argv)
+std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_ptr<Options> options)
 {
   theApp = app;
-  return argv;
+  return options;
 }
 
 void quitApp(int sig)
@@ -35,10 +35,9 @@ void quitApp(int sig)
   Application::get().quit();
 }
 
-Application::Application(int numArgs, char **argv)
-    : m_selfPath(initStatic(this, argv[0]))
+Application::Application(std::unique_ptr<Options> options)
+    : m_options(initStatic(this, std::move(options)))
     , m_theMainLoop(MainLoop::create())
-    , m_options(new Options(numArgs, argv))
     , m_websocketSession(std::make_unique<WebSocketSession>())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
@@ -103,12 +102,12 @@ Application &Application::get()
 
 Glib::ustring Application::getSelfPath() const
 {
-  return m_selfPath;
+  return getOptions()->getSelfPath();
 }
 
 Glib::ustring Application::getResourcePath() const
 {
-  RefPtr<Gio::File> app = Gio::File::create_for_path(m_selfPath);
+  RefPtr<Gio::File> app = Gio::File::create_for_path(getSelfPath());
   RefPtr<Gio::File> parent = app->get_parent();
   Glib::ustring parentPath = parent->get_path();
   return parentPath + "/resources/";
@@ -188,7 +187,7 @@ Clipboard *Application::getClipboard()
   return m_clipboard.get();
 }
 
-Options *Application::getOptions()
+const Options *Application::getOptions() const
 {
   return m_options.get();
 }

@@ -6,6 +6,7 @@
 #include <chrono>
 #include "device-settings/DebugLevel.h"
 #include "profiling/Profiler.h"
+#include "Options.h"
 #include <nltools/messaging/Messaging.h>
 #include <nltools/StringTools.h>
 
@@ -84,18 +85,25 @@ void setupLocale()
   DebugLevel::error("Could not set locale to any desired");
 }
 
+void setupMessaging(const Options* options)
+{
+  using namespace nltools::msg;
+
+  auto bbbb = options->getBBBB();
+
+  Configuration conf;
+  conf.offerEndpoints = { EndPoint::Playground };
+  conf.useEndpoints = { { EndPoint::Playground }, { EndPoint::AudioEngine },    { EndPoint::Lpc, bbbb },
+                        { EndPoint::Oled, bbbb }, { EndPoint::PanelLed, bbbb }, { EndPoint::RibbonLed, bbbb } };
+  nltools::msg::init(conf);
+}
+
 int main(int numArgs, char** argv)
 {
   Gio::init();
+  auto options = std::make_unique<Options>(numArgs, argv);
 
-  nltools::msg::Configuration conf;
-  conf.inChannel = { nltools::msg::Participants::Playground,
-                     nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::PlaygroundWebSocket) };
-  conf.outChannels.push_back({ nltools::msg::Participants::Playground,
-                               nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::PlaygroundWebSocket) });
-  conf.outChannels.push_back({ nltools::msg::Participants::AudioEngine,
-                               nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::AudioEngineWebSocket) });
-  nltools::msg::init(conf);
+  setupMessaging(options.get());
 
   setupLocale();
 
@@ -111,7 +119,7 @@ int main(int numArgs, char** argv)
 #endif
 
   {
-    Application app(numArgs, argv);
+    Application app(std::move(options));
     Application::get().run();
     DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }

@@ -14,12 +14,7 @@ enum class Domain : uint8_t
 {
   Lpc = 1,
   Buttons = 2,
-  Oled = 3,
   Rotary = 4,
-  PanelLed = 5,
-  RibbonLed = 6,
-  TimeStampedRotary = 7,
-  TimeStampedOled = 8,
 };
 
 void printCurrentTime(const char *s);

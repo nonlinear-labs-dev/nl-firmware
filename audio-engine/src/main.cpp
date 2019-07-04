@@ -39,17 +39,19 @@ void runMainLoop()
   theMainLoop->run();
 }
 
+void setupMessaging()
+{
+  using namespace nltools::msg;
+  Configuration conf;
+  conf.offerEndpoints = { EndPoint::AudioEngine };
+  conf.useEndpoints = { EndPoint::Playground };
+  nltools::msg::init(conf);
+}
+
 int main(int args, char *argv[])
 {
   Glib::init();
-
-  nltools::msg::Configuration conf;
-  conf.inChannel = { nltools::msg::Participants::AudioEngine,
-                     nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::AudioEngineWebSocket) };
-  conf.outChannels.push_back({ nltools::msg::Participants::Playground,
-                               nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::PlaygroundWebSocket) });
-  nltools::msg::init(conf);
-
+  setupMessaging();
   connectSignals();
 
   theOptions = std::make_unique<Options>(args, argv);
