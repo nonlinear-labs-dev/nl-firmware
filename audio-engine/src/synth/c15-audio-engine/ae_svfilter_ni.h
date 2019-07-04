@@ -32,6 +32,5 @@ struct ae_svfilter_ni
     FloatVector m_first_int1_stateVar, m_first_int2_stateVar;
     FloatVector m_second_int1_stateVar, m_second_int2_stateVar;
 
-    FloatVector m_first_sv_sample; // seems obsolete?
     FloatVector m_first_sat_stateVar, m_second_sat_stateVar;
 };

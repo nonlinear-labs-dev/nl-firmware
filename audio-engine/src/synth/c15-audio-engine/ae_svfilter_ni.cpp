@@ -33,7 +33,6 @@ void ae_svfilter_ni::init(float _samplerate)
     m_second_int1_stateVar = 0.0f;
     m_second_int2_stateVar = 0.0f;
 
-    m_first_sv_sample = 0.0f; // seems obsolete?
     m_first_sat_stateVar = 0.0f;
     m_second_sat_stateVar = 0.0f;
 }
@@ -121,7 +120,6 @@ void ae_svfilter_ni::resetDSP()
     m_second_int1_stateVar = 0.0f;
     m_second_int2_stateVar = 0.0f;
 
-    m_first_sv_sample = 0.0f; // seems obsolete?
     m_first_sat_stateVar = 0.0f;
     m_second_sat_stateVar = 0.0f;
 }
