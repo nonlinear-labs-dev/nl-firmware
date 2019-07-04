@@ -57,7 +57,7 @@ namespace nltools
       {
         std::unique_lock<std::mutex> l(m_conditionMutex);
 
-        while(!m_connectionEstablished)
+        if(!m_connectionEstablished)
           m_connectionEstablishedCondition.wait_for(l, timeOut);
 
         return m_connectionEstablished;
@@ -91,7 +91,7 @@ namespace nltools
 
         if(error)
         {
-          nltools::Log::info(error->message);
+          nltools::Log::debug(error->message);
           g_error_free(error);
           pThis->reconnect();
         }

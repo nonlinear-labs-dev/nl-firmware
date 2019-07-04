@@ -7,6 +7,7 @@
 #include "device-settings/DebugLevel.h"
 #include "profiling/Profiler.h"
 #include <nltools/messaging/Messaging.h>
+#include <nltools/StringTools.h>
 
 void printStackTrace(int i)
 {
@@ -86,7 +87,15 @@ void setupLocale()
 int main(int numArgs, char** argv)
 {
   Gio::init();
-  nltools::msg::init(nltools::msg::Participants::Playground);
+
+  nltools::msg::Configuration conf;
+  conf.inChannel = { nltools::msg::Participants::Playground,
+                     nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::PlaygroundWebSocket) };
+  conf.outChannels.push_back({ nltools::msg::Participants::Playground,
+                               nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::PlaygroundWebSocket) });
+  conf.outChannels.push_back({ nltools::msg::Participants::AudioEngine,
+                               nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::AudioEngineWebSocket) });
+  nltools::msg::init(conf);
 
   setupLocale();
 

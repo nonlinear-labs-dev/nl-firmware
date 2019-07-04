@@ -4,6 +4,7 @@
 #include "ui/CommandlinePerformanceWatch.h"
 
 #include <nltools/logging/Log.h>
+#include <nltools/StringTools.h>
 #include <nltools/messaging/Messaging.h>
 
 #include <glibmm.h>
@@ -41,7 +42,13 @@ void runMainLoop()
 int main(int args, char *argv[])
 {
   Glib::init();
-  nltools::msg::init(nltools::msg::Participants::AudioEngine);
+
+  nltools::msg::Configuration conf;
+  conf.inChannel = { nltools::msg::Participants::AudioEngine,
+                     nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::AudioEngineWebSocket) };
+  conf.outChannels.push_back({ nltools::msg::Participants::Playground,
+                               nltools::concat("ws://", "localhost", ":", nltools::msg::Ports::PlaygroundWebSocket) });
+  nltools::msg::init(conf);
 
   connectSignals();
 

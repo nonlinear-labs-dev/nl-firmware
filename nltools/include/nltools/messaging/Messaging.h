@@ -79,7 +79,20 @@ namespace nltools
     }
 
     // Client has to call this on startup
-    void init(Participants self);
+
+    struct ChannelConfiguration
+    {
+      Participants peer;
+      std::string uri;
+    };
+
+    struct Configuration
+    {
+      ChannelConfiguration inChannel;
+      std::vector<ChannelConfiguration> outChannels;
+    };
+
+    void init(const Configuration &conf);
 
     // wait at most timeOut for the connection to be established
     // return true if there is a connection to receiver

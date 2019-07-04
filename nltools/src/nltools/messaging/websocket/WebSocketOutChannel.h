@@ -47,7 +47,7 @@ namespace nltools
         Glib::RefPtr<Glib::MainLoop> m_messageLoop;
         std::thread m_contextThread;
 
-        std::atomic<bool> m_connectionEstablished;
+        std::atomic<bool> m_connectionEstablished = false;
         std::mutex m_conditionMutex;
         std::condition_variable m_connectionEstablishedCondition;
       };

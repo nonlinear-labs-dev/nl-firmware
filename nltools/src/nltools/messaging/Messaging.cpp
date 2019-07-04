@@ -2,6 +2,7 @@
 #include <nltools/messaging/websocket/WebSocketOutChannel.h>
 #include <nltools/messaging/websocket/WebSocketInChannel.h>
 #include <nltools/logging/Log.h>
+#include <nltools/StringTools.h>
 #include <memory>
 #include <map>
 #include <list>
@@ -13,65 +14,49 @@ namespace nltools
     namespace detail
     {
       using OutChannels = std::map<Participants, std::unique_ptr<OutChannel>>;
+      using InChannelPtr = std::unique_ptr<InChannel>;
       using Signals = std::map<MessageType, sigc::signal<void, const SerializedMessage &>>;
 
-      static OutChannels createOutChannels()
-      {
-        OutChannels ret;
-        ret[Participants::AudioEngine]
-            = std::make_unique<ws::WebSocketOutChannel>("localhost", Ports::AudioEngineWebSocket);
-        ret[Participants::Playground]
-            = std::make_unique<ws::WebSocketOutChannel>("localhost", Ports::PlaygroundWebSocket);
-        return ret;
-      }
-
-      static Signals &getSignals()
-      {
-        static Signals signals;
-        return signals;
-      }
+      static OutChannels outChannels;
+      static InChannelPtr inChannel;
+      static Signals signals;
 
       static void notifyClients(const SerializedMessage &s)
       {
         gsize numBytes = 0;
         auto data = reinterpret_cast<const uint16_t *>(s->get_data(numBytes));
         auto type = static_cast<MessageType>(data[0]);
-        getSignals()[type](s);
+        signals[type](s);
       }
 
-      static std::unique_ptr<InChannel> createInChannel(Participants whoAmI)
+      static void createInChannel(const Configuration &conf)
       {
         auto cb = [](const auto &s) { notifyClients(s); };
-
-        switch(whoAmI)
-        {
-          case Participants::AudioEngine:
-            return std::make_unique<ws::WebSocketInChannel>(cb, Ports::AudioEngineWebSocket);
-
-          case Participants::Playground:
-            return std::make_unique<ws::WebSocketInChannel>(cb, Ports::PlaygroundWebSocket);
-
-          default:
-            nltools::Log::error("Cannot create input channel!");
-        }
-
-        return nullptr;
+        parseURI(conf.inChannel.uri, [=](auto scheme, auto, auto, auto port) {
+          assert(scheme == "ws");  // Currently, only web sockets are supported
+          inChannel = std::make_unique<ws::WebSocketInChannel>(cb, port);
+        });
       }
 
-      static OutChannel *getOutChannel(Participants r)
+      static void createOutChannels(const Configuration &conf)
       {
-        static OutChannels outChannels = createOutChannels();
-        return outChannels.at(r).get();
+        for(const auto &c : conf.outChannels)
+        {
+          parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
+            assert(scheme == "ws");  // Currently, only web sockets are supported
+            outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port);
+          });
+        }
       }
 
       static sigc::connection connectReceiver(MessageType type, std::function<void(const SerializedMessage &)> cb)
       {
-        return getSignals()[type].connect(cb);
+        return signals[type].connect(cb);
       }
 
       void send(nltools::msg::Participants receiver, SerializedMessage msg)
       {
-        getOutChannel(receiver)->send(msg);
+        outChannels.at(receiver)->send(msg);
       }
 
       sigc::connection receiveSerialized(MessageType type, std::function<void(const SerializedMessage &)> cb)
@@ -82,12 +67,13 @@ namespace nltools
 
     bool waitForConnection(Participants receiver, std::chrono::milliseconds timeOut)
     {
-      return detail::getOutChannel(receiver)->waitForConnection(timeOut);
+      return detail::outChannels.at(receiver)->waitForConnection(timeOut);
     }
 
-    void init(Participants self)
+    void init(const Configuration &conf)
     {
-      static auto inChannel = detail::createInChannel(self);
+      detail::createInChannel(conf);
+      detail::createOutChannels(conf);
     }
   }
 }
