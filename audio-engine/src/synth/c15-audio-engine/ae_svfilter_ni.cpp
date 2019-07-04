@@ -63,7 +63,7 @@ void ae_svfilter_ni::apply(const FloatVector &_sampleA, const FloatVector &_samp
 
     auto omega = (_signals.get<Signals::SVF_F1_CUT>() + (fmVar * _signals.get<Signals::SVF_F1_FM>())) * m_warpConst_2PI;
     /* Here, we will perform clipping depending on the resonance! */
-    omega = std::clamp(omega, 0.f, fmax); // is new parallel template working?
+    omega = std::clamp(omega, 0.f, fmax);
 
     auto highpassOutput = inputSample - ((m_first_int1_stateVar * damp) + m_first_int2_stateVar);
     auto bandpassOutput = (highpassOutput * omega) + m_first_int1_stateVar;
@@ -88,7 +88,7 @@ void ae_svfilter_ni::apply(const FloatVector &_sampleA, const FloatVector &_samp
                 + (m_second_sat_stateVar * 0.10f);
 
     omega = (_signals.get<Signals::SVF_F2_CUT>() + (fmVar * _signals.get<Signals::SVF_F2_FM>())) * m_warpConst_2PI;
-    omega = std::clamp(omega, 0.0f, fmax); // is new parallel template working?
+    omega = std::clamp(omega, 0.0f, fmax);
 
     highpassOutput = inputSample - ((m_second_int1_stateVar * damp) + m_second_int2_stateVar);
     bandpassOutput = (highpassOutput * omega) + m_second_int1_stateVar;
