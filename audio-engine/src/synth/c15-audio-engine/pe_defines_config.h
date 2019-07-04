@@ -23,6 +23,11 @@
       // - 155 (internal unison handling, echo/reverb sends),                                                          \
       // - 156 (simplified TCD key sequence by new KeyVoice command, automatic internal unison loop)
 
+// +3dB clipping candidates (can be disabled for test and comparison purposes)
+#define test_env_ab_3db_clip 1          //
+#define test_env_c_3db_clip 1           //
+#define test_fbm_kt_3db_clip 1          //
+
 #define test_tone_initial_freq 500.0f  // Test Tone initial Frequency
 #define test_tone_initial_gain -6.0f   // Test Tone initial Gain (in decibel)
 #define test_tone_initial_state 0      // Test Tone initial State (0: disabled, 1: enabled)
@@ -30,8 +35,8 @@
 #define test_comb_decay_gate_mode                                                                                      \
   1  // 0: apply in slow post processing (like prototype), 1: audio fade min, max by gate signal (recommended)
 
-#define test_svf_types 1        // 0: SVF first Proto NAN, 1: SVF noFIR, 2: SVF FIR, 3: SVF Original Primary (later)
-#define test_svf_fm_limit 1.5f  // SVF fm clipping maximum
+#define test_svf_types 3        // 0: SVF first Proto NAN, 1: SVF noFIR, 2: SVF FIR, 3: SVF NI (recommended)
+#define test_svf_fm_limit 1.5f  // SVF fm clipping maximum (for svf_types 0, 1, 2)
 
 #define test_preload_update                                                                                            \
   2  // 0: non-optimized preload update, 1: optimized preload update (but key glitches), 2: fixed preload update (recommended)
@@ -90,7 +95,7 @@ const uint32_t dsp_clock_rates[2] = {
 
 #define sig_number_of_params 198        // see Linux Engine LPC Status / Overview, Parameter List
 #define sig_number_of_param_items 274   // number of required (single-voice) rendering items for all parameters
-#define sig_number_of_signal_items 136  // signals shared between the parameter and audio engine
+#define sig_number_of_signal_items 138  // signals shared between the parameter and audio engine
 
 /* TCD List Handling */
 
@@ -104,7 +109,7 @@ const uint32_t dsp_clock_rates[2] = {
 
 #define sig_number_of_params 197        // see Linux Engine 1.55 LPC Status / Overview, Parameter List
 #define sig_number_of_param_items 254   // number of required (single-voice) rendering items for all parameters
-#define sig_number_of_signal_items 136  // signals shared between the parameter and audio engine
+#define sig_number_of_signal_items 138  // signals shared between the parameter and audio engine
 
 /* TCD List Handling */
 
@@ -118,7 +123,7 @@ const uint32_t dsp_clock_rates[2] = {
 
 #define sig_number_of_params 195        // see Linux Engine 1.56 LPC Status / Overview, Parameter List
 #define sig_number_of_param_items 214   // number of required (single-voice) rendering items for all parameters
-#define sig_number_of_signal_items 136  // signals shared between the parameter and audio engine
+#define sig_number_of_signal_items 138  // signals shared between the parameter and audio engine
 
 /* TCD List Handling */
 

@@ -227,6 +227,18 @@ namespace std
     return ret;
   }
 
+  // with the new state variable filter, we need a parallel vector max
+  template <typename T, size_t size> inline ParallelData<T, size> clamp(const ParallelData<T, size> &in,
+                                                                        T min, const ParallelData<T, size> &max)
+  {
+    ParallelData<T, size> ret;
+
+    for(size_t i = 0; i < size; i++)
+      ret[i] = std::clamp(in[i], min, max[i]);
+
+    return ret;
+  }
+
   template <typename TOut, typename T, size_t size>
   inline ParallelData<TOut, size> round(const ParallelData<T, size> &in)
   {

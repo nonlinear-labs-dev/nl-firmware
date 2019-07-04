@@ -252,7 +252,7 @@ float paramengine::scale(const uint32_t _scaleId, const float _scaleArg, float _
       break;
     case 8:
       /* exponential, osc-pitch scaling (argument is offset) */
-      result = m_convert.eval_osc_pitch(_value + _scaleArg);  // includes hyperbolic floor, oscillators only
+      result = m_convert.eval_osc_pitch(_value + _scaleArg);  // includes hyperbolic floor, oscillators only (now redundant)
       break;
     case 9:
       /* exponential, lin-pitch scaling (argument is offset) */
@@ -480,8 +480,12 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
       * _velocity;  // determine decay2 velocity accorindg to velocity and parameter
   levelKT = getParameterValue(Parameters::P_EA_LKT)
       * _pitch;  // determine level key tracking according to pitch and parameter
+#if test_env_ab_3db_clip == 0
+  peak = m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT);
+#elif test_env_ab_3db_clip == 1
   peak = std::min(m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT),
                   env_clip_peak);  // determine peak level according to velocity and level parameters (max +3dB)
+#endif
 
   m_event.m_env[0].m_levelFactor[_voiceId] = peak;  // remember peak level
   m_event.m_env[0].m_timeFactor[_voiceId][0] = m_convert.eval_level(timeKT + attackVel)
@@ -536,8 +540,12 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
       * _velocity;  // determine decay2 velocity accorindg to velocity and parameter
   levelKT = getParameterValue(Parameters::P_EB_LKT)
       * _pitch;  // determine level key tracking according to pitch and parameter
+#if test_env_ab_3db_clip == 0
+  peak = m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT);
+#elif test_env_ab_3db_clip == 1
   peak = std::min(m_convert.eval_level(((1.f - _velocity) * levelVel) + levelKT),
                   env_clip_peak);  // determine peak level according to velocity and level parameters (max +3dB)
+#endif
 
   m_event.m_env[1].m_levelFactor[_voiceId] = peak;  // remember peak level
   m_event.m_env[1].m_timeFactor[_voiceId][0] = m_convert.eval_level(timeKT + attackVel)
@@ -593,7 +601,11 @@ void paramengine::newEnvUpdateStart(const uint32_t _voiceId, const float _pitch,
   unclipped
       = m_convert.eval_level(((1.f - _velocity) * levelVel)
                              + levelKT);  // determine unclipped peak level according to velocity and level parameters
+#if test_env_c_3db_clip == 0
+  peak = unclipped;
+#elif test_env_c_3db_clip == 1
   peak = std::min(unclipped, env_clip_peak);  // determine clipped peak level (max +3dB)
+#endif
   m_env_c_clipFactor[_voiceId]
       = unclipped / peak;  // determine unclipped / clipped peak factor in order to reconstruct unclipped signal later
 
@@ -939,7 +951,7 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OA_PEC);
   signals.set<Signals::OSC_A_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OA_FEC);
   signals.set<Signals::OSC_A_FLUEC>(
@@ -955,7 +967,7 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OB_PEC);
   signals.set<Signals::OSC_B_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator B Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OB_FEC);
   signals.set<Signals::OSC_B_FLUEC>(
@@ -1036,12 +1048,14 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   /* - Resonance */
   keyTracking = getParameterValue(Parameters::P_SVF_RKT) * m_svfResFactor;
   envMod = signals.get<Signals::ENV_C_CLIP>()[_voiceId] * getParameterValue(Parameters::P_SVF_REC);
-  unitPitch = getParameterValue(Parameters::P_SVF_RES) + envMod + (notePitch * keyTracking);
-  //signals.set(SignalLabel::SVF_RES, m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f)));
-  float res = 1.f
-      - m_svfResonanceCurve.applyCurve(
-            std::clamp(unitPitch, 0.f, 1.f));  // NEW resonance handling directly in post processing
-  signals.set<Signals::SVF_RES>(_voiceId, std::max(res + res, 0.02f));
+  unitPitch = m_svfResonanceCurve.applyCurve(std::clamp(getParameterValue(Parameters::P_SVF_RES) + envMod + (notePitch * keyTracking), 0.0f, 1.0f));
+#if test_svf_types != 3
+  // not sure here, but it's working
+  signals.set<Signals::SVF_RES>(_voiceId, unitPitch); // transmit res directly
+#elif test_svf_types == 3
+  signals.set<Signals::SVF_RES_DAMP>(_voiceId, 2.0f - (2.0f * unitPitch)); // transmit damp factor derived from res
+  signals.set<Signals::SVF_RES_FMAX>(_voiceId, 0.7352f + (0.2930f * unitPitch * (1.3075f + unitPitch))); // transmit maximum freq derived from res
+#endif
   /* - Feedback Mixer */
   /*   - determine Highpass Filter Frequency */
   signals.set<Signals::FBM_HPF>(_voiceId, evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f));
@@ -1131,7 +1145,11 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   signals.set<Signals::OUT_SVF_R>(_voiceId, tmp_lvl * tmp_pan);
   /* - Feedback Mixer */
   tmp_lvl = getParameterValue(Parameters::P_FBM_LVL);
+#if test_fbm_kt_3db_clip == 0
+  tmp_pan = m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch));
+#elif test_fbm_kt_3db_clip == 1
   tmp_pan = std::min(m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch)), env_clip_peak);
+#endif
   signals.set<Signals::FBM_LVL>(_voiceId, tmp_lvl * tmp_pan);
 }
 
@@ -1307,7 +1325,7 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OA_PEC);
   signals.set<Signals::OSC_A_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator A Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OA_FEC);
   signals.set<Signals::OSC_A_FLUEC>(
@@ -1323,7 +1341,7 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   envMod = signals.get<Signals::ENV_C_UNCL>()[_voiceId] * getParameterValue(Parameters::P_OB_PEC);
   signals.set<Signals::OSC_B_FRQ>(
       _voiceId,
-      evalNyquist(m_pitch_reference * unitPitch * m_convert.eval_lin_pitch(69.f + (notePitch * keyTracking) + envMod)));
+      evalNyquist(m_pitch_reference * m_convert.eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   /* - Oscillator B Fluctuation (Envelope C) */
   envMod = getParameterValue(Parameters::P_OB_FEC);
   signals.set<Signals::OSC_B_FLUEC>(
@@ -1394,12 +1412,14 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   /* - Resonance */
   keyTracking = getParameterValue(Parameters::P_SVF_RKT) * m_svfResFactor;
   envMod = signals.get<Signals::ENV_C_CLIP>()[_voiceId] * getParameterValue(Parameters::P_SVF_REC);
-  unitPitch = getParameterValue(Parameters::P_SVF_RES) + envMod + (notePitch * keyTracking);
-  //signals.set(SignalLabel::SVF_RES, m_svfResonanceCurve.applyCurve(std::clamp(unitPitch, 0.f, 1.f)));
-  float res = 1.f
-      - m_svfResonanceCurve.applyCurve(
-            std::clamp(unitPitch, 0.f, 1.f));  // NEW resonance handling directly in post processing
-  signals.set<Signals::SVF_RES>(_voiceId, std::max(res + res, 0.02f));
+  unitPitch = m_svfResonanceCurve.applyCurve(std::clamp(getParameterValue(Parameters::P_SVF_RES) + envMod + (notePitch * keyTracking), 0.0f, 1.0f));
+#if test_svf_types != 3
+  // not sure here, but it's working
+  signals.set<Signals::SVF_RES>(_voiceId, unitPitch); // transmit res directly
+#elif test_svf_types == 3
+  signals.set<Signals::SVF_RES_DAMP>(_voiceId, 2.0f - (2.0f * unitPitch)); // transmit damp factor derived from res
+  signals.set<Signals::SVF_RES_FMAX>(_voiceId, 0.7352f + (0.2930f * unitPitch * (1.3075f + unitPitch))); // transmit maximum freq derived from res
+#endif
   /* Output Mixer */
   float tmp_lvl, tmp_pan;
 #if test_milestone == 150
@@ -1433,7 +1453,11 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
   signals.set<Signals::OUT_SVF_R>(_voiceId, tmp_lvl * tmp_pan);
   /* - Feedback Mixer */
   tmp_lvl = getParameterValue(Parameters::P_FBM_LVL);
+#if test_fbm_kt_3db_clip == 0
+  tmp_pan = m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch));
+#elif test_fbm_kt_3db_clip == 1
   tmp_pan = std::min(m_convert.eval_level(getParameterValue(Parameters::P_FBM_LKT) * (notePitch)), env_clip_peak);
+#endif
   signals.set<Signals::FBM_LVL>(_voiceId, tmp_lvl * tmp_pan);
   /*   - determine Highpass Filter Frequency */
   signals.set<Signals::FBM_HPF>(_voiceId, evalNyquist(m_convert.eval_lin_pitch(12.f + notePitch) * 440.f));
