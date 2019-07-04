@@ -2,10 +2,10 @@
 #include "c15-audio-engine/dsp_host.h"
 #include "main.h"
 #include "Options.h"
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 
-#include <messaging/Message.h>
-#include <logging/Log.h>
+#include <nltools/messaging/Message.h>
+#include <nltools/logging/Log.h>
 
 C15Synth::C15Synth()
     : m_dsp(std::make_unique<dsp_host>())

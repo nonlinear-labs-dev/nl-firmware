@@ -1,9 +1,9 @@
-#include <messaging/Messaging.h>
-#include <messaging/Message.h>
-#include <logging/Log.h>
+#include <nltools/messaging/Messaging.h>
+#include <nltools/messaging/Message.h>
+#include <nltools/logging/Log.h>
 #include "TestDriver.h"
 #include <glib.h>
-#include <tools/Expiration.h>
+#include <nltools/threading/Expiration.h>
 
 struct MessagingTests
 {

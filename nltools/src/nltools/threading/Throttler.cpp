@@ -1,4 +1,4 @@
-#include "Throttler.h"
+#include <nltools/threading/Throttler.h>
 
 Throttler::Throttler(Expiration::Duration maxDelay)
     : m_expiration(std::bind(&Throttler::delayedCallback, this))

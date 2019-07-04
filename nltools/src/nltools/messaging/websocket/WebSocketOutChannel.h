@@ -1,7 +1,8 @@
 #pragma once
 
-#include <messaging/OutChannel.h>
-#include <threading/ContextBoundMessageQueue.h>
+#include <nltools/messaging/OutChannel.h>
+#include <nltools/threading/ContextBoundMessageQueue.h>
+
 #include <memory>
 #include <thread>
 #include <atomic>

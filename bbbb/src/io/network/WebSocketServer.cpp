@@ -1,6 +1,6 @@
 #include <io/network/WebSocketServer.h>
 #include <netinet/tcp.h>
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 
 WebSocketServer::WebSocketServer()
     : m_server(soup_server_new(nullptr, nullptr), g_object_unref)

@@ -1,4 +1,5 @@
 #include "OutChannel.h"
+
 namespace nltools
 {
   namespace msg

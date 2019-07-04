@@ -1,6 +1,6 @@
 #include "CommandlinePerformanceWatch.h"
 #include "io/audio/AudioOutput.h"
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include <glibmm.h>
 
 CommandlinePerformanceWatch::CommandlinePerformanceWatch(const AudioOutput *device)

@@ -1,5 +1,5 @@
 #include "AudioEngineProxy.h"
-#include <messaging/Message.h>
+#include <nltools/messaging/Message.h>
 
 void AudioEngineProxy::sendParameter(uint16_t id, tControlPositionValue value)
 {

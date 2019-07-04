@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tools/Throttler.h>
+#include <nltools/threading/Throttler.h>
 #include <io/Sender.h>
 #include <stddef.h>
 #include <linux/fb.h>

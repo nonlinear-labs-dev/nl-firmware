@@ -10,8 +10,8 @@ namespace nltools
   namespace msg
   {
     // forward declaration of message types:
-    class ParameterChangedMessage;
-    class PresetChangedMessage;
+    struct ParameterChangedMessage;
+    struct PresetChangedMessage;
 
     // known ports for paritcipants:
     enum Ports

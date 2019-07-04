@@ -6,26 +6,26 @@ namespace nltools
 {
   namespace msg
   {
-    struct ParameterChangedMessage
+    template <MessageType msgType> struct Message
     {
-      static const MessageType theType = MessageType::Parameter;
+      static const MessageType theType = msgType;
+      MessageType type = msgType;
+    };
 
+    struct ParameterChangedMessage : Message<MessageType::Parameter>
+    {
       ParameterChangedMessage(uint16_t id = 0, double controlPosition = 0)
           : parameterId(id)
           , controlPosition(controlPosition)
       {
       }
 
-      MessageType type = theType;
       uint16_t parameterId;
       double controlPosition;
     };
 
-    struct PresetChangedMessage
+    struct PresetChangedMessage : Message<MessageType::Preset>
     {
-      static const MessageType theType = MessageType::Preset;
-
-      MessageType type = theType;
       double values[380];
     };
   }

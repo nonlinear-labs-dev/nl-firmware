@@ -1,6 +1,6 @@
 #include "WebSocketOutChannel.h"
-#include "StringTools.h"
-#include "logging/Log.h"
+#include <nltools/StringTools.h>
+#include <nltools/logging/Log.h>
 
 #include <netinet/tcp.h>
 

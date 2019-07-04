@@ -1,7 +1,6 @@
 #pragma once
 
-#include "playground.h"
-#include "Expiration.h"
+#include <nltools/threading/Expiration.h>
 
 class Throttler
 {

@@ -10,7 +10,7 @@
 #include <presets/SearchQuery.h>
 #include <serialization/PresetManagerSerializer.h>
 #include <tools/ScopedGuard.h>
-#include <tools/Throttler.h>
+#include <nltools/threading/Throttler.h>
 #include <tools/Uuid.h>
 #include <tools/RecursionGuard.h>
 

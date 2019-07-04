@@ -1,4 +1,4 @@
-#include <messaging/Message.h>
+#include <nltools/messaging/Message.h>
 
 namespace nltools
 {

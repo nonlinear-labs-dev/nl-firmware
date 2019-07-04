@@ -1,4 +1,4 @@
-#include "Expiration.h"
+#include <nltools/threading/Expiration.h>
 
 Expiration::Expiration(Expiration::Callback cb, Expiration::Duration d, int priority)
 {
@@ -33,11 +33,9 @@ void Expiration::cancel()
 
 void Expiration::refresh(Expiration::Duration d, int priority)
 {
-  using namespace std::chrono;
-
   cancel();
 
-  auto ms = duration_cast<milliseconds>(d).count();
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
   auto cb = sigc::mem_fun(this, &Expiration::doCallback);
   m_timeout = Glib::MainContext::get_default()->signal_timeout().connect(cb, ms, priority);
 }

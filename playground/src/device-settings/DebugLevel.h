@@ -2,7 +2,7 @@
 
 #include "EnumSetting.h"
 #include <sys/time.h>
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 
 enum class DebugLevels
 {

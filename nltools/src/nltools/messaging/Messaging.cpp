@@ -1,7 +1,7 @@
-#include <messaging/Messaging.h>
-#include <messaging/websocket/WebSocketOutChannel.h>
-#include <messaging/websocket/WebSocketInChannel.h>
-#include <logging/Log.h>
+#include <nltools/messaging/Messaging.h>
+#include <nltools/messaging/websocket/WebSocketOutChannel.h>
+#include <nltools/messaging/websocket/WebSocketInChannel.h>
+#include <nltools/logging/Log.h>
 #include <memory>
 #include <map>
 #include <list>

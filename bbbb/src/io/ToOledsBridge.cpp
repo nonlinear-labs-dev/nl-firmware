@@ -4,7 +4,7 @@
 #include <Application.h>
 #include <Options.h>
 #include <string.h>
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 
 ToOledsBridge::ToOledsBridge()
     : super(new FrameBufferSender(), new WebSocketReceiver(Domain::Oled))

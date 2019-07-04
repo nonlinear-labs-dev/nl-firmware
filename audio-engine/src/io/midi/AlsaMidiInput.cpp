@@ -1,5 +1,5 @@
 #include "AlsaMidiInput.h"
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include "io/HighPriorityTask.h"
 #include <iostream>
 

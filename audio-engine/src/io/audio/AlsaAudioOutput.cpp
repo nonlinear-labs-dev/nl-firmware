@@ -3,7 +3,7 @@
 #include "main.h"
 #include "Options.h"
 #include "io/HighPriorityTask.h"
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include <iostream>
 #include <algorithm>
 

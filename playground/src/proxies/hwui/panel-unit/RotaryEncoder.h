@@ -2,7 +2,7 @@
 
 #include "playground.h"
 #include "proxies/hwui/HWUIEnums.h"
-#include <tools/Throttler.h>
+#include <nltools/threading/Throttler.h>
 #include <chrono>
 #include <io/network/WebSocketSession.h>
 

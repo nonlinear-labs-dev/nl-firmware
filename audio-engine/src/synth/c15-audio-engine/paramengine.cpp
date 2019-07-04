@@ -7,7 +7,7 @@
 *******************************************************************************/
 #include <math.h>
 #include "paramengine.h"
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include "SignalStorage.h"
 
 std::ostream& operator<<(std::ostream& lhs, const param_body& rhs)

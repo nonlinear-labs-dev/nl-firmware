@@ -63,7 +63,7 @@ add_executable(playground ${SOURCE_FILES})
 target_link_libraries(playground pthread)
 target_link_libraries(playground stdc++fs)
 target_link_libraries(playground nltools)
-include_directories(playground ${CMAKE_SOURCE_DIR}/nltools/tools/include/)
+include_directories(playground ${CMAKE_SOURCE_DIR}/nltools/include/)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})

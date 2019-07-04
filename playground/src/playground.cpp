@@ -6,7 +6,7 @@
 #include <chrono>
 #include "device-settings/DebugLevel.h"
 #include "profiling/Profiler.h"
-#include <messaging/Messaging.h>
+#include <nltools/messaging/Messaging.h>
 
 void printStackTrace(int i)
 {

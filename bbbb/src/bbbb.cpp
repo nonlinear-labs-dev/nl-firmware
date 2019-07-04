@@ -3,7 +3,7 @@
 #include <execinfo.h>
 #include <iostream>
 #include <chrono>
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include "Application.h"
 #ifdef _DEVELOPMENT_PC
 #include <ui/Window.h>

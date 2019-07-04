@@ -1,5 +1,5 @@
 #include "WebSocketInChannel.h"
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include <netinet/tcp.h>
 
 namespace nltools

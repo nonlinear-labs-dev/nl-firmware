@@ -1,7 +1,7 @@
 #pragma once
 
-#include <messaging/InChannel.h>
-#include <threading/ContextBoundMessageQueue.h>
+#include <nltools/messaging/InChannel.h>
+#include <nltools/threading/ContextBoundMessageQueue.h>
 #include <libsoup/soup.h>
 #include <memory>
 #include <thread>

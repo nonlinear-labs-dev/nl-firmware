@@ -1,7 +1,6 @@
 #pragma once
 
-#include "playground.h"
-#include "Uncopyable.h"
+#include <nltools/Uncopyable.h>
 #include <chrono>
 #include <functional>
 #include <glibmm.h>

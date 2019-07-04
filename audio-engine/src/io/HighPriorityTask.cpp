@@ -1,5 +1,5 @@
 #include "HighPriorityTask.h"
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include <mutex>
 
 HighPriorityTask::HighPriorityTask(int bindToCore, std::function<void()> cb)

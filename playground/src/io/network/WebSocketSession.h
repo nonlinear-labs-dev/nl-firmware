@@ -6,9 +6,9 @@
 #include <functional>
 #include <memory>
 #include <list>
-#include <tools/Expiration.h>
 #include <thread>
-#include <threading/ContextBoundMessageQueue.h>
+#include <nltools/threading/Expiration.h>
+#include <nltools/threading/ContextBoundMessageQueue.h>
 #include <chrono>
 
 class WebSocketSession

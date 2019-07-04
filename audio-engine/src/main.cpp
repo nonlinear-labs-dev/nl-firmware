@@ -3,8 +3,8 @@
 #include "synth/C15Synth.h"
 #include "ui/CommandlinePerformanceWatch.h"
 
-#include <logging/Log.h>
-#include <messaging/Messaging.h>
+#include <nltools/logging/Log.h>
+#include <nltools/messaging/Messaging.h>
 
 #include <glibmm.h>
 #include <iostream>

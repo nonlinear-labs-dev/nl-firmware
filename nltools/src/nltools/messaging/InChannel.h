@@ -1,6 +1,6 @@
 #pragma once
 
-#include <messaging/Messaging.h>
+#include <nltools/messaging/Messaging.h>
 #include <functional>
 
 namespace nltools

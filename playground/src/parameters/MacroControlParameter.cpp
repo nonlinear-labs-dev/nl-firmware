@@ -17,7 +17,7 @@
 #include "RibbonParameter.h"
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
-#include <tools/Throttler.h>
+#include <nltools/threading/Throttler.h>
 #include "http/HTTPServer.h"
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
@@ -126,7 +126,8 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
   if(valueD != lastBroadcastedControlPosition)
   {
-    const auto str = StringTools::buildString("MCVIEW&ID=",idString,"&VAL=",value,"&UUID=",uuid,"&NAME=",getGivenName());
+    const auto str
+        = StringTools::buildString("MCVIEW&ID=", idString, "&VAL=", value, "&UUID=", uuid, "&NAME=", getGivenName());
     Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
     lastBroadcastedControlPosition = valueD;
   }

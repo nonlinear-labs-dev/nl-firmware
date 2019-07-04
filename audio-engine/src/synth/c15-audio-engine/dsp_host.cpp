@@ -1,5 +1,5 @@
 #include <iostream>
-#include <logging/Log.h>
+#include <nltools/logging/Log.h>
 #include "dsp_host.h"
 #include "pe_utilities.h"
 
