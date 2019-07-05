@@ -12,6 +12,12 @@
 #include <parameters/PitchbendParameter.h>
 #include <parameters/RibbonParameter.h>
 
+AudioEngineProxy::AudioEngineProxy()
+{
+  using namespace nltools::msg;
+  onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
+}
+
 void AudioEngineProxy::sendParameter(uint16_t id, tControlPositionValue value)
 {
   using namespace nltools::msg;
@@ -51,12 +57,14 @@ void AudioEngineProxy::sendEditBuffer()
         auto &t = msg.aftertouch[aftertouch++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.returnMode = a->getReturnMode();
       }
       else if(auto a = dynamic_cast<PitchbendParameter *>(p))
       {
         auto &t = msg.bender[bender++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.returnMode = a->getReturnMode();
       }
       else if(auto a = dynamic_cast<MacroControlParameter *>(p))
       {
@@ -69,7 +77,7 @@ void AudioEngineProxy::sendEditBuffer()
         auto &t = msg.modulateables[modulateables++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
-        t.mc = static_cast<nltools::msg::SetPresetMessage::MCs>(a->getModulationSource());
+        t.mc = a->getModulationSource();
         t.modulationAmount = static_cast<float>(a->getModulationAmount());
       }
       else if(auto a = dynamic_cast<PedalParameter *>(p))
@@ -77,12 +85,16 @@ void AudioEngineProxy::sendEditBuffer()
         auto &t = msg.pedals[pedals++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.pedalMode = a->getPedalMode();
+        t.returnMode = a->getReturnMode();
       }
       else if(auto a = dynamic_cast<RibbonParameter *>(p))
       {
         auto &t = msg.ribbons[ribbons++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.ribbonReturnMode = a->getRibbonReturnMode();
+        t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
       }
       else if(auto a = dynamic_cast<Parameter *>(p))
       {

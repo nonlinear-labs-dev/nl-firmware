@@ -1,7 +1,6 @@
 #include <glib.h>
 #include "FourStateLED.h"
 #include "device-settings/DebugLevel.h"
-#include <io/network/WebSocketSession.h>
 #include <Application.h>
 #include <nltools/messaging/Message.h>
 

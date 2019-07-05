@@ -87,7 +87,7 @@ class EditBuffer : public ParameterGroupSet
   void setParameter(size_t id, double cpValue);
 
   void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id);
-  void setModulationSource(ModulationSource src);
+  void setModulationSource(MacroControls src);
   void setModulationAmount(double amount);
 
   bool undoableImportReaktorParameter(UNDO::Transaction *transaction, std::istringstream &input, Parameter *param);

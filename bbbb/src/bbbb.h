@@ -13,8 +13,6 @@
 enum class Domain : uint8_t
 {
   Lpc = 1,
-  Buttons = 2,
-  Rotary = 4,
 };
 
 void printCurrentTime(const char *s);

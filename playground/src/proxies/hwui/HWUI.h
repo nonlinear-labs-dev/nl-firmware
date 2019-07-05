@@ -9,12 +9,19 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <nltools/threading/Expiration.h>
 #include <tools/Signal.h>
-#include <io/network/WebSocketSession.h>
 #include <array>
 #include <memory>
 
 class Application;
 class UsageMode;
+
+namespace nltools
+{
+  namespace msg
+  {
+    struct ButtonChangedMessage;
+  }
+}
 
 class HWUI
 {
@@ -53,7 +60,7 @@ class HWUI
   void deInit();
 
  private:
-  void onButtonMessage(WebSocketSession::tMessage msg);
+  void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
   void onButtonPressed(int buttonID, bool state);
   void onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res);
 

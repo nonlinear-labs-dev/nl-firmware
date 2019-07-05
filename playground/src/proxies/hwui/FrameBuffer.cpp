@@ -6,7 +6,6 @@
 #include <sys/mman.h>
 #include <string.h>
 #include <iostream>
-#include <io/network/WebSocketSession.h>
 #include <Application.h>
 #include <Options.h>
 #include <proxies/hwui/HWUI.h>
@@ -77,7 +76,7 @@ FrameBuffer::FrameBuffer()
   openAndMap();
   clear();
 
-  Application::get().getWebSocketSession()->onConnectionEstablished(sigc::mem_fun(this, &FrameBuffer::swapBuffers));
+  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Lpc, sigc::mem_fun(this, &FrameBuffer::swapBuffers));
 }
 
 void FrameBuffer::initStacks()

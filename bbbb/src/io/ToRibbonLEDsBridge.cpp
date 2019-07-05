@@ -1,5 +1,4 @@
 #include <io/ToRibbonLEDsBridge.h>
-#include "network/WebSocketReceiver.h"
 #include "files/FileIOSender.h"
 
 #include <nltools/messaging/Message.h>
@@ -9,7 +8,7 @@ ToRibbonLEDsBridge::ToRibbonLEDsBridge()
 {
 
   using namespace nltools::msg;
-  receive<SetRibbonLEDMessage, EndPoint::RibbonLed>(sigc::mem_fun(this, &ToRibbonLEDsBridge::onMessageReceived));
+  receive<SetRibbonLEDMessage>(EndPoint::RibbonLed, sigc::mem_fun(this, &ToRibbonLEDsBridge::onMessageReceived));
 }
 
 void ToRibbonLEDsBridge::onMessageReceived(const nltools::msg::SetRibbonLEDMessage &msg)

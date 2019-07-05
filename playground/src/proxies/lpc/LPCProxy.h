@@ -9,7 +9,6 @@
 #include <parameters/value/QuantizedValue.h>
 #include <memory>
 #include <nltools/threading/Throttler.h>
-#include <io/network/WebSocketSession.h>
 
 class Application;
 class Parameter;
@@ -17,6 +16,14 @@ class ModulateableParameter;
 class PhysicalControlParameter;
 class Preset;
 class MessageParser;
+
+namespace nltools
+{
+  namespace msg
+  {
+    struct LPCMessage;
+  }
+}
 
 enum LPCSettingIDs
 {
@@ -73,7 +80,7 @@ class LPCProxy
   int getLPCSoftwareVersion() const;
 
  private:
-  void onWebSocketMessage(WebSocketSession::tMessage msg);
+  void onLPCMessage(const nltools::msg::LPCMessage &msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);
 
   typedef std::shared_ptr<MessageComposer> tMessageComposerPtr;

@@ -3,7 +3,6 @@
 #ifdef _DEVELOPMENT_PC
 
 #include <gtkmm-3.0/gtkmm.h>
-#include <io/network/WebSocketServer.h>
 #include "PanelUnit.h"
 #include "PlayPanel.h"
 #include "Ribbon.h"
@@ -27,7 +26,6 @@ class Window : public Gtk::Window
  private:
   void onFrameBufferMessageReceived(const nltools::msg::SetOLEDMessage &msg);
   void onPanelLEDsMessageReceived(const nltools::msg::SetPanelLEDMessage &msg);
-  WebSocketServer::tMessage m_frameBuffer;
 
   Gtk::VBox m_box;
   Gtk::VBox m_ribbonBox;

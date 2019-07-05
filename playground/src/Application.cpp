@@ -19,7 +19,6 @@
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
-#include <io/network/WebSocketSession.h>
 
 Application *Application::theApp = nullptr;
 
@@ -38,7 +37,6 @@ void quitApp(int sig)
 Application::Application(std::unique_ptr<Options> options)
     : m_options(initStatic(this, std::move(options)))
     , m_theMainLoop(MainLoop::create())
-    , m_websocketSession(std::make_unique<WebSocketSession>())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
@@ -64,8 +62,6 @@ Application::Application(std::unique_ptr<Options> options)
   m_presetManager->init();
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
   runWatchDog();
-
-  m_websocketSession->startListening();
 
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);
 
@@ -230,11 +226,6 @@ UndoScope *Application::getUndoScope()
 DeviceInformation *Application::getDeviceInformation()
 {
   return m_deviceInformation.get();
-}
-
-WebSocketSession *Application::getWebSocketSession()
-{
-  return m_websocketSession.get();
 }
 
 bool Application::heartbeat()

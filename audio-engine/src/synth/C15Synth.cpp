@@ -13,8 +13,8 @@ C15Synth::C15Synth()
   m_dsp->init(getOptions()->getSampleRate(), getOptions()->getPolyphony());
 
   using namespace nltools::msg;
-  receive<ParameterChangedMessage, EndPoint::AudioEngine>(sigc::mem_fun(this, &C15Synth::onParameterMessage));
-  receive<SetPresetMessage, EndPoint::AudioEngine>(sigc::mem_fun(this, &C15Synth::onPresetMessage));
+  receive<ParameterChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onParameterMessage));
+  receive<SetPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPresetMessage));
 }
 
 C15Synth::~C15Synth() = default;

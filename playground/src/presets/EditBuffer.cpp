@@ -205,7 +205,7 @@ void EditBuffer::setParameter(size_t id, double cpValue)
   }
 }
 
-void EditBuffer::setModulationSource(ModulationSource src)
+void EditBuffer::setModulationSource(MacroControls src)
 {
   if(auto p = dynamic_cast<ModulateableParameter *>(m_selectedParameter))
   {

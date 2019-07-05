@@ -17,5 +17,6 @@ Bridge::~Bridge()
 
 void Bridge::transmit(Receiver::tMessage msg)
 {
-  m_sender->send(msg);
+  if(m_sender)
+    m_sender->send(msg);
 }

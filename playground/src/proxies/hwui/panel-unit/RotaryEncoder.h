@@ -4,7 +4,14 @@
 #include "proxies/hwui/HWUIEnums.h"
 #include <nltools/threading/Throttler.h>
 #include <chrono>
-#include <io/network/WebSocketSession.h>
+
+namespace nltools
+{
+  namespace msg
+  {
+    class RotaryChangedMessage;
+  }
+}
 
 class RotaryEncoder
 {
@@ -26,7 +33,7 @@ class RotaryEncoder
   static void registerTests();
 
  private:
-  void onMessage(WebSocketSession::tMessage msg);
+  void onMessage(const nltools::msg::RotaryChangedMessage &msg);
   void open();
   tIncrement speedUp(tIncrement inc);
   void applyIncrement(tIncrement currentInc);

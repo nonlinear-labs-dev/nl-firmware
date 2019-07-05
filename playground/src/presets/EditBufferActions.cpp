@@ -41,7 +41,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("set-mod-src", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto src = std::stoi(request->get("source"));
-    editBuffer->setModulationSource(static_cast<ModulationSource>(src));
+    editBuffer->setModulationSource(static_cast<MacroControls>(src));
   });
 
   addAction("reset", [=](std::shared_ptr<NetworkRequest> request) mutable {

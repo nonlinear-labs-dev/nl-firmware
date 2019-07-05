@@ -3,7 +3,6 @@
 #ifdef _DEVELOPMENT_PC
 
 #include <gtkmm-3.0/gtkmm.h>
-#include <io/network/WebSocketServer.h>
 #include <nltools/messaging/Message.h>
 
 class Boled : public Gtk::DrawingArea

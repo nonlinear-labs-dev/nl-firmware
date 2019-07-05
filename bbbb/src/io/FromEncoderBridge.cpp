@@ -1,18 +1,14 @@
 #include <io/files/FileIOReceiver.h>
 #include <io/FromEncoderBridge.h>
-#include <io/network/WebSocketSender.h>
 #include <Application.h>
 #include <Options.h>
 #include <string.h>
+#include <nltools/messaging/Messaging.h>
+#include <nltools/messaging/Message.h>
 
 FromEncoderBridge::FromEncoderBridge()
-    : Bridge(new WebSocketSender(getDomain()), new FileIOReceiver("/dev/espi_encoder", 1))
+    : Bridge(nullptr, new FileIOReceiver("/dev/espi_encoder", 1))
 {
-}
-
-Domain FromEncoderBridge::getDomain()
-{
-  return Domain::Rotary;
 }
 
 void FromEncoderBridge::transmit(Receiver::tMessage msg)
@@ -24,11 +20,7 @@ void FromEncoderBridge::transmit(Receiver::tMessage msg)
 
 void FromEncoderBridge::sendRotary(int8_t inc)
 {
-  scheduleSimpleEvent(inc);
-}
-
-void FromEncoderBridge::scheduleSimpleEvent(int8_t inc)
-{
-  auto msg = Glib::Bytes::create(&inc, 1);
-  m_sender->send(msg);
+  nltools::msg::RotaryChangedMessage msg;
+  msg.increment = inc;
+  nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
 }

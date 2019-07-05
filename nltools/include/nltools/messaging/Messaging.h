@@ -27,6 +27,7 @@ namespace nltools
 
     enum class MessageType : uint16_t
     {
+      // deprecated messages for LPC <-> Playground
       Preset,
       Morph_A,
       Morph_B,
@@ -38,9 +39,14 @@ namespace nltools
       Assertion,
       Request,
 
+      // messages to be used from v1.7 on
       SetRibbonLED,
       SetPanelLED,
-      SetOLED
+      SetOLED,
+      RotaryChanged,
+      ButtonChanged,
+      LPC,
+      Ping
     };
 
     namespace detail
@@ -102,9 +108,11 @@ namespace nltools
       detail::send(receiver, detail::serialize<Msg>(msg));
     }
 
-    template <typename M, EndPoint receivingEndPoint> sigc::connection receive(std::function<void(const M &)> cb)
+    template <typename Msg> sigc::connection receive(EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)
     {
-      return detail::receive<M>(M::theType, receivingEndPoint, [=](const auto &s) { cb(s); });
+      return detail::receive<Msg>(Msg::theType, receivingEndPoint, [=](const auto &s) { cb(s); });
     }
+
+    sigc::connection onConnectionEstablished(EndPoint endPoint, std::function<void()> cb);
   }
 }

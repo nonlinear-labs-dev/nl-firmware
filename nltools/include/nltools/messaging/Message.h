@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Messaging.h"
+#include <nltools/Types.h>
 
 namespace nltools
 {
@@ -24,6 +25,17 @@ namespace nltools
       float controlPosition;
     };
 
+    struct RotaryChangedMessage : Message<MessageType::RotaryChanged>
+    {
+      int8_t increment;
+    };
+
+    struct ButtonChangedMessage : Message<MessageType::ButtonChanged>
+    {
+      int8_t buttonId;
+      bool pressed;
+    };
+
     struct SetRibbonLEDMessage : Message<MessageType::SetRibbonLED>
     {
       uint8_t id;
@@ -41,18 +53,41 @@ namespace nltools
       uint8_t pixels[256][96];
     };
 
+    struct LPCMessage : Message<MessageType::LPC>
+    {
+      Glib::RefPtr<Glib::Bytes> message;
+    };
+
+    struct PingMessage : Message<MessageType::Ping>
+    {
+    };
+
+    namespace detail
+    {
+      // default (de)serialization for messages, may be specialized for more compilcated types:
+      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage &s)
+      {
+        LPCMessage ret;
+        gsize numBytes = 0;
+        auto data = reinterpret_cast<const uint8_t *>(s->get_data(numBytes));
+        ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
+        return ret;
+      }
+
+      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage &msg)
+      {
+        gsize numBytes = 0;
+        auto data = reinterpret_cast<const uint8_t *>(msg.message->get_data(numBytes));
+        auto scratch = reinterpret_cast<uint16_t *>(g_malloc(numBytes + 2));
+        scratch[0] = static_cast<uint16_t>(MessageType::LPC);
+        memcpy(&scratch[1], data, numBytes);
+        auto bytes = g_bytes_new_take(scratch, numBytes + 2);
+        return Glib::wrap(bytes);
+      }
+    }
+
     struct SetPresetMessage : Message<MessageType::Preset>
     {
-      enum class MCs
-      {
-        None,
-        A,
-        B,
-        C,
-        D
-
-      };
-
       struct Parameter
       {
         int32_t id;
@@ -61,18 +96,24 @@ namespace nltools
 
       struct RibbonParameter : Parameter
       {
+        RibbonTouchBehaviour ribbonTouchBehaviour;
+        RibbonReturnMode ribbonReturnMode;
       };
 
       struct PedalParameter : Parameter
       {
+        PedalModes pedalMode;
+        ReturnMode returnMode;
       };
 
       struct AftertouchParameter : Parameter
       {
+        ReturnMode returnMode;
       };
 
       struct BenderParameter : Parameter
       {
+        ReturnMode returnMode;
       };
 
       struct MacroParameter : Parameter
@@ -81,7 +122,7 @@ namespace nltools
 
       struct ModulateableParameter : Parameter
       {
-        MCs mc = MCs::None;
+        MacroControls mc = MacroControls::NONE;
         float modulationAmount = 0;
       };
 

@@ -19,7 +19,7 @@ struct MessagingTests
       nltools::Log::notify("waiting for connection to playground endpoint");
       assert(waitForConnection(EndPoint::Playground));
 
-      auto c = receive<ParameterChangedMessage, EndPoint::Playground>([&](const auto &msg) { numReceivedMessages++; });
+      auto c = receive<ParameterChangedMessage>(EndPoint::Playground, [&](const auto &msg) { numReceivedMessages++; });
 
       send(EndPoint::Playground, msgToSend);
 
@@ -44,7 +44,7 @@ struct MessagingTests
       nltools::Log::notify("waiting for connection to playground endpoint");
       assert(waitForConnection(EndPoint::Playground));
 
-      auto c = receive<ParameterChangedMessage, EndPoint::Playground>([&](const auto &msg) { numReceivedMessages++; });
+      auto c = receive<ParameterChangedMessage>(EndPoint::Playground, [&](const auto &msg) { numReceivedMessages++; });
 
       for(int i = 0; i < numSendMessages; i++)
         send(EndPoint::Playground, msgToSend);

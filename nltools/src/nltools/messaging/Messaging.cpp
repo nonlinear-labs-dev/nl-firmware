@@ -16,10 +16,12 @@ namespace nltools
       using OutChannels = std::map<EndPoint, std::unique_ptr<OutChannel>>;
       using InChannels = std::map<EndPoint, std::unique_ptr<InChannel>>;
       using Signals = std::map<std::pair<MessageType, EndPoint>, sigc::signal<void, const SerializedMessage &>>;
+      using ConnectionSignals = std::map<EndPoint, sigc::signal<void>>;
 
       static OutChannels outChannels;
       static InChannels inChannels;
       static Signals signals;
+      static ConnectionSignals connectionSignals;
 
       static void notifyClients(const SerializedMessage &s, EndPoint endPoint)
       {
@@ -51,6 +53,7 @@ namespace nltools
             assert(scheme == "ws");  // Currently, only web sockets are supported
             std::unique_lock<std::mutex> lock(libSoupMutex);
             outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port, libSoupMutex);
+            outChannels[c.peer]->onConnectionEstablished([peer = c.peer] { connectionSignals[peer](); });
           });
         }
       }
@@ -100,6 +103,16 @@ namespace nltools
     uint getPortFor(EndPoint p)
     {
       return static_cast<uint>(p) + 40100;
+    }
+
+    sigc::connection onConnectionEstablished(EndPoint endPoint, std::function<void()> cb)
+    {
+      auto ret = detail::connectionSignals[endPoint].connect(cb);
+
+      if(detail::outChannels.at(endPoint)->isConnected())
+        cb();
+
+      return ret;
     }
   }
 }

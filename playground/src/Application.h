@@ -15,7 +15,6 @@ class UndoScope;
 class Settings;
 class EmbeddedPC;
 class Clipboard;
-class WebSocketSession;
 
 class Application
 {
@@ -44,8 +43,6 @@ class Application
   DeviceInformation *getDeviceInformation();
   Clipboard *getClipboard();
 
-  WebSocketSession *getWebSocketSession();
-
   void quit();
   bool isQuit() const;
 
@@ -60,7 +57,6 @@ class Application
   std::unique_ptr<Options> m_options;
   RefPtr<MainLoop> m_theMainLoop;
 
-  std::unique_ptr<WebSocketSession> m_websocketSession;
   std::unique_ptr<HTTPServer> m_http;
   std::unique_ptr<Settings> m_settings;
   std::unique_ptr<UndoScope> m_undoScope;

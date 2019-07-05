@@ -12,7 +12,4 @@ class FromEncoderBridge : public Bridge
 
  private:
   void transmit(Receiver::tMessage msg) override;
-
-  void scheduleSimpleEvent(int8_t inc);
-  static Domain getDomain();
 };

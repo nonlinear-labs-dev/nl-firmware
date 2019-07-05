@@ -1,8 +1,9 @@
 #include "WebSocketOutChannel.h"
 #include <nltools/StringTools.h>
 #include <nltools/logging/Log.h>
-
 #include <netinet/tcp.h>
+#include <glibmm.h>
+#include <nltools/messaging/Message.h>
 
 namespace nltools
 {
@@ -15,9 +16,11 @@ namespace nltools
           , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)
+          , m_mainThreadContextQueue(
+                std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
           , m_contextThread(std::bind(&WebSocketOutChannel::backgroundThread, this))
       {
-        nltools::Log::notify(__PRETTY_FUNCTION__, __LINE__, m_uri);
+        nltools::Log::debug(__PRETTY_FUNCTION__, __LINE__, m_uri);
       }
 
       WebSocketOutChannel::~WebSocketOutChannel()
@@ -64,6 +67,16 @@ namespace nltools
         return m_connectionEstablished;
       }
 
+      void WebSocketOutChannel::onConnectionEstablished(std::function<void()> cb)
+      {
+        m_onConnectionEstablished = cb;
+      }
+
+      bool WebSocketOutChannel::isConnected() const
+      {
+        return m_connectionEstablished;
+      }
+
       void WebSocketOutChannel::backgroundThread()
       {
         auto m = Glib::MainContext::create();
@@ -71,7 +84,14 @@ namespace nltools
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
         m_messageLoop = Glib::MainLoop::create(m);
         m_backgroundContextQueue->pushMessage(std::bind(&WebSocketOutChannel::connect, this));
+        m->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
         m_messageLoop->run();
+      }
+
+      bool WebSocketOutChannel::ping()
+      {
+        send(detail::serialize(PingMessage()));
+        return true;
       }
 
       void WebSocketOutChannel::connect()
@@ -91,7 +111,7 @@ namespace nltools
 
         if(error)
         {
-          nltools::Log::debug(error->message);
+          nltools::Log::debug(pThis->m_uri, " -> ", error->message);
           g_error_free(error);
           pThis->reconnect();
         }
@@ -106,6 +126,9 @@ namespace nltools
         std::unique_lock<std::mutex> l(m_conditionMutex);
         m_connectionEstablished = true;
         m_connectionEstablishedCondition.notify_all();
+
+        if(m_onConnectionEstablished)
+          m_mainThreadContextQueue->pushMessage([this] { this->m_onConnectionEstablished(); });
       }
 
       void WebSocketOutChannel::reconnect()
