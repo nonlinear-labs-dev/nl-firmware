@@ -4,7 +4,6 @@
 #include <iostream>
 #include <chrono>
 #include <nltools/logging/Log.h>
-#include <nltools/messaging/Messaging.h>
 
 #include "Application.h"
 #ifdef _DEVELOPMENT_PC
@@ -40,20 +39,9 @@ void printStackTrace(int i)
   exit(EXIT_FAILURE);
 }
 
-void setupMessaging()
-{
-  using namespace nltools::msg;
-  Configuration conf;
-  conf.offerEndpoints = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed };
-  conf.useEndpoints = { EndPoint::Playground };
-  nltools::msg::init(conf);
-}
-
 int main(int numArgs, char** argv)
 {
   Gio::init();
-
-  setupMessaging();
 
   ::signal(SIGSEGV, printStackTrace);
   ::signal(SIGILL, printStackTrace);

@@ -14,6 +14,7 @@ class Options
   Glib::ustring getKioskModeFile() const;
   Glib::ustring getHardwareTestsFolder() const;
   Glib::ustring getBBBB() const;
+  Glib::ustring getAudioEngineHost() const;
 
   Glib::ustring getSelfPath() const;
 
@@ -25,6 +26,7 @@ class Options
   Glib::ustring m_pmPath;
   Glib::ustring m_settingsFile;
   Glib::ustring m_kioskModeFile;
-  Glib::ustring m_bbbb = "127.0.0.1";
+  Glib::ustring m_bbbb = "localhost";
+  Glib::ustring m_audioEngineHost = "localhost";
   Glib::ustring m_selfPath;
 };

@@ -22,6 +22,7 @@ class Application
 
  private:
   static char *initStatic(Application *app, char *argv);
+  void setupMessaging();
 
   static Application *theApp;
   Glib::ustring m_selfPath;

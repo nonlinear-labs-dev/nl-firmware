@@ -15,7 +15,6 @@ namespace nltools
           , m_contextThread(std::bind(&WebSocketInChannel::backgroundThread, this, std::ref(libSoupMutex)))
           , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
       {
-        nltools::Log::notify(__PRETTY_FUNCTION__, __LINE__, m_port);
       }
 
       WebSocketInChannel::~WebSocketInChannel()

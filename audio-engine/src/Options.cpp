@@ -33,6 +33,7 @@ Options::Options(int &argc, char **&argv)
       "configure alsa audio input with this number of frames per period");
   add(mainGroup, m_numPeriods, "num-periods", 'n', "configure alsa audio input with this number of periods");
   add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "configure alsa audio input with this ring buffer size");
+  add(mainGroup, m_playgroundHost, "playground-host", 'h', "Where to find the playground");
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
@@ -77,6 +78,11 @@ int Options::getNumPeriods() const
 int Options::getAlsaRingBufferSize() const
 {
   return m_alsaBufferSize;
+}
+
+std::string Options::getPlaygroundHost() const
+{
+  return m_playgroundHost;
 }
 
 int Options::getSampleRate() const

@@ -7,5 +7,9 @@ class Options
 {
  public:
   Options(int &argc, char **&argv);
-  virtual ~Options();
+
+  Glib::ustring getPlaygroundHost() const;
+
+ private:
+  Glib::ustring m_playgroundHost = "localhost";
 };

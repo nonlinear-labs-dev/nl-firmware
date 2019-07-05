@@ -39,22 +39,21 @@ void runMainLoop()
   theMainLoop->run();
 }
 
-void setupMessaging()
+void setupMessaging(const Options *o)
 {
   using namespace nltools::msg;
   Configuration conf;
   conf.offerEndpoints = { EndPoint::AudioEngine };
-  conf.useEndpoints = { EndPoint::Playground };
+  conf.useEndpoints = { { EndPoint::Playground, o->getPlaygroundHost() } };
   nltools::msg::init(conf);
 }
 
 int main(int args, char *argv[])
 {
   Glib::init();
-  setupMessaging();
   connectSignals();
-
   theOptions = std::make_unique<Options>(args, argv);
+  setupMessaging(theOptions.get());
 
   if(theOptions->doMeasurePerformance())
   {

@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <nltools/messaging/Messaging.h>
+
 #ifdef _DEVELOPMENT_PC
 #include <ui/Window.h>
 #endif
@@ -22,10 +24,20 @@ Application::Application(int numArgs, char **argv)
     , m_options(std::make_unique<Options>(numArgs, argv))
     , m_bridges(std::make_unique<Bridges>())
 {
+  setupMessaging();
 }
 
 Application::~Application()
 {
+}
+
+void Application::setupMessaging()
+{
+  using namespace nltools::msg;
+  Configuration conf;
+  conf.offerEndpoints = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed };
+  conf.useEndpoints = { { EndPoint::Playground, m_options->getPlaygroundHost() } };
+  nltools::msg::init(conf);
 }
 
 Application &Application::get()

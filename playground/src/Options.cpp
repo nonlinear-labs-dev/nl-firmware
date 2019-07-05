@@ -20,8 +20,14 @@ Options::Options(int &argc, char **&argv)
   OptionEntry bbbb;
   bbbb.set_long_name("bbbb");
   bbbb.set_short_name('b');
-  bbbb.set_description("IP of the device running the BeagleBoneBlackBridge (bbbb)");
+  bbbb.set_description("Where to find the bbbb");
   mainGroup.add_entry(bbbb, m_bbbb);
+
+  OptionEntry ae;
+  ae.set_long_name("audio-engine-host");
+  ae.set_short_name('a');
+  ae.set_description("Where to find the audio-engine");
+  mainGroup.add_entry(ae, m_audioEngineHost);
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
@@ -81,6 +87,11 @@ Glib::ustring Options::getPresetManagerPath() const
 Glib::ustring Options::getBBBB() const
 {
   return m_bbbb;
+}
+
+ustring Options::getAudioEngineHost() const
+{
+  return m_audioEngineHost;
 }
 
 Glib::ustring Options::getSelfPath() const
