@@ -2,7 +2,6 @@
 #include "c15-audio-engine/dsp_host.h"
 #include "main.h"
 #include "Options.h"
-#include <nltools/logging/Log.h>
 
 #include <nltools/messaging/Message.h>
 #include <nltools/logging/Log.h>
