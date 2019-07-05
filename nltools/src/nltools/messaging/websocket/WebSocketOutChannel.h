@@ -18,7 +18,7 @@ namespace nltools
       class WebSocketOutChannel : public OutChannel
       {
        public:
-        WebSocketOutChannel(const std::string &targetMachine, guint port);
+        WebSocketOutChannel(const std::string &targetMachine, guint port, std::mutex &);
         ~WebSocketOutChannel() override;
 
         void send(const SerializedMessage &msg) override;

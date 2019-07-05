@@ -14,6 +14,7 @@ C15Synth::C15Synth()
 
   using namespace nltools::msg;
   receive<ParameterChangedMessage, EndPoint::AudioEngine>(sigc::mem_fun(this, &C15Synth::onParameterMessage));
+  receive<SetPresetMessage, EndPoint::AudioEngine>(sigc::mem_fun(this, &C15Synth::onPresetMessage));
 }
 
 C15Synth::~C15Synth() = default;
@@ -133,15 +134,12 @@ void C15Synth::changeSelectedValueBy(int i)
   }
 }
 
-static void sendMessageToPlayground()
-{
-  nltools::msg::waitForConnection(nltools::msg::EndPoint::Playground);
-  nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::ParameterChangedMessage());
-  nltools::Log::notify("sent parameter message!");
-}
-
 void C15Synth::onParameterMessage(const nltools::msg::ParameterChangedMessage &msg)
 {
   nltools::Log::notify("got parameter message!");
-  Glib::MainContext::get_default()->signal_timeout().connect_seconds_once(sigc::ptr_fun(&sendMessageToPlayground), 2);
+}
+
+void C15Synth::onPresetMessage(const nltools::msg::SetPresetMessage &msg)
+{
+  nltools::Log::notify("got preset message!");
 }

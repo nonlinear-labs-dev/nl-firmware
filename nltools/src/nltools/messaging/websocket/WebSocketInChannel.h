@@ -16,11 +16,11 @@ namespace nltools
       class WebSocketInChannel : public InChannel
       {
        public:
-        WebSocketInChannel(Callback cb, guint port);
+        WebSocketInChannel(Callback cb, guint port, std::mutex &libSoupMutex);
         ~WebSocketInChannel();
 
        private:
-        void backgroundThread();
+        void backgroundThread(std::mutex &libSoupMutex);
         static void webSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
                               SoupClientContext *client, WebSocketInChannel *pThis);
         static void receiveMessage(SoupWebsocketConnection *, gint, GBytes *message, WebSocketInChannel *pThis);

@@ -29,26 +29,28 @@ namespace nltools
         signals[std::make_pair(type, endPoint)](s);
       }
 
-      static void createInChannels(const Configuration &conf)
+      static void createInChannels(const Configuration &conf, std::mutex &libSoupMutex)
       {
         for(const auto &c : conf.offerEndpoints)
         {
           auto cb = [peer = c.peer](const auto &s) { notifyClients(s, peer); };
 
-          parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
+          parseURI(c.uri, [=, &libSoupMutex](auto scheme, auto, auto, auto port) {
             assert(scheme == "ws");  // Currently, only web sockets are supported
-            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port);
+            std::unique_lock<std::mutex> lock(libSoupMutex);
+            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port, libSoupMutex);
           });
         }
       }
 
-      static void createOutChannels(const Configuration &conf)
+      static void createOutChannels(const Configuration &conf, std::mutex &libSoupMutex)
       {
         for(const auto &c : conf.useEndpoints)
         {
-          parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
+          parseURI(c.uri, [=, &libSoupMutex](auto scheme, auto host, auto, auto port) {
             assert(scheme == "ws");  // Currently, only web sockets are supported
-            outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port);
+            std::unique_lock<std::mutex> lock(libSoupMutex);
+            outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port, libSoupMutex);
           });
         }
       }
@@ -90,8 +92,9 @@ namespace nltools
 
     void init(const Configuration &conf)
     {
-      detail::createInChannels(conf);
-      detail::createOutChannels(conf);
+      static std::mutex libSoupMutex;
+      detail::createInChannels(conf, libSoupMutex);
+      detail::createOutChannels(conf, libSoupMutex);
     }
 
     uint getPortFor(EndPoint p)

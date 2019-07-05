@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <mutex>
 
 namespace nltools
 {
@@ -76,6 +77,9 @@ namespace nltools
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void output(const Args&... args)
     {
+      static std::mutex m;
+      std::unique_lock<std::mutex> l(m);
+
       constexpr auto addNewLine = mode == LogMode::AppendNewLine || mode == LogMode::InsertSpacesAndAppendNewLine;
       constexpr auto insertSpaces = mode == LogMode::InsertSpaces || mode == LogMode::InsertSpacesAndAppendNewLine;
 
@@ -85,7 +89,9 @@ namespace nltools
         std::initializer_list<bool>({ (std::cout << args, false)... });
 
       if(addNewLine)
+      {
         std::cout << std::endl;
+      }
     }
 
    private:

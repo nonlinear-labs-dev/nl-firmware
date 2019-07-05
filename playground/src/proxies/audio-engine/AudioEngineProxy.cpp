@@ -3,6 +3,7 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
 #include <parameters/AftertouchParameter.h>
 #include <parameters/MacroControlParameter.h>
@@ -15,6 +16,14 @@ void AudioEngineProxy::sendParameter(uint16_t id, tControlPositionValue value)
 {
   using namespace nltools::msg;
   send(EndPoint::AudioEngine, ParameterChangedMessage(id, value));
+}
+
+void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)
+{
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    if(std::exchange(m_suppressParamChanges, !m_suppressParamChanges))
+      sendEditBuffer();
+  });
 }
 
 void AudioEngineProxy::sendEditBuffer()
@@ -39,25 +48,25 @@ void AudioEngineProxy::sendEditBuffer()
     {
       if(auto a = dynamic_cast<AftertouchParameter *>(p))
       {
-        auto t = msg.aftertouch[aftertouch++];
+        auto &t = msg.aftertouch[aftertouch++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
       }
       else if(auto a = dynamic_cast<PitchbendParameter *>(p))
       {
-        auto t = msg.bender[bender++];
+        auto &t = msg.bender[bender++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
       }
       else if(auto a = dynamic_cast<MacroControlParameter *>(p))
       {
-        auto t = msg.macros[macros++];
+        auto &t = msg.macros[macros++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
       }
       else if(auto a = dynamic_cast<ModulateableParameter *>(p))
       {
-        auto t = msg.modulateables[modulateables++];
+        auto &t = msg.modulateables[modulateables++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
         t.mc = static_cast<nltools::msg::SetPresetMessage::MCs>(a->getModulationSource());
@@ -65,24 +74,24 @@ void AudioEngineProxy::sendEditBuffer()
       }
       else if(auto a = dynamic_cast<PedalParameter *>(p))
       {
-        auto t = msg.pedals[pedals++];
+        auto &t = msg.pedals[pedals++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
       }
       else if(auto a = dynamic_cast<RibbonParameter *>(p))
       {
-        auto t = msg.ribbons[ribbons++];
+        auto &t = msg.ribbons[ribbons++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
       }
       else if(auto a = dynamic_cast<Parameter *>(p))
       {
-        auto t = msg.unmodulateables[unmodulateables++];
+        auto &t = msg.unmodulateables[unmodulateables++];
         t.id = a->getID();
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
       }
     }
   }
-  nltools::Log::notify("unmodulateables:", unmodulateables);
-  nltools::Log::notify("modulateables:", modulateables);
+
+  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
 }

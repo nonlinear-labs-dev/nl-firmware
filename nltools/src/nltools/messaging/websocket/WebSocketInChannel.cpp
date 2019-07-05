@@ -8,14 +8,14 @@ namespace nltools
   {
     namespace ws
     {
-
-      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port)
+      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, std::mutex &libSoupMutex)
           : InChannel(cb)
           , m_port(port)
-          , m_server(nullptr, g_object_unref)
-          , m_contextThread(std::bind(&WebSocketInChannel::backgroundThread, this))
+          , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
+          , m_contextThread(std::bind(&WebSocketInChannel::backgroundThread, this, std::ref(libSoupMutex)))
           , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
       {
+        nltools::Log::notify(__PRETTY_FUNCTION__, __LINE__, m_port);
       }
 
       WebSocketInChannel::~WebSocketInChannel()
@@ -27,12 +27,12 @@ namespace nltools
           m_contextThread.join();
       }
 
-      void WebSocketInChannel::backgroundThread()
+      void WebSocketInChannel::backgroundThread(std::mutex &libSoupMutex)
       {
+        std::unique_lock<std::mutex> lock(libSoupMutex);
+
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());
-
-        m_server.reset(soup_server_new(nullptr, nullptr));
 
         GError *error = nullptr;
 
@@ -47,6 +47,8 @@ namespace nltools
         }
 
         m_messageLoop = Glib::MainLoop::create(m);
+        lock.unlock();
+
         m_messageLoop->run();
       }
 

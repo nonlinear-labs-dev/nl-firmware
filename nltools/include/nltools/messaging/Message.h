@@ -94,8 +94,8 @@ namespace nltools
       std::array<RibbonParameter, 2> ribbons;
       std::array<BenderParameter, 1> bender;
       std::array<MacroParameter, 4> macros;
-      std::array<ModulateableParameter, 1000> modulateables;
-      std::array<UnmodulatebaleParameter, 1000> unmodulateables;
+      std::array<ModulateableParameter, 89> modulateables;
+      std::array<UnmodulatebaleParameter, 138> unmodulateables;
     };
   }
 }

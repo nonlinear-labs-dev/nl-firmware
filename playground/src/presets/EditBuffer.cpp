@@ -11,6 +11,7 @@
 #include "EditBufferSnapshotMaker.h"
 #include "proxies/lpc/LPCProxy.h"
 #include <proxies/hwui/HWUI.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 #include "parameters/ModulateableParameter.h"
 #include <parameters/PhysicalControlParameter.h>
 #include <tools/TimeTools.h>
@@ -367,7 +368,9 @@ void EditBuffer::undoableLoad(Preset *preset)
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
   auto lpc = Application::get().getLPCProxy();
+  auto ae = Application::get().getAudioEngineProxy();
   lpc->toggleSuppressParameterChanges(transaction);
+  ae->toggleSuppressParameterChanges(transaction);
 
   copyFrom(transaction, preset);
   undoableSetLoadedPresetInfo(transaction, preset);
@@ -380,6 +383,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   }
 
   lpc->toggleSuppressParameterChanges(transaction);
+  ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 

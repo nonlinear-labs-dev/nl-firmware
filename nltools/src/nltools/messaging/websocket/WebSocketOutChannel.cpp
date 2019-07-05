@@ -10,13 +10,14 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port)
+      WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port, std::mutex &)
           : m_uri(concat("http://", targetMachine, ":", port))
-          , m_soupSession(nullptr, g_object_unref)
+          , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)
           , m_contextThread(std::bind(&WebSocketOutChannel::backgroundThread, this))
       {
+        nltools::Log::notify(__PRETTY_FUNCTION__, __LINE__, m_uri);
       }
 
       WebSocketOutChannel::~WebSocketOutChannel()
@@ -67,7 +68,6 @@ namespace nltools
       {
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());
-        m_soupSession.reset(soup_session_new());
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
         m_messageLoop = Glib::MainLoop::create(m);
         m_backgroundContextQueue->pushMessage(std::bind(&WebSocketOutChannel::connect, this));

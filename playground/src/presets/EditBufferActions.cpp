@@ -8,6 +8,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <proxies/lpc/LPCProxy.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 #include <boost/algorithm/string.hpp>
 
 //NonMember helperFunctions pre:
