@@ -9,10 +9,6 @@ namespace nltools
 {
   namespace msg
   {
-    // forward declaration of message types:
-    struct ParameterChangedMessage;
-    struct PresetChangedMessage;
-
     // Types:
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 

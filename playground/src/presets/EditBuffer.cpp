@@ -509,6 +509,7 @@ void EditBuffer::undoableImportReaktorPreset(UNDO::Transaction *transaction, con
   }
 
   Application::get().getLPCProxy()->sendEditBuffer();
+  Application::get().getAudioEngineProxy()->sendEditBuffer();
 }
 
 bool EditBuffer::readReaktorPresetHeader(std::istringstream &input) const
@@ -582,6 +583,7 @@ Glib::ustring EditBuffer::exportReaktorPreset()
 void EditBuffer::sendToLPC()
 {
   Application::get().getLPCProxy()->sendEditBuffer();
+  Application::get().getAudioEngineProxy()->sendEditBuffer();
 }
 
 void EditBuffer::undoableUnlockAllGroups(UNDO::Transaction *transaction)
