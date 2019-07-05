@@ -20,7 +20,9 @@ namespace nltools
       PanelLed,
       RibbonLed,
       AudioEngine,
-      Playground
+      Playground,
+
+      TestEndPoint,
     };
 
     uint getPortFor(EndPoint p);
@@ -97,6 +99,7 @@ namespace nltools
     };
 
     void init(const Configuration &conf);
+    void deInit();
 
     // wait at most timeOut for the connection to be established
     // return true if there is a connection to receiver

@@ -12,6 +12,7 @@ namespace nltools
      public:
       using Callback = std::function<void(const SerializedMessage &)>;
       InChannel(Callback cb);
+      virtual ~InChannel();
 
      protected:
       void onMessageReceived(const SerializedMessage &) const;

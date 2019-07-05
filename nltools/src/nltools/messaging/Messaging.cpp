@@ -96,8 +96,17 @@ namespace nltools
     void init(const Configuration &conf)
     {
       static std::mutex libSoupMutex;
+      deInit();
       detail::createInChannels(conf, libSoupMutex);
       detail::createOutChannels(conf, libSoupMutex);
+    }
+
+    void deInit()
+    {
+      detail::outChannels.clear();
+      detail::inChannels.clear();
+      detail::signals.clear();
+      detail::connectionSignals.clear();
     }
 
     uint getPortFor(EndPoint p)

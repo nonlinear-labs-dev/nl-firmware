@@ -28,6 +28,8 @@ namespace nltools
 
       void WebSocketInChannel::backgroundThread(std::mutex &libSoupMutex)
       {
+        pthread_setname_np(pthread_self(), "WebSockIn");
+
         std::unique_lock<std::mutex> lock(libSoupMutex);
 
         auto m = Glib::MainContext::create();

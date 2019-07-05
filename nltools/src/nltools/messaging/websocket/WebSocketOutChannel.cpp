@@ -4,6 +4,7 @@
 #include <netinet/tcp.h>
 #include <glibmm.h>
 #include <nltools/messaging/Message.h>
+#include <pthread.h>
 
 namespace nltools
 {
@@ -79,6 +80,8 @@ namespace nltools
 
       void WebSocketOutChannel::backgroundThread()
       {
+        pthread_setname_np(pthread_self(), "WebSockOut");
+
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);

@@ -19,12 +19,28 @@
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
+#include <nltools/messaging/Messaging.h>
 
 Application *Application::theApp = nullptr;
+
+void setupMessaging(const Options *options)
+{
+  using namespace nltools::msg;
+
+  auto bbbb = options->getBBBB();
+  auto ae = options->getAudioEngineHost();
+
+  Configuration conf;
+  conf.offerEndpoints = { EndPoint::Playground };
+  conf.useEndpoints = { { EndPoint::Playground }, { EndPoint::AudioEngine, ae }, { EndPoint::Lpc, bbbb },
+                        { EndPoint::Oled, bbbb }, { EndPoint::PanelLed, bbbb },  { EndPoint::RibbonLed, bbbb } };
+  nltools::msg::init(conf);
+}
 
 std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_ptr<Options> options)
 {
   theApp = app;
+  setupMessaging(options.get());
   return options;
 }
 
@@ -34,8 +50,8 @@ void quitApp(int sig)
   Application::get().quit();
 }
 
-Application::Application(std::unique_ptr<Options> options)
-    : m_options(initStatic(this, std::move(options)))
+Application::Application(int numArgs, char **argv)
+    : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
     , m_theMainLoop(MainLoop::create())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))

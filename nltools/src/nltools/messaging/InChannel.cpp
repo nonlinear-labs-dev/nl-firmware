@@ -10,6 +10,8 @@ namespace nltools
     {
     }
 
+    InChannel::~InChannel() = default;
+
     void InChannel::onMessageReceived(const SerializedMessage &msg) const
     {
       m_cb(msg);

@@ -19,7 +19,7 @@ class Clipboard;
 class Application
 {
  public:
-  Application(std::unique_ptr<Options> options);
+  Application(int numArgs, char **argv);
   virtual ~Application();
 
   Glib::ustring getSelfPath() const;

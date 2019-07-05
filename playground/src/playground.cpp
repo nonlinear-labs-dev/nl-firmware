@@ -7,7 +7,6 @@
 #include "device-settings/DebugLevel.h"
 #include "profiling/Profiler.h"
 #include "Options.h"
-#include <nltools/messaging/Messaging.h>
 #include <nltools/StringTools.h>
 
 void printStackTrace(int i)
@@ -85,26 +84,9 @@ void setupLocale()
   DebugLevel::error("Could not set locale to any desired");
 }
 
-void setupMessaging(const Options* options)
-{
-  using namespace nltools::msg;
-
-  auto bbbb = options->getBBBB();
-  auto ae = options->getAudioEngineHost();
-
-  Configuration conf;
-  conf.offerEndpoints = { EndPoint::Playground };
-  conf.useEndpoints = { { EndPoint::Playground }, { EndPoint::AudioEngine, ae }, { EndPoint::Lpc, bbbb },
-                        { EndPoint::Oled, bbbb }, { EndPoint::PanelLed, bbbb },  { EndPoint::RibbonLed, bbbb } };
-  nltools::msg::init(conf);
-}
-
 int main(int numArgs, char** argv)
 {
   Gio::init();
-  auto options = std::make_unique<Options>(numArgs, argv);
-
-  setupMessaging(options.get());
 
   setupLocale();
 
@@ -120,7 +102,7 @@ int main(int numArgs, char** argv)
 #endif
 
   {
-    Application app(std::move(options));
+    Application app(numArgs, argv);
     Application::get().run();
     DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }

@@ -9,7 +9,7 @@ namespace nltools
 {
   namespace threading
   {
-    class ContextBoundMessageQueue
+    class ContextBoundMessageQueue : public sigc::trackable
     {
      public:
       using tMessage = std::function<void(void)>;
@@ -21,7 +21,7 @@ namespace nltools
       int m_signal = 0;
 
      private:
-      static gboolean doQueuedStuff(ContextBoundMessageQueue* pThis);
+      bool doQueuedStuff();
 
       std::list<tMessage> m_queue;
       std::recursive_mutex m_mutex;

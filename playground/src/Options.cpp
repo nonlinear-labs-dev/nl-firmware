@@ -35,11 +35,6 @@ Options::Options(int &argc, char **&argv)
   ctx.parse(argc, argv);
 }
 
-Options::~Options()
-{
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-}
-
 void Options::setDefaults()
 {
   ustring prefered = "/internalstorage/preset-manager/";
