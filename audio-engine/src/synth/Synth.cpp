@@ -3,7 +3,7 @@
 #include "io/audio/AudioOutputMock.h"
 #include "io/midi/AlsaMidiInput.h"
 #include "io/midi/MidiInputMock.h"
-#include "io/Log.h"
+#include <nltools/logging/Log.h>
 #include "Options.h"
 #include "main.h"
 

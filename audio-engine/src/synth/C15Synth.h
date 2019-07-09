@@ -1,10 +1,20 @@
 #pragma once
 
 #include "Synth.h"
+#include <sigc++/sigc++.h>
+
+namespace nltools
+{
+  namespace msg
+  {
+    struct ParameterChangedMessage;
+    struct SetPresetMessage;
+  }
+}
 
 class dsp_host;
 
-class C15Synth : public Synth
+class C15Synth : public Synth, public sigc::trackable
 {
  public:
   C15Synth();
@@ -25,6 +35,8 @@ class C15Synth : public Synth
 
  private:
   void changeSelectedValueBy(int i);
+  void onParameterMessage(const nltools::msg::ParameterChangedMessage &msg);
+  void onPresetMessage(const nltools::msg::SetPresetMessage &msg);
 
   std::unique_ptr<dsp_host> m_dsp;
 };

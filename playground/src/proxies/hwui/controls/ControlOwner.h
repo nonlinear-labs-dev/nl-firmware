@@ -1,7 +1,7 @@
 #pragma once
 
 #include "playground.h"
-#include <tools/Uncopyable.h>
+#include <nltools/Uncopyable.h>
 
 class Control;
 class FrameBuffer;

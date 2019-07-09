@@ -7,7 +7,7 @@
 *******************************************************************************/
 #include <math.h>
 #include "paramengine.h"
-#include "io/Log.h"
+#include <nltools/logging/Log.h>
 #include "SignalStorage.h"
 
 std::ostream& operator<<(std::ostream& lhs, const param_body& rhs)
@@ -928,8 +928,8 @@ void paramengine::postProcessPoly_slow(SignalStorage& signals, const uint32_t _v
   newEnvUpdateTimes(_voiceId);
   /* Pitch Updates */
 #if test_milestone == 150
-  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId)
-      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId) + getParameterValue(Parameters::P_MA_T)
+      + m_note_shift[_voiceId];
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
@@ -1086,8 +1086,8 @@ void paramengine::postProcessPoly_fast(SignalStorage& signals, const uint32_t _v
   /* temporary variables */
   float tmp_lvl, tmp_pan, tmp_abs;
 #if test_milestone == 150
-  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId)
-      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId) + getParameterValue(Parameters::P_MA_T)
+      + m_note_shift[_voiceId];
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
@@ -1301,8 +1301,8 @@ void paramengine::postProcessPoly_key(SignalStorage& signals, const uint32_t _vo
 {
   /* Pitch Updates */
 #if test_milestone == 150
-  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId)
-      + getParameterValue(Parameters::P_MA_T) + m_note_shift[_voiceId];
+  const float notePitch = getParameterValue(Parameters::P_KEY_NP, _voiceId) + getParameterValue(Parameters::P_MA_T)
+      + m_note_shift[_voiceId];
 #elif test_milestone == 155
   const uint32_t uVoice = static_cast<uint32_t>(getParameterValue(Parameters::P_UN_V));
   const uint32_t uIndex = static_cast<uint32_t>(getParameterValue(Parameters::P_KEY_IDX, _voiceId));
@@ -1720,33 +1720,34 @@ void paramengine::testLevelVelocity()
   uint32_t LVI, KVI;
   float peak;
   //
-  Log::info("Test Level Velocities:");
-  Log::info("\t0\t15\t30\t45\t60\t(dB Level Velocity)");
+  nltools::Log::info("Test Level Velocities:");
+  nltools::Log::info("\t0\t15\t30\t45\t60\t(dB Level Velocity)");
   for(KVI = 0; KVI < 5; KVI++)
   {
-    Log::info<Log::LogMode::Plain>(100 * KV[KVI], "\t");
+    nltools::Log::info<nltools::Log::LogMode::Plain>(100 * KV[KVI], "\t");
     for(LVI = 0; LVI < 5; LVI++)
     {
       peak = m_convert.eval_level((1.f - KV[KVI]) * -LV[LVI]);
-      Log::info<Log::LogMode::Plain>(peak, "\t");
+      nltools::Log::info<nltools::Log::LogMode::Plain>(peak, "\t");
     }
-    Log::info();
+    nltools::Log::info();
   }
-  Log::info("(% Key Velocity)");
+  nltools::Log::info("(% Key Velocity)");
 }
 
 void paramengine::testRounding()
 {
-  Log::info("Testing Round Mechanism");
-  Log::info("\tidx\tfloat\tint\tround\tint+\tint-\tR5?");
+  nltools::Log::info("Testing Round Mechanism");
+  nltools::Log::info("\tidx\tfloat\tint\tround\tint+\tint-\tR5?");
   float f;
   for(uint32_t i = 0; i < 65; i++)
   {
     f = roundingValues[i];
-    Log::info<Log::LogMode::Plain>("\t", i, "\t", f, "\t", static_cast<int>(f), "\t");
-    Log::info<Log::LogMode::Plain>(static_cast<int>(std::round(f - 0.5f)), "\t", static_cast<int>(f + 0.5f), "\t");
-    Log::info<Log::LogMode::AppendNewLine>(static_cast<int>(f - 0.5f));
+    nltools::Log::info<nltools::Log::LogMode::Plain>("\t", i, "\t", f, "\t", static_cast<int>(f), "\t");
+    nltools::Log::info<nltools::Log::LogMode::Plain>(static_cast<int>(std::round(f - 0.5f)), "\t",
+                                                     static_cast<int>(f + 0.5f), "\t");
+    nltools::Log::info<nltools::Log::LogMode::AppendNewLine>(static_cast<int>(f - 0.5f));
     // reaktor algorithm???
   }
-  Log::info();
+  nltools::Log::info();
 }

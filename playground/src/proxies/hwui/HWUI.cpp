@@ -23,8 +23,8 @@
 #include <tools/Signal.h>
 #include <xml/FileOutStream.h>
 #include <groups/HardwareSourcesGroup.h>
-#include <io/network/WebSocketSession.h>
 #include <tools/PerformanceTimer.h>
+#include <nltools/messaging/Message.h>
 
 HWUI::HWUI()
     : m_readersCancel(Gio::Cancellable::create())
@@ -41,8 +41,8 @@ HWUI::HWUI()
   }
 #endif
 
-  Application::get().getWebSocketSession()->onMessageReceived(WebSocketSession::Domain::Buttons,
-                                                              sigc::mem_fun(this, &HWUI::onButtonMessage));
+  nltools::msg::receive<nltools::msg::ButtonChangedMessage>(nltools::msg::EndPoint::Playground,
+                                                            sigc::mem_fun(this, &HWUI::onButtonMessage));
 }
 
 HWUI::~HWUI()
@@ -56,13 +56,9 @@ void HWUI::deInit()
   Oleds::get().deInit();
 }
 
-void HWUI::onButtonMessage(WebSocketSession::tMessage msg)
+void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
 {
-  gsize numBytes = 0;
-  auto buffer = (const char *) msg->get_data(numBytes);
-
-  if(numBytes > 0)
-    onButtonPressed(buffer[0] & 0x7F, buffer[0] & 0x80);
+  onButtonPressed(msg.buttonId, msg.pressed);
 }
 
 void HWUI::init()
@@ -206,34 +202,6 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       else if(line == "inc-all-fine")
       {
         Application::get().getPresetManager()->incAllParamsFine();
-      }
-      else if(line == "issue938")
-      {
-#if _DEVELOPMENT_PC
-        using namespace std::chrono_literals;
-        using Domain = WebSocketSession::Domain;
-        using Msg = Glib::Bytes;
-
-        auto w = Application::get().getWebSocketSession();
-        auto step = 16000 / 50;
-        uint16_t pedalMove[4] = {};
-        pedalMove[0] = MessageParser::PARAM;
-        pedalMove[1] = 2;
-        pedalMove[2] = HardwareSourcesGroup::getUpperRibbonParameterID();
-        pedalMove[3] = 1 * step;
-
-        auto delay = 20ms;
-
-        w->simulateReceivedDebugMessage({ delay, Domain::Lpc, Msg::create(&pedalMove, 8) });
-        w->simulateReceivedDebugMessage({ delay, BUTTON_INC, true });
-        w->simulateReceivedDebugMessage({ delay, BUTTON_INC, false });
-
-        for(int i = 0; i < 10; i++)
-        {
-          pedalMove[3] = (i + 2) * step;
-          w->simulateReceivedDebugMessage({ delay, Domain::Lpc, Msg::create(&pedalMove, 8) });
-        }
-#endif
       }
       else if(line.at(0) == '!')
       {

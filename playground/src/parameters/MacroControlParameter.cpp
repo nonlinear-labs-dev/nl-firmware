@@ -17,13 +17,13 @@
 #include "RibbonParameter.h"
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
-#include <tools/Throttler.h>
+#include <nltools/threading/Throttler.h>
 #include "http/HTTPServer.h"
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
 #include <tools/StringTools.h>
 
-static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(ModulationSource::MC1);
+static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(MacroControls::MC1);
 
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
@@ -126,7 +126,8 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
   if(valueD != lastBroadcastedControlPosition)
   {
-    const auto str = StringTools::buildString("MCVIEW&ID=",idString,"&VAL=",value,"&UUID=",uuid,"&NAME=",getGivenName());
+    const auto str
+        = StringTools::buildString("MCVIEW&ID=", idString, "&VAL=", value, "&UUID=", uuid, "&NAME=", getGivenName());
     Application::get().getHTTPServer()->getMCViewContentManager().sendToAllWebsockets(str);
     lastBroadcastedControlPosition = valueD;
   }
@@ -235,7 +236,7 @@ void MacroControlParameter::undoableResetConnectionsToTargets()
   while(!m_targets.empty())
   {
     auto p = *m_targets.begin();
-    p->undoableSelectModSource(scope->getTransaction(), ModulationSource::NONE);
+    p->undoableSelectModSource(scope->getTransaction(), MacroControls::NONE);
     p->undoableSetModAmount(scope->getTransaction(), 0);
   }
 }

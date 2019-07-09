@@ -1,6 +1,6 @@
 #include "CommandlinePerformanceWatch.h"
 #include "io/audio/AudioOutput.h"
-#include "io/Log.h"
+#include <nltools/logging/Log.h>
 #include <glibmm.h>
 
 CommandlinePerformanceWatch::CommandlinePerformanceWatch(const AudioOutput *device)
@@ -16,7 +16,7 @@ bool CommandlinePerformanceWatch::printPerformance()
 
   char txt[256];
   sprintf(txt, "[%3.1f%% ... %3.1f%% ... %3.1f%%]", 100 * p.min, 100 * p.avg, 100 * p.max);
-  Log::output<Log::LogMode::InsertSpaces>("\rPerformance:", txt, "#>");
-  Log::flush();
+  nltools::Log::output<nltools::Log::LogMode::InsertSpaces>("\rPerformance:", txt, "#>");
+  nltools::Log::flush();
   return true;
 }
