@@ -2,6 +2,7 @@
 
 #include "Messaging.h"
 #include <nltools/Types.h>
+#include <cstring>
 
 namespace nltools
 {
@@ -80,7 +81,7 @@ namespace nltools
         auto data = reinterpret_cast<const uint8_t *>(msg.message->get_data(numBytes));
         auto scratch = reinterpret_cast<uint16_t *>(g_malloc(numBytes + 2));
         scratch[0] = static_cast<uint16_t>(MessageType::LPC);
-        memcpy(&scratch[1], data, numBytes);
+	std::memcpy(&scratch[1], data, numBytes);
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
         return Glib::wrap(bytes);
       }

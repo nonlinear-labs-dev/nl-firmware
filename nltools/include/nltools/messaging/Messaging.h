@@ -4,6 +4,7 @@
 #include <giomm.h>
 #include <sigc++/sigc++.h>
 #include <assert.h>
+#include <cstring>
 
 namespace nltools
 {
