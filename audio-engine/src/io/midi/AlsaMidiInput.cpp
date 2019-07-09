@@ -1,5 +1,5 @@
 #include "AlsaMidiInput.h"
-#include "io/Log.h"
+#include <nltools/logging/Log.h>
 #include "io/HighPriorityTask.h"
 #include <iostream>
 
@@ -18,7 +18,7 @@ AlsaMidiInput::~AlsaMidiInput()
 void AlsaMidiInput::open(const std::string &deviceName)
 {
   if(snd_rawmidi_open(&m_handle, nullptr, deviceName.c_str(), SND_RAWMIDI_NONBLOCK))
-    Log::error("Could not open midi device");
+    nltools::Log::error("Could not open midi device");
 }
 
 void AlsaMidiInput::start()

@@ -1,7 +1,7 @@
 #include "C15_CLI.h"
 #include "main.h"
 #include "synth/C15Synth.h"
-#include "io/Log.h"
+#include <nltools/logging/Log.h>
 #include <iostream>
 
 C15_CLI::C15_CLI(C15Synth *synth)
@@ -16,7 +16,7 @@ C15_CLI::C15_CLI(C15Synth *synth)
   m_commands['-'] = [=] { synth->decrease(); };
 
   m_commands['q'] = [=] {
-    Log::info("Quitting application...");
+    nltools::Log::info("Quitting application...");
     quit(0);
   };
 }

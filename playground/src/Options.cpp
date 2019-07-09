@@ -3,6 +3,7 @@
 #include "device-settings/DebugLevel.h"
 
 Options::Options(int &argc, char **&argv)
+    : m_selfPath(argv[0])
 {
   setDefaults();
 
@@ -19,24 +20,19 @@ Options::Options(int &argc, char **&argv)
   OptionEntry bbbb;
   bbbb.set_long_name("bbbb");
   bbbb.set_short_name('b');
-  bbbb.set_description("IP of the device running the BeagleBoneBlackBridge (bbbb)");
+  bbbb.set_description("Where to find the bbbb");
   mainGroup.add_entry(bbbb, m_bbbb);
 
-  Glib::OptionEntry doTimestamps;
-  doTimestamps.set_long_name("timestamps");
-  doTimestamps.set_short_name('t');
-  doTimestamps.set_description("measure turn around time encoder -> playground -> oled");
-  mainGroup.add_entry(doTimestamps, m_doTimeStamps);
+  OptionEntry ae;
+  ae.set_long_name("audio-engine-host");
+  ae.set_short_name('a');
+  ae.set_description("Where to find the audio-engine");
+  mainGroup.add_entry(ae, m_audioEngineHost);
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
   ctx.parse(argc, argv);
-}
-
-Options::~Options()
-{
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void Options::setDefaults()
@@ -88,9 +84,14 @@ Glib::ustring Options::getBBBB() const
   return m_bbbb;
 }
 
-bool Options::sendBBBBTurnaroundTimestamps()
+ustring Options::getAudioEngineHost() const
 {
-  return m_doTimeStamps;
+  return m_audioEngineHost;
+}
+
+Glib::ustring Options::getSelfPath() const
+{
+  return m_selfPath;
 }
 
 Glib::ustring Options::getSettingsFile() const

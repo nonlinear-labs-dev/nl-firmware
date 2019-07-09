@@ -2,6 +2,7 @@
 
 #include "EnumSetting.h"
 #include <sys/time.h>
+#include <nltools/logging/Log.h>
 
 enum class DebugLevels
 {
@@ -60,40 +61,27 @@ class DebugLevel : public EnumSetting<DebugLevels>
 
   template <typename... tArgs> static void gassy(const tArgs&... args)
   {
-    trace(DebugLevels::DEBUG_LEVEL_GASSY, args...);
+    nltools::Log::notify(args...);
   }
 
   template <typename... tArgs> static void info(const tArgs&... args)
   {
-    trace(DebugLevels::DEBUG_LEVEL_INFO, args...);
+    nltools::Log::info(args...);
   }
 
   template <typename... tArgs> static void debug(const tArgs&... args)
   {
-    trace(DebugLevels::DEBUG_LEVEL_DEBUG, args...);
+    nltools::Log::debug(args...);
   }
 
   template <typename... tArgs> static void warning(const tArgs&... args)
   {
-    trace(DebugLevels::DEBUG_LEVEL_WARNING, args...);
+    nltools::Log::warning(args...);
   }
 
   template <typename... tArgs> static void error(const tArgs&... args)
   {
-    trace(DebugLevels::DEBUG_LEVEL_ERROR, args...);
-  }
-
-  template <typename... tArgs> static void trace(DebugLevels level, const tArgs&... args)
-  {
-    if(DebugLevel::getLevel() >= level)
-      printTrace(level, args...);
-  }
-
-  template <typename... tArgs> static void output(const tArgs&... args)
-  {
-    std::stringstream str;
-    printTrace(str, args...);
-    g_printerr("%s\n", str.str().c_str());
+    nltools::Log::error(args...);
   }
 
  private:
@@ -102,40 +90,4 @@ class DebugLevel : public EnumSetting<DebugLevels>
 
   const std::vector<Glib::ustring>& enumToString() const override;
   const std::vector<Glib::ustring>& enumToDisplayString() const override;
-
-  template <typename... tArgs> static void printTrace(DebugLevels level, tArgs&... args)
-  {
-    std::stringstream str;
-    str << level << " ";
-    printTrace(str, args...);
-  }
-
-  template <typename tFirst, typename... tArgs>
-  static void printTrace(std::stringstream& str, const tFirst& first, const tArgs&... args)
-  {
-    str << first << " ";
-    printTrace(str, args...);
-  }
-
-  template <typename tFirst> static void printTrace(std::stringstream& str, const tFirst& first)
-  {
-    str << first;
-    g_printerr("%8" G_GUINT64_FORMAT ": %s\n", getTimestamp(), str.str().c_str());
-  }
-
-  static uint64_t getTimestamp()
-  {
-    static uint64_t epoch = getCurrentMilliseconds();
-    return getCurrentMilliseconds() - epoch;
-  }
-
-  static uint64_t getCurrentMilliseconds()
-  {
-    struct timeval spec;
-    gettimeofday(&spec, nullptr);
-    return spec.tv_sec * 1000 + spec.tv_usec / 1000;
-  }
 };
-
-#define DEBUG_TRACE(...) DebugLevel::debug(__PRETTY_FUNCTION__, "Line", __LINE__, "->", __VA_ARGS__)
-#define DEBUG_TRACE_EMPTY() DebugLevel::debug(__PRETTY_FUNCTION__, "Line", __LINE__)

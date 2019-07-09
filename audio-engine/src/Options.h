@@ -22,12 +22,15 @@ class Options
   int getNumPeriods() const;
   int getAlsaRingBufferSize() const;
 
+  std::string getPlaygroundHost() const;
+
  private:
   bool m_fatalXRuns = false;
   int m_rate = 48000;
   int m_polyphony = 20;
   bool m_measurePerformance = false;
 
+  Glib::ustring m_playgroundHost = "localhost";
   Glib::ustring m_midiInputDeviceName;
   std::chrono::nanoseconds m_additionalMidiDelay = std::chrono::nanoseconds::zero();
 

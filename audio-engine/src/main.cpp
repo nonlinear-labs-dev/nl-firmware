@@ -2,7 +2,10 @@
 #include "synth/SimpleSynth.h"
 #include "synth/C15Synth.h"
 #include "ui/CommandlinePerformanceWatch.h"
-#include "io/Log.h"
+
+#include <nltools/logging/Log.h>
+#include <nltools/StringTools.h>
+#include <nltools/messaging/Messaging.h>
 
 #include <glibmm.h>
 #include <iostream>
@@ -36,20 +39,28 @@ void runMainLoop()
   theMainLoop->run();
 }
 
+void setupMessaging(const Options *o)
+{
+  using namespace nltools::msg;
+  Configuration conf;
+  conf.offerEndpoints = { EndPoint::AudioEngine };
+  conf.useEndpoints = { { EndPoint::Playground, o->getPlaygroundHost() } };
+  nltools::msg::init(conf);
+}
+
 int main(int args, char *argv[])
 {
   Glib::init();
-
   connectSignals();
-
   theOptions = std::make_unique<Options>(args, argv);
+  setupMessaging(theOptions.get());
 
   if(theOptions->doMeasurePerformance())
   {
     auto synth = std::make_unique<C15Synth>();
     synth->measurePerformance(std::chrono::seconds(5));  // warm up
     auto result = synth->measurePerformance(std::chrono::seconds(5));
-    Log::info("Audio engine performs at", result, "x realtime.");
+    nltools::Log::info("Audio engine performs at", result, "x realtime.");
     return EXIT_SUCCESS;
   }
 

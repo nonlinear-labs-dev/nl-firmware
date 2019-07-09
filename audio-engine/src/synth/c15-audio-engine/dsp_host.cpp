@@ -1,5 +1,5 @@
 #include <iostream>
-#include "io/Log.h"
+#include <nltools/logging/Log.h>
 #include "dsp_host.h"
 #include "pe_utilities.h"
 
@@ -25,12 +25,12 @@ void dsp_host::init(uint32_t _samplerate, uint32_t _polyphony)
   m_decoder.init();
   /* init messages to terminal */
 
-  Log::info("DSP_HOST::MILESTONE:\t\t", static_cast<float>(test_milestone) * 0.01f);
-  Log::info("DSP_HOST::INIT:\t\t\tsamplerate:", m_samplerate, ", voices:", m_voices);
-  Log::info("DSP_HOST::CLOCK_divisions:\t", m_clockDivision[0], ",", m_clockDivision[1], ",", m_clockDivision[2], ",",
-            m_clockDivision[3]);
-  Log::info("DSP_HOST::UPSAMPLE:\t\t", m_upsampleFactor);
-  Log::info("DSP_HOST::SIZEOF:\t\t", sizeof(dsp_host), "bytes");
+  nltools::Log::info("DSP_HOST::MILESTONE:\t\t", static_cast<float>(test_milestone) * 0.01f);
+  nltools::Log::info("DSP_HOST::INIT:\t\t\tsamplerate:", m_samplerate, ", voices:", m_voices);
+  nltools::Log::info("DSP_HOST::CLOCK_divisions:\t", m_clockDivision[0], ",", m_clockDivision[1], ",",
+                     m_clockDivision[2], ",", m_clockDivision[3]);
+  nltools::Log::info("DSP_HOST::UPSAMPLE:\t\t", m_upsampleFactor);
+  nltools::Log::info("DSP_HOST::SIZEOF:\t\t", sizeof(dsp_host), "bytes");
 
   /* Audio Engine */
   initAudioEngine();
@@ -267,7 +267,7 @@ void dsp_host::evalMidi(uint32_t _status, uint32_t _data0, uint32_t _data1)
       }
       else
       {
-        Log::info("ignored selectVoice(", i, ")");
+        nltools::Log::info("ignored selectVoice(", i, ")");
       }
       break;
     case 2:
@@ -284,7 +284,7 @@ void dsp_host::evalMidi(uint32_t _status, uint32_t _data0, uint32_t _data1)
       }
       else
       {
-        Log::info("ignored selectMultipleVoices(", i, ")");
+        nltools::Log::info("ignored selectMultipleVoices(", i, ")");
       }
       break;
     case 3:
@@ -1054,11 +1054,11 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
       {
         case 1:
           /* Group Mode */
-          Log::info("enabled GROUP mode");
+          nltools::Log::info("enabled GROUP mode");
           m_test_midiMode = 0;
           break;
         case 2:
-          Log::info("enabled GLOBAL mode");
+          nltools::Log::info("enabled GLOBAL mode");
           m_test_midiMode = 1;
           m_test_selectedParam = -1;
           /* Global Mode */
@@ -1070,7 +1070,7 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
             {
               /* NULL selected param */
               uint32_t tmp_p = static_cast<uint32_t>(m_test_selectedParam);  // cast as unsigned int
-              Log::info("NULL Param (", tmp_p, ")");                         // print to terminal
+              nltools::Log::info("NULL Param (", tmp_p, ")");                // print to terminal
               /* TCD instructions */
               evalMidi(0, 127, 127);                 // select all voices
               evalMidi(1, tmp_p >> 7, tmp_p & 127);  // select corresponding param
@@ -1082,98 +1082,98 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
           else
           {
             /* Print Head */
-            Log::info("print parameters: HEAD");
+            nltools::Log::info("print parameters: HEAD");
             testGetParamHeadData();
           }
           break;
         case 4:
           /* Print Body */
-          Log::info("print parameters: BODY");
+          nltools::Log::info("print parameters: BODY");
           testGetParamRenderData();
           break;
         case 5:
           /* Print Signal */
-          Log::info("print parameters: SIGNAL");
+          nltools::Log::info("print parameters: SIGNAL");
           testGetSignalData();
           break;
         case 6:
           /* Init */
-          Log::info("triggered INIT");
+          nltools::Log::info("triggered INIT");
           testInit();
           break;
         case 7:
           /* Flush */
-          Log::info("triggered FLUSH");
+          nltools::Log::info("triggered FLUSH");
           testReset(0);
           break;
         case 8:
           /* Preset 0 */
-          Log::info("load PRESET 0");
+          nltools::Log::info("load PRESET 0");
           testLoadPreset(0);
           break;
         case 9:
           /* Preset 1 */
-          Log::info("load PRESET 1");
+          nltools::Log::info("load PRESET 1");
           testLoadPreset(1);
           break;
         case 10:
           /* Preset 2 */
-          Log::info("load PRESET 2");
+          nltools::Log::info("load PRESET 2");
           testLoadPreset(2);
           break;
         case 11:
           /* Preset 3 */
-          Log::info("load PRESET 3");
+          nltools::Log::info("load PRESET 3");
           testLoadPreset(3);
           break;
         case 12:
           /* Preset 4 */
-          Log::info("load PRESET 4");
+          nltools::Log::info("load PRESET 4");
           testLoadPreset(4);
           break;
         case 13:
           /* Preset 5 */
-          Log::info("load PRESET 5");
+          nltools::Log::info("load PRESET 5");
           testLoadPreset(5);
           break;
         case 14:
           /* Preset 6 */
-          Log::info("load PRESET 6");
+          nltools::Log::info("load PRESET 6");
           testLoadPreset(6);
           break;
         case 15:
           /* Preset 7 */
-          Log::info("load PRESET 7");
+          nltools::Log::info("load PRESET 7");
           testLoadPreset(7);
           break;
         case 16:
           // Envelope Stop
-          Log::info("triggered ENV_STOP");
+          nltools::Log::info("triggered ENV_STOP");
           testReset(1);
           break;
         case 17:
           // DSP Reset
-          Log::info("triggered DSP_RESET");
+          nltools::Log::info("triggered DSP_RESET");
           testReset(2);
           break;
         case 18:
           // Trigger Test Tone
           m_test_tone_state = 1 - m_test_tone_state;
-          Log::info("triggered TEST_TONE_STATE(", m_test_tone_state, ")");
+          nltools::Log::info("triggered TEST_TONE_STATE(", m_test_tone_state, ")");
           evalMidi(8, 0, 4);                   // select utility (test tone state)
           evalMidi(24, 0, m_test_tone_state);  // update utility
           break;
         case 19:
           // Mute OSC A
           m_test_muteA = 1 - m_test_muteA;
-          Log::info("OSC_A_Mute:", m_test_muteA);
+          nltools::Log::info("OSC_A_Mute:", m_test_muteA);
           evalMidi(8, 0, 5);
           evalMidi(24, 0, m_test_muteA);
           break;
         case 20:
           // Mute OSC B
           m_test_muteB = 1 - m_test_muteB;
-          Log::info("OSC_B_Mute:", m_test_muteB);
+          nltools::Log::info("OSC_B_Mute:", m_test_muteB);
           evalMidi(8, 0, 6);
           evalMidi(24, 0, m_test_muteB);
           break;
@@ -1186,63 +1186,63 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
       {
         case 1:
           /* Env A */
-          Log::info("selected ENVELOPE_A");
+          nltools::Log::info("selected ENVELOPE_A");
           break;
         case 2:
           /* Env B */
-          Log::info("selected ENVELOPE_B");
+          nltools::Log::info("selected ENVELOPE_B");
           break;
         case 3:
           /* Env C */
-          Log::info("selected ENVELOPE_C");
+          nltools::Log::info("selected ENVELOPE_C");
           break;
         case 4:
           /* Osc A */
-          Log::info("selected OSCILLATOR_A");
+          nltools::Log::info("selected OSCILLATOR_A");
           break;
         case 5:
           /* Shp A */
-          Log::info("selected SHAPER_A");
+          nltools::Log::info("selected SHAPER_A");
           break;
         case 6:
           /* Osc B */
-          Log::info("selected OSCILLATOR_B");
+          nltools::Log::info("selected OSCILLATOR_B");
           break;
         case 7:
           /* Shp B */
-          Log::info("selected SHAPER_B");
+          nltools::Log::info("selected SHAPER_B");
           break;
         case 8:
           /* Out Mix */
-          Log::info("selected OUTPUT_MIXER");
+          nltools::Log::info("selected OUTPUT_MIXER");
           break;
         case 9:
           /* Comb Filter */
-          Log::info("selected COMB_FILTER");
+          nltools::Log::info("selected COMB_FILTER");
           break;
         case 10:
           /* State Variable Filter */
-          Log::info("selected STATE_VARIABLE_FILTER");
+          nltools::Log::info("selected STATE_VARIABLE_FILTER");
           break;
         case 11:
           /* Cabinet & Gap Filter */
-          Log::info("selected CABINET_&_GAP_FILTER");
+          nltools::Log::info("selected CABINET_&_GAP_FILTER");
           break;
         case 12:
           /* Flanger */
-          Log::info("selected FLANGER");
+          nltools::Log::info("selected FLANGER");
           break;
         case 13:
           /* Echo and Reverb */
-          Log::info("selected ECHO_&_REVERB");
+          nltools::Log::info("selected ECHO_&_REVERB");
           break;
         case 16:
           /* FB Mix */
-          Log::info("selected FEEDBACK MIXER");
+          nltools::Log::info("selected FEEDBACK MIXER");
           break;
         case 17:
           /* Master */
-          Log::info("selected MASTER");
+          nltools::Log::info("selected MASTER");
           break;
       }
       break;
@@ -1263,11 +1263,11 @@ void dsp_host::testRouteControls(uint32_t _id, uint32_t _value)
             val = (2 * val) - 1;
           }
           val *= rng;
-          Log::info("edit PARAM ", tcdId, "(", val, ")");
+          nltools::Log::info("edit PARAM ", tcdId, "(", val, ")");
           /* get unison voices trigger and stop envelopes */
           if(tcdId == 249)
           {
-            Log::info("\tEnvelope Stop");
+            nltools::Log::info("\tEnvelope Stop");
             resetEnv();
             val += 1;
           }
@@ -1395,7 +1395,7 @@ void dsp_host::testNoteOff(uint32_t _pitch, uint32_t _velocity)
       = static_cast<int32_t>(m_voices);  // number of voices represented as signed integer (for correct comparisons)
   if((checkVoiceId < 0) || (checkVoiceId >= v))
   {
-    Log::warning("detected Note Off that shouldn't have happened...");
+    nltools::Log::warning("detected Note Off that shouldn't have happened...");
   }
   else
   {
@@ -1426,7 +1426,7 @@ void dsp_host::testNewNoteOff(uint32_t _pitch, uint32_t _velocity)
       = static_cast<int32_t>(m_voices);  // number of voices represented as signed integer (for correct comparisons)
   if((checkVoiceId < 0) || (checkVoiceId >= v))
   {
-    Log::warning("detected Note Off that shouldn't have happened...");
+    nltools::Log::warning("detected Note Off that shouldn't have happened...");
   }
   else
   {
@@ -1456,7 +1456,7 @@ void dsp_host::testNoteOff156(uint32_t _pitch, uint32_t _velocity)
       = static_cast<int32_t>(m_voices);  // number of voices represented as signed integer (for correct comparisons)
   if((checkVoiceId < 0) || (checkVoiceId >= v))
   {
-    Log::warning("detected Note Off that shouldn't have happened...");
+    nltools::Log::warning("detected Note Off that shouldn't have happened...");
   }
   else
   {
@@ -1476,7 +1476,7 @@ void dsp_host::testNoteOff156(uint32_t _pitch, uint32_t _velocity)
 /* set transition time */
 void dsp_host::testSetGlobalTime(uint32_t _value)
 {
-  Log::info("\nSET_TIME(", _value, "(ms))");
+  nltools::Log::info("\nSET_TIME(", _value, "(ms))");
   /* select all voices, params and update time */
   _value *= static_cast<uint32_t>(m_params.m_millisecond);  // convert time accordingly in samples
   evalMidi(0, 127, 127);                                    // select all voices
@@ -1503,7 +1503,7 @@ void dsp_host::testSetReference(uint32_t _value)
 {
   /* prepare value */
   uint32_t val = static_cast<uint32_t>(static_cast<float>(_value) * m_test_normalizeMidi * utility_definition[1].range);
-  Log::info("\nSET_REFERENCE(", val, ")");
+  nltools::Log::info("\nSET_REFERENCE(", val, ")");
   /* select and update reference utility */
   evalMidi(8, 0, 1);                  // select utility (reference tone)
   evalMidi(24, val >> 7, val & 127);  // update utility
@@ -1513,7 +1513,7 @@ void dsp_host::testSetReference(uint32_t _value)
 void dsp_host::testSetToneFreq(uint32_t _value)
 {
   _value += 400;
-  Log::info("Set_TestTone_Frequency:", _value, "[Hz]");
+  nltools::Log::info("Set_TestTone_Frequency:", _value, "[Hz]");
   evalMidi(8, 0, 2);                        // select utility (test tone freq)
   evalMidi(24, _value >> 7, _value & 127);  // update utility
 }
@@ -1522,7 +1522,7 @@ void dsp_host::testSetToneFreq(uint32_t _value)
 void dsp_host::testSetToneAmp(uint32_t _value)
 {
   int32_t val = static_cast<int32_t>(_value) - 127;
-  Log::info("Set_TestTone_Amplitude:", val, "[dB]");
+  nltools::Log::info("Set_TestTone_Amplitude:", val, "[dB]");
   if(val < 0)
   {
     _value = 8192 + static_cast<uint32_t>(val * -1);
@@ -1538,7 +1538,7 @@ void dsp_host::testSetToneAmp(uint32_t _value)
 /* preset recall approach */
 void dsp_host::testLoadPreset(uint32_t _presetId)
 {
-  Log::info("RECALL:", _presetId);
+  nltools::Log::info("RECALL:", _presetId);
   /* run a recall sequence based on the given preset id (predefined presets in pe_defines_testconfig.h) */
   /* recall sequence - no flush */
   evalMidi(47, 1, 1);  // enable preload (recall list mode)
@@ -1553,7 +1553,7 @@ void dsp_host::testLoadPreset(uint32_t _presetId)
 /* trigger flush */
 void dsp_host::testReset(uint32_t _mode)
 {
-  Log::info("RESET:", _mode);
+  nltools::Log::info("RESET:", _mode);
   /* pass the trigger TCD message */
   evalMidi(39, 0, _mode);  // flush/env_stop/dsp_reset
 }
@@ -1562,38 +1562,38 @@ void dsp_host::testReset(uint32_t _mode)
 void dsp_host::testGetSignalData()
 {
   /* print out the signal array to the terminal */
-  Log::info("PARAM_SIGNAL:");
+  nltools::Log::info("PARAM_SIGNAL:");
   for(uint32_t p = 0; p < sig_number_of_signal_items; p++)
   {
-    Log::info<Log::LogMode::InsertSpaces>(p, "-");
+    nltools::Log::info<nltools::Log::LogMode::InsertSpaces>(p, "-");
     for(uint32_t v = 0; v < m_voices; v++)
     {
-      Log::info<Log::LogMode::Plain>(m_parameters.getOld(v, static_cast<Signals>(p)), ", ");
+      nltools::Log::info<nltools::Log::LogMode::Plain>(m_parameters.getOld(v, static_cast<Signals>(p)), ", ");
     }
-    Log::info();
+    nltools::Log::info();
   }
   /* print out the left and right output signal to the terminal */
-  Log::info("OUTPUT_SIGNAL:", m_mainOut_L, ",", m_mainOut_R);
+  nltools::Log::info("OUTPUT_SIGNAL:", m_mainOut_L, ",", m_mainOut_R);
 }
 
 /* glance at parameter definition */
 void dsp_host::testGetParamHeadData()
 {
   /* print out the parameter definitions to the terminal */
-  Log::info("PARAM_HEAD:");
+  nltools::Log::info("PARAM_HEAD:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     auto parameterId = static_cast<Parameters>(p);
     param_head *obj = &m_params.getHead(parameterId);
-    Log::info<Log::LogMode::Plain>("id: ", obj->m_id, ", ");
-    Log::info<Log::LogMode::Plain>("index: ", obj->m_index, ", ");
-    Log::info<Log::LogMode::Plain>("size: ", obj->m_size, ", ");
-    Log::info<Log::LogMode::Plain>("clock: ", static_cast<uint32_t>(obj->m_clockType), ", ");
-    Log::info<Log::LogMode::Plain>("poly: ", static_cast<uint32_t>(obj->m_polyType), ", ");
-    Log::info<Log::LogMode::Plain>("scaleId: ", static_cast<uint32_t>(obj->m_scaleId), ", ");
-    Log::info<Log::LogMode::Plain>("postId: ", static_cast<uint32_t>(obj->m_postId), ", ");
-    Log::info<Log::LogMode::Plain>("norm: ", obj->m_normalize, ", ");
-    Log::info<Log::LogMode::AppendNewLine>("scaleArg: ", obj->m_scaleArg);
+    nltools::Log::info<nltools::Log::LogMode::Plain>("id: ", obj->m_id, ", ");
+    nltools::Log::info<nltools::Log::LogMode::Plain>("index: ", obj->m_index, ", ");
+    nltools::Log::info<nltools::Log::LogMode::Plain>("size: ", obj->m_size, ", ");
+    nltools::Log::info<nltools::Log::LogMode::Plain>("clock: ", static_cast<uint32_t>(obj->m_clockType), ", ");
+    nltools::Log::info<nltools::Log::LogMode::Plain>("poly: ", static_cast<uint32_t>(obj->m_polyType), ", ");
+    nltools::Log::info<nltools::Log::LogMode::Plain>("scaleId: ", static_cast<uint32_t>(obj->m_scaleId), ", ");
+    nltools::Log::info<nltools::Log::LogMode::Plain>("postId: ", static_cast<uint32_t>(obj->m_postId), ", ");
+    nltools::Log::info<nltools::Log::LogMode::Plain>("norm: ", obj->m_normalize, ", ");
+    nltools::Log::info<nltools::Log::LogMode::AppendNewLine>("scaleArg: ", obj->m_scaleArg);
   }
 }
 
@@ -1601,7 +1601,7 @@ void dsp_host::testGetParamHeadData()
 void dsp_host::testGetParamRenderData()
 {
   /* print out the parameter rendering status to the terminal */
-  Log::info("PARAM_BODY:");
+  nltools::Log::info("PARAM_BODY:");
   for(uint32_t p = 0; p < sig_number_of_params; p++)
   {
     auto parameterId = static_cast<Parameters>(p);
@@ -1610,11 +1610,12 @@ void dsp_host::testGetParamRenderData()
     for(uint32_t i = 0; i < obj->m_size; i++)
     {
       param_body *item = &m_params.getBody(index);
-      Log::info<Log::LogMode::Plain>("P(", obj->m_id, ", ", i, "):\t");
-      Log::info<Log::LogMode::Plain>("state: ", item->m_state, ",\tpreload: ", item->m_preload);
-      Log::info<Log::LogMode::Plain>(",\tsignal: ", item->m_value, ",\tdx:[", item->m_dx[0], ", ", item->m_dx[1], "]");
-      Log::info<Log::LogMode::Plain>(",\tx: ", item->m_x, ",\tstart: ", item->m_start);
-      Log::info<Log::LogMode::AppendNewLine>(",\tdiff: ", item->m_diff, ",\tdest: ", item->m_dest);
+      nltools::Log::info<nltools::Log::LogMode::Plain>("P(", obj->m_id, ", ", i, "):\t");
+      nltools::Log::info<nltools::Log::LogMode::Plain>("state: ", item->m_state, ",\tpreload: ", item->m_preload);
+      nltools::Log::info<nltools::Log::LogMode::Plain>(",\tsignal: ", item->m_value, ",\tdx:[", item->m_dx[0], ", ",
+                                                       item->m_dx[1], "]");
+      nltools::Log::info<nltools::Log::LogMode::Plain>(",\tx: ", item->m_x, ",\tstart: ", item->m_start);
+      nltools::Log::info<nltools::Log::LogMode::AppendNewLine>(",\tdiff: ", item->m_diff, ",\tdest: ", item->m_dest);
       index++;
     }
   }
@@ -1655,7 +1656,7 @@ void dsp_host::testParseDestination(int32_t _value)
 void dsp_host::testInit()
 {
   /* */
-  Log::info("INIT SEQUENCE");
+  nltools::Log::info("INIT SEQUENCE");
   evalMidi(0, 127, 127);  // select all voices
   evalMidi(1, 127, 127);  // select all parameters
   testSetGlobalTime(dsp_initial_time);
