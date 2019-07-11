@@ -14,11 +14,11 @@ Options::Options(int &argc, char **&argv)
   pmPath.set_flags(OptionEntry::FLAG_FILENAME);
   pmPath.set_long_name("pm-path");
   pmPath.set_short_name('p');
-  pmPath.set_description("name of the folder that stores preset-managers banks as XML files");
+  pmPath.set_description("Name of the folder that stores preset-managers banks as XML files");
   mainGroup.add_entry_filename(pmPath, sigc::mem_fun(this, &Options::setPMPathName));
 
   OptionEntry bbbb;
-  bbbb.set_long_name("bbbb");
+  bbbb.set_long_name("bbbb-host");
   bbbb.set_short_name('b');
   bbbb.set_description("Where to find the bbbb");
   mainGroup.add_entry(bbbb, m_bbbb);

@@ -16,23 +16,27 @@ void add(Glib::OptionGroup &mainGroup, T &ref, const std::string &longName, cons
 
 Options::Options(int &argc, char **&argv)
 {
+
+
   Glib::ustring additionalMidiDelayString;
 
   Glib::OptionGroup mainGroup("common", "common options");
   Glib::OptionContext ctx;
 
-  add(mainGroup, m_rate, "sample-rate", 'r', "Samplerate of audio engine");
-  add(mainGroup, m_polyphony, "polyphony", 'p', "Polyphony of the c15 audio engine");
+
+
+  add(mainGroup, m_rate, "sample-rate", 'r', "Audio samplerate");
+  add(mainGroup, m_polyphony, "polyphony", 'p', "Number of voices");
   add(mainGroup, m_midiInputDeviceName, "midi-in", 'm', "Name of the alsa midi input device");
   add(mainGroup, m_audioOutputDeviceName, "audio-out", 'a', "Name of the alsa audio output device");
   add(mainGroup, m_fatalXRuns, "fatal-xruns", 'f', "Terminate program in case of alsa underrun or overrun");
-  add(mainGroup, m_measurePerformance, "measure-performance", 'e', "Calculate performance of audio engine");
+  add(mainGroup, m_measurePerformance, "measure-performance", 'e', "Measure audio-engine realtime performance ");
   add(mainGroup, additionalMidiDelayString, "additional-midi-delay", 'i',
-      "add this delay (in ns) to each incoming midi note");
+      "incoming midi note delay (in ns)");
   add(mainGroup, m_framesPerPeriod, "frames-per-period", 's',
-      "configure alsa audio input with this number of frames per period");
-  add(mainGroup, m_numPeriods, "num-periods", 'n', "configure alsa audio input with this number of periods");
-  add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "configure alsa audio input with this ring buffer size");
+      "alsa audio input frames per period");
+  add(mainGroup, m_numPeriods, "num-periods", 'n', "alsa audio input number of periods");
+  add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "alsa audio input ring buffer size");
   add(mainGroup, m_playgroundHost, "playground-host", 'h', "Where to find the playground");
 
   ctx.set_main_group(mainGroup);
