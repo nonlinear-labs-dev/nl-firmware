@@ -79,14 +79,16 @@ public abstract class ModulatableParameter extends Parameter {
 
 		return false;
 	}
-
+	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
 
-		if (isSelectedParameterMyMacroControl())
+		if (isSelectedParameterMyMacroControl()) {
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(5), toXPixels(1.5), null,
 					ColorTable.getMacroControlTargetColor());
+			drewRoundedRect = true;
+		}
 	}
 
 	public void setModulationSource(MacroControls src, Initiator initiator) {

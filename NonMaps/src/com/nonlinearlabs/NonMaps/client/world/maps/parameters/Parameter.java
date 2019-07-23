@@ -132,14 +132,15 @@ public abstract class Parameter extends LayoutResizingVertical {
 				null);
 
 		super.draw(ctx, invalidationMask);
-
+		
 		if (isSelected())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
 					getColorSliderHighlight());
-
-		if (shouldHightlightChanged())
+		else if (shouldHightlightChanged())
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
 	}
+
+	protected boolean drewRoundedRect = false;
 
 	private RGB getParameterBackgroundColor() {
 		return isSelected() ? getColorObjectBackgroundSelected() : new Gray(52);
