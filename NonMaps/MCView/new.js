@@ -33,8 +33,9 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/");
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
+    //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/"); //Local
+    //this.webSocket = new WebSocket("ws://192.168.0.2:8080/ws-mc/"); //Buildserver
+    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/'); //Production
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
@@ -913,3 +914,26 @@ function setInterpolation(val) {
 function stub() {
 
 }
+
+function doToggle() {
+  if (document.fullscreenElement) {
+		document.exitFullscreen();
+	} else {
+		document.documentElement.requestFullscreen();
+	}
+}
+
+document.addEventListener("fullscreenchange", () => {
+  if(document.fullscreenElement) {
+    document.getElementById("fs-select").checked = true;
+  } else {
+    document.getElementById("fs-select").checked = false;
+  }
+  setTimeout(() => {
+    view.redraw(model);
+  }, 3);
+});
+
+window.addEventListener('resize', () => {
+  view.redraw(model);
+});
