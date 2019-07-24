@@ -282,10 +282,23 @@ class MCView {
     });
 
     this.imgageloaded = false;
+    this.fontsloaded = false;
+
     this.img = new Image();
     this.img.onload = () => {
       this.imgageloaded = true;
+
+      if(this.fontsloaded)
+        view.redraw(model);
     }
+
+    document.fonts.onloadingdone = (fontFaceSetEvent) => {
+      this.fontsloaded = true;
+
+      if(this.imgageloaded)
+        view.redraw(model);
+    };
+
     this.img.src = "tri-open.svg";
 
     this.body = document.getElementById('body');
@@ -439,7 +452,7 @@ class MCView {
     var width = canvasWidth - leftMargin;
     var heigth = canvas.height;
 
-    ctx.font = '20px nonlinearfont';
+    ctx.font = '20px CanvasFont';
     ctx.strokeStyle = "black";
     ctx.fillStyle = new ColorScheme().backgroundColor;
     ctx.fillRect(0, 0, canvasWidth, heigth);
@@ -520,8 +533,8 @@ class MCView {
 
     ctx.strokeStyle = new ColorScheme().markerColor;
     ctx.fillStyle = new ColorScheme().labelColor;
-    ctx.font = "20px nonlinearfont";
-    var lineHeight=ctx.measureText("\uE001").width;
+    ctx.font = '20px CanvasFont_UNICODE';
+    var lineHeight=ctx.measureText("\uE101").width;
 
     var offset = lineHeight;
 
@@ -536,15 +549,15 @@ class MCView {
 
     //X
     ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
-    ctx.font = "20px nonlinearfont2";
+    ctx.font = '20px CanvasFont';
     ctx.fillStyle = new ColorScheme().markerColor;
     ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight * 1.05);
     ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
     //Y
     ctx.fillStyle = new ColorScheme().labelColor;
-    ctx.font = "20px nonlinearfont";
+    ctx.font = '20px CanvasFont_UNICODE';
     ctx.fillText(yLabel, upperLeftFixPointX - getTextWidth(yLabel) / 2, upperLeftFixPointY);
-    ctx.font = "20px nonlinearfont2";
+    ctx.font = '20px CanvasFont';
     ctx.fillStyle = new ColorScheme().markerColor;
     ctx.fillText(Number(yVal).toFixed(1), upperLeftFixPointX - getTextWidth(Number(yVal).toFixed(1)) / 2, upperLeftFixPointY + lineHeight * 1.05);
     ctx.fillText(yName, upperLeftFixPointX + getTextWidth(yLabel), upperLeftFixPointY);
@@ -589,9 +602,9 @@ class MCView {
     ctx.beginPath();
     ctx.strokeStyle = new ColorScheme().markerColor;
     ctx.fillStyle = new ColorScheme().labelColor;
-    ctx.font = "20px nonlinearfont";
+    ctx.font = '20px CanvasFont_UNICODE';
 
-    var lineHeight=ctx.measureText("\uE001").width;
+    var lineHeight=ctx.measureText("\uE101").width;
     var offset = lineHeight;
     var lowerRightFixPointX = x + w - offset;
     var lowerRightFixPointY = y + h - offset * 1.3;
@@ -601,7 +614,7 @@ class MCView {
     };
 
     ctx.fillText(xLabel, lowerRightFixPointX - getTextWidth(xLabel) / 2, lowerRightFixPointY);
-    ctx.font = "20px nonlinearfont2";
+    ctx.font = '20px CanvasFont';
     ctx.fillStyle = new ColorScheme().markerColor;
     ctx.fillText(Number(xVal).toFixed(1), lowerRightFixPointX - getTextWidth(Number(xVal).toFixed(1)) / 2, lowerRightFixPointY + lineHeight * 1.05);
     ctx.fillText(xName, lowerRightFixPointX - getTextWidth(xName) - getTextWidth(xLabel), lowerRightFixPointY);
@@ -636,17 +649,17 @@ class MCView {
 function getUnicodeForMC(mcId) {
 	switch(mcId) {
 		case 243:
-		return "\uE000";
+		return "\uE100";
 		case 244:
-		return "\uE001";
+		return "\uE101";
 		case 245:
-		return "\uE002";
+		return "\uE102";
 		case 246:
-		return "\uE003";
+		return "\uE103";
 		case 247:
-		return "\uE200";
+		return "\uE104";
 		case 248:
-		return "\uE201";
+		return "\uE105";
 	}
 }
 
@@ -859,6 +872,7 @@ function onLoad() {
     } else {
       setCDXY(view.range);
     }
+
     view.redraw(model);
   };
 

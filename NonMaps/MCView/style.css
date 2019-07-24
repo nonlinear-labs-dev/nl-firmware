@@ -1,18 +1,3 @@
-@font-face {
-  font-family: 'nonlinearfont';
-	font-style: normal;
-	font-weight: 400;
-  src: url('./SourceSansProLW25-Regular.otf');
-  unicode-range: U+E000-E201;
-}
-
-@font-face {
-  font-family: 'nonlinearfont2';
-	font-style: normal;
-	font-weight: 400;
-  src: url('./SourceSansProLW25-Regular.otf');
-}
-
 
 .collapsed {
   display: none;
@@ -45,7 +30,7 @@ html, body {
   right: 0;
   bottom: 0;
   left: 0;
-  font-family: "nonlinearfont2";
+  font-family: "CanvasFont_UNICODE";
 }
 
 html {
@@ -59,14 +44,14 @@ html {
 
 body {
 	width: 100%;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    background-color: #222;
-	font-family: 'Source Sans Pro';
-    font-weight: 300;
-    font-style: normal;
-    font-stretch: normal;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background-color: #222;
+  font-family: 'CanvasFont_UNICODE';
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
 	font-size: 18px;
 	line-height: 1.4;
 }
@@ -125,6 +110,8 @@ h4 {
 .triangle-left {
 	width: 8%;
 	background: url(tri-open.svg) 50% 50% no-repeat #604343;
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
 	border-left: 1px solid #222;
 	cursor: pointer;
 }
@@ -184,7 +171,7 @@ label {
 }
 
 .marker {
-    font-family: 'Source Sans Pro LW25';
+    font-family: 'CanvasFont_UNICODE';
     vertical-align: 1px;
     font-weight: 400;
     color: #bbb;

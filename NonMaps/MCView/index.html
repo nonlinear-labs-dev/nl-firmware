@@ -2,13 +2,13 @@
   <head>
     	<title>C15 - MC View</title>
     	<meta name="viewport" content="width=device-width, user-scalable=no">
+      <link rel="stylesheet" href="fonts/source-sans-pro.css" type="text/css" />
       <link rel="stylesheet" href="style.css">
       <link rel="shortcut icon" href="favicon.ico">
-      <link rel="stylesheet" href="fonts/source-sans-pro.css" type="text/css" />
 		<script type="text/javascript"  src="new.js" ></script>
 	</head>
   <body id='body' onload="onLoad()">
-    <div class='overlay collapsed' id='settings-overlay' class='collapsed' onclick="event.stopPropagation(); toggleSettings();">
+    <div class='overlay collapsed' id='settings-overlay' onclick="event.stopPropagation(); toggleSettings();">
       <div class="triangle-left" onclick='event.stopPropagation(); toggleSettings();'>
       </div>
       <div class="setting-item" onclick="event.stopPropagation(); stub();">
@@ -19,7 +19,7 @@
             <h4 id="interpolation-step-label">100</h4>
           </div><!-- end slide-container -->
             <div class="form-container">
-              <h3><b class="marker">&#xE002;</b>&#8287;and&#8287;<b class="marker">&#xE003;</b>&#8287;on:</h3>
+              <h3><b class="marker">&#xE102;</b>&#8287;and&#8287;<b class="marker">&#xE103;</b>&#8287;on:</h3>
               <form class="sel-input-form">
               <input class="radio-radio" type="radio" name="mc-sel" id="cd-x-f" value="x" checked="">
               <label class="radio-label"><span id="cd-x"></span> Sliders</label>
@@ -32,6 +32,5 @@
       </div><!-- end setting-item -->
     </div>
     <canvas id="canvas"></canvas>
-    </div>
   </body>
 </html>
