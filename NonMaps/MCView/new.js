@@ -33,8 +33,8 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/");
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
+    this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/");
+    //this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
@@ -449,6 +449,7 @@ class MCView {
     var canvasWidth = canvas.width;
     var leftMargin = canvasWidth * view.range.leftMargin;
     leftMargin = Math.max(leftMargin, fiveMM);
+    document.getElementById("settings-opener").style.width = leftMargin + "px";
     var width = canvasWidth - leftMargin;
     var heigth = canvas.height;
 
@@ -910,6 +911,9 @@ function toggleSettings() {
   var e = document.getElementById("settings-overlay");
   e.classList.toggle("collapsed");
   e.classList.toggle("full");
+
+  var op = document.getElementById("settings-opener");
+  op.classList.toggle("collapsed");
 }
 
 function setInterpolation(val) {

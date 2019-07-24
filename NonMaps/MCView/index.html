@@ -8,9 +8,9 @@
 		<script type="text/javascript"  src="new.js" ></script>
 	</head>
   <body id='body' onload="onLoad()">
+    <div class="overlay triangle-open" id="settings-opener" onclick='event.stopPropagation(); toggleSettings();'>
+    </div>
     <div class='overlay collapsed' id='settings-overlay' onclick="event.stopPropagation(); toggleSettings();">
-      <div class="triangle-left" onclick='event.stopPropagation(); toggleSettings();'>
-      </div>
       <div class="setting-item" onclick="event.stopPropagation(); stub();">
         <div class="set-area">
           <div class="slide-container">

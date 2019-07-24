@@ -30,7 +30,7 @@ html, body {
   right: 0;
   bottom: 0;
   left: 0;
-  font-family: "CanvasFont_UNICODE";
+  font-family: "CanvasFont";
 }
 
 html {
@@ -48,7 +48,7 @@ body {
   margin: 0;
   overflow: hidden;
   background-color: #222;
-  font-family: 'CanvasFont_UNICODE';
+  font-family: 'CanvasFont';
   font-weight: 300;
   font-style: normal;
   font-stretch: normal;
@@ -109,11 +109,17 @@ h4 {
 
 .triangle-left {
 	width: 8%;
-	background: url(tri-open.svg) 50% 50% no-repeat #604343;
+	background: url(tri-open.svg) 50% 50% no-repeat #404040;
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
 	border-left: 1px solid #222;
 	cursor: pointer;
+}
+
+.triangle-open {
+  background: url(tri-open.svg) 50% 50% no-repeat #404040;
+  border-left: 1px solid #222;
+  cursor: pointer;
 }
 
 .form-container {
