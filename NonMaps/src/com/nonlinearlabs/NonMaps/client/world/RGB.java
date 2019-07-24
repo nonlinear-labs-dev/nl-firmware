@@ -70,8 +70,12 @@ public class RGB {
 		return new RGB(155, 159, 163);
 	}
 	
-	public static RGB changedBorder() {
+	public static RGB changedBeltBorder() {
 		return new RGB(196, 205, 145);
+	}
+	
+	public static RGB changedBorder() {
+		return new RGB(217, 231, 121);
 	}
 	
 	public static RGB changedText() {

@@ -22,7 +22,7 @@ public class EditorModeButton extends SVGImage {
 		if(isChanged()) {
 			Rect pix = getPixRect().copy();
 			pix = pix.getReducedBy(pix.getWidth() * -0.5);
-			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBorder());
+			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBeltBorder());
 		}
 	}
 

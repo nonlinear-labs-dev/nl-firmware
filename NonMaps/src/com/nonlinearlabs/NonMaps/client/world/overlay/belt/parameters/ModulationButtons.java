@@ -20,7 +20,7 @@ public class ModulationButtons extends OverlayLayout {
 		public OGLabel(OverlayLayout parent) {
 			super(parent);
 			setFontColor(RGB.changedText());
-			setFontHeightInMM(6);
+			setFontHeightInMM(5);
 		}
 		
 		
@@ -55,7 +55,7 @@ public class ModulationButtons extends OverlayLayout {
 		if(isChanged()) {
 			Rect pix = getPixRect().copy();
 			pix = pix.getReducedBy(pix.getWidth() / -5.5);
-			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBorder());
+			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBeltBorder());
 		}
 	}
 
