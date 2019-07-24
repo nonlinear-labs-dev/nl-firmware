@@ -20,11 +20,9 @@ public class EditorModeButton extends SVGImage {
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
 		if(isChanged()) {
-			Rect pixrect = getPixRect().copy();
-			pixrect.moveBy(1, 0);
-			pixrect.reduceHeightBy(-2);
-			pixrect.reduceWidthBy(-2);
-			pixrect.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, null, RGB.yellow());
+			Rect pix = getPixRect().copy();
+			pix = pix.getReducedBy(pix.getWidth() * -0.5);
+			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBorder());
 		}
 	}
 

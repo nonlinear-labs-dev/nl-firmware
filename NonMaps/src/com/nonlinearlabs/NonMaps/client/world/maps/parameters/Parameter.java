@@ -129,7 +129,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		if(isSelected()) {
 			return getColorSliderHighlight();
 		} else if(shouldHightlightChanged()) {
-			return RGB.yellow();
+			return RGB.changedBorder();
 		}
 		return null;
 	}

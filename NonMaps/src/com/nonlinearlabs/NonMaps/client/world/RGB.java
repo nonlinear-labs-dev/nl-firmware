@@ -69,6 +69,14 @@ public class RGB {
 	public static RGB lightGray() {
 		return new RGB(155, 159, 163);
 	}
+	
+	public static RGB changedBorder() {
+		return new RGB(196, 205, 145);
+	}
+	
+	public static RGB changedText() {
+		return new RGB(126, 131, 95);
+	}
 
 	public static RGB lighterGray() {
 		return new RGB(190, 190, 190);
