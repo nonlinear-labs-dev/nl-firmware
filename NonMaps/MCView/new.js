@@ -487,20 +487,6 @@ class MCView {
     }
   }
 
-  drawSettingsOpener() {
-    var area = function(x1, y1, x2, y2, x3, y3) {
-      return Math.abs((x1*(y2-y3) + x2*(y3-y1)+
-                                    x3*(y1-y2))/2.0);
-    };
-
-    var canvas = view.canvas;
-    var ctx = canvas.getContext("2d");
-
-    if(this.imgageloaded) {
-        ctx.drawImage(this.img, 0, canvas.height / 2);
-    }
-  }
-
   drawHandle(division, xD, yD, wD, hD) {
     if(division.type == null)
       return;
