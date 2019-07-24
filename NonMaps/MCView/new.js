@@ -516,7 +516,7 @@ class MCView {
     var xLabel = getUnicodeForMC(division.MCX);
     var xName = model.mcs[division.MCX - 243].givenName;
 
-    var size = canvas.width / 200 * 2;
+    var size = canvas.width / 100;
 
     ctx.strokeStyle = new ColorScheme().markerColor;
     ctx.fillStyle = new ColorScheme().labelColor;
@@ -555,6 +555,8 @@ class MCView {
 
     yTarget = 100 - yTarget;
     yVal = 100 - yVal;
+
+    size = Math.max(size, 12);
 
     ctx.arc(x + w / 100 * xVal, y + h / 100 * yVal, size, 0, 2*Math.PI, true);
     ctx.stroke();
@@ -606,7 +608,7 @@ class MCView {
 
     if(xTarget !== undefined && xTarget !== xVal) {
       ctx.beginPath();
-      ctx.lineWidth = w / 200 * 1;
+      ctx.lineWidth = Math.max(w / 200, 8);
       ctx.fillStyle = "transparent";
       ctx.strokeStyle = new ColorScheme().grayIndicator;
       ctx.moveTo(xD + wD / 100 * xTarget, yD + 1);
@@ -617,9 +619,8 @@ class MCView {
 
     ctx.beginPath();
     ctx.fillStyle = "transparent";
-    ctx.lineWidth = "5";
     ctx.strokeStyle = new ColorScheme().blueIndicator;
-    ctx.lineWidth = w / 200 * 1;
+    ctx.lineWidth = Math.max(w / 200, 8);
     ctx.moveTo(x + w / 100 * xVal, y + 1);
     ctx.lineTo(x + w / 100 * xVal, y + h - 1);
     ctx.stroke();
