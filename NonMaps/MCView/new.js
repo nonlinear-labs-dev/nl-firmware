@@ -33,6 +33,7 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
+    //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/");
     this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/');
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
@@ -212,18 +213,18 @@ class RangeDivision {
       if(val !== null) {
         if(val === "true") {
           setCDXY(this);
-          document.getElementById("cd-x").checked = false;
-          document.getElementById("cd-xy").checked = true;
+          document.getElementById("cd-x-f").checked = false;
+          document.getElementById("cd-xy-f").checked = true;
         } else {
           setCDX(this);
-          document.getElementById("cd-xy").checked = false;
-          document.getElementById("cd-x").checked = true;
+          document.getElementById("cd-xy-f").checked = false;
+          document.getElementById("cd-x-f").checked = true;
         }
       }
     } catch(err) {
       setCDX(this);
-      document.getElementById("cd-x").checked = true;
-      document.getElementById("cd-xy").checked = false;
+      document.getElementById("cd-x-f").checked = true;
+      document.getElementById("cd-xy-f").checked = false;
       console.log(err);
     }
   }
@@ -279,6 +280,13 @@ class MCView {
         view.redraw(model);
       });
     });
+
+    this.imgageloaded = false;
+    this.img = new Image();
+    this.img.onload = () => {
+      this.imgageloaded = true;
+    }
+    this.img.src = "tri-open.svg";
 
     this.body = document.getElementById('body');
     this.addEventsToElement(this.canvas);
@@ -404,7 +412,6 @@ class MCView {
     });
 
     element.addEventListener('click', function(event) {
-      console.log(document.getElementById('settings-overlay').classList);
       if(document.getElementById('settings-overlay').classList.contains("collapsed")) {
         var canvas = view.canvas;
         var middle = canvas.height / 2;
@@ -413,22 +420,9 @@ class MCView {
         leftMargin = Math.max(leftMargin, fiveMM);
         var width = leftMargin * 0.6;
 
-        var area = function(x1, y1, x2, y2, x3, y3)
-        {
-           return Math.abs((x1*(y2-y3) + x2*(y3-y1)+
-                                        x3*(y1-y2))/2.0);
-        };
-
-        var a = area(0, middle - height, 0, middle + height, width, middle);
-        var a1 = area(event.pageX, event.pageY, 0, middle - height, 0, middle + height);
-        var a2 = area(event.pageX, event.pageY, 0, middle - height, width, middle);
-        var a3 = area(event.pageX, event.pageY, 0, middle + height, width, middle);
-
-        if(Math.abs((a1 + a2 + a3) - a) < 0.2) {
+        if(event.pageX <= leftMargin) {
           toggleSettings();
         }
-
-        console.log(event);
       }
     });
   }
@@ -489,25 +483,10 @@ class MCView {
 
     var canvas = view.canvas;
     var ctx = canvas.getContext("2d");
-    ctx.beginPath();
-    ctx.strokeStyle = new ColorScheme().labelColor;
-    ctx.fillStyle = new ColorScheme().labelColor;
-    ctx.lineWidth = "3";
 
-    var middle = canvas.height / 2;
-    var height = (canvas.height / 100) * 2.5;
-    var leftMargin = canvas.width * view.range.leftMargin;
-    leftMargin = Math.max(leftMargin, fiveMM);
-    var width = leftMargin * 0.6;
-
-    height = Math.max(Math.min(50, height), 25);
-
-    ctx.moveTo(0, middle - height);
-    ctx.lineTo(0, middle + height);
-    ctx.lineTo(width, middle);
-    ctx.lineTo(0, middle - height);
-    ctx.stroke();
-    ctx.fill();
+    if(this.imgageloaded) {
+        ctx.drawImage(this.img, 0, canvas.height / 2);
+    }
   }
 
   drawHandle(division, xD, yD, wD, hD) {
@@ -867,19 +846,28 @@ function onLoad() {
     }
   }
 
-  var changeHandler = function() {
-    if( this.value === "x") {
+  var toggleXY = () => {
+    var xyBox = document.getElementById("cd-xy-f");
+    var xBox = document.getElementById("cd-x-f");
+
+    xBox.checked = xyBox.checked;
+    xyBox.checked = !xBox.checked;
+
+    if(xBox.checked) {
       setCDX(view.range);
-    } else if (this.value === "xy") {
+    } else {
       setCDXY(view.range);
     }
     view.redraw(model);
   };
 
-  var radios = document.querySelectorAll('input[type=radio][name="mc-sel"]');
-  radios.forEach(function(radio) {
-    radio.addEventListener('change', changeHandler);
-  });
+  document.getElementById("cd-xy").onclick = () => {
+    toggleXY()
+  };
+
+  document.getElementById("cd-x").onclick = () => {
+    toggleXY();
+  };
   //End Events for Settings
 
   serverProxy = new ServerProxy(function() {
