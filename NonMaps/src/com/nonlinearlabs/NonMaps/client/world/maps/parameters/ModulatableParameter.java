@@ -7,6 +7,7 @@ import com.nonlinearlabs.NonMaps.client.ColorTable;
 import com.nonlinearlabs.NonMaps.client.ServerProxy;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.world.RGB;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
@@ -81,16 +82,15 @@ public abstract class ModulatableParameter extends Parameter {
 	}
 	
 	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
-		super.draw(ctx, invalidationMask);
-
-		if (isSelectedParameterMyMacroControl()) {
-			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(5), toXPixels(1.5), null,
-					ColorTable.getMacroControlTargetColor());
-			drewRoundedRect = true;
-		}
+	protected RGB getRoundingColor() {
+			if(isSelectedParameterMyMacroControl()) {
+				return ColorTable.getMacroControlTargetColor();
+			} 
+			else {
+				return super.getRoundingColor();
+			}
 	}
-
+	
 	public void setModulationSource(MacroControls src, Initiator initiator) {
 		if (modulationSource != src) {
 
