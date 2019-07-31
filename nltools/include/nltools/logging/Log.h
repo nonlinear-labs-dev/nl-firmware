@@ -19,7 +19,8 @@ namespace nltools
       Info,
       Warning,
       Error,
-      Notify
+      Notify,
+      Silent
     };
 
     static void setLevel(Level l)
