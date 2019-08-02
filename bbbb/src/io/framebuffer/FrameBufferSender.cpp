@@ -2,7 +2,7 @@
 #include <bbbb.h>
 #include <fcntl.h>
 #include <io/framebuffer/FrameBufferSender.h>
-#include <nltools/Log.h>
+#include <nltools/logging/Log.h>
 #include <Options.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
