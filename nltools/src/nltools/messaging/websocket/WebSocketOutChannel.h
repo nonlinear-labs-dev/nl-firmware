@@ -2,6 +2,7 @@
 
 #include <nltools/messaging/OutChannel.h>
 #include <nltools/threading/ContextBoundMessageQueue.h>
+#include <nltools/threading/BackgroundThreadWaiter.h>
 
 #include <memory>
 #include <thread>
@@ -48,12 +49,10 @@ namespace nltools
         std::unique_ptr<threading::ContextBoundMessageQueue> m_backgroundContextQueue;
         std::unique_ptr<threading::ContextBoundMessageQueue> m_mainThreadContextQueue;
         Glib::RefPtr<Glib::MainLoop> m_messageLoop;
-        std::thread m_contextThread;
 
-        std::atomic<bool> m_connectionEstablished = false;
-        std::mutex m_conditionMutex;
-        std::condition_variable m_connectionEstablishedCondition;
+        BackgroundThreadWaiter m_connectionEstablishedWaiter;
         std::function<void()> m_onConnectionEstablished;
+        std::thread m_contextThread;
       };
     }
   }

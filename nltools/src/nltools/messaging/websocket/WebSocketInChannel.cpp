@@ -15,6 +15,7 @@ namespace nltools
           , m_contextThread(std::bind(&WebSocketInChannel::backgroundThread, this, std::ref(libSoupMutex)))
           , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
       {
+        m_conditionEstablishedThreadWaiter.wait();
       }
 
       WebSocketInChannel::~WebSocketInChannel()
@@ -48,8 +49,7 @@ namespace nltools
         }
 
         m_messageLoop = Glib::MainLoop::create(m);
-        lock.unlock();
-
+        m_conditionEstablishedThreadWaiter.notify();
         m_messageLoop->run();
       }
 
