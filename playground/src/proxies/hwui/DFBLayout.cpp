@@ -9,6 +9,8 @@
 #include <presets/EditBuffer.h>
 
 #include <proxies/hwui/buttons.h>
+
+#include <memory>
 #include "ButtonRepeat.h"
 
 DFBLayout::DFBLayout(OLEDProxy &oled)
@@ -82,7 +84,7 @@ void DFBLayout::setDirty()
 
 void DFBLayout::installButtonRepeat(std::function<void()> cb)
 {
-  m_buttonRepeat.reset(new ButtonRepeat(cb));
+  m_buttonRepeat = std::make_unique<ButtonRepeat>(cb);
 }
 
 void DFBLayout::removeButtonRepeat()
