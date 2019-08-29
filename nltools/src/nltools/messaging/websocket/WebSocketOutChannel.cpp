@@ -12,7 +12,7 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port, std::mutex &)
+      WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port)
           : m_uri(concat("http://", targetMachine, ":", port))
           , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
@@ -21,11 +21,16 @@ namespace nltools
                 std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
           , m_contextThread(std::bind(&WebSocketOutChannel::backgroundThread, this))
       {
-        nltools::Log::debug(__PRETTY_FUNCTION__, __LINE__, m_uri);
       }
 
       WebSocketOutChannel::~WebSocketOutChannel()
       {
+        while(!m_bgRunning)
+        {
+          using namespace std::chrono_literals;
+          std::this_thread::sleep_for(10ms);
+        }
+
         if(m_messageLoop)
           m_messageLoop->quit();
 
@@ -82,8 +87,9 @@ namespace nltools
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
         m_messageLoop = Glib::MainLoop::create(m);
         m_backgroundContextQueue->pushMessage(std::bind(&WebSocketOutChannel::connect, this));
-        m->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
+        auto c = m->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
         m_messageLoop->run();
+        c.disconnect();
       }
 
       bool WebSocketOutChannel::ping()
@@ -94,8 +100,9 @@ namespace nltools
 
       void WebSocketOutChannel::connect()
       {
+        m_bgRunning.store(true);
         m_message.reset(soup_message_new("GET", m_uri.c_str()));
-        auto cb = (GAsyncReadyCallback) &WebSocketOutChannel::onWebSocketConnected;
+        auto cb = reinterpret_cast<GAsyncReadyCallback>(&WebSocketOutChannel::onWebSocketConnected);
         soup_session_websocket_connect_async(m_soupSession.get(), m_message.get(), nullptr, nullptr, nullptr, cb, this);
       }
 
@@ -135,8 +142,6 @@ namespace nltools
 
       void WebSocketOutChannel::connectWebSocket(SoupWebsocketConnection *connection)
       {
-        g_object_ref(connection);
-
         auto stream = soup_websocket_connection_get_io_stream(connection);
         auto outStream = g_io_stream_get_output_stream(stream);
 

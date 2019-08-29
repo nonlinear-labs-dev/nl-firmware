@@ -6,6 +6,8 @@
 #include <libsoup/soup.h>
 #include <memory>
 #include <thread>
+#include <atomic>
+#include <condition_variable>
 
 namespace nltools
 {
@@ -17,11 +19,11 @@ namespace nltools
       class WebSocketInChannel : public InChannel
       {
        public:
-        WebSocketInChannel(Callback cb, guint port, std::mutex &libSoupMutex);
+        WebSocketInChannel(Callback cb, guint port);
         ~WebSocketInChannel();
 
        private:
-        void backgroundThread(std::mutex &libSoupMutex);
+        void backgroundThread();
         static void webSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
                               SoupClientContext *client, WebSocketInChannel *pThis);
         static void receiveMessage(SoupWebsocketConnection *, gint, GBytes *message, WebSocketInChannel *pThis);
