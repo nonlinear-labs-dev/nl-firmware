@@ -51,7 +51,6 @@ namespace nltools
         Glib::RefPtr<Glib::MainLoop> m_messageLoop;
 
         std::atomic_bool m_bgRunning = {false};
-
         BackgroundThreadWaiter m_connectionEstablishedWaiter;
         std::function<void()> m_onConnectionEstablished;
         std::thread m_contextThread;
