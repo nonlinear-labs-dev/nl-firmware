@@ -264,7 +264,6 @@ bool PlayControlParameterSelectLayout2::onButton(int i, bool down, ButtonModifie
   if(down)
   {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    auto hw = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID("CS"));
 
     switch(i)
     {

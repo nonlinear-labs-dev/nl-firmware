@@ -43,7 +43,6 @@ FileDialogLayout::~FileDialogLayout()
 bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
 {
   auto hwui = Application::get().getHWUI();
-  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
 
   if(down)
   {
@@ -101,8 +100,7 @@ bool FileDialogLayout::onRotary(int inc, ButtonModifiers modifiers)
 void FileDialogLayout::updateLabels()
 {
   if(fileCount != 0)
-    positionLabel->setText(
-        { "[" + to_string(fileList->getSelectedIndex() + 1) + "/" + to_string(fileCount) + "]" });
+    positionLabel->setText({ "[" + to_string(fileList->getSelectedIndex() + 1) + "/" + to_string(fileCount) + "]" });
   else
     positionLabel->setText("[0/0]");
 }
