@@ -3,7 +3,6 @@
 #include <proxies/hwui/UsageMode.h>
 #include <proxies/hwui/ShortVsLongPress.h>
 #include <proxies/hwui/ButtonRepeat.h>
-#include <proxies/hwui/buttons.h>
 
 class Application;
 
