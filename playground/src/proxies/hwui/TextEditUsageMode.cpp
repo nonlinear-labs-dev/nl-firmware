@@ -5,6 +5,8 @@
 #include <proxies/hwui/buttons.h>
 #include <testing/TestDriver.h>
 
+#include <memory>
+
 static TestDriver<TextEditUsageMode> tests;
 
 const gunichar c_shift = 0x12;
@@ -210,7 +212,7 @@ void TextEditUsageMode::handleShiftButton(bool state)
 
 void TextEditUsageMode::installButtonRepeat(std::function<void()> cb)
 {
-  m_buttonRepeat.reset(new ButtonRepeat(cb));
+  m_buttonRepeat = std::make_unique<ButtonRepeat>(cb);
 }
 
 void TextEditUsageMode::onCharPressed(gunichar c)
@@ -273,7 +275,7 @@ bool TextEditUsageMode::handleSpecialChar(gunichar c)
   return false;
 }
 
-connection TextEditUsageMode::onTextChanged(slot<void, const ustring &> cb)
+connection TextEditUsageMode::onTextChanged(const slot<void, const ustring &>& cb)
 {
   return m_sigTextChanged.connectAndInit(cb, m_text);
 }
@@ -317,13 +319,13 @@ void TextEditUsageMode::chooseLayout()
 {
   bool realShiftState = m_capsLock ^ m_shiftState;
 
-  if(m_symbolState == true && realShiftState == false)
+  if(m_symbolState && !realShiftState)
     m_layout = Layout::Symbol;
-  else if(m_symbolState == true && realShiftState == true)
+  else if(m_symbolState && realShiftState)
     m_layout = Layout::SymbolShift;
-  else if(m_symbolState == false && realShiftState == false)
+  else if(!m_symbolState && !realShiftState)
     m_layout = Layout::Normal;
-  else if(m_symbolState == false && realShiftState == true)
+  else if(!m_symbolState && realShiftState)
     m_layout = Layout::Shift;
 
   updateLeds();

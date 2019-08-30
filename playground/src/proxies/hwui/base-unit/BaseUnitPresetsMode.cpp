@@ -14,16 +14,32 @@ void BaseUnitPresetsMode::setup()
 
   setupButtonConnection(BUTTON_MINUS, [=](auto, auto, auto state) {
     if(state)
-      if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-        bank->selectPreviousPreset();
+    {
+      installButtonRepeat([] {
+        if(auto bank = Application::get().getPresetManager()->getSelectedBank())
+          bank->selectPreviousPreset();
+      });
+    }
+    else
+    {
+      removeButtonRepeat();
+    }
 
     return true;
   });
 
   setupButtonConnection(BUTTON_PLUS, [=](auto, auto, auto state) {
     if(state)
-      if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-        bank->selectNextPreset();
+    {
+      installButtonRepeat([] {
+        if(auto bank = Application::get().getPresetManager()->getSelectedBank())
+          bank->selectNextPreset();
+      });
+    }
+    else
+    {
+      removeButtonRepeat();
+    }
 
     return true;
   });
