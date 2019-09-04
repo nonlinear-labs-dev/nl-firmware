@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include "nlrotary.h"
+#include <nltools/Assert.h>
 
 #define READ_BUFFER_SIZE 128
 
@@ -55,7 +56,7 @@ int nl_rotary_query_number_of_rotaries()
 
 static void nl_rotary_init()
 {
-  system("modprobe ti_tscadc");
+  nltools::ignore(system("modprobe ti_tscadc"));
 
   memset(&s_theFiles[0], 0, sizeof(AINFile));
   memset(&s_theFiles[1], 0, sizeof(AINFile));

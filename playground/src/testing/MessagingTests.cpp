@@ -21,7 +21,9 @@ struct MessagingTests
     while((exp.isPending() && !test()) || min.isPending())
       g_main_context_iteration(nullptr, TRUE);
 
-    g_assert(test());
+    nltools_assertInTest(test());
+
+    nltools::Log::notify(__LINE__, test());
   }
 
   static void registerTests()
@@ -48,10 +50,10 @@ struct MessagingTests
 
       int numMessages = 0;
       ParameterChangedMessage msgToSend(12, 0.3);
-      assert(waitForConnection(EndPoint::TestEndPoint));
+      nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
       auto c = receive<ParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
       send(EndPoint::TestEndPoint, msgToSend);
-      doMainLoop(0s, 2s, [&] { return numMessages == 0; });
+      doMainLoop(0s, 2s, [&] { return numMessages == 1; });
       c.disconnect();
     });
 
@@ -67,13 +69,35 @@ struct MessagingTests
       int numSendMessages = 1000;
 
       ParameterChangedMessage msgToSend(12, 0.3);
-      assert(waitForConnection(EndPoint::TestEndPoint));
+      nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
       auto c = receive<ParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
 
       for(int i = 0; i < numSendMessages; i++)
         send(EndPoint::TestEndPoint, msgToSend);
 
       doMainLoop(0s, 5s, [&] { return numRecMessages == numSendMessages; });
+      c.disconnect();
+    });
+
+    g_test_add_func("/Messaging/no-packets-doubled", [] {
+      using namespace nltools::msg;
+
+      nltools::Log::setLevel(nltools::Log::Debug);
+
+      Configuration conf{ { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
+      nltools::msg::init(conf);
+
+      int numRecMessages = 0;
+      int numSendMessages = 100;
+
+      ParameterChangedMessage msgToSend(12, 0.3);
+      nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
+      auto c = receive<ParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
+
+      for(int i = 0; i < numSendMessages; i++)
+        send(EndPoint::TestEndPoint, msgToSend);
+
+      doMainLoop(1s, 1s, [&] { return numRecMessages <= numSendMessages; });
       c.disconnect();
     });
 

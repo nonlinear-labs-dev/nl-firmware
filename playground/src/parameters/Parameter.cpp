@@ -18,6 +18,7 @@
 #include <presets/PresetParameter.h>
 #include <presets/Preset.h>
 #include <device-settings/DebugLevel.h>
+#include <nltools/Assert.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -223,7 +224,7 @@ const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   auto ret = eb->getRecallParameterSet().findParameterByID(getID());
-  assert(ret != nullptr && "originalParameter is null and should not be");
+  nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
   return ret;
 }
 

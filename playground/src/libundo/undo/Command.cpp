@@ -1,5 +1,5 @@
 #include "Command.h"
-#include <assert.h>
+#include <nltools/Assert.h>
 
 namespace UNDO
 {
@@ -31,7 +31,7 @@ namespace UNDO
 
   void Command::doAction() const
   {
-    assert(getState() == INITIAL);
+    nltools_assertAlways(getState() == INITIAL);
     m_state = DOING;
     implDoAction();
     m_state = DONE;
@@ -39,7 +39,7 @@ namespace UNDO
 
   void Command::undoAction() const
   {
-    assert(getState() == DONE || getState() == REDONE);
+    nltools_assertAlways(getState() == DONE || getState() == REDONE);
     m_state = UNDOING;
     implUndoAction();
     m_state = UNDONE;
@@ -47,7 +47,7 @@ namespace UNDO
 
   void Command::redoAction() const
   {
-    assert(getState() == UNDONE);
+    nltools_assertAlways(getState() == UNDONE);
     m_state = REDOING;
     implRedoAction();
     m_state = REDONE;

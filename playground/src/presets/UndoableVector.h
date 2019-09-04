@@ -7,10 +7,10 @@
 #include <tools/Uuid.h>
 #include "libundo/undo/SwapData.h"
 #include "libundo/undo/Transaction.h"
-#include <assert.h>
 #include <device-settings/CrashOnError.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
+#include <nltools/Assert.h>
 
 template <typename Owner, typename Element> class UndoableVector
 {
@@ -419,10 +419,11 @@ template <typename Owner, typename Element> class UndoableVector
     if(!empty())
     {
       //assert(getSelected());
-      assert(std::none_of(m_elements.begin(), m_elements.end(), [&](auto &b) { return b.get() == nullptr; }));
+      nltools_assertOnDevPC(
+          std::none_of(m_elements.begin(), m_elements.end(), [&](auto &b) { return b.get() == nullptr; }));
       std::unordered_set<std::string> uuids;
       std::for_each(m_elements.begin(), m_elements.end(), [&](auto &c) { uuids.insert(c->getUuid().raw()); });
-      assert(uuids.size() == size());
+      nltools_assertOnDevPC(uuids.size() == size());
     }
 #endif
   }
