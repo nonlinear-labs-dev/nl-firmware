@@ -250,10 +250,12 @@ bool Application::heartbeat()
 
   const char *toSend = m_heartbeatState ? "1" : "0";
 
-  int out = open("/sys/class/leds/playground_status/brightness", O_WRONLY);
-  write(out, toSend, 1);
-  fsync(out);
-  close(out);
+  if(int out = open("/sys/class/leds/playground_status/brightness", O_WRONLY))
+  {
+    nltools_assertInDebug(write(out, toSend, 1) == 1);
+    fsync(out);
+    close(out);
+  }
 
   if(m_heartbeatState)
   {

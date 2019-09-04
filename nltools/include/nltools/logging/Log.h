@@ -5,11 +5,6 @@
 
 namespace nltools
 {
-#pragma once
-
-#include <initializer_list>
-#include <iostream>
-
   class Log
   {
    public:

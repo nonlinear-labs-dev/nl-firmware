@@ -1,9 +1,9 @@
 #pragma once
 
+#include "nltools/Assert.h"
 #include <memory>
 #include <giomm.h>
 #include <sigc++/sigc++.h>
-#include <assert.h>
 #include <cstring>
 
 namespace nltools
@@ -58,7 +58,7 @@ namespace nltools
       template <typename Msg> Msg deserialize(const SerializedMessage &s)
       {
         Msg ret;
-        assert(s->get_size() == sizeof(Msg));
+        nltools_assertAlways(s->get_size() == sizeof(Msg));
         gsize numBytes = 0;
         memcpy(&ret, s->get_data(numBytes), sizeof(Msg));
         return ret;

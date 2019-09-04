@@ -1,4 +1,5 @@
 #include "BackgroundJobs.h"
+#include <nltools/Assert.h>
 
 BackgroundJob::BackgroundJob(BackgroundJob::tCallback cb)
     : callback(cb)
@@ -7,7 +8,7 @@ BackgroundJob::BackgroundJob(BackgroundJob::tCallback cb)
 
 BackgroundJob::~BackgroundJob()
 {
-  assert(m_close == true);
+  nltools_assertAlways(m_close == true);
 }
 
 void BackgroundJob::start()

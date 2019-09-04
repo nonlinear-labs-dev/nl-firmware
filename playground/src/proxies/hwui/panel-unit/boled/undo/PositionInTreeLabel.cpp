@@ -1,5 +1,4 @@
 #include <proxies/hwui/panel-unit/boled/undo/PositionInTreeLabel.h>
-#include <assert.h>
 
 PositionInTreeLabel::PositionInTreeLabel(const Rect &pos)
     : super(pos)

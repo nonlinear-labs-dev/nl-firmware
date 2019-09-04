@@ -6,6 +6,7 @@
 #include <tools/FileSystem.h>
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
+#include <nltools/Assert.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 
@@ -341,7 +342,7 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 {
 #if _DEVELOPMENT_PC
   if(auto existing = Application::get().getPresetManager()->findBank(uuid))
-    assert(existing == this);
+    nltools_assertOnDevPC(existing == this);
 #endif
 
   transaction->addUndoSwap(this, m_uuid, uuid);
@@ -455,7 +456,7 @@ void Bank::movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *preset
   else
   {
     auto p = m_presets.release(transaction, presetToMove);
-    assert(p == presetToMove);
+    nltools_assertAlways(p == presetToMove);
     auto pos = presetAnchor ? tgtBank->getPresetPosition(presetAnchor) : tgtBank->getNumPresets();
     tgtBank->m_presets.adopt(transaction, pos, p);
     tgtBank->updateLastModifiedTimestamp(transaction);

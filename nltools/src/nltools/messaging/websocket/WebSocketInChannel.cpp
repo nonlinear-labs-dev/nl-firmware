@@ -2,7 +2,6 @@
 #include <nltools/logging/Log.h>
 #include <netinet/tcp.h>
 #include <glib.h>
-
 #include <utility>
 
 namespace nltools

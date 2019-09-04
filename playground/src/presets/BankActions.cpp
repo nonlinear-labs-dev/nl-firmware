@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <tools/TimeTools.h>
 #include <proxies/hwui/HWUI.h>
+#include <nltools/Assert.h>
 
 BankActions::BankActions(PresetManager &presetManager)
     : RPCActionManager("/presets/banks/")
@@ -158,7 +159,7 @@ BankActions::BankActions(PresetManager &presetManager)
     {
       if(!m_presetManager.getSelectedBank())
       {
-        assert(m_presetManager.getNumBanks() == 0);
+        nltools_assertAlways(m_presetManager.getNumBanks() == 0);
         auto b = m_presetManager.addBank(transaction);
         m_presetManager.selectBank(transaction, b->getUuid());
       }
@@ -166,7 +167,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto selectedBank = m_presetManager.getSelectedBank();
       if(!selectedBank->getSelectedPreset())
       {
-        assert(selectedBank->getNumPresets() == 0);
+        nltools_assertAlways(selectedBank->getNumPresets() == 0);
         auto p = selectedBank->appendPreset(transaction);
         selectedBank->selectPreset(transaction, p->getUuid());
       }
@@ -211,7 +212,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto srcPreset = srcBank->findPreset(presetToMove);
       auto anchorPos = tgtBank->getPresetPosition(presetAnchor);
 
-      assert(srcPreset);
+      nltools_assertAlways(srcPreset);
 
       auto scope = m_presetManager.getUndoScope().startTransaction("Copy preset '%0'", srcPreset->getName());
       auto transaction = scope->getTransaction();
@@ -233,7 +234,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto srcPreset = srcBank->findPreset(presetToMove);
       auto anchorPos = tgtBank->getPresetPosition(presetAnchor) + 1;
 
-      assert(srcPreset);
+      nltools_assertAlways(srcPreset);
 
       auto scope = m_presetManager.getUndoScope().startTransaction("Copy preset '%0'", srcPreset->getName());
       auto transaction = scope->getTransaction();

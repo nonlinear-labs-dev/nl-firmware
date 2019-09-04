@@ -38,7 +38,7 @@ namespace nltools
           auto cb = [peer = c.peer](const auto &s) { notifyClients(s, peer); };
 
           parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
-            assert(scheme == "ws");  // Currently, only web sockets are supported
+            nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
             inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port);
           });
         }
@@ -49,7 +49,7 @@ namespace nltools
         for(const auto &c : conf.useEndpoints)
         {
           parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
-            assert(scheme == "ws");  // Currently, only web sockets are supported
+            nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
             outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port);
             outChannels[c.peer]->onConnectionEstablished([peer = c.peer] { connectionSignals[peer](); });
           });

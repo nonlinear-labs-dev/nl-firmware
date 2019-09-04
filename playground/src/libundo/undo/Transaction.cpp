@@ -4,7 +4,7 @@
 #include "Scope.h"
 #include "Algorithm.h"
 #include "SwapCommand.h"
-#include <assert.h>
+#include <nltools/Assert.h>
 #include "device-settings/DebugLevel.h"
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
@@ -83,7 +83,7 @@ namespace UNDO
 
   void Transaction::addCommand(tCommandPtr cmd)
   {
-    assert(!m_isClosed);
+    nltools_assertAlways(!m_isClosed);
     cmd->setParentTransaction(this);
     m_commands.push_back(cmd);
     cmd->doAction();
@@ -96,7 +96,7 @@ namespace UNDO
 
   void Transaction::implUndoAction() const
   {
-    assert(m_isClosed);
+    nltools_assertAlways(m_isClosed);
 
     onImplUndoActionStart();
 
@@ -108,7 +108,7 @@ namespace UNDO
 
   void Transaction::implRedoAction() const
   {
-    assert(m_isClosed);
+    nltools_assertAlways(m_isClosed);
 
     for(const auto &m_command : m_commands)
     {

@@ -1,7 +1,6 @@
 #include <xml/FileInStream.h>
 #include <device-settings/DebugLevel.h>
 #include <tools/FileTools.h>
-#include <assert.h>
 
 static bool doesZipFileExists(const Glib::ustring &fileName)
 {
