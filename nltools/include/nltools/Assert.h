@@ -25,17 +25,17 @@ namespace nltools
 #if _DEVELOPMENT_PC
 #define nltools_assertOnDevPC(a) nltools_assertAlways(a)
 #else
-#define nltools_assertOnDevPC(a) ((void) (0))
+#define nltools_assertOnDevPC(a) nltools::ignore(a)
 #endif
 
 #ifndef NDEBUG
 #define nltools_assertInDebug(a) nltools_assertAlways(a)
 #else
-#define nltools_assertInDebug(a) ((void) (0))
+#define nltools_assertInDebug(a) nltools::ignore(a)
 #endif
 
 #ifdef _TESTS
 #define nltools_assertInTest(a) nltools_assertAlways(a)
 #else
-#define nltools_assertInTest(a) ((void) (0))
+#define nltools_assertInTest(a) nltools::ignore(a)
 #endif
