@@ -17,10 +17,23 @@ namespace nltools
     Log::output<Log::LogMode::AppendNewLine>("\tFunction: ", function);
     throw std::runtime_error("Assertion failed!");
   }
+
+  inline void fail[[noreturn]](const char *expr, const char *file, int line, const char *function, const char* description)
+  {
+    Log::error("Assertion failed:");
+    Log::output<Log::LogMode::AppendNewLine>("\tExpression: ", expr);
+    Log::output<Log::LogMode::AppendNewLine>("\tLocation: ", file, ":", line);
+    Log::output<Log::LogMode::AppendNewLine>("\tFunction: ", function);
+    Log::output<Log::LogMode::AppendNewLine>("\tDescription: ", description);
+    throw std::runtime_error("Assertion failed!");
+  }
 }
 
 #define nltools_assertAlways(expr)                                                                                     \
   (static_cast<bool>(expr) ? void(0) : nltools::fail(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__))
+
+#define nltools_detailedAssertAlways(expr, description)                                                                                     \
+  (static_cast<bool>(expr) ? void(0) : nltools::fail(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, #description))
 
 #if _DEVELOPMENT_PC
 #define nltools_assertOnDevPC(a) nltools_assertAlways(a)

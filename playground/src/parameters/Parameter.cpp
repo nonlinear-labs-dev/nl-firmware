@@ -224,7 +224,7 @@ const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   auto ret = eb->getRecallParameterSet().findParameterByID(getID());
-  nltools_assertAlways(ret != nullptr && "originalParameter is null and should not be");
+  nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
   return ret;
 }
 
