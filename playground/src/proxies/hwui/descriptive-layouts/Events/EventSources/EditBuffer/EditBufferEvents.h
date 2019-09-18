@@ -17,7 +17,7 @@ namespace DescriptiveLayouts
       }
       else
       {
-        const auto suffix = std::string(eb->m_vgISelected ? "  I" : "  II");
+        const auto suffix = std::string(eb->isSelected(EditBuffer::VoiceGroup::I) ? "  I" : "  II");
         const auto suffixLen = suffix.size();
         const auto str = typeStr + suffix;
         setValue({ str, suffixLen });
@@ -48,7 +48,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(eb->isVGISelected());
+      setValue(eb->isSelected(EditBuffer::VoiceGroup::I));
     }
   };
 
@@ -57,7 +57,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(eb->isVGIISelected());
+      setValue(eb->isSelected(EditBuffer::VoiceGroup::II));
     }
   };
 }

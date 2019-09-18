@@ -13,7 +13,7 @@ namespace DescriptiveLayouts
       if(type == Type::Single)
         setValue({ typeStr, 0 });
       else
-        setValue({ typeStr + (eb->isVGISelected() ? " [I]" : " [II]"), 0 });
+        setValue({ typeStr + (eb->isSelected(EditBuffer::VoiceGroup::I) ? " [I]" : " [II]"), 0 });
     }
   };
 
@@ -22,7 +22,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue({ eb->isVGISelected() ? "Select II" : "Select I", 0 });
+      setValue({ eb->isSelected(EditBuffer::VoiceGroup::I) ? "Select II" : "Select I", 0 });
     }
   };
 

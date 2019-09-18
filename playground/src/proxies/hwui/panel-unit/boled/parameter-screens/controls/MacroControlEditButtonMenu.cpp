@@ -29,7 +29,6 @@ void MacroControlEditButtonMenu::setup()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   clear();
-  clearActions();
 
   addButton("Smoothing", std::bind(&MacroControlEditButtonMenu::smoothing, this));
   addButton("Rename", std::bind(&MacroControlEditButtonMenu::rename, this));

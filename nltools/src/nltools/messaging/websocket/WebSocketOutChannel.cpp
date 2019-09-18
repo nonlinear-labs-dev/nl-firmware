@@ -25,7 +25,6 @@ namespace nltools
 
       WebSocketOutChannel::~WebSocketOutChannel()
       {
-
         while(!m_bgRunning)
         {
           using namespace std::chrono_literals;
@@ -42,11 +41,7 @@ namespace nltools
       void WebSocketOutChannel::send(const SerializedMessage &msg)
       {
         if(!m_connection)
-        {
-#warning "adlerauge"
-          reconnect();
           return;
-        }
 
         m_backgroundContextQueue->pushMessage([=]() {
           if(m_connection)

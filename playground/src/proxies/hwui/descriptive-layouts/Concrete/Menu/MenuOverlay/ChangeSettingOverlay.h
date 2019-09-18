@@ -22,8 +22,12 @@ template <class tSetting> class ChangeSettingOverlay : public ArrowIncrementDecr
     return Application::get().getSettings()->getSetting<tSetting>().get();
   }
 
- #warning"adlerauge"
- protected:
+  void setLabelHighlight(bool h)
+  {
+    m_label->setHighlight(h);
+  }
+
+ private:
   Control* m_label;
 };
 

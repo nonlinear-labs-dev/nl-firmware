@@ -16,8 +16,7 @@ class ArrowIncrementDecrementOverlay : public ScrollMenuOverlay
   virtual void onRight(bool down) = 0;
   virtual void onCommit(bool down) = 0;
 
- #warning"adlerauge"
- protected:
+ private:
   ArrowRight* m_rightArrow;
   ArrowLeft* m_leftArrow;
 };

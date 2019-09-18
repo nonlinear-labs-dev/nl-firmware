@@ -34,13 +34,12 @@ void setupMessaging(const Options *options)
   auto ae = options->getAudioEngineHost();
 
   Configuration conf;
-#warning "adlerauge"
   conf.offerEndpoints = { EndPoint::Playground };
   conf.useEndpoints = { { EndPoint::Lpc, bbbb },
                         { EndPoint::Oled, bbbb },
                         { EndPoint::PanelLed, bbbb },
                         { EndPoint::RibbonLed, bbbb },
-                        { EndPoint::AudioEngine } };
+                        { EndPoint::AudioEngine, ae } };
   nltools::msg::init(conf);
 }
 
@@ -144,7 +143,7 @@ void Application::run()
 void Application::quit()
 {
   DebugLevel::warning(__PRETTY_FUNCTION__);
-#warning "adlerauge"
+
   if(!m_isQuit)
   {
     m_isQuit = true;
@@ -152,9 +151,10 @@ void Application::quit()
   }
   else
   {
-    DebugLevel::warning("Application already quit!");
+    DebugLevel::warning("Application already quitting - terminating ungracefully!");
     std::terminate();
   }
+
   DebugLevel::warning(__PRETTY_FUNCTION__);
 }
 

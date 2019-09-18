@@ -34,7 +34,6 @@ class UpdateDocumentContributor : public IntrusiveListItem<UpdateDocumentContrib
   };
 
   virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic);
-  void onRestore();
 
   bool didChangeSince(tUpdateID clientsUpdateID) const;
   tUpdateID getUpdateIDOfLastChange() const;

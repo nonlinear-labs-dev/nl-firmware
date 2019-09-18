@@ -2,8 +2,6 @@
 #include <proxies/hwui/controls/ControlWithChildren.h>
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
 
-class AnimationControl;
-
 class BasicItem : public ControlWithChildren
 {
  protected:

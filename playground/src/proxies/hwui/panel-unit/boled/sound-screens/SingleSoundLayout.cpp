@@ -16,7 +16,6 @@
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/RandomizeAmountLabel.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/RandomizeAmountSlider.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/SingleSoundEditMenuLegacy.h>
-#include <proxies/hwui/panel-unit/boled/sound-screens/controls/SingleSoundMenu.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/TransitionTimeLabel.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/TransitionTimeSlider.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/SingleSoundLayout.h>

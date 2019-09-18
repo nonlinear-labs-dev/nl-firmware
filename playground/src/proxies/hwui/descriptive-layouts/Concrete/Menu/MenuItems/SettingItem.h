@@ -18,8 +18,7 @@ template <class tSetting> class SettingItem : public EditorItem
 
   ScrollMenuOverlay* createOverlay() override
   {
- #warning"adlerauge ueberall nach Standart suchen"
-    return new ChangeSettingOverlay<tSetting>(getStandartOverlayRect());
+    return new ChangeSettingOverlay<tSetting>(getStandardOverlayRect());
   }
 
  protected:

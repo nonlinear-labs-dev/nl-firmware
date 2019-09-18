@@ -4,28 +4,26 @@
 
 template <class tSetting> class ChangeSettingWithCommitOverlay : public ChangeSettingOverlay<tSetting>
 {
- protected:
-  using ChangeSettingOverlay<tSetting>::m_label;
+  using super = ChangeSettingOverlay<tSetting>;
 
  public:
   template <class tCB>
   ChangeSettingWithCommitOverlay(const Rect& r, tCB cb)
-      : ChangeSettingOverlay<tSetting>(r)
+      : super(r)
       , m_commitCB{ cb }
   {
   }
 
   void onCommit(bool down) override
   {
-    ChangeSettingOverlay<tSetting>::onCommit(down);
-    if(down)
-    {
-      m_commitCB();
-    }
+    super::onCommit(down);
 
-    m_label->setHighlight(down);
+    if(down)
+      m_commitCB();
+
+    super::setLabelHighlight(down);
   }
 
- protected:
+ private:
   std::function<void(void)> m_commitCB;
 };

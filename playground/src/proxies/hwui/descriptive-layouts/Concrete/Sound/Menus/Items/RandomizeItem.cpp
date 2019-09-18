@@ -18,5 +18,5 @@ RandomizeItem::~RandomizeItem() = default;
 
 ScrollMenuOverlay* RandomizeItem::createOverlay()
 {
-  return new RandomizeOverlay(getStandartOverlayRect());
+  return new RandomizeOverlay(getStandardOverlayRect());
 }

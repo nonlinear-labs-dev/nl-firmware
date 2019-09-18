@@ -44,18 +44,19 @@ namespace nltools
 
       if(!m_queue.empty())
       {
-#warning "adlerauge"
         auto &m = m_queue.front();
         m();
         m_queue.pop_front();
       }
-      else
+
+      if(m_queue.empty())
       {
         g_source_destroy(m_source);
         g_source_unref(m_source);
         m_source = nullptr;
         return false;
       }
+
       return true;
     }
   }

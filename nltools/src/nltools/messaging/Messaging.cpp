@@ -29,17 +29,7 @@ namespace nltools
         gsize numBytes = 0;
         auto data = reinterpret_cast<const uint16_t *>(s->get_data(numBytes));
         auto type = static_cast<MessageType>(data[0]);
-
-        try
-        {
-#warning "cleanup"
-          signals.at(std::make_pair(type, endPoint))(s);
-        }
-        catch(...)
-        {
-          if(type != MessageType::Ping)
-            nltools::Log::error("Could not find", toStringMessageType(type), "handler in", toStringEndPoint(endPoint));
-        }
+        signals.at(std::make_pair(type, endPoint))(s);
       }
 
       static void createInChannels(const Configuration &conf)
@@ -51,6 +41,7 @@ namespace nltools
           parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
             nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
             inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port);
+            signals[std::make_pair(MessageType::Ping, c.peer)];
           });
         }
       }

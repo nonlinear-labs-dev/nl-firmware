@@ -157,6 +157,4 @@ class PresetManager : public ContentSection
   bool m_saveRequestDuringSave = false;
 
   friend class PresetManagerSerializer;
- #warning"mueffelt"   
-  friend class AutoLoadBlocker;
 };

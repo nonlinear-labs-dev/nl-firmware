@@ -43,9 +43,8 @@ class RawValue
   RawValue(const RawValue &other) = delete;
   RawValue &operator=(const RawValue &) = delete;
 
-  #warning"adlerauge"
-  std::vector<tValueType> m_rawValue;
   tValueType m_defaultValue;
+  tValueType m_rawValue;
   tValueType m_factoryDefaultValue;
 
   const ScaleConverter *m_scaleConverter;

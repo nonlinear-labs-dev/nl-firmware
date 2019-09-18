@@ -30,7 +30,6 @@ PresetEditButtonMenu::~PresetEditButtonMenu()
 void PresetEditButtonMenu::onClipboardChanged()
 {
   clear();
-  clearActions();
 
   addButton("Rename", std::bind(&PresetEditButtonMenu::renamePreset, this));
   addButton("Cut", std::bind(&PresetEditButtonMenu::cutPreset, this));

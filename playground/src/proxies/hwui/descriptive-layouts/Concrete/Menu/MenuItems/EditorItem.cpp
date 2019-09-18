@@ -5,8 +5,7 @@ bool EditorItem::canEnter()
   return true;
 }
 
- #warning"adlerauge typo"
-Rect EditorItem::getStandartOverlayRect()
+Rect EditorItem::getStandardOverlayRect()
 {
   auto half = getPosition();
   half.setHeight(half.getHeight() - 2);

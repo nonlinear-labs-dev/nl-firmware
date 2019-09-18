@@ -85,12 +85,16 @@ class EditBuffer : public ParameterGroupSet
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
 
-  //Mock
-  bool isVGISelected() const;
-  bool isVGIISelected() const;
-  bool m_vgISelected = true;
+  enum class VoiceGroup
+  {
+    I,
+    II
+  };
 
-  void loadCurrentVG(Preset *pPreset);
+  bool isSelected(VoiceGroup v) const;
+  void toggleVoiceGroup();
+  void loadCurrentVoiceGroup(Preset *pPreset);
+
  private:
   Parameter *searchForAnyParameterWithLock() const;
 
@@ -107,6 +111,8 @@ class EditBuffer : public ParameterGroupSet
 
   void doDeferedJobs();
   void checkModified();
+
+  VoiceGroup m_selectedVoiceGroup = VoiceGroup::I;
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   SignalWithCache<void, bool> m_signalModificationState;

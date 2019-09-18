@@ -1,5 +1,4 @@
 #include "BasicItem.h"
-#include "AnimationControl.h"
 
 bool BasicItem::canEnter()
 {

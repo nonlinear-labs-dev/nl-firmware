@@ -20,7 +20,6 @@ void ConvertSoundMenu::convertSoundTo(Type newType)
 void ConvertSoundMenu::setup()
 {
   clear();
-  clearActions();
 
   auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
 

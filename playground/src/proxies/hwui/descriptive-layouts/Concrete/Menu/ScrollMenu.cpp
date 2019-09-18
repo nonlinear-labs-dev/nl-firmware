@@ -96,7 +96,6 @@ bool ScrollMenu::handleScrolling(const Buttons &i, bool down)
 
 void ScrollMenu::doLayout()
 {
- #warning"adlerauge"
   if(m_overlay)
   {
     m_overlay->setVisible(true);
@@ -124,6 +123,7 @@ void ScrollMenu::doLayout()
   //Move all Controls away
   for(auto &c : getControls())
   {
+#warning "FIXME"
     auto pos = c->getPosition();
     pos.setTop(-1000);
     pos.setLeft(-1000);

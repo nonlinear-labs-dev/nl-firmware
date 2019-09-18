@@ -31,8 +31,7 @@ template <class tSetting> class SettingLabel : public LabelRegular8
     }
   }
 
- #warning"adlerauge"
- protected:
+ private:
   std::shared_ptr<tSetting> m_setting;
   sigc::connection m_connection;
 };

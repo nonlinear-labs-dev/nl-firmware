@@ -13,7 +13,7 @@ class EditorItem : public BasicItem
   {
   }
 
-  Rect getStandartOverlayRect();
+  Rect getStandardOverlayRect();
 
   virtual ScrollMenuOverlay* createOverlay() = 0;
 

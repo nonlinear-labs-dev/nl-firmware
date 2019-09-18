@@ -23,7 +23,7 @@ class ButtonMenu : public ControlWithChildren
   void toggle();
   void antiToggle();
   void sanitizeIndex();
-  int sanitizeIndex(int index);
+  size_t sanitizeIndex(size_t index);
 
  protected:
   void clear() override;
@@ -33,7 +33,6 @@ class ButtonMenu : public ControlWithChildren
   const size_t getItemCount() const;
 
  protected:
-  void clearActions();
   void setItemTitle(size_t i, const Glib::ustring &caption);
 
   virtual Font::Justification getDefaultButtonJustification() const;
@@ -41,6 +40,7 @@ class ButtonMenu : public ControlWithChildren
   virtual void bruteForce();
 
  private:
+  void clearActions();
   size_t getItemToShowAtPlace(size_t place) const;
 
   struct Item

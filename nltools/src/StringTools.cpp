@@ -1,5 +1,6 @@
 #include <nltools/StringTools.h>
 #include <libsoup/soup.h>
+#include <algorithm>
 
 namespace nltools
 {
@@ -14,7 +15,6 @@ namespace nltools
 
   bool startsWith(const std::string &string, const std::string &test)
   {
-    #warning "FIXME"
-    return string.rfind(test) == 0;
+    return g_str_has_prefix(string.c_str(), test.c_str());
   }
 }

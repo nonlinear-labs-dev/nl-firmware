@@ -21,7 +21,6 @@ AppendOverwriteInsertButtonMenu::AppendOverwriteInsertButtonMenu(PresetManagerLa
 void AppendOverwriteInsertButtonMenu::buildMenu()
 {
   clear();
-  clearActions();
 
   auto pm = Application::get().getPresetManager();
   addButton("Append", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));

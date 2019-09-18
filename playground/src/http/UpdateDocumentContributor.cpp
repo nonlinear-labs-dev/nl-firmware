@@ -42,13 +42,6 @@ UpdateDocumentContributor::tUpdateID UpdateDocumentContributor::onChange(uint64_
   return m_updateIDOnLastChange;
 }
 
-void UpdateDocumentContributor::onRestore()
-{
-#warning "adlerauge"
-  onChange();
-  propagateChangeDownstream();
-}
-
 void UpdateDocumentContributor::propagateChangeDownstream()
 {
   for(UpdateDocumentContributor *c : m_children)

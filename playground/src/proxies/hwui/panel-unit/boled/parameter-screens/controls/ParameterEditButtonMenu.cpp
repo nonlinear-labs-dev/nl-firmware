@@ -29,7 +29,6 @@ void ParameterEditButtonMenu::setup()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   clear();
-  clearActions();
 
   if(eb->getSelected()->getParentGroup()->areAllParametersLocked())
     addButton("Unlock Group", std::bind(&ParameterEditButtonMenu::toggleGroupLock, this));

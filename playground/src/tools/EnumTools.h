@@ -78,7 +78,7 @@ namespace EnumTools
     if(it != map.end())                                                                                                \
       return it->second;                                                                                               \
     DebugLevel::throwException("Could not find value", e, "in enum map for", #enumName);                               \
-    return (enumName) 0;                                                                                               \
+    return static_cast<enumName>(0);                                                                                   \
   }                                                                                                                    \
   inline std::string toString(const enumName &e)                                                                       \
   {                                                                                                                    \
@@ -90,6 +90,6 @@ namespace EnumTools
     auto it = map.find(e);                                                                                             \
     if(it != map.end())                                                                                                \
       return it->second;                                                                                               \
-    DebugLevel::throwException("Could not find value", (int) e, "in enum map for", #enumName);                         \
+    DebugLevel::throwException("Could not find value", e, "in enum map for", #enumName);                               \
     return "";                                                                                                         \
   }

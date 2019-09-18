@@ -5,7 +5,7 @@
 #include "presets/Preset.h"
 #include "presets/Bank.h"
 
- #warning"adlerauge"
+#warning "adlerauge"
 
 GenericPresetList::GenericPresetList(const Point &p)
     : ControlWithChildren({ p.getX(), p.getY(), 128, 50 })

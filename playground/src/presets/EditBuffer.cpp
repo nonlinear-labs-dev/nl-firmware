@@ -653,18 +653,18 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
   }
 }
 
- #warning"naming"
-bool EditBuffer::isVGISelected() const
+bool EditBuffer::isSelected(EditBuffer::VoiceGroup v) const
 {
-  return m_vgISelected;
+  return m_selectedVoiceGroup == v;
 }
 
-bool EditBuffer::isVGIISelected() const
+void EditBuffer::toggleVoiceGroup()
 {
-  return !isVGISelected();
+  m_selectedVoiceGroup = isSelected(VoiceGroup::I) ? VoiceGroup::II : VoiceGroup::I;
+  onChange();
 }
 
-void EditBuffer::loadCurrentVG(Preset *pPreset)
+void EditBuffer::loadCurrentVoiceGroup(Preset *pPreset)
 {
   if(pPreset == nullptr)
     return;
