@@ -22,7 +22,8 @@ public class MoveSomeBanksLayer extends MapsControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		selectionRect.fillAndStroke(ctx, new RGBA(255, 255, 255, 0.25), Millimeter.toPixels(0.1), new RGB(255, 255, 255));
+		selectionRect.fillAndStroke(ctx, new RGBA(255, 255, 255, 0.25), Millimeter.toPixels(0.1),
+				new RGB(255, 255, 255));
 	}
 
 	public void update(Position pos) {

@@ -80,7 +80,8 @@ public class PresetList extends OverlayLayout {
 	}
 
 	private void drawDropIndicator(Context2d ctx, Rect rect, double yOffset, double heightFactor) {
-		ctx.fillRect(rect.getLeft(), rect.getTop() + rect.getHeight() * yOffset, rect.getWidth(), rect.getHeight() * heightFactor);
+		ctx.fillRect(rect.getLeft(), rect.getTop() + rect.getHeight() * yOffset, rect.getWidth(),
+				rect.getHeight() * heightFactor);
 	}
 
 	@Override
@@ -119,7 +120,7 @@ public class PresetList extends OverlayLayout {
 	public Control drag(Position pos, DragProxy dragProxy) {
 		if (!getPixRect().contains(pos))
 			return null;
-		
+
 		if (dragProxy.getOrigin() instanceof IPreset || dragProxy.getOrigin() instanceof EditBufferDraggingButton
 				|| dragProxy.getOrigin() instanceof IBank) {
 			setIsDropTarget(true);
@@ -144,7 +145,7 @@ public class PresetList extends OverlayLayout {
 	@Override
 	public Control drop(Position pos, DragProxy dragProxy) {
 		Bank b = getParent().getBankInCharge();
-				
+
 		if (dragProxy.getOrigin() instanceof IPreset)
 			getNonMaps().getServerProxy().dropPresetOnBankIfNotInBank((IPreset) dragProxy.getOrigin(), b);
 		else if (dragProxy.getOrigin() instanceof EditBufferDraggingButton)
@@ -214,7 +215,8 @@ public class PresetList extends OverlayLayout {
 
 		currentScrollPreset = p;
 
-		double target = getChildren().get(0).getRelativePosition().getTop() - p.getRelativePosition().getTop() + getChildHeight();
+		double target = getChildren().get(0).getRelativePosition().getTop() - p.getRelativePosition().getTop()
+				+ getChildHeight();
 
 		if (target != scrollPosition) {
 

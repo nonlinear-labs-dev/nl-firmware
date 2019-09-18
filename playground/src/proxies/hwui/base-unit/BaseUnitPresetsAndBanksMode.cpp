@@ -53,10 +53,12 @@ void BaseUnitPresetsAndBanksMode::onFuncButtonDown()
 {
 }
 
-void BaseUnitPresetsAndBanksMode::installButtonRepeat(const std::function<void()>& cb) {
+void BaseUnitPresetsAndBanksMode::installButtonRepeat(const std::function<void()>& cb)
+{
   m_buttonRepeat = std::make_unique<ButtonRepeat>(cb);
 }
 
-void BaseUnitPresetsAndBanksMode::removeButtonRepeat() {
+void BaseUnitPresetsAndBanksMode::removeButtonRepeat()
+{
   m_buttonRepeat.reset();
 }

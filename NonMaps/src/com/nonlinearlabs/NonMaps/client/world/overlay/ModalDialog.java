@@ -11,47 +11,48 @@ public class ModalDialog extends GWTDialog {
 
 	protected Runnable ok;
 	protected Runnable cancel;
-	
+
 	static int modalPopupLeft = 0;
 	static int modalPopupTop = 0;
-	
+
 	public ModalDialog(String message, Runnable okAction, Runnable cancelAction) {
 		ok = okAction;
 		cancel = cancelAction;
 		setModal(true);
 		setWidth("20em");
 		addHeader("Confirm!");
-		
+
 		HTMLPanel panel = new HTMLPanel("");
 		HTMLPanel buttons = new HTMLPanel("");
 		panel.add(new Label(message, true));
-		
+
 		Button okButton, cancelButton;
-		
+
 		buttons.add(okButton = new Button("OK", new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent arg0) {
-				ok.run();;
+				ok.run();
+				;
 				commit();
 			}
 		}));
 		buttons.add(cancelButton = new Button("Cancel", new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent arg0) {
 				cancel.run();
 				commit();
 			}
 		}));
-		
+
 		okButton.getElement().addClassName("modal-button-button");
 		cancelButton.getElement().addClassName("modal-button-button");
 		buttons.getElement().addClassName("modal-button-div");
 		panel.add(buttons);
 		add(panel);
 	}
-	
+
 	@Override
 	protected void setLastPopupPos(int popupLeft, int popupTop) {
 		modalPopupLeft = popupLeft;

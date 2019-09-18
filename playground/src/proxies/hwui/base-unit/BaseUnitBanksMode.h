@@ -8,6 +8,7 @@ class BaseUnitBanksMode : public BaseUnitPresetsAndBanksMode
 {
  private:
   typedef BaseUnitPresetsAndBanksMode super;
+
  public:
   void setup() override;
 };

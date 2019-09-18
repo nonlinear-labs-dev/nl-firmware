@@ -9,15 +9,15 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 public abstract class RecallValue extends Label {
 
 	protected boolean active = false;
-	
+
 	public void setActive(boolean b) {
 		active = b;
 	}
-	
+
 	public boolean isActive() {
 		return active;
 	}
-	
+
 	public RecallValue(OverlayLayout parent) {
 		super(parent);
 		setFontHeightInMM(5);
@@ -31,7 +31,7 @@ public abstract class RecallValue extends Label {
 	public double calculateTextWidth() {
 		Context2d ctx = NonMaps.get().getCanvas().getContext2d();
 		String text = getDrawText(ctx);
-		ctx.setFont(getFontSizeInPixel() + "px 'Source Sans Pro LW25'");		
+		ctx.setFont(getFontSizeInPixel() + "px 'Source Sans Pro LW25'");
 		return ctx.measureText(text).getWidth();
 	}
 }

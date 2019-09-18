@@ -142,7 +142,8 @@ abstract public class PhysicalControlParameter extends Parameter {
 		if (idWithLargestAmount == 0)
 			return "Not assigned";
 
-		Parameter p = (Parameter) NonMaps.theMaps.getNonLinearWorld().getParameterEditor().findSelectable(idWithLargestAmount);
+		Parameter p = (Parameter) NonMaps.theMaps.getNonLinearWorld().getParameterEditor()
+				.findSelectable(idWithLargestAmount);
 		return (isNegative ? "-" : "") + p.getName().getLongName();
 	}
 

@@ -52,7 +52,8 @@ public class MCLowerBound extends MCSomething {
 					ModulatableParameter modulatedParam = (ModulatableParameter) p;
 					MacroControls s = modulatedParam.getModulationSource();
 					if (s != MacroControls.NONE) {
-						MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(s);
+						MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor()
+								.getMacroControls().getControl(s);
 
 						double modAmount = modulatedParam.getModulationAmount().getClippedValue();
 
@@ -74,7 +75,8 @@ public class MCLowerBound extends MCSomething {
 
 						modulatedParam.getModulationAmount().setRawValue(Initiator.INDIRECT_USER_ACTION, newModAmount);
 						modulatedParam.getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, newValue);
-						NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount, newValue);
+						NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount,
+								newValue);
 					}
 				}
 			}

@@ -15,26 +15,26 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 public class ModulationButtons extends OverlayLayout {
 
 	protected Label originalSource;
-	
+
 	protected class OGLabel extends Label {
 
 		public OGLabel(OverlayLayout parent) {
 			super(parent);
 			setFontColor(new Gray(155));
 		}
-		
+
 		@Override
 		public String getDrawText(Context2d ctx) {
 			BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-			if(bpm instanceof ModulateableParameter) {
-				ModulateableParameter modP = (ModulateableParameter)bpm;
-				if(modP.isModSourceChanged())
+			if (bpm instanceof ModulateableParameter) {
+				ModulateableParameter modP = (ModulateableParameter) bpm;
+				if (modP.isModSourceChanged())
 					return "Original: " + modP.ogModSource.getValue().toString();
 			}
 			return "";
 		}
 	}
-	
+
 	public ModulationButtons(BeltParameterLayout parent) {
 		super(parent);
 
@@ -43,14 +43,14 @@ public class ModulationButtons extends OverlayLayout {
 		for (MacroControls b : buttons) {
 			addChild(new ModulationSourceButton(this, b));
 		}
-		
+
 		addChild(originalSource = new OGLabel(this));
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		if(isChanged()) {
+		if (isChanged()) {
 			Rect pix = getPixRect().copy();
 			pix.reduceHeightBy(-(pix.getHeight() / 4.5));
 			pix.reduceWidthBy(-(pix.getWidth() / 3.5));
@@ -60,12 +60,12 @@ public class ModulationButtons extends OverlayLayout {
 
 	private boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if(bpm instanceof ModulateableParameter) {
-			return ((ModulateableParameter)bpm).isModSourceChanged();
+		if (bpm instanceof ModulateableParameter) {
+			return ((ModulateableParameter) bpm).isModSourceChanged();
 		}
 		return false;
 	}
-	
+
 	@Override
 	public BeltParameterLayout getParent() {
 		return (BeltParameterLayout) super.getParent();
@@ -78,24 +78,21 @@ public class ModulationButtons extends OverlayLayout {
 		double buttonDim = Millimeter.toPixels(10);
 		double yspace = (h - 2 * buttonDim);
 		double xspace = (w - 2 * buttonDim);
-		
+
 		double sizeY = Millimeter.toPixels(4);
 		double spaceY = Millimeter.toPixels(2);
-		
+
 		originalSource.doLayout(-buttonDim, 0, w + 2 * buttonDim, sizeY);
-		
+
 		double space = Math.min(xspace, yspace);
-		for (int y = 0; y < 2; y++) 
-		{
-			for (int x = 0; x < 2; x++)
-			{
+		for (int y = 0; y < 2; y++) {
+			for (int x = 0; x < 2; x++) {
 				int index = y * 2 + x;
 				double xPos = x * (space + buttonDim);
 				double yPos = spaceY + sizeY + y * (space + buttonDim);
 				getChildren().get(index).doLayout(xPos, yPos, buttonDim, buttonDim);
 			}
 		}
-				
 
 	}
 }

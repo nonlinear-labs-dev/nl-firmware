@@ -37,8 +37,8 @@ class Line extends ZoomReactingControl {
 		ctx.setFillStyle(getColorObjectContour().toString());
 		double insetX = 0;
 		double insetY = 0;
-		ctx.fillRect(pixRect.getLeft() + insetX, pixRect.getTop() + insetY, pixRect.getWidth() - 2 * insetX, pixRect.getHeight() - 2
-				* insetY);
+		ctx.fillRect(pixRect.getLeft() + insetX, pixRect.getTop() + insetY, pixRect.getWidth() - 2 * insetX,
+				pixRect.getHeight() - 2 * insetY);
 		super.draw(ctx, invalidationMask);
 	}
 }

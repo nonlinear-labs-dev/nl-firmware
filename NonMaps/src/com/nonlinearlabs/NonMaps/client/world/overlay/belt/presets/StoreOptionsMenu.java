@@ -18,8 +18,7 @@ public class StoreOptionsMenu extends SVGImage {
 		public StoreOptionsContextMenu(OverlayLayout parent) {
 			super(parent);
 
-
-			if(!currentSetting.equals("Append")) {
+			if (!currentSetting.equals("Append")) {
 				addChild(new ContextMenuItem(this, "Append") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -29,7 +28,7 @@ public class StoreOptionsMenu extends SVGImage {
 				});
 			}
 
-			if(!currentSetting.equals("Insert")) {
+			if (!currentSetting.equals("Insert")) {
 				addChild(new ContextMenuItem(this, "Insert") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -38,7 +37,7 @@ public class StoreOptionsMenu extends SVGImage {
 					}
 				});
 			}
-			if(!currentSetting.equals("Overwrite")) {
+			if (!currentSetting.equals("Overwrite")) {
 				addChild(new ContextMenuItem(this, "Overwrite") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -83,7 +82,7 @@ public class StoreOptionsMenu extends SVGImage {
 	private Control openContextMenu(Position pos) {
 		Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 
-		if(o.getContextMenu() instanceof StoreOptionsContextMenu) {
+		if (o.getContextMenu() instanceof StoreOptionsContextMenu) {
 			o.removeExistingContextMenus();
 			return this;
 		}

@@ -112,7 +112,8 @@ public class Updater {
 		String x = bank.getAttributes().getNamedItem("x").getNodeValue();
 		String y = bank.getAttributes().getNamedItem("y").getNodeValue();
 
-		NonPosition bankPos = this.bank.getNonMaps().getNonLinearWorld().getViewport().getNonPosition().getCenterPoint();
+		NonPosition bankPos = this.bank.getNonMaps().getNonLinearWorld().getViewport().getNonPosition()
+				.getCenterPoint();
 
 		try {
 			bankPos = new NonPosition(Double.parseDouble(x), Double.parseDouble(y));

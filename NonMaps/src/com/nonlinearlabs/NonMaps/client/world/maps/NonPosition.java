@@ -127,7 +127,7 @@ public class NonPosition {
 	}
 
 	public double distanceTo(NonPosition other) {
-        return Math.hypot(Math.abs(other.y - y), Math.abs(other.x - x));
+		return Math.hypot(Math.abs(other.y - y), Math.abs(other.x - x));
 	}
 
 }

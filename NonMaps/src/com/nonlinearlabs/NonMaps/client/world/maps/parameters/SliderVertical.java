@@ -64,7 +64,8 @@ public class SliderVertical extends ModulateableValueControl {
 			Position center = r.getCenterPoint();
 			double handleWidth = toXPixels(getSliderHandleWidth());
 			double handleHeight = toYPixels(0.5);
-			Rect centerRect = new Rect(center.getX() - handleWidth, center.getY() - handleHeight, handleWidth * 2, handleHeight * 2);
+			Rect centerRect = new Rect(center.getX() - handleWidth, center.getY() - handleHeight, handleWidth * 2,
+					handleHeight * 2);
 			centerRect.fill(ctx, getColorSliderBackground());
 		}
 	}

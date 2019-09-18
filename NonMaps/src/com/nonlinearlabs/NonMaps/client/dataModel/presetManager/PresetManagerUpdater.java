@@ -9,7 +9,7 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 public class PresetManagerUpdater extends Updater {
 
 	protected PresetManager target;
-	
+
 	public PresetManagerUpdater(Node c, PresetManager pm) {
 		super(c);
 		target = pm;

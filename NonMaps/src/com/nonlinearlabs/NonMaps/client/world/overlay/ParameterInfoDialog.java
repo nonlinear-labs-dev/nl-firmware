@@ -234,7 +234,7 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 				setDescription(info);
 				return;
 			}
-			
+
 		}
 
 		parameterNameView.setText(newSelection.getFullNameWithGroup());

@@ -41,14 +41,14 @@ public class FloatingWindowHeader extends OverlayLayout {
 
 			private void drawX(Context2d ctx) {
 				Rect r = getPixRect().getReducedBy(Millimeter.toPixels(4));
-				
+
 				boolean mouseDown = isCaptureControl();
-				
+
 				RGB fillColor = mouseDown ? new Gray(133) : new Gray(66);
 				RGB strokeColor = mouseDown ? new Gray(222) : new Gray(154);
-				
-				r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), Millimeter.toPixels(0.25),
-						fillColor, strokeColor);
+
+				r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, Millimeter.toPixels(1), Millimeter.toPixels(0.25), fillColor,
+						strokeColor);
 
 				r = r.getReducedBy(Millimeter.toPixels(4));
 
@@ -65,29 +65,29 @@ public class FloatingWindowHeader extends OverlayLayout {
 
 				ctx.stroke();
 			}
-			
+
 			@Override
 			public Control mouseDown(Position eventPoint) {
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return this;
 			}
-			
+
 			@Override
 			public void onMouseLost() {
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
-			
+
 			@Override
 			public Control mouseUp(Position eventPoint) {
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return this;
 			}
-			
+
 			@Override
 			public void dragLeave() {
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
-			
+
 			@Override
 			public Control click(Position eventPoint) {
 				parent.toggle();

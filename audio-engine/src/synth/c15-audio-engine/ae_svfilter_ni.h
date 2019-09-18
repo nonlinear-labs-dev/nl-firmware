@@ -18,19 +18,19 @@ using namespace NlToolbox::Constants;
 
 struct ae_svfilter_ni
 {
-    ae_svfilter_ni();       // Default Constructor
+  ae_svfilter_ni();  // Default Constructor
 
-    FloatVector m_out;
-    float m_warpConst_2PI;
+  FloatVector m_out;
+  float m_warpConst_2PI;
 
-    void init(float _samplerate);
-    void apply(const FloatVector &_sampleA, const FloatVector &_sampleB,
-               const FloatVector &_sampleComb, SignalStorage &signals);
-    void resetDSP();
+  void init(float _samplerate);
+  void apply(const FloatVector &_sampleA, const FloatVector &_sampleB, const FloatVector &_sampleComb,
+             SignalStorage &signals);
+  void resetDSP();
 
-    //**************************** State Variables ****************************//
-    FloatVector m_first_int1_stateVar, m_first_int2_stateVar;
-    FloatVector m_second_int1_stateVar, m_second_int2_stateVar;
+  //**************************** State Variables ****************************//
+  FloatVector m_first_int1_stateVar, m_first_int2_stateVar;
+  FloatVector m_second_int1_stateVar, m_second_int2_stateVar;
 
-    FloatVector m_first_sat_stateVar, m_second_sat_stateVar;
+  FloatVector m_first_sat_stateVar, m_second_sat_stateVar;
 };

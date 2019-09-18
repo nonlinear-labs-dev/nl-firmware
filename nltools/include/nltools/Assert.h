@@ -18,7 +18,8 @@ namespace nltools
     throw std::runtime_error("Assertion failed!");
   }
 
-  inline void fail[[noreturn]](const char *expr, const char *file, int line, const char *function, const char* description)
+  inline void fail[[noreturn]](const char *expr, const char *file, int line, const char *function,
+                               const char *description)
   {
     Log::error("Assertion failed:");
     Log::output<Log::LogMode::AppendNewLine>("\tExpression: ", expr);
@@ -32,7 +33,7 @@ namespace nltools
 #define nltools_assertAlways(expr)                                                                                     \
   (static_cast<bool>(expr) ? void(0) : nltools::fail(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__))
 
-#define nltools_detailedAssertAlways(expr, description)                                                                                     \
+#define nltools_detailedAssertAlways(expr, description)                                                                \
   (static_cast<bool>(expr) ? void(0) : nltools::fail(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, #description))
 
 #if _DEVELOPMENT_PC

@@ -6,7 +6,7 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 public class PresetUpdater extends Updater {
 
 	protected Preset target;
-	
+
 	public PresetUpdater(Node n, Preset preset) {
 		super(n);
 		target = preset;

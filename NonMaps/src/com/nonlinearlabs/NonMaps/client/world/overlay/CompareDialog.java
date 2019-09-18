@@ -172,7 +172,7 @@ public class CompareDialog extends GWTDialog {
 			if (colorNode != null) {
 				String colora = colorNode.getAttributes().getNamedItem("a").getNodeValue();
 				String colorb = colorNode.getAttributes().getNamedItem("b").getNodeValue();
-				if(!colora.isEmpty() && !colorb.isEmpty()) {
+				if (!colora.isEmpty() && !colorb.isEmpty()) {
 					table.setText(row, 0, "Color");
 					table.setText(row, 1, colora);
 					table.setText(row, 2, colorb);
@@ -209,25 +209,25 @@ public class CompareDialog extends GWTDialog {
 		order.add("Scale");
 		return order;
 	}
-	
+
 	Node findParameterGroupNodeByName(NodeList list, String name) {
 		for (int numGroup = 0; numGroup < list.getLength(); numGroup++) {
 			Node node = list.item(numGroup);
-			if(node.getNodeType() == Node.ELEMENT_NODE)
-				if(node.getAttributes().getNamedItem("name").getNodeValue().equals(name))
+			if (node.getNodeType() == Node.ELEMENT_NODE)
+				if (node.getAttributes().getNamedItem("name").getNodeValue().equals(name))
 					return node;
 		}
 		return null;
 	}
-	
+
 	public void writeParameterGroups(int row) {
 		NodeList groups = xml.getElementsByTagName("group");
 
-		for(String id: getParameterGroupOrder()) {
+		for (String id : getParameterGroupOrder()) {
 			Node group = findParameterGroupNodeByName(groups, id);
-			if(group != null)
+			if (group != null)
 				row = writeParameterGroup(row, group);
-		}	
+		}
 	}
 
 	public int writeParameterGroup(int row, Node group) {
@@ -333,7 +333,7 @@ public class CompareDialog extends GWTDialog {
 			Node enabled = ServerProxy.getChild(root, "enabled");
 			String a = enabled.getAttributes().getNamedItem("a").getNodeValue();
 			String b = enabled.getAttributes().getNamedItem("b").getNodeValue();
-			
+
 			loadPresetA.setEnabled(a.equals("1"));
 			loadPresetB.setEnabled(b.equals("1"));
 		}

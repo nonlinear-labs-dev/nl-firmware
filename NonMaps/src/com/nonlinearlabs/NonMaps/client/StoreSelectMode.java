@@ -119,7 +119,8 @@ public class StoreSelectMode {
 
 	public void updateUI() {
 		NonMaps.get().getNonLinearWorld().invalidate(NonLinearWorld.INVALIDATION_FLAG_UI_CHANGED);
-		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl().update();
+		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl()
+				.update();
 	}
 
 	public boolean isOriginalPreset(Preset mapsPreset) {

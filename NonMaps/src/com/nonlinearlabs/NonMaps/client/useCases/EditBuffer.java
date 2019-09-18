@@ -12,7 +12,8 @@ public class EditBuffer {
 
 	public void setParameterValue(String groupId, int id, double newValue, boolean oracle) {
 
-		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get().findParameter(id);
+		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get()
+				.findParameter(id);
 		if (p != null)
 			p.value.value.setValue(newValue);
 
@@ -39,7 +40,8 @@ public class EditBuffer {
 	}
 
 	public IncrementalChanger startUserEdit(int parameterID, double pixels) {
-		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get().findParameter(parameterID);
+		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get()
+				.findParameter(parameterID);
 
 		return null;
 	}

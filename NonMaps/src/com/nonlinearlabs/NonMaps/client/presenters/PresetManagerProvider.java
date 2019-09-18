@@ -18,7 +18,7 @@ public class PresetManagerProvider {
 
 	public PresetManagerProvider() {
 		pm = new PresetManagerPresenter();
-		clients  = new LinkedList<Function<PresetManagerPresenter, Boolean>>();
+		clients = new LinkedList<Function<PresetManagerPresenter, Boolean>>();
 		com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetManager.get().getBanks()
 				.onChange(b -> onBanksChanged(b));
 	}
@@ -32,7 +32,7 @@ public class PresetManagerProvider {
 				if (!pm.banks.stream().anyMatch((b) -> b.uuid.equals(key))) {
 					pm.banks.add(new PresetManagerPresenter.Bank(bank));
 				}
-			} catch(Exception e) {
+			} catch (Exception e) {
 			}
 		});
 
@@ -54,7 +54,7 @@ public class PresetManagerProvider {
 		clients.add(cb);
 		cb.apply(pm);
 	}
-	
+
 	public PresetManagerPresenter getPresenter() {
 		return pm;
 	}

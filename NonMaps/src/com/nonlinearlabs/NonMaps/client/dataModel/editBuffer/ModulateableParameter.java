@@ -9,20 +9,22 @@ import com.nonlinearlabs.NonMaps.client.dataModel.Updater;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout;
 
 public class ModulateableParameter extends BasicParameterModel {
-	
+
 	public enum ModSource {
 		None, A, B, C, D
 	}
 
 	public DoubleDataModelEntity modAmount = new DoubleDataModelEntity();
-	public EnumDataModelEntity<ModSource> modSource = new EnumDataModelEntity<ModSource>(ModSource.class, ModSource.None);
+	public EnumDataModelEntity<ModSource> modSource = new EnumDataModelEntity<ModSource>(ModSource.class,
+			ModSource.None);
 	public StringDataModelEntity modAmountStringizer = new StringDataModelEntity();
 	public IntegerDataModelEntity modAmountCoarse = new IntegerDataModelEntity();
 	public IntegerDataModelEntity modAmountFine = new IntegerDataModelEntity();
 	public DoubleDataModelEntity ogModAmount = new DoubleDataModelEntity();
 	public IntegerDataModelEntity mcParameterID = new IntegerDataModelEntity();
-	public EnumDataModelEntity<ModSource> ogModSource = new EnumDataModelEntity<ModSource>(ModSource.class, ModSource.None);
-	
+	public EnumDataModelEntity<ModSource> ogModSource = new EnumDataModelEntity<ModSource>(ModSource.class,
+			ModSource.None);
+
 	@Override
 	public boolean isChanged() {
 		boolean src = isModSourceChanged();
@@ -31,36 +33,34 @@ public class ModulateableParameter extends BasicParameterModel {
 		return src || amt || val;
 	}
 
-
 	public boolean isMCPosChanged() {
-		if(!mcParameterID.getValue().toString().isEmpty()) {
+		if (!mcParameterID.getValue().toString().isEmpty()) {
 			BasicParameterModel mcBPM = EditBufferModel.get().findParameter(mcParameterID.getValue());
-			if(mcBPM != null && mcBPM instanceof MacroControlParameter) {
+			if (mcBPM != null && mcBPM instanceof MacroControlParameter) {
 				return mcBPM.isChanged();
 			}
 		}
 		return false;
 	}
-	
+
 	public boolean isModAmountChanged() {
 		int denominator = value.metaData.fineDenominator.getValue();
-		int ogRounded = (int)(ogModAmount.getValue() * denominator);
-		int nowRounded = (int)(modAmount.getValue() * denominator);
+		int ogRounded = (int) (ogModAmount.getValue() * denominator);
+		int nowRounded = (int) (modAmount.getValue() * denominator);
 		return ogRounded != nowRounded;
 	}
-	
+
 	public boolean isModSourceChanged() {
 		return ogModSource.getValue() != modSource.getValue();
 	}
-	
+
 	@Override
 	public Updater getUpdater(Node c) {
 		return new ModulateableParameterUpdater(c, this);
 	}
 
-
 	public boolean isChanged(BeltParameterLayout.Mode mode) {
-		switch(mode) {
+		switch (mode) {
 		case mcAmount:
 			return isModAmountChanged();
 		case mcSource:

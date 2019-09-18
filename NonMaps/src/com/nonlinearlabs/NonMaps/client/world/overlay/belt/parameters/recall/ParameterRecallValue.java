@@ -14,11 +14,12 @@ public class ParameterRecallValue extends RecallValue {
 	@Override
 	public String getDrawText(Context2d ctx) {
 		EditBufferModel eb = EditBufferModel.get();
-		
-		if(!isActive())
+
+		if (!isActive())
 			return "";
-		
-		Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(eb.selectedParameter.getValue());
+
+		Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor()
+				.findParameter(eb.selectedParameter.getValue());
 		return param.getDecoratedValue(true, eb.getSelectedParameter().originalValue.getValue());
 	}
 }

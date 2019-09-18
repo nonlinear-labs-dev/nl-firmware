@@ -15,13 +15,13 @@ class LoadPreset extends SVGImage {
 	LoadPreset(OverlayLayout parent) {
 		super(parent, "Load_Enabled.svg", "Load_Active.svg", "Load_Disabled.svg");
 	}
-	
+
 	public boolean isSelectedBankEmpty() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		String b = pm.getSelectedBank();
 		Bank bank = pm.findBank(b);
 		if (bank != null) {
-			if(bank.getPresetList().getPresetCount() != 0)
+			if (bank.getPresetList().getPresetCount() != 0)
 				return false;
 		}
 		return true;
@@ -29,7 +29,7 @@ class LoadPreset extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		if(isSelectedBankEmpty()) {
+		if (isSelectedBankEmpty()) {
 			return drawStates.disabled.ordinal();
 		} else if (!isEnabled()) {
 			return drawStates.disabled.ordinal();
@@ -37,7 +37,7 @@ class LoadPreset extends SVGImage {
 			return drawStates.disabled.ordinal();
 		} else if (isCaptureControl()) {
 			return drawStates.active.ordinal();
-		} else if(NonMaps.theMaps.getNonLinearWorld().getPresetManager().isChangingPresetWhileInDirectLoad()) {
+		} else if (NonMaps.theMaps.getNonLinearWorld().getPresetManager().isChangingPresetWhileInDirectLoad()) {
 			return drawStates.disabled.ordinal();
 		} else {
 			return drawStates.normal.ordinal();
@@ -65,7 +65,7 @@ class LoadPreset extends SVGImage {
 
 	protected boolean isSelectedPresetLoaded() {
 		String loadedPresetUUID = EditBufferModel.get().loadedPreset.getValue();
-		
+
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		String b = pm.getSelectedBank();
 		if (b != null) {

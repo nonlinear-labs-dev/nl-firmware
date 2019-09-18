@@ -47,8 +47,8 @@ public class MCSourceDisplay extends SVGImage {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		if (getParent().isOneOf(BeltParameterLayout.Mode.mcValue, BeltParameterLayout.Mode.mcAmount, BeltParameterLayout.Mode.mcSource,
-				BeltParameterLayout.Mode.paramValue))
+		if (getParent().isOneOf(BeltParameterLayout.Mode.mcValue, BeltParameterLayout.Mode.mcAmount,
+				BeltParameterLayout.Mode.mcSource, BeltParameterLayout.Mode.paramValue))
 			getParent().setMode(BeltParameterLayout.Mode.modulateableParameter);
 		else if (getSelectedPhase() != -1)
 			getParent().setMode(BeltParameterLayout.Mode.paramValue);

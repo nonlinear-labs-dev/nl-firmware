@@ -12,8 +12,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 public class MenuAreaPresetButton extends SVGImage {
 
 	public MenuAreaPresetButton(MenuArea parent) {
-		super(parent, "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_S.svg", "Menu_A_Enabled.svg",
-				"Menu_A_Active.svg", "Menu_A_Disabled.svg");
+		super(parent, "Menu_Preset_Enabled_S.svg", "Menu_Preset_Active_S.svg", "Menu_Preset_Disabled_S.svg",
+				"Menu_A_Enabled.svg", "Menu_A_Active.svg", "Menu_A_Disabled.svg");
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public class MenuAreaPresetButton extends SVGImage {
 		Preset p = getPreset();
 		Overlay o = getOverlay();
 
-		if(o.getContextMenu() instanceof PresetContextMenu) {
+		if (o.getContextMenu() instanceof PresetContextMenu) {
 			o.removeExistingContextMenus();
 			return this;
 		}

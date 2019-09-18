@@ -19,7 +19,7 @@ class TextEditUsageMode : public UsageMode
   virtual void setup();
   virtual bool onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool state);
 
-  connection onTextChanged(const slot<void, const ustring &>& cb);
+  connection onTextChanged(const slot<void, const ustring &> &cb);
   ustring getKeyLabel(int buttonID) const;
 
   gunichar getCharAtRelativeToCursorPosition(int pos) const;

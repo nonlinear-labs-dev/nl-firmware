@@ -24,7 +24,7 @@ abstract public class ScaleParameter extends ModulationSourceHighPriority {
 	public double getDefaultValue() {
 		return 0.0;
 	}
-	
+
 	public String getStringName() {
 		return super.getName().getLongName();
 	}

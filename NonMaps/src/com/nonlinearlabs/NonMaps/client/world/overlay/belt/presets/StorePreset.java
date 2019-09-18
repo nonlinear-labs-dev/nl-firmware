@@ -112,7 +112,8 @@ class StorePreset extends SVGImage {
 		switch (action) {
 		case APPEND:
 			if (getPresetManager().isInStoreSelectMode()) {
-				getNonMaps().getServerProxy().appendEditBuffer(getPresetManager().getStoreSelectMode().getSelectedBank());
+				getNonMaps().getServerProxy()
+						.appendEditBuffer(getPresetManager().getStoreSelectMode().getSelectedBank());
 			} else {
 				getNonMaps().getServerProxy().appendPreset();
 			}
@@ -127,9 +128,11 @@ class StorePreset extends SVGImage {
 			break;
 
 		case OVERWRITE:
-			if (getPresetManager().isInStoreSelectMode() &&	getPresetManager().getStoreSelectMode().getSelectedPreset() != null) {
-				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getStoreSelectMode().getSelectedPreset());
-			} else if(getPresetManager().getSelectedPreset() != null) {
+			if (getPresetManager().isInStoreSelectMode()
+					&& getPresetManager().getStoreSelectMode().getSelectedPreset() != null) {
+				getNonMaps().getServerProxy()
+						.overwritePresetWithEditBuffer(getPresetManager().getStoreSelectMode().getSelectedPreset());
+			} else if (getPresetManager().getSelectedPreset() != null) {
 				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getSelectedPreset());
 			} else {
 				getNonMaps().getServerProxy().overwritePreset();
@@ -141,7 +144,8 @@ class StorePreset extends SVGImage {
 	}
 
 	protected void createNewBank() {
-		getNonMaps().getServerProxy().newBankFromEditBuffer(getNonMaps().getNonLinearWorld().getNonPosition().getCenterPoint());
+		getNonMaps().getServerProxy()
+				.newBankFromEditBuffer(getNonMaps().getNonLinearWorld().getNonPosition().getCenterPoint());
 	}
 
 	@Override

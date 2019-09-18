@@ -68,41 +68,41 @@ public class PresetManagerContextMenu extends ContextMenu {
 				return super.click(eventPoint);
 			}
 		});
-		
 
 		addChild(new ContextMenuItem(this, "Restore all Banks from Backup File ...") {
 			@Override
 			public Control click(Position eventPoint) {
-				
-				NonMaps.get().getNonLinearWorld().getViewport().getOverlay().promptUser("This will replace all current banks! Please save the banks with your work as files before restoring the backup.", () -> {
-					final FileUpload upload = new FileUpload();
-					upload.setName("uploadFormElement");
 
-					if (!Navigator.getPlatform().toLowerCase().contains("mac"))
-						upload.getElement().setAttribute("accept", ".xml.tar.gz");
+				NonMaps.get().getNonLinearWorld().getViewport().getOverlay().promptUser(
+						"This will replace all current banks! Please save the banks with your work as files before restoring the backup.",
+						() -> {
+							final FileUpload upload = new FileUpload();
+							upload.setName("uploadFormElement");
 
+							if (!Navigator.getPlatform().toLowerCase().contains("mac"))
+								upload.getElement().setAttribute("accept", ".xml.tar.gz");
 
-					upload.addChangeHandler(new ChangeHandler() {
-
-						@Override
-						public void onChange(ChangeEvent event) {
-							loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
+							upload.addChangeHandler(new ChangeHandler() {
 
 								@Override
-								public void onZipUploaded(JavaScriptObject buffer) {
-									NonMaps.theMaps.getServerProxy().importPresetManager(buffer);
+								public void onChange(ChangeEvent event) {
+									loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
+
+										@Override
+										public void onZipUploaded(JavaScriptObject buffer) {
+											NonMaps.theMaps.getServerProxy().importPresetManager(buffer);
+										}
+									});
+
+									RootPanel.get().remove(upload);
 								}
 							});
 
-							RootPanel.get().remove(upload);
-						}
-					});
+							upload.click();
+							RootPanel.get().add(upload);
+						}, () -> {
 
-					upload.click();
-					RootPanel.get().add(upload);
-				}, () -> {
-					
-				});
+						});
 				return super.click(eventPoint);
 			}
 
@@ -184,16 +184,16 @@ public class PresetManagerContextMenu extends ContextMenu {
 	}
 
 	private native void loadBackupFile(NativeEvent evt, ZipUploadedHandler receiver) /*-{
-		var files = evt.target.files;
-		if (files != null && files.length > 0) {
-			var file = files[0];
-			var reader = new FileReader();
-
-			reader.onload = function(e) {
-				var zip = reader.result;
-				receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetManagerContextMenu.ZipUploadedHandler::onZipUploaded(Lcom/google/gwt/core/client/JavaScriptObject;)(zip);
-			}
-			reader.readAsArrayBuffer(file);
-		}
-	}-*/;
+																						var files = evt.target.files;
+																						if (files != null && files.length > 0) {
+																						var file = files[0];
+																						var reader = new FileReader();
+																						
+																						reader.onload = function(e) {
+																						var zip = reader.result;
+																						receiver.@com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetManagerContextMenu.ZipUploadedHandler::onZipUploaded(Lcom/google/gwt/core/client/JavaScriptObject;)(zip);
+																						}
+																						reader.readAsArrayBuffer(file);
+																						}
+																						}-*/;
 }

@@ -29,7 +29,7 @@ public class BooleanDataModelEntity extends EnumDataModelEntity<BooleanValues> {
 	public void setValue(boolean v) {
 		setValue(v ? BooleanValues.on : BooleanValues.off);
 	}
-	
+
 	public boolean getBool() {
 		return isTrue();
 	}

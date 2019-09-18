@@ -205,7 +205,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 		int keyCode = event.getNativeEvent().getKeyCode();
 
-		if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_E && getNonMaps().getNonLinearWorld().isCtrlDown()) {
+		if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_E
+				&& getNonMaps().getNonLinearWorld().isCtrlDown()) {
 			toggleVisibility();
 			return this;
 		}
@@ -230,7 +231,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 			if (initiator == Initiator.EXPLICIT_USER_ACTION)
 				getNonMaps().getServerProxy().onParameterSelectionChanged(this);
 
-			if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "parameter", "parameter-and-preset"))
+			if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "parameter",
+					"parameter-and-preset"))
 				scrollToSelectedParameter();
 
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -271,7 +273,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 				updatePreset(node);
 				updateSelection(node);
 			} else {
-				Tracer.log("did not change parameters in parameter editor from update doc, because it says the changes can be omitted");
+				Tracer.log(
+						"did not change parameters in parameter editor from update doc, because it says the changes can be omitted");
 			}
 		}
 
@@ -414,7 +417,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 	}
 
 	private void updateCompare(Node node) {
-		for (CompareDialog compareDialog : NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getCompareDialogs()) {
+		for (CompareDialog compareDialog : NonMaps.get().getNonLinearWorld().getViewport().getOverlay()
+				.getCompareDialogs()) {
 			compareDialog.update();
 		}
 	}

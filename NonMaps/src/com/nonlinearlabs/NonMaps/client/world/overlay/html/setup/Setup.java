@@ -45,19 +45,20 @@ public class Setup extends Composite {
 	DivElement deviceSettings, uiSettings, systemInfo, about;
 
 	@UiField
-	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type, selectionAutoScroll,
-			editParameter, scalingFactor, stripeBrightness;
+	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
+			selectionAutoScroll, editParameter, scalingFactor, stripeBrightness;
 
 	@UiField
-	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString, editSmoothingTimeDisplayString, freeMemory,
-			uiVersion, rtVersion, osVersion, dateTime;
+	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
+			editSmoothingTimeDisplayString, freeMemory, uiVersion, rtVersion, osVersion, dateTime;
 
 	@UiField
 	InputElement pedal1Slider, pedal2Slider, pedal3Slider, pedal4Slider;
 
 	@UiField
-	RadioButton presetGlitchSurpressionOn, presetGlitchSurpressionOff, showContextMenusOn, showContextMenusOff, presetDragDropOn,
-			presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff, highlightChangedOn, highlightChangedOff;
+	RadioButton presetGlitchSurpressionOn, presetGlitchSurpressionOff, showContextMenusOn, showContextMenusOff,
+			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
+			highlightChangedOn, highlightChangedOff;
 
 	@UiField
 	InputElement editSmoothingTimeSlider;
@@ -99,7 +100,8 @@ public class Setup extends Composite {
 		fillListboxWithOptions(scalingFactor, LocalSettings.DisplayScalingFactor.options);
 		fillListboxWithOptions(stripeBrightness, LocalSettings.StripeBrightness.options);
 
-		fillRadioButtons(presetGlitchSurpressionOn, presetGlitchSurpressionOff, DeviceSettings.PresetGlitchSurpression.options);
+		fillRadioButtons(presetGlitchSurpressionOn, presetGlitchSurpressionOff,
+				DeviceSettings.PresetGlitchSurpression.options);
 		fillRadioButtons(showContextMenusOn, showContextMenusOff, LocalSettings.ContextMenus.options);
 		fillRadioButtons(presetDragDropOn, presetDragDropOff, LocalSettings.PresetDragDrop.options);
 		fillRadioButtons(bitmapCacheOn, bitmapCacheOff, LocalSettings.BitmapCache.options);
@@ -109,25 +111,32 @@ public class Setup extends Composite {
 
 	public void connectEventHandlers() {
 		SystemSettings settings = SystemSettings.get();
-		com.nonlinearlabs.NonMaps.client.useCases.LocalSettings locals = com.nonlinearlabs.NonMaps.client.useCases.LocalSettings.get();
+		com.nonlinearlabs.NonMaps.client.useCases.LocalSettings locals = com.nonlinearlabs.NonMaps.client.useCases.LocalSettings
+				.get();
 
 		deviceSettingsButton.addClickHandler(e -> switchPage(deviceSettingsButton, deviceSettings));
 		uiSettingsButton.addClickHandler(e -> switchPage(uiSettingsButton, uiSettings));
 		systemInfoButton.addClickHandler(e -> switchPage(systemInfoButton, systemInfo));
 		aboutButton.addClickHandler(e -> switchPage(aboutButton, about));
 
-		velocityCurve.addChangeHandler(e -> settings.setVelocityCurve(VelocityCurve.values()[velocityCurve.getSelectedIndex()]));
-		aftertouchCurve.addChangeHandler(e -> settings.setAftertouchCurve(AftertouchCurve.values()[aftertouchCurve.getSelectedIndex()]));
-		benderCurve.addChangeHandler(e -> settings.setBenderCurve(BenderCurve.values()[benderCurve.getSelectedIndex()]));
+		velocityCurve.addChangeHandler(
+				e -> settings.setVelocityCurve(VelocityCurve.values()[velocityCurve.getSelectedIndex()]));
+		aftertouchCurve.addChangeHandler(
+				e -> settings.setAftertouchCurve(AftertouchCurve.values()[aftertouchCurve.getSelectedIndex()]));
+		benderCurve
+				.addChangeHandler(e -> settings.setBenderCurve(BenderCurve.values()[benderCurve.getSelectedIndex()]));
 		pedal1Type.addChangeHandler(e -> settings.setPedal1Type(PedalType.values()[pedal1Type.getSelectedIndex()]));
 		pedal2Type.addChangeHandler(e -> settings.setPedal2Type(PedalType.values()[pedal2Type.getSelectedIndex()]));
 		pedal3Type.addChangeHandler(e -> settings.setPedal3Type(PedalType.values()[pedal3Type.getSelectedIndex()]));
 		pedal4Type.addChangeHandler(e -> settings.setPedal4Type(PedalType.values()[pedal4Type.getSelectedIndex()]));
-		selectionAutoScroll.addChangeHandler(e -> locals.setSelectionAutoScroll(SelectionAutoScroll.values()[selectionAutoScroll
-				.getSelectedIndex()]));
-		editParameter.addChangeHandler(e -> locals.setEditParameter(EditParameter.values()[editParameter.getSelectedIndex()]));
-		scalingFactor.addChangeHandler(e -> locals.setDisplayScaling(DisplayScaling.values()[scalingFactor.getSelectedIndex()]));
-		stripeBrightness.addChangeHandler(e -> locals.setStripeBrightness(StripeBrightness.values()[stripeBrightness.getSelectedIndex()]));
+		selectionAutoScroll.addChangeHandler(e -> locals
+				.setSelectionAutoScroll(SelectionAutoScroll.values()[selectionAutoScroll.getSelectedIndex()]));
+		editParameter.addChangeHandler(
+				e -> locals.setEditParameter(EditParameter.values()[editParameter.getSelectedIndex()]));
+		scalingFactor.addChangeHandler(
+				e -> locals.setDisplayScaling(DisplayScaling.values()[scalingFactor.getSelectedIndex()]));
+		stripeBrightness.addChangeHandler(
+				e -> locals.setStripeBrightness(StripeBrightness.values()[stripeBrightness.getSelectedIndex()]));
 
 		presetGlitchSurpressionOn.addClickHandler(e -> settings.setPresetGlitchSurpression(BooleanValues.on));
 		presetGlitchSurpressionOff.addClickHandler(e -> settings.setPresetGlitchSurpression(BooleanValues.off));
@@ -145,15 +154,20 @@ public class Setup extends Composite {
 		developerOptionsOff.addClickHandler(e -> locals.showDeveloperOptions(BooleanValues.off));
 
 		editSmoothingTimeRange = Range.wrap(editSmoothingTimeSlider);
-		editSmoothingTimeRange.addValueChangeHandler(e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
+		editSmoothingTimeRange.addValueChangeHandler(
+				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
 
-		pedal1Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 254, e.getValue().doubleValue(), true));
-		pedal2Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 259, e.getValue().doubleValue(), true));
-		pedal3Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 264, e.getValue().doubleValue(), true));
-		pedal4Range.addValueChangeHandler(e -> EditBuffer.get().setParameterValue("CS", 269, e.getValue().doubleValue(), true));
+		pedal1Range.addValueChangeHandler(
+				e -> EditBuffer.get().setParameterValue("CS", 254, e.getValue().doubleValue(), true));
+		pedal2Range.addValueChangeHandler(
+				e -> EditBuffer.get().setParameterValue("CS", 259, e.getValue().doubleValue(), true));
+		pedal3Range.addValueChangeHandler(
+				e -> EditBuffer.get().setParameterValue("CS", 264, e.getValue().doubleValue(), true));
+		pedal4Range.addValueChangeHandler(
+				e -> EditBuffer.get().setParameterValue("CS", 269, e.getValue().doubleValue(), true));
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
-		
+
 		highlightChangedOn.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.on));
 		highlightChangedOff.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.off));
 
@@ -202,7 +216,7 @@ public class Setup extends Composite {
 		editSmoothingTimeDisplayString.setText(t.editSmoothingTime.displayValue);
 
 		deviceName.setText(t.deviceName);
-		
+
 		highlightChangedOn.setValue(t.highlightChangedParameters.value);
 		highlightChangedOff.setValue(!t.highlightChangedParameters.value);
 	}

@@ -15,7 +15,7 @@ public class FBMixer extends ParameterGroupVertical {
 			public RGB getColorFont() {
 				return RGB.lighterGray();
 			}
-		});		
+		});
 		addChild(new FBMixerControls(this));
 	}
 

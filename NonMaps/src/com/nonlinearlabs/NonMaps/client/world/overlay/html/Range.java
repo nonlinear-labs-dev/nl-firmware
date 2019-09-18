@@ -69,8 +69,8 @@ public class Range extends Widget implements HasValue<Number> {
 	}
 
 	public final native void setValue(Element element, Number value) /*-{
-		element.value = value;
-	}-*/;
+																		element.value = value;
+																		}-*/;
 
 	private InputElement getInputElement() {
 		return getElement().cast();

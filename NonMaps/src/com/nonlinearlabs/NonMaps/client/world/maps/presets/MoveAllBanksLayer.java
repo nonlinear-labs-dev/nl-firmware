@@ -31,7 +31,8 @@ public class MoveAllBanksLayer extends MapsControl {
 		double twoMM = Millimeter.toPixels(2);
 		Rect minRect = getPixRect().copy();
 		minRect.applyPadding(-twoMM, -twoMM, -twoMM, -twoMM);
-		minRect.drawRoundedArea(ctx, twoMM, Millimeter.toPixels(0.1), new RGBA(255, 255, 255, 0.25), new RGB(255, 255, 255));
+		minRect.drawRoundedArea(ctx, twoMM, Millimeter.toPixels(0.1), new RGBA(255, 255, 255, 0.25),
+				new RGB(255, 255, 255));
 	}
 
 	@Override

@@ -26,17 +26,15 @@ public class PresetBeltLayouterL extends PresetBeltLayouter {
 
 		layout.autoLoad.doLayout(right - autoLoadWidth, 0, autoLoadWidth, h);
 		right -= autoLoadWidth + margin;
-				
+
 		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth,
 				currentPresetHeight);
 
 		right -= currentPresetWidth + margin;
-		
 
-		
 		layout.load.doLayout(right, 0, h);
 		right -= layout.load.getRelativePosition().getWidth() + margin;
-		
+
 		double bankWidth = right - left;
 		if (bankWidth < getMinBankControlWidth())
 			return false;
@@ -48,7 +46,6 @@ public class PresetBeltLayouterL extends PresetBeltLayouter {
 		right += layout.load.getRelativePosition().getWidth() + margin;
 		layout.currentPreset.getRelativePosition().moveTo(right, layout.currentPreset.getRelativePosition().getTop());
 		right += layout.currentPreset.getRelativePosition().getWidth() / 2 - Millimeter.toPixels(5);
-
 
 		super.layoutLockSymbol(w);
 		return true;

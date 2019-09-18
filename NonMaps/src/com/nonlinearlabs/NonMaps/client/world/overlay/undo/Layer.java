@@ -122,7 +122,8 @@ public class Layer {
 	}
 
 	public double getX(UndoTransaction undoTransaction) {
-		double x = UndoTransaction.getSpaceBetweenEntries() + (layers.getMaxLayerWidth() - getLayerWidth(layers.getContext())) / 2;
+		double x = UndoTransaction.getSpaceBetweenEntries()
+				+ (layers.getMaxLayerWidth() - getLayerWidth(layers.getContext())) / 2;
 
 		for (UndoTransaction u : elements) {
 			if (u == undoTransaction)

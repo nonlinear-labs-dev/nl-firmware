@@ -19,7 +19,7 @@ public class EditorModeButton extends SVGImage {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		if(isChanged()) {
+		if (isChanged()) {
 			Rect pixrect = getPixRect().copy();
 			pixrect.moveBy(1, 0);
 			pixrect.reduceHeightBy(-2);
@@ -30,13 +30,13 @@ public class EditorModeButton extends SVGImage {
 
 	private boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if(bpm instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter)bpm;
+		if (bpm instanceof ModulateableParameter) {
+			ModulateableParameter modP = (ModulateableParameter) bpm;
 			return modP.isModAmountChanged() || modP.isModSourceChanged() || modP.isMCPosChanged();
 		}
 		return false;
 	}
-	
+
 	@Override
 	public BeltParameterLayout getParent() {
 		return (BeltParameterLayout) super.getParent();
@@ -67,8 +67,9 @@ public class EditorModeButton extends SVGImage {
 	}
 
 	private boolean isActive() {
-		return getParent().isOneOf(BeltParameterLayout.Mode.mcValue, BeltParameterLayout.Mode.mcAmount, BeltParameterLayout.Mode.mcSource,
-				BeltParameterLayout.Mode.paramValue, BeltParameterLayout.Mode.mcLower, BeltParameterLayout.Mode.mcUpper);
+		return getParent().isOneOf(BeltParameterLayout.Mode.mcValue, BeltParameterLayout.Mode.mcAmount,
+				BeltParameterLayout.Mode.mcSource, BeltParameterLayout.Mode.paramValue,
+				BeltParameterLayout.Mode.mcLower, BeltParameterLayout.Mode.mcUpper);
 	}
 
 	@Override

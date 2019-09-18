@@ -31,10 +31,12 @@ public class PresetContextMenu extends ContextMenu {
 		this.preset = preset;
 		final PresetManager pm = preset.getParent().getParent();
 		final boolean hasMultipleSelection = pm.hasMultiplePresetSelection();
-		final boolean multipleSelectionAllowed = Setup.get().localSettings.presetDragDrop.getValue() == BooleanValues.on;
+		final boolean multipleSelectionAllowed = Setup.get().localSettings.presetDragDrop
+				.getValue() == BooleanValues.on;
 
 		if (multipleSelectionAllowed) {
-			addChild(new ContextMenuItem(this, pm.hasMultiplePresetSelection() ? "Disable Multiple Selection" : "Start Multiple Selection") {
+			addChild(new ContextMenuItem(this,
+					pm.hasMultiplePresetSelection() ? "Disable Multiple Selection" : "Start Multiple Selection") {
 				@Override
 				public Control click(Position eventPoint) {
 					if (pm.hasMultiplePresetSelection())
@@ -93,12 +95,11 @@ public class PresetContextMenu extends ContextMenu {
 					}
 				});
 			}
-		}
-		else {
+		} else {
 			addChild(new PresetContextMenuItem(this, "Copy") {
 				@Override
 				public Control click(Position eventPoint) {
-					getNonMaps().getServerProxy().copyPresets(pm.getMultiSelection().getCSV());				
+					getNonMaps().getServerProxy().copyPresets(pm.getMultiSelection().getCSV());
 					return super.click(eventPoint);
 				}
 			});
@@ -143,7 +144,7 @@ public class PresetContextMenu extends ContextMenu {
 			}
 		});
 	}
-	
+
 	protected Position calcColorMenuPosition(TwoPartContextMenuItem item) {
 		double bottom = item.getPixRect().getBottom();
 		double right = item.getPixRect().getRight() + 5;
@@ -154,13 +155,13 @@ public class PresetContextMenu extends ContextMenu {
 	public static void deletePresetWithBankModal(boolean hasMultipleSelection, PresetManager pm, Preset preset) {
 		if (hasMultipleSelection) {
 			String csv = pm.getMultiSelection().getCSV();
-			if(pm.getMultiSelection().selectionContainsSolePresets()) {
+			if (pm.getMultiSelection().selectionContainsSolePresets()) {
 				PresetDeleter.open(csv);
 			} else {
 				NonMaps.get().getServerProxy().deletePresets(csv, false);
 			}
 		} else {
-			if(preset.getParent().getPresetList().getPresetCount() == 1)
+			if (preset.getParent().getPresetList().getPresetCount() == 1)
 				PresetDeleter.open(preset);
 			else
 				NonMaps.get().getServerProxy().deletePreset(preset, false);

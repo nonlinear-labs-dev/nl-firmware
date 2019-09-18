@@ -54,10 +54,10 @@ class NextPreset extends SVGImage {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 
 		Bank b = pm.findBank(pm.getSelectedBank());
-		if(b != null)
-			if(b.getPresetList().getPresetCount() == 0)
+		if (b != null)
+			if (b.getPresetList().getPresetCount() == 0)
 				return drawStates.disabled.ordinal();
-		
+
 		if (!pm.canNext())
 			return drawStates.disabled.ordinal();
 

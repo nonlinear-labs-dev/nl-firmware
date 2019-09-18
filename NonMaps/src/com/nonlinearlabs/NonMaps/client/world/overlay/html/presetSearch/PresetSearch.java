@@ -70,7 +70,7 @@ public class PresetSearch extends Composite {
 		zoomToAllMatches.addClickHandler(b -> getUseCases().toggleZoomToAllMatches());
 
 		loadPreset.addClickHandler(b -> getUseCases().toggleLoadPreset());
-		
+
 		prev.addClickHandler(b -> getUseCases().highlightPrev());
 		next.addClickHandler(b -> getUseCases().highlightNext());
 

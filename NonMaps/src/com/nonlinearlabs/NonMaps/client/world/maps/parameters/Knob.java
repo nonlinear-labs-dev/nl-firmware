@@ -73,14 +73,17 @@ abstract class Knob extends ModulateableValueControl {
 		ctx.stroke();
 	}
 
-	protected void drawHighlitArea(Context2d ctx, Position center, double endAngleValue, double startAngleValue, double value) {
+	protected void drawHighlitArea(Context2d ctx, Position center, double endAngleValue, double startAngleValue,
+			double value) {
 		boolean arcDirection = value < 0;
 		ctx.beginPath();
 		ctx.setStrokeStyle(getColorObjectContour().toString());
 		ctx.setLineWidth(toXPixels(0.5));
 		ctx.setFillStyle(getColorSliderHighlight().toString());
-		ctx.arc(center.getX(), center.getY(), toXPixels(getOuterRadius()), startAngleValue, endAngleValue, arcDirection);
-		ctx.arc(center.getX(), center.getY(), toXPixels(getInnerRadius()), endAngleValue, startAngleValue, !arcDirection);
+		ctx.arc(center.getX(), center.getY(), toXPixels(getOuterRadius()), startAngleValue, endAngleValue,
+				arcDirection);
+		ctx.arc(center.getX(), center.getY(), toXPixels(getInnerRadius()), endAngleValue, startAngleValue,
+				!arcDirection);
 		ctx.closePath();
 		ctx.fill();
 		ctx.stroke();

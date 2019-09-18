@@ -129,8 +129,8 @@ public class ParameterValueSlider extends OverlayControl {
 			return new Gray(230);
 
 		return getParent().getParent().isOneOf(BeltParameterLayout.Mode.unmodulateableParameter,
-				BeltParameterLayout.Mode.modulateableParameter, BeltParameterLayout.Mode.paramValue, BeltParameterLayout.Mode.mcSource) ? new Gray(
-				230) : new Gray(77);
+				BeltParameterLayout.Mode.modulateableParameter, BeltParameterLayout.Mode.paramValue,
+				BeltParameterLayout.Mode.mcSource) ? new Gray(230) : new Gray(77);
 	}
 
 	private void drawHandle(Context2d ctx, double value, boolean isBipolar) {

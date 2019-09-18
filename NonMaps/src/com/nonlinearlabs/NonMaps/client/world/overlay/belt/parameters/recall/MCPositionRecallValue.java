@@ -15,22 +15,22 @@ public class MCPositionRecallValue extends RecallValue {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		
-		if(!isActive())
+
+		if (!isActive())
 			return "";
-		
+
 		EditBufferModel eb = EditBufferModel.get();
 		BasicParameterModel bpm = eb.getSelectedParameter();
-		
-		if(bpm instanceof ModulateableParameter) {
-			int mcParamID = ((ModulateableParameter)bpm).mcParameterID.getValue();
-			
+
+		if (bpm instanceof ModulateableParameter) {
+			int mcParamID = ((ModulateableParameter) bpm).mcParameterID.getValue();
+
 			BasicParameterModel mc = eb.findParameter(mcParamID);
 			Parameter mcparam = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(mcParamID);
-			
+
 			return mcparam.getDecoratedValue(true, mc.originalValue.getValue());
 		}
-		
+
 		return "";
 	}
 

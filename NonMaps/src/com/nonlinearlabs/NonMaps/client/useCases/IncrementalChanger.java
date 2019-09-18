@@ -20,7 +20,8 @@ public class IncrementalChanger {
 	}
 
 	public double getQuantizedValue(double v, boolean fine) {
-		double steps = fine ? this.theValue.metaData.fineDenominator.getValue() : this.theValue.metaData.coarseDenominator.getValue();
+		double steps = fine ? this.theValue.metaData.fineDenominator.getValue()
+				: this.theValue.metaData.coarseDenominator.getValue();
 		v *= steps;
 		v = Math.round(v);
 		return v / steps;
@@ -46,7 +47,8 @@ public class IncrementalChanger {
 			amount *= 2;
 
 		if (fine)
-			amount = amount * this.theValue.metaData.coarseDenominator.getValue() / this.theValue.metaData.fineDenominator.getValue();
+			amount = amount * this.theValue.metaData.coarseDenominator.getValue()
+					/ this.theValue.metaData.fineDenominator.getValue();
 
 		pendingAmount += amount;
 

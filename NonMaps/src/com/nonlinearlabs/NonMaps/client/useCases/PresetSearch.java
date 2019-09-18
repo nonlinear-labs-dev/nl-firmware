@@ -25,7 +25,7 @@ public class PresetSearch {
 	public static PresetSearch get() {
 		return theSearch;
 	}
-	
+
 	public void toggleLoadPreset() {
 		getModel().loadPreset.setValue(!getModel().loadPreset.getBool());
 		refresh();

@@ -196,7 +196,8 @@ class PrevNextButtons extends LayoutResizingHorizontal {
 	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
 		prev.setNonSize(parentsWidthFromFirstPass / 2, getNonPosition().getHeight());
 		next.setNonSize(parentsWidthFromFirstPass / 2, getNonPosition().getHeight());
-		next.getNonPosition().setPosition(new NonPosition(prev.getNonPosition().getRight(), prev.getNonPosition().getTop()));
+		next.getNonPosition()
+				.setPosition(new NonPosition(prev.getNonPosition().getRight(), prev.getNonPosition().getTop()));
 		setNonSize(parentsWidthFromFirstPass, getNonPosition().getHeight());
 	}
 

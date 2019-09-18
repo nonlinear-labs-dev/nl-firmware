@@ -59,12 +59,12 @@ public abstract class SVGImage extends OverlayControl {
 	}
 
 	private static native String base64Encode(String v) /*-{
-		return btoa(v);
-	}-*/;
+														return btoa(v);
+														}-*/;
 
 	private static native String base64Decode(String v) /*-{
-		return atob(v);
-	}-*/;
+														return atob(v);
+														}-*/;
 
 	@Override
 	public void calcPixRect(Position parentsReference, double currentZoom) {

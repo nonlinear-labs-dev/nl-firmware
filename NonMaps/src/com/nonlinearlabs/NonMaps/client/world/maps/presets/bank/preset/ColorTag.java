@@ -11,7 +11,7 @@ public class ColorTag extends ZoomReactingControl {
 
 	public enum Color {
 		green, blue, yellow, orange, purple, red, none;
-		
+
 		public RGB toRGB() {
 			switch (this) {
 			case green:
@@ -31,9 +31,9 @@ public class ColorTag extends ZoomReactingControl {
 				return new RGBA(0, 0, 0, 0);
 			}
 		}
-		
+
 		static public Color toEnum(String s) {
-			if(s == "")
+			if (s == "")
 				return none;
 			else
 				return Color.valueOf(s);

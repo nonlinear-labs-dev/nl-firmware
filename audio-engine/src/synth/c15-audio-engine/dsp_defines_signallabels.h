@@ -16,19 +16,19 @@ enum class Signals
   Invalid = -1,
   Unused = 16383,
 
-  ENV_A_MAG = 0,   // Envelope A (magnitude component)
-  ENV_A_TMB,   // Envelope A (timbre component)
-  ENV_B_MAG,   // Envelope B (magnitude component)
-  ENV_B_TMB,   // Envelope B (timbre component)
-  ENV_C_CLIP,  // Envelope C (clipped)
-  ENV_C_UNCL,  // Envelope C (unclipped)
-  ENV_G_SIG,   // Gate Envelope
+  ENV_A_MAG = 0,  // Envelope A (magnitude component)
+  ENV_A_TMB,      // Envelope A (timbre component)
+  ENV_B_MAG,      // Envelope B (magnitude component)
+  ENV_B_TMB,      // Envelope B (timbre component)
+  ENV_C_CLIP,     // Envelope C (clipped)
+  ENV_C_UNCL,     // Envelope C (unclipped)
+  ENV_G_SIG,      // Gate Envelope
 
   /* Oscillator A Signals             -- polyphonic */
 
   OSC_A_FRQ,  // Oscillator A Frequency (Pitch, Pitch KT, Pitch Env C Amount, Env C, Master Tune, Reference, Key Pitch)
-  OSC_A_FLUEC,   // Oscillator A Fluctuation (Amount, Env C Amount, Env C)
-  OSC_A_PMSEA,   // Oscillator A PM Self (Amount, Env A Amount, Env A)
+  OSC_A_FLUEC,  // Oscillator A Fluctuation (Amount, Env C Amount, Env C)
+  OSC_A_PMSEA,  // Oscillator A PM Self (Amount, Env A Amount, Env A)
   OSC_A_PMSSH,  // Oscillator A PM Self Shaper (Amount)
   OSC_A_PMBEB,  // Oscillator A PM B (Amount, Env B Amount, Env B)
   OSC_A_PMBSH,  // Oscillator A PM B Shaper (Amount)
@@ -90,15 +90,15 @@ enum class Signals
   SVF_F1_FM,  // SVF Upper Filter FM Amount (Cutoff, Cutoff KT, Cutoff Env C Amount, Env C, Spread, FM, Master Tune, Reference, Key Pitch)
   SVF_F2_FM,  // SVF Lower Filter FM Amount (Cutoff, Cutoff KT, Cutoff Env C Amount, Env C, Spread, FM, Master Tune, Reference, Key Pitch)
   SVF_RES,    // SVF Resonance (old) (Resonance, Res KT, Res Env C Amount, Env C, Master Tune, Key Pitch)
-  SVF_RES_DAMP,    // SVF Resonance (new) - damp factor (derived from res in param engine)
-  SVF_RES_FMAX,    // SVF Resonance (new) - freq maximum (derived from res in param engine)
-  SVF_LBH_1,  // SVF Upper LBH Mix (Amount)
-  SVF_LBH_2,  // SVF Lower LBH Mix (Amount)
-  SVF_PAR_1,  // SVF Parallel Amount 1 (Amount)
-  SVF_PAR_2,  // SVF Parallel Amount 2 (Amount)
-  SVF_PAR_3,  // SVF Parallel Amount 3 (Amount)
-  SVF_PAR_4,  // SVF Parallel Amount 4 (Amount)
-  SVF_FMAB,   // SVF FM AB Mix (Amount)
+  SVF_RES_DAMP,  // SVF Resonance (new) - damp factor (derived from res in param engine)
+  SVF_RES_FMAX,  // SVF Resonance (new) - freq maximum (derived from res in param engine)
+  SVF_LBH_1,     // SVF Upper LBH Mix (Amount)
+  SVF_LBH_2,     // SVF Lower LBH Mix (Amount)
+  SVF_PAR_1,     // SVF Parallel Amount 1 (Amount)
+  SVF_PAR_2,     // SVF Parallel Amount 2 (Amount)
+  SVF_PAR_3,     // SVF Parallel Amount 3 (Amount)
+  SVF_PAR_4,     // SVF Parallel Amount 4 (Amount)
+  SVF_FMAB,      // SVF FM AB Mix (Amount)
 
   /* Feedback Mixer Signals           -- polyphonic */
 
@@ -142,12 +142,12 @@ enum class Signals
 
   /* Gap Filter Signals               -- monophonic */
 
-  GAP_LFL,     // Gap Filter Left Lowpass Frequency (Center, Stereo, Gap)
-  GAP_HFL,     // Gap Filter Left Highpass Frequency (Center, Stereo, Gap)
-  GAP_LFR,     // Gap Filter Right Lowpass Frequency (Center, Stereo, Gap)
-  GAP_HFR,     // Gap Filter Right Highpass Frequency (Center, Stereo, Gap)
-  GAP_RES,     // Gap Filter Resonance (Amount)
-  GAP_HPLP,    // Gap Filter Highpass to Lowpass Amount (Balance, Mix)
+  GAP_LFL,    // Gap Filter Left Lowpass Frequency (Center, Stereo, Gap)
+  GAP_HFL,    // Gap Filter Left Highpass Frequency (Center, Stereo, Gap)
+  GAP_LFR,    // Gap Filter Right Lowpass Frequency (Center, Stereo, Gap)
+  GAP_HFR,    // Gap Filter Right Highpass Frequency (Center, Stereo, Gap)
+  GAP_RES,    // Gap Filter Resonance (Amount)
+  GAP_HPLP,   // Gap Filter Highpass to Lowpass Amount (Balance, Mix)
   GAP_INLP,   // Gap Filter Input to Lowpass Amount (Balance, Mix)
   GAP_HPOUT,  // Gap Filter Highpass to Output Amount (Balance, Mix)
   GAP_LPOUT,  // Gap Filter Lowpass to Output Amount (Balance, Mix)

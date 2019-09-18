@@ -33,8 +33,10 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			boolean isAnyParameterLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked();
-			boolean areAllParametersLocked = NonMaps.get().getNonLinearWorld().getParameterEditor().areAllParametersLocked();
+			boolean isAnyParameterLocked = NonMaps.get().getNonLinearWorld().getParameterEditor()
+					.isAnyParameterLocked();
+			boolean areAllParametersLocked = NonMaps.get().getNonLinearWorld().getParameterEditor()
+					.areAllParametersLocked();
 
 			if (!areAllParametersLocked) {
 				addChild(new ContextMenuItem(this, "Lock all Groups") {
@@ -99,9 +101,11 @@ public class LabelModuleHeader extends LabelSmall {
 		super.draw(ctx, invalidationMask);
 
 		if (isLocked())
-			ctx.fillText(getLockSymbol(), pixRect.getRight() - ctx.measureText(getLockSymbol()).getWidth() * getLockSymbolOffsetFactor(), pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
+			ctx.fillText(getLockSymbol(),
+					pixRect.getRight() - ctx.measureText(getLockSymbol()).getWidth() * getLockSymbolOffsetFactor(),
+					pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 	}
-	
+
 	protected String getLockSymbol() {
 		return "\ue20A";
 	}
@@ -109,7 +113,7 @@ public class LabelModuleHeader extends LabelSmall {
 	protected float getLockSymbolOffsetFactor() {
 		return (float) 1;
 	}
-	
+
 	@Override
 	protected double getFontHeight() {
 		return 16;
@@ -147,7 +151,7 @@ public class LabelModuleHeader extends LabelSmall {
 	public void resetScaling() {
 		NonMaps.get().getServerProxy().resetScaling();
 	}
-	
+
 	@Override
 	public Control onContextMenu(Position pos) {
 		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
