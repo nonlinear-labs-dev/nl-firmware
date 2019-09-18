@@ -23,6 +23,8 @@ class NoteShift : public Setting
   void incOctave();
   void decOctave();
 
+  ustring getDisplayString() const override;
+
  private:
   NoteShift(const NoteShift& other) = delete;
   NoteShift& operator=(const NoteShift&) = delete;

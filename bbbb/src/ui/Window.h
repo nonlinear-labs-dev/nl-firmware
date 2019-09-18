@@ -3,6 +3,7 @@
 #ifdef _DEVELOPMENT_PC
 
 #include <gtkmm-3.0/gtkmm.h>
+#include "Boled.h"
 #include "PanelUnit.h"
 #include "PlayPanel.h"
 #include "Ribbon.h"

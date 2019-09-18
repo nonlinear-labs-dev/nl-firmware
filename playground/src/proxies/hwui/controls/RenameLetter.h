@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LabelRegular8.h"
+#include <proxies/hwui/buttons.h>
 
 class TextEditUsageMode;
 
@@ -10,7 +11,7 @@ class RenameLetter : public LabelRegular8
   typedef LabelRegular8 super;
 
  public:
-  RenameLetter(std::shared_ptr<TextEditUsageMode> mode, int buttonID, const Rect &pos);
+  RenameLetter(std::shared_ptr<TextEditUsageMode> mode, Buttons buttonID, const Rect &pos);
 
   StringAndSuffix getText() const override;
   bool redraw(FrameBuffer &fb) override;
@@ -20,5 +21,5 @@ class RenameLetter : public LabelRegular8
   bool highlightLetter() const;
 
   std::shared_ptr<TextEditUsageMode> m_mode;
-  int m_buttonID;
+  Buttons m_buttonID;
 };

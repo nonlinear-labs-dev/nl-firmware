@@ -1,6 +1,7 @@
 #include "Options.h"
 #include <glibmm/optiongroup.h>
 #include "device-settings/DebugLevel.h"
+#include "Application.h"
 
 Options::Options(int &argc, char **&argv)
     : m_selfPath(argv[0])
@@ -16,6 +17,13 @@ Options::Options(int &argc, char **&argv)
   pmPath.set_short_name('p');
   pmPath.set_description("Name of the folder that stores preset-managers banks as XML files");
   mainGroup.add_entry_filename(pmPath, sigc::mem_fun(this, &Options::setPMPathName));
+
+  OptionEntry layoutPath;
+  layoutPath.set_flags(OptionEntry::FLAG_FILENAME);
+  layoutPath.set_long_name("layouts");
+  layoutPath.set_short_name('l');
+  layoutPath.set_description("name of the folder containing the styles, controls and layouts");
+  mainGroup.add_entry_filename(layoutPath, sigc::mem_fun(this, &Options::setLayoutFolder));
 
   OptionEntry bbbb;
   bbbb.set_long_name("bbbb-host");
@@ -52,6 +60,12 @@ void Options::setDefaults()
 
   m_settingsFile = "./settings.xml";
   m_kioskModeFile = "./kiosk-mode.stamp";
+
+  Glib::ustring p = m_selfPath;
+  size_t lastSlash = p.rfind('/');
+  Glib::ustring path = "/resources/Templates/";
+  p = p.substr(0, lastSlash) + path;
+  m_layoutFolder = p;
 }
 
 bool Options::makePresetManagerDirectory(Glib::RefPtr<Gio::File> file)
@@ -74,39 +88,45 @@ bool Options::setPMPathName(const Glib::ustring &optionName, const Glib::ustring
   return true;
 }
 
-Glib::ustring Options::getPresetManagerPath() const
+bool Options::setLayoutFolder(const Glib::ustring &optionName, const Glib::ustring &path, bool hasValue)
+{
+  if(hasValue)
+    m_layoutFolder = path;
+
+  return true;
+}
+
+const ustring &Options::getPresetManagerPath() const
 {
   return m_pmPath;
 }
 
-Glib::ustring Options::getBBBB() const
+const ustring &Options::getBBBB() const
 {
   return m_bbbb;
 }
 
-ustring Options::getAudioEngineHost() const
+const ustring &Options::getAudioEngineHost() const
 {
   return m_audioEngineHost;
 }
 
-Glib::ustring Options::getSelfPath() const
+const ustring &Options::getSelfPath() const
 {
   return m_selfPath;
 }
 
-Glib::ustring Options::getSettingsFile() const
+const ustring &Options::getSettingsFile() const
 {
   return m_settingsFile;
 }
 
-Glib::ustring Options::getKioskModeFile() const
+const ustring &Options::getKioskModeFile() const
 {
   return m_kioskModeFile;
 }
 
-Glib::ustring Options::getHardwareTestsFolder() const
+const ustring &Options::getLayoutFolder() const
 {
-  const char *folder = "/home/hhoegelo/hw_tests-binaries";
-  //const char *folder = "/nonlinear/hw_tests-binaries";
-  return folder;
+  return m_layoutFolder;
 }

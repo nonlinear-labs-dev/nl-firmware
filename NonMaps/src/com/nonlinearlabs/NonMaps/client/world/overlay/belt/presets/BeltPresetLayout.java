@@ -95,5 +95,4 @@ public class BeltPresetLayout extends OverlayLayout {
 	public boolean isDirectLoadActive() {
 		return autoLoad.isDirectLoadActive();
 	}
-
 }

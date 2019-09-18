@@ -1,0 +1,25 @@
+{
+  "layouts": {
+    "Single-Sound-Edit-Layout": {
+      "Selector": {
+        "UIFocus": "Sound",
+        "UIMode": "Edit",
+        "UIDetail": "Init"
+      },
+      "Conditions": [
+        "isSingleSound"
+      ],
+      "Controls": {
+        "Border": {
+          "Class": "SoundEditBorder",
+          "Position": "0, 0",
+          "Events": "SoundEditHeading => Text[Text]"
+        },
+        "Content": {
+          "Class": "SingleSoundEditMenu",
+          "Position": "1, 11"
+        }
+      }
+    }
+  }
+}

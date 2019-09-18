@@ -4,6 +4,7 @@
 #include "TestDriver.h"
 #include <glib.h>
 #include <nltools/threading/Expiration.h>
+#include <assert.h>
 
 struct MessagingTests
 {
@@ -108,7 +109,7 @@ struct MessagingTests
       Configuration conf{ { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
       nltools::msg::init(conf);
       auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
-      doMainLoop(0s, 1s, [&] { return received; });
+      doMainLoop(0s, 5s, [&] { return received; });
       c.disconnect();
     });
   }

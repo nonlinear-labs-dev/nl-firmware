@@ -12,13 +12,14 @@ class Button : public LabelRegular8
 
  public:
   Button(const Glib::ustring &caption, int buttonID);
+  Button(const Glib::ustring &caption, Buttons button);
   Button(const Glib::ustring &caption, const Rect &rect);
   virtual ~Button();
 
   bool redraw(FrameBuffer &fb) override;
   void blind(bool b);
 
-  static Rect getButtonPos(int n);
+  static Rect getButtonPos(Buttons n);
 
  protected:
   void setFontColor(FrameBuffer &fb) const override;

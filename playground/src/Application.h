@@ -10,7 +10,6 @@ class LPCProxy;
 class AudioEngineProxy;
 class HWUI;
 class Options;
-class HWTests;
 class UndoScope;
 class Settings;
 class EmbeddedPC;
@@ -35,7 +34,6 @@ class Application
   const Options *getOptions() const;
   LPCProxy *getLPCProxy() const;
   AudioEngineProxy *getAudioEngineProxy() const;
-  HWTests *getHWTests();
   HWUI *getHWUI();
   const HWUI *getHWUI() const;
   UndoScope *getUndoScope();
@@ -64,7 +62,6 @@ class Application
   std::unique_ptr<LPCProxy> m_lpcProxy;
   std::unique_ptr<AudioEngineProxy> m_audioEngineProxy;
   std::unique_ptr<HWUI> m_hwui;
-  std::unique_ptr<HWTests> m_hwtests;
 
   std::unique_ptr<WatchDog> m_watchDog;
   std::unique_ptr<WatchDog> m_aggroWatchDog;

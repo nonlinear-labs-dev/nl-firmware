@@ -141,11 +141,9 @@ void Clipboard::copyPresets(const Glib::ustring &csv)
   m_currentContentWasCut = false;
   m_content.reset(new MultiplePresetSelection(getParent()));
 
-  auto uuids = StringTools::splitStringOnAnyDelimiter(csv, ',');
-
   auto mulPresetSelection = static_cast<MultiplePresetSelection *>(m_content.get());
 
-  for(auto uuid : uuids)
+  for(const auto &uuid : StringTools::splitStringOnAnyDelimiter(csv, ','))
   {
     if(auto preset = pm->findPreset(uuid))
     {
@@ -158,6 +156,7 @@ void Clipboard::copyPresets(const Glib::ustring &csv)
 bool Clipboard::copyPreset(const Uuid &presetUuid)
 {
   auto pm = Application::get().getPresetManager();
+
   if(auto preset = pm->findPreset(presetUuid))
   {
     m_currentContentWasCut = false;
@@ -299,7 +298,6 @@ void Clipboard::pastePresetOnBank(const Uuid &bankUuid)
     {
       auto scope = getUndoScope().startTransaction("Paste Preset");
       auto transaction = scope->getTransaction();
-
       auto source = dynamic_cast<const Preset *>(m_content.get());
       target->appendPreset(transaction, std::make_unique<Preset>(target, *source, true));
       doCut(transaction);
@@ -351,7 +349,6 @@ void Clipboard::pastePresetOnPreset(const Uuid &presetUuid)
       auto newPreset = std::make_unique<Preset>(targetBank, *source, true);
       auto newPresetPtr = targetBank->insertPreset(transaction, insertPos, std::move(newPreset));
       targetBank->selectPreset(transaction, newPresetPtr->getUuid());
-
       doCut(transaction);
     }
   }

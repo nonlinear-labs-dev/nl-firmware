@@ -2,6 +2,7 @@
 #include <io/FromEncoderBridge.h>
 #include <Application.h>
 #include <io/Bridges.h>
+#include <nltools/logging/Log.h>
 
 enum Buttons
 {
@@ -107,6 +108,7 @@ void PlayPanel::setFrameBuffer(const nltools::msg::SetOLEDMessage &msg)
 
 bool PlayPanel::onRotary(Gtk::ScrollType s, double v)
 {
+  nltools::Log::debug(__PRETTY_FUNCTION__, (int) s);
   auto b = Application::get().getBridges()->getBridge<FromEncoderBridge>();
   b->sendRotary(v);
   m_rotary.set_value(0);

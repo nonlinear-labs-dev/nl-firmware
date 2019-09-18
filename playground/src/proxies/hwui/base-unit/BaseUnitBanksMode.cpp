@@ -7,7 +7,7 @@ void BaseUnitBanksMode::setup()
 {
   super::setup();
 
-  setupButtonConnection(BUTTON_MINUS, [=](auto, auto, auto state) {
+  setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
     if(state)
       installButtonRepeat([] { Application::get().getPresetManager()->selectPreviousBank(); });
     else
@@ -16,7 +16,7 @@ void BaseUnitBanksMode::setup()
     return true;
   });
 
-  setupButtonConnection(BUTTON_PLUS, [=](auto, auto, auto state) {
+  setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
     if(state)
       installButtonRepeat([] { Application::get().getPresetManager()->selectNextBank(); });
     else

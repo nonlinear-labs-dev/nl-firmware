@@ -1,0 +1,40 @@
+{
+  "styles": {
+    "Default-Bar-Style": {
+      "selector": {
+        "PrimitiveClasses": "Bar"
+      },
+      "styles": {
+        "Color": "C128"
+      }
+    },
+    "Default-Border-Style": {
+      "selector": {
+        "PrimitiveClasses": "Border"
+      },
+      "styles": {
+        "Color": "C128"
+      }
+    },
+    "Default-Text-Style": {
+      "selector": {
+        "PrimitiveClasses": "Text"
+      },
+      "styles": {
+        "Color": "C128",
+        "BackgroundColor": "C43",
+        "TextAlign": "Center",
+        "FontSize": 8,
+        "FontDecoration": "Regular"
+      }
+    },
+    "Default-Circle-Style": {
+      "selector": {
+        "PrimitiveClasses": "Circle"
+      },
+      "styles": {
+        "Color": "C128"
+      }
+    }
+  }
+}

@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include "http/HTTPServer.h"
 #include "http/UndoScope.h"
-#include "hw-tests/HWTests.h"
 #include "Options.h"
 #include "presets/PresetManager.h"
 #include "profiling/Profiler.h"
@@ -19,7 +18,11 @@
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
+#include <assert.h>
+#include <proxies/hwui/debug-oled/DebugLayout.h>
+#include <tools/ExceptionTools.h>
 #include <nltools/messaging/Messaging.h>
+#include <device-settings/LayoutMode.h>
 
 Application *Application::theApp = nullptr;
 
@@ -31,9 +34,13 @@ void setupMessaging(const Options *options)
   auto ae = options->getAudioEngineHost();
 
   Configuration conf;
+#warning "adlerauge"
   conf.offerEndpoints = { EndPoint::Playground };
-  conf.useEndpoints = { { EndPoint::Playground }, { EndPoint::AudioEngine, ae }, { EndPoint::Lpc, bbbb },
-                        { EndPoint::Oled, bbbb }, { EndPoint::PanelLed, bbbb },  { EndPoint::RibbonLed, bbbb } };
+  conf.useEndpoints = { { EndPoint::Lpc, bbbb },
+                        { EndPoint::Oled, bbbb },
+                        { EndPoint::PanelLed, bbbb },
+                        { EndPoint::RibbonLed, bbbb },
+                        { EndPoint::AudioEngine } };
   nltools::msg::init(conf);
 }
 
@@ -60,7 +67,6 @@ Application::Application(int numArgs, char **argv)
     , m_lpcProxy(new LPCProxy())
     , m_audioEngineProxy(new AudioEngineProxy)
     , m_hwui(new HWUI())
-    , m_hwtests(new HWTests(m_http->getUpdateDocumentMaster()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
@@ -127,16 +133,28 @@ Glib::ustring Application::getResourcePath() const
 
 void Application::run()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__);
-  m_theMainLoop->run();
-  DebugLevel::warning(__PRETTY_FUNCTION__);
+  while(!m_isQuit)
+  {
+    DebugLevel::warning(__PRETTY_FUNCTION__);
+    m_theMainLoop->run();
+    DebugLevel::warning(__PRETTY_FUNCTION__);
+  }
 }
 
 void Application::quit()
 {
   DebugLevel::warning(__PRETTY_FUNCTION__);
-  m_isQuit = true;
-  m_theMainLoop->quit();
+#warning "adlerauge"
+  if(!m_isQuit)
+  {
+    m_isQuit = true;
+    m_theMainLoop->quit();
+  }
+  else
+  {
+    DebugLevel::warning("Application already quit!");
+    std::terminate();
+  }
   DebugLevel::warning(__PRETTY_FUNCTION__);
 }
 
@@ -217,11 +235,6 @@ AudioEngineProxy *Application::getAudioEngineProxy() const
 Settings *Application::getSettings()
 {
   return m_settings.get();
-}
-
-HWTests *Application::getHWTests()
-{
-  return m_hwtests.get();
 }
 
 HWUI *Application::getHWUI()

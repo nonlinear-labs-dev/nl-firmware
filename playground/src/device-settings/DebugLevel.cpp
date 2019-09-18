@@ -12,13 +12,12 @@ DebugLevel::DebugLevel(Settings &settings)
   DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
 }
 
-DebugLevel::~DebugLevel()
-{
-}
+DebugLevel::~DebugLevel() = default;
 
 bool DebugLevel::set(DebugLevels m)
 {
-  if(super::set(m))
+#warning "adlerauge"
+  if(super::forceset(m))
   {
     lastSetLevel = m;
     DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC, save());

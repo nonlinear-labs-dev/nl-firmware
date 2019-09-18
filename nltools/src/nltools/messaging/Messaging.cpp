@@ -2,6 +2,7 @@
 #include <nltools/messaging/websocket/WebSocketOutChannel.h>
 #include <nltools/messaging/websocket/WebSocketInChannel.h>
 #include <nltools/logging/Log.h>
+#include <nltools/ExceptionTools.h>
 #include <nltools/StringTools.h>
 #include <memory>
 #include <map>
@@ -28,7 +29,17 @@ namespace nltools
         gsize numBytes = 0;
         auto data = reinterpret_cast<const uint16_t *>(s->get_data(numBytes));
         auto type = static_cast<MessageType>(data[0]);
-        signals[std::make_pair(type, endPoint)](s);
+
+        try
+        {
+#warning "cleanup"
+          signals.at(std::make_pair(type, endPoint))(s);
+        }
+        catch(...)
+        {
+          if(type != MessageType::Ping)
+            nltools::Log::error("Could not find", toStringMessageType(type), "handler in", toStringEndPoint(endPoint));
+        }
       }
 
       static void createInChannels(const Configuration &conf)
@@ -59,10 +70,11 @@ namespace nltools
       static sigc::connection connectReceiver(MessageType type, EndPoint endPoint,
                                               std::function<void(const SerializedMessage &)> cb)
       {
-        return signals[std::make_pair(type, endPoint)].connect(cb);
+        auto ret = signals[std::make_pair(type, endPoint)].connect(cb);
+        return ret;
       }
 
-      void send(nltools::msg::EndPoint receiver, SerializedMessage msg)
+      void send(nltools::msg::EndPoint receiver, const SerializedMessage &msg)
       {
         outChannels.at(receiver)->send(msg);
       }

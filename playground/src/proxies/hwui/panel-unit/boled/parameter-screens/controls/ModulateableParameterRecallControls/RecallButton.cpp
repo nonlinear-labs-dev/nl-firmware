@@ -1,6 +1,7 @@
 #include "RecallButton.h"
 
-RecallButton::RecallButton(const Glib::ustring &caption, int buttonID)
+
+RecallButton::RecallButton(const Glib::ustring &caption, Buttons buttonID)
     : Button(caption, buttonID)
 {
 }

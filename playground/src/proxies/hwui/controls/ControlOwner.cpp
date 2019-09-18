@@ -1,14 +1,12 @@
 #include "ControlOwner.h"
 #include "Control.h"
 #include "Button.h"
+#include <Application.h>
+#include <device-settings/LayoutMode.h>
 
-ControlOwner::ControlOwner()
-{
-}
+ControlOwner::ControlOwner() = default;
 
-ControlOwner::~ControlOwner()
-{
-}
+ControlOwner::~ControlOwner() = default;
 
 const ControlOwner::tControls &ControlOwner::getControls() const
 {
@@ -17,7 +15,7 @@ const ControlOwner::tControls &ControlOwner::getControls() const
 
 bool ControlOwner::isDirty() const
 {
-  for(auto c : m_controls)
+  for(const auto &c : m_controls)
     if(c->isDirty())
       return true;
 
@@ -26,7 +24,7 @@ bool ControlOwner::isDirty() const
 
 void ControlOwner::setHighlight(bool isHighlight)
 {
-  for(auto c : m_controls)
+  for(const auto &c : m_controls)
     c->setHighlight(isHighlight);
 }
 
@@ -34,7 +32,7 @@ bool ControlOwner::redraw(FrameBuffer &fb)
 {
   bool didRedraw = false;
 
-  for(auto c : m_controls)
+  for(const auto &c : m_controls)
   {
     if(c->isDirty())
     {
@@ -76,20 +74,20 @@ void ControlOwner::clear()
 
 void ControlOwner::setAllDirty()
 {
-  for(auto c : m_controls)
+  for(const auto &c : m_controls)
     c->setDirty();
 }
 
-void ControlOwner::forEach(tIfCallback cb) const
+void ControlOwner::forEach(const tIfCallback &cb) const
 {
-  for(auto c : m_controls)
+  for(const auto &c : m_controls)
     if(!cb(c))
       return;
 }
 
-void ControlOwner::forEach(tCallback cb) const
+void ControlOwner::forEach(const tCallback &cb) const
 {
-  for(auto c : m_controls)
+  for(const auto &c : m_controls)
     cb(c);
 }
 
@@ -106,7 +104,7 @@ bool ControlOwner::isHighlight() const
   return false;
 }
 
-void ControlOwner::highlight(std::shared_ptr<Control> c)
+void ControlOwner::highlight(const std::shared_ptr<Control> &c)
 {
   c->setHighlight(true);
 }

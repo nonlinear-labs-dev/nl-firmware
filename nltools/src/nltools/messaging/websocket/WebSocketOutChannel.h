@@ -20,19 +20,21 @@ namespace nltools
       {
        public:
         WebSocketOutChannel(const std::string &targetMachine, guint port);
+
         ~WebSocketOutChannel() override;
 
         void send(const SerializedMessage &msg) override;
         bool waitForConnection(std::chrono::milliseconds timeOut) override;
         void onConnectionEstablished(std::function<void()> cb) override;
         bool isConnected() const override;
-
         void signalConnectionEstablished();
 
        private:
         void connect();
         void connectWebSocket(SoupWebsocketConnection *connection);
+
         static void onWebSocketConnected(SoupSession *session, GAsyncResult *res, WebSocketOutChannel *pThis);
+
         void reconnect();
         void backgroundThread();
         bool ping();

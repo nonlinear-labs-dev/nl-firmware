@@ -5,7 +5,6 @@
 #include "presets/EditBuffer.h"
 #include "Application.h"
 #include "http/HTTPServer.h"
-#include "hw-tests/HWTests.h"
 #include "SoupOutStream.h"
 #include "xml/XmlWriter.h"
 #include "NetworkRequest.h"
@@ -84,7 +83,6 @@ void ContentManager::init()
 void ContentManager::addContentSections()
 {
   addContentSection(static_cast<ContentSection *>(Application::get().getPresetManager()));
-  addContentSection(static_cast<ContentSection *>(Application::get().getHWTests()));
   addContentSection(static_cast<ContentSection *>(Application::get().getUndoScope()));
   addContentSection(static_cast<ContentSection *>(Application::get().getSettings()));
   addContentSection(static_cast<ContentSection *>(Application::get().getDeviceInformation()));

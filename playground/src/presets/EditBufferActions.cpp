@@ -224,10 +224,6 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 }
 
-EditBufferActions::~EditBufferActions()
-{
-}
-
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer)
 {
   auto paramGroup = editBuffer->getParameterGroupByID("Scale");

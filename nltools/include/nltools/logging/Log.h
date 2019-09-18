@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <initializer_list>
 #include <mutex>
 
 namespace nltools
@@ -62,7 +63,8 @@ namespace nltools
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void notify(const Args&... args)
     {
-      output<mode>("Notify: ", args...);
+      if(s_level <= Level::Notify)
+        output<mode>("Notify: ", args...);
     }
 
     static void flush()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <proxies/hwui/buttons.h>
 #include "Carousel.h"
 
 class Application;
@@ -18,6 +19,10 @@ class ParameterCarousel : public Carousel
   virtual void turn() override;
   virtual void antiTurn() override;
 
+  bool containsSelectedParameter() const;
+
+  void requestTurn();
+
  protected:
   virtual void setup(Parameter *selectedParameter) override;
 
@@ -25,6 +30,6 @@ class ParameterCarousel : public Carousel
   ParameterCarousel(const ParameterCarousel &other);
   ParameterCarousel &operator=(const ParameterCarousel &);
   void setupChildControls(const std::shared_ptr<PanelUnitParameterEditMode> &edit, Parameter *selectedParameter,
-                          int button);
+                          Buttons button);
   void setupChildControls(Parameter *selectedParameter, const std::__cxx11::list<int> &buttonAssignments);
 };

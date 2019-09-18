@@ -53,7 +53,7 @@ class DebugLevel : public EnumSetting<DebugLevels>
 
  public:
   DebugLevel(Settings& settings);
-  virtual ~DebugLevel();
+  ~DebugLevel() override;
 
   bool set(DebugLevels m) override;
 
@@ -84,10 +84,56 @@ class DebugLevel : public EnumSetting<DebugLevels>
     nltools::Log::error(args...);
   }
 
+  template <typename... tArgs> static void throwException(const tArgs&... args)
+  {
+    auto str = concat(args...);
+    throw std::runtime_error(str);
+  }
+
  private:
   DebugLevel(const DebugLevel& other);
   DebugLevel& operator=(const DebugLevel&);
 
   const std::vector<Glib::ustring>& enumToString() const override;
   const std::vector<Glib::ustring>& enumToDisplayString() const override;
+
+  template <typename... tArgs> static std::string concat(tArgs&... args)
+  {
+    std::stringstream str;
+    (void) std::initializer_list<bool>{ (str << args << " ", false)... };
+    return str.str();
+  }
+
+  template <typename... tArgs> static void printTrace(DebugLevels level, tArgs&... args)
+  {
+    std::stringstream str;
+    str << level << " ";
+    printTrace(str, args...);
+  }
+
+  template <typename tFirst, typename... tArgs>
+  static void printTrace(std::stringstream& str, const tFirst& first, const tArgs&... args)
+  {
+    str << first << " ";
+    printTrace(str, args...);
+  }
+
+  template <typename tFirst> static void printTrace(std::stringstream& str, const tFirst& first)
+  {
+    str << first;
+    g_printerr("%8" G_GUINT64_FORMAT ": %s\n", getTimestamp(), str.str().c_str());
+  }
+
+  static uint64_t getTimestamp()
+  {
+    static uint64_t epoch = getCurrentMilliseconds();
+    return getCurrentMilliseconds() - epoch;
+  }
+
+  static uint64_t getCurrentMilliseconds()
+  {
+    struct timeval spec;
+    gettimeofday(&spec, nullptr);
+    return spec.tv_sec * 1000 + spec.tv_usec / 1000;
+  }
 };

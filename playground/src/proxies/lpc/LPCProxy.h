@@ -38,7 +38,8 @@ enum LPCSettingIDs
   PEDAL_4_MODE = 8,
   RIBBON_REL_FACTOR = 9,  // ==> tTcdRange(256, 2560)
   // obsolete LOWER_RIBBON_REL_FACTOR = 10, // ==> tTcdRange(256, 2560)
-  VELOCITY_CURVE = 11,   // ==> VERY_SOFT = 0, SOFT = 1, NORMAL = 2, HARD = 3, VERY_HARD = 4
+  VELOCITY_CURVE = 11,  // ==> VERY_SOFT = 0, SOFT = 1, NORMAL = 2, HARD = 3, VERY_HARD = 4
+
   TRANSITION_TIME = 12,  // ==> tTcdRange(0, 16000)
 
   PEDAL_1_TYPE = 26,  // ==> PotTipActive = 0

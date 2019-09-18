@@ -17,10 +17,10 @@ class FileDialogLayout : public DFBLayout
   typedef std::function<bool(std::experimental::filesystem::directory_entry)> tFilterFunction;
 
  public:
-  FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header);
-  virtual ~FileDialogLayout();
+  FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, const std::string& header);
+  ~FileDialogLayout() override;
 
-  bool onButton(int i, bool down, ButtonModifiers modifiers) override;
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   bool onRotary(int inc, ButtonModifiers modifiers) override;
 
   std::experimental::filesystem::directory_entry getSelectedFile();
@@ -32,7 +32,6 @@ class FileDialogLayout : public DFBLayout
   int fileCount = 0;
   FileListControl* fileList = nullptr;
   Label* positionLabel = nullptr;
-
   InvertedLabel* headerLabel = nullptr;
   tCallBackFunction commitFunction;
   FileCrawlerJob crawler;

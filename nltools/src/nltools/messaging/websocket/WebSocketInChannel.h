@@ -6,8 +6,6 @@
 #include <libsoup/soup.h>
 #include <memory>
 #include <thread>
-#include <atomic>
-#include <condition_variable>
 
 namespace nltools
 {
@@ -15,7 +13,6 @@ namespace nltools
   {
     namespace ws
     {
-
       class WebSocketInChannel : public InChannel
       {
        public:
@@ -24,6 +21,7 @@ namespace nltools
 
        private:
         void backgroundThread();
+
         static void webSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
                               SoupClientContext *client, WebSocketInChannel *pThis);
         static void receiveMessage(SoupWebsocketConnection *, gint, GBytes *message, WebSocketInChannel *pThis);

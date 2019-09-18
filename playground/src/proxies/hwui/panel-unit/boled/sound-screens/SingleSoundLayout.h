@@ -4,7 +4,7 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 
-class SingleSoundEditMenu;
+class SingleSoundEditMenuLegacy;
 class SingleSoundMenu;
 
 class SingleSoundLayout : public DFBLayout
@@ -16,10 +16,12 @@ class SingleSoundLayout : public DFBLayout
   SingleSoundLayout(FocusAndMode focusAndMode);
   virtual ~SingleSoundLayout();
 
-  virtual bool onButton(int i, bool down, ButtonModifiers modifiers) override;
+  virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   virtual bool onRotary(int inc, ButtonModifiers modifiers) override;
 
  private:
+  void toggleEditMenu(bool);
+
   enum class Column
   {
     None,
@@ -29,7 +31,6 @@ class SingleSoundLayout : public DFBLayout
     Edit
   };
 
-  void toggleEditMenu(bool inEdit);
   void toggleColumn(Column c);
   void setup();
   void randomize();
@@ -51,7 +52,7 @@ class SingleSoundLayout : public DFBLayout
   Button *m_transitionTimeButton = nullptr;
   AnyParameterLockedIndicator *m_paramLocked = nullptr;
 
-  SingleSoundEditMenu *m_initMenu = nullptr;
+  SingleSoundEditMenuLegacy *m_initMenu = nullptr;
 
   Control *m_edit = nullptr;
 

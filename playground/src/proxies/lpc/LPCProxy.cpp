@@ -140,7 +140,7 @@ void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
   {
-    DebugLevel::info(G_STRLOC, value);
+    DebugLevel::info("param:", p->getMiniParameterEditorName(), ": ", value);
     applyParamMessageAbsolutely(p, value);
   }
 }
@@ -248,6 +248,7 @@ void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
 
   nltools::msg::LPCMessage msg;
   msg.message = flushed;
+
   nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
 }
 

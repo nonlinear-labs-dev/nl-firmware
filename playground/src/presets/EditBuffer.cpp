@@ -28,6 +28,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
     , m_recallSet(this)
+    , m_type(Type::Single)
 {
   m_selectedParameter = nullptr;
   m_hashOnStore = getHash();
@@ -43,6 +44,25 @@ void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
   m_recallSet.copyFromEditBuffer(transaction, this);
 }
 
+Type EditBuffer::getType() const
+{
+  return m_type;
+}
+
+void EditBuffer::setType(Type t)
+{
+  if(m_type != t)
+  {
+    m_type = t;
+    onChange();
+  }
+}
+
+Glib::ustring EditBuffer::getCurrentVoiceGroupName() const
+{
+  return "I " + getName();
+}
+
 Glib::ustring EditBuffer::getName() const
 {
   if(auto o = getOrigin())
@@ -55,7 +75,7 @@ size_t EditBuffer::getHash() const
 {
   size_t hash = AttributesOwner::getHash();
 
-  for(auto g : getParameterGroups())
+  for(const auto g : getParameterGroups())
     hash_combine(hash, g->getHash());
 
   return hash;
@@ -166,7 +186,7 @@ const PresetManager *EditBuffer::getParent() const
   return static_cast<const PresetManager *>(super::getParent());
 }
 
-sigc::connection EditBuffer::onSelectionChanged(slot<void, Parameter *, Parameter *> s)
+sigc::connection EditBuffer::onSelectionChanged(const slot<void, Parameter *, Parameter *> &s)
 {
   return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected());
 }
@@ -621,12 +641,37 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
   return nullptr;
 }
 
-void EditBuffer::setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid)
+void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid)
 {
   if(auto mcs = getParameterGroupByID("MCs"))
+  {
     if(auto mc = dynamic_cast<MacroControlParameter *>(mcs->getParameterByID(id)))
     {
       mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
       mc->setLastMCViewUUID(uuid);
     }
+  }
+}
+
+ #warning"naming"
+bool EditBuffer::isVGISelected() const
+{
+  return m_vgISelected;
+}
+
+bool EditBuffer::isVGIISelected() const
+{
+  return !isVGISelected();
+}
+
+void EditBuffer::loadCurrentVG(Preset *pPreset)
+{
+  if(pPreset == nullptr)
+    return;
+
+  auto string = "Loading " + pPreset->getName()
+      + " into Voice Group: " + getCurrentVoiceGroupName();  //TODO StringTools::compose(x, y, zz);
+  DebugLevel::warning(string);
+  auto scope = getUndoScope().startTransaction(string);
+  undoableLoad(scope->getTransaction(), pPreset);
 }

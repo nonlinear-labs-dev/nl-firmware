@@ -3,6 +3,8 @@
 #include <Application.h>
 #include <nltools/messaging/Message.h>
 #include <ui/Window.h>
+#include <io/FromButtonsBridge.h>
+#include <io/Bridges.h>
 
 class WebSocketReceiver;
 
@@ -15,6 +17,7 @@ Window::Window()
   set_size_request(framebufferDimX, framebufferDimY * 2);
 
   using namespace nltools::msg;
+
   receive<SetOLEDMessage>(EndPoint::Oled, sigc::mem_fun(this, &Window::onFrameBufferMessageReceived));
   receive<SetPanelLEDMessage>(EndPoint::PanelLed, sigc::mem_fun(this, &Window::onPanelLEDsMessageReceived));
 
@@ -26,8 +29,8 @@ Window::Window()
   m_box.pack_start(m_playPanel, true, true);
   m_box.pack_end(m_editPanel, false, false);
   m_box.pack_start(m_ribbonBox, false, false);
-
   add(m_box);
+
   show_all_children(true);
 }
 

@@ -101,7 +101,7 @@ void PresetManager::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, c
 {
   ContentSection::handleHTTPRequest(request, path);
 
-  for(auto actionManager : m_actionManagers)
+  for(auto &actionManager : m_actionManagers)
     if(actionManager->matches(path))
       if(actionManager->handleRequest(path, request))
         return;
@@ -290,7 +290,7 @@ std::shared_ptr<ScopedGuard::Lock> PresetManager::getLoadingLock()
 
 void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
 {
-  nltools::Log::notify("loadMetadata", pmFolder->get_uri());
+  DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
   Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this);
   m_editBuffer->sendToLPC();
@@ -298,7 +298,7 @@ void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transa
 
 void PresetManager::loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
 {
-  nltools::Log::notify("loadInitSound", pmFolder->get_uri());
+  DebugLevel::gassy("loadInitSound", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Init Sound");
 
   Serializer::read<PresetSerializer>(transaction, pmFolder, ".initSound", m_initSound.get(), true);
@@ -309,13 +309,13 @@ void PresetManager::loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::Fi
 
 void PresetManager::loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
 {
-  nltools::Log::notify("loadBanks", pmFolder->get_uri());
+  DebugLevel::gassy("loadBanks", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Banks");
 
   int numBanks = m_banks.size();
 
   m_banks.forEach([&, currentBank = 1](Bank *bank) mutable {
-    nltools::Log::notify("loadBanks, bank:", bank->getUuid().raw());
+    DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
     auto bankFolder = pmFolder->get_child(bank->getUuid().raw());
     bank->load(transaction, bankFolder, currentBank++, numBanks);
   });

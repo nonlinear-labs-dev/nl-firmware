@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "DFBLayout.h"
 
 #include "Application.h"
@@ -7,6 +9,7 @@
 #include "proxies/hwui/panel-unit/PanelUnit.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include "proxies/hwui/OLEDProxy.h"
 
 #include <proxies/hwui/buttons.h>
 
@@ -18,14 +21,7 @@ DFBLayout::DFBLayout(OLEDProxy &oled)
 {
 }
 
-DFBLayout::~DFBLayout()
-{
-}
-
-OLEDProxy &DFBLayout::getOLEDProxy()
-{
-  return m_oled;
-}
+DFBLayout::~DFBLayout() = default;
 
 bool DFBLayout::redrawLayout()
 {
@@ -48,14 +44,14 @@ FrameBuffer &DFBLayout::getFrameBuffer()
   return FrameBuffer::get();
 }
 
-bool DFBLayout::onButton(int i, bool down, ButtonModifiers modifiers)
+bool DFBLayout::onButton(Buttons i, bool down, ::ButtonModifiers modifiers)
 {
-  if(i == BUTTON_INC || i == BUTTON_DEC)
+  if(i == Buttons::BUTTON_INC || i == Buttons::BUTTON_DEC)
   {
     if(down)
     {
       installButtonRepeat([=]() {
-        int direction = (i == BUTTON_INC) ? 1 : -1;
+        int direction = (i == Buttons::BUTTON_INC) ? 1 : -1;
         onRotary(direction, modifiers);
       });
     }
@@ -92,7 +88,7 @@ void DFBLayout::removeButtonRepeat()
   m_buttonRepeat.reset();
 }
 
-bool DFBLayout::isResolutionFine() const
+OLEDProxy &DFBLayout::getOLEDProxy()
 {
-  return Application::get().getHWUI()->isResolutionFine();
+  return m_oled;
 }

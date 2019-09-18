@@ -2,6 +2,8 @@
 
 #include "Parameter.h"
 
+class MacroControlParameter;
+
 class ModulateableParameter : public Parameter
 {
   typedef Parameter super;
@@ -25,6 +27,8 @@ class ModulateableParameter : public Parameter
   void undoableSelectModSource(UNDO::Transaction *transaction, MacroControls src);
   void undoableSetModAmount(UNDO::Transaction *transaction, double amount);
 
+  void undoableIncrementMCSelect(int inc);
+  virtual void undoableIncrementMCAmount(int inc, ButtonModifiers modifiers);
   void undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc);
   virtual void undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc, ButtonModifiers modifiers);
 
@@ -45,7 +49,6 @@ class ModulateableParameter : public Parameter
 
   virtual double getModulationAmountFineDenominator() const;
   virtual double getModulationAmountCoarseDenominator() const;
-
   std::pair<Glib::ustring, Glib::ustring> getModRangeAsDisplayValues() const;
 
   static void registerTests();
@@ -60,7 +63,7 @@ class ModulateableParameter : public Parameter
   bool isModSourceChanged() const;
   bool isModAmountChanged() const;
   bool isMacroControlAssignedAndChanged() const;
-  Parameter *getMacroControl() const;
+  MacroControlParameter *getMacroControl() const;
 
   void undoableRecallMCPos();
   void undoableRecallMCSource();

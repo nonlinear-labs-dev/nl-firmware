@@ -36,6 +36,8 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 #include <parameters/names/ParameterDB.h>
 #include "PanelUnitParameterEditMode.h"
+#include <device-settings/LayoutMode.h>
+#include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 
 class ParameterInfoLayout;
 class ParameterLayout2;
@@ -108,42 +110,45 @@ static EditPanel &getEditPanel()
 
 void PanelUnitParameterEditMode::setup()
 {
-  m_mappings.forEachButton([=](int buttonID, std::list<int> parameterIDs) {
+  m_mappings.forEachButton([=](Buttons buttonID, std::list<int> parameterIDs) {
     std::vector<int> para{ parameterIDs.begin(), parameterIDs.end() };
 
-    if(buttonID != 75 && buttonID != 79 && buttonID != 83 && buttonID != 87)
+    if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
+       && buttonID != Buttons::BUTTON_87)
       setupButtonConnection(buttonID, createParameterSelectAction(para));
   });
 
-  setupButtonConnection(
-      75, std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 243));
+
+  setupButtonConnection(Buttons::BUTTON_75,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 243));
   FOR_TESTS(assignedAudioIDs.insert(243));
 
-  setupButtonConnection(
-      79, std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 244));
+  setupButtonConnection(Buttons::BUTTON_79,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 244));
   FOR_TESTS(assignedAudioIDs.insert(244));
 
-  setupButtonConnection(
-      83, std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 245));
+  setupButtonConnection(Buttons::BUTTON_83,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 245));
   FOR_TESTS(assignedAudioIDs.insert(245));
 
-  setupButtonConnection(
-      87, std::bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 246));
+  setupButtonConnection(Buttons::BUTTON_87,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 246));
+
   FOR_TESTS(assignedAudioIDs.insert(246));
 
   assertAllButtonsAssigned();
 
-  setupButtonConnection(BUTTON_UNDO, [&](gint32 button, ButtonModifiers modifiers, bool state) {
+  setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     getEditPanel().getUndoStateMachine().traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
     return false;
   });
 
-  setupButtonConnection(BUTTON_REDO, [&](gint32 button, ButtonModifiers modifiers, bool state) {
+  setupButtonConnection(Buttons::BUTTON_REDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     getEditPanel().getUndoStateMachine().traverse(state ? REDO_PRESSED : REDO_RELEASED);
     return false;
   });
 
-  setupButtonConnection(BUTTON_SOUND, [&](gint32 button, ButtonModifiers modifiers, bool state) {
+  setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     if(state)
     {
       if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Sound)
@@ -208,7 +213,7 @@ void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Pa
   }
 }
 
-int PanelUnitParameterEditMode::findButtonForParameter(Parameter *param) const
+Buttons PanelUnitParameterEditMode::findButtonForParameter(Parameter *param) const
 {
   int parameterID = param->getID();
 
@@ -218,7 +223,7 @@ int PanelUnitParameterEditMode::findButtonForParameter(Parameter *param) const
   return m_mappings.findButton(parameterID);
 }
 
-std::list<int> PanelUnitParameterEditMode::getButtonAssignments(int button) const
+std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button) const
 {
   return m_mappings.findParameters(button);
 }
@@ -383,24 +388,41 @@ bool PanelUnitParameterEditMode::setParameterSelection(gint32 audioID, bool stat
 
 bool PanelUnitParameterEditMode::isShowingParameterScreen() const
 {
-  auto layout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout();
+  auto settingValue = Application::get().getSettings()->getSetting<LayoutMode>()->get();
+  auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
 
-  if(std::dynamic_pointer_cast<ParameterLayout2>(layout))
-    return true;
+  if(settingValue == LayoutVersionMode::Old)
+  {
+    if(dynamic_cast<ParameterLayout2 *>(currentLayout))
+      return true;
 
-  if(std::dynamic_pointer_cast<ParameterInfoLayout>(layout))
-    return true;
+    if(dynamic_cast<ParameterInfoLayout *>(currentLayout))
+      return true;
+  }
+  else if(settingValue == LayoutVersionMode::New || settingValue == LayoutVersionMode::Mixed)
+  {
+    if(auto genericLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout))
+    {
+      auto &prototype = genericLayout->getPrototype();
+      if(prototype.getDesiredFocusAndMode().focus == UIFocus::Parameters)
+      {
+        return prototype.getDesiredFocusAndMode().mode == UIMode::Select;
+      }
+    }
+    else
+    {
+      if(dynamic_cast<ParameterLayout2 *>(currentLayout))
+        return true;
 
+      if(dynamic_cast<ParameterInfoLayout *>(currentLayout))
+        return true;
+    }
+  }
   return false;
 }
 
 void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 {
-  if(std::dynamic_pointer_cast<PresetManagerLayout>(getCurrentBoledLayout()) != nullptr)
-  {
-    std::cerr << "Current Boled Layout == PresetManagerLayout!" << std::endl;
-  }
-
   m_connectionToMacroControl.disconnect();
 
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
@@ -505,8 +527,8 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, int select
 
   auto button = m_mappings.findButton(selectedParameterID);
 
-  if(button >= 0)
-    states[button] = true;
+  if(button != Buttons::INVALID)
+    states[(int) button] = true;
 }
 
 std::shared_ptr<Layout> PanelUnitParameterEditMode::getCurrentBoledLayout() const
@@ -529,7 +551,7 @@ void PanelUnitParameterEditMode::setLedStates(const tLedStates &states)
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   for(int i = 0; i < NUM_LEDS; i++)
-    panelUnit.getLED(i)->setState(states[i] ? TwoStateLED::ON : TwoStateLED::OFF);
+    panelUnit.getLED((Buttons) i)->setState(states[i] ? TwoStateLED::ON : TwoStateLED::OFF);
 }
 
 void PanelUnitParameterEditMode::letMacroControlTargetsBlink()

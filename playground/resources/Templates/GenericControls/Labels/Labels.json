@@ -1,0 +1,26 @@
+{
+  "controls": {
+    "Label": {
+      "Text": {
+        "Class": "Text",
+        "Rect": "0, 0, 58, 13"
+      }
+    }
+  },
+  "styles": {
+    "Default-Label-NonHighlight": {
+      "selector": {
+        "PrimitiveClass": "Text",
+        "ControlClasses": "Label"
+      },
+      "styles": {
+        "BackgroundColor": "C43",
+        "HighlightBackgroundColor": "C43",
+        "Color": "C128",
+        "HighlightColor": "C128",
+        "FontSize": 8,
+        "TextAlign": "Center"
+      }
+    }
+  }
+}

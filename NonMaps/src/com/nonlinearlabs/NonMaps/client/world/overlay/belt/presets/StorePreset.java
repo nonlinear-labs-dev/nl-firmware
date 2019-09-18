@@ -12,7 +12,6 @@ import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImagePhase;

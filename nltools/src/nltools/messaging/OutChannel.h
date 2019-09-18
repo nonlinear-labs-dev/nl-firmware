@@ -11,11 +11,15 @@ namespace nltools
     {
      public:
       OutChannel();
+
       virtual ~OutChannel();
 
       virtual void send(const SerializedMessage &msg) = 0;
+
       virtual bool waitForConnection(std::chrono::milliseconds timeOut) = 0;
+
       virtual void onConnectionEstablished(std::function<void()> cb) = 0;
+
       virtual bool isConnected() const = 0;
     };
   }

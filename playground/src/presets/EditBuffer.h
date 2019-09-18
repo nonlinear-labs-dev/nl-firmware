@@ -10,6 +10,8 @@ class Application;
 class Writer;
 class PresetManager;
 
+ENUM(Type, uint8_t, Single, Split, Layer);
+
 class EditBuffer : public ParameterGroupSet
 {
  private:
@@ -19,13 +21,17 @@ class EditBuffer : public ParameterGroupSet
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
+  Type getType() const;
+  void setType(Type t);
+
+  Glib::ustring getCurrentVoiceGroupName() const;
   Glib::ustring getName() const;
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
   bool isZombie() const;
 
-  void setMacroControlValueFromMCView(int id, double value, Glib::ustring uuid);
+  void setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid);
   void undoableClear(UNDO::Transaction *transaction);
   void undoableSelectParameter(const Glib::ustring &id);
   void undoableSelectParameter(uint16_t id);
@@ -62,7 +68,7 @@ class EditBuffer : public ParameterGroupSet
   void resetOriginIf(const Preset *p);
 
   // CALLBACKS
-  sigc::connection onSelectionChanged(slot<void, Parameter *, Parameter *> s);
+  sigc::connection onSelectionChanged(const slot<void, Parameter *, Parameter *> &s);
   sigc::connection onModificationStateChanged(slot<void, bool> s);
   sigc::connection onChange(slot<void> s);
   sigc::connection onPresetLoaded(slot<void> s);
@@ -79,6 +85,12 @@ class EditBuffer : public ParameterGroupSet
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
 
+  //Mock
+  bool isVGISelected() const;
+  bool isVGIISelected() const;
+  bool m_vgISelected = true;
+
+  void loadCurrentVG(Preset *pPreset);
  private:
   Parameter *searchForAnyParameterWithLock() const;
 
@@ -116,6 +128,7 @@ class EditBuffer : public ParameterGroupSet
   DelayedJob m_deferedJobs;
 
   bool m_isModified;
+  Type m_type;
   size_t m_hashOnStore;
 
   mutable Preset *m_originCache = nullptr;

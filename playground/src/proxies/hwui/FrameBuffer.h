@@ -27,6 +27,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   enum Colors : tPixel
   {
     Undefined = 0xFF,
+    Transparent = 0x10,
     C43 = 0x00,
     C77 = 0x02,
     C103 = 0x05,
@@ -49,6 +50,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
 
   void fillRect(tCoordinate left, tCoordinate top, tCoordinate width, tCoordinate height);
   void fillRect(const Rect &rect);
+  void fillCircle(const Point &rect, int radius);
 
   void drawRect(tCoordinate left, tCoordinate top, tCoordinate width, tCoordinate height);
   void drawRect(const Rect &rect);
@@ -94,6 +96,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   Offset offset(const Point &offset);
 
   void swapBuffers();
+  bool isValidColor(Colors c) const;
 
  private:
   FrameBuffer();

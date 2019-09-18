@@ -12,7 +12,7 @@ void BaseUnitPresetsMode::setup()
 {
   super::setup();
 
-  setupButtonConnection(BUTTON_MINUS, [=](auto, auto, auto state) {
+  setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
     if(state)
     {
       installButtonRepeat([] {
@@ -28,7 +28,7 @@ void BaseUnitPresetsMode::setup()
     return true;
   });
 
-  setupButtonConnection(BUTTON_PLUS, [=](auto, auto, auto state) {
+  setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
     if(state)
     {
       installButtonRepeat([] {

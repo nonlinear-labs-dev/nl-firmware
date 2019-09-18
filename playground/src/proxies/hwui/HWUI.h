@@ -34,7 +34,9 @@ class HWUI
   void indicateBlockingMainThread();
 
   void undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode focusAndMode);
+  void setUiModeDetail(UIDetail detail);
   void undoableSetFocusAndMode(FocusAndMode focusAndMode);
+  void setFocusAndMode(const UIDetail &detail);
   void setFocusAndMode(FocusAndMode focusAndMode);
   FocusAndMode getFocusAndMode() const;
 
@@ -47,13 +49,10 @@ class HWUI
   BaseUnit &getBaseUnit();
   const BaseUnit &getBaseUnit() const;
 
-  void testDisplays();
-
   ButtonModifiers getButtonModifiers() const;
   bool isResolutionFine() const;
   void unsetFineMode();
   bool isModifierSet(ButtonModifier m) const;
-  bool getButtonState(uint16_t buttonId) const;
 
   sigc::connection onModifiersChanged(slot<void, ButtonModifiers> cb);
   sigc::connection connectToBlinkTimer(slot<void, int> cb);
@@ -61,7 +60,8 @@ class HWUI
 
  private:
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
-  void onButtonPressed(int buttonID, bool state);
+  void onButtonPressed(Buttons buttonID, bool state);
+
   void onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res);
 
   void addModifier(ButtonModifier i);
@@ -71,8 +71,8 @@ class HWUI
   bool onBlinkTimeout();
   void setupFocusAndMode();
 
-  void setModifiers(int buttonID, bool state);
-  bool detectAffengriff(int buttonID, bool state);
+  void setModifiers(Buttons buttonID, bool state);
+  bool detectAffengriff(Buttons buttonID, bool state);
   bool isFineAllowed();
 
   FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
@@ -89,7 +89,7 @@ class HWUI
   sigc::connection m_blinkTimerConnection;
   Signal<void, ButtonModifiers> m_modifersChanged;
   Signal<void, int> m_blinkTimer;
-  std::array<bool, NUM_BUTTONS> m_buttonStates;
+  std::array<bool, (size_t) Buttons::NUM_BUTTONS> m_buttonStates;
 
   int m_affengriffState = 0;
 

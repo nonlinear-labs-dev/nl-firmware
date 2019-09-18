@@ -1,9 +1,9 @@
 
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/FileListControl.h>
 
-FileListControl::FileListControl()
+FileListControl::FileListControl(const Rect &pos)
     : selectedItem(0)
-    , ControlWithChildren(Rect(0, 0, 256, 36))
+    , ControlWithChildren(pos)
 {
   fileList = std::make_unique<FileTools::FileList>();
   upperFile = addControl(new Label("", Rect(0, 0, 256, 12)));
@@ -21,9 +21,7 @@ void FileListControl::setFileList(FileTools::FileList list)
   setSelection(selectedItem);
 }
 
-FileListControl::~FileListControl()
-{
-}
+FileListControl::~FileListControl() = default;
 
 void FileListControl::setSelection(int index)
 {

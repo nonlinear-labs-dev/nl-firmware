@@ -17,10 +17,12 @@ class TextEditUsageMode : public UsageMode
   ~TextEditUsageMode();
 
   virtual void setup();
-  virtual bool onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool state);
 
+
+  virtual bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state);
+
+  ustring getKeyLabel(Buttons buttonID) const;
   connection onTextChanged(const slot<void, const ustring &> &cb);
-  ustring getKeyLabel(int buttonID) const;
 
   gunichar getCharAtRelativeToCursorPosition(int pos) const;
   bool isInserting() const;
@@ -46,10 +48,10 @@ class TextEditUsageMode : public UsageMode
   void onCharPressed(gunichar c);
   bool handleSpecialChar(gunichar c);
   ustring stringizeSpecialChar(gunichar c) const;
-  gunichar getCharForButton(int buttonID) const;
+  void installButtonRepeat(std::function<void()> cb);
+  gunichar getCharForButton(Buttons buttonID) const;
   void toggleCapsLock();
   void toggleSymbol();
-  void installButtonRepeat(std::function<void()> cb);
 
   void updateLeds();
   void chooseLayout();
@@ -68,6 +70,6 @@ class TextEditUsageMode : public UsageMode
   bool m_shiftState = false;
 
   typedef std::tuple<gunichar, gunichar, gunichar, gunichar> tButtonAssignment;
-  std::map<int, tButtonAssignment> m_buttonMap;
+  std::map<Buttons, tButtonAssignment> m_buttonMap;
   std::unique_ptr<ButtonRepeat> m_buttonRepeat;
 };

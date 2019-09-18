@@ -8,6 +8,7 @@ namespace nltools
 {
   namespace msg
   {
+
     template <MessageType msgType> struct Message
     {
       static const MessageType theType = msgType;

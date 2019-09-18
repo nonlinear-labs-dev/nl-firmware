@@ -1,3 +1,4 @@
+#include <proxies/hwui/HWUIEnums.h>
 #include "ControlWithChildren.h"
 
 ControlWithChildren::ControlWithChildren(const Rect &pos)
@@ -5,9 +6,7 @@ ControlWithChildren::ControlWithChildren(const Rect &pos)
 {
 }
 
-ControlWithChildren::~ControlWithChildren()
-{
-}
+ControlWithChildren::~ControlWithChildren() = default;
 
 bool ControlWithChildren::isDirty() const
 {

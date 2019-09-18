@@ -10,6 +10,9 @@ class SSID : public HostAPDSetting
   typedef HostAPDSetting super;
 
  public:
+  ustring getDisplayString() const override;
+
+ public:
   SSID(Settings &parent);
   virtual ~SSID();
 };

@@ -1,3 +1,5 @@
+#include <utility>
+
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 #include <proxies/hwui/panel-unit/boled/file/FileDialogInfoLayout.h>
 #include <device-settings/DebugLevel.h>
@@ -12,11 +14,11 @@
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/controls/Button.h>
 
-FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, std::string header)
+FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, const std::string& header)
     : DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
-    , commitFunction(cb)
+    , commitFunction(std::move(cb))
     , m_header(header)
-    , crawler("/mnt/usb-stick/", filter, [=]() {
+    , crawler("/mnt/usb-stick/", std::move(filter), [=]() {
       auto fl = crawler.copyData();
       fileCount = fl.size();
       fileList->setFileList(fl);
@@ -25,11 +27,10 @@ FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb,
 
 {
   fileCount = 0;
-  addControl(new Button("Cancel", BUTTON_A));
-  addControl(new Button("Select", BUTTON_D));
-  fileList = addControl(new FileListControl());
-  headerLabel = addControl(new InvertedLabel(header, Rect(0, 0, 256, 14)));
-  fileList->setPosition(Rect(0, 14, 256, 36));
+  addControl(new Button("Cancel", Buttons::BUTTON_A));
+  addControl(new Button("Select", Buttons::BUTTON_D));
+  fileList = addControl(new FileListControl(Rect(0, 14, 256, 36)));
+  addControl(new InvertedLabel(header, Rect(0, 0, 256, 14)));
   positionLabel = addControl(new InvertedLabel("", Rect(200, 0, 56, 14)));
   updateLabels();
   crawler.start();
@@ -40,7 +41,7 @@ FileDialogLayout::~FileDialogLayout()
   crawler.killMe();
 }
 
-bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
+bool FileDialogLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   auto hwui = Application::get().getHWUI();
 
@@ -48,8 +49,8 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
   {
     switch(i)
     {
-      case BUTTON_D:
-      case BUTTON_ENTER:
+      case Buttons::BUTTON_D:
+      case Buttons::BUTTON_ENTER:
         try
         {
           commitFunction(getSelectedFile());
@@ -59,22 +60,23 @@ bool FileDialogLayout::onButton(int i, bool down, ButtonModifiers modifiers)
           DebugLevel::error(__FILE__, __LINE__);
         }
         return true;
-      case BUTTON_PRESET:
+      case Buttons::BUTTON_PRESET:
         hwui->undoableSetFocusAndMode({ UIFocus::Banks, UIMode::Select });
         return true;
-      case BUTTON_INC:
+      case Buttons::BUTTON_INC:
         fileList->changeSelection(1);
         updateLabels();
         return true;
-      case BUTTON_DEC:
+      case Buttons::BUTTON_DEC:
         fileList->changeSelection(-1);
         updateLabels();
         return true;
-      case BUTTON_INFO:
+
+      case Buttons::BUTTON_INFO:
         if(fileCount > 0)
           overlayInfo();
         return true;
-      case BUTTON_A:
+      case Buttons::BUTTON_A:
         hwui->undoableSetFocusAndMode(UIMode::Select);
         return true;
     }

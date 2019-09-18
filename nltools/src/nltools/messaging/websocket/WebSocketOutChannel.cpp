@@ -25,6 +25,7 @@ namespace nltools
 
       WebSocketOutChannel::~WebSocketOutChannel()
       {
+
         while(!m_bgRunning)
         {
           using namespace std::chrono_literals;
@@ -41,7 +42,11 @@ namespace nltools
       void WebSocketOutChannel::send(const SerializedMessage &msg)
       {
         if(!m_connection)
+        {
+#warning "adlerauge"
+          reconnect();
           return;
+        }
 
         m_backgroundContextQueue->pushMessage([=]() {
           if(m_connection)
@@ -84,9 +89,11 @@ namespace nltools
 
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());
+
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
         m_messageLoop = Glib::MainLoop::create(m);
         m_backgroundContextQueue->pushMessage(std::bind(&WebSocketOutChannel::connect, this));
+
         auto c = m->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
         m_messageLoop->run();
         c.disconnect();
