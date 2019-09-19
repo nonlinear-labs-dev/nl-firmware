@@ -12,8 +12,17 @@ C15Synth::C15Synth()
   m_dsp->init(getOptions()->getSampleRate(), getOptions()->getPolyphony());
 
   using namespace nltools::msg;
-  receive<ParameterChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onParameterMessage));
+
   receive<SetPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPresetMessage));
+
+  receive<UnmodulateableParameterChangedMessage>(EndPoint::AudioEngine,
+                                                 sigc::mem_fun(this, &C15Synth::onUnmodulateableParameterMessage));
+  receive<ModulateableParameterChangedMessage>(EndPoint::AudioEngine,
+                                               sigc::mem_fun(this, &C15Synth::onModulateableParameterMessage));
+  receive<MacroControlChangedMessage>(EndPoint::AudioEngine,
+                                      sigc::mem_fun(this, &C15Synth::onMacroControlParameterMessage));
+  receive<HWSourceChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWSourceMessage));
+  receive<HWAmountChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWAmountMessage));
 }
 
 C15Synth::~C15Synth() = default;
@@ -133,12 +142,32 @@ void C15Synth::changeSelectedValueBy(int i)
   }
 }
 
-void C15Synth::onParameterMessage(const nltools::msg::ParameterChangedMessage &msg)
-{
-  nltools::Log::notify("got parameter message!");
-}
-
 void C15Synth::onPresetMessage(const nltools::msg::SetPresetMessage &msg)
 {
   nltools::Log::notify("got preset message!");
+}
+
+void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage &msg)
+{
+  nltools::Log::info("Received modulateable parameter message!");
+}
+
+void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage &msg)
+{
+  nltools::Log::info("Received unmodulateable parameter message!");
+}
+
+void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage &msg)
+{
+  nltools::Log::info("Received macro control parameter message!");
+}
+
+void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage &msg)
+{
+  nltools::Log::info("Received hwAmount parameter message!");
+}
+
+void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage &msg)
+{
+  nltools::Log::info("Received hwSource parameter message!");
 }

@@ -11,7 +11,7 @@ ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
   setup();
 }
 
-void ConvertSoundMenu::convertSoundTo(Type newType)
+void ConvertSoundMenu::convertSoundTo(EditBufferType newType)
 {
   Application::get().getPresetManager()->getEditBuffer()->setType(newType);
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
@@ -23,14 +23,14 @@ void ConvertSoundMenu::setup()
 
   auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
 
-  if(type != Type::Single)
-    addButton("Single", std::bind(&ConvertSoundMenu::convertSoundTo, this, Type::Single));
+  if(type != EditBufferType::Single)
+    addButton("Single", std::bind(&ConvertSoundMenu::convertSoundTo, this, EditBufferType::Single));
 
-  if(type != Type::Split)
-    addButton("Split", std::bind(&ConvertSoundMenu::convertSoundTo, this, Type::Split));
+  if(type != EditBufferType::Split)
+    addButton("Split", std::bind(&ConvertSoundMenu::convertSoundTo, this, EditBufferType::Split));
 
-  if(type != Type::Layer)
-    addButton("Layer", std::bind(&ConvertSoundMenu::convertSoundTo, this, Type::Layer));
+  if(type != EditBufferType::Layer)
+    addButton("Layer", std::bind(&ConvertSoundMenu::convertSoundTo, this, EditBufferType::Layer));
 
   sanitizeIndex();
   selectButton(getSelectedButton());

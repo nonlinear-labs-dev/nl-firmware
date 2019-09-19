@@ -11,13 +11,13 @@ namespace DescriptiveLayouts
       const auto type = eb->getType();
       const auto typeStr = toString(type);
 
-      if(type == Type::Single)
+      if(type == EditBufferType::Single)
       {
         setValue({ typeStr, 0 });
       }
       else
       {
-        const auto suffix = std::string(eb->isSelected(EditBuffer::VoiceGroup::I) ? "  I" : "  II");
+        const auto suffix = std::string(eb->isSelected(VoiceGroup::I) ? "  I" : "  II");
         const auto suffixLen = suffix.size();
         const auto str = typeStr + suffix;
         setValue({ str, suffixLen });
@@ -48,7 +48,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(eb->isSelected(EditBuffer::VoiceGroup::I));
+      setValue(eb->isSelected(VoiceGroup::I));
     }
   };
 
@@ -57,7 +57,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(eb->isSelected(EditBuffer::VoiceGroup::II));
+      setValue(eb->isSelected(VoiceGroup::II));
     }
   };
 }

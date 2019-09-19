@@ -15,16 +15,100 @@ namespace nltools
       MessageType type = msgType;
     };
 
-    struct ParameterChangedMessage : Message<MessageType::Parameter>
+    using tID = int;
+    using tControlPosition = double;
+
+    struct HWSourceChangedMessage : Message<MessageType::HWSourceParameter>
     {
-      ParameterChangedMessage(uint16_t id = 0, float controlPosition = 0)
-          : parameterId(id)
+      HWSourceChangedMessage(tID id = 0, tControlPosition controlPosition = 0, ReturnMode mode = ReturnMode::None,
+                             bool locked = false)
+          : parameterId{ id }
+          , controlPosition{ controlPosition }
+          , returnMode{ mode }
+          , lock(locked)
+      {
+      }
+
+      tID parameterId;
+      tControlPosition controlPosition;
+      ReturnMode returnMode;
+      bool lock;
+    };
+
+    struct HWAmountChangedMessage : Message<MessageType::HWAmountParameter>
+    {
+      HWAmountChangedMessage(tID id = 0, tControlPosition pos = 0.0, bool locked = false)
+          : parameterId{ id }
+          , controlPosition{ pos }
+          , lock{ locked }
+      {
+      }
+
+      tID parameterId;
+      tControlPosition controlPosition;
+      bool lock;
+    };
+
+    struct MacroControlChangedMessage : Message<MessageType::MacroControlParameter>
+    {
+      MacroControlChangedMessage(tID id = 0, tControlPosition pos = 0.0, tControlPosition time = 0.0,
+                                 bool locked = false)
+          : lock{ locked }
+          , parameterId{ id }
+          , controlPosition{ pos }
+          , smoothingTime{ time }
+      {
+      }
+
+      bool lock;
+      tID parameterId;
+      tControlPosition controlPosition;
+      tControlPosition smoothingTime;
+    };
+
+    struct UnmodulateableParameterChangedMessage : Message<MessageType::UnmodulateableParameter>
+    {
+      UnmodulateableParameterChangedMessage(tID id = 0, tControlPosition controlPosition = 0, bool locked = false)
+          : lock{ locked }
+          , parameterId(id)
           , controlPosition(controlPosition)
       {
       }
 
-      uint16_t parameterId;
-      float controlPosition;
+      bool lock;
+      tID parameterId;
+      tControlPosition controlPosition;
+    };
+
+    struct ModulateableParameterChangedMessage : Message<MessageType::ModulateableParameter>
+    {
+      ModulateableParameterChangedMessage(tID id = 0, tControlPosition pos = 0.0,
+                                          MacroControls source = MacroControls::NONE, tControlPosition amount = 0.0,
+                                          tControlPosition upper = 0.0, tControlPosition lower = 0.0,
+                                          bool locked = false)
+          : lock{ locked }
+          , parameterId{ id }
+          , controlPosition{ pos }
+          , sourceMacro{ source }
+          , mcAmount{ amount }
+          , mcUpper{ upper }
+          , mcLower{ lower }
+      {
+      }
+
+      bool lock;
+      tID parameterId;
+      tControlPosition controlPosition;
+      MacroControls sourceMacro;
+      tControlPosition mcAmount;
+      tControlPosition mcUpper;
+      tControlPosition mcLower;
+    };
+
+    struct EditBufferContextMessage : Message<MessageType::EditBufferContext>
+    {
+      EditBufferType type;
+      VoiceGroup selectedGroup;
     };
 
     struct RotaryChangedMessage : Message<MessageType::RotaryChanged>
@@ -87,6 +171,21 @@ namespace nltools
         return Glib::wrap(bytes);
       }
     }
+
+    struct SinglePresetMessage : Message<MessageType::SinglePreset>
+    {
+      //TODO
+    };
+
+    struct SplitPresetMessage : Message<MessageType::SplitPreset>
+    {
+      //TODO
+    };
+
+    struct LayerPresetMessage : Message<MessageType::LayerPreset>
+    {
+      //TODO
+    };
 
     struct SetPresetMessage : Message<MessageType::Preset>
     {

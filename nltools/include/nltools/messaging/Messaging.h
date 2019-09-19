@@ -73,7 +73,18 @@ namespace nltools
       RotaryChanged,
       ButtonChanged,
       LPC,
-      Ping
+      Ping,
+
+      SinglePreset,
+      LayerPreset,
+      SplitPreset,
+      UnmodulateableParameter,
+      ModulateableParameter,
+      MacroControlParameter,
+      HWAmountParameter,
+      HWSourceParameter,
+
+      EditBufferContext
     };
 
     inline std::string toStringMessageType(const MessageType &type)
@@ -114,6 +125,18 @@ namespace nltools
           return "MessageType::LPC";
         case MessageType::Ping:
           return "MessageType::Ping";
+        case MessageType::UnmodulateableParameter:
+          return "MessageType::UnmodulateableParameter";
+        case MessageType::ModulateableParameter:
+          return "MessageType::ModulateableParameter";
+        case MessageType::MacroControlParameter:
+          return "MessageType::MacroControlParameter";
+        case MessageType::HWAmountParameter:
+          return "MessageType::HWAmountParameter";
+        case MessageType::HWSourceParameter:
+          return "MessageType::HWSourceParameter";
+        case MessageType::EditBufferContext:
+          return "MessageType::EditBufferContext";
       }
       return "";
     }

@@ -70,7 +70,7 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
 
 void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount)
 {
-  auto clampedAmount = CLAMP(amount, -1.0, 1.0);
+  auto clampedAmount = std::clamp(amount, -1.0, 1.0);
 
   if(m_modulationAmount != clampedAmount)
   {

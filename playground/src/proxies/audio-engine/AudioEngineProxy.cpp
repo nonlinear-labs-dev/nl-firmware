@@ -18,12 +18,6 @@ AudioEngineProxy::AudioEngineProxy()
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
 }
 
-void AudioEngineProxy::sendParameter(uint16_t id, tControlPositionValue value)
-{
-  using namespace nltools::msg;
-  send(EndPoint::AudioEngine, ParameterChangedMessage(id, value));
-}
-
 void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)
 {
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {

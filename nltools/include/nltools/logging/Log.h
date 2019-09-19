@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <initializer_list>
+#include <sstream>
 #include <mutex>
 
 namespace nltools
@@ -31,6 +32,13 @@ namespace nltools
       InsertSpaces,
       InsertSpacesAndAppendNewLine
     };
+
+    template <typename... tArgs> static std::string concat(tArgs&... args)
+    {
+      std::stringstream str;
+      (void) std::initializer_list<bool>{ (str << args << " ", false)... };
+      return str.str();
+    }
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void debug(const Args&... args)
@@ -90,6 +98,12 @@ namespace nltools
       {
         std::cout << std::endl;
       }
+    }
+
+    template <typename... tArgs> static void throwException(const tArgs&... args)
+    {
+      auto str = concat(args...);
+      throw std::runtime_error(str);
     }
 
    private:

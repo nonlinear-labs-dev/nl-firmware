@@ -103,7 +103,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() {
-      if(eb->getType() != Type::Single)
+      if(eb->getType() != EditBufferType::Single)
       {
         eb->toggleVoiceGroup();
       }

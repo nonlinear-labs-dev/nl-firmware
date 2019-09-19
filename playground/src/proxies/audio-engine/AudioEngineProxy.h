@@ -1,5 +1,6 @@
 #pragma once
 
+#include <nltools/messaging/Message.h>
 #include "playground.h"
 
 namespace UNDO
@@ -12,7 +13,12 @@ class AudioEngineProxy
  public:
   AudioEngineProxy();
 
-  void sendParameter(uint16_t id, tControlPositionValue value);
+  template<class tMessage>
+  void sendParameterMessage(const tMessage &msg)
+  {
+    send(nltools::msg::EndPoint::AudioEngine, msg);
+  }
+
   void sendEditBuffer();
   void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
 

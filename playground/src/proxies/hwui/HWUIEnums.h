@@ -1,7 +1,7 @@
 #pragma once
 
 #include <bitset>
-#include <tools/EnumTools.h>
+#include <nltools/enums/EnumTools.h>
 
 ENUM(UIFocus, uint8_t, Any, Sound, Parameters, Presets, Banks, Setup, Unchanged);
 ENUM(UIMode, uint8_t, Any, Select, Store, Edit, Info, Unchanged);

@@ -2,8 +2,9 @@
 
 #include <playground.h>
 #include <proxies/hwui/FrameBuffer.h>
-#include <tools/EnumTools.h>
+#include <nltools/enums/EnumTools.h>
 #include <boost/serialization/strong_typedef.hpp>
+#include <device-settings/DebugLevel.h>
 
 namespace DescriptiveLayouts
 {

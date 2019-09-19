@@ -19,6 +19,7 @@
 #include <presets/Preset.h>
 #include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
+#include <parameters/messaging/ParameterMessageFactory.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -212,7 +213,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
 void Parameter::sendToLpc() const
 {
   Application::get().getLPCProxy()->sendParameter(this);
-  Application::get().getAudioEngineProxy()->sendParameter(getID(), getControlPositionValue());
+  Application::get().getAudioEngineProxy()->sendParameterMessage(ParameterMessageFactory::createMessage(this));
 }
 
 tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modifiers) const

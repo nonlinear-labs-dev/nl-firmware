@@ -2,7 +2,7 @@
 
 #include <playground.h>
 #include "TemplateEnums.h"
-#include <tools/EnumTools.h>
+#include <nltools/enums/EnumTools.h>
 #include <proxies/hwui/buttons.h>
 
 namespace DescriptiveLayouts

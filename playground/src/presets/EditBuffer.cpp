@@ -28,7 +28,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
     , m_recallSet(this)
-    , m_type(Type::Single)
+    , m_type(EditBufferType::Single)
 {
   m_selectedParameter = nullptr;
   m_hashOnStore = getHash();
@@ -44,16 +44,15 @@ void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
   m_recallSet.copyFromEditBuffer(transaction, this);
 }
 
-Type EditBuffer::getType() const
+EditBufferType EditBuffer::getType() const
 {
   return m_type;
 }
 
-void EditBuffer::setType(Type t)
+void EditBuffer::setType(EditBufferType t)
 {
-  if(m_type != t)
+  if(std::exchange(m_type, t) != m_type)
   {
-    m_type = t;
     onChange();
   }
 }
@@ -653,7 +652,7 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
   }
 }
 
-bool EditBuffer::isSelected(EditBuffer::VoiceGroup v) const
+bool EditBuffer::isSelected(VoiceGroup v) const
 {
   return m_selectedVoiceGroup == v;
 }

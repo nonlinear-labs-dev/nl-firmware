@@ -11,6 +11,7 @@
 #include "proxies/hwui/descriptive-layouts/Events/EventSourceBroker.h"
 #include "Selector.h"
 #include "LayoutClass.h"
+#include "device-settings/DebugLevel.h"
 
 namespace DescriptiveLayouts
 {

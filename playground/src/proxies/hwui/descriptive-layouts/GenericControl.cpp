@@ -1,6 +1,6 @@
 #include "GenericControl.h"
 #include "GenericLayout.h"
-#include <tools/EnumTools.h>
+#include <nltools/enums/EnumTools.h>
 #include "Styleable.h"
 #include "proxies/hwui/descriptive-layouts/Events/EventSourceBroker.h"
 #include "PropertyOwner.h"

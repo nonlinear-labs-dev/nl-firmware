@@ -10,5 +10,5 @@ class ConvertSoundMenu : public ButtonMenu
 
  protected:
   void setup();
-  void convertSoundTo(Type newType);
+  void convertSoundTo(EditBufferType newType);
 };

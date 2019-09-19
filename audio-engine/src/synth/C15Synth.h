@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Synth.h"
+#include <nltools/messaging/Message.h>
 #include <sigc++/sigc++.h>
 
 namespace nltools
@@ -35,8 +36,13 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   void changeSelectedValueBy(int i);
-  void onParameterMessage(const nltools::msg::ParameterChangedMessage &msg);
   void onPresetMessage(const nltools::msg::SetPresetMessage &msg);
+
+  void onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg);
+  void onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg);
+  void onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg);
+  void onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg);
+  void onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg);
 
   std::unique_ptr<dsp_host> m_dsp;
 };

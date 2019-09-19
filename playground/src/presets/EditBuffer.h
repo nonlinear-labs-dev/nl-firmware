@@ -10,7 +10,6 @@ class Application;
 class Writer;
 class PresetManager;
 
-ENUM(Type, uint8_t, Single, Split, Layer);
 
 class EditBuffer : public ParameterGroupSet
 {
@@ -21,8 +20,8 @@ class EditBuffer : public ParameterGroupSet
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
-  Type getType() const;
-  void setType(Type t);
+  EditBufferType getType() const;
+  void setType(EditBufferType t);
 
   Glib::ustring getCurrentVoiceGroupName() const;
   Glib::ustring getName() const;
@@ -85,12 +84,6 @@ class EditBuffer : public ParameterGroupSet
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
 
-  enum class VoiceGroup
-  {
-    I,
-    II
-  };
-
   bool isSelected(VoiceGroup v) const;
   void toggleVoiceGroup();
   void loadCurrentVoiceGroup(Preset *pPreset);
@@ -134,7 +127,7 @@ class EditBuffer : public ParameterGroupSet
   DelayedJob m_deferedJobs;
 
   bool m_isModified;
-  Type m_type;
+  EditBufferType m_type;
   size_t m_hashOnStore;
 
   mutable Preset *m_originCache = nullptr;
