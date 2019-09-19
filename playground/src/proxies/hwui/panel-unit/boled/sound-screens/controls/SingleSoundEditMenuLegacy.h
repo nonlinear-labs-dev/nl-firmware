@@ -20,7 +20,7 @@ class SingleSoundEditMenuLegacy : public SoundMenu
   typedef SoundMenu super;
 
  public:
-  SingleSoundEditMenuLegacy(const Rect &rect);
+  explicit SingleSoundEditMenuLegacy(const Rect &rect);
   virtual void init();
 
  protected:

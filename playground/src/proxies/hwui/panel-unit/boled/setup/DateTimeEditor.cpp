@@ -148,7 +148,6 @@ void DateTimeEditor::setTimeValues()
 
 const DateTimeEditor::Selection DateTimeEditor::step(Selection s, int inc) const
 {
- #warning"test me"
   auto currentRaw = static_cast<int>(s);
 
   if(inc > 0)
