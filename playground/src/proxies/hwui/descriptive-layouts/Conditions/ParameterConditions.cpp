@@ -3,6 +3,8 @@
 
 using namespace DescriptiveLayouts;
 
+#warning "IMPROVEMENT: maybe add inversion to condition rules, so we do not need IsModulateable AND IsNotModulateable"
+
 namespace conditiondetail
 {
   const EditBuffer &getEditBuffer()
@@ -81,5 +83,5 @@ void ParameterConditions::ParameterCondition::onParameterSelectionChanged(const 
 
 void ParameterConditions::ParameterCondition::onParameterChanged(const Parameter *param)
 {
-  get();
+  update();
 }

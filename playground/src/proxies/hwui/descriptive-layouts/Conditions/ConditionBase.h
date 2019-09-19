@@ -1,24 +1,24 @@
 #pragma once
+
 #include <atomic>
 #include <glibmm/ustring.h>
+#include <functional>
 
 class ConditionBase
 {
  public:
- #warning"adlerauge (name luegt) vlt update()?"
-  bool get() const
-  {
-    auto res = check();
-    if(m_cache != res)
-    {
-      m_cache = res;
-      onConditionChanged();
-    }
-    return res;
-  }
+  ConditionBase();
+  virtual ~ConditionBase();
+
+  using CB = std::function<void()>;
+  void connect(CB cb);
+  bool update();
+  bool get() const;
 
  protected:
   void onConditionChanged() const;
   virtual bool check() const = 0;
-  mutable std::atomic_bool m_cache{ false };
+
+  std::atomic_bool m_cache{ false };
+  CB m_onConditionChanged;
 };

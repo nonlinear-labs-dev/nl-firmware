@@ -8,7 +8,7 @@ DescriptiveLayouts::SoundConditions::EditBufferCondition::EditBufferCondition()
 
 void DescriptiveLayouts::SoundConditions::EditBufferCondition::onEditBufferChanged()
 {
-  get();
+  update();
 }
 
 DescriptiveLayouts::SoundConditions::EditBufferCondition::~EditBufferCondition()

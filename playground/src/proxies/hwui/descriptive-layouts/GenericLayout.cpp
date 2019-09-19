@@ -12,6 +12,7 @@
 #include "Application.h"
 #include "proxies/hwui/controls/ButtonMenu.h"
 #include "proxies/hwui/HWUI.h"
+#include "proxies/hwui/controls/ControlAdapters.h"
 
 namespace DescriptiveLayouts
 {
@@ -95,7 +96,7 @@ namespace DescriptiveLayouts
 
   bool GenericLayout::handleDefaults(Buttons buttons, bool down, ::ButtonModifiers modifiers)
   {
- #warning"adlerauge"
+#warning "adlerauge"
     if(down)
     {
       switch(buttons)
@@ -130,78 +131,21 @@ namespace DescriptiveLayouts
 
   bool GenericLayout::handleEventSink(EventSinks s)
   {
- #warning"adlerauge - maybe use interfaces instead?"
+    auto shiftPressed = Application::get().getHWUI()->getButtonModifiers()[ButtonModifier::SHIFT];
+
     switch(s)
     {
       case EventSinks::IncButtonMenu:
-        if(auto m = findControlOfType<ButtonMenu>())
-        {
-          if(Application::get().getHWUI()->getButtonModifiers()[ButtonModifier::SHIFT])
-          {
-            m->antiToggle();
-          }
-          else
-          {
-            m->toggle();
-          }
+        if(ControlList<ButtonMenu, ModulationCarousel, ParameterCarousel>::findFirstAndCall(
+               this, [&](auto m) { controladapters::incDec(m, shiftPressed ? -1 : 1); }))
           return true;
-        }
-        if(auto car = findControlOfType<ModulationCarousel>())
-        {
-          if(Application::get().getHWUI()->getButtonModifiers()[ButtonModifier::SHIFT])
-          {
-            car->antiTurn();
-          }
-          else
-          {
-            car->turn();
-          }
-          return true;
-        }
-        if(auto par = findControlOfType<ParameterCarousel>())
-        {
-          if(Application::get().getHWUI()->getButtonModifiers()[ButtonModifier::SHIFT])
-            par->antiTurn();
-          else
-            par->turn();
-
-          return true;
-        }
+        break;
 
       case EventSinks::DecButtonMenu:
-        if(auto m = findControlOfType<ButtonMenu>())
-        {
-          if(Application::get().getHWUI()->getButtonModifiers()[ButtonModifier::SHIFT])
-          {
-            m->toggle();
-          }
-          else
-          {
-            m->antiToggle();
-          }
+        if(ControlList<ButtonMenu, ModulationCarousel, ParameterCarousel>::findFirstAndCall(
+               this, [&](auto m) { controladapters::incDec(m, shiftPressed ? 1 : -1); }))
           return true;
-        }
-        if(auto car = findControlOfType<ModulationCarousel>())
-        {
-          if(Application::get().getHWUI()->getButtonModifiers()[ButtonModifier::SHIFT])
-          {
-            car->turn();
-          }
-          else
-          {
-            car->antiTurn();
-          }
-          return true;
-        }
-        if(auto par = findControlOfType<ParameterCarousel>())
-        {
-          if(Application::get().getHWUI()->getButtonModifiers()[ButtonModifier::SHIFT])
-            par->turn();
-          else
-            par->antiTurn();
-
-          return true;
-        }
+        break;
 
       case EventSinks::FireButtonMenu:
         if(auto m = findControlOfType<ButtonMenu>())
@@ -209,21 +153,28 @@ namespace DescriptiveLayouts
           m->doAction();
           return true;
         }
+        break;
+
       case EventSinks::IncParam:
         if(auto car = findControlOfType<ModulationCarousel>())
         {
           car->onRotary(1, Application::get().getHWUI()->getButtonModifiers());
           return true;
         }
+        break;
+
       case EventSinks::DecParam:
         if(auto car = findControlOfType<ModulationCarousel>())
         {
           car->onRotary(-1, Application::get().getHWUI()->getButtonModifiers());
           return true;
         }
+        break;
+
       default:
-        return false;
+        break;
     }
+    return false;
   }
 
   bool GenericLayout::onRotary(int inc, ::ButtonModifiers modifiers)

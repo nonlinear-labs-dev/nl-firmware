@@ -11,9 +11,9 @@ namespace DescriptiveLayouts
      public:
       PresetListBase()
       {
-        m_layoutConnection
+        /* m_layoutConnection
             = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstantiated(
-                sigc::mem_fun(this, &PresetListBase::onLayoutChanged));
+                sigc::mem_fun(this, &PresetListBase::onLayoutChanged));*/
       }
 
       ~PresetListBase()
@@ -28,6 +28,7 @@ namespace DescriptiveLayouts
       void onLayoutChanged(Layout *layout)
       {
         m_presetListConnection.disconnect();
+
         if(auto genericLayout = dynamic_cast<GenericLayout *>(layout))
         {
           if(auto presetlist = genericLayout->findControlOfType<GenericPresetList>())

@@ -1,4 +1,5 @@
 #pragma once
+#if 0
 
 #include <Application.h>
 #include <parameters/Parameter.h>
@@ -6,7 +7,7 @@
 #include <presets/EditBuffer.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameters/MacroControlParameter.h>
- #warning"adlerauge"
+#warning "adlerauge"
 
 template <class T> class OnParameterChangedNotifier : public sigc::trackable
 {
@@ -130,3 +131,4 @@ template <class T> class OnModulationChangedNotifier : public sigc::trackable
   sigc::connection m_onSelectionChangedSignal;
   sigc::connection m_onModulationSourceChangedSignal;
 };
+#endif

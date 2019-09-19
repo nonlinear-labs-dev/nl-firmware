@@ -9,7 +9,7 @@ class ConditionRegistry : public sigc::trackable
 {
  public:
   typedef ConditionBase* tCondition;
-  tCondition getLambda(const std::string& key);
+  tCondition getCondition(const std::string& key);
   static ConditionRegistry& get();
   sigc::connection onChange(const std::function<void()>& cb);
 

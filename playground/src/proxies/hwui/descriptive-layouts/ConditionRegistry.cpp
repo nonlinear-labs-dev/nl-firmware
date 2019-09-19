@@ -9,9 +9,8 @@
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/Conditions/HWUIConditions.h>
 
-ConditionRegistry::tCondition ConditionRegistry::getLambda(const std::string& key)
+ConditionRegistry::tCondition ConditionRegistry::getCondition(const std::string& key)
 {
- #warning"adlerauge"
   return m_theConditionMap.at(key).get();
 }
 
@@ -32,6 +31,9 @@ ConditionRegistry::ConditionRegistry()
   m_theConditionMap["isSplitSound"] = std::make_unique<SoundConditions::IsSplitSound>();
   m_theConditionMap["isLayerSound"] = std::make_unique<SoundConditions::IsLayerSound>();
   m_theConditionMap["isFineActive"] = std::make_unique<HWUIConditions::IsFineActive>();
+
+  for(auto& c : m_theConditionMap)
+    c.second->connect([this] { this->onConditionChanged(); });
 }
 
 sigc::connection ConditionRegistry::onChange(const std::function<void()>& cb)
@@ -42,7 +44,5 @@ sigc::connection ConditionRegistry::onChange(const std::function<void()>& cb)
 void ConditionRegistry::onConditionChanged()
 {
   if(Application::get().getSettings()->getSetting<LayoutMode>()->get() != LayoutVersionMode::Old)
-  {
     m_signal.send();
-  }
 }

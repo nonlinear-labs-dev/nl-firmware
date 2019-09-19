@@ -13,6 +13,7 @@
 #include <proxies/hwui/descriptive-layouts/Primitives/Bar.h>
 #include <nltools/StringTools.h>
 #include <tools/ExceptionTools.h>
+#include <proxies/hwui/controls/Button.h>
 
 using json = nlohmann::json;
 
@@ -41,29 +42,19 @@ namespace DescriptiveLayouts
     if(pt.is_string())
     {
       std::string compact = pt;
+
       if(nltools::startsWith(compact, "BUTTON_"))
       {
- #warning"adlerauge -> take points from Button.h"
         if(compact == "BUTTON_A")
-        {
-          return Point(3, 51);
-        }
+          return Button::getButtonPos(Buttons::BUTTON_A).getLeftTop();
         else if(compact == "BUTTON_B")
-        {
-          return Point(67, 51);
-        }
+          return Button::getButtonPos(Buttons::BUTTON_B).getLeftTop();
         else if(compact == "BUTTON_C")
-        {
-          return Point(131, 51);
-        }
+          return Button::getButtonPos(Buttons::BUTTON_C).getLeftTop();
         else if(compact == "BUTTON_D")
-        {
-          return Point(195, 51);
-        }
-        else
-        {
-          return Point(0, 0);
-        }
+          return Button::getButtonPos(Buttons::BUTTON_D).getLeftTop();
+
+        return Point(0, 0);
       }
       else
       {
@@ -98,14 +89,21 @@ namespace DescriptiveLayouts
     switch(eventTargetProperty)
     {
       case PrimitiveProperty::ControlPosition:
+      {
         return value.template get<double>();
+      }
+
       case PrimitiveProperty::Range:
       {
         auto values = StringTools::splitStringOnStringDelimiter(value.template get<std::string>(), ",");
         return Bar::Range(std::stof(values[0]), std::stof(values[1]));
       }
+
       case PrimitiveProperty::Text:
+      {
         return Text::DisplayString(value.template get<std::string>(), 0);
+      }
+
       case PrimitiveProperty::Highlight:
       case PrimitiveProperty::Visibility:
       {
@@ -113,9 +111,11 @@ namespace DescriptiveLayouts
         std::istringstream(value.template get<std::string>()) >> std::boolalpha >> val;
         return val;
       }
-      default:
+
       case PrimitiveProperty::None:
+      {
         break;
+      }
     }
     return ret;
   }
@@ -215,7 +215,7 @@ namespace DescriptiveLayouts
     tConditionList ret;
 
     JSONTools::forEachJsonArrayElementChild(
-        j, [&](const auto& conditionString) { ret.push_back(ConditionRegistry::get().getLambda(conditionString)); });
+        j, [&](const auto& conditionString) { ret.push_back(ConditionRegistry::get().getCondition(conditionString)); });
     return ret;
   }
 
@@ -226,7 +226,7 @@ namespace DescriptiveLayouts
     {
       return toT(obj.at(tag));
     }
-    catch(nlohmann::json::out_of_range& notFoundException)
+    catch(nlohmann::json::out_of_range&)
     {
       auto desc = ExceptionTools::handle_eptr(std::current_exception());
       nltools::Log::error(desc);
@@ -234,7 +234,7 @@ namespace DescriptiveLayouts
       if(!optional)
         std::rethrow_exception(std::current_exception());
     }
-    catch(nlohmann::json::invalid_iterator& conversionError)
+    catch(nlohmann::json::invalid_iterator&)
     {
       auto desc = ExceptionTools::handle_eptr(std::current_exception());
       nltools::Log::error(desc);

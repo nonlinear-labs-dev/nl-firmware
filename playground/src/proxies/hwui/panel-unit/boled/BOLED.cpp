@@ -56,29 +56,20 @@ void BOLED::setupFocusAndModeMixed(FocusAndMode focusAndMode)
 
 void BOLED::setupFocusAndModeDescriptiveLayouts(FocusAndMode focusAndMode)
 {
-  #warning "adlerauge"
   try
   {
     if(auto newLayout = DescriptiveLayouts::BoledLayoutFactory::get().instantiate(focusAndMode))
     {
       if(focusAndMode.focus == UIFocus::Parameters)
-      {
-        if(!isSameParameterScreen(dynamic_cast<const DescriptiveLayouts::GenericLayout*>(newLayout.get()),
-                                  focusAndMode))
-        {
-          reset(newLayout);
-        }
-      }
-      else
-      {
-        reset(newLayout);
-      }
+        if(isSameParameterScreen(dynamic_cast<const DescriptiveLayouts::GenericLayout*>(newLayout.get()), focusAndMode))
+          return;
+
+      reset(newLayout);
     }
     else
     {
       DebugLevel::throwException("No DescriptiveLayout for:", focusAndMode.toString(), "found!");
     }
-    return;
   }
   catch(...)
   {
@@ -133,19 +124,6 @@ bool BOLED::isSameParameterScreen(const DescriptiveLayouts::GenericLayout* layou
   }
 
   return false;
-}
-
-void BOLED::reset(Layout* layout)
-{
-  OLEDProxy::reset(layout);
-  #warning "adlerauge"
-  m_layoutInstantiated.emit(layout);
-}
-
-void BOLED::reset(OLEDProxy::tLayoutPtr layout)
-{
-  OLEDProxy::reset(layout);
-  m_layoutInstantiated.emit(layout.get());
 }
 
 void BOLED::installOldLayouts(FocusAndMode focusAndMode)
@@ -294,9 +272,4 @@ void BOLED::runPerformanceTest()
 void BOLED::showUndoScreen()
 {
   reset(new UndoLayout());
-}
-
-sigc::connection BOLED::onLayoutInstantiated(const sigc::slot<void, Layout*>& s)
-{
-  return m_layoutInstantiated.connect(s);
 }

@@ -27,7 +27,6 @@ namespace DescriptiveLayouts
       sigc::connection m_paramConnection;
     };
 
- #warning"adlerauge -> maybe add inversion to condition rules"
     class IsParameterModulateable : public ParameterCondition
     {
      public:

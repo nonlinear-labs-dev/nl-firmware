@@ -2,7 +2,6 @@
 #include <Application.h>
 #include <device-settings/RandomizeAmount.h>
 #include <proxies/hwui/descriptive-layouts/Concrete/Menu/SettingLabel.h>
- #warning"adlerauge"
 
 RandomizeItem::RandomizeItem()
     : EditorItem("Randomize")

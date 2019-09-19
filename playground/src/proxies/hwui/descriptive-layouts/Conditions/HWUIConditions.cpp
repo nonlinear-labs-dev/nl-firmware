@@ -19,7 +19,7 @@ namespace HWUIConditions
   void HWUICondition::onModifiersChanged(const ButtonModifiers &mod)
   {
     m_modifiers = mod;
-    get();
+    update();
   }
 
   bool IsFineActive::check() const
