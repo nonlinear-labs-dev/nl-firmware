@@ -75,9 +75,11 @@ class AnimatedGenericItem : public GenericItem
     m_animator = std::make_unique<Animator>(std::chrono::milliseconds(500), [this] { this->setDirty(); },
                                             [this] {
                                               this->setDirty();
+
+                                              m_animator.reset();
+
                                               if(m_animationFinishedCB)
                                                 m_animationFinishedCB();
-                                              m_animator.reset();
                                             });
   }
 
