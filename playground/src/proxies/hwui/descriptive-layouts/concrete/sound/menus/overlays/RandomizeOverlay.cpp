@@ -3,7 +3,7 @@
 #include <device-settings/RandomizeAmount.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/SettingLabel.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/SettingLabel.h>
 
 RandomizeOverlay::RandomizeOverlay(const Rect& r)
     : ChangeSettingWithCommitOverlay<RandomizeAmount>(r, [] {

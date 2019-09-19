@@ -8,9 +8,9 @@
 #include "JsonHelpers.h"
 #include <boost/algorithm/string.hpp>
 #include <tools/StringTools.h>
-#include <proxies/hwui/descriptive-layouts/Primitives/Text.h>
+#include <proxies/hwui/descriptive-layouts/primitives/Text.h>
 #include <boost/lexical_cast.hpp>
-#include <proxies/hwui/descriptive-layouts/Primitives/Bar.h>
+#include <proxies/hwui/descriptive-layouts/primitives/Bar.h>
 #include <nltools/StringTools.h>
 #include <tools/ExceptionTools.h>
 #include <proxies/hwui/controls/Button.h>
@@ -219,11 +219,6 @@ namespace DescriptiveLayouts
     return ret;
   }
 
-  static std::string convertToString(const json& j)
-  {
-    return j;
-  }
-
   template <class T>
   T parseTFromTag(std::function<T(const json&)> toT, const json& obj, const std::string& tag, bool optional = true)
   {
@@ -262,8 +257,8 @@ namespace DescriptiveLayouts
       const auto& id = name;
       try
       {
-        auto localEventBroker = parseTFromTag<std::string>(convertToString, obj.value(), "LocalEventBroker");
-        auto localEventSink = parseTFromTag<std::string>(convertToString, obj.value(), "LocalEventSink");
+        auto localEventProvider
+            = parseTFromTag<LocalEventProvider>(toLocalEventProvider, obj.value(), "LocalEventBroker");
 
         auto selectionConditions = parseTFromTag<tConditionList>(toConditions, obj.value(), "Conditions");
         auto sinkMappings = parseTFromTag<LayoutClass::EventSinkList>(toEventSinkList, obj.value(), "EventSinks");

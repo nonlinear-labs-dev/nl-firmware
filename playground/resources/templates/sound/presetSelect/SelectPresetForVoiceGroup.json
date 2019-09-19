@@ -1,8 +1,7 @@
 {
   "layouts": {
     "PresetSelectionForVoiceGroupLayout": {
-      "LocalEventBroker" : "PresetSelectionForVoiceGroup",
-      "LocalEventSink" : "PresetSelectionForVoiceGroup",
+      "LocalEventProvider" : "PresetSelectionForVoiceGroup",
       "Selector": {
         "UIFocus": "Sound",
         "UIMode": "Edit",

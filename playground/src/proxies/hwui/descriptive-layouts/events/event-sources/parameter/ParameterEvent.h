@@ -1,6 +1,6 @@
 #pragma once
 #include <parameters/Parameter.h>
-#include "proxies/hwui/descriptive-layouts/Events/EventSources/base/EventSource.h"
+#include "proxies/hwui/descriptive-layouts/events/event-sources/base/EventSource.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>

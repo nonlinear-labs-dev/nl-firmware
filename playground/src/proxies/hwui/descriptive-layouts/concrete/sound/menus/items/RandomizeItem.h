@@ -1,7 +1,7 @@
 #pragma once
 
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/MenuItems/EditorItem.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/Overlays/RandomizeOverlay.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/EditorItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/overlays/RandomizeOverlay.h>
 
 class RandomizeItem : public EditorItem
 {

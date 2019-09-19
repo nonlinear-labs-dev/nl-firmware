@@ -6,7 +6,7 @@
 #include "EventSink.h"
 #include "ControlInstance.h"
 #include <set>
-#include <proxies/hwui/descriptive-layouts/Conditions/ConditionBase.h>
+#include <proxies/hwui/descriptive-layouts/conditions/ConditionBase.h>
 
 class DFBLayout;
 

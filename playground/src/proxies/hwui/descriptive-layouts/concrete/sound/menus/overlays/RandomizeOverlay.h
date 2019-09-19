@@ -1,8 +1,8 @@
 #pragma once
 
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/MenuOverlay/ArrowIncrementDecrementOverlay.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/ArrowIncrementDecrementOverlay.h>
 #include <device-settings/RandomizeAmount.h>
-#include "proxies/hwui/descriptive-layouts/Concrete/Menu/MenuOverlay/ChangeSettingWithCommitOverlay.h"
+#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/ChangeSettingWithCommitOverlay.h"
 
 class RandomizeOverlay : public ChangeSettingWithCommitOverlay<RandomizeAmount>
 {

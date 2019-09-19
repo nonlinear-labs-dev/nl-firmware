@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/SettingLabel.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/SettingLabel.h>
 #include "ArrowIncrementDecrementOverlay.h"
 
 template <class tSetting> class ChangeSettingOverlay : public ArrowIncrementDecrementOverlay

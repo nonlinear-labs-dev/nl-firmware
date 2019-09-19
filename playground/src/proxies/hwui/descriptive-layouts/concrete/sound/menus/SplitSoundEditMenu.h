@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/ScrollMenu.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/ScrollMenu.h>
 
 class SplitSoundEditMenu : public ScrollMenu
 {

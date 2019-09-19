@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include <memory>
-#include <proxies/hwui/descriptive-layouts/Conditions/ConditionBase.h>
+#include <proxies/hwui/descriptive-layouts/conditions/ConditionBase.h>
 #include <tools/Signal.h>
 #include <map>
 

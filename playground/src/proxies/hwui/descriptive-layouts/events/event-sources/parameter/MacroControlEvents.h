@@ -1,5 +1,5 @@
 #pragma once
-#include "proxies/hwui/descriptive-layouts/Events/EventSources/base/EventSource.h"
+#include "proxies/hwui/descriptive-layouts/events/event-sources/base/EventSource.h"
 #include "ParameterEvent.h"
 #include <parameters/ModulateableParameter.h>
 #include <parameters/MacroControlParameter.h>

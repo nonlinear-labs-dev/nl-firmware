@@ -1,5 +1,5 @@
 #pragma once
-#include "../Parameter/ParameterEvent.h"
+#include "../parameter/ParameterEvent.h"
 
 namespace DescriptiveLayouts
 {

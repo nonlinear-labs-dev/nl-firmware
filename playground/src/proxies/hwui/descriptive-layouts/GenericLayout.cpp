@@ -5,9 +5,9 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
 #include "GenericLayout.h"
 #include "GenericControl.h"
-#include "proxies/hwui/descriptive-layouts/Primitives/Bar.h"
-#include "proxies/hwui/descriptive-layouts/Primitives/Border.h"
-#include "proxies/hwui/descriptive-layouts/Primitives/Text.h"
+#include "proxies/hwui/descriptive-layouts/primitives/Bar.h"
+#include "proxies/hwui/descriptive-layouts/primitives/Border.h"
+#include "proxies/hwui/descriptive-layouts/primitives/Text.h"
 
 #include "Application.h"
 #include "proxies/hwui/controls/ButtonMenu.h"

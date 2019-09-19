@@ -1,6 +1,6 @@
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/MenuItems/GenericItem.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/Items/InitSound.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/Items/RandomizeItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/GenericItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/InitSound.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/RandomizeItem.h>
 #include <proxies/hwui/descriptive-layouts/ConditionRegistry.h>
 #include "SingleSoundEditMenu.h"
 #include <proxies/hwui/HWUI.h>

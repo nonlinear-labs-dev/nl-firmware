@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/MenuOverlay/ScrollMenuOverlay.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/ScrollMenuOverlay.h>
 #include <proxies/hwui/controls/ArrowRight.h>
 #include <proxies/hwui/controls/ArrowLeft.h>
 #include <proxies/hwui/controls/LabelRegular8.h>

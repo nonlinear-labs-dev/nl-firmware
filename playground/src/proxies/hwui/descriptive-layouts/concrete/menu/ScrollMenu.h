@@ -2,8 +2,8 @@
 
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/panel-unit/ButtonReceiver.h>
-#include "proxies/hwui/descriptive-layouts/Concrete/Menu/MenuItems/BasicItem.h"
-#include "proxies/hwui/descriptive-layouts/Concrete/Menu/MenuOverlay/ScrollMenuOverlay.h"
+#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-items/BasicItem.h"
+#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/ScrollMenuOverlay.h"
 
 class ScrollMenu : public ControlWithChildren, public ButtonReceiver
 {

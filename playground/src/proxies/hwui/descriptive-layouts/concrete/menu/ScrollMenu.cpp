@@ -1,6 +1,6 @@
-#include <proxies/hwui/descriptive-layouts/Concrete/Menu/MenuItems/AnimatedGenericItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include "ScrollMenu.h"
-#include "proxies/hwui/descriptive-layouts/Concrete/Menu/MenuItems/EditorItem.h"
+#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-items/EditorItem.h"
 
 ScrollMenu::ScrollMenu(const Rect &r)
     : ControlWithChildren(r)

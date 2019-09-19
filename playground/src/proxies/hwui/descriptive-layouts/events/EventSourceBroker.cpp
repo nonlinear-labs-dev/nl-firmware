@@ -11,21 +11,21 @@
 #include <presets/Preset.h>
 #include <tools/EditBufferNotifier.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Preset/GenericPresetList.h>
-#include <proxies/hwui/descriptive-layouts/Events/EventSources/HWUI/HWUIEvents.h>
+#include <proxies/hwui/descriptive-layouts/concrete/preset/GenericPresetList.h>
+#include <proxies/hwui/descriptive-layouts/events/event-sources/hwui/HWUIEvents.h>
 
-#include "EventSources/base/EventSource.h"
-#include "EventSources/Parameter/ParameterEvents.h"
-#include "EventSources/Parameter/MacroControlEvents.h"
-#include "EventSources/Parameter/ParameterUIEvents.h"
-#include "EventSources/Parameter/GroupEvents.h"
-#include "EventSources/EditBuffer/EditBufferEvents.h"
-#include "EventSources/EditBuffer/EditBufferUIEvents.h"
-#include "EventSources/misc/StaticEvents.h"
-#include "EventSources/misc/HWUIMappingEvents.h"
-#include "EventSources/Setting/SettingEvents.h"
+#include "event-sources/base/EventSource.h"
+#include "event-sources/parameter/ParameterEvents.h"
+#include "event-sources/parameter/MacroControlEvents.h"
+#include "event-sources/parameter/ParameterUIEvents.h"
+#include "event-sources/parameter/GroupEvents.h"
+#include "event-sources/edit-buffer/EditBufferEvents.h"
+#include "event-sources/edit-buffer/EditBufferUIEvents.h"
+#include "event-sources/misc/StaticEvents.h"
+#include "event-sources/misc/HWUIMappingEvents.h"
+#include "event-sources/setting/SettingEvents.h"
 
-#include "EventSources/ConcreteUI/ConcretePresetListEvents.h"
+#include "event-sources/concrete-ui/ConcretePresetListEvents.h"
 
 namespace DescriptiveLayouts
 {

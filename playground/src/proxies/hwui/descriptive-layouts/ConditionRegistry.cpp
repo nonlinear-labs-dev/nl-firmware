@@ -4,10 +4,10 @@
 #include <presets/EditBuffer.h>
 #include <parameters/ModulateableParameter.h>
 #include "ConditionRegistry.h"
-#include "Conditions/ParameterConditions.h"
-#include "Conditions/SoundConditions.h"
+#include "conditions/ParameterConditions.h"
+#include "conditions/SoundConditions.h"
 #include <device-settings/LayoutMode.h>
-#include <proxies/hwui/descriptive-layouts/Conditions/HWUIConditions.h>
+#include <proxies/hwui/descriptive-layouts/conditions/HWUIConditions.h>
 
 ConditionRegistry::tCondition ConditionRegistry::getCondition(const std::string& key)
 {

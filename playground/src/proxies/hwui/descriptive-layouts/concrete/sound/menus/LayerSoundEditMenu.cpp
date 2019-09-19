@@ -1,9 +1,9 @@
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/Items/ConvertToSingleItem.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/Items/InitSound.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/Items/RandomizeItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/ConvertToSingleItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/InitSound.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/RandomizeItem.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/descriptive-layouts/ConditionRegistry.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/Items/LoadPresetIntoVoiceGroupItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/LoadPresetIntoVoiceGroupItem.h>
 
 #include "LayerSoundEditMenu.h"
 
