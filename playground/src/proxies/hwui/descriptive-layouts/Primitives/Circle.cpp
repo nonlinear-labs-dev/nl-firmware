@@ -43,7 +43,7 @@ namespace DescriptiveLayouts
     auto color = Control::isHighlight() ? (FrameBuffer::Colors) getStyleValue(StyleKey::HighlightColor)
                                         : (FrameBuffer::Colors) getStyleValue(StyleKey::Color);
     fb.setColor(color);
-    fb.fillCircle(getPosition().getPosition() + m_drawPosition, getHeight() / 2);
+    fb.fillCircle(getPosition().getCenter() + m_drawPosition, getHeight() / 2);
     return true;
   }
 
