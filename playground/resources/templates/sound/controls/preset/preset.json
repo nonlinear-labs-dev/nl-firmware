@@ -1,0 +1,14 @@
+{
+  "controls": {
+    "Preset": {
+      "Number": {
+        "Class": "Text",
+        "Rect": "0, 0, 10, 12"
+      },
+      "Name": {
+        "Class": "Text",
+        "Rect": "10, 0, 40, 12"
+      }
+    }
+  }
+}

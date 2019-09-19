@@ -8,7 +8,7 @@
 #include <proxies/hwui/controls/Rect.h>
 #include "GenericLayout.h"
 #include "EventSink.h"
-#include "proxies/hwui/descriptive-layouts/Events/EventSourceBroker.h"
+#include "proxies/hwui/descriptive-layouts/events/EventSourceBroker.h"
 #include "Selector.h"
 #include "LayoutClass.h"
 

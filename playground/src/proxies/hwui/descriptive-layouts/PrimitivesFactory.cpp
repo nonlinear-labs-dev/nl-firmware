@@ -1,11 +1,11 @@
 #include <tools/ExceptionTools.h>
-#include <proxies/hwui/descriptive-layouts/Primitives/Circle.h>
+#include <proxies/hwui/descriptive-layouts/primitives/Circle.h>
 #include "PrimitivesFactory.h"
 #include "TemplateEnums.h"
 #include "PrimitiveInstance.h"
-#include "proxies/hwui/descriptive-layouts/Primitives/Bar.h"
-#include "proxies/hwui/descriptive-layouts/Primitives/Border.h"
-#include "proxies/hwui/descriptive-layouts/Primitives/Text.h"
+#include "proxies/hwui/descriptive-layouts/primitives/Bar.h"
+#include "proxies/hwui/descriptive-layouts/primitives/Border.h"
+#include "proxies/hwui/descriptive-layouts/primitives/Text.h"
 
 namespace DescriptiveLayouts
 {

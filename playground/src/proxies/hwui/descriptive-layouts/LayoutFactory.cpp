@@ -38,17 +38,8 @@ namespace DescriptiveLayouts
 
   const DescriptiveLayouts::LayoutClass& BoledLayoutFactory::find(FocusAndMode fam) const
   {
-    decltype(m_layouts)::const_iterator it;
-    try
-    {
-      it = std::find_if(m_layouts.begin(), m_layouts.end(),
-                        [=](const LayoutClass& e) { return e.matches(fam) && e.meetsConditions(); });
-    }
-    catch(...)
-    {
- #warning"adlerauge"
-      std::cerr << "Find if threw!" << std::endl;
-    }
+    auto it = std::find_if(m_layouts.begin(), m_layouts.end(),
+                           [=](const LayoutClass& e) { return e.matches(fam) && e.meetsConditions(); });
 
     std::vector<LayoutClass> matches;
     std::copy_if(m_layouts.begin(), m_layouts.end(), std::back_inserter(matches),

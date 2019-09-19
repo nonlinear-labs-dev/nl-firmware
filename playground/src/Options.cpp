@@ -63,7 +63,7 @@ void Options::setDefaults()
 
   Glib::ustring p = m_selfPath;
   size_t lastSlash = p.rfind('/');
-  Glib::ustring path = "/resources/Templates/";
+  Glib::ustring path = "/resources/templates/";
   p = p.substr(0, lastSlash) + path;
   m_layoutFolder = p;
 }

@@ -11,10 +11,10 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
 
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetList.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Preset/LoadVoiceGroupPresetList.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/SplitSoundEditMenu.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/SingleSoundEditMenu.h>
-#include <proxies/hwui/descriptive-layouts/Concrete/Sound/Menus/LayerSoundEditMenu.h>
+#include <proxies/hwui/descriptive-layouts/concrete/preset/LoadVoiceGroupPresetList.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/SplitSoundEditMenu.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/SingleSoundEditMenu.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/LayerSoundEditMenu.h>
 #include "ControlInstance.h"
 #include "GenericControl.h"
 
