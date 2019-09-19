@@ -6,7 +6,6 @@
 #include <proxies/hwui/HWUI.h>
 #include <presets/EditBuffer.h>
 #include <parameters/ModulateableParameter.h>
-#include <tools/OnParameterChangedNotifier.h>
 #include <proxies/hwui/panel-unit/ButtonParameterMapping.h>
 #include <presets/Bank.h>
 #include <presets/Preset.h>

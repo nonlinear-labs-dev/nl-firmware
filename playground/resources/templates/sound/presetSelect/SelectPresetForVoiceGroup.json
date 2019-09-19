@@ -1,6 +1,8 @@
 {
   "layouts": {
     "PresetSelectionForVoiceGroupLayout": {
+      "LocalEventBroker" : "PresetSelectionForVoiceGroup",
+      "LocalEventSink" : "PresetSelectionForVoiceGroup",
       "Selector": {
         "UIFocus": "Sound",
         "UIMode": "Edit",
@@ -22,9 +24,21 @@
           },
           "Events": "DirectLoadStatus => ANY[Highlight]"
         },
-        "PresetList": {
-          "Class": "LoadVoiceGroupPresetList",
-          "Position": "64, 12"
+        "PreviousPreset": {
+          "Class": "Preset",
+          "Position": "64, 12",
+          "Events": "PreviousPresetNumber => Number[Text],PreviousPresetName => Name[Text]"
+        },
+        "CurrentPreset": {
+          "Class": "Preset",
+          "Position": "64, 24",
+          "Events": "CurrentPresetNumber => Number[Text],CurrentPresetName => Name[Text]"
+
+        },
+        "NextPreset": {
+          "Class": "Preset",
+          "Position": "64, 36",
+          "Events": "NextPresetNumber => Number[Text],NextPresetName => Name[Text]"
         },
         "BankLabel": {
           "Class": "WideInvertedLabel",
@@ -45,11 +59,11 @@
       "EventSinks": {
         "BUTTON_A": "SwitchToSoundFocus",
         "BUTTON_D": "ToggleDirectLoad",
-        "BUTTON_B": "DecBankSelectionPresetList",
-        "BUTTON_C": "IncBankSelectionPresetList",
-        "BUTTON_INC": "IncPresetSelectionPresetList",
-        "BUTTON_DEC": "DecPresetSelectionPresetList",
-        "BUTTON_ENTER": "DoPresetListAction"
+        "BUTTON_B": "PresetSelectionForVoiceGroup.DecBankSelectionPresetList",
+        "BUTTON_C": "PresetSelectionForVoiceGroup.IncBankSelectionPresetList",
+        "BUTTON_INC": "PresetSelectionForVoiceGroup.IncPresetSelectionPresetList",
+        "BUTTON_DEC": "PresetSelectionForVoiceGroup.DecPresetSelectionPresetList",
+        "BUTTON_ENTER": "PresetSelectionForVoiceGroup.DoPresetListAction"
       }
     }
   }

@@ -219,8 +219,13 @@ namespace DescriptiveLayouts
     return ret;
   }
 
-  template <class T, typename tToT, typename tTag>
-  T parseTFromTag(tToT toT, const nlohmann::json& obj, const tTag& tag, bool optional = true)
+  static std::string convertToString(const json& j)
+  {
+    return j;
+  }
+
+  template <class T>
+  T parseTFromTag(std::function<T(const json&)> toT, const json& obj, const std::string& tag, bool optional = true)
   {
     try
     {
@@ -257,6 +262,9 @@ namespace DescriptiveLayouts
       const auto& id = name;
       try
       {
+        auto localEventBroker = parseTFromTag<std::string>(convertToString, obj.value(), "LocalEventBroker");
+        auto localEventSink = parseTFromTag<std::string>(convertToString, obj.value(), "LocalEventSink");
+
         auto selectionConditions = parseTFromTag<tConditionList>(toConditions, obj.value(), "Conditions");
         auto sinkMappings = parseTFromTag<LayoutClass::EventSinkList>(toEventSinkList, obj.value(), "EventSinks");
         auto selectors = parseTFromTag<std::list<Selector>>(toSelectors, obj.value(), "Selector", false);
