@@ -7,9 +7,9 @@
     @author     M. Seeber
     @brief      provide smoothing functionality and abstraction in order to
                 perform smoothing within a section
-    @todo
     @note       in theory, we could consider using parallel_data types for the
                 renderers (which maybe would boost performance?)
+    @todo
 *******************************************************************************/
 
 #include <stdint.h>
@@ -148,4 +148,17 @@ private:
         m_audio[static_cast<uint32_t>(Audio::_LENGTH_)],
         m_fast[static_cast<uint32_t>(Fast::_LENGTH_)],
         m_slow[static_cast<uint32_t>(Slow::_LENGTH_)] = {};
+};
+
+// smoother copy handle (for parameter smoothers that directly translate to signals)
+template<uint32_t Length>
+struct SmootherCopyHandle
+{
+    uint32_t m_smootherId[Length], m_signalId[Length], m_length = {};
+    inline void add_copy_id(const uint32_t _smootherId, const uint32_t _signalId)
+    {
+        m_smootherId[m_length] = _smootherId;
+        m_signalId[m_length] = _signalId;
+        m_length++;
+    }
 };

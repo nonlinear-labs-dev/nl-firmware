@@ -6,7 +6,7 @@
     @version    1.7-0
     @author     M. Seeber
     @brief      based on a doubly-linked list, but capable of handling multiple
-                entry and exit points and therefor multiple "sublists"
+                entry and exit points and therefore multiple "sublists"
     @todo
 *******************************************************************************/
 

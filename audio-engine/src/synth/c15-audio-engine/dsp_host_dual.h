@@ -9,11 +9,12 @@
     @todo
 *******************************************************************************/
 
-//#include <stdint.h>
 #include "c15_config.h"
 #include "parameter_list.h"
 #include "smoother_handle.h"
-#include "mappable_list.h"
+#include "macro_assignment.h"
+#include "signal_storage_dual.h"
+#include "parameter_handle.h"
 
 class dsp_host_dual
 {

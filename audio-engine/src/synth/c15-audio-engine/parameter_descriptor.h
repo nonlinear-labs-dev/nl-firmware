@@ -185,7 +185,7 @@ struct SignalDescriptor
 struct ParameterDescriptor
 {
     Descriptors::TypeDescriptor m_param;
-    Scale m_scaleId = Scale::None;
+    Properties::Scale m_scaleId = Properties::Scale::None;
     float m_scaleArg = 0.0f;
     uint32_t m_polarity = 0;
     Descriptors::SmootherDescriptor m_smoother;
