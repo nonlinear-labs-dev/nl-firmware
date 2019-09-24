@@ -14,7 +14,7 @@
 #include <device-settings/DebugLevel.h>
 #include <cmath>
 #include <libundo/undo/Transaction.h>
-#include <presets/ParameterGroupSet.h>
+#include <presets/ParameterDualGroupSet.h>
 #include <presets/PresetParameter.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -55,7 +55,7 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
-  ParameterGroupSet *groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
+  ParameterDualGroupSet *groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent());
   auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
   for(auto router : mappings->getModulationRoutingParametersFor(this))
   {
@@ -163,7 +163,7 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
-    ParameterGroupSet *groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
+    ParameterDualGroupSet *groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent());
     auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
     auto routers = mappings->getModulationRoutingParametersFor(this);
     auto highest = *routers.begin();

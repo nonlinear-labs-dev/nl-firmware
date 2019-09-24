@@ -12,7 +12,7 @@
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/Parabolic2000MsScaleConverter.h>
 
-EchoGroup::EchoGroup(ParameterGroupSet *parent)
+EchoGroup::EchoGroup(ParameterDualGroupSet *parent)
     : ParameterGroup(parent, "Echo", "Echo", "Echo", "Echo")
 {
 }

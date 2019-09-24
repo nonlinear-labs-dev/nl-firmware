@@ -2,7 +2,6 @@
 #include "device-settings/DebugLevel.h"
 #include "parameters/Parameter.h"
 #include "xml/Writer.h"
-#include "http/NetworkRequest.h"
 #include <http/ContentManager.h>
 #include "Application.h"
 #include <presets/Preset.h>
@@ -14,17 +13,14 @@
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include "parameters/ModulateableParameter.h"
 #include <parameters/PhysicalControlParameter.h>
-#include <tools/TimeTools.h>
 #include <device-settings/DeviceName.h>
-#include "device-settings/Settings.h"
 #include "device-settings/RandomizeAmount.h"
 #include "device-info/DeviceInformation.h"
 #include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
-#include "parameters/MacroControlParameter.h"
 
 EditBuffer::EditBuffer(PresetManager *parent)
-    : ParameterGroupSet(parent)
+    : ParameterDualGroupSet(parent)
     , m_deferedJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
     , m_recallSet(this)
@@ -150,7 +146,7 @@ UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)
     m_signalLocksChanged.deferedSend();
   }
 
-  return ParameterGroupSet::onChange(flags);
+  return ParameterDualGroupSet::onChange(flags);
 }
 
 void EditBuffer::doDeferedJobs()
@@ -346,7 +342,7 @@ bool EditBuffer::isZombie() const
 
 void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
-  auto changed = knownRevision < ParameterGroupSet::getUpdateIDOfLastChange();
+  auto changed = knownRevision < ParameterDualGroupSet::getUpdateIDOfLastChange();
   auto pm = static_cast<const PresetManager *>(getParent());
   auto origin = pm->findPreset(getUUIDOfLastLoadedPreset());
   auto zombie = isZombie();
@@ -409,7 +405,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
-  super::copyFrom(transaction, preset);
+  super::copyFrom(transaction, preset, m_selectedVoiceGroup);
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -427,7 +423,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Pre
   transaction->addSimpleCommand([=](auto) {
     swap->swapWith(m_lastLoadedPreset);
     m_signalPresetLoaded.send();
-    m_updateIdWhenLastLoadedPresetChanged = onChange();
+    onChange();
   });
 
   initRecallValues(transaction);
@@ -476,7 +472,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
     swap->swapWith(m_lastLoadedPreset);
     m_signalPresetLoaded.send();
-    m_updateIdWhenLastLoadedPresetChanged = onChange();
+    onChange();
   });
 
   resetModifiedIndicator(transaction);
@@ -495,7 +491,7 @@ void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset
 
 UNDO::Scope &EditBuffer::getUndoScope()
 {
-  return ParameterGroupSet::getUndoScope();
+  return ParameterDualGroupSet::getUndoScope();
 }
 
 Uuid EditBuffer::getUUIDOfLastLoadedPreset() const
@@ -652,14 +648,14 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
   }
 }
 
-bool EditBuffer::isSelected(VoiceGroup v) const
+bool EditBuffer::isVoiceGroupSelected(VoiceGroup v) const
 {
   return m_selectedVoiceGroup == v;
 }
 
 void EditBuffer::toggleVoiceGroup()
 {
-  m_selectedVoiceGroup = isSelected(VoiceGroup::I) ? VoiceGroup::II : VoiceGroup::I;
+  m_selectedVoiceGroup = isVoiceGroupSelected(VoiceGroup::I) ? VoiceGroup::II : VoiceGroup::I;
   onChange();
 }
 

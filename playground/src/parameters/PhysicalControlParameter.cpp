@@ -8,7 +8,7 @@
 #include <device-settings/DebugLevel.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/HardwareSourcesGroup.h>
-#include <presets/ParameterGroupSet.h>
+#include <presets/ParameterDualGroupSet.h>
 #include <limits>
 #include <math.h>
 #include "ParameterAlgorithm.h"
@@ -141,7 +141,7 @@ void PhysicalControlParameter::onSelected()
 {
   super::onSelected();
 
-  auto grandPa = dynamic_cast<const ParameterGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<const ParameterDualGroupSet *>(getParent()->getParent());
   auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
   auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
   mc->setUiSelectedHardwareSource(getID());
@@ -167,7 +167,7 @@ void PhysicalControlParameter::setUiSelectedModulationRouter(int pos)
 
   if(current != pos)
   {
-    ParameterGroupSet *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+    ParameterDualGroupSet *grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
 
     if(auto oldRouter = grandPa->findParameterByID(current))
       oldRouter->onUnselected();
@@ -191,7 +191,7 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 {
   int id = getUiSelectedModulationRouter();
 
-  ParameterGroupSet *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+  ParameterDualGroupSet *grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
   auto mappings = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID("MCM"));
   auto routers = mappings->getModulationRoutingParametersFor(this);
   setUiSelectedModulationRouter(getIdOfAdvancedParameter(routers, id, inc));
@@ -199,7 +199,7 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 
 int PhysicalControlParameter::getUiSelectedModulationRouter() const
 {
-  auto grandPa = dynamic_cast<const ParameterGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<const ParameterDualGroupSet *>(getParent()->getParent());
   auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
   auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
 

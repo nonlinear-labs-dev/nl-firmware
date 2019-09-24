@@ -13,7 +13,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   typedef UpdateDocumentContributor super;
 
  public:
-  ParameterGroup(ParameterGroupSet *parent, const char *id, const char *shortName, const char *longName,
+  ParameterGroup(ParameterDualGroupSet *parent, const char *id, const char *shortName, const char *longName,
                  const char *webUIName);
   virtual ~ParameterGroup();
 

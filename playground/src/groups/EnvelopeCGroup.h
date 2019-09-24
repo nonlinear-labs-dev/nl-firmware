@@ -5,7 +5,7 @@
 class EnvelopeCGroup : public ParameterGroup
 {
  public:
-  EnvelopeCGroup(ParameterGroupSet *parent);
+  EnvelopeCGroup(ParameterDualGroupSet *parent);
   virtual ~EnvelopeCGroup();
 
   void init();

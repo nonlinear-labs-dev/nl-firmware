@@ -5,7 +5,7 @@
 class MasterGroup : public ParameterGroup
 {
  public:
-  MasterGroup(ParameterGroupSet *parent);
+  MasterGroup(ParameterDualGroupSet *parent);
   virtual ~MasterGroup();
 
   void init();

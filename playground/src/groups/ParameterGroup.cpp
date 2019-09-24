@@ -1,11 +1,11 @@
 #include "ParameterGroup.h"
 #include "xml/Writer.h"
 #include "parameters/Parameter.h"
-#include "presets/ParameterGroupSet.h"
+#include "presets/ParameterDualGroupSet.h"
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
 
-ParameterGroup::ParameterGroup(ParameterGroupSet *parent, const char *id, const char *shortName, const char *longName,
+ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, const char *id, const char *shortName, const char *longName,
                                const char *webUIName)
     : UpdateDocumentContributor(parent)
     , m_id(id)

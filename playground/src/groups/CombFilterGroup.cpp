@@ -19,7 +19,7 @@
 #include <parameters/scale-converters/PitchCombLinearStModulationScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-CombFilterGroup::CombFilterGroup(ParameterGroupSet *parent)
+CombFilterGroup::CombFilterGroup(ParameterDualGroupSet *parent)
     : ParameterGroup(parent, "Comb", "Comb Filter", "Comb Filter", "Comb Filter")
 {
 }

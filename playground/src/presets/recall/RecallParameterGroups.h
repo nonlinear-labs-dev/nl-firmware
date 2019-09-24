@@ -2,7 +2,7 @@
 
 #include "presets/PresetParameterGroups.h"
 
-class ParameterGroupSet;
+class ParameterDualGroupSet;
 class EditBuffer;
 class RecallParameterGroup;
 class RecallParameter;

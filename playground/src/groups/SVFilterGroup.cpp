@@ -11,7 +11,7 @@
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-SVFilterGroup::SVFilterGroup(ParameterGroupSet *parent)
+SVFilterGroup::SVFilterGroup(ParameterDualGroupSet *parent)
     : ParameterGroup(parent, "SVF", "SV Filter", "State Variable Filter", "State Variable Filter")
 {
 }

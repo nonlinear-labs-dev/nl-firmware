@@ -12,7 +12,7 @@
 #include <parameters/scale-converters/Parabolic50MsScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 
-FlangerGroup::FlangerGroup(ParameterGroupSet *parent)
+FlangerGroup::FlangerGroup(ParameterDualGroupSet *parent)
     : ParameterGroup(parent, "Flang", "Flanger", "Flanger", "Flanger")
 {
 }

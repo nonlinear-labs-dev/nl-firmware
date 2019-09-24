@@ -3,12 +3,12 @@
 #include <groups/ParameterGroup.h>
 #include <nltools/threading/Throttler.h>
 
-class ParameterGroupSet;
+class ParameterDualGroupSet;
 
 class ScaleGroup : public ParameterGroup
 {
  public:
-  ScaleGroup(ParameterGroupSet *parent);
+  ScaleGroup(ParameterDualGroupSet *parent);
   virtual ~ScaleGroup();
 
   void init();

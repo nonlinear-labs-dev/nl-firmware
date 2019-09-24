@@ -4,7 +4,7 @@
 #include "ModulateableParameter.h"
 #include "PhysicalControlParameter.h"
 #include "scale-converters/MacroControlScaleConverter.h"
-#include "presets/ParameterGroupSet.h"
+#include "presets/ParameterDualGroupSet.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/MacroControlsGroup.h>
@@ -134,7 +134,7 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
 void MacroControlParameter::updateBoundRibbon()
 {
-  auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
+  auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent());
   auto mcm = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
   auto routers = mcm->getModulationRoutingParametersFor(this);
 
@@ -157,7 +157,7 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 {
   if(m_UiSelectedHardwareSourceParameterID != pos)
   {
-    auto *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+    auto *grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
 
     if(auto old = grandPa->findParameterByID(m_UiSelectedHardwareSourceParameterID))
       old->onUnselected();
@@ -171,7 +171,7 @@ void MacroControlParameter::toggleUiSelectedHardwareSource(int inc)
 {
   int id = getUiSelectedHardwareSource();
 
-  auto grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
   auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
   auto availableSources = controlSources->getPhysicalControlParameters();
   setUiSelectedHardwareSource(getIdOfAdvancedParameter(availableSources, id, inc));
@@ -349,7 +349,7 @@ void MacroControlParameter::onSelected()
 
 void MacroControlParameter::onUnselected()
 {
-  auto grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
   auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
 
   for(auto source : controlSources->getPhysicalControlParameters())

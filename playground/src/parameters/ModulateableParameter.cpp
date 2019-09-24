@@ -11,7 +11,7 @@
 #include <libundo/undo/Transaction.h>
 #include <device-settings/DebugLevel.h>
 #include <xml/Writer.h>
-#include <presets/ParameterGroupSet.h>
+#include <presets/ParameterDualGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
@@ -115,7 +115,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
     auto swapData = UNDO::createSwapData(src);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
+      if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != MacroControls::NONE)
         {
@@ -332,7 +332,7 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
 
   auto src = getModulationSource();
   uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
-  auto groupSet = dynamic_cast<const ParameterGroupSet *>(getParentGroup()->getParent());
+  auto groupSet = dynamic_cast<const ParameterDualGroupSet *>(getParentGroup()->getParent());
 
   if(auto srcParam = groupSet->findParameterByID(srcParamID))
   {
@@ -401,11 +401,11 @@ void ModulateableParameter::registerTests()
 
     Root root;
 
-    class GroupSet : public ParameterGroupSet
+    class GroupSet : public ParameterDualGroupSet
     {
      public:
       explicit GroupSet(Root *root)
-          : ParameterGroupSet(root)
+          : ParameterDualGroupSet(root)
       {
       }
 

@@ -13,7 +13,7 @@ namespace DescriptiveLayouts
       if(type == EditBufferType::Single)
         setValue({ typeStr, 0 });
       else
-        setValue({ typeStr + (eb->isSelected(VoiceGroup::I) ? " [I]" : " [II]"), 0 });
+        setValue({ typeStr + (eb->isVoiceGroupSelected(VoiceGroup::I) ? " [I]" : " [II]"), 0 });
     }
   };
 
@@ -22,7 +22,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue({ eb->isSelected(VoiceGroup::I) ? "Select II" : "Select I", 0 });
+      setValue({eb->isVoiceGroupSelected(VoiceGroup::I) ? "Select II" : "Select I", 0 });
     }
   };
 
@@ -52,7 +52,7 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       //TODO add voice group id!
-      auto param = eb->findParameterByID(247);
+      auto param = eb->findParameterByID(247, VoiceGroup::I);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -63,7 +63,7 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       //TODO add voice group id!
-      auto param = eb->findParameterByID(247);
+      auto param = eb->findParameterByID(247, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -74,7 +74,7 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       //TODO add voice group id!
-      auto param = eb->findParameterByID(250);
+      auto param = eb->findParameterByID(250, VoiceGroup::I);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -85,7 +85,7 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       //TODO add voice group id!
-      auto param = eb->findParameterByID(250);
+      auto param = eb->findParameterByID(250, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
     }
   };

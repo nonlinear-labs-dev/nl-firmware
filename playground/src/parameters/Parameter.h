@@ -15,7 +15,7 @@ class Application;
 class ParameterLayout;
 class ParameterInfoLayout;
 class Writer;
-class ParameterGroupSet;
+class ParameterDualGroupSet;
 class ParameterGroup;
 class MessageComposer;
 class FrameBuffer;

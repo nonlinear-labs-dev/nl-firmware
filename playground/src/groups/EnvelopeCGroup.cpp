@@ -12,7 +12,7 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 
-EnvelopeCGroup::EnvelopeCGroup(ParameterGroupSet *parent)
+EnvelopeCGroup::EnvelopeCGroup(ParameterDualGroupSet *parent)
     : ParameterGroup(parent, "Env C", "Envelope C", "Envelope C", "Envelope C")
 {
 }

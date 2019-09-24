@@ -2,12 +2,12 @@
 
 #include "Serializer.h"
 
-class ParameterGroupSet;
+class ParameterDualGroupSet;
 
 class ParameterGroupsSerializer : public Serializer
 {
  public:
-  ParameterGroupsSerializer(ParameterGroupSet *paramGroups);
+  ParameterGroupsSerializer(ParameterDualGroupSet *paramGroups);
 
   static Glib::ustring getTagName();
 
@@ -15,5 +15,5 @@ class ParameterGroupsSerializer : public Serializer
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  ParameterGroupSet *m_paramGroups;
+  ParameterDualGroupSet *m_paramGroups;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ParameterGroupSet.h"
+#include "ParameterDualGroupSet.h"
 #include "presets/recall/RecallParameterGroups.h"
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
@@ -11,12 +11,11 @@ class Writer;
 class PresetManager;
 
 
-class EditBuffer : public ParameterGroupSet
+class EditBuffer : public ParameterDualGroupSet
 {
  private:
-  typedef ParameterGroupSet super;
-
- public:
+  typedef ParameterDualGroupSet super;
+public:
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
@@ -84,10 +83,9 @@ class EditBuffer : public ParameterGroupSet
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
 
-  bool isSelected(VoiceGroup v) const;
+  bool isVoiceGroupSelected(VoiceGroup v) const;
   void toggleVoiceGroup();
   void loadCurrentVoiceGroup(Preset *pPreset);
-
  private:
   Parameter *searchForAnyParameterWithLock() const;
 
@@ -121,7 +119,6 @@ class EditBuffer : public ParameterGroupSet
   friend class PresetParameterGroups;
 
   Uuid m_lastLoadedPreset;
-  tUpdateID m_updateIdWhenLastLoadedPresetChanged = 0;
 
   Glib::ustring m_name;
   DelayedJob m_deferedJobs;

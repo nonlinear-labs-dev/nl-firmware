@@ -103,7 +103,7 @@ PanelUnit::~PanelUnit()
 int PanelUnit::choseHWBestSourceForMC(int mcParamId) const
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(
-         Application::get().getPresetManager()->getEditBuffer()->findParameterByID(mcParamId)))
+      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(mcParamId)))
   {
     return mc->getUiSelectedHardwareSource();
   }

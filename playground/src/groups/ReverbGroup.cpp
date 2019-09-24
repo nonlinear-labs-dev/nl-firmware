@@ -4,7 +4,7 @@
 
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 
-ReverbGroup::ReverbGroup(ParameterGroupSet *parent)
+ReverbGroup::ReverbGroup(ParameterDualGroupSet *parent)
     : ParameterGroup(parent, "Reverb", "Reverb", "Reverb", "Reverb")
 {
 }

@@ -202,7 +202,7 @@ void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Pa
     if(auto ph = dynamic_cast<PhysicalControlParameter *>(newParam))
     {
       if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM")))
+          Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM")))
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {

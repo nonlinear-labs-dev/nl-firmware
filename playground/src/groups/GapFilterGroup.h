@@ -5,7 +5,7 @@
 class GapFilterGroup : public ParameterGroup
 {
  public:
-  GapFilterGroup(ParameterGroupSet *parent);
+  GapFilterGroup(ParameterDualGroupSet *parent);
   virtual ~GapFilterGroup();
 
   void init();
