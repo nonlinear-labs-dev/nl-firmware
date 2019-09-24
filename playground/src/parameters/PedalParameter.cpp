@@ -20,6 +20,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/PlayControlParameterLayouts.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <xml/Writer.h>
+#include <presets/EditBuffer.h>
 
 void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -60,11 +61,12 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
 void PedalParameter::setRoutersModeAccordingToReturnMode()
 {
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
-  auto *groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent());
-  auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
-  for(auto router : mappings->getModulationRoutingParametersFor(this))
-  {
-    router->getValue().setIsBoolean(routersAreBoolean);
+  if(auto eb = dynamic_cast<EditBuffer *>(getParentGroup()->getParent())) {
+    auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
+    for(auto router : mappings->getModulationRoutingParametersFor(this))
+    {
+      router->getValue().setIsBoolean(routersAreBoolean);
+    }
   }
 }
 

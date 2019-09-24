@@ -18,6 +18,7 @@
 #include "device-info/DeviceInformation.h"
 #include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
+#include <nltools/StringTools.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -405,7 +406,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
-  super::copyFrom(transaction, preset, m_selectedVoiceGroup);
+  super::copyFrom(transaction, preset);
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -664,26 +665,19 @@ void EditBuffer::loadCurrentVoiceGroup(Preset *pPreset)
   if(pPreset == nullptr)
     return;
 
-  auto string = "Loading " + pPreset->getName()
-      + " into Voice Group: " + getCurrentVoiceGroupName();  //TODO StringTools::compose(x, y, zz);
+  auto string = nltools::string::concat("Loading " + pPreset->getName() + " into Voice Group: " + getCurrentVoiceGroupName());
   DebugLevel::warning(string);
   auto scope = getUndoScope().startTransaction(string);
   undoableLoad(scope->getTransaction(), pPreset);
 }
 
-const IntrusiveList<EditBuffer::tParameterGroupPtr> &EditBuffer::getParameterGroups() const
-{
-  return ParameterDualGroupSet::getParameterGroups(m_selectedVoiceGroup);
+VoiceGroup EditBuffer::getVoiceGroupSelection() const {
+  return m_selectedVoiceGroup;
 }
 
-std::map<int, Parameter *> EditBuffer::getParametersSortedById() const {
-  return ParameterDualGroupSet::getParametersSortedById(m_selectedVoiceGroup);
+void EditBuffer::selectVoiceGroup(VoiceGroup vg) {
+ if(std::exchange(m_selectedVoiceGroup, vg) != vg) {
+   onChange();
+ }
 }
 
-Parameter *EditBuffer::findParameterByID(int id) const {
-  return ParameterDualGroupSet::findParameterByID(id, m_selectedVoiceGroup);
-}
-
-Parameter *EditBuffer::findParameterByID(int id, VoiceGroup vg) const {
-  return ParameterDualGroupSet::findParameterByID(id, vg);
-}

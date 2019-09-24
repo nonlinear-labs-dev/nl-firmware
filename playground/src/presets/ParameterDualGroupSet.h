@@ -21,26 +21,35 @@ class ParameterDualGroupSet : public AttributesOwner
   typedef ParameterGroup *tParameterGroupPtr;
 
   size_t countParameters() const;
-  tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id, VoiceGroup vg = VoiceGroup::I) const;
+  tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id) const;
+  tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id, VoiceGroup vg) const;
 
-  const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg = VoiceGroup::I) const
-  {
-    return m_parameterGroups[static_cast<int>(vg)];
-  }
+  const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg) const;
+  const IntrusiveList<tParameterGroupPtr> &getParameterGroups() const;
 
-  virtual std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg = VoiceGroup::I) const;
-  virtual Parameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::I) const;
+  std::map<int, Parameter *> getParametersSortedById() const;
+  std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg) const;
+
+  Parameter *findParameterByID(int id, VoiceGroup vgI) const;
+  Parameter *findParameterByID(int id) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  protected:
-  void copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup target = VoiceGroup::I);
-  ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v = VoiceGroup::I);
+  void copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup target);
+  void copyFrom(UNDO::Transaction *transaction, const Preset *other);
+  ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
 
- private:
+  VoiceGroup m_selectedVoiceGroup = VoiceGroup::I;
+
+private:
   using tParamGroups = IntrusiveList<tParameterGroupPtr>;
   using tParamMap = std::map<int, Parameter *>;
 
   std::array<tParamGroups, 2> m_parameterGroups;
   std::array<tParamMap, 2> m_idToParameterMap;
+
+  friend class VoiceGroupSerializer;
+
+  void selectVoiceGroup(VoiceGroup group);
 };

@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <sstream>
 #include <mutex>
+#include "../StringTools.h"
 
 namespace nltools
 {
@@ -33,12 +34,7 @@ namespace nltools
       InsertSpacesAndAppendNewLine
     };
 
-    template <typename... tArgs> static std::string concat(tArgs&... args)
-    {
-      std::stringstream str;
-      (void) std::initializer_list<bool>{ (str << args << " ", false)... };
-      return str.str();
-    }
+
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void debug(const Args&... args)
@@ -102,7 +98,7 @@ namespace nltools
 
     template <typename... tArgs> static void throwException(const tArgs&... args)
     {
-      auto str = concat(args...);
+      auto str = nltools::string::concat(args...);
       throw std::runtime_error(str);
     }
 

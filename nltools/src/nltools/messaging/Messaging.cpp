@@ -84,13 +84,13 @@ namespace nltools
 
     ChannelConfiguration::ChannelConfiguration(EndPoint p)
         : peer(p)
-        , uri(concat("ws://", "localhost", ":", getPortFor(p)))
+        , uri(nltools::string::concat("ws://", "localhost", ":", getPortFor(p)))
     {
     }
 
     ChannelConfiguration::ChannelConfiguration(EndPoint p, const std::string &hostName)
         : peer(p)
-        , uri(concat("ws://", hostName, ":", getPortFor(p)))
+        , uri(nltools::string::concat("ws://", hostName, ":", getPortFor(p)))
     {
     }
 

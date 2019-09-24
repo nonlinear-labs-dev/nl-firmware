@@ -24,7 +24,7 @@ PresetParameterGroups::PresetParameterGroups(UpdateDocumentContributor *parent, 
 
 void PresetParameterGroups::copyFromParameterGroupSet(UNDO::Transaction *transaction, const ParameterDualGroupSet *other)
 {
-  for(auto &g : other->getParameterGroups())
+  for(auto &g : other->getParameterGroups(VoiceGroup::I))
     m_parameterGroups[g->getID()]->copyFrom(transaction, g);
 
   AttributesOwner::copyFrom(transaction, other);

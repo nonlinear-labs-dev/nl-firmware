@@ -23,31 +23,31 @@ Glib::ustring ParameterGroupSerializer::getTagName()
 
 void ParameterGroupSerializer::writeTagContent(Writer &writer) const
 {
-  for(auto param : m_paramGroup->getParameters())
+  if(m_paramGroup != nullptr)
   {
-    ParameterSerializer paramSerializer(param);
-    paramSerializer.write(writer, Attribute("id", param->getID()));
+    for(auto param : m_paramGroup->getParameters())
+    {
+      ParameterSerializer paramSerializer(param);
+      paramSerializer.write(writer, Attribute("id", param->getID()));
+    }
   }
 }
 
 void ParameterGroupSerializer::readTagContent(Reader &reader) const
 {
-  if(m_paramGroup)
+  for(auto p : m_paramGroup->getParameters())
   {
-    for(auto p : m_paramGroup->getParameters())
-    {
-      p->removeFlag(ParameterFlags::Loaded);
-    }
-
-    reader.onTag(ParameterSerializer::getTagName(), [&](auto attr) mutable {
-      auto p = m_parameterById.find(std::stoi(attr.get("id")));
-      if(p != m_parameterById.end())
-      {
-        auto param = p->second;
-        param->setFlag(ParameterFlags::Loaded);
-        return new ParameterSerializer(param);
-      }
-      return static_cast<ParameterSerializer *>(nullptr);
-    });
+    p->removeFlag(ParameterFlags::Loaded);
   }
+
+  reader.onTag(ParameterSerializer::getTagName(), [&](auto attr) mutable {
+    auto p = m_parameterById.find(std::stoi(attr.get("id")));
+    if(p != m_parameterById.end())
+    {
+      auto param = p->second;
+      param->setFlag(ParameterFlags::Loaded);
+      return new ParameterSerializer(param);
+    }
+    return static_cast<ParameterSerializer *>(nullptr);
+  });
 }

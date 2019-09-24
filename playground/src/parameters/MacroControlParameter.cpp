@@ -22,6 +22,7 @@
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
 #include <tools/StringTools.h>
+#include <presets/EditBuffer.h>
 
 static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(MacroControls::MC1);
 
@@ -134,19 +135,22 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
 void MacroControlParameter::updateBoundRibbon()
 {
-  auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent());
-  auto mcm = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
-  auto routers = mcm->getModulationRoutingParametersFor(this);
+  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
+    if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
+      auto mcm = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
+      auto routers = mcm->getModulationRoutingParametersFor(this);
 
-  for(auto router : routers)
-  {
-    if(auto ribbon = dynamic_cast<RibbonParameter *>(router->getSourceParameter()))
-    {
-      if(router->getControlPositionValue() > 0)
+      for(auto router : routers)
       {
-        if(ribbon->getRibbonReturnMode() == RibbonReturnMode::STAY)
+        if(auto ribbon = dynamic_cast<RibbonParameter *>(router->getSourceParameter()))
         {
-          ribbon->boundToMacroControl(getControlPositionValue());
+          if(router->getControlPositionValue() > 0)
+          {
+            if(ribbon->getRibbonReturnMode() == RibbonReturnMode::STAY)
+            {
+              ribbon->boundToMacroControl(getControlPositionValue());
+            }
+          }
         }
       }
     }
@@ -157,13 +161,13 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 {
   if(m_UiSelectedHardwareSourceParameterID != pos)
   {
-    auto *grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
+    if(auto *eb = dynamic_cast<EditBuffer*>(getParent()->getParent())) {
+      if(auto old = eb->findParameterByID(m_UiSelectedHardwareSourceParameterID))
+        old->onUnselected();
 
-    if(auto old = grandPa->findParameterByID(m_UiSelectedHardwareSourceParameterID))
-      old->onUnselected();
-
-    m_UiSelectedHardwareSourceParameterID = pos;
-    invalidate();
+      m_UiSelectedHardwareSourceParameterID = pos;
+      invalidate();
+    }
   }
 }
 
@@ -171,7 +175,7 @@ void MacroControlParameter::toggleUiSelectedHardwareSource(int inc)
 {
   int id = getUiSelectedHardwareSource();
 
-  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent());
   auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
   auto availableSources = controlSources->getPhysicalControlParameters();
   setUiSelectedHardwareSource(getIdOfAdvancedParameter(availableSources, id, inc));
@@ -349,7 +353,7 @@ void MacroControlParameter::onSelected()
 
 void MacroControlParameter::onUnselected()
 {
-  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent());
   auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
 
   for(auto source : controlSources->getPhysicalControlParameters())

@@ -8,6 +8,8 @@
 #include "PresetParameterGroupsSerializer.h"
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
+#include "VoiceGroupSerializer.h"
+#include "VoiceGroupLockSerializer.h"
 
 EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
     : Serializer(getTagName())
@@ -28,7 +30,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 {
   SplashLayout::addStatus("Writing Edit Buffer");
 
-  ParameterGroupsSerializer groups(m_editBuffer);
+  VoiceGroupSerializer groups(m_editBuffer);
   groups.write(writer);
 
   if(auto selectedParam = m_editBuffer->getSelected())
@@ -39,10 +41,12 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 
   writer.writeTextElement("hash-on-store", to_string(m_editBuffer->m_hashOnStore));
 
-  for(auto g : m_editBuffer->getParameterGroups())
-    for(auto p : g->getParameters())
-      if(p->isLocked())
-        writer.writeTextElement("locked-parameter", to_string(p->getID()));
+  VoiceGroupLockSerializer lockSerializer(m_editBuffer);
+  lockSerializer.write(writer);
+
+  writer.writeTextElement("editbuffer-selection", toString(m_editBuffer->getVoiceGroupSelection()));
+
+  writer.writeTextElement("editbuffer-type", toString(m_editBuffer->getType()));
 
   RecallEditBufferSerializer recall(m_editBuffer);
   recall.write(writer);
@@ -50,15 +54,22 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 
 void EditBufferSerializer::readTagContent(Reader &reader) const
 {
+  //TODO Assert all parameters unlocked!?
+
   SplashLayout::addStatus("Reading Edit Buffer");
 
-  for(auto g : m_editBuffer->getParameterGroups())
-    for(auto p : g->getParameters())
-      if(p->isLocked())
-        p->undoableUnlock(reader.getTransaction());
+  reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
+    m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
+  });
 
-  reader.onTag(ParameterGroupsSerializer::getTagName(),
-               [&](auto) mutable { return new ParameterGroupsSerializer(m_editBuffer); });
+  reader.onTextElement("editbuffer-selection",
+                       [&](auto text, auto) mutable { m_editBuffer->selectVoiceGroup(toVoiceGroup(text)); });
+
+  reader.onTextElement("editbuffer-type",
+                       [&](auto text, auto) mutable { m_editBuffer->setType(toEditBufferType(text)); });
+
+  reader.onTag(VoiceGroupSerializer::getTagName(),
+               [&](auto) mutable { return new VoiceGroupSerializer(m_editBuffer); });
 
   reader.onTextElement("selected-parameter", [&](auto text, auto) mutable {
     m_editBuffer->undoableSelectParameter(reader.getTransaction(), text);
@@ -68,6 +79,9 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
                [&](auto) mutable { return new LastLoadedPresetInfoSerializer(m_editBuffer); });
 
   reader.loadElement("hash-on-store", m_editBuffer->m_hashOnStore);
+
+  reader.onTag(VoiceGroupLockSerializer::getTagName(),
+               [&](auto) mutable { return new VoiceGroupLockSerializer(m_editBuffer); });
 
   reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
     m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
