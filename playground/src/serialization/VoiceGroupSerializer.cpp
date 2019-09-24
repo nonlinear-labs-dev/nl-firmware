@@ -50,7 +50,7 @@ VoiceGroupSerializer::VoiceGroupSerializer(ParameterDualGroupSet *paramGroups)
 
 Glib::ustring VoiceGroupSerializer::getTagName()
 {
-  return "VoiceGroup";
+  return "voice-groups";
 }
 
 void VoiceGroupSerializer::writeTagContent(Writer &writer) const

@@ -115,6 +115,7 @@ public:
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;
+  friend class RecallEditBufferSerializer2;
   friend class EditBufferActions;
   friend class PresetParameterGroups;
 

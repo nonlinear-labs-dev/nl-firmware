@@ -8,28 +8,47 @@
 
 RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)
+    , m_editBuffer{ editBuffer }
 {
-  for(auto &g : editBuffer->getParameterGroups())
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    for(auto &parameter : g->getParameters())
+    for(auto &g : m_editBuffer->getParameterGroups(vg))
     {
-      m_parameters[parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
+      for(auto &parameter : g->getParameters())
+      {
+        m_parameters[static_cast<int>(vg)][parameter->getID()]
+            = std::make_unique<RecallParameter>(this, parameter->getID());
+      }
     }
   }
 }
 
+std::array<RecallParameterGroups::tParameterMap, 2>& RecallParameterGroups::getParameters()
+{
+  return m_parameters;
+}
+
+
 const RecallParameter *RecallParameterGroups::findParameterByID(int id) const
 {
-  return m_parameters.at(id).get();
+  return findParameterByID(id, m_editBuffer->getVoiceGroupSelection());
+}
+
+const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
+{
+  return m_parameters[static_cast<int>(vg)].at(id).get();
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
 {
-  for(auto &g : other->getParameterGroups())
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    for(auto &parameter : g->getParameters())
+    for(auto &g : other->getParameterGroups(vg))
     {
-      m_parameters.at(parameter->getID())->copyFrom(transaction, parameter);
+      for(auto &parameter : g->getParameters())
+      {
+        m_parameters[static_cast<int>(vg)].at(parameter->getID())->copyFrom(transaction, parameter);
+      }
     }
   }
 }
@@ -40,7 +59,7 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   if(changed)
   {
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
-      for(auto &parameterpair : m_parameters)
+      for(auto &parameterpair : m_parameters[static_cast<int>(m_editBuffer->getVoiceGroupSelection())])
       {
         auto &parameter = parameterpair.second;
         parameter->writeDocument(writer, knownRevision);
