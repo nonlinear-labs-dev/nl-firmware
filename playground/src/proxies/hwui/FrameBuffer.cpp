@@ -169,16 +169,15 @@ void FrameBuffer::fillRect(const Rect &rect)
   }
 }
 
-void FrameBuffer::fillCircle(const Point &leftTop, int radius)
+void FrameBuffer::fillCircle(const Point &center, int radius)
 {
-
   if(radius % 2 == 0)
   {
-    auto middleX = leftTop.getX() + radius - 0.5;
-    auto middleY = leftTop.getY() + radius - 0.5;
-    for(auto y = leftTop.getY(); y < leftTop.getY() + radius * 2; y++)
+    auto middleX = center.getX() - 0.5;
+    auto middleY = center.getY() - 0.5;
+    for(auto y = center.getY() - radius; y < center.getY() + radius; y++)
     {
-      for(auto x = leftTop.getX(); x < leftTop.getX() + radius * 2; x++)
+      for(auto x = center.getX() - radius; x < center.getX() + radius; x++)
       {
         auto distance = sqrt(pow(x - middleX, 2) + pow(y - middleY, 2));
         if(distance <= radius)
@@ -259,7 +258,7 @@ void FrameBuffer::swapBuffers()
 
 bool FrameBuffer::isValidColor(Colors c) const
 {
-  return c == C43 || c == C77 || c == C103 || c == C128 || c == C179 || c == C204 || c == C255;
+  return c == C43 || c == C77 || c == C103 || c == C128 || c == C179 || c == C204 || c == C255 || c == Transparent;
 }
 
 FrameBuffer::Clip FrameBuffer::clip(const Rect &rect)

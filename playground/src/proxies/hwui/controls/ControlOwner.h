@@ -64,6 +64,29 @@ class ControlOwner : public Uncopyable
     return nullptr;
   }
 
+  template <typename... TControls> struct ControlList
+  {
+    template <typename CB> static bool findFirstAndCall(ControlOwner *o, CB cb)
+    {
+      using this_type = ControlList<TControls...>;
+      bool found = false;
+      std::initializer_list<bool>{ (this_type::callIfMatches<CB, TControls>(found, o, cb), false)... };
+      return found;
+    }
+
+    template <typename CB, typename T> static void callIfMatches(bool &found, ControlOwner *c, CB cb)
+    {
+      if(!found)
+      {
+        if(auto a = c->findControlOfType<T>())
+        {
+          found = true;
+          cb(a.get());
+        }
+      }
+    }
+  };
+
   void highlight(const std::shared_ptr<Control> &c);
   void noHighlight();
   void highlightButtonWithCaption(const Glib::ustring &caption);

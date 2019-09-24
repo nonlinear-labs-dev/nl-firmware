@@ -35,6 +35,8 @@ namespace DescriptiveLayouts
        PresetListPresetName, PresetListHasLeftBank, PresetListHasRightBank, isFineActive, EditBufferMasterText,
        EditBufferUnisonText, VGIUnisonText, VGIIUnisonText, VGIMasterText, VGIIMasterText);
 
+  ENUM(LocalEventProvider, uint8_t, PresetSelectionForVoiceGroup);
+
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
 
   template <typename Derived> class StringId : public std::string

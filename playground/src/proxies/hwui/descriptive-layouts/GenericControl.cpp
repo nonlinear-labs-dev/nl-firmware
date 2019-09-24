@@ -2,7 +2,7 @@
 #include "GenericLayout.h"
 #include <nltools/enums/EnumTools.h>
 #include "Styleable.h"
-#include "proxies/hwui/descriptive-layouts/Events/EventSourceBroker.h"
+#include "proxies/hwui/descriptive-layouts/events/EventSourceBroker.h"
 #include "PropertyOwner.h"
 #include "ControlRegistry.h"
 

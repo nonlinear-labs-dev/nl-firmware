@@ -57,8 +57,6 @@ class DebugLevel : public EnumSetting<DebugLevels>
 
   bool set(DebugLevels m) override;
 
-  static DebugLevels getLevel();
-
   template <typename... tArgs> static void gassy(const tArgs&... args)
   {
     nltools::Log::debug(args...);

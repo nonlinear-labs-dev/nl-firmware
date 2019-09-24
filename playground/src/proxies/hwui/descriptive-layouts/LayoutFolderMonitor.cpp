@@ -54,16 +54,6 @@ void LayoutFolderMonitor::bruteForce()
         DescriptiveLayouts::importLayout(path);
         DescriptiveLayouts::importStyles(path);
       }
-      else if(g_str_has_suffix(path.c_str(), ".yaml"))
-      {
- #warning"adlerauge"
-        auto tmpPath = "/tmp/__nl_style.json";
-        SpawnCommandLine cmd("yaml2json " + path);
-        g_file_set_contents(tmpPath, cmd.getStdOutput().c_str(), -1, nullptr);
-        DescriptiveLayouts::importControls(tmpPath);
-        DescriptiveLayouts::importLayout(tmpPath);
-        DescriptiveLayouts::importStyles(tmpPath);
-      }
     }
 
     DescriptiveLayouts::ConsistencyChecker checker(std::cout);

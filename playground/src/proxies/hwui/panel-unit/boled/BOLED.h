@@ -31,12 +31,6 @@ class BOLED : public OLEDProxy, public sigc::trackable
 
   void bruteForce();
 
-  sigc::connection onLayoutInstantiated(const sigc::slot<void, Layout*>& s);
-
-  void reset(Layout* layout) override;
-
-  void reset(tLayoutPtr layout) override;
-
  private:
   void installOldLayouts(FocusAndMode foucsAndMode);
   void setupSoundScreen(FocusAndMode focusAndMode);
@@ -46,6 +40,4 @@ class BOLED : public OLEDProxy, public sigc::trackable
 
   void setupFocusAndModeMixed(FocusAndMode focusAndMode);
   void setupFocusAndModeDescriptiveLayouts(FocusAndMode focusAndMode);
-
-  sigc::signal<void, Layout*> m_layoutInstantiated;
 };

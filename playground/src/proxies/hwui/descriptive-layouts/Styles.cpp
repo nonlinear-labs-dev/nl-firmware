@@ -9,7 +9,8 @@ namespace DescriptiveLayouts
   {
   }
 
-  #warning "adlerauge -> map style to multiple control classes"
+#warning "IMPROVEMENT -> map style to multiple control classes"
+
   void StyleSheet::registerStyleFull(UIFocus f, UIMode m, UIDetail d, LayoutClasses l, ControlClasses cc,
                                      ControlInstances ci, PrimitiveClasses pc, PrimitiveTag pt, PrimitiveInstances pi,
                                      const StyleMap &s)

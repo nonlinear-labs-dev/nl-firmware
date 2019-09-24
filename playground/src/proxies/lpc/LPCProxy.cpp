@@ -254,7 +254,7 @@ void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
 
 void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
 {
-  if(Application::get().getSettings()->getSetting<DebugLevel>()->getLevel() == DebugLevels::DEBUG_LEVEL_GASSY)
+  if(Application::get().getSettings()->getSetting<DebugLevel>()->get() == DebugLevels::DEBUG_LEVEL_GASSY)
   {
     gsize numBytes = 0;
     uint8_t *data = (uint8_t *) bytes->get_data(numBytes);

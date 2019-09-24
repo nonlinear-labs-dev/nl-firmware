@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include <memory>
-#include <proxies/hwui/descriptive-layouts/Conditions/ConditionBase.h>
+#include <proxies/hwui/descriptive-layouts/conditions/ConditionBase.h>
 #include <tools/Signal.h>
 #include <map>
 
@@ -9,7 +9,7 @@ class ConditionRegistry : public sigc::trackable
 {
  public:
   typedef ConditionBase* tCondition;
-  tCondition getLambda(const std::string& key);
+  tCondition getCondition(const std::string& key);
   static ConditionRegistry& get();
   sigc::connection onChange(const std::function<void()>& cb);
 
