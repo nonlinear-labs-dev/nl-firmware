@@ -28,8 +28,8 @@ class ParameterDualGroupSet : public AttributesOwner
     return m_parameterGroups[static_cast<int>(vg)];
   }
 
-  std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg = VoiceGroup::I) const;
-  Parameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::I) const;
+  virtual std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg = VoiceGroup::I) const;
+  virtual Parameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::I) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 

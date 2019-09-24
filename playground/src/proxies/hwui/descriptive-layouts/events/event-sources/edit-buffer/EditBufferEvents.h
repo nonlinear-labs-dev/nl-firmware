@@ -17,7 +17,7 @@ namespace DescriptiveLayouts
       }
       else
       {
-        const auto suffix = std::string(eb->isVoiceGroupSelected(VoiceGroup::I) ? "  I" : "  II");
+        const auto suffix = std::string(eb->isVoiceGroupSelected(VoiceGroup::I) ? " I" : " II");
         const auto suffixLen = suffix.size();
         const auto str = typeStr + suffix;
         setValue({ str, suffixLen });

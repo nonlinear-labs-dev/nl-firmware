@@ -670,3 +670,20 @@ void EditBuffer::loadCurrentVoiceGroup(Preset *pPreset)
   auto scope = getUndoScope().startTransaction(string);
   undoableLoad(scope->getTransaction(), pPreset);
 }
+
+const IntrusiveList<EditBuffer::tParameterGroupPtr> &EditBuffer::getParameterGroups() const
+{
+  return ParameterDualGroupSet::getParameterGroups(m_selectedVoiceGroup);
+}
+
+std::map<int, Parameter *> EditBuffer::getParametersSortedById() const {
+  return ParameterDualGroupSet::getParametersSortedById(m_selectedVoiceGroup);
+}
+
+Parameter *EditBuffer::findParameterByID(int id) const {
+  return ParameterDualGroupSet::findParameterByID(id, m_selectedVoiceGroup);
+}
+
+Parameter *EditBuffer::findParameterByID(int id, VoiceGroup vg) const {
+  return ParameterDualGroupSet::findParameterByID(id, vg);
+}

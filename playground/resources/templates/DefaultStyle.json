@@ -23,6 +23,7 @@
       "styles": {
         "Color": "C128",
         "BackgroundColor": "C43",
+        "SuffixColor": "C128",
         "TextAlign": "Center",
         "FontSize": 8,
         "FontDecoration": "Regular"

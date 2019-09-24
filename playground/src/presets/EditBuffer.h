@@ -57,6 +57,23 @@ public:
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
 
+/*
+  tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id, VoiceGroup vg = VoiceGroup::I) const;
+
+  const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg = VoiceGroup::I) const
+  {
+    return m_parameterGroups[static_cast<int>(vg)];
+  }
+
+  std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg = VoiceGroup::I) const;
+  Parameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::I) const;
+  */
+
+  const IntrusiveList<tParameterGroupPtr> &getParameterGroups() const;
+  std::map<int, Parameter *> getParametersSortedById() const;
+  Parameter *findParameterByID(int id) const;
+  Parameter *findParameterByID(int id, VoiceGroup vg) const;
+
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
