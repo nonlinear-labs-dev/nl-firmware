@@ -6,6 +6,7 @@
 #include "PropertyOwner.h"
 #include "ControlRegistry.h"
 #include "EventProvider.h"
+#include <tools/ExceptionTools.h>
 
 namespace DescriptiveLayouts
 {
@@ -42,7 +43,14 @@ namespace DescriptiveLayouts
         {
           if(auto propertyOwner = dynamic_cast<PropertyOwner *>(c))
           {
-            propertyOwner->setProperty(init.m_property, init.m_value);
+            try
+            {
+              propertyOwner->setProperty(init.m_property, init.m_value);
+            }
+            catch(...)
+            {
+              G_BREAKPOINT();
+            }
           }
         }
       }

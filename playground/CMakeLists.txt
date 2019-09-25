@@ -23,11 +23,11 @@ string(STRIP ${BRANCH_NAME} BRANCH_NAME)
 set(LIBS
   gio-unix-2.0
   uuid
+  freetype2
   avahi-glib
   avahi-gobject
   avahi-core
   avahi-client
-  freetype2
   )
 
 OPTION(DEV_PC

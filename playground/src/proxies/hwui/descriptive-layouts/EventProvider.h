@@ -5,8 +5,13 @@
 
 namespace DescriptiveLayouts
 {
+  class GlobalEventSourceBroker;
+  class GlobalEventSinkBroker;
 
-  class EventProvider
+  GlobalEventSourceBroker &getGlobalEventSourceBroker();
+  GlobalEventSinkBroker &getGlobalEventSinkBroker();
+
+  class EventProvider : public sigc::trackable
   {
    public:
     static std::unique_ptr<EventProvider> instantiate(EventProviders e);
@@ -14,7 +19,7 @@ namespace DescriptiveLayouts
 
     using Callback = std::function<void(std::experimental::any)>;
 
-    virtual sigc::connection connect(EventSources source, const Callback& cb);
+    virtual sigc::connection connect(EventSources source, const Callback &cb);
     virtual void fire(EventSinks e);
 
    protected:

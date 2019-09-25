@@ -32,21 +32,21 @@ namespace DescriptiveLayouts
        ParameterControlPosition, ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton,
        BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
-       PresetListPresetName, PresetListHasLeftBank, PresetListHasRightBank, isFineActive, EditBufferMasterText,
-       EditBufferUnisonText, VGIUnisonText, VGIIUnisonText, VGIMasterText, VGIIMasterText,
+       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIUnisonText,
+       VGIIUnisonText, VGIMasterText, VGIIMasterText,
 
        PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
 
-  ENUM(EventSinks, uint8_t, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode,
-       SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus,
-       SwitchToMCSelectDetail, SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail,
+  ENUM(EventSinks, uint8_t, Left, Right, Up, Down, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
+       SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,
+       SwitchToSoundFocus, SwitchToMCSelectDetail, SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail,
        SwitchToButtonDDetail, SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel,
        DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
        IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
        DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter);
 
-  ENUM(EventProviders, uint8_t, Global, PresetSelectionForVoiceGroup);
+  ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
 
   template <typename Derived> class StringId : public std::string

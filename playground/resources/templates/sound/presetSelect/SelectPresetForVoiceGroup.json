@@ -1,7 +1,7 @@
 {
   "layouts": {
     "PresetSelectionForVoiceGroupLayout": {
-      "LocalEventProvider" : "PresetSelectionForVoiceGroup",
+      "EventProvider" : "IndependentPresetSelectionEvents",
       "Selector": {
         "UIFocus": "Sound",
         "UIMode": "Edit",
@@ -15,14 +15,6 @@
             "Text[Text]": "Back"
           }
         },
-        "DirectLoadButton": {
-          "Class": "Button",
-          "Position": "BUTTON_D",
-          "Init": {
-            "Text[Text]": "Direct Load"
-          },
-          "Events": "DirectLoadStatus => ANY[Highlight]"
-        },
         "PreviousPreset": {
           "Class": "Preset",
           "Position": "64, 12",
@@ -30,13 +22,12 @@
         },
         "CurrentPreset": {
           "Class": "Preset",
-          "Position": "64, 24",
+          "Position": "64, 29",
           "Events": "CurrentNumber => Number[Text],CurrentName => Name[Text]"
-
         },
         "NextPreset": {
           "Class": "Preset",
-          "Position": "64, 36",
+          "Position": "64, 46",
           "Events": "NextNumber => Number[Text],NextName => Name[Text]"
         },
         "BankLabel": {
@@ -47,23 +38,35 @@
         "LeftButton": {
           "Class": "ArrowLeft",
           "Position": "65, 1",
-          "Events": "PresetListHasLeftBank => ANY[Highlight]"
+          "Events": "CanLeft => ANY[Highlight]"
         },
         "RightButton": {
           "Class": "ArrowRight",
           "Position": "184, 1",
-          "Events": "PresetListHasRightBank => ANY[Highlight]"
+          "Events": "CanRight => ANY[Highlight]"
         }
       },
       "EventSinks": {
         "BUTTON_A": "SwitchToSoundFocus",
-        "BUTTON_D": "ToggleDirectLoad",
-        "BUTTON_B": "DecBankSelectionPresetList",
-        "BUTTON_C": "IncBankSelectionPresetList",
-        "BUTTON_INC": "IncPresetSelectionPresetList",
-        "BUTTON_DEC": "DecPresetSelectionPresetList",
+        "BUTTON_B": "Left",
+        "BUTTON_C": "Right",
+        "BUTTON_INC": "Up",
+        "BUTTON_DEC": "Down",
         "BUTTON_ENTER": "DoPresetListAction"
       }
     }
-  }
+  },
+  "styles" : {
+      "SelectPresetTextStyle" : {
+          "selector": {
+            "ControlClasses": "Preset",
+            "PrimitiveClasses": "Text",
+            "ControlInstances": "CurrentPreset"
+          },
+          "styles": {
+            "BackgroundColor": "C103",
+            "Color": "C43"
+          }
+      }
+    }
 }

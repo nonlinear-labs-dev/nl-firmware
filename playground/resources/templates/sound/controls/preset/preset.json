@@ -1,14 +1,53 @@
 {
   "controls": {
     "Preset": {
+        "Border": {
+          "Class": "Border",
+          "Rect": "0, 0, 128, 18"
+        },
       "Number": {
         "Class": "Text",
-        "Rect": "0, 0, 10, 12"
+        "Rect": "1, 1, 18, 16"
+      },
+      "Space": {
+        "Class": "Text",
+        "Rect": "18, 1, 6, 16"
       },
       "Name": {
         "Class": "Text",
-        "Rect": "10, 0, 40, 12"
+        "Rect": "24, 1, 103, 16"
       }
     }
+  },
+  "styles" : {
+      "Border": {
+        "selector": {
+          "PrimitiveClasses": "Border",
+          "ControlClasses": "Preset"
+        },
+        "styles": {
+          "Color": "C128",
+          "HighlightColor": "C255"
+        }
+      },
+      "PresetTextStyle" : {
+          "selector": {
+            "PrimitiveClasses": "Text",
+            "ControlClasses": "Preset"
+          },
+          "styles": {
+            "TextAlign": "Right"
+          }
+      },
+      "PresetNameStyle" : {
+          "selector": {
+            "PrimitiveClasses": "Text",
+            "ControlClasses": "Preset",
+            "PrimitiveInstances": "Name"
+          },
+          "styles": {
+            "TextAlign": "Left"
+          }
+      }
   }
 }

@@ -76,8 +76,8 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::PresetListBankName] = std::make_unique<PresetListEvents::PresetListBankName>();
     m_map[EventSources::PresetListPresetName] = std::make_unique<PresetListEvents::PresetListPresetName>();
-    m_map[EventSources::PresetListHasLeftBank] = std::make_unique<PresetListEvents::PresetListHasBankLeft>();
-    m_map[EventSources::PresetListHasRightBank] = std::make_unique<PresetListEvents::PresetListHasBankRight>();
+    m_map[EventSources::CanLeft] = std::make_unique<PresetListEvents::PresetListHasBankLeft>();
+    m_map[EventSources::CanRight] = std::make_unique<PresetListEvents::PresetListHasBankRight>();
 
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();

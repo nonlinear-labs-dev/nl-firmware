@@ -13,15 +13,6 @@ const ControlOwner::tControls &ControlOwner::getControls() const
   return m_controls;
 }
 
-bool ControlOwner::isDirty() const
-{
-  for(const auto &c : m_controls)
-    if(c->isDirty())
-      return true;
-
-  return false;
-}
-
 void ControlOwner::setHighlight(bool isHighlight)
 {
   for(const auto &c : m_controls)
@@ -34,16 +25,12 @@ bool ControlOwner::redraw(FrameBuffer &fb)
 
   for(const auto &c : m_controls)
   {
-    if(c->isDirty())
-    {
-      c->drawBackground(fb);
+    c->drawBackground(fb);
 
-      if(c->isVisible())
-        c->redraw(fb);
+    if(c->isVisible())
+      c->redraw(fb);
 
-      c->setClean();
-      didRedraw = true;
-    }
+    didRedraw = true;
   }
   return didRedraw;
 }
@@ -70,12 +57,6 @@ void ControlOwner::clear()
 {
   m_controls.clear();
   setDirty();
-}
-
-void ControlOwner::setAllDirty()
-{
-  for(const auto &c : m_controls)
-    c->setDirty();
 }
 
 void ControlOwner::forEach(const tIfCallback &cb) const
