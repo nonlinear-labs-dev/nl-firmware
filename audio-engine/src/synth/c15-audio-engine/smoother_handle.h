@@ -57,15 +57,36 @@ private:
     bool m_state = false;
 };
 
+// smoother copy handle (for parameter smoothers that directly translate to signals)
+template<uint32_t Length>
+struct SmootherCopyHandle
+{
+    uint32_t m_smootherId[Length], m_signalId[Length], m_length = {};
+    inline void add_copy_id(const uint32_t _smootherId, const uint32_t _signalId)
+    {
+        m_smootherId[m_length] = _smootherId;
+        m_signalId[m_length] = _signalId;
+        m_length++;
+    }
+};
+
 // smoother handle abstraction (includes smoother arrays for each clock type)
-template<class Audio, class Fast, class Slow>
+template<class Sync, class Audio, class Fast, class Slow>
 class SmootherHandle
 {
 public:
+    // copy handles
+    SmootherCopyHandle<static_cast<uint32_t>(Audio::_LENGTH_)> m_copy_audio;
+    SmootherCopyHandle<static_cast<uint32_t>(Fast::_LENGTH_)> m_copy_fast;
+    SmootherCopyHandle<static_cast<uint32_t>(Slow::_LENGTH_)> m_copy_slow;
     // constructor
     inline SmootherHandle()
     {}
     // start methods according to clock type
+    inline void start_sync(const uint32_t _id, const float _dest)
+    {
+        m_sync[_id] = _dest;
+    }
     inline void start_audio(const uint32_t _id, const float _dx, const float _dest)
     {
         m_audio[_id].start(_dx, _dest);
@@ -101,6 +122,10 @@ public:
         }
     }
     // get methods according to clock type (in case of run-time-related access)
+    inline float get_sync(const uint32_t _id)
+    {
+        return m_sync[_id];
+    }
     inline float get_audio(const uint32_t _id)
     {
         return m_audio[_id].m_value;
@@ -114,6 +139,10 @@ public:
         return m_slow[_id].m_value;
     }
     // get method (auto-deducing clock type, in case of compile-time-related access)
+    inline float get(const Sync _id)
+    {
+        return m_sync[static_cast<uint32_t>(_id)];
+    }
     inline float get(const Audio _id)
     {
         return m_audio[static_cast<uint32_t>(_id)].m_value;
@@ -129,6 +158,10 @@ public:
     // reset method (if needed)
     inline void reset()
     {
+        for(uint32_t i = 0; i < static_cast<uint32_t>(Sync::_LENGTH_); i++)
+        {
+            m_sync[i] = 0.0f;
+        }
         for(uint32_t i = 0; i < static_cast<uint32_t>(Audio::_LENGTH_); i++)
         {
             m_audio[i].reset();
@@ -148,17 +181,5 @@ private:
         m_audio[static_cast<uint32_t>(Audio::_LENGTH_)],
         m_fast[static_cast<uint32_t>(Fast::_LENGTH_)],
         m_slow[static_cast<uint32_t>(Slow::_LENGTH_)] = {};
-};
-
-// smoother copy handle (for parameter smoothers that directly translate to signals)
-template<uint32_t Length>
-struct SmootherCopyHandle
-{
-    uint32_t m_smootherId[Length], m_signalId[Length], m_length = {};
-    inline void add_copy_id(const uint32_t _smootherId, const uint32_t _signalId)
-    {
-        m_smootherId[m_length] = _smootherId;
-        m_signalId[m_length] = _signalId;
-        m_length++;
-    }
+    float m_sync[static_cast<uint32_t>(Sync::_LENGTH_)] = {};
 };

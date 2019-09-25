@@ -15,7 +15,10 @@
 namespace C15
 {
 
-// actual parameter list definition
+// actual parameter TCD-order list definition: { Type, ScaleId, ScaleArg, Initial, Polarity, Smoother, Signal }
+// besides type, all descriptors only refer to modulateable and unmodulateable parameters (so, "mod" params only need type description)
+// ignored parameters can be described via "None" (unused/ignored TCD ids)
+
 const ParameterDescriptor ParameterList[Config::tcd_elements] = {
     None
 };

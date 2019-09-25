@@ -11,10 +11,10 @@
 
 #include "c15_config.h"
 #include "parameter_list.h"
-#include "smoother_handle.h"
-#include "macro_assignment.h"
-#include "signal_storage_dual.h"
 #include "parameter_handle.h"
+#include "ae_global_section.h"
+#include "ae_poly_section.h"
+#include "ae_mono_section.h"
 
 class dsp_host_dual
 {
@@ -29,4 +29,15 @@ public:
     void render();
     void reset();
 private:
+    ParameterHandle<
+        C15::Properties::Scale, C15::Descriptors::SmootherSection, C15::Descriptors::SmootherClock, C15::Descriptors::ParameterSignal,
+        C15::Properties::LayerId, C15::Parameters::Hardware_Sources, C15::Parameters::Global_Parameters, C15::Parameters::Hardware_Amounts,
+        C15::Parameters::Macro_Controls, C15::Parameters::Modulateable_Parameters, C15::Parameters::Unmodulateable_Parameters
+    > m_params;
+    ClockHandle m_clock;
+    TimeHandle m_time;
+    uint32_t m_focus;
+    GlobalSection m_global;
+    PolySection m_poly[2];
+    MonoSection m_mono[2];
 };

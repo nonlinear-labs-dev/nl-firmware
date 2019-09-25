@@ -71,74 +71,91 @@ struct TypeDescriptor
     {}
 };
 
-//providing a parameter smoother descriptor
-enum class ParameterSmoother
+//providing a smoother section and clock descriptor (now slightly more advanced)
+enum class SmootherSection
 {
-    None,
-    Global_Sync, Global_Audio, Global_Fast, Global_Slow,
-    Poly_Sync, Poly_Audio, Poly_Fast, Poly_Slow,
-    Mono_Sync, Mono_Audio, Mono_Fast, Mono_Slow
+    None, Global, Poly, Mono
+};
+
+enum class SmootherClock
+{
+    Sync, Audio, Fast, Slow
 };
 
 struct SmootherDescriptor
 {
-    const ParameterSmoother m_type;
+    const SmootherSection m_section;
+    const SmootherClock m_clock;
     const uint32_t m_index;
     // constructors
     inline SmootherDescriptor()
-        : m_type(ParameterSmoother::None)
+        : m_section(SmootherSection::None)
+        , m_clock(SmootherClock::Sync)
         , m_index(None)
     {}
     inline SmootherDescriptor(const uint32_t _param)
-        : m_type(ParameterSmoother::None)
+        : m_section(SmootherSection::None)
+        , m_clock(SmootherClock::Sync)
         , m_index(_param)
     {}
     inline SmootherDescriptor(const Smoothers::Global_Sync _param)
-        : m_type(ParameterSmoother::Global_Sync)
+        : m_section(SmootherSection::Global)
+        , m_clock(SmootherClock::Sync)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Global_Audio _param)
-        : m_type(ParameterSmoother::Global_Audio)
+        : m_section(SmootherSection::Global)
+        , m_clock(SmootherClock::Audio)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Global_Fast _param)
-        : m_type(ParameterSmoother::Global_Fast)
+        : m_section(SmootherSection::Global)
+        , m_clock(SmootherClock::Fast)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Global_Slow _param)
-        : m_type(ParameterSmoother::Global_Slow)
+        : m_section(SmootherSection::Global)
+        , m_clock(SmootherClock::Slow)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Poly_Sync _param)
-        : m_type(ParameterSmoother::Poly_Sync)
+        : m_section(SmootherSection::Poly)
+        , m_clock(SmootherClock::Sync)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Poly_Audio _param)
-        : m_type(ParameterSmoother::Poly_Audio)
+        : m_section(SmootherSection::Poly)
+        , m_clock(SmootherClock::Audio)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Poly_Fast _param)
-        : m_type(ParameterSmoother::Poly_Fast)
+        : m_section(SmootherSection::Poly)
+        , m_clock(SmootherClock::Fast)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Poly_Slow _param)
-        : m_type(ParameterSmoother::Poly_Slow)
+        : m_section(SmootherSection::Poly)
+        , m_clock(SmootherClock::Slow)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Mono_Sync _param)
-        : m_type(ParameterSmoother::Mono_Sync)
+        : m_section(SmootherSection::Mono)
+        , m_clock(SmootherClock::Sync)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Mono_Audio _param)
-        : m_type(ParameterSmoother::Mono_Audio)
+        : m_section(SmootherSection::Mono)
+        , m_clock(SmootherClock::Audio)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Mono_Fast _param)
-        : m_type(ParameterSmoother::Mono_Fast)
+        : m_section(SmootherSection::Mono)
+        , m_clock(SmootherClock::Fast)
         , m_index(static_cast<uint32_t>(_param))
     {}
     inline SmootherDescriptor(const Smoothers::Mono_Slow _param)
-        : m_type(ParameterSmoother::Mono_Slow)
+        : m_section(SmootherSection::Mono)
+        , m_clock(SmootherClock::Slow)
         , m_index(static_cast<uint32_t>(_param))
     {}
 };
@@ -187,7 +204,8 @@ struct ParameterDescriptor
     Descriptors::TypeDescriptor m_param;
     Properties::Scale m_scaleId = Properties::Scale::None;
     float m_scaleArg = 0.0f;
-    uint32_t m_polarity = 0;
+    float m_initial = 0.0f;
+    bool m_polarity = false;
     Descriptors::SmootherDescriptor m_smoother;
     Descriptors::SignalDescriptor m_signal;
 };

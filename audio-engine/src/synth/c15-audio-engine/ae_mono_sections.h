@@ -1,0 +1,4 @@
+#ifndef AE_MONO_SECTIONS_H
+#define AE_MONO_SECTIONS_H
+
+#endif // AE_MONO_SECTIONS_H
