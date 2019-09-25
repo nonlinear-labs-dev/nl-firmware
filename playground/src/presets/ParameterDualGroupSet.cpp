@@ -90,11 +90,6 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameter
   return wrapped;
 }
 
-void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other)
-{
-  copyFrom(transaction, other, m_selectedVoiceGroup);
-}
-
 void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup target)
 {
   super::copyFrom(transaction, other);
@@ -130,11 +125,6 @@ size_t ParameterDualGroupSet::countParameters() const
   return count;
 }
 
-std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedById() const
-{
-  return getParametersSortedById(m_selectedVoiceGroup);
-}
-
 std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedById(VoiceGroup vg) const
 {
   std::map<int, Parameter *> sorted;
@@ -150,35 +140,12 @@ void ParameterDualGroupSet::writeDocument(Writer &writer, UpdateDocumentContribu
 {
   super::writeDocument(writer, knownRevision);
 
-  for(tParameterGroupPtr p : getParameterGroups())
+  for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::I))
     p->writeDocument(writer, knownRevision);
-}
-
-ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGroupByID(const Glib::ustring &id) const
-{
-  return getParameterGroupByID(id, m_selectedVoiceGroup);
-}
-
-Parameter *ParameterDualGroupSet::findParameterByID(int id) const
-{
-  return findParameterByID(id, m_selectedVoiceGroup);
 }
 
 const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
     ParameterDualGroupSet::getParameterGroups(VoiceGroup vg) const
 {
   return m_parameterGroups[static_cast<int>(vg)];
-}
-
-const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &ParameterDualGroupSet::getParameterGroups() const
-{
-  return getParameterGroups(m_selectedVoiceGroup);
-}
-
-void ParameterDualGroupSet::selectVoiceGroup(VoiceGroup group)
-{
-  if(std::exchange(m_selectedVoiceGroup, group) != group)
-  {
-    onChange();
-  }
 }

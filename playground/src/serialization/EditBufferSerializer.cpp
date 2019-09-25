@@ -44,8 +44,6 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
   VoiceGroupLockSerializer lockSerializer(m_editBuffer);
   lockSerializer.write(writer);
 
-  writer.writeTextElement("editbuffer-selection", toString(m_editBuffer->getVoiceGroupSelection()));
-
   writer.writeTextElement("editbuffer-type", toString(m_editBuffer->getType()));
 
   RecallEditBufferSerializer recall(m_editBuffer);
@@ -61,9 +59,6 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
   reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
     m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
   });
-
-  reader.onTextElement("editbuffer-selection",
-                       [&](auto text, auto) mutable { m_editBuffer->selectVoiceGroup(toVoiceGroup(text)); });
 
   reader.onTextElement("editbuffer-type",
                        [&](auto text, auto) mutable { m_editBuffer->setType(toEditBufferType(text)); });

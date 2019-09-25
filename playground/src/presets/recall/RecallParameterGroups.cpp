@@ -23,16 +23,11 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
   }
 }
 
-std::array<RecallParameterGroups::tParameterMap, 2>& RecallParameterGroups::getParameters()
+RecallParameterGroups::tParameterMap& RecallParameterGroups::getParameters(VoiceGroup vg)
 {
-  return m_parameters;
+  return m_parameters[static_cast<int>(vg)];
 }
 
-
-const RecallParameter *RecallParameterGroups::findParameterByID(int id) const
-{
-  return findParameterByID(id, m_editBuffer->getVoiceGroupSelection());
-}
 
 const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
 {
@@ -59,7 +54,7 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   if(changed)
   {
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
-      for(auto &parameterpair : m_parameters[static_cast<int>(m_editBuffer->getVoiceGroupSelection())])
+      for(auto &parameterpair : m_parameters[0])
       {
         auto &parameter = parameterpair.second;
         parameter->writeDocument(writer, knownRevision);

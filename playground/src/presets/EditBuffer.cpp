@@ -71,7 +71,7 @@ size_t EditBuffer::getHash() const
 {
   size_t hash = AttributesOwner::getHash();
 
-  for(const auto g : getParameterGroups())
+  for(const auto g : getParameterGroups(VoiceGroup::I))
     hash_combine(hash, g->getHash());
 
   return hash;
@@ -189,25 +189,25 @@ sigc::connection EditBuffer::onSelectionChanged(const slot<void, Parameter *, Pa
 
 void EditBuffer::undoableSelectParameter(const Glib::ustring &id)
 {
-  if(auto p = findParameterByID(std::stoi(id)))
+  if(auto p = findParameterByID(std::stoi(id), VoiceGroup::I))
     undoableSelectParameter(p);
 }
 
 void EditBuffer::undoableSelectParameter(uint16_t id)
 {
-  if(auto p = findParameterByID(id))
+  if(auto p = findParameterByID(id, VoiceGroup::I))
     undoableSelectParameter(p);
 }
 
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id)
 {
-  if(auto p = findParameterByID(std::stoi(id)))
+  if(auto p = findParameterByID(std::stoi(id), VoiceGroup::I))
     undoableSelectParameter(transaction, p);
 }
 
 void EditBuffer::setParameter(size_t id, double cpValue)
 {
-  if(auto p = findParameterByID(id))
+  if(auto p = findParameterByID(id, VoiceGroup::I))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
     Glib::ustring name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
@@ -245,9 +245,11 @@ bool EditBuffer::hasLocks() const
   return searchForAnyParameterWithLock() != nullptr;
 }
 
+#warning "TODO Editbuffer API + VoiceGroup"
+
 bool EditBuffer::anyParameterChanged() const
 {
-  for(auto &paramGroup : getParameterGroups())
+  for(auto &paramGroup : getParameterGroups(VoiceGroup::I))
   {
     for(auto &param : paramGroup->getParameters())
     {
@@ -406,7 +408,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
-  super::copyFrom(transaction, preset);
+  super::copyFrom(transaction, preset, VoiceGroup::I);
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -438,11 +440,11 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableClear(UNDO::Transaction *transaction)
 {
-  auto firstGroup = *(getParameterGroups().begin());
+  auto firstGroup = *(getParameterGroups(VoiceGroup::I).begin());
   auto firstParam = *(firstGroup->getParameters().begin());
   undoableSelectParameter(transaction, firstParam);
 
-  for(auto group : getParameterGroups())
+  for(auto group : getParameterGroups(VoiceGroup::I))
   {
     group->undoableClear(transaction);
   }
@@ -455,7 +457,7 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
-  for(auto group : getParameterGroups())
+  for(auto group : getParameterGroups(VoiceGroup::I))
     group->undoableRandomize(transaction, initiator, amount);
 
   transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
@@ -466,7 +468,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   UNDO::ActionCommand::tAction sendEditBuffer(std::bind(&EditBuffer::sendToLPC, this));
   transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
 
-  for(auto group : getParameterGroups())
+  for(auto group : getParameterGroups(VoiceGroup::I))
     group->undoableClear(transaction);
 
   auto swap = UNDO::createSwapData(Uuid::init());
@@ -486,7 +488,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *other)
 {
-  for(auto &g : getParameterGroups())
+  for(auto &g : getParameterGroups(VoiceGroup::I))
     g->undoableSetDefaultValues(transaction, other->findParameterGroup(g->getID()));
 }
 
@@ -514,7 +516,7 @@ void EditBuffer::undoableImportReaktorPreset(UNDO::Transaction *transaction, con
 
     if(readReaktorPresetHeader(input))
     {
-      for(auto paramIt : getParametersSortedById())
+      for(auto paramIt : getParametersSortedById(VoiceGroup::I))
       {
         if(!undoableImportReaktorParameter(transaction, input, paramIt.second))
         {
@@ -592,7 +594,7 @@ Glib::ustring EditBuffer::exportReaktorPreset()
   str << "65535" << std::endl;
   str << "-65536" << std::endl;
 
-  for(auto paramIt : getParametersSortedById())
+  for(auto paramIt : getParametersSortedById(VoiceGroup::I))
   {
     paramIt.second->exportReaktorParameter(str);
   }
@@ -608,25 +610,25 @@ void EditBuffer::sendToLPC()
 
 void EditBuffer::undoableUnlockAllGroups(UNDO::Transaction *transaction)
 {
-  for(auto group : getParameterGroups())
+  for(auto group : getParameterGroups(VoiceGroup::I))
     group->undoableUnlock(transaction);
 }
 
 void EditBuffer::undoableLockAllGroups(UNDO::Transaction *transaction)
 {
-  for(auto group : getParameterGroups())
+  for(auto group : getParameterGroups(VoiceGroup::I))
     group->undoableLock(transaction);
 }
 
 void EditBuffer::undoableToggleGroupLock(UNDO::Transaction *transaction, const Glib::ustring &groupId)
 {
-  if(auto g = getParameterGroupByID(groupId))
+  if(auto g = getParameterGroupByID(groupId, VoiceGroup::I))
     g->undoableToggleLock(transaction);
 }
 
 Parameter *EditBuffer::searchForAnyParameterWithLock() const
 {
-  for(auto group : getParameterGroups())
+  for(auto group : getParameterGroups(VoiceGroup::I))
   {
     for(auto parameter : group->getParameters())
     {
@@ -639,7 +641,7 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
 
 void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid)
 {
-  if(auto mcs = getParameterGroupByID("MCs"))
+  if(auto mcs = getParameterGroupByID("MCs", VoiceGroup::I))
   {
     if(auto mc = dynamic_cast<MacroControlParameter *>(mcs->getParameterByID(id)))
     {
@@ -647,17 +649,6 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
       mc->setLastMCViewUUID(uuid);
     }
   }
-}
-
-bool EditBuffer::isVoiceGroupSelected(VoiceGroup v) const
-{
-  return m_selectedVoiceGroup == v;
-}
-
-void EditBuffer::toggleVoiceGroup()
-{
-  m_selectedVoiceGroup = isVoiceGroupSelected(VoiceGroup::I) ? VoiceGroup::II : VoiceGroup::I;
-  onChange();
 }
 
 void EditBuffer::loadCurrentVoiceGroup(Preset *pPreset)
@@ -670,14 +661,3 @@ void EditBuffer::loadCurrentVoiceGroup(Preset *pPreset)
   auto scope = getUndoScope().startTransaction(string);
   undoableLoad(scope->getTransaction(), pPreset);
 }
-
-VoiceGroup EditBuffer::getVoiceGroupSelection() const {
-  return m_selectedVoiceGroup;
-}
-
-void EditBuffer::selectVoiceGroup(VoiceGroup vg) {
- if(std::exchange(m_selectedVoiceGroup, vg) != vg) {
-   onChange();
- }
-}
-

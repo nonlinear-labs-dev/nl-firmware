@@ -10,12 +10,12 @@ class Application;
 class Writer;
 class PresetManager;
 
-
 class EditBuffer : public ParameterDualGroupSet
 {
  private:
   typedef ParameterDualGroupSet super;
-public:
+
+ public:
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
@@ -85,9 +85,8 @@ public:
 
   VoiceGroup getVoiceGroupSelection() const;
   void selectVoiceGroup(VoiceGroup vg);
-  bool isVoiceGroupSelected(VoiceGroup v) const;
-  void toggleVoiceGroup();
   void loadCurrentVoiceGroup(Preset *pPreset);
+
  private:
   Parameter *searchForAnyParameterWithLock() const;
 

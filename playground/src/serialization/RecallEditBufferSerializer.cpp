@@ -22,7 +22,7 @@ namespace Detail {
 
   protected:
     void writeTagContent(Writer &writer) const override {
-      auto& parameters = m_editBuffer->getRecallParameterSet().getParameters().at(static_cast<int>(m_voiceGroup));
+      auto& parameters = m_editBuffer->getRecallParameterSet().getParameters();
       for(auto& param: parameters) {
         RecallParameterSerializer serializer(param.second.get());
         serializer.write(writer, Attribute("id", param.first));
@@ -32,7 +32,7 @@ namespace Detail {
     void readTagContent(Reader &reader) const override {
       reader.onTag(RecallParameterSerializer::getTagName(), [&, this](const Attributes &attr) mutable {
         auto id = std::stoi(attr.get("id"));
-        auto serializer = new RecallParameterSerializer(m_editBuffer->getRecallParameterSet().getParameters()[static_cast<int>(m_voiceGroup)].at(id).get());
+        auto serializer = new RecallParameterSerializer(m_editBuffer->getRecallParameterSet().getParameters().at(id).get());
         return serializer;
       });
     }

@@ -1,4 +1,5 @@
 #pragma once
+#include <glibmm/ustring.h>
 
 namespace nltools
 {

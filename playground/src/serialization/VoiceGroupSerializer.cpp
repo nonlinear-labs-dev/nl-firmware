@@ -55,8 +55,6 @@ Glib::ustring VoiceGroupSerializer::getTagName()
 
 void VoiceGroupSerializer::writeTagContent(Writer &writer) const
 {
-  writer.writeTextElement("selected-voice-group", toString(m_paramGroups->m_selectedVoiceGroup));
-
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     writer.writeTag(toString(vg), [vg, &writer, this] {
@@ -68,10 +66,6 @@ void VoiceGroupSerializer::writeTagContent(Writer &writer) const
 
 void VoiceGroupSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("selected-voice-group", [this](auto text, const auto attr) mutable {
-    m_paramGroups->selectVoiceGroup(toVoiceGroup(text));
-  });
-
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     reader.onTag(toString(vg), [this, vg](const auto &attr) mutable {
