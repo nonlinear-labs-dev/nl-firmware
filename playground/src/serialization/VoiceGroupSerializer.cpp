@@ -74,7 +74,7 @@ void VoiceGroupSerializer::readTagContent(Reader &reader) const
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    reader.onTag(toString(vg), [&](const auto &attr) mutable {
+    reader.onTag(toString(vg), [this, vg](const auto &attr) mutable {
       return new Detail::VoiceGroupSerializer2(dynamic_cast<EditBuffer *>(m_paramGroups), vg);
     });
   }
