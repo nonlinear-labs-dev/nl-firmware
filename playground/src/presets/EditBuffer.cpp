@@ -240,16 +240,16 @@ void EditBuffer::setModulationAmount(double amount)
   }
 }
 
-bool EditBuffer::hasLocks() const
+bool EditBuffer::hasLocks(VoiceGroup vg) const
 {
   return searchForAnyParameterWithLock() != nullptr;
 }
 
 #warning "TODO Editbuffer API + VoiceGroup"
 
-bool EditBuffer::anyParameterChanged() const
+bool EditBuffer::anyParameterChanged(VoiceGroup vg) const
 {
-  for(auto &paramGroup : getParameterGroups(VoiceGroup::I))
+  for(auto &paramGroup : getParameterGroups(vg))
   {
     for(auto &param : paramGroup->getParameters())
     {
@@ -622,13 +622,14 @@ void EditBuffer::undoableLockAllGroups(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableToggleGroupLock(UNDO::Transaction *transaction, const Glib::ustring &groupId)
 {
-  if(auto g = getParameterGroupByID(groupId, VoiceGroup::I))
-    g->undoableToggleLock(transaction);
+  for(auto vg: {VoiceGroup::I, VoiceGroup::II})
+    if(auto g = getParameterGroupByID(groupId, vg))
+      g->undoableToggleLock(transaction);
 }
 
-Parameter *EditBuffer::searchForAnyParameterWithLock() const
+Parameter *EditBuffer::searchForAnyParameterWithLock(VoiceGroup vg) const
 {
-  for(auto group : getParameterGroups(VoiceGroup::I))
+  for(auto group : getParameterGroups(vg))
   {
     for(auto parameter : group->getParameters())
     {
@@ -641,7 +642,7 @@ Parameter *EditBuffer::searchForAnyParameterWithLock() const
 
 void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid)
 {
-  if(auto mcs = getParameterGroupByID("MCs", VoiceGroup::I))
+  if(auto mcs = getParameterGroupByID("MCs"))
   {
     if(auto mc = dynamic_cast<MacroControlParameter *>(mcs->getParameterByID(id)))
     {

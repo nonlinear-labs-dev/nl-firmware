@@ -59,10 +59,13 @@ class EditBuffer : public ParameterDualGroupSet
 
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
 
+  //void copyFrom(UNDO::Transaction *transaction, const LayerPreset *preset);
+  //void copyFrom(UNDO::Transaction *transaction, const SplitPreset *preset);
+
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
-  bool hasLocks() const;
-  bool anyParameterChanged() const;
+  bool hasLocks(VoiceGroup vg = VoiceGroup::I) const;
+  bool anyParameterChanged(VoiceGroup vg = VoiceGroup::I) const;
   void resetOriginIf(const Preset *p);
 
   // CALLBACKS
@@ -83,12 +86,10 @@ class EditBuffer : public ParameterDualGroupSet
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
 
-  VoiceGroup getVoiceGroupSelection() const;
-  void selectVoiceGroup(VoiceGroup vg);
   void loadCurrentVoiceGroup(Preset *pPreset);
 
  private:
-  Parameter *searchForAnyParameterWithLock() const;
+  Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::I) const;
 
   UNDO::Scope &getUndoScope() override;
 
