@@ -26,18 +26,18 @@
         "PreviousPreset": {
           "Class": "Preset",
           "Position": "64, 12",
-          "Events": "PreviousPresetNumber => Number[Text],PreviousPresetName => Name[Text]"
+          "Events": "PreviousNumber => Number[Text],PreviousName => Name[Text]"
         },
         "CurrentPreset": {
           "Class": "Preset",
           "Position": "64, 24",
-          "Events": "CurrentPresetNumber => Number[Text],CurrentPresetName => Name[Text]"
+          "Events": "CurrentNumber => Number[Text],CurrentName => Name[Text]"
 
         },
         "NextPreset": {
           "Class": "Preset",
           "Position": "64, 36",
-          "Events": "NextPresetNumber => Number[Text],NextPresetName => Name[Text]"
+          "Events": "NextNumber => Number[Text],NextName => Name[Text]"
         },
         "BankLabel": {
           "Class": "WideInvertedLabel",
@@ -58,11 +58,11 @@
       "EventSinks": {
         "BUTTON_A": "SwitchToSoundFocus",
         "BUTTON_D": "ToggleDirectLoad",
-        "BUTTON_B": "PresetSelectionForVoiceGroup.DecBankSelectionPresetList",
-        "BUTTON_C": "PresetSelectionForVoiceGroup.IncBankSelectionPresetList",
-        "BUTTON_INC": "PresetSelectionForVoiceGroup.IncPresetSelectionPresetList",
-        "BUTTON_DEC": "PresetSelectionForVoiceGroup.DecPresetSelectionPresetList",
-        "BUTTON_ENTER": "PresetSelectionForVoiceGroup.DoPresetListAction"
+        "BUTTON_B": "DecBankSelectionPresetList",
+        "BUTTON_C": "IncBankSelectionPresetList",
+        "BUTTON_INC": "IncPresetSelectionPresetList",
+        "BUTTON_DEC": "DecPresetSelectionPresetList",
+        "BUTTON_ENTER": "DoPresetListAction"
       }
     }
   }

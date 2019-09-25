@@ -8,6 +8,7 @@
 namespace DescriptiveLayouts
 {
   class GenericControl;
+  class EventProvider;
 
   struct ControlInstance
   {
@@ -51,7 +52,7 @@ namespace DescriptiveLayouts
     ControlInstance(ControlInstances controlInstance, ControlClasses control, const Point& position,
                     EventConnections eventConnections, StaticInitList staticInit);
 
-    Control* instantiate() const;
+    Control* instantiate(EventProvider* eventProvider) const;
 
     ControlInstances controlInstance;
     ControlClasses controlClass;

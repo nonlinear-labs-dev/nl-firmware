@@ -1,6 +1,6 @@
 #include <utility>
 
-#include "EventSourceBroker.h"
+#include "GlobalEventSourceBroker.h"
 #include "proxies/hwui/descriptive-layouts/LayoutFactory.h"
 #include <Application.h>
 #include <proxies/hwui/HWUI.h>
@@ -29,14 +29,7 @@
 
 namespace DescriptiveLayouts
 {
-
-  EventSourceBroker& EventSourceBroker::get()
-  {
-    static EventSourceBroker s;
-    return s;
-  }
-
-  EventSourceBroker::EventSourceBroker()
+  GlobalEventSourceBroker::GlobalEventSourceBroker()
   {
     m_map[EventSources::ParameterGroupName] = std::make_unique<ParameterGroupNameEventSource>();
     m_map[EventSources::SliderRange] = std::make_unique<SliderRangeEventSource>();
@@ -91,8 +84,10 @@ namespace DescriptiveLayouts
 #warning "IMPROVEMENT: maybe add some logic layer to save on events"
   }
 
-  sigc::connection EventSourceBroker::connect(EventSources source,
-                                              const std::function<void(std::experimental::any)>& cb)
+  GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;
+
+  sigc::connection GlobalEventSourceBroker::connect(EventSources source,
+                                                    const std::function<void(std::experimental::any)>& cb)
   {
     if(source == EventSources::None)
       return {};

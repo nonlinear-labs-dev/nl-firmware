@@ -3,10 +3,10 @@
 #include <utility>
 #include <proxies/hwui/HWUIEnums.h>
 #include "Selector.h"
-#include "EventSink.h"
 #include "ControlInstance.h"
 #include <set>
 #include <proxies/hwui/descriptive-layouts/conditions/ConditionBase.h>
+#include <proxies/hwui/descriptive-layouts/TemplateEnums.h>
 
 class DFBLayout;
 
@@ -30,8 +30,9 @@ namespace DescriptiveLayouts
     }
 
     LayoutClass(LayoutClasses id, std::list<Selector> sel, std::list<ControlInstance> ci,
-                std::list<EventSinkMapping> esm, const ConditionList &con)
+                std::list<EventSinkMapping> esm, const ConditionList &con, EventProviders ep)
         : id(std::move(id))
+        , eventProvider(ep)
     {
       for(const auto &s : sel)
         addToList(s);
@@ -63,6 +64,7 @@ namespace DescriptiveLayouts
     ConditionList conditions;
     ControlInstanceList controls;
     EventSinkList sinkMappings;
+    EventProviders eventProvider;
 
     friend class GenericLayout;
     friend class ConsistencyChecker;

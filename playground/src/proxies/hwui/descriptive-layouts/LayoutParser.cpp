@@ -259,15 +259,14 @@ namespace DescriptiveLayouts
       const auto& id = name;
       try
       {
-        auto localEventProvider
-            = parseTFromTag<LocalEventProvider>(toLocalEventProvider, obj.value(), "LocalEventBroker");
-
+        auto eventProvider = parseTFromTag<EventProviders>(toEventProviders, obj.value(), "EventProvider");
         auto selectionConditions = parseTFromTag<tConditionList>(toConditions, obj.value(), "Conditions");
         auto sinkMappings = parseTFromTag<LayoutClass::EventSinkList>(toEventSinkList, obj.value(), "EventSinks");
         auto selectors = parseTFromTag<std::list<Selector>>(toSelectors, obj.value(), "Selector", false);
         auto controls
             = parseTFromTag<LayoutClass::ControlInstanceList>(toControlInstanceList, obj.value(), "Controls", false);
-        BoledLayoutFactory::get().registerLayout(id, selectors, controls, sinkMappings, selectionConditions);
+        BoledLayoutFactory::get().registerLayout(id, selectors, controls, sinkMappings, selectionConditions,
+                                                 eventProvider);
       }
       catch(...)
       {

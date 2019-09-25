@@ -2,15 +2,17 @@
 #include "GenericLayout.h"
 #include <tools/EnumTools.h>
 #include "Styleable.h"
-#include "proxies/hwui/descriptive-layouts/events/EventSourceBroker.h"
+#include "proxies/hwui/descriptive-layouts/events/GlobalEventSourceBroker.h"
 #include "PropertyOwner.h"
 #include "ControlRegistry.h"
+#include "EventProvider.h"
 
 namespace DescriptiveLayouts
 {
-  GenericControl::GenericControl(const ControlInstance &prototype)
+  GenericControl::GenericControl(const ControlInstance &prototype, EventProvider *eventProvider)
       : ControlWithChildren(Rect(prototype.position, Point(0, 0)))
       , m_prototype(prototype)
+      , m_eventProvider(eventProvider)
   {
     addPrimitives();
   }
@@ -74,8 +76,8 @@ namespace DescriptiveLayouts
   {
     for(auto &c : m_prototype.eventConnections)
     {
-      m_connections.push_back(EventSourceBroker::get().connect(
-          c.src, sigc::bind<1>(sigc::mem_fun(this, &GenericControl::onEventFired), c)));
+      m_connections.push_back(
+          m_eventProvider->connect(c.src, sigc::bind<1>(sigc::mem_fun(this, &GenericControl::onEventFired), c)));
     }
   }
 
