@@ -41,7 +41,8 @@ namespace FileTools
 
   void RecursiveDirectoryMonitor::recurseDirectory(const tFile& start, tFileCallBack cb)
   {
-    try {
+    if(start->query_exists())
+    {
       auto fileIt = start->enumerate_children();
       while(auto fileInfo = fileIt->next_file())
       {
@@ -49,11 +50,7 @@ namespace FileTools
         cb(file);
         if(fileInfo->get_file_type() == Gio::FILE_TYPE_DIRECTORY)
           recurseDirectory(file, cb);
-
       }
-    } catch(...) {
-      auto desc = nltools::ExceptionTools::handle_eptr(std::current_exception());
-      nltools::Log::error(__FILE__, __LINE__, __FUNCTION__, desc);
     }
   }
 
