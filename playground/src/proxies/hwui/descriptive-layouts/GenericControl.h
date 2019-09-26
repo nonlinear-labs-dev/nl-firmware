@@ -25,6 +25,8 @@ namespace DescriptiveLayouts
     std::list<sigc::connection> m_connections;
 
    protected:
+    bool isTransparent() const override;
+
     ControlInstance m_prototype;
     LayoutClasses m_lastUsedLayout;
     EventProvider* m_eventProvider = nullptr;

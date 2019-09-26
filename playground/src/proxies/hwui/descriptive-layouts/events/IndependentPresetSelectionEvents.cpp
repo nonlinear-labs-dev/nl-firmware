@@ -10,22 +10,16 @@
 
 namespace DescriptiveLayouts
 {
+
   IndependentPresetSelectionEvents::IndependentPresetSelectionEvents()
+      : m_cursor([](auto) { return true; })
   {
     createEventSources<Text::DisplayString>(
         EventSources::PreviousNumber, EventSources::PreviousName, EventSources::CurrentNumber,
         EventSources::CurrentName, EventSources::NextNumber, EventSources::NextName, EventSources::PresetListBankName);
     createEventSources<bool>(EventSources::CanLeft, EventSources::CanRight);
 
-    auto pm = Application::get().getPresetManager();
-    if(auto b = pm->getSelectedBank())
-    {
-      selectedBankNumber = pm->getBankPosition(b->getUuid());
-
-      if(auto p = b->getSelectedPreset())
-        selectedPresetNumber = b->getPresetPosition(p);
-    }
-
+    m_cursor.moveToSelected();
     bruteForce();
   }
 
@@ -41,21 +35,23 @@ namespace DescriptiveLayouts
     switch(e)
     {
       case EventSinks::Left:
-        if(selectedBankNumber)
-          selectedBankNumber--;
+        if(m_cursor.canPreviousBank())
+          m_cursor.previousBank();
         break;
 
       case EventSinks::Right:
-        selectedBankNumber++;
+        if(m_cursor.canNextBank())
+          m_cursor.nextBank();
         break;
 
       case EventSinks::Up:
-        selectedPresetNumber++;
+        if(m_cursor.canPreviousPreset())
+          m_cursor.previousPreset();
         break;
 
       case EventSinks::Down:
-        if(selectedPresetNumber)
-          selectedPresetNumber--;
+        if(m_cursor.canNextPreset())
+          m_cursor.nextPreset();
         break;
 
       default:
@@ -75,69 +71,37 @@ namespace DescriptiveLayouts
     {
       connections.clear();
 
-      sanitize();
+      auto currentCursor = m_cursor;
+      auto previousCursor = currentCursor;
+      previousCursor.previousPreset();
+      auto nextCursor = currentCursor;
+      nextCursor.nextPreset();
 
-      auto bank = pm->getBankAt(selectedBankNumber);
-      auto numPresets = bank ? bank->getNumPresets() : 0;
-      auto previousPreset = bank && selectedPresetNumber ? bank->getPresetAt(selectedPresetNumber - 1) : nullptr;
-      auto currentPreset = bank && selectedPresetNumber >= 0 && selectedPresetNumber < numPresets
-          ? bank->getPresetAt(selectedPresetNumber)
-          : nullptr;
-      auto nextPreset
-          = bank && selectedPresetNumber < numPresets - 1 ? bank->getPresetAt(selectedPresetNumber + 1) : nullptr;
+      setString(EventSources::PreviousNumber, previousCursor.getPresetNumberString());
+      setString(EventSources::PreviousName, previousCursor.getPresetName());
+      setString(EventSources::CurrentNumber, currentCursor.getPresetNumberString());
+      setString(EventSources::CurrentName, currentCursor.getPresetName());
+      setString(EventSources::NextNumber, nextCursor.getPresetNumberString());
+      setString(EventSources::NextName, nextCursor.getPresetName());
 
-      setString(EventSources::PreviousNumber,
-                previousPreset ? std::to_string(bank->getPresetPosition(previousPreset->getUuid())) : "");
-      setString(EventSources::PreviousName, previousPreset ? previousPreset->getName() : "");
-      setString(EventSources::CurrentNumber,
-                currentPreset ? std::to_string(bank->getPresetPosition(currentPreset->getUuid())) : "");
-      setString(EventSources::CurrentName, currentPreset ? currentPreset->getName() : "");
+      setString(EventSources::PresetListBankName, currentCursor.getBankName());
 
-      setString(EventSources::NextNumber,
-                nextPreset ? std::to_string(bank->getPresetPosition(nextPreset->getUuid())) : "");
-      setString(EventSources::NextName, nextPreset ? nextPreset->getName() : "");
-
-      setString(EventSources::PresetListBankName, bank ? bank->getName(true) : "");
-
-      static_cast<EventSource<bool> *>(eventSources.at(EventSources::CanLeft).get())->setValue(selectedBankNumber > 0);
+      static_cast<EventSource<bool> *>(eventSources.at(EventSources::CanLeft).get())
+          ->setValue(currentCursor.canPreviousBank());
       static_cast<EventSource<bool> *>(eventSources.at(EventSources::CanRight).get())
-          ->setValue(selectedBankNumber < pm->getNumBanks() - 1);
+          ->setValue(currentCursor.canNextBank());
 
-      if(bank)
-        connections.push_back(bank->onBankChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
+      if(auto b = currentCursor.getBank())
+        connections.push_back(b->onBankChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
 
-      if(previousPreset)
-        connections.push_back(
-            previousPreset->onChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
+      if(auto p = previousCursor.getPreset())
+        connections.push_back(p->onChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
 
-      if(currentPreset)
-        connections.push_back(
-            currentPreset->onChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
+      if(auto p = currentCursor.getPreset())
+        connections.push_back(p->onChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
 
-      if(nextPreset)
-        connections.push_back(
-            nextPreset->onChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
-    }
-  }
-
-  void IndependentPresetSelectionEvents::sanitize()
-  {
-    auto pm = Application::get().getPresetManager();
-
-    if(auto numBanks = pm->getNumBanks())
-    {
-      selectedBankNumber = CLAMP(selectedBankNumber, 0, numBanks - 1);
-      auto b = pm->getBankAt(selectedBankNumber);
-
-      if(auto numPresets = b->getNumPresets())
-        selectedPresetNumber = CLAMP(selectedPresetNumber, 0, numPresets - 1);
-      else
-        selectedPresetNumber = invalid;
-    }
-    else
-    {
-      selectedBankNumber = invalid;
-      selectedPresetNumber = invalid;
+      if(auto p = nextCursor.getPreset())
+        connections.push_back(p->onChanged(sigc::mem_fun(this, &IndependentPresetSelectionEvents::bruteForce)));
     }
   }
 

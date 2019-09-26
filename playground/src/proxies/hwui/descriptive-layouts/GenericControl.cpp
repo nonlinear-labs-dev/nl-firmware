@@ -108,4 +108,9 @@ namespace DescriptiveLayouts
       }
     }
   }
+
+  bool GenericControl::isTransparent() const
+  {
+    return true;
+  }
 }
