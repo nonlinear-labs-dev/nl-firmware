@@ -19,7 +19,6 @@ namespace DescriptiveLayouts
         EventSources::CurrentName, EventSources::NextNumber, EventSources::NextName, EventSources::PresetListBankName);
     createEventSources<bool>(EventSources::CanLeft, EventSources::CanRight);
 
-    m_cursor.moveToSelected();
     bruteForce();
   }
 

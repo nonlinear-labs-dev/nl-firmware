@@ -10,6 +10,7 @@ PresetManagerCursor::PresetManagerCursor(std::function<bool(const Preset*)> matc
     , m_bank(Uuid::none())
 
 {
+  moveToSelected();
 }
 
 void PresetManagerCursor::moveToSelected()
@@ -140,10 +141,20 @@ Preset* PresetManagerCursor::getPreset() const
   return pm->findPreset(m_preset);
 }
 
+Uuid PresetManagerCursor::getPresetUuid() const
+{
+  return m_preset;
+}
+
 Bank* PresetManagerCursor::getBank() const
 {
   auto pm = Application::get().getPresetManager();
   return pm->findBank(m_bank);
+}
+
+Uuid PresetManagerCursor::getBankUuid() const
+{
+  return m_bank;
 }
 
 std::string PresetManagerCursor::getPresetNumberString() const

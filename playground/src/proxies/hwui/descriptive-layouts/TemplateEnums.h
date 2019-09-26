@@ -35,18 +35,30 @@ namespace DescriptiveLayouts
        PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIUnisonText,
        VGIIUnisonText, VGIMasterText, VGIIMasterText,
 
-       PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
+       // try to use more generic names, the specific meaning is implemented in the EventProvider
+       Edit, Fine, Locked, Position, NumItems,
 
-  ENUM(EventSinks, uint8_t, Left, Right, Up, Down, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
-       SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,
-       SwitchToSoundFocus, SwitchToMCSelectDetail, SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail,
-       SwitchToButtonDDetail, SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel,
-       DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
-       IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
-       IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
-       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter);
+       ButtonA, ButtonB, ButtonC, ButtonD,
 
-  ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents);
+       PreviousNumber, PreviousName, PreviousSelected, PreviousLoaded,
+
+       CurrentNumber, CurrentName, CurrentSelected, CurrentLoaded,
+
+       NextNumber, NextName, NextSelected, NextLoaded);
+
+  ENUM(EventSinks, uint8_t, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
+       SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
+       SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail, SwitchToButtonDDetail,
+       SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel, DecMCSel, IncMCAmt, DecMCAmt,
+       IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu, IncModulationCarousel, DecModulationCarousel,
+       ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad, IncPresetSelectionPresetList,
+       DecPresetSelectionPresetList, IncBankSelectionPresetList, DecBankSelectionPresetList, DoPresetListAction,
+       OpenUnisonParameter, OpenMasterParameter,
+
+       // try to use more generic names, the specific meaning is implemented in the EventProvider
+       Left, Right, Up, Down, IncParam, DecParam);
+
+  ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents, PresetManagerEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
 
   template <typename Derived> class StringId : public std::string
