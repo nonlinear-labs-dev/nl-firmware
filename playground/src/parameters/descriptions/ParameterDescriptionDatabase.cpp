@@ -23,15 +23,17 @@ class ParameterDescriptionDatabase::Job
  private:
   void load()
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID);
+    for(auto vg: {VoiceGroup::I, VoiceGroup::II}) {
+      auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID, vg);
 
-    if(auto mc = dynamic_cast<MacroControlParameter *>(param))
-    {
-      loadFromParameter(mc);
-    }
-    else
-    {
-      loadFromFile();
+      if(auto mc = dynamic_cast<MacroControlParameter *>(param))
+      {
+        loadFromParameter(mc);
+      }
+      else
+      {
+        loadFromFile();
+      }
     }
   }
 

@@ -23,7 +23,7 @@ class EditBuffer : public ParameterDualGroupSet
   Glib::ustring getName() const;
   size_t getHash() const;
   const Preset *getOrigin() const;
-  Parameter *getSelected() const;
+  Parameter *getSelected(VoiceGroup voiceGroup = VoiceGroup::Invalid) const;
   bool isZombie() const;
 
   void setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid);
@@ -32,10 +32,13 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableSelectParameter(const Glib::ustring &id, VoiceGroup voiceGroup = VoiceGroup::Invalid);
   void undoableSelectParameter(uint16_t id, VoiceGroup voiceGroup = VoiceGroup::Invalid);
-  void undoableSelectParameter(Parameter *p);
-  void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
-  void undoableLoad(UNDO::Transaction *transaction, Preset *preset, VoiceGroup vg = VoiceGroup::Invalid);
+  void undoableSelectParameter(Parameter *p, VoiceGroup voiceGroup = VoiceGroup::Invalid);
+  void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p,
+                               VoiceGroup voiceGroup = VoiceGroup::Invalid);
+
+  void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset, VoiceGroup target = VoiceGroup::Invalid);
+
   void undoableLoadSelectedPreset();
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
@@ -56,7 +59,7 @@ class EditBuffer : public ParameterDualGroupSet
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
 
-  void copyFrom(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup target = VoiceGroup::Invalid);
+  void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
 
   //void copyFrom(UNDO::Transaction *transaction, const LayerPreset *preset);
   //void copyFrom(UNDO::Transaction *transaction, const SplitPreset *preset);
@@ -95,9 +98,10 @@ class EditBuffer : public ParameterDualGroupSet
 
   void setParameter(size_t id, double cpValuem, VoiceGroup target = VoiceGroup::Invalid);
 
-  void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id, VoiceGroup vg = VoiceGroup::Invalid);
-  void setModulationSource(MacroControls src);
-  void setModulationAmount(double amount);
+  void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id,
+                               VoiceGroup vg = VoiceGroup::Invalid);
+  void setModulationSource(MacroControls src, VoiceGroup vg = VoiceGroup::Invalid);
+  void setModulationAmount(double amount, VoiceGroup vg = VoiceGroup::Invalid);
 
   void doDeferedJobs();
   void checkModified();
@@ -108,7 +112,7 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
 
-  Parameter *m_selectedParameter = nullptr;
+  std::array<Parameter *, 2> m_selectedParameter{ nullptr, nullptr };
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;
@@ -125,7 +129,7 @@ class EditBuffer : public ParameterDualGroupSet
   EditBufferType m_type;
   size_t m_hashOnStore;
 
-  mutable Preset *m_originCache = nullptr;
+  mutable Preset *m_originCache{ nullptr };
   RecallParameterGroups m_recallSet;
 
   friend class PresetManager;

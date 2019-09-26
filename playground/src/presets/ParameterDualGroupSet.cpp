@@ -100,20 +100,19 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameter
   return wrapped;
 }
 
-void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup target)
+void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other)
 {
-  if(target == VoiceGroup::Invalid)
-  {
-    target = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
-  }
 
   super::copyFrom(transaction, other);
 
-  for(auto &g : getParameterGroups(target))
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    if(auto c = other->findParameterGroup(g->getID(), target))
+    for(auto &g : getParameterGroups(vg))
     {
-      g->copyFrom(transaction, c);
+      if(auto c = other->findParameterGroup(g->getID(), vg))
+      {
+        g->copyFrom(transaction, c);
+      }
     }
   }
 }

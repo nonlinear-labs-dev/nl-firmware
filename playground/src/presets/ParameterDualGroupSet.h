@@ -30,7 +30,7 @@ class ParameterDualGroupSet : public AttributesOwner
 
  protected:
   virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
-  virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup target);
+  virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
 
  private:
   using tParamGroups = IntrusiveList<tParameterGroupPtr>;
