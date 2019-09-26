@@ -494,7 +494,7 @@ void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &g : getParameterGroups(vg))
-      g->undoableSetDefaultValues(transaction, other->findParameterGroup(g->getID()));
+      g->undoableSetDefaultValues(transaction, other->findParameterGroup(g->getID(), vg));
 }
 
 UNDO::Scope &EditBuffer::getUndoScope()

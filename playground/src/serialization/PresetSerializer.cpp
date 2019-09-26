@@ -24,6 +24,7 @@ void PresetSerializer::writeTagContent(Writer &writer) const
 {
   writer.writeTextElement("name", m_preset->getName());
   writer.writeTextElement("uuid", m_preset->getUuid().raw());
+  writer.writeTextElement("type", toString(m_preset->getType()));
 
   AttributesOwnerSerializer attributesWriter(m_preset);
   attributesWriter.write(writer);
@@ -46,6 +47,6 @@ void PresetSerializer::readTagContent(Reader &reader) const
   reader.onTag(AttributesOwnerSerializer::getTagName(),
                [&](const Attributes &attr) mutable { return new AttributesOwnerSerializer(m_preset); });
 
-  reader.onTag(PresetParameterGroupsSerializer::getTagName(),
+  reader.onTag(PresetParameterGroupsSerializer::getTagName() + "-I",
                [&](const Attributes &attr) mutable { return new PresetParameterGroupsSerializer(m_preset); });
 }

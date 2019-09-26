@@ -16,20 +16,33 @@ Glib::ustring PresetParameterGroupsSerializer::getTagName()
 
 void PresetParameterGroupsSerializer::writeTagContent(Writer &writer) const
 {
-  for(auto &paramGroup : m_preset->m_parameterGroups)
-  {
-    PresetParameterGroupSerializer group(paramGroup.second.get());
-    group.write(writer, Attribute("id", paramGroup.first));
-  }
+  writer.writeTag(toString(VoiceGroup::I), [&writer, this] {
+    for(auto& paramGroup : m_preset->m_parameterGroups[static_cast<int>(VoiceGroup::I)])
+    {
+      PresetParameterGroupSerializer group(paramGroup.second.get());
+      group.write(writer, Attribute("id", paramGroup.first));
+    }
+  });
+
+  writer.writeTag(toString(VoiceGroup::II), [&writer, this] {
+    for(auto& paramGroup : m_preset->m_parameterGroups[static_cast<int>(VoiceGroup::II)])
+    {
+      PresetParameterGroupSerializer group(paramGroup.second.get());
+      group.write(writer, Attribute("id", paramGroup.first));
+    }
+  });
 }
 
 void PresetParameterGroupsSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTag(PresetParameterGroupSerializer::getTagName(), [&](const Attributes &attr) mutable {
-    auto id = attr.get("id");
-    auto group = std::make_unique<PresetParameterGroup>();
-    auto serializer = new PresetParameterGroupSerializer(group.get());
-    m_preset->m_parameterGroups[id] = std::move(group);
-    return serializer;
+  reader.onTag(toString(VoiceGroup::I), [&](const Attributes& attr) mutable {
+    auto group = m_preset->findParameterGroup(attr.get("id"), VoiceGroup::I);
+    return new PresetParameterGroupSerializer(group);
   });
+
+  reader.onTag(toString(VoiceGroup::II), [&](const Attributes& attr) mutable {
+    auto group = m_preset->findParameterGroup(attr.get("id"), VoiceGroup::II);
+    return new PresetParameterGroupSerializer(group);
+  });
+
 }

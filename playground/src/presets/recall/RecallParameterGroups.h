@@ -1,6 +1,6 @@
 #pragma once
 
-#include "presets/PresetParameterGroups.h"
+#include "presets/PresetDualParameterGroups.h"
 
 class ParameterDualGroupSet;
 class EditBuffer;
