@@ -13,6 +13,7 @@
 #include "parameter_list.h"
 #include "parameter_handle.h"
 #include "pe_exponentiator.h"
+#include "voice_allocation.h"
 
 #include "ae_global_section.h"
 #include "ae_poly_section.h"
