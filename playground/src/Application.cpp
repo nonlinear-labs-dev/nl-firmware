@@ -72,6 +72,7 @@ Application::Application(int numArgs, char **argv)
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_heartbeatState(false)
     , m_isQuit(false)
+    , m_hwuiEditBufferSelection(new EditBufferSelection(m_presetManager->getEditBuffer(), m_hwui.get()))
 {
 #ifdef _PROFILING
   Profiler::get().enable(true);
@@ -255,6 +256,11 @@ UndoScope *Application::getUndoScope()
 DeviceInformation *Application::getDeviceInformation()
 {
   return m_deviceInformation.get();
+}
+
+EditBufferSelection* Application::getEditBufferSelectionForHardwareUI()
+{
+  return m_hwuiEditBufferSelection.get();
 }
 
 bool Application::heartbeat()

@@ -346,6 +346,7 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 
   writer.writeTag("edit-buffer",
                   { Attribute("selected-parameter", m_selectedParameter ? m_selectedParameter->getID() : 0),
+                    Attribute("editbuffer-type", toString(m_type)),
                     Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()),
                     Attribute("loaded-presets-name", getName()), Attribute("loaded-presets-bank-name", bankName),
                     Attribute("preset-is-zombie", zombie), Attribute("is-modified", m_isModified),

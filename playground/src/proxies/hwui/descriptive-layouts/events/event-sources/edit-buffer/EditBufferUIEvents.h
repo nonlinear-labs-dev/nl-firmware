@@ -22,6 +22,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
+      auto currentType = eb->getType();
       setValue({"Select II", 0 });
     }
   };

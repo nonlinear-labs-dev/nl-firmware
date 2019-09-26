@@ -1,5 +1,6 @@
 #pragma once
 
+#include <presets/EditBufferSelection.h>
 #include "playground.h"
 
 class DeviceInformation;
@@ -40,6 +41,7 @@ class Application
   Settings *getSettings();
   DeviceInformation *getDeviceInformation();
   Clipboard *getClipboard();
+  EditBufferSelection *getEditBufferSelectionForHardwareUI();
 
   void quit();
   bool isQuit() const;
@@ -67,6 +69,7 @@ class Application
   std::unique_ptr<WatchDog> m_aggroWatchDog;
   std::unique_ptr<DeviceInformation> m_deviceInformation;
   std::unique_ptr<Clipboard> m_clipboard;
+  std::unique_ptr<EditBufferSelection> m_hwuiEditBufferSelection;
 
   bool m_heartbeatState;
   bool m_isQuit;
