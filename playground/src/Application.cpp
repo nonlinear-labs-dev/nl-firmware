@@ -63,6 +63,7 @@ Application::Application(int numArgs, char **argv)
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_presetManager(new PresetManager(m_http->getUpdateDocumentMaster()))
+    , m_hwuiEditBufferSelection(new EditBufferSelection(m_presetManager->getEditBuffer()))
     , m_lpcProxy(new LPCProxy())
     , m_audioEngineProxy(new AudioEngineProxy)
     , m_hwui(new HWUI())
@@ -72,7 +73,6 @@ Application::Application(int numArgs, char **argv)
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_heartbeatState(false)
     , m_isQuit(false)
-    , m_hwuiEditBufferSelection(new EditBufferSelection(m_presetManager->getEditBuffer(), m_hwui.get()))
 {
 #ifdef _PROFILING
   Profiler::get().enable(true);

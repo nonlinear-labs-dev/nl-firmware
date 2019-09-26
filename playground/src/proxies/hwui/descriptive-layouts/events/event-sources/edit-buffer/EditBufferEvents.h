@@ -1,4 +1,5 @@
 #pragma once
+
 #include "EditBufferEvent.h"
 
 namespace DescriptiveLayouts
@@ -17,10 +18,8 @@ namespace DescriptiveLayouts
       }
       else
       {
-        const auto suffix = " I";
-        const auto suffixLen = strlen(suffix);
-        const auto str = typeStr + suffix;
-        setValue({ str, suffixLen });
+        const auto suffix = " " + toString(Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection());
+        setValue({ typeStr + suffix, suffix.size() });
       }
     }
   };
@@ -39,7 +38,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue({ eb->getCurrentVoiceGroupName(), 0 });
+      auto name = eb->getName(Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection());
+      setValue({ name, 0 });
     }
   };
 
@@ -48,7 +48,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(true);
+      auto val = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+      setValue(val == VoiceGroup::I);
     }
   };
 
@@ -57,7 +58,9 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(false);
+      auto val = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+
+      setValue(val == VoiceGroup::II);
     }
   };
 }

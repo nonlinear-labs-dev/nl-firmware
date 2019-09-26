@@ -61,6 +61,7 @@ class Application
   std::unique_ptr<Settings> m_settings;
   std::unique_ptr<UndoScope> m_undoScope;
   std::unique_ptr<PresetManager> m_presetManager;
+  std::unique_ptr<EditBufferSelection> m_hwuiEditBufferSelection;
   std::unique_ptr<LPCProxy> m_lpcProxy;
   std::unique_ptr<AudioEngineProxy> m_audioEngineProxy;
   std::unique_ptr<HWUI> m_hwui;
@@ -69,7 +70,6 @@ class Application
   std::unique_ptr<WatchDog> m_aggroWatchDog;
   std::unique_ptr<DeviceInformation> m_deviceInformation;
   std::unique_ptr<Clipboard> m_clipboard;
-  std::unique_ptr<EditBufferSelection> m_hwuiEditBufferSelection;
 
   bool m_heartbeatState;
   bool m_isQuit;

@@ -6,28 +6,36 @@
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 
 ModuleCaption::ModuleCaption(const Rect &pos)
-    : super(pos)
-{
+    : super(pos) {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)));
+
+  Application::get().getEditBufferSelectionForHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
 }
 
-ModuleCaption::~ModuleCaption()
-{
+ModuleCaption::~ModuleCaption() {
 }
 
-void ModuleCaption::onParameterSelected(Parameter *newOne)
-{
-  if(newOne)
-  {
+void ModuleCaption::onParameterSelected(Parameter *newOne) {
+  if (newOne) {
+    auto sel = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+
+    auto suffix = std::string{};
+    if (Application::get().getPresetManager()->getEditBuffer()->getType() != EditBufferType::Single)
+      suffix = " " + toString(sel);
     auto group = newOne->getParentGroup();
     auto label = group->getShortName();
-    setText(label);
+    setText(label + suffix);
   }
 }
 
-bool ModuleCaption::redraw(FrameBuffer &fb)
-{
+void ModuleCaption::onSelectionChanged() {
+  setDirty();
+}
+
+
+bool ModuleCaption::redraw(FrameBuffer &fb) {
   const Rect &r = getPosition();
 
   fb.setColor(FrameBuffer::Colors::C128);
@@ -37,17 +45,14 @@ bool ModuleCaption::redraw(FrameBuffer &fb)
   return true;
 }
 
-void ModuleCaption::setFontColor(FrameBuffer &fb) const
-{
+void ModuleCaption::setFontColor(FrameBuffer &fb) const {
   fb.setColor(FrameBuffer::Colors::C43);
 }
 
-std::shared_ptr<Font> ModuleCaption::getFont() const
-{
+std::shared_ptr<Font> ModuleCaption::getFont() const {
   return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
 }
 
-int ModuleCaption::getFontHeight() const
-{
+int ModuleCaption::getFontHeight() const {
   return 8;
 }

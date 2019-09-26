@@ -44,9 +44,8 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
   bool tryParameterToggleOnMacroControl(std::vector<gint32> ids, Parameter *selParam);
 
   tAction createParameterSelectAction(std::vector<gint32> toggleAudioIDs);
-  tAction createParameterSelectAction(gint32 audioID);
 
-  bool toggleParameterSelection(const std::vector<gint32> ids, bool state);
+  bool toggleParameterSelection(std::vector<gint32> ids, bool state);
   bool setParameterSelection(gint32 audioID, bool state);
 
   bool isShowingParameterScreen() const;
@@ -62,18 +61,15 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
   void letReverbBlink(const std::vector<int> &targets);
   bool isSignalFlowingThrough(const Parameter *p) const;
   void setLedStates(const tLedStates &states);
-  std::shared_ptr<Layout> getCurrentBoledLayout() const;
+
   const BOLED &getBoled() const;
   BOLED &getBoled();
   bool handleMacroControlButton(bool state, int mcParamId);
   void assertAllButtonsAssigned();
 
-  bool doMacroControlAssignment(std::list<gint32> ids);
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
 
   ButtonParameterMapping m_mappings;
 
   sigc::connection m_connectionToMacroControl;
-  sigc::connection m_currentBankConnection;
-  Glib::ustring m_selectedPresetUUID;
 };

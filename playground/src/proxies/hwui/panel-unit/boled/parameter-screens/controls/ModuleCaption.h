@@ -22,4 +22,5 @@ class ModuleCaption : public Label
   virtual int getFontHeight() const override;
 
   void onParameterSelected(Parameter *newOne);
+  void onSelectionChanged();
 };

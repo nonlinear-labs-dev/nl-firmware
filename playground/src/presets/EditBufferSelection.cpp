@@ -1,23 +1,32 @@
 #include "EditBufferSelection.h"
 
-EditBufferSelection::EditBufferSelection(EditBuffer* eb, HWUI* hwui) : m_editBuffer{eb}, m_hwui{hwui} {
+EditBufferSelection::EditBufferSelection(EditBuffer* eb)
+    : m_editBuffer{ eb }
+    , m_selectedVG{ VoiceGroup::I }
+{
   m_editBuffer->onChange(sigc::bind(sigc::mem_fun(this, &EditBufferSelection::onEditBufferChanged), m_editBuffer));
-  m_selectedVG = VoiceGroup::I;
 }
 
-void EditBufferSelection::onEditBufferChanged(const EditBuffer* eb) {
-  if(eb->getType() == EditBufferType::Single) {
-    setHWUIEditBufferSelection(VoiceGroup::I);
+void EditBufferSelection::onEditBufferChanged(const EditBuffer* eb)
+{
+  //TODO
+}
+
+void EditBufferSelection::setHWUIEditBufferSelection(VoiceGroup vg)
+{
+  if(std::exchange(m_selectedVG, vg) != vg)
+  {
+    m_voiceGroupSelectionChanged.send();
+    m_editBuffer->onChange(); //Implizit ändert er sich ja auch...
   }
 }
 
-void EditBufferSelection::setHWUIEditBufferSelection(VoiceGroup vg) {
-  if(std::exchange(m_selectedVG, vg) != m_selectedVG) {
-    m_voiceGroupSelectionChanged.send(m_selectedVG);
-  }
-}
-
-
-VoiceGroup EditBufferSelection::getEditBufferSelection() const {
+VoiceGroup EditBufferSelection::getEditBufferSelection() const
+{
   return m_selectedVG;
+}
+
+void EditBufferSelection::toggleHWEditBufferSelection()
+{
+  setHWUIEditBufferSelection(m_selectedVG == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I);
 }

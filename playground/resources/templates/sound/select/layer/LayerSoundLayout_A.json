@@ -47,21 +47,17 @@
           "Class": "LayerVoiceGroupI",
           "Position": "45, 16",
           "Init": {
-            "VoiceGroupIdentifier[Text]": "I",
-            "Unison[Text]": "+12.00 st",
-            "Master[Text]": "-3.5 dB"
+            "VoiceGroupIdentifier[Text]": "I"
           },
-          "Events": "isCurrentVGI => ANY[Highlight]"
+          "Events": "isCurrentVGI => ANY[Highlight], VGIUnisonText => Unison[Text], VGIMasterText => Master[Text]"
         },
         "Lower": {
           "Class": "LayerVoiceGroupII",
           "Position": "45, 32",
           "Init": {
-            "VoiceGroupIdentifier[Text]": "II",
-            "Unison[Text]": "+12.00 st",
-            "Master[Text]": "-3.5 dB"
+            "VoiceGroupIdentifier[Text]": "II"
           },
-          "Events": "isCurrentVGII => ANY[Highlight]"
+          "Events": "isCurrentVGII => ANY[Highlight], VGIIUnisonText => Unison[Text], VGIIMasterText => Master[Text]"
         }
       },
       "EventSinks": {

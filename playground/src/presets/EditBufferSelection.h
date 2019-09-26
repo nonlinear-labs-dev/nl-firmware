@@ -4,21 +4,22 @@
 
 class EditBufferSelection : public sigc::trackable {
 public:
-  EditBufferSelection(EditBuffer* eb, HWUI* hwui);
+  EditBufferSelection(EditBuffer* eb);
   void onEditBufferChanged(const EditBuffer* eb);
 
   void setHWUIEditBufferSelection(VoiceGroup vg);
   VoiceGroup getEditBufferSelection() const;
 
-  template<class tCB>
-  sigc::connection onHwuiSelectionChanged(tCB cb) {
-    return m_voiceGroupSelectionChanged.connectAndInit(cb);
+  sigc::connection onHwuiSelectionChanged(const sigc::slot<void>& s) {
+    return m_voiceGroupSelectionChanged.connectAndInit(s);
   }
+
+  void toggleHWEditBufferSelection();
+
 private:
 
-  Signal<void, VoiceGroup> m_voiceGroupSelectionChanged;
+  Signal<void> m_voiceGroupSelectionChanged;
   VoiceGroup m_selectedVG;
 
   EditBuffer* m_editBuffer;
-  HWUI* m_hwui;
 };

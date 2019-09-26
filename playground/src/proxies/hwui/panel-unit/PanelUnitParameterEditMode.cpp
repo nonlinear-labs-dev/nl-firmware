@@ -234,7 +234,8 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
 
   for(gint32 id : toggleAudioIDs)
   {
-    if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+    auto voiceGroup = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+    if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, voiceGroup))
       g_error("Attempt to link a button to parameter ID %d, which does not exist!", id);
 
     g_assert(assignedAudioIDs.find(id) == assignedAudioIDs.end());
@@ -246,16 +247,11 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
   return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
 
-UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(gint32 audioID)
-{
-  return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, std::vector<gint32>(audioID),
-                   std::placeholders::_3);
-}
-
 bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> ids, bool state)
 {
+  auto voiceGroup = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto firstParameterInList = editBuffer->findParameterByID(ids.front());
+  auto firstParameterInList = editBuffer->findParameterByID(ids.front(), voiceGroup);
 
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
 
@@ -529,11 +525,6 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, int select
 
   if(button != Buttons::INVALID)
     states[(int) button] = true;
-}
-
-std::shared_ptr<Layout> PanelUnitParameterEditMode::getCurrentBoledLayout() const
-{
-  return getBoled().getLayout();
 }
 
 const BOLED &PanelUnitParameterEditMode::getBoled() const

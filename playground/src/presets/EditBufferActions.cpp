@@ -83,32 +83,6 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("import-reaktor-preset", [=](std::shared_ptr<NetworkRequest> request) mutable {
-    Glib::ustring preset = request->get("preset");
-    editBuffer->undoableImportReaktorPreset(preset);
-  });
-
-  addAction("download-editbuffer-as-text", [=](std::shared_ptr<NetworkRequest> request) mutable {
-    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      auto stream = request->createStream("application/x-reaktor-table", false);
-      auto quotedFileName = boost::replace_all_copy(editBuffer->getName().raw(), "\"", "'");
-      httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + quotedFileName + ".rvt\"");
-
-      Glib::ustring preset = editBuffer->exportReaktorPreset();
-      httpRequest->respond(boost::replace_all_copy(preset.raw(), "\n", "\r\n"));
-    }
-  });
-
-  addAction("open-editbuffer-as-text", [=](std::shared_ptr<NetworkRequest> request) mutable {
-    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      auto stream = request->createStream("text/plain", false);
-      Glib::ustring preset = editBuffer->exportReaktorPreset();
-      httpRequest->respond(boost::replace_all_copy(preset.raw(), "\n", "\r\n"));
-    }
-  });
-
   addAction("set-ribbon-touch-behaviour", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto parameterId = std::stoi(request->get("id"));
     Glib::ustring mode = request->get("mode");

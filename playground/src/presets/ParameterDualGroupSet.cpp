@@ -74,6 +74,10 @@ ParameterDualGroupSet::~ParameterDualGroupSet()
 ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGroupByID(const Glib::ustring &id,
                                                                                        VoiceGroup vg) const
 {
+  if(vg == VoiceGroup::Invalid) {
+    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+  }
+
   for(auto a : m_parameterGroups[static_cast<int>(vg)])
     if(a->getID() == id)
       return a;
@@ -83,6 +87,10 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGro
 
 ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameterGroup(ParameterGroup *p, VoiceGroup v)
 {
+  if(v == VoiceGroup::Invalid) {
+    v = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+  }
+
   p->init();
   g_assert(getParameterGroupByID(p->getID(), v) == nullptr);
   auto wrapped = tParameterGroupPtr(p);
@@ -92,6 +100,10 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameter
 
 void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup target)
 {
+  if(target == VoiceGroup::Invalid) {
+    target = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+  }
+
   super::copyFrom(transaction, other);
 
   for(auto &g : getParameterGroups(target))
@@ -105,6 +117,10 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
 
 Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
 {
+  if(vg == VoiceGroup::Invalid) {
+    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+  }
+
   try
   {
     return m_idToParameterMap[static_cast<int>(vg)].at(id);
@@ -127,6 +143,10 @@ size_t ParameterDualGroupSet::countParameters() const
 
 std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedById(VoiceGroup vg) const
 {
+  if(vg == VoiceGroup::Invalid) {
+    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+  }
+
   std::map<int, Parameter *> sorted;
 
   for(auto group : getParameterGroups(vg))
@@ -147,5 +167,9 @@ void ParameterDualGroupSet::writeDocument(Writer &writer, UpdateDocumentContribu
 const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
     ParameterDualGroupSet::getParameterGroups(VoiceGroup vg) const
 {
+  if(vg == VoiceGroup::Invalid) {
+    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+  }
+
   return m_parameterGroups[static_cast<int>(vg)];
 }

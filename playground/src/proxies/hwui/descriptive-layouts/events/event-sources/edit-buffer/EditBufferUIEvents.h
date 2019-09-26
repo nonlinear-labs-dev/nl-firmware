@@ -12,8 +12,10 @@ namespace DescriptiveLayouts
       auto typeStr = toString(type);
       if(type == EditBufferType::Single)
         setValue({ typeStr, 0 });
-      else
-        setValue({ typeStr + " [I]", 0 });
+      else {
+        auto sel = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+        setValue({ typeStr + (sel == VoiceGroup::I ? "[II]" : "[I]"), 0 });
+      }
     }
   };
 
@@ -23,7 +25,10 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       auto currentType = eb->getType();
-      setValue({"Select II", 0 });
+      if(currentType != EditBufferType::Single) {
+        auto sel = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+        setValue({sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
+      }
     }
   };
 
