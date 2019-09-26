@@ -1,5 +1,5 @@
 #include <presets/EditBuffer.h>
-#include "VoiceGroupSerializer.h"
+#include "VoiceGroupsSerializer.h"
 #include "ParameterGroupSerializer.h"
 
 namespace Detail
@@ -42,34 +42,34 @@ namespace Detail
   };
 }
 
-VoiceGroupSerializer::VoiceGroupSerializer(ParameterDualGroupSet *paramGroups)
+VoiceGroupsSerializer::VoiceGroupsSerializer(EditBuffer *editBuffer)
     : Serializer(getTagName())
-    , m_paramGroups{ paramGroups }
+    , m_editBuffer{editBuffer }
 {
 }
 
-Glib::ustring VoiceGroupSerializer::getTagName()
+Glib::ustring VoiceGroupsSerializer::getTagName()
 {
   return "voice-groups";
 }
 
-void VoiceGroupSerializer::writeTagContent(Writer &writer) const
+void VoiceGroupsSerializer::writeTagContent(Writer &writer) const
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     writer.writeTag(toString(vg), [vg, &writer, this] {
-      Detail::VoiceGroupSerializer2 s(dynamic_cast<EditBuffer *>(m_paramGroups), vg);
+      Detail::VoiceGroupSerializer2 s(m_editBuffer, vg);
       s.write(writer);
     });
   }
 }
 
-void VoiceGroupSerializer::readTagContent(Reader &reader) const
+void VoiceGroupsSerializer::readTagContent(Reader &reader) const
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     reader.onTag(toString(vg), [this, vg](const auto &attr) mutable {
-      return new Detail::VoiceGroupSerializer2(dynamic_cast<EditBuffer *>(m_paramGroups), vg);
+      return new Detail::VoiceGroupSerializer2(m_editBuffer, vg);
     });
   }
 }

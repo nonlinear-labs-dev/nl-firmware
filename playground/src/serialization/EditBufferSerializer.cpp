@@ -8,7 +8,7 @@
 #include "PresetParameterGroupsSerializer.h"
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
-#include "VoiceGroupSerializer.h"
+#include "VoiceGroupsSerializer.h"
 #include "VoiceGroupLockSerializer.h"
 
 EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
@@ -32,7 +32,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 
   writer.writeTextElement("editbuffer-type", toString(m_editBuffer->getType()));
 
-  VoiceGroupSerializer groups(m_editBuffer);
+  VoiceGroupsSerializer groups(m_editBuffer);
   groups.write(writer);
 
   if(auto selectedParam = m_editBuffer->getSelected())
@@ -69,8 +69,8 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
   reader.onTextElement("editbuffer-type",
                        [&](auto text, auto) mutable { m_editBuffer->undoableConvertToType(toEditBufferType(text)); });
 
-  reader.onTag(VoiceGroupSerializer::getTagName(),
-               [&](auto) mutable { return new VoiceGroupSerializer(m_editBuffer); });
+  reader.onTag(VoiceGroupsSerializer::getTagName(),
+               [&](auto) mutable { return new VoiceGroupsSerializer(m_editBuffer); });
 
   reader.onTextElement("selected-parameter", [&](auto text, auto) mutable {
     m_editBuffer->undoableSelectParameter(reader.getTransaction(), text);

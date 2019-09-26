@@ -2,15 +2,16 @@
 #include <presets/ParameterDualGroupSet.h>
 #include "Serializer.h"
 
-class VoiceGroupSerializer : public Serializer {
-public:
-  explicit VoiceGroupSerializer(ParameterDualGroupSet *paramGroups);
+class VoiceGroupsSerializer : public Serializer
+{
+ public:
+  explicit VoiceGroupsSerializer(EditBuffer *editBuffer);
 
   static Glib::ustring getTagName();
 
-private:
+ private:
   void writeTagContent(Writer &writer) const;
   void readTagContent(Reader &reader) const;
 
-  ParameterDualGroupSet *m_paramGroups;
+  EditBuffer *m_editBuffer;
 };
