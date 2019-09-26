@@ -58,7 +58,8 @@ public:
     }
     inline uint32_t keyUp(const uint32_t _keyPos)
     {
-        for(uint32_t v = 0; v < m_assignable; v++)
+        uint32_t v;
+        for(v = 0; v < m_assignable; v++)
         {
             if(m_voice_state[v] == static_cast<int32_t>(_keyPos))
             {
