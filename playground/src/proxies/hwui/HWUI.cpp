@@ -26,6 +26,8 @@
 #include <proxies/hwui/descriptive-layouts/LayoutFolderMonitor.h>
 #include <nltools/messaging/Message.h>
 #include <device-settings/LayoutMode.h>
+#include <xml/StandardOutStream.h>
+#include <serialization/EditBufferSerializer.h>
 
 HWUI::HWUI()
     : m_readersCancel(Gio::Cancellable::create())
@@ -186,6 +188,17 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       else if(line == "stress-layouts")
       {
         Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().runPerformanceTest();
+      }
+      else if(line == "dump-editbuffer")
+      {
+        auto eb = Application::get().getPresetManager()->getEditBuffer();
+        auto wtf = std::shared_ptr<std::ostream>(&std::cout, [](void*){});
+        auto os = std::make_shared<StandardOutStream>(wtf);
+        XmlWriter writer(os);
+        eb->writeDocument(writer, 0);
+
+        EditBufferSerializer ebs(eb);
+        ebs.write(writer);
       }
       else if(line == "undo-performance-compare")
       {

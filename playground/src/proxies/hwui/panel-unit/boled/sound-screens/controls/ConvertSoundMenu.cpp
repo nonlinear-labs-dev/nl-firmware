@@ -13,8 +13,7 @@ ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
 
 void ConvertSoundMenu::convertSoundTo(EditBufferType newType)
 {
-  Application::get().getPresetManager()->getEditBuffer()->setType(newType);
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+  Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(newType);
 }
 
 void ConvertSoundMenu::setup()

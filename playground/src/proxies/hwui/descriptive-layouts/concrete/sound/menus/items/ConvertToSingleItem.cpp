@@ -7,7 +7,7 @@
 
 ConvertToSingleItem::ConvertToSingleItem()
     : AnimatedGenericItem(
-          "Convert to Single", [] { Application::get().getPresetManager()->getEditBuffer()->setType(EditBufferType::Single); },
+          "Convert to Single", [] { Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(EditBufferType::Single); },
           [] {
             Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
           })

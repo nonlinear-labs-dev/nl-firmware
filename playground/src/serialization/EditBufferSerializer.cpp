@@ -30,6 +30,8 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 {
   SplashLayout::addStatus("Writing Edit Buffer");
 
+  writer.writeTextElement("editbuffer-type", toString(m_editBuffer->getType()));
+
   VoiceGroupSerializer groups(m_editBuffer);
   groups.write(writer);
 
@@ -56,12 +58,16 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
 
   SplashLayout::addStatus("Reading Edit Buffer");
 
+  reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable {
+    m_editBuffer->undoableConvertToType(reader.getTransaction(), toEditBufferType(text));
+  });
+
   reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
     m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
   });
 
   reader.onTextElement("editbuffer-type",
-                       [&](auto text, auto) mutable { m_editBuffer->setType(toEditBufferType(text)); });
+                       [&](auto text, auto) mutable { m_editBuffer->undoableConvertToType(toEditBufferType(text)); });
 
   reader.onTag(VoiceGroupSerializer::getTagName(),
                [&](auto) mutable { return new VoiceGroupSerializer(m_editBuffer); });

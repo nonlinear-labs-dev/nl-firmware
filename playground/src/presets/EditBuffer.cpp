@@ -46,14 +46,6 @@ EditBufferType EditBuffer::getType() const
   return m_type;
 }
 
-void EditBuffer::setType(EditBufferType t)
-{
-  if(std::exchange(m_type, t) != m_type)
-  {
-    onChange();
-  }
-}
-
 Glib::ustring EditBuffer::getCurrentVoiceGroupName() const
 {
   return "I " + getName();
@@ -242,7 +234,7 @@ void EditBuffer::setModulationAmount(double amount)
 
 bool EditBuffer::hasLocks(VoiceGroup vg) const
 {
-  return searchForAnyParameterWithLock() != nullptr;
+  return searchForAnyParameterWithLock(vg) != nullptr;
 }
 
 #warning "TODO Editbuffer API + VoiceGroup"
@@ -622,7 +614,7 @@ void EditBuffer::undoableLockAllGroups(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableToggleGroupLock(UNDO::Transaction *transaction, const Glib::ustring &groupId)
 {
-  for(auto vg: {VoiceGroup::I, VoiceGroup::II})
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     if(auto g = getParameterGroupByID(groupId, vg))
       g->undoableToggleLock(transaction);
 }
@@ -657,8 +649,25 @@ void EditBuffer::loadCurrentVoiceGroup(Preset *pPreset)
   if(pPreset == nullptr)
     return;
 
-  auto string = nltools::string::concat("Loading " + pPreset->getName() + " into Voice Group: " + getCurrentVoiceGroupName());
+  auto string
+      = nltools::string::concat("Loading " + pPreset->getName() + " into Voice Group: " + getCurrentVoiceGroupName());
   DebugLevel::warning(string);
   auto scope = getUndoScope().startTransaction(string);
   undoableLoad(scope->getTransaction(), pPreset);
+}
+
+void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const EditBufferType &ebType)
+{
+  if(ebType != m_type)
+    transaction->addUndoSwap(this, m_type, ebType);
+}
+
+void EditBuffer::undoableConvertToType(const EditBufferType &ebType)
+{
+  if(ebType == m_type)
+    return;
+
+  auto scope = getUndoScope().startTransaction("Convert Editbuffer to " + toString(ebType));
+  auto transaction = scope->getTransaction();
+  undoableConvertToType(transaction, ebType);
 }

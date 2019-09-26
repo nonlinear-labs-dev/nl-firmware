@@ -10,6 +10,8 @@ class Application;
 class Writer;
 class PresetManager;
 
+
+
 class EditBuffer : public ParameterDualGroupSet
 {
  private:
@@ -18,9 +20,6 @@ class EditBuffer : public ParameterDualGroupSet
  public:
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
-
-  EditBufferType getType() const;
-  void setType(EditBufferType t);
 
   Glib::ustring getCurrentVoiceGroupName() const;
   Glib::ustring getName() const;
@@ -87,6 +86,10 @@ class EditBuffer : public ParameterDualGroupSet
   void initRecallValues(UNDO::Transaction *t);
 
   void loadCurrentVoiceGroup(Preset *pPreset);
+
+  EditBufferType getType() const;
+  void undoableConvertToType(UNDO::Transaction* transaction, const EditBufferType& ebType);
+  void undoableConvertToType(const EditBufferType& ebType);
 
  private:
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::I) const;
