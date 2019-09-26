@@ -10,13 +10,12 @@
 *******************************************************************************/
 
 #include "smoother_handle.h"
-#include "signal_storage_dual.h"
-#include "parameter_info.h"
+#include "ae_info.h"
 
 class PolySection
 {
 public:
-    PolySignalStorage<C15::Signals::Truepoly_Signals, C15::Signals::Quasipoly_Signals> m_signals;
+    PolySignals m_signals;
     PolySection();
     void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);
     void add_copy_fast_id(const uint32_t _smootherId, const uint32_t _signalId);

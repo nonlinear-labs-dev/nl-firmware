@@ -10,14 +10,13 @@
 *******************************************************************************/
 
 #include "smoother_handle.h"
-#include "signal_storage_dual.h"
-#include "parameter_info.h"
+#include "ae_info.h"
 
 // master (volume, tune), scale, test tone (freq, amp, follow_key), soft clip
 class GlobalSection
 {
 public:
-    MonoSignalStorage<C15::Signals::Global_Signals> m_signals;
+    GlobalSignals m_signals;
     float m_out_l, m_out_r, m_pitch;
     GlobalSection();
     void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);

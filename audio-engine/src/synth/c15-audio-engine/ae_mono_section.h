@@ -10,13 +10,12 @@
 *******************************************************************************/
 
 #include "smoother_handle.h"
-#include "signal_storage_dual.h"
-#include "parameter_info.h"
+#include "ae_info.h"
 
 class MonoSection
 {
 public:
-    MonoSignalStorage<C15::Signals::Mono_Signals> m_signals;
+    MonoSignals m_signals;
     MonoSection();
     void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);
     void add_copy_fast_id(const uint32_t _smootherId, const uint32_t _signalId);

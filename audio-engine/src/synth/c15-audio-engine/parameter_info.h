@@ -170,7 +170,8 @@ namespace Properties
 // naming every scale method
 enum class Scale
 {
-    None
+    None, Linear_Offset, Linear_Factor, Linear_Inverse, Parabolic_Offset, Parabolic_Factor, Cubic_Offset, S_Curve_Inverse,
+    Expon_Gain, Expon_Osc_Pitch, Expon_Lin_Pitch, Expon_Shaper_Drive, Expon_Mix_Drive, Expon_Cab_Drive, Expon_Env_Time
 };
 
 enum class LayerId
