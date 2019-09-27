@@ -17,12 +17,12 @@ class GlobalSection
 {
 public:
     GlobalSignals m_signals;
-    float m_out_l, m_out_r, m_pitch;
+    float m_out_l, m_out_r;
     GlobalSection();
     void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);
     void add_copy_fast_id(const uint32_t _smootherId, const uint32_t _signalId);
     void add_copy_slow_id(const uint32_t _smootherId, const uint32_t _signalId);
-    void key_position(const uint32_t _pos);
+    float key_position(const uint32_t _pos);
     void render_audio(const float _left, const float _right);
     void render_fast();
     void render_slow();

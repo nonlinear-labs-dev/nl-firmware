@@ -29,7 +29,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         auto element = C15::ParameterList[i];
         switch(element.m_param.m_type)
         {
-        // global parameters can directly feed to global signals
+        // global parameters need their properties and can directly feed to global signals
         case C15::Descriptors::ParameterType::Global_Parameter:
             m_params.init_global(element);
             switch(element.m_signal.m_signal)
@@ -51,7 +51,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         case C15::Descriptors::ParameterType::Macro_Control:
             m_params.init_macro(element);
             break;
-        // (local) modulateable parameters can directly feed to either quasipoly or mono signals
+        // (local) modulateable parameters need their properties and can directly feed to either quasipoly or mono signals
         case C15::Descriptors::ParameterType::Modulateable_Parameter:
             m_params.init_modulateable(element);
             switch(element.m_signal.m_signal)
@@ -92,7 +92,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
                 break;
             }
             break;
-        // (local) unmodulateable parameters can directly feed to either quasipoly or mono signals
+        // (local) unmodulateable parameters need their properties and can directly feed to either quasipoly or mono signals
         case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
             m_params.init_unmodulateable(element);
             switch(element.m_signal.m_signal)
@@ -149,13 +149,14 @@ void dsp_host_dual::render()
     // fast rendering
     if(m_clock.m_fast)
     {}
-    // audio rendering
+    // audio rendering (always)
 }
 
 void dsp_host_dual::reset()
 {}
 
-float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleArg, const float _value)
+// taken from milestone 1.5 (as only modulateable and unmodulateable parameters need scaling, this should suffice)
+float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleArg, float _value)
 {
     float result = 0.0f;
     switch(_id)
@@ -181,8 +182,8 @@ float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleA
         result = (_value * _value * _value) + _scaleArg;
         break;
     case C15::Properties::Scale::S_Curve_Inverse:
-        result = (2.0f * (_scaleArg - _value)) - 1.0f;
-        result = (result * result * result * -0.25f) + (result * 0.75f) + 0.5f;
+        _value = (2.0f * (_scaleArg - _value)) - 1.0f;
+        result = (_value * _value * _value * -0.25f) + (_value * 0.75f) + 0.5f;
         break;
     case C15::Properties::Scale::Expon_Gain:
         result = m_convert.eval_level(_value + _scaleArg);
@@ -199,9 +200,9 @@ float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleA
     case C15::Properties::Scale::Expon_Mix_Drive:
         result = m_convert.eval_level(_value) * _scaleArg;
         break;
-    case C15::Properties::Scale::Expon_Cab_Drive: // seems obsolete, equals normal expon_gain scaling
-        result = m_convert.eval_level(_value + _scaleArg);
-        break;
+//    case C15::Properties::Scale::Expon_Cab_Drive: // seems obsolete, equals normal expon_gain scaling
+//        result = m_convert.eval_level(_value + _scaleArg);
+//        break;
     case C15::Properties::Scale::Expon_Env_Time:
         result = m_convert.eval_time((_value * 104.0781f) + _scaleArg);
         break;

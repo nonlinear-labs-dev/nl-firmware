@@ -36,7 +36,7 @@ void ae_fadepoint::init(const float _samplerate)
             float x = std::cos(1.5708f * sample_interval * static_cast<float>(i) / fade_time);
             m_data[i] = x * x;
         }
-        else
+        else if(i > m_flush_index)
         {
             float x = std::cos(1.5708f * sample_interval * static_cast<float>(i - 1) / fade_time);
             m_data[i] = x * x;

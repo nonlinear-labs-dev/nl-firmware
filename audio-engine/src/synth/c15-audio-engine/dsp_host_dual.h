@@ -49,5 +49,5 @@ private:
     PolySection m_poly[2];
     MonoSection m_mono[2];
     ae_fadepoint m_fade[2];
-    float scale(const C15::Properties::Scale _id, const float _scaleArg, const float _value);
+    float scale(const C15::Properties::Scale _id, const float _scaleArg, float _value);
 };

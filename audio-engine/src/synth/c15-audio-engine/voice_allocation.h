@@ -18,9 +18,9 @@ class VoiceAllocation
 public:
     inline VoiceAllocation()
     {}
-    inline void init(const uint32_t _assignbale)
+    inline void init(const uint32_t _assignable)
     {
-        m_assignable = _assignbale;
+        m_assignable = _assignable;
         for(uint32_t i = 0; i < m_assignable; i++)
         {
             m_voice_state[i] = -1;

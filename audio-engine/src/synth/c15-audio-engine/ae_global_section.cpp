@@ -29,8 +29,10 @@ void GlobalSection::add_copy_slow_id(const uint32_t _smootherId, const uint32_t 
     m_smoothers.m_copy_slow.add_copy_id(_smootherId, _signalId);
 }
 
-void GlobalSection::key_position(const uint32_t _pos)
-{}
+float GlobalSection::key_position(const uint32_t _pos)
+{
+    return 0.f; // provide scaled pitch (without master tune)
+}
 
 void GlobalSection::render_audio(const float _left, const float _right)
 {
