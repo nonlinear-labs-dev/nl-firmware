@@ -7,6 +7,7 @@
 class Preset;
 class PresetNameLabel;
 class PresetNumberLabel;
+class PresetTypeLabel;
 
 class PresetLabel;
 class Application;
@@ -36,6 +37,7 @@ class PresetListEntry : public ControlWithChildren
 
   PresetNumberLabel *m_number = nullptr;
   PresetNameLabel *m_name = nullptr;
+  PresetTypeLabel *m_type = nullptr;
 
   connection m_animationConnection;
   connection m_presetConnection;

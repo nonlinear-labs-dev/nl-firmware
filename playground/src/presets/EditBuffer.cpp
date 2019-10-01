@@ -274,6 +274,18 @@ bool EditBuffer::anyParameterChanged(VoiceGroup vg) const
   return false;
 }
 
+bool EditBuffer::anyParameterChanged() const
+{
+  if(m_type == SoundType::Single)
+  {
+    return anyParameterChanged(VoiceGroup::I);
+  }
+  else
+  {
+    return anyParameterChanged(VoiceGroup::I) || anyParameterChanged(VoiceGroup::II);
+  }
+}
+
 void EditBuffer::resetOriginIf(const Preset *p)
 {
   if(m_originCache == p)

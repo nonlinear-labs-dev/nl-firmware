@@ -67,7 +67,7 @@ class EditBuffer : public ParameterDualGroupSet
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
   bool hasLocks(VoiceGroup vg = VoiceGroup::Invalid) const;
-  bool anyParameterChanged(VoiceGroup vg = VoiceGroup::Invalid) const;
+  bool anyParameterChanged() const;
   void resetOriginIf(const Preset *p);
 
   // CALLBACKS
@@ -92,6 +92,8 @@ class EditBuffer : public ParameterDualGroupSet
   VoiceGroup findVoiceGroupWithParameter(const Parameter *pParameter);
 
 private:
+  bool anyParameterChanged(VoiceGroup vg) const;
+
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;
 
   UNDO::Scope &getUndoScope() override;

@@ -37,6 +37,9 @@ void PresetSerializer::readTagContent(Reader &reader) const
 {
   reader.onTextElement("name", [&](auto &text, auto) { m_preset->setName(reader.getTransaction(), text); });
 
+  reader.onTextElement("type", [&](auto& text, auto) { m_preset->setType(reader.getTransaction(), toSoundType(text)); });
+
+
   if(!m_ignoreUUIDs)
   {
     reader.onTextElement("uuid", [&](const Glib::ustring &text, const Attributes &attr) {

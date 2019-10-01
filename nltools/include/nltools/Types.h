@@ -1,7 +1,7 @@
 #pragma once
 #include "nltools/enums/EnumTools.h"
 
-ENUM(SoundType, short, Single, Split, Layer);
+ENUM(SoundType, int8_t, Single, Split, Layer, Invalid);
 ENUM(MacroControls, int8_t, NONE = 0, MC1 = 1, MC2 = 2, MC3 = 3, MC4 = 4, NUM_CHOICES = 5);
 ENUM(VoiceGroup, int8_t, I, II, Invalid);
 ENUM(RibbonTouchBehaviour, int8_t, ABSOLUTE, RELATIVE, NUM_TOUCH_BEHAVIOURS);
