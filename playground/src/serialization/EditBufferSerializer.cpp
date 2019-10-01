@@ -54,8 +54,6 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 
 void EditBufferSerializer::readTagContent(Reader &reader) const
 {
-  //TODO Assert all parameters unlocked!?
-
   SplashLayout::addStatus("Reading Edit Buffer");
 
   reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable {
@@ -79,7 +77,11 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
   reader.onTag(LastLoadedPresetInfoSerializer::getTagName(),
                [&](auto) mutable { return new LastLoadedPresetInfoSerializer(m_editBuffer); });
 
-  reader.loadElement("hash-on-store", m_editBuffer->m_hashOnStore);
+  reader.onTextElement("hash-on-store", [&](auto text, auto) {
+    std::stringstream ss(text);
+    ss >> m_editBuffer->m_hashOnStore;
+    m_editBuffer->onChange();
+  });
 
   reader.onTag(VoiceGroupLockSerializer::getTagName(),
                [&](auto) mutable { return new VoiceGroupLockSerializer(m_editBuffer); });

@@ -65,7 +65,7 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    reader.onTag(toString(vg), [&](const Attributes &attr) mutable {
+    reader.onTag(toString(vg), [this, vg](const Attributes &attr) mutable {
       return new Detail::RecallEditBufferSerializer2(m_editBuffer, vg);
     });
   }

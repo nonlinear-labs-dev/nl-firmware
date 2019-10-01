@@ -12,22 +12,21 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
+    const auto index = static_cast<int>(vg);
     for(auto &g : m_editBuffer->getParameterGroups(vg))
     {
       for(auto &parameter : g->getParameters())
       {
-        m_parameters[static_cast<int>(vg)][parameter->getID()]
-            = std::make_unique<RecallParameter>(this, parameter->getID());
+        m_parameters[index][parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
       }
     }
   }
 }
 
-RecallParameterGroups::tParameterMap& RecallParameterGroups::getParameters(VoiceGroup vg)
+RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg)
 {
   return m_parameters[static_cast<int>(vg)];
 }
-
 
 const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
 {
@@ -38,11 +37,12 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
+    const auto index = static_cast<int>(vg);
     for(auto &g : other->getParameterGroups(vg))
     {
       for(auto &parameter : g->getParameters())
       {
-        m_parameters[static_cast<int>(vg)].at(parameter->getID())->copyFrom(transaction, parameter);
+        m_parameters[index].at(parameter->getID())->copyFrom(transaction, parameter);
       }
     }
   }

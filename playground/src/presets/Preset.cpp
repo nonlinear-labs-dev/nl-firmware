@@ -203,7 +203,7 @@ ustring Preset::buildUndoTransactionTitle(const ustring &prefix) const {
 
       char txt[256];
       sprintf(txt, "%zu-%03zu", bankNumber, presetNumber);
-      return UNDO::StringTools::buildString(prefix, " ", txt, ": '", getName(), "'");
+      return UNDO::StringTools::buildString(prefix, " ", toString(getType()), " Preset ", txt, ": '", getName(), "'");
     }
   }
 
