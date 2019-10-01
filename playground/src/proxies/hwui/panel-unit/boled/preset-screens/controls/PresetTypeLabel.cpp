@@ -9,9 +9,7 @@ void PresetTypeLabel::update(const SoundType &type, bool selected, bool loaded)
 {
   if(type != SoundType::Invalid)
   {
-    std::string t{};
-    t += toString(type)[0];
-    setText(t, selected, loaded);
+    setText(typeToString(type), selected, loaded);
   }
   else
   {
@@ -34,4 +32,16 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
   int yinset = showsSelectedPreset() ? 2 : 1;
 
   fb.fillRect(r.getX(), r.getY() + yinset, r.getWidth() - xinset, r.getHeight() - 2 * yinset);
+}
+
+std::string PresetTypeLabel::typeToString(const SoundType &type) {
+  switch (type) {
+    case SoundType::Single:
+    case SoundType::Invalid:
+      return "";
+    case SoundType::Layer:
+      return "=";
+    case SoundType::Split:
+      return "||";
+  }
 }
