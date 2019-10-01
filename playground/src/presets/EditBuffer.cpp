@@ -25,7 +25,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_deferredJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
     , m_recallSet(this)
-    , m_type(EditBufferType::Single)
+    , m_type(SoundType::Single)
 {
   m_hashOnStore = getHash();
 }
@@ -40,14 +40,14 @@ void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
   m_recallSet.copyFromEditBuffer(transaction, this);
 }
 
-EditBufferType EditBuffer::getType() const
+SoundType EditBuffer::getType() const
 {
   return m_type;
 }
 
 Glib::ustring EditBuffer::getName(VoiceGroup vg) const
 {
-  if(vg == VoiceGroup::Invalid || m_type == EditBufferType::Single)
+  if(vg == VoiceGroup::Invalid || m_type == SoundType::Single)
     return getName();
   else
     return toString(vg) + " " + getName();
@@ -214,7 +214,7 @@ void EditBuffer::setParameter(size_t id, double cpValue, VoiceGroup vg)
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue, toString(vg));
     Glib::ustring name{};
-    if(m_type == EditBufferType::Single)
+    if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
       name = UNDO::StringTools::formatString("Set '%0' [%1]", p->getGroupAndParameterName(), toString(vg));
@@ -570,26 +570,12 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
   }
 }
 
-void EditBuffer::loadCurrentVoiceGroup(Preset *pPreset)
+void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType)
 {
-  if(pPreset == nullptr)
-    return;
-
-  auto voiceGroup = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
-
-  auto string = nltools::string::concat("Loading " + pPreset->getName() + " into Voice Group: " + getName(voiceGroup));
-  DebugLevel::warning(string);
-  auto scope = getUndoScope().startTransaction(string);
-  undoableLoad(scope->getTransaction(), pPreset);
+  transaction->addUndoSwap(this, m_type, ebType);
 }
 
-void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const EditBufferType &ebType)
-{
-  if(ebType != m_type)
-    transaction->addUndoSwap(this, m_type, ebType);
-}
-
-void EditBuffer::undoableConvertToType(const EditBufferType &ebType)
+void EditBuffer::undoableConvertToType(const SoundType &ebType)
 {
   if(ebType == m_type)
     return;

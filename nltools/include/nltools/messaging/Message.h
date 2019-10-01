@@ -107,7 +107,7 @@ namespace nltools
 
     struct EditBufferContextMessage : Message<MessageType::EditBufferContext>
     {
-      EditBufferType type;
+      SoundType type;
       VoiceGroup selectedGroup;
     };
 

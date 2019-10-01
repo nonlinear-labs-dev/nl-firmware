@@ -85,11 +85,9 @@ class EditBuffer : public ParameterDualGroupSet
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
 
-  void loadCurrentVoiceGroup(Preset *pPreset);
-
-  EditBufferType getType() const;
-  void undoableConvertToType(UNDO::Transaction *transaction, const EditBufferType &ebType);
-  void undoableConvertToType(const EditBufferType &ebType);
+  SoundType getType() const;
+  void undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType);
+  void undoableConvertToType(const SoundType &ebType);
 
   VoiceGroup findVoiceGroupWithParameter(const Parameter *pParameter);
 
@@ -128,7 +126,7 @@ private:
   DelayedJob m_deferredJobs;
 
   bool m_isModified;
-  EditBufferType m_type;
+  SoundType m_type;
   size_t m_hashOnStore;
 
   mutable Preset *m_originCache{ nullptr };

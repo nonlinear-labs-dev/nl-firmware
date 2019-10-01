@@ -12,7 +12,7 @@ namespace DescriptiveLayouts
       const auto type = eb->getType();
       const auto typeStr = toString(type);
 
-      if(type == EditBufferType::Single)
+      if(type == SoundType::Single)
       {
         setValue({ typeStr, 0 });
       }

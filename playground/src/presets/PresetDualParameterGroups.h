@@ -17,11 +17,11 @@ class PresetDualParameterGroups : public AttributesOwner
 
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
   void init(const Preset* preset);
-  void init(const ParameterDualGroupSet* other);
 
- protected:
+protected:
   using GroupPtr = std::unique_ptr<PresetParameterGroup>;
   using GroupsMap = std::unordered_map<std::string, GroupPtr>;
+  SoundType m_type;
   std::array<GroupsMap, 2> m_parameterGroups;
 
   friend class PresetParameterVoiceGroupSerializer;

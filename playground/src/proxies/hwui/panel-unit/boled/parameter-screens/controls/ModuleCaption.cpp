@@ -22,7 +22,7 @@ void ModuleCaption::onParameterSelected(Parameter *newOne) {
     auto sel = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
 
     auto suffix = std::string{};
-    if (Application::get().getPresetManager()->getEditBuffer()->getType() != EditBufferType::Single)
+    if (Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
       suffix = " " + toString(sel);
     auto group = newOne->getParentGroup();
     auto label = group->getShortName();

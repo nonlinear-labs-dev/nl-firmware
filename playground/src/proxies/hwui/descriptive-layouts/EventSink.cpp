@@ -103,7 +103,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() {
-      if(eb->getType() != EditBufferType::Single)
+      if(eb->getType() != SoundType::Single)
       {
         Application::get().getEditBufferSelectionForHardwareUI()->toggleHWEditBufferSelection();
       }
