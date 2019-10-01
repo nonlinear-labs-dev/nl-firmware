@@ -115,7 +115,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
     auto swapData = UNDO::createSwapData(src);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      if(auto groups = static_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
+      if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != MacroControls::NONE)
         {
@@ -182,6 +182,12 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
   }
 }
 
+void ModulateableParameter::undoableIncrementMCSelect(int inc)
+{
+  auto scope = getUndoScope().startTransaction("Set MC Select for " + getShortName());
+  undoableIncrementMCSelect(scope->getTransaction(), inc);
+}
+
 void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc)
 {
   auto src = (int) getModulationSource();
@@ -197,19 +203,27 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transac
   setModulationSource(transaction, (MacroControls) src);
 }
 
+void ModulateableParameter::undoableIncrementMCAmount(int inc, ButtonModifiers modifiers)
+{
+  auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
+                                                         getGroupAndParameterName());
+  undoableIncrementMCAmount(scope->getTransaction(), inc, modifiers);
+}
+
 void ModulateableParameter::undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc,
                                                       ButtonModifiers modifiers)
 {
   tDisplayValue controlVal = getModulationAmount();
   double denominator = getModAmountDenominator(modifiers);
-  int rasterized = round(controlVal * denominator);
+  int rasterized = static_cast<int>(round(controlVal * denominator));
   controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
   setModulationAmount(transaction, controlVal);
 }
 
 int ModulateableParameter::getModAmountDenominator(const ButtonModifiers &modifiers) const
 {
-  return modifiers[FINE] ? getModulationAmountFineDenominator() : getModulationAmountCoarseDenominator();
+  auto denom = modifiers[FINE] ? getModulationAmountFineDenominator() : getModulationAmountCoarseDenominator();
+  return static_cast<int>(denom);
 }
 
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
@@ -380,7 +394,7 @@ void ModulateableParameter::registerTests()
         return 0;
       }
 
-      virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const
+      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
       {
       }
     };
@@ -390,12 +404,12 @@ void ModulateableParameter::registerTests()
     class GroupSet : public ParameterGroupSet
     {
      public:
-      GroupSet(Root *root)
+      explicit GroupSet(Root *root)
           : ParameterGroupSet(root)
       {
       }
 
-      virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const
+      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
       {
       }
     };
@@ -405,16 +419,16 @@ void ModulateableParameter::registerTests()
     class Group : public ParameterGroup
     {
      public:
-      Group(GroupSet *root)
+      explicit Group(GroupSet *root)
           : ParameterGroup(root, "a", "b", "b", "b")
       {
       }
 
-      void init()
+      void init() override
       {
       }
 
-      virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const
+      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
       {
       }
     };
@@ -475,10 +489,11 @@ bool ModulateableParameter::isMacroControlAssignedAndChanged() const
   return false;
 }
 
-Parameter *ModulateableParameter::getMacroControl() const
+MacroControlParameter *ModulateableParameter::getMacroControl() const
 {
   auto myMCID = MacroControlsGroup::modSrcToParamID(getModulationSource());
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID);
+  return dynamic_cast<MacroControlParameter *>(
+      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID));
 }
 
 void ModulateableParameter::undoableRecallMCPos()

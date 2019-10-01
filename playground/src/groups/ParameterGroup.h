@@ -49,7 +49,6 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
 
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
   void undoableSetDefaultValues(UNDO::Transaction *transaction, const PresetParameterGroup *values);
-  void undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType);
 
   Glib::ustring getID() const;
   size_t getHash() const;
@@ -61,7 +60,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
   // CALLBACKS
-  sigc::connection onGroupChanged(slot<void> slot);
+  sigc::connection onGroupChanged(const slot<void> &slot);
 
   void check();
 

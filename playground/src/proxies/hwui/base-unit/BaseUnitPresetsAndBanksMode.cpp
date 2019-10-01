@@ -20,7 +20,7 @@ BaseUnitPresetsAndBanksMode::BaseUnitPresetsAndBanksMode()
 
 void BaseUnitPresetsAndBanksMode::setup()
 {
-  setupButtonConnection(BUTTON_FUNCTION, [=](auto, auto, auto state) {
+  setupButtonConnection(Buttons::BUTTON_FUNCTION, [=](auto, auto, auto state) {
     if(state)
       onFuncButtonDown();
 
@@ -28,7 +28,7 @@ void BaseUnitPresetsAndBanksMode::setup()
     return true;
   });
 
-  setupButtonConnection(BUTTON_MODE, [=](auto, auto, auto state) {
+  setupButtonConnection(Buttons::BUTTON_MODE, [=](auto, auto, auto state) {
     m_modeButtonHandler.onButtonEvent(state);
     return true;
   });
@@ -49,10 +49,16 @@ void BaseUnitPresetsAndBanksMode::modeButtonLongPress()
   Application::get().getSettings()->getSetting<BaseUnitUIMode>()->set(BaseUnitUIModes::Play);
 }
 
-void BaseUnitPresetsAndBanksMode::onLongPress()
+void BaseUnitPresetsAndBanksMode::onFuncButtonDown()
 {
 }
 
-void BaseUnitPresetsAndBanksMode::onFuncButtonDown()
+void BaseUnitPresetsAndBanksMode::installButtonRepeat(const std::function<void()>& cb)
 {
+  m_buttonRepeat = std::make_unique<ButtonRepeat>(cb);
+}
+
+void BaseUnitPresetsAndBanksMode::removeButtonRepeat()
+{
+  m_buttonRepeat.reset();
 }

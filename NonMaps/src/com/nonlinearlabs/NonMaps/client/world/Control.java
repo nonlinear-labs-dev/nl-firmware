@@ -47,7 +47,7 @@ public abstract class Control {
 
 	public void draw(Context2d ctx, int invalidationMask) {
 	}
-	
+
 	public void drawPost(Context2d ctx, int invalidationMask) {
 	}
 
@@ -296,7 +296,8 @@ public abstract class Control {
 	}
 
 	public boolean isDraggingControl() {
-		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().isCurrentlyDragging(this) || getParent().isDraggingControl();
+		return getNonMaps().getNonLinearWorld().getViewport().getOverlay().isCurrentlyDragging(this)
+				|| getParent().isDraggingControl();
 	}
 
 	public void addPendingInvalidations(int mask) {

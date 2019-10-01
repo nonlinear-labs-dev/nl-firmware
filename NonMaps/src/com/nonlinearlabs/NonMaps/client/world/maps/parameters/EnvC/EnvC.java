@@ -15,7 +15,7 @@ public class EnvC extends ParameterGroupVertical {
 			public RGB getColorFont() {
 				return RGB.lighterGray();
 			}
-		});		
+		});
 		addChild(new EnvCControls(this));
 	}
 

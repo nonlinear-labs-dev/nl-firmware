@@ -21,7 +21,6 @@ AppendOverwriteInsertButtonMenu::AppendOverwriteInsertButtonMenu(PresetManagerLa
 void AppendOverwriteInsertButtonMenu::buildMenu()
 {
   clear();
-  clearActions();
 
   auto pm = Application::get().getPresetManager();
   addButton("Append", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
@@ -205,7 +204,8 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
   auto pm = Application::get().getPresetManager();
   auto scope = Application::get().getUndoScope()->startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
-  auto preset = bank->insertAndLoadPreset(scope->getTransaction(), pos, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
+  auto preset
+      = bank->insertAndLoadPreset(scope->getTransaction(), pos, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
 
   if(modified)
     preset->guessName(transaction);

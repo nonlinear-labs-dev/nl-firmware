@@ -5,6 +5,8 @@
 #include <proxies/hwui/buttons.h>
 #include <testing/TestDriver.h>
 
+#include <memory>
+
 static TestDriver<TextEditUsageMode> tests;
 
 const gunichar c_shift = 0x12;
@@ -45,16 +47,16 @@ void TextEditUsageMode::setup()
   {
     for(int row = 0; row < 4; row++)
     {
-      int buttonID = col * 4 + row;
+      Buttons buttonID = (Buttons)(col * 4 + row);
       m_buttonMap[buttonID] = tButtonAssignment(layout[row].at(col), shiftLayout[row].at(col),
                                                 symbolLayout[row].at(col), symbolShiftLayout[row].at(col));
-      m_buttonMap[buttonID + 48] = tButtonAssignment(layout[row].at(col), shiftLayout[row].at(col),
-                                                     symbolLayout[row].at(col), symbolShiftLayout[row].at(col));
+      m_buttonMap[(Buttons)((int) buttonID + 48)] = tButtonAssignment(
+          layout[row].at(col), shiftLayout[row].at(col), symbolLayout[row].at(col), symbolShiftLayout[row].at(col));
     }
   }
 }
 
-ustring TextEditUsageMode::getKeyLabel(int buttonID) const
+ustring TextEditUsageMode::getKeyLabel(Buttons buttonID) const
 {
   try
   {
@@ -76,7 +78,7 @@ ustring TextEditUsageMode::getKeyLabel(int buttonID) const
   return "";
 }
 
-gunichar TextEditUsageMode::getCharForButton(int buttonID) const
+gunichar TextEditUsageMode::getCharForButton(Buttons buttonID) const
 {
   auto keyAssignment = m_buttonMap.at(buttonID);
 
@@ -166,11 +168,11 @@ void TextEditUsageMode::clampPosition()
   m_position = std::min<int>(m_position, m_text.length());
 }
 
-bool TextEditUsageMode::onButtonPressed(gint32 buttonID, ButtonModifiers modifiers, bool state)
+bool TextEditUsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state)
 {
   m_buttonRepeat.reset();
 
-  if(buttonID == BUTTON_SHIFT)
+  if(buttonID == Buttons::BUTTON_SHIFT)
   {
     handleShiftButton(state);
     return true;
@@ -210,7 +212,7 @@ void TextEditUsageMode::handleShiftButton(bool state)
 
 void TextEditUsageMode::installButtonRepeat(std::function<void()> cb)
 {
-  m_buttonRepeat.reset(new ButtonRepeat(cb));
+  m_buttonRepeat = std::make_unique<ButtonRepeat>(cb);
 }
 
 void TextEditUsageMode::onCharPressed(gunichar c)
@@ -273,7 +275,7 @@ bool TextEditUsageMode::handleSpecialChar(gunichar c)
   return false;
 }
 
-connection TextEditUsageMode::onTextChanged(slot<void, const ustring &> cb)
+connection TextEditUsageMode::onTextChanged(const slot<void, const ustring &> &cb)
 {
   return m_sigTextChanged.connectAndInit(cb, m_text);
 }
@@ -317,13 +319,13 @@ void TextEditUsageMode::chooseLayout()
 {
   bool realShiftState = m_capsLock ^ m_shiftState;
 
-  if(m_symbolState == true && realShiftState == false)
+  if(m_symbolState && !realShiftState)
     m_layout = Layout::Symbol;
-  else if(m_symbolState == true && realShiftState == true)
+  else if(m_symbolState && realShiftState)
     m_layout = Layout::SymbolShift;
-  else if(m_symbolState == false && realShiftState == false)
+  else if(!m_symbolState && !realShiftState)
     m_layout = Layout::Normal;
-  else if(m_symbolState == false && realShiftState == true)
+  else if(!m_symbolState && realShiftState)
     m_layout = Layout::Shift;
 
   updateLeds();
@@ -352,12 +354,12 @@ void TextEditUsageMode::updateLeds()
     auto capsState = realShiftState ? TwoStateLED::ON : TwoStateLED::OFF;
     auto hwui = Application::get().getHWUI();
 
-    for(auto led : { 3, 7, 51, 55 })
+    for(auto led : { Buttons::BUTTON_3, Buttons::BUTTON_7, Buttons::BUTTON_51, Buttons::BUTTON_55 })
     {
       hwui->getPanelUnit().getLED(led)->setState(capsState);
     }
 
-    for(auto led : { 43, 47, 91, 95 })
+    for(auto led : { Buttons::BUTTON_43, Buttons::BUTTON_47, Buttons::BUTTON_91, Buttons::BUTTON_95 })
     {
       hwui->getPanelUnit().getLED(led)->setState(symbolState);
     }

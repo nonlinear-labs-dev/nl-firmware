@@ -71,20 +71,20 @@ class WebSocketConnection {
 		var address = 'ws://' + host + '/ws/';
 		var connection = new WebSocket(address);
 		var self = this;
-
+	
 		connection.onopen = function() {
 			self.@com.nonlinearlabs.NonMaps.client.WebSocketConnection::webSocketConnection = connection;
 			self.@com.nonlinearlabs.NonMaps.client.WebSocketConnection::onServerOpen(Ljava/lang/String;)('');
 		};
-
+	
 		connection.onerror = function(error) {
 			self.@com.nonlinearlabs.NonMaps.client.WebSocketConnection::onServerError(Ljava/lang/String;)('error');
 		};
-
+	
 		connection.onclose = function(e) {
 			self.@com.nonlinearlabs.NonMaps.client.WebSocketConnection::onServerClosed(Ljava/lang/String;)('closed');
 		};
-
+	
 		connection.onmessage = function(e) {
 			self.@com.nonlinearlabs.NonMaps.client.WebSocketConnection::onServerUpdate(Ljava/lang/String;)(e.data);
 		};

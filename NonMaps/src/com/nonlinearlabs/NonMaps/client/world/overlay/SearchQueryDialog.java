@@ -1,7 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay;
 
-
-
 public class SearchQueryDialog extends GWTDialog {
 
 	@Override
@@ -31,57 +29,57 @@ public class SearchQueryDialog extends GWTDialog {
 	/*-
 	private class NameFieldMouseUpHandler implements MouseDownHandler {
 		TextBox nameField;
-
+	
 		public NameFieldMouseUpHandler(TextBox nameField) {
 			this.nameField = nameField;
 		}
-
+	
 		@Override
 		public void onMouseDown(MouseDownEvent event) {
 			nameField.setFocus(true);
 		}
 	}
-
+	
 	private class TriggerNewSearchHandlerOnClick implements ValueChangeHandler<Boolean> {
 		CheckBox b;
 		SearchFieldManager sm;
-
+	
 		public TriggerNewSearchHandlerOnClick(CheckBox b, SearchFieldManager sm) {
 			this.b = b;
 			this.sm = sm;
 		}
-
+	
 		@Override
 		public void onValueChange(ValueChangeEvent<Boolean> event) {
 			sm.onCheckChanged(b);
 		}
 	}
-
+	
 	private class SearchFieldManager {
 		CheckBox name;
 		CheckBox comment;
 		CheckBox deviceName;
-
+	
 		public SearchFieldManager(CheckBox n, CheckBox c, CheckBox d) {
 			name = n;
 			comment = c;
 			deviceName = d;
 		}
-
+	
 		private PresetManager getPresetManager() {
 			return NonMaps.get().getNonLinearWorld().getPresetManager();
 		}
-
+	
 		private void addIfNotPresent(List<SearchQueryFields> currentFields, SearchQueryFields o) {
 			if (currentFields.contains(o) == false)
 				currentFields.add(o);
 		}
-
+	
 		private void removeIfPresent(List<SearchQueryFields> currentFields, SearchQueryFields o) {
 			if (currentFields.contains(o))
 				currentFields.remove(o);
 		}
-
+	
 		private void allowFieldInList(List<SearchQueryFields> currentFields, SearchQueryFields o, boolean allow) {
 			if (allow) {
 				addIfNotPresent(currentFields, o);
@@ -89,11 +87,11 @@ public class SearchQueryDialog extends GWTDialog {
 				removeIfPresent(currentFields, o);
 			}
 		}
-
+	
 		public boolean isFieldAllowed(SearchQueryFields field) {
 			return getPresetManager().getFieldsToBeSearched().contains(field);
 		}
-
+	
 		public void onCheckChanged(CheckBox b) {
 			List<PresetManager.SearchQueryFields> currentFields = getPresetManager().getFieldsToBeSearched();
 			if (b == name) {
@@ -106,24 +104,24 @@ public class SearchQueryDialog extends GWTDialog {
 			getPresetManager().setFieldsToBeSearched(currentFields);
 		}
 	}
-
+	
 	private class NameFieldKeyUpHandler implements KeyUpHandler {
 		TextBox nameField;
-
+	
 		public NameFieldKeyUpHandler(TextBox nameField) {
 			this.nameField = nameField;
 		}
-
+	
 		@Override
 		public void onKeyUp(KeyUpEvent event) {
 			timer = new RepeatingCommand() {
-
+	
 				@Override
 				public boolean execute() {
 					if (timer == this) {
 						String query = nameField.getText();
 						NonMaps.theMaps.getNonLinearWorld().getPresetManager().setFilter(query);
-
+	
 						if (query.isEmpty())
 							restoreZoom();
 						else
@@ -132,27 +130,27 @@ public class SearchQueryDialog extends GWTDialog {
 					return false;
 				}
 			};
-
+	
 			Scheduler.get().scheduleFixedDelay(timer, 250);
 		}
 	}
-
+	
 	private SearchFieldManager theFieldManager;
 	public static SearchQueryDialog theDialog;
 	private RepeatingCommand timer;
 	private Label matches;
 	private NonRect storedZoom;
-
+	
 	private SearchQueryDialog() {
 		RootPanel.get().add(this);
-
+	
 		initalShow();
-
+	
 		addHeader("Search presets for ...");
 		setAnimationEnabled(true);
 		setGlassEnabled(false);
 		setModal(false);
-
+	
 		VerticalPanel rootPanel = new VerticalPanel();
 		rootPanel.add(createTextInputPanel());
 		rootPanel.add(createAndOrPanel());
@@ -164,7 +162,7 @@ public class SearchQueryDialog extends GWTDialog {
 		rootPanel.add(createButtonPanel());
 		setWidget(rootPanel);
 	}
-
+	
 	private FlowPanel createSpacer() {
 		FlowPanel dividerPanel = new FlowPanel();
 		HTML html = new HTML(
@@ -172,131 +170,131 @@ public class SearchQueryDialog extends GWTDialog {
 		dividerPanel.add(html);
 		return dividerPanel;
 	}
-
+	
 	private FlowPanel createCheckBoxPanel() {
 		FlowPanel buttonPanel = new FlowPanel();
 		CheckBox name = new CheckBox("Name");
 		CheckBox comment = new CheckBox("Comment");
 		CheckBox deviceName = new CheckBox("Device Name");
-
+	
 		theFieldManager = new SearchFieldManager(name, comment, deviceName);
-
+	
 		name.getElement().addClassName("name-box-search-dialog");
 		
 		name.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.name));
 		comment.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.comment));
 		deviceName.setValue(theFieldManager.isFieldAllowed(SearchQueryFields.devicename));
-
+	
 		name.addValueChangeHandler(
 				(ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(name, theFieldManager));
 		comment.addValueChangeHandler(
 				(ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(comment, theFieldManager));
 		deviceName.addValueChangeHandler(
 				(ValueChangeHandler<Boolean>) new TriggerNewSearchHandlerOnClick(deviceName, theFieldManager));
-
+	
 		name.addClickHandler(new ClickHandler() {
-
+	
 			@Override
 			public void onClick(ClickEvent event) {
 				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
 						.setFilter(NonMaps.theMaps.getNonLinearWorld().getPresetManager().getFilter());
 			}
 		});
-
+	
 		comment.addClickHandler(new ClickHandler() {
-
+	
 			@Override
 			public void onClick(ClickEvent event) {
 				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
 						.setFilter(NonMaps.theMaps.getNonLinearWorld().getPresetManager().getFilter());
 			}
 		});
-
+	
 		deviceName.addClickHandler(new ClickHandler() {
-
+	
 			@Override
 			public void onClick(ClickEvent event) {
 				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
 						.setFilter(NonMaps.theMaps.getNonLinearWorld().getPresetManager().getFilter());
 			}
 		});
-
+	
 		buttonPanel.add(name);
 		buttonPanel.add(comment);
 		buttonPanel.add(deviceName);
-
+	
 		return buttonPanel;
 	}
-
+	
 	private FlowPanel createZoomPanel() {
 		FlowPanel zoomPanel = new FlowPanel();
 		CheckBox zoomToAllMatches = new CheckBox("Zoom to all Matches");
 		zoomToAllMatches.getElement().addClassName("auto-zoom");
 		Boolean b = Boolean.valueOf(NonMaps.theMaps.getNonLinearWorld().getSettings().get("search-auto-zoom", "false"));
 		zoomToAllMatches.setValue(b);
-
+	
 		zoomToAllMatches.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
+	
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				NonMaps.theMaps.getNonLinearWorld().getSettings().set("search-auto-zoom", event.getValue().toString());
-
+	
 				if (event.getValue())
 					zoomToAll();
 			}
 		});
-
+	
 		zoomPanel.add(zoomToAllMatches);
 		return zoomPanel;
 	}
-
+	
 	private FlowPanel createButtonPanel() {
 		FlowPanel buttonPanel = new FlowPanel();
 		buttonPanel.getElement().addClassName("prev-next-wrapper");
 		Button nextMatch = new Button("Next");
 		Button previousMatch = new Button("Previous");
 		previousMatch.addClickHandler(new ClickHandler() {
-
+	
 			@Override
 			public void onClick(ClickEvent event) {
 				highlightPreviousMatch();
 			}
 		});
-
+	
 		nextMatch.addClickHandler(new ClickHandler() {
-
+	
 			@Override
 			public void onClick(ClickEvent event) {
 				highlightNextMatch();
 			}
 		});
-
+	
 		buttonPanel.getElement().addClassName("prev-next-button-div");
 		previousMatch.getElement().addClassName("previous-button");
 		nextMatch.getElement().addClassName("next-button");
-
+	
 		buttonPanel.add(previousMatch);
 		buttonPanel.add(nextMatch);
 		return buttonPanel;
 	}
-
+	
 	private Panel createTextInputPanel() {
 		HorizontalPanel panel = new HorizontalPanel();
-
+	
 		final TextBox nameField = new TextBox();
 		nameField.getElement().addClassName("search-query");
 		nameField.addKeyUpHandler(new NameFieldKeyUpHandler(nameField));
 		nameField.addMouseDownHandler(new NameFieldMouseUpHandler(nameField));
-
+	
 		nameField.addMouseDownHandler(new MouseDownHandler() {
-
+	
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				double x = event.getRelativeX(nameField.getElement());
 				double w = nameField.getElement().getClientWidth();
 				double activeAreaWidth = Millimeter.toPixels(10)
 						/ (NonMaps.getPixelFactor() * NonMaps.devicePixelRatio);
-
+	
 				if (x > (w - activeAreaWidth)) {
 					nameField.setText("");
 					NonMaps.theMaps.getNonLinearWorld().getPresetManager().setFilter("");
@@ -304,66 +302,66 @@ public class SearchQueryDialog extends GWTDialog {
 				}
 			}
 		});
-
+	
 		Scheduler.get().scheduleFinally(new Command() {
 			public void execute() {
 				nameField.setFocus(true);
 			}
 		});
-
+	
 		panel.add(nameField);
 		panel.add(matches = new Label(""));
 		updateMatches(0);
 		return panel;
 	}
-
+	
 	private FlowPanel createAndOrPanel() {
 		FlowPanel panel = new FlowPanel();
 		RadioButton and = new RadioButton("AndOr", "AND");
 		RadioButton or = new RadioButton("AndOr", "OR");
-
+	
 		and.getElement().addClassName("and-label-search-dialog");
 		
 		and.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
+	
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
 						.setSearchQueryCombination(PresetManager.SearchQueryCombination.AND);
 			}
 		});
-
+	
 		or.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
+	
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				NonMaps.theMaps.getNonLinearWorld().getPresetManager()
 						.setSearchQueryCombination(PresetManager.SearchQueryCombination.OR);
 			}
 		});
-
+	
 		and.setValue(NonMaps.theMaps.getNonLinearWorld().getPresetManager()
 				.getSearchQueryCombination() == PresetManager.SearchQueryCombination.AND, false);
 		or.setValue(NonMaps.theMaps.getNonLinearWorld().getPresetManager()
 				.getSearchQueryCombination() == PresetManager.SearchQueryCombination.OR, false);
-
+	
 		panel.add(and);
 		panel.add(or);
 		return panel;
 	}
-
+	
 	protected void highlightNextMatch() {
 		NonMaps.theMaps.getNonLinearWorld().getPresetManager().highlightNextFilterMatch();
 	}
-
+	
 	protected void highlightPreviousMatch() {
 		NonMaps.theMaps.getNonLinearWorld().getPresetManager().highlightPreviousFilterMatch();
 	}
-
+	
 	protected void zoomToAll() {
 		NonMaps.theMaps.getNonLinearWorld().getPresetManager().zoomToAllFilterMatches();
 	}
-
+	
 	@Override
 	protected void onPreviewNativeEvent(NativePreviewEvent event) {
 		super.onPreviewNativeEvent(event);
@@ -377,7 +375,7 @@ public class SearchQueryDialog extends GWTDialog {
 			break;
 		}
 	}
-
+	
 	@Override
 	protected void commit() {
 		theDialog.hide();
@@ -387,7 +385,7 @@ public class SearchQueryDialog extends GWTDialog {
 		restoreZoom();
 		NonMaps.theMaps.getNonLinearWorld().requestLayout();
 	}
-
+	
 	public static void toggle() {
 		if (theDialog != null) {
 			theDialog.commit();
@@ -398,11 +396,11 @@ public class SearchQueryDialog extends GWTDialog {
 			}
 		}
 	}
-
+	
 	public static boolean isShown() {
 		return theDialog != null;
 	}
-
+	
 	public void updateMatches(int i) {
 		if (i == 0)
 			matches.setText("No Matches");
@@ -411,38 +409,38 @@ public class SearchQueryDialog extends GWTDialog {
 		else
 			matches.setText(i + " Matches");
 	}
-
+	
 	public static void setMatches(int i) {
 		if (theDialog != null)
 			theDialog.updateMatches(i);
 	}
-
+	
 	private void storeZoom() {
 		if (storedZoom == null)
 			storedZoom = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();
 	}
-
+	
 	private void restoreZoom() {
 		if (storedZoom != null) {
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(storedZoom, true);
 			storedZoom = null;
 		}
 	}
-
+	
 	static int lastPopupLeft = -1;
 	static int lastPopupTop = -1;
-
+	
 	@Override
 	protected void setLastPopupPos(int popupLeft, int popupTop) {
 		lastPopupLeft = popupLeft;
 		lastPopupTop = popupTop;
 	}
-
+	
 	@Override
 	protected int getLastPopupPosTop() {
 		return lastPopupTop;
 	}
-
+	
 	@Override
 	protected int getLastPopupPosLeft() {
 		return lastPopupLeft;

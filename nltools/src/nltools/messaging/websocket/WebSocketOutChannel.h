@@ -2,6 +2,7 @@
 
 #include <nltools/messaging/OutChannel.h>
 #include <nltools/threading/ContextBoundMessageQueue.h>
+#include <nltools/threading/BackgroundThreadWaiter.h>
 
 #include <memory>
 #include <thread>
@@ -18,20 +19,22 @@ namespace nltools
       class WebSocketOutChannel : public OutChannel
       {
        public:
-        WebSocketOutChannel(const std::string &targetMachine, guint port, std::mutex &);
+        WebSocketOutChannel(const std::string &targetMachine, guint port);
+
         ~WebSocketOutChannel() override;
 
         void send(const SerializedMessage &msg) override;
         bool waitForConnection(std::chrono::milliseconds timeOut) override;
         void onConnectionEstablished(std::function<void()> cb) override;
         bool isConnected() const override;
-
         void signalConnectionEstablished();
 
        private:
         void connect();
         void connectWebSocket(SoupWebsocketConnection *connection);
+
         static void onWebSocketConnected(SoupSession *session, GAsyncResult *res, WebSocketOutChannel *pThis);
+
         void reconnect();
         void backgroundThread();
         bool ping();
@@ -48,12 +51,11 @@ namespace nltools
         std::unique_ptr<threading::ContextBoundMessageQueue> m_backgroundContextQueue;
         std::unique_ptr<threading::ContextBoundMessageQueue> m_mainThreadContextQueue;
         Glib::RefPtr<Glib::MainLoop> m_messageLoop;
-        std::thread m_contextThread;
 
-        std::atomic<bool> m_connectionEstablished = false;
-        std::mutex m_conditionMutex;
-        std::condition_variable m_connectionEstablishedCondition;
+        std::atomic_bool m_bgRunning = { false };
+        BackgroundThreadWaiter m_connectionEstablishedWaiter;
         std::function<void()> m_onConnectionEstablished;
+        std::thread m_contextThread;
       };
     }
   }

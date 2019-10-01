@@ -26,12 +26,12 @@ public class SVGImagePhase extends OverlayControl {
 	}
 
 	private static native String base64Encode(String v) /*-{
-		return btoa(v);
-	}-*/;
+														return btoa(v);
+														}-*/;
 
 	private static native String base64Decode(String v) /*-{
-		return atob(v);
-	}-*/;
+														return atob(v);
+														}-*/;
 
 	private void preloadImage(final String imageName) {
 		final Image img = new Image();
@@ -95,7 +95,7 @@ public class SVGImagePhase extends OverlayControl {
 		newPos.setHeight(h);
 		newPos.getPosition().moveBy(parentsReference);
 		newPos.round();
-		newPos.moveBy(0.5,  0.5);
+		newPos.moveBy(0.5, 0.5);
 		setPixRect(newPos);
 
 	}

@@ -12,20 +12,19 @@ public class ParameterRecallArea extends RecallArea {
 		addChild(button = new ParameterRecallButton(this));
 		addChild(value = new ParameterRecallValue(this));
 	}
-	
+
 	@Override
 	public boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if(bpm != null)
+		if (bpm != null)
 			return bpm.isValueChanged();
 		return false;
 	}
 
 	@Override
 	public void setVisibleForMode(Mode mode) {
-		setVisible(mode == Mode.modulateableParameter || 
-					mode == Mode.unmodulateableParameter ||
-					mode == Mode.paramValue);
+		setVisible(
+				mode == Mode.modulateableParameter || mode == Mode.unmodulateableParameter || mode == Mode.paramValue);
 	}
-	
+
 }

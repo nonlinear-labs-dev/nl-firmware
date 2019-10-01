@@ -13,9 +13,9 @@ std::shared_ptr<ScopedGuard::Lock> ScopedGuard::lock()
   if(isLocked())
     return nullptr;
 
-  std::shared_ptr<ScopedGuard::Lock> ptr(new Lock());
-  m_currentLock = ptr;
-  return ptr;
+  auto ret = std::make_shared<ScopedGuard::Lock>();
+  m_currentLock = ret;
+  return ret;
 }
 
 bool ScopedGuard::isLocked() const

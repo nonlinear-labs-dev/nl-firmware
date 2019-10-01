@@ -1,7 +1,7 @@
 #pragma once
 
-#include "playground.h"
-#include "http/UpdateDocumentContributor.h"
+#include <playground.h>
+#include <http/UpdateDocumentContributor.h>
 
 class Settings;
 
@@ -23,6 +23,8 @@ class Setting : public UpdateDocumentContributor
 
   virtual void sendToLPC() const;
   virtual bool persistent() const;
+
+  virtual Glib::ustring getDisplayString() const = 0;
 
  protected:
   void notify();

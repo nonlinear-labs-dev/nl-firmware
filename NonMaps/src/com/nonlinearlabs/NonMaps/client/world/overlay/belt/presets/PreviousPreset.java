@@ -50,15 +50,14 @@ class PreviousPreset extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		
-		
+
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 
 		Bank b = pm.findBank(pm.getSelectedBank());
-		if(b != null)
-			if(b.getPresetList().getPresetCount() == 0)
+		if (b != null)
+			if (b.getPresetList().getPresetCount() == 0)
 				return drawStates.disabled.ordinal();
-		
+
 		if (!pm.canPrev())
 			return drawStates.disabled.ordinal();
 

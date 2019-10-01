@@ -2,13 +2,12 @@
 #include "parameters/ModulateableParameter.h"
 #include <proxies/hwui/buttons.h>
 
-MCPositionButton::MCPositionButton(int id)
+MCPositionButton::MCPositionButton(Buttons id)
     : super("MC Pos", id)
 {
 }
 
-MCPositionButton::~MCPositionButton()
-= default;
+MCPositionButton::~MCPositionButton() = default;
 
 void MCPositionButton::update(const Parameter *parameter)
 {
@@ -17,7 +16,7 @@ void MCPositionButton::update(const Parameter *parameter)
     if(p->getModulationSource() == MacroControls::NONE)
       setText("");
     else
-      setText({std::string("MC Pos") + (p->isMacroControlAssignedAndChanged() ? "*" : "")});
+      setText({ std::string("MC Pos") + (p->isMacroControlAssignedAndChanged() ? "*" : "") });
   }
   else
   {

@@ -3,10 +3,10 @@
 
 RawValue::RawValue(const ScaleConverter *scale, tValueType def)
     : m_defaultValue(def)
+    , m_rawValue(def)
     , m_factoryDefaultValue(def)
     , m_scaleConverter(scale)
 {
-  m_rawValue.resize(1, m_defaultValue);
 }
 
 RawValue::~RawValue()
@@ -25,16 +25,13 @@ void RawValue::setScaleConverter(const ScaleConverter *c)
 
 RawValue::tValueType RawValue::getRawValue() const
 {
-  return m_rawValue[0];
+  return m_rawValue;
 }
 
 size_t RawValue::getHash() const
 {
   size_t v = 0;
-
-  for(auto &c : m_rawValue)
-    hash_combine(v, c);
-
+  hash_combine(v, m_rawValue);
   return v;
 }
 
@@ -42,9 +39,7 @@ bool RawValue::setRawValue(Initiator initiator, tValueType newRawValue)
 {
   if(differs(newRawValue))
   {
-    auto oldRawValue = m_rawValue[0];
-    m_rawValue[0] = newRawValue;
-    onRawValueChanged(initiator, oldRawValue, newRawValue);
+    onRawValueChanged(initiator, std::exchange(m_rawValue, newRawValue), newRawValue);
     return true;
   }
 
@@ -53,12 +48,12 @@ bool RawValue::setRawValue(Initiator initiator, tValueType newRawValue)
 
 bool RawValue::differs(tValueType other) const
 {
-  return std::abs(other - m_rawValue[0]) > std::numeric_limits<tValueType>::epsilon();
+  return std::abs(other - m_rawValue) > std::numeric_limits<tValueType>::epsilon();
 }
 
 void RawValue::changeRawValue(Initiator initiator, tValueType diff)
 {
-  setRawValue(initiator, m_rawValue[0] + diff);
+  setRawValue(initiator, m_rawValue + diff);
 }
 
 RawValue::tValueType RawValue::getDefaultValue() const
@@ -98,11 +93,4 @@ void RawValue::setToDefault(Initiator initiator)
 
 void RawValue::onRawValueChanged(Initiator initiator, tValueType oldRawValue, tValueType newRawValue)
 {
-}
-
-void RawValue::undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType)
-{
-  if(oldType != desiredType)
-  {
-  }
 }

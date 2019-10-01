@@ -14,7 +14,7 @@ public class BankUpdater extends Updater {
 		super(c);
 		bank = target;
 	}
-	
+
 	@Override
 	public void doUpdate() {
 		bank.name.setValue(getAttributeValue(root, "name"));

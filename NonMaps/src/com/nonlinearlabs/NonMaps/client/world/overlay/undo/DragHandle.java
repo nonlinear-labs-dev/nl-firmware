@@ -22,8 +22,8 @@ public class DragHandle extends SVGImage {
 	public Control mouseDown(Position eventPoint) {
 		double halfPi = Math.PI / 4;
 		Position center = getPixRect().getCenterPoint();
-		double yrot = center.getY() + Math.sin(halfPi) * (eventPoint.getX() - center.getX()) + Math.cos(halfPi)
-				* (eventPoint.getY() - center.getY());
+		double yrot = center.getY() + Math.sin(halfPi) * (eventPoint.getX() - center.getX())
+				+ Math.cos(halfPi) * (eventPoint.getY() - center.getY());
 
 		if (yrot <= center.getY())
 			return null;

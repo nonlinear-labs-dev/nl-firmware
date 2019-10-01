@@ -1,4 +1,5 @@
 #include <proxies/hwui/panel-unit/boled/InfoContent.h>
+#include <nltools/Assert.h>
 
 InfoContent::InfoContent()
     : super(Rect(0, 0, 0, 64))
@@ -67,7 +68,7 @@ void InfoContent::InfoField::setInfo(Glib::ustring text, FrameBuffer::Colors c)
   }
   else
   {
-    assert(false);
+    nltools_assertAlways(false);
   }
 }
 
@@ -96,7 +97,7 @@ void InfoContent::InfoField::setPosition(int y)
   }
   else
   {
-    assert(false);
+    nltools_assertAlways(false);
   }
 }
 

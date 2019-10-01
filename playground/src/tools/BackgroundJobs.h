@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <thread>
-#include <assert.h>
 #include <mutex>
 #include "FileTools.h"
 
@@ -34,7 +33,7 @@ class FileCrawlerJob : public BackgroundJob
   typedef std::function<bool(fs::directory_entry)> tFilterFunction;
 
  public:
-  FileCrawlerJob(std::string dir, tFilterFunction filter, tCallback cb);
+  FileCrawlerJob(const std::string& dir, tFilterFunction filter, tCallback cb);
 
   bool iterate() override;
   FileTools::FileList copyData();

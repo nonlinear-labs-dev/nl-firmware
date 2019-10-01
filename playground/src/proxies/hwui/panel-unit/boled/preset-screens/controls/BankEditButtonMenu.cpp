@@ -37,7 +37,6 @@ void BankEditButtonMenu::rebuildMenuOnClipboardChange()
 void BankEditButtonMenu::rebuildMenu(size_t numBanks)
 {
   clear();
-  clearActions();
 
   if(numBanks != 0)
     rebuildFullMenu();

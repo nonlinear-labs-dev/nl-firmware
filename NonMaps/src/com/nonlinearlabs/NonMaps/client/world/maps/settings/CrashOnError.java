@@ -15,7 +15,7 @@ public class CrashOnError extends Setting {
 
 	protected CrashOnError(DeveloperSettings parent) {
 		super(parent, "Crash on Error", "Off");
-		
+
 		Setup.get().systemSettings.crashOnError.onChange(new Function<Setup.BooleanValues, Boolean>() {
 
 			@Override
@@ -42,7 +42,7 @@ public class CrashOnError extends Setting {
 	public void setDefault() {
 		setCurrentValue(Items.OFF.toString());
 	}
-	
+
 	public void setCurrentValue(boolean val) {
 		super.setCurrentValue(val ? "On" : "Off");
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);

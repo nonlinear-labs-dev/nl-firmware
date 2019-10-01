@@ -12,8 +12,8 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage.drawStates;
 public class MenuAreaBankButton extends SVGImage {
 
 	public MenuAreaBankButton(MenuArea parent) {
-		super(parent, "Menu_Bank_Enabled_S.svg", "Menu_Bank_Active_S.svg", "Menu_Bank_Disabled_S.svg", "Menu_A_Enabled.svg",
-				"Menu_A_Active.svg", "Menu_A_Disabled.svg");
+		super(parent, "Menu_Bank_Enabled_S.svg", "Menu_Bank_Active_S.svg", "Menu_Bank_Disabled_S.svg",
+				"Menu_A_Enabled.svg", "Menu_A_Active.svg", "Menu_A_Disabled.svg");
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class MenuAreaBankButton extends SVGImage {
 
 		String bankUUID = pm.getSelectedBank();
 
-		if(o.getContextMenu() instanceof CombinedBankContextMenu) {
+		if (o.getContextMenu() instanceof CombinedBankContextMenu) {
 			o.removeExistingContextMenus();
 			return this;
 		}

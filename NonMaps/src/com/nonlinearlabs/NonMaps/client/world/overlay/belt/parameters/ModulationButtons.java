@@ -14,7 +14,7 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 public class ModulationButtons extends OverlayLayout {
 
 	protected Label originalSource;
-	
+
 	protected class OGLabel extends Label {
 
 		public OGLabel(OverlayLayout parent) {
@@ -22,8 +22,6 @@ public class ModulationButtons extends OverlayLayout {
 			setFontColor(RGB.changedText());
 			setFontHeightInMM(5);
 		}
-		
-		
 		
 		@Override
 		public String getDrawText(Context2d ctx) {
@@ -36,7 +34,7 @@ public class ModulationButtons extends OverlayLayout {
 			return "";
 		}
 	}
-	
+
 	public ModulationButtons(BeltParameterLayout parent) {
 		super(parent);
 
@@ -45,14 +43,14 @@ public class ModulationButtons extends OverlayLayout {
 		for (MacroControls b : buttons) {
 			addChild(new ModulationSourceButton(this, b));
 		}
-		
+
 		addChild(originalSource = new OGLabel(this));
 	}
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		if(isChanged()) {
+		if (isChanged()) {
 			Rect pix = getPixRect().copy();
 			pix = pix.getReducedBy(pix.getWidth() / -5.5);
 			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBeltBorder());
@@ -61,12 +59,12 @@ public class ModulationButtons extends OverlayLayout {
 
 	private boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if(bpm instanceof ModulateableParameter) {
-			return ((ModulateableParameter)bpm).isModSourceChanged();
+		if (bpm instanceof ModulateableParameter) {
+			return ((ModulateableParameter) bpm).isModSourceChanged();
 		}
 		return false;
 	}
-	
+
 	@Override
 	public BeltParameterLayout getParent() {
 		return (BeltParameterLayout) super.getParent();

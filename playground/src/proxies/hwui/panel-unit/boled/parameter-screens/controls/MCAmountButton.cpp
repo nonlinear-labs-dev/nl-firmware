@@ -2,13 +2,12 @@
 #include "parameters/ModulateableParameter.h"
 #include <proxies/hwui/buttons.h>
 
-MCAmountButton::MCAmountButton(int id)
+MCAmountButton::MCAmountButton(Buttons id)
     : super("MC Amt", id)
 {
 }
 
-MCAmountButton::~MCAmountButton()
-= default;
+MCAmountButton::~MCAmountButton() = default;
 
 void MCAmountButton::update(const Parameter *parameter)
 {
@@ -17,7 +16,7 @@ void MCAmountButton::update(const Parameter *parameter)
     if(p->getModulationSource() == MacroControls::NONE)
       setText("");
     else
-      setText({std::string("MC Amt") + (p->isModAmountChanged() ? "*" : "")});
+      setText({ std::string("MC Amt") + (p->isModAmountChanged() ? "*" : "") });
   }
   else
   {

@@ -33,7 +33,8 @@ class BlockingMainThreadIndication extends Setting {
 
 			@Override
 			public void setValue(Items item) {
-				SystemSettings.get().setBlockingMainThreadIndication(item == Items.ON ? BooleanValues.on : BooleanValues.off);
+				SystemSettings.get()
+						.setBlockingMainThreadIndication(item == Items.ON ? BooleanValues.on : BooleanValues.off);
 			}
 		}, world), pos);
 	}

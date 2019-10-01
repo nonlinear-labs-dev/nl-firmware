@@ -1,0 +1,69 @@
+{
+  "layouts": {
+    "PresetSelectionForVoiceGroupLayout": {
+      "LocalEventProvider" : "PresetSelectionForVoiceGroup",
+      "Selector": {
+        "UIFocus": "Sound",
+        "UIMode": "Edit",
+        "UIDetail": "SoundSelectPresetForVoiceGroup"
+      },
+      "Controls": {
+        "ButtonA": {
+          "Class": "Button",
+          "Position": "BUTTON_A",
+          "Init": {
+            "Text[Text]": "Back"
+          }
+        },
+        "DirectLoadButton": {
+          "Class": "Button",
+          "Position": "BUTTON_D",
+          "Init": {
+            "Text[Text]": "Direct Load"
+          },
+          "Events": "DirectLoadStatus => ANY[Highlight]"
+        },
+        "PreviousPreset": {
+          "Class": "Preset",
+          "Position": "64, 12",
+          "Events": "PreviousPresetNumber => Number[Text],PreviousPresetName => Name[Text]"
+        },
+        "CurrentPreset": {
+          "Class": "Preset",
+          "Position": "64, 24",
+          "Events": "CurrentPresetNumber => Number[Text],CurrentPresetName => Name[Text]"
+
+        },
+        "NextPreset": {
+          "Class": "Preset",
+          "Position": "64, 36",
+          "Events": "NextPresetNumber => Number[Text],NextPresetName => Name[Text]"
+        },
+        "BankLabel": {
+          "Class": "WideInvertedLabel",
+          "Position": "64, 0",
+          "Events": "PresetListBankName => Text[Text]"
+        },
+        "LeftButton": {
+          "Class": "ArrowLeft",
+          "Position": "65, 1",
+          "Events": "PresetListHasLeftBank => ANY[Highlight]"
+        },
+        "RightButton": {
+          "Class": "ArrowRight",
+          "Position": "184, 1",
+          "Events": "PresetListHasRightBank => ANY[Highlight]"
+        }
+      },
+      "EventSinks": {
+        "BUTTON_A": "SwitchToSoundFocus",
+        "BUTTON_D": "ToggleDirectLoad",
+        "BUTTON_B": "PresetSelectionForVoiceGroup.DecBankSelectionPresetList",
+        "BUTTON_C": "PresetSelectionForVoiceGroup.IncBankSelectionPresetList",
+        "BUTTON_INC": "PresetSelectionForVoiceGroup.IncPresetSelectionPresetList",
+        "BUTTON_DEC": "PresetSelectionForVoiceGroup.DecPresetSelectionPresetList",
+        "BUTTON_ENTER": "PresetSelectionForVoiceGroup.DoPresetListAction"
+      }
+    }
+  }
+}

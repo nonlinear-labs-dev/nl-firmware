@@ -8,9 +8,9 @@ public class ShiftMultiplePresetSelection extends MultiplePresetSelection {
 	public ShiftMultiplePresetSelection(Preset p) {
 		super(p);
 	}
-	
+
 	public void toggle(Preset p) {
-		if(NonMaps.get().getNonLinearWorld().isShiftDown()) {
+		if (NonMaps.get().getNonLinearWorld().isShiftDown()) {
 			super.toggle(p);
 		} else {
 			NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();

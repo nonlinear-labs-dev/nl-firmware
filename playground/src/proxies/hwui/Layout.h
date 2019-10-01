@@ -4,6 +4,8 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <nltools/Uncopyable.h>
 
+class OLEDProxy;
+
 class Layout : public sigc::trackable, public Uncopyable
 {
  public:
@@ -13,7 +15,7 @@ class Layout : public sigc::trackable, public Uncopyable
   virtual bool redrawLayout() = 0;
   virtual void init();
 
-  virtual void copyFrom(Layout *other);
+  virtual void copyFrom(Layout* other);
 
   bool isInitialized() const;
 

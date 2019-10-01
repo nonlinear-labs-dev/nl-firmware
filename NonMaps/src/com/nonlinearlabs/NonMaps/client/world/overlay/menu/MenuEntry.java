@@ -105,8 +105,8 @@ public abstract class MenuEntry extends OverlayLayout {
 		double shortcutWidth = Millimeter.toPixels(20);
 		shortcutLabel.doLayout(w - shortcutWidth, 0, shortcutWidth, h);
 
-		label.doLayout(checkmark.getRelativePosition().getRight(), 0, shortcutLabel.getRelativePosition().getLeft()
-				- checkmark.getRelativePosition().getRight(), h);
+		label.doLayout(checkmark.getRelativePosition().getRight(), 0,
+				shortcutLabel.getRelativePosition().getLeft() - checkmark.getRelativePosition().getRight(), h);
 	}
 
 	public abstract String getDrawText(Context2d ctx);

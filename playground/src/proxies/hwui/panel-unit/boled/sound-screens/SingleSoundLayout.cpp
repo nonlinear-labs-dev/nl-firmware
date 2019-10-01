@@ -15,8 +15,7 @@
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/Caption.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/RandomizeAmountLabel.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/RandomizeAmountSlider.h>
-#include <proxies/hwui/panel-unit/boled/sound-screens/controls/SingleSoundEditMenu.h>
-#include <proxies/hwui/panel-unit/boled/sound-screens/controls/SingleSoundMenu.h>
+#include <proxies/hwui/panel-unit/boled/sound-screens/controls/SingleSoundEditMenuLegacy.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/TransitionTimeLabel.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/TransitionTimeSlider.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/SingleSoundLayout.h>
@@ -31,17 +30,18 @@ SingleSoundLayout::SingleSoundLayout(FocusAndMode focusAndMode)
 {
   addControl(new Caption("Single", Rect(0, 0, 64, 13)));
 
-  m_initButton = addControl(new Button("Init", BUTTON_A));
+  m_initButton = addControl(new Button("Init", Buttons::BUTTON_A));
 
   m_randomizeLabel = addControl(new LabelRegular8("Amount", Rect(67, 12, 58, 11)));
   m_randomizeSlider = addControl(new RandomizeAmountSlider(Rect(67, 28, 58, 4)));
   m_randomizeAmount = addControl(new RandomizeAmountLabel(Rect(67, 36, 58, 12)));
-  m_randomButton = addControl(new Button("Randomize", BUTTON_B));
+
+  m_randomButton = addControl(new Button("Randomize", Buttons::BUTTON_B));
 
   m_transitionTimeLabel = addControl(new LabelRegular8("Time", Rect(131, 12, 58, 11)));
   m_transitionTimeSlider = addControl(new TransitionTimeSlider(Rect(131, 28, 58, 4)));
   m_transitionTimeAmount = addControl(new TransitionTimeLabel(Rect(131, 36, 58, 12)));
-  m_transitionTimeButton = addControl(new Button("Transition", BUTTON_C));
+  m_transitionTimeButton = addControl(new Button("Transition", Buttons::BUTTON_C));
 
   toggleEditMenu(false);
 
@@ -50,70 +50,73 @@ SingleSoundLayout::SingleSoundLayout(FocusAndMode focusAndMode)
   m_edit->setHighlight(true);
   m_edit->setVisible(false);
   m_paramLocked = addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
+
+  m_initMenu = addControl(new SingleSoundEditMenuLegacy(Rect(195, 1, 58, 63)));
+  m_initMenu->setVisible(false);
 }
 
 SingleSoundLayout::~SingleSoundLayout()
 {
 }
 
-bool SingleSoundLayout::onButton(int i, bool down, ButtonModifiers modifiers)
+bool SingleSoundLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down)
   {
     if(m_selectedColumn != Column::Edit)
     {
-      if(i == BUTTON_A)
+      if(i == Buttons::BUTTON_A)
       {
         toggleColumn(Column::Init);
         return true;
       }
-      else if(i == BUTTON_B)
+      else if(i == Buttons::BUTTON_B)
       {
         toggleColumn(Column::Randomize);
         return true;
       }
-      else if(i == BUTTON_C)
+      else if(i == Buttons::BUTTON_C)
       {
         toggleColumn(Column::TranstionTime);
         return true;
       }
     }
 
-    if(i == BUTTON_D)
+    if(i == Buttons::BUTTON_D)
     {
       if(m_selectedColumn == Column::Edit)
         if(m_initMenu != nullptr)
           m_initMenu->toggle();
       return true;
     }
-    else if(i == BUTTON_ENTER)
+    else if(i == Buttons::BUTTON_ENTER)
     {
       action();
       if(m_selectedColumn != Column::Randomize)
         toggleColumn(m_selectedColumn);
       return true;
     }
-    else if(i == BUTTON_DEFAULT)
+    else if(i == Buttons::BUTTON_DEFAULT)
     {
       setDefault();
       return true;
     }
-    else if(i == BUTTON_EDIT)
+    else if(i == Buttons::BUTTON_EDIT)
     {
       toggleColumn(Column::Edit);
       return true;
     }
-    else if(i == BUTTON_PRESET)
+    else if(i == Buttons::BUTTON_PRESET)
     {
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets, UIMode::Select });
       return true;
     }
-    else if(i == BUTTON_STORE)
+    else if(i == Buttons::BUTTON_STORE)
     {
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets, UIMode::Store });
       return true;
     }
-    else if(i == BUTTON_SOUND)
+    else if(i == Buttons::BUTTON_SOUND)
     {
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
       return true;
@@ -142,12 +145,12 @@ void SingleSoundLayout::toggleEditMenu(bool inEdit)
 
   if(inEdit)
   {
-    m_initMenu = addControl(new SingleSoundEditMenu(Rect(195, 0, 58, 64)));
+    m_initMenu = addControl(new SingleSoundEditMenuLegacy(Rect(195, 0, 58, 64)));
     m_initMenu->setVisible(true);
   }
   else
   {
-    m_emptyButton = addControl(new Button("", BUTTON_D));
+    m_emptyButton = addControl(new Button("", Buttons::BUTTON_D));
     m_emptyButton->setVisible(true);
   }
 }

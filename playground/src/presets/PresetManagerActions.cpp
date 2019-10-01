@@ -27,8 +27,8 @@
 #include <proxies/lpc/LPCParameterChangeSurpressor.h>
 #include <tools/TimeTools.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
-#include "SearchQuery.h"
 #include <device-settings/DebugLevel.h>
+#include <nltools/Assert.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     : RPCActionManager("/presets/")
@@ -56,7 +56,8 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     auto bank = presetManager.addBank(transaction);
     bank->setX(transaction, x);
     bank->setY(transaction, y);
-    auto preset = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *presetManager.getEditBuffer()));
+    auto preset
+        = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *presetManager.getEditBuffer()));
     bank->selectPreset(transaction, preset->getUuid());
     presetManager.selectBank(transaction, bank->getUuid());
   });
@@ -184,7 +185,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     auto csv = request->get("csv");
     boost::split(values, csv, boost::is_any_of(","));
 
-    assert(values.size() % 3 == 0);
+    nltools_assertAlways(values.size() % 3 == 0);
 
     for(auto i = values.begin(); i != values.end();)
     {

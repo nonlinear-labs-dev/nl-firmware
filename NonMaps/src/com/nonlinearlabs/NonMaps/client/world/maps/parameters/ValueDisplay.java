@@ -76,8 +76,8 @@ class ValueDisplay extends ValueControl {
 			ctx.setTextBaseline(TextBaseline.MIDDLE);
 
 			ctx.setFont(fontHeightInPixels + "px 'Source Sans Pro LW25'");
-			ctx.fillText(getDisplayValue(), pixRect.getCenterPoint().getX(), pixRect.getCenterPoint().getY()
-					+ toYPixels(moveFontVerticallyBy()));
+			ctx.fillText(getDisplayValue(), pixRect.getCenterPoint().getX(),
+					pixRect.getCenterPoint().getY() + toYPixels(moveFontVerticallyBy()));
 		}
 	}
 

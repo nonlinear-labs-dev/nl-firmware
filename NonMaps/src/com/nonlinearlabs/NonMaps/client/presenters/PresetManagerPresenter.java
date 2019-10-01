@@ -31,32 +31,32 @@ public class PresetManagerPresenter {
 	public PresetManagerPresenter() {
 		banks = new ArrayList<Bank>();
 	}
-	
-	public String getBaseLoadedPresetNumberString() {		
+
+	public String getBaseLoadedPresetNumberString() {
 		EditBufferModel eb = EditBufferModel.get();
 		String ret = "";
 		Preset preset = NonMaps.get().getNonLinearWorld().getPresetManager().findLoadedPreset();
 		com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank bank = preset != null ? preset.getParent() : null;
-		
-		if(eb.loadedPreset.getValue().equals("Init")) {
+
+		if (eb.loadedPreset.getValue().equals("Init")) {
 			ret = "Init";
-		} else if(bank == null && preset == null) {
+		} else if (bank == null && preset == null) {
 			ret = "";
-		} else if(bank != null && preset != null) {
-			ret = bank.getOrderNumber() + "-" + NumberFormat.getFormat("000").format(preset.getNumber()); 
+		} else if (bank != null && preset != null) {
+			ret = bank.getOrderNumber() + "-" + NumberFormat.getFormat("000").format(preset.getNumber());
 		}
 
 		return ret;
 	}
-	
+
 	public String getLoadedPresetNumberString() {
 		boolean mod = EditBufferModel.get().isAnyParamChanged();
 		String ret = getBaseLoadedPresetNumberString();
-		
-		if(ret.isEmpty())
+
+		if (ret.isEmpty())
 			return ret;
-		
+
 		return ret += mod ? " *" : "";
 	}
-	
+
 }

@@ -12,11 +12,11 @@ public class ScaleCol extends ParameterColumn {
 	public ScaleCol(MapsLayout parent) {
 		super(parent);
 	}
-	
+
 	public List<ScaleParameter> getScaleParams() {
 		List<ScaleParameter> ret = new ArrayList<ScaleParameter>();
-		for(Control control: getChildren()) {
-			if(control instanceof ScaleParameter) {
+		for (Control control : getChildren()) {
+			if (control instanceof ScaleParameter) {
 				ret.add((ScaleParameter) control);
 			}
 		}

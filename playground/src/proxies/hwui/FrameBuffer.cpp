@@ -12,6 +12,9 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/panel-unit/RotaryEncoder.h>
 #include <tools/PerformanceTimer.h>
+#include <cmath>
+#include <complex>
+#include <complex.h>
 
 #include <nltools/messaging/Message.h>
 
@@ -87,8 +90,8 @@ void FrameBuffer::initStacks()
 
 void FrameBuffer::openAndMap()
 {
-  auto bytesPerPixel = 1;
-  auto buffersize = 256 * 96 * 1;
+  constexpr const auto bytesPerPixel = 1;
+  constexpr const auto buffersize = 256 * 96 * bytesPerPixel;
   m_backBuffer.resize(buffersize);
 }
 
@@ -132,11 +135,13 @@ void FrameBuffer::clear()
 void FrameBuffer::setColor(const Colors &c)
 {
   m_currentColor = c;
+  g_assert(isValidColor(c));
 }
 
 void FrameBuffer::fiddleColor(tPixel p)
 {
   m_currentColor = (Colors)(p);
+  g_assert(isValidColor(m_currentColor));
 }
 
 FrameBuffer::Colors FrameBuffer::getColor() const
@@ -161,6 +166,26 @@ void FrameBuffer::fillRect(const Rect &rect)
 
     for(auto y = fill.getTop(); y <= bottom; y++)
       drawRawHorizontalLine(left, y, width);
+  }
+}
+
+void FrameBuffer::fillCircle(const Point &center, int radius)
+{
+  if(radius % 2 == 0)
+  {
+    auto middleX = center.getX() - 0.5;
+    auto middleY = center.getY() - 0.5;
+    for(auto y = center.getY() - radius; y < center.getY() + radius; y++)
+    {
+      for(auto x = center.getX() - radius; x < center.getX() + radius; x++)
+      {
+        auto distance = sqrt(pow(x - middleX, 2) + pow(y - middleY, 2));
+        if(distance <= radius)
+        {
+          setPixel(x, y);
+        }
+      }
+    }
   }
 }
 
@@ -226,9 +251,14 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
 void FrameBuffer::swapBuffers()
 {
   using namespace nltools::msg;
-  SetOLEDMessage msg;
+  SetOLEDMessage msg{};
   memcpy(msg.pixels, m_backBuffer.data(), m_backBuffer.size());
   send(EndPoint::Oled, msg);
+}
+
+bool FrameBuffer::isValidColor(Colors c) const
+{
+  return c == C43 || c == C77 || c == C103 || c == C128 || c == C179 || c == C204 || c == C255 || c == Transparent;
 }
 
 FrameBuffer::Clip FrameBuffer::clip(const Rect &rect)

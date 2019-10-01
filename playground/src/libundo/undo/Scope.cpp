@@ -5,7 +5,7 @@
 #include "ContinuousTransaction.h"
 #include "Algorithm.h"
 #include "TrashTransaction.h"
-#include <assert.h>
+#include <nltools/Assert.h>
 #include <iostream>
 #include "device-settings/DebugLevel.h"
 #include <xml/Writer.h>
@@ -56,7 +56,6 @@ namespace UNDO
 
   void Scope::rebase(Transaction *newRoot)
   {
-#warning "Test me"
     if(auto parent = newRoot->getPredecessor())
     {
       m_root = parent->exhaust(newRoot);
@@ -70,7 +69,7 @@ namespace UNDO
 
   Scope::tTransactionScopePtr Scope::startTransaction(const Glib::ustring &name)
   {
-    assert(m_undoPosition == nullptr || m_undoPosition->isClosed());
+    nltools_assertAlways(m_undoPosition == nullptr || m_undoPosition->isClosed());
 
     auto transaction = std::make_unique<Transaction>(*this, name, getDepth());
     auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
@@ -105,7 +104,7 @@ namespace UNDO
   Scope::tTransactionScopePtr Scope::startContinuousTransaction(void *id, steady_clock::duration timeout,
                                                                 const Glib::ustring &name)
   {
-    assert(m_undoPosition == nullptr || m_undoPosition->isClosed());
+    nltools_assertAlways(m_undoPosition == nullptr || m_undoPosition->isClosed());
 
     auto transaction = std::make_unique<ContinuousTransaction>(*this, id, name, getDepth());
 
@@ -169,7 +168,7 @@ namespace UNDO
 
   void Scope::onTransactionUndoStart()
   {
-    assert(m_undoPosition != nullptr);
+    nltools_assertAlways(m_undoPosition != nullptr);
     m_redoPosition = m_undoPosition;
     m_undoPosition = m_undoPosition->getPredecessor();
 
@@ -179,7 +178,7 @@ namespace UNDO
 
   void Scope::onTransactionRedone(const Transaction *transaction)
   {
-    assert(m_redoPosition != nullptr);
+    nltools_assertAlways(m_redoPosition != nullptr);
     size_t numWays = m_undoPosition->getNumSuccessors();
 
     for(size_t i = 0; i < numWays; ++i)

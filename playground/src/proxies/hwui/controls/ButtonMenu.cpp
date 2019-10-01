@@ -1,7 +1,10 @@
+#include <utility>
+
 #include "ButtonMenu.h"
 #include "ButtonMenuButton.h"
 #include "ArrowUp.h"
 #include "ArrowDown.h"
+#include <nltools/Assert.h>
 
 const size_t c_arrowUp = (size_t) -1;
 const size_t c_arrowDown = (size_t) -2;
@@ -11,6 +14,7 @@ ButtonMenu::ButtonMenu(const Rect &rect, size_t numButtonPlaces)
     : super(rect)
     , m_selected(0)
     , m_numButtonPlaces(numButtonPlaces)
+    , entryWidth(rect.getWidth())
 {
 }
 
@@ -35,6 +39,7 @@ void ButtonMenu::setHighlight(bool isHighlight)
 
 void ButtonMenu::toggle()
 {
+  nltools_assertAlways(!m_items.empty());
   auto i = m_selected;
 
   i++;
@@ -48,14 +53,14 @@ void ButtonMenu::toggle()
 
 void ButtonMenu::antiToggle()
 {
-  int i = m_selected;
+  nltools_assertAlways(!m_items.empty());
 
-  i--;
+  auto i = m_selected;
 
-  if(i < 0)
-  {
+  if(i == 0)
     i = m_items.size() - 1;
-  }
+  else
+    i--;
 
   selectButton(i);
   bruteForce();
@@ -63,19 +68,20 @@ void ButtonMenu::antiToggle()
 
 void ButtonMenu::sanitizeIndex()
 {
-  m_selected = (size_t) sanitizeIndex((int) m_selected);
+  m_selected = sanitizeIndex(m_selected);
 }
 
-int ButtonMenu::sanitizeIndex(int index)
+size_t ButtonMenu::sanitizeIndex(size_t index)
 {
-  index = std::min((int) m_items.size() - 1, index);
-  index = std::max(0, index);
+  nltools_assertAlways(!m_items.empty());
+  index = std::min(m_items.size() - 1, index);
+  index = std::max<size_t>(0, index);
   return index;
 }
 
 size_t ButtonMenu::addButton(const Glib::ustring &caption, Action action)
 {
-  m_items.push_back({ caption, action });
+  m_items.push_back({ caption, std::move(action) });
   bruteForce();
   return m_items.size();
 }
@@ -106,19 +112,21 @@ void ButtonMenu::bruteForce()
 
     if(itemToShow == c_arrowUp)
     {
-      addControl(new ArrowUp(Rect(0, y, 58, buttonHeight)));
+      addControl(new ArrowUp(Rect(0, y, entryWidth, buttonHeight)));
     }
     else if(itemToShow == c_arrowDown)
     {
-      addControl(new ArrowDown(Rect(0, y, 58, buttonHeight)));
+      addControl(new ArrowDown(Rect(0, y, entryWidth, buttonHeight)));
     }
     else if(itemToShow != c_empty)
     {
-      Rect buttonPosition(0, y, 58, buttonHeight);
+      Rect buttonPosition(0, y, entryWidth, buttonHeight);
       bool isFirst = (i == 0) || (itemToShow == 0);
       bool isLast = i == (m_numButtonPlaces - 1);
       const Glib::ustring &caption = m_items[itemToShow].title;
       auto button = new ButtonMenuButton(isFirst, isLast, caption, buttonPosition);
+
+      button->setJustification(getDefaultButtonJustification());
 
       if(itemToShow == m_selected)
         selectedButton = button;
@@ -173,9 +181,10 @@ size_t ButtonMenu::getItemToShowAtPlace(size_t place) const
 
 void ButtonMenu::selectButton(size_t i)
 {
-  if(i != m_selected)
+  auto index = sanitizeIndex(i);
+  if(index != m_selected)
   {
-    m_selected = sanitizeIndex(i);
+    m_selected = index;
     bruteForce();
   }
 }
@@ -194,7 +203,18 @@ void ButtonMenu::setItemTitle(size_t i, const Glib::ustring &caption)
   }
 }
 
+Font::Justification ButtonMenu::getDefaultButtonJustification() const
+{
+  return Font::Justification::Center;
+}
+
 const size_t ButtonMenu::getItemCount() const
 {
   return m_items.size();
+}
+
+void ButtonMenu::clear()
+{
+  clearActions();
+  ControlOwner::clear();
 }

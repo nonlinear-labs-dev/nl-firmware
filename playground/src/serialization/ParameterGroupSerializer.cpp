@@ -14,9 +14,7 @@ ParameterGroupSerializer::ParameterGroupSerializer(ParameterGroup *paramGroup)
     m_parameterById[p->getID()] = p;
 }
 
-ParameterGroupSerializer::~ParameterGroupSerializer()
-{
-}
+ParameterGroupSerializer::~ParameterGroupSerializer() = default;
 
 Glib::ustring ParameterGroupSerializer::getTagName()
 {

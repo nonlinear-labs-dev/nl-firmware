@@ -104,6 +104,6 @@ public class SystemSettings {
 
 	public void setCrashOnError(BooleanValues c) {
 		Setup.get().systemSettings.crashOnError.setValue(c);
-		NonMaps.theMaps.getServerProxy().setSetting("CrashOnError", netify(c.name()));		
+		NonMaps.theMaps.getServerProxy().setSetting("CrashOnError", netify(c.name()));
 	}
 }

@@ -25,10 +25,10 @@ public class ModulationAmount extends QuantizedClippedValue {
 	private native String defaultStringize(boolean withUnit, double value) /*-{
 																			var intermediate = Number(value).toPrecision(3);
 																			var ret = parseFloat(intermediate);
-
+																			
 																			if (withUnit)
 																			return ret + "%";
-
+																			
 																			return ret + "";
 																			}-*/;
 

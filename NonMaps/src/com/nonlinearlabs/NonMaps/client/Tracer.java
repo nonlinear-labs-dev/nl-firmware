@@ -9,7 +9,7 @@ public class Tracer {
 
 	public native static void registerCrashHandler() /*-{
 														var nativeLog = console.log.bind(console) //store native function
-
+														
 														console.log = function(text) { //override
 														nativeLog(text);
 														@com.nonlinearlabs.NonMaps.client.Tracer::addToLog(Ljava/lang/String;)(text);

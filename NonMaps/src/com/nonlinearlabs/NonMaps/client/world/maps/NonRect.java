@@ -126,7 +126,8 @@ public class NonRect {
 	}
 
 	public boolean contains(NonPosition pos) {
-		return getLeft() <= pos.getX() && getRight() >= pos.getX() && getTop() <= pos.getY() && getBottom() >= pos.getY();
+		return getLeft() <= pos.getX() && getRight() >= pos.getX() && getTop() <= pos.getY()
+				&& getBottom() >= pos.getY();
 	}
 
 	public void enlargeToHeight(double d) {

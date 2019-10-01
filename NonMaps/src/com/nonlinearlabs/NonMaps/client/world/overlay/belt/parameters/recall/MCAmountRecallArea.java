@@ -7,18 +7,18 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParame
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParameterLayout.Mode;
 
 public class MCAmountRecallArea extends RecallArea {
-		
+
 	public MCAmountRecallArea(BeltParameterLayout parent) {
 		super(parent);
 		addChild(button = new MCAmountRecallButton(this));
 		addChild(value = new MCAmountRecallValue(this));
 	}
-		
+
 	@Override
-	public boolean isChanged() {		
+	public boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if(bpm instanceof ModulateableParameter) {
-			return ((ModulateableParameter)bpm).isModAmountChanged();
+		if (bpm instanceof ModulateableParameter) {
+			return ((ModulateableParameter) bpm).isModAmountChanged();
 		}
 		return false;
 	}

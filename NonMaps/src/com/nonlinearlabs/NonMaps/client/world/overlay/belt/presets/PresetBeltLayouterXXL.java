@@ -24,7 +24,6 @@ public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 
 		layout.autoLoad.doLayout(right - autoLoadWidth, 0, autoLoadWidth, h);
 		right -= autoLoadWidth + margin;
-				
 
 		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth,
 				currentPresetHeight);

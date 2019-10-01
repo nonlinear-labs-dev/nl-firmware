@@ -56,10 +56,10 @@ public class MCUpperBoundLabel extends Label {
 	private native String stringize(boolean withUnit, double value) /*-{
 																	var intermediate = Number(value).toPrecision(3);
 																	var ret = parseFloat(intermediate);
-
+																	
 																	if (withUnit)
 																	return ret + "%";
-
+																	
 																	return ret + "";
 																	}-*/;
 
@@ -77,7 +77,8 @@ public class MCUpperBoundLabel extends Label {
 			MacroControls s = m.getModulationSource();
 			if (s != MacroControls.NONE) {
 				ModulationAmount amount = m.getModulationAmount();
-				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(s);
+				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+						.getControl(s);
 
 				double modAmount = amount.getClippedValue();
 

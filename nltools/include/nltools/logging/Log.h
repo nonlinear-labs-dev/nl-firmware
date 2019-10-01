@@ -1,15 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <initializer_list>
 #include <mutex>
 
 namespace nltools
 {
-#pragma once
-
-#include <initializer_list>
-#include <iostream>
-
   class Log
   {
    public:
@@ -19,7 +15,8 @@ namespace nltools
       Info,
       Warning,
       Error,
-      Notify
+      Notify,
+      Silent
     };
 
     static void setLevel(Level l)
@@ -66,7 +63,8 @@ namespace nltools
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void notify(const Args&... args)
     {
-      output<mode>("Notify: ", args...);
+      if(s_level <= Level::Notify)
+        output<mode>("Notify: ", args...);
     }
 
     static void flush()

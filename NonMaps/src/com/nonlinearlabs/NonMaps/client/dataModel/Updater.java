@@ -7,11 +7,11 @@ import com.google.gwt.xml.client.NodeList;
 
 public abstract class Updater {
 	protected Node root;
-	
+
 	public Updater(Node n) {
 		root = n;
 	}
-	
+
 	protected Node getChild(Node node, String... path) {
 		return getChild(node, 0, path);
 	}

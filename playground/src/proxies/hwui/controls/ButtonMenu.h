@@ -23,17 +23,24 @@ class ButtonMenu : public ControlWithChildren
   void toggle();
   void antiToggle();
   void sanitizeIndex();
-  int sanitizeIndex(int index);
-
-  void doAction();
+  size_t sanitizeIndex(size_t index);
 
  protected:
-  void clearActions();
-  void setItemTitle(size_t i, const Glib::ustring &caption);
+  void clear() override;
+
+ public:
+  void doAction();
   const size_t getItemCount() const;
 
+ protected:
+  void setItemTitle(size_t i, const Glib::ustring &caption);
+
+  virtual Font::Justification getDefaultButtonJustification() const;
+
+  virtual void bruteForce();
+
  private:
-  void bruteForce();
+  void clearActions();
   size_t getItemToShowAtPlace(size_t place) const;
 
   struct Item
@@ -45,4 +52,7 @@ class ButtonMenu : public ControlWithChildren
   std::vector<Item> m_items;
   size_t m_selected;
   size_t m_numButtonPlaces;
+  int entryWidth;
+
+  friend class SoundMenu;
 };

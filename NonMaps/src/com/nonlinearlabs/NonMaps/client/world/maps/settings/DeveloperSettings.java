@@ -1,6 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.settings;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.useCases.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingVertical;
@@ -21,7 +20,6 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new DownloadEditBufferAsText(this));
 		addChild(new DownloadErrorReport(this));
 		addChild(new OpenEditBufferAsText(this));
-		addChild(new TestHWUIDisplay(this));
 		addChild(new KioskMode(this));
 		addChild(new BlockingMainThreadIndication(this));
 		addChild(new BenderRampBypassSetting(this));
@@ -34,9 +32,11 @@ public class DeveloperSettings extends LayoutResizingVertical {
 	}
 
 	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
+	public boolean isVisible() {
 		if (Setup.get().localSettings.showDeveloperOptions.isTrue())
-			super.draw(ctx, invalidationMask);
+			return super.isVisible();
+
+		return false;
 	}
 
 	public String get(String key, String def) {

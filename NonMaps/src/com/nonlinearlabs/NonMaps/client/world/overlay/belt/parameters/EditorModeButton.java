@@ -28,13 +28,13 @@ public class EditorModeButton extends SVGImage {
 
 	private boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if(bpm instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter)bpm;
+		if (bpm instanceof ModulateableParameter) {
+			ModulateableParameter modP = (ModulateableParameter) bpm;
 			return modP.isModAmountChanged() || modP.isModSourceChanged() || modP.isMCPosChanged();
 		}
 		return false;
 	}
-	
+
 	@Override
 	public BeltParameterLayout getParent() {
 		return (BeltParameterLayout) super.getParent();
@@ -65,8 +65,9 @@ public class EditorModeButton extends SVGImage {
 	}
 
 	private boolean isActive() {
-		return getParent().isOneOf(BeltParameterLayout.Mode.mcValue, BeltParameterLayout.Mode.mcAmount, BeltParameterLayout.Mode.mcSource,
-				BeltParameterLayout.Mode.paramValue, BeltParameterLayout.Mode.mcLower, BeltParameterLayout.Mode.mcUpper);
+		return getParent().isOneOf(BeltParameterLayout.Mode.mcValue, BeltParameterLayout.Mode.mcAmount,
+				BeltParameterLayout.Mode.mcSource, BeltParameterLayout.Mode.paramValue,
+				BeltParameterLayout.Mode.mcLower, BeltParameterLayout.Mode.mcUpper);
 	}
 
 	@Override

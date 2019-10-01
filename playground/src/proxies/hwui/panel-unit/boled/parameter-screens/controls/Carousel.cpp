@@ -10,9 +10,7 @@ Carousel::Carousel(const Rect &pos)
       sigc::hide<0>(sigc::mem_fun(this, &Carousel::setup)));
 }
 
-Carousel::~Carousel()
-{
-}
+Carousel::~Carousel() = default;
 
 void Carousel::antiTurn()
 {

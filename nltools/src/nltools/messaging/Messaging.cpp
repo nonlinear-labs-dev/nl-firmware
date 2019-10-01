@@ -2,6 +2,7 @@
 #include <nltools/messaging/websocket/WebSocketOutChannel.h>
 #include <nltools/messaging/websocket/WebSocketInChannel.h>
 #include <nltools/logging/Log.h>
+#include <nltools/ExceptionTools.h>
 #include <nltools/StringTools.h>
 #include <memory>
 #include <map>
@@ -28,31 +29,30 @@ namespace nltools
         gsize numBytes = 0;
         auto data = reinterpret_cast<const uint16_t *>(s->get_data(numBytes));
         auto type = static_cast<MessageType>(data[0]);
-        signals[std::make_pair(type, endPoint)](s);
+        signals.at(std::make_pair(type, endPoint))(s);
       }
 
-      static void createInChannels(const Configuration &conf, std::mutex &libSoupMutex)
+      static void createInChannels(const Configuration &conf)
       {
         for(const auto &c : conf.offerEndpoints)
         {
           auto cb = [peer = c.peer](const auto &s) { notifyClients(s, peer); };
 
-          parseURI(c.uri, [=, &libSoupMutex](auto scheme, auto, auto, auto port) {
-            assert(scheme == "ws");  // Currently, only web sockets are supported
-            std::unique_lock<std::mutex> lock(libSoupMutex);
-            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port, libSoupMutex);
+          parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
+            nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
+            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port);
+            signals[std::make_pair(MessageType::Ping, c.peer)];
           });
         }
       }
 
-      static void createOutChannels(const Configuration &conf, std::mutex &libSoupMutex)
+      static void createOutChannels(const Configuration &conf)
       {
         for(const auto &c : conf.useEndpoints)
         {
-          parseURI(c.uri, [=, &libSoupMutex](auto scheme, auto host, auto, auto port) {
-            assert(scheme == "ws");  // Currently, only web sockets are supported
-            std::unique_lock<std::mutex> lock(libSoupMutex);
-            outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port, libSoupMutex);
+          parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
+            nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
+            outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port);
             outChannels[c.peer]->onConnectionEstablished([peer = c.peer] { connectionSignals[peer](); });
           });
         }
@@ -61,10 +61,11 @@ namespace nltools
       static sigc::connection connectReceiver(MessageType type, EndPoint endPoint,
                                               std::function<void(const SerializedMessage &)> cb)
       {
-        return signals[std::make_pair(type, endPoint)].connect(cb);
+        auto ret = signals[std::make_pair(type, endPoint)].connect(cb);
+        return ret;
       }
 
-      void send(nltools::msg::EndPoint receiver, SerializedMessage msg)
+      void send(nltools::msg::EndPoint receiver, const SerializedMessage &msg)
       {
         outChannels.at(receiver)->send(msg);
       }
@@ -95,10 +96,9 @@ namespace nltools
 
     void init(const Configuration &conf)
     {
-      static std::mutex libSoupMutex;
       deInit();
-      detail::createInChannels(conf, libSoupMutex);
-      detail::createOutChannels(conf, libSoupMutex);
+      detail::createInChannels(conf);
+      detail::createOutChannels(conf);
     }
 
     void deInit()

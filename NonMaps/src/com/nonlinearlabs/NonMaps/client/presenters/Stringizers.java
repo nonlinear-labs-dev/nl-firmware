@@ -15,15 +15,15 @@ public class Stringizers {
 	private JavaScriptObject tmpStringizer;
 
 	private native void createStringizer(String body) /*-{
-		this.@com.nonlinearlabs.NonMaps.client.presenters.Stringizers::tmpStringizer = new Function(
-				"cpValue", "withUnit", body);
-	}-*/;
+														this.@com.nonlinearlabs.NonMaps.client.presenters.Stringizers::tmpStringizer = new Function(
+														"cpValue", "withUnit", body);
+														}-*/;
 
 	private native String stringize(double cpValue) /*-{
-		var stringizer = this.@com.nonlinearlabs.NonMaps.client.presenters.Stringizers::tmpStringizer;
-		var scaledText = stringizer(cpValue, true);
-		return scaledText;
-	}-*/;
+													var stringizer = this.@com.nonlinearlabs.NonMaps.client.presenters.Stringizers::tmpStringizer;
+													var scaledText = stringizer(cpValue, true);
+													return scaledText;
+													}-*/;
 
 	public void registerStringizer(String value) {
 		if (value != null && !value.isEmpty() && !stringizers.containsKey(value)) {

@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include "http/HTTPServer.h"
 #include "http/UndoScope.h"
-#include "hw-tests/HWTests.h"
 #include "Options.h"
 #include "presets/PresetManager.h"
 #include "profiling/Profiler.h"
@@ -19,7 +18,11 @@
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
+#include <assert.h>
+#include <proxies/hwui/debug-oled/DebugLayout.h>
+#include <tools/ExceptionTools.h>
 #include <nltools/messaging/Messaging.h>
+#include <device-settings/LayoutMode.h>
 
 Application *Application::theApp = nullptr;
 
@@ -32,8 +35,11 @@ void setupMessaging(const Options *options)
 
   Configuration conf;
   conf.offerEndpoints = { EndPoint::Playground };
-  conf.useEndpoints = { { EndPoint::Playground }, { EndPoint::AudioEngine, ae }, { EndPoint::Lpc, bbbb },
-                        { EndPoint::Oled, bbbb }, { EndPoint::PanelLed, bbbb },  { EndPoint::RibbonLed, bbbb } };
+  conf.useEndpoints = { { EndPoint::Lpc, bbbb },
+                        { EndPoint::Oled, bbbb },
+                        { EndPoint::PanelLed, bbbb },
+                        { EndPoint::RibbonLed, bbbb },
+                        { EndPoint::AudioEngine, ae } };
   nltools::msg::init(conf);
 }
 
@@ -60,7 +66,6 @@ Application::Application(int numArgs, char **argv)
     , m_lpcProxy(new LPCProxy())
     , m_audioEngineProxy(new AudioEngineProxy)
     , m_hwui(new HWUI())
-    , m_hwtests(new HWTests(m_http->getUpdateDocumentMaster()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
@@ -127,16 +132,29 @@ Glib::ustring Application::getResourcePath() const
 
 void Application::run()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__);
-  m_theMainLoop->run();
-  DebugLevel::warning(__PRETTY_FUNCTION__);
+  while(!m_isQuit)
+  {
+    DebugLevel::warning(__PRETTY_FUNCTION__);
+    m_theMainLoop->run();
+    DebugLevel::warning(__PRETTY_FUNCTION__);
+  }
 }
 
 void Application::quit()
 {
   DebugLevel::warning(__PRETTY_FUNCTION__);
-  m_isQuit = true;
-  m_theMainLoop->quit();
+
+  if(!m_isQuit)
+  {
+    m_isQuit = true;
+    m_theMainLoop->quit();
+  }
+  else
+  {
+    DebugLevel::warning("Application already quitting - terminating ungracefully!");
+    std::terminate();
+  }
+
   DebugLevel::warning(__PRETTY_FUNCTION__);
 }
 
@@ -219,11 +237,6 @@ Settings *Application::getSettings()
   return m_settings.get();
 }
 
-HWTests *Application::getHWTests()
-{
-  return m_hwtests.get();
-}
-
 HWUI *Application::getHWUI()
 {
   return m_hwui.get();
@@ -250,10 +263,12 @@ bool Application::heartbeat()
 
   const char *toSend = m_heartbeatState ? "1" : "0";
 
-  int out = open("/sys/class/leds/playground_status/brightness", O_WRONLY);
-  write(out, toSend, 1);
-  fsync(out);
-  close(out);
+  if(int out = open("/sys/class/leds/playground_status/brightness", O_WRONLY))
+  {
+    nltools::ignore(write(out, toSend, 1));
+    fsync(out);
+    close(out);
+  }
 
   if(m_heartbeatState)
   {

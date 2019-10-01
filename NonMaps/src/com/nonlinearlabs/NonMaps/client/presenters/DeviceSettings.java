@@ -34,7 +34,7 @@ public class DeviceSettings {
 	}
 
 	static public class HighlightChanged {
-		static public String[] options = {"On", "Off"};
+		static public String[] options = { "On", "Off" };
 		public boolean value = false;
 	}
 

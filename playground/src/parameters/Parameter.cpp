@@ -18,6 +18,7 @@
 #include <presets/PresetParameter.h>
 #include <presets/Preset.h>
 #include <device-settings/DebugLevel.h>
+#include <nltools/Assert.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -223,7 +224,7 @@ const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   auto ret = eb->getRecallParameterSet().findParameterByID(getID());
-  assert(ret != nullptr && "originalParameter is null and should not be");
+  nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
   return ret;
 }
 
@@ -394,11 +395,6 @@ void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator init
   setCpValue(transaction, initiator, newPos, false);
 }
 
-void Parameter::undoableSetType(UNDO::Transaction *transaction, PresetType oldType, PresetType desiredType)
-{
-  m_value.undoableSetType(transaction, oldType, desiredType);
-}
-
 void Parameter::onPresetSentToLpc() const
 {
 }
@@ -522,7 +518,6 @@ void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
   auto original = getOriginalParameter();
-  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   auto transactionScope = scope.startTransaction("Recall %0 value", getLongName());
   auto transaction = transactionScope->getTransaction();
   if(original)

@@ -44,7 +44,7 @@ public abstract class OverlayControl extends Control {
 	public void calcPixRect(Position parentsReference, double currentZoom) {
 		setPixRect(getCalculatedPixRect(parentsReference, currentZoom));
 	}
-	
+
 	public Rect getCalculatedPixRect(Position parentsReference, double currentZoom) {
 		Rect newPos = getRelativePosition().copy();
 		newPos.getPosition().moveBy(parentsReference);

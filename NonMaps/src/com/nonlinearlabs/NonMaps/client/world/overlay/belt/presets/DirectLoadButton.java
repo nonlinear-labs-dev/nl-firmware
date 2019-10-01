@@ -66,7 +66,7 @@ public class DirectLoadButton extends SVGImage {
 	public boolean isDirectLoadActive() {
 		return married;
 	}
-	
+
 	public void toggle() {
 		married = !married;
 		NonMaps.theMaps.getServerProxy().setSetting("AutoLoadSelectedPreset", married ? "on" : "off");

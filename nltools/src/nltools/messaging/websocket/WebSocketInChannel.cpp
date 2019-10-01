@@ -1,6 +1,8 @@
 #include "WebSocketInChannel.h"
 #include <nltools/logging/Log.h>
 #include <netinet/tcp.h>
+#include <glib.h>
+#include <utility>
 
 namespace nltools
 {
@@ -8,13 +10,14 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, std::mutex &libSoupMutex)
-          : InChannel(cb)
+      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port)
+          : InChannel(std::move(cb))
           , m_port(port)
           , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
-          , m_contextThread(std::bind(&WebSocketInChannel::backgroundThread, this, std::ref(libSoupMutex)))
           , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
+          , m_contextThread(std::bind(&WebSocketInChannel::backgroundThread, this))
       {
+        m_conditionEstablishedThreadWaiter.wait();
       }
 
       WebSocketInChannel::~WebSocketInChannel()
@@ -26,11 +29,9 @@ namespace nltools
           m_contextThread.join();
       }
 
-      void WebSocketInChannel::backgroundThread(std::mutex &libSoupMutex)
+      void WebSocketInChannel::backgroundThread()
       {
         pthread_setname_np(pthread_self(), "WebSockIn");
-
-        std::unique_lock<std::mutex> lock(libSoupMutex);
 
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());
@@ -48,7 +49,8 @@ namespace nltools
         }
 
         m_messageLoop = Glib::MainLoop::create(m);
-        lock.unlock();
+
+        m_conditionEstablishedThreadWaiter.notify();
 
         m_messageLoop->run();
       }
@@ -58,7 +60,9 @@ namespace nltools
       {
         g_signal_connect(c, "message", G_CALLBACK(&WebSocketInChannel::receiveMessage), pThis);
         g_object_ref(c);
+#ifdef SOUP_VERSION_2_58
         g_object_set(c, "keepalive-interval", 5, nullptr);
+#endif
         pThis->m_connections.push_back(tWebSocketPtr(c, g_object_unref));
       }
 

@@ -12,15 +12,14 @@ class EncoderAccelerationEditor : public SetupLabel, public SetupEditor
 
  public:
   EncoderAccelerationEditor();
-  virtual ~EncoderAccelerationEditor();
-
-  virtual Font::Justification getJustification() const override;
+  ~EncoderAccelerationEditor() override;
+  Font::Justification getJustification() const override;
 
  private:
   bool redraw(FrameBuffer &fb) override;
   void setBackgroundColor(FrameBuffer &fb) const override;
   void onSettingChanged(const Setting *s);
-  bool onButton(int i, bool down, ButtonModifiers modifiers) override;
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   bool onRotary(int inc, ButtonModifiers modifiers) override;
   void setFontColor(FrameBuffer &fb) const override;
 

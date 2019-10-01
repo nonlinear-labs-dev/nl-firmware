@@ -6,6 +6,7 @@
 #include <tools/FileSystem.h>
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
+#include <nltools/Assert.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 
@@ -106,21 +107,24 @@ void Bank::load(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder, in
 
 void Bank::deleteOldPresetFiles(RefPtr<Gio::File> bankFolder)
 {
-  RefPtr<Gio::FileEnumerator> enumerator = bankFolder->enumerate_children();
-
-  while(auto file = enumerator->next_file())
+  if(bankFolder->query_exists())
   {
-    if(file->get_file_type() == Gio::FILE_TYPE_REGULAR)
-    {
-      auto fileName = file->get_name();
-      auto withoutExtension = fileName.substr(0, fileName.find("."));
+    RefPtr<Gio::FileEnumerator> enumerator = bankFolder->enumerate_children();
 
-      if(FileSystem::isNameAUUID(withoutExtension))
+    while(auto file = enumerator->next_file())
+    {
+      if(file->get_file_type() == Gio::FILE_TYPE_REGULAR)
       {
-        if(!findPreset(withoutExtension))
+        auto fileName = file->get_name();
+        auto withoutExtension = fileName.substr(0, fileName.find("."));
+
+        if(FileSystem::isNameAUUID(withoutExtension))
         {
-          if(auto presetFile = bankFolder->get_child(fileName))
-            presetFile->remove();
+          if(!findPreset(withoutExtension))
+          {
+            if(auto presetFile = bankFolder->get_child(fileName))
+              presetFile->remove();
+          }
         }
       }
     }
@@ -250,7 +254,7 @@ Bank *Bank::getMasterLeft() const
 Bank *Bank::getSlaveRight() const
 {
   if(auto pm = dynamic_cast<const PresetManager *>(getParent()))
-    for(auto bank : pm->getBanks())
+    for(const auto bank : pm->getBanks())
       if(auto masterLeft = bank->getMasterLeft())
         if(masterLeft == this)
           return bank;
@@ -261,7 +265,7 @@ Bank *Bank::getSlaveRight() const
 Bank *Bank::getSlaveBottom() const
 {
   if(auto pm = dynamic_cast<const PresetManager *>(getParent()))
-    for(auto bank : pm->getBanks())
+    for(const auto bank : pm->getBanks())
       if(auto masterLeft = bank->getMasterTop())
         if(masterLeft == this)
           return bank;
@@ -339,6 +343,11 @@ void Bank::setName(UNDO::Transaction *transaction, const std::string &name)
 
 void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 {
+#if _DEVELOPMENT_PC
+  if(auto existing = Application::get().getPresetManager()->findBank(uuid))
+    nltools_assertOnDevPC(existing == this);
+#endif
+
   transaction->addUndoSwap(this, m_uuid, uuid);
   updateLastModifiedTimestamp(transaction);
 }
@@ -450,7 +459,7 @@ void Bank::movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *preset
   else
   {
     auto p = m_presets.release(transaction, presetToMove);
-    assert(p == presetToMove);
+    nltools_assertAlways(p == presetToMove);
     auto pos = presetAnchor ? tgtBank->getPresetPosition(presetAnchor) : tgtBank->getNumPresets();
     tgtBank->m_presets.adopt(transaction, pos, p);
     tgtBank->updateLastModifiedTimestamp(transaction);

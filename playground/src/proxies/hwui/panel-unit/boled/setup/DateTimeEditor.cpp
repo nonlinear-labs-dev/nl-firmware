@@ -10,8 +10,6 @@
 #include <cstdio>
 #include <ctime>
 
-static const Rect c_fullRightSidePosition(129, 16, 126, 48);
-
 DateTimeEditor::DateTimeEditor()
     : ControlWithChildren(Rect(0, 0, 0, 0))
     , m_originalTime(std::time(nullptr))
@@ -54,41 +52,34 @@ DateTimeEditor::DateTimeEditor()
   setTimeValues();
 }
 
-DateTimeEditor::~DateTimeEditor()
-{
-}
+DateTimeEditor::~DateTimeEditor() = default;
 
 void DateTimeEditor::setPosition(const Rect &)
 {
   ControlWithChildren::setPosition(c_fullRightSidePosition);
 }
 
-bool DateTimeEditor::onButton(int i, bool down, ButtonModifiers modifiers)
+bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down)
   {
     m_labels[m_selection]->setHighlight(false);
     m_controls[m_selection]->setHighlight(false);
 
-    if(i == BUTTON_C)
+    if(i == Buttons::BUTTON_C)
     {
-      if(m_selection == 0)
-        m_selection = Selection::Year;
-      else
-        m_selection = (Selection)(m_selection - 1);
+      m_selection = step(m_selection, -1);
     }
 
-    if(i == BUTTON_D)
+    if(i == Buttons::BUTTON_D)
     {
-      if(m_selection == Selection::Year)
-        m_selection = Selection::Month;
-      else
-        m_selection = (Selection)(m_selection + 1);
+      m_selection = step(m_selection, 1);
     }
 
     m_labels[m_selection]->setHighlight(true);
     m_controls[m_selection]->setHighlight(true);
-    true;
+    setAllDirty();
+    return true;
   }
   return false;
 }
@@ -110,7 +101,7 @@ bool DateTimeEditor::onRotary(int inc, ButtonModifiers modifiers)
 
     case Year:
       tm->tm_year += inc;
-      tm->tm_year = std::min(tm->tm_year, 2035 - 1900);
+      tm->tm_year = std::min(tm->tm_year, 2050 - 1900);
       tm->tm_year = std::max(tm->tm_year, 2017 - 1900);
       break;
 
@@ -152,4 +143,17 @@ void DateTimeEditor::setTimeValues()
   m_controls[Selection::Year]->setText(format(tm->tm_year + 1900, 4));
   m_controls[Selection::Hour]->setText(format(tm->tm_hour, 2));
   m_controls[Selection::Minute]->setText(format(tm->tm_min, 2));
+  setAllDirty();
+}
+
+const DateTimeEditor::Selection DateTimeEditor::step(Selection s, int inc) const
+{
+  auto currentRaw = static_cast<int>(s);
+
+  if(inc > 0)
+    currentRaw += inc;
+  else if(inc < 0)
+    currentRaw += static_cast<int>(Selection::NumFields + inc);
+
+  return static_cast<Selection>(currentRaw % Selection::NumFields);
 }

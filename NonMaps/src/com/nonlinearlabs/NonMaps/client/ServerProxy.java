@@ -579,9 +579,9 @@ public class ServerProxy {
 		else
 			appendPreset(p, b);
 	}
-	
+
 	public void dropPresetOnBankIfNotInBank(IPreset p, Bank b) {
-		if(b.getPresetList().findPreset(p.getUUID()) == null)
+		if (b.getPresetList().findPreset(p.getUUID()) == null)
 			appendPreset(p, b);
 	}
 
@@ -847,24 +847,24 @@ public class ServerProxy {
 	}
 
 	public native void importPresetManager(JavaScriptObject buffer) /*-{
-
-		var oReq = new XMLHttpRequest();
-		oReq.open("POST", "/presets/import-all-banks", true);
-		oReq.setRequestHeader("Content-Type", "application/binary");
-
-		oReq.onreadystatechange = function() {
-			if (oReq.readyState == 4 && oReq.status == 200) {
-				var ret = oReq.responseText;
-				var sub = "Invalid";
-				if (ret.includes(sub)) {
-					alert(oReq.responseText);
-				}
-			}
-		}
-
-		var blob = new Blob([ buffer ]);
-		oReq.send(blob);
-	}-*/;
+																	
+																	var oReq = new XMLHttpRequest();
+																	oReq.open("POST", "/presets/import-all-banks", true);
+																	oReq.setRequestHeader("Content-Type", "application/binary");
+																	
+																	oReq.onreadystatechange = function() {
+																	if (oReq.readyState == 4 && oReq.status == 200) {
+																	var ret = oReq.responseText;
+																	var sub = "Invalid";
+																	if (ret.includes(sub)) {
+																	alert(oReq.responseText);
+																	}
+																	}
+																	}
+																	
+																	var blob = new Blob([ buffer ]);
+																	oReq.send(blob);
+																	}-*/;
 
 	public void onBankClusterMoved(List<Bank> changedBanks) {
 		String csv = "";
@@ -886,12 +886,6 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
 				new StaticURI.KeyValue("x", slave.getNonPosition().getPosition().getX()),
 				new StaticURI.KeyValue("y", slave.getNonPosition().getPosition().getY()));
-		queueJob(uri, false);
-	}
-
-	public void incDisplayTest() {
-		StaticURI.Path path = new StaticURI.Path("settings", "inc-test-display");
-		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
 
@@ -977,13 +971,13 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
-	
+
 	public void recallMCPosForCurrentParameter() {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-for-current-mod-param");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
-	
+
 	public void recallMcAmountForCurrentParameter() {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-amount-for-current-mod-param");
 		StaticURI uri = new StaticURI(path);

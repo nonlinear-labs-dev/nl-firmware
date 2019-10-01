@@ -322,15 +322,15 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private native void createStringizer(String body) /*-{
-		this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer = new Function(
-				"cpValue", "withUnit", body);
-	}-*/;
+														this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer = new Function(
+														"cpValue", "withUnit", body);
+														}-*/;
 
 	private native String stringize(boolean withUnit, double cpValue) /*-{
-		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer;
-		var scaledText = stringizer(cpValue, withUnit);
-		return scaledText;
-	}-*/;
+																		var stringizer = this.@com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter::stringizer;
+																		var scaledText = stringizer(cpValue, withUnit);
+																		return scaledText;
+																		}-*/;
 
 	public void addListener(ParameterListener l) {
 		listeners.add(l);

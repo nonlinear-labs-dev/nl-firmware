@@ -1,24 +1,18 @@
 #pragma once
 
 #include <bitset>
+#include <tools/EnumTools.h>
 
-enum class UIFocus
-{
-  Sound,
-  Parameters,
-  Presets,
-  Banks,
-  Setup,
-  Unchanged
-};
+ENUM(UIFocus, uint8_t, Any, Sound, Parameters, Presets, Banks, Setup, Unchanged);
+ENUM(UIMode, uint8_t, Any, Select, Store, Edit, Info, Unchanged);
+ENUM(UIDetail, uint8_t, Any, Init, ButtonA, ButtonB, ButtonC, ButtonD, MCSelect, MCAmount, MCPosition, MCModRange,
+     SoundSelectPresetForVoiceGroup);
 
-enum class UIMode
+enum LayoutVersionMode
 {
-  Select,
-  Store,
-  Edit,
-  Info,
-  Unchanged
+  Old,
+  Mixed,
+  New
 };
 
 enum ButtonModifier
@@ -50,6 +44,14 @@ struct FocusAndMode
   FocusAndMode(UIFocus f, UIMode m)
       : focus(f)
       , mode(m)
+      , detail(UIDetail::Init)
+  {
+  }
+
+  FocusAndMode(UIFocus f, UIMode m, UIDetail d)
+      : focus{ f }
+      , mode{ m }
+      , detail{ d }
   {
   }
 
@@ -70,7 +72,7 @@ struct FocusAndMode
 
   bool operator==(const FocusAndMode &other) const
   {
-    return other.focus == focus && other.mode == mode;
+    return other.focus == focus && other.mode == mode && other.detail == detail;
   }
 
   bool operator!=(const FocusAndMode &other) const
@@ -89,4 +91,10 @@ struct FocusAndMode
 
   UIFocus focus;
   UIMode mode;
+  UIDetail detail;
+
+  std::string toString()
+  {
+    return "UIFocus: " + ::toString(focus) + " UIMode: " + ::toString(mode) + " UIDetail: " + ::toString(detail);
+  }
 };

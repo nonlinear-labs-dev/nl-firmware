@@ -50,7 +50,7 @@ public class SetupUpdater extends Updater {
 		m.put("HighlightChangedParameters", Setup.get().systemSettings.highlightChangedParameters);
 		m.put("ForceHighlightChangedParameters", Setup.get().systemSettings.forceHighlightChangedParameters);
 		m.put("CrashOnError", Setup.get().systemSettings.crashOnError);
-		
+
 		return m;
 	}
 

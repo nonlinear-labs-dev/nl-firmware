@@ -8,6 +8,9 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListContent.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListHeader.h>
 #include <memory>
+#include <proxies/hwui/controls/Label.h>
+#include <proxies/hwui/controls/LeftAlignedLabel.h>
+#include "presets/Preset.h"
 
 PresetList::PresetList(const Rect &pos, bool showBankArrows)
     : super(pos, showBankArrows)
@@ -63,7 +66,7 @@ void PresetList::onBankChanged()
   }
 }
 
-bool PresetList::onButton(int i, bool down, ButtonModifiers)
+bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down)
   {
@@ -72,7 +75,7 @@ bool PresetList::onButton(int i, bool down, ButtonModifiers)
 
     switch(i)
     {
-      case BUTTON_B:
+      case Buttons::BUTTON_B:
         if(focusAndMode.focus == UIFocus::Banks)
         {
           if(auto bank = pm->getSelectedBank())
@@ -84,7 +87,7 @@ bool PresetList::onButton(int i, bool down, ButtonModifiers)
         }
         return true;
 
-      case BUTTON_C:
+      case Buttons::BUTTON_C:
         if(focusAndMode.focus == UIFocus::Banks)
         {
           if(auto bank = pm->getSelectedBank())

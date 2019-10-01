@@ -70,40 +70,42 @@ public class MultiplePresetSelection {
 	public void deletePresets() {
 		NonMaps.get().getServerProxy().deletePresets(getCSV(), false);
 	}
-		
+
 	protected PresetManager getPresetManager() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager();
 	}
-	
+
 	protected String getLastUuid() {
 		try {
 			return selectedPresets.get(selectedPresets.size() - 1);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
-		
-	public void handleDownKey() {		
+
+	public void handleDownKey() {
 		Preset curr = getPresetManager().findPreset(getLastUuid());
-		if(curr != null) {
-			Preset next = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getNext(getLastUuid());
-			if(next != null) {
-				if(contains(next)) {
+		if (curr != null) {
+			Preset next = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList()
+					.getNext(getLastUuid());
+			if (next != null) {
+				if (contains(next)) {
 					remove(curr);
 				} else {
 					add(next);
 				}
 			}
 		}
-		
+
 	}
-	
+
 	public void handleUpKey() {
 		Preset curr = getPresetManager().findPreset(getLastUuid());
-		if(curr != null) {
-			Preset prev = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList().getPrev(getLastUuid());
-			if(prev != null) {
-				if(contains(prev)) {
+		if (curr != null) {
+			Preset prev = getPresetManager().findPreset(getLastUuid()).getParent().getPresetList()
+					.getPrev(getLastUuid());
+			if (prev != null) {
+				if (contains(prev)) {
 					remove(curr);
 				} else {
 					add(prev);
@@ -113,10 +115,10 @@ public class MultiplePresetSelection {
 	}
 
 	public boolean selectionContainsSolePresets() {
-		for(String s: getSelectedPresets()) {
+		for (String s : getSelectedPresets()) {
 			Preset p = getPresetManager().findPreset(s);
-			if(p != null) {
-				if(allPresetsOfBankInMulSelection(p.getParent()))
+			if (p != null) {
+				if (allPresetsOfBankInMulSelection(p.getParent()))
 					return true;
 			}
 		}
@@ -124,9 +126,9 @@ public class MultiplePresetSelection {
 	}
 
 	private boolean allPresetsOfBankInMulSelection(Bank b) {
-		for(MapsControl p: b.getPresetList().getChildren()) {
-			if(p instanceof Preset) {
-				if(!selectedPresets.contains(((Preset) p).getUUID()))
+		for (MapsControl p : b.getPresetList().getChildren()) {
+			if (p instanceof Preset) {
+				if (!selectedPresets.contains(((Preset) p).getUUID()))
 					return false;
 			}
 		}

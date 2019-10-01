@@ -228,8 +228,8 @@ namespace std
   }
 
   // with the new state variable filter, we need a parallel vector max
-  template <typename T, size_t size> inline ParallelData<T, size> clamp(const ParallelData<T, size> &in,
-                                                                        T min, const ParallelData<T, size> &max)
+  template <typename T, size_t size>
+  inline ParallelData<T, size> clamp(const ParallelData<T, size> &in, T min, const ParallelData<T, size> &max)
   {
     ParallelData<T, size> ret;
 

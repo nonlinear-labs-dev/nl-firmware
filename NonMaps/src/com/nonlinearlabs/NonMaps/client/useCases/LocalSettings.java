@@ -19,7 +19,8 @@ public class LocalSettings {
 	public void setStorage(LocalStorage s) {
 		storage = s;
 
-		load("SelectionAutoScroll", Setup.get().localSettings.selectionAutoScroll, Setup.SelectionAutoScroll.parameter_and_preset.name());
+		load("SelectionAutoScroll", Setup.get().localSettings.selectionAutoScroll,
+				Setup.SelectionAutoScroll.parameter_and_preset.name());
 		load("ParameterDrag", Setup.get().localSettings.editParameter, Setup.EditParameter.if_selected.name());
 		load("ContextMenus", Setup.get().localSettings.contextMenus, Setup.BooleanValues.on.name());
 		load("PresetDragDropEnabled", Setup.get().localSettings.presetDragDrop, Setup.BooleanValues.on.name());

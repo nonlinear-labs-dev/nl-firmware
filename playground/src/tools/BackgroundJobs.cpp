@@ -1,13 +1,16 @@
+#include <utility>
+
 #include "BackgroundJobs.h"
+#include <nltools/Assert.h>
 
 BackgroundJob::BackgroundJob(BackgroundJob::tCallback cb)
-    : callback(cb)
+    : callback(std::move(cb))
 {
 }
 
 BackgroundJob::~BackgroundJob()
 {
-  assert(m_close == true);
+  nltools_assertAlways(m_close);
 }
 
 void BackgroundJob::start()
@@ -32,7 +35,8 @@ bool BackgroundJob::isRunning()
   return !m_close;
 }
 
-FileCrawlerJob::FileCrawlerJob(std::string dir, FileCrawlerJob::tFilterFunction filter, BackgroundJob::tCallback cb)
+FileCrawlerJob::FileCrawlerJob(const std::string& dir, FileCrawlerJob::tFilterFunction filter,
+                               BackgroundJob::tCallback cb)
     : BackgroundJob(std::move(cb))
     , fileFilter(std::move(filter))
 {

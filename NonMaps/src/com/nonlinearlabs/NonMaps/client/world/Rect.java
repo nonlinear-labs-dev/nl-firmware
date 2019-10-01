@@ -158,17 +158,17 @@ public class Rect extends Object {
 	}
 
 	public void drawDebug(Context2d ctx) {
-		//Draw Rect
+		// Draw Rect
 		drawRoundedRect(ctx, 0, 0, 1, null, RGB.red());
-		
-		//Draw Center Point
+
+		// Draw Center Point
 		double centerSize = Millimeter.toPixels(2);
 		ctx.beginPath();
 		ctx.arc(getCenterPoint().getX(), getCenterPoint().getY(), centerSize, 0, 2 * Math.PI);
 		ctx.closePath();
 		ctx.stroke();
-		
-		//Draw Lines Through Center and extend indefinitely
+
+		// Draw Lines Through Center and extend indefinitely
 		ctx.beginPath();
 		ctx.moveTo(getCenterPoint().getX(), Integer.MIN_VALUE);
 		ctx.lineTo(getCenterPoint().getX(), Integer.MAX_VALUE);
@@ -177,7 +177,7 @@ public class Rect extends Object {
 		ctx.closePath();
 		ctx.stroke();
 	}
-	
+
 	public void drawRoundedArea(Context2d ctx, double corner, double width, RGB fill, RGB stroke) {
 		ctx.beginPath();
 		ctx.moveTo(getLeft() + corner, getTop());

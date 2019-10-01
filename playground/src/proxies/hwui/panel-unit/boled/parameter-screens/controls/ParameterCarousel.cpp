@@ -39,9 +39,9 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
   {
     if(selectedParameter)
     {
-      int button = edit->findButtonForParameter(selectedParameter);
+      auto button = edit->findButtonForParameter(selectedParameter);
 
-      if(button != -1)
+      if(static_cast<int>(button) != -1)
       {
         setupChildControls(edit, selectedParameter, button);
       }
@@ -52,12 +52,16 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
   {
     addControl(new NeverHighlitButton("", Rect(0, 51, 58, 11)));
   }
+  else
+  {
+    setHighlight(true);
+  }
 
   setDirty();
 }
 
 void ParameterCarousel::setupChildControls(const std::shared_ptr<PanelUnitParameterEditMode>& edit,
-                                           Parameter* selectedParameter, int button)
+                                           Parameter* selectedParameter, Buttons button)
 {
   std::list<int> buttonAssignments = edit->getButtonAssignments(button);
 
@@ -97,7 +101,7 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
 void ParameterCarousel::antiTurn()
 {
   auto foundCtrl = std::dynamic_pointer_cast<MiniParameter>(*getControls().rbegin());
-  for(auto ctrl : getControls())
+  for(const auto& ctrl : getControls())
   {
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))
     {
@@ -116,7 +120,7 @@ void ParameterCarousel::turn()
 {
   bool found = false;
   bool handled = false;
-  tIfCallback cb = ([&](tControlPtr ctrl) -> bool {
+  tIfCallback cb = ([&](const tControlPtr& ctrl) -> bool {
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))
     {
       if(found)
@@ -142,4 +146,17 @@ void ParameterCarousel::turn()
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(first()))
       Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
           to_string(p->getParameter()->getID()));
+}
+
+bool ParameterCarousel::containsSelectedParameter() const
+{
+  for(auto& p : getControls())
+  {
+    if(auto mp = dynamic_cast<MiniParameter*>(p.get()))
+    {
+      if(mp->getParameter() == Application::get().getPresetManager()->getEditBuffer()->getSelected())
+        return true;
+    }
+  }
+  return false;
 }

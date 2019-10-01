@@ -52,8 +52,8 @@ class LineWrappingLabel extends OverlayControl {
 		int lineNumber = 1;
 
 		for (String line : lines) {
-			ctx.fillText(line, pixRect.getLeft() + getLeftMargin(), pixRect.getTop() + lineNumber * getLineHeight() - fontHeightInPixels
-					/ 2);
+			ctx.fillText(line, pixRect.getLeft() + getLeftMargin(),
+					pixRect.getTop() + lineNumber * getLineHeight() - fontHeightInPixels / 2);
 			lineNumber++;
 		}
 	}

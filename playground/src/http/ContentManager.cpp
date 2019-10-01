@@ -5,7 +5,6 @@
 #include "presets/EditBuffer.h"
 #include "Application.h"
 #include "http/HTTPServer.h"
-#include "hw-tests/HWTests.h"
 #include "SoupOutStream.h"
 #include "xml/XmlWriter.h"
 #include "NetworkRequest.h"
@@ -31,8 +30,8 @@ ContentManager::WebsocketConnection::~WebsocketConnection()
   g_object_unref(ws);
 }
 
-void ContentManager::WebsocketConnection::onWebsocketRequestDone(std::shared_ptr<WebSocketRequest> request, tUpdateID oldID,
-                                                                 tUpdateID newId)
+void ContentManager::WebsocketConnection::onWebsocketRequestDone(std::shared_ptr<WebSocketRequest> request,
+                                                                 tUpdateID oldID, tUpdateID newId)
 {
   if(oldID == lastSelfIssuedUpdateId)
   {
@@ -84,7 +83,6 @@ void ContentManager::init()
 void ContentManager::addContentSections()
 {
   addContentSection(static_cast<ContentSection *>(Application::get().getPresetManager()));
-  addContentSection(static_cast<ContentSection *>(Application::get().getHWTests()));
   addContentSection(static_cast<ContentSection *>(Application::get().getUndoScope()));
   addContentSection(static_cast<ContentSection *>(Application::get().getSettings()));
   addContentSection(static_cast<ContentSection *>(Application::get().getDeviceInformation()));
@@ -227,7 +225,8 @@ bool ContentManager::feedWebSocket(tWebsocketConnection c)
   return false;
 }
 
-bool ContentManager::tryHandlingContentSectionRequest(tContentSectionPtr section, std::shared_ptr<NetworkRequest> request)
+bool ContentManager::tryHandlingContentSectionRequest(tContentSectionPtr section,
+                                                      std::shared_ptr<NetworkRequest> request)
 {
   Glib::ustring path = request->getPath();
 

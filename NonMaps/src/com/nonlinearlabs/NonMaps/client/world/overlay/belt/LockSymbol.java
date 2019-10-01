@@ -7,19 +7,19 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
 public class LockSymbol extends Label {
 
-    public LockSymbol(OverlayLayout parent) {
-        super(parent);
-        setFontHeightInMM(getLockSizeInMM());
-    }
+	public LockSymbol(OverlayLayout parent) {
+		super(parent);
+		setFontHeightInMM(getLockSizeInMM());
+	}
 
-    @Override
-    public String getDrawText(Context2d ctx) {
-        if (NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked())
-            return "\ue20a";
-        return "";
-    }
+	@Override
+	public String getDrawText(Context2d ctx) {
+		if (NonMaps.get().getNonLinearWorld().getParameterEditor().isAnyParameterLocked())
+			return "\ue20a";
+		return "";
+	}
 
-    public double getLockSizeInMM() {
-        return 7;
-    }
+	public double getLockSizeInMM() {
+		return 7;
+	}
 }

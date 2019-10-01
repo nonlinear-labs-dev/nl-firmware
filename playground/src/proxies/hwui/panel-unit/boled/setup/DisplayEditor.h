@@ -8,6 +8,8 @@ class DisplayEditor : public ControlWithChildren, public SetupEditor
  public:
   DisplayEditor();
 
+  void drawBackground(FrameBuffer& fb) override;
+
  protected:
   void doLayout();
   std::pair<LeftAlignedLabel*, LeftAlignedLabel*> addEntry(const Glib::ustring& key, const Glib::ustring& name,

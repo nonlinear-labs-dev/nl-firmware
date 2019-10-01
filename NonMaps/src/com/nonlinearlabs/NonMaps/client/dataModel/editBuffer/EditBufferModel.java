@@ -29,12 +29,12 @@ public class EditBufferModel {
 	public BooleanDataModelEntity isZombie = new BooleanDataModelEntity();
 	public BooleanDataModelEntity isModified = new BooleanDataModelEntity();
 	public BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
-	
+
 	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
 	public StringDataModelEntity comment = new StringDataModelEntity();
 	public StringDataModelEntity deviceName = new StringDataModelEntity();
 	public DateDataModelEntity storeTime = new DateDataModelEntity();
-	
+
 	static public EditBufferModel get() {
 		return theInstance;
 	}
@@ -54,7 +54,7 @@ public class EditBufferModel {
 		ret += "Is Changed: " + isChanged.getValue().toString() + "\n";
 		return ret;
 	}
-	
+
 	public ParameterGroupModel getGroup(String id) {
 		ParameterGroupModel g = parameterGroups.get(id);
 
@@ -78,7 +78,7 @@ public class EditBufferModel {
 	public BasicParameterModel getSelectedParameter() {
 		return parameters.get(selectedParameter.getValue());
 	}
-	
+
 	public BasicParameterModel addParameter(int id) {
 		BasicParameterModel p = factory.create(id);
 
@@ -93,8 +93,8 @@ public class EditBufferModel {
 	}
 
 	public boolean isAnyParamChanged() {
-		for(BasicParameterModel param: parameters.values()) {
-			if(param.isChanged())
+		for (BasicParameterModel param : parameters.values()) {
+			if (param.isChanged())
 				return true;
 		}
 		return false;

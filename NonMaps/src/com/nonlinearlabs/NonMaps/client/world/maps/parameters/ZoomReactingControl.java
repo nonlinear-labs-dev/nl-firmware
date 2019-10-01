@@ -29,7 +29,8 @@ public abstract class ZoomReactingControl extends MapsControl {
 		return calcYDimension(levelOfDetail, levelOfDetailForFullVisibility, basicHeight, minHeight);
 	}
 
-	protected double calcYDimension(double levelOfDetail, double levelOfDetailForFullVisibility, double basicHeight, double minHeight) {
+	protected double calcYDimension(double levelOfDetail, double levelOfDetailForFullVisibility, double basicHeight,
+			double minHeight) {
 		if (levelOfDetail >= levelOfDetailForFullVisibility) {
 			return basicHeight;
 		} else if (levelOfDetail >= (levelOfDetailForFullVisibility - fadeInRange)) {

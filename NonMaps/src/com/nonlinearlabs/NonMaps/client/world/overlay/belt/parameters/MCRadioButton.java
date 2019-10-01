@@ -27,12 +27,12 @@ class MCRadioButton extends SVGImage {
 
 	private boolean isChanged() {
 		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if(bpm instanceof ModulateableParameter) {
-			return ((ModulateableParameter)bpm).isChanged(this.mode);
+		if (bpm instanceof ModulateableParameter) {
+			return ((ModulateableParameter) bpm).isChanged(this.mode);
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
@@ -56,7 +56,7 @@ class MCRadioButton extends SVGImage {
 		getParent().toggleMcEditMode(this.mode);
 		return this;
 	}
-	
+
 	@Override
 	public Control doubleClick() {
 		return this;

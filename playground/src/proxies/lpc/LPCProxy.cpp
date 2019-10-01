@@ -140,7 +140,7 @@ void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
   {
-    DebugLevel::info(G_STRLOC, value);
+    DebugLevel::info("param:", p->getMiniParameterEditorName(), ": ", value);
     applyParamMessageAbsolutely(p, value);
   }
 }
@@ -248,12 +248,13 @@ void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
 
   nltools::msg::LPCMessage msg;
   msg.message = flushed;
+
   nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
 }
 
 void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
 {
-  if(Application::get().getSettings()->getSetting<DebugLevel>()->getLevel() == DebugLevels::DEBUG_LEVEL_GASSY)
+  if(Application::get().getSettings()->getSetting<DebugLevel>()->get() == DebugLevels::DEBUG_LEVEL_GASSY)
   {
     gsize numBytes = 0;
     uint8_t *data = (uint8_t *) bytes->get_data(numBytes);

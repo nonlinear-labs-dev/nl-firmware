@@ -36,7 +36,7 @@ public abstract class ModulatableParameter extends Parameter {
 	});
 
 	private MacroControls modulationSource = MacroControls.NONE;
-			
+
 	public ModulatableParameter(MapsLayout parent) {
 		super(parent);
 		addChild(new ParameterName(this, getName()));
@@ -115,12 +115,13 @@ public abstract class ModulatableParameter extends Parameter {
 	}
 
 	private MacroControlParameter getModulationSourceParameter() {
-		return getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls().getControl(getModulationSource());
+		return getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
+				.getControl(getModulationSource());
 	}
 
 	@Override
 	public boolean updateValues(Node child) {
-				
+
 		if (super.updateValues(child))
 			return true;
 
@@ -128,7 +129,7 @@ public abstract class ModulatableParameter extends Parameter {
 
 		try {
 			String value = ServerProxy.getText(child);
-			
+
 			if (nodeName.equals("modAmount")) {
 				setModulationAmount(Initiator.INDIRECT_USER_ACTION, Double.parseDouble(value));
 			} else if (nodeName.equals("modSrc")) {
@@ -170,7 +171,7 @@ public abstract class ModulatableParameter extends Parameter {
 
 		return "";
 	}
-	
+
 	@Override
 	public String getFullNameWithGroup() {
 		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());

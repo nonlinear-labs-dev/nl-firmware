@@ -6,17 +6,17 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 
 public class MCAmountRecallButton extends RecallButton {
-	
+
 	public MCAmountRecallButton(RecallArea parent) {
 		super(parent);
 	}
 
 	@Override
 	public Control click(Position p) {
-		if(!isActive())
+		if (!isActive())
 			return null;
-		
-		if(EditBufferModel.get().getSelectedParameter().isChanged()) {
+
+		if (EditBufferModel.get().getSelectedParameter().isChanged()) {
 			NonMaps.get().getServerProxy().recallMcAmountForCurrentParameter();
 			getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;

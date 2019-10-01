@@ -73,8 +73,8 @@ public class DeviceSettingsProvider {
 		Setup.get().systemSettings.editSmoothingTime.onChange(t -> {
 			double v = t.value.getValue();
 			settings.editSmoothingTime.sliderPosition = v;
-			settings.editSmoothingTime.displayValue = Stringizers.get().stringize(
-					Setup.get().systemSettings.editSmoothingTime.metaData.scaling.getValue(), v);
+			settings.editSmoothingTime.displayValue = Stringizers.get()
+					.stringize(Setup.get().systemSettings.editSmoothingTime.metaData.scaling.getValue(), v);
 			notifyClients();
 			return true;
 		});
@@ -90,12 +90,12 @@ public class DeviceSettingsProvider {
 			notifyClients();
 			return true;
 		});
-		
+
 		Setup.get().systemSettings.forceHighlightChangedParameters.onChange(t -> {
 			NonMaps.get().getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 			return true;
 		});
-		
+
 		connectToPedal(254, settings.pedal1);
 		connectToPedal(259, settings.pedal2);
 		connectToPedal(264, settings.pedal3);

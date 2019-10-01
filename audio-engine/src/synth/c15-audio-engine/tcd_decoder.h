@@ -34,7 +34,7 @@ struct decoder
   const int32_t m_getSign[2] = { 1, -1 };  // TCD Sign evaluation
   int32_t m_event[5];                      // TCD Selection Event
 
-  dual_id_list<uint32_t> m_selectedVoices;                       // ID List of selected Voices
+  dual_id_list<uint32_t> m_selectedVoices;                   // ID List of selected Voices
   polyDual_id_list<Parameters> m_selectedParams;             // ID List of selected Parameters
   id_list<Parameters> m_listTraversal[lst_number_of_lists];  // ID Lists for Preset Recall and Key Events
 

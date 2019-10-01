@@ -86,7 +86,8 @@ public abstract class Ribbon extends PhysicalControlParameter {
 
 			@Override
 			public void onParameterChanged(QuantizedClippedValue newValue) {
-				if (getReturnMode() == ReturnMode.None && modulationRoutingParameter.getValue().getQuantizedClipped() != 0.0) {
+				if (getReturnMode() == ReturnMode.None
+						&& modulationRoutingParameter.getValue().getQuantizedClipped() != 0.0) {
 					getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, newValue.getQuantizedClipped());
 				}
 			}

@@ -10,6 +10,9 @@ class Passphrase : public HostAPDSetting
   typedef HostAPDSetting super;
 
  public:
+  ustring getDisplayString() const override;
+
+ public:
   Passphrase(Settings &parent);
   virtual ~Passphrase();
 

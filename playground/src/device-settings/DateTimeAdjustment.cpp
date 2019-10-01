@@ -52,3 +52,8 @@ void DateTimeAdjustment::adjust(time_t modifiedTime)
 {
   set(modifiedTime - std::time(nullptr));
 }
+
+ustring DateTimeAdjustment::getDisplayString() const
+{
+  return std::to_string(get());
+}

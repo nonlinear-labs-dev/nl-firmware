@@ -2,6 +2,7 @@
 
 #include <nltools/messaging/InChannel.h>
 #include <nltools/threading/ContextBoundMessageQueue.h>
+#include <nltools/threading/BackgroundThreadWaiter.h>
 #include <libsoup/soup.h>
 #include <memory>
 #include <thread>
@@ -12,15 +13,15 @@ namespace nltools
   {
     namespace ws
     {
-
       class WebSocketInChannel : public InChannel
       {
        public:
-        WebSocketInChannel(Callback cb, guint port, std::mutex &libSoupMutex);
-        ~WebSocketInChannel();
+        WebSocketInChannel(Callback cb, guint port);
+        ~WebSocketInChannel() override;
 
        private:
-        void backgroundThread(std::mutex &libSoupMutex);
+        void backgroundThread();
+
         static void webSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
                               SoupClientContext *client, WebSocketInChannel *pThis);
         static void receiveMessage(SoupWebsocketConnection *, gint, GBytes *message, WebSocketInChannel *pThis);
@@ -30,9 +31,11 @@ namespace nltools
         guint m_port;
         std::unique_ptr<SoupServer, decltype(*g_object_unref)> m_server;
         Glib::RefPtr<Glib::MainLoop> m_messageLoop;
-        std::thread m_contextThread;
         std::unique_ptr<threading::ContextBoundMessageQueue> m_mainContextQueue;
         std::list<tWebSocketPtr> m_connections;
+
+        BackgroundThreadWaiter m_conditionEstablishedThreadWaiter;
+        std::thread m_contextThread;
       };
     }
   }

@@ -18,6 +18,7 @@ class RedoButton extends UndoRedoButton {
 	}
 
 	public void update() {
-		setEnabled(NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getUndoTree().getTree().getCurrentRedoID() != 0);
+		setEnabled(NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getUndoTree().getTree()
+				.getCurrentRedoID() != 0);
 	}
 }

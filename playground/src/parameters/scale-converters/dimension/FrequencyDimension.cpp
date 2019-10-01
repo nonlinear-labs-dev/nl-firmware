@@ -1,12 +1,8 @@
 #include "FrequencyDimension.h"
 
-FrequencyDimension::FrequencyDimension()
-{
-}
+FrequencyDimension::FrequencyDimension() = default;
 
-FrequencyDimension::~FrequencyDimension()
-{
-}
+FrequencyDimension::~FrequencyDimension() = default;
 
 const FrequencyDimension &FrequencyDimension::get()
 {

@@ -50,13 +50,13 @@ public class ParameterClippingLabel extends Label {
 				double r = NLMath.quantize(modNormalized.getRight(), 1000);
 				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
 
-				if(mMode == Mode.mcLower)
+				if (mMode == Mode.mcLower)
 					return bounds.outOfRange(l);
-				else if(mMode == Mode.mcUpper)
+				else if (mMode == Mode.mcUpper)
 					return bounds.outOfRange(r);
 			}
 		}
-		
+
 		return false;
 	}
 
