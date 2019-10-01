@@ -10,16 +10,17 @@ namespace DescriptiveLayouts
 {
   class EventSourceBase;
 
-  class EventSourceBroker
+  class GlobalEventSourceBroker
   {
    public:
-    static EventSourceBroker& get();
+    explicit GlobalEventSourceBroker();
+    ~GlobalEventSourceBroker();
+
     using Callback = std::function<void(std::experimental::any)>;
 
     sigc::connection connect(EventSources source, const Callback& cb);
 
    private:
-    explicit EventSourceBroker();
     std::map<EventSources, std::unique_ptr<EventSourceBase>> m_map;
   };
 }

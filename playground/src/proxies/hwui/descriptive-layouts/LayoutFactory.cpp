@@ -9,7 +9,6 @@
 #include "ControlInstance.h"
 #include "Selector.h"
 #include "TemplateEnums.h"
-#include "EventSink.h"
 #include "Styles.h"
 #include "LayoutFolderMonitor.h"
 

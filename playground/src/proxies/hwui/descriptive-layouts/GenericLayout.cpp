@@ -13,6 +13,7 @@
 #include "proxies/hwui/controls/ButtonMenu.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/controls/ControlAdapters.h"
+#include "EventProvider.h"
 
 namespace DescriptiveLayouts
 {
@@ -24,6 +25,7 @@ namespace DescriptiveLayouts
 
   void GenericLayout::init()
   {
+    m_eventProvider = EventProvider::instantiate(m_prototype.eventProvider);
     super::init();
     createControls();
   }
@@ -32,7 +34,7 @@ namespace DescriptiveLayouts
   {
     for(auto &c : m_prototype.controls)
     {
-      auto control = c.instantiate();
+      auto control = c.instantiate(m_eventProvider.get());
       if(auto g = dynamic_cast<GenericControl *>(control))
       {
         g->style(m_prototype.id);
@@ -83,9 +85,9 @@ namespace DescriptiveLayouts
           if(!handleEventSink(m.sink))
           {
             if(m.repeat)
-              installButtonRepeat([=]() { EventSinkBroker::get().fire(m.sink); });
+              installButtonRepeat([=]() { m_eventProvider->fire(m.sink); });
             else
-              EventSinkBroker::get().fire(m.sink);
+              m_eventProvider->fire(m.sink);
           }
           return true;
         }
@@ -222,6 +224,7 @@ namespace DescriptiveLayouts
     else
       hwui->setFocusAndMode({ UIFocus::Setup, UIMode::Select, UIDetail::Init });
   }
+
   void GenericLayout::toggleStoreMode()
   {
     auto *hwui = Application::get().getHWUI();
@@ -231,6 +234,7 @@ namespace DescriptiveLayouts
     else
       hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Store, UIDetail::Init });
   }
+
   void GenericLayout::toggleInfo()
   {
     auto *hwui = Application::get().getHWUI();
@@ -240,11 +244,12 @@ namespace DescriptiveLayouts
     else
       hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Info, UIDetail::Init });
   }
+
   void GenericLayout::toggleEdit()
   {
-
     auto *hwui = Application::get().getHWUI();
     auto current = hwui->getFocusAndMode();
+
     if(current.mode == UIMode::Edit)
       hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });
     else

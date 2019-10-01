@@ -34,8 +34,10 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
   fb.fillRect(r.getX(), r.getY() + yinset, r.getWidth() - xinset, r.getHeight() - 2 * yinset);
 }
 
-std::string PresetTypeLabel::typeToString(const SoundType &type) {
-  switch (type) {
+std::string PresetTypeLabel::typeToString(const SoundType &type)
+{
+  switch(type)
+  {
     case SoundType::Single:
     case SoundType::Invalid:
       return "";
@@ -44,4 +46,5 @@ std::string PresetTypeLabel::typeToString(const SoundType &type) {
     case SoundType::Split:
       return "||";
   }
+  return {};
 }

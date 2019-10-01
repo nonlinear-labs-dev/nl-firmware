@@ -9,82 +9,33 @@ using json = nlohmann::json;
 
 namespace DescriptiveLayouts
 {
+  template <typename T, typename C> void assignIfExists(T &target, const C &coll, const std::string &key)
+  {
+    auto it = coll.find(key);
+    if(it != coll.end())
+      target = *it;
+  }
+
+  template <typename T, typename C, typename Conv>
+  void assignIfExists(T &target, const C &coll, const Conv &conv, const std::string &key)
+  {
+    auto it = coll.find(key);
+    if(it != coll.end())
+      target = conv(*it);
+  }
+
   Detail::StyleSelector parseSelector(json selector)
   {
     Detail::StyleSelector theSelector;
-
-    try
-    {
-      theSelector.pt = selector.at("Tag");
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.f = toUIFocus(selector.at("UIFocus"));
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.m = toUIMode(selector.at("UIMode"));
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.d = toUIDetail(selector.at("UIDetail"));
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.l = selector.at("LayoutClasses");
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.cc = selector.at("ControlClasses");
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.ci = selector.at("ControlInstances");
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.pc = toPrimitiveClasses(selector.at("PrimitiveClasses"));
-    }
-    catch(...)
-    {
-    }
-
-    try
-    {
-      theSelector.pi = selector.at("PrimitiveInstances");
-    }
-    catch(...)
-    {
-    }
-
+    assignIfExists(theSelector.pt, selector, "Tag");
+    assignIfExists(theSelector.f, selector, toUIFocus, "UIFocus");
+    assignIfExists(theSelector.m, selector, toUIMode, "UIMode");
+    assignIfExists(theSelector.d, selector, toUIDetail, "UIDetail");
+    assignIfExists(theSelector.l, selector, "LayoutClasses");
+    assignIfExists(theSelector.cc, selector, "ControlClasses");
+    assignIfExists(theSelector.ci, selector, "ControlInstances");
+    assignIfExists(theSelector.pc, selector, toPrimitiveClasses, "PrimitiveClasses");
+    assignIfExists(theSelector.pi, selector, "PrimitiveInstances");
     return theSelector;
   }
 

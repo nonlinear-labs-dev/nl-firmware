@@ -127,6 +127,8 @@ class Parameter : public UpdateDocumentContributor,
   virtual bool isChangedFromLoaded() const;
   virtual bool isValueChangedFromLoaded() const;
 
+  const VoiceGroup &getVoiceGroup() const;
+
  protected:
   virtual void sendToLpc() const;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
@@ -144,6 +146,7 @@ class Parameter : public UpdateDocumentContributor,
   ID m_id;
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
+  VoiceGroup m_voiceGroup;
 
   friend class QuantizedValue;
   friend class EditBufferSnapshotMaker;

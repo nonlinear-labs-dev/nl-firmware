@@ -30,6 +30,10 @@ Parameter::Parameter(ParameterGroup *group, uint16_t id, const ScaleConverter *s
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
 {
+  if(auto eb = dynamic_cast<EditBuffer *>(group->getParent()))
+  {
+    m_voiceGroup = eb->findVoiceGroupWithParameter(this);
+  }
 }
 
 Parameter::~Parameter()
@@ -73,6 +77,14 @@ void Parameter::onValueChanged(Initiator initiator, tControlPositionValue oldVal
 void Parameter::onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
                                             tControlPositionValue newValue)
 {
+}
+
+const VoiceGroup &Parameter::getVoiceGroup() const
+{
+  nltools_detailedAssertAlways(
+      m_voiceGroup == Application::get().getPresetManager()->getEditBuffer()->findVoiceGroupWithParameter(this),
+      "Parameter is unsure what voice group it belongs to");
+  return m_voiceGroup;
 }
 
 tControlPositionValue Parameter::expropriateSnapshotValue()

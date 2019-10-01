@@ -104,13 +104,9 @@ namespace DescriptiveLayouts
 
     void tryMerge(StyleMap &target, tLast key) const
     {
-      try
-      {
-        merge(target, this->at(key));
-      }
-      catch(...)
-      {
-      }
+      auto it = this->find(key);
+      if(it != this->end())
+        merge(target, it->second);
     }
 
     void iterateStyles(const Detail::StyleSelector &sel, Detail::IterationCallback cb) const
@@ -144,13 +140,9 @@ namespace DescriptiveLayouts
 
     void tryMerge(StyleMap &target, tFirst first, tStages... others) const
     {
-      try
-      {
-        this->at(first).collectStyle(target, others...);
-      }
-      catch(...)
-      {
-      }
+      auto it = this->find(first);
+      if(it != this->end())
+        it->second.collectStyle(target, others...);
     }
 
     void iterateStyles(const Detail::StyleSelector &sel, Detail::IterationCallback cb) const

@@ -1,5 +1,5 @@
 #include <utility>
-
+#include "GlobalEventSinkBroker.h"
 #include <parameters/ModulateableParameter.h>
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -7,7 +7,6 @@
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetList.h>
 #include <proxies/hwui/descriptive-layouts/concrete/preset/GenericPresetList.h>
-#include "EventSink.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
@@ -15,25 +14,12 @@
 #include "parameters/Parameter.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
-#include "GenericLayout.h"
+#include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 
 namespace DescriptiveLayouts
 {
-  EventSinkMapping::EventSinkMapping(Buttons button, EventSinks sink, ButtonEvents event, bool rep)
-      : button(button)
-      , sink(sink)
-      , event(event)
-      , repeat(rep)
-  {
-  }
 
-  EventSinkBroker &EventSinkBroker::get()
-  {
-    static EventSinkBroker s;
-    return s;
-  }
-
-  EventSinkBroker::EventSinkBroker()
+  GlobalEventSinkBroker::GlobalEventSinkBroker()
   {
     auto eb = Application::get().getPresetManager()->getEditBuffer();
     auto hwui = Application::get().getHWUI();
@@ -252,12 +238,12 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::OpenMasterParameter, [eb]() { eb->undoableSelectParameter(247); });
   }
 
-  void EventSinkBroker::registerEvent(EventSinks sink, tAction action)
+  void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)
   {
     m_map[sink] = std::move(action);
   }
 
-  void EventSinkBroker::fire(EventSinks s)
+  void GlobalEventSinkBroker::fire(EventSinks s)
   {
     try
     {

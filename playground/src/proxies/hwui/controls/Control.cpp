@@ -3,7 +3,6 @@
 
 Control::Control(const Rect &pos)
     : m_rect(pos)
-    , m_isDirty(true)
     , m_highlight(false)
     , m_visible(true)
 {
@@ -26,13 +25,7 @@ void Control::setPosition(const Rect &rect)
 
 void Control::setDirty()
 {
-  m_isDirty = true;
   Oleds::get().setDirty();
-}
-
-void Control::setClean()
-{
-  m_isDirty = false;
 }
 
 bool Control::isVisible() const
@@ -47,11 +40,6 @@ void Control::setVisible(bool b)
     m_visible = b;
     setDirty();
   }
-}
-
-bool Control::isDirty() const
-{
-  return m_isDirty;
 }
 
 void Control::setHighlight(bool isHighlight)

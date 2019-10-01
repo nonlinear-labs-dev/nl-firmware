@@ -78,13 +78,11 @@ namespace DescriptiveLayouts
 
   Control* ControlRegistry::instantiateConcrete(const ControlClasses& cc, const Point& position)
   {
-    try
-    {
-      return m_discreteRegistry.at(cc)(position);
-    }
-    catch(...)
-    {
-      return nullptr;
-    }
+    auto it = m_discreteRegistry.find(cc);
+
+    if(it != m_discreteRegistry.end())
+      return it->second(position);
+
+    return nullptr;
   }
 }

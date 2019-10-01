@@ -106,13 +106,13 @@ void ScrollMenu::doLayout()
 
   for(int i = m_selectedItem - 1; i < m_selectedItem + 3; i++)
   {
-    try
+    if(i >= 0 && i < m_items.size())
     {
       auto ptr = m_items.at(i);
       ptr->setHighlight(i == m_selectedItem);
       items.emplace_back(ptr);
     }
-    catch(...)
+    else
     {
       items.emplace_back(nullptr);
     }

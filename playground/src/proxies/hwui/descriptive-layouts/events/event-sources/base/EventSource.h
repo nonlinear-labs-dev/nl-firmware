@@ -9,6 +9,8 @@ namespace DescriptiveLayouts
   template <typename T> class EventSource : public EventSourceBase
   {
    public:
+    EventSource() = default;
+
     virtual void setValue(const T &v)
     {
       set_as(v);

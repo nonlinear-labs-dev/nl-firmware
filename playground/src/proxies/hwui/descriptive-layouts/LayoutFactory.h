@@ -7,8 +7,7 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/controls/Rect.h>
 #include "GenericLayout.h"
-#include "EventSink.h"
-#include "proxies/hwui/descriptive-layouts/events/EventSourceBroker.h"
+#include "proxies/hwui/descriptive-layouts/events/GlobalEventSourceBroker.h"
 #include "Selector.h"
 #include "LayoutClass.h"
 #include "device-settings/DebugLevel.h"
@@ -35,9 +34,9 @@ namespace DescriptiveLayouts
     }
 
     void registerLayout(LayoutClasses id, std::list<Selector> sel, std::list<ControlInstance> ci,
-                        std::list<EventSinkMapping> esm, std::list<ConditionBase*> con)
+                        std::list<EventSinkMapping> esm, std::list<ConditionBase*> con, EventProviders ep)
     {
-      m_layouts.emplace_back(id, sel, ci, esm, con);
+      m_layouts.emplace_back(id, sel, ci, esm, con, ep);
       DebugLevel::gassy("registered Layout:", id);
     }
     void sortByPriority();

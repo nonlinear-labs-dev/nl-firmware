@@ -19,13 +19,11 @@ class Control : public sigc::trackable, public Uncopyable
   virtual void drawBackground(FrameBuffer &fb);
 
   virtual const Rect &getPosition() const;
-  virtual bool isDirty() const;
-  void setClean();
 
   virtual void setHighlight(bool isHighlight);
   bool isHighlight() const;
 
-  virtual void setDirty();
+  void setDirty();
   virtual bool isVisible() const;
   void setVisible(bool b);
   int getHeight() const;
@@ -37,7 +35,6 @@ class Control : public sigc::trackable, public Uncopyable
 
  private:
   Rect m_rect;
-  bool m_isDirty;
   bool m_highlight;
   bool m_visible;
 };

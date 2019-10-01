@@ -486,8 +486,6 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       setCarousel(new ModulationCarousel(ModulationCarousel::Mode::LowerBound, Rect(195, 1, 58, 62)));
       break;
   }
-
-  setAllDirty();
 }
 
 bool ModulateableParameterSelectLayout2::handleMCRecall(Buttons i, bool down)

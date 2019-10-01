@@ -7,6 +7,7 @@
 namespace DescriptiveLayouts
 {
   class PropertyOwner;
+  class EventProvider;
 
   class GenericLayout : public DFBLayout
   {
@@ -25,7 +26,6 @@ namespace DescriptiveLayouts
     bool handleEventSink(EventSinks s);
     void createControls();
 
-    LayoutClass m_prototype;
     bool handleDefaults(Buttons buttons, bool down, ::ButtonModifiers modifiers);
     void togglePresetMode();
     void toggleSoundMode();
@@ -33,5 +33,8 @@ namespace DescriptiveLayouts
     void toggleStoreMode();
     void toggleInfo();
     void toggleEdit();
+
+    LayoutClass m_prototype;
+    std::unique_ptr<EventProvider> m_eventProvider;
   };
 }
