@@ -22,6 +22,10 @@ class AudioEngineProxy
   void sendEditBuffer();
   void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
 
+  void sendLayerEditBuffer();
+  void sendSplitEditBuffer();
+  void sendSingleEditBuffer();
+
  private:
   bool m_suppressParamChanges = false;
 };

@@ -36,7 +36,9 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   void changeSelectedValueBy(int i);
-  void onPresetMessage(const nltools::msg::SetPresetMessage &msg);
+  void onLayerPresetMessage(const nltools::msg::LayerPresetMessage &msg);
+  void onSplitPresetMessage(const nltools::msg::SplitPresetMessage &msg);
+  void onSinglePresetMessage(const nltools::msg::SinglePresetMessage &msg);
 
   void onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg);
   void onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg);

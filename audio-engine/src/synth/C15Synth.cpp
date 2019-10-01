@@ -13,7 +13,9 @@ C15Synth::C15Synth()
 
   using namespace nltools::msg;
 
-  receive<SetPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPresetMessage));
+  receive<SinglePresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSinglePresetMessage));
+  receive<LayerPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onLayerPresetMessage));
+  receive<SplitPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSplitPresetMessage));
 
   receive<UnmodulateableParameterChangedMessage>(EndPoint::AudioEngine,
                                                  sigc::mem_fun(this, &C15Synth::onUnmodulateableParameterMessage));
@@ -142,11 +144,6 @@ void C15Synth::changeSelectedValueBy(int i)
   }
 }
 
-void C15Synth::onPresetMessage(const nltools::msg::SetPresetMessage &msg)
-{
-  nltools::Log::notify("got preset message!");
-}
-
 void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage &msg)
 {
   nltools::Log::info("Received modulateable parameter message!");
@@ -170,4 +167,19 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage &msg
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage &msg)
 {
   nltools::Log::info("Received hwSource parameter message!");
+}
+
+void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage &msg)
+{
+  nltools::Log::info("Received Split Preset Message!");
+}
+
+void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage &msg)
+{
+  nltools::Log::info("Received Single Preset Message!");
+}
+
+void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage &msg)
+{
+  nltools::Log::info("Received Layer Preset Message!");
 }
