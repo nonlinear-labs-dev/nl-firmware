@@ -27,8 +27,6 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_recallSet(this)
     , m_type(EditBufferType::Single)
 {
-  m_selectedParameter[0] = nullptr;
-  m_selectedParameter[1] = nullptr;
   m_hashOnStore = getHash();
 }
 
@@ -235,7 +233,7 @@ void EditBuffer::setModulationSource(MacroControls src, VoiceGroup vg)
   sanitizeVoiceGroup(vg);
 
   auto index = static_cast<int>(vg);
-  if(auto p = dynamic_cast<ModulateableParameter *>(m_selectedParameter[index]))
+  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected(vg)))
   {
     auto scope = getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
     p->undoableSelectModSource(scope->getTransaction(), src);
@@ -246,7 +244,7 @@ void EditBuffer::setModulationAmount(double amount, VoiceGroup vg)
 {
   sanitizeVoiceGroup(vg);
   auto index = static_cast<int>(vg);
-  if(auto p = dynamic_cast<ModulateableParameter *>(m_selectedParameter[index]))
+  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected(vg)))
   {
     auto scope = getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
                                                            p->getGroupAndParameterName());
@@ -287,9 +285,10 @@ void EditBuffer::undoableSelectParameter(Parameter *p, VoiceGroup voiceGroup)
   sanitizeVoiceGroup(voiceGroup);
   auto vgIndex = static_cast<int>(voiceGroup);
 
-  if(p != m_selectedParameter[vgIndex])
+  if(p->getID() != m_selectedParameterId)
   {
-    auto scope = getUndoScope().startContinuousTransaction(&m_selectedParameter, std::chrono::hours(1), "Select '%0'",
+    auto newSelection = getSelected(voiceGroup);
+    auto scope = getUndoScope().startContinuousTransaction(&newSelection, std::chrono::hours(1), "Select '%0'",
                                                            p->getGroupAndParameterName());
     undoableSelectParameter(scope->getTransaction(), p, voiceGroup);
   }
@@ -309,22 +308,25 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
   sanitizeVoiceGroup(voiceGroup);
   auto vgIndex = static_cast<int>(voiceGroup);
 
-  if(p != m_selectedParameter[vgIndex])
+  if(m_selectedParameterId != p->getID())
   {
-    auto swapData = UNDO::createSwapData(p);
+    auto swapData = UNDO::createSwapData(p->getID());
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      auto oldSelectedParam = m_selectedParameter[vgIndex];
+      auto oldSelectedParamID = m_selectedParameterId;
 
-      swapData->swapWith(m_selectedParameter[vgIndex]);
+      swapData->swapWith(m_selectedParameterId);
 
-      m_signalSelectedParameter.send(oldSelectedParam, m_selectedParameter[vgIndex]);
+      auto oldP = findParameterByID(oldSelectedParamID, voiceGroup);
+      auto newP = findParameterByID(m_selectedParameterId, voiceGroup);
 
-      if(oldSelectedParam)
-        oldSelectedParam->onUnselected();
+      m_signalSelectedParameter.send(oldP, newP);
 
-      if(m_selectedParameter[vgIndex])
-        m_selectedParameter[vgIndex]->onSelected();
+      if(oldP)
+        oldP->onUnselected();
+
+      if(newP)
+        newP->onSelected();
 
       if(!getParent()->isLoading())
       {
@@ -347,8 +349,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 Parameter *EditBuffer::getSelected(VoiceGroup vg) const
 {
   sanitizeVoiceGroup(vg);
-  auto vgIndex = static_cast<int>(vg);
-  return m_selectedParameter[vgIndex];
+  return findParameterByID(m_selectedParameterId, vg);
 }
 
 void EditBuffer::setName(UNDO::Transaction *transaction, const ustring &name)
@@ -374,19 +375,18 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
   auto bank = origin ? dynamic_cast<const Bank *>(origin->getParent()) : nullptr;
   auto bankName = bank ? bank->getName(true) : "";
 
-  writer.writeTag("edit-buffer",
-                  { Attribute("selected-parameter", m_selectedParameter[0] ? m_selectedParameter[0]->getID() : 0),
-                    Attribute("editbuffer-type", toString(m_type)),
-                    Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()),
-                    Attribute("loaded-presets-name", getName()), Attribute("loaded-presets-bank-name", bankName),
-                    Attribute("preset-is-zombie", zombie), Attribute("is-modified", m_isModified),
-                    Attribute("hash", getHash()), Attribute("changed", changed) },
-                  [&]() {
-                    if(changed)
-                      super::writeDocument(writer, knownRevision);
+  writer.writeTag(
+      "edit-buffer",
+      { Attribute("selected-parameter", m_selectedParameterId), Attribute("editbuffer-type", toString(m_type)),
+        Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()), Attribute("loaded-presets-name", getName()),
+        Attribute("loaded-presets-bank-name", bankName), Attribute("preset-is-zombie", zombie),
+        Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed) },
+      [&]() {
+        if(changed)
+          super::writeDocument(writer, knownRevision);
 
-                    m_recallSet.writeDocument(writer, knownRevision);
-                  });
+        m_recallSet.writeDocument(writer, knownRevision);
+      });
 }
 
 void EditBuffer::undoableLoadSelectedPreset()
@@ -532,7 +532,7 @@ void EditBuffer::undoableUnlockAllGroups(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableLockAllGroups(UNDO::Transaction *transaction)
 {
-  for(auto vg: {VoiceGroup::I, VoiceGroup::II})
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto group : getParameterGroups(vg))
       group->undoableLock(transaction);
 }

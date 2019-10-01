@@ -257,7 +257,7 @@ ParameterGroup *Parameter::getParentGroup()
   return static_cast<ParameterGroup *>(getParent());
 }
 
-gint32 Parameter::getID() const
+Parameter::ID Parameter::getID() const
 {
   return m_id;
 }

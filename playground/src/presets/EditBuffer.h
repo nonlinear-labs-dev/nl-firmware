@@ -112,7 +112,7 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
 
-  std::array<Parameter *, 2> m_selectedParameter{ nullptr, nullptr };
+  Parameter::ID m_selectedParameterId;
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;

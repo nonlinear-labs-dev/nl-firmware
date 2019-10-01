@@ -31,6 +31,8 @@ class Parameter : public UpdateDocumentContributor,
                   public FlagOwner<ParameterFlags, uint8_t>
 {
  public:
+  using ID = uint16_t;
+
   enum class Step
   {
     STEP_INC,
@@ -51,7 +53,7 @@ class Parameter : public UpdateDocumentContributor,
 
   const ParameterGroup *getParentGroup() const;
   ParameterGroup *getParentGroup();
-  gint32 getID() const;
+  ID getID() const;
 
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
@@ -139,7 +141,7 @@ class Parameter : public UpdateDocumentContributor,
  private:
   Signal<void, const Parameter *> m_signalParamChanged;
 
-  uint16_t m_id;
+  ID m_id;
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
 
