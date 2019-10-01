@@ -23,17 +23,15 @@ class ParameterDescriptionDatabase::Job
  private:
   void load()
   {
-    for(auto vg: {VoiceGroup::I, VoiceGroup::II}) {
-      auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID, vg);
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID, VoiceGroup::I);
 
-      if(auto mc = dynamic_cast<MacroControlParameter *>(param))
-      {
-        loadFromParameter(mc);
-      }
-      else
-      {
-        loadFromFile();
-      }
+    if(auto mc = dynamic_cast<MacroControlParameter *>(param))
+    {
+      loadFromParameter(mc);
+    }
+    else
+    {
+      loadFromFile();
     }
   }
 
@@ -46,10 +44,9 @@ class ParameterDescriptionDatabase::Job
   {
     if(auto mc = dynamic_cast<const MacroControlParameter *>(p))
     {
-      auto info = mc->getInfo();
-      if(info != text)
+      const auto &info = mc->getInfo();
+      if(std::exchange(text, info) != info)
       {
-        text = info;
         notifyListeners();
       }
     }
@@ -61,7 +58,10 @@ class ParameterDescriptionDatabase::Job
     {
       file = Gio::File::create_for_path(Application::get().getResourcePath() + "/parameter-descriptions/"
                                         + to_string(paramID) + ".txt");
-      file->read_async(mem_fun(this, &Job::onReadFinish));
+      if(file->query_exists())
+      {
+        file->read_async(mem_fun(this, &Job::onReadFinish));
+      }
     }
     catch(...)
     {

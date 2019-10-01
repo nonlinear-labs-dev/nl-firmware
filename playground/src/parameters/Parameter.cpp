@@ -224,7 +224,8 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
+  auto vg = eb->findVoiceGroupWithParameter(this);
+  auto ret = eb->getRecallParameterSet().findParameterByID(getID(), vg);
   nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
   return ret;
 }

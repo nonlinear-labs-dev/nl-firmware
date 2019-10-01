@@ -91,7 +91,9 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertToType(UNDO::Transaction *transaction, const EditBufferType &ebType);
   void undoableConvertToType(const EditBufferType &ebType);
 
- private:
+  VoiceGroup findVoiceGroupWithParameter(const Parameter *pParameter);
+
+private:
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;
 
   UNDO::Scope &getUndoScope() override;
