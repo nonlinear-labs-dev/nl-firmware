@@ -5,8 +5,8 @@
 #include "parameters/scale-converters/LinearBipolar48StScaleConverter.h"
 #include "parameters/scale-converters/ParabolicGainDbScaleConverter.h"
 
-MasterGroup::MasterGroup(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "Master", "Master", "Master", "Master")
+MasterGroup::MasterGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "Master", "Master", "Master", "Master", voicegroup)
 {
 }
 

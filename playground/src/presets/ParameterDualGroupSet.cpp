@@ -37,29 +37,29 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    appendParameterGroup(new EnvelopeAGroup(this), vg);
-    appendParameterGroup(new EnvelopeBGroup(this), vg);
-    appendParameterGroup(new EnvelopeCGroup(this), vg);
-    appendParameterGroup(new OscillatorAGroup(this), vg);
-    appendParameterGroup(new ShaperAGroup(this), vg);
-    appendParameterGroup(new OscillatorBGroup(this), vg);
-    appendParameterGroup(new ShaperBGroup(this), vg);
-    appendParameterGroup(new FBMixerGroup(this), vg);
-    appendParameterGroup(new CombFilterGroup(this), vg);
-    appendParameterGroup(new SVFilterGroup(this), vg);
-    appendParameterGroup(new OutputMixerGroup(this), vg);
-    appendParameterGroup(new FlangerGroup(this), vg);
-    appendParameterGroup(new CabinetGroup(this), vg);
-    appendParameterGroup(new GapFilterGroup(this), vg);
-    appendParameterGroup(new EchoGroup(this), vg);
-    appendParameterGroup(new ReverbGroup(this), vg);
-    appendParameterGroup(new MasterGroup(this), vg);
-    appendParameterGroup(new UnisonGroup(this), vg);
+    appendParameterGroup(new EnvelopeAGroup(this, vg), vg);
+    appendParameterGroup(new EnvelopeBGroup(this, vg), vg);
+    appendParameterGroup(new EnvelopeCGroup(this, vg), vg);
+    appendParameterGroup(new OscillatorAGroup(this, vg), vg);
+    appendParameterGroup(new ShaperAGroup(this, vg), vg);
+    appendParameterGroup(new OscillatorBGroup(this, vg), vg);
+    appendParameterGroup(new ShaperBGroup(this, vg), vg);
+    appendParameterGroup(new FBMixerGroup(this, vg), vg);
+    appendParameterGroup(new CombFilterGroup(this, vg), vg);
+    appendParameterGroup(new SVFilterGroup(this, vg), vg);
+    appendParameterGroup(new OutputMixerGroup(this, vg), vg);
+    appendParameterGroup(new FlangerGroup(this, vg), vg);
+    appendParameterGroup(new CabinetGroup(this, vg), vg);
+    appendParameterGroup(new GapFilterGroup(this, vg), vg);
+    appendParameterGroup(new EchoGroup(this, vg), vg);
+    appendParameterGroup(new ReverbGroup(this, vg), vg);
+    appendParameterGroup(new MasterGroup(this, vg), vg);
+    appendParameterGroup(new UnisonGroup(this, vg), vg);
 
-    auto macroControls = appendParameterGroup(new MacroControlsGroup(this), vg);
-    auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this), vg);
-    appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls), vg);
-    appendParameterGroup(new ScaleGroup(this), vg);
+    auto macroControls = appendParameterGroup(new MacroControlsGroup(this, vg), vg);
+    auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, vg), vg);
+    appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls, vg), vg);
+    appendParameterGroup(new ScaleGroup(this, vg), vg);
 
     m_idToParameterMap[static_cast<int>(vg)] = getParametersSortedById(vg);
   }
@@ -88,11 +88,6 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGro
 
 ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameterGroup(ParameterGroup *p, VoiceGroup v)
 {
-  if(v == VoiceGroup::Invalid)
-  {
-    v = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
-  }
-
   p->init();
   g_assert(getParameterGroupByID(p->getID(), v) == nullptr);
   auto wrapped = tParameterGroupPtr(p);

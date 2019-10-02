@@ -610,19 +610,3 @@ void EditBuffer::sanitizeVoiceGroup(VoiceGroup &vg)
     vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
 }
 
-VoiceGroup EditBuffer::findVoiceGroupWithParameter(const Parameter *pParameter)
-{
-  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    auto groups = getParameterGroups(vg);
-    for(auto &group : groups)
-    {
-      for(auto &param : group->getParameters())
-      {
-        if(param == pParameter)
-          return vg;
-      }
-    }
-  }
-  return VoiceGroup::Invalid;
-}

@@ -20,8 +20,8 @@
 #include <parameters/scale-converters/PitchOscLinearStScaleModulationConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-OscillatorAGroup::OscillatorAGroup(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "Osc A", "Oscillator A", "Oscillator A", "Oscillator A")
+OscillatorAGroup::OscillatorAGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "Osc A", "Oscillator A", "Oscillator A", "Oscillator A", voicegroup)
 {
 }
 

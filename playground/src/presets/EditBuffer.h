@@ -89,8 +89,6 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType);
   void undoableConvertToType(const SoundType &ebType);
 
-  VoiceGroup findVoiceGroupWithParameter(const Parameter *pParameter);
-
 private:
   bool anyParameterChanged(VoiceGroup vg) const;
 

@@ -5,7 +5,7 @@
 class EnvelopeAGroup : public ParameterGroup
 {
  public:
-  EnvelopeAGroup(ParameterDualGroupSet *parent);
+  EnvelopeAGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
   virtual ~EnvelopeAGroup();
 
   void init();

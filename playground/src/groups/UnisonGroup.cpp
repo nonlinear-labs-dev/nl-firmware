@@ -10,8 +10,8 @@
 #include "parameters/scale-converters/FineBipolar12STScaleConverter.h"
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-UnisonGroup::UnisonGroup(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "Unison", "Unison", "Unison", "Unison")
+UnisonGroup::UnisonGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "Unison", "Unison", "Unison", "Unison", voicegroup)
 {
 }
 

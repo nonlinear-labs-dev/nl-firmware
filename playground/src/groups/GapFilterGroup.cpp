@@ -11,8 +11,8 @@
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-GapFilterGroup::GapFilterGroup(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "Gap Filt", "Gap Filter", "Gap Filter", "Gap Filter")
+GapFilterGroup::GapFilterGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "Gap Filt", "Gap Filter", "Gap Filter", "Gap Filter", voicegroup)
 {
 }
 

@@ -127,7 +127,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual bool isChangedFromLoaded() const;
   virtual bool isValueChangedFromLoaded() const;
 
-  const VoiceGroup &getVoiceGroup() const;
+  VoiceGroup getVoiceGroup() const;
 
  protected:
   virtual void sendToLpc() const;

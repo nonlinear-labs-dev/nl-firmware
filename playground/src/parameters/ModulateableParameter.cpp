@@ -427,7 +427,7 @@ void ModulateableParameter::registerTests()
     {
      public:
       explicit Group(GroupSet *root)
-          : ParameterGroup(root, "a", "b", "b", "b")
+          : ParameterGroup(root, "a", "b", "b", "b", VoiceGroup::I)
       {
       }
 

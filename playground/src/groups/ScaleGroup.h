@@ -8,7 +8,7 @@ class ParameterDualGroupSet;
 class ScaleGroup : public ParameterGroup
 {
  public:
-  ScaleGroup(ParameterDualGroupSet *parent);
+  ScaleGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
   virtual ~ScaleGroup();
 
   void init();

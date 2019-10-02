@@ -11,8 +11,8 @@
 #include <parameters/scale-converters/LinearBipolar1DbstScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-FBMixerGroup::FBMixerGroup(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "FB", "FB Mixer", "Feedback Mixer", "Feedback Mixer")
+FBMixerGroup::FBMixerGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "FB", "FB Mixer", "Feedback Mixer", "Feedback Mixer", voicegroup)
 {
 }
 
