@@ -125,6 +125,15 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	}
 
+	protected RGB getRoundingColor() {
+		if(isSelected()) {
+			return getColorSliderHighlight();
+		} else if(shouldHightlightChanged()) {
+			return RGB.changedBorder();
+		}
+		return null;
+	}
+	
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 
@@ -132,13 +141,12 @@ public abstract class Parameter extends LayoutResizingVertical {
 				null);
 
 		super.draw(ctx, invalidationMask);
-
-		if (isSelected())
-			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null,
-					getColorSliderHighlight());
-
-		if (shouldHightlightChanged())
-			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, RGB.yellow());
+		
+		RGB c = getRoundingColor();
+		if(c != null)
+		{
+			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, c);
+		}
 	}
 
 	private RGB getParameterBackgroundColor() {

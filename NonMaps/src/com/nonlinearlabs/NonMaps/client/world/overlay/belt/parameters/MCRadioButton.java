@@ -36,12 +36,10 @@ class MCRadioButton extends SVGImage {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		if (isChanged()) {
-			Rect pixRect = getPixRect().copy();
-			pixRect.reduceHeightBy(pixRect.getHeight() / 2.2);
-			pixRect.reduceWidthBy(pixRect.getWidth() / 3);
-			pixRect.moveBy(1, 0.5);
-			pixRect.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 19, 1, null, RGB.yellow());
+		if(isChanged()) {
+			Rect pix = getPixRect().copy();
+			pix = pix.getReducedBy(pix.getWidth() * 0.2);
+			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBeltBorder());
 		}
 	}
 
