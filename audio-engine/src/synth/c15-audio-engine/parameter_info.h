@@ -32,10 +32,14 @@ enum class Global_Parameters
 // all local Hardware Amounts
 enum class Hardware_Amounts
 {
-    Pedal_1_to_MC_A, Pedal_2_to_MC_A, Pedal_3_to_MC_A, Pedal_4_to_MC_A, Bender_to_MC_A, Aftertouch_to_MC_A, Ribbon_1_to_MC_A, Ribbon_2_to_MC_A,
-    Pedal_1_to_MC_B, Pedal_2_to_MC_B, Pedal_3_to_MC_B, Pedal_4_to_MC_B, Bender_to_MC_B, Aftertouch_to_MC_B, Ribbon_1_to_MC_B, Ribbon_2_to_MC_B,
-    Pedal_1_to_MC_C, Pedal_2_to_MC_C, Pedal_3_to_MC_C, Pedal_4_to_MC_C, Bender_to_MC_C, Aftertouch_to_MC_C, Ribbon_1_to_MC_C, Ribbon_2_to_MC_C,
-    Pedal_1_to_MC_D, Pedal_2_to_MC_D, Pedal_3_to_MC_D, Pedal_4_to_MC_D, Bender_to_MC_D, Aftertouch_to_MC_D, Ribbon_1_to_MC_D, Ribbon_2_to_MC_D,
+    Pedal_1_to_MC_A, Pedal_1_to_MC_B, Pedal_1_to_MC_C, Pedal_1_to_MC_D,
+    Pedal_2_to_MC_A, Pedal_2_to_MC_B, Pedal_2_to_MC_C, Pedal_2_to_MC_D,
+    Pedal_3_to_MC_A, Pedal_3_to_MC_B, Pedal_3_to_MC_C, Pedal_3_to_MC_D,
+    Pedal_4_to_MC_A, Pedal_4_to_MC_B, Pedal_4_to_MC_C, Pedal_4_to_MC_D,
+    Bender_to_MC_A, Bender_to_MC_B, Bender_to_MC_C, Bender_to_MC_D,
+    Aftertouch_to_MC_A, Aftertouch_to_MC_B, Aftertouch_to_MC_C, Aftertouch_to_MC_D,
+    Ribbon_1_to_MC_A, Ribbon_1_to_MC_B, Ribbon_1_to_MC_C, Ribbon_1_to_MC_D,
+    Ribbon_2_to_MC_A, Ribbon_2_to_MC_B, Ribbon_2_to_MC_C, Ribbon_2_to_MC_D,
     _LENGTH_
 };
 
