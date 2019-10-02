@@ -21,8 +21,6 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     m_convert.init();
     m_clock.init(_samplerate);
     m_time.init(_samplerate);
-    m_fade[0].init(samplerate);
-    m_fade[1].init(samplerate);
     // init parameters by parameter list
     for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
     {
