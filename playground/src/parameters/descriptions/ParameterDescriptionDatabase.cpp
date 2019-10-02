@@ -9,8 +9,9 @@
 class ParameterDescriptionDatabase::Job
 {
  public:
-  Job(int paramID)
+  Job(int paramID, VoiceGroup vg)
       : paramID(paramID)
+      , voiceGroup{ vg }
   {
     load();
   }
@@ -23,7 +24,7 @@ class ParameterDescriptionDatabase::Job
  private:
   void load()
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID, VoiceGroup::I);
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID, voiceGroup);
 
     if(auto mc = dynamic_cast<MacroControlParameter *>(param))
     {
@@ -119,6 +120,7 @@ class ParameterDescriptionDatabase::Job
   }
 
   int paramID = 0;
+  VoiceGroup voiceGroup;
   Glib::ustring text;
   Glib::RefPtr<Gio::File> file;
   Glib::RefPtr<Gio::FileInputStream> stream;
@@ -136,14 +138,14 @@ ParameterDescriptionDatabase::ParameterDescriptionDatabase()
 {
 }
 
-connection ParameterDescriptionDatabase::load(int paramID, slot<void, const Glib::ustring &> cb)
+connection ParameterDescriptionDatabase::load(int paramID, VoiceGroup vg, slot<void, const Glib::ustring &> cb)
 {
   auto it = m_jobs.find(paramID);
 
   if(it != m_jobs.end())
     return it->second->connect(cb);
 
-  auto job = std::make_shared<Job>(paramID);
+  auto job = std::make_shared<Job>(paramID, vg);
   m_jobs[paramID] = job;
   return job->connect(cb);
 }

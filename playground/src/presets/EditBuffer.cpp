@@ -184,27 +184,22 @@ sigc::connection EditBuffer::onSelectionChanged(const slot<void, Parameter *, Pa
   return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected());
 }
 
-void EditBuffer::undoableSelectParameter(const Glib::ustring &id, VoiceGroup voiceGroup)
+void EditBuffer::undoableSelectParameter(const Glib::ustring &id)
 {
-  sanitizeVoiceGroup(voiceGroup);
-
-  if(auto p = findParameterByID(std::stoi(id), voiceGroup))
+  if(auto p = findParameterByID(std::stoi(id)))
     undoableSelectParameter(p);
 }
 
-void EditBuffer::undoableSelectParameter(uint16_t id, VoiceGroup voiceGroup)
+void EditBuffer::undoableSelectParameter(uint16_t id)
 {
-  sanitizeVoiceGroup(voiceGroup);
-
-  if(auto p = findParameterByID(id, voiceGroup))
+  if(auto p = findParameterByID(id))
     undoableSelectParameter(p);
 }
 
-void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id, VoiceGroup vg)
+void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id)
 {
-  sanitizeVoiceGroup(vg);
 
-  if(auto p = findParameterByID(std::stoi(id), vg))
+  if(auto p = findParameterByID(std::stoi(id)))
     undoableSelectParameter(transaction, p);
 }
 
@@ -294,17 +289,14 @@ void EditBuffer::resetOriginIf(const Preset *p)
     m_originCache = nullptr;
 }
 
-void EditBuffer::undoableSelectParameter(Parameter *p, VoiceGroup voiceGroup)
+void EditBuffer::undoableSelectParameter(Parameter *p)
 {
-  sanitizeVoiceGroup(voiceGroup);
-  auto vgIndex = static_cast<int>(voiceGroup);
-
   if(p->getID() != m_selectedParameterId)
   {
-    auto newSelection = getSelected(voiceGroup);
+    auto newSelection = getSelected(VoiceGroup::I);
     auto scope = getUndoScope().startContinuousTransaction(&newSelection, std::chrono::hours(1), "Select '%0'",
                                                            p->getGroupAndParameterName());
-    undoableSelectParameter(scope->getTransaction(), p, voiceGroup);
+    undoableSelectParameter(scope->getTransaction(), p);
   }
   else
   {
@@ -317,11 +309,9 @@ void EditBuffer::undoableSelectParameter(Parameter *p, VoiceGroup voiceGroup)
   }
 }
 
-void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p, VoiceGroup voiceGroup)
+void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
-  sanitizeVoiceGroup(voiceGroup);
-  auto vgIndex = static_cast<int>(voiceGroup);
-
+  const auto targetVG = p->getVoiceGroup();
   if(m_selectedParameterId != p->getID())
   {
     auto swapData = UNDO::createSwapData(p->getID());
@@ -331,8 +321,8 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
       swapData->swapWith(m_selectedParameterId);
 
-      auto oldP = findParameterByID(oldSelectedParamID, voiceGroup);
-      auto newP = findParameterByID(m_selectedParameterId, voiceGroup);
+      auto oldP = findParameterByID(oldSelectedParamID, targetVG);
+      auto newP = findParameterByID(m_selectedParameterId, targetVG);
 
       m_signalSelectedParameter.send(oldP, newP);
 
@@ -609,4 +599,3 @@ void EditBuffer::sanitizeVoiceGroup(VoiceGroup &vg)
   if(vg == VoiceGroup::Invalid)
     vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
 }
-

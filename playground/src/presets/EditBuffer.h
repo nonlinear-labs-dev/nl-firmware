@@ -30,11 +30,10 @@ class EditBuffer : public ParameterDualGroupSet
 
   static void sanitizeVoiceGroup(VoiceGroup &vg);
 
-  void undoableSelectParameter(const Glib::ustring &id, VoiceGroup voiceGroup = VoiceGroup::Invalid);
-  void undoableSelectParameter(uint16_t id, VoiceGroup voiceGroup = VoiceGroup::Invalid);
-  void undoableSelectParameter(Parameter *p, VoiceGroup voiceGroup = VoiceGroup::Invalid);
-  void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p,
-                               VoiceGroup voiceGroup = VoiceGroup::Invalid);
+  void undoableSelectParameter(const Glib::ustring &id);
+  void undoableSelectParameter(uint16_t id);
+  void undoableSelectParameter(Parameter *p);
+  void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
 
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset, VoiceGroup target = VoiceGroup::Invalid);
@@ -98,8 +97,7 @@ private:
 
   void setParameter(size_t id, double cpValuem, VoiceGroup target = VoiceGroup::Invalid);
 
-  void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id,
-                               VoiceGroup vg = VoiceGroup::Invalid);
+  void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id);
   void setModulationSource(MacroControls src, VoiceGroup vg = VoiceGroup::Invalid);
   void setModulationAmount(double amount, VoiceGroup vg = VoiceGroup::Invalid);
 
