@@ -631,12 +631,6 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void uploadReaktorPreset(String preset) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "import-reaktor-preset");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset", preset));
-		queueJob(uri, false);
-	}
-
 	public void setRibbonReturnMode(int ribbonsParameterId, String mode) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-ribbon-return-mode");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId),

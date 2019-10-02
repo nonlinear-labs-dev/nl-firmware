@@ -9,7 +9,7 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
 #include "VoiceGroupsSerializer.h"
-#include "VoiceGroupLockSerializer.h"
+#include "VoiceGroupsLockSerializer.h"
 
 EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
     : Serializer(getTagName())
@@ -30,8 +30,6 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 {
   SplashLayout::addStatus("Writing Edit Buffer");
 
-  writer.writeTextElement("editbuffer-type", toString(m_editBuffer->getType()));
-
   VoiceGroupsSerializer groups(m_editBuffer);
   groups.write(writer);
 
@@ -43,7 +41,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 
   writer.writeTextElement("hash-on-store", to_string(m_editBuffer->m_hashOnStore));
 
-  VoiceGroupLockSerializer lockSerializer(m_editBuffer);
+  VoiceGroupsLockSerializer lockSerializer(m_editBuffer);
   lockSerializer.write(writer);
 
   writer.writeTextElement("editbuffer-type", toString(m_editBuffer->getType()));
@@ -59,13 +57,6 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
   reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable {
     m_editBuffer->undoableConvertToType(reader.getTransaction(), toSoundType(text));
   });
-
-  reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
-    m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
-  });
-
-  reader.onTextElement("editbuffer-type",
-                       [&](auto text, auto) mutable { m_editBuffer->undoableConvertToType(toSoundType(text)); });
 
   reader.onTag(VoiceGroupsSerializer::getTagName(),
                [&](auto) mutable { return new VoiceGroupsSerializer(m_editBuffer); });
@@ -83,8 +74,8 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
     m_editBuffer->onChange();
   });
 
-  reader.onTag(VoiceGroupLockSerializer::getTagName(),
-               [&](auto) mutable { return new VoiceGroupLockSerializer(m_editBuffer); });
+  reader.onTag(VoiceGroupsLockSerializer::getTagName(),
+               [&](auto) mutable { return new VoiceGroupsLockSerializer(m_editBuffer); });
 
   reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
     m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());

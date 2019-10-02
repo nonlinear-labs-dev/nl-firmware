@@ -141,11 +141,6 @@ size_t ParameterDualGroupSet::countParameters() const
 
 std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedById(VoiceGroup vg) const
 {
-  if(vg == VoiceGroup::Invalid)
-  {
-    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
-  }
-
   std::map<int, Parameter *> sorted;
 
   for(auto group : getParameterGroups(vg))

@@ -3,9 +3,9 @@
 #include <presets/EditBuffer.h>
 #include "Serializer.h"
 
-class VoiceGroupLockSerializer : public Serializer {
+class VoiceGroupsLockSerializer : public Serializer {
 public:
-  explicit VoiceGroupLockSerializer(EditBuffer* eb);
+  explicit VoiceGroupsLockSerializer(EditBuffer* eb);
   static std::string getTagName();
 protected:
   void writeTagContent(Writer &writer) const override;

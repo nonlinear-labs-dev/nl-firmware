@@ -16,7 +16,6 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new ResetEditBuffer(this));
 		addChild(new SyncLPCToBBB(this));
 		addChild(new DebugLevel(this));
-		addChild(new UploadPreset(this));
 		addChild(new DownloadEditBufferAsText(this));
 		addChild(new DownloadErrorReport(this));
 		addChild(new OpenEditBufferAsText(this));
