@@ -9,8 +9,21 @@ EXEC_PROGRAM("git"
 
 message("building C15 firmware version: ${PLAYGROUND_VERSION}")
 
+OPTION(BUILD_AUDIOENGINE "Enable building of the audio-engine sub project" ON)
+OPTION(BUILD_BBBB "Enable building of the BeagleBoneBlack-Bridge sub project" ON)
+OPTION(BUILD_PLAYGROUND "Enable building of the Playground and NonMaps sub projects" ON)
+
 add_subdirectory(nltools)
-add_subdirectory(playground)
-add_subdirectory(audio-engine)
-add_subdirectory(bbbb)
-add_subdirectory(NonMaps)
+
+IF(BUILD_AUDIOENGINE)
+    add_subdirectory(audio-engine)
+ENDIF(BUILD_AUDIOENGINE)
+
+IF(BUILD_PLAYGROUND)
+    add_subdirectory(playground)
+    add_subdirectory(NonMaps)
+ENDIF(BUILD_PLAYGROUND)
+
+IF(BUILD_BBBB)
+    add_subdirectory(bbbb)
+ENDIF(BUILD_BBBB)
