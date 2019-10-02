@@ -169,3 +169,13 @@ const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
 
   return m_parameterGroups[static_cast<int>(vg)];
 }
+
+void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
+{
+  nltools_assertOnDevPC(from != to && to != VoiceGroup::Invalid && from != VoiceGroup::Invalid);
+
+  for(auto &group : getParameterGroups(to))
+  {
+    group->copyFrom(transaction, getParameterGroupByID(group->getID(), from));
+  }
+}

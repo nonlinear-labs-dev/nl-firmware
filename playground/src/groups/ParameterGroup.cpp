@@ -262,3 +262,13 @@ bool ParameterGroup::areAllParametersLocked() const
 
   return true;
 }
+
+void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other) {
+  for(auto &g : getParameters())
+  {
+    if(auto c = other->findParameterByID(g->getID()))
+    {
+      g->copyFrom(transaction, c);
+    }
+  }
+}

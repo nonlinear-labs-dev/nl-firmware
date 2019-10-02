@@ -13,7 +13,15 @@ ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
 
 void ConvertSoundMenu::convertSoundTo(SoundType newType)
 {
-  Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(newType);
+  if(newType != SoundType::Single)
+  {
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(newType);
+  }
+  else
+  {
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(
+        SoundType::Single, Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+  }
 }
 
 void ConvertSoundMenu::setup()

@@ -574,24 +574,27 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
   }
 }
 
-void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType)
+void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType, VoiceGroup from)
 {
   transaction->addUndoSwap(this, m_type, ebType);
 
-  transaction->addSimpleCommand([&](auto) {
-    if(m_type == SoundType::Single)
-      Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I);
-  });
+  if(ebType == SoundType::Single)
+  {
+    transaction->addSimpleCommand(
+        [](auto) { Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I); });
+
+    copyVoiceGroup(transaction, from, VoiceGroup::I);
+  }
 }
 
-void EditBuffer::undoableConvertToType(const SoundType &ebType)
+void EditBuffer::undoableConvertToType(const SoundType &ebType, VoiceGroup from)
 {
   if(ebType == m_type)
     return;
 
   auto scope = getUndoScope().startTransaction("Convert Editbuffer to " + toString(ebType));
   auto transaction = scope->getTransaction();
-  undoableConvertToType(transaction, ebType);
+  undoableConvertToType(transaction, ebType, from);
 }
 
 void EditBuffer::sanitizeVoiceGroup(VoiceGroup &vg)

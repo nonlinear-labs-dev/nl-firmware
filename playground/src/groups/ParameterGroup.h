@@ -54,6 +54,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   size_t getHash() const;
 
   virtual void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
+  virtual void copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other);
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 

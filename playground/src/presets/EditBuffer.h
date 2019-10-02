@@ -58,7 +58,7 @@ class EditBuffer : public ParameterDualGroupSet
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
 
-  void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
+  void copyFrom(UNDO::Transaction *transaction, const Preset *preset) override;
 
   //void copyFrom(UNDO::Transaction *transaction, const LayerPreset *preset);
   //void copyFrom(UNDO::Transaction *transaction, const SplitPreset *preset);
@@ -85,10 +85,11 @@ class EditBuffer : public ParameterDualGroupSet
   void initRecallValues(UNDO::Transaction *t);
 
   SoundType getType() const;
-  void undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType);
-  void undoableConvertToType(const SoundType &ebType);
 
-private:
+  void undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType, VoiceGroup from = VoiceGroup::I);
+  void undoableConvertToType(const SoundType &ebType, VoiceGroup from = VoiceGroup::I);
+
+ private:
   bool anyParameterChanged(VoiceGroup vg) const;
 
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;
