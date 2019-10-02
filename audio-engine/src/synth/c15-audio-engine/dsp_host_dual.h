@@ -42,9 +42,13 @@ private:
     exponentiator m_convert;
     ClockHandle m_clock;
     TimeHandle m_time;
-    uint32_t m_focus;
+    // layer handling
+    C15::Properties::LayerMode m_layer_mode;
+    uint32_t m_layer_focus; // probably obsolete
     // global dsp components
     GlobalSection m_global;
+    DualVoiceAllocation m_va;
+    ae_fade_table m_fade;
     // layered dsp components
     PolySection m_poly[2];
     MonoSection m_mono[2];

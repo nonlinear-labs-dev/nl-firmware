@@ -24,6 +24,9 @@ const uint32_t tcd_elements = 1; // 328 (since 1.57)
 const uint32_t clock_rates[4] = {0, 48000, 9600, 400};
 const float fade_time_ms = 3.0f;
 
+const uint32_t key_count = 61;
+const uint32_t key_center = 36;
+
 } // namespace C15::Config
 
 } // namespace C15
