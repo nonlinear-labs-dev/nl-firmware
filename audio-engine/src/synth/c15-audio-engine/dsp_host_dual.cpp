@@ -204,7 +204,7 @@ float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleA
 //        result = m_convert.eval_level(_value + _scaleArg);
 //        break;
     case C15::Properties::Scale::Expon_Env_Time:
-        result = m_convert.eval_time((_value * 104.0781f) + _scaleArg);
+        result = m_convert.eval_time((_value * _scaleArg * 104.0781f) - 20.0f);
         break;
     }
     return result;
