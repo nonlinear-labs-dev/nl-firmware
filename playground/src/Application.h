@@ -1,6 +1,6 @@
 #pragma once
 
-#include <presets/EditBufferSelection.h>
+#include <presets/VoiceGroupSelection.h>
 #include "playground.h"
 
 class DeviceInformation;
@@ -41,7 +41,7 @@ class Application
   Settings *getSettings();
   DeviceInformation *getDeviceInformation();
   Clipboard *getClipboard();
-  EditBufferSelection *getEditBufferSelectionForHardwareUI();
+  VoiceGroupSelection *getVoiceGroupSelectionHardwareUI();
 
   void quit();
   bool isQuit() const;
@@ -61,7 +61,7 @@ class Application
   std::unique_ptr<Settings> m_settings;
   std::unique_ptr<UndoScope> m_undoScope;
   std::unique_ptr<PresetManager> m_presetManager;
-  std::unique_ptr<EditBufferSelection> m_hwuiEditBufferSelection;
+  std::unique_ptr<VoiceGroupSelection> m_hwuiEditBufferSelection;
   std::unique_ptr<LPCProxy> m_lpcProxy;
   std::unique_ptr<AudioEngineProxy> m_audioEngineProxy;
   std::unique_ptr<HWUI> m_hwui;

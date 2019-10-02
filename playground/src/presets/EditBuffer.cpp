@@ -580,7 +580,7 @@ void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const Sou
 
   transaction->addSimpleCommand([&](auto) {
     if(m_type == SoundType::Single)
-      Application::get().getEditBufferSelectionForHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I);
+      Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I);
   });
 }
 
@@ -597,5 +597,5 @@ void EditBuffer::undoableConvertToType(const SoundType &ebType)
 void EditBuffer::sanitizeVoiceGroup(VoiceGroup &vg)
 {
   if(vg == VoiceGroup::Invalid)
-    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
 }

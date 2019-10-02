@@ -13,7 +13,7 @@ namespace DescriptiveLayouts
       if(type == SoundType::Single)
         setValue({ typeStr, 0 });
       else {
-        auto sel = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
         setValue({ typeStr + (sel == VoiceGroup::I ? "[II]" : "[I]"), 0 });
       }
     }
@@ -26,7 +26,7 @@ namespace DescriptiveLayouts
     {
       auto currentType = eb->getType();
       if(currentType != SoundType::Single) {
-        auto sel = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
         setValue({sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
       }
     }

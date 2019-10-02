@@ -76,7 +76,7 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGro
 {
   if(vg == VoiceGroup::Invalid)
   {
-    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   }
 
   for(auto a : m_parameterGroups[static_cast<int>(vg)])
@@ -116,7 +116,7 @@ Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
 {
   if(vg == VoiceGroup::Invalid)
   {
-    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   }
 
   try
@@ -164,7 +164,7 @@ const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
 {
   if(vg == VoiceGroup::Invalid)
   {
-    vg = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   }
 
   return m_parameterGroups[static_cast<int>(vg)];

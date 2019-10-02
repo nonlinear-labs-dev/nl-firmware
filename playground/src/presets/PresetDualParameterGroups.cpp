@@ -31,7 +31,7 @@ void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRev
 #warning "TODO add second paramset to document!!"
 
   for(auto &pair : m_parameterGroups[static_cast<int>(
-          Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection())])
+      Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection())])
     pair.second->writeDocument(writer);
   AttributesOwner::writeDocument(writer, knownRevision);
 }

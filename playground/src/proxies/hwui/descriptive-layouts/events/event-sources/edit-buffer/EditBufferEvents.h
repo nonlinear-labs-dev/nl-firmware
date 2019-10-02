@@ -18,7 +18,7 @@ namespace DescriptiveLayouts
       }
       else
       {
-        const auto suffix = " " + toString(Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection());
+        const auto suffix = " " + toString(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
         setValue({ typeStr + suffix, suffix.size() });
       }
     }
@@ -38,7 +38,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto name = eb->getName(Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection());
+      auto name = eb->getName(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
       setValue({ name, 0 });
     }
   };
@@ -48,7 +48,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto val = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+      auto val = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
       setValue(val == VoiceGroup::I);
     }
   };
@@ -58,7 +58,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto val = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+      auto val = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
 
       setValue(val == VoiceGroup::II);
     }

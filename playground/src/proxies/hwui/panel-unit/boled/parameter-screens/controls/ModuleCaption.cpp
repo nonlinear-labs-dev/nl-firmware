@@ -10,7 +10,7 @@ ModuleCaption::ModuleCaption(const Rect &pos)
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)));
 
-  Application::get().getEditBufferSelectionForHardwareUI()->onHwuiSelectionChanged(
+  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
       sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
 }
 
@@ -19,7 +19,7 @@ ModuleCaption::~ModuleCaption() {
 
 void ModuleCaption::onParameterSelected(Parameter *newOne) {
   if (newOne) {
-    auto sel = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+    auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
 
     auto suffix = std::string{};
     if (Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)

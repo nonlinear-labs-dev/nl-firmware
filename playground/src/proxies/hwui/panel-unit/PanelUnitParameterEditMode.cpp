@@ -234,7 +234,7 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
 
   for(gint32 id : toggleAudioIDs)
   {
-    auto voiceGroup = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+    auto voiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
     if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, voiceGroup))
       g_error("Attempt to link a button to parameter ID %d, which does not exist!", id);
 
@@ -249,7 +249,7 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
 
 bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> ids, bool state)
 {
-  auto voiceGroup = Application::get().getEditBufferSelectionForHardwareUI()->getEditBufferSelection();
+  auto voiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto firstParameterInList = editBuffer->findParameterByID(ids.front(), voiceGroup);
 
