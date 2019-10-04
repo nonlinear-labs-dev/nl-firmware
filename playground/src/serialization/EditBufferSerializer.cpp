@@ -55,7 +55,7 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
   SplashLayout::addStatus("Reading Edit Buffer");
 
   reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable {
-    m_editBuffer->undoableConvertToType(reader.getTransaction(), toSoundType(text));
+    m_editBuffer->m_type = toSoundType(text);
   });
 
   reader.onTag(VoiceGroupsSerializer::getTagName(),

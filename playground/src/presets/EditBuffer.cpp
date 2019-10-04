@@ -569,6 +569,9 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
 
 void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType, VoiceGroup from)
 {
+  if(ebType == m_type)
+    return;
+
   transaction->addUndoSwap(this, m_type, ebType);
 
   if(ebType == SoundType::Single)
@@ -577,6 +580,10 @@ void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const Sou
         [](auto) { Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I); });
 
     copyVoiceGroup(transaction, from, VoiceGroup::I);
+  }
+  else
+  {
+    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   }
 }
 
