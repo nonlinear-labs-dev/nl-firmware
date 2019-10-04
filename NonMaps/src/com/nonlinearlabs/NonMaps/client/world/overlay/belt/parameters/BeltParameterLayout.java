@@ -131,12 +131,12 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		double editorModeLeft = (Millimeter.toPixels(70) / 4) + (buttonDim / 2);
 		double modSrcDim = Millimeter.toPixels(10);
 		double modulationButtonsDimX = Millimeter.toPixels(25);
-		double modulationButtonsDimY = Millimeter.toPixels(30);
+		double modulationButtonsDimY = Millimeter.toPixels(25);
 
 		double modulationButtonsLeft = Millimeter.toPixels(19.5 - 22.5 / 2);
 		double sliderLeft = modulationButtonsLeft + modulationButtonsDimX + Millimeter.toPixels(10);
 
-		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDimY) / 2, modulationButtonsDimX,
+		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDimY) * 0.5, modulationButtonsDimX,
 				modulationButtonsDimY);
 		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
