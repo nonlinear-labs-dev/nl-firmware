@@ -23,11 +23,11 @@ string(STRIP ${BRANCH_NAME} BRANCH_NAME)
 set(LIBS
   gio-unix-2.0
   uuid
+  freetype2
   avahi-glib
   avahi-gobject
   avahi-core
   avahi-client
-  freetype2
   )
 
 OPTION(DEV_PC
@@ -73,8 +73,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 
-file(GLOB_RECURSE SOURCE_FILES
-    src/*.cpp
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+
+set(SOURCE_FILES
+    ${SOURCE_FILES}
     ${CMAKE_CURRENT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp
 )

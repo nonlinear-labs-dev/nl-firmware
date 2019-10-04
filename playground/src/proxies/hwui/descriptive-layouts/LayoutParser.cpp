@@ -224,23 +224,18 @@ namespace DescriptiveLayouts
   template <class T>
   T parseTFromTag(std::function<T(const json&)> toT, const json& obj, const std::string& tag, bool optional = true)
   {
+    if(optional)
+    {
+      auto it = obj.find(tag);
+      if(it != obj.end())
+        return toT(*it);
+
+      return {};
+    }
+
     try
     {
       return toT(obj.at(tag));
-    }
-    catch(nlohmann::json::out_of_range&)
-    {
-      auto desc = ExceptionTools::handle_eptr(std::current_exception());
-      nltools::Log::error(desc);
-
-      if(!optional)
-        std::rethrow_exception(std::current_exception());
-    }
-    catch(nlohmann::json::invalid_iterator&)
-    {
-      auto desc = ExceptionTools::handle_eptr(std::current_exception());
-      nltools::Log::error(desc);
-      std::rethrow_exception(std::current_exception());
     }
     catch(...)
     {
@@ -259,15 +254,14 @@ namespace DescriptiveLayouts
       const auto& id = name;
       try
       {
-        auto localEventProvider
-            = parseTFromTag<LocalEventProvider>(toLocalEventProvider, obj.value(), "LocalEventBroker");
-
+        auto eventProvider = parseTFromTag<EventProviders>(toEventProviders, obj.value(), "EventProvider");
         auto selectionConditions = parseTFromTag<tConditionList>(toConditions, obj.value(), "Conditions");
         auto sinkMappings = parseTFromTag<LayoutClass::EventSinkList>(toEventSinkList, obj.value(), "EventSinks");
         auto selectors = parseTFromTag<std::list<Selector>>(toSelectors, obj.value(), "Selector", false);
         auto controls
             = parseTFromTag<LayoutClass::ControlInstanceList>(toControlInstanceList, obj.value(), "Controls", false);
-        BoledLayoutFactory::get().registerLayout(id, selectors, controls, sinkMappings, selectionConditions);
+        BoledLayoutFactory::get().registerLayout(id, selectors, controls, sinkMappings, selectionConditions,
+                                                 eventProvider);
       }
       catch(...)
       {

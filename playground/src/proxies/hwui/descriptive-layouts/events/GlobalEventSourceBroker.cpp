@@ -1,6 +1,6 @@
 #include <utility>
 
-#include "EventSourceBroker.h"
+#include "GlobalEventSourceBroker.h"
 #include "proxies/hwui/descriptive-layouts/LayoutFactory.h"
 #include <Application.h>
 #include <proxies/hwui/HWUI.h>
@@ -29,14 +29,7 @@
 
 namespace DescriptiveLayouts
 {
-
-  EventSourceBroker& EventSourceBroker::get()
-  {
-    static EventSourceBroker s;
-    return s;
-  }
-
-  EventSourceBroker::EventSourceBroker()
+  GlobalEventSourceBroker::GlobalEventSourceBroker()
   {
     m_map[EventSources::ParameterGroupName] = std::make_unique<ParameterGroupNameEventSource>();
     m_map[EventSources::SliderRange] = std::make_unique<SliderRangeEventSource>();
@@ -83,16 +76,18 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::PresetListBankName] = std::make_unique<PresetListEvents::PresetListBankName>();
     m_map[EventSources::PresetListPresetName] = std::make_unique<PresetListEvents::PresetListPresetName>();
-    m_map[EventSources::PresetListHasLeftBank] = std::make_unique<PresetListEvents::PresetListHasBankLeft>();
-    m_map[EventSources::PresetListHasRightBank] = std::make_unique<PresetListEvents::PresetListHasBankRight>();
+    m_map[EventSources::CanLeft] = std::make_unique<PresetListEvents::PresetListHasBankLeft>();
+    m_map[EventSources::CanRight] = std::make_unique<PresetListEvents::PresetListHasBankRight>();
 
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();
 #warning "IMPROVEMENT: maybe add some logic layer to save on events"
   }
 
-  sigc::connection EventSourceBroker::connect(EventSources source,
-                                              const std::function<void(std::experimental::any)>& cb)
+  GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;
+
+  sigc::connection GlobalEventSourceBroker::connect(EventSources source,
+                                                    const std::function<void(std::experimental::any)>& cb)
   {
     if(source == EventSources::None)
       return {};

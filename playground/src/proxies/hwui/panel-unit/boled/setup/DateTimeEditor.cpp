@@ -78,7 +78,6 @@ bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 
     m_labels[m_selection]->setHighlight(true);
     m_controls[m_selection]->setHighlight(true);
-    setAllDirty();
     return true;
   }
   return false;
@@ -143,7 +142,6 @@ void DateTimeEditor::setTimeValues()
   m_controls[Selection::Year]->setText(format(tm->tm_year + 1900, 4));
   m_controls[Selection::Hour]->setText(format(tm->tm_hour, 2));
   m_controls[Selection::Minute]->setText(format(tm->tm_min, 2));
-  setAllDirty();
 }
 
 const DateTimeEditor::Selection DateTimeEditor::step(Selection s, int inc) const

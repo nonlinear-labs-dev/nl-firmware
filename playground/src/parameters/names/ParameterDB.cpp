@@ -59,20 +59,26 @@ std::string sanitize(const std::string &in)
 
 void ParameterDB::importParsedRow(std::vector<std::string> &&items)
 {
-  int id = std::stoi(items[0]);
-  m_spec[id] = { sanitize(items[4]), sanitize(items[8]), parseSignalPathIndication(items[11]) };
+  if(!items[0].empty())
+  {
+    int id = std::stoi(items[0]);
+    m_spec[id] = { sanitize(items[4]), sanitize(items[8]), parseSignalPathIndication(items[11]) };
+  }
 }
 
 tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &c) const
 {
-  try
+  if(!c.empty())
   {
-    return std::stod(c);
+    try
+    {
+      return std::stod(c);
+    }
+    catch(...)
+    {
+    }
   }
-  catch(...)
-  {
-    return getInvalidSignalPathIndication();
-  }
+  return getInvalidSignalPathIndication();
 }
 
 ustring ParameterDB::getLongName(int id) const

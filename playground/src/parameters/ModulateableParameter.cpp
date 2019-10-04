@@ -331,21 +331,24 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
   double modRight = 0;
 
   auto src = getModulationSource();
-  uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
-  auto groupSet = dynamic_cast<const ParameterGroupSet *>(getParentGroup()->getParent());
-
-  if(auto srcParam = groupSet->findParameterByID(srcParamID))
+  if(src != MacroControls::NONE)
   {
-    auto modAmount = getModulationAmount();
-    auto srcValue = srcParam->getValue().getRawValue();
-    auto value = getValue().getRawValue();
+    uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
+    auto groupSet = dynamic_cast<const ParameterGroupSet *>(getParentGroup()->getParent());
 
-    if(isBiPolar())
-      modLeft = 0.5 * (value + 1.0) - modAmount * srcValue;
-    else
-      modLeft = value - modAmount * srcValue;
+    if(auto srcParam = groupSet->findParameterByID(srcParamID))
+    {
+      auto modAmount = getModulationAmount();
+      auto srcValue = srcParam->getValue().getRawValue();
+      auto value = getValue().getRawValue();
 
-    modRight = modLeft + modAmount;
+      if(isBiPolar())
+        modLeft = 0.5 * (value + 1.0) - modAmount * srcValue;
+      else
+        modLeft = value - modAmount * srcValue;
+
+      modRight = modLeft + modAmount;
+    }
   }
 
   if(clipped)
@@ -491,9 +494,14 @@ bool ModulateableParameter::isMacroControlAssignedAndChanged() const
 
 MacroControlParameter *ModulateableParameter::getMacroControl() const
 {
-  auto myMCID = MacroControlsGroup::modSrcToParamID(getModulationSource());
-  return dynamic_cast<MacroControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID));
+  auto src = getModulationSource();
+  if(src != MacroControls::NONE)
+  {
+    auto myMCID = MacroControlsGroup::modSrcToParamID(src);
+    return dynamic_cast<MacroControlParameter *>(
+        Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID));
+  }
+  return nullptr;
 }
 
 void ModulateableParameter::undoableRecallMCPos()

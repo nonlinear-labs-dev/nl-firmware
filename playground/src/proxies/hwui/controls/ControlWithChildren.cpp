@@ -8,14 +8,6 @@ ControlWithChildren::ControlWithChildren(const Rect &pos)
 
 ControlWithChildren::~ControlWithChildren() = default;
 
-bool ControlWithChildren::isDirty() const
-{
-  if(super::isDirty())
-    return true;
-
-  return ControlOwner::isDirty();
-}
-
 void ControlWithChildren::setDirty()
 {
   Control::setDirty();
@@ -34,15 +26,8 @@ void ControlWithChildren::setHighlight(bool isHighlight)
 
 bool ControlWithChildren::redraw(FrameBuffer &fb)
 {
-  bool redrew = Control::isDirty();
-
-  if(redrew)
-  {
-    ControlOwner::setAllDirty();
-
-    if(!isTransparent())
-      Control::drawBackground(fb);
-  }
+  if(!isTransparent())
+    Control::drawBackground(fb);
 
   auto clip = fb.clipRespectingOffset(getPosition());
 
@@ -51,8 +36,7 @@ bool ControlWithChildren::redraw(FrameBuffer &fb)
 
   auto offset = fb.offset(getPosition().getPosition());
 
-  redrew |= ControlOwner::redraw(fb);
-  return redrew;
+  return ControlOwner::redraw(fb);
 }
 
 void ControlWithChildren::drawBackground(FrameBuffer &fb)

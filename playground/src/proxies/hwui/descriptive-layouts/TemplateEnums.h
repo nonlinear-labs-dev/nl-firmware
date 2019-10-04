@@ -4,6 +4,7 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <tools/EnumTools.h>
 #include <boost/serialization/strong_typedef.hpp>
+#include <proxies/hwui/buttons.h>
 
 namespace DescriptiveLayouts
 {
@@ -31,11 +32,21 @@ namespace DescriptiveLayouts
        ParameterControlPosition, ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton,
        BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
-       PresetListPresetName, PresetListHasLeftBank, PresetListHasRightBank, isFineActive, EditBufferMasterText,
-       EditBufferUnisonText, VGIUnisonText, VGIIUnisonText, VGIMasterText, VGIIMasterText);
+       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIUnisonText,
+       VGIIUnisonText, VGIMasterText, VGIIMasterText,
 
-  ENUM(LocalEventProvider, uint8_t, PresetSelectionForVoiceGroup);
+       PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
 
+  ENUM(EventSinks, uint8_t, Left, Right, Up, Down, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
+       SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,
+       SwitchToSoundFocus, SwitchToMCSelectDetail, SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail,
+       SwitchToButtonDDetail, SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel,
+       DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
+       IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
+       IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
+       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter);
+
+  ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
 
   template <typename Derived> class StringId : public std::string
@@ -102,4 +113,21 @@ namespace DescriptiveLayouts
   using ControlClasses = StringId<traits::Controls::Class>;
   using ControlInstances = StringId<traits::Controls::Instance>;
   using LayoutClasses = StringId<traits::Layouts::Class>;
+
+  struct EventSinkMapping
+  {
+   public:
+    EventSinkMapping(Buttons button, EventSinks sink, ButtonEvents event = ButtonEvents::Down, bool rep = false)
+        : button(button)
+        , sink(sink)
+        , event(event)
+        , repeat(rep)
+    {
+    }
+
+    Buttons button;
+    ButtonEvents event;
+    EventSinks sink;
+    bool repeat;
+  };
 }

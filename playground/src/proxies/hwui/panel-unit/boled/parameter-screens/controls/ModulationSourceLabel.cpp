@@ -32,12 +32,18 @@ void ModulationSourceLabel::onParamValueChanged(const Parameter *param)
 {
   if(const auto *modP = dynamic_cast<const ModulateableParameter *>(param))
   {
-    uint16_t id = MacroControlsGroup::modSrcToParamID(modP->getModulationSource());
+    auto src = modP->getModulationSource();
 
-    if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+    if(src != MacroControls::NONE)
     {
-      setText(mc->getShortName());
-      return;
+
+      uint16_t id = MacroControlsGroup::modSrcToParamID(src);
+
+      if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+      {
+        setText(mc->getShortName());
+        return;
+      }
     }
   }
 

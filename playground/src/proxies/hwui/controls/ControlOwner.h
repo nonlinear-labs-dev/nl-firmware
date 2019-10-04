@@ -14,14 +14,11 @@ class ControlOwner : public Uncopyable
   ControlOwner();
   virtual ~ControlOwner();
 
-  virtual bool isDirty() const;
   virtual bool redraw(FrameBuffer &fb);
   virtual void setHighlight(bool isHighlight);
 
   virtual bool isHighlight() const;
   virtual void setDirty() = 0;
-
-  void setAllDirty();
 
   typedef std::shared_ptr<Control> tControlPtr;
   typedef std::list<tControlPtr> tControls;

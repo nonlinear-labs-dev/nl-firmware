@@ -33,16 +33,12 @@ namespace DescriptiveLayouts
   {
   }
 
-  Control* ControlInstance::instantiate() const
+  Control* ControlInstance::instantiate(EventProvider* eventProvider) const
   {
     if(ControlRegistry::get().exists(controlClass))
-    {
-      auto control = ControlRegistry::get().instantiateConcrete(controlClass, position);
-      return control ? control : new GenericControl(*this);
-    }
-    else
-    {
-      return new GenericControl(*this);
-    }
+      if(auto control = ControlRegistry::get().instantiateConcrete(controlClass, position))
+        return control;
+
+    return new GenericControl(*this, eventProvider);
   }
 }

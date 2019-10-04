@@ -25,18 +25,13 @@ DFBLayout::~DFBLayout() = default;
 
 bool DFBLayout::redrawLayout()
 {
-  bool doRedraw = m_clear || isDirty();
-
   if(m_clear)
   {
     m_clear = false;
     m_oled.clear();
   }
 
-  if(doRedraw)
-    return redraw(getFrameBuffer());
-
-  return doRedraw;
+  return redraw(getFrameBuffer());
 }
 
 FrameBuffer &DFBLayout::getFrameBuffer()
@@ -73,7 +68,6 @@ bool DFBLayout::onRotary(int inc, ButtonModifiers modifiers)
 
 void DFBLayout::setDirty()
 {
-  ControlOwner::setAllDirty();
   m_clear = true;
   Oleds::get().setDirty();
 }
