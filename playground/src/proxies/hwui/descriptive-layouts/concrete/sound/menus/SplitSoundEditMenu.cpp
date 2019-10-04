@@ -15,6 +15,7 @@
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/ConvertToSingleItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/InitSound.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/LoadPresetIntoVoiceGroupItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/SplitPointItem.h>
 
 SplitSoundEditMenu::SplitSoundEditMenu(const Rect& r)
     : ScrollMenu(r)
@@ -29,6 +30,8 @@ void SplitSoundEditMenu::init()
   addItem<ConvertToSingleItem>();
   addItem<InitSound>();
   addItem<RandomizeItem>();
+
+  addItem<SplitPointItem>();
 
   addItem<SettingItem<TransitionTime>>("Transition Time");
   addItem<SettingItem<EditSmoothingTime>>("Smoothing Time");

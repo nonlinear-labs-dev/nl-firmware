@@ -17,6 +17,9 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
+#include <testing/TestRootDocument.h>
+#include <testing/parameter/TestGroupSet.h>
+#include <testing/parameter/TestGroup.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -393,54 +396,10 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
 void ModulateableParameter::registerTests()
 {
   g_test_add_func("/ModulateableParameter/1.4pct-to-112lpc", []() {
-    class Root : public UpdateDocumentMaster
-    {
-     public:
-      tUpdateID onChange(bool force)
-      {
-        return 0;
-      }
 
-      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-      {
-      }
-    };
-
-    Root root;
-
-    class GroupSet : public ParameterDualGroupSet
-    {
-     public:
-      explicit GroupSet(Root *root)
-          : ParameterDualGroupSet(root)
-      {
-      }
-
-      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-      {
-      }
-    };
-
-    GroupSet groupSet(&root);
-
-    class Group : public ParameterGroup
-    {
-     public:
-      explicit Group(GroupSet *root)
-          : ParameterGroup(root, "a", "b", "b", "b", VoiceGroup::I)
-      {
-      }
-
-      void init() override
-      {
-      }
-
-      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-      {
-      }
-    };
-
-    Group group(&groupSet);
+    TestRootDocument root;
+    TestGroupSet groupSet(&root);
+    TestGroup group(&groupSet, VoiceGroup::I);
 
     ModulateableParameter peter(&group, 1, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
     peter.m_modulationAmount = 0.014;

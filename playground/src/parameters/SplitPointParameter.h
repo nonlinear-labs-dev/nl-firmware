@@ -3,6 +3,7 @@
 
 class SplitPointParameter : public Parameter {
 public:
-  SplitPointParameter(ParameterGroup *group, uint16_t id, tControlPositionValue def);
+  SplitPointParameter(ParameterGroup *group, uint16_t id);
   std::string getDisplayValue(VoiceGroup vg) const;
+  static void registerTests();
 };
