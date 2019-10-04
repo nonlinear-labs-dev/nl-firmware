@@ -8,12 +8,12 @@ namespace Detail
   {
    public:
     VoiceGroupSerializer2(EditBuffer *eb, VoiceGroup vg)
-        : Serializer(getTagName())
+        : Serializer(tagName())
         , m_editBuffer{ eb }
         , m_voiceGroup{ vg }
     {
     }
-    static std::string getTagName()
+    static std::string tagName()
     {
       return "param-groups";
     }
@@ -40,11 +40,42 @@ namespace Detail
     EditBuffer *m_editBuffer;
     VoiceGroup m_voiceGroup;
   };
+
+  class SplitGroupSerializer : public Serializer
+  {
+   public:
+    SplitGroupSerializer(EditBuffer *eb)
+        : Serializer(tagName())
+        , m_editBuffer{ eb }
+    {
+    }
+
+    static std::string tagName()
+    {
+      return "split-group";
+    }
+
+   protected:
+    void writeTagContent(Writer &writer) const override
+    {
+      ParameterGroupSerializer ser(m_editBuffer->getSplitSoundParameterGroup());
+      ser.write(writer);
+    }
+
+    void readTagContent(Reader &reader) const override
+    {
+      reader.onTag(ParameterGroupSerializer::getTagName(), [this](const auto &attr) mutable {
+        return new ParameterGroupSerializer(m_editBuffer->getSplitSoundParameterGroup());
+      });
+    }
+
+    EditBuffer *m_editBuffer;
+  };
 }
 
 VoiceGroupsSerializer::VoiceGroupsSerializer(EditBuffer *editBuffer)
     : Serializer(getTagName())
-    , m_editBuffer{editBuffer }
+    , m_editBuffer{ editBuffer }
 {
 }
 
@@ -62,14 +93,19 @@ void VoiceGroupsSerializer::writeTagContent(Writer &writer) const
       s.write(writer);
     });
   }
+
+  Detail::SplitGroupSerializer splits(m_editBuffer);
+  splits.write(writer);
 }
 
 void VoiceGroupsSerializer::readTagContent(Reader &reader) const
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    reader.onTag(toString(vg), [this, vg](const auto &attr) mutable {
-      return new Detail::VoiceGroupSerializer2(m_editBuffer, vg);
-    });
+    reader.onTag(toString(vg),
+                 [this, vg](const auto &attr) mutable { return new Detail::VoiceGroupSerializer2(m_editBuffer, vg); });
   }
+
+  reader.onTag(Detail::SplitGroupSerializer::tagName(),
+               [this](const auto &attr) mutable { return new Detail::SplitGroupSerializer(m_editBuffer); });
 }
