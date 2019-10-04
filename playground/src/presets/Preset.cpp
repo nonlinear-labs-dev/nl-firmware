@@ -356,3 +356,13 @@ void Preset::writeGroups(Writer &writer, const Preset *other) const
     g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first));
   }
 }
+
+PresetParameterGroup *Preset::getSplitGroup()
+{
+  return m_splitGroup.get();
+}
+
+const PresetParameterGroup *Preset::getSplitGroup() const
+{
+  return m_splitGroup.get();
+}

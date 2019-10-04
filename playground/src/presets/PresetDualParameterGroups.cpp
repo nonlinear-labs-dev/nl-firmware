@@ -1,4 +1,5 @@
 #include <Application.h>
+#include <testing/TestRootDocument.h>
 #include "EditBuffer.h"
 #include "PresetDualParameterGroups.h"
 #include "PresetManager.h"
@@ -24,6 +25,8 @@ PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &g : editbuffer.getParameterGroups(vg))
       m_parameterGroups[static_cast<int>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
+
+  m_splitGroup = std::make_unique<PresetParameterGroup>(*editbuffer.getSplitSoundParameterGroup());
 }
 
 void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
@@ -31,7 +34,7 @@ void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRev
 #warning "TODO add second paramset to document!!"
 
   for(auto &pair : m_parameterGroups[static_cast<int>(
-      Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection())])
+          Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection())])
     pair.second->writeDocument(writer);
   AttributesOwner::writeDocument(writer, knownRevision);
 }
@@ -43,4 +46,6 @@ void PresetDualParameterGroups::init(const Preset *preset)
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &group : preset->m_parameterGroups[static_cast<int>(vg)])
       m_parameterGroups[static_cast<int>(vg)][group.first] = std::make_unique<PresetParameterGroup>(*group.second);
+
+  m_splitGroup = std::make_unique<PresetParameterGroup>(*preset->getSplitGroup());
 }

@@ -112,6 +112,9 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
       }
     }
   }
+
+  if(other->getSplitGroup())
+    m_splitParameters.copyFrom(transaction, other->getSplitGroup());
 }
 
 Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
@@ -127,7 +130,14 @@ Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
   }
   catch(...)
   {
-    return nullptr;
+    try
+    {
+      return m_splitParameters.findParameterByID(id);
+    }
+    catch(...)
+    {
+      return nullptr;
+    }
   }
 }
 
