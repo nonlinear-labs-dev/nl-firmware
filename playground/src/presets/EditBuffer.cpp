@@ -205,8 +205,6 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const G
 
 void EditBuffer::setParameter(size_t id, double cpValue, VoiceGroup vg)
 {
-  sanitizeVoiceGroup(vg);
-
   if(auto p = findParameterByID(id, vg))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue, toString(vg));
@@ -227,9 +225,6 @@ void EditBuffer::setParameter(size_t id, double cpValue, VoiceGroup vg)
 
 void EditBuffer::setModulationSource(MacroControls src, VoiceGroup vg)
 {
-  sanitizeVoiceGroup(vg);
-
-  auto index = static_cast<int>(vg);
   if(auto p = dynamic_cast<ModulateableParameter *>(getSelected(vg)))
   {
     auto scope = getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
@@ -239,8 +234,6 @@ void EditBuffer::setModulationSource(MacroControls src, VoiceGroup vg)
 
 void EditBuffer::setModulationAmount(double amount, VoiceGroup vg)
 {
-  sanitizeVoiceGroup(vg);
-  auto index = static_cast<int>(vg);
   if(auto p = dynamic_cast<ModulateableParameter *>(getSelected(vg)))
   {
     auto scope = getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
@@ -352,7 +345,6 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
 Parameter *EditBuffer::getSelected(VoiceGroup vg) const
 {
-  sanitizeVoiceGroup(vg);
   return findParameterByID(m_selectedParameterId, vg);
 }
 
@@ -595,10 +587,4 @@ void EditBuffer::undoableConvertToType(const SoundType &ebType, VoiceGroup from)
   auto scope = getUndoScope().startTransaction("Convert Editbuffer to " + toString(ebType));
   auto transaction = scope->getTransaction();
   undoableConvertToType(transaction, ebType, from);
-}
-
-void EditBuffer::sanitizeVoiceGroup(VoiceGroup &vg)
-{
-  if(vg == VoiceGroup::Invalid)
-    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
 }

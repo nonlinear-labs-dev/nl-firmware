@@ -17,6 +17,9 @@ namespace DescriptiveLayouts
       m_changedConnection = eb->onChange(sigc::mem_fun(this, &EditBufferEvent<T>::onEditBufferChanged));
       m_presetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &EditBufferEvent<T>::onPresetLoaded));
       m_onRecallChanged = eb->onRecallValuesChanged(sigc::mem_fun(this, &EditBufferEvent<T>::onRecallChanged));
+      m_onHardwareUIVoiceGroupSelectionChanged
+          = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+              sigc::mem_fun(this, &EditBufferEvent<T>::onHWUIVoiceGroupSelectionChanged));
     }
 
     ~EditBufferEvent()
@@ -41,6 +44,11 @@ namespace DescriptiveLayouts
       onChange(getEditBuffer());
     }
 
+    virtual void onHWUIVoiceGroupSelectionChanged()
+    {
+      onChange(getEditBuffer());
+    }
+
     virtual void onChange(const EditBuffer* eb) = 0;
 
     static EditBuffer* getEditBuffer()
@@ -52,5 +60,6 @@ namespace DescriptiveLayouts
     sigc::connection m_changedConnection;
     sigc::connection m_presetLoadedConnection;
     sigc::connection m_onRecallChanged;
+    sigc::connection m_onHardwareUIVoiceGroupSelectionChanged;
   };
 }
