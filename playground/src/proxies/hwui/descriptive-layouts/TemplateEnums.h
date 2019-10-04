@@ -34,7 +34,7 @@ namespace DescriptiveLayouts
        BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
        PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIUnisonText,
-       VGIIUnisonText, VGIMasterText, VGIIMasterText,
+       VGIIUnisonText, VGIMasterText, VGIIMasterText, SplitPointValue,
 
        PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
 

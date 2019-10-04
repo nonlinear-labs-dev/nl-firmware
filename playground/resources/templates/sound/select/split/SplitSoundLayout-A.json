@@ -68,16 +68,14 @@
         "Split": {
           "Class": "SplitPoint",
           "Position": "116, 18",
-          "Init": {
-            "Text[Text]": "G#3"
-          }
+          "Events": "SplitPointValue => Text[Text]"
         }
       },
       "EventSinks": {
+        "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "SwitchToInitDetail",
         "BUTTON_C": "OpenUnisonParameter",
-        "BUTTON_D": "OpenMasterParameter",
-        "BUTTON_ENTER": "ToggleVoiceGroup"
+        "BUTTON_D": "OpenMasterParameter"
       }
     }
   }

@@ -4,6 +4,7 @@
 #include "groups/ParameterGroup.h"
 #include <presets/AttributesOwner.h>
 #include <vector>
+#include <groups/SplitSoundGroup.h>
 #include "tools/IntrusiveList.h"
 
 class Parameter;
@@ -28,13 +29,16 @@ class ParameterDualGroupSet : public AttributesOwner
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
+  virtual SplitSoundGroup *getSplitSoundParameterGroup();
+  virtual const SplitSoundGroup *getSplitSoundParameterGroup() const;
+
  protected:
   virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
 
-  void copyVoiceGroup(UNDO::Transaction* transaction, VoiceGroup from, VoiceGroup to);
+  void copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
 
-private:
+ private:
   using tParamGroups = IntrusiveList<tParameterGroupPtr>;
   using tParamMap = std::map<int, Parameter *>;
 
@@ -42,4 +46,6 @@ private:
   std::array<tParamMap, 2> m_idToParameterMap;
 
   friend class VoiceGroupSerializer;
+
+  SplitSoundGroup m_splitParameters;
 };

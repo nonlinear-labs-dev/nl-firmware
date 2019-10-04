@@ -1,4 +1,6 @@
 #pragma once
+
+#include <parameters/SplitPointParameter.h>
 #include "EditBufferEvent.h"
 
 namespace DescriptiveLayouts
@@ -12,7 +14,8 @@ namespace DescriptiveLayouts
       auto typeStr = toString(type);
       if(type == SoundType::Single)
         setValue({ typeStr, 0 });
-      else {
+      else
+      {
         auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
         setValue({ typeStr + (sel == VoiceGroup::I ? "[II]" : "[I]"), 0 });
       }
@@ -25,9 +28,10 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       auto currentType = eb->getType();
-      if(currentType != SoundType::Single) {
+      if(currentType != SoundType::Single)
+      {
         auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        setValue({sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
+        setValue({ sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
       }
     }
   };
@@ -89,6 +93,24 @@ namespace DescriptiveLayouts
     {
       auto param = eb->findParameterByID(250, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
+    }
+  };
+
+  class SplitPointValueText : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      if(auto splitPoint
+         = dynamic_cast<const SplitPointParameter *>(eb->getSplitSoundParameterGroup()->getParameterByID(18700)))
+      {
+        setValue({ splitPoint->getDisplayValue(vg), 0 });
+      }
+      else
+      {
+        setValue({ "", 0 });
+      }
     }
   };
 }

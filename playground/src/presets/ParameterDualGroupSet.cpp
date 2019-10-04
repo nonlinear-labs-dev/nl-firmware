@@ -31,9 +31,11 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <groups/SplitSoundGroup.h>
 
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
+    , m_splitParameters{ this }
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
@@ -178,4 +180,14 @@ void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, Voice
   {
     group->copyFrom(transaction, getParameterGroupByID(group->getID(), from));
   }
+}
+
+SplitSoundGroup *ParameterDualGroupSet::getSplitSoundParameterGroup()
+{
+  return &m_splitParameters;
+}
+
+const SplitSoundGroup *ParameterDualGroupSet::getSplitSoundParameterGroup() const
+{
+  return &m_splitParameters;
 }

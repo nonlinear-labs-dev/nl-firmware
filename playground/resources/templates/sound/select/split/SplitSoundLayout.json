@@ -68,9 +68,7 @@
         "Split": {
           "Class": "SplitPoint",
           "Position": "116, 18",
-          "Init": {
-            "Text[Text]": "G#3"
-          }
+          "Events": "SplitPointValue => Text[Text]"
         }
       },
       "EventSinks": {

@@ -62,6 +62,7 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::isCurrentVGI] = std::make_unique<IsCurrentVGI>();
     m_map[EventSources::isCurrentVGII] = std::make_unique<IsCurrentVGII>();
+    m_map[EventSources::SplitPointValue] = std::make_unique<SplitPointValueText>();
     m_map[EventSources::SelectVGButtonText] = std::make_unique<SelectVGButtonText>();
     m_map[EventSources::SoundEditHeading] = std::make_unique<SoundEditHeading>();
 
