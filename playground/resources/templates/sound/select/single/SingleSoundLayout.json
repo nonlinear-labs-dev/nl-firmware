@@ -65,8 +65,8 @@
       "EventSinks": {
         "BUTTON_A": "SwitchToButtonADetail",
         "BUTTON_B": "SwitchToInitDetail",
-        "BUTTON_C": "OpenUnisonParameter",
-        "BUTTON_D": "OpenMasterParameter"
+        "BUTTON_C": "OpenUnisonParameterScreen",
+        "BUTTON_D": "OpenMasterParameterScreen"
       }
     }
   }

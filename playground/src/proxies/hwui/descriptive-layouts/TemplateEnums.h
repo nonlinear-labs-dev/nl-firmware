@@ -33,8 +33,8 @@ namespace DescriptiveLayouts
        ParameterControlPosition, ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton,
        BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
-       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIUnisonText,
-       VGIIUnisonText, VGIMasterText, VGIIMasterText, SplitPointValue,
+       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIMasterTuneText,
+       VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue,
 
        PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
 
@@ -45,7 +45,7 @@ namespace DescriptiveLayouts
        DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
        IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
-       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter);
+       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameterScreen, OpenMasterParameterScreen);
 
   ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);

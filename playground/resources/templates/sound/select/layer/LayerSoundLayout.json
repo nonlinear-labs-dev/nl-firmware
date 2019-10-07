@@ -49,7 +49,7 @@
           "Init": {
             "VoiceGroupIdentifier[Text]": "I"
           },
-          "Events": "isCurrentVGI => ANY[Highlight], VGIUnisonText => Unison[Text], VGIMasterText => Master[Text]"
+          "Events": "isCurrentVGI => ANY[Highlight], VGIMasterTuneText => Unison[Text], VGIMasterVolumeText => Master[Text]"
         },
         "Lower": {
           "Class": "LayerVoiceGroupII",
@@ -59,13 +59,13 @@
             "Unison[Text]": "",
             "Master[Text]": ""
           },
-          "Events": "isCurrentVGII => ANY[Highlight], VGIIUnisonText => Unison[Text], VGIIMasterText => Master[Text]"
+          "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text]"
         }
       },
       "EventSinks": {
         "BUTTON_A": "SwitchToButtonADetail",
-        "BUTTON_C": "OpenUnisonParameter",
-        "BUTTON_D": "OpenMasterParameter"
+        "BUTTON_C": "OpenUnisonParameterScreen",
+        "BUTTON_D": "OpenMasterParameterScreen"
       }
     }
   }

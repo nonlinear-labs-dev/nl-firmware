@@ -233,9 +233,9 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::OpenUnisonParameter, [eb]() { eb->undoableSelectParameter(250); });
+    registerEvent(EventSinks::OpenMasterParameterScreen, [eb]() { eb->undoableSelectParameter(247); });
 
-    registerEvent(EventSinks::OpenMasterParameter, [eb]() { eb->undoableSelectParameter(247); });
+    registerEvent(EventSinks::OpenUnisonParameterScreen, [eb]() { eb->undoableSelectParameter(249); });
   }
 
   void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)

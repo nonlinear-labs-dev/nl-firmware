@@ -36,7 +36,7 @@ namespace DescriptiveLayouts
     }
   };
 
-  class EditBufferMasterText : public EditBufferEvent<DisplayString>
+  class EditBufferMasterVolumeText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
@@ -46,17 +46,17 @@ namespace DescriptiveLayouts
     }
   };
 
-  class EditBufferUnisonText : public EditBufferEvent<DisplayString>
+  class EditBufferMasterTuneText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(250);
+      auto param = eb->findParameterByID(248);
       setValue({ param->getDisplayString(), 0 });
     }
   };
 
-  class VGIMasterText : public EditBufferEvent<DisplayString>
+  class VGIMasterVolumeText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
@@ -66,7 +66,7 @@ namespace DescriptiveLayouts
     }
   };
 
-  class VGIIMasterText : public EditBufferEvent<DisplayString>
+  class VGIIMasterVolumeText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
@@ -76,22 +76,22 @@ namespace DescriptiveLayouts
     }
   };
 
-  class VGIUnisonText : public EditBufferEvent<DisplayString>
+  class VGIMasterTuneText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(250, VoiceGroup::I);
+      auto param = eb->findParameterByID(248, VoiceGroup::I);
       setValue({ param->getDisplayString(), 0 });
     }
   };
 
-  class VGIIUnisonText : public EditBufferEvent<DisplayString>
+  class VGIIMasterTuneText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(250, VoiceGroup::II);
+      auto param = eb->findParameterByID(248, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -102,8 +102,8 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto splitPoint
-         = dynamic_cast<const SplitPointParameter *>(eb->getSplitSoundParameterGroup()->getParameterByID(18700)))
+      if(auto splitPoint = dynamic_cast<const SplitPointParameter *>(
+             eb->getSplitSoundParameterGroup()->getParameterByID(18700)))  //TODO change 18700
       {
         setValue({ splitPoint->getDisplayValue(vg), 0 });
       }

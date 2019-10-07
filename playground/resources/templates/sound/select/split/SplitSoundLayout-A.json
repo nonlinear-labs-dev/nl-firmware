@@ -52,7 +52,7 @@
             "LowerText[Text]": "-3.5 dB",
             "ANY[Highlight]": "true"
           },
-          "Events": "isCurrentVGI => ANY[Highlight], VGIUnisonText => UpperText[Text], VGIMasterText => LowerText[Text]"
+          "Events": "isCurrentVGI => ANY[Highlight], VGIMasterTuneText => UpperText[Text], VGIMasterVolumeText => LowerText[Text]"
         },
         "Right": {
           "Class": "SplitVoiceGroupII",
@@ -63,7 +63,7 @@
             "LowerText[Text]": "-3.5 dB",
             "ANY[Highlight]": "false"
           },
-          "Events": "isCurrentVGII => ANY[Highlight], VGIIUnisonText => UpperText[Text], VGIIMasterText => LowerText[Text]"
+          "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => UpperText[Text], VGIIMasterVolumeText => LowerText[Text]"
         },
         "Split": {
           "Class": "SplitPoint",
@@ -74,8 +74,8 @@
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "SwitchToInitDetail",
-        "BUTTON_C": "OpenUnisonParameter",
-        "BUTTON_D": "OpenMasterParameter"
+        "BUTTON_C": "OpenUnisonParameterScreen",
+        "BUTTON_D": "OpenMasterParameterScreen"
       }
     }
   }
