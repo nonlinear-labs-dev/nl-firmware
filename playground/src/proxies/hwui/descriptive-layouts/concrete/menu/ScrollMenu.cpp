@@ -102,7 +102,7 @@ void ScrollMenu::doLayout()
     return;
   }
 
-  std::vector<BasicItem *> items;
+  std::vector<MenuItem *> items;
 
   for(int i = m_selectedItem - 1; i < m_selectedItem + 3; i++)
   {

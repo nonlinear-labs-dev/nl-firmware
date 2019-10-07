@@ -1,3 +1,4 @@
+#include <proxies/hwui/controls/ArrowLeft.h>
 #include "EditorItem.h"
 
 bool EditorItem::canEnter()
@@ -18,6 +19,7 @@ Rect EditorItem::getStandardOverlayRect()
 void EditorItem::doAction()
 {
 }
+
 bool EditorItem::drawHighlightBorder(FrameBuffer& fb)
 {
   auto ret = BasicItem::drawHighlightBorder(fb);
@@ -30,4 +32,18 @@ bool EditorItem::drawHighlightBorder(FrameBuffer& fb)
   fb.setColor(FrameBuffer::C103);
   fb.drawRect(getPosition());
   return true;
+}
+
+bool EditorItem::redraw(FrameBuffer &fb) {
+  auto ret = BasicItem::redraw(fb) ;
+  ret |= redrawEnterIndication(fb);
+  return ret;
+}
+
+bool EditorItem::redrawEnterIndication(FrameBuffer &buffer) {
+  auto leftRect = getPosition();
+  leftRect.setWidth(12);
+  leftRect.setLeft(getPosition().getRight() - 12);
+  SubmenuIndicator s(leftRect);
+  return s.redraw(buffer);
 }

@@ -4,6 +4,7 @@
 #include <proxies/hwui/descriptive-layouts/ConditionRegistry.h>
 #include "SingleSoundEditMenu.h"
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/TextItem.h>
 
 SingleSoundEditMenu::SingleSoundEditMenu(const Rect& r)
     : ScrollMenu(r)
@@ -13,6 +14,7 @@ SingleSoundEditMenu::SingleSoundEditMenu(const Rect& r)
 
 void SingleSoundEditMenu::init()
 {
+  addItem<TextItem>("-- Single --");
   addItem<InitSound>();
   addItem<RandomizeItem>();
 }
