@@ -21,6 +21,21 @@
         "Rect": "168, 0, 2, 13",
         "Tag": "bar-l"
       },
+      "Border-hider1": {
+        "Class": "Bar",
+        "Rect": "168, 13, 1, 1",
+        "Tag": "fullDark"
+      },
+      "Border-hider2": {
+        "Class": "Bar",
+        "Rect": "167, 14, 1, 1",
+        "Tag": "fullDark"
+      },
+      "Border-Pixel": {
+        "Class": "Bar",
+        "Rect": "167, 13, 1, 1",
+        "Tag": "pixel"
+      },
       "Cover-Right": {
         "Class": "Bar",
         "Rect": "169, 0, 1, 15",
@@ -84,6 +99,28 @@
         "PrimitiveClass": "Bar",
         "ControlClasses": "LayerVoiceGroupII",
         "Tag": "Cover"
+      },
+      "styles": {
+        "Color": "C43",
+        "HighlightColor": "C43"
+      }
+    },
+    "BorderPixel": {
+      "selector": {
+        "PrimitiveClass": "Bar",
+        "ControlClasses": "LayerVoiceGroupII",
+        "Tag": "pixel"
+      },
+      "styles": {
+        "Color": "C128",
+        "HighlightColor": "C255"
+      }
+    },
+    "FullDark": {
+      "selector": {
+        "PrimitiveClass": "Bar",
+        "ControlClasses": "LayerVoiceGroupII",
+        "Tag": "fullDark"
       },
       "styles": {
         "Color": "C43",
