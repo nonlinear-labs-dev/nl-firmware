@@ -78,6 +78,9 @@ class MacroControlParameter : public Parameter
   Glib::ustring m_lastMCViewUuid;
 
   void propagateMCChangeToMCViews(const Initiator &initiatior);
+
+  void sendParameterMessage() const override;
+
   tControlPositionValue lastBroadcastedControlPosition = std::numeric_limits<tControlPositionValue>::max();
 
   Throttler mcviewThrottler;

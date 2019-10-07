@@ -154,4 +154,6 @@ class Parameter : public UpdateDocumentContributor,
 
   tControlPositionValue m_lastSnapshotedValue;
   bool m_isLocked = false;
+
+  virtual void sendParameterMessage() const;
 };

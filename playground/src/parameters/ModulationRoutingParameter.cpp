@@ -6,6 +6,8 @@
 #include <groups/MacroControlMappingGroup.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulationRouterParameterLayouts.h>
 #include <cmath>
+#include <proxies/audio-engine/AudioEngineProxy.h>
+#include <Application.h>
 
 ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, uint16_t id, tSrcParameterPtr srcParam,
                                                        tMCParameterPtr tgtParam, const ScaleConverter *scaling)
@@ -147,4 +149,9 @@ DFBLayout *ModulationRoutingParameter::createLayout(FocusAndMode focusAndMode) c
 
 void ModulationRoutingParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
+}
+
+void ModulationRoutingParameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulationRoutingParameter>(this);
 }

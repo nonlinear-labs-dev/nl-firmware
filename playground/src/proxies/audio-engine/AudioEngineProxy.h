@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nltools/messaging/Message.h>
+#include <parameters/messaging/ParameterMessageFactory.h>
 #include "playground.h"
 
 namespace UNDO
@@ -12,6 +13,16 @@ class AudioEngineProxy
 {
  public:
   AudioEngineProxy();
+
+  template<typename tParameter>
+  auto createAndSendParameterMessage(const tParameter* parameter) {
+    sendParameterMessage(createMessage<tParameter>(parameter));
+  }
+
+  template<typename tParameter>
+  auto createMessage(const tParameter* parameter) {
+    return ParameterMessageFactory::createMessage<tParameter>(parameter);
+  }
 
   template<class tMessage>
   void sendParameterMessage(const tMessage &msg)

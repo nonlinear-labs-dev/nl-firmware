@@ -76,6 +76,8 @@ class ModulateableParameter : public Parameter
   Glib::ustring modulationValueToDisplayString(tControlPositionValue v) const;
   int getModAmountDenominator(const ButtonModifiers &modifiers) const;
 
+  void sendParameterMessage() const override;
+
   tDisplayValue m_modulationAmount;
   MacroControls m_modSource;
 };

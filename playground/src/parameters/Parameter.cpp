@@ -219,7 +219,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
 void Parameter::sendToLpc() const
 {
   Application::get().getLPCProxy()->sendParameter(this);
-  Application::get().getAudioEngineProxy()->sendParameterMessage(ParameterMessageFactory::createMessage(this));
+  sendParameterMessage();
 }
 
 tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modifiers) const
@@ -539,4 +539,9 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
   nltools_assertOnDevPC(other->getVoiceGroup() != getVoiceGroup());
 
   setCpValue(transaction, Initiator::INDIRECT, other->getControlPositionValue(), false);
+}
+
+void Parameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<Parameter>(this);
 }

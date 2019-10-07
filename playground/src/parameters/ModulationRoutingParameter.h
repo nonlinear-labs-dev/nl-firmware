@@ -37,4 +37,7 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
   void onExclusiveRoutingLost();
+
+private:
+  void sendParameterMessage() const override;
 };

@@ -20,6 +20,8 @@
 #include <testing/TestRootDocument.h>
 #include <testing/parameter/TestGroupSet.h>
 #include <testing/parameter/TestGroup.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
+#include <parameters/messaging/ParameterMessageFactory.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -87,6 +89,11 @@ void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, 
       sendToLpc();
     });
   }
+}
+
+void ModulateableParameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulateableParameter>(this);
 }
 
 MacroControls ModulateableParameter::getModulationSource() const
@@ -396,7 +403,6 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
 void ModulateableParameter::registerTests()
 {
   g_test_add_func("/ModulateableParameter/1.4pct-to-112lpc", []() {
-
     TestRootDocument root;
     TestGroupSet groupSet(&root);
     TestGroup group(&groupSet, VoiceGroup::I);

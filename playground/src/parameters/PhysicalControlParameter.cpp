@@ -16,6 +16,7 @@
 #include <Application.h>
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
 #include <presets/EditBuffer.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
                                                    tDisplayValue def, int coarseDenominator, int fineDenominator)
@@ -193,7 +194,8 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 {
   int id = getUiSelectedModulationRouter();
 
-  if(auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent())) {
+  if(auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent()))
+  {
     auto mappings = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID("MCM"));
     auto routers = mappings->getModulationRoutingParametersFor(this);
     setUiSelectedModulationRouter(getIdOfAdvancedParameter(routers, id, inc));
@@ -202,7 +204,8 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 
 int PhysicalControlParameter::getUiSelectedModulationRouter() const
 {
-  if(auto grandPa = dynamic_cast<const EditBuffer*>(getParent()->getParent())) {
+  if(auto grandPa = dynamic_cast<const EditBuffer *>(getParent()->getParent()))
+  {
     auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
     auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
 
@@ -231,4 +234,9 @@ void PhysicalControlParameter::undoableStepBehavior(UNDO::Transaction *transacti
 
 void PhysicalControlParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
+}
+
+void PhysicalControlParameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<PhysicalControlParameter>(this);
 }

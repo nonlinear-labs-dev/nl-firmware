@@ -23,6 +23,7 @@
 #include <presets/PresetParameter.h>
 #include <tools/StringTools.h>
 #include <presets/EditBuffer.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(MacroControls::MC1);
 
@@ -135,8 +136,10 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
 void MacroControlParameter::updateBoundRibbon()
 {
-  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
-    if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
+  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  {
+    if(auto eb = dynamic_cast<EditBuffer *>(groups->getParent()))
+    {
       auto mcm = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
       auto routers = mcm->getModulationRoutingParametersFor(this);
 
@@ -161,7 +164,8 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 {
   if(m_UiSelectedHardwareSourceParameterID != pos)
   {
-    if(auto *eb = dynamic_cast<EditBuffer*>(getParent()->getParent())) {
+    if(auto *eb = dynamic_cast<EditBuffer *>(getParent()->getParent()))
+    {
       if(auto old = eb->findParameterByID(m_UiSelectedHardwareSourceParameterID))
         old->onUnselected();
 
@@ -372,4 +376,9 @@ void MacroControlParameter::undoableRandomize(UNDO::Transaction *transaction, In
 void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
+}
+
+void MacroControlParameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<MacroControlParameter>(this);
 }
