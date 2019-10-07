@@ -2,6 +2,6 @@
 #include "LinearHerzScaleConverter.h"
 
 LinearHerzScaleConverter::LinearHerzScaleConverter()
-    : LinearScaleConverter(ScaleConverter::tTcdRange{ 0, 16000 }, tDisplayRange{ 220, 880 }, FrequencyDimension{})
+    : LinearScaleConverter(ScaleConverter::tTcdRange{ 0, 16000 }, tDisplayRange{ 420, 480 }, FrequencyDimension::get())
 {
 }

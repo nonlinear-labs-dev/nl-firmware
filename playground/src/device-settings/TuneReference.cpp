@@ -3,7 +3,7 @@
 
 TuneReference::TuneReference(Settings& parent)
     : Setting(parent)
-    , m_value(nullptr, ScaleConverter::get<LinearHerzScaleConverter>(), 0, 100, 1000)
+    , m_value(nullptr, ScaleConverter::get<LinearHerzScaleConverter>(), 0, 60, 600)
 {
 }
 
@@ -19,7 +19,7 @@ ustring TuneReference::save() const
 
 ustring TuneReference::getDisplayString() const
 {
-  return std::to_string(m_value.getRawValue()) + " Hz";
+  return m_value.getDisplayString();
 }
 
 void TuneReference::incDec(int inc, ButtonModifiers mod)

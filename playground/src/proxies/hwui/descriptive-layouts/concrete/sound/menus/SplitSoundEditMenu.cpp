@@ -32,8 +32,8 @@ void SplitSoundEditMenu::init()
   addItem<ConvertToSingleItem>();
   addItem<InitSound>();
   addItem<RandomizeItem>();
+
   addItem<TextItem>("-- Common --");
   addItem<SettingItem<TransitionTime>>("Transition Time");
-  addItem<SettingItem<EditSmoothingTime>>("Smoothing Time");
   addItem<SettingItem<TuneReference>>("Tune Reference");
 }
