@@ -61,10 +61,10 @@
         }
       },
       "EventSinks": {
+        "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "SwitchToInitDetail",
         "BUTTON_C": "OpenUnisonParameterScreen",
-        "BUTTON_D": "OpenMasterParameterScreen",
-        "BUTTON_ENTER": "ToggleVoiceGroup"
+        "BUTTON_D": "OpenMasterParameterScreen"
       }
     }
   }
