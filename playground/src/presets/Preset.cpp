@@ -357,12 +357,12 @@ void Preset::writeGroups(Writer &writer, const Preset *other) const
   }
 }
 
-PresetParameterGroup *Preset::getSplitGroup()
+SplitPresetParameterGroup *Preset::getSplitGroup()
 {
   return &m_splitGroup;
 }
 
-const PresetParameterGroup *Preset::getSplitGroup() const
+const SplitPresetParameterGroup *Preset::getSplitGroup() const
 {
   return &m_splitGroup;
 }

@@ -12,21 +12,19 @@ PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *
 }
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent, const Preset &other)
-    : AttributesOwner(parent, &other), m_splitGroup{other}
+    : AttributesOwner(parent, &other), m_splitGroup(other.getSplitGroup())
 {
   init(&other);
 }
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent, const EditBuffer &editbuffer)
-    : AttributesOwner(parent, &editbuffer), m_splitGroup{editbuffer}
+    : AttributesOwner(parent, &editbuffer), m_splitGroup(editbuffer)
 {
   m_type = editbuffer.getType();
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &g : editbuffer.getParameterGroups(vg))
       m_parameterGroups[static_cast<int>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
-
-  m_splitGroup = std::make_unique<PresetParameterGroup>(*editbuffer.getSplitSoundParameterGroup());
 }
 
 void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
@@ -46,6 +44,4 @@ void PresetDualParameterGroups::init(const Preset *preset)
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &group : preset->m_parameterGroups[static_cast<int>(vg)])
       m_parameterGroups[static_cast<int>(vg)][group.first] = std::make_unique<PresetParameterGroup>(*group.second);
-
-  m_splitGroup = std::make_unique<PresetParameterGroup>(*preset->getSplitGroup());
 }

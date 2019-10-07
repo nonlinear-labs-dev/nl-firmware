@@ -13,14 +13,20 @@ ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
 
 void ConvertSoundMenu::convertSoundTo(SoundType newType)
 {
+  auto pm = Application::get().getPresetManager();
   if(newType != SoundType::Single)
   {
-    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(newType);
+    auto scope = pm->getUndoScope().startTransaction("Convert to " + toString(newType));
+    auto transaction = scope->getTransaction();
+    auto currentSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToDual(transaction, newType,
+                                                                                  currentSelection);
   }
   else
   {
-    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(
-        SoundType::Single, Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+    auto scope = pm->getUndoScope().startTransaction("Convert to Single");
+    auto transaction = scope->getTransaction();
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction);
   }
 }
 

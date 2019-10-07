@@ -86,8 +86,8 @@ class EditBuffer : public ParameterDualGroupSet
 
   SoundType getType() const;
 
-  void undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType, VoiceGroup from = VoiceGroup::I);
-  void undoableConvertToType(const SoundType &ebType, VoiceGroup from = VoiceGroup::I);
+  void undoableConvertToSingle(UNDO::Transaction* transaction);
+  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
 
  private:
   bool anyParameterChanged(VoiceGroup vg) const;

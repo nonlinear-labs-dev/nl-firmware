@@ -9,8 +9,9 @@ ConvertToSingleItem::ConvertToSingleItem()
     : AnimatedGenericItem(
           "Convert to Single",
           [] {
-            Application::get().getPresetManager()->getEditBuffer()->undoableConvertToType(
-                SoundType::Single, Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+            auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Convert Sound to Single");
+            auto transaction = scope->getTransaction();
+            Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction);
           },
           [] {
             Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });

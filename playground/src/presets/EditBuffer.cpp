@@ -427,7 +427,12 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
-  undoableConvertToType(transaction, preset->getType());
+
+  if(preset->getType() == SoundType::Single)
+    undoableConvertToSingle(transaction);
+  else if(preset->getType() == SoundType::Split || preset->getType() == SoundType::Layer)
+    undoableConvertToDual(transaction, preset->getType());
+
   super::copyFrom(transaction, preset);
 
   resetModifiedIndicator(transaction, getHash());
@@ -567,32 +572,23 @@ void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib
   }
 }
 
-void EditBuffer::undoableConvertToType(UNDO::Transaction *transaction, const SoundType &ebType, VoiceGroup from)
+void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction)
 {
-  if(ebType == m_type)
+  if(m_type == SoundType::Single)
     return;
 
-  transaction->addUndoSwap(this, m_type, ebType);
-
-  if(ebType == SoundType::Single)
-  {
-    transaction->addSimpleCommand(
-        [](auto) { Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I); });
-
-    copyVoiceGroup(transaction, from, VoiceGroup::I);
-  }
-  else
-  {
-    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
-  }
+  transaction->addUndoSwap(this, m_type, SoundType::Single);
 }
 
-void EditBuffer::undoableConvertToType(const SoundType &ebType, VoiceGroup from)
+void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom)
 {
-  if(ebType == m_type)
+  if(m_type != SoundType::Single)
     return;
 
-  auto scope = getUndoScope().startTransaction("Convert Editbuffer to " + toString(ebType));
-  auto transaction = scope->getTransaction();
-  undoableConvertToType(transaction, ebType, from);
+  transaction->addUndoSwap(this, m_type, type);
+  if(copyFrom == VoiceGroup::II)
+    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+
+  transaction->addSimpleCommand(
+      [](auto) { Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I); });
 }
