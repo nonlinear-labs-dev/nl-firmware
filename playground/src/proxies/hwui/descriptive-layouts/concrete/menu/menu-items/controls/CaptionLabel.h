@@ -18,6 +18,21 @@ template <typename tLabelType> class CaptionLabel : public tLabelType
     return 2;
   }
 
+  void setFontColor(FrameBuffer& fb) const override
+  {
+    if(m_changeHighlight)
+    {
+      if(tLabelType::isHighlight())
+        fb.setColor(FrameBuffer::C255);
+      else
+        fb.setColor(FrameBuffer::C179);
+    }
+    else
+    {
+      fb.setColor(FrameBuffer::C179);
+    }
+  }
+
   void setBackgroundColor(FrameBuffer& fb) const override
   {
     if(m_changeHighlight)

@@ -8,5 +8,9 @@ MonoModeItem::MonoModeItem(const Rect &rect)
 
 MenuOverlay *MonoModeItem::createOverlay()
 {
-  return new MonoModeOverlay(getFullRightSideOverlayRect());
+  auto og = getPosition();
+  auto third = og.getWidth() / 3;
+  auto twoThirds
+      = Rect(og.getLeft() + third + 1, 0, third * 2 + 1, 52);
+  return new MonoModeOverlay(twoThirds);
 }
