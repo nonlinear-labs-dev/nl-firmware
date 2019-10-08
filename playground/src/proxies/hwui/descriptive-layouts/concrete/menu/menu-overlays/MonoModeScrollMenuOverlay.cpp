@@ -41,5 +41,7 @@ void MonoModeScrollMenuOverlay::ScrollMenuOverlayMenu::init()
 }
 
 bool MonoModeScrollMenuOverlay::redraw(FrameBuffer &fb) {
-  return m_menu.redraw(fb);
+  auto ret = MenuOverlay::redraw(fb);
+  ret |= m_menu.redraw(fb);
+  return ret;
 }

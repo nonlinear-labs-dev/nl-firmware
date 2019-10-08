@@ -31,8 +31,8 @@ bool ControlWithChildren::redraw(FrameBuffer &fb)
 
   auto clip = fb.clipRespectingOffset(getPosition());
 
-  //if(clip.isEmpty())
-  //  return false;
+  if(clip.isEmpty())
+    return false;
 
   auto offset = fb.offset(getPosition().getPosition());
 

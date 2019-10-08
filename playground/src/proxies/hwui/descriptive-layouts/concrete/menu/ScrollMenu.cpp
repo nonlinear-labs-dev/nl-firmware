@@ -98,8 +98,11 @@ void ScrollMenu::doLayout()
 {
   if(m_overlay)
   {
-    m_overlay->setVisible(true);
-    return;
+    auto castedMe = dynamic_cast<MenuOverlay*>(this);
+    if(castedMe != m_overlay) {
+      m_overlay->setVisible(true);
+      return;
+    }
   }
 
   std::vector<MenuItem *> items;
