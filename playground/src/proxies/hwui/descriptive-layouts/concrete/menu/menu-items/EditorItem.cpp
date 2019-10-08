@@ -57,5 +57,6 @@ bool EditorItem::redrawEnterIndication(FrameBuffer &buffer)
   leftRect.setWidth(12);
   leftRect.setLeft(getPosition().getRight() - 12);
   SubmenuIndicator s(leftRect);
+  s.setHighlight(isHighlight());
   return s.redraw(buffer);
 }

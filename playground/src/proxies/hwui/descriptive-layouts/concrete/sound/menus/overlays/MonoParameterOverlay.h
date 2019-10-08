@@ -15,5 +15,6 @@ class MonoParameterOverlay : public ArrowIncrementDecrementOverlay
   void onCommit(bool down) override;
 
  private:
+  Parameter* getParameter() const;
   const Parameter* m_parameter;
 };

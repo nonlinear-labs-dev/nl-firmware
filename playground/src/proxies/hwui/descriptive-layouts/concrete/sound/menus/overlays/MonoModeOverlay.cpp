@@ -20,10 +20,9 @@ MonoModeOverlay::MonoModeOverlay(const Rect& r)
   for(auto& id : ids)
   {
     const auto height = r.getHeight() / ids.size();
-    const auto baseRect
-        = Rect{ r.getLeft(), static_cast<int>(r.getTop() + height * i), r.getWidth(), static_cast<int>(height) };
     auto param = getParameter(id);
-    m_labels.emplace_back(addControl(new MonoParameterItem(param->getLongName(), param, baseRect)));
+    m_labels.emplace_back(addControl(new MonoParameterItem(
+        param->getLongName(), param, Rect{ 0, static_cast<int>(height * i), r.getWidth(), static_cast<int>(height) })));
     i++;
   }
 
@@ -77,21 +76,15 @@ void MonoModeOverlay::selectPrev()
 
 bool MonoModeOverlay::redraw(FrameBuffer& fb)
 {
-  MenuOverlay::redraw(fb);
+  auto ret = MenuOverlay::redraw(fb);
 
   if(m_overlay)
   {
-    return m_overlay->redraw(fb);
-  }
-  else
-  {
-    auto ret = MenuOverlay::redraw(fb);
-    for(auto& i : m_labels)
-    {
-      i->redraw(fb);
-    }
+    ret |= m_overlay->redraw(fb);
     return ret;
   }
+
+  return ret;
 }
 
 void MonoModeOverlay::enterCurr()

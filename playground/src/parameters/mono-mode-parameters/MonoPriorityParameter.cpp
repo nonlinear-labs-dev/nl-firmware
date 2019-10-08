@@ -1,8 +1,8 @@
-#include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
+#include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include "MonoPriorityParameter.h"
 
 MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, Parameter::ID id)
-    : MonoParameter(parent, id, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 2, 2)
+    : MonoParameter(parent, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 2, 2)
 {
 }
 

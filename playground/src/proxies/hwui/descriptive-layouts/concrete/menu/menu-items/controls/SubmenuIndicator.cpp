@@ -25,10 +25,19 @@ SubmenuIndicator::SubmenuIndicator(const Rect &rect)
 
 bool SubmenuIndicator::redraw(FrameBuffer &fb)
 {
+  if(isHighlight())
+    m_label.setFontColor(FrameBuffer::Colors::C255);
+  else
+    m_label.setFontColor(FrameBuffer::Colors::C179);
+
   m_label.redraw(fb);
   auto pos = getArrowLineRect(m_label.getPosition());
 
-  fb.setColor(FrameBuffer::Colors::C128);
+  if(isHighlight())
+    fb.setColor(FrameBuffer::Colors::C255);
+  else
+    fb.setColor(FrameBuffer::Colors::C179);
+
   fb.drawHorizontalLine(pos.getLeft() + 2, pos.getCenter().getY() + 1, 3);
   fb.drawVerticalLine(pos.getLeft() + 4, pos.getCenter().getY() - 2, 4);
   return true;

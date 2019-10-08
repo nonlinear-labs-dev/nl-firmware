@@ -13,7 +13,7 @@ class BasicItem : public MenuItem
       , m_caption{ caption }
   {
     auto leftHalf = getPosition();
-    leftHalf.setLeft(leftHalf.getLeft() + 1);
+    leftHalf.setLeft(1);
     leftHalf.setWidth((leftHalf.getWidth() / 2) - 1);
 
     addControl(new CaptionLabel<LeftAlignedLabel>(m_caption, leftHalf, true));

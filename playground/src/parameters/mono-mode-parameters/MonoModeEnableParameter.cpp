@@ -1,8 +1,8 @@
-#include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
+#include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include "MonoModeEnableParameter.h"
 
 MonoModeEnableParameter::MonoModeEnableParameter(ParameterGroup *group, uint16_t id)
-    : MonoParameter(group, id, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 1, 1)
+    : MonoParameter(group, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 1, 1)
 {
 }
 
