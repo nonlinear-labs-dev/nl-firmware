@@ -33,6 +33,7 @@ template <class tSetting> class ChangeSettingOverlay : public ArrowIncrementDecr
 
 template <class tSetting> void ChangeSettingOverlay<tSetting>::onLeft(bool down)
 {
+  ArrowIncrementDecrementOverlay::onLeft(down);
   if(down)
   {
     getSetting()->incDec(-1, {});
@@ -41,6 +42,7 @@ template <class tSetting> void ChangeSettingOverlay<tSetting>::onLeft(bool down)
 
 template <class tSetting> void ChangeSettingOverlay<tSetting>::onRight(bool down)
 {
+  ArrowIncrementDecrementOverlay::onRight(down);
   if(down)
   {
     getSetting()->incDec(1, {});
@@ -49,4 +51,5 @@ template <class tSetting> void ChangeSettingOverlay<tSetting>::onRight(bool down
 
 template <class tSetting> void ChangeSettingOverlay<tSetting>::onCommit(bool down)
 {
+  ArrowIncrementDecrementOverlay::onCommit(down);
 }

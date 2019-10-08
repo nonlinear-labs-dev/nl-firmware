@@ -6,7 +6,7 @@ bool EditorItem::canEnter()
   return true;
 }
 
-Rect EditorItem::getStandardOverlayRect()
+Rect EditorItem::getDefaultOverlayRect()
 {
   auto half = getPosition();
   half.setHeight(half.getHeight() - 2);
@@ -16,11 +16,21 @@ Rect EditorItem::getStandardOverlayRect()
   return half;
 }
 
+Rect EditorItem::getFullRightSideOverlayRect()
+{
+  auto rightHalf = getPosition();
+  rightHalf.setHeight(52);
+  rightHalf.setTop(0);
+  rightHalf.setWidth(rightHalf.getWidth() / 2);
+  rightHalf.setLeft(getPosition().getWidth() / 2);
+  return rightHalf;
+}
+
 void EditorItem::doAction()
 {
 }
 
-bool EditorItem::drawHighlightBorder(FrameBuffer& fb)
+bool EditorItem::drawHighlightBorder(FrameBuffer &fb)
 {
   auto ret = BasicItem::drawHighlightBorder(fb);
 
@@ -34,13 +44,15 @@ bool EditorItem::drawHighlightBorder(FrameBuffer& fb)
   return true;
 }
 
-bool EditorItem::redraw(FrameBuffer &fb) {
-  auto ret = BasicItem::redraw(fb) ;
+bool EditorItem::redraw(FrameBuffer &fb)
+{
+  auto ret = BasicItem::redraw(fb);
   ret |= redrawEnterIndication(fb);
   return ret;
 }
 
-bool EditorItem::redrawEnterIndication(FrameBuffer &buffer) {
+bool EditorItem::redrawEnterIndication(FrameBuffer &buffer)
+{
   auto leftRect = getPosition();
   leftRect.setWidth(12);
   leftRect.setLeft(getPosition().getRight() - 12);

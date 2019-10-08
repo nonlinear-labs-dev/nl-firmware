@@ -3,6 +3,6 @@
 
 class SplitPointItem : public EditorItem {
 public:
-  SplitPointItem();
-  ScrollMenuOverlay *createOverlay() override;
+  SplitPointItem(const Rect &rect);
+  MenuOverlay *createOverlay() override;
 };

@@ -11,6 +11,7 @@
 #include <parameters/PedalParameter.h>
 #include <parameters/PitchbendParameter.h>
 #include <parameters/RibbonParameter.h>
+#include <parameters/mono-mode-parameters/MonoParameter.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -87,6 +88,10 @@ void AudioEngineProxy::sendSingleEditBuffer()
         t.controlPosition = static_cast<float>(a->getControlPositionValue());
         t.ribbonReturnMode = a->getRibbonReturnMode();
         t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
+      }
+      else if(auto a = dynamic_cast<MonoParameter *>(p))
+      {
+        //Wohoo
       }
       else if(auto a = dynamic_cast<Parameter *>(p))
       {
@@ -166,6 +171,10 @@ void AudioEngineProxy::sendSplitEditBuffer()
           t.ribbonReturnMode = a->getRibbonReturnMode();
           t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
         }
+        else if(auto a = dynamic_cast<MonoParameter *>(p))
+        {
+          //Wohoo
+        }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {
           auto &t = msg.unmodulateables[index][unmodulateables++];
@@ -244,6 +253,10 @@ void AudioEngineProxy::sendLayerEditBuffer()
           t.controlPosition = static_cast<float>(a->getControlPositionValue());
           t.ribbonReturnMode = a->getRibbonReturnMode();
           t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
+        }
+        else if(auto a = dynamic_cast<MonoParameter *>(p))
+        {
+          //Wohoo
         }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {

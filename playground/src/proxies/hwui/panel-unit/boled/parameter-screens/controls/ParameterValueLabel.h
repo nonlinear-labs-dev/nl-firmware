@@ -9,7 +9,7 @@ class ParameterValueLabel : public Label
   typedef Label super;
 
  public:
-  ParameterValueLabel(Parameter *param, const Rect &pos);
+  ParameterValueLabel(const Parameter *param, const Rect &pos);
 
  private:
   void updateText(const Parameter *param);

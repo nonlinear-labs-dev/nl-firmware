@@ -1,8 +1,8 @@
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
 #include "TextItem.h"
 
-TextItem::TextItem(const std::string &text)
-    : BasicItem(text)
+TextItem::TextItem(const std::string& text, const Rect& r)
+    : BasicItem(text, r)
 {
 }
 

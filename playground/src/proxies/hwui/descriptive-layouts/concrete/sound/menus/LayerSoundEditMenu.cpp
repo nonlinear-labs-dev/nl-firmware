@@ -15,8 +15,9 @@ LayerSoundEditMenu::LayerSoundEditMenu(const Rect &r)
 
 void LayerSoundEditMenu::init()
 {
-  addItem<LoadPresetIntoVoiceGroupItem>();
-  addItem<ConvertToSingleItem>();
-  addItem<InitSound>();
-  addItem<RandomizeItem>();
+  auto fullWidth = Rect{0, 0, 254, 96};
+  addItem<LoadPresetIntoVoiceGroupItem>(fullWidth);
+  addItem<ConvertToSingleItem>(fullWidth);
+  addItem<InitSound>(fullWidth);
+  addItem<RandomizeItem>(fullWidth);
 }

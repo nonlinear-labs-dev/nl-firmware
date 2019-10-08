@@ -2,11 +2,11 @@
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/controls/SplitPointLabel.h>
 #include "SplitPointItem.h"
 
-ScrollMenuOverlay *SplitPointItem::createOverlay() {
-  return new SplitPointOverlay(getStandardOverlayRect());
+MenuOverlay *SplitPointItem::createOverlay() {
+  return new SplitPointOverlay(getDefaultOverlayRect());
 }
 
-SplitPointItem::SplitPointItem() : EditorItem("Split Point") {
+SplitPointItem::SplitPointItem(const Rect &rect) : EditorItem("Split Point", rect) {
   auto rightHalf = getPosition();
   rightHalf.setWidth(rightHalf.getWidth() / 2);
   rightHalf.setLeft(rightHalf.getWidth());

@@ -1,11 +1,15 @@
 #include "SpacerItem.h"
 
-SpacerItem::SpacerItem() {
+SpacerItem::SpacerItem(const Rect &rect)
+    : MenuItem(rect)
+{
 }
 
-void SpacerItem::doAction() {
+void SpacerItem::doAction()
+{
 }
 
-bool SpacerItem::canEnter() {
+bool SpacerItem::canEnter()
+{
   return false;
 }

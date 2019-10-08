@@ -19,8 +19,7 @@ ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, ui
 }
 
 ModulationRoutingParameter::~ModulationRoutingParameter()
-{
-}
+= default;
 
 void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                                 tControlPositionValue newValue)
@@ -33,7 +32,7 @@ void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPos
     {
       if(p->getRibbonReturnMode() == RibbonReturnMode::STAY)
       {
-        MacroControlMappingGroup *parent = dynamic_cast<MacroControlMappingGroup *>(getParentGroup());
+        auto *parent = dynamic_cast<MacroControlMappingGroup *>(getParentGroup());
         auto otherRouters = parent->getModulationRoutingParametersFor(getSourceParameter());
 
         for(auto router : otherRouters)

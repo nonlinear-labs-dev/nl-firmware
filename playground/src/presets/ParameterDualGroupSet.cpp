@@ -32,6 +32,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <groups/SplitSoundGroup.h>
+#include <groups/MonoGroup.h>
 
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
@@ -62,6 +63,7 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, vg), vg);
     appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls, vg), vg);
     appendParameterGroup(new ScaleGroup(this, vg), vg);
+    appendParameterGroup(new MonoGroup(this, vg), vg);
 
     m_idToParameterMap[static_cast<int>(vg)] = getParametersSortedById(vg);
   }

@@ -17,6 +17,7 @@
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/LoadPresetIntoVoiceGroupItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/SplitPointItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/TextItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/MonoModeItem.h>
 
 SplitSoundEditMenu::SplitSoundEditMenu(const Rect& r)
     : ScrollMenu(r)
@@ -26,14 +27,17 @@ SplitSoundEditMenu::SplitSoundEditMenu(const Rect& r)
 
 void SplitSoundEditMenu::init()
 {
-  addItem<TextItem>("-- Split --");
-  addItem<LoadPresetIntoVoiceGroupItem>();
-  addItem<SplitPointItem>();
-  addItem<ConvertToSingleItem>();
-  addItem<InitSound>();
-  addItem<RandomizeItem>();
+  const auto height = 52 / 4;
+  auto fullWidth = Rect{0, 0, 254, height};
+  addItem<TextItem>("-- Split --", fullWidth);
+  addItem<LoadPresetIntoVoiceGroupItem>(fullWidth);
+  addItem<SplitPointItem>(fullWidth);
+  addItem<ConvertToSingleItem>(fullWidth);
+  addItem<InitSound>(fullWidth);
+  addItem<RandomizeItem>(fullWidth);
+  addItem<MonoModeItem>(fullWidth);
 
-  addItem<TextItem>("-- Common --");
-  addItem<SettingItem<TransitionTime>>("Transition Time");
-  addItem<SettingItem<TuneReference>>("Tune Reference");
+  addItem<TextItem>("-- Common --", fullWidth);
+  addItem<SettingItem<TransitionTime>>("Transition Time", fullWidth);
+  addItem<SettingItem<TuneReference>>("Tune Reference", fullWidth);
 }

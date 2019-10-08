@@ -1,10 +1,11 @@
-#include "ScrollMenuOverlay.h"
+#include "MenuOverlay.h"
 
-ScrollMenuOverlay::ScrollMenuOverlay(const Rect& r)
+MenuOverlay::MenuOverlay(const Rect& r)
     : ControlWithChildren(r)
 {
 }
-bool ScrollMenuOverlay::redraw(FrameBuffer& fb)
+
+bool MenuOverlay::redraw(FrameBuffer& fb)
 {
   auto ret = ControlWithChildren::redraw(fb);
   fb.setColor(FrameBuffer::C204);

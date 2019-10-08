@@ -2,7 +2,7 @@
 #include "ArrowIncrementDecrementOverlay.h"
 
 ArrowIncrementDecrementOverlay::ArrowIncrementDecrementOverlay(const Rect& r)
-    : ScrollMenuOverlay(r)
+    : LeftRightUpDownCommitOverlay(r)
 {
 
   auto fullWidth = r.getWidth();
@@ -12,27 +12,11 @@ ArrowIncrementDecrementOverlay::ArrowIncrementDecrementOverlay(const Rect& r)
   m_rightArrow = addControl(new ArrowRight({ labelWidth + 10, -2, 10, 13 }));
 }
 
-bool ArrowIncrementDecrementOverlay::onButton(Buttons i, bool down, ButtonModifiers mod)
-{
-  if(i == Buttons::BUTTON_C)
-  {
-    m_leftArrow->setHighlight(down);
-    onLeft(down);
-    setDirty();
-    return true;
-  }
-  if(i == Buttons::BUTTON_D)
-  {
-    m_rightArrow->setHighlight(down);
-    onRight(down);
-    setDirty();
-    return true;
-  }
-  if(i == Buttons::BUTTON_ENTER)
-  {
-    onCommit(down);
-    setDirty();
-    return true;
-  }
-  return false;
+void ArrowIncrementDecrementOverlay::onLeft(bool down) {
+  m_leftArrow->setHighlight(down);
 }
+
+void ArrowIncrementDecrementOverlay::onRight(bool down) {
+  m_rightArrow->setHighlight(down);
+}
+

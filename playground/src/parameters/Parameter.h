@@ -117,7 +117,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual VisualizationStyle getVisualizationStyle() const;
 
   // CALLBACKS
-  sigc::connection onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall = true);
+  sigc::connection onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall = true) const;
 
   void check();
 
@@ -142,7 +142,7 @@ class Parameter : public UpdateDocumentContributor,
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
 
  private:
-  Signal<void, const Parameter *> m_signalParamChanged;
+  mutable Signal<void, const Parameter *> m_signalParamChanged;
 
   ID m_id;
   QuantizedValue m_value;

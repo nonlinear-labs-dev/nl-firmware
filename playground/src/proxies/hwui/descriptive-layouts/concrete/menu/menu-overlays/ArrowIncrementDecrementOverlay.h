@@ -1,22 +1,25 @@
 #pragma once
 
-#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/ScrollMenuOverlay.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/MenuOverlay.h>
 #include <proxies/hwui/controls/ArrowRight.h>
 #include <proxies/hwui/controls/ArrowLeft.h>
 #include <proxies/hwui/controls/LabelRegular8.h>
+#include "LeftRightUpDownCommitOverlay.h"
 
-class ArrowIncrementDecrementOverlay : public ScrollMenuOverlay
+class ArrowIncrementDecrementOverlay : public LeftRightUpDownCommitOverlay
 {
  public:
   explicit ArrowIncrementDecrementOverlay(const Rect& r);
 
-  bool onButton(Buttons i, bool down, ButtonModifiers mod) override;
+  void onLeft(bool down) override;
 
-  virtual void onLeft(bool down) = 0;
-  virtual void onRight(bool down) = 0;
-  virtual void onCommit(bool down) = 0;
+  void onRight(bool down) override;
 
- private:
+  void onUp(bool down) override {};
+  void onDown(bool down) override {};
+  void onCommit(bool down) override {};
+
+private:
   ArrowRight* m_rightArrow;
   ArrowLeft* m_leftArrow;
 };

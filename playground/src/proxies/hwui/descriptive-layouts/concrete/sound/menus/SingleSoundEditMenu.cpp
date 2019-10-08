@@ -14,7 +14,8 @@ SingleSoundEditMenu::SingleSoundEditMenu(const Rect& r)
 
 void SingleSoundEditMenu::init()
 {
-  addItem<TextItem>("-- Single --");
-  addItem<InitSound>();
-  addItem<RandomizeItem>();
+  auto fullWidth = Rect{0, 0, 254, 96};
+  addItem<TextItem>("-- Single --", fullWidth);
+  addItem<InitSound>(fullWidth);
+  addItem<RandomizeItem>(fullWidth);
 }

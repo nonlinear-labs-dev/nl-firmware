@@ -3,7 +3,7 @@
 
 class SpacerItem : public MenuItem {
 public:
-  SpacerItem();
+  SpacerItem(const Rect &rect);
   void doAction() override;
   bool canEnter() override;
 };

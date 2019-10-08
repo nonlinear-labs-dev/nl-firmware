@@ -3,7 +3,7 @@
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/panel-unit/ButtonReceiver.h>
 #include "proxies/hwui/descriptive-layouts/concrete/menu/menu-items/MenuItem.h"
-#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/ScrollMenuOverlay.h"
+#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/MenuOverlay.h"
 
 class ScrollMenu : public ControlWithChildren, public ButtonReceiver
 {
@@ -23,7 +23,7 @@ class ScrollMenu : public ControlWithChildren, public ButtonReceiver
   }
 
  protected:
-  ScrollMenuOverlay *m_overlay = nullptr;
+  MenuOverlay *m_overlay = nullptr;
 
   std::vector<MenuItem *> m_items;
   int m_selectedItem{ 0 };

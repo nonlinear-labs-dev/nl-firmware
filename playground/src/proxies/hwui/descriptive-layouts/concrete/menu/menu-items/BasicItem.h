@@ -8,8 +8,9 @@ class BasicItem : public MenuItem
 {
  public:
   template <class T>
-  explicit BasicItem(T caption)
-      : m_caption{ caption }
+  explicit BasicItem(T caption, const Rect& r)
+      : MenuItem(r)
+      , m_caption{ caption }
   {
     auto leftHalf = getPosition();
     leftHalf.setLeft(leftHalf.getLeft() + 1);

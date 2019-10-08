@@ -5,5 +5,5 @@
 class ConvertToSingleItem : public AnimatedGenericItem
 {
  public:
-  ConvertToSingleItem();
+  ConvertToSingleItem(const Rect &rect);
 };
