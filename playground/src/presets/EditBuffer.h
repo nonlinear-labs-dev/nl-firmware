@@ -32,6 +32,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableSelectParameter(const Glib::ustring &id);
   void undoableSelectParameter(uint16_t id);
+  void undoableSelectParameter(uint16_t id, VoiceGroup vg);
   void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
 
@@ -86,7 +87,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   SoundType getType() const;
 
-  void undoableConvertToSingle(UNDO::Transaction* transaction);
+  void undoableConvertToSingle(UNDO::Transaction *transaction);
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
 
  private:

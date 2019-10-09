@@ -65,9 +65,11 @@ void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
   const int miniParamWidth = 56;
   int yPos = ySpaceing;
 
+  const auto vg = getVoiceGroup();
+
   for(int i : { 12345, 12346, 12347, 12348 })
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i, getVoiceGroup());
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i, vg);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     miniParam->setSelected(param == parameter);
     addControl(miniParam);

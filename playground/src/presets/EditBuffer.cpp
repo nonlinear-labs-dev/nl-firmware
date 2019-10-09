@@ -196,6 +196,12 @@ void EditBuffer::undoableSelectParameter(uint16_t id)
     undoableSelectParameter(p);
 }
 
+void EditBuffer::undoableSelectParameter(uint16_t id, VoiceGroup vg)
+{
+  if(auto p = findParameterByID(id, vg))
+    undoableSelectParameter(p);
+}
+
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id)
 {
 
@@ -343,8 +349,16 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
   }
 }
 
+bool isIDMonoGroup(int id)
+{
+  return id >= 12345 && id <= 12348;
+}
+
 Parameter *EditBuffer::getSelected(VoiceGroup vg) const
 {
+  if(getType() != SoundType::Split && isIDMonoGroup(m_selectedParameterId))
+    vg = VoiceGroup::I;
+
   return findParameterByID(m_selectedParameterId, vg);
 }
 

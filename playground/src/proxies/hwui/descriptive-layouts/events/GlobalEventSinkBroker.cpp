@@ -235,7 +235,12 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::OpenMasterParameterScreen, [eb]() { eb->undoableSelectParameter(247); });
     registerEvent(EventSinks::OpenUnisonParameterScreen, [eb]() { eb->undoableSelectParameter(249); });
-    registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() { eb->undoableSelectParameter(12345); });
+    registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
+      if(eb->getType() == SoundType::Split)
+        eb->undoableSelectParameter(12345);
+      else
+        eb->undoableSelectParameter(12345, VoiceGroup::I);
+    });
   }
 
   void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)
