@@ -38,6 +38,7 @@ void AudioEngineProxy::sendSingleEditBuffer()
   size_t pedals = 0;
   size_t ribbons = 0;
   size_t unmodulateables = 0;
+  size_t monos = 0;
 
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
@@ -91,7 +92,9 @@ void AudioEngineProxy::sendSingleEditBuffer()
       }
       else if(auto a = dynamic_cast<MonoParameter *>(p))
       {
-        //Wohoo
+        auto &t = msg.monos[monos++];
+        t.id = p->getID();
+        t.controlPosition = p->getControlPositionValue();
       }
       else if(auto a = dynamic_cast<Parameter *>(p))
       {
@@ -120,6 +123,7 @@ void AudioEngineProxy::sendSplitEditBuffer()
     size_t pedals = 0;
     size_t ribbons = 0;
     size_t unmodulateables = 0;
+    size_t monos = 0;
 
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
@@ -173,7 +177,9 @@ void AudioEngineProxy::sendSplitEditBuffer()
         }
         else if(auto a = dynamic_cast<MonoParameter *>(p))
         {
-          //Wohoo
+          auto &t = msg.monos[index][monos++];
+          t.id = p->getID();
+          t.controlPosition = p->getControlPositionValue();
         }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {
@@ -203,6 +209,7 @@ void AudioEngineProxy::sendLayerEditBuffer()
     size_t pedals = 0;
     size_t ribbons = 0;
     size_t unmodulateables = 0;
+    size_t monos = 0;
 
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
@@ -256,7 +263,12 @@ void AudioEngineProxy::sendLayerEditBuffer()
         }
         else if(auto a = dynamic_cast<MonoParameter *>(p))
         {
-          //Wohoo
+          if(index == 0)
+          {
+            auto &t = msg.monos[monos++];
+            t.id = p->getID();
+            t.controlPosition = p->getControlPositionValue();
+          }
         }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {

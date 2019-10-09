@@ -225,6 +225,10 @@ namespace nltools
       struct UnmodulatebaleParameter : Parameter
       {
       };
+
+      struct MonoParameter : Parameter
+      {
+      };
     }
 
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
@@ -236,6 +240,7 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, 4> macros;
       std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
       std::array<ParameterGroups::UnmodulatebaleParameter, 138> unmodulateables;
+      std::array<ParameterGroups::MonoParameter, 4> monos;
     };
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
@@ -247,6 +252,7 @@ namespace nltools
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
     };
 
     struct LayerPresetMessage : Message<MessageType::LayerPreset>
@@ -258,6 +264,7 @@ namespace nltools
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<ParameterGroups::MonoParameter, 4> monos;
     };
   }
 }
