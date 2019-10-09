@@ -47,7 +47,7 @@ private:
     uint32_t m_layer_focus; // probably obsolete
     // global dsp components
     GlobalSection m_global;
-    DualVoiceAllocation m_va;
+    VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;
     ae_fade_table m_fade;
     // layered dsp components
     PolySection m_poly[2];

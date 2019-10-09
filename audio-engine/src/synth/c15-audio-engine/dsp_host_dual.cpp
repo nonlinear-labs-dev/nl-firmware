@@ -12,12 +12,13 @@
 dsp_host_dual::dsp_host_dual()
 {
     m_mainOut_L = m_mainOut_R = 0.0f;
+    m_layer_mode = C15::Properties::LayerMode::Single;
 }
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
 {
     const float samplerate = static_cast<float>(_samplerate);
-    m_va.init();
+    m_alloc.init(&m_layer_mode);
     m_convert.init();
     m_clock.init(_samplerate);
     m_time.init(_samplerate);
