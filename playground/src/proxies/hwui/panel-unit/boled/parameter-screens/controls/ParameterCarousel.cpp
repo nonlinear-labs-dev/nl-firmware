@@ -9,16 +9,8 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "proxies/hwui/controls/Button.h"
+#include "NeverHighlitButton.h"
 
-class NeverHighlitButton : public Button
-{
- public:
-  using Button::Button;
-
-  virtual void setHighlight(bool isHighlight) override
-  {
-  }
-};
 
 ParameterCarousel::ParameterCarousel(const Rect& pos)
     : super(pos)

@@ -9,11 +9,11 @@ MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, Parameter::
 ustring MonoPriorityParameter::getDisplayString() const
 {
   auto value = getValue().getDisplayValue();
-  if(value == 0.0)
+  if(value == 0)
   {
     return "Lowest";
   }
-  else if(value == 0.5)
+  else if(value == 50)
   {
     return "Last";
   }
@@ -23,10 +23,12 @@ ustring MonoPriorityParameter::getDisplayString() const
   }
 }
 
-ustring MonoPriorityParameter::getLongName() const {
+ustring MonoPriorityParameter::getLongName() const
+{
   return "Mono Priority";
 }
 
-ustring MonoPriorityParameter::getShortName() const {
-  return getLongName();
+ustring MonoPriorityParameter::getShortName() const
+{
+  return "Priority";
 }

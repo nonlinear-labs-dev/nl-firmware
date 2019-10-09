@@ -35,7 +35,6 @@ void SplitSoundEditMenu::init()
   addItem<ConvertToSingleItem>(fullWidth);
   addItem<InitSound>(fullWidth);
   addItem<RandomizeItem>(fullWidth);
-  addItem<MonoModeItem>(fullWidth);
 
   addItem<TextItem>("-- Common --", fullWidth);
   addItem<SettingItem<TransitionTime>>("Transition Time", fullWidth);

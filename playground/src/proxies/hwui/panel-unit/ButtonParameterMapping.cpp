@@ -110,6 +110,8 @@ ButtonParameterMapping::ButtonParameterMapping()
 
   addMapping(Buttons::BUTTON_94, { 241 });
   addMapping(Buttons::BUTTON_95, { 247, 248, 312 });
+
+  //addMapping(Buttons::INVALID, {12345, 12346, 12347, 12348});
 }
 
 ButtonParameterMapping::~ButtonParameterMapping()

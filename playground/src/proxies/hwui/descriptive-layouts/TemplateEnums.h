@@ -45,7 +45,7 @@ namespace DescriptiveLayouts
        DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
        IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
-       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameterScreen, OpenMasterParameterScreen);
+       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameterScreen, OpenMasterParameterScreen, OpenMonoParameterScreen);
 
   ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);

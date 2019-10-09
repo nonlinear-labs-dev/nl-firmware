@@ -18,10 +18,12 @@ ustring MonoModeEnableParameter::getDisplayString() const
   }
 }
 
-ustring MonoModeEnableParameter::getLongName() const {
+ustring MonoModeEnableParameter::getLongName() const
+{
   return "Mono Enable";
 }
 
-ustring MonoModeEnableParameter::getShortName() const {
-  return getLongName();
+ustring MonoModeEnableParameter::getShortName() const
+{
+  return "Enable";
 }

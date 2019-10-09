@@ -7,9 +7,9 @@ MonoGlideTimeParameter::MonoGlideTimeParameter(ParameterGroup *group, Parameter:
 }
 
 ustring MonoGlideTimeParameter::getLongName() const {
-  return "Mono Glide Time";
+  return "Glide Time";
 }
 
 ustring MonoGlideTimeParameter::getShortName() const {
-  return getLongName();
+  return "Glide";
 }

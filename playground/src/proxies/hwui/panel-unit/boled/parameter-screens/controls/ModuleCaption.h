@@ -16,6 +16,10 @@ class ModuleCaption : public Label
 
   bool redraw(FrameBuffer &fb) override;
 
+  virtual bool enableVoiceGroupSuffix() const {
+    return true;
+  };
+
  private:
   virtual void setFontColor(FrameBuffer &fb) const override;
   virtual std::shared_ptr<Font> getFont() const override;
@@ -23,4 +27,12 @@ class ModuleCaption : public Label
 
   void onParameterSelected(Parameter *newOne);
   void onSelectionChanged();
+};
+
+
+class MonoModuleCaption : public ModuleCaption
+{
+public:
+  explicit MonoModuleCaption(const Rect& r);
+  bool enableVoiceGroupSuffix() const override;
 };

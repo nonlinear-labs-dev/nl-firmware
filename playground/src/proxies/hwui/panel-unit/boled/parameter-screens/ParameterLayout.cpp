@@ -21,11 +21,13 @@
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
-  addControl(new ModuleCaption(Rect(0, 0, 64, 13)));
+  addControl(createModuleCaption());
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X, 8, 107, 11)));
   addControl(new LockedIndicator(Rect(66, 1, 10, 11)));
   addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
 }
+
+ModuleCaption *ParameterLayout2::createModuleCaption() const { return new ModuleCaption(Rect(0, 0, 64, 13)); }
 
 void ParameterLayout2::init()
 {

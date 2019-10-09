@@ -18,10 +18,12 @@ ustring MonoLegatoParameter::getDisplayString() const
   }
 }
 
-ustring MonoLegatoParameter::getLongName() const {
+ustring MonoLegatoParameter::getLongName() const
+{
   return "Mono Legato";
 }
 
-ustring MonoLegatoParameter::getShortName() const {
-  return getLongName();
+ustring MonoLegatoParameter::getShortName() const
+{
+  return "Legato";
 }

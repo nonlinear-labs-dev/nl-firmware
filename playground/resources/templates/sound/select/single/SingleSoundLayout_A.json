@@ -39,7 +39,10 @@
         },
         "ButtonB": {
           "Class": "Button",
-          "Position": "BUTTON_B"
+          "Position": "BUTTON_B",
+          "Init": {
+            "Text[Text]": "Mono.."
+          }
         },
         "ButtonC": {
           "Class": "Button",
@@ -74,7 +77,7 @@
       },
       "EventSinks": {
         "BUTTON_A": "IncButtonMenu",
-        "BUTTON_B": "SwitchToInitDetail",
+        "BUTTON_B": "OpenMonoParameterScreen",
         "BUTTON_C": "OpenUnisonParameterScreen",
         "BUTTON_D": "OpenMasterParameterScreen",
         "BUTTON_ENTER": "FireButtonMenu"

@@ -6,7 +6,8 @@
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 
 ModuleCaption::ModuleCaption(const Rect &pos)
-    : super(pos) {
+    : super(pos)
+{
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)));
 
@@ -14,28 +15,37 @@ ModuleCaption::ModuleCaption(const Rect &pos)
       sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
 }
 
-ModuleCaption::~ModuleCaption() {
+ModuleCaption::~ModuleCaption()
+{
 }
 
-void ModuleCaption::onParameterSelected(Parameter *newOne) {
-  if (newOne) {
-    auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-
-    auto suffix = std::string{};
-    if (Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
-      suffix = " " + toString(sel);
+void ModuleCaption::onParameterSelected(Parameter *newOne)
+{
+  if(newOne)
+  {
     auto group = newOne->getParentGroup();
-    auto label = group->getShortName();
-    setText(label + suffix);
+    auto groupName = group->getShortName();
+
+    if(enableVoiceGroupSuffix())
+    {
+      auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      auto suffix = std::string{};
+      if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
+        suffix = " " + toString(sel);
+      setText(groupName + suffix);
+    }
+    else
+      setText(groupName);
   }
 }
 
-void ModuleCaption::onSelectionChanged() {
+void ModuleCaption::onSelectionChanged()
+{
   setDirty();
 }
 
-
-bool ModuleCaption::redraw(FrameBuffer &fb) {
+bool ModuleCaption::redraw(FrameBuffer &fb)
+{
   const Rect &r = getPosition();
 
   fb.setColor(FrameBuffer::Colors::C128);
@@ -45,14 +55,31 @@ bool ModuleCaption::redraw(FrameBuffer &fb) {
   return true;
 }
 
-void ModuleCaption::setFontColor(FrameBuffer &fb) const {
+void ModuleCaption::setFontColor(FrameBuffer &fb) const
+{
   fb.setColor(FrameBuffer::Colors::C43);
 }
 
-std::shared_ptr<Font> ModuleCaption::getFont() const {
+std::shared_ptr<Font> ModuleCaption::getFont() const
+{
   return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
 }
 
-int ModuleCaption::getFontHeight() const {
+int ModuleCaption::getFontHeight() const
+{
   return 8;
+}
+
+MonoModuleCaption::MonoModuleCaption(const Rect &r)
+    : ModuleCaption(r)
+{
+}
+
+bool MonoModuleCaption::enableVoiceGroupSuffix() const
+{
+  auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
+  if(type == SoundType::Single || type == SoundType::Split)
+    return ModuleCaption::enableVoiceGroupSuffix();
+  else
+    return false;
 }

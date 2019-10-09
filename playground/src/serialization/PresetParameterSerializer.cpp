@@ -35,12 +35,11 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
     reader.onTextElement("value", [&](const Glib::ustring &text, const Attributes &attr) mutable {
       auto v = std::stod(text);
       auto converted = ParameterImportConversions::get().convert(m_param->m_id, v, reader.getFileVersion());
-      converted = Application::get()
-          .getPresetManager()
-          ->getEditBuffer()
-          ->findParameterByID(m_param->m_id)
-                      ->getValue()
-                      .getQuantizedValue(converted, true);
+
+      auto eb = Application::get().getPresetManager()->getEditBuffer();
+      if(auto param = eb->findParameterByID(m_param->m_id))
+        converted = param->getValue().getQuantizedValue(converted, true);
+
       m_param->setValue(reader.getTransaction(), converted);
     });
 

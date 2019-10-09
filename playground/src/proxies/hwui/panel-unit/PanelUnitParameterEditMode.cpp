@@ -83,7 +83,7 @@ void PanelUnitParameterEditMode::assertAllButtonsAssigned()
     for(int id : assignedAudioIDs)
     {
       int expected = lastOne + 1;
-      if(expected != 122)  // unused param
+      if(expected != 122 && !(id >= 12345 && id <= 12348))  // unused param
       {
         if(id != expected)
         {
