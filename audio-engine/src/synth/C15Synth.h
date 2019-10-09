@@ -13,7 +13,7 @@ namespace nltools
   }
 }
 
-class dsp_host;
+class dsp_host_dual;
 
 class C15Synth : public Synth, public sigc::trackable
 {
@@ -46,5 +46,5 @@ class C15Synth : public Synth, public sigc::trackable
   void onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg);
   void onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg);
 
-  std::unique_ptr<dsp_host> m_dsp;
+  std::unique_ptr<dsp_host_dual> m_dsp;
 };
