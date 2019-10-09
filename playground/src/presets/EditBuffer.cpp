@@ -596,7 +596,7 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom)
 {
-  if(m_type != SoundType::Single)
+  if(m_type == type)
     return;
 
   transaction->addUndoSwap(this, m_type, type);
