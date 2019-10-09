@@ -3,6 +3,9 @@
 
 ustring NoteWithOctaveDimension::stringizeNote(int note)
 {
+  const std::array<const char *, NoteWithOctaveDimension::KeysPerOctave> keyLabels
+      = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
   note = std::max(0, std::min(note, NoteWithOctaveDimension::KeyCount));
   auto index = note % keyLabels.size();
   auto base = keyLabels[index];

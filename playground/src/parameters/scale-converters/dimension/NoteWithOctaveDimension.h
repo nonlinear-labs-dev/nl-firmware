@@ -13,6 +13,4 @@ class NoteWithOctaveDimension : public Dimension
   static constexpr auto OctaveCount = 5;
   static constexpr auto KeysPerOctave = 12;
   static constexpr auto KeyCount = OctaveCount * KeysPerOctave;
-  static constexpr std::array<const char *, KeysPerOctave> keyLabels
-      = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 };
