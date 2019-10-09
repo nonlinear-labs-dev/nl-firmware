@@ -73,9 +73,14 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
   return toSend;
 }
 
+template <typename T> T clamp(T v, T min, T max)
+{
+  return std::max<T>(min, std::min<T>(v, max));
+}
+
 void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount)
 {
-  auto clampedAmount = std::clamp(amount, -1.0, 1.0);
+  auto clampedAmount = clamp<tDisplayValue>(amount, -1.0, 1.0);
 
   if(m_modulationAmount != clampedAmount)
   {
