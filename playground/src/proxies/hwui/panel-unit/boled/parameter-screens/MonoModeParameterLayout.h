@@ -7,5 +7,4 @@ public:
 protected:
   Parameter *getCurrentParameter() const override;
   Carousel *createCarousel(const Rect &rect) override;
-  ModuleCaption *createModuleCaption() const override;
 };

@@ -7,18 +7,10 @@
 Parameter *MonoModeParameterLayout::getCurrentParameter() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  switch(eb->getType())
-  {
-    case SoundType::Single:
-    case SoundType::Split:
-      return ParameterLayout2::getCurrentParameter();
-    case SoundType::Layer:
-      return eb->getSelected(VoiceGroup::I);
-    case SoundType::Invalid:
-      nltools::fail("", __FILE__, __LINE__, __FUNCTION__);
-  }
-
-  return nullptr;
+  if(eb->getType() == SoundType::Split)
+    return ParameterLayout2::getCurrentParameter();
+  else
+    return eb->getSelected(VoiceGroup::I);
 }
 
 MonoModeParameterLayout::MonoModeParameterLayout()
@@ -29,9 +21,4 @@ MonoModeParameterLayout::MonoModeParameterLayout()
 Carousel *MonoModeParameterLayout::createCarousel(const Rect &rect)
 {
   return new MonoParameterCarousel(rect);
-}
-
-ModuleCaption *MonoModeParameterLayout::createModuleCaption() const
-{
-  return new MonoModuleCaption(Rect{ 0, 0, 64, 13 });
 }

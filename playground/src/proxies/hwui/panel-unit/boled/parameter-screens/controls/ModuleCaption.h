@@ -1,6 +1,10 @@
 #pragma once
 
+#include <parameters/mono-mode-parameters/MonoParameter.h>
 #include "proxies/hwui/controls/Label.h"
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 class Application;
 class Parameter;
@@ -16,7 +20,11 @@ class ModuleCaption : public Label
 
   bool redraw(FrameBuffer &fb) override;
 
-  virtual bool enableVoiceGroupSuffix() const {
+  static bool enableVoiceGroupSuffix()
+  {
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    if(auto selected = dynamic_cast<MonoParameter *>(eb->getSelected()))
+      return eb->getType() == SoundType::Split;
     return true;
   };
 
@@ -27,12 +35,4 @@ class ModuleCaption : public Label
 
   void onParameterSelected(Parameter *newOne);
   void onSelectionChanged();
-};
-
-
-class MonoModuleCaption : public ModuleCaption
-{
-public:
-  explicit MonoModuleCaption(const Rect& r);
-  bool enableVoiceGroupSuffix() const override;
 };

@@ -26,7 +26,7 @@ void ModuleCaption::onParameterSelected(Parameter *newOne)
     auto group = newOne->getParentGroup();
     auto groupName = group->getShortName();
 
-    if(enableVoiceGroupSuffix())
+    if(ModuleCaption::enableVoiceGroupSuffix())
     {
       auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
       auto suffix = std::string{};
@@ -68,18 +68,4 @@ std::shared_ptr<Font> ModuleCaption::getFont() const
 int ModuleCaption::getFontHeight() const
 {
   return 8;
-}
-
-MonoModuleCaption::MonoModuleCaption(const Rect &r)
-    : ModuleCaption(r)
-{
-}
-
-bool MonoModuleCaption::enableVoiceGroupSuffix() const
-{
-  auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
-  if(type == SoundType::Single || type == SoundType::Split)
-    return ModuleCaption::enableVoiceGroupSuffix();
-  else
-    return false;
 }
