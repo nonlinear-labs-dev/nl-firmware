@@ -69,7 +69,7 @@ size_t EditBuffer::getHash() const
     for(const auto g : getParameterGroups(vg))
       hash_combine(hash, g->getHash());
 
-  hash_combine(hash, getType());
+  hash_combine(hash, static_cast<int>(getType()));
 
   return hash;
 }
