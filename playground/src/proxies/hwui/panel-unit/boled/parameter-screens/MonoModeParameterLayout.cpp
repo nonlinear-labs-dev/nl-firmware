@@ -15,7 +15,7 @@ Parameter *MonoModeParameterLayout::getCurrentParameter() const
 }
 
 MonoModeParameterLayout::MonoModeParameterLayout()
-    : UnmodulateableParameterSelectLayout2{}
+    : UnmodulateableParameterSelectLayout2()
 {
 }
 
