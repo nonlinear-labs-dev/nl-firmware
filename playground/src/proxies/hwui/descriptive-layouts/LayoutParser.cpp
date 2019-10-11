@@ -215,9 +215,7 @@ namespace DescriptiveLayouts
     tConditionList ret;
 
     JSONTools::forEachJsonArrayElementChild(
-        j, [&](const auto& conditionString) {
-          ret.push_back(ConditionRegistry::get().getCondition(conditionString));
-        });
+        j, [&](const auto& conditionString) { ret.push_back(ConditionRegistry::get().getCondition(conditionString)); });
     return ret;
   }
 

@@ -1,5 +1,8 @@
 package com.nonlinearlabs.NonMaps.client.dataModel;
 
+import com.google.gwt.core.client.JavaScriptObject;
+import com.nonlinearlabs.NonMaps.client.tools.NLMath;
+
 public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> implements DataModelEntityBase {
 
 	public class ValueMetaData extends Notifier<ValueMetaData> {
@@ -10,17 +13,53 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 		public BooleanDataModelEntity bipolar = new BooleanDataModelEntity();
 		public BooleanDataModelEntity isBoolean = new BooleanDataModelEntity();
 
+		private JavaScriptObject stringizer;
+
 		public ValueMetaData() {
 			defaultValue.onChange(e -> notifyChanges());
-			scaling.onChange(e -> notifyChanges());
+			scaling.onChange(e -> {
+				updateStringizer(e);
+				return notifyChanges();
+			});
 			coarseDenominator.onChange(e -> notifyChanges());
 			fineDenominator.onChange(e -> notifyChanges());
 			bipolar.onChange(e -> notifyChanges());
 		}
 
+		private native void updateStringizer(String body) /*-{
+			this.@com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity.ValueMetaData::stringizer = new Function(
+					"cpValue", "withUnit", body);
+		}-*/;
+
 		@Override
 		public ValueMetaData getValue() {
 			return this;
+		}
+
+		public String getDecoratedValue(boolean withUnit, double cpValue) {
+			if (stringizer == null)
+				return "";
+
+			return stringize(withUnit, cpValue);
+		}
+
+		private native String stringize(boolean withUnit, double cpValue) /*-{
+			var stringizer = this.@com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity.ValueMetaData::stringizer;
+			var scaledText = stringizer(cpValue, withUnit);
+			return scaledText;
+		}-*/;
+
+		public double quantize(double v, boolean fine) {
+			double steps = fine ? fineDenominator.getValue() : coarseDenominator.getValue();
+			v *= steps;
+			v = Math.round(v);
+			return v / steps;
+		}
+
+		public double clip(double v) {
+			if (bipolar.isTrue())
+				return NLMath.clamp(v, -1.0, 1.0);
+			return NLMath.clamp(v, 0.0, 1.0);
 		}
 	}
 
@@ -41,4 +80,11 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 	public void fromString(String str) {
 		value.fromString(str);
 	}
+
+	public String getDecoratedValue(boolean withUnit, double value, boolean fine) {
+		double quantized = metaData.quantize(value, fine);
+		double clipped = metaData.clip(quantized);
+		return metaData.getDecoratedValue(withUnit, clipped);
+	}
+
 }

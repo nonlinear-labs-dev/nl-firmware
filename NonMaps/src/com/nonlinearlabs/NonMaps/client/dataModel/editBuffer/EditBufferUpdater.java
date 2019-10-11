@@ -14,6 +14,7 @@ public class EditBufferUpdater extends Updater {
 	public void doUpdate() {
 		if (root != null) {
 			EditBufferModel eb = EditBufferModel.get();
+
 			String selParam = getAttributeValue(root, "selected-parameter");
 			eb.selectedParameter.setValue(Integer.valueOf(selParam));
 			String loadedPreset = getAttributeValue(root, "loaded-preset");
@@ -28,6 +29,11 @@ public class EditBufferUpdater extends Updater {
 			eb.isModified.setValue(Boolean.valueOf(isModified));
 			String changed = getAttributeValue(root, "changed");
 			eb.isChanged.setValue(Boolean.valueOf(changed));
+
+			processChildrenElements(root, "sound-type", n -> {
+				String soundType = getText(n);
+				eb.soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
+			});
 
 			processChangedChildrenElements(root, "recall-data", c -> processOriginal(c));
 		}

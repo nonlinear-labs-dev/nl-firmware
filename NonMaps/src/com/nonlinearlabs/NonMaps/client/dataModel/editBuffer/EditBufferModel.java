@@ -19,6 +19,10 @@ public class EditBufferModel {
 		green, blue, yellow, orange, purple, red, none;
 	}
 
+	public enum SoundType {
+		Single, Split, Layer
+	}
+
 	private HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
 	private HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
 
@@ -31,6 +35,8 @@ public class EditBufferModel {
 	public BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
 
 	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
+	public EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
+			SoundType.Single);
 	public StringDataModelEntity comment = new StringDataModelEntity();
 	public StringDataModelEntity deviceName = new StringDataModelEntity();
 	public DateDataModelEntity storeTime = new DateDataModelEntity();
