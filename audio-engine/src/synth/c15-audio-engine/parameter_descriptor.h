@@ -22,12 +22,6 @@ const uint32_t None = 0;
 namespace Descriptors
 {
 
-// providing a parameter type descriptor
-enum class ParameterType
-{
-    None, Hardware_Source, Global_Parameter, Hardware_Amount, Macro_Control, Macro_Time, Modulateable_Parameter, Unmodulateable_Parameter
-};
-
 struct TypeDescriptor
 {
     const ParameterType m_type;
@@ -69,17 +63,6 @@ struct TypeDescriptor
         : m_type(ParameterType::Unmodulateable_Parameter)
         , m_index(static_cast<uint32_t>(_param))
     {}
-};
-
-//providing a smoother section and clock descriptor (now slightly more advanced)
-enum class SmootherSection
-{
-    None, Global, Poly, Mono
-};
-
-enum class SmootherClock
-{
-    Sync, Audio, Fast, Slow
 };
 
 struct SmootherDescriptor
@@ -160,12 +143,6 @@ struct SmootherDescriptor
     {}
 };
 
-//providing a parameter signal descriptor
-enum class ParameterSignal
-{
-    None, Global_Signal, Quasipoly_Signal, Truepoly_Signal, Mono_Signal
-};
-
 struct SignalDescriptor
 {
     const ParameterSignal m_signal;
@@ -202,12 +179,13 @@ struct SignalDescriptor
 struct ParameterDescriptor
 {
     Descriptors::TypeDescriptor m_param;
-    Properties::Scale m_scaleId = Properties::Scale::None;
-    float m_scaleArg = 0.0f;
-    float m_initial = 0.0f;
-    bool m_polarity = false;
     Descriptors::SmootherDescriptor m_smoother;
     Descriptors::SignalDescriptor m_signal;
+    Properties::Scale m_scaleId = Properties::Scale::None;
+    float m_scaleFactor = 0.0f;
+    float m_scaleOffset = 0.0f;
+    float m_initial = 0.0f;
+    bool m_polarity = false;
 };
 
 } // namespace C15

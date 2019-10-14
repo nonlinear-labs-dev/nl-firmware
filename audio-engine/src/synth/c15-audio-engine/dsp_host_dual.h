@@ -52,5 +52,5 @@ private:
     // layered dsp components
     PolySection m_poly[2];
     MonoSection m_mono[2];
-    float scale(const C15::Properties::Scale _id, const float _scaleArg, float _value);
+    float scale(const C15::Properties::Scale _id, const float _scaleFactor, const float _scaleOffset, float _value);
 };
