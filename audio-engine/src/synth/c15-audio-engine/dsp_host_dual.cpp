@@ -155,56 +155,43 @@ void dsp_host_dual::render()
 void dsp_host_dual::reset()
 {}
 
-// taken from milestone 1.5 (as only modulateable and unmodulateable parameters need scaling, this should suffice)
-float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleArg, float _value)
+float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleFactor, const float _scaleOffset, float _value)
 {
     float result = 0.0f;
     switch(_id)
     {
     case C15::Properties::Scale::None:
         break;
-    case C15::Properties::Scale::Linear_Offset:
-        result = _value + _scaleArg;
+    case C15::Properties::Scale::Linear:
+        result = _scaleOffset + (_scaleFactor * _value);
         break;
-    case C15::Properties::Scale::Linear_Factor:
-        result = _value * _scaleArg;
+    case C15::Properties::Scale::Parabolic:
+        result = _scaleOffset + (_scaleFactor * _value * std::abs(_value));
         break;
-    case C15::Properties::Scale::Linear_Inverse:
-        result = _scaleArg - _value;
+    case C15::Properties::Scale::Cubic:
+        result = _scaleOffset + (_scaleFactor * _value * _value * _value);
         break;
-    case C15::Properties::Scale::Parabolic_Offset:
-        result = (std::abs(_value) * _value) + _scaleArg;
-        break;
-    case C15::Properties::Scale::Parabolic_Factor:
-        result = std::abs(_value) * _value * _scaleArg;
-        break;
-    case C15::Properties::Scale::Cubic_Offset:
-        result = (_value * _value * _value) + _scaleArg;
-        break;
-    case C15::Properties::Scale::S_Curve_Inverse:
-        _value = (2.0f * (_scaleArg - _value)) - 1.0f;
-        result = (_value * _value * _value * -0.25f) + (_value * 0.75f) + 0.5f;
+    case C15::Properties::Scale::S_Curve:
+        _value = (2.0f * (1.0f - _value)) - 1.0f;
+        result = _scaleOffset + (_scaleFactor * ((_value * _value * _value * -0.25f) + (_value * 0.75f) + 0.5f));
         break;
     case C15::Properties::Scale::Expon_Gain:
-        result = m_convert.eval_level(_value + _scaleArg);
+        result = m_convert.eval_level(_scaleOffset + (_scaleFactor * _value));
         break;
     case C15::Properties::Scale::Expon_Osc_Pitch:
-        result = m_convert.eval_osc_pitch(_value + _scaleArg);
+        result = m_convert.eval_osc_pitch(_scaleOffset + (_scaleFactor * _value));
         break;
     case C15::Properties::Scale::Expon_Lin_Pitch:
-        result = m_convert.eval_lin_pitch(_value + _scaleArg);
+        result = m_convert.eval_lin_pitch(_scaleOffset + (_scaleFactor * _value));
         break;
     case C15::Properties::Scale::Expon_Shaper_Drive:
-        result = (m_convert.eval_level(_value) * _scaleArg) - _scaleArg;
+        result = (m_convert.eval_level(_value) * _scaleFactor) + _scaleOffset;
         break;
     case C15::Properties::Scale::Expon_Mix_Drive:
-        result = m_convert.eval_level(_value) * _scaleArg;
+        result = _scaleOffset + (_scaleFactor * m_convert.eval_level(_value));
         break;
-//    case C15::Properties::Scale::Expon_Cab_Drive: // seems obsolete, equals normal expon_gain scaling
-//        result = m_convert.eval_level(_value + _scaleArg);
-//        break;
     case C15::Properties::Scale::Expon_Env_Time:
-        result = m_convert.eval_time((_value * _scaleArg * 104.0781f) - 20.0f);
+        result = m_convert.eval_time((_value * _scaleFactor * 104.0781f)+ _scaleOffset);
         break;
     }
     return result;

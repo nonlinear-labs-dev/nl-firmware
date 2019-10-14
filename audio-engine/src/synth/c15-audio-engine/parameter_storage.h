@@ -36,7 +36,7 @@ struct Macro_Time_Parameter : Proto_Parameter
 struct Macro_Control_Parameter : Proto_Parameter
 {
     Macro_Time_Parameter m_time;
-    float m_base, m_mod, m_unclipped = 0.0f;
+    float m_base = 0.0f, m_mod = 0.0f, m_unclipped = 0.0f;
     uint32_t m_index = 0;
     bool m_bidir = false;
     inline bool modulate(const float _mod)
@@ -54,7 +54,7 @@ struct Macro_Control_Parameter : Proto_Parameter
 template<typename Scale, typename Section, typename Clock, typename Signal>
 struct Modulateable_Parameter : Proto_Parameter
 {
-    float m_amount, m_base, m_ceil, m_scaleArg, m_unclipped = 0.0f;
+    float m_amount = 0.0f, m_base = 0.0f, m_ceil = 0.0f, m_scaleFactor = 0.0f, m_scaleOffset = 0.0f, m_unclipped = 0.0f;
     C15::Parameters::Macro_Controls m_source = C15::Parameters::Macro_Controls::None;
     Scale m_scaleId;
     Section m_section;
@@ -92,7 +92,7 @@ struct Modulateable_Parameter : Proto_Parameter
 template<typename Scale, typename Section, typename Clock, typename Signal>
 struct Unmodulateable_Parameter : Proto_Parameter
 {
-    float m_scaleArg = 0.0f;
+    float m_scaleFactor = 0.0f, m_scaleOffset = 0.0f;
     Scale m_scaleId;
     Section m_section;
     Clock m_clock;
