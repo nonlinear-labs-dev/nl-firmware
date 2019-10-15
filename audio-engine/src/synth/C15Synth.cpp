@@ -50,7 +50,7 @@ void C15Synth::doAudio(SampleFrame *target, size_t numFrames)
 
 void C15Synth::printAndResetTcdInputLog()
 {
-    nltools::Log::info("currently disabled");
+  nltools::Log::info("currently disabled");
 }
 
 void C15Synth::resetDSP()

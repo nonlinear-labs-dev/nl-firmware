@@ -18,9 +18,11 @@ bool LeftRightUpDownCommitOverlay::onButton(Buttons i, bool down, ButtonModifier
     case Buttons::BUTTON_DEC:
       onDown(down);
       break;
+    case Buttons::ROTARY_MINUS:
     case Buttons::BUTTON_C:
       onLeft(down);
       break;
+    case Buttons::ROTARY_PLUS:
     case Buttons::BUTTON_D:
       onRight(down);
       break;
