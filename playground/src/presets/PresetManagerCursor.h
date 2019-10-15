@@ -32,6 +32,7 @@ class PresetManagerCursor
 
   std::string getPresetNumberString() const;
   std::string getPresetName() const;
+  std::string getPresetType() const;
   std::string getBankName() const;
 
  private:

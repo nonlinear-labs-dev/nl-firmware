@@ -16,8 +16,9 @@ namespace DescriptiveLayouts
       : m_cursor([](auto) { return true; })
   {
     createEventSources<Text::DisplayString>(
-        EventSources::PreviousNumber, EventSources::PreviousName, EventSources::CurrentNumber,
-        EventSources::CurrentName, EventSources::NextNumber, EventSources::NextName, EventSources::PresetListBankName);
+        EventSources::PreviousNumber, EventSources::PreviousName, EventSources::PreviousType,
+        EventSources::CurrentNumber, EventSources::CurrentName, EventSources::CurrentType, EventSources::NextNumber,
+        EventSources::NextName, EventSources::NextType, EventSources::PresetListBankName);
     createEventSources<bool>(EventSources::CanLeft, EventSources::CanRight);
 
     m_cursor.moveToSelected();
@@ -89,10 +90,13 @@ namespace DescriptiveLayouts
 
       setString(EventSources::PreviousNumber, previousCursor.getPresetNumberString());
       setString(EventSources::PreviousName, previousCursor.getPresetName());
+      setString(EventSources::PreviousType, previousCursor.getPresetType());
       setString(EventSources::CurrentNumber, currentCursor.getPresetNumberString());
       setString(EventSources::CurrentName, currentCursor.getPresetName());
+      setString(EventSources::CurrentType, currentCursor.getPresetType());
       setString(EventSources::NextNumber, nextCursor.getPresetNumberString());
       setString(EventSources::NextName, nextCursor.getPresetName());
+      setString(EventSources::NextType, nextCursor.getPresetType());
 
       setString(EventSources::PresetListBankName, currentCursor.getBankName());
 

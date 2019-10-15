@@ -36,7 +36,7 @@ namespace DescriptiveLayouts
        PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIMasterTuneText,
        VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue,
 
-       PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
+       PreviousNumber, PreviousName, PreviousType, CurrentNumber, CurrentName, CurrentType, NextNumber, NextName, NextType);
 
   ENUM(EventSinks, uint8_t, Left, Right, Up, Down, Commit, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
        SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,

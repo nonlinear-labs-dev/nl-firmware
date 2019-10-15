@@ -15,8 +15,12 @@
       },
       "Name": {
         "Class": "Text",
-        "Rect": "27, 2, 96, 16"
-      } 
+        "Rect": "27, 2, 80, 16"
+      },
+      "Type": {
+        "Class": "Text",
+        "Rect": "107, 2, 16, 16"
+      }
     }
   },
   "styles": {
@@ -57,6 +61,16 @@
       },
       "styles": {
         "TextAlign": "Left"
+      }
+    },
+    "PresetTypeStyle": {
+      "selector": {
+        "PrimitiveClasses": "Text",
+        "ControlClasses": "Preset",
+        "PrimitiveInstances": "Type"
+      },
+      "styles": {
+        "TextAlign": "Right"
       }
     }
   }
