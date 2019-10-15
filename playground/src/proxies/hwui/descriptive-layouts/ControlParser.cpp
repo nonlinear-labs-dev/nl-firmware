@@ -57,7 +57,7 @@ namespace DescriptiveLayouts
     JSONTools::forEachJsonChild(primitives, [&lP](const auto& obj) {
       auto value = obj.value();
       auto key = obj.key();
-      auto primClass = JSONTools::getFromJson<PrimitiveClasses>(value, "Class", toPrimitiveClasses);
+      auto primClass = JSONTools::getFromJson<PrimitiveClasses>(value, "Class", to<PrimitiveClasses>);
       auto tag = JSONTools::getFromJson<PrimitiveTag>(value, "Tag");
       auto rect = parseRect(value, key);
       lP.emplace_back(key, primClass, rect, tag);

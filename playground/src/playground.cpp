@@ -99,6 +99,7 @@ int main(int numArgs, char** argv)
 
 #ifdef _TESTS
   TestDriverBase::doTests(numArgs, argv);
+  return 0;
 #endif
 
   {

@@ -13,6 +13,8 @@ class Point
   void setX(int x);
   void setY(int y);
 
+  friend bool operator==(const Point &a, const Point &b);
+
  private:
   int m_x;
   int m_y;

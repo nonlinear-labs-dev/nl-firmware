@@ -70,14 +70,16 @@ namespace EnumTools
   {                                                                                                                    \
     type enums;                                                                                                        \
   };                                                                                                                   \
-  inline const std::map<enumName, std::string> &get##enumName##Map()                                                   \
+  template <typename E> const std::map<E, std::string> &getMap();                                                      \
+  template <> inline const std::map<enumName, std::string> &getMap<enumName>()                                         \
   {                                                                                                                    \
     static auto m = EnumTools::createMap<enumName, type, ValuesOf##enumName>(#enums);                                  \
     return m;                                                                                                          \
   }                                                                                                                    \
-  inline enumName to##enumName(const std::string &e)                                                                   \
+  template <typename E> E to(const std::string &e);                                                                    \
+  template <> inline enumName to<enumName>(const std::string &e)                                                       \
   {                                                                                                                    \
-    static auto map = EnumTools::reverse(get##enumName##Map());                                                        \
+    static auto map = EnumTools::reverse(getMap<enumName>());                                                          \
     auto it = map.find(e);                                                                                             \
     if(it != map.end())                                                                                                \
       return it->second;                                                                                               \
@@ -86,26 +88,29 @@ namespace EnumTools
   }                                                                                                                    \
   inline std::string toString(const enumName &e)                                                                       \
   {                                                                                                                    \
-    auto it = get##enumName##Map().find(e);                                                                            \
-    if(it != get##enumName##Map().end())                                                                               \
+    auto it = getMap<enumName>().find(e);                                                                              \
+    if(it != getMap<enumName>().end())                                                                                 \
       return it->second;                                                                                               \
     DebugLevel::throwException("Could not find value", e, "in enum map for", #enumName);                               \
     return "";                                                                                                         \
   }                                                                                                                    \
-  inline void forEach##enumName##Value(std::function<void(enumName v)> cb)                                             \
+  template <typename E> void forEachValue(std::function<void(E v)> cb);                                                \
+  template <> inline void forEachValue<enumName>(std::function<void(enumName v)> cb)                                   \
   {                                                                                                                    \
-    for(auto &a : get##enumName##Map())                                                                                \
+    for(auto &a : getMap<enumName>())                                                                                  \
       cb(a.first);                                                                                                     \
   }                                                                                                                    \
-  inline void forEach##enumName##String(std::function<void(const std::string &v)> cb)                                  \
+  template <typename E> void forEachString(std::function<void(const std::string &v)> cb);                              \
+  template <> inline void forEachString<enumName>(std::function<void(const std::string &v)> cb)                        \
   {                                                                                                                    \
-    for(auto &a : get##enumName##Map())                                                                                \
+    for(auto &a : getMap<enumName>())                                                                                  \
       cb(a.second);                                                                                                    \
   }                                                                                                                    \
-  inline std::vector<std::string> getAll##enumName##Strings()                                                          \
+  template <typename E> std::vector<std::string> getAllStrings();                                                      \
+  template <> inline std::vector<std::string> getAllStrings<enumName>()                                                \
   {                                                                                                                    \
     std::vector<std::string> ret;                                                                                      \
-    for(auto &a : get##enumName##Map())                                                                                \
+    for(auto &a : getMap<enumName>())                                                                                  \
       ret.push_back(a.second);                                                                                         \
     return ret;                                                                                                        \
   }

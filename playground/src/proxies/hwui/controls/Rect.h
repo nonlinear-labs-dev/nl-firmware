@@ -50,6 +50,8 @@ class Rect
   void draw(FrameBuffer &fb) const;
   void drawRounded(FrameBuffer &fb) const;
 
+  friend bool operator==(const Rect &a, const Rect &b);
+
   static void registerTests();
 
  private:

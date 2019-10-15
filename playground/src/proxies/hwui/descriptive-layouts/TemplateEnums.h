@@ -58,7 +58,7 @@ namespace DescriptiveLayouts
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Left, Right, Up, Down, IncParam, DecParam);
 
-  ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents, PresetManagerEvents);
+  ENUM(EventProviders, uint8_t, None, Global, IndependentPresetSelectionEvents, PresetManagerEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
 
   template <typename Derived> class StringId : public std::string

@@ -15,9 +15,13 @@
 #include <iostream>
 #include <string>
 #include <stack>
+#include <limits>
 
 namespace DescriptiveLayouts
 {
+#warning "TODO: fix hard coded path"
+  const auto testsDir = "/home/hhoegelo/dev/nl/C15/C15/playground/src/proxies/hwui/descriptive-layouts/dsl/tests/";
+  const int maxPos = std::numeric_limits<int16_t>::max();
 
   namespace qi = boost::spirit::qi;
   namespace ascii = boost::spirit::ascii;
@@ -34,9 +38,11 @@ namespace DescriptiveLayouts
   using Rule = qi::rule<iterator_type, std::string(), ascii::space_type>;
   using Strings = std::vector<std::string>;
 
+  static constexpr int invalidInt = std::numeric_limits<int>::min();
+
   struct Element
   {
-    Element(Element* parent, const std::string& n)
+    Element(Element* parent = nullptr, const std::string& n = "root")
         : parent(parent)
         , name(n)
     {
@@ -46,8 +52,8 @@ namespace DescriptiveLayouts
 
     std::string name;
     std::string refersTo;
-    std::string position;
-    std::string eventProvider;
+    Rect position{ 0, 0, maxPos, maxPos };
+    EventProviders eventProvider = EventProviders::None;
 
     Strings fires;
     Strings reactions;
@@ -58,19 +64,19 @@ namespace DescriptiveLayouts
     std::vector<Element> children;
   };
 
-  void dump(const std::string& indent, const std::string& name, const std::string& v)
+  template <typename... V> static void dump(const std::string& indent, const std::string& name, V&&... v)
   {
-    if(!v.empty())
-      nltools::Log::notify(indent, name, v);
+    nltools::Log::notify(indent, name, v...);
   }
 
-  void dump(Element* e, size_t indent = 0)
+  static void dump(Element* e, size_t indent = 0)
   {
     std::string i(indent, ' ');
     dump(i, "Element: ", e->name);
-    dump(i, " pos: ", e->position);
+    dump(i, " pos: ", e->position.getX(), e->position.getY());
+    dump(i, " size: ", e->position.getWidth(), e->position.getHeight());
     dump(i, " ref: ", e->refersTo);
-    dump(i, " event provider: ", e->eventProvider);
+    dump(i, " event provider: ", toString(e->eventProvider));
 
     if(!e->conditions.empty())
     {
@@ -115,12 +121,7 @@ namespace DescriptiveLayouts
     }
   }
 
-  decltype(auto) stringsToRule(const Strings& items)
-  {
-    return boost::spirit::qi::symbols<char, std::string>(items, items);
-  }
-
-  const Element& findChild(const Element& in, const Strings& path)
+  static const Element& findChild(const Element& in, const Strings& path)
   {
     if(path.empty())
       return in;
@@ -132,7 +133,7 @@ namespace DescriptiveLayouts
     throw std::runtime_error("Reference not found");
   }
 
-  const Element& findReference(const Element& in, const Strings& path)
+  static const Element& findReference(const Element& in, const Strings& path)
   {
     if(in.name == path.front())
       return findChild(in, Strings(std::next(path.begin()), path.end()));
@@ -147,50 +148,19 @@ namespace DescriptiveLayouts
     return findReference(*in.parent, path);
   }
 
-  template <typename T> void concat(T& out, const T& in)
+  template <typename T> static void concat(T& out, const T& in)
   {
     out.insert(out.end(), in.begin(), in.end());
   }
 
-  void resolveReferences(const Element& in, Element& out);
-
-  void mergeProperties(const Element& in, Element& out)
-  {
-    for(auto& c : in.children)
-      resolveReferences(c, out.children.emplace_back(&out, c.name));
-
-    concat(out.conditions, in.conditions);
-    concat(out.fires, in.fires);
-    concat(out.inits, in.inits);
-    concat(out.reactions, in.reactions);
-    concat(out.styles, in.styles);
-
-    out.eventProvider = in.eventProvider;
-    out.position = in.position;
-    out.refersTo = in.refersTo;
-  }
-
-  Strings toPath(const std::string& path)
+  static Strings toPath(const std::string& path)
   {
     Strings p;
     boost::split(p, path, boost::is_any_of("/"));
     return p;
   }
 
-  void resolveReferences(const Element& in, Element& out)
-  {
-    bool resolvableReference = !in.refersTo.empty() && in.refersTo[0] != '@';
-
-    if(resolvableReference)
-      mergeProperties(findReference(in, toPath(in.refersTo)), out);
-
-    mergeProperties(in, out);
-
-    if(resolvableReference)
-      out.refersTo.clear();
-  }
-
-  template <typename Out> void recurseAndProduceFlat(const Element& in, Element collector, Out out)
+  template <typename Out> static void recurseAndProduceFlat(const Element& in, Element collector, Out out)
   {
     collector.name += "/" + in.name;
 
@@ -199,8 +169,11 @@ namespace DescriptiveLayouts
     concat(collector.inits, in.inits);
     concat(collector.reactions, in.reactions);
     concat(collector.styles, in.styles);
+
+    auto movedInPos = in.position.getMovedBy(collector.position.getLeftTop());
+    collector.position = collector.position.getIntersection(movedInPos);
+
     collector.eventProvider = in.eventProvider;
-    collector.position = in.position;
     collector.refersTo = in.refersTo;
 
     if(!in.refersTo.empty())
@@ -216,13 +189,13 @@ namespace DescriptiveLayouts
     }
   }
 
-  void makeFlat(const Element& in, Element& out)
+  static void makeFlat(const Element& in, Element& out)
   {
     Element collector(nullptr, "");
     recurseAndProduceFlat(in, collector, [&](const Element& e) { out.children.push_back(e); });
   }
 
-  Strings addPrefix(const Strings& in, const std::string& prefix)
+  static Strings addPrefix(const Strings& in, const std::string& prefix)
   {
     Strings out;
     std::transform(in.begin(), in.end(), std::back_inserter(out), [&](auto& a) { return prefix + a; });
@@ -236,12 +209,12 @@ namespace DescriptiveLayouts
     Again
   };
 
-  bool isUnresolvedReference(const Element& e)
+  static bool isUnresolvedReference(const Element& e)
   {
     return !e.refersTo.empty() && e.refersTo[0] != '@';
   }
 
-  bool containsUnresolvedReferences(const Element& e)
+  static bool containsUnresolvedReferences(const Element& e)
   {
     if(isUnresolvedReference(e))
       return true;
@@ -253,12 +226,12 @@ namespace DescriptiveLayouts
     return false;
   }
 
-  const Element& findRelativeElement(const Element& e)
+  static const Element& findRelativeElement(const Element& e)
   {
     return findReference(e, toPath(e.refersTo));
   }
 
-  bool deepMerge(Element& tgt, const Element& src)
+  static bool deepMerge(Element& tgt, const Element& src)
   {
     // TODO check cross references
     // TODO check paranet/child references
@@ -272,14 +245,16 @@ namespace DescriptiveLayouts
     concat(tgt.reactions, src.reactions);
     concat(tgt.styles, src.styles);
 
-    tgt.eventProvider = src.eventProvider;
-    tgt.position = src.position;
-    tgt.refersTo.clear();
+    if(tgt.eventProvider == EventProviders::None)
+      tgt.eventProvider = src.eventProvider;
 
+    tgt.position = src.position;
+
+    tgt.refersTo.clear();
     return true;
   }
 
-  ResolveResult resolve(Element& e)
+  static ResolveResult resolve(Element& e)
   {
     for(auto& c : e.children)
     {
@@ -303,25 +278,46 @@ namespace DescriptiveLayouts
     return ResolveResult::Done;
   }
 
-  void testSpirit()
+  template <typename TStyle> struct StyleRule
+  {
+    using Style = TStyle;
+    std::string name;
+  };
+
+  static boost::spirit::qi::symbols<char, std::string> stringsToRule(const Strings& items)
+  {
+    return boost::spirit::qi::symbols<char, std::string>(items, items);
+  }
+
+  template <typename R> static Rule createStyleRule(const R& r)
+  {
+    auto theStyleRule = stringsToRule(StyleValues::getAllStrings<typename R::Style>());
+    return string(r.name) >> string("=") >> std::move(theStyleRule);
+  }
+
+  template <typename... E> static Rule createEnumStylesRule(E... e)
+  {
+    return (createStyleRule(e) | ...);
+  }
+
+  static Element parseString(const std::string& content)
   {
     Element root(nullptr, "root");
     Element* current = &root;
     std::stack<Element*> stack;
     stack.push(&root);
 
-    std::ifstream in("/home/hhoegelo/dev/my/scratchbook/src/testdata.nl");
-    std::string content((std::istreambuf_iterator<char>(in)), (std::istreambuf_iterator<char>()));
-
     auto onRef = [&](auto s) { current->refersTo = s; };
     auto onIf = [&](auto s) { current->conditions.push_back(s); };
-    auto onPoint = [&](auto s) { current->position = s; };
-    auto onRect = [&](auto s) { current->position = s; };
+    auto onX = [&](int x) { current->position.setLeft(x); };
+    auto onY = [&](int y) { current->position.setTop(y); };
+    auto onWidth = [&](int w) { current->position.setWidth(w); };
+    auto onHeight = [&](int h) { current->position.setHeight(h); };
     auto onInit = [&](auto s) { current->inits.push_back(s); };
     auto onStyle = [&](auto s) { current->styles.push_back(s); };
     auto onFire = [&](auto s) { current->fires.push_back(s); };
     auto onReaction = [&](auto s) { current->reactions.push_back(s); };
-    auto onUses = [&](auto s) { current->eventProvider = s; };
+    auto onUses = [&](auto s) { current->eventProvider = to<EventProviders>(s); };
     auto diveIn = [&](auto) { stack.push(current); };
     auto diveOut = [&](auto) {
       stack.pop();
@@ -332,18 +328,18 @@ namespace DescriptiveLayouts
     Rule element;
 
     Rule delim = string("/");
-    Rule number = -(lit('+') | lit('-')) >> *qi::digit;
     Rule comma = string(",");
-    Rule point = '(' >> number >> comma >> number >> ')';
-    Rule rect = '(' >> number >> comma >> number >> comma >> number >> comma >> number >> ')';
+    Rule point = '(' >> qi::int_[onX] >> comma >> qi::int_[onY] >> ')';
+    Rule rect = '(' >> qi::int_[onX] >> comma >> qi::int_[onY] >> comma >> qi::int_[onWidth] >> comma
+        >> qi::int_[onHeight] >> ')';
     Rule identifier = lexeme[qi::alpha >> +qi::alnum];
 
-    auto primitiveProperty = stringsToRule(DescriptiveLayouts::getAllPrimitivePropertyStrings());
-    auto uiFocusOptions = stringsToRule(getAllUIFocusStrings());
-    auto primitives = stringsToRule(addPrefix(DescriptiveLayouts::getAllPrimitiveClassesStrings(), "@"));
-    auto eventSourceName = stringsToRule(DescriptiveLayouts::getAllEventSourcesStrings());
-    auto eventSinkName = stringsToRule(DescriptiveLayouts::getAllEventSinksStrings());
-    auto buttonName = stringsToRule(getAllButtonsStrings());
+    auto primitiveProperty = stringsToRule(DescriptiveLayouts::getAllStrings<PrimitiveProperty>());
+    auto uiFocusOptions = stringsToRule(::getAllStrings<UIFocus>());
+    auto primitives = stringsToRule(addPrefix(DescriptiveLayouts::getAllStrings<PrimitiveClasses>(), "@"));
+    auto eventSourceName = stringsToRule(DescriptiveLayouts::getAllStrings<EventSources>());
+    auto eventSinkName = stringsToRule(DescriptiveLayouts::getAllStrings<EventSinks>());
+    auto buttonName = stringsToRule(::getAllStrings<Buttons>());
 
     Rule uiFocusCondition = string("UIFocus") >> string("=") >> uiFocusOptions;
 
@@ -360,12 +356,19 @@ namespace DescriptiveLayouts
         | (primitiveProperty >> string("=") >> primitiveValue);
     Rule fire = buttonName >> string("=") >> eventSinkName;
 
-    // TODO
-    Rule style = identifier >> string("=") >> identifier;
+    Rule enumStyleRules = createEnumStylesRule(
+        StyleRule<StyleValues::Color>{ "Color" }, StyleRule<StyleValues::Color>{ "BackgroundColor" },
+        StyleRule<StyleValues::Alignment>{ "TextAlign" }, StyleRule<StyleValues::BorderStyle>{ "BorderStyle" },
+        StyleRule<StyleValues::Font>{ "FontDecoration" }, StyleRule<StyleValues::Color>{ "SuffixColor" },
+        StyleRule<StyleValues::Color>{ "BorderColor" }, StyleRule<StyleValues::Color>{ "HighlightBackgroundColor" },
+        StyleRule<StyleValues::Color>{ "HighlightColor" });
+
+    Rule fontSizeRule = string("FontSize") >> string("=") >> qi::int_;
+    Rule style = enumStyleRules | fontSizeRule;
 
     Rule ofRule = lit("of") >> (reference[onRef] | '(' >> reference[onRef] >> ')');
     Rule ifRule = lit("if") >> (condition[onIf] | '(' >> +condition[onIf] >> ')');
-    Rule atRule = lit("at") >> (point[onPoint] | rect[onRect]);
+    Rule atRule = lit("at") >> (point | rect);
     Rule usesRule = lit("uses") >> (identifier[onUses] | '(' >> identifier[onUses] >> ')');
     Rule reactRule = lit("react") >> (reaction[onReaction] | '(' >> +reaction[onReaction] >> ')');
     Rule initRule = lit("init") >> (init[onInit] | '(' >> +init[onInit] >> ')');
@@ -382,31 +385,91 @@ namespace DescriptiveLayouts
     std::string::const_iterator end = content.end();
 
     if(phrase_parse(iter, end, g, boost::spirit::ascii::space) && iter == end)
-    {
-      dump(&root);
-
-      while(resolve(root) == ResolveResult::Again)
-        ;
-
-      nltools::Log::notify("RESOLVED:");
-      dump(&root);
-
-      Element flat(nullptr, "flat");
-      makeFlat(root, flat);
-
-      nltools::Log::notify("Flat:");
-      dump(&flat);
-    }
+      return root;
     else
-    {
       nltools::Log::warning("String contains crap:", std::string(iter, end));
-      g_warn_if_reached();
-    }
+
+    throw std::runtime_error("Could not parse file completely.");
+  }
+
+  static Element parseFile(const std::string& fileName)
+  {
+    std::ifstream in(fileName);
+    std::string content((std::istreambuf_iterator<char>(in)), (std::istreambuf_iterator<char>()));
+    return parseString(content);
   }
 
   void DSL::registerTests()
   {
-    g_test_add_func("/DescriptiveLayouts/DSL/a", [] { testSpirit(); });
+    g_test_add_func("/DescriptiveLayouts/DSL/simplestElement", [] {
+      auto e = parseString("TheElement");
+      g_assert(e.children.size() == 1);
+      g_assert(e.children[0].name == "TheElement");
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/simplestElement/resolve", [] {
+      Element e = parseString("TheElement");
+      g_assert(resolve(e) == ResolveResult::Done);
+      Element flat;
+      makeFlat(e, flat);
+      g_assert(e.children.size() == 1);
+      g_assert(flat.children.size() == 0);
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/simpleElement/eventProvider/global", [] {
+      auto e = parseString("TheElement uses Global");
+      g_assert(e.children[0].eventProvider == EventProviders::Global);
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/simpleElement/position/point", [] {
+      auto e = parseString("TheElement at (12, 34)");
+      g_assert(e.children[0].position == Rect(12, 34, maxPos, maxPos));
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/simpleElement/position/rect", [] {
+      auto e = parseString("TheElement at (12, 34, 56, 78)");
+      g_assert(e.children[0].position == Rect(12, 34, 56, 78));
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/nestedElement/position-moved", [] {
+      Element flat;
+      Element e = parseString("TheElement at (12, 34, 500, 600) { NestedElement of @Bar at (100, 100, 20, 30) }");
+      resolve(e);
+      makeFlat(e, flat);
+      g_assert(flat.children.size() == 1);
+      g_assert(flat.children[0].position == Rect(112, 134, 20, 30));
+      g_assert(flat.children[0].name == "/root/TheElement/NestedElement");
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/nestedElement/position-clamped-1", [] {
+      Element flat;
+      Element e = parseString("TheElement at (10, 10) { NestedElement of @Bar at (20, 20, 100, 100) }");
+      resolve(e);
+      makeFlat(e, flat);
+      g_assert(flat.children.size() == 1);
+      g_assert(flat.children[0].position == Rect(30, 30, 100, 100));
+      g_assert(flat.children[0].name == "/root/TheElement/NestedElement");
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/nestedElement/position-clamped-2", [] {
+      Element flat;
+      Element e = parseString("TheElement at (10, 10, 50, 50) { NestedElement of @Bar at (20, 20, 100, 100) }");
+      resolve(e);
+      makeFlat(e, flat);
+      g_assert(flat.children.size() == 1);
+      g_assert(flat.children[0].position == Rect(30, 30, 30, 30));
+      g_assert(flat.children[0].name == "/root/TheElement/NestedElement");
+    });
+
+    g_test_add_func("/DescriptiveLayouts/DSL/styles/Color", [] {
+      Element flat;
+      Element e = parseString("TheElement of @Bar style (Color=C43) }");
+      resolve(e);
+      makeFlat(e, flat);
+      g_assert(flat.children.size() == 1);
+      g_assert(flat.children[0].styles.size() == 1);
+      g_assert(flat.children[0].styles[0] == "Color=C43");
+    });
   }
 
   static TestDriver<DSL> tests;

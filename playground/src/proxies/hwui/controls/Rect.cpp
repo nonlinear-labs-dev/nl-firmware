@@ -246,3 +246,8 @@ void Rect::registerTests()
     g_assert(i.getHeight() == 0);
   });
 }
+
+bool operator==(const Rect &a, const Rect &b)
+{
+  return a.m_height == b.m_height && a.m_width == b.m_width && a.m_leftTop == b.m_leftTop;
+}
