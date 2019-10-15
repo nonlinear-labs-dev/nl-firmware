@@ -7,6 +7,7 @@
 #include "event-sources/base/EventSource.h"
 #include "GlobalEventSinkBroker.h"
 #include "GlobalEventSourceBroker.h"
+#include "presets/EditBuffer.h"
 
 namespace DescriptiveLayouts
 {
@@ -52,6 +53,15 @@ namespace DescriptiveLayouts
       case EventSinks::Down:
         if(m_cursor.canNextPreset())
           m_cursor.nextPreset();
+        break;
+
+      case EventSinks::Commit:
+        if(auto preset = m_cursor.getPreset())
+        {
+          auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+          Application::get().getPresetManager()->getEditBuffer()->undoableLoad(preset, vg);
+          Application::get().getHWUI()->setFocusAndMode(UIMode::Select);
+        }
         break;
 
       default:

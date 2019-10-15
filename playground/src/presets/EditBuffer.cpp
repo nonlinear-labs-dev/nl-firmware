@@ -136,7 +136,7 @@ connection EditBuffer::onRecallValuesChanged(slot<void> s)
 
 connection EditBuffer::onSoundTypeChanged(slot<void> s)
 {
-  return m_signalTypeChanged.connectAndInit(s);
+  return m_signalTypeChanged.connect(s);
 }
 
 UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)

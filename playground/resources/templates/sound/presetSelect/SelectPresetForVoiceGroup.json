@@ -64,7 +64,8 @@
         "BUTTON_C": "Right",
         "BUTTON_INC": "Down",
         "BUTTON_DEC": "Up",
-        "BUTTON_ENTER": "DoPresetListAction"
+        "BUTTON_D": "Commit",
+        "BUTTON_ENTER": "Commit"
       }
     }
   },

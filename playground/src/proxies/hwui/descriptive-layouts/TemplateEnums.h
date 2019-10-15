@@ -38,7 +38,7 @@ namespace DescriptiveLayouts
 
        PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
 
-  ENUM(EventSinks, uint8_t, Left, Right, Up, Down, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
+  ENUM(EventSinks, uint8_t, Left, Right, Up, Down, Commit, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
        SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,
        SwitchToSoundFocus, SwitchToMCSelectDetail, SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail,
        SwitchToButtonDDetail, SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel,

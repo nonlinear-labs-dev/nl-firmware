@@ -24,7 +24,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType) {
     auto scope = pm->getUndoScope().startTransaction("Convert to Single");
     auto transaction = scope->getTransaction();
     Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction);
-    
+
     Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
   }
 }
