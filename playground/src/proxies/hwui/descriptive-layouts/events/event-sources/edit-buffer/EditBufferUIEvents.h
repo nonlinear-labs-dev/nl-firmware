@@ -61,7 +61,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(247, VoiceGroup::I);
+      auto param = eb->findParameterByID(11247, VoiceGroup::I);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -71,7 +71,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(247, VoiceGroup::II);
+      auto param = eb->findParameterByID(11247, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -81,7 +81,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(248, VoiceGroup::I);
+      auto param = eb->findParameterByID(11248, VoiceGroup::I);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -91,7 +91,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(248, VoiceGroup::II);
+      auto param = eb->findParameterByID(11248, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
     }
   };

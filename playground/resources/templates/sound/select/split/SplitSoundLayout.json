@@ -28,14 +28,14 @@
           "Class": "Button",
           "Position": "BUTTON_B",
           "Init": {
-            "Text[Text]": "Mono.."
+            "Text[Text]": "Params.."
           }
         },
         "ButtonC": {
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
-            "Text[Text]": "Unison.."
+            "Text[Text]": "Voices.."
           }
         },
         "ButtonD": {

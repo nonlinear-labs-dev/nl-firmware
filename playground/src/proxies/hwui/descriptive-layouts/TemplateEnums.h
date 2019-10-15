@@ -33,10 +33,11 @@ namespace DescriptiveLayouts
        ParameterControlPosition, ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton,
        BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
-       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIMasterTuneText,
-       VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue,
+       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText,
+       VGIMasterTuneText, VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue,
 
-       PreviousNumber, PreviousName, PreviousType, CurrentNumber, CurrentName, CurrentType, NextNumber, NextName, NextType);
+       PreviousNumber, PreviousName, PreviousType, CurrentNumber, CurrentName, CurrentType, NextNumber, NextName,
+       NextType);
 
   ENUM(EventSinks, uint8_t, Left, Right, Up, Down, Commit, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
        SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,
@@ -45,7 +46,8 @@ namespace DescriptiveLayouts
        DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
        IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
-       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameterScreen, OpenMasterParameterScreen, OpenMonoParameterScreen);
+       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameterScreen, OpenMasterParameterScreen,
+       OpenMonoParameterScreen, OpenParamsScreen, OpenVoicesScreen);
 
   ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);

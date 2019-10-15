@@ -29,16 +29,13 @@
         },
         "ButtonB": {
           "Class": "Button",
-          "Position": "BUTTON_B",
-          "Init": {
-            "Text[Text]": "Mono.."
-          }
+          "Position": "BUTTON_B"
         },
         "ButtonC": {
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
-            "Text[Text]": "Unison.."
+            "Text[Text]": "Voices.."
           }
         },
         "ButtonD": {
@@ -67,7 +64,6 @@
       },
       "EventSinks": {
         "BUTTON_A": "SwitchToButtonADetail",
-        "BUTTON_B": "OpenMonoParameterScreen",
         "BUTTON_C": "OpenUnisonParameterScreen",
         "BUTTON_D": "OpenMasterParameterScreen"
       }

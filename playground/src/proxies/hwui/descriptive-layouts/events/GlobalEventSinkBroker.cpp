@@ -15,6 +15,7 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/DualParameterScreenLayout.h>
 
 namespace DescriptiveLayouts
 {
@@ -233,14 +234,24 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::OpenMasterParameterScreen, [eb]() { eb->undoableSelectParameter(247); });
-    registerEvent(EventSinks::OpenUnisonParameterScreen, [eb]() { eb->undoableSelectParameter(249); });
+    registerEvent(EventSinks::OpenMasterParameterScreen, [eb]() { eb->undoableSelectParameter(11247); });
+
+    registerEvent(EventSinks::OpenUnisonParameterScreen, [eb]() {
+      //eb->undoableSelectParameter(249);
+    });
+
     registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
       if(eb->getType() == SoundType::Split)
         eb->undoableSelectParameter(12345);
       else
         eb->undoableSelectParameter(12345, VoiceGroup::I);
     });
+
+    registerEvent(EventSinks::OpenVoicesScreen,
+                  [hwui]() { hwui->getPanelUnit().getEditPanel().getBoled().reset(new DualParameterScreenLayout()); }); // todo change to VoicesLayout
+
+    registerEvent(EventSinks::OpenParamsScreen,
+                  [hwui]() { hwui->getPanelUnit().getEditPanel().getBoled().reset(new DualParameterScreenLayout()); });
   }
 
   void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)

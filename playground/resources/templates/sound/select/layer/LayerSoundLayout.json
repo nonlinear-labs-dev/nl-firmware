@@ -28,14 +28,14 @@
           "Class": "Button",
           "Position": "BUTTON_B",
           "Init": {
-            "Text[Text]": "Mono.."
+            "Text[Text]": "Params.."
           }
         },
         "ButtonC": {
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
-            "Text[Text]": "Unison.."
+            "Text[Text]": "Voices.."
           }
         },
         "ButtonD": {
@@ -66,8 +66,8 @@
       },
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
-        "BUTTON_B": "OpenMonoParameterScreen",
-        "BUTTON_C": "OpenUnisonParameterScreen",
+        "BUTTON_B": "OpenParamsScreen",
+        "BUTTON_C": "OpenVoicesScreen",
         "BUTTON_D": "OpenMasterParameterScreen"
       }
     }

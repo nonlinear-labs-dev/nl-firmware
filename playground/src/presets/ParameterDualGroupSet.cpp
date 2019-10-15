@@ -33,6 +33,7 @@
 #include <presets/EditBuffer.h>
 #include <groups/SplitSoundGroup.h>
 #include <groups/MonoGroup.h>
+#include <groups/VoiceGroupMasterGroup.h>
 
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
@@ -64,6 +65,7 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls, vg), vg);
     appendParameterGroup(new ScaleGroup(this, vg), vg);
     appendParameterGroup(new MonoGroup(this, vg), vg);
+    appendParameterGroup(new VoiceGroupMasterGroup(this, vg), vg);
 
     m_idToParameterMap[static_cast<int>(vg)] = getParametersSortedById(vg);
   }
@@ -195,8 +197,7 @@ void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, Voice
   }
 }
 
-void
-ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target)
+void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target)
 {
   nltools_assertOnDevPC(p->getType() == SoundType::Single);
 

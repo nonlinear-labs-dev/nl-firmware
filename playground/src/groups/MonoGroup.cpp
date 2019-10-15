@@ -9,8 +9,6 @@ MonoGroup::MonoGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
 {
 }
 
-MonoGroup::~MonoGroup() = default;
-
 void MonoGroup::init()
 {
   appendParameter(new MonoModeEnableParameter(this, 12345));
