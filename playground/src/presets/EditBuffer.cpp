@@ -618,3 +618,10 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
   transaction->addUndoSwap(this, m_type, type);
   transaction->addSimpleCommand([this](auto) mutable { m_signalTypeChanged.send(); });
 }
+
+void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target)
+{
+  auto scope = getUndoScope().startTransaction("Load Preset into Voicegroup");
+  auto transaction = scope->getTransaction();
+  loadIntoVoiceGroup(transaction, preset, target);
+}

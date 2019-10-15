@@ -16,6 +16,13 @@
         "UIDetail": "SoundSelectPresetForVoiceGroup"
       },
       "Controls": {
+        "ButtonA": {
+          "Class": "Button",
+          "Position": "BUTTON_A",
+          "Init": {
+            "Text[Text]": "Back"
+          }
+        },
         "PresetListBorder" : {
           "Class": "PresetListBorder",
           "Position": "64, 0"

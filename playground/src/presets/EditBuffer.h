@@ -91,7 +91,9 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertToSingle(UNDO::Transaction *transaction);
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
 
- private:
+  void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
+
+private:
   bool anyParameterChanged(VoiceGroup vg) const;
 
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;

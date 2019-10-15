@@ -1,3 +1,4 @@
+#include <proxies/hwui/descriptive-layouts/events/IndependentPresetSelectionEvents.h>
 #include "EventProvider.h"
 #include "events/GlobalEventSinkBroker.h"
 #include "events/GlobalEventSourceBroker.h"
@@ -7,7 +8,6 @@
 #include "presets/Preset.h"
 #include "primitives/Text.h"
 #include "events/event-sources/base/EventSource.h"
-#include "events/IndependentPresetSelectionEvents.h"
 
 namespace DescriptiveLayouts
 {

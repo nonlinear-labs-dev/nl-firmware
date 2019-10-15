@@ -195,6 +195,26 @@ void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, Voice
   }
 }
 
+void
+ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target)
+{
+  nltools_assertOnDevPC(p->getType() == SoundType::Single);
+
+  super::copyFrom(transaction, p);
+
+  for(auto &g : getParameterGroups(target))
+  {
+    if(auto c = p->findParameterGroup(g->getID(), VoiceGroup::I))
+    {
+      g->copyFrom(transaction, c);
+    }
+  }
+
+  if(target == VoiceGroup::I)
+    if(p->getSplitGroup())
+      m_splitParameters.copyFrom(transaction, p->getSplitGroup());
+}
+
 SplitSoundGroup *ParameterDualGroupSet::getSplitSoundParameterGroup()
 {
   return &m_splitParameters;
