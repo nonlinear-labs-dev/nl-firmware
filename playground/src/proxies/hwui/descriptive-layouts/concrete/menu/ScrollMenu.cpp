@@ -61,7 +61,7 @@ bool ScrollMenu::onButtonOverlay(const Buttons &i, bool down, const ButtonModifi
 {
   if(m_overlay)
   {
-    if(down && (i == Buttons::BUTTON_A || i == Buttons::BUTTON_B))
+    if(down && (i == Buttons::BUTTON_A || i == Buttons::BUTTON_B || i == Buttons::BUTTON_ENTER))
     {
       remove(m_overlay);
       m_overlay = nullptr;
@@ -80,12 +80,12 @@ bool ScrollMenu::handleScrolling(const Buttons &i, bool down)
 {
   if(down)
   {
-    if(i == Buttons::BUTTON_INC)
+    if(i == Buttons::BUTTON_INC || i == Buttons::ROTARY_PLUS)
     {
       scroll(1);
       return true;
     }
-    else if(i == Buttons::BUTTON_DEC)
+    else if(i == Buttons::BUTTON_DEC || i == Buttons::ROTARY_MINUS)
     {
       scroll(-1);
       return true;
@@ -98,8 +98,9 @@ void ScrollMenu::doLayout()
 {
   if(m_overlay)
   {
-    auto castedMe = dynamic_cast<MenuOverlay*>(this);
-    if(castedMe != m_overlay) {
+    auto castedMe = dynamic_cast<MenuOverlay *>(this);
+    if(castedMe != m_overlay)
+    {
       m_overlay->setVisible(true);
       return;
     }
