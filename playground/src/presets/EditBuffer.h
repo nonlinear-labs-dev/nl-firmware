@@ -77,6 +77,7 @@ class EditBuffer : public ParameterDualGroupSet
   sigc::connection onPresetLoaded(slot<void> s);
   sigc::connection onLocksChanged(slot<void> s);
   sigc::connection onRecallValuesChanged(slot<void> s);
+  sigc::connection onSoundTypeChanged(slot<void> s);
 
   bool isModified() const;
   void sendToLPC();
@@ -111,6 +112,7 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalChange;
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
+  Signal<void> m_signalTypeChanged;
 
   Parameter::ID m_selectedParameterId;
 
@@ -134,4 +136,6 @@ class EditBuffer : public ParameterDualGroupSet
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
+
+  void undoableSetType(UNDO::Transaction *transaction, SoundType type);
 };

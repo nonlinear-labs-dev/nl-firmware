@@ -134,6 +134,11 @@ connection EditBuffer::onRecallValuesChanged(slot<void> s)
   return m_recallSet.m_signalRecallValues.connect(s);
 }
 
+connection EditBuffer::onSoundTypeChanged(slot<void> s)
+{
+  return m_signalTypeChanged.connectAndInit(s);
+}
+
 UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)
 {
   m_deferredJobs.trigger();
@@ -591,7 +596,7 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction)
   if(m_type == SoundType::Single)
     return;
 
-  transaction->addUndoSwap(this, m_type, SoundType::Single);
+  undoableSetType(transaction, SoundType::Single);
 }
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom)
@@ -599,10 +604,17 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   if(m_type == type)
     return;
 
-  transaction->addUndoSwap(this, m_type, type);
+  undoableSetType(transaction, type);
+
   if(copyFrom == VoiceGroup::II)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 
   transaction->addSimpleCommand(
       [](auto) { Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I); });
+}
+
+void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
+{
+  transaction->addUndoSwap(this, m_type, type);
+  transaction->addSimpleCommand([this](auto) mutable { m_signalTypeChanged.send(); });
 }
