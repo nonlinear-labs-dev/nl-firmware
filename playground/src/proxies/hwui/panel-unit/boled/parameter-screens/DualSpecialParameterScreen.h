@@ -18,9 +18,5 @@ class DualSpecialParameterScreen : public UnmodulateableParameterSelectLayout2
 
   ModuleCaption *createModuleCaption() const override;
 
-
-  void toggleVoiceGroup();
-  void openLoadPresetIntoVoiceGroup();
-
   sigc::connection m_connection;
 };

@@ -13,11 +13,13 @@ SplitPointParameter::SplitPointParameter(ParameterGroup *group, uint16_t id)
 {
 }
 
-ustring SplitPointParameter::getGroupAndParameterName() const {
+ustring SplitPointParameter::getGroupAndParameterName() const
+{
   return "Split Point";
 }
 
-DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const {
+DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
+{
   return new DualSpecialParameterScreen();
 }
 
@@ -33,7 +35,8 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
   return "";
 }
 
-ustring SplitPointParameter::getDisplayString() const {
+ustring SplitPointParameter::getDisplayString() const
+{
   auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   if(currentVG == VoiceGroup::I)
     return getDisplayValue(VoiceGroup::I);
@@ -47,10 +50,10 @@ void SplitPointParameter::registerTests()
   g_test_add_func("/SplitPointParameter/stringize", [] {
     TestRootDocument root;
     TestGroupSet set{ &root };
-    TestGroup group(&set, VoiceGroup::Global);
-    group.addParameter(new TestParameter<SplitPointParameter>(&group, uint16_t(18700)));
+    TestGroup group(&set, VoiceGroup::I);
+    group.addParameter(new TestParameter<SplitPointParameter>(&group, uint16_t(1)));
 
-    auto parameter = dynamic_cast<SplitPointParameter *>(group.findParameterByID(18700));
+    auto parameter = dynamic_cast<SplitPointParameter *>(group.findParameterByID(1));
     g_assert(parameter != nullptr);
 
     auto transScope = UNDO::Scope::startTrashTransaction();
@@ -66,11 +69,13 @@ void SplitPointParameter::registerTests()
   });
 }
 
-ustring SplitPointParameter::getLongName() const {
+ustring SplitPointParameter::getLongName() const
+{
   return "Split Point";
 }
 
-ustring SplitPointParameter::getShortName() const {
+ustring SplitPointParameter::getShortName() const
+{
   return "Split P.";
 }
 

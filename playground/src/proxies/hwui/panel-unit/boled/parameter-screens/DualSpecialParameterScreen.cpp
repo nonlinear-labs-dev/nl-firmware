@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualParameterScreenCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualSpecialParameterModuleCaption.h>
 #include <proxies/hwui/buttons.h>
+#include <proxies/hwui/controls/Button.h>
 #include "DualSpecialParameterScreen.h"
 
 Parameter *DualSpecialParameterScreen::getCurrentParameter() const
@@ -17,7 +18,12 @@ DualSpecialParameterScreen::DualSpecialParameterScreen()
 {
   m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() {
     auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    getCarousel()->setup(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg));
+    auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+    getCarousel()->setup(selected);
+    for(auto &i : getControls<DualSpecialParameterModuleCaption>())
+    {
+      i->updateText(selected);
+    }
   });
 }
 
@@ -45,31 +51,14 @@ bool DualSpecialParameterScreen::onButton(Buttons i, bool down, ButtonModifiers 
 {
   if(down && i == Buttons::BUTTON_A)
   {
-    toggleVoiceGroup();
+    Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
     return true;
   }
 
   if(down && i == Buttons::BUTTON_C)
   {
-    openLoadPresetIntoVoiceGroup();
     return true;
   }
 
   return ParameterSelectLayout2::onButton(i, down, modifiers);
-}
-
-void DualSpecialParameterScreen::toggleVoiceGroup()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  if(currentVG == VoiceGroup::I && dynamic_cast<const SplitPointParameter *>(eb->getSelected(currentVG)))
-  {
-    getCarousel()->turn();  //select next parameter that is not Split Point!
-  }
-
-  Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
-}
-
-void DualSpecialParameterScreen::openLoadPresetIntoVoiceGroup()
-{
 }

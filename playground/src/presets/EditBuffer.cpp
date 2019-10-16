@@ -371,6 +371,9 @@ Parameter *EditBuffer::getSelected(VoiceGroup vg) const
   if(getType() != SoundType::Split && isIDMonoGroup(m_selectedParameterId))
     vg = VoiceGroup::I;
 
+  if(getType() == SoundType::Split && m_selectedParameterId == 18700)
+    vg = VoiceGroup::I;
+
   return findParameterByID(m_selectedParameterId, vg);
 }
 

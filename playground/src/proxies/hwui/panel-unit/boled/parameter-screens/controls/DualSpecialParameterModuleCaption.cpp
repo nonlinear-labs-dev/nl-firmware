@@ -18,7 +18,7 @@ void DualSpecialParameterModuleCaption::updateText(Parameter *newOne)
   else
   {
     if(dynamic_cast<const SplitPointParameter *>(eb->getSelected(VoiceGroup::I)))
-      setText({ toString(type), 0 });
+      setText({ toString(type) + " I+II", 0 });
     else
       setText({ toString(type) + " " + toString(vg), 0 });
   }

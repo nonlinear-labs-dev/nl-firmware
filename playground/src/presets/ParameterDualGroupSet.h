@@ -4,7 +4,6 @@
 #include "groups/ParameterGroup.h"
 #include <presets/AttributesOwner.h>
 #include <vector>
-#include <groups/SplitSoundGroup.h>
 #include "tools/IntrusiveList.h"
 
 class Parameter;

@@ -31,7 +31,6 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <groups/SplitSoundGroup.h>
 #include <groups/MonoGroup.h>
 #include <groups/VoiceGroupMasterGroup.h>
 
@@ -177,7 +176,6 @@ const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
 
 void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
 {
-  nltools_assertOnDevPC(from != VoiceGroup::Global && to != VoiceGroup::Global);
   nltools_assertOnDevPC(from != to && to != VoiceGroup::Invalid && from != VoiceGroup::Invalid);
 
   for(auto &group : getParameterGroups(to))
