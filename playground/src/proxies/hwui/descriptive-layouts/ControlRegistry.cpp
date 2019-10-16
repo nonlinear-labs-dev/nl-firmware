@@ -12,6 +12,7 @@
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/SplitSoundEditMenu.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/SingleSoundEditMenu.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/LayerSoundEditMenu.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/MonoGroupControl.h>
 
 namespace DescriptiveLayouts
 {
@@ -46,6 +47,8 @@ namespace DescriptiveLayouts
 
     m_discreteRegistry["LoadVoiceGroupPresetList"]
         = [](const Point& position) { return new LoadVoiceGroupPresetList(position); };
+    m_discreteRegistry["MonoGroupControl"]
+        = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 100, 33));};
   }
 
   void ControlRegistry::registerControl(ControlClass&& cp)

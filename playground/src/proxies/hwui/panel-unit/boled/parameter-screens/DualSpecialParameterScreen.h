@@ -12,6 +12,8 @@ class DualSpecialParameterScreen : public UnmodulateableParameterSelectLayout2
   Parameter *getCurrentParameter() const override;
   Carousel *createCarousel(const Rect &rect) override;
 
+  void update();
+
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 
   Parameter *getCurrentEditParameter() const override;

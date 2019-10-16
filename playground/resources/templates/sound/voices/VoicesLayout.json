@@ -43,32 +43,8 @@
           }
         },
         "Mono-Group": {
-          "Class": "Group-Control-Border",
+          "Class": "MonoGroupControl",
           "Position": "10, 15"
-        },
-        "Legato": {
-          "Class": "ParameterPair",
-          "Position": "12, 16",
-          "Init": {
-            "Value[Text]": "66%",
-            "Label[Text]": "Legato"
-          }
-        },
-        "Prio": {
-          "Class": "ParameterPair",
-          "Position": "12, 26",
-          "Init": {
-            "Value[Text]": "Highest",
-            "Label[Text]": "Priority"
-          }
-        },
-        "Glide": {
-          "Class": "ParameterPair",
-          "Position": "12, 36",
-          "Init": {
-            "Value[Text]": "Yes",
-            "Label[Text]": "Glide"
-          }
         },
         "Voices": {
           "Class": "ParameterPair",

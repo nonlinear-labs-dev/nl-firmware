@@ -4,27 +4,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/PedalSelectionControl.h>
 #include <proxies/hwui/panel-unit/boled/setup/SetupLabel.h>
 #include <proxies/hwui/Oleds.h>
-
-class SmallerParamValueLabel : public ParameterValueLabel
-{
- public:
-  using ParameterValueLabel::ParameterValueLabel;
-
-  SmallerParamValueLabel(const Parameter *param, const Rect &rect)
-      : ParameterValueLabel(param, rect)
-  {
-  }
-
-  std::shared_ptr<Font> getFont() const
-  {
-    return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
-  }
-
-  int getFontHeight() const
-  {
-    return 8;
-  }
-};
+#include "SmallerParameterValueLabel.h"
 
 PedalSelectionControl::PedalSelectionControl(Parameter *param)
     : super(Rect(0, 0, 0, 0))

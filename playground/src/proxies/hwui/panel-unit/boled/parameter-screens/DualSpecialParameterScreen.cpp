@@ -24,6 +24,14 @@ DualSpecialParameterScreen::DualSpecialParameterScreen()
     {
       i->updateText(selected);
     }
+    for(auto &i : getControls<Button>())
+    {
+      if(i->getPosition().getPosition().getX() == Button::getButtonPos(Buttons::BUTTON_A).getPosition().getX())
+      {
+        auto text = to_string("Select ") + (vg == VoiceGroup::I ? "II" : "I");
+        i->setText({ text, 0 });
+      }
+    }
   });
 }
 
