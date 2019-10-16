@@ -18,12 +18,12 @@ namespace DescriptiveLayouts
 
   namespace StyleValues
   {
-    ENUM(Font, uint8_t, Regular, Bold);
-    ENUM(Color, int, Transparent = FrameBuffer::Transparent, C43 = FrameBuffer::C43, C77 = FrameBuffer::C77,
-         C103 = FrameBuffer::C103, C128 = FrameBuffer::C128, C179 = FrameBuffer::C179, C204 = FrameBuffer::C204,
-         C255 = FrameBuffer::C255);
-    ENUM(Alignment, uint8_t, Left, Center, Right);
-    ENUM(BorderStyle, uint8_t, Solid, Rounded, None);
+    ENUM(Font, uint8_t, Undefined, Regular, Bold);
+    ENUM(Color, int, Undefined = FrameBuffer::Undefined, Transparent = FrameBuffer::Transparent, C43 = FrameBuffer::C43,
+         C77 = FrameBuffer::C77, C103 = FrameBuffer::C103, C128 = FrameBuffer::C128, C179 = FrameBuffer::C179,
+         C204 = FrameBuffer::C204, C255 = FrameBuffer::C255);
+    ENUM(Alignment, uint8_t, Undefined, Left, Center, Right);
+    ENUM(BorderStyle, uint8_t, Undefined, Solid, Rounded, None);
   }
 
   ENUM(EventSources, uint8_t, Any, None, ParameterName, SliderRange, ParameterDisplayString, ParameterGroupName,

@@ -113,4 +113,12 @@ namespace EnumTools
     for(auto &a : getMap<enumName>())                                                                                  \
       ret.push_back(a.second);                                                                                         \
     return ret;                                                                                                        \
+  }                                                                                                                    \
+  template <typename E> std::vector<E> getAllValues();                                                                 \
+  template <> inline std::vector<enumName> getAllValues<enumName>()                                                    \
+  {                                                                                                                    \
+    std::vector<enumName> ret;                                                                                         \
+    for(auto &a : getMap<enumName>())                                                                                  \
+      ret.push_back(a.first);                                                                                          \
+    return ret;                                                                                                        \
   }
