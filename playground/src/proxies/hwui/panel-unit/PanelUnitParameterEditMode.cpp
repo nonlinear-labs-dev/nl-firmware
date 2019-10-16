@@ -83,7 +83,7 @@ void PanelUnitParameterEditMode::assertAllButtonsAssigned()
     for(int id : assignedAudioIDs)
     {
       int expected = lastOne + 1;
-      if(expected != 122 && !(id >= 12345 && id <= 12348))  // unused param
+      if(expected != 122)  // unused param
       {
         if(id != expected)
         {
@@ -136,7 +136,8 @@ void PanelUnitParameterEditMode::setup()
 
   FOR_TESTS(assignedAudioIDs.insert(246));
 
-  assertAllButtonsAssigned();
+#warning ADLER
+  //assertAllButtonsAssigned();
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     getEditPanel().getUndoStateMachine().traverse(state ? UNDO_PRESSED : UNDO_RELEASED);

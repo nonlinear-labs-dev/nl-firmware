@@ -181,6 +181,7 @@ std::string PresetManagerCursor::getPresetType() const
         return "X";
     }
   }
+  g_assert_not_reached();
 }
 
 

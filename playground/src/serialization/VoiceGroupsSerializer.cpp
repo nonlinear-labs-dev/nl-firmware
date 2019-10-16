@@ -4,10 +4,10 @@
 
 namespace Detail
 {
-  class VoiceGroupSerializer2 : public Serializer
+  class VoiceGroupSerializer : public Serializer
   {
    public:
-    VoiceGroupSerializer2(EditBuffer *eb, VoiceGroup vg)
+    VoiceGroupSerializer(EditBuffer *eb, VoiceGroup vg)
         : Serializer(tagName())
         , m_editBuffer{ eb }
         , m_voiceGroup{ vg }
@@ -40,37 +40,6 @@ namespace Detail
     EditBuffer *m_editBuffer;
     VoiceGroup m_voiceGroup;
   };
-
-  class SplitGroupSerializer : public Serializer
-  {
-   public:
-    SplitGroupSerializer(EditBuffer *eb)
-        : Serializer(tagName())
-        , m_editBuffer{ eb }
-    {
-    }
-
-    static std::string tagName()
-    {
-      return "split-group";
-    }
-
-   protected:
-    void writeTagContent(Writer &writer) const override
-    {
-      ParameterGroupSerializer ser(m_editBuffer->getSplitSoundParameterGroup());
-      ser.write(writer);
-    }
-
-    void readTagContent(Reader &reader) const override
-    {
-      reader.onTag(ParameterGroupSerializer::getTagName(), [this](const auto &attr) mutable {
-        return new ParameterGroupSerializer(m_editBuffer->getSplitSoundParameterGroup());
-      });
-    }
-
-    EditBuffer *m_editBuffer;
-  };
 }
 
 VoiceGroupsSerializer::VoiceGroupsSerializer(EditBuffer *editBuffer)
@@ -89,13 +58,10 @@ void VoiceGroupsSerializer::writeTagContent(Writer &writer) const
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     writer.writeTag(toString(vg), [vg, &writer, this] {
-      Detail::VoiceGroupSerializer2 s(m_editBuffer, vg);
+      Detail::VoiceGroupSerializer s(m_editBuffer, vg);
       s.write(writer);
     });
   }
-
-  Detail::SplitGroupSerializer splits(m_editBuffer);
-  splits.write(writer);
 }
 
 void VoiceGroupsSerializer::readTagContent(Reader &reader) const
@@ -103,9 +69,6 @@ void VoiceGroupsSerializer::readTagContent(Reader &reader) const
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     reader.onTag(toString(vg),
-                 [this, vg](const auto &attr) mutable { return new Detail::VoiceGroupSerializer2(m_editBuffer, vg); });
+                 [this, vg](const auto &attr) mutable { return new Detail::VoiceGroupSerializer(m_editBuffer, vg); });
   }
-
-  reader.onTag(Detail::SplitGroupSerializer::tagName(),
-               [this](const auto &attr) mutable { return new Detail::SplitGroupSerializer(m_editBuffer); });
 }

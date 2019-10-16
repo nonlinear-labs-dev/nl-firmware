@@ -12,5 +12,4 @@ SplitSoundGroup::SplitSoundGroup(ParameterDualGroupSet* parent)
 
 void SplitSoundGroup::init()
 {
-  appendParameter(new SplitPointParameter(this, 18700));
 }

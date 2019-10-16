@@ -75,9 +75,15 @@ namespace DescriptiveLayouts
         || std::all_of(conditions.begin(), conditions.end(), [](ConditionBase* c) { return c->get(); });
   }
 
-  const unsigned long LayoutClass::getWeight() const
+  long LayoutClass::getTotalWeight() const
   {
-    return conditions.size() + selectors.size();
+    auto ret = getWeight();
+    return ret.first + ret.second;
+  }
+
+  std::pair<long, long> LayoutClass::getWeight() const
+  {
+    return {selectors.size(), conditions.size()};
   }
 
   const std::string LayoutClass::getName() const

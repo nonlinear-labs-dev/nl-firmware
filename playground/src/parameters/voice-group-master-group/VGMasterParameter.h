@@ -13,5 +13,7 @@ class VGMasterParameter : public Parameter
   ustring getGroupAndParameterName() const override;
 
   DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+
+  ustring getShortName() const override;
 };
 

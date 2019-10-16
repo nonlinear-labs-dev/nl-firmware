@@ -33,7 +33,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
   VoiceGroupsSerializer groups(m_editBuffer);
   groups.write(writer);
 
-  if(auto selectedParam = m_editBuffer->getSelected())
+  if(auto selectedParam = m_editBuffer->getSelected(VoiceGroup::I))
     writer.writeTextElement("selected-parameter", to_string(selectedParam->getID()));
 
   LastLoadedPresetInfoSerializer lastLoaded(m_editBuffer);

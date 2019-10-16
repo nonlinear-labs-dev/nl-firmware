@@ -29,9 +29,6 @@ class ParameterDualGroupSet : public AttributesOwner
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
-  virtual SplitSoundGroup *getSplitSoundParameterGroup();
-  virtual const SplitSoundGroup *getSplitSoundParameterGroup() const;
-
  protected:
   virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
@@ -47,6 +44,4 @@ class ParameterDualGroupSet : public AttributesOwner
   std::array<tParamMap, 2> m_idToParameterMap;
 
   friend class VoiceGroupSerializer;
-
-  SplitSoundGroup m_splitParameters;
 };

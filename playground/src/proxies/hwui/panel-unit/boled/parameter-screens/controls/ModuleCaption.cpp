@@ -21,6 +21,11 @@ ModuleCaption::~ModuleCaption()
 
 void ModuleCaption::onParameterSelected(Parameter *newOne)
 {
+  updateText(newOne);
+}
+
+void ModuleCaption::updateText(Parameter *newOne)
+{
   if(newOne)
   {
     auto group = newOne->getParentGroup();

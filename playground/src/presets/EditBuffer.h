@@ -5,6 +5,7 @@
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
+#include <parameters/SplitPointParameter.h>
 
 class Application;
 class Writer;
@@ -93,6 +94,9 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
 
+  const SplitPointParameter *getSplitPoint() const;
+  SplitPointParameter *getSplitPoint();
+
 private:
   bool anyParameterChanged(VoiceGroup vg) const;
 
@@ -116,7 +120,7 @@ private:
   Signal<void> m_signalLocksChanged;
   Signal<void> m_signalTypeChanged;
 
-  Parameter::ID m_selectedParameterId;
+  Parameter::ID m_selectedParameterId = 0;
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;

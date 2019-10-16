@@ -6,4 +6,8 @@ public:
   SplitPointParameter(ParameterGroup *group, uint16_t id);
   std::string getDisplayValue(VoiceGroup vg) const;
   static void registerTests();
+
+  DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+
+  ustring getGroupAndParameterName() const override;
 };

@@ -1,3 +1,4 @@
+#include <proxies/hwui/panel-unit/boled/parameter-screens/DualSpecialParameterScreen.h>
 #include "VGMasterParameter.h"
 
 VGMasterParameter::VGMasterParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
@@ -12,6 +13,11 @@ ustring VGMasterParameter::getLongName() const
   return ParameterDB::get().getLongName(getID() - 11000);
 }
 
+ustring VGMasterParameter::getShortName() const
+{
+  return ParameterDB::get().getShortName(getID() - 11000);
+}
+
 ustring VGMasterParameter::getGroupAndParameterName() const
 {
   return "VGM - " + getLongName();
@@ -19,5 +25,5 @@ ustring VGMasterParameter::getGroupAndParameterName() const
 
 DFBLayout *VGMasterParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  return Parameter::createLayout(focusAndMode);
+  return new DualSpecialParameterScreen();
 }

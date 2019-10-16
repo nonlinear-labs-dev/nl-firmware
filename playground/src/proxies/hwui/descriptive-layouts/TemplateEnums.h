@@ -42,7 +42,7 @@ namespace DescriptiveLayouts
   ENUM(EventSinks, uint8_t, Left, Right, Up, Down, Commit, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
        SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,
        SwitchToSoundFocus, SwitchToMCSelectDetail, SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail,
-       SwitchToButtonDDetail, SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel,
+       SwitchToButtonDDetail, SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SwitchToVoicesDetail, SelectPresetForVoiceGroup, IncMCSel,
        DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
        IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,

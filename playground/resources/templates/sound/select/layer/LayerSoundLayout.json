@@ -3,7 +3,8 @@
     "Layer-Sound-Select-Layout": {
       "Selector": {
         "UIFocus": "Sound",
-        "UIMode": "Select"
+        "UIMode": "Select",
+        "UIDetail": "Init"
       },
       "Conditions": [
         "isLayerSound"
@@ -67,8 +68,7 @@
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "OpenParamsScreen",
-        "BUTTON_C": "OpenVoicesScreen",
-        "BUTTON_D": "OpenMasterParameterScreen"
+        "BUTTON_C": "SwitchToVoicesDetail"
       }
     }
   }

@@ -207,7 +207,14 @@ namespace DescriptiveLayouts
     auto *hwui = Application::get().getHWUI();
     auto current = hwui->getFocusAndMode();
     if(current.focus == UIFocus::Sound)
-      hwui->setFocusAndMode({ UIFocus::Parameters, UIMode::Select, UIDetail::Init });
+      if(current.detail != UIDetail::Init && current.detail != UIDetail::ButtonA)
+      {
+        hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+      }
+      else
+      {
+        hwui->setFocusAndMode({ UIFocus::Parameters, UIMode::Select, UIDetail::Init });
+      }
     else
       hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }

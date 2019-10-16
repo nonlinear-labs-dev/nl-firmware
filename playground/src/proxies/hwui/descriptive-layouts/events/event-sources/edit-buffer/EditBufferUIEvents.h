@@ -33,6 +33,10 @@ namespace DescriptiveLayouts
         auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
         setValue({ sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
       }
+      else
+      {
+        setValue({ "", 0 });
+      }
     }
   };
 
@@ -102,8 +106,7 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto splitPoint = dynamic_cast<const SplitPointParameter *>(
-             eb->getSplitSoundParameterGroup()->getParameterByID(18700)))  //TODO change 18700
+      if(auto splitPoint = dynamic_cast<const SplitPointParameter *>(eb->getSplitPoint()))  //TODO change 18700
       {
         setValue({ splitPoint->getDisplayValue(vg), 0 });
       }

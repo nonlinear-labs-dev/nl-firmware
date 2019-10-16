@@ -46,7 +46,8 @@ namespace DescriptiveLayouts
 
     bool matches(FocusAndMode fam) const;
     bool meetsConditions() const;
-    const unsigned long getWeight() const;
+    long getTotalWeight() const;
+    std::pair<long, long> getWeight() const;
     const std::string getName() const;
 
     FocusAndMode getDesiredFocusAndMode() const;

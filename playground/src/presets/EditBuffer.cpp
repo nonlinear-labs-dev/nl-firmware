@@ -210,7 +210,7 @@ void EditBuffer::undoableSelectParameter(uint16_t id, VoiceGroup vg)
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id)
 {
 
-  if(auto p = findParameterByID(std::stoi(id)))
+  if(auto p = findParameterByID(std::stoi(id), VoiceGroup::I))
     undoableSelectParameter(transaction, p);
 }
 
@@ -297,7 +297,7 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
 {
   if(p->getID() != m_selectedParameterId)
   {
-    auto newSelection = getSelected(VoiceGroup::I);
+    auto newSelection = getSelected(p->getVoiceGroup());
     auto scope = getUndoScope().startContinuousTransaction(&newSelection, std::chrono::hours(1), "Select '%0'",
                                                            p->getGroupAndParameterName());
     undoableSelectParameter(scope->getTransaction(), p);
@@ -580,9 +580,9 @@ Parameter *EditBuffer::searchForAnyParameterWithLock(VoiceGroup vg) const
 
 void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid)
 {
-#warning "What to do with MCView?"
   if(auto mcs = getParameterGroupByID("MCs"))
   {
+#warning "What to do with MCView?"
     if(auto mc = dynamic_cast<MacroControlParameter *>(mcs->getParameterByID(id)))
     {
       mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
@@ -624,4 +624,18 @@ void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup targ
   auto scope = getUndoScope().startTransaction("Load Preset into Voicegroup");
   auto transaction = scope->getTransaction();
   loadIntoVoiceGroup(transaction, preset, target);
+}
+
+const SplitPointParameter *EditBuffer::getSplitPoint() const
+{
+  if(getType() == SoundType::Split)
+    return dynamic_cast<const SplitPointParameter *>(findParameterByID(18700, VoiceGroup::I));
+  return nullptr;
+}
+
+SplitPointParameter *EditBuffer::getSplitPoint()
+{
+  if(getType() == SoundType::Split)
+    return dynamic_cast<SplitPointParameter *>(findParameterByID(18700, VoiceGroup::I));
+  return nullptr;
 }

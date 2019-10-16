@@ -40,8 +40,6 @@ class Preset : public PresetDualParameterGroups
   void invalidate();
 
   SoundType getType() const;
-  SplitPresetParameterGroup* getSplitGroup();
-  const SplitPresetParameterGroup * getSplitGroup() const;
 
   // accessors
   const Uuid &getUuid() const;

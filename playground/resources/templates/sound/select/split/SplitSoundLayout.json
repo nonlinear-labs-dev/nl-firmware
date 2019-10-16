@@ -3,7 +3,8 @@
     "Single-Sound-Select-Layout": {
       "Selector": {
         "UIFocus": "Sound",
-        "UIMode": "Select"
+        "UIMode": "Select",
+        "UIDetail": "Init"
       },
       "Conditions": [
         "isSplitSound"
@@ -75,9 +76,8 @@
       },
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
-        "BUTTON_B": "OpenMonoParameterScreen",
-        "BUTTON_C": "OpenUnisonParameterScreen",
-        "BUTTON_D": "OpenMasterParameterScreen"
+        "BUTTON_B": "OpenParamsScreen",
+        "BUTTON_C": "SwitchToVoicesDetail"
       }
     }
   }

@@ -1,0 +1,49 @@
+{
+  "controls": {
+    "ParameterPair": {
+      "Label": {
+        "Class": "Text",
+        "Rect": "0, 0, 50, 9",
+        "Tag": "Label"
+      },
+      "Value": {
+        "Class": "Text",
+        "Rect": "50, 0, 50, 9",
+        "Tag": "Value"
+      }
+    }
+  },
+  "styles": {
+    "ParameterPair-DefaultStyle": {
+      "selector": {
+        "ControlClasses": "ParameterPair"
+      },
+      "styles": {
+        "Color": "C179",
+        "HighlightColor": "C255"
+      }
+    },
+    "ParameterPair-ValueStyle": {
+      "selector": {
+        "ControlClasses": "ParameterPair",
+        "Tag": "Value"
+      },
+      "styles": {
+        "TextAlign": "Right",
+        "Color": "C179",
+        "HighlightColor": "C255"
+      }
+    },
+    "ParameterPair-LabelStyle": {
+      "selector": {
+        "ControlClasses": "ParameterPair",
+        "Tag": "Label"
+      },
+      "styles": {
+        "TextAlign": "Center",
+        "Color": "C179",
+        "HighlightColor": "C255"
+      }
+    }
+  }
+}

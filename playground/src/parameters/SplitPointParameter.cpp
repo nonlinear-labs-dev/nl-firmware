@@ -5,11 +5,20 @@
 #include <testing/TestRootDocument.h>
 #include <testing/parameter/TestGroup.h>
 #include <testing/parameter/TestParameter.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/DualSpecialParameterScreen.h>
 #include "groups/ParameterGroup.h"
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<KeyWithOctaveScaleConverter>(), 0.5, 60, 60)
 {
+}
+
+ustring SplitPointParameter::getGroupAndParameterName() const {
+  return "Split Point";
+}
+
+DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const {
+  return new DualSpecialParameterScreen();
 }
 
 std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const

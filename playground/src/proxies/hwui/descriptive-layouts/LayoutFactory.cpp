@@ -32,7 +32,11 @@ namespace DescriptiveLayouts
 
   void BoledLayoutFactory::sortByPriority()
   {
-    m_layouts.sort([](const LayoutClass& a, const LayoutClass& b) { return a.getWeight() > b.getWeight(); });
+    m_layouts.sort([](const LayoutClass& a, const LayoutClass& b) {
+      if(a.getTotalWeight() == b.getTotalWeight())
+        return a.getWeight().first > b.getWeight().first;
+      return a.getTotalWeight() > b.getTotalWeight();
+    });
   }
 
   const DescriptiveLayouts::LayoutClass& BoledLayoutFactory::find(FocusAndMode fam) const
@@ -44,6 +48,8 @@ namespace DescriptiveLayouts
     std::copy_if(m_layouts.begin(), m_layouts.end(), std::back_inserter(matches),
                  [=](const LayoutClass& e) { return e.matches(fam) && e.meetsConditions(); });
 
+
+
     if(matches.size() > 1)
     {
       auto text = std::string("Found:\n");
@@ -51,7 +57,8 @@ namespace DescriptiveLayouts
       {
         text += m.getName() + "\n";
       }
-      DebugLevel::throwException("Can't resolve ambiguity: ", text);
+
+      //DebugLevel::throwException("Can't resolve ambiguity: ", text);
     }
 
     if(it == m_layouts.end())

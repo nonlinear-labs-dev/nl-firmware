@@ -64,7 +64,7 @@
       },
       "EventSinks": {
         "BUTTON_A": "SwitchToButtonADetail",
-        "BUTTON_C": "OpenUnisonParameterScreen",
+        "BUTTON_C": "SwitchToVoicesDetail",
         "BUTTON_D": "OpenMasterParameterScreen"
       }
     }

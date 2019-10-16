@@ -37,7 +37,6 @@
 
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
-    , m_splitParameters{ this }
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
@@ -116,9 +115,6 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
       }
     }
   }
-
-  if(other->getSplitGroup())
-    m_splitParameters.copyFrom(transaction, other->getSplitGroup());
 }
 
 Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
@@ -134,14 +130,7 @@ Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
   }
   catch(...)
   {
-    try
-    {
-      return m_splitParameters.findParameterByID(id);
-    }
-    catch(...)
-    {
-      return nullptr;
-    }
+    return nullptr;
   }
 }
 
@@ -210,18 +199,4 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
       g->copyFrom(transaction, c);
     }
   }
-
-  if(target == VoiceGroup::I)
-    if(p->getSplitGroup())
-      m_splitParameters.copyFrom(transaction, p->getSplitGroup());
-}
-
-SplitSoundGroup *ParameterDualGroupSet::getSplitSoundParameterGroup()
-{
-  return &m_splitParameters;
-}
-
-const SplitSoundGroup *ParameterDualGroupSet::getSplitSoundParameterGroup() const
-{
-  return &m_splitParameters;
 }

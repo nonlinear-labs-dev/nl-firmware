@@ -1,11 +1,13 @@
 #pragma once
 #include "UnmodulatebaleParameterLayouts.h"
 
-class DualParameterScreenLayout : public UnmodulateableParameterSelectLayout2
+class DualSpecialParameterScreen : public UnmodulateableParameterSelectLayout2
 {
  public:
-  DualParameterScreenLayout();
+  DualSpecialParameterScreen();
  protected:
   Parameter *getCurrentParameter() const override;
   Carousel *createCarousel(const Rect &rect) override;
+
+  ModuleCaption *createModuleCaption() const override;
 };

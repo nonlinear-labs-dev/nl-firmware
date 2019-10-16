@@ -353,7 +353,6 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
 
     if(editBuffer)
     {
-#warning "look at every usage of findParameterByID!"
       if(auto srcParam = editBuffer->findParameterByID(srcParamID, getVoiceGroup()))
       {
         auto modAmount = getModulationAmount();

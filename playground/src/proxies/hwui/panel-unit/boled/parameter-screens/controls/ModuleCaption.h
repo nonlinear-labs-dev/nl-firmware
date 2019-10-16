@@ -33,6 +33,9 @@ class ModuleCaption : public Label
   virtual std::shared_ptr<Font> getFont() const override;
   virtual int getFontHeight() const override;
 
+ protected:
+  virtual void updateText(Parameter* newOne);
+ private:
   void onParameterSelected(Parameter *newOne);
   void onSelectionChanged();
 };

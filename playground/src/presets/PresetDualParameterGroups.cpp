@@ -6,19 +6,19 @@
 #include "Preset.h"
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent)
-    : AttributesOwner(parent), m_splitGroup{}
+    : AttributesOwner(parent)
 {
   m_type = SoundType::Single;
 }
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent, const Preset &other)
-    : AttributesOwner(parent, &other), m_splitGroup(other.getSplitGroup())
+    : AttributesOwner(parent, &other)
 {
   init(&other);
 }
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent, const EditBuffer &editbuffer)
-    : AttributesOwner(parent, &editbuffer), m_splitGroup(editbuffer)
+    : AttributesOwner(parent, &editbuffer)
 {
   m_type = editbuffer.getType();
 
