@@ -87,4 +87,43 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 		return metaData.getDecoratedValue(withUnit, clipped);
 	}
 
+	public double getQuantizedAndClipped(boolean fine)
+	{
+		return metaData.clip(metaData.quantize(value.getValue(), fine));
+	}
+
+	public String getDecoratedValue(boolean withUnit, boolean fine) {
+		double quantized = metaData.quantize(value.getValue(), fine);
+		double clipped = metaData.clip(quantized);
+		return metaData.getDecoratedValue(withUnit, clipped);
+	}
+
+	public double getClippedValue() {
+		return metaData.clip(value.getValue());
+	}
+
+	public boolean isValueCoarseQuantized() {
+		return getQuantizedAndClipped(false) == getQuantizedAndClipped(true);
+}
+
+	public double getIncDecValue(boolean fine, int inc) {
+	
+		if (!fine && !isValueCoarseQuantized()) {
+			double fineValue = getQuantizedAndClipped(true);
+			double coarseValue = getQuantizedAndClipped(false);
+
+			if (coarseValue < fineValue && inc == -1) {
+				inc = 0;
+			} else if (coarseValue > fineValue && inc == 1) {
+				inc = 0;
+			}
+		}
+
+		double controlVal = getClippedValue();
+		double denominator = fine ? metaData.fineDenominator.getValue() : metaData.coarseDenominator.getValue();
+		double unRounded = controlVal * denominator;
+		double rounded = Math.round(unRounded);
+		return metaData.clip((rounded + inc) / denominator);
+	}
+
 }

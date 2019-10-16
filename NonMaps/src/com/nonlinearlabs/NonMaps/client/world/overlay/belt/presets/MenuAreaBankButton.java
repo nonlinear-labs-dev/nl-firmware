@@ -7,7 +7,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Overlay;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage.drawStates;
 
 public class MenuAreaBankButton extends SVGImage {
 

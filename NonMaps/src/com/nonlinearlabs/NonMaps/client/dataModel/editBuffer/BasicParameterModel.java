@@ -9,12 +9,14 @@ import com.nonlinearlabs.NonMaps.client.dataModel.ValueDataModelEntity;
 
 public class BasicParameterModel extends Notifier<BasicParameterModel> {
 
+	public int id;
 	public ValueDataModelEntity value = new ValueDataModelEntity();
 	public StringDataModelEntity shortName = new StringDataModelEntity();
 	public StringDataModelEntity longName = new StringDataModelEntity();
 	public DoubleDataModelEntity originalValue = new DoubleDataModelEntity();
 
-	public BasicParameterModel() {
+	public BasicParameterModel(int id) {
+		this.id = id;
 		value.onChange(e -> notifyChanges());
 		shortName.onChange(e -> notifyChanges());
 		longName.onChange(e -> notifyChanges());
@@ -41,6 +43,12 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 
 	public Updater getUpdater(Node c) {
 		return new ParameterUpdater(c, this);
+	}
+
+	
+
+	public double getIncDecValue(boolean fine, int inc) {
+		return value.getIncDecValue(fine, inc);
 	}
 
 }

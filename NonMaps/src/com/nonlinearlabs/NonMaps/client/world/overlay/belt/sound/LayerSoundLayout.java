@@ -7,7 +7,6 @@ public class LayerSoundLayout extends OverlayLayout {
 
 	protected LayerSoundLayout(Control parent) {
 		super(parent);
-		// TODO Auto-generated constructor stub
 	}
 
 }

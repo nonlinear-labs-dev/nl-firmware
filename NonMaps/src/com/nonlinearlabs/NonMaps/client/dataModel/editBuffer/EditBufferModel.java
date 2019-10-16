@@ -94,7 +94,7 @@ public class EditBufferModel {
 		return p;
 	}
 
-	public void onParameterChange(String groupId, int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
+	public void onParameterChange(int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
 		findParameter(parameterId).value.onChange(cb);
 	}
 

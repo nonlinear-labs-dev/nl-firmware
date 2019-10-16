@@ -2,34 +2,35 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
-import com.nonlinearlabs.NonMaps.client.NonMaps;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
+import com.nonlinearlabs.NonMaps.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.Rect;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue;
-import com.nonlinearlabs.NonMaps.client.world.maps.parameters.value.QuantizedClippedValue.IncrementalChanger;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-abstract class ValueEdit extends Label implements QuantizedClippedValue.ChangeListener {
-	QuantizedClippedValue value = new QuantizedClippedValue(this);
-	private IncrementalChanger changer;
+class ValueEdit extends Label {
 
-	ValueEdit(OverlayLayout parent) {
+	private IncrementalChanger changer;
+	private BasicParameterModel param;
+
+	ValueEdit(OverlayLayout parent, BasicParameterModel param) {
 		super(parent);
+		this.param = param;
+
+		param.value.value.onChange(i -> {
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return true;
+		});
 	}
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		return getDecoratedValue(true);
+		return param.value.getDecoratedValue(true, true);
 	}
-
-	public String getDecoratedValue(boolean withUnit) {
-		return getDecoratedValue(withUnit, value.getQuantizedClipped());
-	}
-
-	public abstract String getDecoratedValue(boolean withUnit, double cpValue);
 
 	@Override
 	public Control click(Position eventPoint) {
@@ -38,10 +39,10 @@ abstract class ValueEdit extends Label implements QuantizedClippedValue.ChangeLi
 		Rect rightRect = getPixRect().copy();
 		rightRect.setLeft(getPixRect().getRight() - getPixRect().getWidth() / 2);
 		if (leftRect.contains(eventPoint)) {
-			value.dec(Initiator.EXPLICIT_USER_ACTION, false);
+			EditBuffer.get().decParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
 			return this;
 		} else if (rightRect.contains(eventPoint)) {
-			value.inc(Initiator.EXPLICIT_USER_ACTION, false);
+			EditBuffer.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
 			return this;
 		}
 		return super.click(eventPoint);
@@ -49,7 +50,7 @@ abstract class ValueEdit extends Label implements QuantizedClippedValue.ChangeLi
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		changer = value.startUserEdit(Millimeter.toPixels(100));
+		changer = EditBuffer.get().startUserEdit(param.id, Millimeter.toPixels(100));
 		return this;
 	}
 
@@ -77,26 +78,11 @@ abstract class ValueEdit extends Label implements QuantizedClippedValue.ChangeLi
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		if (amount > 0)
-			value.inc(Initiator.EXPLICIT_USER_ACTION, fine);
+			EditBuffer.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
 		else if (amount < 0)
-			value.dec(Initiator.EXPLICIT_USER_ACTION, fine);
+			EditBuffer.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
 
 		return this;
-	}
-
-	@Override
-	public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
-	}
-
-	@Override
-	public void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue) {
-	}
-
-	@Override
-	public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
-		if (initiator == Initiator.EXPLICIT_USER_ACTION)
-			NonMaps.theMaps.getServerProxy().setRandomAmount(newQuantizedValue);
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 	}
 
 	@Override

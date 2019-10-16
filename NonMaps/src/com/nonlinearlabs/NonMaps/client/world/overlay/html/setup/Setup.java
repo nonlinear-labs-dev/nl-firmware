@@ -157,14 +157,14 @@ public class Setup extends Composite {
 		editSmoothingTimeRange.addValueChangeHandler(
 				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
 
-		pedal1Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 254, e.getValue().doubleValue(), true));
-		pedal2Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 259, e.getValue().doubleValue(), true));
-		pedal3Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 264, e.getValue().doubleValue(), true));
-		pedal4Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 269, e.getValue().doubleValue(), true));
+		pedal1Range
+				.addValueChangeHandler(e -> EditBuffer.get().setParameterValue(254, e.getValue().doubleValue(), true));
+		pedal2Range
+				.addValueChangeHandler(e -> EditBuffer.get().setParameterValue(259, e.getValue().doubleValue(), true));
+		pedal3Range
+				.addValueChangeHandler(e -> EditBuffer.get().setParameterValue(264, e.getValue().doubleValue(), true));
+		pedal4Range
+				.addValueChangeHandler(e -> EditBuffer.get().setParameterValue(269, e.getValue().doubleValue(), true));
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
 

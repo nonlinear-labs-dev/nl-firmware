@@ -7,7 +7,6 @@ public class SplitSoundLayout extends OverlayLayout {
 
 	protected SplitSoundLayout(Control parent) {
 		super(parent);
-		// TODO Auto-generated constructor stub
 	}
 
 }

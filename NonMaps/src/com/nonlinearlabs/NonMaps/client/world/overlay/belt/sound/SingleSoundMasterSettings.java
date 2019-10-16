@@ -3,7 +3,6 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
@@ -38,33 +37,7 @@ public class SingleSoundMasterSettings extends OverlayLayout {
 				}
 			});
 
-			edit = addChild(new ValueEdit(this) {
-
-				@Override
-				public String getDecoratedValue(boolean withUnit, double cpValue) {
-					return param.value.getDecoratedValue(withUnit, cpValue, false);
-				}
-			});
-
-			param.value.metaData.coarseDenominator.onChange(i -> {
-				edit.value.setCoarseDenominator(i);
-				return true;
-			});
-
-			param.value.metaData.fineDenominator.onChange(i -> {
-				edit.value.setFineDenominator(i);
-				return true;
-			});
-
-			param.value.metaData.bipolar.onChange(i -> {
-				edit.value.setBipolar(i == BooleanValues.on);
-				return true;
-			});
-
-			param.value.value.onChange(i -> {
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
+			edit = addChild(new ValueEdit(this, param));
 		}
 
 		@Override

@@ -25,7 +25,5 @@ public class DownloadErrorReport extends Setting {
 
 	@Override
 	public void setDefault() {
-		// TODO Auto-generated method stub
-
 	}
 }

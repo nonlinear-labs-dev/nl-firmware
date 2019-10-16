@@ -2,6 +2,8 @@ package com.nonlinearlabs.NonMaps.client.useCases;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
 public class EditBuffer {
 	private static EditBuffer theInstance = new EditBuffer();
@@ -10,10 +12,9 @@ public class EditBuffer {
 		return theInstance;
 	}
 
-	public void setParameterValue(String groupId, int id, double newValue, boolean oracle) {
+	public void setParameterValue(int id, double newValue, boolean oracle) {
 
-		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get()
-				.findParameter(id);
+		BasicParameterModel p = EditBufferModel.get().findParameter(id);
 		if (p != null)
 			p.value.value.setValue(newValue);
 
@@ -21,28 +22,28 @@ public class EditBuffer {
 	}
 
 	public void selectParameter(int id) {
-		if (com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get().selectedParameter.setValue(id))
+		if (EditBufferModel.get().selectedParameter.setValue(id))
 			NonMaps.get().getServerProxy().selectParameter(id);
 	}
 
-	public void setParameterDefault(int parameterID) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void toggleBooleanParameter(int parameterID) {
-		/*-
-		if (getValue().getQuantizedClipped() != 0.0)
-			getValue().setRawValue(Initiator.EXPLICIT_USER_ACTION, 0.0);
-		else
-			getValue().setRawValue(Initiator.EXPLICIT_USER_ACTION, 1.0);-*/
-
-	}
+	
 
 	public IncrementalChanger startUserEdit(int parameterID, double pixels) {
-		BasicParameterModel p = com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.get()
-				.findParameter(parameterID);
+		BasicParameterModel p = EditBufferModel.get().findParameter(parameterID);
+		return new IncrementalChanger(p.value, pixels);
+	}
 
-		return null;
+	public void incParameter(int id, Initiator initiator, boolean fine) {
+		incDecParameter(id, initiator, fine, 1);
+	}
+
+	public void decParameter(int id, Initiator initiator, boolean fine) {
+		incDecParameter(id, initiator, fine, -1);
+	}
+
+	private void incDecParameter(int id, Initiator initiator, boolean fine, int inc) {
+		BasicParameterModel p = EditBufferModel.get().findParameter(id);
+		double v = p.getIncDecValue(fine, inc);
+		setParameterValue(id, v, true);
 	}
 }

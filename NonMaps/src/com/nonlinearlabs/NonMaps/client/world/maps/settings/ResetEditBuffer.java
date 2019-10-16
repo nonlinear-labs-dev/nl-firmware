@@ -24,8 +24,6 @@ class ResetEditBuffer extends Setting {
 
 	@Override
 	public void setDefault() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -1,15 +1,11 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.presets.bank;
 
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
-import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.NonMaps.client.world.overlay.belt.presets.PresetList.ScrollRequest;
-import com.nonlinearlabs.NonMaps.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
 public class PresetList extends LayoutResizingVertical {
 

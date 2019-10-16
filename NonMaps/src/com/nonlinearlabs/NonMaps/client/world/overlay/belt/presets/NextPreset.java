@@ -7,7 +7,6 @@ import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiato
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.NonMaps.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
-import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage.drawStates;
 
 class NextPreset extends SVGImage {
 
