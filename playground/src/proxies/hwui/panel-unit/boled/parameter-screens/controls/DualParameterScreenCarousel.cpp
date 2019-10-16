@@ -18,7 +18,8 @@ void DualParameterScreenCarousel::setup(Parameter *selectedParameter)
 {
   clear();
 
-  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Split)
+  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Split
+     && Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection() == VoiceGroup::I)
     setupMasterParameters({ 18700, 11247, 11248 });
   else
     setupMasterParameters({ 11247, 11248 });
@@ -31,7 +32,6 @@ void DualParameterScreenCarousel::setup(Parameter *selectedParameter)
   {
     setHighlight(true);
   }
-
   setDirty();
 }
 
@@ -48,7 +48,7 @@ void DualParameterScreenCarousel::setupMasterParameters(const std::vector<Parame
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
   const auto numMissing = 5 - parameters.size();
-  int yPos = numMissing * miniParamHeight;
+  int yPos = (numMissing * miniParamHeight) - ySpaceing;
 
   auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
 

@@ -19,6 +19,7 @@
 #include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
 #include <nltools/StringTools.h>
+#include <groups/VoiceGroupMasterGroup.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -313,6 +314,12 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
   }
 }
 
+bool isAnSpecialParameter(const Parameter *p)
+{
+  auto ret = dynamic_cast<const VoiceGroupMasterGroup *>(p->getParent());
+  return ret;
+}
+
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
   const auto targetVG = p->getVoiceGroup();
@@ -336,7 +343,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       if(newP)
         newP->onSelected();
 
-      if(!getParent()->isLoading())
+      if(!getParent()->isLoading() && !isAnSpecialParameter(newP))
       {
         if(auto hwui = Application::get().getHWUI())
         {

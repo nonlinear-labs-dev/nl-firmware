@@ -12,7 +12,14 @@ void DualSpecialParameterModuleCaption::updateText(Parameter *newOne)
   auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
 
   if(type == SoundType::Single)
-    setText({"Single", 0});
+  {
+    setText({ "Single", 0 });
+  }
   else
-    setText({ toString(type) + " " + toString(vg), 0 });
+  {
+    if(dynamic_cast<const SplitPointParameter *>(eb->getSelected(VoiceGroup::I)))
+      setText({ toString(type), 0 });
+    else
+      setText({ toString(type) + " " + toString(vg), 0 });
+  }
 }

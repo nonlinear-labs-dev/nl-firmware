@@ -11,7 +11,6 @@
 #include "proxies/hwui/controls/Button.h"
 #include "NeverHighlitButton.h"
 
-
 ParameterCarousel::ParameterCarousel(const Rect& pos)
     : super(pos)
 {
@@ -118,7 +117,7 @@ void ParameterCarousel::turn()
       if(found)
       {
         Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-            to_string(p->getParameter()->getID()));
+            p->getParameter()->getID(), p->getParameter()->getVoiceGroup());
         handled = true;
         return false;
       }
@@ -137,7 +136,7 @@ void ParameterCarousel::turn()
   if(!handled)
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(first()))
       Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-          to_string(p->getParameter()->getID()));
+          p->getParameter()->getID(), p->getParameter()->getVoiceGroup());
 }
 
 bool ParameterCarousel::containsSelectedParameter() const

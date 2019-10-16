@@ -249,7 +249,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
-      if(eb->getType() == SoundType::Split)
+      if(eb->getType() == SoundType::Split && Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection() == VoiceGroup::I)
         eb->undoableSelectParameter(18700, VoiceGroup::I);
       else
         eb->undoableSelectParameter(11247);

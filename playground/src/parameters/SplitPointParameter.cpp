@@ -24,12 +24,21 @@ DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const {
 std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 {
   auto converter = ScaleConverter::get<KeyWithOctaveScaleConverter>();
+
   if(vg == VoiceGroup::I)
     return converter->getDimension().stringize(getValue().getRawValue());
   else if(vg == VoiceGroup::II)
     return converter->getDimension().stringize(getNextStepValue(-1, {}));
 
   return "";
+}
+
+ustring SplitPointParameter::getDisplayString() const {
+  auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  if(currentVG == VoiceGroup::I)
+    return getDisplayValue(VoiceGroup::I);
+  else
+    return getDisplayValue(VoiceGroup::II);
 }
 
 void SplitPointParameter::registerTests()
@@ -55,6 +64,14 @@ void SplitPointParameter::registerTests()
     g_assert(parameter->getDisplayValue(VoiceGroup::I) == "G#3");
     g_assert(parameter->getDisplayValue(VoiceGroup::II) == "G3");
   });
+}
+
+ustring SplitPointParameter::getLongName() const {
+  return "Split Point";
+}
+
+ustring SplitPointParameter::getShortName() const {
+  return "Split P.";
 }
 
 static TestDriver<SplitPointParameter> driver;
