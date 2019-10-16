@@ -1,11 +1,13 @@
 package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 
 import com.nonlinearlabs.NonMaps.client.world.Control;
+import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.SVGImage;
+import com.nonlinearlabs.NonMaps.client.world.overlay.html.soundSettings.SoundSettingsDialog;
 
-public class SingleSoundSettingsButton extends SVGImage {
+public class SoundSettingsButton extends SVGImage {
 
-	public SingleSoundSettingsButton(Control parent) {
+	public SoundSettingsButton(Control parent) {
 		super(parent, "Append_Enabled.svg");
 	}
 
@@ -15,5 +17,11 @@ public class SingleSoundSettingsButton extends SVGImage {
 
 	public double getPictureWidth() {
 		return getPhase(getSelectedPhase()).getImgWidth();
+	}
+
+	@Override
+	public Control click(Position eventPoint) {
+		SoundSettingsDialog.toggle();
+		return this;
 	}
 }

@@ -3,7 +3,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.NonMaps.client.Millimeter;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
+import com.nonlinearlabs.NonMaps.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.NonMaps.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
@@ -39,10 +39,10 @@ class ValueEdit extends Label {
 		Rect rightRect = getPixRect().copy();
 		rightRect.setLeft(getPixRect().getRight() - getPixRect().getWidth() / 2);
 		if (leftRect.contains(eventPoint)) {
-			EditBuffer.get().decParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
+			EditBufferUseCases.get().decParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
 			return this;
 		} else if (rightRect.contains(eventPoint)) {
-			EditBuffer.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
+			EditBufferUseCases.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
 			return this;
 		}
 		return super.click(eventPoint);
@@ -50,7 +50,7 @@ class ValueEdit extends Label {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		changer = EditBuffer.get().startUserEdit(param.id, Millimeter.toPixels(100));
+		changer = EditBufferUseCases.get().startUserEdit(param.id, Millimeter.toPixels(100));
 		return this;
 	}
 
@@ -78,9 +78,9 @@ class ValueEdit extends Label {
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		if (amount > 0)
-			EditBuffer.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
+			EditBufferUseCases.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
 		else if (amount < 0)
-			EditBuffer.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
+			EditBufferUseCases.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
 
 		return this;
 	}

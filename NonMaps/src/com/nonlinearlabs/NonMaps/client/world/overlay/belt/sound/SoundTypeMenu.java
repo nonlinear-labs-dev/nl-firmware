@@ -2,6 +2,7 @@ package com.nonlinearlabs.NonMaps.client.world.overlay.belt.sound;
 
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Position;
 import com.nonlinearlabs.NonMaps.client.world.overlay.ContextMenu;
@@ -23,6 +24,7 @@ public class SoundTypeMenu extends SVGImage {
 				addChild(new ContextMenuItem(this, "Single") {
 					@Override
 					public Control click(Position eventPoint) {
+						EditBufferUseCases.get().convertToSingleSound();
 						return super.click(eventPoint);
 					}
 				});
@@ -32,6 +34,7 @@ public class SoundTypeMenu extends SVGImage {
 				addChild(new ContextMenuItem(this, "Split") {
 					@Override
 					public Control click(Position eventPoint) {
+						EditBufferUseCases.get().convertToSplitSound();
 						return super.click(eventPoint);
 					}
 				});
@@ -41,6 +44,7 @@ public class SoundTypeMenu extends SVGImage {
 				addChild(new ContextMenuItem(this, "Layer") {
 					@Override
 					public Control click(Position eventPoint) {
+						EditBufferUseCases.get().convertToLayerSound();
 						return super.click(eventPoint);
 					}
 				});

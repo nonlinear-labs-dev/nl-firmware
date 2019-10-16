@@ -7,7 +7,7 @@ import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.overlay.Label;
 import com.nonlinearlabs.NonMaps.client.world.overlay.OverlayLayout;
 
-public class SingleSoundMasterSettings extends OverlayLayout {
+public class SingleSoundSettings extends OverlayLayout {
 
 	class PresetName extends Label {
 
@@ -52,7 +52,7 @@ public class SingleSoundMasterSettings extends OverlayLayout {
 	NamedValueEdit tune;
 	NamedValueEdit volume;
 
-	protected SingleSoundMasterSettings(Control parent) {
+	protected SingleSoundSettings(Control parent) {
 		super(parent);
 
 		presetName = addChild(new PresetName(this));
@@ -60,8 +60,8 @@ public class SingleSoundMasterSettings extends OverlayLayout {
 		volume = addChild(new NamedValueEdit(this, EditBufferModel.get().findParameter(247)));
 	}
 
-	public void doLayout(double x, double w, double h) {
-		super.doLayout(x, 0, w, h);
+	public void doLayout(double x, double y, double w, double h) {
+		super.doLayout(x, y, w, h);
 		int parts = 20;
 		double partSize = w / parts;
 		presetName.doLayout(0, 0, w, h / 3);

@@ -3,12 +3,13 @@ package com.nonlinearlabs.NonMaps.client.useCases;
 import com.nonlinearlabs.NonMaps.client.NonMaps;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
-public class EditBuffer {
-	private static EditBuffer theInstance = new EditBuffer();
+public class EditBufferUseCases {
+	private static EditBufferUseCases theInstance = new EditBufferUseCases();
 
-	public static EditBuffer get() {
+	public static EditBufferUseCases get() {
 		return theInstance;
 	}
 
@@ -25,8 +26,6 @@ public class EditBuffer {
 		if (EditBufferModel.get().selectedParameter.setValue(id))
 			NonMaps.get().getServerProxy().selectParameter(id);
 	}
-
-	
 
 	public IncrementalChanger startUserEdit(int parameterID, double pixels) {
 		BasicParameterModel p = EditBufferModel.get().findParameter(parameterID);
@@ -45,5 +44,28 @@ public class EditBuffer {
 		BasicParameterModel p = EditBufferModel.get().findParameter(id);
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
+	}
+
+	public void initializeSound() {
+		NonMaps.get().getServerProxy().initSound();
+	}
+
+	public void randomizeSound() {
+		NonMaps.get().getServerProxy().randomizeSound();
+	}
+
+	public void convertToSingleSound() {
+		// TODO: connect ServerProxy
+		EditBufferModel.get().soundType.setValue(SoundType.Single);
+	}
+
+	public void convertToSplitSound() {
+		// TODO: connect ServerProxy
+		EditBufferModel.get().soundType.setValue(SoundType.Split);
+	}
+
+	public void convertToLayerSound() {
+		// TODO: connect ServerProxy
+		EditBufferModel.get().soundType.setValue(SoundType.Layer);
 	}
 }

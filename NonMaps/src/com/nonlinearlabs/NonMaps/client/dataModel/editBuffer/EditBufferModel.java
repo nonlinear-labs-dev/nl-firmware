@@ -23,6 +23,10 @@ public class EditBufferModel {
 		Single, Split, Layer
 	}
 
+	public enum VoiceGroup {
+		I, II
+	}
+
 	private HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
 	private HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
 
@@ -36,16 +40,24 @@ public class EditBufferModel {
 
 	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
 	public EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
-			SoundType.Single);
+			SoundType.Split);
 	public StringDataModelEntity comment = new StringDataModelEntity();
 	public StringDataModelEntity deviceName = new StringDataModelEntity();
 	public DateDataModelEntity storeTime = new DateDataModelEntity();
+
+	// dual voice mock
+	// TODO
+	public StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity();
+	public StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity();
 
 	static public EditBufferModel get() {
 		return theInstance;
 	}
 
 	private EditBufferModel() {
+		// mock
+		loadedPresetInVG1.setValue("Chili");
+		loadedPresetInVG2.setValue("Jalapeño");
 	}
 
 	@Override
@@ -104,6 +116,17 @@ public class EditBufferModel {
 				return true;
 		}
 		return false;
+	}
+
+	public String getPresetNameOfVoiceGroup(VoiceGroup group) {
+		switch (group) {
+		case I:
+			return loadedPresetInVG1.getValue();
+
+		case II:
+			return loadedPresetInVG2.getValue();
+		}
+		return "";
 	}
 
 }

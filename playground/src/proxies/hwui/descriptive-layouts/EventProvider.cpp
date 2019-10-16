@@ -44,6 +44,7 @@ namespace DescriptiveLayouts
   {
     switch(e)
     {
+      case EventProviders::None:
       case EventProviders::Global:
         return std::make_unique<GlobalEventProvider>();
 

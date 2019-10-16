@@ -100,6 +100,27 @@ public class DeviceSettingsProvider {
 		connectToPedal(259, settings.pedal2);
 		connectToPedal(264, settings.pedal3);
 		connectToPedal(269, settings.pedal4);
+
+		Setup.get().systemSettings.randomizeAmount.onChange(t -> {
+			settings.randomizeAmountValue = t.value.getValue();
+			settings.randomizeAmountDisplayString = t.getDecoratedValue(true, true);
+			notifyClients();
+			return true;
+		});
+
+		Setup.get().systemSettings.transitionTime.onChange(t -> {
+			settings.transitionTimeValue = t.value.getValue();
+			settings.transitionTimeDisplayString = t.getDecoratedValue(true, true);
+			notifyClients();
+			return true;
+		});
+
+		Setup.get().systemSettings.tuneReference.onChange(t -> {
+			settings.tuneReferenceValue = t.value.getValue();
+			settings.tuneReferenceDisplayString = t.getDecoratedValue(true, true);
+			notifyClients();
+			return true;
+		});
 	}
 
 	public void connectToPedal(int id, Pedal target) {

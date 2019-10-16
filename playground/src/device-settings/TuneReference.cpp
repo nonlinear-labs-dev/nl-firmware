@@ -1,4 +1,5 @@
 #include <parameters/scale-converters/LinearHerzScaleConverter.h>
+#include "xml/Writer.h"
 #include "TuneReference.h"
 
 TuneReference::TuneReference(Settings& parent)
@@ -36,4 +37,18 @@ void TuneReference::incDec(int inc, ButtonModifiers mod)
   }
 
   notify();
+}
+
+void TuneReference::writeDocument(Writer& writer, tUpdateID knownRevision) const
+{
+  Setting::writeDocument(writer, knownRevision);
+
+  if(knownRevision == 0)
+  {
+    writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
+    writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
+    writer.writeTextElement("bipolar", to_string(m_value.isBiPolar()));
+    writer.writeTextElement("coarse-denominator", to_string(m_value.getCoarseDenominator()));
+    writer.writeTextElement("fine-denominator", to_string(m_value.getFineDenominator()));
+  }
 }
