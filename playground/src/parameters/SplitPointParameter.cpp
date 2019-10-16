@@ -79,4 +79,4 @@ ustring SplitPointParameter::getShortName() const
   return "Split P.";
 }
 
-static TestDriver<SplitPointParameter> driver;
+//static TestDriver<SplitPointParameter> driver;

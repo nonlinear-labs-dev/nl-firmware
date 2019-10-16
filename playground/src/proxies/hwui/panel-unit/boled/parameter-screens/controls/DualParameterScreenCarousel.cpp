@@ -60,7 +60,7 @@ void DualParameterScreenCarousel::setupMasterParameters(const std::vector<Parame
 
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p, vgt);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
-    miniParam->setSelected(param == selected);
+    miniParam->setSelected(param == selected || (param->getID() == selected->getID() && selected->getVoiceGroup() == VoiceGroup::I && param->getID() == 18700));
     addControl(miniParam);
     yPos += ySpaceing;
     yPos += miniParamHeight;
