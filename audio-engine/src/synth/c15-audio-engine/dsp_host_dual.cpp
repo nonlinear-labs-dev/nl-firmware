@@ -185,7 +185,7 @@ float dsp_host_dual::scale(const C15::Properties::Scale _id, const float _scaleF
         result = m_convert.eval_lin_pitch(_scaleOffset + (_scaleFactor * _value));
         break;
     case C15::Properties::Scale::Expon_Shaper_Drive:
-        result = (m_convert.eval_level(_value) * _scaleFactor) + _scaleOffset;
+        result = (m_convert.eval_level(_value * _scaleFactor) * _scaleOffset) - _scaleOffset;
         break;
     case C15::Properties::Scale::Expon_Mix_Drive:
         result = _scaleOffset + (_scaleFactor * m_convert.eval_level(_value));
