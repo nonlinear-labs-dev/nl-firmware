@@ -48,6 +48,7 @@ int main(int numArgs, char** argv)
   ::signal(SIGBUS, printStackTrace);
 
   {
+    nltools::Log::setLevel(nltools::Log::Warning);
     Application app(numArgs, argv);
     Application::get().run();
   }

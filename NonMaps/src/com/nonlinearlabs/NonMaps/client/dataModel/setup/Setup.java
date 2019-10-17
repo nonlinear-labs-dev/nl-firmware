@@ -127,6 +127,7 @@ public class Setup {
 		public EnumDataModelEntity<PresetStoreMode> presetStoreModeSetting = createEnumDataModelEntity(
 				PresetStoreMode.class, PresetStoreMode.append);
 		public ValueDataModelEntity randomizeAmount = new ValueDataModelEntity();
+		public ValueDataModelEntity tuneReference = new ValueDataModelEntity();
 		public ValueDataModelEntity ribbonRelativeFactor = new ValueDataModelEntity();
 		public BooleanDataModelEntity sendPresetAsLPCFallback = new BooleanDataModelEntity();
 		public BooleanDataModelEntity signalFlowIndication = new BooleanDataModelEntity();

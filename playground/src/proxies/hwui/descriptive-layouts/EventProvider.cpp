@@ -8,6 +8,7 @@
 #include "primitives/Text.h"
 #include "events/event-sources/base/EventSource.h"
 #include "events/IndependentPresetSelectionEvents.h"
+#include "events/PresetManagerEvents.h"
 
 namespace DescriptiveLayouts
 {
@@ -43,11 +44,15 @@ namespace DescriptiveLayouts
   {
     switch(e)
     {
+      case EventProviders::None:
       case EventProviders::Global:
         return std::make_unique<GlobalEventProvider>();
 
       case EventProviders::IndependentPresetSelectionEvents:
         return std::make_unique<IndependentPresetSelectionEvents>();
+
+      case EventProviders::PresetManagerEvents:
+        return std::make_unique<PresetManagerEvents>();
     }
     return nullptr;
   }

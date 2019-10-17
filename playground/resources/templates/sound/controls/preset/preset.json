@@ -3,19 +3,19 @@
     "Preset": {
       "Background": {
         "Class": "Bar",
-        "Rect": "1, 0, 126, 18"
+        "Rect": "2, 1, 124, 15"
       },
       "Border": {
         "Class": "Border",
-        "Rect": "2, 1, 124, 16"
+        "Rect": "2, 1, 124, 15"
       },
       "Number": {
         "Class": "Text",
-        "Rect": "5, 2, 18, 16"
+        "Rect": "5, 1, 18, 15"
       },
       "Name": {
         "Class": "Text",
-        "Rect": "27, 2, 96, 16"
+        "Rect": "27, 1, 96, 15"
       } 
     }
   },
@@ -26,7 +26,7 @@
         "ControlClasses": "Preset"
       },
       "styles": {
-        "Color": "C43"
+        "Color": "Transparent"
       }
     },
     "BG": {
@@ -36,7 +36,8 @@
         "PrimitiveInstances": "Background"
       },
       "styles": {
-        "Color": "C43"
+        "Color": "C43",
+        "HighlightColor": "C103" 
       }
     },
     "PresetTextStyle": {
@@ -46,7 +47,9 @@
       },
       "styles": {
         "TextAlign": "Right",
-        "BackgroundColor": "Transparent"
+        "BackgroundColor": "Transparent",
+        "HighlightBackgroundColor": "Transparent",
+        "HighlightColor": "C43"
       }
     },
     "PresetNameStyle": {

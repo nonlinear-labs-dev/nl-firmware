@@ -24,15 +24,15 @@ struct EnumRegistryTest
   static void registerTests()
   {
     g_test_add_func("/EnumRegistry/string2Enum", [] {
-      g_assert(toTestButtons("BUTTON_12") == TestButtons::BUTTON_12);
-      g_assert(toTestButtons("BUTTON_DEC") == TestButtons::BUTTON_DEC);
+      g_assert(to<TestButtons>("BUTTON_12") == TestButtons::BUTTON_12);
+      g_assert(to<TestButtons>("BUTTON_DEC") == TestButtons::BUTTON_DEC);
 
-      g_assert(toFooBar("Foo") == FooBar::Foo);
-      g_assert(toFooBar("Bar") == FooBar::Bar);
-      g_assert(toFooBar("Baz") == FooBar::Baz);
-      g_assert(toFooBar("Bum") == FooBar::Bum);
-      g_assert(toFooBar("Boing") == FooBar::Boing);
-      g_assert(toFooBar("Knall") == FooBar::Knall);
+      g_assert(to<FooBar>("Foo") == FooBar::Foo);
+      g_assert(to<FooBar>("Bar") == FooBar::Bar);
+      g_assert(to<FooBar>("Baz") == FooBar::Baz);
+      g_assert(to<FooBar>("Bum") == FooBar::Bum);
+      g_assert(to<FooBar>("Boing") == FooBar::Boing);
+      g_assert(to<FooBar>("Knall") == FooBar::Knall);
     });
 
     g_test_add_func("/EnumRegistry/enum2String", [] {

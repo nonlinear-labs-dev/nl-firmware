@@ -28,13 +28,13 @@ namespace DescriptiveLayouts
   {
     Detail::StyleSelector theSelector;
     assignIfExists(theSelector.pt, selector, "Tag");
-    assignIfExists(theSelector.f, selector, toUIFocus, "UIFocus");
-    assignIfExists(theSelector.m, selector, toUIMode, "UIMode");
-    assignIfExists(theSelector.d, selector, toUIDetail, "UIDetail");
+    assignIfExists(theSelector.f, selector, ::to<UIFocus>, "UIFocus");
+    assignIfExists(theSelector.m, selector, ::to<UIMode>, "UIMode");
+    assignIfExists(theSelector.d, selector, ::to<UIDetail>, "UIDetail");
     assignIfExists(theSelector.l, selector, "LayoutClasses");
     assignIfExists(theSelector.cc, selector, "ControlClasses");
     assignIfExists(theSelector.ci, selector, "ControlInstances");
-    assignIfExists(theSelector.pc, selector, toPrimitiveClasses, "PrimitiveClasses");
+    assignIfExists(theSelector.pc, selector, to<PrimitiveClasses>, "PrimitiveClasses");
     assignIfExists(theSelector.pi, selector, "PrimitiveInstances");
     return theSelector;
   }
@@ -44,12 +44,12 @@ namespace DescriptiveLayouts
     StyleMap theStyles{};
     for(json::iterator style = styles.begin(); style != styles.end(); ++style)
     {
-      auto styleKey = toStyleKey(style.key());
+      auto styleKey = to<StyleKey>(style.key());
 
       switch(styleKey)
       {
         case StyleKey::BorderStyle:
-          theStyles.map.emplace(styleKey, (int) StyleValues::toBorderStyle(style.value()));
+          theStyles.map.emplace(styleKey, (int) StyleValues::to<StyleValues::BorderStyle>(style.value()));
           break;
         case StyleKey::SuffixColor:
         case StyleKey::BorderColor:
@@ -57,16 +57,16 @@ namespace DescriptiveLayouts
         case StyleKey::HighlightColor:
         case StyleKey::HighlightBackgroundColor:
         case StyleKey::Color:
-          theStyles.map.emplace(styleKey, (int) StyleValues::toColor(style.value()));
+          theStyles.map.emplace(styleKey, (int) StyleValues::to<StyleValues::Color>(style.value()));
           break;
         case StyleKey::FontSize:
           theStyles.map.emplace(styleKey, (int) style.value());
           break;
         case StyleKey::TextAlign:
-          theStyles.map.emplace(styleKey, (int) StyleValues::toAlignment(style.value()));
+          theStyles.map.emplace(styleKey, (int) StyleValues::to<StyleValues::Alignment>(style.value()));
           break;
         case StyleKey::FontDecoration:
-          theStyles.map.emplace(styleKey, (int) StyleValues::toFont(style.value()));
+          theStyles.map.emplace(styleKey, (int) StyleValues::to<StyleValues::Font>(style.value()));
           break;
       }
     }

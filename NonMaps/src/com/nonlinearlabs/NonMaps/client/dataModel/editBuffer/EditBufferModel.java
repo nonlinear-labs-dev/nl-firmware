@@ -19,6 +19,14 @@ public class EditBufferModel {
 		green, blue, yellow, orange, purple, red, none;
 	}
 
+	public enum SoundType {
+		Single, Split, Layer
+	}
+
+	public enum VoiceGroup {
+		I, II
+	}
+
 	private HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
 	private HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
 
@@ -31,15 +39,25 @@ public class EditBufferModel {
 	public BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
 
 	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
+	public EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
+			SoundType.Split);
 	public StringDataModelEntity comment = new StringDataModelEntity();
 	public StringDataModelEntity deviceName = new StringDataModelEntity();
 	public DateDataModelEntity storeTime = new DateDataModelEntity();
+
+	// dual voice mock
+	// TODO
+	public StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity();
+	public StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity();
 
 	static public EditBufferModel get() {
 		return theInstance;
 	}
 
 	private EditBufferModel() {
+		// mock
+		loadedPresetInVG1.setValue("Chili");
+		loadedPresetInVG2.setValue("Jalapeño");
 	}
 
 	@Override
@@ -88,7 +106,7 @@ public class EditBufferModel {
 		return p;
 	}
 
-	public void onParameterChange(String groupId, int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
+	public void onParameterChange(int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
 		findParameter(parameterId).value.onChange(cb);
 	}
 
@@ -98,6 +116,17 @@ public class EditBufferModel {
 				return true;
 		}
 		return false;
+	}
+
+	public String getPresetNameOfVoiceGroup(VoiceGroup group) {
+		switch (group) {
+		case I:
+			return loadedPresetInVG1.getValue();
+
+		case II:
+			return loadedPresetInVG2.getValue();
+		}
+		return "";
 	}
 
 }

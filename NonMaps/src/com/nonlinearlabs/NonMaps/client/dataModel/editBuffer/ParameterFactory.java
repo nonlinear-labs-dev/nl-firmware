@@ -21,20 +21,20 @@ public class ParameterFactory {
 
 	public BasicParameterModel create(int id) {
 		if (modulateableParameters.contains(id))
-			return new ModulateableParameter();
+			return new ModulateableParameter(id);
 
 		if (pedals.contains(id))
-			return new PedalParameter();
+			return new PedalParameter(id);
 
 		if (ribbons.contains(id))
-			return new RibbonParameter();
+			return new RibbonParameter(id);
 
 		if (benderAndAftertouch.contains(id))
-			return new PhysicalControlParameter();
+			return new PhysicalControlParameter(id);
 
 		if (macroControls.contains(id))
-			return new MacroControlParameter();
+			return new MacroControlParameter(id);
 
-		return new BasicParameterModel();
+		return new BasicParameterModel(id);
 	}
 }

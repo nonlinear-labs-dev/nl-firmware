@@ -39,7 +39,6 @@ public class SystemSettings {
 	public void setBlockingMainThreadIndication(BooleanValues v) {
 		Setup.get().systemSettings.indicateBlockedUI.setValue(v);
 		NonMaps.get().getServerProxy().setSetting("IndicateBlockedUI", netify(v.name()));
-
 	}
 
 	public void setDeviceName(String newName) {
@@ -105,5 +104,20 @@ public class SystemSettings {
 	public void setCrashOnError(BooleanValues c) {
 		Setup.get().systemSettings.crashOnError.setValue(c);
 		NonMaps.theMaps.getServerProxy().setSetting("CrashOnError", netify(c.name()));
+	}
+
+	public void setRandomizeAmount(double amount) {
+		Setup.get().systemSettings.randomizeAmount.value.setValue(amount);
+		NonMaps.theMaps.getServerProxy().setRandomAmount(amount);
+	}
+
+	public void setTransitionTime(double v) {
+		Setup.get().systemSettings.transitionTime.value.setValue(v);
+		NonMaps.theMaps.getServerProxy().setTransitionTime(v);
+	}
+
+	public void setTuneReference(double v) {
+		Setup.get().systemSettings.tuneReference.value.setValue(v);
+		NonMaps.theMaps.getServerProxy().setSetting("TuneReference", Double.toString(v));
 	}
 }

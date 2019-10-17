@@ -18,7 +18,7 @@ import com.nonlinearlabs.NonMaps.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.NonMaps.client.dataModel.setup.Setup.EditParameter;
-import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
+import com.nonlinearlabs.NonMaps.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.NonMaps.client.world.Control;
 import com.nonlinearlabs.NonMaps.client.world.Gray;
 import com.nonlinearlabs.NonMaps.client.world.Name;
@@ -73,9 +73,13 @@ public abstract class Parameter extends LayoutResizingVertical {
 		name = createName();
 		value = createValue(new ValueChangeListener());
 
-		if (getParameterID() != 0)
+		if (getParameterID() != 0) {
 			getSelectionRoot().registerSelectable(this);
-
+			EditBufferModel.get().onParameterChange(getParameterID(), v -> {
+				value.setRawValue(Initiator.INDIRECT_USER_ACTION, v.value.getValue());
+				return true;
+			});
+		}
 	}
 
 	public void onQuantizedValueChanged(Initiator initiator, double d) {
@@ -400,8 +404,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	public void onValueChanged(Initiator initiator, double diff) {
 		if (initiator == Initiator.EXPLICIT_USER_ACTION) {
-			EditBuffer.get().setParameterValue(getParameterGroupID(), getParameterID(),
-					getValue().getQuantizedClipped(), isOracle());
+			EditBufferUseCases.get().setParameterValue(getParameterID(), getValue().getQuantizedClipped(), isOracle());
 		}
 
 		notifyListeners();

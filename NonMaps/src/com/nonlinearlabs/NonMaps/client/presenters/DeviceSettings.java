@@ -49,4 +49,13 @@ public class DeviceSettings {
 	public EditSmoothingTime editSmoothingTime = new EditSmoothingTime();
 	public String deviceName = "";
 	public HighlightChanged highlightChangedParameters = new HighlightChanged();
+
+	public double randomizeAmountValue = 0;
+	public String randomizeAmountDisplayString = "";
+
+	public double transitionTimeValue = 0;
+	public String transitionTimeDisplayString = "";
+
+	public double tuneReferenceValue = 0;
+	public String tuneReferenceDisplayString = "";
 }

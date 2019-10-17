@@ -1,8 +1,5 @@
 package com.nonlinearlabs.NonMaps.client.world.maps.parameters.Scale;
 
-import com.nonlinearlabs.NonMaps.client.NonMaps;
-import com.nonlinearlabs.NonMaps.client.world.Control;
-import com.nonlinearlabs.NonMaps.client.world.Name;
 import com.nonlinearlabs.NonMaps.client.world.maps.MapsLayout;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.*;
 

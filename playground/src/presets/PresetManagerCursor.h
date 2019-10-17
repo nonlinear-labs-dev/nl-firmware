@@ -11,7 +11,7 @@ class PresetManagerCursor
  public:
   using Matcher = std::function<bool(const Preset*)>;
 
-  PresetManagerCursor(Matcher matcher);
+  PresetManagerCursor(Matcher matcher = [](auto) { return true; });
 
   void moveToSelected();
 
@@ -28,7 +28,9 @@ class PresetManagerCursor
   bool canPreviousPreset() const;
 
   Preset* getPreset() const;
+  Uuid getPresetUuid() const;
   Bank* getBank() const;
+  Uuid getBankUuid() const;
 
   std::string getPresetNumberString() const;
   std::string getPresetName() const;

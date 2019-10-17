@@ -3,10 +3,9 @@ package com.nonlinearlabs.NonMaps.client.dataModel.value;
 import com.nonlinearlabs.NonMaps.client.world.maps.parameters.Parameter.Initiator;
 
 class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
-	private final boolean upper;
-
+	
 	UpperLowerBoundListener(boolean upper) {
-		this.upper = upper;
+	
 	}
 
 	@Override

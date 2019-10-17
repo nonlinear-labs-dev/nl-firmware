@@ -25,13 +25,13 @@ namespace DescriptiveLayouts
   {
     std::list<Selector> selectors;
 
-    if(!JSONTools::readFieldsFromJson<UIFocus>(selector, "UIFocus", toUIFocus, selectors))
+    if(!JSONTools::readFieldsFromJson<UIFocus>(selector, "UIFocus", ::to<UIFocus>, selectors))
       selectors.emplace_back(UIFocus::Any);
 
-    if(!JSONTools::readFieldsFromJson<UIMode>(selector, "UIMode", toUIMode, selectors))
+    if(!JSONTools::readFieldsFromJson<UIMode>(selector, "UIMode", ::to<UIMode>, selectors))
       selectors.emplace_back(UIMode::Any);
 
-    if(!JSONTools::readFieldsFromJson<UIDetail>(selector, "UIDetail", toUIDetail, selectors))
+    if(!JSONTools::readFieldsFromJson<UIDetail>(selector, "UIDetail", ::to<UIDetail>, selectors))
       selectors.emplace_back(UIDetail::Any);
 
     return selectors;
@@ -131,7 +131,7 @@ namespace DescriptiveLayouts
 
         auto parts = StringTools::splitStringOnStringDelimiter(key, "[");
         auto eventTargetObject = removeSpaces(parts[0]);
-        auto eventTargetProperty = toPrimitiveProperty(removeSpaces(removeLastCharacter(parts[1])));
+        auto eventTargetProperty = to<PrimitiveProperty>(removeSpaces(removeLastCharacter(parts[1])));
 
         try
         {
@@ -163,9 +163,9 @@ namespace DescriptiveLayouts
         auto parts = StringTools::splitStringOnStringDelimiter(connection, "=>");
         auto eventTargetParts = StringTools::splitStringOnAnyDelimiter(parts[1], '[');
 
-        auto eventSource = toEventSources(removeSpaces(parts[0]));
+        auto eventSource = to<EventSources>(removeSpaces(parts[0]));
         auto eventTargetObject = removeSpaces(eventTargetParts[0]);
-        auto eventTargetProperty = toPrimitiveProperty(removeSpaces(removeLastCharacter(eventTargetParts[1])));
+        auto eventTargetProperty = to<PrimitiveProperty>(removeSpaces(removeLastCharacter(eventTargetParts[1])));
 
         ret.push_back({ eventSource, eventTargetObject, eventTargetProperty });
       }
@@ -200,11 +200,11 @@ namespace DescriptiveLayouts
       if(button.find("+") != Glib::ustring::npos)
       {
         auto buttonOnly = button.substr(0, button.size() - 1);
-        l.push_back(EventSinkMapping(toButtons(buttonOnly), toEventSinks(target), ButtonEvents::Down, true));
+        l.push_back(EventSinkMapping(::to<Buttons>(buttonOnly), to<EventSinks>(target), ButtonEvents::Down, true));
       }
       else
       {
-        l.push_back(EventSinkMapping(toButtons(button), toEventSinks(target)));
+        l.push_back(EventSinkMapping(::to<Buttons>(button), to<EventSinks>(target)));
       }
     });
     return l;
@@ -215,9 +215,7 @@ namespace DescriptiveLayouts
     tConditionList ret;
 
     JSONTools::forEachJsonArrayElementChild(
-        j, [&](const auto& conditionString) {
-          ret.push_back(ConditionRegistry::get().getCondition(conditionString));
-        });
+        j, [&](const auto& conditionString) { ret.push_back(ConditionRegistry::get().getCondition(conditionString)); });
     return ret;
   }
 
@@ -254,7 +252,7 @@ namespace DescriptiveLayouts
       const auto& id = name;
       try
       {
-        auto eventProvider = parseTFromTag<EventProviders>(toEventProviders, obj.value(), "EventProvider");
+        auto eventProvider = parseTFromTag<EventProviders>(to<EventProviders>, obj.value(), "EventProvider");
         auto selectionConditions = parseTFromTag<tConditionList>(toConditions, obj.value(), "Conditions");
         auto sinkMappings = parseTFromTag<LayoutClass::EventSinkList>(toEventSinkList, obj.value(), "EventSinks");
         auto selectors = parseTFromTag<std::list<Selector>>(toSelectors, obj.value(), "Selector", false);

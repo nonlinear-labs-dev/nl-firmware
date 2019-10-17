@@ -4,26 +4,20 @@ public class SearchQueryDialog extends GWTDialog {
 
 	@Override
 	protected void setLastPopupPos(int popupLeft, int popupTop) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	protected int getLastPopupPosTop() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	protected int getLastPopupPosLeft() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	protected void commit() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/*-

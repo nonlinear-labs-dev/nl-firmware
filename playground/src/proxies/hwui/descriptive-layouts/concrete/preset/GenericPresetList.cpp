@@ -5,8 +5,6 @@
 #include "presets/Preset.h"
 #include "presets/Bank.h"
 
-#warning "IMPROVEMENT: lets try to build a preset list with descriptve layouts + logic layer"
-
 GenericPresetList::GenericPresetList(const Point &p)
     : ControlWithChildren({ p.getX(), p.getY(), 128, 50 })
 {

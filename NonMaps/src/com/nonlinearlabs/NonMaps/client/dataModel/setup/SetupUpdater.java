@@ -44,6 +44,7 @@ public class SetupUpdater extends Updater {
 		m.put("SignalFlowIndication", Setup.get().systemSettings.signalFlowIndication);
 		m.put("SSID", Setup.get().systemSettings.ssid);
 		m.put("TransitionTime", Setup.get().systemSettings.transitionTime);
+		m.put("TuneReference", Setup.get().systemSettings.tuneReference);
 		m.put("VelocityCurve", Setup.get().systemSettings.velocityCurve);
 		m.put("RandomizeAmount", Setup.get().systemSettings.randomizeAmount);
 		m.put("BenderRampBypass", Setup.get().systemSettings.benderRampBypass);

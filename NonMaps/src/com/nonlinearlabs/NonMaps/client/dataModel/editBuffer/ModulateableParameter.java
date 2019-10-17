@@ -10,6 +10,10 @@ import com.nonlinearlabs.NonMaps.client.world.overlay.belt.parameters.BeltParame
 
 public class ModulateableParameter extends BasicParameterModel {
 
+	public ModulateableParameter(int id) {
+		super(id);
+	}
+
 	public enum ModSource {
 		None, A, B, C, D
 	}

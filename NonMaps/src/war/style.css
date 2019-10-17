@@ -556,6 +556,27 @@ caption {
 	/* 	background-color: teal; */
 }
 
+.sound-settings {
+	margin: 1em;
+	color: #EFEFEF;
+}
+
+.sound-settings .slider-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.sound-settings .gwt-Button {
+	background-color: #555F84;
+	border: #0E1115 solid 1px;
+}
+
+.sound-settings .section-headline {
+	color: #7C92A9;
+}
+
 .resize-b {
 	resize: both;
 }

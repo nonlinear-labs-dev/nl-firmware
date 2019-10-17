@@ -1,11 +1,9 @@
 package com.nonlinearlabs.NonMaps.client.contextStates;
 
-import java.util.Date;
-
 public class StopWatchState implements AutoCloseable {
 
-	private Date start;
-	private String name;
+	// private Date start;
+	// private String name;
 
 	public StopWatchState(String name) {
 		// start = new Date();

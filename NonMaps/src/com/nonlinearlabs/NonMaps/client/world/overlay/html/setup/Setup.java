@@ -28,7 +28,7 @@ import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettings;
 import com.nonlinearlabs.NonMaps.client.presenters.DeviceSettingsProvider;
 import com.nonlinearlabs.NonMaps.client.presenters.LocalSettings;
 import com.nonlinearlabs.NonMaps.client.presenters.LocalSettingsProvider;
-import com.nonlinearlabs.NonMaps.client.useCases.EditBuffer;
+import com.nonlinearlabs.NonMaps.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.NonMaps.client.useCases.SystemSettings;
 import com.nonlinearlabs.NonMaps.client.world.overlay.html.Range;
 
@@ -158,13 +158,13 @@ public class Setup extends Composite {
 				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
 
 		pedal1Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 254, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(254, e.getValue().doubleValue(), true));
 		pedal2Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 259, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(259, e.getValue().doubleValue(), true));
 		pedal3Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 264, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(264, e.getValue().doubleValue(), true));
 		pedal4Range.addValueChangeHandler(
-				e -> EditBuffer.get().setParameterValue("CS", 269, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(269, e.getValue().doubleValue(), true));
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
 

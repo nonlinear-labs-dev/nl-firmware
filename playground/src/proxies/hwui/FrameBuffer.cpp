@@ -158,7 +158,7 @@ void FrameBuffer::fillRect(const Rect &rect)
 {
   Rect fill = rect.getMovedBy(m_offsets.top()).getIntersection(m_clips.top());
 
-  if(!fill.isEmpty())
+  if(!fill.isEmpty() && m_currentColor != Transparent)
   {
     auto left = fill.getLeft();
     auto width = fill.getWidth();
@@ -171,7 +171,7 @@ void FrameBuffer::fillRect(const Rect &rect)
 
 void FrameBuffer::fillCircle(const Point &center, int radius)
 {
-  if(radius % 2 == 0)
+  if(radius % 2 == 0 && m_currentColor != Transparent)
   {
     auto middleX = center.getX() - 0.5;
     auto middleY = center.getY() - 0.5;
@@ -191,21 +191,25 @@ void FrameBuffer::fillCircle(const Point &center, int radius)
 
 inline void FrameBuffer::drawRawHorizontalLine(tCoordinate x, tCoordinate y, tCoordinate length)
 {
-  auto fromIdx = getIndex(x, y);
-  auto data = m_backBuffer.data() + fromIdx;
+  if(m_currentColor != Transparent)
+  {
+    auto fromIdx = getIndex(x, y);
+    auto data = m_backBuffer.data() + fromIdx;
 
-  for(long i = 0; i < length; i++)
-    data[i] = m_currentColor;
+    for(long i = 0; i < length; i++)
+      data[i] = m_currentColor;
+  }
 }
 
 void FrameBuffer::drawRect(tCoordinate x, tCoordinate y, tCoordinate width, tCoordinate height)
 {
-  drawRect(Rect(x, y, width, height));
+  if(m_currentColor != Transparent)
+    drawRect(Rect(x, y, width, height));
 }
 
 void FrameBuffer::drawRect(const Rect &rect)
 {
-  if(!rect.isEmpty())
+  if(!rect.isEmpty() && m_currentColor != Transparent)
   {
     drawHorizontalLine(rect.getLeft(), rect.getTop(), rect.getWidth());
     drawHorizontalLine(rect.getLeft(), rect.getBottom(), rect.getWidth());
@@ -216,35 +220,41 @@ void FrameBuffer::drawRect(const Rect &rect)
 
 void FrameBuffer::drawHorizontalLine(tCoordinate x, tCoordinate y, tCoordinate length)
 {
-  auto &clip = m_clips.top();
-  auto &offset = m_offsets.top();
-
-  x += offset.getX();
-  y += offset.getY();
-
-  if(y >= clip.getTop() && y <= clip.getBottom() && length > 0)
+  if(m_currentColor != Transparent)
   {
-    auto left = std::max(x, clip.getLeft());
-    auto right = std::min(x + length, clip.getLeft() + clip.getWidth());
-    drawRawHorizontalLine(left, y, right - left);
+    auto &clip = m_clips.top();
+    auto &offset = m_offsets.top();
+
+    x += offset.getX();
+    y += offset.getY();
+
+    if(y >= clip.getTop() && y <= clip.getBottom() && length > 0)
+    {
+      auto left = std::max(x, clip.getLeft());
+      auto right = std::min(x + length, clip.getLeft() + clip.getWidth());
+      drawRawHorizontalLine(left, y, right - left);
+    }
   }
 }
 
 void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate length)
 {
-  auto &clip = m_clips.top();
-  auto &offset = m_offsets.top();
-
-  x += offset.getX();
-  y += offset.getY();
-
-  if(x >= clip.getLeft() && x <= clip.getRight() && length > 0)
+  if(m_currentColor != Transparent)
   {
-    auto top = std::max(y, clip.getTop());
-    auto bottom = std::min(y + length, clip.getTop() + clip.getHeight());
+    auto &clip = m_clips.top();
+    auto &offset = m_offsets.top();
 
-    for(auto i = top; i < bottom; i++)
-      setRawPixel(x, i);
+    x += offset.getX();
+    y += offset.getY();
+
+    if(x >= clip.getLeft() && x <= clip.getRight() && length > 0)
+    {
+      auto top = std::max(y, clip.getTop());
+      auto bottom = std::min(y + length, clip.getTop() + clip.getHeight());
+
+      for(auto i = top; i < bottom; i++)
+        setRawPixel(x, i);
+    }
   }
 }
 

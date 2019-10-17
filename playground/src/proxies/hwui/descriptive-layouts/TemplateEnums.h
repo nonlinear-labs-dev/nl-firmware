@@ -18,12 +18,12 @@ namespace DescriptiveLayouts
 
   namespace StyleValues
   {
-    ENUM(Font, uint8_t, Regular, Bold);
-    ENUM(Color, int, Transparent = FrameBuffer::Transparent, C43 = FrameBuffer::C43, C77 = FrameBuffer::C77,
-         C103 = FrameBuffer::C103, C128 = FrameBuffer::C128, C179 = FrameBuffer::C179, C204 = FrameBuffer::C204,
-         C255 = FrameBuffer::C255);
-    ENUM(Alignment, uint8_t, Left, Center, Right);
-    ENUM(BorderStyle, uint8_t, Solid, Rounded, None);
+    ENUM(Font, uint8_t, Undefined, Regular, Bold);
+    ENUM(Color, int, Undefined = FrameBuffer::Undefined, Transparent = FrameBuffer::Transparent, C43 = FrameBuffer::C43,
+         C77 = FrameBuffer::C77, C103 = FrameBuffer::C103, C128 = FrameBuffer::C128, C179 = FrameBuffer::C179,
+         C204 = FrameBuffer::C204, C255 = FrameBuffer::C255);
+    ENUM(Alignment, uint8_t, Undefined, Left, Center, Right);
+    ENUM(BorderStyle, uint8_t, Undefined, Solid, Rounded, None);
   }
 
   ENUM(EventSources, uint8_t, Any, None, ParameterName, SliderRange, ParameterDisplayString, ParameterGroupName,
@@ -35,18 +35,30 @@ namespace DescriptiveLayouts
        PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIUnisonText,
        VGIIUnisonText, VGIMasterText, VGIIMasterText,
 
-       PreviousNumber, PreviousName, CurrentNumber, CurrentName, NextNumber, NextName);
+       // try to use more generic names, the specific meaning is implemented in the EventProvider
+       Edit, Fine, Locked, Position, NumItems,
 
-  ENUM(EventSinks, uint8_t, Left, Right, Up, Down, IncParam, DecParam, SwitchToInitDetail, SwitchToEditMode,
-       SwitchToSelectMode, SwitchToSetupFocus, SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus,
-       SwitchToSoundFocus, SwitchToMCSelectDetail, SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail,
-       SwitchToButtonDDetail, SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel,
-       DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu,
-       IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad,
-       IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
-       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter);
+       ButtonA, ButtonB, ButtonC, ButtonD,
 
-  ENUM(EventProviders, uint8_t, Global, IndependentPresetSelectionEvents);
+       PreviousNumber, PreviousName, PreviousSelected, PreviousLoaded,
+
+       CurrentNumber, CurrentName, CurrentSelected, CurrentLoaded,
+
+       NextNumber, NextName, NextSelected, NextLoaded);
+
+  ENUM(EventSinks, uint8_t, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
+       SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
+       SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail, SwitchToButtonDDetail,
+       SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel, DecMCSel, IncMCAmt, DecMCAmt,
+       IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu, IncModulationCarousel, DecModulationCarousel,
+       ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad, IncPresetSelectionPresetList,
+       DecPresetSelectionPresetList, IncBankSelectionPresetList, DecBankSelectionPresetList, DoPresetListAction,
+       OpenUnisonParameter, OpenMasterParameter,
+
+       // try to use more generic names, the specific meaning is implemented in the EventProvider
+       Left, Right, Up, Down, IncParam, DecParam);
+
+  ENUM(EventProviders, uint8_t, None, Global, IndependentPresetSelectionEvents, PresetManagerEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
 
   template <typename Derived> class StringId : public std::string
