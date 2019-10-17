@@ -14,8 +14,8 @@
 
 struct ClockHandle
 {
-    uint32_t m_index, m_div_fast, m_div_slow = 0;
-    bool m_fast, m_slow = false;
+    uint32_t m_index = 0, m_div_fast = 0, m_div_slow = 0;
+    bool m_fast = false, m_slow = false;
     inline void init(const uint32_t _samplerate)
     {
         m_div_fast = _samplerate / C15::Config::clock_rates[2];
@@ -32,7 +32,7 @@ struct ClockHandle
 
 struct TimeHandle
 {
-    float m_convert[4], m_dx_audio, m_dx_fast, m_dx_slow, m_millisecond, m_sample_inc = {};
+    float m_convert[4] = {}, m_dx_audio = 0.0f, m_dx_fast = 0.0f, m_dx_slow = 0.0f, m_millisecond = 0.0f, m_sample_inc = 0.0f;
     inline void init(const uint32_t _samplerate)
     {
         float rate = static_cast<float>(_samplerate);
@@ -80,7 +80,8 @@ struct ParameterHandle
             param->m_clock = _element.m_smoother.m_clock;
             param->m_renderIndex = _element.m_smoother.m_index;
             param->m_scaleId = _element.m_scaleId;
-            param->m_scaleArg = _element.m_scaleArg;
+            param->m_scaleFactor = _element.m_scaleFactor;
+            param->m_scaleOffset = _element.m_scaleOffset;
             param->m_position = param->depolarize(_element.m_initial);
         }
     }
@@ -93,7 +94,8 @@ struct ParameterHandle
             param->m_clock = _element.m_smoother.m_clock;
             param->m_renderIndex = _element.m_smoother.m_index;
             param->m_scaleId = _element.m_scaleId;
-            param->m_scaleArg = _element.m_scaleArg;
+            param->m_scaleFactor = _element.m_scaleFactor;
+            param->m_scaleOffset = _element.m_scaleOffset;
             param->m_position = _element.m_initial;
         }
     }
@@ -106,7 +108,8 @@ struct ParameterHandle
             param->m_clock = _element.m_smoother.m_clock;
             param->m_renderIndex = _element.m_smoother.m_index;
             param->m_scaleId = _element.m_scaleId;
-            param->m_scaleArg = _element.m_scaleArg;
+            param->m_scaleFactor = _element.m_scaleFactor;
+            param->m_scaleOffset = _element.m_scaleOffset;
             param->m_position = _element.m_initial;
         }
     }
