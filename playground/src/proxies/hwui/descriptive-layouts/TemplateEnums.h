@@ -33,7 +33,7 @@ namespace DescriptiveLayouts
        ParameterControlPosition, ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton,
        BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
-       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText,
+       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterVolume, EditBufferMasterTune,
        VGIMasterTuneText, VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider

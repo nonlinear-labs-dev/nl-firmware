@@ -87,7 +87,7 @@
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "OpenMonoParameterScreen",
-        "BUTTON_C": "OpenUnisonParameterScreen"
+        "BUTTON_C": "OpenUnisonParameter"
       }
     }
   }

@@ -177,6 +177,11 @@ PresetParameterGroup *Preset::findParameterGroup(const std::string &id, VoiceGro
   if(it != m_parameterGroups[static_cast<int>(vg)].end())
     return it->second.get();
 
+
+  auto globalit = m_globalParameterGroups.find(id);
+  if(globalit != m_globalParameterGroups.end())
+    return globalit->second.get();
+
   return nullptr;
 }
 

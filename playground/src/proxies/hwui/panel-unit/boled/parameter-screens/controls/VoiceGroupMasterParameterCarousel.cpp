@@ -1,27 +1,27 @@
-#include "DualParameterScreenCarousel.h"
+#include "VoiceGroupMasterParameterCarousel.h"
 #include "NeverHighlitButton.h"
 #include "MiniParameter.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
-#include <parameters/voice-group-master-group/VGMasterParameter.h>
+#include <parameters/voice-group-master-group/SpecialGlobalParameter.h>
 
-DualParameterScreenCarousel::DualParameterScreenCarousel(const Rect &r)
+VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect &r)
     : ParameterCarousel(r)
 {
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
-      sigc::mem_fun(this, &DualParameterScreenCarousel::rebuild));
+      sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
 }
 
-void DualParameterScreenCarousel::setup(Parameter *selectedParameter)
+void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 {
   clear();
 
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Split)
-    setupMasterParameters({ 18700, 11247, 11248 });
+    setupMasterParameters({ 10001, 247, 248 });
   else
-    setupMasterParameters({ 11247, 11248 });
+    setupMasterParameters({ 247, 248 });
 
   if(getNumChildren() == 0)
   {
@@ -34,14 +34,14 @@ void DualParameterScreenCarousel::setup(Parameter *selectedParameter)
   setDirty();
 }
 
-void DualParameterScreenCarousel::rebuild()
+void VoiceGroupMasterParameterCarousel::rebuild()
 {
   auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   setup(s);
 }
 
-void DualParameterScreenCarousel::setupMasterParameters(const std::vector<Parameter::ID> &parameters)
+void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<Parameter::ID> &parameters)
 {
   const auto ySpaceing = 3;
   const int miniParamHeight = 12;
@@ -50,17 +50,16 @@ void DualParameterScreenCarousel::setupMasterParameters(const std::vector<Parame
   int yPos = (numMissing * miniParamHeight) - ySpaceing;
 
   const auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  const auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+  const auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
 
   for(auto p : parameters)
   {
-    auto vgt = vg;
-    if(p == 18700)
-      vgt = VoiceGroup::I;
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p, vg);
+    if(!param)
+      param = Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(p);
 
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p, vgt);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
-    miniParam->setSelected(param == selected || (param->getID() == selected->getID() && selected->getVoiceGroup() == VoiceGroup::I && param->getID() == 18700));
+    miniParam->setSelected(param == selected);
     addControl(miniParam);
     yPos += ySpaceing;
     yPos += miniParamHeight;

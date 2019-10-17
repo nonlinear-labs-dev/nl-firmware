@@ -11,7 +11,7 @@ Parameter *MonoModeParameterLayout::getCurrentParameter() const
   if(eb->getType() == SoundType::Split)
     return ParameterLayout2::getCurrentParameter();
   else
-    return eb->getSelected(VoiceGroup::I);
+    return eb->getSelected();
 }
 
 MonoModeParameterLayout::MonoModeParameterLayout()

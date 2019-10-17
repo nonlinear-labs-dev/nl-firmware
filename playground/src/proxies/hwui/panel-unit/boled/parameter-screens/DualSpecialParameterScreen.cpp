@@ -1,4 +1,4 @@
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualParameterScreenCarousel.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupMasterParameterCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualSpecialParameterModuleCaption.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/controls/Button.h>
@@ -6,7 +6,7 @@
 
 Parameter *DualSpecialParameterScreen::getCurrentParameter() const
 {
-  if(auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(VoiceGroup::I))
+  if(auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected())
     if(auto sp = dynamic_cast<SplitPointParameter *>(selected))
       return sp;
 
@@ -18,7 +18,7 @@ DualSpecialParameterScreen::DualSpecialParameterScreen()
 {
   m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() {
     auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+    auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
     getCarousel()->setup(selected);
     for(auto &i : getControls<DualSpecialParameterModuleCaption>())
     {
@@ -42,7 +42,7 @@ DualSpecialParameterScreen::~DualSpecialParameterScreen()
 
 Carousel *DualSpecialParameterScreen::createCarousel(const Rect &rect)
 {
-  return new DualParameterScreenCarousel(rect);
+  return new VoiceGroupMasterParameterCarousel(rect);
 }
 
 ModuleCaption *DualSpecialParameterScreen::createModuleCaption() const
@@ -65,6 +65,15 @@ bool DualSpecialParameterScreen::onButton(Buttons i, bool down, ButtonModifiers 
 
   if(down && i == Buttons::BUTTON_C)
   {
+    return true;
+  }
+
+  if(down && i == Buttons::BUTTON_D)
+  {
+    if(modifiers[ButtonModifier::SHIFT])
+      getCarousel()->antiTurn();
+    else
+      getCarousel()->turn();
     return true;
   }
 

@@ -51,7 +51,7 @@ void ParameterLayout2::showRecallScreenIfAppropriate()
 Parameter *ParameterLayout2::getCurrentParameter() const
 {
   auto hwSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  return Application::get().getPresetManager()->getEditBuffer()->getSelected(hwSelection);
+  return Application::get().getPresetManager()->getEditBuffer()->getSelected();
 }
 
 Parameter *ParameterLayout2::getCurrentEditParameter() const

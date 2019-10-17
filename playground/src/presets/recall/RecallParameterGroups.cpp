@@ -17,20 +17,45 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     {
       for(auto &parameter : g->getParameters())
       {
-        m_parameters[index][parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
+        m_polyParameters[index][parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
       }
     }
+  }
+
+  for(auto g : m_editBuffer->getGlobalParameterGroups())
+  {
+    for(auto &p : g->getParameters())
+      m_globalParameters[p->getID()] = std::make_unique<RecallParameter>(this, p->getID());
   }
 }
 
 RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg)
 {
-  return m_parameters[static_cast<int>(vg)];
+  return m_polyParameters[static_cast<int>(vg)];
+}
+
+RecallParameterGroups::tParameterMap &RecallParameterGroups::getGlobalParameters()
+{
+  return m_globalParameters;
 }
 
 const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
 {
-  return m_parameters[static_cast<int>(vg)].at(id).get();
+  try
+  {
+    return m_polyParameters[static_cast<int>(vg)].at(id).get();
+  }
+  catch(...)
+  {
+    try
+    {
+      return m_globalParameters.at(id).get();
+    }
+    catch(...)
+    {
+      return nullptr;
+    }
+  }
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
@@ -42,8 +67,16 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
     {
       for(auto &parameter : g->getParameters())
       {
-        m_parameters[index].at(parameter->getID())->copyFrom(transaction, parameter);
+        m_polyParameters[index].at(parameter->getID())->copyFrom(transaction, parameter);
       }
+    }
+  }
+
+  for(auto &g : other->getGlobalParameterGroups())
+  {
+    for(auto &p : g->getParameters())
+    {
+      m_globalParameters.at(p->getID())->copyFrom(transaction, p);
     }
   }
 }
@@ -54,8 +87,9 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   if(changed)
   {
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
-      for(auto &parameterpair : m_parameters[0])
+      for(auto &parameterpair : m_polyParameters[0])
       {
+#warning Mängel Abstellen!
         auto &parameter = parameterpair.second;
         parameter->writeDocument(writer, knownRevision);
       }

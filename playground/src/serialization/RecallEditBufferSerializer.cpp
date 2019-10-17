@@ -41,9 +41,14 @@ namespace Detail
     {
       reader.onTag(RecallParameterSerializer::getTagName(), [&, this](const Attributes &attr) mutable {
         auto id = std::stoi(attr.get("id"));
-        auto serializer = new RecallParameterSerializer(
-            m_editBuffer->getRecallParameterSet().getParameters(m_voiceGroup).at(id).get());
-        return serializer;
+        auto& rps = m_editBuffer->getRecallParameterSet();
+        try {
+          auto param = rps.getParameters(m_voiceGroup).at(id).get();
+          auto serializer = new RecallParameterSerializer(param);
+          return serializer;
+        } catch(...) {
+          return static_cast<RecallParameterSerializer*>(nullptr);
+        }
       });
     }
 

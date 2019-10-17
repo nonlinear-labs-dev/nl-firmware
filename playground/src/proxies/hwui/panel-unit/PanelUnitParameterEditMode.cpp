@@ -118,7 +118,6 @@ void PanelUnitParameterEditMode::setup()
       setupButtonConnection(buttonID, createParameterSelectAction(para));
   });
 
-
   setupButtonConnection(Buttons::BUTTON_75,
                         bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 243));
   FOR_TESTS(assignedAudioIDs.insert(243));
@@ -203,7 +202,7 @@ void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Pa
     if(auto ph = dynamic_cast<PhysicalControlParameter *>(newParam))
     {
       if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-          Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM")))
+             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM")))
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {
@@ -235,8 +234,8 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
 
   for(gint32 id : toggleAudioIDs)
   {
-    auto voiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, voiceGroup))
+    if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id)
+       && !Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(id))
       g_error("Attempt to link a button to parameter ID %d, which does not exist!", id);
 
     g_assert(assignedAudioIDs.find(id) == assignedAudioIDs.end());

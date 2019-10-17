@@ -20,12 +20,14 @@ public:
   tUpdateID onChange(uint64_t flags) override;
 
   tParameterMap& getParameters(VoiceGroup vg = VoiceGroup::I);
+  tParameterMap& getGlobalParameters();
 
  private:
   EditBuffer* m_editBuffer;
   Signal<void> m_signalRecallValues;
 
-  std::array<tParameterMap, 2> m_parameters;
+  std::array<tParameterMap, 2> m_polyParameters;
+  tParameterMap m_globalParameters;
 
   friend class EditBuffer;
   friend class RecallEditBufferSerializer;

@@ -13,7 +13,7 @@ bool ModulationBoundControl::onButton(Buttons i, bool down, ButtonModifiers)
       if(down)
       {
         if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(
-               Application::get().getPresetManager()->getEditBuffer()->getSelected()))
+            Application::get().getPresetManager()->getEditBuffer()->getSelected()))
         {
           auto &undoScope = modulatedParam->getUndoScope();
           auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set MC Amount for '%0'",

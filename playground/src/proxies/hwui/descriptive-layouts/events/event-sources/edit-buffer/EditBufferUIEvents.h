@@ -73,13 +73,24 @@ namespace DescriptiveLayouts
     }
   };
 
+  template<int id, VoiceGroup vg>
+  class ParameterValue : public EditBufferEvent<DisplayString>
+  {
+  public:
+    void onChange(const EditBuffer* eb) override
+    {
+      if(auto param = eb->findParameterByID(id, vg))
+        setValue({param->getDisplayString(), 0});
+    }
+  };
+
   class VGIMasterVolumeText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(11247, VoiceGroup::I);
-      setValue({ param->getDisplayString(), 0 });
+      if(auto param = eb->findParameterByID(11247, VoiceGroup::I))
+        setValue({ param->getDisplayString(), 0 });
     }
   };
 
@@ -88,8 +99,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(11247, VoiceGroup::II);
-      setValue({ param->getDisplayString(), 0 });
+      if(auto param = eb->findParameterByID(11247, VoiceGroup::II))
+        setValue({ param->getDisplayString(), 0 });
     }
   };
 
@@ -98,8 +109,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(11248, VoiceGroup::I);
-      setValue({ param->getDisplayString(), 0 });
+      if(auto param = eb->findParameterByID(248, VoiceGroup::I))
+        setValue({ param->getDisplayString(), 0 });
     }
   };
 
@@ -108,8 +119,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(11248, VoiceGroup::II);
-      setValue({ param->getDisplayString(), 0 });
+      if(auto param = eb->findParameterByID(248, VoiceGroup::II))
+        setValue({ param->getDisplayString(), 0 });
     }
   };
 

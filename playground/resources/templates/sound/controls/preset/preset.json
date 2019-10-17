@@ -16,6 +16,10 @@
       "Name": {
         "Class": "Text",
         "Rect": "27, 1, 96, 15"
+      },
+      "Type": {
+        "Class": "Text",
+        "Rect": "60, 1, 10, 15"
       }
     }
   },

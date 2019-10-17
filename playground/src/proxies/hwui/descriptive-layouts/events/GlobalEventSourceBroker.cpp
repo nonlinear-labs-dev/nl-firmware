@@ -49,13 +49,13 @@ namespace DescriptiveLayouts
     m_map[EventSources::CurrentVoiceGroupName] = std::make_unique<CurrentVoiceGroupName>();
     m_map[EventSources::ParameterControlPosition] = std::make_unique<CurrentParameterControlPosition>();
 
-    m_map[EventSources::EditBufferMasterText] = std::make_unique<EditBufferMasterVolumeText>();
-    m_map[EventSources::EditBufferUnisonText] = std::make_unique<EditBufferMasterTuneText>();
+    m_map[EventSources::EditBufferMasterVolume] = std::make_unique<ParameterValue<247, VoiceGroup::Global>>();
+    m_map[EventSources::EditBufferMasterTune] = std::make_unique<ParameterValue<248, VoiceGroup::Global>>();
 
-    m_map[EventSources::VGIMasterTuneText] = std::make_unique<VGIMasterTuneText>();
-    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<VGIIMasterTuneText>();
-    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<VGIMasterVolumeText>();
-    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<VGIIMasterVolumeText>();
+    m_map[EventSources::VGIMasterTuneText] = std::make_unique<ParameterValue<10003, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<ParameterValue<10003, VoiceGroup::II>>();
+    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<ParameterValue<10002, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<ParameterValue<10002, VoiceGroup::II>>();
 
     m_map[EventSources::BooleanTrue] = std::make_unique<BooleanTrue>();
     m_map[EventSources::BooleanFalse] = std::make_unique<BooleanFalse>();

@@ -122,7 +122,6 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::SwitchToButtonCDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonC); });
     registerEvent(EventSinks::SwitchToButtonDDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonD); });
     registerEvent(EventSinks::SwitchToVoicesDetail, [hwui] { hwui->setUiModeDetail(UIDetail::Voices); });
-
     registerEvent(EventSinks::SelectPresetForVoiceGroup, [hwui] {
       hwui->setUiModeDetail(UIDetail::SoundSelectPresetForVoiceGroup);
       hwui->getPanelUnit().getEditPanel().getBoled().bruteForce();
@@ -243,11 +242,17 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
-      if(eb->getType() == SoundType::Split && Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection() == VoiceGroup::I)
-        eb->undoableSelectParameter(18700, VoiceGroup::I);
+      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+
+      if(eb->getType() == SoundType::Split)
+        eb->undoableSelectParameter(10001);
       else
-        eb->undoableSelectParameter(11247);
+        eb->undoableSelectParameter(10002, vg);
     });
+
+    registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter(247); });
+
+    registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() { eb->undoableSelectParameter(249); });
   }
 
   void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)

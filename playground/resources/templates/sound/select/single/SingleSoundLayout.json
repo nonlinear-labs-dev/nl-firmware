@@ -51,7 +51,7 @@
           "Init": {
             "Text[Text]": "+12.00 st"
           },
-          "Events": "EditBufferUnisonText => Text[Text]"
+          "Events": "EditBufferMasterTune => Text[Text]"
         },
         "MasterLabel": {
           "Class": "SoundParameterLabel",
@@ -59,13 +59,13 @@
           "Init": {
             "Text[Text]": "-3.5 dB"
           },
-          "Events": "EditBufferMasterText => Text[Text]"
+          "Events": "EditBufferMasterVolume => Text[Text]"
         }
       },
       "EventSinks": {
         "BUTTON_A": "SwitchToButtonADetail",
         "BUTTON_C": "SwitchToVoicesDetail",
-        "BUTTON_D": "OpenMasterParameterScreen"
+        "BUTTON_D": "OpenMasterParameter"
       }
     }
   }

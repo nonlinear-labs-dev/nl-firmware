@@ -24,7 +24,7 @@ class EditBuffer : public ParameterDualGroupSet
   Glib::ustring getName() const;
   size_t getHash() const;
   const Preset *getOrigin() const;
-  Parameter *getSelected(VoiceGroup voiceGroup = VoiceGroup::Invalid) const;
+  Parameter *getSelected() const;
   bool isZombie() const;
 
   void setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid);
@@ -97,7 +97,7 @@ class EditBuffer : public ParameterDualGroupSet
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();
 
-private:
+ private:
   bool anyParameterChanged(VoiceGroup vg) const;
 
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;
@@ -120,7 +120,14 @@ private:
   Signal<void> m_signalLocksChanged;
   Signal<void> m_signalTypeChanged;
 
-  Parameter::ID m_selectedParameterId = 0;
+  struct LastSelection
+  {
+    LastSelection(Parameter::ID id, VoiceGroup vg) : m_id{id}, m_voiceGroup{vg} {}
+    Parameter::ID m_id = 0;
+    VoiceGroup m_voiceGroup = VoiceGroup::I;
+  };
+
+  LastSelection m_lastSelectedParameter;
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;

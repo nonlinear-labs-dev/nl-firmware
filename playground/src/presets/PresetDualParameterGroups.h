@@ -23,6 +23,7 @@ protected:
   using GroupsMap = std::unordered_map<std::string, GroupPtr>;
   SoundType m_type;
   std::array<GroupsMap, 2> m_parameterGroups;
+  GroupsMap m_globalParameterGroups;
   
   friend class PresetParameterVoiceGroupSerializer;
   friend class PresetParameterGroupsSerializer;

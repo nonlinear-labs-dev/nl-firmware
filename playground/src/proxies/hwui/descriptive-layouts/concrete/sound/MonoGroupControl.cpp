@@ -11,6 +11,11 @@ MonoGroupControl::MonoGroupControl(const Rect &r)
   m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() { rebuild(); });
 }
 
+MonoGroupControl::~MonoGroupControl()
+{
+  m_connection.disconnect();
+}
+
 void MonoGroupControl::rebuild()
 {
   clear();

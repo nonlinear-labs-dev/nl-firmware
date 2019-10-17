@@ -106,7 +106,7 @@ void dsp_host::tickMain()
   {
     /* render slow mono parameters and perform mono post processing */
 #if PARAM_ITERATOR == 0
-    for(const auto &it : m_params.m_parameters.getClockIds(ClockTypes::Slow, PolyTypes::Mono))
+    for(const auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Slow, PolyTypes::Mono))
     {
       auto i = m_params.getHead(static_cast<Parameters>(it)).m_index;
       m_params.getBody(i).tick();
@@ -123,7 +123,7 @@ void dsp_host::tickMain()
     for(uint32_t v = 0; v < m_voices; v++)
     {
 #if PARAM_ITERATOR == 0
-      for(const auto &it : m_params.m_parameters.getClockIds(ClockTypes::Slow, PolyTypes::Poly))
+      for(const auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Slow, PolyTypes::Poly))
       {
         auto i = m_params.getHead(static_cast<Parameters>(it)).m_index + v;
         m_params.getBody(i).tick();
@@ -147,7 +147,7 @@ void dsp_host::tickMain()
   {
     /* render fast mono parameters and perform mono post processing */
 #if PARAM_ITERATOR == 0
-    for(auto &it : m_params.m_parameters.getClockIds(ClockTypes::Fast, PolyTypes::Mono))
+    for(auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Fast, PolyTypes::Mono))
     {
       auto i = m_params.getHead(static_cast<Parameters>(it)).m_index;
       m_params.getBody(i).tick();
@@ -164,7 +164,7 @@ void dsp_host::tickMain()
     for(uint32_t v = 0; v < m_voices; v++)
     {
 #if PARAM_ITERATOR == 0
-      for(auto &it : m_params.m_parameters.getClockIds(ClockTypes::Fast, PolyTypes::Poly))
+      for(auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Fast, PolyTypes::Poly))
       {
         auto i = m_params.getHead(static_cast<Parameters>(it)).m_index + v;
         m_params.getBody(i).tick();
@@ -183,7 +183,7 @@ void dsp_host::tickMain()
   }
   /* third: evaluate audio clock (always) - mono rendering and post processing, poly rendering and post processing */
 #if PARAM_ITERATOR == 0
-  for(auto &it : m_params.m_parameters.getClockIds(ClockTypes::Audio, PolyTypes::Mono))
+  for(auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Audio, PolyTypes::Mono))
   {
     auto i = m_params.getHead(static_cast<Parameters>(it)).m_index;
     m_params.getBody(i).tick();
@@ -205,7 +205,7 @@ void dsp_host::tickMain()
   {
     /* render poly audio parameters */
 #if PARAM_ITERATOR == 0
-    for(auto &it : m_params.m_parameters.getClockIds(ClockTypes::Audio, PolyTypes::Poly))
+    for(auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Audio, PolyTypes::Poly))
     {
       auto i = m_params.getHead(static_cast<Parameters>(it)).m_index + v;
       m_params.getBody(i).tick();
@@ -519,44 +519,44 @@ void dsp_host::preloadUpdate(uint32_t _mode, uint32_t _listId)
       /* Trigger Slow Rendering and Post Processing (Key Events should be effective immediately) */
       /* render slow mono parameters and perform mono post processing */
 #if PARAM_ITERATOR == 0
-      for(const auto &it : m_params.m_parameters.getClockIds(ClockTypes::Slow, PolyTypes::Mono))
+      for(const auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Slow, PolyTypes::Mono))
       {
         auto i = m_params.getHead(static_cast<Parameters>(it)).m_index;
         m_params.getBody(i).tick();
       }
 #else
-      auto end = m_params.m_parameters.end(ClockTypes::Slow, PolyTypes::Mono);
-      for(param_body *it = m_params.m_parameters.begin(ClockTypes::Slow, PolyTypes::Mono); it != end; it++)
+      auto end = m_params.m_polyParameters.end(ClockTypes::Slow, PolyTypes::Mono);
+      for(param_body *it = m_params.m_polyParameters.begin(ClockTypes::Slow, PolyTypes::Mono); it != end; it++)
       {
         it->tick();
       }
 #endif
-      m_params.postProcessMono_slow(m_parameters.bindToVoice(0));
+      m_params.postProcessMono_slow(m_polyParameters.bindToVoice(0));
       /* render slow poly parameters and perform poly slow post processing */
       for(v = 0; v < m_voices; v++)
       {
 #if PARAM_ITERATOR == 0
-        for(const auto &it : m_params.m_parameters.getClockIds(ClockTypes::Slow, PolyTypes::Poly))
+        for(const auto &it : m_params.m_polyParameters.getClockIds(ClockTypes::Slow, PolyTypes::Poly))
         {
           auto i = m_params.getHead(static_cast<Parameters>(it)).m_index + v;
           m_params.getBody(i).tick();
         }
 #else
 
-        end = m_params.m_parameters.end(ClockTypes::Slow, PolyTypes::Poly, v);
-        for(param_body *it = m_params.m_parameters.begin(ClockTypes::Slow, PolyTypes::Poly, v); it != end;
+        end = m_params.m_polyParameters.end(ClockTypes::Slow, PolyTypes::Poly, v);
+        for(param_body *it = m_params.m_polyParameters.begin(ClockTypes::Slow, PolyTypes::Poly, v); it != end;
             it += m_voices)
         {
           it->tick();
         }
 #endif
-        m_params.postProcessPoly_slow(m_parameters.bindToVoice(v), v);
+        m_params.postProcessPoly_slow(m_polyParameters.bindToVoice(v), v);
         /* slow polyphonic Trigger for Filter Coefficients */
-        setPolySlowFilterCoeffs(m_parameters.bindToVoice(v), v);
+        setPolySlowFilterCoeffs(m_polyParameters.bindToVoice(v), v);
       }
 
       /* slow monophonic Trigger for Filter Coefficients */
-      setMonoSlowFilterCoeffs(m_parameters.bindToVoice(0));
+      setMonoSlowFilterCoeffs(m_polyParameters.bindToVoice(0));
       /* Reset Slow Clock counter (next slow clock tick will occur in 120 samples - @48kHz) */
       m_clockPosition[3] = 1;
       /* apply preloaded values - key events */
@@ -591,8 +591,8 @@ void dsp_host::preloadUpdate(uint32_t _mode, uint32_t _listId)
           m_params.m_event.m_poly[v].m_preload = 0;  // reset preload counter
           m_params.keyApply(v);                      // trigger env_engine
           keyApply(v);  // update comb filter delay smoother, phase, (determine voice steal)
-          m_params.postProcessPoly_key(m_parameters, v);  // update key-related parameters/signals
-          setPolySlowFilterCoeffs(m_parameters, v);       // update filter coefficients
+          m_params.postProcessPoly_key(m_polyParameters, v);  // update key-related parameters/signals
+          setPolySlowFilterCoeffs(m_polyParameters, v);       // update filter coefficients
         }
       }
 #endif

@@ -73,7 +73,10 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
   yPos += missingParams * (miniParamHeight + ySpaceing);
   for(int i : buttonAssignments)
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i);
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    auto param = eb->findParameterByID(i);
+    if(!param)
+      param = eb->findGlobalParameterByID(i);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr)
     {

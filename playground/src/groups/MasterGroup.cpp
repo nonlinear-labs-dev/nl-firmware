@@ -1,3 +1,4 @@
+#include <parameters/voice-group-master-group/SpecialGlobalParameter.h>
 #include "MasterGroup.h"
 #include "parameters/Parameter.h"
 #include "parameters/ModulateableParameter.h"
@@ -5,8 +6,8 @@
 #include "parameters/scale-converters/LinearBipolar48StScaleConverter.h"
 #include "parameters/scale-converters/ParabolicGainDbScaleConverter.h"
 
-MasterGroup::MasterGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
-    : ParameterGroup(parent, "Master", "Master", "Master", "Master", voicegroup)
+MasterGroup::MasterGroup(ParameterDualGroupSet *parent)
+    : ParameterGroup(parent, "Master", "Master", "Master", "Master", VoiceGroup::Global)
 {
 }
 

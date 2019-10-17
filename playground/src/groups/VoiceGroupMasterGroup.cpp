@@ -1,19 +1,17 @@
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
-#include <parameters/voice-group-master-group/VGMasterParameter.h>
-#include <parameters/SplitPointParameter.h>
+#include <parameters/voice-group-master-group/SpecialGlobalParameter.h>
 #include "VoiceGroupMasterGroup.h"
 
 VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
-    : ParameterGroup(parent, "VGM", "VGM", "VGM", "VGM", voicegroup)
+    : ParameterGroup(parent, "VGM", "VG Master", "Voice Group Master", "Voice Group Master", voicegroup)
 {
 }
 
 void VoiceGroupMasterGroup::init()
 {
-  appendParameter(new SplitPointParameter(this, 18700));
-  appendParameter(
-      new VGMasterParameter(this, 11247, ScaleConverter::get<ParabolicGainDbScaleConverter>(), 0.5, 100, 1000));
-  appendParameter(
-      new VGMasterParameter(this, 11248, ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48, 4800));
+  appendParameter(new SpecialPolyParameter(this, 10002, ScaleConverter::get<ParabolicGainDbScaleConverter>(), 0.5,
+                                             100, 1000, "Level", "Output Level", getVoiceGroup()));
+  appendParameter(new SpecialPolyParameter(this, 10003, ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48,
+                                             4800, "Tune", "Voice Group Tune", getVoiceGroup()));
 }

@@ -19,7 +19,8 @@
 #include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
 #include <nltools/StringTools.h>
-#include <groups/VoiceGroupMasterGroup.h>
+#include <groups/GlobalParameterGroups.h>
+#include <groups/MasterGroup.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -27,6 +28,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
+    , m_lastSelectedParameter{0, VoiceGroup::I}
 {
   m_hashOnStore = getHash();
 }
@@ -192,13 +194,15 @@ sigc::connection EditBuffer::onSelectionChanged(const slot<void, Parameter *, Pa
 
 void EditBuffer::undoableSelectParameter(const Glib::ustring &id)
 {
-  if(auto p = findParameterByID(std::stoi(id)))
-    undoableSelectParameter(p);
+  undoableSelectParameter(std::stoi(id));
 }
 
 void EditBuffer::undoableSelectParameter(uint16_t id)
 {
   if(auto p = findParameterByID(id))
+    undoableSelectParameter(p);
+
+  if(auto p = findGlobalParameterByID(id))
     undoableSelectParameter(p);
 }
 
@@ -206,11 +210,13 @@ void EditBuffer::undoableSelectParameter(uint16_t id, VoiceGroup vg)
 {
   if(auto p = findParameterByID(id, vg))
     undoableSelectParameter(p);
+
+  if(auto p = findGlobalParameterByID(id))
+    undoableSelectParameter(p);
 }
 
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id)
 {
-
   if(auto p = findParameterByID(std::stoi(id), VoiceGroup::I))
     undoableSelectParameter(transaction, p);
 }
@@ -237,7 +243,7 @@ void EditBuffer::setParameter(size_t id, double cpValue, VoiceGroup vg)
 
 void EditBuffer::setModulationSource(MacroControls src, VoiceGroup vg)
 {
-  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected(vg)))
+  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected()))
   {
     auto scope = getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
     p->undoableSelectModSource(scope->getTransaction(), src);
@@ -246,7 +252,7 @@ void EditBuffer::setModulationSource(MacroControls src, VoiceGroup vg)
 
 void EditBuffer::setModulationAmount(double amount, VoiceGroup vg)
 {
-  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected(vg)))
+  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected()))
   {
     auto scope = getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
                                                            p->getGroupAndParameterName());
@@ -296,9 +302,9 @@ void EditBuffer::resetOriginIf(const Preset *p)
 
 void EditBuffer::undoableSelectParameter(Parameter *p)
 {
-  if(p->getID() != m_selectedParameterId)
+  if(p->getID() != m_lastSelectedParameter.m_id || p->getVoiceGroup() != m_lastSelectedParameter.m_voiceGroup)
   {
-    auto newSelection = getSelected(p->getVoiceGroup());
+    auto newSelection = p;
     auto scope = getUndoScope().startContinuousTransaction(&newSelection, std::chrono::hours(1), "Select '%0'",
                                                            p->getGroupAndParameterName());
     undoableSelectParameter(scope->getTransaction(), p);
@@ -314,26 +320,20 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
   }
 }
 
-bool isAnSpecialParameter(const Parameter *p)
-{
-  auto ret = dynamic_cast<const VoiceGroupMasterGroup *>(p->getParent());
-  return ret;
-}
-
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
   const auto targetVG = p->getVoiceGroup();
-  if(m_selectedParameterId != p->getID())
+  if(m_lastSelectedParameter.m_id != p->getID())
   {
-    auto swapData = UNDO::createSwapData(p->getID());
+    auto swapData = UNDO::createSwapData(LastSelection(p->getID(), p->getVoiceGroup()));
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      auto oldSelectedParamID = m_selectedParameterId;
+      auto oldSelection = m_lastSelectedParameter;
 
-      swapData->swapWith(m_selectedParameterId);
+      swapData->swapWith(m_lastSelectedParameter);
 
-      auto oldP = findParameterByID(oldSelectedParamID, targetVG);
-      auto newP = findParameterByID(m_selectedParameterId, targetVG);
+      auto oldP = findParameterByID(oldSelection.m_id, oldSelection.m_voiceGroup);
+      auto newP = findParameterByID(m_lastSelectedParameter.m_id, m_lastSelectedParameter.m_voiceGroup);
 
       m_signalSelectedParameter.send(oldP, newP);
 
@@ -343,7 +343,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       if(newP)
         newP->onSelected();
 
-      if(!getParent()->isLoading() && !isAnSpecialParameter(newP))
+      if(!getParent()->isLoading())
       {
         if(auto hwui = Application::get().getHWUI())
         {
@@ -366,15 +366,13 @@ bool isIDMonoGroup(int id)
   return id >= 12345 && id <= 12348;
 }
 
-Parameter *EditBuffer::getSelected(VoiceGroup vg) const
+Parameter *EditBuffer::getSelected() const
 {
-  if(getType() != SoundType::Split && isIDMonoGroup(m_selectedParameterId))
-    vg = VoiceGroup::I;
+  if(m_lastSelectedParameter.m_voiceGroup == VoiceGroup::Global)
+    if(auto p = findGlobalParameterByID(m_lastSelectedParameter.m_id))
+      return p;
 
-  if(getType() == SoundType::Split && m_selectedParameterId == 18700)
-    vg = VoiceGroup::I;
-
-  return findParameterByID(m_selectedParameterId, vg);
+  return findParameterByID(m_lastSelectedParameter.m_id, m_lastSelectedParameter.m_voiceGroup);
 }
 
 void EditBuffer::setName(UNDO::Transaction *transaction, const ustring &name)
@@ -402,7 +400,7 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 
   writer.writeTag(
       "edit-buffer",
-      { Attribute("selected-parameter", m_selectedParameterId), Attribute("editbuffer-type", toString(m_type)),
+      { Attribute("selected-parameter", m_lastSelectedParameter.m_id), Attribute("editbuffer-type", toString(m_type)),
         Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()), Attribute("loaded-presets-name", getName()),
         Attribute("loaded-presets-bank-name", bankName), Attribute("preset-is-zombie", zombie),
         Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed) },
@@ -639,13 +637,13 @@ void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup targ
 const SplitPointParameter *EditBuffer::getSplitPoint() const
 {
   if(getType() == SoundType::Split)
-    return dynamic_cast<const SplitPointParameter *>(findParameterByID(18700, VoiceGroup::I));
+    return dynamic_cast<const SplitPointParameter *>(findParameterByID(10001, VoiceGroup::Global));
   return nullptr;
 }
 
 SplitPointParameter *EditBuffer::getSplitPoint()
 {
   if(getType() == SoundType::Split)
-    return dynamic_cast<SplitPointParameter *>(findParameterByID(18700, VoiceGroup::I));
+    return dynamic_cast<SplitPointParameter *>(findParameterByID(10001, VoiceGroup::Global));
   return nullptr;
 }

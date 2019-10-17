@@ -32,7 +32,9 @@ namespace Detail
     {
       reader.onTag(ParameterGroupSerializer::getTagName(), [this](const auto attr) mutable {
         auto group = m_editBuffer->getParameterGroupByID(attr.get("id"), m_voiceGroup);
-        return new ParameterGroupSerializer(group);
+        if(group)
+          return new ParameterGroupSerializer(group);
+        return static_cast<ParameterGroupSerializer*>(nullptr);
       });
     }
 

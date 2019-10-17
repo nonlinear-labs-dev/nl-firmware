@@ -2,10 +2,10 @@
 #include "ParameterCarousel.h"
 #include <parameters/Parameter.h>
 
-class DualParameterScreenCarousel : public ParameterCarousel
+class VoiceGroupMasterParameterCarousel : public ParameterCarousel
 {
  public:
-  DualParameterScreenCarousel(const Rect& r);
+  VoiceGroupMasterParameterCarousel(const Rect& r);
 
  private:
   void rebuild();
