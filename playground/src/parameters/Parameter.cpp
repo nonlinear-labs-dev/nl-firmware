@@ -19,6 +19,7 @@
 #include <presets/Preset.h>
 #include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
+#include <parameters/messaging/ParameterMessageFactory.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -28,6 +29,7 @@ Parameter::Parameter(ParameterGroup *group, uint16_t id, const ScaleConverter *s
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
+    , m_voiceGroup{ group->getVoiceGroup() }
 {
 }
 
@@ -72,6 +74,11 @@ void Parameter::onValueChanged(Initiator initiator, tControlPositionValue oldVal
 void Parameter::onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
                                             tControlPositionValue newValue)
 {
+}
+
+VoiceGroup Parameter::getVoiceGroup() const
+{
+  return m_voiceGroup;
 }
 
 tControlPositionValue Parameter::expropriateSnapshotValue()
@@ -212,7 +219,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
 void Parameter::sendToLpc() const
 {
   Application::get().getLPCProxy()->sendParameter(this);
-  Application::get().getAudioEngineProxy()->sendParameter(getID(), getControlPositionValue());
+  sendParameterMessage();
 }
 
 tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modifiers) const
@@ -223,7 +230,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
+  auto ret = eb->getRecallParameterSet().findParameterByID(getID(), m_voiceGroup);
   nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
   return ret;
 }
@@ -256,7 +263,7 @@ ParameterGroup *Parameter::getParentGroup()
   return static_cast<ParameterGroup *>(getParent());
 }
 
-gint32 Parameter::getID() const
+Parameter::ID Parameter::getID() const
 {
   return m_id;
 }
@@ -286,7 +293,7 @@ tControlPositionValue Parameter::getControlPositionValue() const
   return m_value.getQuantizedClipped();
 }
 
-sigc::connection Parameter::onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall)
+sigc::connection Parameter::onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall) const
 {
   if(doInitCall)
     return m_signalParamChanged.connectAndInit(slot, this);
@@ -524,4 +531,17 @@ void Parameter::undoableRecallFromPreset()
     setCPFromHwui(transaction, original->getRecallValue());
   else
     setDefaultFromHwui(transaction);
+}
+
+void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
+{
+  nltools_assertOnDevPC(other->getID() == getID());
+  nltools_assertOnDevPC(other->getVoiceGroup() != getVoiceGroup());
+
+  setCpValue(transaction, Initiator::INDIRECT, other->getControlPositionValue(), false);
+}
+
+void Parameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<Parameter>(this);
 }

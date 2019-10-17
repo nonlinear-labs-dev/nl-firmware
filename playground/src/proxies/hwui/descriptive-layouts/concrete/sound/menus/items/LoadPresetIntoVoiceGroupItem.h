@@ -4,6 +4,6 @@
 class LoadPresetIntoVoiceGroupItem : public BasicItem
 {
  public:
-  LoadPresetIntoVoiceGroupItem();
+  LoadPresetIntoVoiceGroupItem(const Rect& rect);
   void doAction() override;
 };

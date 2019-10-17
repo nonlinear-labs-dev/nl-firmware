@@ -6,8 +6,8 @@ template <class tSetting> class SettingItem : public EditorItem
 {
  public:
   template <class tCap>
-  explicit SettingItem(tCap c)
-      : EditorItem(c)
+  explicit SettingItem(tCap c, const Rect& r)
+      : EditorItem(c, r)
   {
     auto rightHalf = getPosition();
     rightHalf.setWidth((rightHalf.getWidth() / 2) - 20);
@@ -16,9 +16,9 @@ template <class tSetting> class SettingItem : public EditorItem
     m_label = addControl(new SettingLabel<tSetting>(rightHalf));
   }
 
-  ScrollMenuOverlay* createOverlay() override
+  MenuOverlay* createOverlay() override
   {
-    return new ChangeSettingOverlay<tSetting>(getStandardOverlayRect());
+    return new ChangeSettingOverlay<tSetting>(getDefaultOverlayRect());
   }
 
  protected:

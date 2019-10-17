@@ -2,13 +2,12 @@
 #include "libundo/undo/ContinuousTransaction.h"
 
 UpdateDocumentMaster::UpdateDocumentMaster()
-    : UpdateDocumentContributor(NULL)
+    : UpdateDocumentContributor(nullptr)
 {
 }
 
 UpdateDocumentMaster::~UpdateDocumentMaster()
-{
-}
+= default;
 
 UpdateDocumentMaster::tUpdateID UpdateDocumentMaster::onChange(uint64_t flags)
 {

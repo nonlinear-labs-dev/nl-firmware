@@ -1,4 +1,6 @@
 #pragma once
+
+#include <parameters/SplitPointParameter.h>
 #include "EditBufferEvent.h"
 
 namespace DescriptiveLayouts
@@ -10,10 +12,26 @@ namespace DescriptiveLayouts
     {
       auto type = eb->getType();
       auto typeStr = toString(type);
-      if(type == Type::Single)
+      if(type == SoundType::Single)
         setValue({ typeStr, 0 });
       else
-        setValue({ typeStr + (eb->isSelected(EditBuffer::VoiceGroup::I) ? " [I]" : " [II]"), 0 });
+      {
+        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        setValue({ typeStr + (sel == VoiceGroup::I ? "[II]" : "[I]"), 0 });
+      }
+    }
+  };
+
+  class MonoEnabledText : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      if(auto param = eb->findParameterByID(12345, vg))
+      {
+        setValue({ param->getDisplayString(), 0 });
+      }
     }
   };
 
@@ -22,11 +40,20 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue({ eb->isSelected(EditBuffer::VoiceGroup::I) ? "Select II" : "Select I", 0 });
+      auto currentType = eb->getType();
+      if(currentType != SoundType::Single)
+      {
+        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        setValue({ sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
+      }
+      else
+      {
+        setValue({ "", 0 });
+      }
     }
   };
 
-  class EditBufferMasterText : public EditBufferEvent<DisplayString>
+  class EditBufferMasterVolumeText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
@@ -36,57 +63,70 @@ namespace DescriptiveLayouts
     }
   };
 
-  class EditBufferUnisonText : public EditBufferEvent<DisplayString>
+  class EditBufferMasterTuneText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(250);
+      auto param = eb->findParameterByID(248);
       setValue({ param->getDisplayString(), 0 });
     }
   };
 
-  class VGIMasterText : public EditBufferEvent<DisplayString>
+  class VGIMasterVolumeText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      //TODO add voice group id!
-      auto param = eb->findParameterByID(247);
+      auto param = eb->findParameterByID(11247, VoiceGroup::I);
       setValue({ param->getDisplayString(), 0 });
     }
   };
 
-  class VGIIMasterText : public EditBufferEvent<DisplayString>
+  class VGIIMasterVolumeText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      //TODO add voice group id!
-      auto param = eb->findParameterByID(247);
+      auto param = eb->findParameterByID(11247, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
     }
   };
 
-  class VGIUnisonText : public EditBufferEvent<DisplayString>
+  class VGIMasterTuneText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      //TODO add voice group id!
-      auto param = eb->findParameterByID(250);
+      auto param = eb->findParameterByID(11248, VoiceGroup::I);
       setValue({ param->getDisplayString(), 0 });
     }
   };
 
-  class VGIIUnisonText : public EditBufferEvent<DisplayString>
+  class VGIIMasterTuneText : public EditBufferEvent<DisplayString>
   {
    public:
     void onChange(const EditBuffer *eb) override
     {
-      //TODO add voice group id!
-      auto param = eb->findParameterByID(250);
+      auto param = eb->findParameterByID(11248, VoiceGroup::II);
       setValue({ param->getDisplayString(), 0 });
+    }
+  };
+
+  class SplitPointValueText : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      if(auto splitPoint = dynamic_cast<const SplitPointParameter *>(eb->getSplitPoint()))  //TODO change 18700
+      {
+        setValue({ splitPoint->getDisplayValue(vg), 0 });
+      }
+      else
+      {
+        setValue({ "", 0 });
+      }
     }
   };
 }

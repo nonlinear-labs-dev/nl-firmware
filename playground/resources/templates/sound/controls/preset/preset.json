@@ -16,7 +16,7 @@
       "Name": {
         "Class": "Text",
         "Rect": "27, 1, 96, 15"
-      } 
+      }
     }
   },
   "styles": {
@@ -60,6 +60,16 @@
       },
       "styles": {
         "TextAlign": "Left"
+      }
+    },
+    "PresetTypeStyle": {
+      "selector": {
+        "PrimitiveClasses": "Text",
+        "ControlClasses": "Preset",
+        "PrimitiveInstances": "Type"
+      },
+      "styles": {
+        "TextAlign": "Right"
       }
     }
   }

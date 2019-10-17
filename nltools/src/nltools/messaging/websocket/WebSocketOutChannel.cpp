@@ -13,7 +13,7 @@ namespace nltools
     namespace ws
     {
       WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port)
-          : m_uri(concat("http://", targetMachine, ":", port))
+          : m_uri(nltools::string::concat("http://", targetMachine, ":", port))
           , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)

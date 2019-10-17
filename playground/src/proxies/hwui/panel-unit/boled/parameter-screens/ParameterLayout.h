@@ -1,6 +1,7 @@
 #pragma once
 
 #include <proxies/hwui/DFBLayout.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 
 class Overlay;
 class Carousel;
@@ -33,6 +34,9 @@ class ParameterLayout2 : public DFBLayout
   Control *m_lock = nullptr;
   void handlePresetValueRecall();
   void copyFrom(Layout *src) override;
+
+ protected:
+  virtual ModuleCaption *createModuleCaption() const;
 
  private:
   void showRecallScreenIfAppropriate();

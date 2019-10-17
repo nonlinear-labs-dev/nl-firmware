@@ -4,5 +4,5 @@
 class InitSound : public AnimatedGenericItem
 {
  public:
-  InitSound();
+  InitSound(const Rect &rect);
 };

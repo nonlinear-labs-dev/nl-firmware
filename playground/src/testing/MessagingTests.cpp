@@ -50,9 +50,9 @@ struct MessagingTests
       nltools::msg::init(conf);
 
       int numMessages = 0;
-      ParameterChangedMessage msgToSend(12, 0.3);
+      UnmodulateableParameterChangedMessage msgToSend(12, 0.3);
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
-      auto c = receive<ParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
+      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
       send(EndPoint::TestEndPoint, msgToSend);
       doMainLoop(0s, 2s, [&] { return numMessages == 1; });
       c.disconnect();
@@ -69,9 +69,9 @@ struct MessagingTests
       int numRecMessages = 0;
       int numSendMessages = 1000;
 
-      ParameterChangedMessage msgToSend(12, 0.3);
+      UnmodulateableParameterChangedMessage msgToSend(12, 0.3);
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
-      auto c = receive<ParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
+      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
 
       for(int i = 0; i < numSendMessages; i++)
         send(EndPoint::TestEndPoint, msgToSend);
@@ -91,9 +91,9 @@ struct MessagingTests
       int numRecMessages = 0;
       int numSendMessages = 100;
 
-      ParameterChangedMessage msgToSend(12, 0.3);
+      UnmodulateableParameterChangedMessage msgToSend(12, 0.3);
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
-      auto c = receive<ParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
+      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
 
       for(int i = 0; i < numSendMessages; i++)
         send(EndPoint::TestEndPoint, msgToSend);

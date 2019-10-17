@@ -60,8 +60,8 @@ class AnimatedGenericItem : public GenericItem
 {
  public:
   template <class tCap, class tCB, class tCB2>
-  AnimatedGenericItem(tCap caption, tCB cb, tCB2 onAnimationFinishedCB = nullptr)
-      : GenericItem(caption, cb)
+  AnimatedGenericItem(tCap caption, const Rect &r, tCB cb, tCB2 onAnimationFinishedCB = nullptr)
+      : GenericItem(caption, r, cb)
   {
     m_animationFinishedCB = onAnimationFinishedCB;
   }

@@ -2,7 +2,9 @@
 
 #include <iostream>
 #include <initializer_list>
+#include <sstream>
 #include <mutex>
+#include "../StringTools.h"
 
 namespace nltools
 {
@@ -31,6 +33,8 @@ namespace nltools
       InsertSpaces,
       InsertSpacesAndAppendNewLine
     };
+
+
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void debug(const Args&... args)
@@ -90,6 +94,12 @@ namespace nltools
       {
         std::cout << std::endl;
       }
+    }
+
+    template <typename... tArgs> static void throwException(const tArgs&... args)
+    {
+      auto str = nltools::string::concat(args...);
+      throw std::runtime_error(str);
     }
 
    private:

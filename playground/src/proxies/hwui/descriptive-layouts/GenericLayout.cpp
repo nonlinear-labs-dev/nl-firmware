@@ -5,9 +5,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
 #include "GenericLayout.h"
 #include "GenericControl.h"
-#include "proxies/hwui/descriptive-layouts/primitives/Bar.h"
-#include "proxies/hwui/descriptive-layouts/primitives/Border.h"
-#include "proxies/hwui/descriptive-layouts/primitives/Text.h"
 
 #include "Application.h"
 #include "proxies/hwui/controls/ButtonMenu.h"
@@ -210,7 +207,14 @@ namespace DescriptiveLayouts
     auto *hwui = Application::get().getHWUI();
     auto current = hwui->getFocusAndMode();
     if(current.focus == UIFocus::Sound)
-      hwui->setFocusAndMode({ UIFocus::Parameters, UIMode::Select, UIDetail::Init });
+      if(current.detail != UIDetail::Init && current.detail != UIDetail::ButtonA)
+      {
+        hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+      }
+      else
+      {
+        hwui->setFocusAndMode({ UIFocus::Parameters, UIMode::Select, UIDetail::Init });
+      }
     else
       hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }

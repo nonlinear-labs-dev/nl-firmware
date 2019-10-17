@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tools/EnumTools.h>
+#include <nltools/enums/EnumTools.h>
 
 ENUM(Buttons, uint16_t, FIRST_PARAMETER_BUTTON = 0,
 

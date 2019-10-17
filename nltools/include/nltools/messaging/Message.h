@@ -15,16 +15,110 @@ namespace nltools
       MessageType type = msgType;
     };
 
-    struct ParameterChangedMessage : Message<MessageType::Parameter>
+    using tID = int;
+    using tControlPosition = double;
+
+    struct HWSourceChangedMessage : Message<MessageType::HWSourceParameter>
     {
-      ParameterChangedMessage(uint16_t id = 0, float controlPosition = 0)
-          : parameterId(id)
-          , controlPosition(controlPosition)
+      HWSourceChangedMessage(tID id = 0, tControlPosition controlPosition = 0, ReturnMode mode = ReturnMode::None,
+                             bool locked = false, VoiceGroup vg = VoiceGroup::I)
+          : parameterId{ id }
+          , controlPosition{ controlPosition }
+          , returnMode{ mode }
+          , lock(locked)
+          , voiceGroup{ vg }
       {
       }
 
-      uint16_t parameterId;
-      float controlPosition;
+      tID parameterId;
+      tControlPosition controlPosition;
+      ReturnMode returnMode;
+      bool lock;
+
+      VoiceGroup voiceGroup;
+    };
+
+    struct HWAmountChangedMessage : Message<MessageType::HWAmountParameter>
+    {
+      HWAmountChangedMessage(tID id = 0, tControlPosition pos = 0.0, bool locked = false, VoiceGroup vg = VoiceGroup::I)
+          : parameterId{ id }
+          , controlPosition{ pos }
+          , lock{ locked }
+          , voiceGroup{ vg }
+      {
+      }
+
+      tID parameterId;
+      tControlPosition controlPosition;
+      bool lock;
+
+      VoiceGroup voiceGroup;
+    };
+
+    struct MacroControlChangedMessage : Message<MessageType::MacroControlParameter>
+    {
+      MacroControlChangedMessage(tID id = 0, tControlPosition pos = 0.0, tControlPosition time = 0.0,
+                                 bool locked = false, VoiceGroup vg = VoiceGroup::I)
+          : lock{ locked }
+          , parameterId{ id }
+          , controlPosition{ pos }
+          , smoothingTime{ time }
+          , voiceGroup{ vg }
+      {
+      }
+
+      bool lock;
+      tID parameterId;
+      tControlPosition controlPosition;
+      tControlPosition smoothingTime;
+
+      VoiceGroup voiceGroup;
+    };
+
+    struct UnmodulateableParameterChangedMessage : Message<MessageType::UnmodulateableParameter>
+    {
+      UnmodulateableParameterChangedMessage(tID id = 0, tControlPosition controlPosition = 0, bool locked = false,
+                                            VoiceGroup vg = VoiceGroup::I)
+          : lock{ locked }
+          , parameterId(id)
+          , controlPosition(controlPosition)
+          , voiceGroup{ vg }
+      {
+      }
+
+      bool lock;
+      tID parameterId;
+      tControlPosition controlPosition;
+
+      VoiceGroup voiceGroup;
+    };
+
+    struct ModulateableParameterChangedMessage : Message<MessageType::ModulateableParameter>
+    {
+      ModulateableParameterChangedMessage(tID id = 0, tControlPosition pos = 0.0,
+                                          MacroControls source = MacroControls::NONE, tControlPosition amount = 0.0,
+                                          tControlPosition upper = 0.0, tControlPosition lower = 0.0,
+                                          bool locked = false, VoiceGroup vg = VoiceGroup::I)
+          : lock{ locked }
+          , parameterId{ id }
+          , controlPosition{ pos }
+          , sourceMacro{ source }
+          , mcAmount{ amount }
+          , mcUpper{ upper }
+          , mcLower{ lower }
+          , voiceGroup{ vg }
+      {
+      }
+
+      bool lock;
+      tID parameterId;
+      tControlPosition controlPosition;
+      MacroControls sourceMacro;
+      tControlPosition mcAmount;
+      tControlPosition mcUpper;
+      tControlPosition mcLower;
+
+      VoiceGroup voiceGroup;
     };
 
     struct RotaryChangedMessage : Message<MessageType::RotaryChanged>
@@ -88,7 +182,7 @@ namespace nltools
       }
     }
 
-    struct SetPresetMessage : Message<MessageType::Preset>
+    namespace ParameterGroups
     {
       struct Parameter
       {
@@ -132,13 +226,45 @@ namespace nltools
       {
       };
 
-      std::array<PedalParameter, 4> pedals;
-      std::array<AftertouchParameter, 1> aftertouch;
-      std::array<RibbonParameter, 2> ribbons;
-      std::array<BenderParameter, 1> bender;
-      std::array<MacroParameter, 4> macros;
-      std::array<ModulateableParameter, 89> modulateables;
-      std::array<UnmodulatebaleParameter, 138> unmodulateables;
+      struct MonoParameter : Parameter
+      {
+      };
+    }
+
+    struct SinglePresetMessage : Message<MessageType::SinglePreset>
+    {
+      std::array<ParameterGroups::PedalParameter, 4> pedals;
+      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
+      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
+      std::array<ParameterGroups::BenderParameter, 1> bender;
+      std::array<ParameterGroups::MacroParameter, 4> macros;
+      std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
+      std::array<ParameterGroups::UnmodulatebaleParameter, 138> unmodulateables;
+      std::array<ParameterGroups::MonoParameter, 4> monos;
+    };
+
+    struct SplitPresetMessage : Message<MessageType::SplitPreset>
+    {
+      std::array<std::array<ParameterGroups::PedalParameter, 4>, 2> pedals;
+      std::array<std::array<ParameterGroups::AftertouchParameter, 1>, 2> aftertouch;
+      std::array<std::array<ParameterGroups::RibbonParameter, 2>, 2> ribbons;
+      std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
+      std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
+    };
+
+    struct LayerPresetMessage : Message<MessageType::LayerPreset>
+    {
+      std::array<std::array<ParameterGroups::PedalParameter, 4>, 2> pedals;
+      std::array<std::array<ParameterGroups::AftertouchParameter, 1>, 2> aftertouch;
+      std::array<std::array<ParameterGroups::RibbonParameter, 2>, 2> ribbons;
+      std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
+      std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<ParameterGroups::MonoParameter, 4> monos;
     };
   }
 }

@@ -49,19 +49,20 @@ namespace DescriptiveLayouts
     m_map[EventSources::CurrentVoiceGroupName] = std::make_unique<CurrentVoiceGroupName>();
     m_map[EventSources::ParameterControlPosition] = std::make_unique<CurrentParameterControlPosition>();
 
-    m_map[EventSources::EditBufferMasterText] = std::make_unique<EditBufferMasterText>();
-    m_map[EventSources::EditBufferUnisonText] = std::make_unique<EditBufferUnisonText>();
+    m_map[EventSources::EditBufferMasterText] = std::make_unique<EditBufferMasterVolumeText>();
+    m_map[EventSources::EditBufferUnisonText] = std::make_unique<EditBufferMasterTuneText>();
 
-    m_map[EventSources::VGIUnisonText] = std::make_unique<VGIUnisonText>();
-    m_map[EventSources::VGIIUnisonText] = std::make_unique<VGIIUnisonText>();
-    m_map[EventSources::VGIMasterText] = std::make_unique<VGIMasterText>();
-    m_map[EventSources::VGIIMasterText] = std::make_unique<VGIIMasterText>();
+    m_map[EventSources::VGIMasterTuneText] = std::make_unique<VGIMasterTuneText>();
+    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<VGIIMasterTuneText>();
+    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<VGIMasterVolumeText>();
+    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<VGIIMasterVolumeText>();
 
     m_map[EventSources::BooleanTrue] = std::make_unique<BooleanTrue>();
     m_map[EventSources::BooleanFalse] = std::make_unique<BooleanFalse>();
 
     m_map[EventSources::isCurrentVGI] = std::make_unique<IsCurrentVGI>();
     m_map[EventSources::isCurrentVGII] = std::make_unique<IsCurrentVGII>();
+    m_map[EventSources::SplitPointValue] = std::make_unique<SplitPointValueText>();
     m_map[EventSources::SelectVGButtonText] = std::make_unique<SelectVGButtonText>();
     m_map[EventSources::SoundEditHeading] = std::make_unique<SoundEditHeading>();
 
@@ -81,6 +82,7 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();
+    m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

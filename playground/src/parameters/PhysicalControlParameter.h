@@ -45,7 +45,10 @@ class PhysicalControlParameter : public Parameter
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
- private:
+private:
+  void sendParameterMessage() const override;
+
+private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
 
   bool m_changingFromHWUI = false;

@@ -10,6 +10,9 @@ ModuleCaption::ModuleCaption(const Rect &pos)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)));
+
+  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
 }
 
 ModuleCaption::~ModuleCaption()
@@ -18,12 +21,32 @@ ModuleCaption::~ModuleCaption()
 
 void ModuleCaption::onParameterSelected(Parameter *newOne)
 {
+  updateText(newOne);
+}
+
+void ModuleCaption::updateText(Parameter *newOne)
+{
   if(newOne)
   {
     auto group = newOne->getParentGroup();
-    auto label = group->getShortName();
-    setText(label);
+    auto groupName = group->getShortName();
+
+    if(ModuleCaption::enableVoiceGroupSuffix())
+    {
+      auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      auto suffix = std::string{};
+      if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
+        suffix = " " + toString(sel);
+      setText(groupName + suffix);
+    }
+    else
+      setText(groupName);
   }
+}
+
+void ModuleCaption::onSelectionChanged()
+{
+  setDirty();
 }
 
 bool ModuleCaption::redraw(FrameBuffer &fb)

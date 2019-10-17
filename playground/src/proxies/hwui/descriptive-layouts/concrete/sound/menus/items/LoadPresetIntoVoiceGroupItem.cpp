@@ -3,8 +3,8 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
 
-LoadPresetIntoVoiceGroupItem::LoadPresetIntoVoiceGroupItem()
-    : BasicItem("Import Preset")
+LoadPresetIntoVoiceGroupItem::LoadPresetIntoVoiceGroupItem(const Rect& r)
+    : BasicItem("Import Preset", r)
 {
 }
 

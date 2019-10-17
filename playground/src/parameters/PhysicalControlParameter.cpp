@@ -8,13 +8,15 @@
 #include <device-settings/DebugLevel.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/HardwareSourcesGroup.h>
-#include <presets/ParameterGroupSet.h>
+#include <presets/ParameterDualGroupSet.h>
 #include <limits>
 #include <math.h>
 #include "ParameterAlgorithm.h"
 #include <http/UpdateDocumentMaster.h>
 #include <Application.h>
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
+#include <presets/EditBuffer.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
                                                    tDisplayValue def, int coarseDenominator, int fineDenominator)
@@ -141,10 +143,12 @@ void PhysicalControlParameter::onSelected()
 {
   super::onSelected();
 
-  auto grandPa = dynamic_cast<const ParameterGroupSet *>(getParent()->getParent());
-  auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
-  auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
-  mc->setUiSelectedHardwareSource(getID());
+  if(auto grandPa = dynamic_cast<const EditBuffer *>(getParent()->getParent()))
+  {
+    auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
+    auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
+    mc->setUiSelectedHardwareSource(getID());
+  }
 }
 
 void PhysicalControlParameter::onUnselected()
@@ -167,22 +171,21 @@ void PhysicalControlParameter::setUiSelectedModulationRouter(int pos)
 
   if(current != pos)
   {
-    ParameterGroupSet *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
-
-    if(auto oldRouter = grandPa->findParameterByID(current))
-      oldRouter->onUnselected();
-
-    if(auto newRouter = dynamic_cast<ModulationRoutingParameter *>(grandPa->findParameterByID(pos)))
+    if(auto *grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent()))
     {
-      newRouter->getTargetParameter()->onSelected();
-    }
+      if(auto oldRouter = grandPa->findParameterByID(current))
+        oldRouter->onUnselected();
 
-    invalidate();
-
-    if(auto u = std::dynamic_pointer_cast<PanelUnitParameterEditMode>(
-           Application::get().getHWUI()->getPanelUnit().getUsageMode()))
-    {
-      u->bruteForceUpdateLeds();
+      if(auto newRouter = dynamic_cast<ModulationRoutingParameter *>(grandPa->findParameterByID(pos)))
+      {
+        newRouter->getTargetParameter()->onSelected();
+      }
+      invalidate();
+      if(auto u = std::dynamic_pointer_cast<PanelUnitParameterEditMode>(
+             Application::get().getHWUI()->getPanelUnit().getUsageMode()))
+      {
+        u->bruteForceUpdateLeds();
+      }
     }
   }
 }
@@ -191,24 +194,27 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 {
   int id = getUiSelectedModulationRouter();
 
-  ParameterGroupSet *grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
-  auto mappings = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID("MCM"));
-  auto routers = mappings->getModulationRoutingParametersFor(this);
-  setUiSelectedModulationRouter(getIdOfAdvancedParameter(routers, id, inc));
+  if(auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent()))
+  {
+    auto mappings = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID("MCM"));
+    auto routers = mappings->getModulationRoutingParametersFor(this);
+    setUiSelectedModulationRouter(getIdOfAdvancedParameter(routers, id, inc));
+  }
 }
 
 int PhysicalControlParameter::getUiSelectedModulationRouter() const
 {
-  auto grandPa = dynamic_cast<const ParameterGroupSet *>(getParent()->getParent());
-  auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
-  auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
+  if(auto grandPa = dynamic_cast<const EditBuffer *>(getParent()->getParent()))
+  {
+    auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
+    auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
 
-  auto mcm = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID("MCM"));
-
-  if(auto router = mcm->getModulationRoutingParameterFor(this, mc))
-    return router->getID();
-
-  return mcm->getModulationRoutingParametersFor(this).front()->getID();
+    auto mcm = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID("MCM"));
+    if(auto router = mcm->getModulationRoutingParameterFor(this, mc))
+      return router->getID();
+    return mcm->getModulationRoutingParametersFor(this).front()->getID();
+  }
+  nltools::fail("ParamGroupSet is not EditBuffer", __FILE__, __LINE__, __FUNCTION__);
 }
 
 bool PhysicalControlParameter::hasBehavior() const
@@ -228,4 +234,9 @@ void PhysicalControlParameter::undoableStepBehavior(UNDO::Transaction *transacti
 
 void PhysicalControlParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
+}
+
+void PhysicalControlParameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<PhysicalControlParameter>(this);
 }

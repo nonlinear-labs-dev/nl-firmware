@@ -63,6 +63,7 @@ Application::Application(int numArgs, char **argv)
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_presetManager(new PresetManager(m_http->getUpdateDocumentMaster()))
+    , m_hwuiEditBufferSelection(new VoiceGroupSelection())
     , m_lpcProxy(new LPCProxy())
     , m_audioEngineProxy(new AudioEngineProxy)
     , m_hwui(new HWUI())
@@ -255,6 +256,11 @@ UndoScope *Application::getUndoScope()
 DeviceInformation *Application::getDeviceInformation()
 {
   return m_deviceInformation.get();
+}
+
+VoiceGroupSelection *Application::getVoiceGroupSelectionHardwareUI()
+{
+  return m_hwuiEditBufferSelection.get();
 }
 
 bool Application::heartbeat()

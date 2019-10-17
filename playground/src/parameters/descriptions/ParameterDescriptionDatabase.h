@@ -9,7 +9,7 @@ class ParameterDescriptionDatabase
  public:
   static ParameterDescriptionDatabase &get();
 
-  connection load(int paramID, slot<void, const Glib::ustring &>);
+  connection load(int paramID, VoiceGroup vg, slot<void, const Glib::ustring &>);
 
  private:
   ParameterDescriptionDatabase();

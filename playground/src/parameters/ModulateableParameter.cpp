@@ -11,12 +11,17 @@
 #include <libundo/undo/Transaction.h>
 #include <device-settings/DebugLevel.h>
 #include <xml/Writer.h>
-#include <presets/ParameterGroupSet.h>
+#include <presets/ParameterDualGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
+#include <testing/TestRootDocument.h>
+#include <testing/parameter/TestGroupSet.h>
+#include <testing/parameter/TestGroup.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
+#include <parameters/messaging/ParameterMessageFactory.h>
 
 static TestDriver<ModulateableParameter> tests;
 
@@ -68,9 +73,14 @@ uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
   return toSend;
 }
 
+template <typename T> T clamp(T v, T min, T max)
+{
+  return std::max<T>(min, std::min<T>(v, max));
+}
+
 void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount)
 {
-  auto clampedAmount = CLAMP(amount, -1.0, 1.0);
+  auto clampedAmount = clamp<tDisplayValue>(amount, -1.0, 1.0);
 
   if(m_modulationAmount != clampedAmount)
   {
@@ -84,6 +94,11 @@ void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, 
       sendToLpc();
     });
   }
+}
+
+void ModulateableParameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulateableParameter>(this);
 }
 
 MacroControls ModulateableParameter::getModulationSource() const
@@ -115,7 +130,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
     auto swapData = UNDO::createSwapData(src);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
+      if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != MacroControls::NONE)
         {
@@ -334,20 +349,23 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
   if(src != MacroControls::NONE)
   {
     uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
-    auto groupSet = dynamic_cast<const ParameterGroupSet *>(getParentGroup()->getParent());
+    auto editBuffer = dynamic_cast<const EditBuffer *>(getParentGroup()->getParent());
 
-    if(auto srcParam = groupSet->findParameterByID(srcParamID))
+    if(editBuffer)
     {
-      auto modAmount = getModulationAmount();
-      auto srcValue = srcParam->getValue().getRawValue();
-      auto value = getValue().getRawValue();
+      if(auto srcParam = editBuffer->findParameterByID(srcParamID, getVoiceGroup()))
+      {
+        auto modAmount = getModulationAmount();
+        auto srcValue = srcParam->getValue().getRawValue();
+        auto value = getValue().getRawValue();
 
-      if(isBiPolar())
-        modLeft = 0.5 * (value + 1.0) - modAmount * srcValue;
-      else
-        modLeft = value - modAmount * srcValue;
+        if(isBiPolar())
+          modLeft = 0.5 * (value + 1.0) - modAmount * srcValue;
+        else
+          modLeft = value - modAmount * srcValue;
 
-      modRight = modLeft + modAmount;
+        modRight = modLeft + modAmount;
+      }
     }
   }
 
@@ -389,54 +407,9 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
 void ModulateableParameter::registerTests()
 {
   g_test_add_func("/ModulateableParameter/1.4pct-to-112lpc", []() {
-    class Root : public UpdateDocumentMaster
-    {
-     public:
-      tUpdateID onChange(bool force)
-      {
-        return 0;
-      }
-
-      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-      {
-      }
-    };
-
-    Root root;
-
-    class GroupSet : public ParameterGroupSet
-    {
-     public:
-      explicit GroupSet(Root *root)
-          : ParameterGroupSet(root)
-      {
-      }
-
-      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-      {
-      }
-    };
-
-    GroupSet groupSet(&root);
-
-    class Group : public ParameterGroup
-    {
-     public:
-      explicit Group(GroupSet *root)
-          : ParameterGroup(root, "a", "b", "b", "b")
-      {
-      }
-
-      void init() override
-      {
-      }
-
-      void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-      {
-      }
-    };
-
-    Group group(&groupSet);
+    TestRootDocument root;
+    TestGroupSet groupSet(&root);
+    TestGroup group(&groupSet, VoiceGroup::I);
 
     ModulateableParameter peter(&group, 1, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
     peter.m_modulationAmount = 0.014;

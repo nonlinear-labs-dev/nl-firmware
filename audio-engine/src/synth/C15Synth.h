@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Synth.h"
+#include <nltools/messaging/Message.h>
 #include <sigc++/sigc++.h>
 
 namespace nltools
@@ -12,7 +13,7 @@ namespace nltools
   }
 }
 
-class dsp_host;
+class dsp_host_dual;
 
 class C15Synth : public Synth, public sigc::trackable
 {
@@ -35,8 +36,15 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   void changeSelectedValueBy(int i);
-  void onParameterMessage(const nltools::msg::ParameterChangedMessage &msg);
-  void onPresetMessage(const nltools::msg::SetPresetMessage &msg);
+  void onLayerPresetMessage(const nltools::msg::LayerPresetMessage &msg);
+  void onSplitPresetMessage(const nltools::msg::SplitPresetMessage &msg);
+  void onSinglePresetMessage(const nltools::msg::SinglePresetMessage &msg);
 
-  std::unique_ptr<dsp_host> m_dsp;
+  void onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg);
+  void onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg);
+  void onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg);
+  void onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg);
+  void onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg);
+
+  std::unique_ptr<dsp_host_dual> m_dsp;
 };

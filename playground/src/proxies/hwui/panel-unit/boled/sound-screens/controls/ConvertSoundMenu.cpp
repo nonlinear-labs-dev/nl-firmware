@@ -6,31 +6,42 @@
 #include "presets/EditBuffer.h"
 
 ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
-    : ButtonMenu(rect, 2)
-{
+    : ButtonMenu(rect, 2) {
   setup();
 }
 
-void ConvertSoundMenu::convertSoundTo(Type newType)
-{
-  Application::get().getPresetManager()->getEditBuffer()->setType(newType);
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+void ConvertSoundMenu::convertSoundTo(SoundType newType) {
+  auto pm = Application::get().getPresetManager();
+  if (newType != SoundType::Single) {
+    auto scope = pm->getUndoScope().startTransaction("Convert to " + toString(newType));
+    auto transaction = scope->getTransaction();
+    auto currentSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToDual(transaction, newType,
+                                                                                  currentSelection);
+
+    Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+  } else {
+    auto scope = pm->getUndoScope().startTransaction("Convert to Single");
+    auto transaction = scope->getTransaction();
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction);
+
+    Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+  }
 }
 
-void ConvertSoundMenu::setup()
-{
+void ConvertSoundMenu::setup() {
   clear();
 
   auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
 
-  if(type != Type::Single)
-    addButton("Single", std::bind(&ConvertSoundMenu::convertSoundTo, this, Type::Single));
+  if (type != SoundType::Single)
+    addButton("Single", std::bind(&ConvertSoundMenu::convertSoundTo, this, SoundType::Single));
 
-  if(type != Type::Split)
-    addButton("Split", std::bind(&ConvertSoundMenu::convertSoundTo, this, Type::Split));
+  if (type != SoundType::Split)
+    addButton("Split", std::bind(&ConvertSoundMenu::convertSoundTo, this, SoundType::Split));
 
-  if(type != Type::Layer)
-    addButton("Layer", std::bind(&ConvertSoundMenu::convertSoundTo, this, Type::Layer));
+  if (type != SoundType::Layer)
+    addButton("Layer", std::bind(&ConvertSoundMenu::convertSoundTo, this, SoundType::Layer));
 
   sanitizeIndex();
   selectButton(getSelectedButton());

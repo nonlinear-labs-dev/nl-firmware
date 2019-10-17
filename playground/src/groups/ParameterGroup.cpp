@@ -1,17 +1,18 @@
 #include "ParameterGroup.h"
 #include "xml/Writer.h"
 #include "parameters/Parameter.h"
-#include "presets/ParameterGroupSet.h"
+#include "presets/ParameterDualGroupSet.h"
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
 
-ParameterGroup::ParameterGroup(ParameterGroupSet *parent, const char *id, const char *shortName, const char *longName,
-                               const char *webUIName)
+ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, const char *id, const char *shortName,
+                               const char *longName, const char *webUIName, VoiceGroup voiceGroup)
     : UpdateDocumentContributor(parent)
     , m_id(id)
     , m_shortName(shortName)
     , m_longName(longName)
     , m_webUIName(webUIName ?: m_longName)
+    , m_voiceGroup{ voiceGroup }
 {
 }
 
@@ -143,6 +144,11 @@ sigc::connection ParameterGroup::onGroupChanged(const slot<void> &slot)
   return m_signalGroupChanged.connectAndInit(slot);
 }
 
+VoiceGroup ParameterGroup::getVoiceGroup() const
+{
+  return m_voiceGroup;
+}
+
 ParameterGroup::tUpdateID ParameterGroup::onChange(uint64_t flags)
 {
   auto ret = super::onChange(flags);
@@ -255,4 +261,14 @@ bool ParameterGroup::areAllParametersLocked() const
       return false;
 
   return true;
+}
+
+void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other) {
+  for(auto &g : getParameters())
+  {
+    if(auto c = other->findParameterByID(g->getID()))
+    {
+      g->copyFrom(transaction, c);
+    }
+  }
 }

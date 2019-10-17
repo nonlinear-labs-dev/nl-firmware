@@ -6,6 +6,7 @@
 #include <sigc++/sigc++.h>
 #include <cstring>
 #include <nltools/logging/Log.h>
+#include <nltools/enums/EnumTools.h>
 
 namespace nltools
 {
@@ -14,109 +15,19 @@ namespace nltools
     // Types:
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 
-    enum class EndPoint
-    {
-      None,
-      Lpc,
-      Oled,
-      PanelLed,
-      RibbonLed,
-      AudioEngine,
-      Playground,
-      TestEndPoint
-    };
-
-    inline std::string toStringEndPoint(const EndPoint &e)
-    {
-      switch(e)
-      {
-        case EndPoint::None:
-          return "EndPoint::None";
-        case EndPoint::Lpc:
-          return "EndPoint::Lpc";
-        case EndPoint::Oled:
-          return "EndPoint::Oled";
-        case EndPoint::PanelLed:
-          return "EndPoint::PanelLed";
-        case EndPoint::RibbonLed:
-          return "EndPoint::RibbonLed";
-        case EndPoint::AudioEngine:
-          return "EndPoint::AudioEngine";
-        case EndPoint::Playground:
-          return "EndPoint::Playground";
-        case EndPoint::TestEndPoint:
-          return "EndPoint::TestEndPoint";
-      }
-      return "";
-    }
+    ENUM(EndPoint, uint16_t, None, Lpc, Oled, PanelLed, RibbonLed, AudioEngine, Playground, TestEndPoint);
 
     uint getPortFor(EndPoint p);
 
-    enum class MessageType : uint16_t
-    {
-      // deprecated messages for LPC <-> Playground
-      Preset,
-      Morph_A,
-      Morph_B,
-      Parameter,
-      EditControl,
-      MorphPosition,
-      Setting,
-      Notification,
-      Assertion,
-      Request,  //9
+    ENUM(MessageType, uint16_t, Preset, Morph_A, Morph_B, Parameter, EditControl, MorphPosition, Setting, Notification,
+         Assertion, Request,
 
-      // messages to be used from v1.7 on
-      SetRibbonLED,  //10
-      SetPanelLED,   //11
-      SetOLED,       //12
-      RotaryChanged,
-      ButtonChanged,
-      LPC,
-      Ping
-    };
+         SetRibbonLED, SetPanelLED, SetOLED, RotaryChanged, ButtonChanged, LPC, Ping,
 
-    inline std::string toStringMessageType(const MessageType &type)
-    {
-      switch(type)
-      {
-        case MessageType::Preset:
-          return "MessageType::Preset";
-        case MessageType::Morph_A:
-          return "MessageType::Morph_A";
-        case MessageType::Morph_B:
-          return "MessageType::Morph_B";
-        case MessageType::Parameter:
-          return "MessageType::Parameter";
-        case MessageType::EditControl:
-          return "MessageType::EditControl";
-        case MessageType::MorphPosition:
-          return "MessageType::MorphPosition";
-        case MessageType::Setting:
-          return "MessageType::Setting";
-        case MessageType::Notification:
-          return "MessageType::Notification";
-        case MessageType::Assertion:
-          return "MessageType::Assertion";
-        case MessageType::Request:
-          return "MessageType::Request";
-        case MessageType::SetRibbonLED:
-          return "MessageType::SetRibbonLED";
-        case MessageType::SetPanelLED:
-          return "MessageType::SetPanelLED";
-        case MessageType::SetOLED:
-          return "MessageType::SetOLED";
-        case MessageType::RotaryChanged:
-          return "MessageType::RotaryChanged";
-        case MessageType::ButtonChanged:
-          return "MessageType::ButtonChanged";
-        case MessageType::LPC:
-          return "MessageType::LPC";
-        case MessageType::Ping:
-          return "MessageType::Ping";
-      }
-      return "";
-    }
+         SinglePreset, LayerPreset, SplitPreset, UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
+         HWAmountParameter, HWSourceParameter,
+
+         EditBufferContext);
 
     namespace detail
     {

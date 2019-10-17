@@ -1,6 +1,8 @@
 #pragma once
+
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/controls/SubmenuIndicator.h>
 #include "BasicItem.h"
-#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/ScrollMenuOverlay.h"
+#include "proxies/hwui/descriptive-layouts/concrete/menu/menu-overlays/MenuOverlay.h"
 
 class EditorItem : public BasicItem
 {
@@ -8,17 +10,18 @@ class EditorItem : public BasicItem
   bool canEnter() override;
 
   template <class tCaption>
-  explicit EditorItem(tCaption cap)
-      : BasicItem(cap)
+  explicit EditorItem(tCaption cap, const Rect& r)
+      : BasicItem(cap, r)
   {
   }
 
-  Rect getStandardOverlayRect();
-
-  virtual ScrollMenuOverlay* createOverlay() = 0;
-
+  bool redraw(FrameBuffer& fb) override;
+  Rect getDefaultOverlayRect();
+  Rect getFullRightSideOverlayRect();
+  virtual MenuOverlay* createOverlay() = 0;
   void doAction() override;
 
  protected:
   bool drawHighlightBorder(FrameBuffer& fb) override;
+  bool redrawEnterIndication(FrameBuffer& buffer);
 };

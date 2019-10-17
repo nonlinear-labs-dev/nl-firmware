@@ -1,3 +1,4 @@
+#include <nltools/Assert.h>
 #include "xml/Attributes.h"
 #include "xml/Writer.h"
 #include "xml/Reader.h"
@@ -23,6 +24,7 @@ Glib::ustring ParameterGroupSerializer::getTagName()
 
 void ParameterGroupSerializer::writeTagContent(Writer &writer) const
 {
+  nltools_assertOnDevPC(m_paramGroup != nullptr);
   for(auto param : m_paramGroup->getParameters())
   {
     ParameterSerializer paramSerializer(param);

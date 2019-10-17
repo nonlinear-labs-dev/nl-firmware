@@ -12,8 +12,8 @@
 #include <parameters/scale-converters/Parabolic50MsScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 
-FlangerGroup::FlangerGroup(ParameterGroupSet *parent)
-    : ParameterGroup(parent, "Flang", "Flanger", "Flanger", "Flanger")
+FlangerGroup::FlangerGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "Flang", "Flanger", "Flanger", "Flanger", voicegroup)
 {
 }
 

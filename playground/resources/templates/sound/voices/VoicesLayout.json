@@ -1,0 +1,94 @@
+{
+  "layouts": {
+    "Sound-Voices-Layout": {
+      "Selector": {
+        "UIFocus": "Sound",
+        "UIMode": "Select",
+        "UIDetail": "Voices"
+      },
+      "Controls": {
+        "Header": {
+          "Class": "InvertedLabel",
+          "Position": "0, 0",
+          "Events": "EditBufferTypeText => Text[Text]"
+        },
+        "ButtonA": {
+          "Class": "Button",
+          "Position": "BUTTON_A",
+          "Events": "SelectVGButtonText => Text[Text]"
+        },
+        "ButtonB": {
+          "Class": "Button",
+          "Position": "BUTTON_B",
+          "Init": {
+            "Text[Text]": "Mono .."
+          }
+        },
+        "ButtonC": {
+          "Class": "Button",
+          "Position": "BUTTON_C",
+          "Init": {
+            "Text[Text]": "Unison .."
+          }
+        },
+        "ButtonD": {
+          "Class": "Button",
+          "Position": "BUTTON_D"
+        },
+        "Mono": {
+          "Class": "Label",
+          "Position": "66, 0",
+          "Init": {
+            "Text[Text]": "Mono"
+          },
+          "Events": "MonoEnabledText => Text[Text]"
+        },
+        "Mono-Group": {
+          "Class": "MonoGroupControl",
+          "Position": "10, 15"
+        },
+        "Voices": {
+          "Class": "ParameterPair",
+          "Position": "127, 2",
+          "Init": {
+            "Value[Text]": "1",
+            "Label[Text]": "Voices"
+          }
+        },
+        "Unison-Group": {
+          "Class": "Group-Control-Border",
+          "Position": "133, 15"
+        },
+        "Detune": {
+          "Class": "ParameterPair",
+          "Position": "132, 16",
+          "Init": {
+            "Value[Text]": "2.88%",
+            "Label[Text]": "Detune"
+          }
+        },
+        "Phase": {
+          "Class": "ParameterPair",
+          "Position": "132, 26",
+          "Init": {
+            "Value[Text]": "No",
+            "Label[Text]": "Phase"
+          }
+        },
+        "Pan": {
+          "Class": "ParameterPair",
+          "Position": "132, 36",
+          "Init": {
+            "Value[Text]": "-50%",
+            "Label[Text]": "Pan"
+          }
+        }
+      },
+      "EventSinks": {
+        "BUTTON_A": "ToggleVoiceGroup",
+        "BUTTON_B": "OpenMonoParameterScreen",
+        "BUTTON_C": "OpenUnisonParameterScreen"
+      }
+    }
+  }
+}

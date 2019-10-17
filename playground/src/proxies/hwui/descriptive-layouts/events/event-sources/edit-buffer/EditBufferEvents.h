@@ -1,4 +1,5 @@
 #pragma once
+
 #include "EditBufferEvent.h"
 
 namespace DescriptiveLayouts
@@ -11,16 +12,14 @@ namespace DescriptiveLayouts
       const auto type = eb->getType();
       const auto typeStr = toString(type);
 
-      if(type == Type::Single)
+      if(type == SoundType::Single)
       {
         setValue({ typeStr, 0 });
       }
       else
       {
-        const auto suffix = std::string(eb->isSelected(EditBuffer::VoiceGroup::I) ? "  I" : "  II");
-        const auto suffixLen = suffix.size();
-        const auto str = typeStr + suffix;
-        setValue({ str, suffixLen });
+        const auto suffix = " " + toString(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+        setValue({ typeStr + suffix, suffix.size() });
       }
     }
   };
@@ -39,7 +38,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue({ eb->getCurrentVoiceGroupName(), 0 });
+      auto name = eb->getName(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+      setValue({ name, 0 });
     }
   };
 
@@ -48,7 +48,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(eb->isSelected(EditBuffer::VoiceGroup::I));
+      auto val = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      setValue(val == VoiceGroup::I);
     }
   };
 
@@ -57,7 +58,9 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue(eb->isSelected(EditBuffer::VoiceGroup::II));
+      auto val = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+
+      setValue(val == VoiceGroup::II);
     }
   };
 }

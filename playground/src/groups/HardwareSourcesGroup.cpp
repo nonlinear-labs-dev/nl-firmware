@@ -6,8 +6,8 @@
 #include <parameters/PitchbendParameter.h>
 #include <parameters/AftertouchParameter.h>
 
-HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet *parent)
-    : ParameterGroup(parent, "CS", "HW Source", "Hardware Source", "Hardware Source")
+HardwareSourcesGroup::HardwareSourcesGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "CS", "HW Source", "Hardware Source", "Hardware Source", voicegroup)
 {
 }
 

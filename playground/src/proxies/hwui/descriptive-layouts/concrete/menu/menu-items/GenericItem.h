@@ -7,8 +7,8 @@ class GenericItem : public BasicItem
 {
  public:
   template <class T, class tCB>
-  GenericItem(const T& caption, tCB cb)
-      : BasicItem(caption)
+  GenericItem(const T& caption, const Rect& r, tCB cb)
+      : BasicItem(caption, r)
       , m_cb{ cb }
   {
   }

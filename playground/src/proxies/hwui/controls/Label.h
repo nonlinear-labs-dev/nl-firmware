@@ -28,6 +28,12 @@ class Label : public Control
     {
     }
 
+    StringAndSuffix(const char c, size_t suffix = 0)
+        : text(std::to_string(c))
+        , suffix(suffix)
+    {
+    }
+
     bool operator!=(const StringAndSuffix &other) const
     {
 

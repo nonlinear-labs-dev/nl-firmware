@@ -38,7 +38,7 @@ class PresetParameterGroup
   // algorithm
   void writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other) const;
 
- private:
+ protected:
   std::unordered_map<int, ParameterPtr> m_parameters;
 
   friend class PresetParameterGroupSerializer;

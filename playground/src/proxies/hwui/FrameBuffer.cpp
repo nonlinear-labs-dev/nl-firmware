@@ -1,20 +1,8 @@
-#include <device-settings/DebugLevel.h>
-#include <fcntl.h>
 #include <proxies/hwui/controls/Point.h>
 #include <proxies/hwui/FrameBuffer.h>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
 #include <string.h>
-#include <iostream>
-#include <Application.h>
-#include <Options.h>
-#include <proxies/hwui/HWUI.h>
-#include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/panel-unit/RotaryEncoder.h>
-#include <tools/PerformanceTimer.h>
 #include <cmath>
-#include <complex>
-#include <complex.h>
 
 #include <nltools/messaging/Message.h>
 

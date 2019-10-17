@@ -2,6 +2,7 @@
 
 #include <proxies/hwui/HWUIEnums.h>
 #include "ConditionBase.h"
+#include "sigc++/connection.h"
 
 namespace HWUIConditions
 {

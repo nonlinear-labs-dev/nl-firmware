@@ -10,6 +10,7 @@
 #include "proxies/hwui/descriptive-layouts/events/GlobalEventSourceBroker.h"
 #include "Selector.h"
 #include "LayoutClass.h"
+#include "device-settings/DebugLevel.h"
 
 namespace DescriptiveLayouts
 {

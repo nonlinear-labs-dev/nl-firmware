@@ -1,44 +1,45 @@
 #pragma once
 
-#include "ParameterGroupSet.h"
+#include "ParameterDualGroupSet.h"
 #include "presets/recall/RecallParameterGroups.h"
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
+#include <parameters/SplitPointParameter.h>
 
 class Application;
 class Writer;
 class PresetManager;
 
-ENUM(Type, uint8_t, Single, Split, Layer);
-
-class EditBuffer : public ParameterGroupSet
+class EditBuffer : public ParameterDualGroupSet
 {
  private:
-  typedef ParameterGroupSet super;
+  typedef ParameterDualGroupSet super;
 
  public:
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
-  Type getType() const;
-  void setType(Type t);
-
-  Glib::ustring getCurrentVoiceGroupName() const;
+  Glib::ustring getName(VoiceGroup vg) const;
   Glib::ustring getName() const;
   size_t getHash() const;
   const Preset *getOrigin() const;
-  Parameter *getSelected() const;
+  Parameter *getSelected(VoiceGroup voiceGroup = VoiceGroup::Invalid) const;
   bool isZombie() const;
 
   void setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid);
-  void undoableClear(UNDO::Transaction *transaction);
+
+  static void sanitizeVoiceGroup(VoiceGroup &vg);
+
   void undoableSelectParameter(const Glib::ustring &id);
   void undoableSelectParameter(uint16_t id);
+  void undoableSelectParameter(uint16_t id, VoiceGroup vg);
   void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
+
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
-  void undoableLoad(Preset *preset);
+  void undoableLoad(Preset *preset, VoiceGroup target = VoiceGroup::Invalid);
+
   void undoableLoadSelectedPreset();
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
@@ -59,11 +60,14 @@ class EditBuffer : public ParameterGroupSet
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
 
-  void copyFrom(UNDO::Transaction *transaction, const Preset *preset);
+  void copyFrom(UNDO::Transaction *transaction, const Preset *preset) override;
+
+  //void copyFrom(UNDO::Transaction *transaction, const LayerPreset *preset);
+  //void copyFrom(UNDO::Transaction *transaction, const SplitPreset *preset);
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
-  bool hasLocks() const;
+  bool hasLocks(VoiceGroup vg = VoiceGroup::Invalid) const;
   bool anyParameterChanged() const;
   void resetOriginIf(const Preset *p);
 
@@ -74,10 +78,8 @@ class EditBuffer : public ParameterGroupSet
   sigc::connection onPresetLoaded(slot<void> s);
   sigc::connection onLocksChanged(slot<void> s);
   sigc::connection onRecallValuesChanged(slot<void> s);
+  sigc::connection onSoundTypeChanged(slot<void> s);
 
-  void undoableImportReaktorPreset(const Glib::ustring &preset);
-  void undoableImportReaktorPreset(UNDO::Transaction *transaction, const Glib::ustring &preset);
-  Glib::ustring exportReaktorPreset();
   bool isModified() const;
   void sendToLPC();
 
@@ -85,61 +87,61 @@ class EditBuffer : public ParameterGroupSet
   RecallParameterGroups &getRecallParameterSet();
   void initRecallValues(UNDO::Transaction *t);
 
-  enum class VoiceGroup
-  {
-    I,
-    II
-  };
+  SoundType getType() const;
 
-  bool isSelected(VoiceGroup v) const;
-  void toggleVoiceGroup();
-  void loadCurrentVoiceGroup(Preset *pPreset);
+  void undoableConvertToSingle(UNDO::Transaction *transaction);
+  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
 
- private:
-  Parameter *searchForAnyParameterWithLock() const;
+  void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
+
+  const SplitPointParameter *getSplitPoint() const;
+  SplitPointParameter *getSplitPoint();
+
+private:
+  bool anyParameterChanged(VoiceGroup vg) const;
+
+  Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;
 
   UNDO::Scope &getUndoScope() override;
 
-  void setParameter(size_t id, double cpValue);
+  void setParameter(size_t id, double cpValuem, VoiceGroup target = VoiceGroup::Invalid);
 
   void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id);
-  void setModulationSource(MacroControls src);
-  void setModulationAmount(double amount);
-
-  bool undoableImportReaktorParameter(UNDO::Transaction *transaction, std::istringstream &input, Parameter *param);
-  bool readReaktorPresetHeader(std::istringstream &input) const;
+  void setModulationSource(MacroControls src, VoiceGroup vg = VoiceGroup::Invalid);
+  void setModulationAmount(double amount, VoiceGroup vg = VoiceGroup::Invalid);
 
   void doDeferedJobs();
   void checkModified();
-
-  VoiceGroup m_selectedVoiceGroup = VoiceGroup::I;
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   SignalWithCache<void, bool> m_signalModificationState;
   Signal<void> m_signalChange;
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
+  Signal<void> m_signalTypeChanged;
 
-  Parameter *m_selectedParameter = nullptr;
+  Parameter::ID m_selectedParameterId = 0;
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;
+  friend class RecallEditBufferSerializer2;
   friend class EditBufferActions;
   friend class PresetParameterGroups;
 
   Uuid m_lastLoadedPreset;
-  tUpdateID m_updateIdWhenLastLoadedPresetChanged = 0;
 
   Glib::ustring m_name;
-  DelayedJob m_deferedJobs;
+  DelayedJob m_deferredJobs;
 
   bool m_isModified;
-  Type m_type;
+  SoundType m_type;
   size_t m_hashOnStore;
 
-  mutable Preset *m_originCache = nullptr;
+  mutable Preset *m_originCache{ nullptr };
   RecallParameterGroups m_recallSet;
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
+
+  void undoableSetType(UNDO::Transaction *transaction, SoundType type);
 };

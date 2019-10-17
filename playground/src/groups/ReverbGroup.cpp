@@ -4,8 +4,8 @@
 
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 
-ReverbGroup::ReverbGroup(ParameterGroupSet *parent)
-    : ParameterGroup(parent, "Reverb", "Reverb", "Reverb", "Reverb")
+ReverbGroup::ReverbGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "Reverb", "Reverb", "Reverb", "Reverb", voicegroup)
 {
 }
 

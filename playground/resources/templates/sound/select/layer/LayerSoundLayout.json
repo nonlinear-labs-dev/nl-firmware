@@ -27,13 +27,16 @@
         },
         "ButtonB": {
           "Class": "Button",
-          "Position": "BUTTON_B"
+          "Position": "BUTTON_B",
+          "Init": {
+            "Text[Text]": "Params.."
+          }
         },
         "ButtonC": {
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
-            "Text[Text]": "Unison.."
+            "Text[Text]": "Voices.."
           }
         },
         "ButtonD": {
@@ -47,27 +50,25 @@
           "Class": "LayerVoiceGroupI",
           "Position": "45, 16",
           "Init": {
-            "VoiceGroupIdentifier[Text]": "I",
-            "Unison[Text]": "+12.00 st",
-            "Master[Text]": "-3.5 dB"
+            "VoiceGroupIdentifier[Text]": "I"
           },
-          "Events": "isCurrentVGI => ANY[Highlight]"
+          "Events": "isCurrentVGI => ANY[Highlight], VGIMasterTuneText => Unison[Text], VGIMasterVolumeText => Master[Text]"
         },
         "Lower": {
           "Class": "LayerVoiceGroupII",
           "Position": "45, 32",
           "Init": {
             "VoiceGroupIdentifier[Text]": "II",
-            "Unison[Text]": "+12.00 st",
-            "Master[Text]": "-3.5 dB"
+            "Unison[Text]": "",
+            "Master[Text]": ""
           },
-          "Events": "isCurrentVGII => ANY[Highlight]"
+          "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text]"
         }
       },
       "EventSinks": {
-        "BUTTON_A": "SwitchToButtonADetail",
-        "BUTTON_C": "OpenUnisonParameter",
-        "BUTTON_D": "OpenMasterParameter"
+        "BUTTON_A": "ToggleVoiceGroup",
+        "BUTTON_B": "OpenParamsScreen",
+        "BUTTON_C": "SwitchToVoicesDetail"
       }
     }
   }

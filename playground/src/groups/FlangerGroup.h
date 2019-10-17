@@ -5,7 +5,7 @@
 class FlangerGroup : public ParameterGroup
 {
  public:
-  FlangerGroup(ParameterGroupSet *parent);
+  FlangerGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
   virtual ~FlangerGroup();
 
   void init();

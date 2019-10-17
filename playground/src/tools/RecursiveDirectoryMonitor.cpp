@@ -1,4 +1,6 @@
 #include <utility>
+#include <nltools/logging/Log.h>
+#include <nltools/ExceptionTools.h>
 
 #include "RecursiveDirectoryMonitor.h"
 
@@ -39,16 +41,17 @@ namespace FileTools
 
   void RecursiveDirectoryMonitor::recurseDirectory(const tFile& start, tFileCallBack cb)
   {
-      if(start->query_exists()) {
-          auto fileIt = start->enumerate_children();
-          while(auto fileInfo = fileIt->next_file())
-          {
-              auto file = getFileFromFileInfo(start, fileInfo);
-              cb(file);
-              if(fileInfo->get_file_type() == Gio::FILE_TYPE_DIRECTORY)
-                  recurseDirectory(file, cb);
-          }
+    if(start->query_exists())
+    {
+      auto fileIt = start->enumerate_children();
+      while(auto fileInfo = fileIt->next_file())
+      {
+        auto file = getFileFromFileInfo(start, fileInfo);
+        cb(file);
+        if(fileInfo->get_file_type() == Gio::FILE_TYPE_DIRECTORY)
+          recurseDirectory(file, cb);
       }
+    }
   }
 
   RecursiveDirectoryMonitor::tFileList RecursiveDirectoryMonitor::getAllDirectorysInDirectory(const tFile& folder)

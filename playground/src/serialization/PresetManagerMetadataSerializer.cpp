@@ -16,6 +16,8 @@ Glib::ustring PresetManagerMetadataSerializer::getTagName()
 
 void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
 {
+  writer.writeTextElement("selected-editbuffer-group", toString(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection()));
+
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
 
   EditBufferSerializer eb(m_pm->getEditBuffer());
@@ -27,6 +29,10 @@ void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
 
 void PresetManagerMetadataSerializer::readTagContent(Reader &reader) const
 {
+  reader.onTextElement("selected-editbuffer-group", [](const auto& text, auto) {
+    Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(to<VoiceGroup>(text));
+  });
+
   reader.onTextElement("selected-bank-uuid",
                        [&](const auto &text, const auto &) { m_pm->selectBank(reader.getTransaction(), text); });
 

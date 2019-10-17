@@ -8,6 +8,7 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNumberLabel.h>
 #include <functional>
+#include "PresetTypeLabel.h"
 
 const float c_numAnimationSteps = 30;
 const float c_animationLength = 1000;  // ms
@@ -17,7 +18,8 @@ PresetListEntry::PresetListEntry(const Rect &pos)
     , m_animationProgress(0)
 {
   m_number = addControl(new PresetNumberLabel(Rect(0, 0, 21, 16)));
-  m_name = addControl(new PresetNameLabel(Rect(21, 0, 105, 16)));
+  m_name = addControl(new PresetNameLabel(Rect(21, 0, 95, 16)));
+  m_type = addControl(new PresetTypeLabel(Rect(105, 0, 21, 16)));
 }
 
 PresetListEntry::~PresetListEntry()
@@ -48,12 +50,14 @@ void PresetListEntry::onPresetChanged(const Preset *preset)
       auto num = bank->getPresetPosition(preset->getUuid());
       m_number->update(num, m_selected, isLoaded);
       m_name->update(preset->getName(), m_selected, isLoaded);
+      m_type->update(preset->getType(), m_selected, isLoaded);
       return;
     }
   }
 
   m_number->update(-1, false, false);
   m_name->update("", false, false);
+  m_type->update(SoundType::Invalid, false, false);
 }
 
 bool PresetListEntry::redraw(FrameBuffer &fb)

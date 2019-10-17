@@ -36,5 +36,6 @@ namespace DescriptiveLayouts
 
     LayoutClass m_prototype;
     std::unique_ptr<EventProvider> m_eventProvider;
+
   };
 }

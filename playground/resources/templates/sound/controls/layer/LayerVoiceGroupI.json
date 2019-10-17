@@ -21,9 +21,24 @@
         "Rect": "168, 2, 2, 13",
         "Tag": "bar-l"
       },
+      "Border-pixel": {
+        "Class": "Bar",
+        "Rect": "167, 1, 1, 1",
+        "Tag": "pixel"
+      },
       "Cover-Right": {
         "Class": "Bar",
         "Rect": "169, 0, 1, 15",
+        "Tag": "Cover"
+      },
+      "Cover-Right2": {
+        "Class": "Bar",
+        "Rect": "168, 1, 1, 1",
+        "Tag": "Cover"
+      },
+      "Cover-Right3": {
+        "Class": "Bar",
+        "Rect": "167, 0, 1, 1",
         "Tag": "Cover"
       },
       "Border": {
@@ -88,6 +103,17 @@
       "styles": {
         "Color": "C43",
         "HighlightColor": "C43"
+      }
+    },
+    "BorderPixel": {
+      "selector": {
+        "PrimitiveClass": "Bar",
+        "ControlClasses": "LayerVoiceGroupI",
+        "Tag": "pixel"
+      },
+      "styles": {
+        "Color": "C128",
+        "HighlightColor": "C255"
       }
     },
     "ParamValue": {

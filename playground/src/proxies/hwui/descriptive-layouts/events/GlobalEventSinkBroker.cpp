@@ -15,6 +15,7 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/DualSpecialParameterScreen.h>
 
 namespace DescriptiveLayouts
 {
@@ -89,9 +90,9 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() {
-      if(eb->getType() != Type::Single)
+      if(eb->getType() != SoundType::Single)
       {
-        eb->toggleVoiceGroup();
+        Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
       }
     });
 
@@ -120,6 +121,7 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::SwitchToButtonBDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonB); });
     registerEvent(EventSinks::SwitchToButtonCDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonC); });
     registerEvent(EventSinks::SwitchToButtonDDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonD); });
+    registerEvent(EventSinks::SwitchToVoicesDetail, [hwui] { hwui->setUiModeDetail(UIDetail::Voices); });
 
     registerEvent(EventSinks::SelectPresetForVoiceGroup, [hwui] {
       hwui->setUiModeDetail(UIDetail::SoundSelectPresetForVoiceGroup);
@@ -233,9 +235,19 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::OpenUnisonParameter, [eb]() { eb->undoableSelectParameter(250); });
+    registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
+      if(eb->getType() == SoundType::Split)
+        eb->undoableSelectParameter(12345);
+      else
+        eb->undoableSelectParameter(12345, VoiceGroup::I);
+    });
 
-    registerEvent(EventSinks::OpenMasterParameter, [eb]() { eb->undoableSelectParameter(247); });
+    registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
+      if(eb->getType() == SoundType::Split && Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection() == VoiceGroup::I)
+        eb->undoableSelectParameter(18700, VoiceGroup::I);
+      else
+        eb->undoableSelectParameter(11247);
+    });
   }
 
   void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)

@@ -2,8 +2,9 @@
 
 #include <playground.h>
 #include <proxies/hwui/FrameBuffer.h>
-#include <tools/EnumTools.h>
+#include <nltools/enums/EnumTools.h>
 #include <boost/serialization/strong_typedef.hpp>
+#include <device-settings/DebugLevel.h>
 #include <proxies/hwui/buttons.h>
 
 namespace DescriptiveLayouts
@@ -32,8 +33,8 @@ namespace DescriptiveLayouts
        ParameterControlPosition, ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton,
        BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
-       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText, VGIUnisonText,
-       VGIIUnisonText, VGIMasterText, VGIIMasterText,
+       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText,
+       VGIMasterTuneText, VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Edit, Fine, Locked, Position, NumItems,
@@ -44,7 +45,7 @@ namespace DescriptiveLayouts
 
        CurrentNumber, CurrentName, CurrentSelected, CurrentLoaded,
 
-       NextNumber, NextName, NextSelected, NextLoaded);
+       NextNumber, NextName, NextSelected, NextLoaded, PreviousType, NextType, CurrentType);
 
   ENUM(EventSinks, uint8_t, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
@@ -53,10 +54,10 @@ namespace DescriptiveLayouts
        IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu, IncModulationCarousel, DecModulationCarousel,
        ToggleVoiceGroup, CommitPresetForButtonMenu, ToggleDirectLoad, IncPresetSelectionPresetList,
        DecPresetSelectionPresetList, IncBankSelectionPresetList, DecBankSelectionPresetList, DoPresetListAction,
-       OpenUnisonParameter, OpenMasterParameter,
+       OpenUnisonParameter, OpenMasterParameter, SwitchToVoicesDetail, OpenMonoParameterScreen, OpenParamsScreen,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
-       Left, Right, Up, Down, IncParam, DecParam);
+       Left, Right, Up, Down, IncParam, DecParam, Commit);
 
   ENUM(EventProviders, uint8_t, None, Global, IndependentPresetSelectionEvents, PresetManagerEvents);
   ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);

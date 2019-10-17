@@ -6,6 +6,8 @@
 #include <groups/MacroControlMappingGroup.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulationRouterParameterLayouts.h>
 #include <cmath>
+#include <proxies/audio-engine/AudioEngineProxy.h>
+#include <Application.h>
 
 ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, uint16_t id, tSrcParameterPtr srcParam,
                                                        tMCParameterPtr tgtParam, const ScaleConverter *scaling)
@@ -17,8 +19,7 @@ ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, ui
 }
 
 ModulationRoutingParameter::~ModulationRoutingParameter()
-{
-}
+= default;
 
 void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                                 tControlPositionValue newValue)
@@ -31,7 +32,7 @@ void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPos
     {
       if(p->getRibbonReturnMode() == RibbonReturnMode::STAY)
       {
-        MacroControlMappingGroup *parent = dynamic_cast<MacroControlMappingGroup *>(getParentGroup());
+        auto *parent = dynamic_cast<MacroControlMappingGroup *>(getParentGroup());
         auto otherRouters = parent->getModulationRoutingParametersFor(getSourceParameter());
 
         for(auto router : otherRouters)
@@ -147,4 +148,9 @@ DFBLayout *ModulationRoutingParameter::createLayout(FocusAndMode focusAndMode) c
 
 void ModulationRoutingParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
+}
+
+void ModulationRoutingParameter::sendParameterMessage() const
+{
+  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulationRoutingParameter>(this);
 }

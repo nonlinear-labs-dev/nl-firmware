@@ -19,17 +19,17 @@ DescriptiveLayouts::SoundConditions::EditBufferCondition::~EditBufferCondition()
 bool DescriptiveLayouts::SoundConditions::IsSingleSound::check() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->getType() == Type::Single;
+  return eb->getType() == SoundType::Single;
 }
 
 bool DescriptiveLayouts::SoundConditions::IsLayerSound::check() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->getType() == Type::Layer;
+  return eb->getType() == SoundType::Layer;
 }
 
 bool DescriptiveLayouts::SoundConditions::IsSplitSound::check() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->getType() == Type::Split;
+  return eb->getType() == SoundType::Split;
 }

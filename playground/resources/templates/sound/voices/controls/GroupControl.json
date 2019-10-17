@@ -1,0 +1,10 @@
+{
+  "controls": {
+    "Group-Control-Border": {
+      "Border": {
+        "Class": "Border",
+        "Rect": "1, 0, 111, 33"
+      }
+    }
+  }
+}

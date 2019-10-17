@@ -12,8 +12,8 @@
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/Parabolic2000MsScaleConverter.h>
 
-EchoGroup::EchoGroup(ParameterGroupSet *parent)
-    : ParameterGroup(parent, "Echo", "Echo", "Echo", "Echo")
+EchoGroup::EchoGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
+    : ParameterGroup(parent, "Echo", "Echo", "Echo", "Echo", voicegroup)
 {
 }
 

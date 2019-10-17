@@ -177,6 +177,25 @@ std::string PresetManagerCursor::getPresetName() const
   return {};
 }
 
+std::string PresetManagerCursor::getPresetType() const
+{
+  if(auto p = getPreset())
+  {
+    switch(p->getType()) {
+      case SoundType::Single:
+        return "";
+      case SoundType::Split:
+        return "||";
+      case SoundType::Layer:
+        return "=";
+      case SoundType::Invalid:
+        return "X";
+    }
+  }
+  g_assert_not_reached();
+}
+
+
 std::string PresetManagerCursor::getBankName() const
 {
   if(auto b = getBank())

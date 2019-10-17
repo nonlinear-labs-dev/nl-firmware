@@ -13,8 +13,8 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   typedef UpdateDocumentContributor super;
 
  public:
-  ParameterGroup(ParameterGroupSet *parent, const char *id, const char *shortName, const char *longName,
-                 const char *webUIName);
+  ParameterGroup(ParameterDualGroupSet *parent, const char *id, const char *shortName, const char *longName,
+                 const char *webUIName, VoiceGroup voiceGroup);
   virtual ~ParameterGroup();
 
   virtual void init() = 0;
@@ -54,6 +54,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   size_t getHash() const;
 
   virtual void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
+  virtual void copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other);
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
@@ -63,6 +64,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   sigc::connection onGroupChanged(const slot<void> &slot);
 
   void check();
+  VoiceGroup getVoiceGroup() const;
 
  protected:
   tParameterPtr appendParameter(Parameter *p);
@@ -74,4 +76,5 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   const char *m_webUIName;
   IntrusiveList<tParameterPtr> m_parameters;
   Signal<void> m_signalGroupChanged;
+  const VoiceGroup m_voiceGroup;
 };

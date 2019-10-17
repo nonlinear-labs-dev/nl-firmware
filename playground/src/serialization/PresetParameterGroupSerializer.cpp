@@ -20,11 +20,12 @@ Glib::ustring PresetParameterGroupSerializer::getTagName()
 
 void PresetParameterGroupSerializer::writeTagContent(Writer &writer) const
 {
-  for(auto &param : m_paramGroup->m_parameters)
-  {
-    PresetParameterSerializer paramSerializer(param.second.get());
-    paramSerializer.write(writer, Attribute("id", param.first));
-  }
+  if(m_paramGroup)
+    for(auto &param : m_paramGroup->m_parameters)
+    {
+      PresetParameterSerializer paramSerializer(param.second.get());
+      paramSerializer.write(writer, Attribute("id", param.first));
+    }
 }
 
 void PresetParameterGroupSerializer::readTagContent(Reader &reader) const

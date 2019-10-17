@@ -14,8 +14,9 @@
 #include <device-settings/DebugLevel.h>
 #include <cmath>
 #include <libundo/undo/Transaction.h>
-#include <presets/ParameterGroupSet.h>
+#include <presets/ParameterDualGroupSet.h>
 #include <presets/PresetParameter.h>
+#include <presets/EditBuffer.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -55,11 +56,14 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
-  ParameterGroupSet *groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
-  auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
-  for(auto router : mappings->getModulationRoutingParametersFor(this))
-  {
-    router->getValue().setIsBoolean(routersAreBoolean);
+  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
+    if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
+      auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
+      for(auto router : mappings->getModulationRoutingParametersFor(this))
+      {
+        router->getValue().setIsBoolean(routersAreBoolean);
+      }
+    }
   }
 
   ensureExclusiveRoutingIfNeeded();
@@ -163,25 +167,28 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
-    ParameterGroupSet *groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent());
-    auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
-    auto routers = mappings->getModulationRoutingParametersFor(this);
-    auto highest = *routers.begin();
+    if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
+      if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
+        auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
+        auto routers = mappings->getModulationRoutingParametersFor(this);
+        auto highest = *routers.begin();
+        for(auto router : routers)
+        {
+          if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
+          {
+            highest = router;
+          }
+        }
 
-    for(auto router : routers)
-    {
-      if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
-      {
-        highest = router;
+        for(auto router : routers)
+        {
+          if(router != highest)
+          {
+            router->onExclusiveRoutingLost();
+          }
+        }
       }
-    }
 
-    for(auto router : routers)
-    {
-      if(router != highest)
-      {
-        router->onExclusiveRoutingLost();
-      }
     }
   }
 }

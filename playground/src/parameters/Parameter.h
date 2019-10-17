@@ -15,7 +15,7 @@ class Application;
 class ParameterLayout;
 class ParameterInfoLayout;
 class Writer;
-class ParameterGroupSet;
+class ParameterDualGroupSet;
 class ParameterGroup;
 class MessageComposer;
 class FrameBuffer;
@@ -31,6 +31,8 @@ class Parameter : public UpdateDocumentContributor,
                   public FlagOwner<ParameterFlags, uint8_t>
 {
  public:
+  using ID = uint16_t;
+
   enum class Step
   {
     STEP_INC,
@@ -51,7 +53,7 @@ class Parameter : public UpdateDocumentContributor,
 
   const ParameterGroup *getParentGroup() const;
   ParameterGroup *getParentGroup();
-  gint32 getID() const;
+  ID getID() const;
 
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
@@ -72,6 +74,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual void loadDefault(UNDO::Transaction *transaction);
   virtual void reset(UNDO::Transaction *transaction, Initiator initiator);
   virtual void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other);
+  virtual void copyFrom(UNDO::Transaction *transaction, const Parameter *other);
   virtual void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const;
 
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
@@ -114,7 +117,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual VisualizationStyle getVisualizationStyle() const;
 
   // CALLBACKS
-  sigc::connection onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall = true);
+  sigc::connection onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall = true) const;
 
   void check();
 
@@ -124,6 +127,8 @@ class Parameter : public UpdateDocumentContributor,
 
   virtual bool isChangedFromLoaded() const;
   virtual bool isValueChangedFromLoaded() const;
+
+  VoiceGroup getVoiceGroup() const;
 
  protected:
   virtual void sendToLpc() const;
@@ -137,15 +142,18 @@ class Parameter : public UpdateDocumentContributor,
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
 
  private:
-  Signal<void, const Parameter *> m_signalParamChanged;
+  mutable Signal<void, const Parameter *> m_signalParamChanged;
 
-  uint16_t m_id;
+  ID m_id;
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
+  VoiceGroup m_voiceGroup;
 
   friend class QuantizedValue;
   friend class EditBufferSnapshotMaker;
 
   tControlPositionValue m_lastSnapshotedValue;
   bool m_isLocked = false;
+
+  virtual void sendParameterMessage() const;
 };

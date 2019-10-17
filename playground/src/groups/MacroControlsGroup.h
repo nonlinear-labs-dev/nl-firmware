@@ -6,7 +6,7 @@
 class MacroControlsGroup : public ParameterGroup
 {
  public:
-  MacroControlsGroup(ParameterGroupSet *parent);
+  MacroControlsGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
   virtual ~MacroControlsGroup();
 
   void init();

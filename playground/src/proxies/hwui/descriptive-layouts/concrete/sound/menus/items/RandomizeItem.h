@@ -6,7 +6,7 @@
 class RandomizeItem : public EditorItem
 {
  public:
-  RandomizeItem();
+  RandomizeItem(const Rect &rect);
   ~RandomizeItem() override;
-  ScrollMenuOverlay* createOverlay() override;
+  MenuOverlay* createOverlay() override;
 };

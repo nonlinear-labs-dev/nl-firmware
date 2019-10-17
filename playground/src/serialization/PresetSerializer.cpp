@@ -24,6 +24,7 @@ void PresetSerializer::writeTagContent(Writer &writer) const
 {
   writer.writeTextElement("name", m_preset->getName());
   writer.writeTextElement("uuid", m_preset->getUuid().raw());
+  writer.writeTextElement("type", toString(m_preset->getType()));
 
   AttributesOwnerSerializer attributesWriter(m_preset);
   attributesWriter.write(writer);
@@ -35,6 +36,9 @@ void PresetSerializer::writeTagContent(Writer &writer) const
 void PresetSerializer::readTagContent(Reader &reader) const
 {
   reader.onTextElement("name", [&](auto &text, auto) { m_preset->setName(reader.getTransaction(), text); });
+
+  reader.onTextElement("type",
+                       [&](auto &text, auto) { m_preset->setType(reader.getTransaction(), to<SoundType>(text)); });
 
   if(!m_ignoreUUIDs)
   {

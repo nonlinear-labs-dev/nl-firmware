@@ -16,6 +16,13 @@
         "UIDetail": "SoundSelectPresetForVoiceGroup"
       },
       "Controls": {
+        "ButtonA": {
+          "Class": "Button",
+          "Position": "BUTTON_A",
+          "Init": {
+            "Text[Text]": "Back"
+          }
+        },
         "PresetListBorder" : {
           "Class": "PresetListBorder",
           "Position": "64, 0"
@@ -30,17 +37,17 @@
         "PreviousPreset": {
           "Class": "Preset",
           "Position": "64, 12",
-          "Events": "PreviousNumber => Number[Text],PreviousName => Name[Text]"
+          "Events": "PreviousNumber => Number[Text],PreviousName => Name[Text], PreviousType => Type[Text]"
         },
         "CurrentPreset": {
           "Class": "Preset",
           "Position": "64, 29",
-          "Events": "CurrentNumber => Number[Text],CurrentName => Name[Text]"
+          "Events": "CurrentNumber => Number[Text],CurrentName => Name[Text], CurrentType => Type[Text]"
         },
         "NextPreset": {
           "Class": "Preset",
           "Position": "64, 46",
-          "Events": "NextNumber => Number[Text],NextName => Name[Text]"
+          "Events": "NextNumber => Number[Text],NextName => Name[Text], NextType => Type[Text]"
         },
         "BankLabel": {
           "Class": "WideInvertedLabel",
@@ -54,7 +61,7 @@
         },
         "RightButton": {
           "Class": "ArrowRight",
-          "Position": "184, 1",
+          "Position": "182, 1",
           "Events": "CanRight => ANY[Highlight]"
         }
       },
@@ -64,7 +71,8 @@
         "BUTTON_C": "Right",
         "BUTTON_INC": "Down",
         "BUTTON_DEC": "Up",
-        "BUTTON_ENTER": "DoPresetListAction"
+        "BUTTON_D": "Commit",
+        "BUTTON_ENTER": "Commit"
       }
     }
   },

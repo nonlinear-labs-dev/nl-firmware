@@ -8,28 +8,42 @@
 
 RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)
+    , m_editBuffer{ editBuffer }
 {
-  for(auto &g : editBuffer->getParameterGroups())
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    for(auto &parameter : g->getParameters())
+    const auto index = static_cast<int>(vg);
+    for(auto &g : m_editBuffer->getParameterGroups(vg))
     {
-      m_parameters[parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
+      for(auto &parameter : g->getParameters())
+      {
+        m_parameters[index][parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
+      }
     }
   }
 }
 
-const RecallParameter *RecallParameterGroups::findParameterByID(int id) const
+RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg)
 {
-  return m_parameters.at(id).get();
+  return m_parameters[static_cast<int>(vg)];
+}
+
+const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
+{
+  return m_parameters[static_cast<int>(vg)].at(id).get();
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
 {
-  for(auto &g : other->getParameterGroups())
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    for(auto &parameter : g->getParameters())
+    const auto index = static_cast<int>(vg);
+    for(auto &g : other->getParameterGroups(vg))
     {
-      m_parameters.at(parameter->getID())->copyFrom(transaction, parameter);
+      for(auto &parameter : g->getParameters())
+      {
+        m_parameters[index].at(parameter->getID())->copyFrom(transaction, parameter);
+      }
     }
   }
 }
@@ -40,7 +54,7 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   if(changed)
   {
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
-      for(auto &parameterpair : m_parameters)
+      for(auto &parameterpair : m_parameters[0])
       {
         auto &parameter = parameterpair.second;
         parameter->writeDocument(writer, knownRevision);

@@ -1,10 +1,9 @@
 #pragma once
+#include <glibmm/ustring.h>
+#include <nltools/StringTools.h>
 
 namespace nltools
 {
-
-  namespace ExceptionTools
-  {
     inline Glib::ustring handle_eptr(std::exception_ptr eptr)
     {
       try
@@ -32,5 +31,10 @@ namespace nltools
       }
       return "";
     }
-  }
+
+    template <typename... tArgs> void throwException(const tArgs &... args)
+    {
+      auto str = nltools::string::concat(args...);
+      throw std::runtime_error(str);
+    }
 }
