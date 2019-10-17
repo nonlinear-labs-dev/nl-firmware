@@ -1,7 +1,7 @@
 #include "AlsaMidiInput.h"
 #include <nltools/logging/Log.h>
 #include "io/HighPriorityTask.h"
-#include <iostream>
+#include <nltools/ExceptionTools.h>
 
 AlsaMidiInput::AlsaMidiInput(const std::string &deviceName, Callback cb)
     : MidiInput(cb)
@@ -99,8 +99,7 @@ void AlsaMidiInput::doBackgroundWork()
       }
       else if(readResult == -19)
       {
-        std::cerr << "Read result is: " << readResult << " => " << snd_strerror(readResult) << std::endl;
-        throw std::runtime_error("Could not read from midi input file descriptor");
+        nltools::throwException("Could not read from midi input file descriptor =>", snd_strerror(readResult));
       }
     }
   }
