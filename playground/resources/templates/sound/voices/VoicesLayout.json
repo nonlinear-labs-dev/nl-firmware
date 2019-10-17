@@ -40,7 +40,8 @@
           "Position": "66, 0",
           "Init": {
             "Text[Text]": "Mono"
-          }
+          },
+          "Events": "MonoEnabledText => Text[Text]"
         },
         "Mono-Group": {
           "Class": "MonoGroupControl",

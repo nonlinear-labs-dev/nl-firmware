@@ -22,6 +22,19 @@ namespace DescriptiveLayouts
     }
   };
 
+  class MonoEnabledText : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      if(auto param = eb->findParameterByID(12345, vg))
+      {
+        setValue({ param->getDisplayString(), 0 });
+      }
+    }
+  };
+
   class SelectVGButtonText : public EditBufferEvent<DisplayString>
   {
    public:

@@ -83,6 +83,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();
 #warning "IMPROVEMENT: maybe add some logic layer to save on events"
+    m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;
