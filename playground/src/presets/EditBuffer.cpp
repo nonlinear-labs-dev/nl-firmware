@@ -201,8 +201,7 @@ void EditBuffer::undoableSelectParameter(uint16_t id)
 {
   if(auto p = findParameterByID(id))
     undoableSelectParameter(p);
-
-  if(auto p = findGlobalParameterByID(id))
+  else if(auto p = findGlobalParameterByID(id))
     undoableSelectParameter(p);
 }
 

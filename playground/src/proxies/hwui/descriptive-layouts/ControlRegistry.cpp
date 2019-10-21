@@ -48,7 +48,7 @@ namespace DescriptiveLayouts
     m_discreteRegistry["LoadVoiceGroupPresetList"]
         = [](const Point& position) { return new LoadVoiceGroupPresetList(position); };
     m_discreteRegistry["MonoGroupControl"]
-        = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 100, 33));};
+        = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 125, 33));};
   }
 
   void ControlRegistry::registerControl(ControlClass&& cp)

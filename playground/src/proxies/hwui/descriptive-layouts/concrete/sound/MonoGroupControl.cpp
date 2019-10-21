@@ -7,6 +7,7 @@
 
 MonoGroupControl::MonoGroupControl(const Rect &r)
     : ControlWithChildren(r)
+    , m_grid{ nullptr }
 {
   m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() { rebuild(); });
 }
@@ -25,15 +26,29 @@ void MonoGroupControl::rebuild()
   auto monoEnableParam = eb->findParameterByID(12345, vg);
   auto monoEnable = monoEnableParam->getDisplayString() == "On";
 
-  //Non enable Parameters
-  auto i = 0;
-  for(auto id : { 12346, 12347, 12348 })
+  auto paramid = std::array<int, 4>{ 12345, 12346, 12347, 12348 };
+
+  const auto width = 62;
+  const auto height = 16;
+
+  auto index = 0;
+
+  for(auto y = 0; y < 2; y++)
   {
-    auto y = i++ * 10;
-    auto param = eb->findParameterByID(id, vg);
-    auto label = addControl(new Label(param->getShortName(), { 0, y, 40, 10 }));
-    auto val = addControl(new SmallerParamValueLabel(param, { 41, y, 50, 10 }));
-    label->setHighlight(monoEnable);
-    val->setHighlight(monoEnable);
+    for(auto x = 0; x < 2; x++)
+    {
+      auto param = eb->findParameterByID(paramid[index++], vg);
+
+      if(paramid[y + x] != 12345)
+      {
+        auto str = param->getShortName() + ": " + param->getDisplayString();
+        m_grid[y][x] = addControl(new Label(str, { (x * width) + (x), y * height + (y), width, height }));
+      }
+      else
+      {
+        auto str = param->getDisplayString();
+        m_grid[y][x] = addControl(new Label(str, { (x * width) + (x), y * height + (y), width, height }));
+      }
+    }
   }
 }

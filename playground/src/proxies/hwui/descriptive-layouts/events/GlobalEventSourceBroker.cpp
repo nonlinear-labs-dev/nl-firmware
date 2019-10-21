@@ -83,6 +83,19 @@ namespace DescriptiveLayouts
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();
     m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
+    m_map[EventSources::MonoEnabled] = std::make_unique<MonoEnabledBool>();
+
+    m_map[EventSources::MonoPrioText] = std::make_unique<ParameterValueCurrentVG<12348>>();
+    m_map[EventSources::MonoLegatoText] = std::make_unique<ParameterValueCurrentVG<12346>>();
+    m_map[EventSources::MonoGlideText] = std::make_unique<ParameterValueCurrentVG<12347>>();
+
+    m_map[EventSources::UnisonVoicesText] = std::make_unique<ParameterValueCurrentVG<249>>();
+    m_map[EventSources::UnisonDetuneText] = std::make_unique<ParameterValueCurrentVG<250>>();
+    m_map[EventSources::UnisonPhaseText] = std::make_unique<ParameterValueCurrentVG<252>>();
+    m_map[EventSources::UnisonPanText] = std::make_unique<ParameterValueCurrentVG<253>>();
+
+    m_map[EventSources::VoicesParameterHeader] = std::make_unique<VoicesParameterHeader>();
+    m_map[EventSources::UnisonEnabled] = std::make_unique<UnisonEnabledBool>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

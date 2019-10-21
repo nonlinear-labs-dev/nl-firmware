@@ -35,6 +35,8 @@ namespace DescriptiveLayouts
        isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
        PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterVolume, EditBufferMasterTune,
        VGIMasterTuneText, VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText,
+       MonoPrioText, MonoLegatoText, MonoGlideText, UnisonVoicesText, UnisonDetuneText, UnisonPhaseText, UnisonPanText,
+       MonoEnabled, VoicesParameterHeader, UnisonEnabled,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Edit, Fine, Locked, Position, NumItems,
