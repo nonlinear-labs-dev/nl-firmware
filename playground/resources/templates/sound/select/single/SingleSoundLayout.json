@@ -46,20 +46,20 @@
           }
         },
         "UnisonLabel": {
-          "Class": "SoundParameterLabel",
-          "Position": "128, 25",
+          "Class": "SingleSoundTop",
+          "Position": "80, 15",
           "Init": {
-            "Text[Text]": "+12.00 st"
+            "Label[Text]": "Volume"
           },
-          "Events": "EditBufferMasterTune => Text[Text]"
+          "Events": "EditBufferMasterTune => Value[Text]"
         },
         "MasterLabel": {
-          "Class": "SoundParameterLabel",
-          "Position": "192, 25",
+          "Class": "SingleSoundBottom",
+          "Position": "80, 30",
           "Init": {
-            "Text[Text]": "-3.5 dB"
+            "Label[Text]": "Tune"
           },
-          "Events": "EditBufferMasterVolume => Text[Text]"
+          "Events": "EditBufferMasterVolume => Value[Text]"
         }
       },
       "EventSinks": {

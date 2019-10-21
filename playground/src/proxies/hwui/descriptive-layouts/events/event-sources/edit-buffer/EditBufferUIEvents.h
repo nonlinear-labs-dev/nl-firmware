@@ -52,7 +52,7 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override
     {
       auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto param = eb->findParameterByID(247, vg))
+      if(auto param = eb->findParameterByID(249, vg))
         setValue(param->getControlPositionValue() > 0);
     }
   };

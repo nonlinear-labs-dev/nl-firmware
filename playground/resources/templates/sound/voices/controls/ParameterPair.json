@@ -87,7 +87,7 @@
         "ControlClasses": "ParameterPairTop"
       },
       "styles": {
-        "Color": "C77",
+        "Color": "C255",
         "HighlightColor": "C255",
         "BackgroundColor": "C179",
         "HighlightBackgroundColor": "C179"
@@ -98,8 +98,8 @@
         "ControlClasses": "ParameterPairBottom"
       },
       "styles": {
-        "Color": "C179",
-        "HighlightColor": "C255",
+        "Color": "C128",
+        "HighlightColor": "C179",
         "BackgroundColor": "C77",
         "HighlightBackgroundColor": "C77"
       }
@@ -120,7 +120,7 @@
         "PrimitiveClasses": "Bar"
       },
       "styles": {
-        "Color": "C179",
+        "Color": "C128",
         "HighlightColor": "C179"
       }
     },
@@ -129,7 +129,7 @@
         "ControlClasses": "ParameterPair"
       },
       "styles": {
-        "Color": "C179",
+        "Color": "C128",
         "HighlightColor": "C179",
         "BackgroundColor": "C77",
         "HighlightBackgroundColor": "C77"
@@ -142,8 +142,8 @@
       },
       "styles": {
         "TextAlign": "Right",
-        "Color": "C179",
-        "HighlightColor": "C255",
+        "Color": "C128",
+        "HighlightColor": "C179",
         "BackgroundColor": "C77",
         "HighlightBackgroundColor": "C77"
       }
@@ -155,8 +155,8 @@
       },
       "styles": {
         "TextAlign": "Center",
-        "Color": "C179",
-        "HighlightColor": "C255",
+        "Color": "C128",
+        "HighlightColor": "C179",
         "BackgroundColor": "C77",
         "HighlightBackgroundColor": "C77"
       }
