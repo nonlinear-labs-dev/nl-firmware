@@ -12,6 +12,8 @@ class RecallParameter : public UpdateDocumentContributor
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
   void copyFrom(UNDO::Transaction* transaction, const Parameter* other);
 
+  int getID() const;
+
   tControlPositionValue getRecallValue() const;
   MacroControls getRecallModSource() const;
   tControlPositionValue getRecallModulationAmount() const;

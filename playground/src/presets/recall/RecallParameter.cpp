@@ -24,6 +24,11 @@ void RecallParameter::copyFrom(UNDO::Transaction *transaction, const Parameter *
   }
 }
 
+int RecallParameter::getID() const
+{
+  return m_id;
+}
+
 void RecallParameter::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   if(getUpdateIDOfLastChange() > knownRevision)

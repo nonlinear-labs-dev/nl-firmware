@@ -21,6 +21,7 @@ public:
 
   tParameterMap& getParameters(VoiceGroup vg = VoiceGroup::I);
   tParameterMap& getGlobalParameters();
+  RecallParameter* findGlobalParameterByID(int id);
 
  private:
   EditBuffer* m_editBuffer;

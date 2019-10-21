@@ -39,6 +39,17 @@ RecallParameterGroups::tParameterMap &RecallParameterGroups::getGlobalParameters
   return m_globalParameters;
 }
 
+RecallParameter *RecallParameterGroups::findGlobalParameterByID(int id)
+{
+  for(auto &p : m_globalParameters)
+  {
+    if(p.second->getID() == id)
+      return p.second.get();
+  }
+
+  return nullptr;
+}
+
 const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
 {
   try
@@ -89,7 +100,6 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
       for(auto &parameterpair : m_polyParameters[0])
       {
-#warning Mängel Abstellen!
         auto &parameter = parameterpair.second;
         parameter->writeDocument(writer, knownRevision);
       }
