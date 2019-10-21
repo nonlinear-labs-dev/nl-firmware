@@ -89,7 +89,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::MonoLegatoText] = std::make_unique<ParameterValueCurrentVG<12346>>();
     m_map[EventSources::MonoGlideText] = std::make_unique<ParameterValueCurrentVG<12347>>();
 
-    m_map[EventSources::UnisonVoicesText] = std::make_unique<ParameterValueCurrentVG<249>>();
+    m_map[EventSources::UnisonVoicesText] = std::make_unique<UnisonVoicesText>();
     m_map[EventSources::UnisonDetuneText] = std::make_unique<ParameterValueCurrentVG<250>>();
     m_map[EventSources::UnisonPhaseText] = std::make_unique<ParameterValueCurrentVG<252>>();
     m_map[EventSources::UnisonPanText] = std::make_unique<ParameterValueCurrentVG<253>>();

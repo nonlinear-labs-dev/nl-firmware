@@ -37,8 +37,8 @@ namespace DescriptiveLayouts
 
   class MonoEnabledBool : public EditBufferEvent<bool>
   {
-  public:
-    void onChange(const EditBuffer* eb) override
+   public:
+    void onChange(const EditBuffer *eb) override
     {
       auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
       if(auto param = eb->findParameterByID(12345, vg))
@@ -48,8 +48,8 @@ namespace DescriptiveLayouts
 
   class UnisonEnabledBool : public EditBufferEvent<bool>
   {
-  public:
-    void onChange(const EditBuffer* eb) override
+   public:
+    void onChange(const EditBuffer *eb) override
     {
       auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
       if(auto param = eb->findParameterByID(247, vg))
@@ -97,34 +97,43 @@ namespace DescriptiveLayouts
 
   class VoicesParameterHeader : public EditBufferEvent<DisplayString>
   {
-  public:
-    void onChange(const EditBuffer* eb) override
+   public:
+    void onChange(const EditBuffer *eb) override
     {
       auto selection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      setValue({"Voices " + toString(selection), 0});
+      setValue({ "Voices " + toString(selection), 0 });
     }
   };
 
-  template<int id, VoiceGroup vg>
-  class ParameterValue : public EditBufferEvent<DisplayString>
+  template <int id, VoiceGroup vg> class ParameterValue : public EditBufferEvent<DisplayString>
   {
-  public:
-    void onChange(const EditBuffer* eb) override
+   public:
+    void onChange(const EditBuffer *eb) override
     {
       if(auto param = eb->findParameterByID(id, vg))
-        setValue({param->getDisplayString(), 0});
+        setValue({ param->getDisplayString(), 0 });
     }
   };
 
-  template<int id>
-  class ParameterValueCurrentVG : public EditBufferEvent<DisplayString>
+  template <int id> class ParameterValueCurrentVG : public EditBufferEvent<DisplayString>
   {
-  public:
-    void onChange(const EditBuffer* eb) override
+   public:
+    void onChange(const EditBuffer *eb) override
     {
       auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
       if(auto param = eb->findParameterByID(id, vg))
-        setValue({param->getDisplayString(), 0});
+        setValue({ param->getDisplayString(), 0 });
+    }
+  };
+
+  class UnisonVoicesText : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *editBuffer)
+    {
+      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      if(auto param = editBuffer->findParameterByID(249, vg))
+        setValue({ param->getControlPositionValue() == 0 ? "Off" : param->getDisplayString(), 0 });
     }
   };
 

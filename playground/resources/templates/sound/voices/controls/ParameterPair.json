@@ -101,7 +101,7 @@
         "Color": "C179",
         "HighlightColor": "C255",
         "BackgroundColor": "C77",
-        "HighlightBackgroundColor": "C128"
+        "HighlightBackgroundColor": "C77"
       }
     },
     "ParameterPair-border": {
@@ -132,7 +132,7 @@
         "Color": "C179",
         "HighlightColor": "C179",
         "BackgroundColor": "C77",
-        "HighlightBackgroundColor": "C128"
+        "HighlightBackgroundColor": "C77"
       }
     },
     "ParameterPair-ValueStyle": {
@@ -145,7 +145,7 @@
         "Color": "C179",
         "HighlightColor": "C255",
         "BackgroundColor": "C77",
-        "HighlightBackgroundColor": "C128"
+        "HighlightBackgroundColor": "C77"
       }
     },
     "ParameterPair-LabelStyle": {
@@ -158,7 +158,7 @@
         "Color": "C179",
         "HighlightColor": "C255",
         "BackgroundColor": "C77",
-        "HighlightBackgroundColor": "C128"
+        "HighlightBackgroundColor": "C77"
       }
     }
   }
