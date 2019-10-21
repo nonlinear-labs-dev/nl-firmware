@@ -6,6 +6,7 @@ class VoiceGroupMasterParameterCarousel : public ParameterCarousel
 {
  public:
   VoiceGroupMasterParameterCarousel(const Rect& r);
+  ~VoiceGroupMasterParameterCarousel() override;
 
  private:
   void rebuild();
@@ -16,4 +17,5 @@ protected:
 
 private:
   sigc::connection m_editbufferConnection;
+  sigc::connection m_selectConnection;
 };

@@ -20,6 +20,6 @@ void DualSpecialParameterModuleCaption::updateText(Parameter *newOne)
     if(dynamic_cast<const SplitPointParameter *>(eb->getSelected()))
       setText({ toString(type) + " I+II", 0 });
     else
-      setText({ toString(type) + " " + toString(vg), 0 });
+      setText({ "VG Master " + toString(vg), 0 });
   }
 }

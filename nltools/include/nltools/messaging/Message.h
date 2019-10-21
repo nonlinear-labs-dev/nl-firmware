@@ -229,6 +229,10 @@ namespace nltools
       struct MonoParameter : Parameter
       {
       };
+
+      struct SplitPoint : Parameter
+      {
+      };
     }
 
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
@@ -241,6 +245,7 @@ namespace nltools
       std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
       std::array<ParameterGroups::UnmodulatebaleParameter, 138> unmodulateables;
       std::array<ParameterGroups::MonoParameter, 4> monos;
+      std::array<ParameterGroups::Parameter, 3> master;
     };
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
@@ -253,6 +258,9 @@ namespace nltools
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
       std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
+      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+      std::array<ParameterGroups::Parameter, 3> master;
+      ParameterGroups::SplitPoint splitpoint;
     };
 
     struct LayerPresetMessage : Message<MessageType::LayerPreset>
@@ -265,6 +273,8 @@ namespace nltools
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
       std::array<ParameterGroups::MonoParameter, 4> monos;
+      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+      std::array<ParameterGroups::Parameter, 3> master;
     };
   }
 }

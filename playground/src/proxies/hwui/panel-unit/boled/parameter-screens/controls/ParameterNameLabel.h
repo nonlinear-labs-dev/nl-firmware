@@ -14,6 +14,8 @@ class ParameterNameLabel : public Label
   ParameterNameLabel(const Rect &pos);
   virtual ~ParameterNameLabel();
 
+  void updateParameter(const Parameter* parameter);
+
  protected:
   virtual void setSuffixFontColor(FrameBuffer &fb) const;
 

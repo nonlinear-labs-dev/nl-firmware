@@ -1,4 +1,4 @@
-#include <parameters/voice-group-master-group/SpecialGlobalParameter.h>
+#include <parameters/voice-group-master-group/SpecialPolyParameter.h>
 #include "MasterGroup.h"
 #include "parameters/Parameter.h"
 #include "parameters/ModulateableParameter.h"

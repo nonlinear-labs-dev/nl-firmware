@@ -25,6 +25,7 @@ class EditBuffer : public ParameterDualGroupSet
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
+  Parameter *getSelected(VoiceGroup vg) const;
   bool isZombie() const;
 
   void setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid);

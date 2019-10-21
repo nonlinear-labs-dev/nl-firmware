@@ -32,6 +32,11 @@ void ParameterNameLabel::onParameterSelected(Parameter *param)
   }
 }
 
+void ParameterNameLabel::updateParameter(const Parameter *parameter)
+{
+  onParameterChanged(parameter);
+}
+
 Glib::ustring removeLastChar(const Glib::ustring &s)
 {
   if(!s.empty())

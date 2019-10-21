@@ -28,7 +28,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{0, VoiceGroup::I}
+    , m_lastSelectedParameter{ 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -373,6 +373,14 @@ Parameter *EditBuffer::getSelected() const
       return p;
 
   return findParameterByID(m_lastSelectedParameter.m_id, m_lastSelectedParameter.m_voiceGroup);
+}
+
+Parameter *EditBuffer::getSelected(VoiceGroup vg) const
+{
+  if(auto p = findParameterByID(m_lastSelectedParameter.m_id, vg))
+    return p;
+
+  return findGlobalParameterByID(m_lastSelectedParameter.m_id);
 }
 
 void EditBuffer::setName(UNDO::Transaction *transaction, const ustring &name)

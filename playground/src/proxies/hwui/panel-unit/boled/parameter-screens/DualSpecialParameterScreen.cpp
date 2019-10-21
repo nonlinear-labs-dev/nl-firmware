@@ -2,6 +2,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualSpecialParameterModuleCaption.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/controls/Button.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterValueLabel.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include "DualSpecialParameterScreen.h"
 
 Parameter *DualSpecialParameterScreen::getCurrentParameter() const
@@ -18,12 +20,20 @@ DualSpecialParameterScreen::DualSpecialParameterScreen()
 {
   m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() {
     auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+    auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
     getCarousel()->setup(selected);
+
     for(auto &i : getControls<DualSpecialParameterModuleCaption>())
     {
       i->updateText(selected);
     }
+
+    if(auto valueLabel = findControlOfType<ParameterValueLabel>())
+      valueLabel->updateParameter(selected);
+
+    if(auto nameLabel = findControlOfType<ParameterNameLabel>())
+      nameLabel->updateParameter(selected);
+
     for(auto &i : getControls<Button>())
     {
       if(i->getPosition().getPosition().getX() == Button::getButtonPos(Buttons::BUTTON_A).getPosition().getX())
