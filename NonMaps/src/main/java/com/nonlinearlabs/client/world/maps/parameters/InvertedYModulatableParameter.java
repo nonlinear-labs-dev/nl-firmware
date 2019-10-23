@@ -8,8 +8,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public abstract class InvertedYModulatableParameter extends ModulatableParameter {
 
-	public InvertedYModulatableParameter(MapsLayout parent, String s) {
-		super(parent, s);
+	public InvertedYModulatableParameter(MapsLayout parent, String s, int parameterID) {
+		super(parent, s, parameterID);
 	}
 
 	@Override

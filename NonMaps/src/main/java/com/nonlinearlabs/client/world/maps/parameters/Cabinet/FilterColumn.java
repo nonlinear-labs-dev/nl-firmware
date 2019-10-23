@@ -13,27 +13,17 @@ class FilterColumn extends ParameterColumn {
 	private class HiCut extends ModulateableKnob {
 
 		private HiCut(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 194;
+			super(parent, 194);
 		}
 	}
 
 	private class LoCut extends Parameter {
 
 		private LoCut(MapsLayout parent) {
-			super(parent);
+			super(parent, 196);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 196;
 		}
 	}
 

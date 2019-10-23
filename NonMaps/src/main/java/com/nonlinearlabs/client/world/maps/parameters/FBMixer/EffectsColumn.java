@@ -6,20 +6,8 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class EffectsColumn extends ParameterColumn {
 
-	private class FX extends ModulatableSlider {
-
-		private FX(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 160;
-		}
-	}
-
 	EffectsColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new FX(this));
+		addChild(new ModulatableSlider(this, 160));
 	}
 }

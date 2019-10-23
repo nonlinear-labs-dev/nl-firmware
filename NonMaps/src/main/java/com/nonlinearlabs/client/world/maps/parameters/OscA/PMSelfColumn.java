@@ -13,51 +13,31 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class PMSelfColumn extends ParameterColumn {
 
-	private class PMSelf extends ModulateableKnob {
-
-		private PMSelf(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 60;
-		}
-	}
-
 	private class EnvA extends ModulationSourceHighPriority {
 
 		private EnvA(MapsLayout parent) {
-			super(parent);
+			super(parent, 62);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 62;
-		}
 	}
 
 	private class ShaperMix extends Parameter {
 
 		private ShaperMix(MapsLayout parent) {
-			super(parent);
+			super(parent, 63);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 63;
-		}
 	}
 
 	PMSelfColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new PMSelf(this));
+		addChild(new ModulateableKnob(this, 60));
 		addChild(new EnvA(this));
 		addChild(new ShaperMix(this));
 	}

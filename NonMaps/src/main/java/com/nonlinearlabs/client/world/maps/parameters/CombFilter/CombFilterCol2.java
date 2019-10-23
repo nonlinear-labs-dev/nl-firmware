@@ -15,13 +15,8 @@ class CombFilterCol2 extends ParameterColumn {
 	private class Pitch extends ModulatableParameter {
 
 		private Pitch(MapsLayout parent) {
-			super(parent);
+			super(parent, 115);
 			addChild(new ModulateableNumericalControl(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 115;
 		}
 
 		@Override
@@ -33,29 +28,19 @@ class CombFilterCol2 extends ParameterColumn {
 	private class EnvC extends ModulationSourceHighPriority {
 
 		private EnvC(MapsLayout parent) {
-			super(parent);
+			super(parent, 118);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 118;
 		}
 	}
 
 	private class Keytracking extends ModulationSourceHighPriority {
 
 		private Keytracking(MapsLayout parent) {
-			super(parent);
+			super(parent, 117);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new KeyTrackParameter(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 117;
 		}
 	}
 
@@ -64,6 +49,5 @@ class CombFilterCol2 extends ParameterColumn {
 		addChild(new Pitch(this));
 		addChild(new EnvC(this));
 		addChild(new Keytracking(this));
-
 	}
 }

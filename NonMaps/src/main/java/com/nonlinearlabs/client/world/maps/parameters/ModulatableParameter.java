@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.ColorTable;
@@ -13,7 +12,7 @@ import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.maps.parameters.value.ModulationAmount;
 
-public abstract class ModulatableParameter extends Parameter {
+public class ModulatableParameter extends Parameter {
 
 	private ModulationAmount amount = new ModulationAmount(new ModulationAmount.ChangeListener() {
 
@@ -37,13 +36,13 @@ public abstract class ModulatableParameter extends Parameter {
 
 	private MacroControls modulationSource = MacroControls.NONE;
 
-	public ModulatableParameter(MapsLayout parent) {
-		super(parent);
+	public ModulatableParameter(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 		addChild(new ParameterName(this, getName()));
 	}
 
-	public ModulatableParameter(MapsLayout parent, String name) {
-		super(parent);
+	public ModulatableParameter(MapsLayout parent, String name, int parameterID) {
+		super(parent, parameterID);
 		addChild(new ParameterName(this, name));
 	}
 
@@ -80,17 +79,16 @@ public abstract class ModulatableParameter extends Parameter {
 
 		return false;
 	}
-	
+
 	@Override
 	protected RGB getRoundingColor() {
-			if(isSelectedParameterMyMacroControl()) {
-				return ColorTable.getMacroControlTargetColor();
-			} 
-			else {
-				return super.getRoundingColor();
-			}
+		if (isSelectedParameterMyMacroControl()) {
+			return ColorTable.getMacroControlTargetColor();
+		} else {
+			return super.getRoundingColor();
+		}
 	}
-	
+
 	public void setModulationSource(MacroControls src, Initiator initiator) {
 		if (modulationSource != src) {
 

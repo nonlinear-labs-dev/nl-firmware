@@ -6,20 +6,8 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class SVFilterColumn extends ParameterColumn {
 
-	private class SVF extends ModulatableSlider {
-
-		private SVF(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 158;
-		}
-	}
-
 	SVFilterColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new SVF(this));
+		addChild(new ModulatableSlider(this, 158));
 	}
 }

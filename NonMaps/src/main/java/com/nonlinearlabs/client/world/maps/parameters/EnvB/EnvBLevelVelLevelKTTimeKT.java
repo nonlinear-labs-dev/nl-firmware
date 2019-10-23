@@ -13,15 +13,10 @@ class EnvBLevelVelLevelKTTimeKT extends ParameterGroupControls {
 	private class LvlVel extends ModulationSourceHighPriority {
 
 		private LvlVel(MapsLayout parent) {
-			super(parent);
+			super(parent, 33);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 33;
 		}
 
 		@Override
@@ -33,15 +28,10 @@ class EnvBLevelVelLevelKTTimeKT extends ParameterGroupControls {
 	private class LvlKT extends ModulationSourceHighPriority {
 
 		private LvlKT(MapsLayout parent) {
-			super(parent);
+			super(parent, 36);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 36;
 		}
 
 		@Override
@@ -53,15 +43,10 @@ class EnvBLevelVelLevelKTTimeKT extends ParameterGroupControls {
 	private class TimeKT extends ModulationSourceHighPriority {
 
 		private TimeKT(MapsLayout parent) {
-			super(parent);
+			super(parent, 37);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 37;
 		}
 
 		@Override

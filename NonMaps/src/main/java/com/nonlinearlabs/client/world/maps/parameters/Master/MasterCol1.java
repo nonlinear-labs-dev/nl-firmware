@@ -13,30 +13,22 @@ class MasterCol1 extends ParameterColumn {
 	private class Volume extends Parameter {
 
 		private Volume(MapsLayout parent) {
-			super(parent);
+			super(parent, 247);
 			addChild(new LabelLarge(this, getName()));
 			addChild(new SliderVertical(this));
 			addChild(new ValueDisplayLarge(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 247;
-		}
 	}
 
 	private class Tune extends Parameter {
 
 		private Tune(MapsLayout parent) {
-			super(parent);
+			super(parent, 248);
 			addChild(new LabelLarge(this, getName()));
 			addChild(new NumericalControlSmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 248;
-		}
 	}
 
 	MasterCol1(MapsLayout parent) {

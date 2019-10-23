@@ -15,12 +15,7 @@ class FlangerCol1 extends DoubleParameterColumn {
 		private class Rate extends ModulateableKnob {
 
 			private Rate(MapsLayout parent) {
-				super(parent);
-			}
-
-			@Override
-			public int getParameterID() {
-				return 214;
+				super(parent, 214);
 			}
 
 			@Override
@@ -40,12 +35,7 @@ class FlangerCol1 extends DoubleParameterColumn {
 		private class EnvF extends UnmodulateableKnob {
 
 			private EnvF(MapsLayout parent) {
-				super(parent);
-			}
-
-			@Override
-			public int getParameterID() {
-				return 307;
+				super(parent, 307);
 			}
 
 			@Override
@@ -57,12 +47,7 @@ class FlangerCol1 extends DoubleParameterColumn {
 		private class Phase extends UnmodulateableKnob {
 
 			private Phase(MapsLayout parent) {
-				super(parent);
-			}
-
-			@Override
-			public int getParameterID() {
-				return 213;
+				super(parent, 213);
 			}
 
 			@Override

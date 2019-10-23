@@ -73,7 +73,7 @@ public abstract class Label extends OverlayControl {
 			if (getLineColor() != null)
 				ctx.setFillStyle(getLineColor().toString());
 
-			ctx.fillText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
+			drawText(ctx, text, left);
 		} else {
 			double x = left.getX();
 			for (int i = 0; i < splits.length; i++) {
@@ -86,6 +86,10 @@ public abstract class Label extends OverlayControl {
 		}
 	}
 
+	protected void drawText(Context2d ctx, String text, Position left) {
+		ctx.fillText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
+	}
+
 	protected String crop(Context2d ctx, Rect pixRect, String text) {
 		return TextCropper.crop(text, ctx, pixRect.getWidth());
 	}
@@ -93,7 +97,7 @@ public abstract class Label extends OverlayControl {
 	public void drawSplit(int idx, Context2d ctx, String split, double x, double y) {
 		RGB color = getColorFontForSplit(idx);
 		ctx.setFillStyle(color.toString());
-		ctx.fillText(split, x, y);
+		drawText(ctx, split, new Position(x, y));
 	}
 
 	protected RGB getColorFontForSplit(int i) {

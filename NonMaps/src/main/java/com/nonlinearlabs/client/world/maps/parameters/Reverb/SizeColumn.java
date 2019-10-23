@@ -10,36 +10,19 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class SizeColumn extends ParameterColumn {
 
-	private class Size extends ModulateableKnob {
-
-		private Size(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 235;
-		}
-	}
-
 	private class Chorus extends Parameter {
 
 		private Chorus(MapsLayout parent) {
-			super(parent);
+			super(parent, 237);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 237;
 		}
 	}
 
 	SizeColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new Size(this));
+		addChild(new ModulateableKnob(this, 235));
 		addChild(new Chorus(this));
 	}
 }

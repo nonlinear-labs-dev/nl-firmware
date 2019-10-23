@@ -43,8 +43,8 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	private LinkedList<ModulatableParameter> targets = new LinkedList<ModulatableParameter>();
 
-	MacroControlParameter(MacrosCol parent, String defName) {
-		super(parent);
+	MacroControlParameter(MacrosCol parent, String defName, int parameterID) {
+		super(parent, parameterID);
 		addChild(new LabelLarge(this, getName()) {
 			@Override
 			protected double getBasicHeight() {
