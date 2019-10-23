@@ -37,7 +37,8 @@ import com.nonlinearlabs.client.world.maps.parameters.SVFilter.SVFilter;
 import com.nonlinearlabs.client.world.maps.parameters.Scale.Scale;
 import com.nonlinearlabs.client.world.maps.parameters.ShapeA.ShapeA;
 import com.nonlinearlabs.client.world.maps.parameters.ShapeB.ShapeB;
-import com.nonlinearlabs.client.world.maps.parameters.Unison.Unison;
+import com.nonlinearlabs.client.world.maps.parameters.VoiceGroup.VoiceGroup;
+import com.nonlinearlabs.client.world.maps.parameters.Voices.Voices;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.CompareDialog;
 
@@ -45,7 +46,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 	private String loadedPreset = "";
 	private PlayControls playControls;
-	private boolean m_isModified = false;
 	private static ParameterEditor theEditor = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
 	private String hash = "";
@@ -146,7 +146,9 @@ public class ParameterEditor extends LayoutResizingVertical {
 				public UnisonAndMaster() {
 					super(SynthParameters.this);
 
-					addChild(new Unison(this));
+					addChild(new Voices(this));
+					addChild(new SpacerLarge(this));
+					addChild(new VoiceGroup(this));
 					addChild(new SpacerLarge(this));
 					addChild(new Master(this));
 					addChild(new SpacerLarge(this));
@@ -290,8 +292,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 			this.loadedPresetsName = loadedPresetsName;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
-
-		m_isModified = node.getAttributes().getNamedItem("is-modified").getNodeValue().equals("1");
 	}
 
 	public void updateHash(Node node) {

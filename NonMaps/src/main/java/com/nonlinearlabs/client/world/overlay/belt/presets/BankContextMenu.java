@@ -16,7 +16,6 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler;
 import java.util.List;
 
-
 public abstract class BankContextMenu extends ContextMenu {
 
 	protected Bank m_bank = null;
@@ -176,7 +175,6 @@ public abstract class BankContextMenu extends ContextMenu {
 	private NonPosition calcualteBankPosition() {
 		List<Bank> banks = NonMaps.get().getNonLinearWorld().getPresetManager().getBanks();
 
-		NonPosition np = new NonPosition();
 		if (!banks.isEmpty()) {
 			Bank rightMost = banks.get(0);
 			for (Bank b : banks) {

@@ -1,4 +1,4 @@
-package com.nonlinearlabs.client.world.maps.parameters.Unison;
+package com.nonlinearlabs.client.world.maps.parameters.Voices;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.ColorTable;
@@ -7,9 +7,9 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
 
-public class Unison extends ParameterGroupVertical {
+public class Voices extends ParameterGroupVertical {
 
-	public Unison(MapsLayout parent) {
+	public Voices(MapsLayout parent) {
 		super(parent);
 		addChild(new LabelModuleHeader(this, getName()) {
 			@Override
@@ -17,7 +17,7 @@ public class Unison extends ParameterGroupVertical {
 				return RGB.lighterGray();
 			}
 		});
-		addChild(new UnisonControls(this));
+		addChild(new VoicesControls(this));
 	}
 
 	@Override
