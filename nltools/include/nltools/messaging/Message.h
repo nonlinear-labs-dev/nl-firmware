@@ -2,6 +2,7 @@
 
 #include "Messaging.h"
 #include <nltools/Types.h>
+#include <nltools/Testing.h>
 #include <cstring>
 
 namespace nltools
@@ -161,20 +162,20 @@ namespace nltools
     namespace detail
     {
       // default (de)serialization for messages, may be specialized for more compilcated types:
-      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage &s)
+      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage& s)
       {
         LPCMessage ret;
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(s->get_data(numBytes));
+        auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
         ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
         return ret;
       }
 
-      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage &msg)
+      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage& msg)
       {
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(msg.message->get_data(numBytes));
-        auto scratch = reinterpret_cast<uint16_t *>(g_malloc(numBytes + 2));
+        auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
+        auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
         scratch[0] = static_cast<uint16_t>(MessageType::LPC);
         std::memcpy(&scratch[1], data, numBytes);
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
@@ -186,7 +187,7 @@ namespace nltools
     {
       struct Parameter
       {
-        int32_t id;
+        uint16_t id;
         double controlPosition = 0;
       };
 
@@ -233,6 +234,47 @@ namespace nltools
       struct SplitPoint : Parameter
       {
       };
+
+#warning "Auge Auge Auge"
+      //autsch.. TODO cleanup
+
+      inline std::ostream& operator<<(std::ostream& o, const Parameter& p)
+      {
+        return o << "ID: " << p.id << " value: " << p.controlPosition;
+      }
+
+      inline bool operator==(const Parameter& lhs, const Parameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition;
+      }
+
+      inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.mc == rhs.mc
+            && lhs.modulationAmount == rhs.modulationAmount;
+      }
+
+      inline bool operator==(const AftertouchParameter& lhs, const AftertouchParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.returnMode == rhs.returnMode;
+      }
+
+      inline bool operator==(const BenderParameter& lhs, const BenderParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.returnMode == rhs.returnMode;
+      }
+
+      inline bool operator==(const PedalParameter& lhs, const PedalParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.pedalMode == rhs.pedalMode
+            && lhs.returnMode == rhs.returnMode;
+      }
+
+      inline bool operator==(const RibbonParameter& lhs, const RibbonParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition
+            && lhs.ribbonTouchBehaviour == rhs.ribbonTouchBehaviour && lhs.ribbonReturnMode == rhs.ribbonReturnMode;
+      }
     }
 
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
@@ -282,5 +324,28 @@ namespace nltools
       std::array<ParameterGroups::Parameter, 2> master;
       std::array<ParameterGroups::Parameter, 12> scale;
     };
+
+    //Helpers
+    template <typename tArray> bool compareArray(const tArray& a1, const tArray& a2)
+    {
+      auto ret = a1.size() == a2.size();
+
+      if(ret)
+      {
+        for(unsigned long i = 0; i < a1.size(); i++)
+        {
+          ret = a1[i] == a2[i];
+          if(!ret)
+            return false;
+        }
+      }
+      return ret;
+    }
+
+    //Message Operators
+    inline bool operator==(const SinglePresetMessage& p1, const SinglePresetMessage& p2)
+    {
+      return compareArray(p1.modulateables, p2.modulateables);
+    }
   }
 }
