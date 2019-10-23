@@ -13,15 +13,10 @@ class DriveExtColumn extends ParameterColumn {
 	private class Fold extends Parameter {
 
 		private Fold(MapsLayout parent) {
-			super(parent);
+			super(parent, 190);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 190;
 		}
 
 		@Override
@@ -33,15 +28,10 @@ class DriveExtColumn extends ParameterColumn {
 	private class Asym extends Parameter {
 
 		private Asym(MapsLayout parent) {
-			super(parent);
+			super(parent, 191);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 191;
 		}
 
 		@Override

@@ -10,36 +10,19 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class EnvACol6 extends ParameterColumn {
 
-	private class Release extends ModulateableKnob {
-
-		private Release(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 10;
-		}
-	}
-
 	private class Velocity extends ModulationSourceHighPriority {
 
 		private Velocity(MapsLayout parent) {
-			super(parent);
+			super(parent, 16);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 16;
 		}
 	}
 
 	EnvACol6(MapsLayout parent) {
 		super(parent);
-		addChild(new Release(this));
+		addChild(new ModulateableKnob(this, 10));
 		addChild(new Velocity(this));
 	}
 }

@@ -6,20 +6,8 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class FlangerCol7 extends ParameterColumn {
 
-	private class Mix extends ModulatableSlider {
-
-		private Mix(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 223;
-		}
-	}
-
 	FlangerCol7(MapsLayout parent) {
 		super(parent);
-		addChild(new Mix(this));
+		addChild(new ModulatableSlider(this, 223));
 	}
 }

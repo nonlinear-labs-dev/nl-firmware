@@ -17,21 +17,17 @@ public class MonoColumn extends ParameterColumn {
     private class Voices extends Parameter {
 
         private Voices(MapsLayout parent) {
-            super(parent);
+            super(parent, 249);
             addChild(new LabelLarge(this, getName()));
             addChild(new NumericalControlSmall(this));
         }
 
-        @Override
-        public int getParameterID() {
-            return 249;
-        }
     }
 
     private class Detune extends ModulatableParameter {
 
         private Detune(MapsLayout parent) {
-            super(parent);
+            super(parent, 250);
             addChild(new ModulationSourceLabel(this));
             addChild(new NumericalControlSmall(this) {
                 @Override
@@ -48,40 +44,28 @@ public class MonoColumn extends ParameterColumn {
             addChild(new Spacer(this, 1, 6));
         }
 
-        @Override
-        public int getParameterID() {
-            return 250;
-        }
     }
 
     private class Phase extends ModulationSourceHighPriority {
 
         private Phase(MapsLayout parent) {
-            super(parent);
+            super(parent, 252);
             addChild(new LabelModulationSource(this, getName()));
             addChild(new SliderHorizontal(this));
             addChild(new ValueDisplaySmall(this));
         }
 
-        @Override
-        public int getParameterID() {
-            return 252;
-        }
     }
 
     private class Pan extends ModulationSourceHighPriority {
 
         private Pan(MapsLayout parent) {
-            super(parent);
+            super(parent, 253);
             addChild(new LabelModulationSource(this, getName()));
             addChild(new SliderHorizontal(this));
             addChild(new ValueDisplaySmall(this));
         }
 
-        @Override
-        public int getParameterID() {
-            return 253;
-        }
     }
 
     public MonoColumn(MapsLayout parent) {

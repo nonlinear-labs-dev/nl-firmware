@@ -1,8 +1,11 @@
 package com.nonlinearlabs.client.world.maps.parameters.VoiceGroup;
 
 import com.nonlinearlabs.client.ColorTable;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
 
@@ -17,6 +20,15 @@ public class VoiceGroup extends ParameterGroupVertical {
 			}
 		});
 		addChild(new VoicesGroupControls(this));
+
+		EditBufferModel.get().soundType.onChange(v -> {
+			if (v == SoundType.Layer)
+				setTitle("Layer");
+			else if (v == SoundType.Split)
+				setTitle("Split");
+
+			return true;
+		});
 	}
 
 	@Override
@@ -72,5 +84,9 @@ public class VoiceGroup extends ParameterGroupVertical {
 	@Override
 	public String getID() {
 		return "Unison";
+	}
+
+	public void setTitle(String title) {
+		getName().setLongName(title);
 	}
 }

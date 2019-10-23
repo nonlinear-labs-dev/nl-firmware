@@ -15,13 +15,8 @@ class PitchColumn extends ParameterColumn {
 	private class Pitch extends ModulatableParameter {
 
 		private Pitch(MapsLayout parent) {
-			super(parent);
+			super(parent, 53);
 			addChild(new ModulateableNumericalControl(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 53;
 		}
 
 		@Override
@@ -33,30 +28,22 @@ class PitchColumn extends ParameterColumn {
 	private class EnvelopeC extends ModulationSourceHighPriority {
 
 		private EnvelopeC(MapsLayout parent) {
-			super(parent);
+			super(parent, 56);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 56;
-		}
 	}
 
 	private class Keytracking extends ModulationSourceHighPriority {
 
 		private Keytracking(MapsLayout parent) {
-			super(parent);
+			super(parent, 55);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new KeyTrackParameter(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 55;
-		}
 	}
 
 	PitchColumn(MapsLayout parent) {

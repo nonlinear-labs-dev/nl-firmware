@@ -9,14 +9,12 @@ import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls
 
 public class ModulationRoutingParameter extends Parameter {
 
-	private int paramID;
 	private int targetParamID;
 	private int sourceParamID;
 
 	public ModulationRoutingParameter(MapsLayout parent, int paramID, final int srcParamID, int targetParamID) {
-		super(parent);
+		super(parent, paramID);
 
-		this.paramID = paramID;
 		this.sourceParamID = srcParamID;
 		this.targetParamID = targetParamID;
 
@@ -91,11 +89,6 @@ public class ModulationRoutingParameter extends Parameter {
 		ParameterEditor eddi = (ParameterEditor) getSelectionRoot();
 		PhysicalControlParameter src = (PhysicalControlParameter) eddi.findSelectable(srcParamID);
 		src.addModulationRoutingParameter(this);
-	}
-
-	@Override
-	public int getParameterID() {
-		return paramID;
 	}
 
 	public int getTargetParameterID() {

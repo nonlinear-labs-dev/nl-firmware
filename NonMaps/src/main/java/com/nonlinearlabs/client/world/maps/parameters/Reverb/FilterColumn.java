@@ -10,37 +10,20 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class FilterColumn extends ParameterColumn {
 
-	private class HiCut extends ModulateableKnob {
-
-		private HiCut(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 238;
-		}
-	}
-
 	private class LoCut extends Parameter {
 
 		private LoCut(MapsLayout parent) {
-			super(parent);
+			super(parent, 240);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 240;
 		}
 
 	}
 
 	FilterColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new HiCut(this));
+		addChild(new ModulateableKnob(this, 238));
 		addChild(new LoCut(this));
 	}
 }

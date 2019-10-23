@@ -66,10 +66,12 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private JavaScriptObject stringizer;
 	private Name name;
 	private boolean isLocked = false;
+	private int parameterID;
 	protected QuantizedClippedValue.IncrementalChanger currentParameterChanger = null;
 
-	public Parameter(MapsLayout parent) {
+	public Parameter(MapsLayout parent, int id) {
 		super(parent);
+		parameterID = id;
 		name = createName();
 		value = createValue(new ValueChangeListener());
 
@@ -108,7 +110,9 @@ public abstract class Parameter extends LayoutResizingVertical {
 		return getValue().isBipolar();
 	}
 
-	public abstract int getParameterID();
+	public final int getParameterID() {
+		return parameterID;
+	}
 
 	static private List<Integer> HardwareSourceIDS() {
 		return Arrays.asList(254, 259, 264, 269, 274, 279, 284, 289);
@@ -130,14 +134,14 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	protected RGB getRoundingColor() {
-		if(isSelected()) {
+		if (isSelected()) {
 			return getColorSliderHighlight();
-		} else if(shouldHightlightChanged()) {
+		} else if (shouldHightlightChanged()) {
 			return RGB.changedBorder();
 		}
 		return null;
 	}
-	
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 
@@ -145,10 +149,9 @@ public abstract class Parameter extends LayoutResizingVertical {
 				null);
 
 		super.draw(ctx, invalidationMask);
-		
+
 		RGB c = getRoundingColor();
-		if(c != null)
-		{
+		if (c != null) {
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, c);
 		}
 	}

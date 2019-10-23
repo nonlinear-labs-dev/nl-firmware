@@ -10,36 +10,20 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class GapColumn extends ParameterColumn {
 
-	private class Gap extends ModulateableKnob {
-
-		private Gap(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 204;
-		}
-	}
-
 	private class Resonance extends Parameter {
 
 		private Resonance(MapsLayout parent) {
-			super(parent);
+			super(parent, 206);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 206;
-		}
 	}
 
 	GapColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new Gap(this));
+		addChild(new ModulateableKnob(this, 204));
 		addChild(new Resonance(this));
 	}
 }

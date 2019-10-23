@@ -10,36 +10,19 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class FeedbackColumn extends ParameterColumn {
 
-	private class Feedback extends ModulateableKnob {
-
-		private Feedback(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 229;
-		}
-	}
-
 	private class CrossFB extends Parameter {
 
 		private CrossFB(MapsLayout parent) {
-			super(parent);
+			super(parent, 231);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 231;
 		}
 	}
 
 	FeedbackColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new Feedback(this));
+		addChild(new ModulateableKnob(this, 229));
 		addChild(new CrossFB(this));
 	}
 }

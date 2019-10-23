@@ -10,22 +10,10 @@ import com.nonlinearlabs.client.world.maps.parameters.SVFilter.LittleKnobSlider;
 
 class CombFilterCol7 extends ParameterColumn {
 
-	private class PM extends ModulateableKnob {
-
-		private PM(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 133;
-		}
-	}
-
 	private class PMAB extends ModulationSourceHighPriority {
 
 		private PMAB(MapsLayout parent) {
-			super(parent);
+			super(parent, 135);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new LittleKnobSlider(this));
 			addChild(new ValueDisplaySmall(this));
@@ -35,16 +23,11 @@ class CombFilterCol7 extends ParameterColumn {
 		public boolean shouldHaveHandleOnly() {
 			return true;
 		}
-
-		@Override
-		public int getParameterID() {
-			return 135;
-		}
 	}
 
 	CombFilterCol7(MapsLayout parent) {
 		super(parent);
-		addChild(new PM(this));
+		addChild(new ModulateableKnob(this, 133));
 		addChild(new PMAB(this));
 	}
 }

@@ -4,8 +4,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public abstract class ModulationSourceHighPriority extends ModulationSource {
 
-	public ModulationSourceHighPriority(MapsLayout parent) {
-		super(parent);
+	public ModulationSourceHighPriority(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

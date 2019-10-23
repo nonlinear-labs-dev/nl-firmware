@@ -12,18 +12,11 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 abstract class MacrosCol extends ParameterColumn {
 
 	private MacroControlParameter param;
-	private int smoothingID;
-	private int macroControlID;
 
 	private class MacroControlParameterSlider extends MacroControlParameter {
 
-		private MacroControlParameterSlider(MacrosCol parent, String defName) {
-			super(parent, defName);
-		}
-
-		@Override
-		public int getParameterID() {
-			return macroControlID;
+		private MacroControlParameterSlider(MacrosCol parent, String defName, int parameterID) {
+			super(parent, defName, parameterID);
 		}
 
 		@Override
@@ -43,16 +36,11 @@ abstract class MacrosCol extends ParameterColumn {
 
 	private class Smoothing extends ModulationSourceHighPriority {
 
-		private Smoothing(MapsLayout parent) {
-			super(parent);
+		private Smoothing(MapsLayout parent, int parameterID) {
+			super(parent, parameterID);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return smoothingID;
 		}
 
 		@Override
@@ -87,13 +75,9 @@ abstract class MacrosCol extends ParameterColumn {
 		super(parent);
 
 		int diffBetweenMacroControlIDAndItsSmoothing = 81;
-
-		this.macroControlID = macroControlID;
-		this.smoothingID = macroControlID + diffBetweenMacroControlIDAndItsSmoothing;
-		this.param = new MacroControlParameterSlider(this, defName);
-
+		this.param = new MacroControlParameterSlider(this, defName, macroControlID);
 		addChild(param);
-		addChild(new Smoothing(this));
+		addChild(new Smoothing(this, macroControlID + diffBetweenMacroControlIDAndItsSmoothing));
 	}
 
 	public MacroControlParameter getParameter() {

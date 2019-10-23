@@ -10,36 +10,20 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class AColumn extends ParameterColumn {
 
-	private class A extends ModulatableSlider {
-
-		private A(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 169;
-		}
-	}
-
 	private class Pan extends Parameter {
 
 		private Pan(MapsLayout parent) {
-			super(parent);
+			super(parent, 171);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 171;
-		}
 	}
 
 	AColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new A(this));
+		addChild(new ModulatableSlider(this, 169));
 		addChild(new Pan(this));
 	}
 }
