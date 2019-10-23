@@ -10,7 +10,7 @@ public class Echo extends ParameterGroupVertical {
 
 	public Echo(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new EchoControls(this));
 	}
 

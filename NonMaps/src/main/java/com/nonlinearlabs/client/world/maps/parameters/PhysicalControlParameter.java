@@ -16,7 +16,7 @@ abstract public class PhysicalControlParameter extends Parameter {
 
 	public PhysicalControlParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelLarge(this, getName()));
+		addChild(new LabelLarge(this));
 		addChild(new SliderHorizontalWithHandle(this));
 		addChild(new ValueDisplaySmall(this));
 	}

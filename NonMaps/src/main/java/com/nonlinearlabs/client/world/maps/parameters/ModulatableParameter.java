@@ -14,44 +14,16 @@ import com.nonlinearlabs.client.world.maps.parameters.value.ModulationAmount;
 
 public class ModulatableParameter extends Parameter {
 
-	private ModulationAmount amount = new ModulationAmount(new ModulationAmount.ChangeListener() {
-
-		@Override
-		public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
-		}
-
-		@Override
-		public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
-			if (initiator == Initiator.EXPLICIT_USER_ACTION)
-				getNonMaps().getServerProxy().setModulationAmount(ModulatableParameter.this);
-
-			notifyListeners();
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
-
-		@Override
-		public void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue) {
-		}
-	});
-
 	private MacroControls modulationSource = MacroControls.NONE;
 
 	public ModulatableParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new ParameterName(this, getName()));
+		addChild(new ParameterName(this));
 	}
 
 	public ModulatableParameter(MapsLayout parent, String name, int parameterID) {
 		super(parent, parameterID);
 		addChild(new ParameterName(this, name));
-	}
-
-	public ModulationAmount getModulationAmount() {
-		return amount;
-	}
-
-	public void setModulationAmount(Initiator initiator, double amount) {
-		this.amount.setRawValue(initiator, amount);
 	}
 
 	public MacroControls getModulationSource() {

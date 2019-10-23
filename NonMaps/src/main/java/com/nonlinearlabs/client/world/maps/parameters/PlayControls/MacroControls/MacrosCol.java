@@ -4,7 +4,7 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModulationSource;
-import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceHighPriority;
+import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontal;
 import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
@@ -34,13 +34,10 @@ abstract class MacrosCol extends ParameterColumn {
 		}
 	}
 
-	private class Smoothing extends ModulationSourceHighPriority {
+	private class Smoothing extends ModulationSourceSlider {
 
 		private Smoothing(MapsLayout parent, int parameterID) {
 			super(parent, parameterID);
-			addChild(new LabelModulationSource(this, getName()));
-			addChild(new SliderHorizontal(this));
-			addChild(new ValueDisplaySmall(this));
 		}
 
 		@Override

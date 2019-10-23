@@ -14,6 +14,7 @@ public class ParameterUpdater extends Updater {
 	}
 
 	public void doUpdate() {
+
 		String shortName = getChildText(root, "short-name");
 		String longName = getChildText(root, "long-name");
 		if (!shortName.isEmpty())
@@ -21,6 +22,8 @@ public class ParameterUpdater extends Updater {
 
 		if (!longName.isEmpty())
 			target.longName.setValue(longName);
+
+		target.locked.setValue(getAttributeValue(root, "locked").equals("1"));
 
 		ValueUpdater vu = new ValueUpdater(root, target.value);
 		vu.doUpdate();

@@ -6,7 +6,7 @@ public class ModulationSourceSlider extends ModulationSourceHighPriority {
 
 	public ModulationSourceSlider(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelModulationSource(this, getName()));
+		addChild(new LabelModulationSource(this));
 		addChild(new SliderHorizontal(this));
 		addChild(new ValueDisplaySmall(this));
 	}

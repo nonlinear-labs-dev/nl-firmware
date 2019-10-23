@@ -28,7 +28,7 @@ class CombFilterCol2 extends ParameterColumn {
 
 		private Keytracking(MapsLayout parent) {
 			super(parent, 117);
-			addChild(new LabelModulationSource(this, getName()));
+			addChild(new LabelModulationSource(this));
 			addChild(new KeyTrackParameter(this));
 		}
 	}

@@ -47,7 +47,7 @@ public class Macros extends ParameterGroupVertical {
 
 	public Macros(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()) {
+		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();

@@ -164,10 +164,6 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
-	public void onParameterChanged(Parameter pl) {
-		setParameter(pl.getParameterID(), pl.getValue().getQuantizedClipped(), pl.isOracle());
-	}
-
 	public void setParameter(int id, double v, boolean oracle) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id), new StaticURI.KeyValue("value", v));

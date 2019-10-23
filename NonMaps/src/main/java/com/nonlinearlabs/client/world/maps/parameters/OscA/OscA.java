@@ -10,7 +10,7 @@ public class OscA extends ParameterGroupVertical {
 
 	public OscA(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new OscAControls(this));
 	}
 

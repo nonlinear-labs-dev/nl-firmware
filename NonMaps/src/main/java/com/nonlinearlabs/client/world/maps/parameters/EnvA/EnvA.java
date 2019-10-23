@@ -10,7 +10,7 @@ public class EnvA extends ParameterGroupVertical {
 
 	public EnvA(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new EnvAControls(this));
 	}
 

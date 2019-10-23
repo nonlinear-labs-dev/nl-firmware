@@ -10,7 +10,7 @@ public class ShapeA extends ParameterGroupVertical {
 
 	public ShapeA(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new ShapeAControls(this));
 	}
 

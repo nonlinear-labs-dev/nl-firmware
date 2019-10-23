@@ -4,7 +4,6 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 
 public class EditBufferUseCases {
 	private static EditBufferUseCases theInstance = new EditBufferUseCases();
@@ -32,15 +31,15 @@ public class EditBufferUseCases {
 		return new IncrementalChanger(p.value, pixels);
 	}
 
-	public void incParameter(int id, Initiator initiator, boolean fine) {
-		incDecParameter(id, initiator, fine, 1);
+	public void incParameter(int id, boolean fine) {
+		incDecParameter(id, fine, 1);
 	}
 
-	public void decParameter(int id, Initiator initiator, boolean fine) {
-		incDecParameter(id, initiator, fine, -1);
+	public void decParameter(int id, boolean fine) {
+		incDecParameter(id, fine, -1);
 	}
 
-	private void incDecParameter(int id, Initiator initiator, boolean fine, int inc) {
+	private void incDecParameter(int id, boolean fine, int inc) {
 		BasicParameterModel p = EditBufferModel.get().findParameter(id);
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
@@ -67,5 +66,20 @@ public class EditBufferUseCases {
 	public void convertToLayerSound() {
 		// TODO: connect ServerProxy
 		EditBufferModel.get().soundType.setValue(SoundType.Layer);
+	}
+
+	public void setToDefault(int parameterID) {
+		BasicParameterModel p = EditBufferModel.get().findParameter(parameterID);
+		double v = p.value.metaData.defaultValue.getValue();
+		setParameterValue(parameterID, v, true);
+	}
+
+	public void toggleBoolean(int parameterID) {
+		BasicParameterModel p = EditBufferModel.get().findParameter(parameterID);
+
+		if (p.value.getQuantizedAndClipped(true) != 0.0)
+			setParameterValue(parameterID, 0, true);
+		else
+			setParameterValue(parameterID, 1, true);
 	}
 }

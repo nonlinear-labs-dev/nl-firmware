@@ -10,7 +10,7 @@ public class GapFilter extends ParameterGroupVertical {
 
 	public GapFilter(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new GapFilterControls(this));
 	}
 

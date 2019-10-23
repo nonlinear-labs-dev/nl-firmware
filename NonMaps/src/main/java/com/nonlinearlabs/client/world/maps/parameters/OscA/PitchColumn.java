@@ -28,7 +28,7 @@ class PitchColumn extends ParameterColumn {
 
 		private Keytracking(MapsLayout parent) {
 			super(parent, 55);
-			addChild(new LabelModulationSource(this, getName()));
+			addChild(new LabelModulationSource(this));
 			addChild(new KeyTrackParameter(this));
 		}
 

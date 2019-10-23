@@ -12,7 +12,7 @@ public class VoiceGroup extends ParameterGroupVertical {
 
 	public VoiceGroup(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()) {
+		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();

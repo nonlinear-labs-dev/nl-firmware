@@ -10,7 +10,7 @@ public class Reverb extends ParameterGroupVertical {
 
 	public Reverb(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new ReverbControls(this));
 	}
 

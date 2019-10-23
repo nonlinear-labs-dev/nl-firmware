@@ -6,6 +6,7 @@ import com.nonlinearlabs.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceHighPriority;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceLabel;
+import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
 import com.nonlinearlabs.client.world.maps.parameters.NumericalControlSmall;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
@@ -19,7 +20,7 @@ public class UnisonColumn extends ParameterColumn {
 
         private Voices(MapsLayout parent) {
             super(parent, 249);
-            addChild(new LabelLarge(this, getName()));
+            addChild(new LabelLarge(this));
             addChild(new NumericalControlSmall(this));
         }
 
@@ -47,33 +48,12 @@ public class UnisonColumn extends ParameterColumn {
 
     }
 
-    private class Phase extends ModulationSourceHighPriority {
-
-        private Phase(MapsLayout parent) {
-            super(parent, 252);
-            addChild(new LabelModulationSource(this, getName()));
-            addChild(new SliderHorizontal(this));
-            addChild(new ValueDisplaySmall(this));
-        }
-
-    }
-
-    private class Pan extends ModulationSourceHighPriority {
-
-        private Pan(MapsLayout parent) {
-            super(parent, 253);
-            addChild(new LabelModulationSource(this, getName()));
-            addChild(new SliderHorizontal(this));
-            addChild(new ValueDisplaySmall(this));
-        }
-    }
-
     public UnisonColumn(MapsLayout parent) {
         super(parent);
         addChild(new Voices(this));
         addChild(new Detune(this));
-        addChild(new Phase(this));
-        addChild(new Pan(this));
+        addChild(new ModulationSourceSlider(this, 252));
+        addChild(new ModulationSourceSlider(this, 253));
     }
 
 }

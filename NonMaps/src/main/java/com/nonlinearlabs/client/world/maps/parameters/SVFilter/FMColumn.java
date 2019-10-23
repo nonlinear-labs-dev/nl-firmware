@@ -13,7 +13,7 @@ class FMColumn extends ParameterColumn {
 
 		private AB(MapsLayout parent) {
 			super(parent, 155);
-			addChild(new LabelModulationSource(this, getName()));
+			addChild(new LabelModulationSource(this));
 			addChild(new LittleKnobSlider(this));
 			addChild(new ValueDisplaySmall(this));
 		}

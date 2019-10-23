@@ -11,7 +11,7 @@ public class OutputMixer extends ParameterGroupVertical {
 
 	public OutputMixer(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()) {
+		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();

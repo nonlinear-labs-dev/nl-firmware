@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
@@ -14,6 +15,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 	public StringDataModelEntity shortName = new StringDataModelEntity();
 	public StringDataModelEntity longName = new StringDataModelEntity();
 	public DoubleDataModelEntity originalValue = new DoubleDataModelEntity();
+	public BooleanDataModelEntity locked = new BooleanDataModelEntity();
 
 	public BasicParameterModel(int id) {
 		this.id = id;
@@ -45,10 +47,12 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		return new ParameterUpdater(c, this);
 	}
 
-	
-
 	public double getIncDecValue(boolean fine, int inc) {
 		return value.getIncDecValue(fine, inc);
+	}
+
+	public boolean isLocked() {
+		return locked.isTrue();
 	}
 
 }

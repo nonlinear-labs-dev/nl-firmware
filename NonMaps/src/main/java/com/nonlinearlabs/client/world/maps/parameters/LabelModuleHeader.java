@@ -60,8 +60,8 @@ public class LabelModuleHeader extends LabelSmall {
 		}
 	}
 
-	public LabelModuleHeader(ParameterGroupVertical parent, Name name) {
-		super(parent, name);
+	public LabelModuleHeader(ParameterGroupVertical parent) {
+		super(parent);
 	}
 
 	@Override

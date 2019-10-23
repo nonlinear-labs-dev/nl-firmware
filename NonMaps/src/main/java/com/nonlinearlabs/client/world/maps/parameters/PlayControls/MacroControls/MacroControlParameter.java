@@ -45,7 +45,7 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	MacroControlParameter(MacrosCol parent, String defName, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelLarge(this, getName()) {
+		addChild(new LabelLarge(this) {
 			@Override
 			protected double getBasicHeight() {
 				return 23;

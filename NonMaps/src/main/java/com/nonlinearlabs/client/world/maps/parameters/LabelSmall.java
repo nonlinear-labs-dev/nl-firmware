@@ -12,12 +12,10 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class LabelSmall extends ZoomReactingControl {
 	private String text = "";
-	private Name name = null;
 	private boolean isVisible = false;
 
-	public LabelSmall(MapsLayout parent, Name name) {
+	public LabelSmall(MapsLayout parent) {
 		super(parent);
-		setName(name);
 	}
 
 	public LabelSmall(MapsLayout parent, String text) {
@@ -44,27 +42,12 @@ public class LabelSmall extends ZoomReactingControl {
 		return text;
 	}
 
-	public void setName(Name name) {
-		this.name = name;
-		this.text = "";
-	}
-
 	protected boolean shouldShowTextForLevelOfDetail(double levelOfDetail) {
 		return levelOfDetail >= getLevelOfDetailForFullVisibility();
 	}
 
 	protected String getDisplayText() {
-		if (name != null) {
-			text = name.getLongName();
-
-			if (text.isEmpty())
-				text = name.getShortName();
-		}
 		return text;
-	}
-
-	protected Name getName() {
-		return name;
 	}
 
 	protected double getFontHeight() {

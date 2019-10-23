@@ -10,7 +10,7 @@ public class Flanger extends ParameterGroupVertical {
 
 	public Flanger(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new FlangerControls(this));
 	}
 

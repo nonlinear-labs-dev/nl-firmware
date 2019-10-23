@@ -8,8 +8,8 @@ import com.nonlinearlabs.client.world.Rect;
 
 public class ParameterName extends LabelLarge {
 
-	public ParameterName(ModulatableParameter p, Name name) {
-		super(p, name);
+	public ParameterName(ModulatableParameter p) {
+		super(p);
 	}
 
 	public ParameterName(ModulatableParameter p, String name) {

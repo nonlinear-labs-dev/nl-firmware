@@ -10,7 +10,7 @@ public class EnvB extends ParameterGroupVertical {
 
 	public EnvB(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new EnvBControls(this));
 	}
 

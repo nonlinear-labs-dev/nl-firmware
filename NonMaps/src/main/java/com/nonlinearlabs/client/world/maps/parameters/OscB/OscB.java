@@ -10,7 +10,7 @@ public class OscB extends ParameterGroupVertical {
 
 	public OscB(MapsLayout parent) {
 		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		addChild(new LabelModuleHeader(this));
 		addChild(new OscBControls(this));
 	}
 
