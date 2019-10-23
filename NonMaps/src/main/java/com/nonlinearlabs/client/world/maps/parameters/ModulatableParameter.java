@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.ColorTable;
@@ -80,17 +79,16 @@ public abstract class ModulatableParameter extends Parameter {
 
 		return false;
 	}
-	
+
 	@Override
 	protected RGB getRoundingColor() {
-			if(isSelectedParameterMyMacroControl()) {
-				return ColorTable.getMacroControlTargetColor();
-			} 
-			else {
-				return super.getRoundingColor();
-			}
+		if (isSelectedParameterMyMacroControl()) {
+			return ColorTable.getMacroControlTargetColor();
+		} else {
+			return super.getRoundingColor();
+		}
 	}
-	
+
 	public void setModulationSource(MacroControls src, Initiator initiator) {
 		if (modulationSource != src) {
 
