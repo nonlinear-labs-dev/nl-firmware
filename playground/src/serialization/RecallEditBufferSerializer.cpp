@@ -41,13 +41,16 @@ namespace Detail
     {
       reader.onTag(RecallParameterSerializer::getTagName(), [&, this](const Attributes &attr) mutable {
         auto id = std::stoi(attr.get("id"));
-        auto& rps = m_editBuffer->getRecallParameterSet();
-        try {
+        auto &rps = m_editBuffer->getRecallParameterSet();
+        try
+        {
           auto param = rps.getParameters(m_voiceGroup).at(id).get();
           auto serializer = new RecallParameterSerializer(param);
           return serializer;
-        } catch(...) {
-          return static_cast<RecallParameterSerializer*>(nullptr);
+        }
+        catch(...)
+        {
+          return static_cast<RecallParameterSerializer *>(nullptr);
         }
       });
     }
@@ -58,14 +61,21 @@ namespace Detail
 
   class GlobalRecallSerializer : public Serializer
   {
-  public:
-    GlobalRecallSerializer(EditBuffer* eb) : Serializer(tagName()), m_editBuffer(eb) {}
+   public:
+    GlobalRecallSerializer(EditBuffer *eb)
+        : Serializer(tagName())
+        , m_editBuffer(eb)
+    {
+    }
 
-    static std::string tagName() {
+    static std::string tagName()
+    {
       return "GlobalRecall";
     }
-  protected:
-    void writeTagContent(Writer &writer) const override {
+
+   protected:
+    void writeTagContent(Writer &writer) const override
+    {
       auto &parameters = m_editBuffer->getRecallParameterSet().getGlobalParameters();
       for(auto &param : parameters)
       {
@@ -74,22 +84,26 @@ namespace Detail
       }
     }
 
-    void readTagContent(Reader &reader) const override {
+    void readTagContent(Reader &reader) const override
+    {
       reader.onTag(RecallParameterSerializer::getTagName(), [&, this](const Attributes &attr) mutable {
         auto id = std::stoi(attr.get("id"));
-        auto& rps = m_editBuffer->getRecallParameterSet();
-        try {
+        auto &rps = m_editBuffer->getRecallParameterSet();
+        try
+        {
           auto param = rps.findGlobalParameterByID(id);
           auto serializer = new RecallParameterSerializer(param);
           return serializer;
-        } catch(...) {
-          return static_cast<RecallParameterSerializer*>(nullptr);
+        }
+        catch(...)
+        {
+          return static_cast<RecallParameterSerializer *>(nullptr);
         }
       });
     }
 
-  private:
-    EditBuffer* m_editBuffer;
+   private:
+    EditBuffer *m_editBuffer;
   };
 }
 
@@ -114,7 +128,6 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
     });
   }
 
-  reader.onTag(Detail::GlobalRecallSerializer::tagName(), [this](const Attributes& attr) mutable {
-    return new   Detail::GlobalRecallSerializer(m_editBuffer);
-  });
+  reader.onTag(Detail::GlobalRecallSerializer::tagName(),
+               [this](const Attributes &attr) mutable { return new Detail::GlobalRecallSerializer(m_editBuffer); });
 }

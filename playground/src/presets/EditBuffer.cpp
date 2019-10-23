@@ -27,6 +27,7 @@
 #include <parameters/PitchbendParameter.h>
 #include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <nltools/Testing.h>
+#include <testing/EditBufferTests.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -662,136 +663,9 @@ SplitPointParameter *EditBuffer::getSplitPoint()
 }
 
 #ifdef _DEVELOPMENT_PC
-void compareUnmodulateable(const Parameter *parameter, const nltools::msg::ParameterGroups::Parameter &presetParameter)
-{
-  nltools::test::_assert(
-      parameter->getID() == presetParameter.id,
-      nltools::string::concat("ID differs! expected: ", parameter->getID(), " got ", presetParameter.id));
-  nltools::test::_assert(!parameter->isValueDifferentFrom(presetParameter.controlPosition),
-                         nltools::string::concat("ID: ", presetParameter.id,
-                                                 " Value differs, expected: ", parameter->getControlPositionValue(),
-                                                 " got: ", presetParameter.controlPosition));
-}
-
-void compareModulateable(const ModulateableParameter *parameter,
-                         const nltools::msg::ParameterGroups::ModulateableParameter &mod)
-{
-  compareUnmodulateable(parameter, mod);
-  nltools::test::_assert(parameter->getModulationAmount() == static_cast<double>(mod.modulationAmount),
-                         "ModAmount differs");
-  nltools::test::_assert(parameter->getModulationSource() == mod.mc, "Mod Source differs");
-}
-
-void compareAfterTouch(const AftertouchParameter *p, const nltools::msg::ParameterGroups::AftertouchParameter &a)
-{
-  compareUnmodulateable(p, a);
-  nltools::test::_assert(a.returnMode == p->getReturnMode(), "Returnmode differs");
-}
-
-void comparePedal(const PedalParameter *pedal, const nltools::msg::ParameterGroups::PedalParameter &p)
-{
-  compareUnmodulateable(pedal, p);
-  nltools::test::_assert(p.returnMode == pedal->getReturnMode(), "Return mode differs");
-  nltools::test::_assert(p.pedalMode == pedal->getPedalMode(), "Pedal mode differs");
-}
-
-void compareRibbon(const RibbonParameter *ribbon, const nltools::msg::ParameterGroups::RibbonParameter &r)
-{
-  compareUnmodulateable(ribbon, r);
-  nltools::test::_assert(r.ribbonTouchBehaviour == ribbon->getRibbonTouchBehaviour(), "Touch behaviour differs");
-  nltools::test::_assert(r.ribbonReturnMode == ribbon->getRibbonReturnMode(), "Ribbon Returnmode differs");
-}
-
-void compareBender(const PitchbendParameter *bender, const nltools::msg::ParameterGroups::BenderParameter &be)
-{
-  compareUnmodulateable(bender, be);
-  nltools::test::_assert(be.returnMode == bender->getReturnMode(), "Returnmode differs");
-}
-
-void compareSingleSound(EditBuffer *eb, const nltools::msg::SinglePresetMessage &s)
-{
-  {
-    const auto ebType = eb->getType();
-    const auto msgType = s.type;
-    const auto same = ebType == SoundType::Single && msgType == nltools::msg::MessageType::SinglePreset;
-    nltools::test::_assert(same, "EditBuffer is not of type Single!");
-  }
-
-  for(auto &u : s.unmodulateables)
-  {
-    auto param = eb->findParameterByID(u.id, VoiceGroup::I);
-    nltools::test::_assert(param != nullptr, "Parameter not found!");
-    compareUnmodulateable(param, u);
-  }
-
-  for(auto &m : s.modulateables)
-  {
-    auto mod = dynamic_cast<ModulateableParameter *>(eb->findParameterByID(m.id, VoiceGroup::I));
-    nltools::test::_assert(mod != nullptr, "Parameter is not Modulateable!");
-    compareModulateable(mod, m);
-  }
-
-  for(auto &b : s.bender)
-  {
-    auto bender = dynamic_cast<PitchbendParameter *>(eb->findParameterByID(b.id, VoiceGroup::I));
-    nltools::test::_assert(bender != nullptr, "Parameter is not Pitchbender!");
-    compareBender(bender, b);
-  }
-
-  for(auto &m : s.monos)
-  {
-    auto mono = dynamic_cast<MonoParameter *>(eb->findParameterByID(m.id, VoiceGroup::I));
-    nltools::test::_assert(mono != nullptr, "Parameter is not MonoParameter!");
-    compareUnmodulateable(mono, m);
-  }
-
-  for(auto &mc : s.macros)
-  {
-    auto macro = dynamic_cast<MacroControlParameter *>(eb->findParameterByID(mc.id, VoiceGroup::I));
-    nltools::test::_assert(macro != nullptr, "Parameter is not MacroControl!");
-    compareUnmodulateable(macro, mc);
-  }
-
-  for(auto &a : s.aftertouch)
-  {
-    auto after = dynamic_cast<AftertouchParameter *>(eb->findParameterByID(a.id, VoiceGroup::I));
-    nltools::test::_assert(after != nullptr, "Parameter not Aftertouch!");
-    compareAfterTouch(after, a);
-  }
-
-  for(auto &r : s.ribbons)
-  {
-    auto ribbon = dynamic_cast<RibbonParameter *>(eb->findParameterByID(r.id, VoiceGroup::I));
-    nltools::test::_assert(ribbon != nullptr, "Parameter not Ribbon!");
-    compareRibbon(ribbon, r);
-  }
-
-  for(auto &p : s.pedals)
-  {
-    auto pedal = dynamic_cast<PedalParameter *>(eb->findParameterByID(p.id));
-    nltools::test::_assert(pedal != nullptr, "Parameter not Pedal!");
-    comparePedal(pedal, p);
-  }
-
-  for(auto &m : s.master)
-  {
-    auto master = eb->findParameterByID(m.id, VoiceGroup::Global);
-    nltools::test::_assert(master != nullptr, "Master not found!");
-    compareUnmodulateable(master, m);
-  }
-}
 
 void EditBuffer::runTests()
 {
-  nltools::Log::warning("Starting Edit Buffer tests");
-  {
-    auto scope = getUndoScope().startTransaction("[TEST] Convert 2 Single");
-    undoableConvertToSingle(scope->getTransaction());
-  }
-
-  const auto originalSinglePresetMessage = AudioEngineProxy::createSingleEditBufferMessage();
-  compareSingleSound(this, originalSinglePresetMessage);
-
-  nltools::Log::warning("Edit Buffer tests ran successfully");
+  EditBufferTests tester(this);
 }
 #endif

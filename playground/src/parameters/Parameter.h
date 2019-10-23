@@ -130,7 +130,7 @@ class Parameter : public UpdateDocumentContributor,
 
   VoiceGroup getVoiceGroup() const;
 
-  bool isValueDifferentFrom(float d) const;
+  bool isValueDifferentFrom(double d) const;
 
 protected:
   virtual void sendToLpc() const;

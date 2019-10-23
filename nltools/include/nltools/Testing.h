@@ -10,6 +10,7 @@ namespace nltools
       if(!test)
       {
         std::cerr << description << std::endl;
+        std::raise(SIGINT);
       }
     }
   }

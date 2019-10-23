@@ -219,7 +219,7 @@ namespace nltools
       struct ModulateableParameter : Parameter
       {
         MacroControls mc = MacroControls::NONE;
-        float modulationAmount = 0;
+        double modulationAmount = 0;
       };
 
       struct UnmodulatebaleParameter : Parameter
@@ -243,9 +243,11 @@ namespace nltools
       std::array<ParameterGroups::BenderParameter, 1> bender;
       std::array<ParameterGroups::MacroParameter, 4> macros;
       std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 138> unmodulateables;
+      std::array<ParameterGroups::UnmodulatebaleParameter, 126> unmodulateables;
       std::array<ParameterGroups::MonoParameter, 4> monos;
-      std::array<ParameterGroups::Parameter, 3> master;
+
+      std::array<ParameterGroups::Parameter, 2> master;
+      std::array<ParameterGroups::Parameter, 12> scale;
     };
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
@@ -256,10 +258,12 @@ namespace nltools
       std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 126>, 2> unmodulateables;
       std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
       std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
-      std::array<ParameterGroups::Parameter, 3> master;
+
+      std::array<ParameterGroups::Parameter, 2> master;
+      std::array<ParameterGroups::Parameter, 12> scale;
       ParameterGroups::SplitPoint splitpoint;
     };
 
@@ -271,10 +275,12 @@ namespace nltools
       std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 126>, 2> unmodulateables;
       std::array<ParameterGroups::MonoParameter, 4> monos;
       std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
-      std::array<ParameterGroups::Parameter, 3> master;
+
+      std::array<ParameterGroups::Parameter, 2> master;
+      std::array<ParameterGroups::Parameter, 12> scale;
     };
   }
 }

@@ -546,8 +546,9 @@ void Parameter::sendParameterMessage() const
   Application::get().getAudioEngineProxy()->createAndSendParameterMessage<Parameter>(this);
 }
 
-bool Parameter::isValueDifferentFrom(float d) const
+bool Parameter::isValueDifferentFrom(double d) const
 {
+
   const auto fac = m_value.getFineDenominator();
   const auto a = static_cast<int>(getControlPositionValue() * fac);
   const auto b = static_cast<int>(d * fac);
