@@ -187,7 +187,7 @@ namespace nltools
       struct Parameter
       {
         int32_t id;
-        float controlPosition = 0;
+        double controlPosition = 0;
       };
 
       struct RibbonParameter : Parameter

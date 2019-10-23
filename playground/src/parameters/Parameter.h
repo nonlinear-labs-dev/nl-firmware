@@ -130,7 +130,9 @@ class Parameter : public UpdateDocumentContributor,
 
   VoiceGroup getVoiceGroup() const;
 
- protected:
+  bool isValueDifferentFrom(float d) const;
+
+protected:
   virtual void sendToLpc() const;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;

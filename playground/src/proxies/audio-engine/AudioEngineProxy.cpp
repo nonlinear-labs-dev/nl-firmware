@@ -27,7 +27,7 @@ void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transac
   });
 }
 
-void AudioEngineProxy::sendSingleEditBuffer()
+nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
 {
   nltools::msg::SinglePresetMessage msg;
 
@@ -105,10 +105,10 @@ void AudioEngineProxy::sendSingleEditBuffer()
     }
   }
 
-  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  return msg;
 }
 
-void AudioEngineProxy::sendSplitEditBuffer()
+nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage()
 {
   nltools::msg::SplitPresetMessage msg;
 
@@ -191,10 +191,10 @@ void AudioEngineProxy::sendSplitEditBuffer()
     }
   }
 
-  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  return msg;
 }
 
-void AudioEngineProxy::sendLayerEditBuffer()
+nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage()
 {
   nltools::msg::LayerPresetMessage msg;
 
@@ -280,7 +280,7 @@ void AudioEngineProxy::sendLayerEditBuffer()
     }
   }
 
-  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  return msg;
 }
 
 void AudioEngineProxy::sendEditBuffer()
@@ -289,13 +289,13 @@ void AudioEngineProxy::sendEditBuffer()
   switch(eb->getType())
   {
     case SoundType::Single:
-      sendSingleEditBuffer();
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSingleEditBufferMessage());
       break;
     case SoundType::Split:
-      sendSplitEditBuffer();
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSplitEditBufferMessage());
       break;
     case SoundType::Layer:
-      sendLayerEditBuffer();
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage());
       break;
     default:
       return;

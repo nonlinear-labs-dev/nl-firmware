@@ -33,9 +33,9 @@ class AudioEngineProxy
   void sendEditBuffer();
   void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
 
-  void sendLayerEditBuffer();
-  void sendSplitEditBuffer();
-  void sendSingleEditBuffer();
+  static nltools::msg::LayerPresetMessage createLayerEditBufferMessage();
+  static nltools::msg::SplitPresetMessage createSplitEditBufferMessage();
+  static nltools::msg::SinglePresetMessage createSingleEditBufferMessage();
 
  private:
   bool m_suppressParamChanges = false;

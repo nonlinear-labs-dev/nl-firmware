@@ -98,6 +98,9 @@ class EditBuffer : public ParameterDualGroupSet
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();
 
+#ifdef _DEVELOPMENT_PC
+  void runTests();
+#endif
  private:
   bool anyParameterChanged(VoiceGroup vg) const;
 

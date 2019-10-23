@@ -192,7 +192,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       else if(line == "dump-editbuffer")
       {
         auto eb = Application::get().getPresetManager()->getEditBuffer();
-        auto wtf = std::shared_ptr<std::ostream>(&std::cout, [](void*){});
+        auto wtf = std::shared_ptr<std::ostream>(&std::cout, [](void *) {});
         auto os = std::make_shared<StandardOutStream>(wtf);
         XmlWriter writer(os);
         eb->writeDocument(writer, 0);
@@ -223,6 +223,12 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         Application::get().getPresetManager()->incAllParamsFine();
       }
+#ifdef _DEVELOPMENT_PC
+      else if(line == "test-eb")
+      {
+        Application::get().getPresetManager()->getEditBuffer()->runTests();
+      }
+#endif
       else if(line.at(0) == '!')
       {
         onButtonPressed(Buttons::BUTTON_SHIFT, true);
