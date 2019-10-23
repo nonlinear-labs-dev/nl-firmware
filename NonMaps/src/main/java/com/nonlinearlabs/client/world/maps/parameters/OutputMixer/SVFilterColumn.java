@@ -10,36 +10,20 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class SVFilterColumn extends ParameterColumn {
 
-	private class SVF extends ModulatableSlider {
-
-		private SVF(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 178;
-		}
-	}
-
 	private class Pan extends Parameter {
 
 		private Pan(MapsLayout parent) {
-			super(parent);
+			super(parent, 180);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 180;
-		}
 	}
 
 	SVFilterColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new SVF(this));
+		addChild(new ModulatableSlider(this, 178));
 		addChild(new Pan(this));
 	}
 }

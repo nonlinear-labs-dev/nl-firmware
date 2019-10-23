@@ -18,12 +18,7 @@ class DriveColumn extends DoubleParameterColumn {
 		private class Drive extends ModulateableKnob {
 
 			private Drive(MapsLayout parent) {
-				super(parent);
-			}
-
-			@Override
-			public int getParameterID() {
-				return 164;
+				super(parent, 164);
 			}
 
 			@Override
@@ -43,15 +38,10 @@ class DriveColumn extends DoubleParameterColumn {
 		private class Fold extends Parameter {
 
 			private Fold(MapsLayout parent) {
-				super(parent);
+				super(parent, 166);
 				addChild(new SmallParameterName(this, getName()));
 				addChild(new KnobSmall(this));
 				addChild(new ValueDisplaySmall(this));
-			}
-
-			@Override
-			public int getParameterID() {
-				return 166;
 			}
 
 			@Override
@@ -63,15 +53,10 @@ class DriveColumn extends DoubleParameterColumn {
 		private class Asym extends Parameter {
 
 			private Asym(MapsLayout parent) {
-				super(parent);
+				super(parent, 167);
 				addChild(new SmallParameterName(this, getName()));
 				addChild(new KnobSmall(this));
 				addChild(new ValueDisplaySmall(this));
-			}
-
-			@Override
-			public int getParameterID() {
-				return 167;
 			}
 
 			@Override

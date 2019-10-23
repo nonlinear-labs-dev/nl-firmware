@@ -12,7 +12,7 @@ import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.maps.parameters.value.ModulationAmount;
 
-public abstract class ModulatableParameter extends Parameter {
+public class ModulatableParameter extends Parameter {
 
 	private ModulationAmount amount = new ModulationAmount(new ModulationAmount.ChangeListener() {
 
@@ -36,13 +36,13 @@ public abstract class ModulatableParameter extends Parameter {
 
 	private MacroControls modulationSource = MacroControls.NONE;
 
-	public ModulatableParameter(MapsLayout parent) {
-		super(parent);
+	public ModulatableParameter(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 		addChild(new ParameterName(this, getName()));
 	}
 
-	public ModulatableParameter(MapsLayout parent, String name) {
-		super(parent);
+	public ModulatableParameter(MapsLayout parent, String name, int parameterID) {
+		super(parent, parameterID);
 		addChild(new ParameterName(this, name));
 	}
 

@@ -14,8 +14,8 @@ abstract public class PhysicalControlParameter extends Parameter {
 
 	private HashSet<ModulationRoutingParameter> targets = new HashSet<ModulationRoutingParameter>();
 
-	public PhysicalControlParameter(MapsLayout parent) {
-		super(parent);
+	public PhysicalControlParameter(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 		addChild(new LabelLarge(this, getName()));
 		addChild(new SliderHorizontalWithHandle(this));
 		addChild(new ValueDisplaySmall(this));

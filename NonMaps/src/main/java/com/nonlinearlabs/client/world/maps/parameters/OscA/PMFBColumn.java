@@ -13,51 +13,31 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class PMFBColumn extends ParameterColumn {
 
-	private class PMFB extends ModulateableKnob {
-
-		private PMFB(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 68;
-		}
-	}
-
 	private class EnvC extends ModulationSourceHighPriority {
 
 		private EnvC(MapsLayout parent) {
-			super(parent);
+			super(parent, 70);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 70;
-		}
 	}
 
 	private class Chirp extends Parameter {
 
 		private Chirp(MapsLayout parent) {
-			super(parent);
+			super(parent, 303);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 303;
-		}
 	}
 
 	PMFBColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new PMFB(this));
+		addChild(new ModulateableKnob(this, 68));
 		addChild(new EnvC(this));
 		addChild(new Chirp(this));
 	}

@@ -11,7 +11,7 @@ class DriveColumn extends ParameterColumn {
 	private class Drive extends ModulateableKnob {
 
 		private Drive(MapsLayout parent) {
-			super(parent);
+			super(parent, 188);
 			insertChild(1, new Spacer(this, 1, 23) {
 				@Override
 				public double getLevelOfDetailForFullVisibility() {
@@ -25,11 +25,6 @@ class DriveColumn extends ParameterColumn {
 					return 3;
 				}
 			});
-		}
-
-		@Override
-		public int getParameterID() {
-			return 188;
 		}
 
 		@Override

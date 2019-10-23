@@ -13,51 +13,31 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class FluctColumn extends ParameterColumn {
 
-	private class Fluctuation extends ModulateableKnob {
-
-		private Fluctuation(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 87;
-		}
-	}
-
 	private class EnvelopeC extends ModulationSourceHighPriority {
 
 		private EnvelopeC(MapsLayout parent) {
-			super(parent);
+			super(parent, 89);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 89;
-		}
 	}
 
 	private class Phase extends Parameter {
 
 		private Phase(MapsLayout parent) {
-			super(parent);
+			super(parent, 302);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 302;
-		}
 	}
 
 	FluctColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new Fluctuation(this));
+		addChild(new ModulateableKnob(this, 87));
 		addChild(new EnvelopeC(this));
 		addChild(new Phase(this));
 	}

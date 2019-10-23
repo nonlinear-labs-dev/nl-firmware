@@ -9,6 +9,8 @@ import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.Tracer;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.world.AppendOverwriteInsertPresetDialog;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Name;
@@ -16,6 +18,7 @@ import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.Cabinet.Cabinet;
 import com.nonlinearlabs.client.world.maps.parameters.CombFilter.CombFilter;
@@ -143,13 +146,36 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 			private class UnisonAndMaster extends LayoutResizingHorizontal {
 
+				private class VoiceGroupAndSpacer extends LayoutResizingHorizontal {
+					VoiceGroupAndSpacer(UnisonAndMaster parent) {
+						super(parent);
+						addChild(new VoiceGroup(this));
+						addChild(new SpacerLarge(this));
+
+						EditBufferModel.get().soundType.onChange(v -> {
+							requestLayout();
+							return true;
+						});
+					}
+
+					@Override
+					public void doFirstLayoutPass(double levelOfDetail) {
+						if (EditBufferModel.get().soundType.getValue() == SoundType.Single) {
+							setNonSize(new NonDimension(0, 0));
+						} else {
+							super.doFirstLayoutPass(levelOfDetail);
+						}
+					}
+				}
+
 				public UnisonAndMaster() {
 					super(SynthParameters.this);
 
 					addChild(new Voices(this));
 					addChild(new SpacerLarge(this));
-					addChild(new VoiceGroup(this));
-					addChild(new SpacerLarge(this));
+
+					addChild(new VoiceGroupAndSpacer(this));
+
 					addChild(new Master(this));
 					addChild(new SpacerLarge(this));
 					addChild(new Scale(this));

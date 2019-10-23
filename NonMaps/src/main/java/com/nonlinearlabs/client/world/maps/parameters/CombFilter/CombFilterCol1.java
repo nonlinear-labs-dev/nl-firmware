@@ -12,15 +12,10 @@ class CombFilterCol1 extends ParameterColumn {
 	private class AB extends InvertedYModulatableParameter {
 
 		private AB(MapsLayout parent) {
-			super(parent, "A - B");
+			super(parent, "A - B", 113);
 			addChild(new ModulationSourceLabel(this));
 			addChild(new ABSlider(this));
 			addChild(new ValueDisplayLarge(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 113;
 		}
 	}
 

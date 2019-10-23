@@ -9,10 +9,13 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
+import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.Viewport;
 import com.nonlinearlabs.client.world.overlay.belt.Belt;
@@ -24,6 +27,43 @@ import com.nonlinearlabs.client.world.pointer.Gesture;
 
 public class Overlay extends OverlayLayout {
 
+	private class LayerDisplay extends Label {
+
+		public LayerDisplay(OverlayLayout parent) {
+			super(parent);
+
+			EditBufferModel.get().soundType.onChange(v -> {
+				setVisible(v != SoundType.Single);
+				return true;
+			});
+		}
+
+		@Override
+		public String getDrawText(Context2d ctx) {
+			return "II";
+		}
+
+		@Override
+		protected void drawText(Context2d ctx, String text, Position left) {
+			ctx.setStrokeStyle(RGB.black().toString());
+			ctx.strokeText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
+			ctx.setStrokeStyle(RGB.white().toString());
+			ctx.fillText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
+		}
+
+		@Override
+		protected double getFontHeight(Rect pixRect) {
+			return super.getFontHeight(pixRect) * 2;
+		}
+
+		@Override
+		public void draw(Context2d ctx, int invalidationMask) {
+			getPixRect().fill(ctx, new RGBA(255, 0, 0, 0.25));
+			super.draw(ctx, invalidationMask);
+		}
+
+	}
+
 	private Belt belt = null;
 	private GlobalButtons buttons = null;
 	private UndoRedoButtons undoRedo = null;
@@ -33,9 +73,11 @@ public class Overlay extends OverlayLayout {
 	private UndoTreeWindow undo;
 	private List<CompareDialog> compareDialogs;
 	private ModalDialog modalDialog;
+	private LayerDisplay layerDisplay;
 
 	public Overlay(Viewport parent) {
 		super(parent);
+		addChild(layerDisplay = new LayerDisplay(this));
 		addChild(belt = new Belt(this, parent.getNonMaps()));
 		addChild(buttons = new GlobalButtons(this, belt));
 		addChild(undoRedo = new UndoRedoButtons(this, belt));
@@ -90,7 +132,56 @@ public class Overlay extends OverlayLayout {
 		drawBackground(ctx);
 		buttons.drawActiveButton(ctx, invalidationMask);
 
+		if (EditBufferModel.get().soundType.getValue() != SoundType.Single)
+			drawDualSoundIndication(ctx);
+
 		super.draw(ctx, invalidationMask);
+	}
+
+	private void drawDualSoundIndication(Context2d ctx) {
+		Rect r = getPixRect().copy();
+		r.setBottom(belt.getPixRect().getTop());
+
+		Rect gbr = buttons.getPixRect();
+		Rect ldr = layerDisplay.getPixRect();
+
+		double w = 2;
+		double corner = Millimeter.toPixels(1);
+		r = r.getReducedBy(w / 1);
+
+		ctx.beginPath();
+		ctx.moveTo(r.getLeft() + corner, r.getTop());
+		ctx.lineTo(ldr.getLeft() - corner, r.getTop());
+		ctx.arcTo(ldr.getLeft(), ldr.getTop(), ldr.getLeft(), ldr.getTop() + corner, corner);
+		ctx.lineTo(ldr.getLeft(), ldr.getBottom() - corner);
+		ctx.arcTo(ldr.getLeft(), ldr.getBottom(), ldr.getLeft() + corner, ldr.getBottom(), corner);
+		ctx.lineTo(ldr.getRight() - corner, ldr.getBottom());
+		ctx.arcTo(ldr.getRight(), ldr.getBottom(), ldr.getRight(), ldr.getBottom() - corner, corner);
+		ctx.lineTo(ldr.getRight(), ldr.getTop() + corner);
+		ctx.arcTo(ldr.getRight(), ldr.getTop(), ldr.getRight() + corner, ldr.getTop(), corner);
+
+		ctx.lineTo(r.getRight() - corner, r.getTop());
+		ctx.arcTo(r.getRight(), r.getTop(), r.getRight(), r.getTop() + corner, corner);
+
+		ctx.lineTo(r.getRight(), gbr.getTop() - corner);
+		ctx.arcTo(r.getRight(), gbr.getTop(), r.getRight() - corner, gbr.getTop(), corner);
+		ctx.lineTo(gbr.getLeft() + corner, gbr.getTop());
+		ctx.arcTo(gbr.getLeft(), gbr.getTop(), gbr.getLeft(), gbr.getTop() + corner, corner);
+		ctx.lineTo(gbr.getLeft(), gbr.getBottom() - corner);
+		ctx.arcTo(gbr.getLeft(), gbr.getBottom(), gbr.getLeft() - corner, gbr.getBottom(), corner);
+		ctx.lineTo(r.getLeft() + corner, r.getBottom());
+		ctx.arcTo(r.getLeft(), r.getBottom(), r.getLeft(), r.getBottom() - corner, corner);
+		ctx.lineTo(r.getLeft(), r.getTop() + corner);
+		ctx.arcTo(r.getLeft(), r.getTop(), r.getLeft() + corner, r.getTop(), corner);
+		ctx.closePath();
+
+		ctx.setLineWidth(Math.ceil(w) * 2);
+		ctx.setStrokeStyle(RGB.black().toString());
+		ctx.stroke();
+
+		ctx.setLineWidth(Math.ceil(w));
+		ctx.setStrokeStyle(RGB.red().toString());
+		ctx.stroke();
 	}
 
 	private void drawBackground(Context2d ctx) {
@@ -150,6 +241,10 @@ public class Overlay extends OverlayLayout {
 	public void doLayout(double x, double y, double w, double h) {
 		getRelativePosition().moveTo(0, 0);
 		super.doLayout(x, y, w, h);
+
+		double layerDisplayWidth = Millimeter.toPixels(10);
+		double layerDisplayHeight = Millimeter.toPixels(10);
+		layerDisplay.doLayout((w - layerDisplayWidth) / 2, 0, layerDisplayWidth, layerDisplayHeight);
 
 		double beltHeight = Millimeter.toPixels(40);
 		belt.doLayout(0, h - beltHeight, w, beltHeight);

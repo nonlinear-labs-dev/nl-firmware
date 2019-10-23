@@ -58,6 +58,10 @@ public class RGB {
 		return new RGB(0, 0, 0);
 	}
 
+	public static RGB white() {
+		return new RGB(255, 255, 255);
+	}
+
 	public static RGB red() {
 		return new RGB(255, 0, 0);
 	}
@@ -69,15 +73,15 @@ public class RGB {
 	public static RGB lightGray() {
 		return new RGB(155, 159, 163);
 	}
-	
+
 	public static RGB changedBeltBorder() {
 		return new RGB(196, 205, 145);
 	}
-	
+
 	public static RGB changedBorder() {
 		return new RGB(217, 231, 121);
 	}
-	
+
 	public static RGB changedText() {
 		return new RGB(126, 131, 95);
 	}
@@ -93,4 +97,5 @@ public class RGB {
 	public static RGB floatingWindowHeaderBackground() {
 		return new RGB(22, 22, 30);
 	}
+
 }

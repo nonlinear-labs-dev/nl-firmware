@@ -14,12 +14,7 @@ class DriveColumn extends ParameterColumn {
 	private class Drive extends ModulateableKnob {
 
 		private Drive(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 71;
+			super(parent, 71);
 		}
 
 		@Override
@@ -31,15 +26,10 @@ class DriveColumn extends ParameterColumn {
 	private class EnvA extends ModulationSourceHighPriority {
 
 		private EnvA(MapsLayout parent) {
-			super(parent);
+			super(parent, 73);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 73;
 		}
 
 		@Override

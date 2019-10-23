@@ -10,36 +10,19 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class FBMixColumn extends ParameterColumn {
 
-	private class FBMix extends ModulatableSlider {
-
-		private FBMix(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 108;
-		}
-	}
-
 	private class EnvC extends ModulationSourceHighPriority {
 
 		private EnvC(MapsLayout parent) {
-			super(parent);
+			super(parent, 110);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 110;
 		}
 	}
 
 	FBMixColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new FBMix(this));
+		addChild(new ModulatableSlider(this, 108));
 		addChild(new EnvC(this));
 	}
 }

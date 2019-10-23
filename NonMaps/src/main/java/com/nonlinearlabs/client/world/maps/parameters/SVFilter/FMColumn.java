@@ -9,22 +9,10 @@ import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class FMColumn extends ParameterColumn {
 
-	private class FM extends ModulateableKnob {
-
-		private FM(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 153;
-		}
-	}
-
 	private class AB extends ModulationSourceHighPriority {
 
 		private AB(MapsLayout parent) {
-			super(parent);
+			super(parent, 155);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new LittleKnobSlider(this));
 			addChild(new ValueDisplaySmall(this));
@@ -35,15 +23,11 @@ class FMColumn extends ParameterColumn {
 			return true;
 		}
 
-		@Override
-		public int getParameterID() {
-			return 155;
-		}
 	}
 
 	FMColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new FM(this));
+		addChild(new ModulateableKnob(this, 153));
 		addChild(new AB(this));
 	}
 }

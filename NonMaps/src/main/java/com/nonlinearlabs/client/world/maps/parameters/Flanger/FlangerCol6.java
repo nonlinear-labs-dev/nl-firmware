@@ -15,12 +15,7 @@ class FlangerCol6 extends DoubleParameterColumn {
 		private class Feedback extends ModulateableKnob {
 
 			private Feedback(MapsLayout parent) {
-				super(parent);
-			}
-
-			@Override
-			public int getParameterID() {
-				return 219;
+				super(parent, 219);
 			}
 
 			@Override
@@ -40,12 +35,7 @@ class FlangerCol6 extends DoubleParameterColumn {
 		private class CrossFB extends UnmodulateableKnob {
 
 			private CrossFB(MapsLayout parent) {
-				super(parent);
-			}
-
-			@Override
-			public int getParameterID() {
-				return 221;
+				super(parent, 221);
 			}
 
 			@Override
@@ -57,12 +47,7 @@ class FlangerCol6 extends DoubleParameterColumn {
 		private class HiCut extends UnmodulateableKnob {
 
 			private HiCut(MapsLayout parent) {
-				super(parent);
-			}
-
-			@Override
-			public int getParameterID() {
-				return 222;
+				super(parent, 222);
 			}
 
 			@Override

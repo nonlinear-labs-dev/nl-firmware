@@ -12,16 +12,12 @@ class ABColumn extends ParameterColumn {
 	private class AB extends InvertedYModulatableParameter {
 
 		private AB(MapsLayout parent) {
-			super(parent, "A - B");
+			super(parent, "A - B", 136);
 			addChild(new ModulationSourceLabel(this));
 			addChild(new ABSlider(this));
 			addChild(new ValueDisplayLarge(this));
 		}
 
-		@Override
-		public int getParameterID() {
-			return 136;
-		}
 	}
 
 	ABColumn(MapsLayout parent) {

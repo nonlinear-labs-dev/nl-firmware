@@ -18,56 +18,32 @@ class EnvACol1 extends ParameterColumn {
 	private class Attack extends ModulateableKnob {
 
 		private Attack(MapsLayout parent) {
-			super(parent);
-
-			// sorry for this one:
-			// as the ModRouting controls register in the constructor and
-			// their getParameterID() methods do not work at this time, they
-			// will register as param 0
-			// so there is code in Parameter() to not register params with
-			// paramID 0
-			// so the real param-0 has to register by itself
-			getSelectionRoot().registerSelectable(this);
+			super(parent, 0);
 		}
 
 		@Override
 		public RGB getColorFontValueDisplay() {
 			return ColorTable.getColorEnvOscAHeaderBackground();
 		}
-
-		@Override
-		public int getParameterID() {
-			return 0;
-		}
 	}
 
 	private class Curve extends Parameter {
 
 		private Curve(MapsLayout parent) {
-			super(parent);
+			super(parent, 294);
 			addChild(new SmallParameterName(this, getName()));
 			addChild(new KnobSmall(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 294;
 		}
 	}
 
 	private class Velocity extends ModulationSourceHighPriority {
 
 		private Velocity(MapsLayout parent) {
-			super(parent);
+			super(parent, 15);
 			addChild(new LabelModulationSource(this, getName()));
 			addChild(new SliderHorizontal(this));
 			addChild(new ValueDisplaySmall(this));
-		}
-
-		@Override
-		public int getParameterID() {
-			return 15;
 		}
 	}
 

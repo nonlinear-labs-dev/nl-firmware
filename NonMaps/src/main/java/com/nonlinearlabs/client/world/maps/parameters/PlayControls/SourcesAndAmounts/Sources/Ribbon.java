@@ -14,12 +14,12 @@ import com.nonlinearlabs.client.world.maps.parameters.value.QuantizedClippedValu
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.RibbonContextMenu;
 
-public abstract class Ribbon extends PhysicalControlParameter {
+public class Ribbon extends PhysicalControlParameter {
 
 	private int currentMode = 0;
 
-	Ribbon(HardwareSourcesCol1 parent) {
-		super(parent);
+	Ribbon(HardwareSourcesCol1 parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

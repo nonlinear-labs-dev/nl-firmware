@@ -9,12 +9,12 @@ import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmo
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.PedalContextMenu;
 
-public abstract class Pedal extends PhysicalControlParameter {
+public class Pedal extends PhysicalControlParameter {
 
 	private int currentMode = 0;
 
-	Pedal(MapsLayout parent) {
-		super(parent);
+	Pedal(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

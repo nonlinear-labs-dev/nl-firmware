@@ -6,20 +6,8 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class RingModColumn extends ParameterColumn {
 
-	private class RingMod extends ModulateableKnob {
-
-		private RingMod(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 111;
-		}
-	}
-
 	RingModColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new RingMod(this));
+		addChild(new ModulateableKnob(this, 111));
 	}
 }

@@ -6,28 +6,8 @@ class ScaleCol2 extends ScaleCol {
 
 	ScaleCol2(MapsLayout parent) {
 		super(parent);
-		addChild(new ScaleParameter(this) {
-
-			@Override
-			public int getParameterID() {
-				return 313;
-			}
-		});
-
-		addChild(new ScaleParameter(this) {
-
-			@Override
-			public int getParameterID() {
-				return 317;
-			}
-		});
-
-		addChild(new ScaleParameter(this) {
-
-			@Override
-			public int getParameterID() {
-				return 321;
-			}
-		});
+		addChild(new ScaleParameter(this, 313));
+		addChild(new ScaleParameter(this, 317));
+		addChild(new ScaleParameter(this, 321));
 	}
 }

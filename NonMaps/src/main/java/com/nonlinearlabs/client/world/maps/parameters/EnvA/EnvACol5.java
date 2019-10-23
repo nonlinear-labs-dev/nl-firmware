@@ -6,20 +6,8 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class EnvACol5 extends ParameterColumn {
 
-	private class Sustain extends ModulateableKnob {
-
-		private Sustain(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 8;
-		}
-	}
-
 	EnvACol5(MapsLayout parent) {
 		super(parent);
-		addChild(new Sustain(this));
+		addChild(new ModulateableKnob(this, 8));
 	}
 }

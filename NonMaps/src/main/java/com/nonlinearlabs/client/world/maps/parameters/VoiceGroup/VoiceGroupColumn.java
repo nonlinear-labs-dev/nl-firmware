@@ -10,29 +10,20 @@ public class VoiceGroupColumn extends ParameterColumn {
     private class Volume extends Parameter {
 
         private Volume(MapsLayout parent) {
-            super(parent);
+            super(parent, 249);
             addChild(new LabelLarge(this, getName()));
             addChild(new NumericalControlSmall(this));
-        }
-
-        @Override
-        public int getParameterID() {
-            return 249;
         }
     }
 
     private class Tune extends Parameter {
 
         private Tune(MapsLayout parent) {
-            super(parent);
+            super(parent, 249);
             addChild(new LabelLarge(this, getName()));
             addChild(new NumericalControlSmall(this));
         }
 
-        @Override
-        public int getParameterID() {
-            return 249;
-        }
     }
 
     public VoiceGroupColumn(MapsLayout parent) {

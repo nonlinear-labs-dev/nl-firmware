@@ -6,20 +6,8 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class BalanceColumn extends ParameterColumn {
 
-	private class Balance extends ModulateableKnob {
-
-		private Balance(MapsLayout parent) {
-			super(parent);
-		}
-
-		@Override
-		public int getParameterID() {
-			return 207;
-		}
-	}
-
 	BalanceColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new Balance(this));
+		addChild(new ModulateableKnob(this, 207));
 	}
 }
