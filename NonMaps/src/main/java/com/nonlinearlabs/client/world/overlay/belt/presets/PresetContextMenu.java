@@ -1,10 +1,11 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
 import java.util.ArrayList;
+
 import com.nonlinearlabs.client.ClipboardManager.ClipboardContent;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.setup.Setup;
 import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
-import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RenameDialog;
