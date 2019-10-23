@@ -7,6 +7,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -57,8 +58,7 @@ class WebSocketConnection {
 	public void startPolling(ServerListener listener) {
 		Tracer.log("startPolling");
 		this.listener = listener;
-		// webSocketOpen(Window.Location.getHost());
-		webSocketOpen("127.0.0.1:8080");
+		webSocketOpen(Window.Location.getHostName() + ":8080");
 	}
 
 	private native int getBufferedAmount()
