@@ -3,8 +3,8 @@ package com.nonlinearlabs.client.world.overlay.belt;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
+import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 abstract class Dropper extends SVGImage {
 

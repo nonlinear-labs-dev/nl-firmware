@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.nonlinearlabs.client.world.maps.LayoutHorizontal;
-
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 

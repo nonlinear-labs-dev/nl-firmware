@@ -1,5 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
+import java.util.List;
+
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.ClipboardManager.ClipboardContent;
@@ -14,7 +16,6 @@ import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.presets.TextUpload.TextUploadedHandler;
-import java.util.List;
 
 public abstract class BankContextMenu extends ContextMenu {
 
