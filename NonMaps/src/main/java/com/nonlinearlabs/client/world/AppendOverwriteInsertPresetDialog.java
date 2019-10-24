@@ -222,7 +222,7 @@ public class AppendOverwriteInsertPresetDialog extends GWTDialog {
 
 	private boolean shouldUseOriginalName() {
 		PresetManager mgr = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
-		boolean modified = EditBufferModel.get().isAnyParamChanged();
+		boolean modified = EditBufferModel.isAnyParamChanged();
 		boolean overwrite = lastChoosen == Action.OVERWRITE;
 		Preset p = mgr.findLoadedPreset();
 		boolean storeInPlace = mgr.findSelectedPreset() == p;

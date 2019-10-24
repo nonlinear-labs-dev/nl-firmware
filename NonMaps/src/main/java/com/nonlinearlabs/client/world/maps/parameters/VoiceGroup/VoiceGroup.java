@@ -20,7 +20,7 @@ public class VoiceGroup extends ParameterGroupVertical {
 		});
 		addChild(new VoicesGroupControls(this));
 
-		EditBufferModel.get().soundType.onChange(v -> {
+		EditBufferModel.soundType.onChange(v -> {
 			if (v == SoundType.Layer)
 				setTitle("Layer");
 			else if (v == SoundType.Split)

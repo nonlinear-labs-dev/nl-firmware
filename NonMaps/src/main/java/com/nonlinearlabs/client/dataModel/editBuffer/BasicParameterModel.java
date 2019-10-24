@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Notifier;
@@ -53,6 +54,10 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 
 	public boolean isLocked() {
 		return locked.isTrue();
+	}
+
+	public void  getHash(Checksum crc) {
+		crc.eat(value.getQuantizedAndClipped(true));
 	}
 
 }

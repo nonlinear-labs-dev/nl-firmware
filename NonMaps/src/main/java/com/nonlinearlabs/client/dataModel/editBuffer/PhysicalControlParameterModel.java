@@ -1,7 +1,7 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
-public class PhysicalControlParameter extends BasicParameterModel {
-	public PhysicalControlParameter(int id) {
+public class PhysicalControlParameterModel extends BasicParameterModel {
+	public PhysicalControlParameterModel(int id) {
 		super(id);
 	}
 

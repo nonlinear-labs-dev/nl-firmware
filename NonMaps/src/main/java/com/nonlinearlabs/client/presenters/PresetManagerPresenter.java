@@ -33,12 +33,11 @@ public class PresetManagerPresenter {
 	}
 
 	public String getBaseLoadedPresetNumberString() {
-		EditBufferModel eb = EditBufferModel.get();
 		String ret = "";
 		Preset preset = NonMaps.get().getNonLinearWorld().getPresetManager().findLoadedPreset();
 		com.nonlinearlabs.client.world.maps.presets.bank.Bank bank = preset != null ? preset.getParent() : null;
 
-		if (eb.loadedPreset.getValue().equals("Init")) {
+		if (EditBufferModel.loadedPreset.getValue().equals("Init")) {
 			ret = "Init";
 		} else if (bank == null && preset == null) {
 			ret = "";
@@ -50,7 +49,7 @@ public class PresetManagerPresenter {
 	}
 
 	public String getLoadedPresetNumberString() {
-		boolean mod = EditBufferModel.get().isAnyParamChanged();
+		boolean mod = EditBufferModel.isAnyParamChanged();
 		String ret = getBaseLoadedPresetNumberString();
 
 		if (ret.isEmpty())

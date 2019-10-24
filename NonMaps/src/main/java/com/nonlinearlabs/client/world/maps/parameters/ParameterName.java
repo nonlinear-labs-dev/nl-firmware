@@ -51,10 +51,7 @@ public class ParameterName extends LabelLarge {
 	}
 
 	protected String getDisplayText() {
-		Name n = getName();
-		if (n != null)
-			return getName().getShortName();
-
+		// TODO
 		return super.getDisplayText();
 	}
 

@@ -2,7 +2,7 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.Updater;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter.ModSource;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 
 public class EditBufferUpdater extends Updater {
 
@@ -48,7 +48,7 @@ public class EditBufferUpdater extends Updater {
 	private void processGroup(Node c) {
 		String groupId = getAttributeValue(c, "id");
 
-		ParameterGroupModel target = EditBufferModel.get().getGroup(groupId);
+		ParameterGroupModel target = EditBufferModel.getGroup(groupId);
 		ParameterGroupUpdater updater = new ParameterGroupUpdater(c, target);
 		updater.doUpdate();
 	}
@@ -61,12 +61,12 @@ public class EditBufferUpdater extends Updater {
 			String modAmt = getAttributeValue(param, "mod-amt");
 
 			if (!id.isEmpty()) {
-				BasicParameterModel bpm = EditBufferModel.get().findParameter(Integer.valueOf(id));
+				BasicParameterModel bpm = EditBufferModel.findParameter(Integer.valueOf(id));
 				if (!val.isEmpty())
 					bpm.originalValue.setValue(Double.valueOf(val));
 
-				if (bpm instanceof ModulateableParameter) {
-					ModulateableParameter modP = ((ModulateableParameter) bpm);
+				if (bpm instanceof ModulateableParameterModel) {
+					ModulateableParameterModel modP = ((ModulateableParameterModel) bpm);
 					if (!modAmt.isEmpty())
 						modP.ogModAmount.setValue(Double.valueOf(modAmt));
 					if (!modSrc.isEmpty())

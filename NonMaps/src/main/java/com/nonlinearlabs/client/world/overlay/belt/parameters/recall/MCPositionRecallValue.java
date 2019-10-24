@@ -4,7 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 
 public class MCPositionRecallValue extends RecallValue {
@@ -22,8 +22,8 @@ public class MCPositionRecallValue extends RecallValue {
 		EditBufferModel eb = EditBufferModel.get();
 		BasicParameterModel bpm = eb.getSelectedParameter();
 
-		if (bpm instanceof ModulateableParameter) {
-			int mcParamID = ((ModulateableParameter) bpm).mcParameterID.getValue();
+		if (bpm instanceof ModulateableParameterModel) {
+			int mcParamID = ((ModulateableParameterModel) bpm).mcParameterID.getValue();
 
 			BasicParameterModel mc = eb.findParameter(mcParamID);
 			Parameter mcparam = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(mcParamID);

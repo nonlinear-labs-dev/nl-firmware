@@ -15,7 +15,7 @@ public class ParameterRecallArea extends RecallArea {
 
 	@Override
 	public boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
+		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
 		if (bpm != null)
 			return bpm.isValueChanged();
 		return false;

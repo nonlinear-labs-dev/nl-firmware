@@ -16,7 +16,7 @@ public class ParameterCompareButton extends SVGImage {
 	@Override
 	public int getSelectedPhase() {
 
-		if (EditBufferModel.get().isAnyParamChanged()) {
+		if (EditBufferModel.isAnyParamChanged()) {
 			if (inCompare) {
 				return 1;
 			} else {
@@ -33,7 +33,7 @@ public class ParameterCompareButton extends SVGImage {
 
 	@Override
 	public Control click(Position eventPos) {
-		if (inCompare || EditBufferModel.get().isAnyParamChanged()) {
+		if (inCompare || EditBufferModel.isAnyParamChanged()) {
 			inCompare = !inCompare;
 		}
 		return this;

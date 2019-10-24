@@ -152,7 +152,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 						addChild(new VoiceGroup(this));
 						addChild(new SpacerLarge(this));
 
-						EditBufferModel.get().soundType.onChange(v -> {
+						EditBufferModel.soundType.onChange(v -> {
 							requestLayout();
 							return true;
 						});
@@ -160,7 +160,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 					@Override
 					public void doFirstLayoutPass(double levelOfDetail) {
-						if (EditBufferModel.get().soundType.getValue() == SoundType.Single) {
+						if (EditBufferModel.soundType.getValue() == SoundType.Single) {
 							setNonSize(new NonDimension(0, 0));
 						} else {
 							super.doFirstLayoutPass(levelOfDetail);
@@ -295,7 +295,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 			updateCompare(node);
 
 			if (!omitOracles) {
-				updateParameterGroups(node);
 				updatePreset(node);
 				updateSelection(node);
 			} else {
@@ -364,54 +363,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 		if (ret != null)
 			return ret;
 		return "";
-	}
-
-	private void updateParameterGroups(Node node) {
-		NodeList parameterGroups = node.getChildNodes();
-
-		for (int i = 0; i < parameterGroups.getLength(); i++) {
-			Node n = parameterGroups.item(i);
-			String nodesName = n.getNodeName();
-
-			if (nodesName.equals("parameter-group")) {
-				updateParameters(n);
-			}
-		}
-	}
-
-	private void updateParameters(Node parameterGroupNode) {
-		if (ServerProxy.didChange(parameterGroupNode)) {
-			String longGroupName = parameterGroupNode.getAttributes().getNamedItem("long-name").getNodeValue();
-			String shortGroupName = parameterGroupNode.getAttributes().getNamedItem("short-name").getNodeValue();
-			String groupID = parameterGroupNode.getAttributes().getNamedItem("id").getNodeValue();
-
-			ParameterGroupIface grp = findParameterGroup(groupID);
-
-			if (grp != null)
-				grp.setName(new Name(longGroupName, shortGroupName));
-
-			NodeList parameters = parameterGroupNode.getChildNodes();
-
-			for (int i = 0; i < parameters.getLength(); i++) {
-				Node n = parameters.item(i);
-
-				if (n.getNodeName().equals("parameter")) {
-					updateParameter(n);
-				}
-			}
-		}
-	}
-
-	private void updateParameter(Node n) {
-		if (ServerProxy.didChange(n)) {
-			String id = n.getAttributes().getNamedItem("id").getNodeValue();
-			Parameter sel = findSelectable(Integer.parseInt(id));
-
-			if (sel != null) {
-				Parameter param = (Parameter) sel;
-				param.update(n);
-			}
-		}
 	}
 
 	public ParameterGroupIface findParameterGroup(final String groupID) {

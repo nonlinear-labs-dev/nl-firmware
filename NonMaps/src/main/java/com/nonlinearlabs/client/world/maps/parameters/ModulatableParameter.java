@@ -6,6 +6,8 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.useCases.ModulateableParameterUseCases;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
@@ -33,8 +35,6 @@ public class ModulatableParameter extends Parameter {
 	@Override
 	public void getStateHash(Checksum crc) {
 		super.getStateHash(crc);
-		crc.eat(amount.getQuantizedClipped());
-		crc.eat(modulationSource.hashCode());
 		crc.eat(isSelectedParameterMyMacroControl());
 	}
 
@@ -61,65 +61,24 @@ public class ModulatableParameter extends Parameter {
 		}
 	}
 
-	public void setModulationSource(MacroControls src, Initiator initiator) {
-		if (modulationSource != src) {
-
-			MacroControlParameter modSrcParam = getModulationSourceParameter();
-
-			if (modSrcParam != null)
-				modSrcParam.removeModulatableParameter(this);
-
-			modulationSource = src;
-
-			modSrcParam = getModulationSourceParameter();
-
-			if (modSrcParam != null)
-				modSrcParam.addModulatableParameter(this);
-
-			if (initiator == Initiator.EXPLICIT_USER_ACTION)
-				getNonMaps().getServerProxy().setModulationSource(this);
-
-			getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, getValue().getQuantizedClipped());
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+	public ModulateableParameterModel.ModSource toModSource(MacroControls i) {
+		switch (i) {
+		case NONE:
+			return ModulateableParameterModel.ModSource.None;
+		case A:
+			return ModulateableParameterModel.ModSource.A;
+		case B:
+			return ModulateableParameterModel.ModSource.B;
+		case C:
+			return ModulateableParameterModel.ModSource.C;
+		case D:
+			return ModulateableParameterModel.ModSource.D;
 		}
+		return ModulateableParameterModel.ModSource.None;
 	}
 
-	private MacroControlParameter getModulationSourceParameter() {
-		return getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
-				.getControl(getModulationSource());
-	}
-
-	@Override
-	public boolean updateValues(Node child) {
-
-		if (super.updateValues(child))
-			return true;
-
-		String nodeName = child.getNodeName();
-
-		try {
-			String value = ServerProxy.getText(child);
-
-			if (nodeName.equals("modAmount")) {
-				setModulationAmount(Initiator.INDIRECT_USER_ACTION, Double.parseDouble(value));
-			} else if (nodeName.equals("modSrc")) {
-				setModulationSource(MacroControls.fromInt(Integer.parseInt(value)), Initiator.INDIRECT_USER_ACTION);
-			} else if (nodeName.equals("mod-amount-stringizer")) {
-				amount.setStringizer(value);
-			} else if (nodeName.equals("mod-amount-coarse")) {
-				amount.setCoarseDenominator(Double.parseDouble(value));
-			} else if (nodeName.equals("mod-amount-fine")) {
-				amount.setFineDenominator(Double.parseDouble(value));
-			} else {
-				return false;
-			}
-
-			return true;
-		} catch (Exception e) {
-
-		}
-
-		return false;
+	public void setModulationSource(MacroControls src) {
+		ModulateableParameterUseCases.setModulationSource(getParameterID(), toModSource(src));
 	}
 
 	protected String getModSourceString() {
@@ -144,7 +103,7 @@ public class ModulatableParameter extends Parameter {
 
 	@Override
 	public String getFullNameWithGroup() {
-		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
+		BasicParameterModel bpm = EditBufferModel.findParameter(getParameterID());
 		boolean changed = bpm.value.value.getValue() != bpm.originalValue.getValue();
 		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
 	}

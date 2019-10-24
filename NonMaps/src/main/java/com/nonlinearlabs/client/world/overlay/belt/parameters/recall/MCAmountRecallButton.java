@@ -16,7 +16,7 @@ public class MCAmountRecallButton extends RecallButton {
 		if (!isActive())
 			return null;
 
-		if (EditBufferModel.get().getSelectedParameter().isChanged()) {
+		if (EditBufferModel.getSelectedParameter().isChanged()) {
 			NonMaps.get().getServerProxy().recallMcAmountForCurrentParameter();
 			getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return this;

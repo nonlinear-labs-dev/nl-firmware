@@ -27,9 +27,9 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 		}
 
 		private native void updateStringizer(String body) /*-{
-			this.@com.nonlinearlabs.client.dataModel.ValueDataModelEntity.ValueMetaData::stringizer = new Function(
-					"cpValue", "withUnit", body);
-		}-*/;
+															this.@com.nonlinearlabs.client.dataModel.ValueDataModelEntity.ValueMetaData::stringizer = new Function(
+															"cpValue", "withUnit", body);
+															}-*/;
 
 		@Override
 		public ValueMetaData getValue() {
@@ -44,10 +44,10 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 		}
 
 		private native String stringize(boolean withUnit, double cpValue) /*-{
-			var stringizer = this.@com.nonlinearlabs.client.dataModel.ValueDataModelEntity.ValueMetaData::stringizer;
-			var scaledText = stringizer(cpValue, withUnit);
-			return scaledText;
-		}-*/;
+																			var stringizer = this.@com.nonlinearlabs.client.dataModel.ValueDataModelEntity.ValueMetaData::stringizer;
+																			var scaledText = stringizer(cpValue, withUnit);
+																			return scaledText;
+																			}-*/;
 
 		public double quantize(double v, boolean fine) {
 			double steps = fine ? fineDenominator.getValue() : coarseDenominator.getValue();
@@ -87,9 +87,12 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 		return metaData.getDecoratedValue(withUnit, clipped);
 	}
 
-	public double getQuantizedAndClipped(boolean fine)
-	{
+	public double getQuantizedAndClipped(boolean fine) {
 		return metaData.clip(metaData.quantize(value.getValue(), fine));
+	}
+
+	public double getQuantized(boolean fine) {
+		return metaData.quantize(value.getValue(), fine);
 	}
 
 	public String getDecoratedValue(boolean withUnit, boolean fine) {
@@ -104,10 +107,10 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 
 	public boolean isValueCoarseQuantized() {
 		return getQuantizedAndClipped(false) == getQuantizedAndClipped(true);
-}
+	}
 
 	public double getIncDecValue(boolean fine, int inc) {
-	
+
 		if (!fine && !isValueCoarseQuantized()) {
 			double fineValue = getQuantizedAndClipped(true);
 			double coarseValue = getQuantizedAndClipped(false);

@@ -4,7 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
@@ -22,13 +22,13 @@ public class ModulationButtons extends OverlayLayout {
 			setFontColor(RGB.changedText());
 			setFontHeightInMM(5);
 		}
-		
+
 		@Override
 		public String getDrawText(Context2d ctx) {
-			BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-			if(bpm instanceof ModulateableParameter) {
-				ModulateableParameter modP = (ModulateableParameter)bpm;
-				if(modP.isModSourceChanged())
+			BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
+			if (bpm instanceof ModulateableParameterModel) {
+				ModulateableParameterModel modP = (ModulateableParameterModel) bpm;
+				if (modP.isModSourceChanged())
 					return "(" + modP.ogModSource.getValue().toString() + ")";
 			}
 			return "";
@@ -58,9 +58,9 @@ public class ModulationButtons extends OverlayLayout {
 	}
 
 	private boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if (bpm instanceof ModulateableParameter) {
-			return ((ModulateableParameter) bpm).isModSourceChanged();
+		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
+		if (bpm instanceof ModulateableParameterModel) {
+			return ((ModulateableParameterModel) bpm).isModSourceChanged();
 		}
 		return false;
 	}
@@ -77,19 +77,16 @@ public class ModulationButtons extends OverlayLayout {
 		double buttonDim = Millimeter.toPixels(10);
 		double yspace = (h - 2 * buttonDim);
 		double xspace = (w - 2 * buttonDim);
-		
+
 		double space = Math.min(xspace, yspace);
 		for (int y = 0; y < 2; y++) {
-			for (int x = 0; x < 2; x++)
-			{
+			for (int x = 0; x < 2; x++) {
 				int index = y * 2 + x;
-				getChildren().get(index).doLayout(x * (space + buttonDim), 
-						y * (space + buttonDim), 
-						buttonDim,
+				getChildren().get(index).doLayout(x * (space + buttonDim), y * (space + buttonDim), buttonDim,
 						buttonDim);
-			}		
+			}
 		}
-			
+
 		originalSource.doLayout(0, buttonDim - buttonDim * 0.25, w, buttonDim);
 	}
 }

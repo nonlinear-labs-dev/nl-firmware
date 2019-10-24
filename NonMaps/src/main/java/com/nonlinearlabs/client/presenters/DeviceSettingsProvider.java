@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameter;
+import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.Setup;
 import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.client.presenters.DeviceSettings.Pedal;
@@ -124,7 +124,7 @@ public class DeviceSettingsProvider {
 	}
 
 	public void connectToPedal(int id, Pedal target) {
-		PedalParameter srcPedal = (PedalParameter) EditBufferModel.get().findParameter(id);
+		PedalParameterModel srcPedal = (PedalParameterModel) EditBufferModel.findParameter(id);
 		srcPedal.value.onChange(t -> {
 			double v = t.value.getValue();
 			target.displayValue = Stringizers.get().stringize(srcPedal.value.metaData.scaling.getValue(), v);

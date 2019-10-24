@@ -50,10 +50,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
 		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
 		crc.eat(getParameterModel().isChanged());
+		getParameterModel().getHash(crc);
 	}
 
 	BasicParameterModel getParameterModel() {
-		return EditBufferModel.get().findParameter(getParameterID());
+		return EditBufferModel.findParameter(getParameterID());
 	}
 
 	public final int getParameterID() {
@@ -65,7 +66,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private boolean shouldHightlightChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
+		BasicParameterModel bpm = EditBufferModel.findParameter(getParameterID());
 		boolean highlight = Setup.get().systemSettings.highlightChangedParameters.isTrue();
 		boolean forceHighlight = Setup.get().systemSettings.forceHighlightChangedParameters.isTrue();
 
@@ -162,8 +163,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 			if (isBoolean())
 				toggleBoolean();
 			else
-				currentParameterChanger = EditBufferUseCases.get().startUserEdit(getParameterID(),
-						Millimeter.toPixels(100));
+				startMouseEdit();
 			return this;
 
 		case if_selected:
@@ -171,8 +171,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 				if (isBoolean())
 					toggleBoolean();
 				else
-					currentParameterChanger = EditBufferUseCases.get().startUserEdit(getParameterID(),
-							Millimeter.toPixels(100));
+					startMouseEdit();
 				return this;
 			}
 
@@ -186,6 +185,10 @@ public abstract class Parameter extends LayoutResizingVertical {
 		}
 
 		return super.mouseDown(eventPoint);
+	}
+
+	private void startMouseEdit() {
+		currentParameterChanger = EditBufferUseCases.get().startUserEdit(getParameterID(), Millimeter.toPixels(100));
 	}
 
 	@Override
@@ -325,7 +328,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getFullNameWithGroup() {
-		BasicParameterModel bpm = EditBufferModel.get().findParameter(getParameterID());
+		BasicParameterModel bpm = EditBufferModel.findParameter(getParameterID());
 		return getGroupName() + "   \u2013   " + bpm.longName.getValue() + (bpm.isChanged() ? " *" : "");
 	}
 

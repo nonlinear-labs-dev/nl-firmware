@@ -1,27 +1,28 @@
 package com.nonlinearlabs.client.useCases;
 
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
 
 public class IncrementalChanger {
-	private final ValueDataModelEntity theValue;
+	private final BasicParameterModel parameter;
 	private double lastQuantizedValue = 0;
 	private double pendingAmount = 0;
 	private double pixPerRange = 0;
 
-	IncrementalChanger(ValueDataModelEntity theValue, double pixPerRange) {
-		this.theValue = theValue;
-		this.lastQuantizedValue = this.theValue.value.getValue();
+	IncrementalChanger(BasicParameterModel parameter, double pixPerRange) {
+		this.parameter = parameter;
+		this.lastQuantizedValue = parameter.value.value.getValue();
 		this.pixPerRange = pixPerRange;
 	}
 
 	public ValueDataModelEntity getValue() {
-		return this.theValue;
+		return this.parameter.value;
 	}
 
 	public double getQuantizedValue(double v, boolean fine) {
-		double steps = fine ? this.theValue.metaData.fineDenominator.getValue()
-				: this.theValue.metaData.coarseDenominator.getValue();
+		double steps = fine ? parameter.value.metaData.fineDenominator.getValue()
+				: parameter.value.metaData.coarseDenominator.getValue();
 		v *= steps;
 		v = Math.round(v);
 		return v / steps;
@@ -36,19 +37,19 @@ public class IncrementalChanger {
 	}
 
 	public double getLowerBorder() {
-		return (theValue.metaData.bipolar.getValue() == BooleanValues.on) ? -1.0 : 0.0;
+		return (parameter.value.metaData.bipolar.getValue() == BooleanValues.on) ? -1.0 : 0.0;
 	}
 
 	public void changeBy(boolean fine, double amount) {
 
 		amount /= pixPerRange;
 
-		if (this.theValue.metaData.bipolar.getValue() == BooleanValues.on)
+		if (parameter.value.metaData.bipolar.getValue() == BooleanValues.on)
 			amount *= 2;
 
 		if (fine)
-			amount = amount * this.theValue.metaData.coarseDenominator.getValue()
-					/ this.theValue.metaData.fineDenominator.getValue();
+			amount = amount * parameter.value.metaData.coarseDenominator.getValue()
+					/ parameter.value.metaData.fineDenominator.getValue();
 
 		pendingAmount += amount;
 
@@ -57,14 +58,14 @@ public class IncrementalChanger {
 
 		if (newVal != lastQuantizedValue) {
 
-			if (this.theValue.metaData.isBoolean.getValue() == BooleanValues.on) {
+			if (parameter.value.metaData.isBoolean.getValue() == BooleanValues.on) {
 				if (newVal > lastQuantizedValue)
 					newVal = 1.0;
 				else if (newVal < lastQuantizedValue)
 					newVal = 0.0;
 			}
 
-			this.theValue.value.setValue(newVal);
+			EditBufferUseCases.get().setParameterValue(parameter.id, newVal, true);
 			pendingAmount = 0;
 			lastQuantizedValue = newVal;
 		}

@@ -17,7 +17,7 @@ public class SingleSoundSettings extends OverlayLayout {
 
 		@Override
 		public String getDrawText(Context2d ctx) {
-			return EditBufferModel.get().loadedPresetName.getValue();
+			return EditBufferModel.loadedPresetName.getValue();
 		}
 	};
 
@@ -56,8 +56,8 @@ public class SingleSoundSettings extends OverlayLayout {
 		super(parent);
 
 		presetName = addChild(new PresetName(this));
-		tune = addChild(new NamedValueEdit(this, EditBufferModel.get().findParameter(248)));
-		volume = addChild(new NamedValueEdit(this, EditBufferModel.get().findParameter(247)));
+		tune = addChild(new NamedValueEdit(this, EditBufferModel.findParameter(248)));
+		volume = addChild(new NamedValueEdit(this, EditBufferModel.findParameter(247)));
 	}
 
 	public void doLayout(double x, double y, double w, double h) {

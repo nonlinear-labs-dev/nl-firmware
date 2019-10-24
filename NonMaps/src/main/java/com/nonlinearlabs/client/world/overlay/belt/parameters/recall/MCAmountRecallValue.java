@@ -4,7 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 
@@ -20,12 +20,12 @@ public class MCAmountRecallValue extends RecallValue {
 		if (!isActive())
 			return "";
 
-		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
+		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
 		Parameter p = NonMaps.get().getNonLinearWorld().getParameterEditor().getSelection();
-		if (p instanceof ModulatableParameter && bpm instanceof ModulateableParameter) {
+		if (p instanceof ModulatableParameter && bpm instanceof ModulateableParameterModel) {
 			ModulatableParameter m = (ModulatableParameter) p;
 			return m.getModulationAmount().getDecoratedValue(true,
-					((ModulateableParameter) bpm).ogModAmount.getValue());
+					((ModulateableParameterModel) bpm).ogModAmount.getValue());
 		}
 		return null;
 	}

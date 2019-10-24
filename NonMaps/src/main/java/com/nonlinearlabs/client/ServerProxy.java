@@ -16,6 +16,7 @@ import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferUpdater;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManager;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
@@ -438,17 +439,15 @@ public class ServerProxy {
 		RenameDialog.awaitNewPreset(uuid);
 	}
 
-	public void setModulationAmount(final ModulatableParameter modulatableParameter) {
+	public void setModulationAmount(double amount) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
-		StaticURI uri = new StaticURI(path,
-				new StaticURI.KeyValue("amount", modulatableParameter.getModulationAmount().getQuantizedClipped()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount));
 		queueJob(uri, true);
 	}
 
-	public void setModulationSource(ModulatableParameter modulatableParameter) {
+	public void setModulationSource(ModSource src) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
-		StaticURI uri = new StaticURI(path,
-				new StaticURI.KeyValue("source", modulatableParameter.getModulationSource().toInt()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()));
 		queueJob(uri, true);
 	}
 

@@ -2,17 +2,17 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter.ModSource;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 
 public class ModulateableParameterUpdater extends ParameterUpdater {
 
-	ModulateableParameter modTarget;
+	ModulateableParameterModel target;
 
-	public ModulateableParameterUpdater(Node c, ModulateableParameter p) {
+	public ModulateableParameterUpdater(Node c, ModulateableParameterModel p) {
 		super(c, p);
-		modTarget = p;
+		target = p;
 	}
 
 	@Override
@@ -21,18 +21,38 @@ public class ModulateableParameterUpdater extends ParameterUpdater {
 		String modSource = getChildText(root, "modSrc");
 		String modAmount = getChildText(root, "modAmount");
 
+		String modAmountCoarse = getChildText(root, "mod-amount-coarse");
+		String modAmountFine = getChildText(root, "mod-amount-fine");
+		String modAmountStringizer = getChildText(root, "mod-amount-stringizer");
+
+		boolean notify = false;
+
 		if (!modSource.isEmpty()) {
-			modTarget.modSource.setValue(ModSource.values()[Integer.valueOf(modSource)]);
-			MacroControlParameter mc = NonMaps.get().getNonLinearWorld().getParameterEditor().getMacroControls()
-					.getControl(MacroControls.values()[modTarget.modSource.getValue().ordinal()]);
-			if (mc != null)
-				modTarget.mcParameterID.setValue(mc.getParameterID());
-			modTarget.notifyChanges();
+			target.modSource.setValue(ModSource.values()[Integer.valueOf(modSource)]);
+			notify = true;
 		}
 
 		if (!modAmount.isEmpty()) {
-			modTarget.modAmount.setValue(Double.valueOf(modAmount));
-			modTarget.notifyChanges();
+			target.modAmount.value.setValue(Double.valueOf(modAmount));
+			notify = true;
 		}
+
+		if (!modAmountCoarse.isEmpty()) {
+			target.modAmount.metaData.coarseDenominator.setValue(Integer.valueOf(modAmountCoarse));
+			notify = true;
+		}
+
+		if (!modAmountFine.isEmpty()) {
+			target.modAmount.metaData.fineDenominator.setValue(Integer.valueOf(modAmountFine));
+			notify = true;
+		}
+
+		if (!modAmountStringizer.isEmpty()) {
+			target.modAmount.metaData.scaling.setValue(modAmountStringizer);
+			notify = true;
+		}
+
+		if (notify)
+			target.notifyChanges();
 	}
 }

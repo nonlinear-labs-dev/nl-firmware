@@ -9,10 +9,10 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();
 
 	public ParameterPresenterProvider(int parameterId) {
-		BasicParameterModel p = EditBufferModel.get().findParameter(parameterId);
+		BasicParameterModel p = EditBufferModel.findParameter(parameterId);
 		p.onChange(e -> updatePresenter(e));
 
-		EditBufferModel.get().selectedParameter.onChange(id -> {
+		EditBufferModel.selectedParameter.onChange(id -> {
 			boolean isSelected = parameterId == id;
 			if (isSelected != presenter.selected) {
 				presenter.selected = isSelected;

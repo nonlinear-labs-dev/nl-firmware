@@ -20,7 +20,7 @@ public class ParameterGroupUpdater extends Updater {
 
 	private void processParameter(Node c) {
 		String id = getAttributeValue(c, "id");
-		BasicParameterModel p = EditBufferModel.get().findParameter(Integer.parseInt(id));
+		BasicParameterModel p = EditBufferModel.findParameter(Integer.parseInt(id));
 		if (p != null) {
 			Updater u = p.getUpdater(c);
 			u.doUpdate();
