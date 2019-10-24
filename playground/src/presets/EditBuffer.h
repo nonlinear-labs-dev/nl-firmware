@@ -74,15 +74,15 @@ class EditBuffer : public ParameterDualGroupSet
 
   // CALLBACKS
   sigc::connection onSelectionChanged(const slot<void, Parameter *, Parameter *> &s);
-  sigc::connection onModificationStateChanged(slot<void, bool> s);
-  sigc::connection onChange(slot<void> s);
-  sigc::connection onPresetLoaded(slot<void> s);
-  sigc::connection onLocksChanged(slot<void> s);
-  sigc::connection onRecallValuesChanged(slot<void> s);
+  sigc::connection onModificationStateChanged(const slot<void, bool>& s);
+  sigc::connection onChange(const slot<void>& s);
+  sigc::connection onPresetLoaded(const slot<void>& s);
+  sigc::connection onLocksChanged(const slot<void>& s);
+  sigc::connection onRecallValuesChanged(const slot<void>& s);
   sigc::connection onSoundTypeChanged(slot<void> s);
 
   bool isModified() const;
-  void sendToLPC();
+  static void sendToLPC();
 
   //RECALL
   RecallParameterGroups &getRecallParameterSet();
@@ -90,7 +90,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   SoundType getType() const;
 
-  void undoableConvertToSingle(UNDO::Transaction *transaction);
+  void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
@@ -111,8 +111,8 @@ class EditBuffer : public ParameterDualGroupSet
   void setParameter(size_t id, double cpValuem, VoiceGroup target = VoiceGroup::Invalid);
 
   void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id);
-  void setModulationSource(MacroControls src, VoiceGroup vg = VoiceGroup::Invalid);
-  void setModulationAmount(double amount, VoiceGroup vg = VoiceGroup::Invalid);
+  void setModulationSource(MacroControls src);
+  void setModulationAmount(double amount);
 
   void doDeferedJobs();
   void checkModified();
@@ -158,4 +158,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+
+  void undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 };

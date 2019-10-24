@@ -9,6 +9,7 @@
 #include <parameters/PitchbendParameter.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/mono-mode-parameters/MonoParameter.h>
+#include <nltools/Types.h>
 
 EditBufferTests::EditBufferTests(EditBuffer *eb)
     : m_editBuffer{ eb }
@@ -16,9 +17,11 @@ EditBufferTests::EditBufferTests(EditBuffer *eb)
   nltools::Log::warning("[TEST] Starting Edit Buffer tests");
 
   {
-    nltools::Log::warning("[TEST] Convert Sound to Single");
+    nltools::Log::warning("[TEST] Init Single Sound");
     auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Single");
-    m_editBuffer->undoableConvertToSingle(scope->getTransaction());
+    m_editBuffer->undoableInitSound(scope->getTransaction());
+    m_editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    m_editBuffer->getGlobalParameterGroupByID("Master")->getParameterByID(247)->setCPFromHwui(scope->getTransaction(), 0.25);
   }
 
   const auto originalSinglePresetMessage = AudioEngineProxy::createSingleEditBufferMessage();
@@ -36,9 +39,9 @@ EditBufferTests::EditBufferTests(EditBuffer *eb)
   nltools::Log::warning("[PASS] Split Sound OK!");
 
   {
-    nltools::Log::warning("[TEST] Convert Sound to Single");
+    nltools::Log::warning("[TEST] Convert Split to Single");
     auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Single");
-    m_editBuffer->undoableConvertToSingle(scope->getTransaction());
+    m_editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
   }
 
   const auto splitToSingleConvertedPresetMessage = AudioEngineProxy::createSingleEditBufferMessage();
@@ -46,7 +49,7 @@ EditBufferTests::EditBufferTests(EditBuffer *eb)
   nltools::Log::warning("[PASS] Split to Single Sound OK!");
 
   {
-    nltools::Log::warning("[TEST] Convert Sound to Layer");
+    nltools::Log::warning("[TEST] Convert Single to Layer");
     auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Layer");
     m_editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
   }
@@ -58,10 +61,11 @@ EditBufferTests::EditBufferTests(EditBuffer *eb)
   {
     nltools::Log::warning("[TEST] Convert Layer to Single");
     auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Single");
-    m_editBuffer->undoableConvertToSingle(scope->getTransaction());
+    m_editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
   }
 
   const auto singleFromLayerConvertedSound = AudioEngineProxy::createSingleEditBufferMessage();
+
   compareSingleSound(singleFromLayerConvertedSound, splitToSingleConvertedPresetMessage);
 
   nltools::Log::warning("[PASS] Edit Buffer tests ran successfully");
@@ -385,7 +389,6 @@ void EditBufferTests::compareLayerSoundToOriginalSingle(const nltools::msg::Laye
     size_t bender = 0;
     size_t ribbon = 0;
     size_t after = 0;
-    size_t mono = 0;
     size_t vgMaster = 0;
 
     for(auto &_ : layer.unmodulateables[vgIndex])
