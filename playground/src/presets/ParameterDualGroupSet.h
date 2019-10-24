@@ -27,7 +27,7 @@ class ParameterDualGroupSet : public AttributesOwner
   virtual const IntrusiveList<tParameterGroupPtr> &getGlobalParameterGroups() const;
 
   virtual std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg = VoiceGroup::Invalid) const;
-  virtual std::map<int, Parameter *> collectGlobalParametersById() const;
+  virtual std::map<int, Parameter *> getGlobalParametersSortedById() const;
   virtual Parameter *findParameterByID(int id, VoiceGroup vgI = VoiceGroup::Invalid) const;
   virtual Parameter *findGlobalParameterByID(int id) const;
 

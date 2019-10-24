@@ -100,8 +100,20 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto selection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      setValue({ "Voices " + toString(selection), 0 });
+      auto type = eb->getType();
+      if(type == SoundType::Split)
+      {
+        auto selection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        setValue({ "Voices " + toString(selection), 0 });
+      }
+      else if(type == SoundType::Layer)
+      {
+        setValue({ "Voices I/II", 0 });
+      }
+      else
+      {
+        setValue({ "Voices", 0 });
+      }
     }
   };
 

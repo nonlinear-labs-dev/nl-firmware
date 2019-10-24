@@ -29,6 +29,7 @@ public:
 
   std::array<tParameterMap, 2> m_polyParameters;
   tParameterMap m_globalParameters;
+  std::unique_ptr<RecallParameter> m_splitPoint;
 
   friend class EditBuffer;
   friend class RecallEditBufferSerializer;

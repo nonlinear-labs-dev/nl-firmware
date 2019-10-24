@@ -58,7 +58,7 @@
           "Init": {
             "Label[Text]": "Volume"
           },
-          "Events": "EditBufferMasterTune => Value[Text]"
+          "Events": "EditBufferMasterVolume => Value[Text]"
         },
         "MasterLabel": {
           "Class": "SingleSoundBottom",
@@ -66,11 +66,14 @@
           "Init": {
             "Label[Text]": "Tune"
           },
-          "Events": "EditBufferMasterVolume => Value[Text]"
+          "Events": "EditBufferMasterTune => Value[Text]"
         }
       },
       "EventSinks": {
         "BUTTON_A": "IncButtonMenu",
+        "BUTTON_B": "SwitchToInitDetail",
+        "BUTTON_C": "SwitchToVoicesDetail",
+        "BUTTON_D": "OpenMasterParameter",
         "BUTTON_ENTER": "FireButtonMenu"
       }
     }

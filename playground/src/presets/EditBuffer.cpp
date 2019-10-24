@@ -624,15 +624,11 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGr
     case SoundType::Single:
       break;
   }
-
-  if(m_type == SoundType::Single)
-    return;
-
-  undoableSetType(transaction, SoundType::Single);
 }
 
 void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
+  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
 
   auto vgmasterGroup = getParameterGroupByID("VGM", copyFrom);
   auto masterGroup = getGlobalParameterGroupByID("Master");

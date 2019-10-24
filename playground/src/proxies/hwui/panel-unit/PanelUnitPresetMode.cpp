@@ -62,11 +62,19 @@ void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::li
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto currentParams = getMappings().findParameters(buttonId);
   auto ebParameters = editBuffer->getParametersSortedById();
+  auto globalParameters = editBuffer->getGlobalParametersSortedById();
 
   bool anyChanged = false;
   for(const auto paramID : currentParams)
   {
-    anyChanged |= ebParameters[paramID]->isChangedFromLoaded();
+    try
+    {
+      anyChanged |= ebParameters.at(paramID)->isChangedFromLoaded();
+    }
+    catch(...)
+    {
+      anyChanged |= globalParameters.at(paramID)->isChangedFromLoaded();
+    }
   }
   states[(int) buttonId] = anyChanged ? TwoStateLED::BLINK : TwoStateLED::OFF;
 }

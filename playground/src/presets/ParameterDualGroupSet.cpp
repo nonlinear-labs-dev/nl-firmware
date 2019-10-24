@@ -72,7 +72,7 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
   appendGlobalParameterGroup(new MasterGroup(this));
   appendGlobalParameterGroup(new ScaleGroup(this, VoiceGroup::Global));
 
-  m_globalIDToParameterMap = collectGlobalParametersById();
+  m_globalIDToParameterMap = getGlobalParametersSortedById();
 }
 
 ParameterDualGroupSet::~ParameterDualGroupSet()
@@ -137,7 +137,7 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
 
   for(auto &g : m_globalParameterGroups)
   {
-    if(auto o = other->findParameterGroup(g->getID(), g->getVoiceGroup()))
+    if(auto o = other->findParameterGroup(g->getID(), VoiceGroup::Global))
       g->copyFrom(transaction, o);
   }
 }
@@ -201,7 +201,7 @@ std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedById(VoiceG
   return sorted;
 }
 
-std::map<int, Parameter *> ParameterDualGroupSet::collectGlobalParametersById() const
+std::map<int, Parameter *> ParameterDualGroupSet::getGlobalParametersSortedById() const
 {
   std::map<int, Parameter *> sorted;
 

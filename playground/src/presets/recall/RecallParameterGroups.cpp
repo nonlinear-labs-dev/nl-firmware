@@ -64,9 +64,18 @@ const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGro
     }
     catch(...)
     {
-      return nullptr;
+      try
+      {
+        if(m_splitPoint && m_splitPoint->getID() == id)
+          return m_splitPoint.get();
+      }
+      catch(...)
+      {
+        return nullptr;
+      }
     }
   }
+  return nullptr;
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
@@ -90,6 +99,8 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
       m_globalParameters.at(p->getID())->copyFrom(transaction, p);
     }
   }
+
+  m_splitPoint->copyFrom(transaction, other->getSplitPoint());
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
