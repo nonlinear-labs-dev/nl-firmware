@@ -155,4 +155,7 @@ class EditBuffer : public ParameterDualGroupSet
   friend class LastLoadedPresetInfoSerializer;
 
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
+
+  void undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 };

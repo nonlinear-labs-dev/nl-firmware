@@ -45,6 +45,25 @@ EditBufferTests::EditBufferTests(EditBuffer *eb)
   compareSingleSound(splitToSingleConvertedPresetMessage, splitToSingleConvertedPresetMessage);
   nltools::Log::warning("[PASS] Split to Single Sound OK!");
 
+  {
+    nltools::Log::warning("[TEST] Convert Sound to Layer");
+    auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Layer");
+    m_editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+  }
+
+  const auto layerFromSingleConvertedSound = AudioEngineProxy::createLayerEditBufferMessage();
+  compareLayerSoundToOriginalSingle(layerFromSingleConvertedSound, splitToSingleConvertedPresetMessage);
+  nltools::Log::warning("[PASS] Layer Sound OK!");
+
+  {
+    nltools::Log::warning("[TEST] Convert Layer to Single");
+    auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Single");
+    m_editBuffer->undoableConvertToSingle(scope->getTransaction());
+  }
+
+  const auto singleFromLayerConvertedSound = AudioEngineProxy::createSingleEditBufferMessage();
+  compareSingleSound(singleFromLayerConvertedSound, splitToSingleConvertedPresetMessage);
+
   nltools::Log::warning("[PASS] Edit Buffer tests ran successfully");
 }
 
@@ -224,7 +243,7 @@ void EditBufferTests::compareSplitSoundToSingleOrigin(const nltools::msg::Single
                                                       const nltools::msg::SplitPresetMessage &converted)
 {
 
-  for(auto &vg : { VoiceGroup::I })
+  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
   {
     const auto vgIndex = static_cast<int>(vg);
 
@@ -236,6 +255,7 @@ void EditBufferTests::compareSplitSoundToSingleOrigin(const nltools::msg::Single
     size_t ribbon = 0;
     size_t after = 0;
     size_t mono = 0;
+    size_t vgMaster = 0;
 
     for(auto &_ : converted.unmodulateables[vgIndex])
     {
@@ -308,14 +328,157 @@ void EditBufferTests::compareSplitSoundToSingleOrigin(const nltools::msg::Single
 
       compareAfterTouch(og, conv);
     }
+
+    //Voice Group Master set to global master values
+    for(auto &_ : converted.vgMaster[vgIndex])
+    {
+      auto &og = original.master[vgMaster];
+      auto &conv = converted.vgMaster[vgIndex][vgMaster];
+      vgMaster++;
+
+      nltools::test::assertEquals(og.controlPosition, conv.controlPosition);
+    }
   }
 
-  nltools::test::assertEquals(converted.splitpoint.controlPosition, 0.0);  //TODO What to test here?
+  //Mono Master set to 0 initialy
+  size_t master = 0;
+  for(auto &_ : converted.master)
+  {
+    auto &og = original.master[master];
+    auto &conv = converted.master[master];
+    master++;
+
+    nltools::test::assertEquals(og.id, conv.id);
+    nltools::test::assertEquals(0.0, conv.controlPosition);
+  }
+
+  size_t scale = 0;
+  for(auto &_ : converted.scale)
+  {
+    auto &og = original.scale[scale];
+    auto &conv = converted.scale[scale];
+    scale++;
+
+    nltools::test::assertEquals(og, conv);
+  }
+
+  nltools::test::assertEquals(converted.splitpoint.controlPosition, 0.5);
 }
 
 void EditBufferTests::compareSingleSound(const nltools::msg::SinglePresetMessage &s,
                                          const nltools::msg::SinglePresetMessage &s1) const
 {
-  auto same = s.modulateables == s1.modulateables;
-  nltools::test::assertEquals(same, true);
+  nltools::test::assertEquals(s, s1, "Single Sound not Equal");
+}
+
+void EditBufferTests::compareLayerSoundToOriginalSingle(const nltools::msg::LayerPresetMessage layer,
+                                                        const nltools::msg::SinglePresetMessage single)
+{
+  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    const auto vgIndex = static_cast<int>(vg);
+
+    size_t unmod = 0;
+    size_t mod = 0;
+    size_t macro = 0;
+    size_t pedal = 0;
+    size_t bender = 0;
+    size_t ribbon = 0;
+    size_t after = 0;
+    size_t mono = 0;
+    size_t vgMaster = 0;
+
+    for(auto &_ : layer.unmodulateables[vgIndex])
+    {
+      auto &og = single.unmodulateables[unmod];
+      auto &conv = layer.unmodulateables[vgIndex][unmod];
+      unmod++;
+
+      compareUnmodulateable(og, conv);
+    }
+
+    for(auto &_ : layer.modulateables[vgIndex])
+    {
+      auto &og = single.modulateables[mod];
+      auto &conv = layer.modulateables[vgIndex][mod];
+      mod++;
+
+      compareModulateable(og, conv);
+    }
+
+    for(auto &_ : layer.macros[vgIndex])
+    {
+      auto &og = single.macros[macro];
+      auto &conv = layer.macros[vgIndex][macro];
+      macro++;
+
+      compareUnmodulateable(og, conv);
+    }
+
+    for(auto &_ : layer.ribbons[vgIndex])
+    {
+      auto &og = single.ribbons[ribbon];
+      auto &conv = layer.ribbons[vgIndex][ribbon];
+      ribbon++;
+
+      compareRibbon(og, conv);
+    }
+
+    for(auto &_ : layer.bender[vgIndex])
+    {
+      auto &og = single.bender[bender];
+      auto &conv = layer.bender[vgIndex][bender];
+      bender++;
+
+      compareBender(og, conv);
+    }
+
+    for(auto &_ : layer.pedals[vgIndex])
+    {
+      auto &og = single.pedals[pedal];
+      auto &conv = layer.pedals[vgIndex][pedal];
+      pedal++;
+
+      comparePedal(og, conv);
+    }
+
+    for(auto &_ : layer.aftertouch[vgIndex])
+    {
+      auto &og = single.aftertouch[after];
+      auto &conv = layer.aftertouch[vgIndex][after];
+      after++;
+
+      compareAfterTouch(og, conv);
+    }
+
+    for(auto &_ : layer.vgMaster[vgIndex])
+    {
+      auto &og = single.master[vgMaster];
+      auto &conv = layer.vgMaster[vgIndex][vgMaster];
+      vgMaster++;
+
+      nltools::test::assertEquals(og.controlPosition, conv.controlPosition);
+    }
+  }
+
+  size_t master = 0;
+  for(auto &_ : layer.master)
+  {
+    auto &og = single.master[master];
+    auto &conv = layer.master[master];
+    master++;
+
+    nltools::test::assertEquals(og.id, conv.id);
+    nltools::test::assertEquals(0.0, conv.controlPosition);
+  }
+
+  size_t scale = 0;
+  for(auto &_ : layer.scale)
+  {
+    auto &og = single.scale[scale];
+    auto &conv = layer.scale[scale];
+    scale++;
+
+    nltools::test::assertEquals(og, conv);
+  }
 }

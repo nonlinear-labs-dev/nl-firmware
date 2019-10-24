@@ -5,7 +5,7 @@
 #include <testing/TestRootDocument.h>
 #include <testing/parameter/TestGroup.h>
 #include <testing/parameter/TestParameter.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/DualSpecialParameterScreen.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, uint16_t id)
@@ -20,7 +20,7 @@ ustring SplitPointParameter::getGroupAndParameterName() const
 
 DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  return new DualSpecialParameterScreen();
+  return new DualVoiceGroupMasterAndSplitPointLayout();
 }
 
 std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const

@@ -4,9 +4,9 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterValueLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
-#include "DualSpecialParameterScreen.h"
+#include "DualVoiceGroupMasterAndSplitPointLayout.h"
 
-Parameter *DualSpecialParameterScreen::getCurrentParameter() const
+Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentParameter() const
 {
   if(auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected())
     if(auto sp = dynamic_cast<SplitPointParameter *>(selected))
@@ -15,7 +15,7 @@ Parameter *DualSpecialParameterScreen::getCurrentParameter() const
   return ParameterLayout2::getCurrentParameter();
 }
 
-DualSpecialParameterScreen::DualSpecialParameterScreen()
+DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout()
     : UnmodulateableParameterSelectLayout2()
 {
   m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() {
@@ -45,27 +45,27 @@ DualSpecialParameterScreen::DualSpecialParameterScreen()
   });
 }
 
-DualSpecialParameterScreen::~DualSpecialParameterScreen()
+DualVoiceGroupMasterAndSplitPointLayout::~DualVoiceGroupMasterAndSplitPointLayout()
 {
   m_connection.disconnect();
 }
 
-Carousel *DualSpecialParameterScreen::createCarousel(const Rect &rect)
+Carousel *DualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
 {
   return new VoiceGroupMasterParameterCarousel(rect);
 }
 
-ModuleCaption *DualSpecialParameterScreen::createModuleCaption() const
+ModuleCaption *DualVoiceGroupMasterAndSplitPointLayout::createModuleCaption() const
 {
   return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
 }
 
-Parameter *DualSpecialParameterScreen::getCurrentEditParameter() const
+Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentEditParameter() const
 {
   return getCurrentParameter();
 }
 
-bool DualSpecialParameterScreen::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+bool DualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down && i == Buttons::BUTTON_A)
   {

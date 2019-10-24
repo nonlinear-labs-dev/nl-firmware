@@ -623,8 +623,22 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom)
 {
+
   if(m_type == type)
     return;
+
+  switch(type)
+  {
+    case SoundType::Single:
+    case SoundType::Invalid:
+      break;
+    case SoundType::Split:
+      undoableConvertToSplit(transaction, copyFrom);
+      break;
+    case SoundType::Layer:
+      undoableConvertToLayer(transaction, copyFrom);
+      break;
+  }
 
   undoableSetType(transaction, type);
 
@@ -662,10 +676,79 @@ SplitPointParameter *EditBuffer::getSplitPoint()
   return nullptr;
 }
 
+VoiceGroup invert(VoiceGroup vg)
+{
+  return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
+}
+
+void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  undoableSetType(transaction, SoundType::Split);
+
+  //Copy Voice Group from one to the other -> real initialize
+  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
+
+  auto globalMaster = getGlobalParameterGroupByID("Master");
+  auto vgMasterI = getParameterGroupByID("VGM", VoiceGroup::I);
+  auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
+
+  //Copy Global Master to VG Master
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
+  {
+    auto mI = vgMasterI->findParameterByID(ids.first);
+    auto mII = vgMasterII->findParameterByID(ids.first);
+    auto gI = globalMaster->findParameterByID(ids.second);
+
+    mI->copyFrom(transaction, gI);
+    mII->copyFrom(transaction, gI);
+  }
+
+  //Init Global Master
+  for(auto &mp : globalMaster->getParameters())
+  {
+    mp->setCPFromHwui(transaction, 0.0);
+  }
+
+  auto splitParam = getSplitPoint();
+  splitParam->setCPFromHwui(transaction, 0.5);
+}
+
+void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  undoableSetType(transaction, SoundType::Layer);
+
+  //Copy Voice Group from one to the other -> real initialize
+  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
+
+  auto globalMaster = getGlobalParameterGroupByID("Master");
+
+  auto vgMasterI = getParameterGroupByID("VGM", VoiceGroup::I);
+  auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
+
+  //Copy Global Master to VG Master
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
+  {
+    auto mI = vgMasterI->findParameterByID(ids.first);
+    auto mII = vgMasterII->findParameterByID(ids.first);
+    auto gI = globalMaster->findParameterByID(ids.second);
+
+    mI->copyFrom(transaction, gI);
+    mII->copyFrom(transaction, gI);
+  }
+
+  //Init Global Master
+  for(auto &mp : globalMaster->getParameters())
+  {
+    mp->setCPFromHwui(transaction, 0.0);
+  }
+}
+
 #ifdef _DEVELOPMENT_PC
 
 void EditBuffer::runTests()
 {
   EditBufferTests tester(this);
 }
+
+
 #endif

@@ -51,4 +51,7 @@ class EditBufferTests
 
   void compareSplitSoundToSingleOrigin(const nltools::msg::SinglePresetMessage &original,
                                        const nltools::msg::SplitPresetMessage &converted);
+
+  void compareLayerSoundToOriginalSingle(const nltools::msg::LayerPresetMessage layer,
+                                         const nltools::msg::SinglePresetMessage single);
 };

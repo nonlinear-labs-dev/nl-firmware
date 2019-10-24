@@ -535,7 +535,6 @@ void Parameter::undoableRecallFromPreset()
 
 void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 {
-  nltools_assertOnDevPC(other->getID() == getID());
   nltools_assertOnDevPC(other->getVoiceGroup() != getVoiceGroup());
 
   setCpValue(transaction, Initiator::INDIRECT, other->getControlPositionValue(), false);

@@ -2,12 +2,12 @@
 #include <parameters/Parameter.h>
 #include <parameters/names/ParameterDB.h>
 
-class SpecialPolyParameter : public Parameter
+class VoiceGroupMasterParameter : public Parameter
 {
  public:
-  SpecialPolyParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
-                       tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator,
-                       const std::string &shortName, const std::string &longName, VoiceGroup vg);
+  VoiceGroupMasterParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
+                            tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator,
+                            const std::string &shortName, const std::string &longName, VoiceGroup vg);
 
   ustring getLongName() const override;
 

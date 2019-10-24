@@ -5,7 +5,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
-#include <parameters/voice-group-master-group/SpecialPolyParameter.h>
+#include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 
 VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect &r)
     : ParameterCarousel(r)

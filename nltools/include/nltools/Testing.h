@@ -24,6 +24,16 @@ namespace nltools
       }
     }
 
+    template <typename T> static void assertEquals(const T& expected, const T& test, const char* description)
+    {
+      auto res = test == expected;
+      if(!res)
+      {
+        nltools::Log::error("[FAIL] not equal!", description);
+        std::raise(SIGINT);
+      }
+    }
+
     template <typename T> static void assertNotNull(const T* ptr)
     {
       if(ptr == nullptr)

@@ -8,6 +8,8 @@
 #include "profiling/Profiler.h"
 #include "Options.h"
 #include <nltools/StringTools.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 void printStackTrace(int i)
 {
@@ -103,6 +105,10 @@ int main(int numArgs, char** argv)
 
   {
     Application app(numArgs, argv);
+#ifdef _DEVELOPMENT_PC
+    Application::get().getPresetManager()->getEditBuffer()->runTests();
+#endif
+
     Application::get().run();
     DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   }
