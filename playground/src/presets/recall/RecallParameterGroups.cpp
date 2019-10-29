@@ -100,7 +100,12 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
     }
   }
 
-  m_splitPoint->copyFrom(transaction, other->getSplitPoint());
+  if(m_splitPoint == nullptr)
+    if(other->getSplitPoint() != nullptr)
+      m_splitPoint = std::make_unique<RecallParameter>(this, other->getSplitPoint()->getID());
+
+  if(m_splitPoint && other->getSplitPoint())
+    m_splitPoint->copyFrom(transaction, other->getSplitPoint());
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const

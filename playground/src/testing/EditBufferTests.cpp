@@ -6,6 +6,8 @@
 #include <parameters/ModulateableParameter.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <nltools/Types.h>
+#include <presets/Bank.h>
+#include <presets/Preset.h>
 
 inline auto getEditBuffer() -> EditBuffer*
 {
@@ -301,5 +303,83 @@ TEST_CASE("Split to Single Conversion")
 
     REQUIRE(globalMasterVolume->getControlPositionValue() == 0.7);
     REQUIRE(globalMasterTune->getControlPositionValue() == 0.7);
+  }
+}
+
+TEST_CASE("Load Presets Complete")
+{
+
+  auto editBuffer = getEditBuffer();
+  auto pm = editBuffer->getParent();
+
+  Bank* bank = nullptr;
+
+  Uuid singleuuid;
+  Uuid splituuid;
+  Uuid layeruuid;
+
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    bank = pm->addBank(scope->getTransaction());
+    auto singlePreset = bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(bank, *editBuffer));
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+    auto splitPreset = bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(bank, *editBuffer));
+    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+    auto layerPreset = bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(bank, *editBuffer));
+
+    REQUIRE(singlePreset != nullptr);
+    REQUIRE(layerPreset != nullptr);
+    REQUIRE(splitPreset != nullptr);
+
+    singlePreset->setName(scope->getTransaction(), "Single Preset");
+    splitPreset->setName(scope->getTransaction(), "Split Preset");
+    layerPreset->setName(scope->getTransaction(), "Layer Preset");
+
+    REQUIRE(singlePreset->getType() == SoundType::Single);
+    REQUIRE(splitPreset->getType() == SoundType::Split);
+    REQUIRE(layerPreset->getType() == SoundType::Layer);
+
+    singleuuid = singlePreset->getUuid();
+    splituuid = splitPreset->getUuid();
+    layeruuid = layerPreset->getUuid();
+  }
+
+  SECTION("Load single preset")
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), pm->findPreset(singleuuid));
+
+    REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == singleuuid);
+    REQUIRE(editBuffer->getType() == SoundType::Single);
+  }
+
+  SECTION("Load layer preset")
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), pm->findPreset(layeruuid));
+
+    REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == layeruuid);
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
+  }
+
+  SECTION("Load split preset")
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), pm->findPreset(splituuid));
+
+    REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == splituuid);
+    REQUIRE(editBuffer->getType() == SoundType::Split);
+  }
+
+  //cleanup
+  {
+    auto scope = createTestScope();
+    pm->deleteBank(scope->getTransaction(), bank->getUuid());
+    REQUIRE(pm->findBank(bank->getUuid()) == nullptr);
+    REQUIRE(pm->findPreset(singleuuid) == nullptr);
+    REQUIRE(pm->findPreset(layeruuid) == nullptr);
+    REQUIRE(pm->findPreset(splituuid) == nullptr);
   }
 }

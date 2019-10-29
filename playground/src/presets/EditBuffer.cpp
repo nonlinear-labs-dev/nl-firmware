@@ -445,7 +445,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   copyFrom(transaction, preset);
   undoableSetLoadedPresetInfo(transaction, preset);
 
-  if(auto bank = static_cast<Bank *>(preset->getParent()))
+  if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
     auto pm = static_cast<PresetManager *>(getParent());
     bank->selectPreset(transaction, preset->getUuid());
