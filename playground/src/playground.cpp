@@ -1,3 +1,7 @@
+#ifdef _TESTS
+#define CATCH_CONFIG_RUNNER
+#include <third-party/include/catch.hpp>
+#endif
 #include "Application.h"
 #include "testing/TestDriver.h"
 #include <stdlib.h>
@@ -103,6 +107,13 @@ int main(int numArgs, char** argv)
 
   {
     Application app(numArgs, argv);
+
+#ifdef _TESTS
+    std::vector<const char*> args;
+    args.emplace_back(argv[0]);
+    //args.emplace_back("-s"); //include this line to show passing tests
+    int result = Catch::Session().run(args.size(), args.data());
+#endif
 
     Application::get().run();
     DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);

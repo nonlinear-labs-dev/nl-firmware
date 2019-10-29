@@ -45,7 +45,9 @@ ENDIF()
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
+  add_subdirectory(src/third-party)
 ENDIF(DEV_PC)
+
 
 IF(PROFILING)
   ADD_DEFINITIONS(-D_PROFILING)
@@ -77,8 +79,6 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 set(SOURCE_FILES
     ${SOURCE_FILES}
-    ${CMAKE_CURRENT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp
 )
 
 add_executable(playground ${SOURCE_FILES})

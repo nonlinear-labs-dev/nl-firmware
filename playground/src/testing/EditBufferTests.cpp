@@ -1,346 +1,229 @@
-#include "EditBufferTests.h"
-#include <nltools/Testing.h>
+#include <third-party/include/catch.hpp>
+
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <parameters/PedalParameter.h>
 #include <parameters/ModulateableParameter.h>
-#include <parameters/AftertouchParameter.h>
-#include <parameters/RibbonParameter.h>
-#include <parameters/PitchbendParameter.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
-#include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <nltools/Types.h>
 
-EditBufferTests::EditBufferTests(EditBuffer *eb)
-    : m_editBuffer{ eb }
+inline auto getEditBuffer() -> EditBuffer*
 {
-  nltools::test::printPassedTests = false;
+  return Application::get().getPresetManager()->getEditBuffer();
+}
 
-  initEditBuffer();
+inline auto createTestScope() -> std::unique_ptr<UNDO::TransactionCreationScope>
+{
+  return std::move(Application::get().getPresetManager()->getUndoScope().startTestTransaction());
+}
 
-  nltools::test::assertEquals(m_editBuffer->getType(), SoundType::Single, "Soundtype is Single");
+TEST_CASE("EditBuffer Initialized")
+{
+  auto eb = getEditBuffer();
+  REQUIRE(eb != nullptr);
+}
 
-  const auto originalSinglePresetMessage = AudioEngineProxy::createSingleEditBufferMessage();
-  compareSingleSound(m_editBuffer, originalSinglePresetMessage);
-  nltools::Log::warning("[PASS] Single Sound Init");
-
-
-  convertSingleToSplit();
-
-  nltools::test::assertEquals(m_editBuffer->getType(), SoundType::Split, "Soundtype is Split");
-
-  const auto singleToSplitConvertedSound = AudioEngineProxy::createSplitEditBufferMessage();
-  compareSplitSoundToSingleOrigin(originalSinglePresetMessage, singleToSplitConvertedSound);
-  nltools::Log::warning("[PASS] Split Sound OK!");
+TEST_CASE("editbuffer can be converted")
+{
+  auto editBuffer = getEditBuffer();
 
   {
-    nltools::Log::warning("[TEST] Convert Split to Single");
-    auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Single");
-    m_editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
   }
 
-  const auto splitToSingleConvertedPresetMessage = AudioEngineProxy::createSingleEditBufferMessage();
-  compareSingleSound(splitToSingleConvertedPresetMessage, splitToSingleConvertedPresetMessage);
-  nltools::Log::warning("[PASS] Split to Single Sound OK!");
+  REQUIRE(editBuffer->getType() == SoundType::Single);
 
+  SECTION("convert single editbuffer to layer")
   {
-    nltools::Log::warning("[TEST] Convert Single to Layer");
-    auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Layer");
-    m_editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
   }
 
-  const auto layerFromSingleConvertedSound = AudioEngineProxy::createLayerEditBufferMessage();
-  compareLayerSoundToOriginalSingle(layerFromSingleConvertedSound, splitToSingleConvertedPresetMessage);
-  nltools::Log::warning("[PASS] Layer Sound OK!");
-
+  SECTION("convert single editbuffer to split")
   {
-    nltools::Log::warning("[TEST] Convert Layer to Single");
-    auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Single");
-    m_editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+
+    REQUIRE(editBuffer->getType() == SoundType::Split);
   }
 
-  const auto singleFromLayerConvertedSound = AudioEngineProxy::createSingleEditBufferMessage();
-
-  compareSingleSound(singleFromLayerConvertedSound, splitToSingleConvertedPresetMessage);
-
-  nltools::Log::warning("[PASS] Edit Buffer tests ran successfully");
-}
-
-void EditBufferTests::convertSingleToSplit() const
-{
-  nltools::Log::warning("[TEST] Convert Single to Split");
-  auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert Single 2 Split");
-  m_editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
-}
-
-void EditBufferTests::compareUnmodulateable(const Parameter *parameter,
-                                            const nltools::msg::ParameterGroups::Parameter &presetParameter) const
-{
-  nltools::test::assertNotNull(parameter);
-  const auto id1 = parameter->getID();
-  const auto id2 = presetParameter.id;
-
-  nltools::test::assertEquals(id1, id2, "ID Equal");
-
-  const auto cp1 = parameter->getControlPositionValue();
-  const auto cp2 = presetParameter.controlPosition;
-
-  const auto differs = parameter->isValueDifferentFrom(cp2);
-  const auto descr = nltools::string::concat("ID: ", id1, " Value differs, expected: ", cp1, " got: ", cp2);
-  nltools::test::_assert(!differs, descr);
-}
-
-void EditBufferTests::compareUnmodulateable(const nltools::msg::ParameterGroups::Parameter &p1,
-                                            const nltools::msg::ParameterGroups::Parameter &p2) const
-{
-  nltools::test::assertEquals(p1.id, p2.id, "ID equal");
-  nltools::test::assertEquals(p1.controlPosition, p2.controlPosition, "CP equal");
-}
-
-void EditBufferTests::compareModulateable(const ModulateableParameter *parameter,
-                                          const nltools::msg::ParameterGroups::ModulateableParameter &mod) const
-{
-  compareUnmodulateable(parameter, mod);
-  nltools::test::assertEquals(parameter->getModulationAmount(), mod.modulationAmount, "Modamount Equal");
-  nltools::test::assertEquals(parameter->getModulationSource(), mod.mc, "Modsrc Equal");
-}
-
-void EditBufferTests::compareModulateable(const nltools::msg::ParameterGroups::ModulateableParameter &p1,
-                                          const nltools::msg::ParameterGroups::ModulateableParameter &p2) const
-{
-  compareUnmodulateable(p1, p2);
-  nltools::test::assertEquals(p1.modulationAmount, p2.modulationAmount, "Modamount Equal");
-  nltools::test::assertEquals(p1.mc, p2.mc, "Modsrc Equal");
-}
-
-void EditBufferTests::compareAfterTouch(const AftertouchParameter *p,
-                                        const nltools::msg::ParameterGroups::AftertouchParameter &a) const
-{
-  compareUnmodulateable(p, a);
-  nltools::test::assertEquals(a.returnMode, p->getReturnMode(), "Aftertouch Return Mode Equal");
-}
-
-void EditBufferTests::compareAfterTouch(const nltools::msg::ParameterGroups::AftertouchParameter &p1,
-                                        const nltools::msg::ParameterGroups::AftertouchParameter &p2) const
-{
-  compareUnmodulateable(p1, p2);
-  nltools::test::assertEquals(p1.returnMode, p2.returnMode, "Aftertouch Return Mode Equal");
-}
-
-void EditBufferTests::comparePedal(const PedalParameter *pedal,
-                                   const nltools::msg::ParameterGroups::PedalParameter &p) const
-{
-  compareUnmodulateable(pedal, p);
-  nltools::test::assertEquals(p.returnMode, pedal->getReturnMode(), "Pedal Return Mode Equal");
-  nltools::test::assertEquals(p.pedalMode, pedal->getPedalMode(), "Pedal Mode Equal");
-}
-
-void EditBufferTests::comparePedal(const nltools::msg::ParameterGroups::PedalParameter &p1,
-                                   const nltools::msg::ParameterGroups::PedalParameter &p2) const
-{
-  compareUnmodulateable(p1, p2);
-  nltools::test::assertEquals(p1.returnMode, p2.returnMode, "Pedal Return Mode Equal");
-  nltools::test::assertEquals(p1.pedalMode, p2.pedalMode, "Pedal Mode Equal");
-}
-
-void EditBufferTests::compareRibbon(const RibbonParameter *ribbon,
-                                    const nltools::msg::ParameterGroups::RibbonParameter &r) const
-{
-  compareUnmodulateable(ribbon, r);
-  nltools::test::assertEquals(r.ribbonTouchBehaviour, ribbon->getRibbonTouchBehaviour(),
-                              "Ribbon Touch Behaviour Equal");
-  nltools::test::assertEquals(r.ribbonReturnMode, ribbon->getRibbonReturnMode(), "Ribbon Return Mode Equal");
-}
-
-void EditBufferTests::compareRibbon(const nltools::msg::ParameterGroups::RibbonParameter &p1,
-                                    const nltools::msg::ParameterGroups::RibbonParameter &p2) const
-{
-  compareUnmodulateable(p1, p2);
-  nltools::test::assertEquals(p1.ribbonReturnMode, p2.ribbonReturnMode, "Ribbon Return Mode Equal");
-  nltools::test::assertEquals(p1.ribbonTouchBehaviour, p2.ribbonTouchBehaviour, "Ribbon Touch Behaviour");
-}
-
-void EditBufferTests::compareBender(const PitchbendParameter *bender,
-                                    const nltools::msg::ParameterGroups::BenderParameter &be) const
-{
-  compareUnmodulateable(bender, be);
-  nltools::test::assertEquals(be.returnMode, bender->getReturnMode(), "Bender Return Mode Equal");
-}
-
-void EditBufferTests::compareBender(const nltools::msg::ParameterGroups::BenderParameter &p1,
-                                    const nltools::msg::ParameterGroups::BenderParameter &p2) const
-{
-  compareUnmodulateable(p1, p2);
-  nltools::test::assertEquals(p1.returnMode, p2.returnMode, "Bender Return Mode Equal");
-}
-
-void EditBufferTests::compareSingleSound(EditBuffer *eb, const nltools::msg::SinglePresetMessage &s) const
-{
+  SECTION("convert single editbuffer to split and undo")
   {
-    const auto ebType = eb->getType();
-    const auto msgType = s.type;
-    const auto same = ebType == SoundType::Single && msgType == nltools::msg::MessageType::SinglePreset;
-    nltools::test::_assert(same, "EditBuffer is not of type Single!");
-  }
-
-  for(auto &u : s.unmodulateables)
-  {
-    auto param = eb->findParameterByID(u.id, VoiceGroup::I);
-    nltools::test::assertNotNull(param);
-    compareUnmodulateable(param, u);
-  }
-
-  for(auto &m : s.modulateables)
-  {
-    auto mod = dynamic_cast<ModulateableParameter *>(eb->findParameterByID(m.id, VoiceGroup::I));
-    nltools::test::assertNotNull(mod);
-    compareModulateable(mod, m);
-  }
-
-  for(auto &b : s.bender)
-  {
-    auto bender = dynamic_cast<PitchbendParameter *>(eb->findParameterByID(b.id, VoiceGroup::I));
-    nltools::test::assertNotNull(bender);
-    compareBender(bender, b);
-  }
-
-  for(auto &m : s.monos)
-  {
-    auto mono = dynamic_cast<MonoParameter *>(eb->findParameterByID(m.id, VoiceGroup::I));
-    nltools::test::assertNotNull(mono);
-    compareUnmodulateable(mono, m);
-  }
-
-  for(auto &mc : s.macros)
-  {
-    auto macro = dynamic_cast<MacroControlParameter *>(eb->findParameterByID(mc.id, VoiceGroup::I));
-    nltools::test::assertNotNull(macro);
-    compareUnmodulateable(macro, mc);
-  }
-
-  for(auto &a : s.aftertouch)
-  {
-    auto after = dynamic_cast<AftertouchParameter *>(eb->findParameterByID(a.id, VoiceGroup::I));
-    nltools::test::assertNotNull(after);
-    compareAfterTouch(after, a);
-  }
-
-  for(auto &r : s.ribbons)
-  {
-    auto ribbon = dynamic_cast<RibbonParameter *>(eb->findParameterByID(r.id, VoiceGroup::I));
-    nltools::test::assertNotNull(ribbon);
-    compareRibbon(ribbon, r);
-  }
-
-  for(auto &p : s.pedals)
-  {
-    auto pedal = dynamic_cast<PedalParameter *>(eb->findParameterByID(p.id));
-    nltools::test::assertNotNull(pedal);
-    comparePedal(pedal, p);
-  }
-
-  for(auto &m : s.master)
-  {
-    auto master = eb->findParameterByID(m.id, VoiceGroup::Global);
-    nltools::test::assertNotNull(master);
-    compareUnmodulateable(master, m);
-  }
-}
-
-void EditBufferTests::compareSplitSoundToSingleOrigin(const nltools::msg::SinglePresetMessage &original,
-                                                      const nltools::msg::SplitPresetMessage &converted)
-{
-  assertGeneralDualParameterGroups(converted, original);
-
-  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    const auto vgIndex = static_cast<int>(vg);
-
-    size_t mono = 0;
-    size_t vgMaster = 0;
-
-    for(auto &_ : converted.monos[vgIndex])
     {
-      auto &og = original.monos[mono];
-      auto &conv = converted.monos[vgIndex][mono];
-      mono++;
-
-      compareUnmodulateable(og, conv);
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
     }
 
-    //Voice Group Master set to global master values
-    for(auto &_ : converted.vgMaster[vgIndex])
+    REQUIRE(editBuffer->getType() == SoundType::Split);
+
+    editBuffer->getParent()->getUndoScope().undo();
+
+    REQUIRE(editBuffer->getType() == SoundType::Single);
+  }
+}
+
+TEST_CASE("master groups initialization tests")
+{
+  auto editBuffer = getEditBuffer();
+
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+  }
+
+  auto collectScaleParameterValues = [editBuffer] {
+    std::vector<double> ret;
+    if(auto g = editBuffer->getGlobalParameterGroupByID("Scale"))
+      for(auto p : g->getParameters())
+        ret.emplace_back(p->getControlPositionValue());
+    return ret;
+  };
+
+  const auto globalMasterVolume = editBuffer->findGlobalParameterByID(247)->getControlPositionValue();
+  const auto globalMasterTune = editBuffer->findGlobalParameterByID(248)->getControlPositionValue();
+  const auto globalScaleValues = collectScaleParameterValues();
+
+  auto compareVoiceGroupMasterSameAsGlobalMaster = [globalMasterVolume, globalMasterTune, editBuffer]() {
+    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      auto &og = original.master[vgMaster];
-      auto &conv = converted.vgMaster[vgIndex][vgMaster];
-      vgMaster++;
+      auto vgMasterVolume = editBuffer->findParameterByID(10002, vg)->getControlPositionValue();
+      auto vgMasterTune = editBuffer->findParameterByID(10003, vg)->getControlPositionValue();
 
-      nltools::test::assertEquals(og.controlPosition, conv.controlPosition,
-                                  "VG Master equal to previous global Master");
+      REQUIRE(vgMasterVolume == globalMasterVolume);
+      REQUIRE(vgMasterTune == globalMasterTune);
     }
-  }
+  };
 
-  assertScaleGroupsSame(converted, original);
+  auto globalMasterSetToDefault = [editBuffer]() {
+    auto globalMasterVolume = editBuffer->findGlobalParameterByID(247)->getControlPositionValue();
+    auto globalMasterTune = editBuffer->findGlobalParameterByID(248)->getControlPositionValue();
 
-  //Global Master set to 0 initialy
-  size_t master = 0;
-  for(auto &_ : converted.master)
+    REQUIRE(globalMasterVolume == 0.5);
+    REQUIRE(globalMasterTune == 0);
+  };
+
+  auto scaleUntouched = [editBuffer, collectScaleParameterValues](const std::vector<double>& scaleValues) {
+    auto currentScaleValues = collectScaleParameterValues();
+
+    REQUIRE(scaleValues.size() == currentScaleValues.size());
+    REQUIRE(scaleValues == currentScaleValues);
+  };
+
+  SECTION("split global master copied to voice groups master and set to default")
   {
-    auto &og = original.master[master];
-    auto &conv = converted.master[master];
-    master++;
-
-    nltools::test::assertEquals(og.id, conv.id, "Global Master ID Same");
-    nltools::test::assertEquals(0.0, conv.controlPosition, "Global Master Value initialized to 0");
-  }
-
-  nltools::test::assertEquals(converted.splitpoint.controlPosition, 0.5, "Split Point Initialized");
-}
-
-void EditBufferTests::compareSingleSound(const nltools::msg::SinglePresetMessage &s,
-                                         const nltools::msg::SinglePresetMessage &s1) const
-{
-  nltools::test::assertEqualsSilent(s, s1, "Single Sound not Equal");
-}
-
-void EditBufferTests::compareLayerSoundToOriginalSingle(const nltools::msg::LayerPresetMessage& layer,
-                                                        const nltools::msg::SinglePresetMessage& single)
-{
-  assertGeneralDualParameterGroups(layer, single);
-
-  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    const auto vgIndex = static_cast<int>(vg);
-    size_t vgMaster = 0;
-
-
-    for(auto &_ : layer.vgMaster[vgIndex])
     {
-      auto &og = single.master[vgMaster];
-      auto &conv = layer.vgMaster[vgIndex][vgMaster];
-      vgMaster++;
-
-      nltools::test::assertEquals(og.controlPosition, conv.controlPosition, "VG Master equal to prior Global Master");
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
     }
+
+    compareVoiceGroupMasterSameAsGlobalMaster();
+    globalMasterSetToDefault();
+    scaleUntouched(globalScaleValues);
   }
 
-  size_t master = 0;
-  for(auto &_ : layer.master)
+  SECTION("layer global master copied to voice groups master and set to default")
   {
-    auto &og = single.master[master];
-    auto &conv = layer.master[master];
-    master++;
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+    }
 
-    nltools::test::assertEquals(og.id, conv.id, "Global Master ID Equal");
-    nltools::test::assertEquals(0.0, conv.controlPosition, "Global Master Value 0");
+    compareVoiceGroupMasterSameAsGlobalMaster();
+    globalMasterSetToDefault();
+    scaleUntouched(globalScaleValues);
   }
-
-  assertScaleGroupsSame(layer, single);
 }
 
-void EditBufferTests::initEditBuffer()
+TEST_CASE("convert back and forth")
 {
-  auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("[TEST] Convert 2 Single");
-  m_editBuffer->undoableInitSound(scope->getTransaction());
-  m_editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+  auto editBuffer = getEditBuffer();
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+  }
+
+  auto hash = editBuffer->getHash();
+
+  SECTION("split and back")
+  {
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+    }
+
+    auto splitHash = editBuffer->getHash();
+    REQUIRE(splitHash != hash);
+
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    }
+
+    auto singleHash = editBuffer->getHash();
+    REQUIRE(singleHash != splitHash);
+    REQUIRE(singleHash == hash);
+  }
+
+  SECTION("split and undo")
+  {
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+    }
+
+    auto splitHash = editBuffer->getHash();
+    REQUIRE(splitHash != hash);
+
+    editBuffer->getParent()->getUndoScope().undo();
+
+    auto singleHash = editBuffer->getHash();
+    REQUIRE(singleHash != splitHash);
+    REQUIRE(singleHash == hash);
+  }
+}
+
+TEST_CASE("poly groups layer sound initialized")
+{
+  auto editBuffer = getEditBuffer();
+
+  const auto unisonVoices = editBuffer->findParameterByID(249, VoiceGroup::I)->getControlPositionValue();
+  const auto unisonDetune = editBuffer->findParameterByID(250, VoiceGroup::I)->getControlPositionValue();
+  const auto unisonPhase = editBuffer->findParameterByID(252, VoiceGroup::I)->getControlPositionValue();
+  const auto unisonPan = editBuffer->findParameterByID(253, VoiceGroup::I)->getControlPositionValue();
+
+  const auto monoEnable = editBuffer->findParameterByID(12345, VoiceGroup::I)->getControlPositionValue();
+  const auto monoPrio = editBuffer->findParameterByID(12346, VoiceGroup::I)->getControlPositionValue();
+  const auto monoLegato = editBuffer->findParameterByID(12347, VoiceGroup::I)->getControlPositionValue();
+  const auto monoGlide = editBuffer->findParameterByID(12348, VoiceGroup::I)->getControlPositionValue();
+
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+  }
+
+  for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    const auto vgVoices = editBuffer->findParameterByID(249, vg)->getControlPositionValue();
+    const auto vgDetune = editBuffer->findParameterByID(250, vg)->getControlPositionValue();
+    const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
+    const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
+
+    const auto vgEnable = editBuffer->findParameterByID(12345, vg)->getControlPositionValue();
+    const auto vgPrio = editBuffer->findParameterByID(12346, vg)->getControlPositionValue();
+    const auto vgLegato = editBuffer->findParameterByID(12347, vg)->getControlPositionValue();
+    const auto vgGlide = editBuffer->findParameterByID(12348, vg)->getControlPositionValue();
+
+    REQUIRE(unisonVoices == vgVoices);
+    REQUIRE(unisonDetune == vgDetune);
+    REQUIRE(unisonPhase == vgPhase);
+    REQUIRE(unisonPan == vgPan);
+
+    REQUIRE(monoEnable == vgEnable);
+    REQUIRE(monoPrio == vgPrio);
+    REQUIRE(monoLegato == vgLegato);
+    REQUIRE(monoGlide == vgGlide);
+  }
 }

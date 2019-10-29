@@ -22,7 +22,6 @@
 #include <parameters/RibbonParameter.h>
 #include <parameters/PitchbendParameter.h>
 #include <nltools/Testing.h>
-#include <testing/EditBufferTests.h>
 #include <nltools/Types.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
@@ -748,7 +747,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGro
   //Init Global Master
   for(auto &mp : globalMaster->getParameters())
   {
-    mp->setCPFromHwui(transaction, 0.0);
+    mp->setDefaultFromHwui(transaction);
   }
 
   auto splitParam = getSplitPoint();
@@ -781,15 +780,6 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGro
   //Init Global Master
   for(auto &mp : globalMaster->getParameters())
   {
-    mp->setCPFromHwui(transaction, 0.0);
+    mp->setDefaultFromHwui(transaction);
   }
 }
-
-#ifdef _DEVELOPMENT_PC
-
-void EditBuffer::runTests()
-{
-  EditBufferTests tester(this);
-}
-
-#endif

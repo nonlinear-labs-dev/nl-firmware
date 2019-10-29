@@ -223,12 +223,6 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         Application::get().getPresetManager()->incAllParamsFine();
       }
-#ifdef _DEVELOPMENT_PC
-      else if(line == "test-eb")
-      {
-        Application::get().getPresetManager()->getEditBuffer()->runTests();
-      }
-#endif
       else if(line.at(0) == '!')
       {
         onButtonPressed(Buttons::BUTTON_SHIFT, true);
