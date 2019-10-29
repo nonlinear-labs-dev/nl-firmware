@@ -5,6 +5,9 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <groups/MasterGroup.h>
+#include <groups/ScaleGroup.h>
+#include <groups/UnisonGroup.h>
 
 class Application;
 class Parameter;
@@ -23,8 +26,17 @@ class ModuleCaption : public Label
   static bool enableVoiceGroupSuffix()
   {
     auto eb = Application::get().getPresetManager()->getEditBuffer();
+
     if(auto selected = dynamic_cast<MonoParameter *>(eb->getSelected()))
       return eb->getType() == SoundType::Split;
+    if(auto selected = dynamic_cast<UnisonGroup *>(eb->getSelected()->getParent()))
+      return eb->getType() == SoundType::Split;
+
+    if(auto selected = dynamic_cast<MasterGroup *>(eb->getSelected()->getParent()))
+      return false;
+    if(auto selected = dynamic_cast<ScaleGroup *>(eb->getSelected()->getParent()))
+      return false;
+
     return true;
   };
 
@@ -34,7 +46,8 @@ class ModuleCaption : public Label
   virtual int getFontHeight() const override;
 
  protected:
-  virtual void updateText(Parameter* newOne);
+  virtual void updateText(Parameter *newOne);
+
  private:
   void onParameterSelected(Parameter *newOne);
   void onSelectionChanged();

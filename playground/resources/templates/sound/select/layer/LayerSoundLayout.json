@@ -68,7 +68,8 @@
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "OpenParamsScreen",
-        "BUTTON_C": "SwitchToVoicesDetail"
+        "BUTTON_C": "SwitchToVoicesDetail",
+        "BUTTON_D": "OpenMasterParameter"
       }
     }
   }

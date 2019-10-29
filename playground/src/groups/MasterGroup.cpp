@@ -1,7 +1,5 @@
-#include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include "MasterGroup.h"
 #include "parameters/Parameter.h"
-#include "parameters/ModulateableParameter.h"
 
 #include "parameters/scale-converters/LinearBipolar48StScaleConverter.h"
 #include "parameters/scale-converters/ParabolicGainDbScaleConverter.h"
