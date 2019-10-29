@@ -627,21 +627,19 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGr
 
 void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
-  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
-
-  auto vgmasterGroup = getParameterGroupByID("VGM", copyFrom);
   auto masterGroup = getGlobalParameterGroupByID("Master");
   auto masterVolumeParameter = masterGroup->getParameterByID(247);
-  auto masterTuneParameter = masterGroup->getParameterByID(247);
+  auto masterTuneParameter = masterGroup->getParameterByID(248);
 
-  auto vgVolume = vgmasterGroup->getParameterByID(10002);
-  auto vgTune = vgmasterGroup->getParameterByID(10003);
-
-  auto newVolume = masterVolumeParameter->getControlPositionValue() + vgVolume->getControlPositionValue();
-  auto newTune = masterTuneParameter->getControlPositionValue() + vgTune->getControlPositionValue();
+  auto newVolume = findParameterByID(10002, VoiceGroup::II)->getControlPositionValue()
+      + findParameterByID(10002, VoiceGroup::I)->getControlPositionValue();
+  auto newTune = findParameterByID(10003, VoiceGroup::II)->getControlPositionValue()
+      + findParameterByID(10003, VoiceGroup::I)->getControlPositionValue();
 
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);
   masterTuneParameter->setCPFromHwui(transaction, newTune);
+
+  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
 
   undoableSetType(transaction, SoundType::Single);
 }
@@ -653,7 +651,7 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   auto vgmasterGroup = getParameterGroupByID("VGM", copyFrom);
   auto masterGroup = getGlobalParameterGroupByID("Master");
   auto masterVolumeParameter = masterGroup->getParameterByID(247);
-  auto masterTuneParameter = masterGroup->getParameterByID(247);
+  auto masterTuneParameter = masterGroup->getParameterByID(248);
 
   auto vgVolume = vgmasterGroup->getParameterByID(10002);
   auto vgTune = vgmasterGroup->getParameterByID(10003);

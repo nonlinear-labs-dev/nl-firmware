@@ -185,7 +185,7 @@ TEST_CASE("convert back and forth")
   }
 }
 
-TEST_CASE("poly groups layer sound initialized")
+TEST_CASE("poly groups initialization")
 {
   auto editBuffer = getEditBuffer();
 
@@ -199,31 +199,107 @@ TEST_CASE("poly groups layer sound initialized")
   const auto monoLegato = editBuffer->findParameterByID(12347, VoiceGroup::I)->getControlPositionValue();
   const auto monoGlide = editBuffer->findParameterByID(12348, VoiceGroup::I)->getControlPositionValue();
 
+  SECTION("poly groups I, II and original are equal")
   {
-    auto scope = createTestScope();
-    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+    }
+
+    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+    {
+      const auto vgVoices = editBuffer->findParameterByID(249, vg)->getControlPositionValue();
+      const auto vgDetune = editBuffer->findParameterByID(250, vg)->getControlPositionValue();
+      const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
+      const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
+
+      const auto vgEnable = editBuffer->findParameterByID(12345, vg)->getControlPositionValue();
+      const auto vgPrio = editBuffer->findParameterByID(12346, vg)->getControlPositionValue();
+      const auto vgLegato = editBuffer->findParameterByID(12347, vg)->getControlPositionValue();
+      const auto vgGlide = editBuffer->findParameterByID(12348, vg)->getControlPositionValue();
+
+      REQUIRE(unisonVoices == vgVoices);
+      REQUIRE(unisonDetune == vgDetune);
+      REQUIRE(unisonPhase == vgPhase);
+      REQUIRE(unisonPan == vgPan);
+
+      REQUIRE(monoEnable == vgEnable);
+      REQUIRE(monoPrio == vgPrio);
+      REQUIRE(monoLegato == vgLegato);
+      REQUIRE(monoGlide == vgGlide);
+    }
   }
 
-  for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+  SECTION("poly groups I, II and original same")
   {
-    const auto vgVoices = editBuffer->findParameterByID(249, vg)->getControlPositionValue();
-    const auto vgDetune = editBuffer->findParameterByID(250, vg)->getControlPositionValue();
-    const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
-    const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+    }
 
-    const auto vgEnable = editBuffer->findParameterByID(12345, vg)->getControlPositionValue();
-    const auto vgPrio = editBuffer->findParameterByID(12346, vg)->getControlPositionValue();
-    const auto vgLegato = editBuffer->findParameterByID(12347, vg)->getControlPositionValue();
-    const auto vgGlide = editBuffer->findParameterByID(12348, vg)->getControlPositionValue();
+    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+    {
+      const auto vgVoices = editBuffer->findParameterByID(249, vg)->getControlPositionValue();
+      const auto vgDetune = editBuffer->findParameterByID(250, vg)->getControlPositionValue();
+      const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
+      const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
 
-    REQUIRE(unisonVoices == vgVoices);
-    REQUIRE(unisonDetune == vgDetune);
-    REQUIRE(unisonPhase == vgPhase);
-    REQUIRE(unisonPan == vgPan);
+      const auto vgEnable = editBuffer->findParameterByID(12345, vg)->getControlPositionValue();
+      const auto vgPrio = editBuffer->findParameterByID(12346, vg)->getControlPositionValue();
+      const auto vgLegato = editBuffer->findParameterByID(12347, vg)->getControlPositionValue();
+      const auto vgGlide = editBuffer->findParameterByID(12348, vg)->getControlPositionValue();
 
-    REQUIRE(monoEnable == vgEnable);
-    REQUIRE(monoPrio == vgPrio);
-    REQUIRE(monoLegato == vgLegato);
-    REQUIRE(monoGlide == vgGlide);
+      REQUIRE(unisonVoices == vgVoices);
+      REQUIRE(unisonDetune == vgDetune);
+      REQUIRE(unisonPhase == vgPhase);
+      REQUIRE(unisonPan == vgPan);
+
+      REQUIRE(monoEnable == vgEnable);
+      REQUIRE(monoPrio == vgPrio);
+      REQUIRE(monoLegato == vgLegato);
+      REQUIRE(monoGlide == vgGlide);
+    }
+  }
+}
+
+TEST_CASE("Split to Single Conversion")
+{
+  auto editBuffer = getEditBuffer();
+
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+  }
+
+  REQUIRE(editBuffer->getType() == SoundType::Split);
+
+  SECTION("add voice-group master params and set init global master")
+  {
+    auto vgmasterI = editBuffer->findParameterByID(10002, VoiceGroup::I);
+    auto vgmasterII = editBuffer->findParameterByID(10002, VoiceGroup::II);
+    auto vgtuneI = editBuffer->findParameterByID(10003, VoiceGroup::I);
+    auto vgtuneII = editBuffer->findParameterByID(10003, VoiceGroup::II);
+
+    //Update vg master parameters
+    {
+      auto scope = createTestScope();
+      vgmasterI->setCPFromHwui(scope->getTransaction(), 0.5);
+      vgmasterII->setCPFromHwui(scope->getTransaction(), 0.2);
+
+      vgtuneI->setCPFromHwui(scope->getTransaction(), 0.5);
+      vgtuneII->setCPFromHwui(scope->getTransaction(), 0.2);
+    }
+
+    //Convert sound to single
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    }
+
+    auto globalMasterVolume = editBuffer->findGlobalParameterByID(247);
+    auto globalMasterTune = editBuffer->findGlobalParameterByID(248);
+
+    REQUIRE(globalMasterVolume->getControlPositionValue() == 0.7);
+    REQUIRE(globalMasterTune->getControlPositionValue() == 0.7);
   }
 }

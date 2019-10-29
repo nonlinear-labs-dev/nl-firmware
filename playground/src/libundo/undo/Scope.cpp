@@ -84,12 +84,7 @@ namespace UNDO
 
   Scope::tTransactionScopePtr Scope::startTestTransaction()
   {
-    nltools_assertAlways(m_undoPosition == nullptr || m_undoPosition->isClosed());
-
-    auto transaction = std::make_unique<Transaction>(*this, "test", getDepth());
-    auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
-    addTransaction(std::move(transaction));
-    return ret;
+    return startTransaction("test");
   }
 
   Scope::tTransactionScopePtr Scope::startCuckooTransaction()
