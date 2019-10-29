@@ -392,6 +392,17 @@ class MockPresetStorage
   Preset* m_layer;
 };
 
+TEST_CASE("Preset Mock Storage")
+{
+  MockPresetStorage presets;
+  REQUIRE(presets.getSinglePreset() != nullptr);
+  REQUIRE(presets.getSinglePreset()->getType() == SoundType::Single);
+  REQUIRE(presets.getSplitPreset() != nullptr);
+  REQUIRE(presets.getSplitPreset()->getType() == SoundType::Split);
+  REQUIRE(presets.getLayerPreset() != nullptr);
+  REQUIRE(presets.getLayerPreset()->getType() == SoundType::Layer);
+}
+
 TEST_CASE("Load Presets Complete")
 {
   auto editBuffer = getEditBuffer();
@@ -400,13 +411,6 @@ TEST_CASE("Load Presets Complete")
 
   {
     MockPresetStorage presets;
-    REQUIRE(presets.getSinglePreset() != nullptr);
-    REQUIRE(presets.getLayerPreset() != nullptr);
-    REQUIRE(presets.getSplitPreset() != nullptr);
-
-    REQUIRE(presets.getSinglePreset()->getType() == SoundType::Single);
-    REQUIRE(presets.getSplitPreset()->getType() == SoundType::Split);
-    REQUIRE(presets.getLayerPreset()->getType() == SoundType::Layer);
 
     SECTION("Load single preset")
     {
@@ -444,11 +448,22 @@ TEST_CASE("Load Presets Complete")
 
 TEST_CASE("load single preset into dual editbuffer")
 {
+  MockPresetStorage presets;
+
   auto editBuffer = getEditBuffer();
   {
     auto scope = createTestScope();
-    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Single);
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
 
-    REQUIRE(editBuffer->getType() == SoundType::Single);
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
+  }
+
+  SECTION("Load Single Into I")
+  {
+    auto scope = createTestScope();
+  }
+
+  SECTION("Load Single Into II")
+  {
   }
 }
