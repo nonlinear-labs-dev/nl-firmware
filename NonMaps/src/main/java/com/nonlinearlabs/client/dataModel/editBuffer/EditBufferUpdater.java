@@ -13,26 +13,24 @@ public class EditBufferUpdater extends Updater {
 	@Override
 	public void doUpdate() {
 		if (root != null) {
-			EditBufferModel eb = EditBufferModel.get();
-
 			String selParam = getAttributeValue(root, "selected-parameter");
-			eb.selectedParameter.setValue(Integer.valueOf(selParam));
+			EditBufferModel.selectedParameter.setValue(Integer.valueOf(selParam));
 			String loadedPreset = getAttributeValue(root, "loaded-preset");
-			eb.loadedPreset.setValue(loadedPreset);
+			EditBufferModel.loadedPreset.setValue(loadedPreset);
 			String loadedPresetName = getAttributeValue(root, "loaded-presets-name");
-			eb.loadedPresetName.setValue(loadedPresetName);
+			EditBufferModel.loadedPresetName.setValue(loadedPresetName);
 			String loadedPresetBankName = getAttributeValue(root, "loaded-presets-bank-name");
-			eb.loadedPresetBankName.setValue(loadedPresetBankName);
+			EditBufferModel.loadedPresetBankName.setValue(loadedPresetBankName);
 			String isZombie = getAttributeValue(root, "preset-is-zombie");
-			eb.isZombie.setValue(Boolean.valueOf(isZombie));
+			EditBufferModel.isZombie.setValue(Boolean.valueOf(isZombie));
 			String isModified = getAttributeValue(root, "is-modified");
-			eb.isModified.setValue(Boolean.valueOf(isModified));
+			EditBufferModel.isModified.setValue(Boolean.valueOf(isModified));
 			String changed = getAttributeValue(root, "changed");
-			eb.isChanged.setValue(Boolean.valueOf(changed));
+			EditBufferModel.isChanged.setValue(Boolean.valueOf(changed));
 
 			processChildrenElements(root, "sound-type", n -> {
 				String soundType = getText(n);
-				eb.soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
+				EditBufferModel.soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
 			});
 
 			processChangedChildrenElements(root, "recall-data", c -> processOriginal(c));

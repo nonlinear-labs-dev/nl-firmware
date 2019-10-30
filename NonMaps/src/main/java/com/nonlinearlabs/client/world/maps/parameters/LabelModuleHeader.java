@@ -4,9 +4,9 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.setup.Setup;
 import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
@@ -33,10 +33,8 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			boolean isAnyParameterLocked = NonMaps.get().getNonLinearWorld().getParameterEditor()
-					.isAnyParameterLocked();
-			boolean areAllParametersLocked = NonMaps.get().getNonLinearWorld().getParameterEditor()
-					.areAllParametersLocked();
+			boolean areAllParametersLocked = EditBufferPresenterProvider.getPresenter().allParametersLocked;
+			boolean isAnyParameterLocked = EditBufferPresenterProvider.getPresenter().isAnyParameterLocked;
 
 			if (!areAllParametersLocked) {
 				addChild(new ContextMenuItem(this, "Lock all Groups") {

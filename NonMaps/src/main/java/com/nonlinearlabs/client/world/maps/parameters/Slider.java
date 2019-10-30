@@ -4,8 +4,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 abstract class Slider extends ValueControl {
 
-	public Slider(MapsLayout parent) {
-		super(parent);
+	public Slider(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 }

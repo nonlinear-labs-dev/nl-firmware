@@ -12,6 +12,7 @@ import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
 public class BasicParameterModel extends Notifier<BasicParameterModel> {
 
 	public int id;
+	public ParameterGroupModel group;
 	public ValueDataModelEntity value = new ValueDataModelEntity();
 	public StringDataModelEntity shortName = new StringDataModelEntity();
 	public StringDataModelEntity longName = new StringDataModelEntity();
@@ -44,7 +45,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		return isValueChanged();
 	}
 
-	public Updater getUpdater(Node c) {
+	public Updater createUpdater(Node c) {
 		return new ParameterUpdater(c, this);
 	}
 
@@ -56,8 +57,12 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		return locked.isTrue();
 	}
 
-	public void  getHash(Checksum crc) {
+	public void getHash(Checksum crc) {
 		crc.eat(value.getQuantizedAndClipped(true));
+	}
+
+	public void setGroup(ParameterGroupModel group) {
+		this.group = group;
 	}
 
 }

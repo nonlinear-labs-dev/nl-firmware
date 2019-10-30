@@ -2,7 +2,6 @@ package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.world.Gray;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 

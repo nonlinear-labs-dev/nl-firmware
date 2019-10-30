@@ -4,7 +4,6 @@ import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 
 public class MCAmountEdit extends MCSomething {
@@ -35,7 +34,7 @@ public class MCAmountEdit extends MCSomething {
 		if (p instanceof ModulatableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
 			if (m.getModulationSource() != MacroControls.NONE)
-				m.getModulationAmount().setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
+				m.getModulationAmount().setToDefault(Parameter.);
 		}
 
 		return this;
@@ -43,12 +42,12 @@ public class MCAmountEdit extends MCSomething {
 
 	@Override
 	protected void inc(ModulatableParameter m, boolean fine) {
-		m.getModulationAmount().inc(Initiator.EXPLICIT_USER_ACTION, fine);
+		m.getModulationAmount().inc(fine);
 	}
 
 	@Override
 	protected void dec(ModulatableParameter m, boolean fine) {
-		m.getModulationAmount().dec(Initiator.EXPLICIT_USER_ACTION, fine);
+		m.getModulationAmount().dec(fine);
 	}
 
 }

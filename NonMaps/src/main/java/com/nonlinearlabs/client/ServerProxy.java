@@ -97,7 +97,6 @@ public class ServerProxy {
 			boolean omitOracles = omitOracles(world);
 
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
-			nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);
 			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
 			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
 					presetManagerNode, deviceInfo, undoNode);

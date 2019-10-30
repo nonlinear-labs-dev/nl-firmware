@@ -1,25 +1,17 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
-import com.nonlinearlabs.client.world.AppendOverwriteInsertPresetDialog;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.Cabinet.Cabinet;
 import com.nonlinearlabs.client.world.maps.parameters.CombFilter.CombFilter;
 import com.nonlinearlabs.client.world.maps.parameters.Echo.Echo;
@@ -43,14 +35,12 @@ import com.nonlinearlabs.client.world.maps.parameters.ShapeB.ShapeB;
 import com.nonlinearlabs.client.world.maps.parameters.VoiceGroup.VoiceGroup;
 import com.nonlinearlabs.client.world.maps.parameters.Voices.Voices;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
-import com.nonlinearlabs.client.world.overlay.CompareDialog;
 
 public class ParameterEditor extends LayoutResizingVertical {
 
 	private String loadedPreset = "";
 	private PlayControls playControls;
 	private static ParameterEditor theEditor = null;
-	private HashMap<String, String> attributes = new HashMap<String, String>();
 	private String hash = "";
 
 	private class PlayControlsArea extends ResizingHorizontalCenteringLayout {
@@ -245,7 +235,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 	private Parameter selectedObject = null;
 
-	public void select(Initiator initiator, Parameter sel) {
+	public void select(Parameter sel) {
 		if (selectedObject != sel) {
 			Parameter oldSel = selectedObject;
 			selectedObject = sel;
@@ -254,8 +244,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 				listener.onSelectionChanged(oldSel, sel);
 			}
 
-			if (initiator == Initiator.EXPLICIT_USER_ACTION)
-				getNonMaps().getServerProxy().onParameterSelectionChanged(this);
+			getNonMaps().getServerProxy().onParameterSelectionChanged(this);
 
 			if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "parameter",
 					"parameter-and-preset"))
@@ -286,85 +275,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 		listeners.remove(listener);
 	}
 
-	public void update(Node node, boolean omitOracles) {
-		if (node == null)
-			return;
-
-		if (ServerProxy.didChange(node)) {
-			updateHash(node);
-			updateCompare(node);
-
-			if (!omitOracles) {
-				updatePreset(node);
-				updateSelection(node);
-			} else {
-				Tracer.log(
-						"did not change parameters in parameter editor from update doc, because it says the changes can be omitted");
-			}
-		}
-
-		String loadedPreset = node.getAttributes().getNamedItem("loaded-preset").getNodeValue();
-
-		if (loadedPreset != null && !loadedPreset.equals(this.loadedPreset)) {
-			this.loadedPreset = loadedPreset;
-			AppendOverwriteInsertPresetDialog.close();
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
-
-		String loadedPresetsName = node.getAttributes().getNamedItem("loaded-presets-name").getNodeValue();
-
-		if (loadedPresetsName != null && !loadedPresetsName.equals(this.loadedPresetsName)) {
-			this.loadedPresetsName = loadedPresetsName;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
-	}
-
-	public void updateHash(Node node) {
-		String hash = node.getAttributes().getNamedItem("hash").getNodeValue();
-		if (!hash.equals(this.hash)) {
-			this.hash = hash;
-		}
-	}
-
-	private void updatePreset(Node node) {
-		NodeList children = node.getChildNodes();
-
-		for (int i = 0; i < children.getLength(); i++) {
-			Node n = children.item(i);
-			String nodesName = n.getNodeName();
-
-			if (nodesName.equals("preset")) {
-				updateAttributes(n);
-			}
-		}
-	}
-
-	private void updateAttributes(Node node) {
-		NodeList children = node.getChildNodes();
-
-		for (int i = 0; i < children.getLength(); i++) {
-			Node n = children.item(i);
-			String nodesName = n.getNodeName();
-
-			if (nodesName.equals("attribute")) {
-				updateAttribute(n);
-			}
-		}
-	}
-
-	private void updateAttribute(Node n) {
-		String key = n.getAttributes().getNamedItem("key").getNodeValue();
-		String value = ServerProxy.getText(n);
-		attributes.put(key, value);
-	}
-
-	public String getAttribute(String key) {
-		String ret = attributes.get(key);
-		if (ret != null)
-			return ret;
-		return "";
-	}
-
 	public ParameterGroupIface findParameterGroup(final String groupID) {
 		Control found = recurseChildren(new ControlFinder() {
 
@@ -382,33 +292,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return (ParameterGroupIface) found;
 	}
 
-	private void updateSelection(Node node) {
-		String selected = node.getAttributes().getNamedItem("selected-parameter").getNodeValue();
-		Parameter sel = findSelectable(Integer.parseInt(selected));
-
-		if (sel != selectedObject) {
-			select(Initiator.INDIRECT_USER_ACTION, sel);
-		}
-	}
-
-	private void updateCompare(Node node) {
-		for (CompareDialog compareDialog : NonMaps.get().getNonLinearWorld().getViewport().getOverlay()
-				.getCompareDialogs()) {
-			compareDialog.update();
-		}
-	}
-
-	private HashMap<Integer, Parameter> parameterMap = new HashMap<Integer, Parameter>();
-
-	public void registerSelectable(Parameter sel) {
-		Parameter pl = (Parameter) sel;
-		parameterMap.put(pl.getParameterID(), pl);
-	}
-
-	Parameter findSelectable(int parameterID) {
-		return parameterMap.get(parameterID);
-	}
-
 	public String getLoadedPresetUUID() {
 		return loadedPreset;
 	}
@@ -419,17 +302,6 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 	public Macros getMacroControls() {
 		return playControls.getMacroControls();
-	}
-
-	public Parameter getSelectedOrSome() {
-		if (selectedObject != null)
-			return (Parameter) selectedObject;
-
-		return parameterMap.values().iterator().next();
-	}
-
-	public Parameter findParameter(int parameterID) {
-		return (Parameter) findSelectable(parameterID);
 	}
 
 	public PlayControls getPlayControls() {
@@ -474,11 +346,4 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return c != null;
 	}
 
-	public boolean areAllParametersLocked() {
-		for (Parameter p : parameterMap.values()) {
-			if (p.isLocked() == false)
-				return false;
-		}
-		return true;
-	}
 }

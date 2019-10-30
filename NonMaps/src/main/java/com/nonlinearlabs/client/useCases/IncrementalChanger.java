@@ -73,4 +73,16 @@ public class IncrementalChanger {
 
 	public void finish() {
 	}
+
+	public void setToDefault() {
+		// todo
+	}
+
+	public void inc(boolean fine) {
+		// todo
+	}
+
+	public void dec(boolean fine) {
+		// todo
+	}
 }

@@ -15,8 +15,8 @@ class MasterCol1 extends ParameterColumn {
 		private Volume(MapsLayout parent) {
 			super(parent, 247);
 			addChild(new LabelLarge(this));
-			addChild(new SliderVertical(this));
-			addChild(new ValueDisplayLarge(this));
+			addChild(new SliderVertical(this, getParameterID()));
+			addChild(new ValueDisplayLarge(this, getParameterID()));
 		}
 
 	}
@@ -26,7 +26,7 @@ class MasterCol1 extends ParameterColumn {
 		private Tune(MapsLayout parent) {
 			super(parent, 248);
 			addChild(new LabelLarge(this));
-			addChild(new NumericalControlSmall(this));
+			addChild(new NumericalControlSmall(this, getParameterID()));
 		}
 
 	}

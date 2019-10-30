@@ -15,9 +15,9 @@ class EnvALevelVelLevelKTTimeKT extends ParameterGroupControls {
 
 		private LvlVel(MapsLayout parent) {
 			super(parent, 14);
-			addChild(new LabelModulationSource(this));
-			addChild(new SliderHorizontal(this));
-			addChild(new ValueDisplaySmall(this));
+			addChild(new LabelModulationSource(this, getParameterID()));
+			addChild(new SliderHorizontal(this, getParameterID()));
+			addChild(new ValueDisplaySmall(this, getParameterID()));
 		}
 
 		@Override

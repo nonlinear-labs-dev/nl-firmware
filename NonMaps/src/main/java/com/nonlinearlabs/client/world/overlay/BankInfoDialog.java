@@ -197,7 +197,7 @@ public class BankInfoDialog extends GWTDialog {
 
 				if (theBank != null) {
 					int oldNumber = theBank.getOrderNumber();
-					int currentValue = new Integer(position.getValue());
+					int currentValue = position.getValue();
 
 					if (oldNumber != currentValue) {
 						NonMaps.get().getServerProxy().setBankOrderNumber(theBank, currentValue);
@@ -299,7 +299,7 @@ public class BankInfoDialog extends GWTDialog {
 
 			if (haveFocus != position) {
 				if (bankPos != currentPositionValue) {
-					position.setText(new Integer(bankPos).toString());
+					position.setText(Integer.toString(bankPos));
 				}
 			}
 

@@ -1,6 +1,8 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
+import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
+import com.nonlinearlabs.client.dataModel.Updater;
 
 public class PedalParameterModel extends PhysicalControlParameterModel {
 	public PedalParameterModel(int id) {
@@ -17,4 +19,9 @@ public class PedalParameterModel extends PhysicalControlParameterModel {
 	}
 
 	public EnumDataModelEntity<Modes> mode = new EnumDataModelEntity<Modes>(Modes.class, Modes.stay);
+
+	@Override
+	public Updater createUpdater(Node c) {
+		return new PedalParameterUpdater(c, this);
+	}
 }

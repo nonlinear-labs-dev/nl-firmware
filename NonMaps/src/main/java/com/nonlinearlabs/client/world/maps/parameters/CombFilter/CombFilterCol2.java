@@ -15,7 +15,7 @@ class CombFilterCol2 extends ParameterColumn {
 
 		private Pitch(MapsLayout parent) {
 			super(parent, 115);
-			addChild(new ModulateableNumericalControl(this));
+			addChild(new ModulateableNumericalControl(this, 115));
 		}
 
 		@Override
@@ -28,8 +28,8 @@ class CombFilterCol2 extends ParameterColumn {
 
 		private Keytracking(MapsLayout parent) {
 			super(parent, 117);
-			addChild(new LabelModulationSource(this));
-			addChild(new KeyTrackParameter(this));
+			addChild(new LabelModulationSource(this, getParameterID()));
+			addChild(new KeyTrackParameter(this, getParameterID()));
 		}
 	}
 

@@ -22,7 +22,8 @@ public class ParameterGroupUpdater extends Updater {
 		String id = getAttributeValue(c, "id");
 		BasicParameterModel p = EditBufferModel.findParameter(Integer.parseInt(id));
 		if (p != null) {
-			Updater u = p.getUpdater(c);
+			p.setGroup(target);
+			Updater u = p.createUpdater(c);
 			u.doUpdate();
 		}
 	}

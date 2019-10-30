@@ -18,6 +18,8 @@ public class ParameterFactory {
 	static private HashSet<Integer> modulationRouters = new HashSet<Integer>(
 			Arrays.asList(255, 256, 257, 258, 260, 261, 262, 263, 265, 266, 267, 268, 270, 271, 272, 273, 275, 276, 277,
 					278, 280, 281, 282, 283, 285, 286, 287, 288, 290, 291, 292, 293));
+	static private HashSet<Integer> scaleOffsetParameters = new HashSet<Integer>(
+			Arrays.asList(313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323));
 
 	static public BasicParameterModel create(int id) {
 		if (modulateableParameters.contains(id))
@@ -38,10 +40,18 @@ public class ParameterFactory {
 		if (modulationRouters.contains(id))
 			return new ModulationRouterParameterModel(id);
 
+		if (scaleOffsetParameters.contains(id))
+			return new ScaleOffsetParameterModel(id);
+
 		return new BasicParameterModel(id);
 	}
 
 	static public Set<Integer> getModulationRouters() {
 		return modulationRouters;
 	}
+
+	static public Set<Integer> getScaleOffsetParameters() {
+		return scaleOffsetParameters;
+	}
+
 }

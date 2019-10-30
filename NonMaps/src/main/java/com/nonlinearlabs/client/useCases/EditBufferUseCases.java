@@ -3,11 +3,11 @@ package com.nonlinearlabs.client.useCases;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
-import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 
 public class EditBufferUseCases {
 	private static EditBufferUseCases theInstance = new EditBufferUseCases();
@@ -134,5 +134,30 @@ public class EditBufferUseCases {
 			setParameterValue(parameterID, 0, true);
 		else
 			setParameterValue(parameterID, 1, true);
+	}
+
+	public void decModulationAmount(int id, boolean fine) {
+		incDecModulationAmount(id, fine, -1);
+	}
+
+	public void incModulationAmount(int id, boolean fine) {
+		incDecModulationAmount(id, fine, 1);
+	}
+
+	private void incDecModulationAmount(int id, boolean fine, int inc) {
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		double v = p.modAmount.getIncDecValue(fine, inc);
+		setModulationAmount(id, v, true);
+	}
+
+	public void setModulationAmount(int id, double newValue, boolean b) {
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		double oldValue = p.modAmount.getQuantizedAndClipped(true);
+		p.modAmount.value.setValue(newValue);
+		newValue = p.modAmount.getQuantizedAndClipped(true);
+		double diff = newValue - oldValue;
+
+		if (diff != 0)
+			NonMaps.get().getServerProxy().setModulationAmount(newValue);
 	}
 }

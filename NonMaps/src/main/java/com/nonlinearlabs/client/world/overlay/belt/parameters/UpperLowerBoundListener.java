@@ -3,7 +3,6 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.maps.parameters.value.QuantizedClippedValue;
@@ -16,7 +15,7 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 	}
 
 	@Override
-	public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue) {
+	public void onQuantizedValueChanged(double oldQuantizedValue, double newQuantizedValue) {
 		Parameter p = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 
 		if (p instanceof ModulatableParameter) {
@@ -53,22 +52,19 @@ class UpperLowerBoundListener implements QuantizedClippedValue.ChangeListener {
 				if (modulatedParam.isBiPolar())
 					newModAmount /= 2;
 
-				if (initiator == Initiator.EXPLICIT_USER_ACTION) {
-					modulatedParam.getModulationAmount().setRawValue(Initiator.INDIRECT_USER_ACTION, newModAmount);
-					modulatedParam.getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, newValue);
+				modulatedParam.getModulationAmount().setRawValue(newModAmount);
+				modulatedParam.getValue().setRawValue(newValue);
 
-					NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount,
-							newValue);
-				}
+				NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount, newValue);
 			}
 		}
 	}
 
 	@Override
-	public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
+	public void onClippedValueChanged(double oldClippedValue, double newClippedValue) {
 	}
 
 	@Override
-	public void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue) {
+	public void onRawValueChanged(double oldRawValue, double newRawValue) {
 	}
 }

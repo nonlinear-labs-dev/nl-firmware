@@ -2,7 +2,6 @@ package com.nonlinearlabs.client.world.maps.parameters.value;
 
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.client.tools.NLMath;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 
 class ClippedValue extends Value {
 
@@ -23,17 +22,17 @@ class ClippedValue extends Value {
 	}
 
 	@Override
-	protected void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue) {
+	protected void onRawValueChanged(double oldRawValue, double newRawValue) {
 		double oldClippedValue = clip(oldRawValue);
 		double newClippedValue = clip(newRawValue);
 
 		if (oldClippedValue != newClippedValue)
-			onClippedValueChanged(initiator, oldClippedValue, newClippedValue);
+			onClippedValueChanged(oldClippedValue, newClippedValue);
 
-		super.onRawValueChanged(initiator, oldRawValue, newRawValue);
+		super.onRawValueChanged(oldRawValue, newRawValue);
 	}
 
-	protected void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
+	protected void onClippedValueChanged(double oldClippedValue, double newClippedValue) {
 	}
 
 	public void update(ValueDataModelEntity e) {

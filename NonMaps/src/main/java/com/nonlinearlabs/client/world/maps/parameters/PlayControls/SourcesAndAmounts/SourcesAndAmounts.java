@@ -11,7 +11,6 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
-import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.ContextMenuItem;
@@ -125,10 +124,6 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 	@Override
 	public String getID() {
 		return "MCM";
-	}
-
-	public void onReturningModeChanged(PhysicalControlParameter src) {
-		controls.onReturningModeChanged(src);
 	}
 
 	public Pedal getPedal(int i) {

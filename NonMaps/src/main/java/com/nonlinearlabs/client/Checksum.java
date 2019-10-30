@@ -26,6 +26,11 @@ public class Checksum {
 		eat(v.hashCode());
 	}
 
+	public void eat(String[] v) {
+		for (String a : v)
+			eat(a);
+	}
+
 	public long getHash() {
 		return checksum;
 	}

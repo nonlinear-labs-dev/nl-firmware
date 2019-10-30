@@ -30,7 +30,7 @@ public class MCValueEdit extends MCSomething {
 		Parameter q = getMacroControl();
 
 		if (q != null)
-			q.setDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
+			q.setDefault(Parameter.);
 
 		return this;
 	}

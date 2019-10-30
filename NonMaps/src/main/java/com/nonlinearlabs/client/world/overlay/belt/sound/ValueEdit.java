@@ -8,7 +8,6 @@ import com.nonlinearlabs.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
@@ -39,10 +38,10 @@ class ValueEdit extends Label {
 		Rect rightRect = getPixRect().copy();
 		rightRect.setLeft(getPixRect().getRight() - getPixRect().getWidth() / 2);
 		if (leftRect.contains(eventPoint)) {
-			EditBufferUseCases.get().decParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
+			EditBufferUseCases.get().decParameter(param.id, false);
 			return this;
 		} else if (rightRect.contains(eventPoint)) {
-			EditBufferUseCases.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, false);
+			EditBufferUseCases.get().incParameter(param.id, false);
 			return this;
 		}
 		return super.click(eventPoint);
@@ -78,9 +77,9 @@ class ValueEdit extends Label {
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		if (amount > 0)
-			EditBufferUseCases.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
+			EditBufferUseCases.get().incParameter(param.id, fine);
 		else if (amount < 0)
-			EditBufferUseCases.get().incParameter(param.id, Initiator.EXPLICIT_USER_ACTION, fine);
+			EditBufferUseCases.get().incParameter(param.id, fine);
 
 		return this;
 	}

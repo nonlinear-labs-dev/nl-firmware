@@ -16,7 +16,7 @@ public class MonoColumn extends ParameterColumn {
         private Voices(MapsLayout parent) {
             super(parent, 249);
             addChild(new LabelLarge(this));
-            addChild(new NumericalControlSmall(this));
+            addChild(new NumericalControlSmall(this, getParameterID()));
         }
     }
 
@@ -24,8 +24,8 @@ public class MonoColumn extends ParameterColumn {
 
         private Detune(MapsLayout parent) {
             super(parent, 250);
-            addChild(new ModulationSourceLabel(this));
-            addChild(new NumericalControlSmall(this) {
+            addChild(new ModulationSourceLabel(this, getParameterID()));
+            addChild(new NumericalControlSmall(this, getParameterID()) {
                 @Override
                 protected double getInsetY() {
                     return 0;

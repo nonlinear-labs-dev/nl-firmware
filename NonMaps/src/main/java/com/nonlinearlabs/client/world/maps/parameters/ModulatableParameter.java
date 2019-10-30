@@ -1,18 +1,14 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.ColorTable;
-import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.ModulateableParameterUseCases;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
-import com.nonlinearlabs.client.world.maps.parameters.value.ModulationAmount;
 
 public class ModulatableParameter extends Parameter {
 
@@ -81,42 +77,16 @@ public class ModulatableParameter extends Parameter {
 		ModulateableParameterUseCases.setModulationSource(getParameterID(), toModSource(src));
 	}
 
-	protected String getModSourceString() {
-		switch (getModulationSource()) {
-		case A:
-			return "\uE000";
-
-		case B:
-			return "\uE001";
-
-		case C:
-			return "\uE002";
-
-		case D:
-			return "\uE003";
-
-		default:
-		}
-
-		return "";
-	}
-
 	@Override
 	public String getFullNameWithGroup() {
-		BasicParameterModel bpm = EditBufferModel.findParameter(getParameterID());
-		boolean changed = bpm.value.value.getValue() != bpm.originalValue.getValue();
-		return getGroupName() + "   \u2013   " + getName().getLongName() + (changed ? " *" : "");
-	}
-
-	public void applyModulation(Initiator initiator, double diff) {
-		getValue().applyModulation(initiator, amount.getQuantizedClipped() * diff);
+		return presenter.fullNameWithGroup;
 	}
 
 	public void modulationAmountInc(boolean fine) {
-		amount.inc(Initiator.EXPLICIT_USER_ACTION, fine);
+		EditBufferUseCases.get().incModulationAmount(getParameterID(), fine);
 	}
 
 	public void modulationAmountDec(boolean fine) {
-		amount.dec(Initiator.EXPLICIT_USER_ACTION, fine);
+		EditBufferUseCases.get().decModulationAmount(getParameterID(), fine);
 	}
 }

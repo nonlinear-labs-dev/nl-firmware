@@ -1,8 +1,5 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.Millimeter;
@@ -13,6 +10,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.setup.Setup;
 import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.Setup.EditParameter;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.client.world.Control;
@@ -30,54 +29,33 @@ import com.nonlinearlabs.client.world.pointer.TouchPinch;
 
 public abstract class Parameter extends LayoutResizingVertical {
 
-	public enum Initiator {
-		EXPLICIT_USER_ACTION, INDIRECT_USER_ACTION, MODULATION
-	}
-
-	private int parameterID;
 	protected IncrementalChanger currentParameterChanger = null;
+	protected ParameterPresenter presenter;
+	protected int id;
 
 	public Parameter(MapsLayout parent, int id) {
 		super(parent);
-		parameterID = id;
+		this.id = id;
+		ParameterPresenterProviders.get().register(id, p -> onPresenterUpdated(p));
+	}
+
+	private boolean onPresenterUpdated(ParameterPresenter p) {
+		presenter = p;
+		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		return true;
 	}
 
 	@Override
 	public void getStateHash(Checksum crc) {
-		super.getStateHash(crc);
-		crc.eat(isSelected());
-		crc.eat(getParameterID());
-		crc.eat(Setup.get().systemSettings.highlightChangedParameters.getValue().toString());
-		crc.eat(Setup.get().systemSettings.forceHighlightChangedParameters.getValue().toString());
-		crc.eat(getParameterModel().isChanged());
-		getParameterModel().getHash(crc);
-	}
-
-	BasicParameterModel getParameterModel() {
-		return EditBufferModel.findParameter(getParameterID());
-	}
-
-	public final int getParameterID() {
-		return parameterID;
-	}
-
-	static private List<Integer> HardwareSourceIDS() {
-		return Arrays.asList(254, 259, 264, 269, 274, 279, 284, 289);
+		presenter.getHash(crc);
 	}
 
 	private boolean shouldHightlightChanged() {
-		BasicParameterModel bpm = EditBufferModel.findParameter(getParameterID());
-		boolean highlight = Setup.get().systemSettings.highlightChangedParameters.isTrue();
-		boolean forceHighlight = Setup.get().systemSettings.forceHighlightChangedParameters.isTrue();
+		return presenter.highlightChanged;
+	}
 
-		if (HardwareSourceIDS().contains(getParameterID()))
-			return false;
-
-		if (!bpm.isChanged())
-			return false;
-
-		return highlight || forceHighlight;
-
+	public int getParameterID() {
+		return id;
 	}
 
 	protected RGB getRoundingColor() {
@@ -126,8 +104,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 		EditBufferUseCases.get().setToDefault(getParameterID());
 	}
 
-	public void select(Initiator initiator) {
-		getSelectionRoot().select(initiator, this);
+	public void select() {
+		getSelectionRoot().select(this);
 	}
 
 	public boolean isSelected() {
@@ -142,7 +120,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 			return null;
 
 		if (!isSelected())
-			select(Initiator.EXPLICIT_USER_ACTION);
+			select();
 
 		return this;
 	}
@@ -158,7 +136,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 		switch (Setup.get().localSettings.editParameter.getValue()) {
 		case always:
-			select(Initiator.EXPLICIT_USER_ACTION);
+			select();
 
 			if (isBoolean())
 				toggleBoolean();
@@ -268,7 +246,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public boolean isBoolean() {
-		return getParameterModel().value.metaData.isBoolean.getBool();
+		return presenter.isBoolean;
 	}
 
 	private void toggleBoolean() {
@@ -281,10 +259,6 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	public ContextMenu createContextMenu(Overlay o) {
 		return new ParameterContextMenu(o, this);
-	}
-
-	public boolean hasContextMenu() {
-		return true;
 	}
 
 	public boolean dimHandleAtDefaultValue() {
@@ -315,14 +289,12 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	@Override
 	public Control onContextMenu(Position pos) {
-		select(Initiator.EXPLICIT_USER_ACTION);
+		select();
 		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 
 		if (showContextMenus) {
-			if (hasContextMenu()) {
-				Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-				return o.setContextMenu(pos, createContextMenu(o));
-			}
+			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
+			return o.setContextMenu(pos, createContextMenu(o));
 		}
 		return super.onContextMenu(pos);
 	}
@@ -338,7 +310,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public boolean isLocked() {
-		return getParameterModel().isLocked();
+		return presenter.locked;
 	}
 
 }

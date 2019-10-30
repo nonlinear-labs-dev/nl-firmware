@@ -6,8 +6,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 public class KeyTrackParameter extends NumericalControlSmall {
 	private boolean isVisible = false;
 
-	public KeyTrackParameter(MapsLayout parent) {
-		super(parent);
+	public KeyTrackParameter(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

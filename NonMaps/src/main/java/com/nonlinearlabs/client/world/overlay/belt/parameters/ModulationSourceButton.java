@@ -4,7 +4,6 @@ import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
@@ -29,9 +28,9 @@ public class ModulationSourceButton extends SVGImage {
 			if (p instanceof ModulatableParameter) {
 				final ModulatableParameter m = (ModulatableParameter) p;
 				if (m.getModulationSource() == which)
-					m.setModulationSource(MacroControls.NONE, Initiator.EXPLICIT_USER_ACTION);
+					m.setModulationSource(MacroControls.NONE, );
 				else
-					m.setModulationSource(which, Initiator.EXPLICIT_USER_ACTION);
+					m.setModulationSource(which, );
 			}
 			getParent().getParent().onMCSelectionChanged();
 			return this;

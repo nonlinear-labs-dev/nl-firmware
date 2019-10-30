@@ -4,7 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
 import com.nonlinearlabs.client.Checksum;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.TextCropper;

@@ -2,11 +2,8 @@ package com.nonlinearlabs.client.world.maps.parameters.EnvB;
 
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupControls;
-import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontal;
-import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class EnvBLevelVelLevelKTTimeKT extends ParameterGroupControls {
 

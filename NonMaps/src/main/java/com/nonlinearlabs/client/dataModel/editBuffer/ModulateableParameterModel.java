@@ -21,6 +21,10 @@ public class ModulateableParameterModel extends BasicParameterModel {
 		public int toInt() {
 			return ordinal();
 		}
+
+		public int toParameterId() {
+			return 242 + ordinal();
+		}
 	}
 
 	public ValueDataModelEntity modAmount = new ValueDataModelEntity();
@@ -61,7 +65,7 @@ public class ModulateableParameterModel extends BasicParameterModel {
 	}
 
 	@Override
-	public Updater getUpdater(Node c) {
+	public Updater createUpdater(Node c) {
 		return new ModulateableParameterUpdater(c, this);
 	}
 

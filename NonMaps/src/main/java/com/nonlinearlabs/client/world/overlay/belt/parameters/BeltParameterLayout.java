@@ -4,20 +4,25 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.tools.NLMath;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
+import com.nonlinearlabs.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Range;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.SelectionListener;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.maps.parameters.value.ModulationAmount;
-import com.nonlinearlabs.client.world.maps.parameters.value.QuantizedClippedValue;
-import com.nonlinearlabs.client.world.maps.parameters.value.QuantizedClippedValue.IncrementalChanger;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.Belt;
@@ -54,7 +59,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	private ParameterClippingLabel mcUpperClip;
 	private ParameterClippingLabel mcLowerClip;
 
-	private QuantizedClippedValue currentValue;
 	private RecallArea currentRecall;
 
 	public BeltParameterLayout(Belt parent) {
@@ -86,8 +90,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		addChild(currentRecall = new ParameterRecallArea(this));
 
 		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
-
-		setupValue();
 	}
 
 	public Mode getMode() {
@@ -223,9 +225,8 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		dottedLine.setVisible(isOneOf(Mode.modulateableParameter));
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));
 
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.hasContextMenu()
-				&& existsMoreThanOneItemInContextMenu(p);
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.showContextMenu;
 
 		contextMenu.setVisible(ctxMenuVisible);
 		currentRecall.setVisibleForMode(mode);
@@ -261,12 +262,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		}
 	}
 
-	private boolean existsMoreThanOneItemInContextMenu(Parameter p) {
-		return (p instanceof ModulatableParameter || p instanceof PhysicalControlParameter
-				|| p instanceof MacroControlParameter) && !p.getName().getLongName().equals("Bender")
-				&& !p.getName().getLongName().equals("Aftertouch");
-	}
-
 	protected void toggleMcEditMode(Mode m) {
 		if (mode != m)
 			setMode(m);
@@ -281,53 +276,14 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	public void setMode(Mode m, boolean force) {
 		if (mode != m || force) {
 			mode = m;
-			setupValue();
 			showAndHideChildren();
 			requestLayout();
 		}
 	}
 
 	public boolean isModulationAssigned() {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			return m.getModulationSource() != MacroControls.NONE;
-		}
-		return false;
-	}
-
-	private void setupValue() {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-
-			if (m.getModulationSource() != MacroControls.NONE) {
-				switch (getMode()) {
-				case mcAmount:
-					currentValue = m.getModulationAmount();
-					return;
-
-				case mcValue:
-					MacroControls s = m.getModulationSource();
-					Parameter q = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
-							.getControl(s);
-					currentValue = q.getValue();
-					return;
-
-				case mcLower:
-					currentValue = createLowerBoundDummyValue(m);
-					return;
-
-				case mcUpper:
-					currentValue = createUpperBoundDummyValue(m);
-					return;
-
-				default:
-				}
-			}
-		}
-		currentValue = p.getValue();
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.modulation.isModulated;
 	}
 
 	public boolean isOneOf(Mode... m) {
@@ -361,7 +317,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-
 		if (currentIncrementalChanger != null) {
 			double amount = newPoint.getX() - oldPoint.getX();
 			currentIncrementalChanger.changeBy(fine, amount);
@@ -383,110 +338,40 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		currentIncrementalChanger = currentValue.startUserEdit(slider.getPixRect().getWidth());
+		startEdit();
 		return this;
 	}
 
-	private QuantizedClippedValue createBoundDummyValue(ModulatableParameter p, final boolean upper) {
-		QuantizedClippedValue dummyValue = new QuantizedClippedValue(new UpperLowerBoundListener(upper)) {
-			@Override
-			public void setToDefault(Initiator initiator) {
-				Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-				if (p instanceof ModulatableParameter) {
-					ModulatableParameter m = (ModulatableParameter) p;
-					m.getModulationAmount().setRawValue(Initiator.EXPLICIT_USER_ACTION,
-							m.getModulationAmount().getDefaultValue());
-				}
-			}
-		};
-		dummyValue.setCoarseDenominator(p.getValue().getCoarseDenominator());
-		dummyValue.setFineDenominator(p.getValue().getFineDenominator());
-		dummyValue.setBipolar(p.getValue().isBipolar());
-		dummyValue.setRawValue(Initiator.INDIRECT_USER_ACTION, calcBound(upper));
-		return dummyValue;
-	}
-
-	public double calcBound(boolean upper) {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			MacroControls s = m.getModulationSource();
-			if (s != MacroControls.NONE) {
-
-				ModulationAmount amount = m.getModulationAmount();
-				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
-						.getControl(s);
-				double modAmount = amount.getClippedValue();
-
-				if (m.isBiPolar())
-					modAmount *= 2;
-
-				double srcValue = mc.getValue().getClippedValue();
-				double value = m.getValue().getClippedValue();
-				double modLeft = value - modAmount * srcValue;
-
-				if (!upper)
-					return m.getValue().clip(modLeft);
-				else
-					return m.getValue().clip(modLeft + modAmount);
-			}
-		}
-		return 0;
-	}
-
-	private QuantizedClippedValue createLowerBoundDummyValue(ModulatableParameter m) {
-		return createBoundDummyValue(m, false);
-	}
-
-	private QuantizedClippedValue createUpperBoundDummyValue(ModulatableParameter m) {
-		return createBoundDummyValue(m, true);
+	private IncrementalChanger startEdit() {
+		// TODO -> the changer has to be choosen based om the edit mode
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		currentIncrementalChanger = EditBufferUseCases.get().startUserEdit(p.id, slider.getPixRect().getWidth());
+		return currentIncrementalChanger;
 	}
 
 	@Override
 	public void onMouseLost() {
 		if (currentIncrementalChanger != null) {
 			currentIncrementalChanger.finish();
+			currentIncrementalChanger = null;
 		}
 		super.onMouseLost();
 	}
 
 	@Override
 	public Control doubleClick() {
-		if (currentIncrementalChanger == null) {
-			if (currentValue == null)
-				setupValue();
-
-			if (currentValue != null)
-				currentIncrementalChanger = currentValue.startUserEdit(slider.getPixRect().getWidth());
-		}
-
-		if (currentIncrementalChanger != null) {
-			currentIncrementalChanger.getValue().setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
-		}
+		startEdit().setToDefault();
 		return this;
 	}
 
 	@Override
 	public Control onKey(final KeyDownEvent event) {
-		if (currentIncrementalChanger == null) {
-			if (currentValue == null)
-				setupValue();
-
-			if (currentValue != null)
-				currentIncrementalChanger = currentValue.startUserEdit(slider.getPixRect().getWidth());
-		}
-
-		if (currentIncrementalChanger != null) {
-			if (event.getNativeKeyCode() == KeyCodes.KEY_K) {
-				currentIncrementalChanger.getValue().inc(Parameter.Initiator.EXPLICIT_USER_ACTION,
-						event.isShiftKeyDown());
-				return this;
-			} else if (event.getNativeKeyCode() == KeyCodes.KEY_M) {
-				currentIncrementalChanger.getValue().dec(Parameter.Initiator.EXPLICIT_USER_ACTION,
-						event.isShiftKeyDown());
-				return this;
-			}
+		if (event.getNativeKeyCode() == KeyCodes.KEY_K) {
+			currentIncrementalChanger.inc(event.isShiftKeyDown());
+			return this;
+		} else if (event.getNativeKeyCode() == KeyCodes.KEY_M) {
+			currentIncrementalChanger.dec(event.isShiftKeyDown());
+			return this;
 		}
 
 		return null;
@@ -494,102 +379,40 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
-
 		if (amount > 0)
-			getValue().inc(Initiator.EXPLICIT_USER_ACTION, fine);
+			startEdit().inc(fine);
 		else if (amount < 0)
-			getValue().dec(Initiator.EXPLICIT_USER_ACTION, fine);
+			startEdit().dec(fine);
 
 		return this;
 	}
 
-	public QuantizedClippedValue getValue() {
-		return currentValue;
-	}
-
 	public String getCurrentValuesName(double width) {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-		return p.getFullNameWithGroup();
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.fullNameWithGroup;
 	}
 
 	public String[] getDecoratedValue(boolean b) {
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		switch (mode) {
+		case mcAmount:
+			return p.modulation.amountDisplayValues;
 
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
+		case mcLower:
+			return p.modulation.amountLowerBoundDisplayValues;
 
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			MacroControls s = m.getModulationSource();
+		case mcUpper:
+			return p.modulation.amountUpperBoundDisplayValues;
 
-			if (s != MacroControls.NONE) {
-				ModulationAmount amount = m.getModulationAmount();
-				MacroControlParameter mc = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
-						.getControl(s);
-				double modAmount = amount.getClippedValue();
+		case mcValue:
+			return p.modulation.macroControlDisplayValues;
 
-				if (m.isBiPolar())
-					modAmount *= 2;
-
-				double srcValue = mc.getValue().getClippedValue();
-				double value = m.getValue().getClippedValue();
-
-				Range bounds = new Range(m.isBiPolar() ? -1.0 : 0, 1.0);
-				double left = (value - modAmount * srcValue);
-				double right = left + modAmount;
-				Range mod = new Range(left, right);
-				Range modNormalized = new Range(mod.getLeft(), mod.getRight());
-				modNormalized.normalize();
-
-				double r = NLMath.quantize(modNormalized.getRight(), 1000);
-				double l = NLMath.quantize(modNormalized.getLeft(), 1000);
-
-				switch (mode) {
-				case mcAmount: {
-					String with = m.getModulationAmount().getDecoratedValue(true);
-					String without = m.getModulationAmount().getDecoratedValue(false);
-					return new String[] { "MC Amount: " + with, "MC Amount: " + without, "MC Amt: " + without,
-							"Amt: " + without, without };
-				}
-
-				case mcLower: {
-					String clip = bounds.outOfRange(modAmount >= 0 ? l : r) ? "! " : "";
-					mod.clipTo(bounds);
-					String with = p.getDecoratedValue(true, mod.getLeft());
-					String without = p.getDecoratedValue(false, mod.getLeft());
-					return new String[] { clip + "Lower Limit: " + with, clip + "Lower Limit: " + without,
-							clip + "Lower: " + without, clip + "Lo: " + without, clip + without };
-				}
-
-				case mcUpper: {
-					String clip = bounds.outOfRange(modAmount >= 0 ? r : l) ? "! " : "";
-					mod.clipTo(bounds);
-					String with = p.getDecoratedValue(true, mod.getRight());
-					String without = p.getDecoratedValue(false, mod.getRight());
-					return new String[] { clip + "Upper Limit: " + with, clip + "Upper Limit: " + without,
-							clip + "Upper: " + without, clip + "Up: " + without, clip + without };
-
-				}
-
-				case mcValue: {
-					String with = mc.getDecoratedValue(true);
-					String without = mc.getDecoratedValue(false);
-					return new String[] { "MC Position: " + with, "MC Position: " + without, "MC Pos: " + without,
-							"Pos: " + without, without };
-				}
-
-				case mcSource:
-				case modulateableParameter:
-				case paramValue:
-				case unmodulateableParameter:
-					break;
-				}
-			}
+		case mcSource:
+		case modulateableParameter:
+		case paramValue:
+		case unmodulateableParameter:
+		default:
+			return p.displayValues;
 		}
-
-		return new String[] { p.getDecoratedValue(true), p.getDecoratedValue(false) };
 	}
-
-	public void onMCSelectionChanged() {
-		setupValue();
-	}
-
 }

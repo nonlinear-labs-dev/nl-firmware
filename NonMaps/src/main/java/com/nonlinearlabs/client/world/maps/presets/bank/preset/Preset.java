@@ -23,7 +23,6 @@ import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.RenameDialog;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.presets.MultiplePresetSelection;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
@@ -352,7 +351,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
 		} else {
-			getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+			getParent().getPresetList().selectPreset(getUUID());
 
 		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -449,7 +448,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void select() {
-		getParent().getPresetList().selectPreset(getUUID(), Initiator.EXPLICIT_USER_ACTION);
+		getParent().getPresetList().selectPreset(getUUID());
 	}
 
 	public void load() {

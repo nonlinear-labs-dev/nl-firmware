@@ -9,6 +9,7 @@ import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 
 public class EditBufferModel {
 
@@ -89,22 +90,21 @@ public class EditBufferModel {
 			if (param.isChanged())
 				return true;
 		}
-		return 
-	@Override
+		return false;
 	}
 
-	public stat @OverrideameOfVoiceGroup(VoiceGroup group)
-
-	{
-		switch 
-	@Override
+	public static String getPresetNameOfVoiceGroup(VoiceGroup group) {
+		switch (group) {
 		case I:
-	@Override
 			return loadedPresetInVG1.getValue();
 
 		case II:
 			return loadedPresetInVG2.getValue();
-		}return"";
-}
+		}
+		return "";
+	}
 
+	public static MacroControlParameterModel findParameter(ModSource value) {
+		return (MacroControlParameterModel) findParameter(value.toParameterId());
+	}
 }

@@ -1,11 +1,18 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.nonlinearlabs.client.world.Name;
-import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 
 public class SmallParameterName extends LabelSmall {
-	public SmallParameterName(Parameter parent) {
+	private ParameterPresenter presenter;;
+
+	public SmallParameterName(Parameter parent, int parameterID) {
 		super(parent);
+
+		ParameterPresenterProviders.get().register(parameterID, v -> {
+			presenter = v;
+			return true;
+		});
 	}
 
 	@Override
@@ -19,6 +26,6 @@ public class SmallParameterName extends LabelSmall {
 	}
 
 	protected String getDisplayText() {
-		return "TODO";
+		return presenter.longName;
 	}
 }

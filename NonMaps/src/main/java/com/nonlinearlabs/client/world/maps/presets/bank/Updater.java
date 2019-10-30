@@ -9,7 +9,6 @@ import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.NonPosition;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
 public class Updater {
@@ -27,7 +26,7 @@ public class Updater {
 			updateBankPosition(bank);
 			updateOrderNumber(bank);
 			this.bank.updateAttributes(bank);
-			this.bank.getPresetList().selectPreset(selectedPreset, Initiator.INDIRECT_USER_ACTION);
+			this.bank.getPresetList().selectPreset(selectedPreset);
 			updatePresets(bank, force);
 			updateAttachment(bank);
 			updateDateOfLastChange(bank);

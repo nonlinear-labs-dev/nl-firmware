@@ -24,7 +24,6 @@ import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.NonRect;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.presets.MultiplePresetSelection;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape.Orientation;
@@ -661,13 +660,10 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		return dateOfLastChange;
 	}
 
-	public void setAttribute(Initiator initiator, String key, String value) {
+	public void setAttribute(String key, String value) {
 		attributes.put(key, value);
-
-		if (initiator == Initiator.EXPLICIT_USER_ACTION) {
-			NonMaps.get().getServerProxy().setBankAttribute(this, key, value);
-			requestLayout();
-		}
+		NonMaps.get().getServerProxy().setBankAttribute(this, key, value);
+		requestLayout();
 	}
 
 	public void undockBank() {

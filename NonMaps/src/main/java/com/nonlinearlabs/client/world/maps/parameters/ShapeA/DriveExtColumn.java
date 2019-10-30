@@ -2,11 +2,8 @@ package com.nonlinearlabs.client.world.maps.parameters.ShapeA;
 
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.KnobSmall;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.SmallKnobParameter;
-import com.nonlinearlabs.client.world.maps.parameters.SmallParameterName;
-import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 
 class DriveExtColumn extends ParameterColumn {
 
@@ -22,7 +19,7 @@ class DriveExtColumn extends ParameterColumn {
 		}
 	}
 
-	private class Asym extends ParaSmallKnobParametermeter {
+	private class Asym extends SmallKnobParameter {
 
 		private Asym(MapsLayout parent) {
 			super(parent, 75);

@@ -5,8 +5,8 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class SliderHorizontalWithHandle extends SliderHorizontal {
-	public SliderHorizontalWithHandle(MapsLayout parent) {
-		super(parent);
+	public SliderHorizontalWithHandle(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

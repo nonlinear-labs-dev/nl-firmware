@@ -5,7 +5,6 @@ import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.maps.parameters.value.QuantizedClippedValue;
@@ -45,7 +44,7 @@ public class MCUpperBound extends MCSomething {
 		dummyValue = new QuantizedClippedValue(new QuantizedClippedValue.ChangeListener() {
 
 			@Override
-			public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newRight) {
+			public void onQuantizedValueChanged(double oldQuantizedValue, double newRight) {
 				Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 
 				if (p instanceof ModulatableParameter) {
@@ -72,8 +71,8 @@ public class MCUpperBound extends MCSomething {
 						if (modulatedParam.isBiPolar())
 							newModAmount /= 2;
 
-						modulatedParam.getModulationAmount().setRawValue(Initiator.INDIRECT_USER_ACTION, newModAmount);
-						modulatedParam.getValue().setRawValue(Initiator.INDIRECT_USER_ACTION, newValue);
+						modulatedParam.getModulationAmount().setRawValue(newModAmount);
+						modulatedParam.getValue().setRawValue(newValue);
 						NonMaps.theMaps.getServerProxy().setModulationAmountAndValue(modulatedParam, newModAmount,
 								newValue);
 					}
@@ -81,18 +80,18 @@ public class MCUpperBound extends MCSomething {
 			}
 
 			@Override
-			public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
+			public void onClippedValueChanged(double oldClippedValue, double newClippedValue) {
 			}
 
 			@Override
-			public void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue) {
+			public void onRawValueChanged(double oldRawValue, double newRawValue) {
 			}
 		});
 
 		dummyValue.setCoarseDenominator(p.getValue().getCoarseDenominator());
 		dummyValue.setFineDenominator(p.getValue().getFineDenominator());
 		dummyValue.setBipolar(p.getValue().isBipolar());
-		dummyValue.setRawValue(Initiator.INDIRECT_USER_ACTION, getMiddle().calcBound());
+		dummyValue.setRawValue(getMiddle().calcBound());
 	}
 
 	@Override
@@ -102,7 +101,7 @@ public class MCUpperBound extends MCSomething {
 		if (p instanceof ModulatableParameter) {
 			ModulatableParameter m = (ModulatableParameter) p;
 			createDummyValue(m);
-			dummyValue.setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
+			dummyValue.setToDefault(Parameter.);
 		}
 
 		return this;
@@ -111,12 +110,12 @@ public class MCUpperBound extends MCSomething {
 	@Override
 	protected void inc(ModulatableParameter m, boolean fine) {
 		createDummyValue(m);
-		dummyValue.inc(Initiator.EXPLICIT_USER_ACTION, fine);
+		dummyValue.inc(fine);
 	}
 
 	@Override
 	protected void dec(ModulatableParameter m, boolean fine) {
 		createDummyValue(m);
-		dummyValue.dec(Initiator.EXPLICIT_USER_ACTION, fine);
+		dummyValue.dec(fine);
 	}
 }

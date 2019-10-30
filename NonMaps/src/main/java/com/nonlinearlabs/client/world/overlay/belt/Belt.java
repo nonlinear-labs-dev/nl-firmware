@@ -10,7 +10,6 @@ import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IPreset;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -55,10 +54,6 @@ public class Belt extends OverlayLayout {
 			presetLayout.fadeIn();
 			break;
 		}
-	}
-
-	public Parameter getSelectedParameter() {
-		return getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 	}
 
 	@Override
