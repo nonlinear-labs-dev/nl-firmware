@@ -1,7 +1,5 @@
 
-#ifdef _TESTS
 #define CATCH_CONFIG_RUNNER
-#endif
 #include <third-party/include/catch.hpp>
 
 #include "Application.h"
