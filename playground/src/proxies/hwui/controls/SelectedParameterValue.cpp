@@ -11,6 +11,9 @@ SelectedParameterValue::SelectedParameterValue(const Rect &rect)
       sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)));
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
+
+  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
 }
 
 SelectedParameterValue::~SelectedParameterValue()
@@ -55,4 +58,10 @@ bool SelectedParameterValue::redraw(FrameBuffer &fb)
 void SelectedParameterValue::setSuffixFontColor(FrameBuffer &fb) const
 {
   fb.setColor(FrameBuffer::C128);
+}
+
+void SelectedParameterValue::onVoiceGroupSelectionChanged()
+{
+  const auto param = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+  onParameterSelected(param);
 }

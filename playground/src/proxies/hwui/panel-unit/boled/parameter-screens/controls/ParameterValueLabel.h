@@ -14,5 +14,7 @@ class ParameterValueLabel : public Label
   void updateParameter(const Parameter* param);
  private:
   void updateText(const Parameter *param);
+  void updateVoiceGroup();
   sigc::connection m_connection;
+  sigc::connection m_vgSelectionConnection;
 };

@@ -6,6 +6,10 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include "DualVoiceGroupMasterAndSplitPointLayout.h"
 
+#warning "Recall is not working properly"
+#warning "select is breaking current value slider"
+#warning "voice group selection is not reseting properly"
+
 Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentParameter() const
 {
   if(auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected())
@@ -18,31 +22,37 @@ Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentParameter() const
 DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout()
     : UnmodulateableParameterSelectLayout2()
 {
-  m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() {
-    auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
-    getCarousel()->setup(selected);
+  m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
+  m_connection = Application::get().getPresetManager()->getEditBuffer()->onChange(
+      sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
+}
 
-    for(auto &i : getControls<DualSpecialParameterModuleCaption>())
+void DualVoiceGroupMasterAndSplitPointLayout::update()
+{
+  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+  getCarousel()->setup(selected);
+
+  for(auto &i : getControls<DualSpecialParameterModuleCaption>())
+  {
+    i->updateText(selected);
+  }
+
+  if(auto valueLabel = findControlOfType<ParameterValueLabel>())
+    valueLabel->updateParameter(selected);
+
+  if(auto nameLabel = findControlOfType<ParameterNameLabel>())
+    nameLabel->updateParameter(selected);
+
+  for(auto &i : getControls<Button>())
+  {
+    if(i->getPosition().getPosition().getX() == Button::getButtonPos(Buttons::BUTTON_A).getPosition().getX())
     {
-      i->updateText(selected);
+      auto text = to_string("Select ") + (vg == VoiceGroup::I ? "II" : "I");
+      i->setText({ text, 0 });
     }
-
-    if(auto valueLabel = findControlOfType<ParameterValueLabel>())
-      valueLabel->updateParameter(selected);
-
-    if(auto nameLabel = findControlOfType<ParameterNameLabel>())
-      nameLabel->updateParameter(selected);
-
-    for(auto &i : getControls<Button>())
-    {
-      if(i->getPosition().getPosition().getX() == Button::getButtonPos(Buttons::BUTTON_A).getPosition().getX())
-      {
-        auto text = to_string("Select ") + (vg == VoiceGroup::I ? "II" : "I");
-        i->setText({ text, 0 });
-      }
-    }
-  });
+  }
 }
 
 DualVoiceGroupMasterAndSplitPointLayout::~DualVoiceGroupMasterAndSplitPointLayout()

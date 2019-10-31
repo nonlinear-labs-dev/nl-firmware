@@ -17,6 +17,9 @@ ParameterNameLabel::ParameterNameLabel(const Rect &pos)
 
   Application::get().getPresetManager()->getEditBuffer()->onRecallValuesChanged(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
+
+  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
 }
 
 ParameterNameLabel::~ParameterNameLabel()
