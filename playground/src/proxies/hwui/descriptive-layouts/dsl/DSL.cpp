@@ -13,7 +13,7 @@
 #include <string>
 #include <stack>
 #include <limits>
-#include <variant>
+#include <tools/variant.hpp>
 
 namespace DescriptiveLayouts
 {

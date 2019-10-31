@@ -45,7 +45,7 @@ namespace DescriptiveLayouts
       target = src;
   }
 
-  template <typename T, int i = std::tuple_size_v<T> - 1> struct StyleProcessor
+  template <typename T, int i = std::tuple_size<T>::value - 1> struct StyleProcessor
   {
     static void merge(T& target, const T& source, const T& undef)
     {
