@@ -93,8 +93,7 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGro
     if(a->getID() == id)
       return a;
 
-
-  for(auto a: m_globalParameterGroups)
+  for(auto a : m_globalParameterGroups)
     if(a->getID() == id)
       return a;
 
@@ -162,7 +161,7 @@ Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
   }
   catch(...)
   {
-    return nullptr;
+    return findGlobalParameterByID(id);
   }
 }
 

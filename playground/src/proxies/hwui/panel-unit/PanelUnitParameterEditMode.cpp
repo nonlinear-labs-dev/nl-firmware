@@ -135,8 +135,7 @@ void PanelUnitParameterEditMode::setup()
 
   FOR_TESTS(assignedAudioIDs.insert(246));
 
-#warning ADLER
-  //assertAllButtonsAssigned();
+  assertAllButtonsAssigned();
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     getEditPanel().getUndoStateMachine().traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
