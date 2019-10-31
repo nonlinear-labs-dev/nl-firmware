@@ -32,6 +32,7 @@ class ParameterDualGroupSet : public AttributesOwner
   virtual Parameter *findGlobalParameterByID(int id) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
 
  protected:
   virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
@@ -39,7 +40,6 @@ class ParameterDualGroupSet : public AttributesOwner
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
 
   void copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
-  void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
 
  private:
   using tParamGroups = IntrusiveList<tParameterGroupPtr>;

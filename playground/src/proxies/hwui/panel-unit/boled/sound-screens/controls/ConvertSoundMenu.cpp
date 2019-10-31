@@ -23,7 +23,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
     Application::get().getPresetManager()->getEditBuffer()->undoableConvertToDual(transaction, newType,
                                                                                   currentSelection);
 
-    Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }
   else
   {
@@ -32,7 +32,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
     auto currentVoiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
     Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction, currentVoiceGroup);
 
-    Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }
 }
 

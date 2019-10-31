@@ -268,16 +268,36 @@ bool EditBuffer::hasLocks(VoiceGroup vg) const
 
 bool EditBuffer::anyParameterChanged(VoiceGroup vg) const
 {
-  for(auto &paramGroup : getParameterGroups(vg))
+  if(vg == VoiceGroup::I || vg == VoiceGroup::II)
   {
-    for(auto &param : paramGroup->getParameters())
+    for(auto &paramGroup : getParameterGroups(vg))
     {
-      if(param->isChangedFromLoaded())
+      for(auto &param : paramGroup->getParameters())
       {
-        return true;
+        if(param->isChangedFromLoaded())
+        {
+          return true;
+        }
       }
     }
   }
+  else if(vg == VoiceGroup::Global)
+  {
+    for(auto &g : getGlobalParameterGroups())
+    {
+      for(auto &param : g->getParameters())
+      {
+        if(param->isChangedFromLoaded())
+        {
+          return true;
+        }
+      }
+    }
+  }
+
+  if(getType() == SoundType::Split)
+    return getSplitPoint()->isChangedFromLoaded();
+
   return false;
 }
 
@@ -285,11 +305,12 @@ bool EditBuffer::anyParameterChanged() const
 {
   if(m_type == SoundType::Single)
   {
-    return anyParameterChanged(VoiceGroup::I);
+    return anyParameterChanged(VoiceGroup::I) || anyParameterChanged(VoiceGroup::Global);
   }
   else
   {
-    return anyParameterChanged(VoiceGroup::I) || anyParameterChanged(VoiceGroup::II);
+    return anyParameterChanged(VoiceGroup::I) || anyParameterChanged(VoiceGroup::II)
+        || anyParameterChanged(VoiceGroup::Global);
   }
 }
 
@@ -695,8 +716,13 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
 void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 {
-  transaction->addUndoSwap(this, m_type, type);
-  transaction->addSimpleCommand([this](auto) mutable { m_signalTypeChanged.send(); });
+  auto swap = UNDO::createSwapData(std::move(type));
+
+  transaction->addSimpleCommand([=](auto) {
+    swap->swapWith(m_type);
+    m_signalTypeChanged.send();
+    onChange();
+  });
 }
 
 void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target)

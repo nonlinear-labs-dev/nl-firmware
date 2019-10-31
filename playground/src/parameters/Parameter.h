@@ -123,6 +123,7 @@ class Parameter : public UpdateDocumentContributor,
 
   //Recall
   void undoableRecallFromPreset();
+  void undoableRecallFromPreset(UNDO::Transaction* transaction);
   const RecallParameter *getOriginalParameter() const;
 
   virtual bool isChangedFromLoaded() const;

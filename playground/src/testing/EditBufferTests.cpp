@@ -461,9 +461,81 @@ TEST_CASE("load single preset into dual editbuffer")
   SECTION("Load Single Into I")
   {
     auto scope = createTestScope();
+    editBuffer->loadIntoVoiceGroup(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
+
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
   }
 
   SECTION("Load Single Into II")
   {
+    auto scope = createTestScope();
+    editBuffer->loadIntoVoiceGroup(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::II);
+
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
+  }
+}
+
+TEST_CASE("Load <-> Changed")
+{
+  MockPresetStorage presets;
+  auto editBuffer = getEditBuffer();
+
+  SECTION("Load leads to reset changed indication")
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+
+    REQUIRE(!editBuffer->anyParameterChanged());
+
+    auto param = editBuffer->findParameterByID(2, VoiceGroup::I);
+
+    REQUIRE(param != nullptr);
+    REQUIRE(!param->isChangedFromLoaded());
+
+    param->stepCPFromHwui(scope->getTransaction(), 1, {});
+
+    REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->anyParameterChanged());
+  }
+
+  SECTION("Load leads to reset changed indication dual")
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+
+    REQUIRE(!editBuffer->anyParameterChanged());
+
+    auto param = editBuffer->findParameterByID(2, VoiceGroup::I);
+
+    REQUIRE(param != nullptr);
+    REQUIRE(!param->isChangedFromLoaded());
+
+    param->stepCPFromHwui(scope->getTransaction(), 1, {});
+
+    REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->anyParameterChanged());
+  }
+
+  SECTION("Recall")
+  {
+    Parameter* param{ nullptr };
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+      param = editBuffer->findParameterByID(2, VoiceGroup::I);
+      REQUIRE(param != nullptr);
+      REQUIRE(!param->isChangedFromLoaded());
+
+      param->stepCPFromHwui(scope->getTransaction(), 1, {});
+
+      REQUIRE(param->isChangedFromLoaded());
+    }
+
+    REQUIRE(param != nullptr);
+    REQUIRE(param->isChangedFromLoaded());
+
+    param->undoableRecallFromPreset();
+
+    REQUIRE(!param->isChangedFromLoaded());
   }
 }

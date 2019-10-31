@@ -524,9 +524,14 @@ void Parameter::check()
 void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto original = getOriginalParameter();
   auto transactionScope = scope.startTransaction("Recall %0 value", getLongName());
   auto transaction = transactionScope->getTransaction();
+  undoableRecallFromPreset(transaction);
+}
+
+void Parameter::undoableRecallFromPreset(UNDO::Transaction* transaction)
+{
+  auto original = getOriginalParameter();
   if(original)
     setCPFromHwui(transaction, original->getRecallValue());
   else
