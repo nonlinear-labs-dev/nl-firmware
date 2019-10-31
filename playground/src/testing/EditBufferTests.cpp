@@ -539,3 +539,34 @@ TEST_CASE("Load <-> Changed")
     REQUIRE(!param->isChangedFromLoaded());
   }
 }
+
+TEST_CASE("load presets of different types")
+{
+  auto editBuffer = getEditBuffer();
+  MockPresetStorage presets;
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  }
+
+  SECTION("Load Single ")
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+
+    REQUIRE(editBuffer->getType() == SoundType::Single);
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  }
+
+  SECTION("Load Split")
+  {
+    auto scope = createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
+
+    REQUIRE(editBuffer->getType() == SoundType::Split);
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  }
+}

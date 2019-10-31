@@ -20,8 +20,7 @@ class EditBuffer : public ParameterDualGroupSet
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
-  Glib::ustring getName(VoiceGroup vg) const;
-  Glib::ustring getName() const;
+  Glib::ustring getName(VoiceGroup vg = VoiceGroup::Global) const;
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
@@ -74,11 +73,11 @@ class EditBuffer : public ParameterDualGroupSet
 
   // CALLBACKS
   sigc::connection onSelectionChanged(const slot<void, Parameter *, Parameter *> &s);
-  sigc::connection onModificationStateChanged(const slot<void, bool>& s);
-  sigc::connection onChange(const slot<void>& s);
-  sigc::connection onPresetLoaded(const slot<void>& s);
-  sigc::connection onLocksChanged(const slot<void>& s);
-  sigc::connection onRecallValuesChanged(const slot<void>& s);
+  sigc::connection onModificationStateChanged(const slot<void, bool> &s);
+  sigc::connection onChange(const slot<void> &s);
+  sigc::connection onPresetLoaded(const slot<void> &s);
+  sigc::connection onLocksChanged(const slot<void> &s);
+  sigc::connection onRecallValuesChanged(const slot<void> &s);
   sigc::connection onSoundTypeChanged(slot<void> s);
 
   bool isModified() const;
@@ -99,6 +98,8 @@ class EditBuffer : public ParameterDualGroupSet
   SplitPointParameter *getSplitPoint();
 
  private:
+  Glib::ustring getEditBufferName() const;
+
   bool anyParameterChanged(VoiceGroup vg) const;
 
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;
@@ -123,7 +124,11 @@ class EditBuffer : public ParameterDualGroupSet
 
   struct LastSelection
   {
-    LastSelection(Parameter::ID id, VoiceGroup vg) : m_id{id}, m_voiceGroup{vg} {}
+    LastSelection(Parameter::ID id, VoiceGroup vg)
+        : m_id{ id }
+        , m_voiceGroup{ vg }
+    {
+    }
     Parameter::ID m_id = 0;
     VoiceGroup m_voiceGroup = VoiceGroup::I;
   };
@@ -139,6 +144,8 @@ class EditBuffer : public ParameterDualGroupSet
   Uuid m_lastLoadedPreset;
 
   Glib::ustring m_name;
+  std::array<Glib::ustring, 2> m_voiceGroupLabels;
+
   DelayedJob m_deferredJobs;
 
   bool m_isModified;

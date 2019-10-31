@@ -33,16 +33,6 @@ namespace DescriptiveLayouts
     }
   };
 
-  class CurrentVoiceGroupName : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      auto name = eb->getName(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
-      setValue({ name, 0 });
-    }
-  };
-
   class IsCurrentVGI : public EditBufferEvent<bool>
   {
    public:

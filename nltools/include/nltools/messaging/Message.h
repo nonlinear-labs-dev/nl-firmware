@@ -235,14 +235,6 @@ namespace nltools
       {
       };
 
-#warning "Auge Auge Auge"
-      //autsch.. TODO cleanup
-
-      inline std::ostream& operator<<(std::ostream& o, const Parameter& p)
-      {
-        return o << "ID: " << p.id << " value: " << p.controlPosition;
-      }
-
       inline bool operator==(const Parameter& lhs, const Parameter& rhs)
       {
         return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition;
@@ -324,81 +316,5 @@ namespace nltools
       std::array<ParameterGroups::Parameter, 2> master;
       std::array<ParameterGroups::Parameter, 12> scale;
     };
-
-    //Helpers
-    template <typename tArray> bool compareArray(const tArray& a1, const tArray& a2)
-    {
-      auto ret = a1.size() == a2.size();
-
-      if(ret)
-      {
-        for(unsigned long i = 0; i < a1.size(); i++)
-        {
-          ret = a1[i] == a2[i];
-          if(!ret)
-            return false;
-        }
-      }
-      return ret;
-    }
-
-    inline bool operator==(const SinglePresetMessage& p1, const SinglePresetMessage& p2)
-    {
-      auto mod = compareArray(p1.modulateables, p2.modulateables);
-      auto unmod = compareArray(p1.unmodulateables, p2.unmodulateables);
-      auto after = compareArray(p1.aftertouch, p2.aftertouch);
-      auto scale = compareArray(p1.scale, p2.scale);
-      auto mono = compareArray(p1.monos, p2.monos);
-      auto pedal = compareArray(p1.pedals, p2.pedals);
-      auto bender = compareArray(p1.bender, p2.bender);
-      auto ribbon = compareArray(p1.ribbons, p2.ribbons);
-      auto master = compareArray(p1.master, p2.master);
-      auto mc = compareArray(p1.macros, p2.macros);
-      return mod && unmod && after && scale && mono && bender && pedal && ribbon && master && mc;
-    }
-
-    inline bool operator==(const LayerPresetMessage& p1, const LayerPresetMessage& p2)
-    {
-      auto same = true;
-      for(auto i = 0; i < 2; i++)
-      {
-        auto mod = compareArray(p1.modulateables[i], p2.modulateables[i]);
-        auto unmod = compareArray(p1.unmodulateables[i], p2.unmodulateables[i]);
-        auto after = compareArray(p1.aftertouch[i], p2.aftertouch[i]);
-        auto pedal = compareArray(p1.pedals[i], p2.pedals[i]);
-        auto bender = compareArray(p1.bender[i], p2.bender[i]);
-        auto ribbon = compareArray(p1.ribbons[i], p2.ribbons[i]);
-        auto mc = compareArray(p1.macros[i], p2.macros[i]);
-        auto vgMaster = compareArray(p1.vgMaster[i], p2.vgMaster[i]);
-        same = same && mod && unmod && after && bender && pedal && ribbon && mc && vgMaster;
-      }
-      auto master = compareArray(p1.master, p2.master);
-      auto mono = compareArray(p1.monos, p2.monos);
-      auto scale = compareArray(p1.scale, p2.scale);
-      return same && mono && scale && master;
-    }
-
-    inline bool operator==(const SplitPresetMessage& p1, const SplitPresetMessage& p2)
-    {
-      auto same = true;
-      for(auto i = 0; i < 2; i++)
-      {
-        auto mod = compareArray(p1.modulateables[i], p2.modulateables[i]);
-        auto unmod = compareArray(p1.unmodulateables[i], p2.unmodulateables[i]);
-        auto after = compareArray(p1.aftertouch[i], p2.aftertouch[i]);
-        auto pedal = compareArray(p1.pedals[i], p2.pedals[i]);
-        auto bender = compareArray(p1.bender[i], p2.bender[i]);
-        auto ribbon = compareArray(p1.ribbons[i], p2.ribbons[i]);
-        auto mc = compareArray(p1.macros[i], p2.macros[i]);
-        auto vgMaster = compareArray(p1.vgMaster[i], p2.vgMaster[i]);
-        same = same && mod && unmod && after && bender && pedal && ribbon && mc && vgMaster;
-      }
-      auto mono = compareArray(p1.monos, p2.monos);
-      auto scale = compareArray(p1.scale, p2.scale);
-      auto split = p1.splitpoint == p2.splitpoint;
-      auto master = compareArray(p1.master, p2.master);
-
-      return same && mono && scale && split && master;
-    }
   }
 }

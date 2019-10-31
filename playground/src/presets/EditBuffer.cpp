@@ -52,13 +52,17 @@ SoundType EditBuffer::getType() const
 
 Glib::ustring EditBuffer::getName(VoiceGroup vg) const
 {
-  if(vg == VoiceGroup::Invalid || m_type == SoundType::Single)
-    return getName();
+  if(vg == VoiceGroup::Global || vg == VoiceGroup::Invalid)
+  {
+    return getEditBufferName();
+  }
   else
-    return toString(vg) + " " + getName();
+  {
+    return m_voiceGroupLabels[static_cast<int>(vg)];
+  }
 }
 
-Glib::ustring EditBuffer::getName() const
+Glib::ustring EditBuffer::getEditBufferName() const
 {
   if(auto o = getOrigin())
     return o->getName();
@@ -402,7 +406,7 @@ Parameter *EditBuffer::getSelected(VoiceGroup vg) const
   return findGlobalParameterByID(m_lastSelectedParameter.m_id);
 }
 
-void EditBuffer::setName(UNDO::Transaction *transaction, const ustring &name)
+void EditBuffer::setName(UNDO::Transaction *transaction, const Glib::ustring &name)
 {
   transaction->addUndoSwap(this, m_name, name);
 }
