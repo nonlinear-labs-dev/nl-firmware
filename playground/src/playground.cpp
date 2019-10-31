@@ -1,6 +1,7 @@
+#include <third-party/include/catch.hpp>
+
 #ifdef _TESTS
 #define CATCH_CONFIG_RUNNER
-#include <third-party/include/catch.hpp>
 #endif
 #include "Application.h"
 #include "testing/TestDriver.h"
