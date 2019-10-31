@@ -27,10 +27,18 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto param = eb->findParameterByID(12345, vg))
+      if(eb->getType() == SoundType::Split)
       {
-        setValue({ param->getDisplayString(), 0 });
+        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        if(auto param = eb->findParameterByID(12345, vg))
+        {
+          setValue({ param->getDisplayString(), 0 });
+        }
+      }
+      else
+      {
+        if(auto param = eb->findParameterByID(12345, VoiceGroup::I))
+          setValue({ param->getDisplayString(), 0 });
       }
     }
   };
@@ -40,9 +48,17 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto param = eb->findParameterByID(12345, vg))
-        setValue(param->getDisplayString() == "On");
+      if(eb->getType() == SoundType::Split)
+      {
+        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        if(auto param = eb->findParameterByID(12345, vg))
+          setValue(param->getDisplayString() == "On");
+      }
+      else
+      {
+        if(auto param = eb->findParameterByID(12345, VoiceGroup::I))
+          setValue(param->getDisplayString() == "On");
+      }
     }
   };
 
@@ -51,9 +67,17 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto param = eb->findParameterByID(249, vg))
-        setValue(param->getControlPositionValue() > 0);
+      if(eb->getType() == SoundType::Split)
+      {
+        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        if(auto param = eb->findParameterByID(249, vg))
+          setValue(param->getControlPositionValue() > 0);
+      }
+      else
+      {
+        if(auto param = eb->findParameterByID(249, VoiceGroup::I))
+          setValue(param->getControlPositionValue() > 0);
+      }
     }
   };
 
@@ -143,9 +167,17 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *editBuffer)
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto param = editBuffer->findParameterByID(249, vg))
-        setValue({ param->getControlPositionValue() == 0 ? "Off" : param->getDisplayString(), 0 });
+      if(editBuffer->getType() == SoundType::Split)
+      {
+        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        if(auto param = editBuffer->findParameterByID(249, vg))
+          setValue({ param->getControlPositionValue() == 0 ? "Off" : param->getDisplayString(), 0 });
+      }
+      else
+      {
+        if(auto param = editBuffer->findParameterByID(249, VoiceGroup::I))
+          setValue({ param->getControlPositionValue() == 0 ? "Off" : param->getDisplayString(), 0 });
+      }
     }
   };
 

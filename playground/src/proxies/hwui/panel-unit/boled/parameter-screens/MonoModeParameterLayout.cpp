@@ -9,9 +9,9 @@ Parameter *MonoModeParameterLayout::getCurrentParameter() const
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   if(eb->getType() == SoundType::Split)
-    return ParameterLayout2::getCurrentParameter();
-  else
     return eb->getSelected();
+  else
+    return eb->getSelected(VoiceGroup::I);
 }
 
 MonoModeParameterLayout::MonoModeParameterLayout()
