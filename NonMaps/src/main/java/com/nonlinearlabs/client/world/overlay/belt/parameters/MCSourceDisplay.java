@@ -1,10 +1,9 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public class MCSourceDisplay extends SVGImage {
@@ -20,13 +19,11 @@ public class MCSourceDisplay extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
+		ParameterPresenter presenter = EditBufferPresenterProvider.getPresenter().selectedParameter;
 
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			MacroControls s = m.getModulationSource();
+		if (presenter.modulation.isModulateable) {
 
-			switch (s) {
+			switch (presenter.modulation.modulationSource) {
 			case A:
 				return 0;
 			case B:
@@ -38,7 +35,6 @@ public class MCSourceDisplay extends SVGImage {
 
 			default:
 				break;
-
 			}
 		}
 

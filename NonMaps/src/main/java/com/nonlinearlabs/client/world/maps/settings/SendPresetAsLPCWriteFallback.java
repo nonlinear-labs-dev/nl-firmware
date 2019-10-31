@@ -2,8 +2,8 @@ package com.nonlinearlabs.client.world.maps.settings;
 
 import java.util.function.Function;
 
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.useCases.SystemSettings;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.NonLinearWorld;
@@ -43,7 +43,7 @@ class SendPresetAsLPCWriteFallback extends Setting {
 	SendPresetAsLPCWriteFallback(DeveloperSettings parent) {
 		super(parent, "LPC write fallback", "Off");
 
-		Setup.get().systemSettings.sendPresetAsLPCFallback.onChange(new Function<Setup.BooleanValues, Boolean>() {
+		SetupModel.get().systemSettings.sendPresetAsLPCFallback.onChange(new Function<SetupModel.BooleanValues, Boolean>() {
 
 			@Override
 			public Boolean apply(BooleanValues t) {

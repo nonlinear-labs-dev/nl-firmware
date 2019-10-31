@@ -10,8 +10,8 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.Tracer;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
 import com.nonlinearlabs.client.world.IPreset;
@@ -530,7 +530,7 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 	protected DropAction getDropAction(Position pos, DragProxy draggedElement) {
 
-		if (Setup.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
+		if (SetupModel.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
 
 			Control origin = draggedElement.getOrigin();
 

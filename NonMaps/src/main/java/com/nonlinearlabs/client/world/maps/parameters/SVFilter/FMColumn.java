@@ -18,11 +18,6 @@ class FMColumn extends ParameterColumn {
 			addChild(new ValueDisplaySmall(this, getParameterID()));
 		}
 
-		@Override
-		public boolean shouldHaveHandleOnly() {
-			return true;
-		}
-
 	}
 
 	FMColumn(MapsLayout parent) {

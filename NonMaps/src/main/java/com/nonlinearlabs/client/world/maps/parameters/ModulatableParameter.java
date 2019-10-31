@@ -2,12 +2,12 @@ package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.ColorTable;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.ModulateableParameterUseCases;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 
 public class ModulatableParameter extends Parameter {
@@ -35,17 +35,9 @@ public class ModulatableParameter extends Parameter {
 	}
 
 	public boolean isSelectedParameterMyMacroControl() {
-		Parameter selectedParam = getNonMaps().getNonLinearWorld().getParameterEditor().getSelection();
-
-		if (selectedParam != null && selectedParam instanceof MacroControlParameter) {
-			MacroControlParameter myParam = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
-					.getControl(getModulationSource());
-
-			if (myParam != null && myParam.equals(selectedParam))
-				return true;
-		}
-
-		return false;
+		int mySourceID = presenter.modulation.modulationSource.toParameterId();
+		int selectedParameterID = EditBufferModel.selectedParameter.getValue();
+		return mySourceID == selectedParameterID;
 	}
 
 	@Override

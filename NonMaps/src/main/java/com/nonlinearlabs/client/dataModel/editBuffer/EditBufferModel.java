@@ -1,6 +1,8 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
@@ -27,6 +29,7 @@ public class EditBufferModel {
 
 	private static HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
 	private static HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
+	private static ArrayList<ModulateableParameterModel> modulateableParametersCache = new ArrayList<ModulateableParameterModel>();
 
 	public static IntegerDataModelEntity selectedParameter = new IntegerDataModelEntity();
 	public static StringDataModelEntity loadedPreset = new StringDataModelEntity();
@@ -75,8 +78,12 @@ public class EditBufferModel {
 	public static BasicParameterModel addParameter(int id) {
 		BasicParameterModel p = ParameterFactory.create(id);
 
-		if (p != null)
+		if (p != null) {
 			parameters.put(id, p);
+
+			if (p instanceof ModulateableParameterModel)
+				modulateableParametersCache.add((ModulateableParameterModel) p);
+		}
 
 		return p;
 	}
@@ -106,5 +113,9 @@ public class EditBufferModel {
 
 	public static MacroControlParameterModel findParameter(ModSource value) {
 		return (MacroControlParameterModel) findParameter(value.toParameterId());
+	}
+
+	public static List<ModulateableParameterModel> getAllModulateableParameters() {
+		return modulateableParametersCache;
 	}
 }

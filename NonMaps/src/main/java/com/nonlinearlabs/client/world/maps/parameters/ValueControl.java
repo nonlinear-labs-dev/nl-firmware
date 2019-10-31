@@ -34,7 +34,7 @@ abstract class ValueControl extends ZoomReactingControl {
 	}
 
 	public String getDisplayValue() {
-		return presenter.displayValues[0];
+		return presenter.displayValues[presenter.displayValues.length - 1];
 	}
 
 	public Parameter getParentParameterLayout() {

@@ -12,6 +12,6 @@ public class PedalParameterUpdater extends ParameterUpdater {
     public void doUpdate() {
         super.doUpdate();
         PedalParameterModel p = (PedalParameterModel) target;
-        p.mode.fromString(getChildText(root, "pedal-mode"));
+        p.mode.fromInt(Integer.parseInt(getChildText(root, "pedal-mode")));
     }
 }

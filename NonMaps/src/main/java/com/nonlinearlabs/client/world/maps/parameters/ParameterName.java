@@ -50,8 +50,7 @@ public class ParameterName extends LabelLarge {
 	}
 
 	protected String getDisplayText() {
-		// TODO
-		return super.getDisplayText();
+		return getParent().presenter.shortName;
 	}
 
 }

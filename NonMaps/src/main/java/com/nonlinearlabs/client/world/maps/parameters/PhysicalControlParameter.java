@@ -18,29 +18,13 @@ abstract public class PhysicalControlParameter extends Parameter {
 	}
 
 	@Override
-	public boolean shouldHaveHandleOnly() {
-		return true;
-	}
-
-	@Override
 	protected int getBackgroundRoundings() {
 		return Rect.ROUNDING_NONE;
 	}
 
 	@Override
 	public boolean dimHandleAtDefaultValue() {
-		switch (getReturnMode()) {
-		case Center:
-			return true;
-
-		case None:
-			return false;
-
-		case Zero:
-			return true;
-
-		}
-		return super.dimHandleAtDefaultValue();
+		return presenter.isReturning;
 	}
 
 	public enum ReturnMode {
@@ -70,7 +54,6 @@ abstract public class PhysicalControlParameter extends Parameter {
 		}
 	}
 
-	public abstract ReturnMode getReturnMode();
 
 	@Override
 	public String getGroupName() {

@@ -4,7 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.CachingMapsControl;
@@ -13,21 +12,20 @@ import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonRect;
 
-public abstract class ParameterGroupVertical extends LayoutResizingVertical implements ParameterGroupIface {
+public abstract class ParameterGroup extends LayoutResizingVertical  {
 
-	private Name name = new Name();
 	private NonRect m_viewportPosAtClick;
+	private String groupID;
 
-	public ParameterGroupVertical(MapsLayout parent) {
+	public ParameterGroup(MapsLayout parent, String groupID) {
 		super(parent);
+		this.groupID = groupID;
 	}
 
-	@Override
-	public Name getName() {
-		return name;
+	public String getID() {
+		return groupID;
 	}
 
-	@Override
 	public boolean isLocked() {
 		Control c = recurseChildren(new ControlFinder() {
 			@Override
@@ -57,11 +55,6 @@ public abstract class ParameterGroupVertical extends LayoutResizingVertical impl
 		getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, toXPixels(6), toXPixels(2), null,
 				getColorModuleHeaderBackground());
 
-	}
-
-	@Override
-	public void setName(Name name) {
-		this.name.copy(name);
 	}
 
 	@Override

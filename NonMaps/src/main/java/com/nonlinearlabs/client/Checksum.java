@@ -12,7 +12,7 @@ public class Checksum {
 		eat(Math.round(d * 1000000));
 	}
 
-	private void eat(long v) {
+	public void eat(long v) {
 		final int prime = 31;
 		checksum = prime * checksum + v;
 	}

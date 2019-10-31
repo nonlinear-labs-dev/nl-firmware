@@ -4,19 +4,14 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class OscA extends ParameterGroupVertical {
+public class OscA extends ParameterGroup {
 
 	public OscA(MapsLayout parent) {
-		super(parent);
+		super(parent, "Osc A");
 		addChild(new LabelModuleHeader(this));
 		addChild(new OscAControls(this));
-	}
-
-	@Override
-	public String getID() {
-		return "Osc A";
 	}
 
 	public RGB getColorSliderHighlight() {

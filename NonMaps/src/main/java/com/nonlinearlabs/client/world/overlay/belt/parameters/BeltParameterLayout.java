@@ -4,25 +4,12 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
-import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
-import com.nonlinearlabs.client.tools.NLMath;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.Range;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
-import com.nonlinearlabs.client.world.maps.parameters.SelectionListener;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
-import com.nonlinearlabs.client.world.maps.parameters.value.ModulationAmount;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.Belt;
@@ -33,7 +20,7 @@ import com.nonlinearlabs.client.world.overlay.belt.parameters.recall.RecallArea;
 import com.nonlinearlabs.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.client.world.pointer.TouchPinch;
 
-public class BeltParameterLayout extends OverlayLayout implements SelectionListener {
+public class BeltParameterLayout extends OverlayLayout {
 
 	public enum Mode {
 		unmodulateableParameter, modulateableParameter, paramValue, mcValue, mcAmount, mcLower, mcUpper, mcSource
@@ -89,7 +76,11 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 
 		addChild(currentRecall = new ParameterRecallArea(this));
 
-		getNonMaps().getNonLinearWorld().getParameterEditor().registerListener(this);
+		EditBufferPresenterProvider.get().onChange(p -> {
+			// todo: handle mode change if modulateable / unmodulateable
+
+			return true;
+		});
 	}
 
 	public Mode getMode() {
@@ -192,7 +183,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 				+ dottedLineInset;
 
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight() - dottedLineInset, 0, lineWidth, h);
-
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
 		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
@@ -298,19 +288,6 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		return false;
 	}
 
-	@Override
-	public void onSelectionChanged(Parameter oldSelection, final Parameter newSelection) {
-		boolean newModulateable = newSelection instanceof ModulatableParameter;
-
-		currentIncrementalChanger = null;
-		currentRecall.setVisible(false);
-
-		if (newModulateable)
-			setMode(Mode.modulateableParameter, true);
-		else
-			setMode(Mode.unmodulateableParameter, true);
-	}
-
 	public void setValueChanger(IncrementalChanger changer) {
 		currentIncrementalChanger = changer;
 	}
@@ -342,10 +319,41 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 		return this;
 	}
 
-	private IncrementalChanger startEdit() {
-		// TODO -> the changer has to be choosen based om the edit mode
+	public IncrementalChanger startEdit() {
+		return startEdit(slider.getPixRect().getWidth());
+	}
+
+	public void startEdit(Mode mode, double width) {
+		setMode(mode);
+		startEdit(width);
+	}
+
+	public IncrementalChanger startEdit(double width) {
 		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		currentIncrementalChanger = EditBufferUseCases.get().startUserEdit(p.id, slider.getPixRect().getWidth());
+		switch (mode) {
+		case mcAmount:
+			currentIncrementalChanger = EditBufferUseCases.get().startEditMCAmount(p.id, width);
+			break;
+
+		case unmodulateableParameter:
+		case modulateableParameter:
+		case paramValue:
+		case mcSource:
+			currentIncrementalChanger = EditBufferUseCases.get().startEditParameterValue(p.id, width);
+			break;
+
+		case mcValue:
+			currentIncrementalChanger = EditBufferUseCases.get().startEditMacroControlValue(p.id, width);
+			break;
+
+		case mcLower:
+			currentIncrementalChanger = EditBufferUseCases.get().startEditModulationAmountLowerBound(p.id, width);
+			break;
+
+		case mcUpper:
+			currentIncrementalChanger = EditBufferUseCases.get().startEditModulationAmountUpperBound(p.id, width);
+			break;
+		}
 		return currentIncrementalChanger;
 	}
 
@@ -367,10 +375,10 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 	@Override
 	public Control onKey(final KeyDownEvent event) {
 		if (event.getNativeKeyCode() == KeyCodes.KEY_K) {
-			currentIncrementalChanger.inc(event.isShiftKeyDown());
+			startEdit().inc(event.isShiftKeyDown());
 			return this;
 		} else if (event.getNativeKeyCode() == KeyCodes.KEY_M) {
-			currentIncrementalChanger.dec(event.isShiftKeyDown());
+			startEdit().dec(event.isShiftKeyDown());
 			return this;
 		}
 
@@ -415,4 +423,5 @@ public class BeltParameterLayout extends OverlayLayout implements SelectionListe
 			return p.displayValues;
 		}
 	}
+
 }

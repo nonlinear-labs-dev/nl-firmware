@@ -6,9 +6,10 @@ import com.nonlinearlabs.client.dataModel.Updater;
 public class ParameterGroupUpdater extends Updater {
 	private ParameterGroupModel target;
 
-	public ParameterGroupUpdater(Node c, ParameterGroupModel target) {
+	public ParameterGroupUpdater(Node c, ParameterGroupModel target, String groupId) {
 		super(c);
 		this.target = target;
+		this.target.id = groupId;
 	}
 
 	@Override

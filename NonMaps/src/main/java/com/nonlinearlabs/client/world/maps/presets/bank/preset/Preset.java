@@ -12,8 +12,8 @@ import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.IPreset;
@@ -333,7 +333,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (isInStoreSelectMode())
 			return null;
 
-		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+		boolean showContextMenus = SetupModel.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 
 		if (showContextMenus) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
@@ -371,7 +371,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control startDragging(Position pos) {
-		if (Setup.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
+		if (SetupModel.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
 			if (isInMultiplePresetSelectionMode()) {
 				return startMultipleSelectionDrag(pos);
 			}

@@ -12,7 +12,7 @@ public class RibbonModulationRoutingParameter extends ModulationRoutingParameter
 
 	@Override
 	protected ModulationRoutingButton createRoutingButton() {
-		return new RibbonModulationRoutingButton(this);
+		return new RibbonModulationRoutingButton(this, getParameterID());
 	}
 
 	@Override

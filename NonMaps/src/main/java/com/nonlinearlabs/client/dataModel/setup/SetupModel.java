@@ -6,11 +6,11 @@ import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
 
-public class Setup {
+public class SetupModel {
 
-	private static Setup theInstance = new Setup();
+	private static SetupModel theInstance = new SetupModel();
 
-	static public Setup get() {
+	static public SetupModel get() {
 		return theInstance;
 	}
 

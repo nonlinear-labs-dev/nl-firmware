@@ -26,6 +26,6 @@ public class SmallParameterName extends LabelSmall {
 	}
 
 	protected String getDisplayText() {
-		return presenter.longName;
+		return presenter.shortName;
 	}
 }

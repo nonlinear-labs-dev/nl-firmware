@@ -19,10 +19,6 @@ class CombFilterCol7 extends ParameterColumn {
 			addChild(new ValueDisplaySmall(this, getParameterID()));
 		}
 
-		@Override
-		public boolean shouldHaveHandleOnly() {
-			return true;
-		}
 	}
 
 	CombFilterCol7(MapsLayout parent) {

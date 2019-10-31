@@ -18,7 +18,8 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 		public ValueMetaData() {
 			defaultValue.onChange(e -> notifyChanges());
 			scaling.onChange(e -> {
-				updateStringizer(e);
+				if(!e.isEmpty())
+					updateStringizer(e);
 				return notifyChanges();
 			});
 			coarseDenominator.onChange(e -> notifyChanges());
@@ -51,6 +52,7 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 
 		public double quantize(double v, boolean fine) {
 			double steps = fine ? fineDenominator.getValue() : coarseDenominator.getValue();
+			steps = steps != 0 ? steps : 1;
 			v *= steps;
 			v = Math.round(v);
 			return v / steps;

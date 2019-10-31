@@ -1,16 +1,15 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import java.util.HashSet;
-
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
+import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
-import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.parameters.Cabinet.Cabinet;
 import com.nonlinearlabs.client.world.maps.parameters.CombFilter.CombFilter;
@@ -215,6 +214,17 @@ public class ParameterEditor extends LayoutResizingVertical {
 		addChild(new SpacerLarge(this));
 		addChild(new SpacerLarge(this));
 		addChild(new SynthParameters(this));
+
+		EditBufferModel.selectedParameter.onChange(i -> {
+			boolean autoScroll = LocalSettingsProvider.get().getSettings().selectionAutoScroll
+					.isOneOf(SelectionAutoScroll.parameter, SelectionAutoScroll.parameter_and_preset);
+
+			if (autoScroll && EditBufferModel.findParameter(i).group != null) {
+				scrollToSelectedParameterGroup(EditBufferModel.findParameter(i).group.id);
+			}
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return true;
+		});
 	}
 
 	public Control onKey(final KeyDownEvent event) {
@@ -233,55 +243,23 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return theEditor;
 	}
 
-	private Parameter selectedObject = null;
+	private void scrollToSelectedParameterGroup(String groupID) {
+		if (groupID == "CS")
+			groupID = "MCM";
+			
+		ParameterGroup p = findParameterGroup(groupID);
 
-	public void select(Parameter sel) {
-		if (selectedObject != sel) {
-			Parameter oldSel = selectedObject;
-			selectedObject = sel;
-
-			for (SelectionListener listener : listeners) {
-				listener.onSelectionChanged(oldSel, sel);
-			}
-
-			getNonMaps().getServerProxy().onParameterSelectionChanged(this);
-
-			if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "parameter",
-					"parameter-and-preset"))
-				scrollToSelectedParameter();
-
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
+		if (!p.isVisible())
+			p.scrollToMakeFullyVisible();
 	}
 
-	private void scrollToSelectedParameter() {
-		if (!selectedObject.isVisible())
-			((MapsLayout) selectedObject.getParameterGroup()).scrollToMakeFullyVisible();
-	}
-
-	public Parameter getSelection() {
-		return selectedObject;
-	}
-
-	private HashSet<SelectionListener> listeners = new HashSet<SelectionListener>();
-	private String loadedPresetsName = "Init";
-
-	public void registerListener(SelectionListener listener) {
-		listeners.add(listener);
-		listener.onSelectionChanged(null, selectedObject);
-	}
-
-	public void removeListener(SelectionListener listener) {
-		listeners.remove(listener);
-	}
-
-	public ParameterGroupIface findParameterGroup(final String groupID) {
+	public ParameterGroup findParameterGroup(final String groupID) {
 		Control found = recurseChildren(new ControlFinder() {
 
 			@Override
 			public boolean onWayDownFound(Control child) {
-				if (child instanceof ParameterGroupIface) {
-					ParameterGroupIface i = (ParameterGroupIface) child;
+				if (child instanceof ParameterGroup) {
+					ParameterGroup i = (ParameterGroup) child;
 					if (i.getID().equals(groupID))
 						return true;
 				}
@@ -289,7 +267,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 			}
 		});
 
-		return (ParameterGroupIface) found;
+		return (ParameterGroup) found;
 	}
 
 	public String getLoadedPresetUUID() {
@@ -297,7 +275,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 	}
 
 	public String getLoadedPresetName() {
-		return loadedPresetsName;
+		return "Init";
 	}
 
 	public Macros getMacroControls() {
@@ -344,6 +322,25 @@ public class ParameterEditor extends LayoutResizingVertical {
 		});
 
 		return c != null;
+	}
+
+	public Parameter findParameter(int id) {
+		return (Parameter) recurseChildren(new ControlFinder() {
+			@Override
+			public boolean onWayDownFound(Control ctrl) {
+				if (ctrl instanceof Parameter) {
+					Parameter p = (Parameter) ctrl;
+					if (p.getParameterID() == id) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	public Parameter getSelectedParameter() {
+		return findParameter(EditBufferModel.selectedParameter.getValue());
 	}
 
 }

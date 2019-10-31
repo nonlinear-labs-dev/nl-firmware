@@ -3,7 +3,7 @@ package com.nonlinearlabs.client.world.maps.parameters.value;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 class Value {
 	private double rawValue = 0;

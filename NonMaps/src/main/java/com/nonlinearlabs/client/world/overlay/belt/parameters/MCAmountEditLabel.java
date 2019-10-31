@@ -2,11 +2,10 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.overlay.Label;
 
 public class MCAmountEditLabel extends Label {
@@ -22,21 +21,10 @@ public class MCAmountEditLabel extends Label {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			MacroControls s = m.getModulationSource();
-			if (s != MacroControls.NONE) {
-				String decorated = m.getModulationAmount().getDecoratedValue(true);
-				String unDecorated = m.getModulationAmount().getDecoratedValue(false);
-
-				String str[] = { "MC Amount: \t" + decorated, "MC Amount: \t" + unDecorated, "MC Amt: \t" + unDecorated,
-						"Amt: \t" + unDecorated, unDecorated };
-
-				return chooseFittingString(ctx, str);
-
-			}
+		if (p.modulation.isModulated) {
+			return chooseFittingString(ctx, p.modulation.amountDisplayValues);
 		}
 
 		String str[] = { "MC Amount", "MC Amt", "Amt" };

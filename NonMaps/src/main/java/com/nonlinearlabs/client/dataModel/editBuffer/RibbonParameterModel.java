@@ -5,8 +5,13 @@ import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Updater;
 
 public class RibbonParameterModel extends PhysicalControlParameterModel {
+	
+	public EnumDataModelEntity<ReturnModes> mode = new EnumDataModelEntity<ReturnModes>(ReturnModes.class,
+	ReturnModes.non_return);
+
 	public RibbonParameterModel(int id) {
 		super(id);
+		mode.onChange(v -> notifyChanges());
 	}
 
 	public enum ReturnModes {
@@ -23,7 +28,6 @@ public class RibbonParameterModel extends PhysicalControlParameterModel {
 		return new RibbonParameterUpdater(c, this);
 	}
 
-	public EnumDataModelEntity<ReturnModes> mode = new EnumDataModelEntity<ReturnModes>(ReturnModes.class,
-			ReturnModes.non_return);
+
 
 }

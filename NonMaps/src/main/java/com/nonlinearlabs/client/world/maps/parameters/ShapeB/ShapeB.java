@@ -4,19 +4,14 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class ShapeB extends ParameterGroupVertical {
+public class ShapeB extends ParameterGroup {
 
 	public ShapeB(MapsLayout parent) {
-		super(parent);
+		super(parent, "Sh B");
 		addChild(new LabelModuleHeader(this));
 		addChild(new ShapeBControls(this));
-	}
-
-	@Override
-	public String getID() {
-		return "Sh B";
 	}
 
 	public RGB getColorSliderHighlight() {

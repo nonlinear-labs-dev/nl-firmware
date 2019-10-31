@@ -21,7 +21,7 @@ import com.nonlinearlabs.client.dataModel.presetManager.PresetManager;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupUpdater;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
@@ -32,7 +32,6 @@ import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape.Orientation;
@@ -149,13 +148,6 @@ public class ServerProxy {
 		}
 		Tracer.log("ServerProxy.omitOracles -> hard coded false");
 		return false;
-	}
-
-	public void onParameterSelectionChanged(final ParameterEditor root) {
-		Parameter pl = root.getSelection();
-		if (pl != null) {
-			selectParameter(pl.getParameterID());
-		}
 	}
 
 	public void selectParameter(int id) {

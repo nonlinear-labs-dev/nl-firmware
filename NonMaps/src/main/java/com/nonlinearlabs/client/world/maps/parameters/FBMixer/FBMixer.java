@@ -4,12 +4,12 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class FBMixer extends ParameterGroupVertical {
+public class FBMixer extends ParameterGroup {
 
 	public FBMixer(MapsLayout parent) {
-		super(parent);
+		super(parent, "FB");
 		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
@@ -67,10 +67,5 @@ public class FBMixer extends ParameterGroupVertical {
 	@Override
 	public RGB getColorIndicator() {
 		return ColorTable.getColorIndicator();
-	}
-
-	@Override
-	public String getID() {
-		return "FB";
 	}
 }

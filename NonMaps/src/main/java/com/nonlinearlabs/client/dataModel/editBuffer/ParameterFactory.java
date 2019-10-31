@@ -13,7 +13,7 @@ public class ParameterFactory {
 
 	static private HashSet<Integer> pedals = new HashSet<Integer>(Arrays.asList(254, 259, 264, 269));
 	static private HashSet<Integer> ribbons = new HashSet<Integer>(Arrays.asList(284, 289));
-	static private HashSet<Integer> benderAndAftertouch = new HashSet<Integer>(Arrays.asList(274, 279));
+
 	static private HashSet<Integer> macroControls = new HashSet<Integer>(Arrays.asList(243, 244, 245, 246));
 	static private HashSet<Integer> modulationRouters = new HashSet<Integer>(
 			Arrays.asList(255, 256, 257, 258, 260, 261, 262, 263, 265, 266, 267, 268, 270, 271, 272, 273, 275, 276, 277,
@@ -31,8 +31,11 @@ public class ParameterFactory {
 		if (ribbons.contains(id))
 			return new RibbonParameterModel(id);
 
-		if (benderAndAftertouch.contains(id))
-			return new PhysicalControlParameterModel(id);
+		if (id == 274)
+			return new BenderParameterModel(id);
+
+		if (id == 279)
+			return new AftertouchParameterModel(id);
 
 		if (macroControls.contains(id))
 			return new MacroControlParameterModel(id);

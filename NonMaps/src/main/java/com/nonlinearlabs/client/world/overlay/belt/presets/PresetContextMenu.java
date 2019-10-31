@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.nonlinearlabs.client.ClipboardManager.ClipboardContent;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RenameDialog;
@@ -29,7 +29,7 @@ public class PresetContextMenu extends ContextMenu {
 		this.preset = preset;
 		final PresetManager pm = preset.getParent().getParent();
 		final boolean hasMultipleSelection = pm.hasMultiplePresetSelection();
-		final boolean multipleSelectionAllowed = Setup.get().localSettings.presetDragDrop
+		final boolean multipleSelectionAllowed = SetupModel.get().localSettings.presetDragDrop
 				.getValue() == BooleanValues.on;
 
 		if (multipleSelectionAllowed) {

@@ -5,12 +5,12 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Scale extends ParameterGroupVertical {
+public class Scale extends ParameterGroup {
 
 	public Scale(MapsLayout parent) {
-		super(parent);
+		super(parent, "Scale");
 		addChild(new ScaleLabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
@@ -80,8 +80,4 @@ public class Scale extends ParameterGroupVertical {
 		return EditBufferPresenterProvider.getPresenter().isAnyScaleOffsetParameterNotDefault;
 	}
 
-	@Override
-	public String getID() {
-		return "Scale";
-	}
 }

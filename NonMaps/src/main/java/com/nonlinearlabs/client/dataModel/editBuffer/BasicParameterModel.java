@@ -25,6 +25,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		shortName.onChange(e -> notifyChanges());
 		longName.onChange(e -> notifyChanges());
 		originalValue.onChange(e -> notifyChanges());
+		locked.onChange(e -> notifyChanges());
 	}
 
 	@Override

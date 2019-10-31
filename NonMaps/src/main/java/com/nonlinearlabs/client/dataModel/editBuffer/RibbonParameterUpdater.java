@@ -12,6 +12,6 @@ public class RibbonParameterUpdater extends ParameterUpdater {
     public void doUpdate() {
         super.doUpdate();
         RibbonParameterModel p = (RibbonParameterModel) target;
-        p.mode.fromString(getChildText(root, "ribbon-return-mode"));
+        p.mode.fromInt(Integer.parseInt(getChildText(root, "ribbon-return-mode")));
     }
 }

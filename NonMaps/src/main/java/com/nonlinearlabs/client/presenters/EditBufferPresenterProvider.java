@@ -20,7 +20,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private void monitorSelectedParameter() {
         EditBufferModel.selectedParameter.onChange(selectedParameterID -> {
             ParameterPresenterProviders.get().register(selectedParameterID, v -> {
-                if (selectedParameterID != v.id)
+                if (EditBufferModel.selectedParameter.getValue() != v.id)
                     return false;
 
                 presenter.selectedParameter = v;

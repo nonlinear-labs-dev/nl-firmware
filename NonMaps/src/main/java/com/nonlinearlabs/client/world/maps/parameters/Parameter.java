@@ -7,9 +7,9 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
-import com.nonlinearlabs.client.dataModel.setup.Setup.EditParameter;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -29,8 +29,9 @@ import com.nonlinearlabs.client.world.pointer.TouchPinch;
 
 public abstract class Parameter extends LayoutResizingVertical {
 
+	public ParameterPresenter presenter;
+	
 	protected IncrementalChanger currentParameterChanger = null;
-	protected ParameterPresenter presenter;
 	protected int id;
 
 	public Parameter(MapsLayout parent, int id) {
@@ -105,11 +106,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public void select() {
-		getSelectionRoot().select(this);
+		EditBufferUseCases.get().selectParameter(getParameterID());
 	}
 
 	public boolean isSelected() {
-		return getSelectionRoot().getSelection() == this;
+		return presenter.selected;
 	}
 
 	@Override
@@ -134,7 +135,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	@Override
 	public Control mouseDown(Position eventPoint) {
 
-		switch (Setup.get().localSettings.editParameter.getValue()) {
+		switch (SetupModel.get().localSettings.editParameter.getValue()) {
 		case always:
 			select();
 
@@ -166,7 +167,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private void startMouseEdit() {
-		currentParameterChanger = EditBufferUseCases.get().startUserEdit(getParameterID(), Millimeter.toPixels(100));
+		currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterID(),
+				Millimeter.toPixels(100));
 	}
 
 	@Override
@@ -185,7 +187,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-		boolean noDrag = (Setup.get().localSettings.editParameter.getValue() == EditParameter.never)
+		boolean noDrag = (SetupModel.get().localSettings.editParameter.getValue() == EditParameter.never)
 				|| getWorld().isSpaceDown();
 
 		if (isSelected() && !noDrag) {
@@ -253,10 +255,6 @@ public abstract class Parameter extends LayoutResizingVertical {
 		EditBufferUseCases.get().toggleBoolean(getParameterID());
 	}
 
-	public boolean shouldHaveHandleOnly() {
-		return false;
-	}
-
 	public ContextMenu createContextMenu(Overlay o) {
 		return new ParameterContextMenu(o, this);
 	}
@@ -276,11 +274,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 		return findInParents(c.getParent());
 	}
 
-	public ParameterGroupIface getParameterGroup() {
+	public ParameterGroup getParameterGroup() {
 		Control p = getParent();
 		while (p != null) {
-			if (p instanceof ParameterGroupIface)
-				return (ParameterGroupIface) p;
+			if (p instanceof ParameterGroup)
+				return (ParameterGroup) p;
 
 			p = p.getParent();
 		}
@@ -290,7 +288,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	@Override
 	public Control onContextMenu(Position pos) {
 		select();
-		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+		boolean showContextMenus = SetupModel.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 
 		if (showContextMenus) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
@@ -305,8 +303,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getGroupName() {
-		ParameterGroupIface group = (ParameterGroupIface) getParameterGroup();
-		return group.getName().getLongName();
+		return EditBufferModel.findParameter(getParameterID()).longName.getValue();
 	}
 
 	public boolean isLocked() {

@@ -4,12 +4,12 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Reverb extends ParameterGroupVertical {
+public class Reverb extends ParameterGroup {
 
 	public Reverb(MapsLayout parent) {
-		super(parent);
+		super(parent, "Reverb");
 		addChild(new LabelModuleHeader(this));
 		addChild(new ReverbControls(this));
 	}
@@ -64,8 +64,4 @@ public class Reverb extends ParameterGroupVertical {
 		return ColorTable.getColorIndicator();
 	}
 
-	@Override
-	public String getID() {
-		return "Reverb";
-	}
 }

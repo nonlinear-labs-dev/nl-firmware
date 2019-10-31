@@ -14,7 +14,7 @@ import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IPreset;
 import com.nonlinearlabs.client.world.NonLinearWorld;

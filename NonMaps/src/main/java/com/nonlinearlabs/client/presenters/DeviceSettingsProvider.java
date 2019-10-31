@@ -3,11 +3,13 @@ package com.nonlinearlabs.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.presenters.DeviceSettings.Pedal;
 import com.nonlinearlabs.client.world.Control;
 
@@ -22,76 +24,76 @@ public class DeviceSettingsProvider {
 	private DeviceSettings settings = new DeviceSettings();
 
 	private DeviceSettingsProvider() {
-		Setup.get().systemSettings.velocityCurve.onChange(t -> {
+		SetupModel.get().systemSettings.velocityCurve.onChange(t -> {
 			settings.velocityCurve.selected = t.ordinal();
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.aftertouchCurve.onChange(t -> {
+		SetupModel.get().systemSettings.aftertouchCurve.onChange(t -> {
 			settings.aftertouchCurve.selected = t.ordinal();
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.benderCurve.onChange(t -> {
+		SetupModel.get().systemSettings.benderCurve.onChange(t -> {
 			settings.benderCurve.selected = t.ordinal();
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.pedal1Type.onChange(t -> {
+		SetupModel.get().systemSettings.pedal1Type.onChange(t -> {
 			settings.pedal1.selected = t.ordinal();
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.pedal2Type.onChange(t -> {
+		SetupModel.get().systemSettings.pedal2Type.onChange(t -> {
 			settings.pedal2.selected = t.ordinal();
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.pedal3Type.onChange(t -> {
+		SetupModel.get().systemSettings.pedal3Type.onChange(t -> {
 			settings.pedal3.selected = t.ordinal();
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.pedal4Type.onChange(t -> {
+		SetupModel.get().systemSettings.pedal4Type.onChange(t -> {
 			settings.pedal4.selected = t.ordinal();
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.presetGlitchSuppression.onChange(t -> {
+		SetupModel.get().systemSettings.presetGlitchSuppression.onChange(t -> {
 			settings.presetGlitchSurpession.value = (t == BooleanValues.on);
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.editSmoothingTime.onChange(t -> {
+		SetupModel.get().systemSettings.editSmoothingTime.onChange(t -> {
 			double v = t.value.getValue();
 			settings.editSmoothingTime.sliderPosition = v;
 			settings.editSmoothingTime.displayValue = Stringizers.get()
-					.stringize(Setup.get().systemSettings.editSmoothingTime.metaData.scaling.getValue(), v);
+					.stringize(SetupModel.get().systemSettings.editSmoothingTime.metaData.scaling.getValue(), v);
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.deviceName.onChange(t -> {
+		SetupModel.get().systemSettings.deviceName.onChange(t -> {
 			settings.deviceName = t;
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.highlightChangedParameters.onChange(t -> {
+		SetupModel.get().systemSettings.highlightChangedParameters.onChange(t -> {
 			settings.highlightChangedParameters.value = t == BooleanValues.on;
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.forceHighlightChangedParameters.onChange(t -> {
+		SetupModel.get().systemSettings.forceHighlightChangedParameters.onChange(t -> {
 			NonMaps.get().getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 			return true;
 		});
@@ -101,21 +103,21 @@ public class DeviceSettingsProvider {
 		connectToPedal(264, settings.pedal3);
 		connectToPedal(269, settings.pedal4);
 
-		Setup.get().systemSettings.randomizeAmount.onChange(t -> {
+		SetupModel.get().systemSettings.randomizeAmount.onChange(t -> {
 			settings.randomizeAmountValue = t.value.getValue();
 			settings.randomizeAmountDisplayString = t.getDecoratedValue(true, true);
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.transitionTime.onChange(t -> {
+		SetupModel.get().systemSettings.transitionTime.onChange(t -> {
 			settings.transitionTimeValue = t.value.getValue();
 			settings.transitionTimeDisplayString = t.getDecoratedValue(true, true);
 			notifyClients();
 			return true;
 		});
 
-		Setup.get().systemSettings.tuneReference.onChange(t -> {
+		SetupModel.get().systemSettings.tuneReference.onChange(t -> {
 			settings.tuneReferenceValue = t.value.getValue();
 			settings.tuneReferenceDisplayString = t.getDecoratedValue(true, true);
 			notifyClients();
@@ -134,8 +136,20 @@ public class DeviceSettingsProvider {
 		});
 	}
 
+	boolean scheduled = false;
+
 	protected void notifyClients() {
-		clients.removeIf(listener -> !listener.apply(settings));
+		if (!scheduled) {
+			scheduled = true;
+			Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+				@Override
+				public void execute() {
+					scheduled = false;
+					clients.removeIf(listener -> !listener.apply(settings));
+				}
+			});
+		}
 	}
 
 	public void register(Function<DeviceSettings, Boolean> cb) {

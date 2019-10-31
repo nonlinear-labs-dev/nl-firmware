@@ -1,20 +1,33 @@
 package com.nonlinearlabs.client.presenters;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
+
 import com.nonlinearlabs.client.dataModel.Notifier;
+import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.BenderParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.ReturnModes;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.tools.NLMath;
 import com.nonlinearlabs.client.world.Range;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();
+
+	static Set<Integer> handleOnlyParameters = new TreeSet<Integer>(
+			Arrays.asList(135, 155, 254, 259, 264, 269, 284, 289, 274, 279, 243, 244, 245, 246));
 
 	public ParameterPresenterProvider(int parameterId) {
 		presenter.id = parameterId;
@@ -34,13 +47,23 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	private boolean updatePresenter(BasicParameterModel e) {
+		presenter.isBoolean = e.value.metaData.isBoolean.getBool();
+		presenter.drawCenterReturnIndicator = false;
+		presenter.drawZeroReturnIndicator = false;
+		presenter.isReturning = false;
+		presenter.drawHandleOnly = handleOnlyParameters.contains(e.id);
 		presenter.highlightChanged = false;
 		presenter.modulation.isModulateable = false;
-		presenter.controlPosition = e.value.value.getValue();
+		presenter.modulation.lowerClipping = false;
+		presenter.modulation.upperClipping = false;
+		presenter.controlPosition = e.value.getQuantizedAndClipped(true);
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
 
 		presenter.displayValues = new String[] { e.value.getDecoratedValue(true, true),
 				e.value.getDecoratedValue(false, true) };
+
+		presenter.originalParameterValueDecoratedString = e.value.getDecoratedValue(true, e.originalValue.getValue(),
+				true);
 
 		presenter.shortName = e.shortName.getValue();
 		presenter.longName = e.longName.getValue();
@@ -58,19 +81,27 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		if (e instanceof MacroControlParameterModel)
 			updatePresenter((MacroControlParameterModel) e);
 
+		if (e instanceof ModulationRouterParameterModel)
+			updatePresenter((ModulationRouterParameterModel) e);
+
 		if (presenter.updateHash())
 			notifyChanges();
 
 		return true;
 	}
 
+	private void updatePresenter(ModulationRouterParameterModel p) {
+		PhysicalControlParameterModel m =  (PhysicalControlParameterModel) EditBufferModel.findParameter(p.getAssociatedPhysicalControlID());
+		presenter.isBoolean = !m.isReturning();
+	}
+
 	private void updatePresenter(ModulateableParameterModel p) {
 		presenter.showContextMenu = true;
 		presenter.modulation.isModulateable = true;
-
 		presenter.modulation.isModulated = p.modSource.getValue() != ModSource.None;
 
 		if (presenter.modulation.isModulated) {
+			presenter.modulation.modulationSource = p.modSource.getValue();
 			presenter.modulation.modulationSourceLabel = toString(p.modSource.getValue());
 
 			double modAmount = p.modAmount.getQuantizedAndClipped(true);
@@ -154,20 +185,61 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 						"MC Position: " + without, "MC Pos: " + without, "Pos: " + without, without };
 			}
 
+			{
+				presenter.modulation.originalModulationAmountDecoratedString = p.modAmount.getDecoratedValue(true,
+						p.ogModAmount.getValue(), true);
+
+				MacroControlParameterModel macroControl = EditBufferModel.findParameter(p.modSource.getValue());
+				presenter.modulation.originalModulationPositionDecoratedString = macroControl.value
+						.getDecoratedValue(true, macroControl.originalValue.getValue(), true);
+
+			}
+
+			updateClipping(p);
 		} else {
 			presenter.modulation.modulationSourceLabel = "";
+			presenter.modulation.modulationSource = ModSource.None;
 			presenter.modulation.amountDisplayValues = new String[] { "" };
 			presenter.modulation.amountLowerBoundDisplayValues = new String[] { "" };
 			presenter.modulation.amountUpperBoundDisplayValues = new String[] { "" };
 			presenter.modulation.macroControlDisplayValues = new String[] { "" };
+			presenter.modulation.originalModulationAmountDecoratedString = "---";
+			presenter.modulation.originalModulationPositionDecoratedString = "---";
 			presenter.modulation.modulationRange.left = presenter.modulation.modulationRange.right = presenter.controlPosition;
+		}
+	}
+
+	private void updateClipping(ModulateableParameterModel m) {
+		if (m.modSource.getValue() != ModSource.None) {
+			MacroControlParameterModel mc = EditBufferModel.findParameter(m.modSource.getValue());
+			double modAmount = m.modAmount.getClippedValue();
+			boolean bipolar = m.value.metaData.bipolar.getBool();
+
+			if (bipolar)
+				modAmount *= 2;
+
+			double srcValue = mc.value.getClippedValue();
+			double value = m.value.getClippedValue();
+
+			Range bounds = new Range(bipolar ? -1.0 : 0, 1.0);
+			double left = (value - modAmount * srcValue);
+			double right = left + modAmount;
+			Range mod = new Range(left, right);
+			Range modNormalized = new Range(mod.getLeft(), mod.getRight());
+			modNormalized.normalize();
+
+			double r = NLMath.quantize(modNormalized.getRight(), 1000);
+			double l = NLMath.quantize(modNormalized.getLeft(), 1000);
+
+			presenter.modulation.lowerClipping = bounds.outOfRange(l);
+			presenter.modulation.upperClipping = bounds.outOfRange(r);
 		}
 	}
 
 	private void updatePresenter(PhysicalControlParameterModel p) {
 		presenter.showContextMenu = p.id != 274 && p.id != 279;
-		boolean highlight = Setup.get().systemSettings.highlightChangedParameters.isTrue();
-		boolean forceHighlight = Setup.get().systemSettings.forceHighlightChangedParameters.isTrue();
+		boolean highlight = SetupModel.get().systemSettings.highlightChangedParameters.isTrue();
+		boolean forceHighlight = SetupModel.get().systemSettings.forceHighlightChangedParameters.isTrue();
 		presenter.highlightChanged = p.isChanged() && (highlight || forceHighlight);
 
 		int idWithLargestAmount = 0;
@@ -189,6 +261,32 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		else {
 			BasicParameterModel mc = EditBufferModel.findParameter(idWithLargestAmount);
 			presenter.longName = (isNegative ? "-" : "") + mc.longName.getValue();
+		}
+
+		if (p instanceof RibbonParameterModel) {
+			RibbonParameterModel r = (RibbonParameterModel) p;
+			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;
+			presenter.drawZeroReturnIndicator = false;
+			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;
+		}
+
+		if (p instanceof PedalParameterModel) {
+			PedalParameterModel r = (PedalParameterModel) p;
+			presenter.drawCenterReturnIndicator = r.mode.getValue() == Modes.returnToCenter;
+			presenter.drawZeroReturnIndicator = r.mode.getValue() == Modes.returnToZero;
+			presenter.isReturning = r.mode.getValue() != Modes.stay;
+		}
+
+		if (p instanceof BenderParameterModel) { 
+			presenter.drawCenterReturnIndicator = true;
+			presenter.drawZeroReturnIndicator = false;
+			presenter.isReturning = true;
+		}
+
+		if (p instanceof AftertouchParameterModel) {
+			presenter.drawCenterReturnIndicator = false;
+			presenter.drawZeroReturnIndicator = true;
+			presenter.isReturning = true;
 		}
 	}
 
@@ -224,6 +322,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	public String getFullNameWithGroup(BasicParameterModel e) {
 		boolean changed = e.isChanged();
-		return e.group.longName + "   \u2013   " + e.longName.getValue() + (changed ? " *" : "");
+		if (e.group == null)
+			return "---";
+
+		return e.group.longName.getValue() + "   \u2013   " + e.longName.getValue() + (changed ? " *" : "");
 	}
 }

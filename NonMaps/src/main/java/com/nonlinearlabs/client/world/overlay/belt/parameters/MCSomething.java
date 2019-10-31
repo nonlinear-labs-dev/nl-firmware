@@ -2,12 +2,11 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGBA;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
@@ -44,15 +43,8 @@ public abstract class MCSomething extends OverlayLayout {
 	}
 
 	protected boolean shouldDrawShadow() {
-
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			if (m.getModulationSource() != MacroControls.NONE)
-				return false;
-		}
-		return true;
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return !p.modulation.isModulated;
 	}
 
 	@Override
@@ -72,22 +64,20 @@ public abstract class MCSomething extends OverlayLayout {
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-
+		if (p.modulation.isModulateable) {
 			if (amount > 0)
-				inc(m, fine);
+				inc(p.id, fine);
 			else if (amount < 0)
-				dec(m, fine);
+				dec(p.id, fine);
 		}
 
 		return this;
 	}
 
-	protected abstract void dec(ModulatableParameter m, boolean fine);
+	protected abstract void dec(int id, boolean fine);
 
-	protected abstract void inc(ModulatableParameter m, boolean fine);
+	protected abstract void inc(int id, boolean fine);
 
 }

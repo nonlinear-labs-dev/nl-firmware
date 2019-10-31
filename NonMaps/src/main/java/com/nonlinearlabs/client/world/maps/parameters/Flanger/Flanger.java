@@ -4,12 +4,12 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Flanger extends ParameterGroupVertical {
+public class Flanger extends ParameterGroup {
 
 	public Flanger(MapsLayout parent) {
-		super(parent);
+		super(parent, "Flang");
 		addChild(new LabelModuleHeader(this));
 		addChild(new FlangerControls(this));
 	}
@@ -64,8 +64,4 @@ public class Flanger extends ParameterGroupVertical {
 		return ColorTable.getColorIndicator();
 	}
 
-	@Override
-	public String getID() {
-		return "Flang";
-	}
 }

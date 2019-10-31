@@ -47,7 +47,7 @@ public class EditBufferUpdater extends Updater {
 		String groupId = getAttributeValue(c, "id");
 
 		ParameterGroupModel target = EditBufferModel.getGroup(groupId);
-		ParameterGroupUpdater updater = new ParameterGroupUpdater(c, target);
+		ParameterGroupUpdater updater = new ParameterGroupUpdater(c, target, groupId);
 		updater.doUpdate();
 	}
 

@@ -4,12 +4,12 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class EnvA extends ParameterGroupVertical {
+public class EnvA extends ParameterGroup {
 
 	public EnvA(MapsLayout parent) {
-		super(parent);
+		super(parent, "Env A");
 		addChild(new LabelModuleHeader(this));
 		addChild(new EnvAControls(this));
 	}
@@ -56,10 +56,5 @@ public class EnvA extends ParameterGroupVertical {
 
 	public RGB getColorIndicator() {
 		return ColorTable.getColorIndicator();
-	}
-
-	@Override
-	public String getID() {
-		return "Env A";
 	}
 }

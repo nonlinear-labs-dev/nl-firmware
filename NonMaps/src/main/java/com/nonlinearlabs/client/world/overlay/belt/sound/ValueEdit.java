@@ -49,7 +49,7 @@ class ValueEdit extends Label {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		changer = EditBufferUseCases.get().startUserEdit(param.id, Millimeter.toPixels(100));
+		changer = EditBufferUseCases.get().startEditParameterValue(param.id, Millimeter.toPixels(100));
 		return this;
 	}
 

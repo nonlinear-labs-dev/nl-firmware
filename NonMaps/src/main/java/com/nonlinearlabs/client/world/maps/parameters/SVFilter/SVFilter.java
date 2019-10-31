@@ -4,12 +4,12 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class SVFilter extends ParameterGroupVertical {
+public class SVFilter extends ParameterGroup {
 
 	public SVFilter(MapsLayout parent) {
-		super(parent);
+		super(parent, "SVF");
 		addChild(new LabelModuleHeader(this));
 		addChild(new SVFilterControls(this));
 	}
@@ -64,8 +64,4 @@ public class SVFilter extends ParameterGroupVertical {
 		return ColorTable.getColorIndicator();
 	}
 
-	@Override
-	public String getID() {
-		return "SVF";
-	}
 }

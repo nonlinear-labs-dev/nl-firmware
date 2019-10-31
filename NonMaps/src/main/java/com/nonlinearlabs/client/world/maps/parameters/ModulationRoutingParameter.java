@@ -1,12 +1,26 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class ModulationRoutingParameter extends Parameter {
 
+	private ParameterPresenter physicalControlParameterPresenter;
+
 	public ModulationRoutingParameter(MapsLayout parent, int paramID) {
 		super(parent, paramID);
+
+		ModulationRouterParameterModel p = (ModulationRouterParameterModel) EditBufferModel.findParameter(paramID);
+
+		ParameterPresenterProviders.get().register(p.getAssociatedPhysicalControlID(), v -> {
+			physicalControlParameterPresenter = v;
+			onReturningModeChanged();
+			return true;
+		});
 	}
 
 	@Override
@@ -18,7 +32,6 @@ public class ModulationRoutingParameter extends Parameter {
 		removeAll();
 
 		if (returning) {
-
 			addChild(new Spacer(this) {
 				@Override
 				protected double getBasicHeight() {
@@ -57,7 +70,11 @@ public class ModulationRoutingParameter extends Parameter {
 	}
 
 	protected ModulationRoutingButton createRoutingButton() {
-		return new ModulationRoutingButton(this);
+		return new ModulationRoutingButton(this, getParameterID());
+	}
+
+	public void onReturningModeChanged() {
+		setupChildren(physicalControlParameterPresenter.isReturning);
 	}
 
 }

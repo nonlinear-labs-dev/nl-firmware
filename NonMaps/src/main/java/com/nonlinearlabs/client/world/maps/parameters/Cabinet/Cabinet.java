@@ -4,12 +4,12 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Cabinet extends ParameterGroupVertical {
+public class Cabinet extends ParameterGroup {
 
 	public Cabinet(MapsLayout parent) {
-		super(parent);
+		super(parent, "Cab");
 		addChild(new LabelModuleHeader(this));
 		addChild(new CabinetControls(this));
 	}
@@ -64,8 +64,4 @@ public class Cabinet extends ParameterGroupVertical {
 		return ColorTable.getColorIndicator();
 	}
 
-	@Override
-	public String getID() {
-		return "Cab";
-	}
 }

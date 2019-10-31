@@ -62,11 +62,7 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 					ColorTable.getMacroControlTargetColor());
 	}
 
-	@Override
-	public boolean shouldHaveHandleOnly() {
-		return true;
-	}
-
+	
 	@Override
 	public String getCurrentName() {
 		return presenter.userGivenName;
