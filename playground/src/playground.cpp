@@ -1,8 +1,9 @@
-#include <third-party/include/catch.hpp>
 
 #ifdef _TESTS
 #define CATCH_CONFIG_RUNNER
 #endif
+#include <third-party/include/catch.hpp>
+
 #include "Application.h"
 #include "testing/TestDriver.h"
 #include <stdlib.h>
@@ -109,7 +110,6 @@ int main(int numArgs, char** argv)
   {
     Application app(numArgs, argv);
 
-#ifdef _TESTS
     app.stopWatchDog();
     std::vector<const char*> args;
     args.emplace_back(argv[0]);
@@ -118,7 +118,6 @@ int main(int numArgs, char** argv)
     if(result != 0)
       exit(result);
     app.runWatchDog();
-#endif
 
     Application::get().run();
     DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
