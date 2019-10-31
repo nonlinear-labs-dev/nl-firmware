@@ -24,6 +24,7 @@ DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout
 {
   m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
       sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
+
   m_connection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
 }

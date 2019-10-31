@@ -28,4 +28,5 @@ class SelectedParameterValue : public Label
 
  private:
   sigc::connection m_paramValueConnection;
+  sigc::connection m_voiceGroupSelectionConnection;
 };
