@@ -18,7 +18,8 @@ namespace DescriptiveLayouts
       }
       else
       {
-        const auto suffix = " " + toString(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+        const auto suffix
+            = " " + toString(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
         setValue({ typeStr + suffix, suffix.size() });
       }
     }
@@ -29,7 +30,17 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue({eb->getName(), 0 });
+      setValue({ eb->getName(), 0 });
+    }
+  };
+
+  class CurrentVoiceGroupLabel : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      setValue({ eb->getVoiceGroupName(currentVG), 0 });
     }
   };
 

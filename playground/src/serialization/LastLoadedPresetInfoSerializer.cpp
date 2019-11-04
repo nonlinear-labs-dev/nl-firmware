@@ -20,8 +20,8 @@ void LastLoadedPresetInfoSerializer::writeTagContent(Writer &writer) const
 {
   writer.writeTextElement("loaded-preset", m_editBuffer->getUUIDOfLastLoadedPreset().raw());
   writer.writeTextElement("loaded-presets-name", m_editBuffer->getName());
-  writer.writeTextElement("voice-group-label-I", m_editBuffer->getName());
-  writer.writeTextElement("voice-group-label-II", m_editBuffer->getName());
+  writer.writeTextElement("voice-group-label-I", m_editBuffer->getVoiceGroupName(VoiceGroup::I));
+  writer.writeTextElement("voice-group-label-II", m_editBuffer->getVoiceGroupName(VoiceGroup::II));
 }
 
 void LastLoadedPresetInfoSerializer::readTagContent(Reader &reader) const

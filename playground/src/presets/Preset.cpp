@@ -18,6 +18,7 @@ Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
     , m_type{ SoundType::Single }
+    , m_voiceGroupLabels{ { "I", "II" } }
 {
 }
 
@@ -26,6 +27,7 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
     , m_type{ other.getType() }
+    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
 {
 }
 
@@ -34,6 +36,8 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, 
     , m_type{ editBuffer.getType() }
 {
   m_name = editBuffer.getName();
+  m_voiceGroupLabels[0] = editBuffer.getVoiceGroupName(VoiceGroup::I);
+  m_voiceGroupLabels[1] = editBuffer.getVoiceGroupName(VoiceGroup::II);
 
   if(copyUUID)
     m_uuid = editBuffer.getUUIDOfLastLoadedPreset();
@@ -119,6 +123,11 @@ SoundType Preset::getType() const
   return m_type;
 }
 
+Glib::ustring Preset::getVoiceGroupName(VoiceGroup vg) const
+{
+  return m_voiceGroupLabels[static_cast<int>(vg)];
+}
+
 const Uuid &Preset::getUuid() const
 {
   return m_uuid;
@@ -176,7 +185,6 @@ PresetParameterGroup *Preset::findParameterGroup(const std::string &id, VoiceGro
 
   if(it != m_parameterGroups[static_cast<int>(vg)].end())
     return it->second.get();
-
 
   auto globalit = m_globalParameterGroups.find(id);
   if(globalit != m_globalParameterGroups.end())

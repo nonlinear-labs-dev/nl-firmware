@@ -95,6 +95,8 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::VoicesParameterHeader] = std::make_unique<VoicesParameterHeader>();
     m_map[EventSources::UnisonEnabled] = std::make_unique<UnisonEnabledBool>();
+
+    m_map[EventSources::CurrentVoiceGroupLabel] = std::make_unique<CurrentVoiceGroupLabel>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

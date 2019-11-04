@@ -501,6 +501,8 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Pre
   if(preset)
   {
     setName(transaction, preset->getName());
+    setVoiceGroupName(transaction, preset->getVoiceGroupName(VoiceGroup::I), VoiceGroup::I);
+    setVoiceGroupName(transaction, preset->getVoiceGroupName(VoiceGroup::II), VoiceGroup::II);
     newId = preset->getUuid();
   }
 
@@ -553,7 +555,10 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 
   resetModifiedIndicator(transaction);
 
+  setVoiceGroupName(transaction, "I", VoiceGroup::I);
+  setVoiceGroupName(transaction, "II", VoiceGroup::II);
   setName(transaction, "Init Sound");
+
   m_recallSet.copyFromEditBuffer(transaction, this);
 
   transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
@@ -733,6 +738,7 @@ void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup targ
   auto scope = getUndoScope().startTransaction("Load Preset into Voicegroup");
   auto transaction = scope->getTransaction();
   loadIntoVoiceGroup(transaction, preset, target);
+  setVoiceGroupName(transaction, preset->getName(), target);
 }
 
 const SplitPointParameter *EditBuffer::getSplitPoint() const
