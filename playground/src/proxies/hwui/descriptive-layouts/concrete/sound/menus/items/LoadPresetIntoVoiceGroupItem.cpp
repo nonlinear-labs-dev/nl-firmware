@@ -10,6 +10,6 @@ LoadPresetIntoVoiceGroupItem::LoadPresetIntoVoiceGroupItem(const Rect& r)
 
 void LoadPresetIntoVoiceGroupItem::doAction()
 {
-  Application::get().getHWUI()->setFocusAndMode(UIDetail::SoundSelectPresetForVoiceGroup);
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+  Application::get().getHWUI()->setFocusAndMode(
+      FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::SoundSelectPresetForVoiceGroup));
 }

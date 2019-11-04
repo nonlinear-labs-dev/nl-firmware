@@ -21,6 +21,12 @@
         "Class": "Text",
         "Rect": "60, 1, 10, 15"
       }
+    },
+    "PresetListBorder": {
+      "Border" : {
+        "Class": "Border",
+        "Rect": "0, 0, 128, 64"
+      }
     }
   },
   "styles": {
