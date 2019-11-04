@@ -19,13 +19,9 @@ void LayerSoundEditMenu::init()
 {
   const auto height = 52 / 4;
   auto fullWidth = Rect{ 0, 0, 254, height };
-  addItem<TextItem>("-- Layer --", fullWidth);
+  auto currentLayer = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto str = toString(currentLayer);
+  addItem<TextItem>("-- Layer " + str + "  --", fullWidth);
   addItem<LoadPresetIntoVoiceGroupItem>(fullWidth);
   addItem<ConvertToSingleItem>(fullWidth);
-  addItem<InitSound>(fullWidth);
-  addItem<RandomizeItem>(fullWidth);
-
-  addItem<TextItem>("-- Common --", fullWidth);
-  addItem<SettingItem<TransitionTime>>("Transition Time", fullWidth);
-  addItem<SettingItem<TuneReference>>("Tune Reference", fullWidth);
 }
