@@ -1,0 +1,33 @@
+{
+  "layouts": {
+    "Layer-Sound-Info-Layout": {
+      "Selector": {
+        "UIFocus": "Sound",
+        "UIMode": "Info",
+        "UIDetail": "Init"
+      },
+      "Conditions": [
+        "isLayerSound"
+      ],
+      "Controls": {
+        "Name": {
+          "Class": "WideHighlightLabel",
+          "Position": "64, 16",
+          "Init": {
+            "Text[Text]": "Layer Sound Info: Mockup?!"
+          }
+        },
+        "ButtonA": {
+          "Class": "Button",
+          "Position": "BUTTON_A",
+          "Init": {
+            "Text[Text]": "Back"
+          }
+        }
+      },
+      "EventSinks": {
+        "BUTTON_A": "SwitchToSelectMode"
+      }
+    }
+  }
+}
