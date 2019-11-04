@@ -16,7 +16,7 @@
           "Events": "SoundEditHeading => Text[Text]"
         },
         "Content": {
-          "Class": "SplitSoundEditMenu",
+          "Class": "DualSoundEditMenu",
           "Position": "1,11"
         }
       }

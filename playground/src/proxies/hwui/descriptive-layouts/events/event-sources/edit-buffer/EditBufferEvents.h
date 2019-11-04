@@ -29,7 +29,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      setValue({ eb->getName(), 0 });
+      setValue({eb->getName(), 0 });
     }
   };
 

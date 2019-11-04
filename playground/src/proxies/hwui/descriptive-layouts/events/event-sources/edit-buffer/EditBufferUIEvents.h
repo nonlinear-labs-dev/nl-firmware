@@ -17,7 +17,7 @@ namespace DescriptiveLayouts
       else
       {
         auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        setValue({ typeStr + (sel == VoiceGroup::I ? "[II]" : "[I]"), 0 });
+        setValue({ typeStr + (sel == VoiceGroup::I ? "[I]" : "[II]"), 0 });
       }
     }
   };

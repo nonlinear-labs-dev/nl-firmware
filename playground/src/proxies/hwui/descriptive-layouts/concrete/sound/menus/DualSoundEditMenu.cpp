@@ -1,30 +1,28 @@
-#include "SplitSoundEditMenu.h"
+#include "DualSoundEditMenu.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 
-#include <device-settings/TransitionTime.h>
-#include <device-settings/TuneReference.h>
-
-#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/SettingItem.h>
-#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/RandomizeItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/ConvertToSingleItem.h>
-#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/InitSound.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/LoadPresetIntoVoiceGroupItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/TextItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/VoiceGroupLabelItem.h>
 
-SplitSoundEditMenu::SplitSoundEditMenu(const Rect &r)
+DualSoundEditMenu::DualSoundEditMenu(const Rect &r)
     : ScrollMenu(r)
 {
   init();
 }
 
-void SplitSoundEditMenu::init()
+void DualSoundEditMenu::init()
 {
   const auto height = 52 / 4;
   auto fullWidth = Rect{ 0, 0, 254, height };
   auto currentLayer = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   auto str = toString(currentLayer);
-  addItem<TextItem>("-- Split " + str + "  --", fullWidth);
+  auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
+  auto typeString = toString(type);
+  addItem<TextItem>("-- " + typeString + " " + str + "  --", fullWidth);
   addItem<LoadPresetIntoVoiceGroupItem>(fullWidth);
+  addItem<VoiceGroupLabelItem>(fullWidth);
   addItem<ConvertToSingleItem>(fullWidth);
 }

@@ -50,16 +50,9 @@ SoundType EditBuffer::getType() const
   return m_type;
 }
 
-Glib::ustring EditBuffer::getName(VoiceGroup vg) const
+Glib::ustring EditBuffer::getName() const
 {
-  if(vg == VoiceGroup::Global || vg == VoiceGroup::Invalid)
-  {
-    return getEditBufferName();
-  }
-  else
-  {
-    return m_voiceGroupLabels[static_cast<int>(vg)];
-  }
+  return getEditBufferName();
 }
 
 Glib::ustring EditBuffer::getEditBufferName() const
@@ -409,6 +402,12 @@ Parameter *EditBuffer::getSelected(VoiceGroup vg) const
 void EditBuffer::setName(UNDO::Transaction *transaction, const Glib::ustring &name)
 {
   transaction->addUndoSwap(this, m_name, name);
+}
+
+void EditBuffer::setVoiceGroupName(UNDO::Transaction *transaction, const Glib::ustring &name, VoiceGroup vg)
+{
+  nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
+  transaction->addUndoSwap(this, m_voiceGroupLabels[static_cast<int>(vg)], name);
 }
 
 bool EditBuffer::isZombie() const
@@ -810,4 +809,10 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGro
   {
     mp->setDefaultFromHwui(transaction);
   }
+}
+
+Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
+{
+  nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
+  return m_voiceGroupLabels[static_cast<int>(vg)];
 }

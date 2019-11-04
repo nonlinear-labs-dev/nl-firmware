@@ -20,7 +20,8 @@ class EditBuffer : public ParameterDualGroupSet
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
-  Glib::ustring getName(VoiceGroup vg = VoiceGroup::Global) const;
+  Glib::ustring getName() const;
+  Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
@@ -51,6 +52,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableToggleGroupLock(UNDO::Transaction *transaction, const Glib::ustring &groupId);
 
   void setName(UNDO::Transaction *transaction, const Glib::ustring &name);
+  void setVoiceGroupName(UNDO::Transaction *transaction, const Glib::ustring &name, VoiceGroup vg);
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   Uuid getUUIDOfLastLoadedPreset() const;

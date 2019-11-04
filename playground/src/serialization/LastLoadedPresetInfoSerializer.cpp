@@ -19,9 +19,9 @@ Glib::ustring LastLoadedPresetInfoSerializer::getTagName()
 void LastLoadedPresetInfoSerializer::writeTagContent(Writer &writer) const
 {
   writer.writeTextElement("loaded-preset", m_editBuffer->getUUIDOfLastLoadedPreset().raw());
-  writer.writeTextElement("loaded-presets-name", m_editBuffer->getName(VoiceGroup::Global));
-  writer.writeTextElement("voice-group-label-I", m_editBuffer->getName(VoiceGroup::I));
-  writer.writeTextElement("voice-group-label-II", m_editBuffer->getName(VoiceGroup::II));
+  writer.writeTextElement("loaded-presets-name", m_editBuffer->getName());
+  writer.writeTextElement("voice-group-label-I", m_editBuffer->getName());
+  writer.writeTextElement("voice-group-label-II", m_editBuffer->getName());
 }
 
 void LastLoadedPresetInfoSerializer::readTagContent(Reader &reader) const

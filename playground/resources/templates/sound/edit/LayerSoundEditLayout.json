@@ -14,7 +14,7 @@
           "Events": "SoundEditHeading => Text[Text]"
         },
         "Content": {
-          "Class": "LayerSoundEditMenu",
+          "Class": "DualSoundEditMenu",
           "Position": "1, 11"
         }
       }
