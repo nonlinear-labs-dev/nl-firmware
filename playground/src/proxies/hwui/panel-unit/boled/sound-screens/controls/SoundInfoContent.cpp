@@ -14,12 +14,11 @@ SoundInfoContent::SoundInfoContent()
 
   if(eb->getType() != SoundType::Single)
   {
+    addInfoField("I", "Label I");
     if(eb->getType() == SoundType::Split)
     {
       addInfoField("split", "Split Point");
     }
-
-    addInfoField("I", "Label I");
     addInfoField("II", "Label II");
   }
 
@@ -41,7 +40,8 @@ void SoundInfoContent::fillContents()
 
   if(eb->getType() == SoundType::Split)
   {
-    infoFields["split"]->setInfo(eb->getSplitPoint()->getDisplayString());
+    infoFields["split"]->setInfo(eb->getSplitPoint()->getDisplayValue(VoiceGroup::II) + " - "
+                                 + eb->getSplitPoint()->getDisplayValue(VoiceGroup::I));
   }
 
   if(eb->getType() != SoundType::Single)
