@@ -14,6 +14,12 @@ CurrentVoiceGroupSelectionIndicator::CurrentVoiceGroupSelectionIndicator(const R
 {
   Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
       sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
+
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
 }
 
 void CurrentVoiceGroupSelectionIndicator::focusChanged()
