@@ -485,10 +485,7 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
 
-  if(preset->getType() == SoundType::Single)
-    undoableConvertToSingle(transaction, VoiceGroup::I);
-  else if(preset->getType() == SoundType::Split || preset->getType() == SoundType::Layer)
-    undoableConvertToDual(transaction, preset->getType());
+  transaction->addUndoSwap(this, m_type, preset->getType());
 
   super::copyFrom(transaction, preset);
 
