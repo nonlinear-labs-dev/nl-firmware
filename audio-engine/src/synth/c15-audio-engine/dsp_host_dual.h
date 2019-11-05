@@ -30,6 +30,7 @@ class dsp_host_dual
   // public methods
   void init(const uint32_t _samplerate, const uint32_t _polyphony);
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
+  void onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   void render();
   void reset();
 
@@ -56,4 +57,6 @@ class dsp_host_dual
   MonoSection m_mono[2];
   float scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
               float _value);
+  // helper values
+  const float m_norm_vel = 4095.0f / 127.0f, m_norm_hw = 8000.0f / 127.0f;
 };

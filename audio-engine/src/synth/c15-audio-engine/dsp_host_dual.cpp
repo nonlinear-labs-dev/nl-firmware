@@ -139,6 +139,145 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
 
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
+  const uint32_t ch = _status & 15, st = (_status & 127) >> 4;
+  uint32_t arg = 0;
+  // LPC MIDI Protocol 1.7 transmit every LPC Message as MIDI PitchBend Message! (avoiding TCD Protocol collisions)
+  if(st == 6)
+  {
+    switch(ch)
+    {
+      case 0:
+        // Pedal 1
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 1:
+        // Pedal 2
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 2:
+        // Pedal 3
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 3:
+        // Pedal 4
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 4:
+        // Bender
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 5:
+        // Aftertouch
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 6:
+        // Ribbon 1
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 7:
+        // Ribbon 2
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 13:
+        // Key Pos (down or up)
+        arg = _data1;
+        // ...
+        break;
+      case 14:
+        // Key Down
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      case 15:
+        // Key Up
+        arg = _data1 + (_data0 << 7);
+        // ...
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
+{
+  const uint32_t type = (_status & 127) >> 4;
+  uint32_t arg = 0;
+  switch(type)
+  {
+    case 0:
+      // note off
+      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_vel);
+      onMidiMessage(0xED, 0, _data0);            // keyPos
+      onMidiMessage(0xEF, arg >> 7, arg & 127);  // keyUp
+      break;
+    case 1:
+      // note on
+      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_vel);
+      onMidiMessage(0xED, 0, _data0);            // keyPos
+      onMidiMessage(0xEE, arg >> 7, arg & 127);  // keyDown
+      break;
+    case 3:
+      // ctrl chg (hw sources: pedals, ribbons) - hard coded ReMOTE template "MSE 2"
+      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_hw);
+      switch(_data0)
+      {
+        case 61:
+          // Pedal 1
+          onMidiMessage(0xE0, arg >> 7, arg & 127);
+          break;
+        case 62:
+          // Pedal 2
+          onMidiMessage(0xE1, arg >> 7, arg & 127);
+          break;
+        case 63:
+          // Pedal 3
+          onMidiMessage(0xE2, arg >> 7, arg & 127);
+          break;
+        case 64:
+          // Pedal 4
+          onMidiMessage(0xE3, arg >> 7, arg & 127);
+          break;
+        case 67:
+          // Ribbon 1
+          onMidiMessage(0xE6, arg >> 7, arg & 127);
+          break;
+        case 68:
+          // Ribbon 2
+          onMidiMessage(0xE7, arg >> 7, arg & 127);
+          break;
+        default:
+          break;
+      }
+      break;
+    case 5:
+      // mono at (hw source)
+      arg = static_cast<uint32_t>(static_cast<float>(_data0) * m_norm_hw);
+      onMidiMessage(0xE5, arg >> 7, arg & 127);  // hw_at
+      break;
+    case 6:
+      // bend (hw source)
+      if((_data1 == 64) || (_data1 == 65))
+      {
+        arg = 4000;  // enforce true return_to_zero
+      }
+      else
+      {
+        arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_hw);
+      }
+      onMidiMessage(0xE4, arg >> 7, arg & 127);  // hw_bend
+      break;
+    default:
+      break;
+  }
 }
 
 void dsp_host_dual::render()

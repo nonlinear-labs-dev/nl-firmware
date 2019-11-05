@@ -32,7 +32,7 @@ C15Synth::~C15Synth() = default;
 void C15Synth::doMidi(const MidiEvent &event)
 {
 #if test_inputModeFlag
-  //m_dsp->onMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
+  m_dsp->onRawMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
 #else
   m_dsp->onMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
 #endif
