@@ -169,7 +169,6 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       case 4:
         // Bender
         arg = _data1 + (_data0 << 7);
-        std::cout << "Bend: " << arg << std::endl;
         // ...
         break;
       case 5:
