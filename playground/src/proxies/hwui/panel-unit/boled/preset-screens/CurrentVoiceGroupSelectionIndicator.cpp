@@ -10,7 +10,7 @@ inline static Glib::ustring currentVoiceGroupToString()
 }
 
 CurrentVoiceGroupSelectionIndicator::CurrentVoiceGroupSelectionIndicator(const Rect &r)
-    : SymbolLabel(currentVoiceGroupToString(), r)
+    : LabelRegular8(currentVoiceGroupToString(), r)
 {
   Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
       sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
@@ -20,4 +20,6 @@ void CurrentVoiceGroupSelectionIndicator::focusChanged()
 {
   if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
     setText({ currentVoiceGroupToString(), 0 });
+  else
+    setText({ "", 0 });
 }

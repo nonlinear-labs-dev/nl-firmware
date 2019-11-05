@@ -12,7 +12,7 @@
       "Controls": {
         "Name": {
           "Class": "WideHighlightLabel",
-          "Position": "64, 16",
+          "Position": "-100, -100",
           "Init": {
             "Text[Text]": "Split Sound Info: Mockup?!"
           }
@@ -23,6 +23,10 @@
           "Init": {
             "Text[Text]": "Back"
           }
+        },
+        "asda": {
+          "Class": "CurrentVoiceGroupSelectionIndicator",
+          "Position": "15, 10"
         }
       },
       "EventSinks": {

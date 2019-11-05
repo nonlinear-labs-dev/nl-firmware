@@ -12,6 +12,7 @@
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/DualSoundEditMenu.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/SingleSoundEditMenu.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/MonoGroupControl.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/CurrentVoiceGroupSelectionIndicator.h>
 
 namespace DescriptiveLayouts
 {
@@ -45,7 +46,11 @@ namespace DescriptiveLayouts
     m_discreteRegistry["LoadVoiceGroupPresetList"]
         = [](const Point& position) { return new LoadVoiceGroupPresetList(position); };
     m_discreteRegistry["MonoGroupControl"]
-        = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 125, 33));};
+        = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 125, 33)); };
+
+    m_discreteRegistry["CurrentVoiceGroupSelectionIndicator"] = [](const Point& position) {
+      return new CurrentVoiceGroupSelectionIndicator(Rect(position.getX(), position.getY(), 10, 8));
+    };
   }
 
   void ControlRegistry::registerControl(ControlClass&& cp)

@@ -1,13 +1,13 @@
 #pragma once
-#include <proxies/hwui/controls/SymbolLabel.h>
+#include <proxies/hwui/controls/LabelRegular8.h>
 
-class CurrentVoiceGroupSelectionIndicator : public SymbolLabel
+class CurrentVoiceGroupSelectionIndicator : public LabelRegular8
 {
-public:
+ public:
   explicit CurrentVoiceGroupSelectionIndicator(const Rect& r);
   void focusChanged();
-private:
 
+ private:
   /*
       split.a.01	E0F0
       split.a.02	E0F1
