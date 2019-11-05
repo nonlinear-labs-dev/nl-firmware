@@ -14,9 +14,9 @@
 
 BankInfoContent::BankInfoContent()
 {
-  addInfoField("name", "Name", new MultiLineContent());
+  addInfoField("name", "Name", new MultiLineInfoContent());
   addInfoField("size", "Size");
-  addInfoField("comment", "Comment", new MultiLineContent());
+  addInfoField("comment", "Comment", new MultiLineInfoContent());
   addInfoField("state", "State");
   addInfoField("dateofchange", "Last Change");
   addInfoField("importdate", "Import Date");

@@ -13,8 +13,8 @@
 
 PresetInfoContent::PresetInfoContent()
 {
-  addInfoField("name", "Name", new MultiLineContent());
-  addInfoField("comment", "Comment", new MultiLineContent());
+  addInfoField("name", "Name", new MultiLineInfoContent());
+  addInfoField("comment", "Comment", new MultiLineInfoContent());
   addInfoField("lastchange", "Last Change");
   addInfoField("devicename", "Device Name");
   addInfoField("uiversion", "UI Version");

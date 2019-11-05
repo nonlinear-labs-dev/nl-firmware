@@ -4,12 +4,13 @@
 #include <chrono>
 #include <utility>
 #include <tools/FileTools.h>
+#include <proxies/hwui/panel-unit/boled/info/MultiLineInfoContent.h>
 
 FileInfoContent::FileInfoContent(std::experimental::filesystem::directory_entry file)
     : m_file(std::move(file))
 {
   addInfoField("filename", "Filename:");
-  addInfoField("path", "Path:", new MultiLineContent());
+  addInfoField("path", "Path:", new MultiLineInfoContent());
   addInfoField("date", "Mod. Date:");
   addInfoField("size", "File Size:");
 

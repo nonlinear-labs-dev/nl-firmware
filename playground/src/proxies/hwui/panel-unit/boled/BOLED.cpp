@@ -22,6 +22,7 @@
 #include "BOLED.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
+#include <proxies/hwui/panel-unit/boled/sound-screens/SoundInfoLayout.h>
 
 BOLED::BOLED()
     : OLEDProxy(Rect(0, 0, 256, 64))
@@ -158,7 +159,10 @@ void BOLED::installOldLayouts(FocusAndMode focusAndMode)
 
 void BOLED::setupSoundScreen(FocusAndMode focusAndMode)
 {
-  reset(new SingleSoundLayout(focusAndMode));
+  if(focusAndMode.mode == UIMode::Info)
+    reset(new SoundInfoLayout());
+  else
+    reset(new SingleSoundLayout(focusAndMode));
 }
 
 void BOLED::setupParameterScreen(FocusAndMode focusAndMode)

@@ -6,12 +6,24 @@
 
 SoundInfoContent::SoundInfoContent()
 {
-  addInfoField("presetlabel", "Sound Label", new MultiLineContent());
-  addInfoField("comment", "Comment", new MultiLineContent());
+  addInfoField("presetlabel", "Sound Label");
   addInfoField("type", "Sound Type");
+  addInfoField("comment", "Comment", new MultiLineInfoContent());
 
-  Application::get().getPresetManager()->getEditBuffer()->onChange(
-      sigc::mem_fun(this, &SoundInfoContent::updateContent));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  if(eb->getType() != SoundType::Single)
+  {
+    if(eb->getType() == SoundType::Split)
+    {
+      addInfoField("split", "Split Point");
+    }
+
+    addInfoField("I", "Label I");
+    addInfoField("II", "Label II");
+  }
+
+  eb->onChange(sigc::mem_fun(this, &SoundInfoContent::updateContent));
 }
 
 void SoundInfoContent::fillContents()
@@ -20,8 +32,22 @@ void SoundInfoContent::fillContents()
   infoFields["presetlabel"]->setInfo(editBuffer->getName());
 
   if(auto origin = editBuffer->getOrigin())
-    infoFields["comment"]->setInfo(origin->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
+    infoFields["comment"]->setInfo(origin->getAttribute("Comment", "---"));
   else
     infoFields["comment"]->setInfo("---");
   infoFields["type"]->setInfo(toString(editBuffer->getType()));
+
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  if(eb->getType() == SoundType::Split)
+  {
+    infoFields["split"]->setInfo(eb->getSplitPoint()->getDisplayString());
+  }
+
+  if(eb->getType() != SoundType::Single)
+  {
+    infoFields["type"]->setInfo(toString(eb->getType()));
+    infoFields["I"]->setInfo(eb->getVoiceGroupName(VoiceGroup::I));
+    infoFields["II"]->setInfo(eb->getVoiceGroupName(VoiceGroup::II));
+  }
 }

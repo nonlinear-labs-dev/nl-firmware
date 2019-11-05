@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/panel-unit/boled/InfoContent.h>
+#include <proxies/hwui/panel-unit/boled/info/InfoContent.h>
 
 class Preset;
 class Uuid;
