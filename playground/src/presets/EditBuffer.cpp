@@ -71,6 +71,13 @@ size_t EditBuffer::getHash() const
     for(const auto g : getParameterGroups(vg))
       hash_combine(hash, g->getHash());
 
+  for(auto &global : getGlobalParameterGroups())
+    for(auto p : global->getParameters())
+      hash_combine(hash, p->getHash());
+
+  if(getSplitPoint())
+    hash_combine(hash, getSplitPoint()->getHash());
+
   hash_combine(hash, static_cast<int>(getType()));
 
   return hash;
