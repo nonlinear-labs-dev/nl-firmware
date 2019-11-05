@@ -237,4 +237,45 @@ namespace DescriptiveLayouts
       }
     }
   };
+
+  class SoundInfoHeader : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      setValue({ "Sound Info", 0 });
+    }
+  };
+
+  class VoiceGroupILabel : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      auto vgILabel = eb->getVoiceGroupName(VoiceGroup::I);
+      setValue({ vgILabel, 0 });
+    }
+  };
+
+  class VoiceGroupIILabel : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      auto vgIILabel = eb->getVoiceGroupName(VoiceGroup::II);
+      setValue({ vgIILabel, 0 });
+    }
+  };
+
+  class SoundInfoSplitPoint : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override
+    {
+      if(auto splitPoint = eb->getSplitPoint())
+      {
+        setValue({ splitPoint->getDisplayString(), 0 });
+      }
+    }
+  };
 }

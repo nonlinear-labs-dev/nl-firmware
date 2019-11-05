@@ -13,6 +13,7 @@ InfoContent::~InfoContent()
 void InfoContent::setPosition(const Rect& rect)
 {
   super::setPosition(rect);
+  fixLayout();
 }
 
 const Rect& InfoContent::getPosition() const
@@ -28,6 +29,7 @@ void InfoContent::setDirty()
 
 InfoContent::InfoField* InfoContent::addInfoField(std::string lineIdentifier, Glib::ustring labelText, Control* field)
 {
+  infoOrder.emplace_back(lineIdentifier);
   auto label = addControl(new SingleLineContent(labelText));
   addControl(field);
   infoFields[lineIdentifier] = std::make_unique<InfoField>(label, field);
@@ -80,7 +82,8 @@ void InfoContent::InfoField::setInfo(Glib::ustring text)
 int InfoContent::InfoField::format(int y)
 {
   setPosition(y);
-  return std::max(m_content->getPosition().getBottom(), m_label->getPosition().getBottom());
+  auto height = std::max(m_content->getHeight(), m_label->getHeight());
+  return y + height;
 }
 
 void InfoContent::InfoField::setPosition(int y)
@@ -110,4 +113,24 @@ void InfoContent::MultiLineContent::setPosition(Rect rect)
 {
   rect.moveBy(0, 2);
   MultiLineLabel::setPosition(rect);
+}
+
+void InfoContent::fixLayout()
+{
+  int y = 0;
+
+  for(const auto& infoKey : infoOrder)
+  {
+    y = infoFields[infoKey]->format(y);
+  }
+
+  Rect r = getPosition();
+  r.setHeight(y);
+  ControlWithChildren::setPosition(r);
+}
+
+void InfoContent::updateContent()
+{
+  fillContents();
+  fixLayout();
 }

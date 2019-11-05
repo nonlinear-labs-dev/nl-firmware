@@ -15,7 +15,8 @@
           "Position": "64, 16",
           "Init": {
             "Text[Text]": "Layer Sound Info: Mockup?!"
-          }
+          },
+          "Events": "SoundInfoHeader => Text[Text]"
         },
         "ButtonA": {
           "Class": "Button",

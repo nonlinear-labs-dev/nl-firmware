@@ -9,15 +9,9 @@ class FileInfoContent : public InfoContent
 {
  public:
   FileInfoContent(std::experimental::filesystem::directory_entry file);
-  ~FileInfoContent() = default;
 
-  void setPosition(const Rect &rect) override;
-  const Rect &getPosition() const override;
-  void setDirty() override;
-
-  void fixLayout();
+  void fillContents() override;
 
  private:
-  void initializeFileInfosFromFile();
   std::experimental::filesystem::directory_entry m_file;
 };

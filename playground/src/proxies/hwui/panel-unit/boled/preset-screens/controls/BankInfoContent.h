@@ -16,19 +16,14 @@ class BankInfoContent : public InfoContent
 
  public:
   BankInfoContent();
-  virtual ~BankInfoContent();
 
-  void setPosition(const Rect &rect) override;
-  const Rect &getPosition() const override;
-  void setDirty() override;
+  void fillContents() override;
 
  private:
   void onBankSelectionChanged(const Uuid &selectedBank);
   void onBankChanged(Bank *bank);
 
-  void fixLayout();
-  bool fillFromBank(Bank *bank);
-  bool fillDefaults();
+  void fillFromBank(Bank *bank);
 
   sigc::connection m_bankConnection;
 };

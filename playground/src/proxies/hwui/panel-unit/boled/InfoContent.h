@@ -46,9 +46,15 @@ class InfoContent : public Scrollable, public ControlWithChildren
   virtual const Rect& getPosition() const override;
   virtual void setDirty() override;
 
+  virtual void fillContents() = 0;
+  void updateContent();
+
   InfoField* addInfoField(std::string lineIdentifier, Glib::ustring labelText, Control* field);
   InfoField* addInfoField(std::string lineIdentifier, Glib::ustring labelText);
 
  protected:
+  void fixLayout();
+
+  std::vector<std::string> infoOrder;
   std::map<std::string, std::unique_ptr<InfoField>> infoFields;
 };
