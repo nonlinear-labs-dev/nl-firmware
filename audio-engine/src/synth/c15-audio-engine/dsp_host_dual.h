@@ -58,5 +58,5 @@ class dsp_host_dual
   float scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
               float _value);
   // helper values
-  const float m_norm_vel = 4095.0f / 127.0f, m_norm_hw = 8000.0f / 127.0f;
+  const float m_norm_vel = 4095.0f / 127.0f, m_norm_hw = 8000.0f / 127.0f, m_norm_pb = 8000.0f / 16383.0f;
 };

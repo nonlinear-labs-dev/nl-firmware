@@ -141,7 +141,7 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
 {
   const uint32_t ch = _status & 15, st = (_status & 127) >> 4;
   uint32_t arg = 0;
-  // LPC MIDI Protocol 1.7 transmit every LPC Message as MIDI PitchBend Message! (avoiding TCD Protocol collisions)
+  // LPC MIDI Protocol 1.7 transmits every LPC Message as MIDI PitchBend Message! (avoiding TCD Protocol collisions)
   if(st == 6)
   {
     switch(ch)
@@ -169,6 +169,7 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       case 4:
         // Bender
         arg = _data1 + (_data0 << 7);
+        std::cout << "Bend: " << arg << std::endl;
         // ...
         break;
       case 5:
@@ -265,14 +266,7 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
       break;
     case 6:
       // bend (hw source)
-      if((_data1 == 64) || (_data1 == 65))
-      {
-        arg = 4000;  // enforce true return_to_zero
-      }
-      else
-      {
-        arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_hw);
-      }
+      arg = static_cast<uint32_t>(static_cast<float>(_data0 + (_data1 << 7)) * m_norm_pb);
       onMidiMessage(0xE4, arg >> 7, arg & 127);  // hw_bend
       break;
     default:
