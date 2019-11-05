@@ -244,7 +244,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   VoiceAllocator<LocalVoices> m_local[2];
   KeyAssignment m_keyState[Keys];
   VoiceAssignment m_voiceState[GlobalVoices];
-  uint32_t m_localIndex[GlobalVoices], m_localVoice[GlobalVoices], m_splitPoint = {};
+  uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {}, m_splitPoint = {};
   LayerMode* m_mode;
   inline void keyDown_apply(KeyAssignment* _keyState, const uint32_t _keyPos)
   {

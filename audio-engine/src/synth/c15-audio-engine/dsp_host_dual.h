@@ -35,6 +35,8 @@ class dsp_host_dual
   void reset();
 
  private:
+  void keyDown(const float _vel);
+  void keyUp(const float _vel);
   ParameterHandle<C15::Properties::SmootherScale, C15::Descriptors::SmootherSection, C15::Descriptors::SmootherClock,
                   C15::Descriptors::ParameterSignal, C15::Properties::LayerId, C15::Parameters::Hardware_Sources,
                   C15::Parameters::Global_Parameters, C15::Parameters::Hardware_Amounts,
@@ -58,5 +60,8 @@ class dsp_host_dual
   float scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
               float _value);
   // helper values
-  const float m_norm_vel = 4095.0f / 127.0f, m_norm_hw = 8000.0f / 127.0f, m_norm_pb = 8000.0f / 16383.0f;
+  const float m_format_vel = 4095.0f / 127.0f, m_format_hw = 8000.0f / 127.0f, m_format_pb = 8000.0f / 16383.0f,
+              m_norm_vel = 1.0f / 4095.0f, m_norm_hw = 1.0f / 8000.0f;
+  uint32_t m_key_pos = 0;
+  bool m_key_valid = false;
 };

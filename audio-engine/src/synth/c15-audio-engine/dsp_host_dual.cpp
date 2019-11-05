@@ -189,17 +189,26 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       case 13:
         // Key Pos (down or up)
         arg = _data1;
-        // ...
+        m_key_pos = arg - C15::Config::key_from;
+        // key position is only valid within range [36 ... 96]
+        m_key_valid = (arg >= C15::Config::key_from) && (arg <= C15::Config::key_to);
         break;
       case 14:
         // Key Down
         arg = _data1 + (_data0 << 7);
+        if(m_key_valid)
+        {
+          keyDown(static_cast<float>(arg) * m_norm_vel);
+        }
         // ...
         break;
       case 15:
         // Key Up
         arg = _data1 + (_data0 << 7);
-        // ...
+        if(m_key_valid)
+        {
+          keyUp(static_cast<float>(arg) * m_norm_vel);
+        }
         break;
       default:
         break;
@@ -215,19 +224,19 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
   {
     case 0:
       // note off
-      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_vel);
+      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
       onMidiMessage(0xED, 0, _data0);            // keyPos
       onMidiMessage(0xEF, arg >> 7, arg & 127);  // keyUp
       break;
     case 1:
       // note on
-      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_vel);
+      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
       onMidiMessage(0xED, 0, _data0);            // keyPos
       onMidiMessage(0xEE, arg >> 7, arg & 127);  // keyDown
       break;
     case 3:
       // ctrl chg (hw sources: pedals, ribbons) - hard coded ReMOTE template "MSE 2"
-      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_norm_hw);
+      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_hw);
       switch(_data0)
       {
         case 61:
@@ -260,17 +269,31 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
       break;
     case 5:
       // mono at (hw source)
-      arg = static_cast<uint32_t>(static_cast<float>(_data0) * m_norm_hw);
+      arg = static_cast<uint32_t>(static_cast<float>(_data0) * m_format_hw);
       onMidiMessage(0xE5, arg >> 7, arg & 127);  // hw_at
       break;
     case 6:
       // bend (hw source)
-      arg = static_cast<uint32_t>(static_cast<float>(_data0 + (_data1 << 7)) * m_norm_pb);
+      arg = static_cast<uint32_t>(static_cast<float>(_data0 + (_data1 << 7)) * m_format_pb);
       onMidiMessage(0xE4, arg >> 7, arg & 127);  // hw_bend
       break;
     default:
       break;
   }
+}
+
+void dsp_host_dual::keyDown(const float _vel)
+{
+  const bool valid = m_alloc.keyDown(m_key_pos);
+  //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
+  //{}
+}
+
+void dsp_host_dual::keyUp(const float _vel)
+{
+  const bool valid = m_alloc.keyUp(m_key_pos);
+  //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
+  //{}
 }
 
 void dsp_host_dual::render()
