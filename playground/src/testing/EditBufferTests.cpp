@@ -8,6 +8,7 @@
 #include <nltools/Types.h>
 #include <presets/Bank.h>
 #include <presets/Preset.h>
+#include <presets/PresetParameter.h>
 
 inline auto getEditBuffer() -> EditBuffer*
 {
@@ -62,8 +63,7 @@ void removeBankOfPreset(UNDO::Transaction* transaction, Preset* presetToDelete)
 {
   auto editBuffer = getEditBuffer();
   auto pm = editBuffer->getParent();
-  auto bank = dynamic_cast<Bank*>(presetToDelete->getParent());
-  if(bank)
+  if(auto bank = dynamic_cast<Bank*>(presetToDelete->getParent()))
     pm->deleteBank(transaction, bank->getUuid());
 }
 
@@ -74,6 +74,7 @@ class MockPresetStorage
   {
     auto scope = createTestScope();
     auto transaction = scope->getTransaction();
+
     m_layer = createLayerPreset(transaction);
     m_split = createSplitPreset(transaction);
     m_single = createSinglePreset(transaction);
@@ -83,6 +84,7 @@ class MockPresetStorage
   {
     auto scope = createTestScope();
     auto transaction = scope->getTransaction();
+
     removeBankOfPreset(transaction, m_single);
     removeBankOfPreset(transaction, m_split);
     removeBankOfPreset(transaction, m_layer);
@@ -115,56 +117,79 @@ TEST_CASE("EditBuffer Initialized")
   REQUIRE(eb != nullptr);
 }
 
-TEST_CASE("editbuffer can be converted")
+TEST_CASE("Simple EditBuffer Conversion")
 {
   auto editBuffer = getEditBuffer();
+  MockPresetStorage presets;
 
-  {
+  auto loadSinglePreset = [&]() {
     auto scope = createTestScope();
-    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
-  }
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+    REQUIRE(editBuffer->getType() == SoundType::Single);
+  };
 
-  REQUIRE(editBuffer->getType() == SoundType::Single);
-
-  SECTION("convert single editbuffer to layer")
+  SECTION("Convert Single to Layer Sound")
   {
+    loadSinglePreset();
+
     auto scope = createTestScope();
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
   }
 
-  SECTION("convert single editbuffer to split")
+  SECTION("Convert Single to Split Sound")
   {
+    loadSinglePreset();
+
     auto scope = createTestScope();
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
   }
 
-  SECTION("convert single editbuffer to split and undo")
+  SECTION("Undo Convert Single to Split")
   {
+    loadSinglePreset();
+
     {
       auto scope = createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
     }
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
-
     editBuffer->getParent()->getUndoScope().undo();
+    REQUIRE(editBuffer->getType() == SoundType::Single);
+  }
 
+  SECTION("Undo Convert Single to Layer")
+  {
+    loadSinglePreset();
+
+    {
+      auto scope = createTestScope();
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+    }
+
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
+    editBuffer->getParent()->getUndoScope().undo();
     REQUIRE(editBuffer->getType() == SoundType::Single);
   }
 }
 
+#warning "Hier nochmal beigehen und mängel abstellen! (convert changed + master copy addition rules)"
 TEST_CASE("master groups initialization tests")
 {
   auto editBuffer = getEditBuffer();
+  MockPresetStorage presets;
 
-  {
+  auto loadSinglePreset = [&]() {
     auto scope = createTestScope();
-    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
-  }
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+    REQUIRE(editBuffer->getType() == SoundType::Single);
+  };
+
+  loadSinglePreset();
 
   auto collectScaleParameterValues = [editBuffer] {
     std::vector<double> ret;
@@ -312,11 +337,15 @@ TEST_CASE("Split to Single Conversion")
   MockPresetStorage presets;
 
   {
+    //TODO mit stephan über conversion rules reden
     auto scope = createTestScope();
+    auto vgMaster = presets.getSplitPreset()->findParameterByID(10002, VoiceGroup::I);
+    vgMaster->setValue(scope->getTransaction(), 0.2);
+    auto globalMaster = presets.getSplitPreset()->findParameterByID(247, VoiceGroup::Global);
+    globalMaster->setValue(scope->getTransaction(), 0.2);
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
+    REQUIRE(editBuffer->getType() == SoundType::Split);
   }
-
-  REQUIRE(editBuffer->getType() == SoundType::Split);
 
   SECTION("add voice-group master params and set init global master")
   {
