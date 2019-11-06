@@ -282,6 +282,102 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
   }
 }
 
+void dsp_host_dual::update_event_hw_source(const uint32_t _index, const bool _lock,
+                                           const C15::Properties::HW_Return_Behavior _behavior, const float _position)
+{
+  auto param = m_params.get_source(_index);
+  param->m_lock = _lock;
+  param->m_behavior = _behavior;
+  // behavior special cases ???
+  if(param->m_position != _position)
+  {
+    param->m_position = _position;
+    // trigger hw chain ...
+  }
+}
+
+void dsp_host_dual::update_event_hw_amount(const uint32_t _index, const uint32_t _layer, const bool _lock,
+                                           const float _position)
+{
+  auto param = m_params.get_amount(_layer, _index);
+  param->m_lock = _lock;
+  if(param->m_position != _position)
+  {
+    param->m_position = _position;
+    // silent mc update (base) ??? (most probably yes)
+  }
+}
+
+void dsp_host_dual::update_event_macro_ctrl(const uint32_t _index, const uint32_t _layer, const bool _lock,
+                                            const float _position)
+{
+  auto param = m_params.get_macro(_layer, _index);
+  param->m_lock = param->m_time.m_lock = _lock;  // currently, group lock affects both
+  if(param->m_position != _position)
+  {
+    param->m_position = _position;
+    // trigger mc chain ...
+  }
+}
+
+void dsp_host_dual::update_event_macro_time(const uint32_t _index, const uint32_t _layer, const bool _lock,
+                                            const float _position)
+{
+  auto param = m_params.get_macro(_layer, _index);
+  param->m_lock = param->m_time.m_lock = _lock;  // currently, group lock affects both
+  param->m_time.m_position = _position;
+  // currently, no scaled field present for mc times ...
+}
+
+void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint32_t _layer, const bool _lock,
+                                              const float _position)
+{
+  auto param = m_params.get_direct(_layer, _index);
+  param->m_lock = _lock;
+  if(param->m_position != _position)
+  {
+    param->m_position = _position;
+    // trigger transition ...
+  }
+}
+
+void dsp_host_dual::update_event_target_param(const uint32_t _index, const uint32_t _layer, const bool _lock,
+                                              const float _position, const C15::Parameters::Macro_Controls _source,
+                                              const float _amount)
+{
+  auto param = m_params.get_target(_layer, _index);
+  param->m_lock = _lock;
+  const bool change = param->m_position != _position, reassign = param->m_source != _source;
+  if((param->m_amount != _amount) || reassign)
+  {
+    const uint32_t srcId = static_cast<uint32_t>(_source);
+    param->m_position = _position;
+    param->m_source = _source;
+    param->m_amount = _amount;
+    param->update_modulation_aspects(m_params.get_macro(_layer, srcId)->m_position);
+    if(reassign)
+    {
+      m_params.m_layer[_layer].m_assignment.reassign(_index, srcId);
+    }
+  }
+  if(change)
+  {
+    param->m_position = _position;
+    // trigger transition ...
+  }
+}
+
+void dsp_host_dual::update_event_global_param(const uint32_t _index, const bool _lock, const float _position)
+{
+  auto param = m_params.get_global(_index);
+  param->m_lock = _lock;
+  if(param->m_position != _position)
+  {
+    param->m_position = _position;
+    // trigger transition ...
+  }
+}
+
 void dsp_host_dual::keyDown(const float _vel)
 {
   const bool valid = m_alloc.keyDown(m_key_pos);

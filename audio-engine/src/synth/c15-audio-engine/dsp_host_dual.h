@@ -31,6 +31,15 @@ class dsp_host_dual
   void init(const uint32_t _samplerate, const uint32_t _polyphony);
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   void onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
+  void update_event_hw_source(const uint32_t _index, const bool _lock,
+                              const C15::Properties::HW_Return_Behavior _behavior, const float _position);
+  void update_event_hw_amount(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
+  void update_event_macro_ctrl(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
+  void update_event_macro_time(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
+  void update_event_direct_param(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
+  void update_event_target_param(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position,
+                                 const C15::Parameters::Macro_Controls _source, const float _amount);
+  void update_event_global_param(const uint32_t _index, const bool _lock, const float _position);
   void render();
   void reset();
 
