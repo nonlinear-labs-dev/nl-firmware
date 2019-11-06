@@ -24,6 +24,27 @@ void ModuleCaption::onParameterSelected(Parameter *newOne)
   updateText(newOne);
 }
 
+bool ModuleCaption::enableVoiceGroupSuffix() const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto selected = eb->getSelected();
+
+  if(selected->getVoiceGroup() == VoiceGroup::Global)
+    return false;
+
+  if(dynamic_cast<MonoParameter *>(selected))
+    return eb->getType() == SoundType::Split;
+  if(dynamic_cast<UnisonGroup *>(selected->getParent()))
+    return eb->getType() == SoundType::Split;
+
+  if(dynamic_cast<MasterGroup *>(selected->getParent()))
+    return false;
+  if(dynamic_cast<ScaleGroup *>(selected->getParent()))
+    return false;
+
+  return true;
+};
+
 void ModuleCaption::updateText(Parameter *newOne)
 {
   if(newOne)
@@ -31,7 +52,7 @@ void ModuleCaption::updateText(Parameter *newOne)
     auto group = newOne->getParentGroup();
     auto groupName = group->getShortName();
 
-    if(ModuleCaption::enableVoiceGroupSuffix())
+    if(enableVoiceGroupSuffix())
     {
       auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
       auto suffix = std::string{};

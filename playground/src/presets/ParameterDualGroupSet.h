@@ -32,9 +32,9 @@ class ParameterDualGroupSet : public AttributesOwner
   virtual Parameter *findGlobalParameterByID(int id) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
 
  protected:
+  void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
   virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
   virtual ParameterDualGroupSet::tParameterGroupPtr appendGlobalParameterGroup(ParameterGroup *p);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);

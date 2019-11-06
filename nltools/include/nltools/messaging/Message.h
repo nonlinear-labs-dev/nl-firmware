@@ -58,12 +58,11 @@ namespace nltools
 
     struct MacroControlChangedMessage : Message<MessageType::MacroControlParameter>
     {
-      MacroControlChangedMessage(tID id = 0, tControlPosition pos = 0.0, tControlPosition time = 0.0,
-                                 bool locked = false, VoiceGroup vg = VoiceGroup::I)
+      MacroControlChangedMessage(tID id = 0, tControlPosition pos = 0.0, bool locked = false,
+                                 VoiceGroup vg = VoiceGroup::I)
           : lock{ locked }
           , parameterId{ id }
           , controlPosition{ pos }
-          , smoothingTime{ time }
           , voiceGroup{ vg }
       {
       }
@@ -71,7 +70,6 @@ namespace nltools
       bool lock;
       tID parameterId;
       tControlPosition controlPosition;
-      tControlPosition smoothingTime;
 
       VoiceGroup voiceGroup;
     };
@@ -187,30 +185,31 @@ namespace nltools
     {
       struct Parameter
       {
-        uint16_t id;
+        uint16_t id{};
         double controlPosition = 0;
+        bool locked = false;
       };
 
       struct RibbonParameter : Parameter
       {
-        RibbonTouchBehaviour ribbonTouchBehaviour;
-        RibbonReturnMode ribbonReturnMode;
+        RibbonTouchBehaviour ribbonTouchBehaviour{};
+        RibbonReturnMode ribbonReturnMode{};
       };
 
       struct PedalParameter : Parameter
       {
-        PedalModes pedalMode;
-        ReturnMode returnMode;
+        PedalModes pedalMode{};
+        ReturnMode returnMode{};
       };
 
       struct AftertouchParameter : Parameter
       {
-        ReturnMode returnMode;
+        ReturnMode returnMode{};
       };
 
       struct BenderParameter : Parameter
       {
-        ReturnMode returnMode;
+        ReturnMode returnMode{};
       };
 
       struct MacroParameter : Parameter

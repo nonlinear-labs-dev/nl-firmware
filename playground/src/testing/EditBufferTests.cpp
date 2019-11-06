@@ -19,6 +19,96 @@ inline auto createTestScope() -> std::unique_ptr<UNDO::TransactionCreationScope>
   return std::move(Application::get().getPresetManager()->getUndoScope().startTestTransaction());
 }
 
+Preset* createSinglePreset(UNDO::Transaction* transaction)
+{
+  auto editBuffer = getEditBuffer();
+  auto pm = editBuffer->getParent();
+
+  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
+  auto bank = pm->addBank(transaction);
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
+  preset->setName(transaction, "Single Preset");
+  return preset;
+}
+
+Preset* createSplitPreset(UNDO::Transaction* transaction)
+{
+  auto editBuffer = getEditBuffer();
+  auto pm = editBuffer->getParent();
+
+  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
+
+  editBuffer->undoableConvertToDual(transaction, SoundType::Split, VoiceGroup::I);
+
+  auto bank = pm->addBank(transaction);
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
+  preset->setName(transaction, "Split Preset");
+  return preset;
+}
+
+Preset* createLayerPreset(UNDO::Transaction* transaction)
+{
+  auto editBuffer = getEditBuffer();
+  auto pm = editBuffer->getParent();
+
+  editBuffer->undoableConvertToDual(transaction, SoundType::Layer, VoiceGroup::I);
+  auto bank = pm->addBank(transaction);
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
+  preset->setName(transaction, "Layer Preset");
+  return preset;
+}
+
+void removeBankOfPreset(UNDO::Transaction* transaction, Preset* presetToDelete)
+{
+  auto editBuffer = getEditBuffer();
+  auto pm = editBuffer->getParent();
+  auto bank = dynamic_cast<Bank*>(presetToDelete->getParent());
+  if(bank)
+    pm->deleteBank(transaction, bank->getUuid());
+}
+
+class MockPresetStorage
+{
+ public:
+  MockPresetStorage()
+  {
+    auto scope = createTestScope();
+    auto transaction = scope->getTransaction();
+    m_layer = createLayerPreset(transaction);
+    m_split = createSplitPreset(transaction);
+    m_single = createSinglePreset(transaction);
+  }
+
+  ~MockPresetStorage()
+  {
+    auto scope = createTestScope();
+    auto transaction = scope->getTransaction();
+    removeBankOfPreset(transaction, m_single);
+    removeBankOfPreset(transaction, m_split);
+    removeBankOfPreset(transaction, m_layer);
+  }
+
+  Preset* getSinglePreset()
+  {
+    return m_single;
+  }
+
+  Preset* getSplitPreset()
+  {
+    return m_split;
+  }
+
+  Preset* getLayerPreset()
+  {
+    return m_layer;
+  }
+
+ private:
+  Preset* m_single;
+  Preset* m_split;
+  Preset* m_layer;
+};
+
 TEST_CASE("EditBuffer Initialized")
 {
   auto eb = getEditBuffer();
@@ -139,54 +229,6 @@ TEST_CASE("master groups initialization tests")
   }
 }
 
-TEST_CASE("convert back and forth")
-{
-  auto editBuffer = getEditBuffer();
-  {
-    auto scope = createTestScope();
-    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
-  }
-
-  auto hash = editBuffer->getHash();
-
-  SECTION("split and back")
-  {
-    {
-      auto scope = createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
-    }
-
-    auto splitHash = editBuffer->getHash();
-    REQUIRE(splitHash != hash);
-
-    {
-      auto scope = createTestScope();
-      editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
-    }
-
-    auto singleHash = editBuffer->getHash();
-    REQUIRE(singleHash != splitHash);
-    REQUIRE(singleHash == hash);
-  }
-
-  SECTION("split and undo")
-  {
-    {
-      auto scope = createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
-    }
-
-    auto splitHash = editBuffer->getHash();
-    REQUIRE(splitHash != hash);
-
-    editBuffer->getParent()->getUndoScope().undo();
-
-    auto singleHash = editBuffer->getHash();
-    REQUIRE(singleHash != splitHash);
-    REQUIRE(singleHash == hash);
-  }
-}
-
 TEST_CASE("poly groups initialization")
 {
   auto editBuffer = getEditBuffer();
@@ -267,10 +309,11 @@ TEST_CASE("poly groups initialization")
 TEST_CASE("Split to Single Conversion")
 {
   auto editBuffer = getEditBuffer();
+  MockPresetStorage presets;
 
   {
     auto scope = createTestScope();
-    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
   }
 
   REQUIRE(editBuffer->getType() == SoundType::Split);
@@ -305,92 +348,6 @@ TEST_CASE("Split to Single Conversion")
     REQUIRE(globalMasterTune->getControlPositionValue() == 0.7);
   }
 }
-
-Preset* createSinglePreset(UNDO::Transaction* transaction)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-
-  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
-  auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
-  preset->setName(transaction, "Single Preset");
-  return preset;
-}
-
-Preset* createSplitPreset(UNDO::Transaction* transaction)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-
-  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
-
-  editBuffer->undoableConvertToDual(transaction, SoundType::Split, VoiceGroup::I);
-
-  auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
-  preset->setName(transaction, "Split Preset");
-  return preset;
-}
-
-Preset* createLayerPreset(UNDO::Transaction* transaction)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-
-  editBuffer->undoableConvertToDual(transaction, SoundType::Layer, VoiceGroup::I);
-  auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
-  preset->setName(transaction, "Layer Preset");
-  return preset;
-}
-
-void removeBankOfPreset(UNDO::Transaction* transaction, Preset* presetToDelete)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-  auto bank = dynamic_cast<Bank*>(presetToDelete->getParent());
-  if(bank)
-    pm->deleteBank(transaction, bank->getUuid());
-}
-
-class MockPresetStorage
-{
- public:
-  MockPresetStorage()
-  {
-    auto scope = createTestScope();
-    auto transaction = scope->getTransaction();
-    m_layer = createLayerPreset(transaction);
-    m_split = createSplitPreset(transaction);
-    m_single = createSinglePreset(transaction);
-  }
-  ~MockPresetStorage()
-  {
-    auto scope = createTestScope();
-    auto transaction = scope->getTransaction();
-    removeBankOfPreset(transaction, m_single);
-    removeBankOfPreset(transaction, m_split);
-    removeBankOfPreset(transaction, m_layer);
-  }
-  Preset* getSinglePreset()
-  {
-    return m_single;
-  }
-  Preset* getSplitPreset()
-  {
-    return m_split;
-  }
-  Preset* getLayerPreset()
-  {
-    return m_layer;
-  }
-
- private:
-  Preset* m_single;
-  Preset* m_split;
-  Preset* m_layer;
-};
 
 TEST_CASE("Preset Mock Storage")
 {
@@ -461,7 +418,7 @@ TEST_CASE("load single preset into dual editbuffer")
   SECTION("Load Single Into I")
   {
     auto scope = createTestScope();
-    editBuffer->loadIntoVoiceGroup(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
+    editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
   }
@@ -469,7 +426,7 @@ TEST_CASE("load single preset into dual editbuffer")
   SECTION("Load Single Into II")
   {
     auto scope = createTestScope();
-    editBuffer->loadIntoVoiceGroup(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::II);
+    editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::II);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
   }
@@ -581,5 +538,48 @@ TEST_CASE("load presets of different types")
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  }
+}
+
+TEST_CASE("Voice Group Label")
+{
+  auto eb = getEditBuffer();
+
+  MockPresetStorage presets;
+
+  {
+    auto scope = createTestScope();
+    eb->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+    REQUIRE(eb->getType() == SoundType::Layer);
+    eb->setVoiceGroupName(scope->getTransaction(), "I", VoiceGroup::I);
+    eb->setVoiceGroupName(scope->getTransaction(), "II", VoiceGroup::II);
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "I");
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "II");
+  }
+
+  SECTION("Convert to Single clears Voice Group Labels")
+  {
+    auto scope = createTestScope();
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I).empty());
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::II).empty());
+  }
+
+  SECTION("Load Single into Voice Group sets Voice Group Label to Preset Name")
+  {
+    auto scope = createTestScope();
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "I");
+    eb->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
+  }
+
+  SECTION("Convert Single to Dual sets Voice Group Labels to prior EB Name")
+  {
+    auto scope = createTestScope();
+    eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+    auto ebName = eb->getName();
+    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == ebName);
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == ebName);
   }
 }

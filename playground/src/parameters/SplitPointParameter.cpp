@@ -27,9 +27,9 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 {
   auto converter = ScaleConverter::get<KeyWithOctaveScaleConverter>();
 
-  if(vg == VoiceGroup::I)
+  if(vg == VoiceGroup::II)
     return converter->getDimension().stringize(getValue().getRawValue());
-  else if(vg == VoiceGroup::II)
+  else if(vg == VoiceGroup::I)
     return converter->getDimension().stringize(getNextStepValue(-1, {}));
 
   return "";
@@ -60,12 +60,12 @@ void SplitPointParameter::registerTests()
     auto transaction = transScope->getTransaction();
 
     parameter->stepCPFromHwui(transaction, 1, {});
-    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "G3");
-    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "F#3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "F#3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "G3");
 
     parameter->stepCPFromHwui(transaction, 1, {});
-    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "G#3");
-    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "G3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "G3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "G#3");
   });
 }
 

@@ -95,6 +95,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
+  void undoableLoadPresetIntoDualSound(UNDO::Transaction* transaction, Preset* preset, VoiceGroup target);
 
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();

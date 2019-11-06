@@ -38,6 +38,8 @@
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
 {
+  auto hwSources = appendGlobalParameterGroup(new HardwareSourcesGroup(this, VoiceGroup::Global));
+
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     appendParameterGroup(new EnvelopeAGroup(this, vg), vg);
@@ -59,7 +61,6 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     appendParameterGroup(new UnisonGroup(this, vg), vg);
 
     auto macroControls = appendParameterGroup(new MacroControlsGroup(this, vg), vg);
-    auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, vg), vg);
     appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls, vg), vg);
 
     appendParameterGroup(new MonoGroup(this, vg), vg);

@@ -647,9 +647,13 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGr
   switch(m_type)
   {
     case SoundType::Split:
+      setVoiceGroupName(transaction, "", VoiceGroup::I);
+      setVoiceGroupName(transaction, "", VoiceGroup::II);
       undoableConvertSplitToSingle(transaction, copyFrom);
       break;
     case SoundType::Layer:
+      setVoiceGroupName(transaction, "", VoiceGroup::I);
+      setVoiceGroupName(transaction, "", VoiceGroup::II);
       undoableConvertLayerToSingle(transaction, copyFrom);
       break;
     case SoundType::Invalid:
@@ -706,16 +710,19 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   switch(type)
   {
-    case SoundType::Single:
-    case SoundType::Invalid:
-      break;
     case SoundType::Split:
       undoableConvertToSplit(transaction, copyFrom);
       break;
     case SoundType::Layer:
       undoableConvertToLayer(transaction, copyFrom);
       break;
+    case SoundType::Single:
+    case SoundType::Invalid:
+      break;
   }
+
+  setVoiceGroupName(transaction, getName(), VoiceGroup::I);
+  setVoiceGroupName(transaction, getName(), VoiceGroup::II);
 
   undoableSetType(transaction, type);
 
@@ -741,8 +748,13 @@ void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup targ
 {
   auto scope = getUndoScope().startTransaction("Load Preset into Voicegroup");
   auto transaction = scope->getTransaction();
-  loadIntoVoiceGroup(transaction, preset, target);
+  undoableLoadPresetIntoDualSound(transaction, preset, target);
+}
+
+void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup target)
+{
   setVoiceGroupName(transaction, preset->getName(), target);
+  loadIntoVoiceGroup(transaction, preset, target);
 }
 
 const SplitPointParameter *EditBuffer::getSplitPoint() const
