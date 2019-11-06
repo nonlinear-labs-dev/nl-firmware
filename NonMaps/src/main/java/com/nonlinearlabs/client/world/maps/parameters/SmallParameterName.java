@@ -4,7 +4,7 @@ import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 
 public class SmallParameterName extends LabelSmall {
-	private ParameterPresenter presenter;;
+	private ParameterPresenter presenter;
 
 	public SmallParameterName(Parameter parent, int parameterID) {
 		super(parent);

@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.useCases;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.nonlinearlabs.client.dataModel.DoubleDataModelEntity;
@@ -14,10 +15,11 @@ public class IncrementalChanger {
 	private int fineNumSteps;
 	private boolean isBipolar;
 	private boolean isBoolean;
-	private Consumer<Double> callback;
+	private BiConsumer<Double, Boolean> callback;
+	private Runnable doneCallback;
 
 	IncrementalChanger(DoubleDataModelEntity value, int coarseSteps, int fineSteps, boolean bipolar, boolean isBoolean,
-			double pixPerRange, double defaultValue, Consumer<Double> cb) {
+			double pixPerRange, double defaultValue, BiConsumer<Double, Boolean> cb, Runnable doneCallback) {
 		this.coarseNumSteps = coarseSteps;
 		this.fineNumSteps = fineSteps;
 		this.lastQuantizedValue = value.getValue();
@@ -26,12 +28,14 @@ public class IncrementalChanger {
 		this.isBoolean = isBoolean;
 		this.defaultValue = defaultValue;
 		this.callback = cb;
+		this.doneCallback = doneCallback;
 	}
 
-	public IncrementalChanger(ValueDataModelEntity value, double pixelsPerRange, Consumer<Double> cb) {
+	public IncrementalChanger(ValueDataModelEntity value, double pixelsPerRange, BiConsumer<Double, Boolean> cb,
+			Runnable doneCallback) {
 		this(value.value, value.metaData.coarseDenominator.getValue(), value.metaData.fineDenominator.getValue(),
 				value.metaData.bipolar.getBool(), value.metaData.isBoolean.getBool(), pixelsPerRange,
-				value.metaData.defaultValue.getValue(), cb);
+				value.metaData.defaultValue.getValue(), cb, doneCallback);
 	}
 
 	public double getQuantizedValue(double v, boolean fine) {
@@ -77,17 +81,19 @@ public class IncrementalChanger {
 					newVal = 0.0;
 			}
 
-			callback.accept(newVal);
+			callback.accept(newVal, false);
 			pendingAmount = 0;
 			lastQuantizedValue = newVal;
 		}
 	}
 
 	public void finish() {
+		if (doneCallback != null)
+			doneCallback.run();
 	}
 
 	public void setToDefault() {
-		callback.accept(defaultValue);
+		callback.accept(defaultValue, true);
 		lastQuantizedValue = defaultValue;
 	}
 
@@ -124,6 +130,6 @@ public class IncrementalChanger {
 		double unRounded = controlVal * denominator;
 		double rounded = Math.round(unRounded);
 		double newValue = clip((rounded + inc) / denominator);
-		callback.accept(newValue);
+		callback.accept(newValue, true);
 	}
 }

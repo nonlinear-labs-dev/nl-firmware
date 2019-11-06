@@ -7,7 +7,7 @@ abstract public class PhysicalControlParameter extends Parameter {
 
 	public PhysicalControlParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelLarge(this));
+		addChild(new UnModulateableParameterName(this));
 		addChild(new SliderHorizontalWithHandle(this, getParameterID()));
 		addChild(new ValueDisplaySmall(this, getParameterID()));
 	}
@@ -53,7 +53,6 @@ abstract public class PhysicalControlParameter extends Parameter {
 			return ReturnMode.None;
 		}
 	}
-
 
 	@Override
 	public String getGroupName() {

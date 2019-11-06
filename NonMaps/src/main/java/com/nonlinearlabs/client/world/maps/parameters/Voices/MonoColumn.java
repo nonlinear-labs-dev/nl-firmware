@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters.Voices;
 
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.LabelLarge;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceLabel;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
@@ -9,13 +8,14 @@ import com.nonlinearlabs.client.world.maps.parameters.NumericalControlSmall;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.Spacer;
+import com.nonlinearlabs.client.world.maps.parameters.UnModulateableParameterName;
 
 public class MonoColumn extends ParameterColumn {
     private class Voices extends Parameter {
 
         private Voices(MapsLayout parent) {
             super(parent, 249);
-            addChild(new LabelLarge(this));
+            addChild(new UnModulateableParameterName(this));
             addChild(new NumericalControlSmall(this, getParameterID()));
         }
     }

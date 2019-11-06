@@ -6,4 +6,9 @@ public class AftertouchParameterModel extends PhysicalControlParameterModel {
         super(id);
     }
 
+    @Override
+    public boolean isReturning() {
+        return true;
+    }
+
 }

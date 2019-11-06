@@ -6,7 +6,6 @@ import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.world.AppendOverwriteInsertPresetDialog.Action;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Position;
@@ -18,6 +17,10 @@ import com.nonlinearlabs.client.world.overlay.SVGImagePhase;
 import com.nonlinearlabs.client.world.overlay.belt.EditBufferDraggingButton;
 
 class StorePreset extends SVGImage {
+
+	public enum Action {
+		INSERT, OVERWRITE, APPEND, DEFAULT
+	}
 
 	Action action = Action.APPEND;
 	RepeatingCommand dragDelay = null;

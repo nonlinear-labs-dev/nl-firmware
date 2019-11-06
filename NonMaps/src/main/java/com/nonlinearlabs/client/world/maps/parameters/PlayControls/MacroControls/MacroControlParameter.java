@@ -5,9 +5,9 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.LabelLarge;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontalWithHandle;
+import com.nonlinearlabs.client.world.maps.parameters.UnModulateableParameterName;
 import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.Overlay;
@@ -37,7 +37,7 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	MacroControlParameter(MacrosCol parent, String defName, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelLarge(this) {
+		addChild(new UnModulateableParameterName(this) {
 			@Override
 			protected double getBasicHeight() {
 				return 23;
@@ -62,7 +62,6 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 					ColorTable.getMacroControlTargetColor());
 	}
 
-	
 	@Override
 	public String getCurrentName() {
 		return presenter.userGivenName;

@@ -22,9 +22,9 @@ public class PedalParameterModel extends PhysicalControlParameterModel {
 		return mode.getValue() != Modes.stay;
 	}
 
-
 	@Override
 	public Updater createUpdater(Node c) {
 		return new PedalParameterUpdater(c, this);
 	}
+
 }

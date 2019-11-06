@@ -138,21 +138,18 @@ void MacroControlParameter::updateBoundRibbon()
 {
   if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
   {
-    if(auto eb = dynamic_cast<EditBuffer *>(groups->getParent()))
-    {
-      auto mcm = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
-      auto routers = mcm->getModulationRoutingParametersFor(this);
+    auto mcm = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
+    auto routers = mcm->getModulationRoutingParametersFor(this);
 
-      for(auto router : routers)
+    for(auto router : routers)
+    {
+      if(auto ribbon = dynamic_cast<RibbonParameter *>(router->getSourceParameter()))
       {
-        if(auto ribbon = dynamic_cast<RibbonParameter *>(router->getSourceParameter()))
+        if(router->getControlPositionValue() > 0)
         {
-          if(router->getControlPositionValue() > 0)
+          if(ribbon->getRibbonReturnMode() == RibbonReturnMode::STAY)
           {
-            if(ribbon->getRibbonReturnMode() == RibbonReturnMode::STAY)
-            {
-              ribbon->boundToMacroControl(getControlPositionValue());
-            }
+            ribbon->boundToMacroControl(getControlPositionValue());
           }
         }
       }
@@ -164,7 +161,7 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 {
   if(m_UiSelectedHardwareSourceParameterID != pos)
   {
-    if(auto *eb = dynamic_cast<EditBuffer *>(getParent()->getParent()))
+    if(auto *eb = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent()))
     {
       if(auto old = eb->findParameterByID(m_UiSelectedHardwareSourceParameterID))
         old->onUnselected();
@@ -179,7 +176,7 @@ void MacroControlParameter::toggleUiSelectedHardwareSource(int inc)
 {
   int id = getUiSelectedHardwareSource();
 
-  auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
   auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
   auto availableSources = controlSources->getPhysicalControlParameters();
   setUiSelectedHardwareSource(getIdOfAdvancedParameter(availableSources, id, inc));
@@ -357,7 +354,7 @@ void MacroControlParameter::onSelected()
 
 void MacroControlParameter::onUnselected()
 {
-  auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
   auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
 
   for(auto source : controlSources->getPhysicalControlParameters())

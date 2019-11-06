@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.useCases;
 
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -9,15 +10,21 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 
 public class EditBufferUseCases {
 	private static EditBufferUseCases theInstance = new EditBufferUseCases();
+	private AnimationManager animationManager = new AnimationManager();
 
 	public static EditBufferUseCases get() {
 		return theInstance;
 	}
 
 	public void setParameterValue(int id, double newValue, boolean oracle) {
+		setParameterValue(id, newValue, oracle, true);
+	}
+
+	private void setParameterValue(int id, double newValue, boolean oracle, boolean setAnimationTimeout) {
 
 		BasicParameterModel p = EditBufferModel.findParameter(id);
 		double oldQ = p.value.getQuantizedAndClipped(true);
@@ -25,15 +32,51 @@ public class EditBufferUseCases {
 		double newQ = p.value.getQuantizedAndClipped(true);
 		double diff = newQ - oldQ;
 
-		if (p instanceof PhysicalControlParameterModel)
-			applyPhysicalControlModulation((PhysicalControlParameterModel) p, diff);
+		if (p instanceof PhysicalControlParameterModel) {
+			PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
+			applyPhysicalControlModulation(m, diff);
 
-		if (p instanceof MacroControlParameterModel)
+			if (setAnimationTimeout)
+				animationManager.startDelayedAnimation(m, 2000);
+			else
+				animationManager.cancelAnimation(m);
+		}
+
+		if (p instanceof MacroControlParameterModel) {
 			applyModulationToModulateableParameters(id, diff);
+			handleBidirectionalRibbonBinding(newValue, (MacroControlParameterModel) p);
+		}
 
 		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
 	}
 
+	private void startReturningAnimation(PhysicalControlParameterModel m) {
+		animationManager.startReturnAnimation(m);
+	}
+
+	private void handleBidirectionalRibbonBinding(double newValue, MacroControlParameterModel m) {
+		for (int routerId : m.getRouterIDs()) {
+			ModulationRouterParameterModel r = this.<ModulationRouterParameterModel>findParameter(routerId);
+
+			if (r.value.getQuantized(true) > 0.0) {
+				int physicalControlID = r.getAssociatedPhysicalControlID();
+
+				int ribbon1 = 284;
+				int ribbon2 = 289;
+
+				if (physicalControlID == ribbon1 || physicalControlID == ribbon2) {
+					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
+					if (!ribbon.isReturning()) {
+						ribbon.value.value.setValue(newValue);
+					}
+				}
+			}
+		}
+	}
+
+	private <T> T findParameter(int id) {
+		return (T) EditBufferModel.findParameter(id);
+	}
 
 	private void applyPhysicalControlModulation(PhysicalControlParameterModel p, double diff) {
 
@@ -76,9 +119,11 @@ public class EditBufferUseCases {
 	private void applyModulationToModulateableParameters(int macroControlID, double d) {
 		if (d != 0) {
 			ModSource m = ModSource.fromParameterId(macroControlID);
-			for(ModulateableParameterModel t : EditBufferModel.getAllModulateableParameters()) {
-				if(t.modSource.getValue() == m) {
+			for (ModulateableParameterModel t : EditBufferModel.getAllModulateableParameters()) {
+				if (t.modSource.getValue() == m) {
 					double amount = t.modAmount.getQuantizedAndClipped(true);
+					if (t.value.metaData.bipolar.getBool())
+						amount *= 2;
 					t.value.value.setValue(t.value.value.getValue() + d * amount);
 				}
 			}
@@ -86,7 +131,8 @@ public class EditBufferUseCases {
 	}
 
 	private void applyDirectModulation(ModulationRouterParameterModel routerParameter, double newValue) {
-		MacroControlParameterModel m = (MacroControlParameterModel) EditBufferModel.findParameter(routerParameter.getAssociatedMacroControlID());
+		MacroControlParameterModel m = (MacroControlParameterModel) EditBufferModel
+				.findParameter(routerParameter.getAssociatedMacroControlID());
 		double oldQ = m.value.getQuantizedAndClipped(true);
 		m.value.value.setValue(newValue);
 		double newQ = m.value.getQuantizedAndClipped(true);
@@ -187,12 +233,18 @@ public class EditBufferUseCases {
 
 	public IncrementalChanger startEditParameterValue(int id, double pixelsPerRange) {
 		BasicParameterModel p = EditBufferModel.findParameter(id);
-		return new IncrementalChanger(p.value, pixelsPerRange, v -> setParameterValue(id, v, true));
+		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> setParameterValue(id, v, true, b), () -> {
+			if (p instanceof PhysicalControlParameterModel) {
+				PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
+				if (m.isReturning())
+					startReturningAnimation(m);
+			}
+		});
 	}
 
 	public IncrementalChanger startEditMCAmount(int id, double pixelsPerRange) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
-		return new IncrementalChanger(p.modAmount, pixelsPerRange, v -> setModulationAmount(id, v, true));
+		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationAmount(id, v, true), null);
 	}
 
 	public IncrementalChanger startEditMacroControlValue(int id, double pixelsPerRange) {

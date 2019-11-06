@@ -16,12 +16,12 @@ public class ModulatableParameter extends Parameter {
 
 	public ModulatableParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new ParameterName(this));
+		addChild(new ModulateableParameterName(this));
 	}
 
 	public ModulatableParameter(MapsLayout parent, String name, int parameterID) {
 		super(parent, parameterID);
-		addChild(new ParameterName(this, name));
+		addChild(new ModulateableParameterName(this, name));
 	}
 
 	public MacroControls getModulationSource() {

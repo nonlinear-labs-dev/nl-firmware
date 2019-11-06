@@ -5,19 +5,22 @@ import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 
-public class ParameterName extends LabelLarge {
+public class ModulateableParameterName extends LabelLarge {
 
-	public ParameterName(ModulatableParameter p) {
+	private String name = null;
+
+	public ModulateableParameterName(ModulatableParameter p) {
 		super(p);
 	}
 
-	public ParameterName(ModulatableParameter p, String name) {
-		super(p, name);
+	public ModulateableParameterName(ModulatableParameter p, String name) {
+		super(p);
+		this.name = name;
 	}
 
 	@Override
-	public ModulatableParameter getParent() {
-		return (ModulatableParameter) super.getParent();
+	public Parameter getParent() {
+		return (Parameter) super.getParent();
 	}
 
 	@Override
@@ -50,6 +53,9 @@ public class ParameterName extends LabelLarge {
 	}
 
 	protected String getDisplayText() {
+		if (name != null)
+			return name;
+
 		return getParent().presenter.shortName;
 	}
 
