@@ -30,21 +30,24 @@
           "Position": "BUTTON_B",
           "Init": {
             "Text[Text]": "Params.."
-          }
+          },
+          "Events": "SoundParamsButtonText => Text[Text]"
         },
         "ButtonC": {
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
             "Text[Text]": "Voices.."
-          }
+          },
+          "Events": "SoundVoicesButtonText => Text[Text]"
         },
         "ButtonD": {
           "Class": "Button",
           "Position": "BUTTON_D",
           "Init": {
             "Text[Text]": "Master.."
-          }
+          },
+          "Events": "SoundMasterButtonText => Text[Text]"
         },
         "Upper": {
           "Class": "LayerVoiceGroupI",

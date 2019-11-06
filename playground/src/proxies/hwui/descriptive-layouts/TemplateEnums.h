@@ -36,7 +36,8 @@ namespace DescriptiveLayouts
        CanRight, isFineActive, EditBufferMasterVolume, EditBufferMasterTune, VGIMasterTuneText, VGIIMasterTuneText,
        VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText, MonoPrioText, MonoLegatoText,
        MonoGlideText, UnisonVoicesText, UnisonDetuneText, UnisonPhaseText, UnisonPanText, MonoEnabled,
-       VoicesParameterHeader, UnisonEnabled, CurrentVoiceGroupLabel,
+       VoicesParameterHeader, UnisonEnabled, CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText,
+       SoundMasterButtonText, MonoButtonText, UnisonButtonText,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Edit, Fine, Locked, Position, NumItems,

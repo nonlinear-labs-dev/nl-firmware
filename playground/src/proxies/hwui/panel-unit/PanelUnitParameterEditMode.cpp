@@ -150,8 +150,12 @@ void PanelUnitParameterEditMode::setup()
   setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     if(state)
     {
-      if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Sound)
-        Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
+      auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+      if(focusAndMode.focus == UIFocus::Sound)
+        if(focusAndMode.mode == UIMode::Edit)
+          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+        else
+          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
       else
         Application::get().getHWUI()->undoableSetFocusAndMode(UIFocus::Sound);
     }

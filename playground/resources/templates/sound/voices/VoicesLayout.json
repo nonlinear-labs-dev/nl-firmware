@@ -22,7 +22,8 @@
           "Position": "BUTTON_B",
           "Init": {
             "Text[Text]": "Mono .."
-          }
+          },
+          "Events": "MonoButtonText => Text[Text]"
         },
         "ButtonC": {
           "Class": "Button",
@@ -33,7 +34,8 @@
           "Position": "BUTTON_D",
           "Init": {
             "Text[Text]": "Unison .."
-          }
+          },
+          "Events": "UnisonButtonText => Text[Text]"
         },
         "MonoEnable": {
           "Class": "ParameterPairTop",

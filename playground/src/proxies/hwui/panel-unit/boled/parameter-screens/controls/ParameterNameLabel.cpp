@@ -86,7 +86,7 @@ const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const
 
 void ParameterNameLabel::handleParameterName(const Parameter *pParameter)
 {
-  const auto changed = pParameter->isValueChangedFromLoaded();
+  const auto changed = pParameter->isChangedFromLoaded();
   setText({ pParameter->getLongName() + (changed ? "*" : ""), changed ? 1u : 0u });
 }
 

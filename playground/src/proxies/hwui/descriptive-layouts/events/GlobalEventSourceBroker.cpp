@@ -97,6 +97,13 @@ namespace DescriptiveLayouts
     m_map[EventSources::UnisonEnabled] = std::make_unique<UnisonEnabledBool>();
 
     m_map[EventSources::CurrentVoiceGroupLabel] = std::make_unique<CurrentVoiceGroupLabel>();
+
+    m_map[EventSources::SoundParamsButtonText] = std::make_unique<SoundParamsButtonText>();
+    m_map[EventSources::SoundVoicesButtonText] = std::make_unique<SoundVoicesButtonText>();
+    m_map[EventSources::SoundMasterButtonText] = std::make_unique<SoundMasterButtonText>();
+
+    m_map[EventSources::MonoButtonText] = std::make_unique<MonoButtonText>();
+    m_map[EventSources::UnisonButtonText] = std::make_unique<UnisonButtonText>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

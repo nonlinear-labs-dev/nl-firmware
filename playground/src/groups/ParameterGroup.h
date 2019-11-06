@@ -46,6 +46,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   void undoableToggleLock(UNDO::Transaction *transaction);
   bool areAllParametersLocked() const;
   bool isAnyParameterLocked() const;
+  bool isAnyParameterChanged() const;
 
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
   void undoableSetDefaultValues(UNDO::Transaction *transaction, const PresetParameterGroup *values);
@@ -65,6 +66,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
 
   void check();
   VoiceGroup getVoiceGroup() const;
+
 
  protected:
   tParameterPtr appendParameter(Parameter *p);

@@ -254,6 +254,15 @@ bool ParameterGroup::isAnyParameterLocked() const
   return false;
 }
 
+bool ParameterGroup::isAnyParameterChanged() const
+{
+  for(auto p : getParameters())
+    if(p->isChangedFromLoaded())
+      return true;
+
+  return false;
+}
+
 bool ParameterGroup::areAllParametersLocked() const
 {
   for(auto p : getParameters())
@@ -263,7 +272,8 @@ bool ParameterGroup::areAllParametersLocked() const
   return true;
 }
 
-void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other) {
+void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other)
+{
   for(auto &g : getParameters())
   {
     if(auto c = other->findParameterByID(g->getID()))

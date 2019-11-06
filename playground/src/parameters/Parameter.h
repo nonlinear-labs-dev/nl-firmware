@@ -127,11 +127,10 @@ class Parameter : public UpdateDocumentContributor,
   const RecallParameter *getOriginalParameter() const;
 
   virtual bool isChangedFromLoaded() const;
-  virtual bool isValueChangedFromLoaded() const;
+  bool isValueDifferentFrom(double d) const;
 
   VoiceGroup getVoiceGroup() const;
 
-  bool isValueDifferentFrom(double d) const;
 
 protected:
   virtual void sendToLpc() const;

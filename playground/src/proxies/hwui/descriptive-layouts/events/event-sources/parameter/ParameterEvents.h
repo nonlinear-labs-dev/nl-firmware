@@ -103,7 +103,7 @@ namespace DescriptiveLayouts
    public:
     void onSelectedParameterChanged(const Parameter *p) override
     {
-      setValue(p && p->isValueChangedFromLoaded());
+      setValue(p && p->isChangedFromLoaded());
     }
   };
 }
