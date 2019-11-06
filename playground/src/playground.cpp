@@ -110,19 +110,23 @@ int main(int numArgs, char** argv)
 
     app.stopWatchDog();
 
-    //Run Tests
+#ifdef _TESTS
     {
       auto oldLogLevel = nltools::Log::getLevel();
-      nltools::Log::setLevel(nltools::Log::Warning);
+      nltools::Log::setLevel(nltools::Log::Silent);
+
       std::vector<const char*> args;
       args.emplace_back(argv[0]);
       //args.emplace_back("-s"); //include this line to show passing tests
+
       int result = Catch::Session().run(args.size(), args.data());
       if(result != 0)
         exit(result);
 
       nltools::Log::setLevel(oldLogLevel);
     }
+#endif
+
     app.runWatchDog();
 
     Application::get().run();

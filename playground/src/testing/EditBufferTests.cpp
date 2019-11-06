@@ -335,9 +335,17 @@ TEST_CASE("Split to Single Conversion")
       vgtuneII->setCPFromHwui(scope->getTransaction(), 0.2);
     }
 
+    {
+      auto scope = createTestScope();
+      REQUIRE(editBuffer->anyParameterChanged());
+      presets.getSplitPreset()->copyFrom(scope->getTransaction(), editBuffer);
+      REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    }
+
     //Convert sound to single
     {
       auto scope = createTestScope();
+      REQUIRE_FALSE(editBuffer->anyParameterChanged());
       editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
     }
 
@@ -377,6 +385,7 @@ TEST_CASE("Load Presets Complete")
 
       REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == singlePreset->getUuid());
       REQUIRE(editBuffer->getType() == SoundType::Single);
+      REQUIRE_FALSE(editBuffer->anyParameterChanged());
     }
 
     SECTION("Load layer preset")
@@ -387,6 +396,7 @@ TEST_CASE("Load Presets Complete")
 
       REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == layerPreset->getUuid());
       REQUIRE(editBuffer->getType() == SoundType::Layer);
+      REQUIRE_FALSE(editBuffer->anyParameterChanged());
     }
 
     SECTION("Load split preset")
@@ -397,13 +407,14 @@ TEST_CASE("Load Presets Complete")
 
       REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == splitPreset->getUuid());
       REQUIRE(editBuffer->getType() == SoundType::Split);
+      REQUIRE_FALSE(editBuffer->anyParameterChanged());
     }
   }
 
   REQUIRE(numBanks == pm->getNumBanks());
 }
 
-TEST_CASE("load single preset into dual editbuffer")
+TEST_CASE("Editbuffer Contents loaded")
 {
   MockPresetStorage presets;
 
@@ -420,6 +431,7 @@ TEST_CASE("load single preset into dual editbuffer")
     auto scope = createTestScope();
     editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
 
+    REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
   }
 
@@ -428,6 +440,7 @@ TEST_CASE("load single preset into dual editbuffer")
     auto scope = createTestScope();
     editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::II);
 
+    REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::II) == presets.getSinglePreset()->getName());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
   }
 }
