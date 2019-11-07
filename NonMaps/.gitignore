@@ -1,5 +1,0 @@
-bin/*
-target/*
-build/*
-.vscode
-CMakeLists.txt.user
