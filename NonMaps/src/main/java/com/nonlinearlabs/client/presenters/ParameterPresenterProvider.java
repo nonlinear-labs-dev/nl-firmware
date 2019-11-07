@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
@@ -30,6 +31,11 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			Arrays.asList(135, 155, 254, 259, 264, 269, 284, 289, 274, 279, 243, 244, 245, 246));
 
 	public ParameterPresenterProvider(int parameterId) {
+		NonMaps.get().getServerProxy().loadParameterDescription(parameterId, v -> {
+			presenter.parameterInfo = v;
+			notifyChanges();
+		});
+
 		presenter.id = parameterId;
 
 		BasicParameterModel p = EditBufferModel.findParameter(parameterId);
@@ -47,6 +53,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	private boolean updatePresenter(BasicParameterModel e) {
+		presenter.parameterInfo = e.info.getValue();
 		presenter.isBoolean = e.value.metaData.isBoolean.getBool();
 		presenter.drawCenterReturnIndicator = false;
 		presenter.drawZeroReturnIndicator = false;
@@ -91,7 +98,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	private void updatePresenter(ModulationRouterParameterModel p) {
-		PhysicalControlParameterModel m =  (PhysicalControlParameterModel) EditBufferModel.findParameter(p.getAssociatedPhysicalControlID());
+		PhysicalControlParameterModel m = (PhysicalControlParameterModel) EditBufferModel
+				.findParameter(p.getAssociatedPhysicalControlID());
 		presenter.isBoolean = !m.isReturning();
 	}
 
@@ -143,7 +151,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			presenter.modulation.amountDisplayValues = new String[] { "MC Amount: " + modAmountWithUnit,
 					"MC Amount: " + modAmountWithoutUnit, "MC Amt: " + modAmountWithoutUnit,
 					"Amt: " + modAmountWithoutUnit, modAmountWithoutUnit };
-		
+
 			double srcValue = mc.value.getClippedValue();
 
 			Range bounds = new Range(p.value.metaData.bipolar.getBool() ? -1.0 : 0, 1.0);
@@ -276,7 +284,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			presenter.isReturning = r.mode.getValue() != Modes.stay;
 		}
 
-		if (p instanceof BenderParameterModel) { 
+		if (p instanceof BenderParameterModel) {
 			presenter.drawCenterReturnIndicator = true;
 			presenter.drawZeroReturnIndicator = false;
 			presenter.isReturning = true;
@@ -292,6 +300,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private void updatePresenter(MacroControlParameterModel p) {
 		presenter.userGivenName = p.givenName.getValue();
 		presenter.showContextMenu = true;
+		presenter.isMacroControl = false;
 	}
 
 	private String toString(ModSource s) {

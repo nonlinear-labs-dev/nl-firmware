@@ -50,6 +50,8 @@ public class ParameterPresenter {
 	public boolean drawCenterReturnIndicator = false;
 	public boolean drawZeroReturnIndicator = false;
 	public boolean isReturning = false;
+	public boolean isMacroControl = false;
+	public String parameterInfo = "";
 
 	public void getHash(Checksum crc) {
 		crc.eat((long) hash);
@@ -91,6 +93,8 @@ public class ParameterPresenter {
 		c.eat(drawCenterReturnIndicator);
 		c.eat(drawZeroReturnIndicator);
 		c.eat(isReturning);
+		c.eat(isMacroControl);
+		c.eat(parameterInfo);
 
 		c.eat(SetupModel.get().systemSettings.highlightChangedParameters.getValue().toString());
 		c.eat(SetupModel.get().systemSettings.forceHighlightChangedParameters.getValue().toString());

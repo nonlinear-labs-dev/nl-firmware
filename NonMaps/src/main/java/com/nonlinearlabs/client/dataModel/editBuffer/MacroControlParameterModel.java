@@ -12,7 +12,6 @@ public class MacroControlParameterModel extends BasicParameterModel {
 		super(id);
 
 		givenName.onChange(e -> notifyChanges());
-		info.onChange(e -> notifyChanges());
 	}
 
 	public int[] getRouterIDs() {

@@ -18,6 +18,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 	public StringDataModelEntity longName = new StringDataModelEntity();
 	public DoubleDataModelEntity originalValue = new DoubleDataModelEntity();
 	public BooleanDataModelEntity locked = new BooleanDataModelEntity();
+	public StringDataModelEntity info = new StringDataModelEntity();
 
 	public BasicParameterModel(int id) {
 		this.id = id;
@@ -26,6 +27,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		longName.onChange(e -> notifyChanges());
 		originalValue.onChange(e -> notifyChanges());
 		locked.onChange(e -> notifyChanges());
+		info.onChange(e -> notifyChanges());
 	}
 
 	@Override

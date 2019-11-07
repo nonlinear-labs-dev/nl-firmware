@@ -311,8 +311,14 @@ public class EditBufferUseCases {
 
 	public void renameMacroControl(int parameterID, String newName) {
 		MacroControlParameterModel m = this.<MacroControlParameterModel>findParameter(parameterID);
-		m.givenName.fromString(newName);
+		m.givenName.setValue(newName);
 		NonMaps.theMaps.getServerProxy().renameMacroControl(parameterID, newName);
+	}
+
+	public void setMacroControlInfo(int id, String text) {
+		MacroControlParameterModel m = this.<MacroControlParameterModel>findParameter(id);
+		m.info.setValue(text);
+		NonMaps.theMaps.getServerProxy().setMacroControlInfo(id, text);
 	}
 
 }

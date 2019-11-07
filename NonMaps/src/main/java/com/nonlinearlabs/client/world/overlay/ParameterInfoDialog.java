@@ -24,12 +24,16 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 
-public class ParameterInfoDialog extends GWTDialog  {
+public class ParameterInfoDialog extends GWTDialog {
 
 	private static ParameterInfoDialog theDialog;
 	private static float infoBoxHeight = 0;
+
+	ParameterPresenter presenter;
+
 	private TextArea infoField;
 	private Label parameterNameView;
 	private Label paramNameEditView;
@@ -99,10 +103,8 @@ public class ParameterInfoDialog extends GWTDialog  {
 			@Override
 			public void onBlur(BlurEvent event) {
 				focusOwner = null;
-				
-				// TODO
-				//	NonMaps.theMaps.getServerProxy().setMacroControlInfo(mc.getParameterID(), infoField.getText());
-				
+				int id = EditBufferPresenterProvider.getPresenter().selectedParameter.id;
+				EditBufferUseCases.get().setMacroControlInfo(id, infoField.getText());
 				update(EditBufferPresenterProvider.getPresenter().selectedParameter);
 			}
 		});
@@ -172,12 +174,8 @@ public class ParameterInfoDialog extends GWTDialog  {
 			@Override
 			public void onBlur(BlurEvent event) {
 				focusOwner = null;
-
-				// TODO
-				// mc.setName(paramNameEditEditor.getText());
-				
-				// TODO: Test
-				update(EditBufferPresenterProvider.getPresenter().selectedParameter);
+				int id = EditBufferPresenterProvider.getPresenter().selectedParameter.id;
+				EditBufferUseCases.get().renameMacroControl(id, paramNameEditEditor.getText());
 			}
 		});
 
@@ -190,8 +188,8 @@ public class ParameterInfoDialog extends GWTDialog  {
 			return;
 		}
 
-		// todo
-		boolean isMC = false;
+		presenter = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		boolean isMC = presenter.isMacroControl;
 
 		infoField.setEnabled(isMC);
 		paramNameEditor.setVisible(isMC);
@@ -208,28 +206,20 @@ public class ParameterInfoDialog extends GWTDialog  {
 		}
 
 		if (isMC) {
-// TODO
+			paramNameEditView.setText(presenter.fullNameWithGroup);
 
-			// MacroControlParameter p = (MacroControlParameter) selectedParameter;
+			if (focusOwner != paramNameEditEditor)
+				paramNameEditEditor.setText(presenter.userGivenName);
 
-			// paramNameEditView.setText(p.getGroupName() + "   \u2013   " + p.getName().getShortName());
-
-			// if (focusOwner != paramNameEditEditor)
-			// 	paramNameEditEditor.setText(p.getName().getEditName());
-
-			// String info = p.getInfo();
-			// if (!info.isEmpty()) {
-			// 	setDescription(info);
-			// 	return;
-			// }
-
+			String info = presenter.parameterInfo;
+			if (!info.isEmpty()) {
+				setDescription(info);
+				return;
+			}
 		}
 
-		//parameterNameView.setText(selectedParameter.getFullNameWithGroup());
-
+		parameterNameView.setText(selectedParameter.fullNameWithGroup);
 		centerIfOutOfView();
-		// TODO
-	//	NonMaps.theMaps.getServerProxy().loadParameterDescription((Parameter) selectedParameter, this);
 	}
 
 	@Override
@@ -237,16 +227,17 @@ public class ParameterInfoDialog extends GWTDialog  {
 		// Parameter p = param;
 
 		// if (p != null) {
-		// 	MapsControl parent = p.getParent();
+		// MapsControl parent = p.getParent();
 
-		// 	while (parent != null) {
-		// 		if (parent instanceof ParameterGroupIface) {
-		// 			ParameterGroupIface group = (ParameterGroupIface) parent;
-		// 			String longText = group.getName().getLongName() + " \u2013 " + p.getName().getLongName();
-		// 			return longText;
-		// 		}
-		// 		parent = parent.getParent();
-		// 	}
+		// while (parent != null) {
+		// if (parent instanceof ParameterGroupIface) {
+		// ParameterGroupIface group = (ParameterGroupIface) parent;
+		// String longText = group.getName().getLongName() + " \u2013 " +
+		// p.getName().getLongName();
+		// return longText;
+		// }
+		// parent = parent.getParent();
+		// }
 		// }
 		return "";
 	}

@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
@@ -31,12 +32,10 @@ import com.nonlinearlabs.client.world.Uuid;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
-import com.nonlinearlabs.client.world.overlay.ParameterInfoDialog;
 
 public class ServerProxy {
 
@@ -368,18 +367,18 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void loadParameterDescription(final Parameter selectedParameter, final ParameterInfoDialog client) {
-		downloadFile("/resources/parameter-descriptions/" + selectedParameter.getParameterID() + ".txt",
+	public void loadParameterDescription(int id, final Consumer<String> client) {
+		downloadFile("/resources/parameter-descriptions/" + id + ".txt",
 				new DownloadHandler() {
 
 					@Override
 					public void onFileDownloaded(String text) {
-						client.setDescription(text);
+						client.accept(text);
 					}
 
 					@Override
 					public void onError() {
-						client.setDescription("");
+						client.accept("");
 					}
 				});
 	}
