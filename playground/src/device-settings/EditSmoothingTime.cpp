@@ -6,6 +6,8 @@
 #include <parameters/value/RawValue.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <xml/Writer.h>
+#include <nltools/messaging/Message.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 EditSmoothingTime::EditSmoothingTime(Settings &parent)
     : super(parent)
@@ -51,6 +53,9 @@ void EditSmoothingTime::setDefault()
 void EditSmoothingTime::sendToLPC() const
 {
   Application::get().getLPCProxy()->sendSetting(EDIT_SMOOTHING_TIME, m_time.getTcdValue());
+
+  nltools::msg::Setting::EditSmoothingTimeMessage msg(m_time.getRawValue());
+  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::EditSmoothingTimeMessage>(msg);
 }
 
 tControlPositionValue EditSmoothingTime::get() const

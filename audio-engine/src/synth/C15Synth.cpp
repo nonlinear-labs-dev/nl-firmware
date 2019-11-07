@@ -25,6 +25,14 @@ C15Synth::C15Synth()
                                       sigc::mem_fun(this, &C15Synth::onMacroControlParameterMessage));
   receive<HWSourceChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWSourceMessage));
   receive<HWAmountChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWAmountMessage));
+
+  //Settings
+  receive<Setting::NoteShiftMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onNoteShiftMessage));
+  receive<Setting::PresetGlitchMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPresetGlitchMessage));
+  receive<Setting::TransitionTimeMessage>(EndPoint::AudioEngine,
+                                          sigc::mem_fun(this, &C15Synth::onTransitionTimeMessage));
+  receive<Setting::EditSmoothingTimeMessage>(EndPoint::AudioEngine,
+                                             sigc::mem_fun(this, &C15Synth::onEditSmoothingTimeMessage));
 }
 
 C15Synth::~C15Synth() = default;
@@ -139,4 +147,24 @@ void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage &ms
 void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage &msg)
 {
   nltools::Log::info("Received Layer Preset Message!");
+}
+
+void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage &msg)
+{
+  nltools::Log::info("Received NoteShift Message!");
+}
+
+void C15Synth::onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage &msg)
+{
+  nltools::Log::info("Received Preset Glitch Suppression Message!");
+}
+
+void C15Synth::onTransitionTimeMessage(const nltools::msg::Setting::TransitionTimeMessage &msg)
+{
+  nltools::Log::info("Received Transition Time Message!");
+}
+
+void C15Synth::onEditSmoothingTimeMessage(const nltools::msg::Setting::EditSmoothingTimeMessage &msg)
+{
+  nltools::Log::info("Received EditSmoothing Time Message!");
 }

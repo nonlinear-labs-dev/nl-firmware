@@ -19,6 +19,49 @@ namespace nltools
     using tID = int;
     using tControlPosition = double;
 
+    namespace Setting
+    {
+      struct NoteShiftMessage : Message<MessageType::NoteShiftSetting>
+      {
+        NoteShiftMessage(int offset)
+            : m_shift{ offset }
+        {
+        }
+
+        const int m_shift{};
+      };
+
+      struct PresetGlitchMessage : Message<MessageType::PresetGlitchSetting>
+      {
+        PresetGlitchMessage(bool enabled)
+            : m_enabled{ enabled }
+        {
+        }
+
+        const bool m_enabled{};
+      };
+
+      struct TransitionTimeMessage : Message<MessageType::TransitionTimeSetting>
+      {
+        TransitionTimeMessage(float value)
+            : m_value{ value }
+        {
+        }
+
+        const float m_value{};
+      };
+
+      struct EditSmoothingTimeMessage : Message<MessageType::EditSmoothingTimeSetting>
+      {
+        EditSmoothingTimeMessage(float time)
+            : m_time{ time }
+        {
+        }
+
+        const float m_time{};
+      };
+    }
+
     struct HWSourceChangedMessage : Message<MessageType::HWSourceParameter>
     {
       HWSourceChangedMessage(tID id = 0, tControlPosition controlPosition = 0, ReturnMode mode = ReturnMode::None,
