@@ -73,6 +73,7 @@ include_directories(src)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 
+configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 
@@ -108,6 +109,7 @@ target_link_libraries(playground-test nltools)
 
 include_directories(playground ${CMAKE_SOURCE_DIR}/nltools/include/)
 include_directories(playground ${CMAKE_SOURCE_DIR}/playground/src/)
+include_directories(playground ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
 include_directories(playground-test ${CMAKE_SOURCE_DIR}/nltools/include/)
 include_directories(playground-test ${CMAKE_SOURCE_DIR}/playground/src)
@@ -135,26 +137,13 @@ install(FILES ${PARAMETER_DESCRIPTIONS}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/parameter-descriptions
 )
 
-install(FILES ${PARAMETER_DESCRIPTIONS}
-    DESTINATION ${CMAKE_BINARY_DIR}/playground/resources/parameter-descriptions
-)
-
 install(FILES ${VERSION_INFOS}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/version-infos
-)
-
-install(FILES ${VERSION_INFOS}
-    DESTINATION ${CMAKE_BINARY_DIR}/playground/resources/version-infos
 )
 
 install(DIRECTORY resources
     USE_SOURCE_PERMISSIONS
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
-)
-
-install(DIRECTORY resources
-    USE_SOURCE_PERMISSIONS
-    DESTINATION ${CMAKE_BINARY_DIR}/playground
 )
 
 install(TARGETS playground

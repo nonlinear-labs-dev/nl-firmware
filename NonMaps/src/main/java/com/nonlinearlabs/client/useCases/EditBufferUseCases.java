@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.useCases;
 
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -42,10 +41,8 @@ public class EditBufferUseCases {
 				animationManager.cancelAnimation(m);
 		}
 
-		if (p instanceof MacroControlParameterModel) {
+		if (p instanceof MacroControlParameterModel) 
 			applyModulationToModulateableParameters(id, diff);
-			handleBidirectionalRibbonBinding(newValue, (MacroControlParameterModel) p);
-		}
 
 		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
 	}
@@ -54,7 +51,7 @@ public class EditBufferUseCases {
 		animationManager.startReturnAnimation(m);
 	}
 
-	private void handleBidirectionalRibbonBinding(double newValue, MacroControlParameterModel m) {
+	private void handleBidirectionalRibbonBinding(MacroControlParameterModel m) {
 		for (int routerId : m.getRouterIDs()) {
 			ModulationRouterParameterModel r = this.<ModulationRouterParameterModel>findParameter(routerId);
 
@@ -67,7 +64,7 @@ public class EditBufferUseCases {
 				if (physicalControlID == ribbon1 || physicalControlID == ribbon2) {
 					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
 					if (!ribbon.isReturning()) {
-						ribbon.value.value.setValue(newValue);
+						ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
 					}
 				}
 			}
@@ -79,7 +76,6 @@ public class EditBufferUseCases {
 	}
 
 	private void applyPhysicalControlModulation(PhysicalControlParameterModel p, double diff) {
-
 		if (Math.abs(diff) > 0.0) {
 			for (int router = 0; router < 4; router++) {
 				int routerId = p.id + router + 1;
@@ -106,9 +102,7 @@ public class EditBufferUseCases {
 
 	private void applyModulation(int macroControlID, double delta) {
 		BasicParameterModel macroControl = EditBufferModel.findParameter(macroControlID);
-		if (macroControl.value.metaData.bipolar.getBool())
-			delta *= 2;
-
+	
 		double oldQ = macroControl.value.getQuantizedAndClipped(true);
 		double v = macroControl.value.value.getValue();
 		macroControl.value.value.setValue(v + delta);
@@ -127,6 +121,9 @@ public class EditBufferUseCases {
 					t.value.value.setValue(t.value.value.getValue() + d * amount);
 				}
 			}
+
+			MacroControlParameterModel mc = EditBufferModel.findParameter(m);
+			handleBidirectionalRibbonBinding(mc);
 		}
 	}
 

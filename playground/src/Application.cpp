@@ -118,17 +118,9 @@ Application &Application::get()
   return *theApp;
 }
 
-Glib::ustring Application::getSelfPath() const
-{
-  return getOptions()->getSelfPath();
-}
-
 Glib::ustring Application::getResourcePath() const
 {
-  RefPtr<Gio::File> app = Gio::File::create_for_path(getSelfPath());
-  RefPtr<Gio::File> parent = app->get_parent();
-  Glib::ustring parentPath = parent->get_path();
-  return parentPath + "/resources/";
+  return getOptions()->getInstallDir() + "/nonlinear/playground/resources/";
 }
 
 void Application::run()
