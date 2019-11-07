@@ -103,7 +103,7 @@ public class ParameterInfoDialog extends GWTDialog {
 			@Override
 			public void onBlur(BlurEvent event) {
 				focusOwner = null;
-				int id = EditBufferPresenterProvider.getPresenter().selectedParameter.id;
+				int id = presenter.id;
 				EditBufferUseCases.get().setMacroControlInfo(id, infoField.getText());
 				update(EditBufferPresenterProvider.getPresenter().selectedParameter);
 			}

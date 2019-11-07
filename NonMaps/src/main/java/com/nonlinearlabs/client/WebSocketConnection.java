@@ -58,7 +58,6 @@ class WebSocketConnection {
 	public void startPolling(ServerListener listener) {
 		Tracer.log("startPolling");
 		this.listener = listener;
-		// TODO!!!
 		webSocketOpen(Window.Location.getHost());
 	}
 
