@@ -289,7 +289,12 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_ms
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Single;
   m_layer_mode = C15::Properties::LayerMode::Single;
   m_preloaded_single_data = _msg;
-  // todo: glitch_suppression, stop envelopes on layer_changed
+  // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
+  // time management (transition time) currently missing ...
+  // basic steps (without fade point mechanics):
+  // - reset mc assignments
+  // - update in order: sources, amounts, macros, targets (set mc assignment), direct
+  // - start transitions
   nltools::Log::info("Received Single Preset Message!");
 }
 
@@ -298,7 +303,8 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Split;
   m_layer_mode = C15::Properties::LayerMode::Split;
   m_preloaded_split_data = _msg;
-  // todo: glitch_suppression, stop envelopes on layer_changed
+  // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
+  // time management (transition time) currently missing ...
   nltools::Log::info("Received Split Preset Message!");
 }
 
@@ -307,7 +313,8 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Layer;
   m_layer_mode = C15::Properties::LayerMode::Layer;
   m_preloaded_layer_data = _msg;
-  // todo: glitch_suppression, stop envelopes on layer_changed
+  // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
+  // time management (transition time) currently missing ...
   nltools::Log::info("Received Layer Preset Message!");
 }
 
@@ -347,6 +354,7 @@ void dsp_host_dual::update_event_macro_ctrl(const uint32_t _index, const uint32_
     param->m_position = _position;
     param->update_modulation_aspects();
     // trigger mc chain ... (ribbon bidirectionality currently missing ...)
+    // time management (mc smoothing time) currently missing ...
   }
 }
 
@@ -357,6 +365,7 @@ void dsp_host_dual::update_event_macro_time(const uint32_t _index, const uint32_
   param->m_lock = param->m_time.m_lock = _lock;  // currently, group lock affects both
   param->m_time.m_position = _position;
   // currently, no scaled field present for mc times ...
+  // time management (mc smoothing time) currently missing ...
 }
 
 void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint32_t _layer, const bool _lock,
@@ -368,6 +377,8 @@ void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint3
   {
     param->m_position = _position;
     // trigger transition ...
+    // time management (edit time) currently missing ...
+    // detection of unison_changed (stopping envelopes) missing ...
   }
 }
 
@@ -394,6 +405,7 @@ void dsp_host_dual::update_event_target_param(const uint32_t _index, const uint3
   if(change)
   {
     // trigger transition ...
+    // time management (edit time) currently missing ...
   }
 }
 
@@ -405,6 +417,7 @@ void dsp_host_dual::update_event_global_param(const uint32_t _index, const bool 
   {
     param->m_position = _position;
     // trigger transition ...
+    // time management (edit time) currently missing ...
   }
 }
 
