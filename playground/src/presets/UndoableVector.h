@@ -11,6 +11,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <nltools/Assert.h>
+#include <playground-helpers.h>
 
 template <typename Owner, typename Element> class UndoableVector
 {
@@ -87,7 +88,7 @@ template <typename Owner, typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range(getStackTrace("Element is not in std::vector"));
+    throw std::out_of_range(Environment::getStackTrace("Element is not in std::vector"));
   }
 
   size_t getIndexOf(const Element *e) const
@@ -97,7 +98,7 @@ template <typename Owner, typename Element> class UndoableVector
     if(it != m_elements.end())
       return std::distance(m_elements.begin(), it);
 
-    throw std::out_of_range(getStackTrace("Element is not in std::vector"));
+    throw std::out_of_range(Environment::getStackTrace("Element is not in std::vector"));
   }
 
   size_t size() const

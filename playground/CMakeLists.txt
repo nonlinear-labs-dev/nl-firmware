@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(playground)
+project(playground-tests)
 
 execute_process(COMMAND "git" "rev-parse" "--abbrev-ref" "HEAD"
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -77,23 +78,44 @@ configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.c
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
+list(FILTER SOURCE_FILES EXCLUDE REGEX ".*playground-tests.cpp$")
+
+set (EXCLUDE_DIR "/testing/unit-tests/")
+foreach (TMP_PATH ${SOURCE_FILES})
+  string (FIND ${TMP_PATH} ${EXCLUDE_DIR} EXCLUDE_DIR_FOUND)
+  if (NOT ${EXCLUDE_DIR_FOUND} EQUAL -1)
+    list (REMOVE_ITEM SOURCE_FILES ${TMP_PATH})
+  endif ()
+endforeach(TMP_PATH)
+
+file(GLOB_RECURSE TEST_FILES src/*.cpp)
+list(FILTER TEST_FILES EXCLUDE REGEX ".*playground.cpp$")
+
 set(SOURCE_FILES
     ${SOURCE_FILES}
 )
 
 add_executable(playground ${SOURCE_FILES})
+add_executable(playground-test ${TEST_FILES})
 
 target_link_libraries(playground pthread)
 target_link_libraries(playground stdc++fs)
 target_link_libraries(playground nltools)
 
+target_link_libraries(playground-test pthread)
+target_link_libraries(playground-test stdc++fs)
+target_link_libraries(playground-test nltools)
+
 include_directories(playground ${CMAKE_SOURCE_DIR}/nltools/include/)
 include_directories(playground ${CMAKE_SOURCE_DIR}/playground/src/)
 
+include_directories(playground-test ${CMAKE_SOURCE_DIR}/nltools/include/)
+include_directories(playground-test ${CMAKE_SOURCE_DIR}/playground/src)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})
   target_link_libraries(playground ${${name}_LIBRARIES})
+  target_link_libraries(playground-test ${${name}_LIBRARIES})
 endfunction(linkLib)
 
 foreach(lib ${LIBS})
@@ -137,6 +159,10 @@ install(DIRECTORY resources
 
 install(TARGETS playground
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
+)
+
+install(TARGETS playground-test
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
 )
 
 ADD_CUSTOM_TARGET(

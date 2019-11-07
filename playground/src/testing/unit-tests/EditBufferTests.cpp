@@ -1,4 +1,5 @@
 #include <third-party/include/catch.hpp>
+#include <testing/TestHelper.h>
 
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
@@ -13,11 +14,6 @@
 inline auto getEditBuffer() -> EditBuffer*
 {
   return Application::get().getPresetManager()->getEditBuffer();
-}
-
-inline auto createTestScope() -> std::unique_ptr<UNDO::TransactionCreationScope>
-{
-  return std::move(Application::get().getPresetManager()->getUndoScope().startTestTransaction());
 }
 
 Preset* createSinglePreset(UNDO::Transaction* transaction)
@@ -72,7 +68,7 @@ class MockPresetStorage
  public:
   MockPresetStorage()
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
     m_layer = createLayerPreset(transaction);
@@ -82,7 +78,7 @@ class MockPresetStorage
 
   ~MockPresetStorage()
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
     removeBankOfPreset(transaction, m_single);
@@ -123,7 +119,7 @@ TEST_CASE("Simple EditBuffer Conversion")
   MockPresetStorage presets;
 
   auto loadSinglePreset = [&]() {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
     REQUIRE(editBuffer->getType() == SoundType::Single);
   };
@@ -132,7 +128,7 @@ TEST_CASE("Simple EditBuffer Conversion")
   {
     loadSinglePreset();
 
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
@@ -142,7 +138,7 @@ TEST_CASE("Simple EditBuffer Conversion")
   {
     loadSinglePreset();
 
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
@@ -153,7 +149,7 @@ TEST_CASE("Simple EditBuffer Conversion")
     loadSinglePreset();
 
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
     }
 
@@ -167,7 +163,7 @@ TEST_CASE("Simple EditBuffer Conversion")
     loadSinglePreset();
 
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
     }
 
@@ -184,7 +180,7 @@ TEST_CASE("master groups initialization tests")
   MockPresetStorage presets;
 
   auto loadSinglePreset = [&]() {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
     REQUIRE(editBuffer->getType() == SoundType::Single);
   };
@@ -232,7 +228,7 @@ TEST_CASE("master groups initialization tests")
   SECTION("split global master copied to voice groups master and set to default")
   {
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
     }
 
@@ -244,7 +240,7 @@ TEST_CASE("master groups initialization tests")
   SECTION("layer global master copied to voice groups master and set to default")
   {
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
     }
 
@@ -268,10 +264,10 @@ TEST_CASE("poly groups initialization")
   const auto monoLegato = editBuffer->findParameterByID(12347, VoiceGroup::I)->getControlPositionValue();
   const auto monoGlide = editBuffer->findParameterByID(12348, VoiceGroup::I)->getControlPositionValue();
 
-  SECTION("poly groups I, II and original are equal")
+  SECTION("Convert to Layer initializes Voice Groups from VoiceGroup::I ")
   {
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
     }
 
@@ -299,10 +295,10 @@ TEST_CASE("poly groups initialization")
     }
   }
 
-  SECTION("poly groups I, II and original same")
+  SECTION("Convert to Split initializes Voice Groups from VoiceGroup::I")
   {
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
     }
 
@@ -338,7 +334,7 @@ TEST_CASE("Split to Single Conversion")
 
   {
     //TODO mit stephan über conversion rules reden
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     auto vgMaster = presets.getSplitPreset()->findParameterByID(10002, VoiceGroup::I);
     vgMaster->setValue(scope->getTransaction(), 0.2);
     auto globalMaster = presets.getSplitPreset()->findParameterByID(247, VoiceGroup::Global);
@@ -356,7 +352,7 @@ TEST_CASE("Split to Single Conversion")
 
     //Update vg master parameters
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       vgmasterI->setCPFromHwui(scope->getTransaction(), 0.5);
       vgmasterII->setCPFromHwui(scope->getTransaction(), 0.2);
 
@@ -365,7 +361,7 @@ TEST_CASE("Split to Single Conversion")
     }
 
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       REQUIRE(editBuffer->anyParameterChanged());
       presets.getSplitPreset()->copyFrom(scope->getTransaction(), editBuffer);
       REQUIRE_FALSE(editBuffer->anyParameterChanged());
@@ -373,7 +369,7 @@ TEST_CASE("Split to Single Conversion")
 
     //Convert sound to single
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       REQUIRE_FALSE(editBuffer->anyParameterChanged());
       editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
     }
@@ -408,7 +404,7 @@ TEST_CASE("Load Presets Complete")
 
     SECTION("Load single preset")
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       auto singlePreset = presets.getSinglePreset();
       editBuffer->undoableLoad(scope->getTransaction(), singlePreset);
 
@@ -419,7 +415,7 @@ TEST_CASE("Load Presets Complete")
 
     SECTION("Load layer preset")
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       auto layerPreset = presets.getLayerPreset();
       editBuffer->undoableLoad(scope->getTransaction(), layerPreset);
 
@@ -430,7 +426,7 @@ TEST_CASE("Load Presets Complete")
 
     SECTION("Load split preset")
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       auto splitPreset = presets.getSplitPreset();
       editBuffer->undoableLoad(scope->getTransaction(), splitPreset);
 
@@ -449,7 +445,7 @@ TEST_CASE("Editbuffer Contents loaded")
 
   auto editBuffer = getEditBuffer();
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
@@ -457,7 +453,7 @@ TEST_CASE("Editbuffer Contents loaded")
 
   SECTION("Load Single Into I")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
 
     REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
@@ -466,7 +462,7 @@ TEST_CASE("Editbuffer Contents loaded")
 
   SECTION("Load Single Into II")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::II);
 
     REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::II) == presets.getSinglePreset()->getName());
@@ -494,7 +490,7 @@ TEST_CASE("Load <-> Changed")
 
   SECTION("Load leads to reset changed indication")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
 
     REQUIRE(!editBuffer->anyParameterChanged());
@@ -512,7 +508,7 @@ TEST_CASE("Load <-> Changed")
 
   SECTION("Load leads to reset changed indication dual")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
 
     REQUIRE(!editBuffer->anyParameterChanged());
@@ -532,7 +528,7 @@ TEST_CASE("Load <-> Changed")
   {
     Parameter* param{ nullptr };
     {
-      auto scope = createTestScope();
+      auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
       param = editBuffer->findParameterByID(2, VoiceGroup::I);
       REQUIRE(param != nullptr);
@@ -557,7 +553,7 @@ TEST_CASE("load presets of different types")
   auto editBuffer = getEditBuffer();
   MockPresetStorage presets;
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
@@ -566,7 +562,7 @@ TEST_CASE("load presets of different types")
 
   SECTION("Load Single ")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
 
     REQUIRE(editBuffer->getType() == SoundType::Single);
@@ -575,7 +571,7 @@ TEST_CASE("load presets of different types")
 
   SECTION("Load Split")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
@@ -590,7 +586,7 @@ TEST_CASE("Voice Group Label")
   MockPresetStorage presets;
 
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
     REQUIRE(eb->getType() == SoundType::Layer);
     eb->setVoiceGroupName(scope->getTransaction(), "I", VoiceGroup::I);
@@ -601,7 +597,7 @@ TEST_CASE("Voice Group Label")
 
   SECTION("Convert to Single clears Voice Group Labels")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I).empty());
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::II).empty());
@@ -609,7 +605,7 @@ TEST_CASE("Voice Group Label")
 
   SECTION("Load Single into Voice Group sets Voice Group Label to Preset Name")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "I");
     eb->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
@@ -617,7 +613,7 @@ TEST_CASE("Voice Group Label")
 
   SECTION("Convert Single to Dual sets Voice Group Labels to prior EB Name")
   {
-    auto scope = createTestScope();
+    auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
     auto ebName = eb->getName();
     eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);

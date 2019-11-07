@@ -1,8 +1,8 @@
+#define CATCH_CONFIG_RUNNER
+#include <third-party/include/catch.hpp>
 #include "Application.h"
 #include "testing/TestDriver.h"
-#include <cstdlib>
 #include "device-settings/DebugLevel.h"
-#include "Options.h"
 #include "playground-helpers.h"
 
 int main(int numArgs, char** argv)
@@ -16,20 +16,17 @@ int main(int numArgs, char** argv)
   ::signal(SIGBUS, Environment::printStackTrace);
   ::signal(SIGKILL, Environment::printStackTrace);
 
-#ifdef _PROFILING
-  Profiler::get ().enable (true);
-#endif
-
-#ifdef _TESTS
   TestDriverBase::doTests(numArgs, argv);
-#endif
+  Application app(numArgs, argv);
 
-  {
-    Application app(numArgs, argv);
-    Application::get().run();
-    DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-  }
+  app.stopWatchDog();
 
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-  return EXIT_SUCCESS;
+  nltools::Log::setLevel(nltools::Log::Silent);
+
+  std::vector<const char*> args;
+  args.emplace_back(argv[0]);
+  args.emplace_back("-s");  //this line enables showing of passed tests
+
+  int result = Catch::Session().run(args.size(), args.data());
+  return result;
 }
