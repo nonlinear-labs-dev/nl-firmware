@@ -70,7 +70,7 @@ struct ParameterHandle
     {
       auto param = get_macro(i, _element.m_param.m_index);
       param->m_index = m_source_count * (_element.m_param.m_index - 1);
-      param->m_base = param->m_position = 0.5f;  // a bit hacky, better via element descriptor ...
+      param->m_base = param->m_position = _element.m_initial;
     }
   }
   inline void init_modulateable(const C15::ParameterDescriptor _element)
@@ -85,7 +85,7 @@ struct ParameterHandle
       param->m_scaleId = _element.m_ae.m_scaleId;
       param->m_scaleFactor = _element.m_ae.m_scaleFactor;
       param->m_scaleOffset = _element.m_ae.m_scaleOffset;
-      param->m_position = param->depolarize(_element.m_ae.m_initial);
+      param->m_position = param->depolarize(_element.m_initial);
     }
   }
   inline void init_unmodulateable(const C15::ParameterDescriptor _element)
@@ -99,7 +99,7 @@ struct ParameterHandle
       param->m_scaleId = _element.m_ae.m_scaleId;
       param->m_scaleFactor = _element.m_ae.m_scaleFactor;
       param->m_scaleOffset = _element.m_ae.m_scaleOffset;
-      param->m_position = _element.m_ae.m_initial;
+      param->m_position = _element.m_initial;
     }
   }
   inline void init_global(const C15::ParameterDescriptor _element)
@@ -113,7 +113,7 @@ struct ParameterHandle
       param->m_scaleId = _element.m_ae.m_scaleId;
       param->m_scaleFactor = _element.m_ae.m_scaleFactor;
       param->m_scaleOffset = _element.m_ae.m_scaleOffset;
-      param->m_position = _element.m_ae.m_initial;
+      param->m_position = _element.m_initial;
     }
   }
   // numeric getters (when dispatching TCD ids)

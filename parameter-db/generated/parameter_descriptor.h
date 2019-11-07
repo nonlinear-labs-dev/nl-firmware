@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /** @file       parameter_descriptor.h
-    @date       2019-11-05
+    @date       2019-11-07
     @version    1.7B-1
     @author     M. Seeber
     @brief      provide a flexible descriptor structure
@@ -208,7 +208,7 @@ namespace C15
       SmootherDescriptor m_smoother;
       SignalDescriptor m_signal;
       Properties::SmootherScale m_scaleId = Properties::SmootherScale::None;
-      float m_scaleFactor = 0.0f, m_scaleOffset = 0.0f, m_initial = 0.0f;
+      float m_scaleFactor = 0.0f, m_scaleOffset = 0.0f;
       bool m_polarity = false;
     };
 
@@ -222,6 +222,7 @@ namespace C15
   struct ParameterDescriptor
   {
     Descriptors::TypeDescriptor m_param;
+    float m_initial = 0.0f;
     Descriptors::AudioEngineParamDescriptor m_ae;
     Descriptors::PlaygroundParamDescriptor m_pg;
   };

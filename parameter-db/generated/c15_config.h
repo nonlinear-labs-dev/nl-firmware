@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       c15_config.h
-    @date       2019-11-05, 16:51
-    @version	1.7B-1
+    @date       2019-11-07, 14:51
+    @version    1.7B-1
     @author     M. Seeber
     @brief      crucial information about the audio engine
     @todo
@@ -22,7 +22,6 @@ namespace C15
     const uint32_t local_polyphony = total_polyphony >> 1;
     const uint32_t tcd_elements = 400;
     const uint32_t clock_rates[2][3] = { { 48000, 9600, 400 }, { 96000, 9600, 400 } };
-    // later: two separate binaries for 48k and 96k modes (with different polyphonies) ...
     const float fade_time_ms = 3.0f;
     const uint32_t key_count = 61;
     const uint32_t key_center = 24;
