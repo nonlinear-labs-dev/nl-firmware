@@ -6,6 +6,8 @@
 #include <parameters/value/RawValue.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <xml/Writer.h>
+#include <nltools/messaging/Message.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 TransitionTime::TransitionTime(Settings &parent)
     : super(parent)
@@ -51,6 +53,9 @@ void TransitionTime::setDefault()
 void TransitionTime::sendToLPC() const
 {
   Application::get().getLPCProxy()->sendSetting(TRANSITION_TIME, m_time.getTcdValue());
+
+  nltools::msg::Setting::TransitionTimeMessage msg(m_time.getRawValue());
+  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TransitionTimeMessage>(msg);
 }
 
 tControlPositionValue TransitionTime::get() const
