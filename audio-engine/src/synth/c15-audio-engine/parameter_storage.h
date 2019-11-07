@@ -82,6 +82,7 @@ struct Modulateable_Parameter : Proto_Parameter
   inline bool modulate(const float _mod)
   {
     m_unclipped = m_base + (m_amount * _mod);
+    m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
     return m_position != m_unclipped;
   }
   inline void update_modulation_aspects(const float _mod)

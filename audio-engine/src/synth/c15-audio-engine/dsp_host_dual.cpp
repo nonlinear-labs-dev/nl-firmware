@@ -346,23 +346,23 @@ void dsp_host_dual::update_event_target_param(const uint32_t _index, const uint3
                                               const float _amount)
 {
   auto param = m_params.get_target(_layer, _index);
+  const float pos = param->depolarize(_position);
+  const bool change = param->m_position != pos;
+  const uint32_t srcId = static_cast<uint32_t>(_source);
   param->m_lock = _lock;
-  const bool change = param->m_position != _position, reassign = param->m_source != _source;
-  if((param->m_amount != _amount) || reassign)
+  param->m_position = pos;
+  if(param->m_amount != _amount)
   {
-    const uint32_t srcId = static_cast<uint32_t>(_source);
-    param->m_position = _position;
-    param->m_source = _source;
     param->m_amount = _amount;
-    param->update_modulation_aspects(m_params.get_macro(_layer, srcId)->m_position);
-    if(reassign)
-    {
-      m_params.m_layer[_layer].m_assignment.reassign(_index, srcId);
-    }
   }
+  if(param->m_source != _source)
+  {
+    param->m_source = _source;
+    m_params.m_layer[_layer].m_assignment.reassign(_index, srcId);
+  }
+  param->update_modulation_aspects(m_params.get_macro(_layer, srcId)->m_position);
   if(change)
   {
-    param->m_position = _position;
     // trigger transition ...
   }
 }

@@ -70,6 +70,7 @@ struct ParameterHandle
     {
       auto param = get_macro(i, _element.m_param.m_index);
       param->m_index = m_source_count * (_element.m_param.m_index - 1);
+      param->m_base = param->m_position = 0.5f;  // a bit hacky, better via element descriptor ...
     }
   }
   inline void init_modulateable(const C15::ParameterDescriptor _element)
