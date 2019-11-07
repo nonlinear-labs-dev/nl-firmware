@@ -487,7 +487,7 @@ TEST_CASE("Load <-> Changed")
   MockPresetStorage presets;
   auto editBuffer = getEditBuffer();
 
-  SECTION("Load leads to reset changed indication")
+  SECTION("Load resets Changed-Indication")
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
@@ -505,7 +505,7 @@ TEST_CASE("Load <-> Changed")
     REQUIRE(editBuffer->anyParameterChanged());
   }
 
-  SECTION("Load leads to reset changed indication dual")
+  SECTION("Load Dual Preset resets Changed-Indication")
   {
     auto scope = TestHelper::createTestScope();
 
@@ -521,15 +521,17 @@ TEST_CASE("Load <-> Changed")
     REQUIRE(editBuffer->anyParameterChanged());
   }
 
-  SECTION("Recall")
+  SECTION("Recall Poly Parameter (I) in Dual EditBuffer")
   {
     Parameter* param{ nullptr };
+
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+
       param = editBuffer->findParameterByID(2, VoiceGroup::I);
       REQUIRE(param != nullptr);
-      REQUIRE(!param->isChangedFromLoaded());
+      REQUIRE_FALSE(param->isChangedFromLoaded());
 
       TestHelper::forceParameterChange(scope->getTransaction(), param);
 
@@ -538,17 +540,74 @@ TEST_CASE("Load <-> Changed")
 
     REQUIRE(param != nullptr);
     REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->anyParameterChanged());
 
     param->undoableRecallFromPreset();
 
-    REQUIRE(!param->isChangedFromLoaded());
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    REQUIRE_FALSE(param->isChangedFromLoaded());
+  }
+
+  SECTION("Recall Poly Parameter (II) in Dual EditBuffer")
+  {
+    Parameter* param{ nullptr };
+
+    {
+      auto scope = TestHelper::createTestScope();
+      editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+
+      param = editBuffer->findParameterByID(15, VoiceGroup::II);
+      REQUIRE(param != nullptr);
+      REQUIRE_FALSE(param->isChangedFromLoaded());
+
+      TestHelper::forceParameterChange(scope->getTransaction(), param);
+
+      REQUIRE(param->isChangedFromLoaded());
+    }
+
+    REQUIRE(param != nullptr);
+    REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->anyParameterChanged());
+
+    param->undoableRecallFromPreset();
+
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    REQUIRE_FALSE(param->isChangedFromLoaded());
+  }
+
+  SECTION("Recall Global Parameter in Dual EditBuffer")
+  {
+    Parameter* param{ nullptr };
+
+    {
+      auto scope = TestHelper::createTestScope();
+      editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+
+      param = editBuffer->findParameterByID(247, VoiceGroup::Global);
+      REQUIRE(param != nullptr);
+      REQUIRE_FALSE(param->isChangedFromLoaded());
+
+      TestHelper::forceParameterChange(scope->getTransaction(), param);
+
+      REQUIRE(param->isChangedFromLoaded());
+    }
+
+    REQUIRE(param != nullptr);
+    REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->anyParameterChanged());
+
+    param->undoableRecallFromPreset();
+
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    REQUIRE_FALSE(param->isChangedFromLoaded());
   }
 }
 
-TEST_CASE("load presets of different types")
+TEST_CASE("Load Presets of all types")
 {
   auto editBuffer = getEditBuffer();
   MockPresetStorage presets;
+
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
@@ -557,7 +616,7 @@ TEST_CASE("load presets of different types")
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
   }
 
-  SECTION("Load Single ")
+  SECTION("Load Single")
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
@@ -572,6 +631,15 @@ TEST_CASE("load presets of different types")
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  }
+
+  SECTION("Load Layer")
+  {
+    auto scope = TestHelper::createTestScope();
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+
+    REQUIRE(editBuffer->getType() == SoundType::Layer);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
   }
 }
