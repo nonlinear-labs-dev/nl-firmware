@@ -49,7 +49,6 @@ IF(DEV_PC)
   add_subdirectory(src/third-party)
 ENDIF(DEV_PC)
 
-
 IF(PROFILING)
   ADD_DEFINITIONS(-D_PROFILING)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -finstrument-functions -finstrument-functions-exclude-file-list=Profiler.h,Profiler.cpp,map,/c++/")
@@ -70,6 +69,7 @@ foreach(lib ${LIBS})
 endforeach(lib)
 
 include_directories(src)
+include_directories(${PROJECT_BINARY_DIR}/src)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 
@@ -77,29 +77,18 @@ configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 
+SET(GENERATED_SOURCES
+    ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp
+    ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
+
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 list(FILTER SOURCE_FILES EXCLUDE REGEX ".*playground.cpp$")
 list(FILTER SOURCE_FILES EXCLUDE REGEX ".*playground-tests.cpp$")
 
-set (EXCLUDE_DIR "/testing/unit-tests/")
-foreach (TMP_PATH ${SOURCE_FILES})
-  string (FIND ${TMP_PATH} ${EXCLUDE_DIR} EXCLUDE_DIR_FOUND)
-  if (NOT ${EXCLUDE_DIR_FOUND} EQUAL -1)
-    list (REMOVE_ITEM SOURCE_FILES ${TMP_PATH})
-  endif ()
-endforeach(TMP_PATH)
-
-add_library(playground-lib STATIC ${SOURCE_FILES})
+add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 
 file(GLOB_RECURSE UNIT_TEST_FILES src/testing/unit-tests/*.cpp)
-
-file(GLOB_RECURSE TEST_FILES src/*.cpp)
-list(FILTER TEST_FILES EXCLUDE REGEX ".*playground.cpp$")
-
-set(SOURCE_FILES
-    ${SOURCE_FILES}
-)
 
 target_link_libraries(playground-lib pthread)
 target_link_libraries(playground-lib stdc++fs)
