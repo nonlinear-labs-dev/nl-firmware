@@ -45,6 +45,7 @@ struct Macro_Control_Parameter : Proto_Parameter
   {
     m_mod = _mod;
     m_unclipped = m_base + m_mod;
+    m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
     return m_position != m_unclipped;
   }
   inline void update_modulation_aspects()

@@ -9,6 +9,8 @@
     @todo
 *******************************************************************************/
 
+#include <nltools/logging/Log.h>
+
 dsp_host_dual::dsp_host_dual()
 {
   m_mainOut_L = m_mainOut_R = 0.0f;
@@ -282,6 +284,33 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
   }
 }
 
+void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_msg)
+{
+  m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Single;
+  m_layer_mode = C15::Properties::LayerMode::Single;
+  m_preloaded_single_data = _msg;
+  // todo: glitch_suppression, stop envelopes on layer_changed
+  nltools::Log::info("Received Single Preset Message!");
+}
+
+void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg)
+{
+  m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Split;
+  m_layer_mode = C15::Properties::LayerMode::Split;
+  m_preloaded_split_data = _msg;
+  // todo: glitch_suppression, stop envelopes on layer_changed
+  nltools::Log::info("Received Split Preset Message!");
+}
+
+void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg)
+{
+  m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Layer;
+  m_layer_mode = C15::Properties::LayerMode::Layer;
+  m_preloaded_layer_data = _msg;
+  // todo: glitch_suppression, stop envelopes on layer_changed
+  nltools::Log::info("Received Layer Preset Message!");
+}
+
 void dsp_host_dual::update_event_hw_source(const uint32_t _index, const bool _lock,
                                            const C15::Properties::HW_Return_Behavior _behavior, const float _position)
 {
@@ -316,7 +345,8 @@ void dsp_host_dual::update_event_macro_ctrl(const uint32_t _index, const uint32_
   if(param->m_position != _position)
   {
     param->m_position = _position;
-    // trigger mc chain ...
+    param->update_modulation_aspects();
+    // trigger mc chain ... (ribbon bidirectionality currently missing ...)
   }
 }
 

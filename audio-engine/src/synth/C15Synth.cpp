@@ -245,15 +245,18 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage &msg
 
 void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage &msg)
 {
-  nltools::Log::info("Received Split Preset Message!");
+  //nltools::Log::info("Received Split Preset Message!");
+  m_dsp->onPresetMessage(msg);
 }
 
 void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage &msg)
 {
-  nltools::Log::info("Received Single Preset Message!");
+  //nltools::Log::info("Received Single Preset Message!");
+  m_dsp->onPresetMessage(msg);
 }
 
 void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage &msg)
 {
-  nltools::Log::info("Received Layer Preset Message!");
+  //nltools::Log::info("Received Layer Preset Message!");
+  m_dsp->onPresetMessage(msg);
 }
