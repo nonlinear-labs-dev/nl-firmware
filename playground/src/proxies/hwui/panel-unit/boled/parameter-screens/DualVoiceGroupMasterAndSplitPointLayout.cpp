@@ -6,10 +6,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include "DualVoiceGroupMasterAndSplitPointLayout.h"
 
-#warning "Recall is not working properly"
-#warning "select is breaking current value slider"
-#warning "voice group selection is not reseting properly"
-
 Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentParameter() const
 {
   if(auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected())

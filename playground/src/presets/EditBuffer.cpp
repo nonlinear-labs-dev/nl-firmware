@@ -658,8 +658,10 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGr
       break;
     case SoundType::Invalid:
     case SoundType::Single:
-      break;
+      return;
   }
+
+  initRecallValues(transaction);
 }
 
 void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
@@ -731,6 +733,8 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   transaction->addSimpleCommand(
       [](auto) { Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I); });
+
+  initRecallValues(transaction);
 }
 
 void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
