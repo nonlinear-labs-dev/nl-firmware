@@ -139,18 +139,16 @@ void AlsaAudioOutput::handleWriteError(snd_pcm_sframes_t result)
   {
     if(getOptions()->areXRunsFatal())
     {
-      std::stringstream str;
-      str << "XRun at frame position " << m_framesProcessed << std::endl;
-      throw std::runtime_error(str.str());
+      throw std::runtime_error("XRun");
     }
 
     if(auto recoverResult = snd_pcm_recover(m_handle, result, 1))
     {
-      std::cerr << "Could not recover:" << recoverResult << std::endl;
+      nltools::Log::error("Could not recover from x-run:", recoverResult);
     }
     else
     {
-      std::cerr << "recovered from x-run" << std::endl;
+      nltools::Log::warning("recovered from x-run");
       snd_pcm_start(m_handle);
     }
   }

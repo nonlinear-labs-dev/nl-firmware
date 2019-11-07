@@ -56,13 +56,12 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
-  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
-    if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
-      auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
-      for(auto router : mappings->getModulationRoutingParametersFor(this))
-      {
-        router->getValue().setIsBoolean(routersAreBoolean);
-      }
+  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  {
+    auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
+    for(auto router : mappings->getModulationRoutingParametersFor(this))
+    {
+      router->getValue().setIsBoolean(routersAreBoolean);
     }
   }
 
@@ -167,28 +166,26 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
-    if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
-      if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
-        auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
-        auto routers = mappings->getModulationRoutingParametersFor(this);
-        auto highest = *routers.begin();
-        for(auto router : routers)
+    if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+    {
+      auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
+      auto routers = mappings->getModulationRoutingParametersFor(this);
+      auto highest = *routers.begin();
+      for(auto router : routers)
+      {
+        if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
         {
-          if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
-          {
-            highest = router;
-          }
-        }
-
-        for(auto router : routers)
-        {
-          if(router != highest)
-          {
-            router->onExclusiveRoutingLost();
-          }
+          highest = router;
         }
       }
 
+      for(auto router : routers)
+      {
+        if(router != highest)
+        {
+          router->onExclusiveRoutingLost();
+        }
+      }
     }
   }
 }
