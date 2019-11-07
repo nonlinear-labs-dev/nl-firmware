@@ -2,9 +2,9 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
 
-public class RibbonParameterUpdater extends ParameterUpdater {
+public class RibbonParameterModelUpdater extends BasicParameterModelUpdater {
 
-    public RibbonParameterUpdater(Node c, BasicParameterModel p) {
+    public RibbonParameterModelUpdater(Node c, BasicParameterModel p) {
         super(c, p);
     }
 

@@ -6,6 +6,7 @@ import com.nonlinearlabs.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Updater;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout;
 
 public class ModulateableParameterModel extends BasicParameterModel {
@@ -22,18 +23,17 @@ public class ModulateableParameterModel extends BasicParameterModel {
 		}
 
 		public static ModSource fromParameterId(int i) {
-			switch(i)
-			{
-				case 243:
+			switch (i) {
+			case 243:
 				return A;
 
-				case 244:
+			case 244:
 				return B;
 
-				case 245:
+			case 245:
 				return C;
 
-				case 246:
+			case 246:
 				return D;
 			}
 			return None;
@@ -49,7 +49,7 @@ public class ModulateableParameterModel extends BasicParameterModel {
 
 	public ModulateableParameterModel(int id) {
 		super(id);
-
+		modAmount.metaData.bipolar.setValue(BooleanValues.on);
 		modAmount.onChange(e -> notifyChanges());
 		modSource.onChange(e -> notifyChanges());
 		ogModAmount.onChange(e -> notifyChanges());
@@ -87,7 +87,7 @@ public class ModulateableParameterModel extends BasicParameterModel {
 
 	@Override
 	public Updater createUpdater(Node c) {
-		return new ModulateableParameterUpdater(c, this);
+		return new ModulateableParameterModelUpdater(c, this);
 	}
 
 	public boolean isChanged(BeltParameterLayout.Mode mode) {

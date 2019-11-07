@@ -3,10 +3,10 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.Updater;
 
-public class ParameterGroupUpdater extends Updater {
+public class ParameterGroupModelUpdater extends Updater {
 	private ParameterGroupModel target;
 
-	public ParameterGroupUpdater(Node c, ParameterGroupModel target, String groupId) {
+	public ParameterGroupModelUpdater(Node c, ParameterGroupModel target, String groupId) {
 		super(c);
 		this.target = target;
 		this.target.id = groupId;

@@ -5,9 +5,9 @@ import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Updater;
 
 public class RibbonParameterModel extends PhysicalControlParameterModel {
-	
+
 	public EnumDataModelEntity<ReturnModes> mode = new EnumDataModelEntity<ReturnModes>(ReturnModes.class,
-	ReturnModes.non_return);
+			ReturnModes.non_return);
 
 	public RibbonParameterModel(int id) {
 		super(id);
@@ -25,9 +25,7 @@ public class RibbonParameterModel extends PhysicalControlParameterModel {
 
 	@Override
 	public Updater createUpdater(Node c) {
-		return new RibbonParameterUpdater(c, this);
+		return new RibbonParameterModelUpdater(c, this);
 	}
-
-
 
 }

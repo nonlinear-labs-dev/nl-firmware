@@ -24,7 +24,7 @@ public class PedalParameterModel extends PhysicalControlParameterModel {
 
 	@Override
 	public Updater createUpdater(Node c) {
-		return new PedalParameterUpdater(c, this);
+		return new PedalParameterModelUpdater(c, this);
 	}
 
 }

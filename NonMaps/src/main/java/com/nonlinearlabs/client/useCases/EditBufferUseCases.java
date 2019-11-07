@@ -41,7 +41,7 @@ public class EditBufferUseCases {
 				animationManager.cancelAnimation(m);
 		}
 
-		if (p instanceof MacroControlParameterModel) 
+		if (p instanceof MacroControlParameterModel)
 			applyModulationToModulateableParameters(id, diff);
 
 		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
@@ -102,7 +102,7 @@ public class EditBufferUseCases {
 
 	private void applyModulation(int macroControlID, double delta) {
 		BasicParameterModel macroControl = EditBufferModel.findParameter(macroControlID);
-	
+
 		double oldQ = macroControl.value.getQuantizedAndClipped(true);
 		double v = macroControl.value.value.getValue();
 		macroControl.value.value.setValue(v + delta);
@@ -222,6 +222,40 @@ public class EditBufferUseCases {
 			NonMaps.get().getServerProxy().setModulationAmount(newValue);
 	}
 
+	private void setModulationUpperBound(int parameterId, double newAmount, boolean fine) {
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(parameterId);
+		MacroControlParameterModel mc = EditBufferModel.findParameter(p.modSource.getValue());
+
+		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
+		double oldAmount = p.modAmount.getClippedValue();
+		double oldValue = p.value.getClippedValue();
+		double mcValue = mc.value.getClippedValue();
+		double oldLowerBound = oldValue - (factor * oldAmount) * mcValue;
+		
+		setModulationAmount(parameterId, newAmount, true);
+
+		double newLowerBound = oldValue - (factor * newAmount) * mcValue;
+		double lowerBoundDiff = newLowerBound - oldLowerBound;
+		setParameterValue(parameterId, oldValue - lowerBoundDiff, true);
+	}
+
+	private void setModulationLowerBound(int parameterId, double newAmount, boolean fine) {
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(parameterId);
+		MacroControlParameterModel mc = EditBufferModel.findParameter(p.modSource.getValue());
+
+		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
+		double oldAmount = p.modAmount.getClippedValue();
+		double oldValue = p.value.getClippedValue();
+		double mcValue = mc.value.getClippedValue();
+		double oldUpperBound = oldValue + (factor * oldAmount) * (1.0 - mcValue);
+		
+		setModulationAmount(parameterId, newAmount, true);
+
+		double newUpperBound = oldValue + (factor * newAmount) * (1.0 - mcValue);
+		double upperBoundDiff = newUpperBound - oldUpperBound;
+		setParameterValue(parameterId, oldValue - upperBoundDiff, true);
+	}
+
 	public void setModulationSource(int id, ModSource src) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
 		if (p.modSource.setValue(src))
@@ -254,13 +288,31 @@ public class EditBufferUseCases {
 	}
 
 	public IncrementalChanger startEditModulationAmountLowerBound(int id, double pixelsPerRange) {
-		// TODO
-		return null;
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		return new IncrementalChanger(p.modAmount, pixelsPerRange,
+				(v, b) -> setModulationLowerBound(id, v, true), null) {
+					@Override
+					public double bendAmount(double i) {
+						return -i / 2;
+					}
+				};
 	}
 
 	public IncrementalChanger startEditModulationAmountUpperBound(int id, double pixelsPerRange) {
-		// TODO
-		return null;
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationUpperBound(id, v, true),
+				null) {
+					@Override
+					public double bendAmount(double i) {
+						return i / 2;
+					}
+				};
+	}
+
+	public void renameMacroControl(int parameterID, String newName) {
+		MacroControlParameterModel m = this.<MacroControlParameterModel>findParameter(parameterID);
+		m.givenName.fromString(newName);
+		NonMaps.theMaps.getServerProxy().renameMacroControl(parameterID, newName);
 	}
 
 }

@@ -121,7 +121,6 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendGlobalPar
 
 void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other)
 {
-
   super::copyFrom(transaction, other);
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })

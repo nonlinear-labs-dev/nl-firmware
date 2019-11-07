@@ -23,6 +23,7 @@ class Application
   virtual ~Application();
 
   Glib::ustring getResourcePath() const;
+  Glib::ustring getNonMapsPath() const;
 
   static Application &get();
 

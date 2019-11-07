@@ -30,7 +30,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	private IncrementalChanger currentIncrementalChanger;
 
 	private OverlayControl modulationButtons;
-	private OverlayControl slider;
+	private Sliders slider;
 	private OverlayControl mcSourceDisplay;
 	private OverlayControl editorMode;
 	private OverlayControl valueDisplay;
@@ -320,7 +320,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	}
 
 	public IncrementalChanger startEdit() {
-		return startEdit(slider.getPixRect().getWidth());
+		return startEdit(slider.getParamSliderVisibleWidth());
 	}
 
 	public void startEdit(Mode mode, double width) {

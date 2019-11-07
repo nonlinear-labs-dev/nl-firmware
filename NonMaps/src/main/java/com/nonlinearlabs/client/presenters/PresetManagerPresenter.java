@@ -11,8 +11,8 @@ public class PresetManagerPresenter {
 	public static class Bank {
 
 		public static class Preset {
-			public String uuid;
-			public String name;
+			public String uuid = "";
+			public String name = "";
 		}
 
 		public Bank(com.nonlinearlabs.client.dataModel.presetManager.Bank bank) {
@@ -22,8 +22,8 @@ public class PresetManagerPresenter {
 			});
 		}
 
-		public String name;
-		public String uuid;
+		public String name = "";
+		public String uuid = "";
 	}
 
 	public ArrayList<Bank> banks;

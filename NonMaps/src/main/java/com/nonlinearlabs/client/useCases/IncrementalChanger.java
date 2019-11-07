@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.useCases;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import com.nonlinearlabs.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
@@ -67,7 +66,7 @@ public class IncrementalChanger {
 		if (fine)
 			amount = amount * coarseNumSteps / fineNumSteps;
 
-		pendingAmount += amount;
+		pendingAmount += bendAmount(amount);
 
 		double newVal = getQuantizedValue(lastQuantizedValue + pendingAmount, fine);
 		newVal = clip(newVal);
@@ -98,11 +97,15 @@ public class IncrementalChanger {
 	}
 
 	public void inc(boolean fine) {
-		incDec(fine, 1);
+		incDec(fine, bendAmount(1.0) < 0 ? -1 : 1);
 	}
 
 	public void dec(boolean fine) {
-		incDec(fine, -1);
+		incDec(fine, bendAmount(-1.0) < 0 ? -1 : 1);
+	}
+
+	public double bendAmount(double i) {
+		return i;
 	}
 
 	protected boolean isValueCoarseQuantized() {
@@ -113,14 +116,14 @@ public class IncrementalChanger {
 		return clip(getQuantizedValue(lastQuantizedValue, fine));
 	}
 
-	private void incDec(boolean fine, int inc) {
+	private void incDec(boolean fine, double inc) {
 		if (!fine && !isValueCoarseQuantized()) {
 			double fineValue = getQuantizedClippedValue(true);
 			double coarseValue = getQuantizedClippedValue(false);
 
-			if (coarseValue < fineValue && inc == -1) {
+			if (coarseValue < fineValue && inc < 0) {
 				inc = 0;
-			} else if (coarseValue > fineValue && inc == 1) {
+			} else if (coarseValue > fineValue && inc > 0) {
 				inc = 0;
 			}
 		}

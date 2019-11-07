@@ -16,6 +16,8 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 		private JavaScriptObject stringizer;
 
 		public ValueMetaData() {
+			updateStringizer("return $wnd.formatDimensionDigits(cpValue * 100, '%', withUnit, 3);");
+
 			defaultValue.onChange(e -> notifyChanges());
 			scaling.onChange(e -> {
 				if(!e.isEmpty())

@@ -136,15 +136,14 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			presenter.modulation.modulationRange.left = modLeft;
 			presenter.modulation.modulationRange.right = modRight;
 
+			presenter.modulation.modulationAmount = p.modAmount.getQuantizedAndClipped(true);
+
 			String modAmountWithUnit = p.modAmount.getDecoratedValue(true, true);
 			String modAmountWithoutUnit = p.modAmount.getDecoratedValue(false, true);
 			presenter.modulation.amountDisplayValues = new String[] { "MC Amount: " + modAmountWithUnit,
 					"MC Amount: " + modAmountWithoutUnit, "MC Amt: " + modAmountWithoutUnit,
 					"Amt: " + modAmountWithoutUnit, modAmountWithoutUnit };
-
-			if (p.value.metaData.bipolar.getBool())
-				modAmount *= 2;
-
+		
 			double srcValue = mc.value.getClippedValue();
 
 			Range bounds = new Range(p.value.metaData.bipolar.getBool() ? -1.0 : 0, 1.0);
@@ -161,8 +160,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 				String clip = bounds.outOfRange(modAmount >= 0 ? l : r) ? "! " : "";
 				mod.clipTo(bounds);
-				String with = p.value.getDecoratedValue(true, mod.getLeft(), true);
-				String without = p.value.getDecoratedValue(false, mod.getLeft(), true);
+				String with = p.modAmount.getDecoratedValue(true, mod.getLeft(), true);
+				String without = p.modAmount.getDecoratedValue(false, mod.getLeft(), true);
 				presenter.modulation.amountLowerBoundDisplayValues = new String[] { clip + "Lower Limit: " + with,
 						clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without,
 						clip + without };
@@ -171,8 +170,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			{
 				String clip = bounds.outOfRange(modAmount >= 0 ? r : l) ? "! " : "";
 				mod.clipTo(bounds);
-				String with = p.value.getDecoratedValue(true, mod.getRight(), true);
-				String without = p.value.getDecoratedValue(false, mod.getRight(), true);
+				String with = p.modAmount.getDecoratedValue(true, mod.getRight(), true);
+				String without = p.modAmount.getDecoratedValue(false, mod.getRight(), true);
 				presenter.modulation.amountUpperBoundDisplayValues = new String[] { clip + "Upper Limit: " + with,
 						clip + "Upper Limit: " + without, clip + "Upper: " + without, clip + "Up: " + without,
 						clip + without };

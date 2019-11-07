@@ -47,7 +47,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 	}
 
 	public Updater createUpdater(Node c) {
-		return new ParameterUpdater(c, this);
+		return new BasicParameterModelUpdater(c, this);
 	}
 
 	public double getIncDecValue(boolean fine, int inc) {

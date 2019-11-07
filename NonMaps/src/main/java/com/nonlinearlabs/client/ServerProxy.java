@@ -15,7 +15,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferUpdater;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManager;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
@@ -110,7 +110,7 @@ public class ServerProxy {
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
 			deviceInfoUpdater.doUpdate();
 
-			EditBufferUpdater ebu = new EditBufferUpdater(editBufferNode);
+			EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 			ebu.doUpdate();
 
 			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManager.get());
@@ -610,9 +610,9 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void renameMacroControl(MacroControlParameter param, String newName) {
+	public void renameMacroControl(int parameterID, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-mc");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()),
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID),
 				new StaticURI.KeyValue("new-name", newName));
 		queueJob(uri, false);
 	}

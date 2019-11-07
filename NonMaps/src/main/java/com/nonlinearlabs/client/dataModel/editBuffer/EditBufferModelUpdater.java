@@ -4,9 +4,9 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.Updater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 
-public class EditBufferUpdater extends Updater {
+public class EditBufferModelUpdater extends Updater {
 
-	public EditBufferUpdater(Node editBufferNode) {
+	public EditBufferModelUpdater(Node editBufferNode) {
 		super(editBufferNode);
 	}
 
@@ -47,7 +47,7 @@ public class EditBufferUpdater extends Updater {
 		String groupId = getAttributeValue(c, "id");
 
 		ParameterGroupModel target = EditBufferModel.getGroup(groupId);
-		ParameterGroupUpdater updater = new ParameterGroupUpdater(c, target, groupId);
+		ParameterGroupModelUpdater updater = new ParameterGroupModelUpdater(c, target, groupId);
 		updater.doUpdate();
 	}
 

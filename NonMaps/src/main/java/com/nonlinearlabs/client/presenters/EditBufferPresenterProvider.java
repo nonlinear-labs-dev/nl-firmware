@@ -15,6 +15,12 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private EditBufferPresenterProvider() {
         monitorScaleParameters();
         monitorSelectedParameter();
+
+        EditBufferModel.loadedPreset.onChange(v -> {
+            presenter.loadedPresetUUID = v;
+            notifyChanges();
+            return true;
+        });
     }
 
     private void monitorSelectedParameter() {

@@ -2,9 +2,9 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
 
-public class PedalParameterUpdater extends ParameterUpdater {
+public class PedalParameterModelUpdater extends BasicParameterModelUpdater {
 
-    public PedalParameterUpdater(Node c, BasicParameterModel p) {
+    public PedalParameterModelUpdater(Node c, BasicParameterModel p) {
         super(c, p);
     }
 

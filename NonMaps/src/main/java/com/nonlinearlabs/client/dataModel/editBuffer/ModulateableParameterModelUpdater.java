@@ -3,11 +3,11 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 
-public class ModulateableParameterUpdater extends ParameterUpdater {
+public class ModulateableParameterModelUpdater extends BasicParameterModelUpdater {
 
 	ModulateableParameterModel target;
 
-	public ModulateableParameterUpdater(Node c, ModulateableParameterModel p) {
+	public ModulateableParameterModelUpdater(Node c, ModulateableParameterModel p) {
 		super(c, p);
 		target = p;
 	}

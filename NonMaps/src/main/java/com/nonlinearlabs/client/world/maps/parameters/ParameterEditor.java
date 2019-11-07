@@ -5,6 +5,7 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.NonLinearWorld;
@@ -37,7 +38,6 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
 public class ParameterEditor extends LayoutResizingVertical {
 
-	private String loadedPreset = "";
 	private PlayControls playControls;
 	private static ParameterEditor theEditor = null;
 	private String hash = "";
@@ -271,7 +271,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 	}
 
 	public String getLoadedPresetUUID() {
-		return loadedPreset;
+		return EditBufferPresenterProvider.getPresenter().loadedPresetUUID;
 	}
 
 	public String getLoadedPresetName() {
@@ -295,7 +295,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 	}
 
 	public String getLoadedPresetInfo() {
-		Preset p = NonMaps.get().getNonLinearWorld().getPresetManager().findPreset(loadedPreset);
+		String uuid = EditBufferPresenterProvider.getPresenter().loadedPresetUUID;
+		Preset p = NonMaps.get().getNonLinearWorld().getPresetManager().findPreset(uuid);
 
 		if (p != null)
 			return p.getAttribute("Comment");

@@ -38,6 +38,7 @@ public class ParameterPresenter {
 		public boolean upperClipping = false;
 		public String originalModulationAmountDecoratedString = "---";
 		public String originalModulationPositionDecoratedString = "---";
+		public double modulationAmount = 0;
 	}
 
 	public Modulation modulation = new Modulation();

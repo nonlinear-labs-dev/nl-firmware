@@ -27,29 +27,61 @@ public class ModulationAmountSlider extends OverlayControl {
 	public void draw(Context2d ctx, int invalidationMask) {
 		try (ClipContext c = new ClipContext(ctx, this)) {
 			ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-			if (p.modulation.isModulated) 
+			if (p.modulation.isModulated)
 				drawSlider(ctx, p);
 		}
 	}
 
 	protected void drawSlider(Context2d ctx, ParameterPresenter p) {
-		// TODO
+		boolean isBiPolar = p.bipolar;
+		double targetValue = p.controlPosition;
+		double modLeft = p.modulation.modulationRange.left;
+		double modRight = p.modulation.modulationRange.right;
+
 		Rect r = getPixRect().copy();
 		boolean isMCHighlight = isHighlit();
+
 		double width = r.getWidth();
 		double targetX = 0;
-	
-		//if (!upper)
-		//	r.moveBy(0, oldHeight - r.getHeight());
+
+		if (isBiPolar) {
+			double x = r.getCenterPoint().getX();
+			r.setLeft(x + width / 2 * modLeft);
+			r.setRight(x + width / 2 * modRight);
+			targetX = x + width / 2 * targetValue;
+		} else {
+			double left = r.getLeft();
+			r.setLeft(left + width * modLeft);
+			r.setRight(left + width * modRight);
+			targetX = left + width * targetValue;
+		}
+
+		r = normalizeRect(r);
+
+		double oldHeight = r.getHeight();
+		r.setHeight(r.getHeight() * 0.75);
+
+		if (!upper)
+			r.moveBy(0, oldHeight - r.getHeight());
 
 		RGB darker = isMCHighlight ? new Gray(179) : new Gray(102);
 		RGB lighter = isMCHighlight ? new Gray(230) : new Gray(128);
 
-	//	drawTopAndBottomContour(ctx, leftRect, fillColor);
-//		fillColor = modLeft < modRight ? lighter : darker;
-//		rightRect.fill(ctx, fillColor);
+		Rect leftRect = r.copy();
+		leftRect.setRight(targetX);
+		RGB fillColor = p.modulation.modulationAmount > 0 ? darker : lighter;
+		leftRect.fill(ctx, fillColor);
+		drawTopAndBottomContour(ctx, leftRect, fillColor);
 
-//		drawTopAndBottomContour(ctx, rightRect, fillColor);
+		Rect rightRect = r.copy();
+		double oldWidth = rightRect.getRight() - targetX;
+		rightRect.setLeft(targetX);
+		rightRect.setWidth(oldWidth);
+
+		fillColor = p.modulation.modulationAmount > 0 ? lighter : darker;
+		rightRect.fill(ctx, fillColor);
+
+		drawTopAndBottomContour(ctx, rightRect, fillColor);
 	}
 
 	protected void drawTopAndBottomContour(Context2d ctx, Rect leftRect, RGB fillColor) {

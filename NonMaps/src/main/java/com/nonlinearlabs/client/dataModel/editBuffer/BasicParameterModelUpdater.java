@@ -4,17 +4,16 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.Updater;
 import com.nonlinearlabs.client.dataModel.ValueUpdater;
 
-public class ParameterUpdater extends Updater {
+public class BasicParameterModelUpdater extends Updater {
 
 	protected BasicParameterModel target;
 
-	public ParameterUpdater(Node c, BasicParameterModel p) {
+	public BasicParameterModelUpdater(Node c, BasicParameterModel p) {
 		super(c);
 		target = p;
 	}
 
 	public void doUpdate() {
-
 		String shortName = getChildText(root, "short-name");
 		String longName = getChildText(root, "long-name");
 		if (!shortName.isEmpty())

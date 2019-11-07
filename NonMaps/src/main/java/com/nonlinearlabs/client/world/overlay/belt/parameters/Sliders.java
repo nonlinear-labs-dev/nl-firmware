@@ -9,7 +9,7 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 public class Sliders extends OverlayLayout {
 
 	OverlayControl upper;
-	OverlayControl middle;
+	ParameterValueSlider middle;
 	OverlayControl lower;
 
 	public Sliders(BeltParameterLayout parent) {
@@ -23,6 +23,10 @@ public class Sliders extends OverlayLayout {
 	@Override
 	public BeltParameterLayout getParent() {
 		return (BeltParameterLayout) super.getParent();
+	}
+
+	public double getParamSliderVisibleWidth() {
+		return middle.getPixRect().getWidth();
 	}
 
 	@Override
