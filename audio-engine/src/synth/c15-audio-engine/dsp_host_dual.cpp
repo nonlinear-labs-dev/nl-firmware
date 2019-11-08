@@ -135,6 +135,9 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
             break;
         }
         break;
+      case C15::Descriptors::ParameterType::Macro_Time:
+        m_params.init_macro_time(element);
+        break;
     }
   }
 }
@@ -233,8 +236,15 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
     case 1:
       // note on
       arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
-      onMidiMessage(0xED, 0, _data0);            // keyPos
-      onMidiMessage(0xEE, arg >> 7, arg & 127);  // keyDown
+      onMidiMessage(0xED, 0, _data0);  // keyPos
+      if(arg != 0)
+      {
+        onMidiMessage(0xEE, arg >> 7, arg & 127);  // keyDown
+      }
+      else
+      {
+        onMidiMessage(0xEF, 0, 0);  // keyUp
+      }
       break;
     case 3:
       // ctrl chg (hw sources: pedals, ribbons) - hard coded ReMOTE template "MSE 2"
@@ -290,11 +300,10 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_ms
   m_layer_mode = C15::Properties::LayerMode::Single;
   m_preloaded_single_data = _msg;
   // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
-  // time management (transition time) currently missing ...
   // basic steps (without fade point mechanics):
   // - reset mc assignments
   // - update in order: sources, amounts, macros, targets (set mc assignment), direct
-  // - start transitions
+  // - start transitions (transition time)
   nltools::Log::info("Received Single Preset Message!");
 }
 
@@ -304,7 +313,6 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg
   m_layer_mode = C15::Properties::LayerMode::Split;
   m_preloaded_split_data = _msg;
   // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
-  // time management (transition time) currently missing ...
   nltools::Log::info("Received Split Preset Message!");
 }
 
@@ -314,7 +322,6 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg
   m_layer_mode = C15::Properties::LayerMode::Layer;
   m_preloaded_layer_data = _msg;
   // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
-  // time management (transition time) currently missing ...
   nltools::Log::info("Received Layer Preset Message!");
 }
 
@@ -324,7 +331,9 @@ void dsp_host_dual::update_event_hw_source(const uint32_t _index, const bool _lo
   auto param = m_params.get_source(_index);
   param->m_lock = _lock;
   param->m_behavior = _behavior;
-  // behavior special cases ???
+  // missing: pg message when behavior was changed ...
+  // behavior logic (depending on source type: pedals or ribbons)
+  // possibly best strategy: split position_changed and behavior_changed at this point ...
   if(param->m_position != _position)
   {
     param->m_position = _position;
@@ -340,7 +349,7 @@ void dsp_host_dual::update_event_hw_amount(const uint32_t _index, const uint32_t
   if(param->m_position != _position)
   {
     param->m_position = _position;
-    // silent mc update (base) ??? (most probably yes)
+    // silent mc update (base) !!!
   }
 }
 
@@ -353,8 +362,8 @@ void dsp_host_dual::update_event_macro_ctrl(const uint32_t _index, const uint32_
   {
     param->m_position = _position;
     param->update_modulation_aspects();
-    // trigger mc chain ... (ribbon bidirectionality currently missing ...)
-    // time management (mc smoothing time) currently missing ...
+    // ribbon bidirectionality currently missing ...
+    // trigger mc chain ...
   }
 }
 
@@ -362,10 +371,13 @@ void dsp_host_dual::update_event_macro_time(const uint32_t _index, const uint32_
                                             const float _position)
 {
   auto param = m_params.get_macro(_layer, _index);
-  param->m_lock = param->m_time.m_lock = _lock;  // currently, group lock affects both
-  param->m_time.m_position = _position;
-  // currently, no scaled field present for mc times ...
-  // time management (mc smoothing time) currently missing ...
+  auto time = &param->m_time;
+  param->m_lock = time->m_lock = _lock;  // currently, group lock affects both
+  if(time->m_position != _position)
+  {
+    time->m_position = _position;
+    update_event_time(&time->m_dx, scale(time->m_scaleId, time->m_scaleFactor, time->m_scaleOffset, time->m_position));
+  }
 }
 
 void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint32_t _layer, const bool _lock,
@@ -373,12 +385,19 @@ void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint3
 {
   auto param = m_params.get_direct(_layer, _index);
   param->m_lock = _lock;
-  if(param->m_position != _position)
+  const bool change = param->m_position != _position;
+  if(change)
   {
     param->m_position = _position;
-    // trigger transition ...
-    // time management (edit time) currently missing ...
-    // detection of unison_changed (stopping envelopes) missing ...
+    if(_index == static_cast<uint32_t>(C15::Parameters::Unmodulateable_Parameters::Unison_Voices))
+    {
+      nltools::Log::info("Unison Voices changed!");
+      // reset voice allocation, stop envelopes ...
+    }
+    else
+    {
+      // trigger transition (edit time) ...
+    }
   }
 }
 
@@ -392,10 +411,7 @@ void dsp_host_dual::update_event_target_param(const uint32_t _index, const uint3
   const uint32_t srcId = static_cast<uint32_t>(_source);
   param->m_lock = _lock;
   param->m_position = pos;
-  if(param->m_amount != _amount)
-  {
-    param->m_amount = _amount;
-  }
+  param->m_amount = _amount;
   if(param->m_source != _source)
   {
     param->m_source = _source;
@@ -404,8 +420,7 @@ void dsp_host_dual::update_event_target_param(const uint32_t _index, const uint3
   param->update_modulation_aspects(m_params.get_macro(_layer, srcId)->m_position);
   if(change)
   {
-    // trigger transition ...
-    // time management (edit time) currently missing ...
+    // trigger transition (edit time) ...
   }
 }
 
@@ -416,23 +431,19 @@ void dsp_host_dual::update_event_global_param(const uint32_t _index, const bool 
   if(param->m_position != _position)
   {
     param->m_position = _position;
-    // trigger transition ...
-    // time management (edit time) currently missing ...
+    // trigger transition (edit time) ...
   }
 }
 
-void dsp_host_dual::keyDown(const float _vel)
+void dsp_host_dual::update_event_edit_time(const float _position)
 {
-  const bool valid = m_alloc.keyDown(m_key_pos);
-  //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
-  //{}
+  update_event_time(&m_edit_time, 200.0f * _position);
 }
 
-void dsp_host_dual::keyUp(const float _vel)
+void dsp_host_dual::update_event_transition_time(const float _position)
 {
-  const bool valid = m_alloc.keyUp(m_key_pos);
-  //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
-  //{}
+  // transition time scales like mc smoothing or like finite env times
+  update_event_time(&m_transition_time, scale(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, _position));
 }
 
 void dsp_host_dual::render()
@@ -451,6 +462,20 @@ void dsp_host_dual::render()
 
 void dsp_host_dual::reset()
 {
+}
+
+void dsp_host_dual::keyDown(const float _vel)
+{
+  const bool valid = m_alloc.keyDown(m_key_pos);
+  //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
+  //{}
+}
+
+void dsp_host_dual::keyUp(const float _vel)
+{
+  const bool valid = m_alloc.keyUp(m_key_pos);
+  //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
+  //{}
 }
 
 float dsp_host_dual::scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
@@ -494,4 +519,12 @@ float dsp_host_dual::scale(const C15::Properties::SmootherScale _id, const float
       break;
   }
   return result;
+}
+
+void dsp_host_dual::update_event_time(Time_Parameter *_param, const float _ms)
+{
+  m_time.update_ms(_ms);
+  _param->m_dx_audio = m_time.m_dx_audio;
+  _param->m_dx_fast = m_time.m_dx_fast;
+  _param->m_dx_slow = m_time.m_dx_slow;
 }

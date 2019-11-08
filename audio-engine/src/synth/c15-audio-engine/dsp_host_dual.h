@@ -45,17 +45,22 @@ class dsp_host_dual
   void update_event_target_param(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position,
                                  const C15::Parameters::Macro_Controls _source, const float _amount);
   void update_event_global_param(const uint32_t _index, const bool _lock, const float _position);
+  void update_event_edit_time(const float _position);
+  void update_event_transition_time(const float _position);
   void render();
   void reset();
 
  private:
   void keyDown(const float _vel);
   void keyUp(const float _vel);
+  float scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
+              float _value);
+  void update_event_time(Time_Parameter *_param, const float _ms);
   // preloadable preset buffers
   nltools::msg::SinglePresetMessage m_preloaded_single_data;
   nltools::msg::SplitPresetMessage m_preloaded_split_data;
   nltools::msg::LayerPresetMessage m_preloaded_layer_data;
-  // ...
+  // parameters
   ParameterHandle<C15::Properties::SmootherScale, C15::Descriptors::SmootherSection, C15::Descriptors::SmootherClock,
                   C15::Descriptors::ParameterSignal, C15::Properties::LayerId, C15::Parameters::Hardware_Sources,
                   C15::Parameters::Global_Parameters, C15::Parameters::Hardware_Amounts,
@@ -66,6 +71,7 @@ class dsp_host_dual
   exponentiator m_convert;
   ClockHandle m_clock;
   TimeHandle m_time;
+  Time_Parameter m_edit_time, m_transition_time;
   // layer handling
   C15::Properties::LayerMode m_layer_mode;
   uint32_t m_layer_focus;  // probably obsolete
@@ -76,8 +82,6 @@ class dsp_host_dual
   // layered dsp components
   PolySection m_poly[2];
   MonoSection m_mono[2];
-  float scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
-              float _value);
   // helper values
   const float m_format_vel = 4095.0f / 127.0f, m_format_hw = 8000.0f / 127.0f, m_format_pb = 8000.0f / 16383.0f,
               m_norm_vel = 1.0f / 4095.0f, m_norm_hw = 1.0f / 8000.0f;

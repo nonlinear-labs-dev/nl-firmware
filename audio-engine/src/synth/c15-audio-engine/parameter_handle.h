@@ -73,6 +73,16 @@ struct ParameterHandle
       param->m_base = param->m_position = _element.m_initial;
     }
   }
+  inline void init_macro_time(const C15::ParameterDescriptor _element)
+  {
+    for(uint32_t i = 0; i < m_layer_count; i++)
+    {
+      auto param = get_macro(i, _element.m_param.m_index);
+      param->m_time.m_scaleId = _element.m_ae.m_scaleId;
+      param->m_time.m_scaleFactor = _element.m_ae.m_scaleFactor;
+      param->m_time.m_scaleOffset = _element.m_ae.m_scaleOffset;
+    }
+  }
   inline void init_modulateable(const C15::ParameterDescriptor _element)
   {
     for(uint32_t i = 0; i < m_layer_count; i++)
@@ -129,7 +139,7 @@ struct ParameterHandle
   {
     return &m_layer[_layerId].m_amount[_id];
   }
-  inline Macro_Control_Parameter* get_macro(const uint32_t _layerId, const uint32_t _id)
+  inline Macro_Control_Parameter<Scale>* get_macro(const uint32_t _layerId, const uint32_t _id)
   {
     return &m_layer[_layerId].m_macro[_id];
   }
@@ -142,7 +152,7 @@ struct ParameterHandle
   {
     return &m_layer[_layerId].m_direct[_id];
   }
-  // enum-class-bassed getters (if needed)
+  // enum-class-based getters (if needed)
   inline Hardware_Source_Parameter* get(const HW _id)
   {
     return &m_global.m_source[static_cast<uint32_t>(_id)];
@@ -155,7 +165,7 @@ struct ParameterHandle
   {
     return &m_layer[static_cast<uint32_t>(_layerId)].m_amount[static_cast<uint32_t>(_id)];
   }
-  inline Macro_Control_Parameter* get(const Layer _layerId, const MC _id)
+  inline Macro_Control_Parameter<Scale>* get(const Layer _layerId, const MC _id)
   {
     return &m_layer[static_cast<uint32_t>(_layerId)].m_macro[static_cast<uint32_t>(_id)];
   }

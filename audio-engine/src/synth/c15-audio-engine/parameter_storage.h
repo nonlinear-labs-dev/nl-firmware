@@ -21,6 +21,12 @@ struct Proto_Parameter
   bool m_lock = false;
 };
 
+// time storage
+struct Time_Parameter
+{
+  float m_dx_audio = 0.0f, m_dx_fast = 0.0f, m_dx_slow = 0.0f;
+};
+
 // derived parameter types
 struct Hardware_Source_Parameter : Proto_Parameter
 {
@@ -31,13 +37,16 @@ struct Hardware_Amount_Parameter : Proto_Parameter
 {
 };
 
-struct Macro_Time_Parameter : Proto_Parameter
+template <typename Scale> struct Macro_Time_Parameter : Proto_Parameter
 {
+  Time_Parameter m_dx;
+  float m_scaleFactor = 0.0f, m_scaleOffset = 0.0f;
+  Scale m_scaleId;
 };
 
-struct Macro_Control_Parameter : Proto_Parameter
+template <typename Scale> struct Macro_Control_Parameter : Proto_Parameter
 {
-  Macro_Time_Parameter m_time;
+  Macro_Time_Parameter<Scale> m_time;
   float m_base = 0.0f, m_mod = 0.0f, m_unclipped = 0.0f;
   uint32_t m_index = 0;
   bool m_bidir = false;
@@ -45,8 +54,8 @@ struct Macro_Control_Parameter : Proto_Parameter
   {
     m_mod = _mod;
     m_unclipped = m_base + m_mod;
-    m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
-    return m_position != m_unclipped;
+    //m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
+    return m_position != m_unclipped;  // basic change detection (position needs to be updated from outside)
   }
   inline void update_modulation_aspects()
   {
@@ -83,8 +92,8 @@ struct Modulateable_Parameter : Proto_Parameter
   inline bool modulate(const float _mod)
   {
     m_unclipped = m_base + (m_amount * _mod);
-    m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
-    return m_position != m_unclipped;
+    //m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
+    return m_position != m_unclipped;  // basic change detection (position needs to be updated from outside)
   }
   inline void update_modulation_aspects(const float _mod)
   {
@@ -115,7 +124,7 @@ template <typename Scale, typename Section, typename Clock, typename Signal, cla
 struct Layer_Parameter_Storage
 {
   Hardware_Amount_Parameter m_amount[static_cast<uint32_t>(HA::_LENGTH_)];
-  Macro_Control_Parameter m_macro[static_cast<uint32_t>(MC::_LENGTH_)];
+  Macro_Control_Parameter<Scale> m_macro[static_cast<uint32_t>(MC::_LENGTH_)];
   Modulateable_Parameter<Scale, Section, Clock, Signal> m_target[static_cast<uint32_t>(TP::_LENGTH_)];
   Unmodulateable_Parameter<Scale, Section, Clock, Signal> m_direct[static_cast<uint32_t>(DP::_LENGTH_)];
   MC_Assignment<MC, TP> m_assignment;
