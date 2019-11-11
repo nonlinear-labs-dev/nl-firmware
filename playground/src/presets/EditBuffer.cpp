@@ -670,13 +670,23 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   auto masterVolumeParameter = masterGroup->getParameterByID(247);
   auto masterTuneParameter = masterGroup->getParameterByID(248);
 
-  auto newVolume = findParameterByID(10002, VoiceGroup::II)->getControlPositionValue()
-      + findParameterByID(10002, VoiceGroup::I)->getControlPositionValue();
-  auto newTune = findParameterByID(10003, VoiceGroup::II)->getControlPositionValue()
-      + findParameterByID(10003, VoiceGroup::I)->getControlPositionValue();
+  auto originVolume = findParameterByID(10002, copyFrom);
+  auto originTune = findParameterByID(10003, copyFrom);
+
+  auto newVolume = originVolume->getControlPositionValue() + masterVolumeParameter->getControlPositionValue();
+  auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);
   masterTuneParameter->setCPFromHwui(transaction, newTune);
+
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    auto vgVolume = findParameterByID(10002, vg);
+    auto vgTune = findParameterByID(10003, vg);
+
+    vgVolume->setDefaultFromHwui(transaction);
+    vgTune->setDefaultFromHwui(transaction);
+  }
 
   copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
 
@@ -759,6 +769,7 @@ void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction,
 {
   setVoiceGroupName(transaction, preset->getName(), target);
   loadIntoVoiceGroup(transaction, preset, target);
+  initRecallValues(transaction);
 }
 
 const SplitPointParameter *EditBuffer::getSplitPoint() const

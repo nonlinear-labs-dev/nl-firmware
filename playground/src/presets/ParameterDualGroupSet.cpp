@@ -259,6 +259,15 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
       g->copyFrom(transaction, c);
     }
   }
+
+  for(auto &g : getGlobalParameterGroups())
+  {
+    for(auto &globalParam : g->getParameters())
+    {
+      if(auto presetGlobalParam = p->findParameterByID(globalParam->getID(), globalParam->getVoiceGroup()))
+        globalParam->copyFrom(transaction, presetGlobalParam);
+    }
+  }
 }
 
 ParameterDualGroupSet::tParameterGroupPtr

@@ -524,7 +524,7 @@ void Parameter::undoableRecallFromPreset()
   undoableRecallFromPreset(transaction);
 }
 
-void Parameter::undoableRecallFromPreset(UNDO::Transaction* transaction)
+void Parameter::undoableRecallFromPreset(UNDO::Transaction *transaction)
 {
   auto original = getOriginalParameter();
   if(original)

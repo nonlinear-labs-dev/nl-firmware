@@ -50,31 +50,27 @@ RecallParameter *RecallParameterGroups::findGlobalParameterByID(int id)
   return nullptr;
 }
 
-const RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
+RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
 {
   try
   {
-    return m_polyParameters[static_cast<int>(vg)].at(id).get();
+    return m_polyParameters.at(static_cast<int>(vg)).at(id).get();
   }
   catch(...)
   {
-    try
-    {
-      return m_globalParameters.at(id).get();
-    }
-    catch(...)
-    {
-      try
-      {
-        if(m_splitPoint && m_splitPoint->getID() == id)
-          return m_splitPoint.get();
-      }
-      catch(...)
-      {
-        return nullptr;
-      }
-    }
   }
+
+  try
+  {
+    return m_globalParameters.at(id).get();
+  }
+  catch(...)
+  {
+  }
+
+  if(m_splitPoint && m_splitPoint->getID() == id)
+    return m_splitPoint.get();
+
   return nullptr;
 }
 

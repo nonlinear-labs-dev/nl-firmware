@@ -13,7 +13,8 @@ public:
   using tParameterMap = std::unordered_map<int, std::unique_ptr<RecallParameter>>;
   RecallParameterGroups(EditBuffer *editBuffer);
 
-  const RecallParameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::I) const;
+  RecallParameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::I) const;
+
   void copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 

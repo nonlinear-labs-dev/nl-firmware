@@ -91,7 +91,7 @@ namespace Detail
         auto &rps = m_editBuffer->getRecallParameterSet();
         try
         {
-          auto param = rps.findGlobalParameterByID(id);
+          auto param = rps.findParameterByID(id, VoiceGroup::Global);
           auto serializer = new RecallParameterSerializer(param);
           return serializer;
         }

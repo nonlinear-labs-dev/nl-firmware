@@ -24,7 +24,7 @@ int main(int numArgs, char** argv)
 
   Application app(numArgs, argv);
 
-  nltools::Log::setLevel(nltools::Log::Silent);
+  nltools::Log::setLevel(nltools::Log::Error);
 
   app.stopWatchDog();
 

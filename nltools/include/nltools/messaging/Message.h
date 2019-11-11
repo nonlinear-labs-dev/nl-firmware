@@ -23,42 +23,62 @@ namespace nltools
     {
       struct NoteShiftMessage : Message<MessageType::NoteShiftSetting>
       {
+        NoteShiftMessage()
+            : m_shift{ 0 }
+        {
+        }
+
         NoteShiftMessage(int offset)
             : m_shift{ offset }
         {
         }
 
-        const int m_shift{};
+        int m_shift{};
       };
 
       struct PresetGlitchMessage : Message<MessageType::PresetGlitchSetting>
       {
+        PresetGlitchMessage()
+            : m_enabled{ false }
+        {
+        }
+
         PresetGlitchMessage(bool enabled)
             : m_enabled{ enabled }
         {
         }
 
-        const bool m_enabled{};
+        bool m_enabled{};
       };
 
       struct TransitionTimeMessage : Message<MessageType::TransitionTimeSetting>
       {
+        TransitionTimeMessage()
+            : m_value{ 0.0 }
+        {
+        }
+
         TransitionTimeMessage(float value)
             : m_value{ value }
         {
         }
 
-        const float m_value{};
+        float m_value{};
       };
 
       struct EditSmoothingTimeMessage : Message<MessageType::EditSmoothingTimeSetting>
       {
+        EditSmoothingTimeMessage()
+            : m_time{ 0 }
+        {
+        }
+
         EditSmoothingTimeMessage(float time)
             : m_time{ time }
         {
         }
 
-        const float m_time{};
+        float m_time{};
       };
     }
 

@@ -90,81 +90,68 @@ TEST_CASE("Simple EditBuffer Conversion")
   }
 }
 
+void loadSinglePreset(MockPresetStorage& presets)
+{
+  auto editBuffer = getEditBuffer();
+  auto scope = TestHelper::createTestScope();
+  editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+  REQUIRE(editBuffer->getType() == SoundType::Single);
+  REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == presets.getSinglePreset()->getUuid());
+}
+
+void loadSplitPreset(MockPresetStorage& presets)
+{
+  auto editBuffer = getEditBuffer();
+  auto scope = TestHelper::createTestScope();
+  editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
+  REQUIRE(editBuffer->getType() == SoundType::Split);
+  REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == presets.getSplitPreset()->getUuid());
+}
+
+void loadLayerPreset(MockPresetStorage& presets)
+{
+  auto editBuffer = getEditBuffer();
+  auto scope = TestHelper::createTestScope();
+  editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+  REQUIRE(editBuffer->getType() == SoundType::Layer);
+  REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == presets.getLayerPreset()->getUuid());
+}
+
 #warning "Hier nochmal beigehen und mängel abstellen! (convert changed + master copy addition rules)"
-TEST_CASE("master groups initialization tests")
+TEST_CASE("Sound Conversion - Master Groups")
 {
   auto editBuffer = getEditBuffer();
   MockPresetStorage presets;
 
-  auto loadSinglePreset = [&]() {
-    auto scope = TestHelper::createTestScope();
-    editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
-    REQUIRE(editBuffer->getType() == SoundType::Single);
-    REQUIRE_FALSE(editBuffer->anyParameterChanged());
-  };
-
-  loadSinglePreset();
-
-  auto collectScaleParameterValues = [editBuffer] {
-    std::vector<double> ret;
-    if(auto g = editBuffer->getGlobalParameterGroupByID("Scale"))
-      for(auto p : g->getParameters())
-        ret.emplace_back(p->getControlPositionValue());
-    return ret;
-  };
-
-  const auto globalMasterVolume = editBuffer->findGlobalParameterByID(247)->getControlPositionValue();
-  const auto globalMasterTune = editBuffer->findGlobalParameterByID(248)->getControlPositionValue();
-  const auto globalScaleValues = collectScaleParameterValues();
-
-  auto compareVoiceGroupMasterSameAsGlobalMaster = [globalMasterVolume, globalMasterTune, editBuffer]() {
-    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
-    {
-      auto vgMasterVolume = editBuffer->findParameterByID(10002, vg)->getControlPositionValue();
-      auto vgMasterTune = editBuffer->findParameterByID(10003, vg)->getControlPositionValue();
-
-      REQUIRE(vgMasterVolume == globalMasterVolume);
-      REQUIRE(vgMasterTune == globalMasterTune);
-    }
-  };
-
-  auto globalMasterSetToDefault = [editBuffer]() {
-    auto globalMasterVolume = editBuffer->findGlobalParameterByID(247)->getControlPositionValue();
-    auto globalMasterTune = editBuffer->findGlobalParameterByID(248)->getControlPositionValue();
-
-    REQUIRE(globalMasterVolume == 0.5);
-    REQUIRE(globalMasterTune == 0);
-  };
-
-  auto scaleUntouched = [editBuffer, collectScaleParameterValues](const std::vector<double>& scaleValues) {
-    auto currentScaleValues = collectScaleParameterValues();
-
-    REQUIRE(scaleValues.size() == currentScaleValues.size());
-    REQUIRE(scaleValues == currentScaleValues);
-  };
-
-  SECTION("split global master copied to voice groups master and set to default")
+  SECTION("Split to Single copy Voice Group Master Volume to Global Master Volume")
   {
     {
       auto scope = TestHelper::createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+      auto split = presets.getSplitPreset();
+      auto vgVolumeI = split->findParameterByID(10002, VoiceGroup::I);
+      REQUIRE(vgVolumeI != nullptr);
+      vgVolumeI->setValue(scope->getTransaction(), 0.125);
+      REQUIRE(vgVolumeI->getValue() == 0.125);
     }
 
-    compareVoiceGroupMasterSameAsGlobalMaster();
-    globalMasterSetToDefault();
-    scaleUntouched(globalScaleValues);
-  }
+    {
+      loadSplitPreset(presets);
+      auto vgVolumeI = editBuffer->findParameterByID(10002, VoiceGroup::I);
+      REQUIRE(vgVolumeI != nullptr);
+      REQUIRE(vgVolumeI->getControlPositionValue() == 0.125);
+    }
 
-  SECTION("layer global master copied to voice groups master and set to default")
-  {
     {
       auto scope = TestHelper::createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
-    }
+      editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
 
-    compareVoiceGroupMasterSameAsGlobalMaster();
-    globalMasterSetToDefault();
-    scaleUntouched(globalScaleValues);
+      auto vgVolumeI = editBuffer->findParameterByID(10002, VoiceGroup::I);
+      REQUIRE(vgVolumeI != nullptr);
+      REQUIRE(vgVolumeI->getControlPositionValue() == vgVolumeI->getDefaultValue());
+    }
   }
 }
 
@@ -245,62 +232,6 @@ TEST_CASE("poly groups initialization")
   }
 }
 
-TEST_CASE("Split to Single Conversion")
-{
-  auto editBuffer = getEditBuffer();
-  MockPresetStorage presets;
-
-  {
-    auto scope = TestHelper::createTestScope();
-    auto vgMaster = presets.getSplitPreset()->findParameterByID(10002, VoiceGroup::I);
-    vgMaster->setValue(scope->getTransaction(), 0.2);
-    auto globalMaster = presets.getSplitPreset()->findParameterByID(247, VoiceGroup::Global);
-    globalMaster->setValue(scope->getTransaction(), 0.2);
-    editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
-    REQUIRE(editBuffer->getType() == SoundType::Split);
-    REQUIRE_FALSE(editBuffer->anyParameterChanged());
-  }
-
-  SECTION("add voice-group master params and set init global master")
-  {
-    auto vgmasterI = editBuffer->findParameterByID(10002, VoiceGroup::I);
-    auto vgmasterII = editBuffer->findParameterByID(10002, VoiceGroup::II);
-    auto vgtuneI = editBuffer->findParameterByID(10003, VoiceGroup::I);
-    auto vgtuneII = editBuffer->findParameterByID(10003, VoiceGroup::II);
-
-    //Update vg master parameters
-    {
-      auto scope = TestHelper::createTestScope();
-      vgmasterI->setCPFromHwui(scope->getTransaction(), 0.5);
-      vgmasterII->setCPFromHwui(scope->getTransaction(), 0.2);
-
-      vgtuneI->setCPFromHwui(scope->getTransaction(), 0.5);
-      vgtuneII->setCPFromHwui(scope->getTransaction(), 0.2);
-    }
-
-    {
-      auto scope = TestHelper::createTestScope();
-      REQUIRE(editBuffer->anyParameterChanged());
-      presets.getSplitPreset()->copyFrom(scope->getTransaction(), editBuffer);
-      REQUIRE_FALSE(editBuffer->anyParameterChanged());
-    }
-
-    //Convert sound to single
-    {
-      auto scope = TestHelper::createTestScope();
-      REQUIRE_FALSE(editBuffer->anyParameterChanged());
-      editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
-      REQUIRE_FALSE(editBuffer->anyParameterChanged());
-    }
-
-    auto globalMasterVolume = editBuffer->findGlobalParameterByID(247);
-    auto globalMasterTune = editBuffer->findGlobalParameterByID(248);
-
-    REQUIRE(globalMasterVolume->getControlPositionValue() == 0.7);
-    REQUIRE(globalMasterTune->getControlPositionValue() == 0.7);
-  }
-}
-
 TEST_CASE("Preset Mock Storage")
 {
   MockPresetStorage presets;
@@ -327,7 +258,6 @@ TEST_CASE("Load Presets Complete")
       auto singlePreset = presets.getSinglePreset();
       editBuffer->undoableLoad(scope->getTransaction(), singlePreset);
 
-      REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == singlePreset->getUuid());
       REQUIRE(editBuffer->getType() == SoundType::Single);
       REQUIRE_FALSE(editBuffer->anyParameterChanged());
     }
