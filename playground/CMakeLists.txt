@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 project(playground)
 project(playground-tests)
 
@@ -83,9 +83,8 @@ SET(GENERATED_SOURCES
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
-list(FILTER SOURCE_FILES EXCLUDE REGEX ".*playground.cpp$")
-list(FILTER SOURCE_FILES EXCLUDE REGEX ".*playground-tests.cpp$")
-list(FILTER SOURCE_FILES EXCLUDE REGEX "unit-tests")
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/playground.cpp)
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/testing/unit-tests/playground-tests.cpp)
 
 add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 
