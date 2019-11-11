@@ -166,6 +166,5 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
-  void undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-  void undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 };

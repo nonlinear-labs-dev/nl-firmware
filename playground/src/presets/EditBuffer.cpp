@@ -644,27 +644,17 @@ VoiceGroup invert(VoiceGroup vg)
 
 void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
-  switch(m_type)
-  {
-    case SoundType::Split:
-      setVoiceGroupName(transaction, "", VoiceGroup::I);
-      setVoiceGroupName(transaction, "", VoiceGroup::II);
-      undoableConvertSplitToSingle(transaction, copyFrom);
-      break;
-    case SoundType::Layer:
-      setVoiceGroupName(transaction, "", VoiceGroup::I);
-      setVoiceGroupName(transaction, "", VoiceGroup::II);
-      undoableConvertLayerToSingle(transaction, copyFrom);
-      break;
-    case SoundType::Invalid:
-    case SoundType::Single:
-      return;
-  }
+  if(m_type == SoundType::Single)
+    return;
 
+  setVoiceGroupName(transaction, "", VoiceGroup::I);
+  setVoiceGroupName(transaction, "", VoiceGroup::II);
+
+  undoableConvertDualToSingle(transaction, copyFrom);
   initRecallValues(transaction);
 }
 
-void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
   auto masterGroup = getGlobalParameterGroupByID("Master");
   auto masterVolumeParameter = masterGroup->getParameterByID(247);
@@ -689,36 +679,6 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   }
 
   copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
-
-  undoableSetType(transaction, SoundType::Single);
-}
-
-void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
-{
-  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
-
-  auto vgmasterGroup = getParameterGroupByID("VGM", copyFrom);
-  auto masterGroup = getGlobalParameterGroupByID("Master");
-  auto masterVolumeParameter = masterGroup->getParameterByID(247);
-  auto masterTuneParameter = masterGroup->getParameterByID(248);
-
-  auto vgVolume = vgmasterGroup->getParameterByID(10002);
-  auto vgTune = vgmasterGroup->getParameterByID(10003);
-
-  auto newVolume = masterVolumeParameter->getControlPositionValue() + vgVolume->getControlPositionValue();
-  auto newTune = masterTuneParameter->getControlPositionValue() + vgTune->getControlPositionValue();
-
-  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
-  masterTuneParameter->setCPFromHwui(transaction, newTune);
-
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    auto vol = findParameterByID(10002, vg);
-    auto tune = findParameterByID(10003, vg);
-
-    vol->setDefaultFromHwui(transaction);
-    tune->setDefaultFromHwui(transaction);
-  }
 
   undoableSetType(transaction, SoundType::Single);
 }

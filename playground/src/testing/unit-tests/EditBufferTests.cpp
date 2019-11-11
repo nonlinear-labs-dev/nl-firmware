@@ -89,7 +89,8 @@ TEST_CASE("Simple EditBuffer Conversion")
 }
 
 template <VoiceGroup tVoiceGroup, typename LoadPresetFunction>
-void masterDualToSingleConversion(LoadPresetFunction loadPresetCB, Preset* singlePreset, Preset* presetToLoad)
+void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Preset* singlePreset,
+                                             Preset* presetToLoad)
 {
   auto editBuffer = getEditBuffer();
   auto vgMaster = editBuffer->findParameterByID(10002, tVoiceGroup);
@@ -130,32 +131,104 @@ void masterDualToSingleConversion(LoadPresetFunction loadPresetCB, Preset* singl
   }
 }
 
-TEST_CASE("Sound Conversion - Master Groups")
+template <VoiceGroup tVoiceGroup, int polyID, int globalID, typename LoadPresetFunction>
+void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB, Preset* singlePreset,
+                                                Preset* dualPreset)
+{
+  auto editBuffer = getEditBuffer();
+  auto vgParameter = editBuffer->findParameterByID(polyID, tVoiceGroup);
+  auto globalParameter = editBuffer->findParameterByID(globalID, VoiceGroup::Global);
+
+  REQUIRE(vgParameter != nullptr);
+  REQUIRE(globalParameter != nullptr);
+
+  loadPreset<SoundType::Single>(singlePreset);
+
+  //Prepare Split-Preset initialize Tune Values
+  {
+    auto scope = TestHelper::createTestScope();
+    auto presetParameter = dualPreset->findParameterByID(polyID, tVoiceGroup);
+    REQUIRE(presetParameter != nullptr);
+
+    presetParameter->setValue(scope->getTransaction(), 0.125);
+    REQUIRE(presetParameter->getValue() == 0.125);
+  }
+
+  //Load Preset and check for our value
+  {
+    loadPresetCB(dualPreset);
+    REQUIRE(vgParameter->getControlPositionValue() == 0.125);
+  }
+
+  const auto globalParameterPreConversion = globalParameter->getControlPositionValue();
+  const auto vGroupParameterPreConversion = vgParameter->getControlPositionValue();
+
+  //Convert and assert tune conversion rules
+  {
+    auto scope = TestHelper::createTestScope();
+    editBuffer->undoableConvertToSingle(scope->getTransaction(), tVoiceGroup);
+    REQUIRE(editBuffer->getType() == SoundType::Single);
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    REQUIRE(vgParameter->getControlPositionValue() == vgParameter->getDefaultValue());
+    REQUIRE(globalParameter->getControlPositionValue() == globalParameterPreConversion + vGroupParameterPreConversion);
+  }
+}
+
+TEST_CASE("Sound Conversion - Master Volume Parameter")
 {
   MockPresetStorage presets;
 
   SECTION("I Split to Single copy Voice Group Master Volume to Global Master Volume")
   {
-    masterDualToSingleConversion<VoiceGroup::I>(&loadPreset<SoundType::Split>, presets.getSinglePreset(),
-                                                presets.getSplitPreset());
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10002, 247>(
+        &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
   SECTION("II Split to Single copy Voice Group Master Volume to Global Master Volume")
   {
-    masterDualToSingleConversion<VoiceGroup::II>(&loadPreset<SoundType::Split>, presets.getSinglePreset(),
-                                                 presets.getSplitPreset());
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10002, 247>(
+        &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
   SECTION("I Layer to Single copy Voice Group Master Volume to Global Master Volume")
   {
-    masterDualToSingleConversion<VoiceGroup::I>(&loadPreset<SoundType::Layer>, presets.getSinglePreset(),
-                                                presets.getLayerPreset());
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10002, 247>(
+        &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 
   SECTION("II Layer to Single copy Voice Group Master Volume to Global Master Volume")
   {
-    masterDualToSingleConversion<VoiceGroup::II>(&loadPreset<SoundType::Layer>, presets.getSinglePreset(),
-                                                 presets.getLayerPreset());
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10002, 247>(
+        &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
+  }
+}
+
+TEST_CASE("Sound Conversion - Master Tune Parameter")
+{
+  MockPresetStorage presets;
+
+  SECTION("I Split to Single copy Voice Group Tune to Global Master Tune")
+  {
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10003, 248>(
+        &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
+  }
+
+  SECTION("II Split to Single copy Voice Group Tune to Global Master Tune")
+  {
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10003, 248>(
+        &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
+  }
+
+  SECTION("I Layer to Single copy Voice Group Tune to Global Master Tune")
+  {
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10003, 248>(
+        &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
+  }
+
+  SECTION("II Layer to Single copy Voice Group Tune to Global Master Tune")
+  {
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10003, 248>(
+        &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 }
 
@@ -336,7 +409,7 @@ TEST_CASE("Load <-> Changed")
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
 
-    REQUIRE(!editBuffer->anyParameterChanged());
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
 
     auto param = editBuffer->findParameterByID(2, VoiceGroup::I);
 

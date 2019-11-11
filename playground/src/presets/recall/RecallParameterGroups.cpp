@@ -102,6 +102,8 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
 
   if(m_splitPoint && other->getSplitPoint())
     m_splitPoint->copyFrom(transaction, other->getSplitPoint());
+
+
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const

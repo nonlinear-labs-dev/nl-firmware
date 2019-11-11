@@ -15,7 +15,9 @@ void RecallParameter::copyFrom(UNDO::Transaction *transaction, const Parameter *
   if(other)
   {
     g_assert(m_id == other->getID());
-    transaction->addUndoSwap(this, m_recallValue, other->getValue().getRawValue());
+
+    transaction->addUndoSwap(this, m_recallValue, other->getValue().clip(other->getControlPositionValue()));
+
     if(auto modP = dynamic_cast<const ModulateableParameter *>(other))
     {
       transaction->addUndoSwap(this, m_recallModAmount, modP->getModulationAmount());
