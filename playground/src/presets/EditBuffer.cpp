@@ -711,6 +711,15 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);
   masterTuneParameter->setCPFromHwui(transaction, newTune);
 
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    auto vol = findParameterByID(10002, vg);
+    auto tune = findParameterByID(10003, vg);
+
+    vol->setDefaultFromHwui(transaction);
+    tune->setDefaultFromHwui(transaction);
+  }
+
   undoableSetType(transaction, SoundType::Single);
 }
 
