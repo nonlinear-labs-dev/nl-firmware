@@ -19,7 +19,6 @@ class ModuleCaption : public Label
 
  public:
   ModuleCaption(const Rect &pos);
-  virtual ~ModuleCaption();
 
   bool redraw(FrameBuffer &fb) override;
 
@@ -31,7 +30,9 @@ class ModuleCaption : public Label
  protected:
   virtual void updateText(Parameter *newOne);
 
- private:
+  StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font, const StringAndSuffix &text) const override;
+
+private:
   void onParameterSelected(Parameter *newOne);
   void onSelectionChanged();
 

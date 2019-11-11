@@ -1,3 +1,4 @@
+#include <proxies/hwui/TextCropper.h>
 #include "ModuleCaption.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
@@ -15,8 +16,10 @@ ModuleCaption::ModuleCaption(const Rect &pos)
       sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
 }
 
-ModuleCaption::~ModuleCaption()
+Label::StringAndSuffix ModuleCaption::shortenStringIfNeccessary(std::shared_ptr<Font> font,
+                                                                const Label::StringAndSuffix &text) const
 {
+  return TextCropper::shortenStringIfNeccessary(font, text.text, getWidth());
 }
 
 void ModuleCaption::onParameterSelected(Parameter *newOne)
@@ -39,10 +42,7 @@ bool ModuleCaption::enableVoiceGroupSuffix() const
 
   if(dynamic_cast<MasterGroup *>(selected->getParent()))
     return false;
-  if(dynamic_cast<ScaleGroup *>(selected->getParent()))
-    return false;
-
-  return true;
+  return dynamic_cast<ScaleGroup *>(selected->getParent()) == nullptr;
 };
 
 void ModuleCaption::updateText(Parameter *newOne)
