@@ -85,6 +85,7 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 list(FILTER SOURCE_FILES EXCLUDE REGEX ".*playground.cpp$")
 list(FILTER SOURCE_FILES EXCLUDE REGEX ".*playground-tests.cpp$")
+list(FILTER SOURCE_FILES EXCLUDE REGEX "unit-tests")
 
 add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 

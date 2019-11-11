@@ -6,7 +6,7 @@
 
 #include "VoiceGroupLabelItem.h"
 
-EditBuffer* getEditBuffer()
+inline EditBuffer* getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }

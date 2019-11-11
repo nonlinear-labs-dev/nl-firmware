@@ -10,102 +10,12 @@
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
+#include "MockPresetStorage.h"
 
-inline auto getEditBuffer() -> EditBuffer*
+EditBuffer* getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }
-
-Preset* createSinglePreset(UNDO::Transaction* transaction)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-
-  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
-  auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
-  preset->setName(transaction, "Single Preset");
-  return preset;
-}
-
-Preset* createSplitPreset(UNDO::Transaction* transaction)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-
-  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
-
-  editBuffer->undoableConvertToDual(transaction, SoundType::Split, VoiceGroup::I);
-
-  auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
-  preset->setName(transaction, "Split Preset");
-  return preset;
-}
-
-Preset* createLayerPreset(UNDO::Transaction* transaction)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-
-  editBuffer->undoableConvertToDual(transaction, SoundType::Layer, VoiceGroup::I);
-  auto bank = pm->addBank(transaction);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
-  preset->setName(transaction, "Layer Preset");
-  return preset;
-}
-
-void removeBankOfPreset(UNDO::Transaction* transaction, Preset* presetToDelete)
-{
-  auto editBuffer = getEditBuffer();
-  auto pm = editBuffer->getParent();
-  if(auto bank = dynamic_cast<Bank*>(presetToDelete->getParent()))
-    pm->deleteBank(transaction, bank->getUuid());
-}
-
-class MockPresetStorage
-{
- public:
-  MockPresetStorage()
-  {
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
-
-    m_layer = createLayerPreset(transaction);
-    m_split = createSplitPreset(transaction);
-    m_single = createSinglePreset(transaction);
-  }
-
-  ~MockPresetStorage()
-  {
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
-
-    removeBankOfPreset(transaction, m_single);
-    removeBankOfPreset(transaction, m_split);
-    removeBankOfPreset(transaction, m_layer);
-  }
-
-  Preset* getSinglePreset()
-  {
-    return m_single;
-  }
-
-  Preset* getSplitPreset()
-  {
-    return m_split;
-  }
-
-  Preset* getLayerPreset()
-  {
-    return m_layer;
-  }
-
- private:
-  Preset* m_single;
-  Preset* m_split;
-  Preset* m_layer;
-};
 
 TEST_CASE("EditBuffer Initialized")
 {

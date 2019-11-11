@@ -7,6 +7,9 @@
 
 int main(int numArgs, char** argv)
 {
+
+  nltools::Log::setLevel(nltools::Log::Silent);
+
   Gio::init();
 
   Environment::setupLocale();
@@ -17,11 +20,13 @@ int main(int numArgs, char** argv)
   ::signal(SIGKILL, Environment::printStackTrace);
 
   TestDriverBase::doTests(numArgs, argv);
+
+
   Application app(numArgs, argv);
 
-  app.stopWatchDog();
-
   nltools::Log::setLevel(nltools::Log::Silent);
+
+  app.stopWatchDog();
 
   std::vector<const char*> args;
   args.emplace_back(argv[0]);
