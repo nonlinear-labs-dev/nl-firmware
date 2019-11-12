@@ -333,14 +333,15 @@ namespace nltools
 
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
     {
-      std::array<ParameterGroups::PedalParameter, 4> pedals;
-      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
-      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
-      std::array<ParameterGroups::BenderParameter, 1> bender;
       std::array<ParameterGroups::MacroParameter, 4> macros;
       std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
       std::array<ParameterGroups::UnmodulatebaleParameter, 124> unmodulateables;
       std::array<ParameterGroups::MonoParameter, 4> monos;
+
+      std::array<ParameterGroups::PedalParameter, 4> pedals;
+      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
+      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
+      std::array<ParameterGroups::BenderParameter, 1> bender;
 
       std::array<ParameterGroups::Parameter, 2> master;
       std::array<ParameterGroups::Parameter, 12> scale;
@@ -348,15 +349,16 @@ namespace nltools
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
     {
-      std::array<std::array<ParameterGroups::PedalParameter, 4>, 2> pedals;
-      std::array<std::array<ParameterGroups::AftertouchParameter, 1>, 2> aftertouch;
-      std::array<std::array<ParameterGroups::RibbonParameter, 2>, 2> ribbons;
-      std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 124>, 2> unmodulateables;
       std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
       std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+
+      std::array<ParameterGroups::PedalParameter, 4> pedals;
+      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
+      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
+      std::array<ParameterGroups::BenderParameter, 1> bender;
 
       std::array<ParameterGroups::Parameter, 2> master;
       std::array<ParameterGroups::Parameter, 12> scale;
@@ -365,15 +367,16 @@ namespace nltools
 
     struct LayerPresetMessage : Message<MessageType::LayerPreset>
     {
-      std::array<std::array<ParameterGroups::PedalParameter, 4>, 2> pedals;
-      std::array<std::array<ParameterGroups::AftertouchParameter, 1>, 2> aftertouch;
-      std::array<std::array<ParameterGroups::RibbonParameter, 2>, 2> ribbons;
-      std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 124>, 2> unmodulateables;
       std::array<ParameterGroups::MonoParameter, 4> monos;
       std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+
+      std::array<ParameterGroups::PedalParameter, 4> pedals;
+      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
+      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
+      std::array<ParameterGroups::BenderParameter, 1> bender;
 
       std::array<ParameterGroups::Parameter, 2> master;
       std::array<ParameterGroups::Parameter, 12> scale;

@@ -90,9 +90,12 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGro
     vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   }
 
-  for(auto a : m_polyParameterGroups[static_cast<int>(vg)])
-    if(a->getID() == id)
-      return a;
+  if(vg == VoiceGroup::I || vg == VoiceGroup::II)
+  {
+    for(auto a : m_polyParameterGroups[static_cast<int>(vg)])
+      if(a->getID() == id)
+        return a;
+  }
 
   for(auto a : m_globalParameterGroups)
     if(a->getID() == id)
@@ -155,7 +158,7 @@ Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
 
   try
   {
-    auto ret = m_idToParameterMap[static_cast<int>(vg)].at(id);
+    auto ret = m_idToParameterMap.at(static_cast<int>(vg)).at(id);
     nltools_assertOnDevPC(ret->getVoiceGroup() == VoiceGroup::I || ret->getVoiceGroup() == VoiceGroup::II);
     return ret;
   }

@@ -26,16 +26,16 @@ Slider::~Slider()
 
 void Slider::voiceGroupSelectionChanged()
 {
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto vgSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   if(auto param = getParameter())
   {
     auto id = param->getID();
     auto vg = param->getVoiceGroup();
 
-    if(auto normalParameter
-       = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, vgSelection))
+    if(auto normalParameter = editBuffer->findParameterByID(id, vgSelection))
       setParameter(normalParameter);
-    else if(auto globalParameter = Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(id))
+    else if(auto globalParameter = editBuffer->findParameterByID(id, VoiceGroup::Global))
       setParameter(globalParameter);
   }
 }
