@@ -128,7 +128,7 @@ Glib::ustring Application::getResourcePath() const
 #ifdef _DEVELOPMENT_PC
   return getOptions()->getInstallDir() + "/nonlinear/playground/resources/";
 #else
-  return "/nonlinear/playground/resources/"
+  return "/nonlinear/playground/resources/";
 #endif
 }
 
