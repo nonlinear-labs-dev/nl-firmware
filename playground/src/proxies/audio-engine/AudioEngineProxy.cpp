@@ -106,9 +106,19 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
       }
       else if(auto a = dynamic_cast<Parameter *>(p))
       {
-        auto &t = msg.unmodulateables[unmodulateables++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<double>(a->getControlPositionValue());
+        if(a->getID() == 249)
+        {
+          auto &t = msg.unisonVoices;
+          t.locked = a->isLocked();
+          t.id = a->getID();
+          t.controlPosition = t.controlPosition;
+        }
+        else
+        {
+          auto &t = msg.unmodulateables[unmodulateables++];
+          t.id = a->getID();
+          t.controlPosition = static_cast<double>(a->getControlPositionValue());
+        }
       }
     }
   }
@@ -179,9 +189,20 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
         }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {
-          auto &t = msg.unmodulateables[index][unmodulateables++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<double>(a->getControlPositionValue());
+          if(a->getID() == 249)
+          {
+            auto &t = msg.unisonVoices.at(index);
+            t.locked = a->isLocked();
+            t.id = a->getID();
+            t.controlPosition = t.controlPosition;
+          }
+          else
+          {
+            auto &t = msg.unmodulateables[index][unmodulateables++];
+            t.id = a->getID();
+            t.controlPosition = static_cast<double>(a->getControlPositionValue());
+            t.locked = a->isLocked();
+          }
         }
       }
     }
@@ -195,6 +216,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
       auto &t = msg.master[master++];
       t.id = p->getID();
       t.controlPosition = p->getControlPositionValue();
+      t.locked = p->isLocked();
     }
   }
 
@@ -206,6 +228,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
       auto &t = msg.scale[scale++];
       t.id = p->getID();
       t.controlPosition = p->getControlPositionValue();
+      t.locked = p->isLocked();
     }
   }
 
@@ -313,9 +336,20 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
         }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {
-          auto &t = msg.unmodulateables[index][unmodulateables++];
-          t.id = a->getID();
-          t.controlPosition = a->getControlPositionValue();
+          if(a->getID() == 249)
+          {
+            auto &t = msg.unisonVoices.at(index);
+            t.locked = a->isLocked();
+            t.id = a->getID();
+            t.controlPosition = t.controlPosition;
+          }
+          else
+          {
+            auto &t = msg.unmodulateables[index][unmodulateables++];
+            t.id = a->getID();
+            t.controlPosition = static_cast<double>(a->getControlPositionValue());
+            t.locked = a->isLocked();
+          }
         }
       }
     }
