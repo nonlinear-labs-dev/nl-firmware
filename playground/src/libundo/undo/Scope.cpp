@@ -82,6 +82,11 @@ namespace UNDO
     return std::make_unique<TransactionCreationScope>(new TrashTransaction(), true);
   }
 
+  Scope::tTransactionScopePtr Scope::startTestTransaction()
+  {
+    return startTransaction("test");
+  }
+
   Scope::tTransactionScopePtr Scope::startCuckooTransaction()
   {
     g_assert(m_undoPosition->isClosed());

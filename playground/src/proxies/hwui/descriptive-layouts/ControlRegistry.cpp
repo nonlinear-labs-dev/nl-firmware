@@ -9,10 +9,10 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
 
 #include <proxies/hwui/descriptive-layouts/concrete/preset/LoadVoiceGroupPresetList.h>
-#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/SplitSoundEditMenu.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/DualSoundEditMenu.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/SingleSoundEditMenu.h>
-#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/LayerSoundEditMenu.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/MonoGroupControl.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/CurrentVoiceGroupSelectionIndicator.h>
 
 namespace DescriptiveLayouts
 {
@@ -37,10 +37,8 @@ namespace DescriptiveLayouts
     m_discreteRegistry["SingleSoundEditMenu"] = [](const Point& position) {
       return new SingleSoundEditMenu(Rect(position.getX(), position.getY(), 254, 52));
     };
-    m_discreteRegistry["LayerSoundEditMenu"]
-        = [](const Point& position) { return new LayerSoundEditMenu(Rect(position.getX(), position.getY(), 254, 52)); };
-    m_discreteRegistry["SplitSoundEditMenu"]
-        = [](const Point& position) { return new SplitSoundEditMenu(Rect(position.getX(), position.getY(), 254, 52)); };
+    m_discreteRegistry["DualSoundEditMenu"]
+        = [](const Point& position) { return new DualSoundEditMenu(Rect(position.getX(), position.getY(), 254, 52)); };
 
     m_discreteRegistry["ParameterCarousel"]
         = [](const Point& position) { return new ParameterCarousel(Rect(position.getX(), position.getY(), 58, 62)); };
@@ -48,7 +46,11 @@ namespace DescriptiveLayouts
     m_discreteRegistry["LoadVoiceGroupPresetList"]
         = [](const Point& position) { return new LoadVoiceGroupPresetList(position); };
     m_discreteRegistry["MonoGroupControl"]
-        = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 100, 33));};
+        = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 125, 33)); };
+
+    m_discreteRegistry["CurrentVoiceGroupSelectionIndicator"] = [](const Point& position) {
+      return new CurrentVoiceGroupSelectionIndicator(Rect(position.getX(), position.getY(), 10, 8));
+    };
   }
 
   void ControlRegistry::registerControl(ControlClass&& cp)

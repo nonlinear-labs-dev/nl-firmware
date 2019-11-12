@@ -29,12 +29,15 @@ namespace DescriptiveLayouts
 
   ENUM(EventSources, uint8_t, Any, None, ParameterName, SliderRange, ParameterDisplayString, ParameterGroupName,
        IsBipolar, LockStatus, MacroControlSymbol, MacroControlAssignment, MacroControlAmount, MacroControlPosition,
-       MacroControlPositionText, MCModRange, EditBufferTypeText, EditBufferName, CurrentVoiceGroupName,
-       ParameterControlPosition, ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton,
-       BooleanTrue, BooleanFalse, MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged,
-       isCurrentVGI, isCurrentVGII, SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName,
-       PresetListPresetName, CanLeft, CanRight, isFineActive, EditBufferMasterText, EditBufferUnisonText,
-       VGIMasterTuneText, VGIIMasterTuneText, VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText,
+       MacroControlPositionText, MCModRange, EditBufferTypeText, EditBufferName, ParameterControlPosition,
+       ParameterNameWithStateSuffix, IsNotOnlyParameterOnButton, IsOnlyParameterOnButton, BooleanTrue, BooleanFalse,
+       MCSelectionChanged, MCPositionChanged, MCAmountChanged, ParameterValueChanged, isCurrentVGI, isCurrentVGII,
+       SelectVGButtonText, SoundEditHeading, DirectLoadStatus, PresetListBankName, PresetListPresetName, CanLeft,
+       CanRight, isFineActive, EditBufferMasterVolume, EditBufferMasterTune, VGIMasterTuneText, VGIIMasterTuneText,
+       VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText, MonoPrioText, MonoLegatoText,
+       MonoGlideText, UnisonVoicesText, UnisonDetuneText, UnisonPhaseText, UnisonPanText, MonoEnabled,
+       VoicesParameterHeader, UnisonEnabled, CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText,
+       SoundMasterButtonText, MonoButtonText, UnisonButtonText,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Edit, Fine, Locked, Position, NumItems,

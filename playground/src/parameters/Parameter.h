@@ -123,14 +123,16 @@ class Parameter : public UpdateDocumentContributor,
 
   //Recall
   void undoableRecallFromPreset();
+  void undoableRecallFromPreset(UNDO::Transaction* transaction);
   const RecallParameter *getOriginalParameter() const;
 
   virtual bool isChangedFromLoaded() const;
-  virtual bool isValueChangedFromLoaded() const;
+  bool isValueDifferentFrom(double d) const;
 
   VoiceGroup getVoiceGroup() const;
 
- protected:
+
+protected:
   virtual void sendToLpc() const;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;

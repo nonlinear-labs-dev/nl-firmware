@@ -20,7 +20,7 @@ ustring MonoLegatoParameter::getDisplayString() const
 
 ustring MonoLegatoParameter::getLongName() const
 {
-  return "Mono Legato";
+  return "Legato";
 }
 
 ustring MonoLegatoParameter::getShortName() const

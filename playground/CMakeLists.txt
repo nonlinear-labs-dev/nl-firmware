@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 project(playground)
+project(playground-tests)
 
 execute_process(COMMAND "git" "rev-parse" "--abbrev-ref" "HEAD"
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -45,6 +46,7 @@ ENDIF()
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
+  add_subdirectory(src/third-party)
 ENDIF(DEV_PC)
 
 IF(PROFILING)
@@ -67,38 +69,56 @@ foreach(lib ${LIBS})
 endforeach(lib)
 
 include_directories(src)
+include_directories(${PROJECT_BINARY_DIR}/src)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 
+configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 
+SET(GENERATED_SOURCES
+    ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp
+    ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
+
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
-set(SOURCE_FILES
-    ${SOURCE_FILES}
-    ${CMAKE_CURRENT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp
-)
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/playground.cpp)
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/testing/unit-tests/playground-tests.cpp)
 
-add_executable(playground ${SOURCE_FILES})
+add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 
-target_link_libraries(playground pthread)
-target_link_libraries(playground stdc++fs)
-target_link_libraries(playground nltools)
+file(GLOB_RECURSE UNIT_TEST_FILES src/testing/unit-tests/*.cpp)
 
-include_directories(playground ${CMAKE_SOURCE_DIR}/nltools/include/)
-include_directories(playground ${CMAKE_SOURCE_DIR}/playground/src/)
+target_link_libraries(playground-lib pthread)
+target_link_libraries(playground-lib stdc++fs)
+target_link_libraries(playground-lib nltools)
 
+include_directories(playground-lib ${CMAKE_SOURCE_DIR}/nltools/include/)
+include_directories(playground-lib ${CMAKE_SOURCE_DIR}/playground/src)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})
-  target_link_libraries(playground ${${name}_LIBRARIES})
+  target_link_libraries(playground-lib ${${name}_LIBRARIES})
 endfunction(linkLib)
 
 foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
+
+set(PLAYGROUND_SOURCES
+        "src/playground.cpp"
+        )
+
+set(PLAYGROUND_TEST_SOURCES
+        ${UNIT_TEST_FILES})
+
+add_executable(playground ${PLAYGROUND_SOURCES})
+add_executable(playground-test ${PLAYGROUND_TEST_SOURCES})
+
+target_link_libraries(playground PRIVATE playground-lib)
+target_link_libraries(playground-test PRIVATE playground-lib)
+
 
 configure_file(${PROJECT_SOURCE_DIR}/systemd/playground.service.in ${PROJECT_BINARY_DIR}/systemd/playground.service @ONLY)
 
@@ -113,30 +133,21 @@ install(FILES ${PARAMETER_DESCRIPTIONS}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/parameter-descriptions
 )
 
-install(FILES ${PARAMETER_DESCRIPTIONS}
-    DESTINATION ${CMAKE_BINARY_DIR}/playground/resources/parameter-descriptions
-)
-
 install(FILES ${VERSION_INFOS}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/version-infos
 )
 
-install(FILES ${VERSION_INFOS}
-    DESTINATION ${CMAKE_BINARY_DIR}/playground/resources/version-infos
-)
-
 install(DIRECTORY resources
     USE_SOURCE_PERMISSIONS
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
-)
-
-install(DIRECTORY resources
-    USE_SOURCE_PERMISSIONS
-    DESTINATION ${CMAKE_BINARY_DIR}/playground
 )
 
 install(TARGETS playground
     DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
+)
+
+install(TARGETS playground-test
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
 )
 
 ADD_CUSTOM_TARGET(

@@ -4,6 +4,8 @@
 #include "proxies/lpc/LPCProxy.h"
 #include "http/UpdateDocumentMaster.h"
 #include <device-settings/DebugLevel.h>
+#include <nltools/messaging/Message.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 static const uint16_t c_NoteShiftSettingKey = NOTE_SHIFT;
 
@@ -49,6 +51,9 @@ void NoteShift::sendToLPC() const
   uint16_t value = (m_shift >= 0) ? 0 : 0x8000;
   value |= abs(m_shift);
   Application::get().getLPCProxy()->sendSetting(c_NoteShiftSettingKey, value);
+
+  nltools::msg::Setting::NoteShiftMessage msg(m_shift);
+  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::NoteShiftMessage>(msg);
 }
 
 int NoteShift::get() const

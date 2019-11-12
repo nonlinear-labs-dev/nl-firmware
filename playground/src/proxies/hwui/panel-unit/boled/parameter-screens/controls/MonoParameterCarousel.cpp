@@ -51,7 +51,7 @@ VoiceGroup MonoParameterCarousel::getVoiceGroup()
 
 void MonoParameterCarousel::rebuild()
 {
-  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(getVoiceGroup());
+  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   setup(s);
 }
 

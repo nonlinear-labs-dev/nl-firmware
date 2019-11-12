@@ -1,11 +1,17 @@
 #include "Slider.h"
 #include "parameters/Parameter.h"
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 Slider::Slider(Parameter *param, const Rect &rect)
     : super(rect)
     , m_value(0)
     , m_bipolar(false)
 {
+  m_voiceGroupSelectionConnection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &Slider::voiceGroupSelectionChanged));
+
   setParameter(param);
 }
 
@@ -16,6 +22,22 @@ Slider::Slider(const Rect &rect)
 
 Slider::~Slider()
 {
+}
+
+void Slider::voiceGroupSelectionChanged()
+{
+  auto vgSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  if(auto param = getParameter())
+  {
+    auto id = param->getID();
+    auto vg = param->getVoiceGroup();
+
+    if(auto normalParameter
+       = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, vgSelection))
+      setParameter(normalParameter);
+    else if(auto globalParameter = Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(id))
+      setParameter(globalParameter);
+  }
 }
 
 void Slider::setParameter(Parameter *param)

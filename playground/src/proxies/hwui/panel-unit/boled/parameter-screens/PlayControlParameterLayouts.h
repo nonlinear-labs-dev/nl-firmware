@@ -70,6 +70,10 @@ class PlayControlParameterSelectLayout2 : public ParameterSelectLayout2
   typedef ParameterSelectLayout2 super;
   PlayControlParameterSelectLayout2();
 
+protected:
+  ModuleCaption *createModuleCaption() const override;
+
+public:
   virtual Carousel *createCarousel(const Rect &rect) override;
   virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 };

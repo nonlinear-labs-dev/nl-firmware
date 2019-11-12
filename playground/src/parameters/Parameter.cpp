@@ -237,11 +237,6 @@ const RecallParameter *Parameter::getOriginalParameter() const
 
 bool Parameter::isChangedFromLoaded() const
 {
-  return isValueChangedFromLoaded();
-}
-
-bool Parameter::isValueChangedFromLoaded() const
-{
   const int denominator = static_cast<const int>(getValue().getFineDenominator());
   const int roundedNow = static_cast<const int>(std::round(getControlPositionValue() * denominator));
   const int roundedOG = static_cast<const int>(std::round(getOriginalParameter()->getRecallValue() * denominator));
@@ -524,9 +519,14 @@ void Parameter::check()
 void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto original = getOriginalParameter();
   auto transactionScope = scope.startTransaction("Recall %0 value", getLongName());
   auto transaction = transactionScope->getTransaction();
+  undoableRecallFromPreset(transaction);
+}
+
+void Parameter::undoableRecallFromPreset(UNDO::Transaction *transaction)
+{
+  auto original = getOriginalParameter();
   if(original)
     setCPFromHwui(transaction, original->getRecallValue());
   else
@@ -535,7 +535,6 @@ void Parameter::undoableRecallFromPreset()
 
 void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 {
-  nltools_assertOnDevPC(other->getID() == getID());
   nltools_assertOnDevPC(other->getVoiceGroup() != getVoiceGroup());
 
   setCpValue(transaction, Initiator::INDIRECT, other->getControlPositionValue(), false);
@@ -544,4 +543,13 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 void Parameter::sendParameterMessage() const
 {
   Application::get().getAudioEngineProxy()->createAndSendParameterMessage<Parameter>(this);
+}
+
+bool Parameter::isValueDifferentFrom(double d) const
+{
+
+  const auto fac = m_value.getFineDenominator();
+  const auto a = static_cast<int>(getControlPositionValue() * fac);
+  const auto b = static_cast<int>(d * fac);
+  return a != b;
 }

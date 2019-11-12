@@ -15,7 +15,7 @@ ustring MonoPriorityParameter::getDisplayString() const
   }
   else if(value == 50)
   {
-    return "Last";
+    return "Latest";
   }
   else
   {
@@ -25,10 +25,10 @@ ustring MonoPriorityParameter::getDisplayString() const
 
 ustring MonoPriorityParameter::getLongName() const
 {
-  return "Mono Priority";
+  return "Priority";
 }
 
 ustring MonoPriorityParameter::getShortName() const
 {
-  return "Priority";
+  return "Prio";
 }

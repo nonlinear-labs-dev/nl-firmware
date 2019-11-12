@@ -11,10 +11,14 @@ SelectedParameterValue::SelectedParameterValue(const Rect &rect)
       sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)));
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
+
+  m_voiceGroupSelectionConnection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
 }
 
 SelectedParameterValue::~SelectedParameterValue()
 {
+  m_voiceGroupSelectionConnection.disconnect();
 }
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)
@@ -38,7 +42,8 @@ void SelectedParameterValue::onParamValueChanged(const Parameter *param)
 
 bool SelectedParameterValue::redraw(FrameBuffer &fb)
 {
-  auto amount = Application::get().getPresetManager()->getEditBuffer()->getSelected()->getDisplayString();
+  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto amount = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg)->getDisplayString();
 
   if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
   {
@@ -55,4 +60,9 @@ bool SelectedParameterValue::redraw(FrameBuffer &fb)
 void SelectedParameterValue::setSuffixFontColor(FrameBuffer &fb) const
 {
   fb.setColor(FrameBuffer::C128);
+}
+
+void SelectedParameterValue::onVoiceGroupSelectionChanged()
+{
+  setDirty();
 }

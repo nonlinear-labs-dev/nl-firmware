@@ -1,0 +1,6 @@
+Die Macro-Marken (Kreise um A B C D) haben die Unicodes:
+
+U+E000
+U+E001
+U+E002
+U+E003

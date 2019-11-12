@@ -11,29 +11,10 @@
 #include <sstream>
 #include <tools/TimeTools.h>
 
-namespace DETAIL
-{
-  class PresetComment : public MultiLineLabel
-  {
-   public:
-    PresetComment()
-        : MultiLineLabel("---")
-    {
-    }
-
-    Oleds::tFont getFont()
-    {
-      return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
-    }
-  };
-}
-
-static const int divider = 64;
-
 PresetInfoContent::PresetInfoContent()
 {
-  addInfoField("name", "Name", new MultiLineContent());
-  addInfoField("comment", "Comment", new MultiLineContent());
+  addInfoField("name", "Name", new MultiLineInfoContent());
+  addInfoField("comment", "Comment", new MultiLineInfoContent());
   addInfoField("lastchange", "Last Change");
   addInfoField("devicename", "Device Name");
   addInfoField("uiversion", "UI Version");
@@ -75,10 +56,7 @@ void PresetInfoContent::onPresetChanged()
 {
   if(auto preset = getCurrentPreset())
   {
-    if(fillFromPreset(preset))
-    {
-      fixLayout();
-    }
+    updateContent();
   }
 }
 
@@ -90,14 +68,18 @@ Preset *PresetInfoContent::getCurrentPreset()
   return nullptr;
 }
 
-bool PresetInfoContent::fillFromPreset(const Preset *preset)
+void PresetInfoContent::fillContents()
+{
+  fillFromPreset(getCurrentPreset());
+}
+
+void PresetInfoContent::fillFromPreset(const Preset *preset)
 {
   infoFields["name"]->setInfo(preset->getName(), FrameBuffer::Colors::C128);
   infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
   infoFields["devicename"]->setInfo(preset->getAttribute("DeviceName", "---"));
   infoFields["uiversion"]->setInfo(preset->getAttribute("SoftwareVersion", "---"));
-  return true;
 }
 
 bool PresetInfoContent::fillDefaults()
@@ -108,18 +90,4 @@ bool PresetInfoContent::fillDefaults()
   infoFields["devicename"]->setInfo("---");
   infoFields["uiversion"]->setInfo("---");
   return true;
-}
-
-void PresetInfoContent::fixLayout()
-{
-  int y = 0;
-
-  for(const auto &infoKey : { "name", "comment", "lastchange", "devicename", "uiversion" })
-  {
-    y = infoFields[infoKey]->format(y);
-  }
-
-  Rect r = getPosition();
-  r.setHeight(y);
-  super::setPosition(r);
 }

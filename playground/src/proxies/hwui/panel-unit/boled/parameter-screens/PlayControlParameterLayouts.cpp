@@ -298,6 +298,10 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
   return super::onButton(i, down, modifiers);
 }
 
+ModuleCaption *PlayControlParameterSelectLayout2::createModuleCaption() const {
+  return ParameterLayout2::createModuleCaption();
+}
+
 PlayControlParameterEditLayout2::PlayControlParameterEditLayout2()
     : super()
 {

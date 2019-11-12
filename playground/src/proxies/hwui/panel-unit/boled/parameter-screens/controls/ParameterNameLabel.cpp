@@ -17,6 +17,9 @@ ParameterNameLabel::ParameterNameLabel(const Rect &pos)
 
   Application::get().getPresetManager()->getEditBuffer()->onRecallValuesChanged(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
+
+  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
+      sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
 }
 
 ParameterNameLabel::~ParameterNameLabel()
@@ -30,6 +33,11 @@ void ParameterNameLabel::onParameterSelected(Parameter *param)
     m_connection.disconnect();
     m_connection = param->onParameterChanged(mem_fun(this, &ParameterNameLabel::onParameterChanged));
   }
+}
+
+void ParameterNameLabel::updateParameter(const Parameter *parameter)
+{
+  onParameterChanged(parameter);
 }
 
 Glib::ustring removeLastChar(const Glib::ustring &s)
@@ -78,7 +86,7 @@ const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const
 
 void ParameterNameLabel::handleParameterName(const Parameter *pParameter)
 {
-  const auto changed = pParameter->isValueChangedFromLoaded();
+  const auto changed = pParameter->isChangedFromLoaded();
   setText({ pParameter->getLongName() + (changed ? "*" : ""), changed ? 1u : 0u });
 }
 

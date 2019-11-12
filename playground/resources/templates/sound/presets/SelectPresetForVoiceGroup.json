@@ -1,18 +1,10 @@
 {
-  "controls": {
-    "PresetListBorder": {
-      "Border" : {
-        "Class": "Border",
-        "Rect": "0, 0, 128, 64"
-      }
-    }
-  },
   "layouts": {
     "PresetSelectionForVoiceGroupLayout": {
       "EventProvider": "IndependentPresetSelectionEvents",
       "Selector": {
         "UIFocus": "Sound",
-        "UIMode": "Edit",
+        "UIMode": "Select",
         "UIDetail": "SoundSelectPresetForVoiceGroup"
       },
       "Controls": {
@@ -23,10 +15,6 @@
             "Text[Text]": "Back"
           }
         },
-        "PresetListBorder" : {
-          "Class": "PresetListBorder",
-          "Position": "64, 0"
-        },
         "ButtonD": {
           "Class": "Button",
           "Position": "BUTTON_D",
@@ -34,20 +22,24 @@
             "Text[Text]": "OK"
           }
         },
+        "Border": {
+          "Class": "PresetListBorder",
+          "Position": "64, 0"
+        },
         "PreviousPreset": {
           "Class": "Preset",
           "Position": "64, 12",
-          "Events": "PreviousNumber => Number[Text],PreviousName => Name[Text], PreviousType => Type[Text]"
+          "Events": "PreviousNumber => Number[Text],PreviousName => Name[Text]"
         },
         "CurrentPreset": {
           "Class": "Preset",
           "Position": "64, 29",
-          "Events": "CurrentNumber => Number[Text],CurrentName => Name[Text], CurrentType => Type[Text]"
+          "Events": "CurrentNumber => Number[Text],CurrentName => Name[Text]"
         },
         "NextPreset": {
           "Class": "Preset",
           "Position": "64, 46",
-          "Events": "NextNumber => Number[Text],NextName => Name[Text], NextType => Type[Text]"
+          "Events": "NextNumber => Number[Text],NextName => Name[Text]"
         },
         "BankLabel": {
           "Class": "WideInvertedLabel",

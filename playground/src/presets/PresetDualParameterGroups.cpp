@@ -25,6 +25,12 @@ PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &g : editbuffer.getParameterGroups(vg))
       m_parameterGroups[static_cast<int>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
+
+
+  for(auto &g : editbuffer.getGlobalParameterGroups())
+  {
+    m_globalParameterGroups[g->getID()] = std::make_unique<PresetParameterGroup>(*g);
+  }
 }
 
 void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
@@ -44,4 +50,9 @@ void PresetDualParameterGroups::init(const Preset *preset)
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &group : preset->m_parameterGroups[static_cast<int>(vg)])
       m_parameterGroups[static_cast<int>(vg)][group.first] = std::make_unique<PresetParameterGroup>(*group.second);
+
+  for(auto &g : preset->m_globalParameterGroups)
+  {
+    m_globalParameterGroups[g.first] = std::make_unique<PresetParameterGroup>(*g.second);
+  }
 }
