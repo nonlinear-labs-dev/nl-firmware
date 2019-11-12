@@ -56,6 +56,14 @@ class dsp_host_dual
   float scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
               float _value);
   void update_event_time(Time_Parameter *_param, const float _ms);
+  void mod_event_mc_chain(const uint32_t _index, const uint32_t _layer, const float _position,
+                          const Time_Parameter _time);
+  void transition_event(const uint32_t _id, const uint32_t _layer, const Time_Parameter _time,
+                        const C15::Descriptors::SmootherSection _section, const C15::Descriptors::SmootherClock _clock,
+                        const float _dest);
+  void transition_event(const uint32_t _id, const Time_Parameter _time,
+                        const C15::Descriptors::SmootherSection _section, const C15::Descriptors::SmootherClock _clock,
+                        const float _dest);
   // preloadable preset buffers
   nltools::msg::SinglePresetMessage m_preloaded_single_data;
   nltools::msg::SplitPresetMessage m_preloaded_split_data;

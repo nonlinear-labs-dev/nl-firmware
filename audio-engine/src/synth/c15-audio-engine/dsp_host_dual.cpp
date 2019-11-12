@@ -339,6 +339,7 @@ void dsp_host_dual::update_event_hw_source(const uint32_t _index, const bool _lo
     param->m_position = _position;
     // trigger hw chain ...
   }
+  nltools::Log::info("hw_pos:", param->m_position);
 }
 
 void dsp_host_dual::update_event_hw_amount(const uint32_t _index, const uint32_t _layer, const bool _lock,
@@ -364,6 +365,7 @@ void dsp_host_dual::update_event_macro_ctrl(const uint32_t _index, const uint32_
     param->update_modulation_aspects();
     // ribbon bidirectionality currently missing ...
     // trigger mc chain ...
+    mod_event_mc_chain(_index, _layer, _position, param->m_time.m_dx);
   }
 }
 
@@ -527,4 +529,88 @@ void dsp_host_dual::update_event_time(Time_Parameter *_param, const float _ms)
   _param->m_dx_audio = m_time.m_dx_audio;
   _param->m_dx_fast = m_time.m_dx_fast;
   _param->m_dx_slow = m_time.m_dx_slow;
+}
+
+void dsp_host_dual::mod_event_mc_chain(const uint32_t _index, const uint32_t _layer, const float _position,
+                                       const Time_Parameter _time)
+{
+  auto list = m_params.m_layer[_layer].m_assignment;
+  for(auto id = list.first(_index); list.running(); id = list.next())
+  {
+    auto param = m_params.get_target(_layer, id);
+    if(param->modulate(_position))
+    {
+      param->m_position = param->m_unclipped < 0.0f ? 0.0f : param->m_unclipped > 1.0f ? 1.0f : param->m_unclipped;
+      transition_event(id, _layer, _time, param->m_section, param->m_clock, param->depolarize(param->m_position));
+    }
+  }
+}
+
+void dsp_host_dual::transition_event(const uint32_t _id, const uint32_t _layer, const Time_Parameter _time,
+                                     const C15::Descriptors::SmootherSection _section,
+                                     const C15::Descriptors::SmootherClock _clock, const float _dest)
+{
+  switch(_section)
+  {
+    case C15::Descriptors::SmootherSection::Poly:
+      switch(_clock)
+      {
+        case C15::Descriptors::SmootherClock::Sync:
+          m_poly[_layer].start_sync(_id, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Audio:
+          m_poly[_layer].start_audio(_id, _time.m_dx_audio, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Fast:
+          m_poly[_layer].start_fast(_id, _time.m_dx_fast, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Slow:
+          m_poly[_layer].start_slow(_id, _time.m_dx_slow, _dest);
+          break;
+      }
+      break;
+    case C15::Descriptors::SmootherSection::Mono:
+      switch(_clock)
+      {
+        case C15::Descriptors::SmootherClock::Sync:
+          m_mono[_layer].start_sync(_id, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Audio:
+          m_mono[_layer].start_audio(_id, _time.m_dx_audio, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Fast:
+          m_mono[_layer].start_fast(_id, _time.m_dx_fast, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Slow:
+          m_mono[_layer].start_slow(_id, _time.m_dx_slow, _dest);
+          break;
+      }
+      break;
+  }
+}
+
+void dsp_host_dual::transition_event(const uint32_t _id, const Time_Parameter _time,
+                                     const C15::Descriptors::SmootherSection _section,
+                                     const C15::Descriptors::SmootherClock _clock, const float _dest)
+{
+  switch(_section)
+  {
+    case C15::Descriptors::SmootherSection::Global:
+      switch(_clock)
+      {
+        case C15::Descriptors::SmootherClock::Sync:
+          m_global.start_sync(_id, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Audio:
+          m_global.start_audio(_id, _time.m_dx_audio, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Fast:
+          m_global.start_fast(_id, _time.m_dx_fast, _dest);
+          break;
+        case C15::Descriptors::SmootherClock::Slow:
+          m_global.start_slow(_id, _time.m_dx_slow, _dest);
+          break;
+      }
+      break;
+  }
 }
