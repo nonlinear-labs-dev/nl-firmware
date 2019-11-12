@@ -1,0 +1,197 @@
+
+.collapsed {
+  display: none;
+}
+
+.full {
+  display: block;
+}
+
+html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(13, 13, 13, 0.5);
+  z-index: 200;
+  position: fixed;
+  overflow: hidden;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  font-family: "CanvasFont";
+}
+
+html {
+	height: 100%;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+body {
+	width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background-color: #222;
+  font-family: 'CanvasFont';
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+	font-size: 18px;
+	line-height: 1.4;
+}
+
+h3 {
+	width: 100%;
+	text-align: center;
+	margin: 0 0 .5em 0;
+	padding: .2em .6em;
+	font-weight: 400;
+	font-size: 18px;
+	color: #ccc;
+	background-color: #333;
+}
+
+h4 {
+	margin: 0.4em 0 .5em 0;
+	font-weight: 400;
+	font-size: 18px;
+	color: #ccc;
+	background-color: #111;
+	padding: 0px 10px;
+	border-radius: 5px;
+}
+
+.setting-item {
+	background-color: #444;
+	width: 12em;
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+}
+
+.slide-container {
+	background-color: #999;
+	border-radius: 5px;
+	border: 1px solid #444;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: hidden;
+	margin-top: .5em;
+	min-height: 6em;
+}
+
+.set-area {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 92%;
+	height: 100%;
+	background-color: #666;
+}
+
+.triangle-left {
+	width: 8%;
+	background: url(tri-open.svg) 50% 50% no-repeat #404040;
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+	border-left: 1px solid #222;
+	cursor: pointer;
+}
+
+.triangle-open {
+  background: url(tri-open.svg) 50% 50% no-repeat #404040;
+  border-left: 1px solid #222;
+  cursor: pointer;
+}
+
+.fs-c {
+  min-height: 3.3em;
+}
+
+.cd-c {
+  min-height: 5.3em;
+}
+
+.form-container {
+	border-radius: 5px;
+	overflow: hidden;
+	margin-top: 1em;
+	margin-bottom: .5em;
+	width: 67%;
+	background-color: #999;
+	border: 1px solid #444;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.end-item {
+  padding-bottom: 0.2em;
+}
+
+input[type="range"] {
+    -webkit-appearance: slider-vertical;
+    width: 20px;
+    height: 20em;
+    min-height: 2em;
+    outline: none;
+    cursor: pointer;
+}
+
+.sel-input-form {
+	display: flex;
+	flex-direction: column;
+  margin-block-end: 0;
+}
+
+input[type="radio"] {
+    display:none;
+}
+
+input[type="radio"] + label span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin: 0px 5px 0 0;
+    vertical-align: -4px;
+    background: url(checkbox-d.png) -60px top no-repeat;
+    cursor: pointer;
+}
+
+input[type="radio"]:checked + label span {
+    background: url(checkbox-d.png) -40px top no-repeat;
+}
+
+label {
+	margin-bottom: .3em;
+	color: #222;
+	font-weight: 300;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.marker {
+    font-family: 'CanvasFont_UNICODE';
+    vertical-align: 1px;
+    font-weight: 400;
+    color: #bbb;
+    font-size: 14px;
+}

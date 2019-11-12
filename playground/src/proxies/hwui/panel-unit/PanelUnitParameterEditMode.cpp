@@ -38,6 +38,7 @@
 #include "PanelUnitParameterEditMode.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
+#include <parameters/PedalParameter.h>
 
 class ParameterInfoLayout;
 class ParameterLayout2;
@@ -88,7 +89,7 @@ void PanelUnitParameterEditMode::assertAllButtonsAssigned()
         if(id != expected)
         {
           auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(expected);
-          if(param->getLongName().find("Pedal") != 0)
+          if(!dynamic_cast<const PedalParameter *>(param))
             g_assert(false);
         }
       }

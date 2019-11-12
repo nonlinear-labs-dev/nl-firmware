@@ -125,7 +125,7 @@ Application &Application::get()
 
 Glib::ustring Application::getResourcePath() const
 {
-  return getOptions()->getInstallDir() + "/resources/";
+  return getOptions()->getInstallDir() + "/playground/resources/";
 }
 
 ustring Application::getNonMapsPath() const
