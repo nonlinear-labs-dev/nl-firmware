@@ -78,10 +78,15 @@ Application::Application(int numArgs, char **argv)
   Profiler::get().enable(true);
 #endif
 
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_settings->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_hwui->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_http->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_presetManager->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
   runWatchDog();
 
