@@ -3,8 +3,6 @@
 #include <string.h>
 #include "device-settings/DebugLevel.h"
 
-static TestDriver<MessageParser> tests;
-
 MessageParser::NLMessage::NLMessage()
     : type(0)
     , length(0)
@@ -12,19 +10,6 @@ MessageParser::NLMessage::NLMessage()
 }
 
 MessageParser::NLMessage::~NLMessage() = default;
-
-void MessageParser::NLMessage::trace(const char *fromLocation)
-{
-  DebugLevel::info("Tracing message from", fromLocation);
-
-  DebugLevel::info("-> type =", type);
-  DebugLevel::info("-> length =", length);
-
-  for(int i = 0; i < params.size(); i++)
-  {
-    DebugLevel::info("-> param", i, "=", params[i]);
-  }
-}
 
 MessageParser::MessageParser()
     : m_numBytesRead(0)
@@ -96,41 +81,4 @@ size_t MessageParser::getNumInitialBytesNeeded()
 const MessageParser::NLMessage &MessageParser::getMessage() const
 {
   return m_msg;
-}
-
-void MessageParser::registerTests()
-{
-  g_test_add_func("/MessageParser/stream", []() {
-    uint16_t data[] = { PRESET_DIRECT, 2, 99, 77 };
-    auto *byteData = reinterpret_cast<uint8_t *>(data);
-
-    size_t msgLen = sizeof(data);
-
-    for(size_t chunksize = 1; chunksize < msgLen; chunksize++)
-    {
-      MessageParser foo;
-
-      size_t todo = msgLen;
-      size_t done = 0;
-
-      while(todo)
-      {
-        size_t todoNow = std::min(todo, chunksize);
-        size_t needed = foo.parse(byteData + done, todoNow);
-
-        if(needed == 0)
-        {
-          const MessageParser::NLMessage &msg = foo.getMessage();
-          g_assert(msg.type == PRESET_DIRECT);
-          g_assert(msg.length == 2);
-          g_assert(msg.params[0] == 99);
-          g_assert(msg.params[1] == 77);
-          break;
-        }
-
-        todo -= todoNow;
-        done += todoNow;
-      }
-    }
-  });
 }
