@@ -131,6 +131,8 @@ void PedalParameter::sendModeToLpc() const
   uint16_t id = mapParameterIdToLPCSetting();
   uint16_t v = (uint16_t) m_mode;
   Application::get().getLPCProxy()->sendSetting(id, v);
+
+  sendToLpc();
 }
 
 uint16_t PedalParameter::mapParameterIdToLPCSetting() const
