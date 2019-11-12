@@ -541,7 +541,9 @@ void dsp_host_dual::mod_event_mc_chain(const uint32_t _index, const uint32_t _la
     if(param->modulate(_position))
     {
       param->m_position = param->m_unclipped < 0.0f ? 0.0f : param->m_unclipped > 1.0f ? 1.0f : param->m_unclipped;
-      transition_event(id, _layer, _time, param->m_section, param->m_clock, param->depolarize(param->m_position));
+      const float dest
+          = scale(param->m_scaleId, param->m_scaleFactor, param->m_scaleOffset, param->polarize(param->m_position));
+      transition_event(id, _layer, _time, param->m_section, param->m_clock, dest);
     }
   }
 }
@@ -587,6 +589,7 @@ void dsp_host_dual::transition_event(const uint32_t _id, const uint32_t _layer, 
       }
       break;
   }
+  nltools::Log::info("transition(id:", _id, ", dest:", _dest, ")");
 }
 
 void dsp_host_dual::transition_event(const uint32_t _id, const Time_Parameter _time,
