@@ -21,9 +21,9 @@ TEST_CASE("Simple IntrusiveList Operations")
 
   SECTION("Simple append")
   {
-    l.append(new Item(1));
-    l.append(new Item(2));
-    l.append(new Item(3));
+    l.append(new Item<int>(1));
+    l.append(new Item<int>(2));
+    l.append(new Item<int>(3));
 
     int expected = 1;
 
@@ -37,7 +37,7 @@ TEST_CASE("Simple IntrusiveList Operations")
 
     expected = 0;
 
-    l.prepend(new Item(0));
+    l.prepend(new Item<int>(0));
 
     for(auto i : l)
     {
@@ -50,12 +50,12 @@ TEST_CASE("Simple IntrusiveList Operations")
 
   SECTION("Remove Middle")
   {
-    auto one = new Item(1);
+    auto one = new Item<int>(1);
 
-    l.append(new Item(2));
-    l.append(new Item(3));
+    l.append(new Item<int>(2));
+    l.append(new Item<int>(3));
     l.prepend(one);
-    l.prepend(new Item(0));
+    l.prepend(new Item<int>(0));
 
     int expected = 0;
 
@@ -85,11 +85,11 @@ TEST_CASE("Simple IntrusiveList Operations")
 
   SECTION("Remove First")
   {
-    auto first = new Item(0);
+    auto first = new Item<int>(0);
 
-    l.append(new Item(2));
-    l.append(new Item(3));
-    l.prepend(new Item(1));
+    l.append(new Item<int>(2));
+    l.append(new Item<int>(3));
+    l.prepend(new Item<int>(1));
     l.prepend(first);
 
     l.remove(first);
@@ -107,12 +107,12 @@ TEST_CASE("Simple IntrusiveList Operations")
 
   SECTION("Remove Last")
   {
-    auto last = new Item(3);
+    auto last = new Item<int>(3);
 
-    l.append(new Item(2));
+    l.append(new Item<int>(2));
     l.append(last);
-    l.prepend(new Item(1));
-    l.prepend(new Item(0));
+    l.prepend(new Item<int>(1));
+    l.prepend(new Item<int>(0));
     l.remove(last);
 
     int expected = 0;
@@ -127,12 +127,12 @@ TEST_CASE("Simple IntrusiveList Operations")
   }
 
   SECTION("Clear") {
-    auto last = new Item(3);
+    auto last = new Item<int>(3);
 
-    l.append(new Item(2));
+    l.append(new Item<int>(2));
     l.append(last);
-    l.prepend(new Item(1));
-    l.prepend(new Item(0));
+    l.prepend(new Item<int>(1));
+    l.prepend(new Item<int>(0));
     l.remove(last);
 
     int expected = 0;
