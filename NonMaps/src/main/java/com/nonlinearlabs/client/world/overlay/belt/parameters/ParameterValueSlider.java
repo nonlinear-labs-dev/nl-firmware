@@ -3,12 +3,12 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 
 public class ParameterValueSlider extends OverlayControl {
@@ -24,13 +24,11 @@ public class ParameterValueSlider extends OverlayControl {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		Parameter p = getParameter();
+		ParameterPresenter parameter = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		double value = parameter.controlPosition;
+		boolean isBiPolar = parameter.bipolar;
 
-		double value = p.getValue().getQuantizedClipped();
-		boolean isBiPolar = p.isBiPolar();
-
-		if (!p.shouldHaveHandleOnly()) {
-
+		if (!parameter.drawHandleOnly) {
 			getPixRect().fillAndStroke(ctx, new Gray(25), 1, new Gray(0));
 
 			if (isBiPolar)
@@ -38,7 +36,6 @@ public class ParameterValueSlider extends OverlayControl {
 
 			drawIndicator(ctx, value, isBiPolar);
 			drawHandle(ctx, value, isBiPolar);
-
 		} else {
 
 			Rect background = getPixRect().copy();
@@ -48,39 +45,23 @@ public class ParameterValueSlider extends OverlayControl {
 
 			if (isBiPolar)
 				drawCenterMark(ctx);
-
 			drawRoundHandle(ctx, value, isBiPolar);
-			drawReturnIndicators(ctx, p);
+			drawReturnIndicators(ctx, parameter);
 
 		}
 	}
 
-	protected Parameter getParameter() {
-		return getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-	}
-
-	protected void drawReturnIndicators(Context2d ctx, Parameter p) {
-		if (p instanceof PhysicalControlParameter) {
-			PhysicalControlParameter ph = (PhysicalControlParameter) p;
-			Rect pixRect = getPixRect().copy();
+	protected void drawReturnIndicators(Context2d ctx, ParameterPresenter parameter) {
+		Rect pixRect = getPixRect().copy();
 
 			double oneMM = Millimeter.toPixels(1);
 			double top = pixRect.getTop() - oneMM;
 			double bottom = pixRect.getBottom() + oneMM;
-
-			switch (ph.getReturnMode()) {
-			case Center:
-				drawReturnArrow(ctx, pixRect.getCenterPoint().getX(), top, bottom);
-				break;
-
-			case Zero:
-				drawReturnArrow(ctx, pixRect.getLeft(), top, bottom);
-				break;
-
-			default:
-				break;
-			}
-		}
+			
+		if (parameter.drawCenterReturnIndicator) 
+			drawReturnArrow(ctx, pixRect.getCenterPoint().getX(), top, bottom);
+		else if(parameter.drawZeroReturnIndicator)
+			drawReturnArrow(ctx, pixRect.getLeft(), top, bottom);
 	}
 
 	protected void drawReturnArrow(Context2d ctx, double x, double top, double bottom) {
@@ -179,7 +160,9 @@ public class ParameterValueSlider extends OverlayControl {
 	}
 
 	protected boolean shouldHandleBeDimmed(double value) {
-		return Math.abs(value) < 0.001 && getParameter().dimHandleAtDefaultValue();
+		// return Math.abs(value) < 0.001 && getParameter().dimHandleAtDefaultValue();
+		// todo
+		return false;
 	}
 
 	private void drawCenterMark(Context2d ctx) {

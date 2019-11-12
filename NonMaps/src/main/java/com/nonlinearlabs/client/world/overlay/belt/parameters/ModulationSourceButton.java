@@ -1,10 +1,11 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
@@ -25,15 +26,14 @@ public class ModulationSourceButton extends SVGImage {
 	@Override
 	public Control mouseDown(Position eventPoint) {
 		if (isVisible() && getParent().isVisible()) {
-			final Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-			if (p instanceof ModulatableParameter) {
-				final ModulatableParameter m = (ModulatableParameter) p;
-				if (m.getModulationSource() == which)
-					m.setModulationSource(MacroControls.NONE, Initiator.EXPLICIT_USER_ACTION);
+			ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+
+			if (p.modulation.isModulateable) {
+				if (MacroControls.from(p.modulation.modulationSource) == which)
+					EditBufferUseCases.get().setModulationSource(p.id, ModSource.None);
 				else
-					m.setModulationSource(which, Initiator.EXPLICIT_USER_ACTION);
+					EditBufferUseCases.get().setModulationSource(p.id, which.toModSource());
 			}
-			getParent().getParent().onMCSelectionChanged();
 			return this;
 		}
 		return null;
@@ -49,11 +49,11 @@ public class ModulationSourceButton extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			return (m.getModulationSource() == which) ? 0 : 1;
-		}
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		
+		if (p.modulation.isModulateable) 
+			return (MacroControls.from(p.modulation.modulationSource) == which) ? 0 : 1;
+		
 		return 0;
 	}
 }

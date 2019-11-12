@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.function.Function;
 
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 public class PresetSearchProvider {
 	public static PresetSearchProvider theInstance = new PresetSearchProvider();

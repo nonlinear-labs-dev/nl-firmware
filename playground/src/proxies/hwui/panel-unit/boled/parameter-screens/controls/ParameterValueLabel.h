@@ -10,7 +10,11 @@ class ParameterValueLabel : public Label
 
  public:
   ParameterValueLabel(const Parameter *param, const Rect &pos);
-
+  ~ParameterValueLabel();
+  void updateParameter(const Parameter* param);
  private:
   void updateText(const Parameter *param);
+  void updateVoiceGroup();
+  sigc::connection m_connection;
+  sigc::connection m_vgSelectionConnection;
 };

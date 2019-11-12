@@ -83,17 +83,38 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
 
 ustring ParameterDB::getLongName(int id) const
 {
-  return m_spec.at(id).longName;
+  try
+  {
+    return m_spec.at(id).longName;
+  }
+  catch(...)
+  {
+    return std::to_string(id) + " not found";
+  }
 }
 
 ustring ParameterDB::getShortName(int id) const
 {
-  return m_spec.at(id).shortName;
+  try
+  {
+    return m_spec.at(id).shortName;
+  }
+  catch(...)
+  {
+    return std::to_string(id) + " not found";
+  }
 }
 
 tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
 {
-  return m_spec.at(id).signalPathIndication;
+  try
+  {
+    return m_spec.at(id).signalPathIndication;
+  }
+  catch(...)
+  {
+    return 0;
+  }
 }
 
 bool ParameterDB::isActive(const Parameter *p) const

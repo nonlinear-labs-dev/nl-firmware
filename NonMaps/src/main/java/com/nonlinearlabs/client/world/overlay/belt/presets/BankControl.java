@@ -12,7 +12,6 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
@@ -154,9 +153,9 @@ public class BankControl extends OverlayLayout implements IBank {
 			return this;
 
 		if (amount > 0)
-			pm.selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
+			pm.selectPreviousPreset();
 		else if (amount < 0)
-			pm.selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
+			pm.selectNextPreset();
 
 		return this;
 	}

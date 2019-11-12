@@ -5,13 +5,13 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Voices extends ParameterGroupVertical {
+public class Voices extends ParameterGroup {
 
 	public Voices(MapsLayout parent) {
-		super(parent);
-		addChild(new LabelModuleHeader(this, getName()) {
+		super(parent, "Unison");
+		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();
@@ -73,10 +73,5 @@ public class Voices extends ParameterGroupVertical {
 	@Override
 	public RGB getColorIndicator() {
 		return ColorTable.getColorIndicator();
-	}
-
-	@Override
-	public String getID() {
-		return "Unison";
 	}
 }

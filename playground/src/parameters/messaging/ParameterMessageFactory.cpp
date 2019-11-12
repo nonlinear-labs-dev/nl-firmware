@@ -25,7 +25,7 @@ namespace ParameterMessageFactory
 
     nltools::msg::MacroControlChangedMessage createMessage(const MacroControlParameter *param)
     {
-      return nltools::msg::MacroControlChangedMessage{ param->getID(), param->getControlPositionValue(), 0.0,
+      return nltools::msg::MacroControlChangedMessage{ param->getID(), param->getControlPositionValue(),
                                                        param->isLocked() };
     }
 

@@ -21,7 +21,6 @@ class RibbonParameter : public PhysicalControlParameter
 
   void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode);
   void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
-  void undoableIncRibbonReturnMode(UNDO::Transaction *transaction);
 
   RibbonTouchBehaviour getRibbonTouchBehaviour() const;
   RibbonReturnMode getRibbonReturnMode() const;

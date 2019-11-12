@@ -22,24 +22,24 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.maps.MapsControl;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupIface;
-import com.nonlinearlabs.client.world.maps.parameters.SelectionListener;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 
-public class ParameterInfoDialog extends GWTDialog implements SelectionListener {
+public class ParameterInfoDialog extends GWTDialog {
 
 	private static ParameterInfoDialog theDialog;
 	private static float infoBoxHeight = 0;
+
+	ParameterPresenter presenter;
+
 	private TextArea infoField;
 	private Label parameterNameView;
 	private Label paramNameEditView;
 	private TextBox paramNameEditEditor;
 	private HTMLPanel paramNameEditor;
 	private FocusWidget focusOwner;
-	private Parameter param;
 
 	private ParameterInfoDialog() {
 		RootPanel.get().add(this);
@@ -54,7 +54,11 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 
 		addHeader("Parameter Info");
 		addContent();
-		update(NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome());
+
+		EditBufferPresenterProvider.get().onChange(p -> {
+			update(p.selectedParameter);
+			return true;
+		});
 
 		super.pushDialogToFront();
 
@@ -63,12 +67,6 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 		if (infoBoxHeight != 0) {
 			infoField.setHeight(infoBoxHeight + "px");
 		}
-	}
-
-	@Override
-	public void onSelectionChanged(Parameter oldSelection, Parameter newSelection) {
-		if (infoField != null)
-			update(newSelection);
 	}
 
 	private void addContent() {
@@ -105,15 +103,9 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 			@Override
 			public void onBlur(BlurEvent event) {
 				focusOwner = null;
-				Parameter p = param;
-				if (p instanceof MacroControlParameter) {
-					MacroControlParameter mc = (MacroControlParameter) p;
-					NonMaps.theMaps.getServerProxy().setMacroControlInfo(mc.getParameterID(), infoField.getText());
-				}
-
-				Parameter s = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-				if (s != param)
-					update(s);
+				int id = presenter.id;
+				EditBufferUseCases.get().setMacroControlInfo(id, infoField.getText());
+				update(EditBufferPresenterProvider.getPresenter().selectedParameter);
 			}
 		});
 
@@ -182,15 +174,8 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 			@Override
 			public void onBlur(BlurEvent event) {
 				focusOwner = null;
-				Parameter p = param;
-				if (p instanceof MacroControlParameter) {
-					MacroControlParameter mc = (MacroControlParameter) p;
-					mc.setName(paramNameEditEditor.getText());
-				}
-
-				Parameter s = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-				if (s != param)
-					update(s);
+				int id = EditBufferPresenterProvider.getPresenter().selectedParameter.id;
+				EditBufferUseCases.get().renameMacroControl(id, paramNameEditEditor.getText());
 			}
 		});
 
@@ -198,14 +183,13 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 		setWidget(justToAddABorder);
 	}
 
-	protected void update(Parameter newSelection) {
+	protected void update(ParameterPresenter selectedParameter) {
 		if (focusOwner != null) {
 			return;
 		}
 
-		param = newSelection;
-
-		boolean isMC = newSelection instanceof MacroControlParameter;
+		presenter = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		boolean isMC = presenter.isMacroControl;
 
 		infoField.setEnabled(isMC);
 		paramNameEditor.setVisible(isMC);
@@ -222,43 +206,39 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 		}
 
 		if (isMC) {
-			MacroControlParameter p = (MacroControlParameter) newSelection;
-
-			paramNameEditView.setText(p.getGroupName() + "   \u2013   " + p.getName().getShortName());
+			paramNameEditView.setText(presenter.fullNameWithGroup);
 
 			if (focusOwner != paramNameEditEditor)
-				paramNameEditEditor.setText(p.getName().getEditName());
+				paramNameEditEditor.setText(presenter.userGivenName);
 
-			String info = p.getInfo();
+			String info = presenter.parameterInfo;
 			if (!info.isEmpty()) {
 				setDescription(info);
 				return;
 			}
-
 		}
 
-		parameterNameView.setText(newSelection.getFullNameWithGroup());
-
+		parameterNameView.setText(selectedParameter.fullNameWithGroup);
 		centerIfOutOfView();
-		NonMaps.theMaps.getServerProxy().loadParameterDescription((Parameter) newSelection, this);
 	}
 
 	@Override
 	public String getTitle() {
-		Parameter p = param;
+		// Parameter p = param;
 
-		if (p != null) {
-			MapsControl parent = p.getParent();
+		// if (p != null) {
+		// MapsControl parent = p.getParent();
 
-			while (parent != null) {
-				if (parent instanceof ParameterGroupIface) {
-					ParameterGroupIface group = (ParameterGroupIface) parent;
-					String longText = group.getName().getLongName() + " \u2013 " + p.getName().getLongName();
-					return longText;
-				}
-				parent = parent.getParent();
-			}
-		}
+		// while (parent != null) {
+		// if (parent instanceof ParameterGroupIface) {
+		// ParameterGroupIface group = (ParameterGroupIface) parent;
+		// String longText = group.getName().getLongName() + " \u2013 " +
+		// p.getName().getLongName();
+		// return longText;
+		// }
+		// parent = parent.getParent();
+		// }
+		// }
 		return "";
 	}
 
@@ -293,7 +273,7 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 	}
 
 	public static void update() {
-		theDialog.update(NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedOrSome());
+		theDialog.update(EditBufferPresenterProvider.getPresenter().selectedParameter);
 	}
 
 	static int lastPopupLeft = -1;
@@ -318,12 +298,10 @@ public class ParameterInfoDialog extends GWTDialog implements SelectionListener 
 	@Override
 	protected void onAttach() {
 		super.onAttach();
-		NonMaps.theMaps.getNonLinearWorld().getParameterEditor().registerListener(this);
 	}
 
 	@Override
 	protected void onDetach() {
-		NonMaps.theMaps.getNonLinearWorld().getParameterEditor().removeListener(this);
 		super.onDetach();
 	}
 

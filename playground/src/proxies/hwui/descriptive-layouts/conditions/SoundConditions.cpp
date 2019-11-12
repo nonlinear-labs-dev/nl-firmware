@@ -4,6 +4,9 @@ DescriptiveLayouts::SoundConditions::EditBufferCondition::EditBufferCondition()
 {
   m_editbufferChangedConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &EditBufferCondition::onEditBufferChanged));
+
+  m_editbufferTypeChangedConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::mem_fun(this, &EditBufferCondition::onEditBufferChanged));
 }
 
 void DescriptiveLayouts::SoundConditions::EditBufferCondition::onEditBufferChanged()
@@ -14,6 +17,7 @@ void DescriptiveLayouts::SoundConditions::EditBufferCondition::onEditBufferChang
 DescriptiveLayouts::SoundConditions::EditBufferCondition::~EditBufferCondition()
 {
   m_editbufferChangedConnection.disconnect();
+  m_editbufferTypeChangedConnection.disconnect();
 }
 
 bool DescriptiveLayouts::SoundConditions::IsSingleSound::check() const

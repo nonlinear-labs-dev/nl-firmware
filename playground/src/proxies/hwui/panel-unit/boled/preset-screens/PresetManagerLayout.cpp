@@ -20,12 +20,12 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListSelectStorePosition.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
-#include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <functional>
 #include <memory>
 #include <vector>
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
+#include "CurrentVoiceGroupSelectionIndicator.h"
 
 PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode)
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -96,8 +96,12 @@ void PresetManagerLayout::setupBankEdit()
   }
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
-  addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
+
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
+  addControl(new CurrentVoiceGroupSelectionIndicator(Rect{ 20, 15, 24, 8 }));
+
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
+
   m_menu = addControl(new BankEditButtonMenu(Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   m_presets->setBankFocus();
@@ -111,7 +115,10 @@ void PresetManagerLayout::setupBankSelect()
   }
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
-  addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
+
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
+  addControl(new CurrentVoiceGroupSelectionIndicator(Rect{ 20, 15, 24, 8 }));
+
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_autoLoad = addControl(new Button("Direct Load", Buttons::BUTTON_D));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
@@ -129,7 +136,10 @@ void PresetManagerLayout::setupBankStore()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
-  addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
+
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
+  addControl(new CurrentVoiceGroupSelectionIndicator(Rect{ 20, 15, 24, 8 }));
+
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_presets->setBankFocus();
@@ -166,7 +176,9 @@ void PresetManagerLayout::setupPresetEdit()
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
-  addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
+
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
+  addControl(new CurrentVoiceGroupSelectionIndicator(Rect{ 20, 15, 24, 8 }));
 
   if(selectedBank && !selectedBank->empty())
   {
@@ -189,7 +201,10 @@ void PresetManagerLayout::setupPresetSelect()
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_autoLoad = addControl(new Button("Direct Load", Buttons::BUTTON_D));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
-  addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
+
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
+  addControl(new CurrentVoiceGroupSelectionIndicator(Rect{ 20, 15, 24, 8 }));
+
   Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->onChange(
       sigc::mem_fun(this, &PresetManagerLayout::updateAutoLoadButton));
 }
@@ -203,7 +218,10 @@ void PresetManagerLayout::setupPresetStore()
   m_bankAndPresetNumberLabel = addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
-  addControl(new UndoIndicator(Rect(4, 15, 10, 5)));
+
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
+  addControl(new CurrentVoiceGroupSelectionIndicator(Rect{ 20, 15, 24, 8 }));
+
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
 }

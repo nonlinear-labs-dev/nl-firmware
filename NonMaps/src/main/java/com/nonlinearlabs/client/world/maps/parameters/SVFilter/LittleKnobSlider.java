@@ -6,8 +6,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontal;
 
 public class LittleKnobSlider extends SliderHorizontal {
-	public LittleKnobSlider(MapsLayout parent) {
-		super(parent);
+	public LittleKnobSlider(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

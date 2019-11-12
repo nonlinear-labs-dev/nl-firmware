@@ -2,28 +2,32 @@ package com.nonlinearlabs.client.world.maps.parameters.Scale;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 import com.nonlinearlabs.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class ScaleLabelModuleHeader extends LabelModuleHeader {
 
-	public ScaleLabelModuleHeader(ParameterGroupVertical parent, Name name) {
-		super(parent, name);
+	public ScaleLabelModuleHeader(ParameterGroup parent) {
+		super(parent);
 	}
 
 	public class ScaleGroupContextMenu extends ParameterGroupContextMenu {
 
 		public ScaleGroupContextMenu(OverlayLayout parent, Scale scaleGroup) {
 			super(parent);
-			if (scaleGroup.anyValueNotDefault()) {
+
+			EditBufferPresenter p = EditBufferPresenterProvider.getPresenter();
+
+			if (p.isAnyScaleOffsetParameterNotDefault) {
 				addChild(new ContextMenuItem(this, "Reset") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -37,7 +41,7 @@ public class ScaleLabelModuleHeader extends LabelModuleHeader {
 
 	@Override
 	public Control onContextMenu(Position pos) {
-		if (Setup.get().localSettings.contextMenus.isTrue()) {
+		if (SetupModel.get().localSettings.contextMenus.isTrue()) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
 			return o.setContextMenu(pos, new ScaleGroupContextMenu(o, (Scale) getParent()));
 		}

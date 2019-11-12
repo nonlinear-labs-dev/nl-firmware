@@ -4,8 +4,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class ValueDisplayLarge extends ValueDisplay {
 
-	public ValueDisplayLarge(MapsLayout parent) {
-		super(parent);
+	public ValueDisplayLarge(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

@@ -1,10 +1,21 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+
 public class LocalSettings {
 
 	static public class SelectionAutoScroll {
 		static public String[] options = { "Off", "Parameter", "Preset", "Parameter and Preset" };
 		public int selected = 3;
+		public SetupModel.SelectionAutoScroll selectedOption = SetupModel.SelectionAutoScroll.off;
+
+		public boolean isOneOf(SetupModel.SelectionAutoScroll... choices) {
+			for (SetupModel.SelectionAutoScroll c : choices)
+				if (c == selectedOption)
+					return true;
+
+			return false;
+		}
 	}
 
 	static public class EditParameter {

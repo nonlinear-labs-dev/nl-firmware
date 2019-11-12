@@ -32,7 +32,7 @@ public class Overlay extends OverlayLayout {
 		public LayerDisplay(OverlayLayout parent) {
 			super(parent);
 
-			EditBufferModel.get().soundType.onChange(v -> {
+			EditBufferModel.soundType.onChange(v -> {
 				setVisible(v != SoundType.Single);
 				return true;
 			});
@@ -132,7 +132,7 @@ public class Overlay extends OverlayLayout {
 		drawBackground(ctx);
 		buttons.drawActiveButton(ctx, invalidationMask);
 
-		if (EditBufferModel.get().soundType.getValue() != SoundType.Single)
+		if (EditBufferModel.soundType.getValue() != SoundType.Single)
 			drawDualSoundIndication(ctx);
 
 		super.draw(ctx, invalidationMask);

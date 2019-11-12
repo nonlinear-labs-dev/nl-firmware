@@ -16,7 +16,7 @@ public class ContextMenuButton extends SVGImage {
 
 	private Control open(Position pos) {
 		Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-		Parameter p = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelection();
+		Parameter p = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().getSelectedParameter();
 		ContextMenu m = p.createContextMenu(o);
 		o.setContextMenu(pos, m);
 		return m;

@@ -1,27 +1,44 @@
 package com.nonlinearlabs.client.useCases;
 
+import java.util.function.BiConsumer;
+
+import com.nonlinearlabs.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
 
 public class IncrementalChanger {
-	private final ValueDataModelEntity theValue;
 	private double lastQuantizedValue = 0;
 	private double pendingAmount = 0;
 	private double pixPerRange = 0;
+	private double defaultValue = 0;
+	private int coarseNumSteps;
+	private int fineNumSteps;
+	private boolean isBipolar;
+	private boolean isBoolean;
+	private BiConsumer<Double, Boolean> callback;
+	private Runnable doneCallback;
 
-	IncrementalChanger(ValueDataModelEntity theValue, double pixPerRange) {
-		this.theValue = theValue;
-		this.lastQuantizedValue = this.theValue.value.getValue();
+	IncrementalChanger(DoubleDataModelEntity value, int coarseSteps, int fineSteps, boolean bipolar, boolean isBoolean,
+			double pixPerRange, double defaultValue, BiConsumer<Double, Boolean> cb, Runnable doneCallback) {
+		this.coarseNumSteps = coarseSteps;
+		this.fineNumSteps = fineSteps;
+		this.lastQuantizedValue = value.getValue();
 		this.pixPerRange = pixPerRange;
+		this.isBipolar = bipolar;
+		this.isBoolean = isBoolean;
+		this.defaultValue = defaultValue;
+		this.callback = cb;
+		this.doneCallback = doneCallback;
 	}
 
-	public ValueDataModelEntity getValue() {
-		return this.theValue;
+	public IncrementalChanger(ValueDataModelEntity value, double pixelsPerRange, BiConsumer<Double, Boolean> cb,
+			Runnable doneCallback) {
+		this(value.value, value.metaData.coarseDenominator.getValue(), value.metaData.fineDenominator.getValue(),
+				value.metaData.bipolar.getBool(), value.metaData.isBoolean.getBool(), pixelsPerRange,
+				value.metaData.defaultValue.getValue(), cb, doneCallback);
 	}
 
 	public double getQuantizedValue(double v, boolean fine) {
-		double steps = fine ? this.theValue.metaData.fineDenominator.getValue()
-				: this.theValue.metaData.coarseDenominator.getValue();
+		double steps = fine ? fineNumSteps : coarseNumSteps;
 		v *= steps;
 		v = Math.round(v);
 		return v / steps;
@@ -36,40 +53,86 @@ public class IncrementalChanger {
 	}
 
 	public double getLowerBorder() {
-		return (theValue.metaData.bipolar.getValue() == BooleanValues.on) ? -1.0 : 0.0;
+		return isBipolar ? -1.0 : 0.0;
 	}
 
 	public void changeBy(boolean fine, double amount) {
 
 		amount /= pixPerRange;
 
-		if (this.theValue.metaData.bipolar.getValue() == BooleanValues.on)
+		if (isBipolar)
 			amount *= 2;
 
 		if (fine)
-			amount = amount * this.theValue.metaData.coarseDenominator.getValue()
-					/ this.theValue.metaData.fineDenominator.getValue();
+			amount = amount * coarseNumSteps / fineNumSteps;
 
-		pendingAmount += amount;
+		pendingAmount += bendAmount(amount);
 
 		double newVal = getQuantizedValue(lastQuantizedValue + pendingAmount, fine);
 		newVal = clip(newVal);
 
 		if (newVal != lastQuantizedValue) {
 
-			if (this.theValue.metaData.isBoolean.getValue() == BooleanValues.on) {
+			if (isBoolean) {
 				if (newVal > lastQuantizedValue)
 					newVal = 1.0;
 				else if (newVal < lastQuantizedValue)
 					newVal = 0.0;
 			}
 
-			this.theValue.value.setValue(newVal);
+			callback.accept(newVal, false);
 			pendingAmount = 0;
 			lastQuantizedValue = newVal;
 		}
 	}
 
 	public void finish() {
+		if (doneCallback != null)
+			doneCallback.run();
+	}
+
+	public void setToDefault() {
+		callback.accept(defaultValue, true);
+		lastQuantizedValue = defaultValue;
+	}
+
+	public void inc(boolean fine) {
+		incDec(fine, bendAmount(1.0) < 0 ? -1 : 1);
+	}
+
+	public void dec(boolean fine) {
+		incDec(fine, bendAmount(-1.0) < 0 ? -1 : 1);
+	}
+
+	public double bendAmount(double i) {
+		return i;
+	}
+
+	protected boolean isValueCoarseQuantized() {
+		return getQuantizedClippedValue(false) == getQuantizedClippedValue(true);
+	}
+
+	private double getQuantizedClippedValue(boolean fine) {
+		return clip(getQuantizedValue(lastQuantizedValue, fine));
+	}
+
+	private void incDec(boolean fine, double inc) {
+		if (!fine && !isValueCoarseQuantized()) {
+			double fineValue = getQuantizedClippedValue(true);
+			double coarseValue = getQuantizedClippedValue(false);
+
+			if (coarseValue < fineValue && inc < 0) {
+				inc = 0;
+			} else if (coarseValue > fineValue && inc > 0) {
+				inc = 0;
+			}
+		}
+
+		double controlVal = clip(lastQuantizedValue);
+		double denominator = fine ? fineNumSteps : coarseNumSteps;
+		double unRounded = controlVal * denominator;
+		double rounded = Math.round(unRounded);
+		double newValue = clip((rounded + inc) / denominator);
+		callback.accept(newValue, true);
 	}
 }

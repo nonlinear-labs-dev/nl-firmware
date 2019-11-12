@@ -3,7 +3,7 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
@@ -19,7 +19,7 @@ public class EditorModeButton extends SVGImage {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
-		if(isChanged()) {
+		if (isChanged()) {
 			Rect pix = getPixRect().copy();
 			pix = pix.getReducedBy(pix.getWidth() * -0.5);
 			pix.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 5, 1.5, null, RGB.changedBeltBorder());
@@ -27,9 +27,9 @@ public class EditorModeButton extends SVGImage {
 	}
 
 	private boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if (bpm instanceof ModulateableParameter) {
-			ModulateableParameter modP = (ModulateableParameter) bpm;
+		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
+		if (bpm instanceof ModulateableParameterModel) {
+			ModulateableParameterModel modP = (ModulateableParameterModel) bpm;
 			return modP.isModAmountChanged() || modP.isModSourceChanged() || modP.isMCPosChanged();
 		}
 		return false;

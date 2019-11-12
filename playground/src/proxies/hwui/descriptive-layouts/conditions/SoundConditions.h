@@ -17,6 +17,7 @@ namespace DescriptiveLayouts
      protected:
       virtual void onEditBufferChanged();
       sigc::connection m_editbufferChangedConnection;
+      sigc::connection m_editbufferTypeChangedConnection;
     };
 
     class IsSingleSound : public EditBufferCondition

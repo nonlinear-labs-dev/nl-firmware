@@ -3,7 +3,6 @@ package com.nonlinearlabs.client.world.maps.presets.bank;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetList.ScrollRequest;
 
@@ -97,29 +96,28 @@ public class PresetList extends LayoutResizingVertical {
 		return null;
 	}
 
-	public void selectPrev(Initiator initiator) {
+	public void selectPrev() {
 		Preset prev = getPrev(selectedPreset);
 
 		if (prev != null)
-			selectPreset(prev.getUUID(), initiator);
+			selectPreset(prev.getUUID());
 	}
 
-	public void selectNext(Initiator initiator) {
+	public void selectNext() {
 		Preset next = getNext(selectedPreset);
 
 		if (next != null)
-			selectPreset(next.getUUID(), initiator);
+			selectPreset(next.getUUID());
 	}
 
 	public String getSelectedPreset() {
 		return selectedPreset;
 	}
 
-	public void selectPreset(String uuid, Initiator initiator) {
+	public void selectPreset(String uuid) {
 		selectedPreset = uuid;
 
-		if (initiator == Initiator.EXPLICIT_USER_ACTION)
-			getNonMaps().getServerProxy().selectPreset(uuid);
+		getNonMaps().getServerProxy().selectPreset(uuid);
 
 		requestLayout();
 

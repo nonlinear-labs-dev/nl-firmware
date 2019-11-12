@@ -14,28 +14,32 @@ class AudioEngineProxy
  public:
   AudioEngineProxy();
 
-  template<typename tParameter>
-  auto createAndSendParameterMessage(const tParameter* parameter) {
+  template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
+  {
     sendParameterMessage(createMessage<tParameter>(parameter));
   }
 
-  template<typename tParameter>
-  auto createMessage(const tParameter* parameter) {
+  template <typename tParameter> auto createMessage(const tParameter* parameter)
+  {
     return ParameterMessageFactory::createMessage<tParameter>(parameter);
   }
 
-  template<class tMessage>
-  void sendParameterMessage(const tMessage &msg)
+  template <class tMessage> void sendParameterMessage(const tMessage& msg)
+  {
+    send(nltools::msg::EndPoint::AudioEngine, msg);
+  }
+
+  template <typename tSettingMessage> void sendSettingMessage(const tSettingMessage& msg)
   {
     send(nltools::msg::EndPoint::AudioEngine, msg);
   }
 
   void sendEditBuffer();
-  void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
+  void toggleSuppressParameterChanges(UNDO::Transaction* transaction);
 
-  void sendLayerEditBuffer();
-  void sendSplitEditBuffer();
-  void sendSingleEditBuffer();
+  static nltools::msg::LayerPresetMessage createLayerEditBufferMessage();
+  static nltools::msg::SplitPresetMessage createSplitEditBufferMessage();
+  static nltools::msg::SinglePresetMessage createSingleEditBufferMessage();
 
  private:
   bool m_suppressParamChanges = false;

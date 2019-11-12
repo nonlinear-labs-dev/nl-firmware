@@ -22,6 +22,4 @@ void SingleSoundEditMenu::init()
   addItem<TextItem>("-- Single --", fullWidth);
   addItem<InitSound>(fullWidth);
   addItem<RandomizeItem>(fullWidth);
-  addItem<SettingItem<TransitionTime>>("Transition Time", fullWidth);
-  addItem<SettingItem<TuneReference>>("Tune Reference", fullWidth);
 }

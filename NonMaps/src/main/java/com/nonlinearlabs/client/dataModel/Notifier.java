@@ -4,9 +4,13 @@ import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+
 public abstract class Notifier<T> {
 
-	LinkedList<Function<T, Boolean>> consumers = new LinkedList<Function<T, Boolean>>();
+	private LinkedList<Function<T, Boolean>> consumers = new LinkedList<Function<T, Boolean>>();
+	private boolean scheduled = false;
 
 	public void onChange(Function<T, Boolean> cb) {
 		consumers.add(cb);
@@ -14,6 +18,23 @@ public abstract class Notifier<T> {
 	}
 
 	public boolean notifyChanges() {
+		if (!scheduled) {
+			scheduled = true;
+
+			Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+				@Override
+				public void execute() {
+					notifyNow();
+				}
+
+			});
+		}
+		return true;
+	}
+
+	private void notifyNow() {
+		scheduled = false;
 		T v = getValue();
 
 		consumers.removeIf(new Predicate<Function<T, Boolean>>() {
@@ -24,8 +45,6 @@ public abstract class Notifier<T> {
 				return !needsFurtherUpdates;
 			}
 		});
-
-		return true;
 	}
 
 	public abstract T getValue();

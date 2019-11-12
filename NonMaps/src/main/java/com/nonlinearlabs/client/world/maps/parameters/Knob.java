@@ -10,8 +10,8 @@ abstract class Knob extends ModulateableValueControl {
 	private static double startAngle = degreeToRadians(120);
 	private static double endAngle = degreeToRadians(60);
 
-	public Knob(MapsLayout parent) {
-		super(parent);
+	public Knob(MapsLayout parent, int parameterId) {
+		super(parent, parameterId);
 	}
 
 	private static double degreeToRadians(double degree) {

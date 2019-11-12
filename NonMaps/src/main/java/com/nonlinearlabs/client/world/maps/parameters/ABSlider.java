@@ -10,8 +10,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 public class ABSlider extends SliderVertical {
 	private boolean labelsVisible = true;
 
-	public ABSlider(MapsLayout parent) {
-		super(parent);
+	public ABSlider(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

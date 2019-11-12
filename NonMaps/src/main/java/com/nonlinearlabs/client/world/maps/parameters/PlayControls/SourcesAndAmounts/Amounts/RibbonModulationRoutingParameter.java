@@ -6,13 +6,13 @@ import com.nonlinearlabs.client.world.maps.parameters.ModulationRoutingParameter
 
 public class RibbonModulationRoutingParameter extends ModulationRoutingParameter {
 
-	public RibbonModulationRoutingParameter(MapsLayout parent, int paramID, int srcParamID, int targetParamID) {
-		super(parent, paramID, srcParamID, targetParamID);
+	public RibbonModulationRoutingParameter(MapsLayout parent, int paramID) {
+		super(parent, paramID);
 	}
 
 	@Override
 	protected ModulationRoutingButton createRoutingButton() {
-		return new RibbonModulationRoutingButton(this);
+		return new RibbonModulationRoutingButton(this, getParameterID());
 	}
 
 	@Override

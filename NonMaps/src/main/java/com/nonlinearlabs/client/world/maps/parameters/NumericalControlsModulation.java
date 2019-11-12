@@ -8,8 +8,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 class NumericalControlsModulation extends ModulateableValueControl {
 
-	NumericalControlsModulation(MapsLayout parent) {
-		super(parent);
+	NumericalControlsModulation(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

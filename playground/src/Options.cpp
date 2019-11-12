@@ -1,10 +1,10 @@
 #include "Options.h"
+#include "CompileTimeOptions.h"
 #include <glibmm/optiongroup.h>
 #include "device-settings/DebugLevel.h"
 #include "Application.h"
 
 Options::Options(int &argc, char **&argv)
-    : m_selfPath(argv[0])
 {
   setDefaults();
 
@@ -61,7 +61,7 @@ void Options::setDefaults()
   m_settingsFile = "./settings.xml";
   m_kioskModeFile = "./kiosk-mode.stamp";
 
-  Glib::ustring p = m_selfPath;
+  Glib::ustring p = getInstallDir();
   size_t lastSlash = p.rfind('/');
   Glib::ustring path = "/resources/templates/";
   p = p.substr(0, lastSlash) + path;
@@ -80,7 +80,7 @@ bool Options::makePresetManagerDirectory(Glib::RefPtr<Gio::File> file)
   return false;
 }
 
-bool Options::setPMPathName(const Glib::ustring &optionName, const Glib::ustring &path, bool hasValue)
+bool Options::setPMPathName(const Glib::ustring &, const Glib::ustring &path, bool hasValue)
 {
   if(hasValue)
     m_pmPath = path;
@@ -88,7 +88,7 @@ bool Options::setPMPathName(const Glib::ustring &optionName, const Glib::ustring
   return true;
 }
 
-bool Options::setLayoutFolder(const Glib::ustring &optionName, const Glib::ustring &path, bool hasValue)
+bool Options::setLayoutFolder(const Glib::ustring &, const Glib::ustring &path, bool hasValue)
 {
   if(hasValue)
     m_layoutFolder = path;
@@ -111,9 +111,9 @@ const ustring &Options::getAudioEngineHost() const
   return m_audioEngineHost;
 }
 
-const ustring &Options::getSelfPath() const
+ustring Options::getInstallDir() const
 {
-  return m_selfPath;
+  return getInstallPrefix();
 }
 
 const ustring &Options::getSettingsFile() const

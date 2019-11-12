@@ -5,6 +5,12 @@
         "Class": "Border",
         "Rect": "1, 0, 111, 33"
       }
+    },
+    "Test-Bar": {
+      "Bar": {
+        "Class": "Bar",
+        "Rect": "0, 0, 94, 2"
+      }
     }
   }
 }

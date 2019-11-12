@@ -61,7 +61,8 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
 void PedalParameter::setRoutersModeAccordingToReturnMode()
 {
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
-  if(auto eb = dynamic_cast<EditBuffer *>(getParentGroup()->getParent())) {
+  if(auto eb = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  {
     auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
     for(auto router : mappings->getModulationRoutingParametersFor(this))
     {
@@ -130,6 +131,8 @@ void PedalParameter::sendModeToLpc() const
   uint16_t id = mapParameterIdToLPCSetting();
   uint16_t v = (uint16_t) m_mode;
   Application::get().getLPCProxy()->sendSetting(id, v);
+
+  sendToLpc();
 }
 
 uint16_t PedalParameter::mapParameterIdToLPCSetting() const

@@ -4,13 +4,13 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class GapFilter extends ParameterGroupVertical {
+public class GapFilter extends ParameterGroup {
 
 	public GapFilter(MapsLayout parent) {
-		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		super(parent, "Gap Filt");
+		addChild(new LabelModuleHeader(this));
 		addChild(new GapFilterControls(this));
 	}
 
@@ -64,8 +64,4 @@ public class GapFilter extends ParameterGroupVertical {
 		return ColorTable.getColorIndicator();
 	}
 
-	@Override
-	public String getID() {
-		return "Gap Filt";
-	}
 }

@@ -150,10 +150,10 @@ void PanelUnit::installUsageMode(FocusAndMode focusAndMode)
   {
     case UIFocus::Presets:
     case UIFocus::Banks:
+    case UIFocus::Sound:
       setUsageMode(new PanelUnitPresetMode());
       break;
 
-    case UIFocus::Sound:
     case UIFocus::Parameters:
     case UIFocus::Setup:
     case UIFocus::Unchanged:

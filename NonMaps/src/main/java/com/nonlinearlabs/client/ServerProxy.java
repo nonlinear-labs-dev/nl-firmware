@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
@@ -15,12 +16,13 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferUpdater;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManager;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupUpdater;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
@@ -30,13 +32,10 @@ import com.nonlinearlabs.client.world.Uuid;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterEditor;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
-import com.nonlinearlabs.client.world.overlay.ParameterInfoDialog;
 
 public class ServerProxy {
 
@@ -96,7 +95,6 @@ public class ServerProxy {
 			boolean omitOracles = omitOracles(world);
 
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
-			nonMaps.getNonLinearWorld().getParameterEditor().update(editBufferNode, omitOracles);
 			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
 			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
 					presetManagerNode, deviceInfo, undoNode);
@@ -111,7 +109,7 @@ public class ServerProxy {
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
 			deviceInfoUpdater.doUpdate();
 
-			EditBufferUpdater ebu = new EditBufferUpdater(editBufferNode);
+			EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 			ebu.doUpdate();
 
 			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManager.get());
@@ -151,21 +149,10 @@ public class ServerProxy {
 		return false;
 	}
 
-	public void onParameterSelectionChanged(final ParameterEditor root) {
-		Parameter pl = root.getSelection();
-		if (pl != null) {
-			selectParameter(pl.getParameterID());
-		}
-	}
-
 	public void selectParameter(int id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, true);
-	}
-
-	public void onParameterChanged(Parameter pl) {
-		setParameter(pl.getParameterID(), pl.getValue().getQuantizedClipped(), pl.isOracle());
 	}
 
 	public void setParameter(int id, double v, boolean oracle) {
@@ -380,18 +367,18 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void loadParameterDescription(final Parameter selectedParameter, final ParameterInfoDialog client) {
-		downloadFile("/resources/parameter-descriptions/" + selectedParameter.getParameterID() + ".txt",
+	public void loadParameterDescription(int id, final Consumer<String> client) {
+		downloadFile("/resources/parameter-descriptions/" + id + ".txt",
 				new DownloadHandler() {
 
 					@Override
 					public void onFileDownloaded(String text) {
-						client.setDescription(text);
+						client.accept(text);
 					}
 
 					@Override
 					public void onError() {
-						client.setDescription("");
+						client.accept("");
 					}
 				});
 	}
@@ -442,17 +429,15 @@ public class ServerProxy {
 		RenameDialog.awaitNewPreset(uuid);
 	}
 
-	public void setModulationAmount(final ModulatableParameter modulatableParameter) {
+	public void setModulationAmount(double amount) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
-		StaticURI uri = new StaticURI(path,
-				new StaticURI.KeyValue("amount", modulatableParameter.getModulationAmount().getQuantizedClipped()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount));
 		queueJob(uri, true);
 	}
 
-	public void setModulationSource(ModulatableParameter modulatableParameter) {
+	public void setModulationSource(ModSource src) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
-		StaticURI uri = new StaticURI(path,
-				new StaticURI.KeyValue("source", modulatableParameter.getModulationSource().toInt()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()));
 		queueJob(uri, true);
 	}
 
@@ -624,9 +609,9 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void renameMacroControl(MacroControlParameter param, String newName) {
+	public void renameMacroControl(int parameterID, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-mc");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()),
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID),
 				new StaticURI.KeyValue("new-name", newName));
 		queueJob(uri, false);
 	}

@@ -13,8 +13,8 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.DisplayScaling;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.DisplayScaling;
 import com.nonlinearlabs.client.localStorage.WebStorage;
 import com.nonlinearlabs.client.useCases.LocalSettings;
 import com.nonlinearlabs.client.world.Dimension;
@@ -63,7 +63,7 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	@Override
 	public void onModuleLoad() {
 		LocalSettings.get().setStorage(new WebStorage());
-		Setup.get().localSettings.displayScaling.onChange(s -> setScaling(s));
+		SetupModel.get().localSettings.displayScaling.onChange(s -> setScaling(s));
 
 		Tracer.registerCrashHandler();
 

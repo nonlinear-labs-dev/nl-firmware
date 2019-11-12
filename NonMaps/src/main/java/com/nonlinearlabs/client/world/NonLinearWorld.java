@@ -12,8 +12,8 @@ import com.nonlinearlabs.client.ClipboardManager;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ContextState;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.maps.IContextMenu;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
@@ -606,7 +606,7 @@ public class NonLinearWorld extends MapsLayout {
 		if (getPresetManager().isInStoreSelectMode())
 			return null;
 
-		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+		boolean showContextMenus = SetupModel.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 		if (showContextMenus) {
 			Overlay o = getViewport().getOverlay();
 			return o.setContextMenu(pos, new PresetManagerContextMenu(o));

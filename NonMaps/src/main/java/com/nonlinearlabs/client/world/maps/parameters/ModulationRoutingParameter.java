@@ -1,37 +1,26 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter.ReturnMode;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 
 public class ModulationRoutingParameter extends Parameter {
 
-	private int targetParamID;
-	private int sourceParamID;
+	private ParameterPresenter physicalControlParameterPresenter;
 
-	public ModulationRoutingParameter(MapsLayout parent, int paramID, final int srcParamID, int targetParamID) {
+	public ModulationRoutingParameter(MapsLayout parent, int paramID) {
 		super(parent, paramID);
 
-		this.sourceParamID = srcParamID;
-		this.targetParamID = targetParamID;
+		ModulationRouterParameterModel p = (ModulationRouterParameterModel) EditBufferModel.findParameter(paramID);
 
-		getSelectionRoot().registerSelectable(this);
-
-		Scheduler s = Scheduler.get();
-
-		s.scheduleFinally(new ScheduledCommand() {
-
-			@Override
-			public void execute() {
-				registerListener(srcParamID);
-			}
+		ParameterPresenterProviders.get().register(p.getAssociatedPhysicalControlID(), v -> {
+			physicalControlParameterPresenter = v;
+			onReturningModeChanged();
+			return true;
 		});
-
-		ParameterEditor eddi = (ParameterEditor) getSelectionRoot();
-		onReturningModeChanged((PhysicalControlParameter) eddi.findSelectable(sourceParamID));
 	}
 
 	@Override
@@ -43,7 +32,6 @@ public class ModulationRoutingParameter extends Parameter {
 		removeAll();
 
 		if (returning) {
-
 			addChild(new Spacer(this) {
 				@Override
 				protected double getBasicHeight() {
@@ -61,7 +49,7 @@ public class ModulationRoutingParameter extends Parameter {
 				}
 			});
 
-			addChild(new SliderHorizontal(this) {
+			addChild(new SliderHorizontal(this, getParameterID()) {
 				@Override
 				protected double getBasicWidth() {
 					return 120;
@@ -73,7 +61,7 @@ public class ModulationRoutingParameter extends Parameter {
 				}
 			});
 
-			addChild(new ValueDisplaySmall(this));
+			addChild(new ValueDisplaySmall(this, getParameterID()));
 		} else {
 			addChild(createRoutingButton());
 		}
@@ -82,42 +70,11 @@ public class ModulationRoutingParameter extends Parameter {
 	}
 
 	protected ModulationRoutingButton createRoutingButton() {
-		return new ModulationRoutingButton(this);
+		return new ModulationRoutingButton(this, getParameterID());
 	}
 
-	private void registerListener(int srcParamID) {
-		ParameterEditor eddi = (ParameterEditor) getSelectionRoot();
-		PhysicalControlParameter src = (PhysicalControlParameter) eddi.findSelectable(srcParamID);
-		src.addModulationRoutingParameter(this);
-	}
-
-	public int getTargetParameterID() {
-		return targetParamID;
-	}
-
-	void applyReturningModulation(Initiator initiator, double diff) {
-		ParameterEditor eddi = (ParameterEditor) getSelectionRoot();
-		MacroControlParameter tgt = (MacroControlParameter) eddi.findSelectable(targetParamID);
-		double amount = getValue().getQuantizedClipped();
-
-		if (amount != 0.0)
-			tgt.applyModulation(initiator, diff * amount);
-	}
-
-	public void applyDirectModulation(Initiator initiator, double value) {
-		ParameterEditor eddi = (ParameterEditor) getSelectionRoot();
-		MacroControlParameter tgt = (MacroControlParameter) eddi.findSelectable(targetParamID);
-		double amount = getValue().getQuantizedClipped();
-
-		if (amount != 0.0)
-			tgt.getValue().setRawValue(initiator, value);
-	}
-
-	public void onReturningModeChanged(PhysicalControlParameter src) {
-		if (src.getParameterID() == sourceParamID) {
-			setupChildren(src.getReturnMode() != ReturnMode.None);
-			getValue().setBoolean(src.getReturnMode() == ReturnMode.None);
-		}
+	public void onReturningModeChanged() {
+		setupChildren(physicalControlParameterPresenter.isReturning);
 	}
 
 }

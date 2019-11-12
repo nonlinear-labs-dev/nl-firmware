@@ -3,8 +3,7 @@ package com.nonlinearlabs.client.world.maps.parameters.value;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 class Value {
 	private double rawValue = 0;
@@ -16,10 +15,10 @@ class Value {
 		return rawValue;
 	}
 
-	public void setRawValue(Initiator initiator, double newRawValue) {
+	public void setRawValue(double newRawValue) {
 		double oldRawValue = rawValue;
 		this.rawValue = newRawValue;
-		onRawValueChanged(initiator, oldRawValue, newRawValue);
+		onRawValueChanged(oldRawValue, newRawValue);
 	}
 
 	public double getDefaultValue() {
@@ -46,8 +45,8 @@ class Value {
 		this.isBoolean = isBoolean;
 	}
 
-	public void setToDefault(Initiator initiator) {
-		setRawValue(initiator, getDefaultValue());
+	public void setToDefault() {
+		setRawValue(getDefaultValue());
 	}
 
 	public void update(Node child) {
@@ -57,7 +56,7 @@ class Value {
 			String value = ServerProxy.getText(child);
 
 			if (nodeName.equals("value")) {
-				setRawValue(Initiator.INDIRECT_USER_ACTION, Double.parseDouble(value));
+				setRawValue(Double.parseDouble(value));
 			} else if (nodeName.equals("bipolar")) {
 				setBipolar(value.equals("1"));
 			} else if (nodeName.equals("default")) {
@@ -67,7 +66,7 @@ class Value {
 		}
 	}
 
-	protected void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue) {
+	protected void onRawValueChanged(double oldRawValue, double newRawValue) {
 	}
 
 	protected void onEditingFinished() {
@@ -77,6 +76,6 @@ class Value {
 	public void update(ValueDataModelEntity e) {
 		this.isBipolar = e.metaData.bipolar.getValue() == BooleanValues.on;
 		this.defaultValue = e.metaData.defaultValue.getValue();
-		setRawValue(Initiator.INDIRECT_USER_ACTION, e.getValue().value.getValue());
+		setRawValue(e.getValue().value.getValue());
 	}
 }
