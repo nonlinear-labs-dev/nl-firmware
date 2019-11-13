@@ -47,6 +47,8 @@ class dsp_host_dual
   void update_event_global_param(const uint32_t _index, const bool _lock, const float _position);
   void update_event_edit_time(const float _position);
   void update_event_transition_time(const float _position);
+  void update_event_note_shift(const float _shift);
+  void update_event_glitch_suppr(const bool _enabled);
   void render();
   void reset();
 

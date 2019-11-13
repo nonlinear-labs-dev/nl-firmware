@@ -14,6 +14,7 @@
 #define LOG_INIT 0
 #define LOG_MIDI 0
 #define LOG_EDTIS 0
+#define LOG_SETTINGS 0
 #define LOG_RECALL 0
 #define LOG_TIMES 0
 #define LOG_KEYS 0
@@ -399,7 +400,12 @@ void dsp_host_dual::update_event_macro_time(const uint32_t _index, const uint32_
   if(param->m_time.m_position != _position)
   {
     param->m_time.m_position = _position;
-    update_event_time(&param->m_time.m_dx, scale(param->m_time.m_scaling, param->m_time.m_position));
+    const float time = scale(param->m_time.m_scaling, param->m_time.m_position);
+    update_event_time(&param->m_time.m_dx, time);
+    // should update both layers in single mode...?
+#if LOG_TIMES
+    nltools::Log::info("MC_time(id:", _index, ", layer:", _layer, "raw:", _position, ",time:", time, ")");
+#endif
   }
 }
 
@@ -469,6 +475,7 @@ void dsp_host_dual::update_event_edit_time(const float _position)
   const float time = 200.0f * _position;
   update_event_time(&m_edit_time, time);
 #if LOG_TIMES
+  nltools::Log::info("edit_time(raw:", _position, ", time:", time, ")");
 #endif
 }
 
@@ -478,6 +485,23 @@ void dsp_host_dual::update_event_transition_time(const float _position)
   const float time = scale(m_transition_scale, _position);
   update_event_time(&m_transition_time, time);
 #if LOG_TIMES
+  nltools::Log::info("transition_time(raw:", _position, ", time:", time, ")");
+#endif
+}
+
+void dsp_host_dual::update_event_note_shift(const float _shift)
+{
+  m_global.m_note_shift = _shift;
+#if LOG_SETTINGS
+  nltools::Log::info("note_shift:", _shift);
+#endif
+}
+
+void dsp_host_dual::update_event_glitch_suppr(const bool _enabled)
+{
+  m_glitch_suppression = _enabled;
+#if LOG_SETTINGS
+  nltools::Log::info("glitch_suppression:", _enabled);
 #endif
 }
 
@@ -505,6 +529,7 @@ void dsp_host_dual::keyDown(const float _vel)
   //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
   //{}
 #if LOG_KEYS
+  nltools::Log::info("key_down()");
 #endif
 }
 
@@ -514,6 +539,7 @@ void dsp_host_dual::keyUp(const float _vel)
   //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
   //{}
 #if LOG_KEYS
+  nltools::Log::info("key_up()");
 #endif
 }
 
