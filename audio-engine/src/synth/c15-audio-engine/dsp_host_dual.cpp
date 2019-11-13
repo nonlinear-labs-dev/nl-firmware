@@ -11,14 +11,16 @@
 
 #include <nltools/logging/Log.h>
 
+// basic logging switches
 #define LOG_INIT 0
 #define LOG_MIDI 0
-#define LOG_EDTIS 0
+#define LOG_EDTIS 1
 #define LOG_SETTINGS 0
 #define LOG_RECALL 0
 #define LOG_TIMES 0
 #define LOG_KEYS 0
 #define LOG_TRANSITIONS 1
+#define LOG_RESET 0
 
 dsp_host_dual::dsp_host_dual()
 {
@@ -320,7 +322,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_ms
   // - update in order: sources, amounts, macros, targets (set mc assignment), direct
   // - start transitions (transition time)
 #if LOG_RECALL
-  nltools::Log::info("Received Single Preset Message!");
+  nltools::Log::info("Received Single Preset Message! (@", m_clock.m_index, ")");
 #endif
 }
 
@@ -331,7 +333,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg
   m_preloaded_split_data = _msg;
   // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
 #if LOG_RECALL
-  nltools::Log::info("Received Split Preset Message!");
+  nltools::Log::info("Received Split Preset Message!, (@", m_clock.m_index, ")");
 #endif
 }
 
@@ -342,7 +344,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg
   m_preloaded_layer_data = _msg;
   // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
 #if LOG_RECALL
-  nltools::Log::info("Received Layer Preset Message!");
+  nltools::Log::info("Received Layer Preset Message!, (@", m_clock.m_index, ")");
 #endif
 }
 
@@ -359,10 +361,10 @@ void dsp_host_dual::update_event_hw_source(const uint32_t _index, const bool _lo
   {
     param->m_position = _position;
     // trigger hw chain ...
-  }
-#if LOG_EDITS
-  nltools::Log::info("hw_pos:", param->m_position);
+#if LOG_EDTIS
+    nltools::Log::info("hw_pos(raw:", _position, ", pos:", param->m_position, ")");
 #endif
+  }
 }
 
 void dsp_host_dual::update_event_hw_amount(const uint32_t _index, const uint32_t _layer, const bool _lock,
@@ -374,6 +376,9 @@ void dsp_host_dual::update_event_hw_amount(const uint32_t _index, const uint32_t
   {
     param->m_position = _position;
     // silent mc update (base) !!!
+#if LOG_EDTIS
+    nltools::Log::info("hw_amt(raw:", _position, ", pos:", param->m_position, ")");
+#endif
   }
 }
 
@@ -389,6 +394,9 @@ void dsp_host_dual::update_event_macro_ctrl(const uint32_t _index, const uint32_
     // ribbon bidirectionality currently missing ...
     // trigger mc chain ...
     mod_event_mc_chain(_index, _layer, _position, param->m_time.m_dx);
+#if LOG_EDTIS
+    nltools::Log::info("mc_pos(raw:", _position, ", pos:", param->m_position, ")");
+#endif
   }
 }
 
@@ -420,7 +428,9 @@ void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint3
     param->m_position = _position;
     if(_index == static_cast<uint32_t>(C15::Parameters::Unmodulateable_Parameters::Unison_Voices))
     {
+#if LOG_RESET
       nltools::Log::info("Unison Voices changed!");
+#endif
       // reset voice allocation, stop envelopes ...
     }
     else
@@ -428,6 +438,9 @@ void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint3
       // trigger transition (edit time) ...
       const float dest = scale(param->m_scaling, param->m_position);
       transition_event(_index, _layer, m_edit_time, param->m_section, param->m_clock, dest);
+#if LOG_EDTIS
+      nltools::Log::info("dp_pos(raw:", _position, ", pos:", param->m_position, "dest:", dest, ")");
+#endif
     }
   }
 }
@@ -454,6 +467,9 @@ void dsp_host_dual::update_event_target_param(const uint32_t _index, const uint3
     // trigger transition (edit time) ...
     const float dest = scale(param->m_scaling, param->polarize(param->m_position));
     transition_event(_index, _layer, m_edit_time, param->m_section, param->m_clock, dest);
+#if LOG_EDTIS
+    nltools::Log::info("tp_pos(raw:", _position, ", pos:", param->m_position, "dest:", dest, ")");
+#endif
   }
 }
 
@@ -467,6 +483,9 @@ void dsp_host_dual::update_event_global_param(const uint32_t _index, const bool 
     // trigger transition (edit time) ...
     const float dest = scale(param->m_scaling, param->m_position);
     transition_event(_index, m_edit_time, param->m_section, param->m_clock, dest);
+#if LOG_EDTIS
+    nltools::Log::info("gp_pos(raw:", _position, ", pos:", param->m_position, "dest:", dest, ")");
+#endif
   }
 }
 
@@ -521,6 +540,9 @@ void dsp_host_dual::render()
 
 void dsp_host_dual::reset()
 {
+#if LOG_RESET
+  nltools::Log::info("dsp_reset()");
+#endif
 }
 
 void dsp_host_dual::keyDown(const float _vel)
