@@ -53,8 +53,7 @@ class dsp_host_dual
  private:
   void keyDown(const float _vel);
   void keyUp(const float _vel);
-  float scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
-              float _value);
+  float scale(const Parameter_Scale<C15::Properties::SmootherScale> _scl, float _value);
   void update_event_time(Time_Parameter *_param, const float _ms);
   void mod_event_mc_chain(const uint32_t _index, const uint32_t _layer, const float _position,
                           const Time_Parameter _time);
@@ -80,6 +79,8 @@ class dsp_host_dual
   ClockHandle m_clock;
   TimeHandle m_time;
   Time_Parameter m_edit_time, m_transition_time;
+  const Parameter_Scale<C15::Properties::SmootherScale> m_transition_scale
+      = { C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f };
   // layer handling
   C15::Properties::LayerMode m_layer_mode;
   uint32_t m_layer_focus;  // probably obsolete

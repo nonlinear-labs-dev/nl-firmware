@@ -78,9 +78,9 @@ struct ParameterHandle
     for(uint32_t i = 0; i < m_layer_count; i++)
     {
       auto param = get_macro(i, _element.m_param.m_index);
-      param->m_time.m_scaleId = _element.m_ae.m_scaleId;
-      param->m_time.m_scaleFactor = _element.m_ae.m_scaleFactor;
-      param->m_time.m_scaleOffset = _element.m_ae.m_scaleOffset;
+      param->m_time.m_scaling.m_id = _element.m_ae.m_scaleId;
+      param->m_time.m_scaling.m_factor = _element.m_ae.m_scaleFactor;
+      param->m_time.m_scaling.m_offset = _element.m_ae.m_scaleOffset;
     }
   }
   inline void init_modulateable(const C15::ParameterDescriptor _element)
@@ -92,9 +92,9 @@ struct ParameterHandle
       param->m_section = _element.m_ae.m_smoother.m_section;
       param->m_clock = _element.m_ae.m_smoother.m_clock;
       param->m_renderIndex = _element.m_ae.m_smoother.m_index;
-      param->m_scaleId = _element.m_ae.m_scaleId;
-      param->m_scaleFactor = _element.m_ae.m_scaleFactor;
-      param->m_scaleOffset = _element.m_ae.m_scaleOffset;
+      param->m_scaling.m_id = _element.m_ae.m_scaleId;
+      param->m_scaling.m_factor = _element.m_ae.m_scaleFactor;
+      param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
       param->m_position = param->depolarize(_element.m_initial);
     }
   }
@@ -106,9 +106,9 @@ struct ParameterHandle
       param->m_section = _element.m_ae.m_smoother.m_section;
       param->m_clock = _element.m_ae.m_smoother.m_clock;
       param->m_renderIndex = _element.m_ae.m_smoother.m_index;
-      param->m_scaleId = _element.m_ae.m_scaleId;
-      param->m_scaleFactor = _element.m_ae.m_scaleFactor;
-      param->m_scaleOffset = _element.m_ae.m_scaleOffset;
+      param->m_scaling.m_id = _element.m_ae.m_scaleId;
+      param->m_scaling.m_factor = _element.m_ae.m_scaleFactor;
+      param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
       param->m_position = _element.m_initial;
     }
   }
@@ -120,9 +120,9 @@ struct ParameterHandle
       param->m_section = _element.m_ae.m_smoother.m_section;
       param->m_clock = _element.m_ae.m_smoother.m_clock;
       param->m_renderIndex = _element.m_ae.m_smoother.m_index;
-      param->m_scaleId = _element.m_ae.m_scaleId;
-      param->m_scaleFactor = _element.m_ae.m_scaleFactor;
-      param->m_scaleOffset = _element.m_ae.m_scaleOffset;
+      param->m_scaling.m_id = _element.m_ae.m_scaleId;
+      param->m_scaling.m_factor = _element.m_ae.m_scaleFactor;
+      param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
       param->m_position = _element.m_initial;
     }
   }

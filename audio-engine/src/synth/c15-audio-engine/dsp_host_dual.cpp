@@ -11,6 +11,14 @@
 
 #include <nltools/logging/Log.h>
 
+#define LOG_INIT 0
+#define LOG_MIDI 0
+#define LOG_EDTIS 0
+#define LOG_RECALL 0
+#define LOG_TIMES 0
+#define LOG_KEYS 0
+#define LOG_TRANSITIONS 1
+
 dsp_host_dual::dsp_host_dual()
 {
   m_mainOut_L = m_mainOut_R = 0.0f;
@@ -140,6 +148,9 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         break;
     }
   }
+#if LOG_INIT
+  nltools::Log::info("dsp_host_dual::init");
+#endif
 }
 
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
@@ -219,6 +230,9 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         break;
     }
   }
+#if LOG_MIDI
+  nltools::Log::info("midiMsg(status:", _status, ", data0:", _data0, ", data1:", _data1, ")");
+#endif
 }
 
 void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
@@ -304,7 +318,9 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_ms
   // - reset mc assignments
   // - update in order: sources, amounts, macros, targets (set mc assignment), direct
   // - start transitions (transition time)
+#if LOG_RECALL
   nltools::Log::info("Received Single Preset Message!");
+#endif
 }
 
 void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg)
@@ -313,7 +329,9 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg
   m_layer_mode = C15::Properties::LayerMode::Split;
   m_preloaded_split_data = _msg;
   // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
+#if LOG_RECALL
   nltools::Log::info("Received Split Preset Message!");
+#endif
 }
 
 void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg)
@@ -322,7 +340,9 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg
   m_layer_mode = C15::Properties::LayerMode::Layer;
   m_preloaded_layer_data = _msg;
   // todo: glitch_suppression, stop envelopes on layer_changed or unison_changed
+#if LOG_RECALL
   nltools::Log::info("Received Layer Preset Message!");
+#endif
 }
 
 void dsp_host_dual::update_event_hw_source(const uint32_t _index, const bool _lock,
@@ -339,7 +359,9 @@ void dsp_host_dual::update_event_hw_source(const uint32_t _index, const bool _lo
     param->m_position = _position;
     // trigger hw chain ...
   }
+#if LOG_EDITS
   nltools::Log::info("hw_pos:", param->m_position);
+#endif
 }
 
 void dsp_host_dual::update_event_hw_amount(const uint32_t _index, const uint32_t _layer, const bool _lock,
@@ -373,12 +395,11 @@ void dsp_host_dual::update_event_macro_time(const uint32_t _index, const uint32_
                                             const float _position)
 {
   auto param = m_params.get_macro(_layer, _index);
-  auto time = &param->m_time;
-  param->m_lock = time->m_lock = _lock;  // currently, group lock affects both
-  if(time->m_position != _position)
+  param->m_lock = param->m_time.m_lock = _lock;  // currently, group lock affects both
+  if(param->m_time.m_position != _position)
   {
-    time->m_position = _position;
-    update_event_time(&time->m_dx, scale(time->m_scaleId, time->m_scaleFactor, time->m_scaleOffset, time->m_position));
+    param->m_time.m_position = _position;
+    update_event_time(&param->m_time.m_dx, scale(param->m_time.m_scaling, param->m_time.m_position));
   }
 }
 
@@ -399,6 +420,8 @@ void dsp_host_dual::update_event_direct_param(const uint32_t _index, const uint3
     else
     {
       // trigger transition (edit time) ...
+      const float dest = scale(param->m_scaling, param->m_position);
+      transition_event(_index, _layer, m_edit_time, param->m_section, param->m_clock, dest);
     }
   }
 }
@@ -423,6 +446,8 @@ void dsp_host_dual::update_event_target_param(const uint32_t _index, const uint3
   if(change)
   {
     // trigger transition (edit time) ...
+    const float dest = scale(param->m_scaling, param->polarize(param->m_position));
+    transition_event(_index, _layer, m_edit_time, param->m_section, param->m_clock, dest);
   }
 }
 
@@ -434,18 +459,26 @@ void dsp_host_dual::update_event_global_param(const uint32_t _index, const bool 
   {
     param->m_position = _position;
     // trigger transition (edit time) ...
+    const float dest = scale(param->m_scaling, param->m_position);
+    transition_event(_index, m_edit_time, param->m_section, param->m_clock, dest);
   }
 }
 
 void dsp_host_dual::update_event_edit_time(const float _position)
 {
-  update_event_time(&m_edit_time, 200.0f * _position);
+  const float time = 200.0f * _position;
+  update_event_time(&m_edit_time, time);
+#if LOG_TIMES
+#endif
 }
 
 void dsp_host_dual::update_event_transition_time(const float _position)
 {
   // transition time scales like mc smoothing or like finite env times
-  update_event_time(&m_transition_time, scale(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, _position));
+  const float time = scale(m_transition_scale, _position);
+  update_event_time(&m_transition_time, time);
+#if LOG_TIMES
+#endif
 }
 
 void dsp_host_dual::render()
@@ -471,6 +504,8 @@ void dsp_host_dual::keyDown(const float _vel)
   const bool valid = m_alloc.keyDown(m_key_pos);
   //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
   //{}
+#if LOG_KEYS
+#endif
 }
 
 void dsp_host_dual::keyUp(const float _vel)
@@ -478,46 +513,47 @@ void dsp_host_dual::keyUp(const float _vel)
   const bool valid = m_alloc.keyUp(m_key_pos);
   //for(auto keyEvent = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); keyEvent = m_alloc.m_traversal.next())
   //{}
+#if LOG_KEYS
+#endif
 }
 
-float dsp_host_dual::scale(const C15::Properties::SmootherScale _id, const float _scaleFactor, const float _scaleOffset,
-                           float _value)
+float dsp_host_dual::scale(const Parameter_Scale<C15::Properties::SmootherScale> _scl, float _value)
 {
   float result = 0.0f;
-  switch(_id)
+  switch(_scl.m_id)
   {
     case C15::Properties::SmootherScale::None:
       break;
     case C15::Properties::SmootherScale::Linear:
-      result = _scaleOffset + (_scaleFactor * _value);
+      result = _scl.m_offset + (_scl.m_factor * _value);
       break;
     case C15::Properties::SmootherScale::Parabolic:
-      result = _scaleOffset + (_scaleFactor * _value * std::abs(_value));
+      result = _scl.m_offset + (_scl.m_factor * _value * std::abs(_value));
       break;
     case C15::Properties::SmootherScale::Cubic:
-      result = _scaleOffset + (_scaleFactor * _value * _value * _value);
+      result = _scl.m_offset + (_scl.m_factor * _value * _value * _value);
       break;
     case C15::Properties::SmootherScale::S_Curve:
       _value = (2.0f * (1.0f - _value)) - 1.0f;
-      result = _scaleOffset + (_scaleFactor * ((_value * _value * _value * -0.25f) + (_value * 0.75f) + 0.5f));
+      result = _scl.m_offset + (_scl.m_factor * ((_value * _value * _value * -0.25f) + (_value * 0.75f) + 0.5f));
       break;
     case C15::Properties::SmootherScale::Expon_Gain:
-      result = m_convert.eval_level(_scaleOffset + (_scaleFactor * _value));
+      result = m_convert.eval_level(_scl.m_offset + (_scl.m_factor * _value));
       break;
     case C15::Properties::SmootherScale::Expon_Osc_Pitch:
-      result = m_convert.eval_osc_pitch(_scaleOffset + (_scaleFactor * _value));
+      result = m_convert.eval_osc_pitch(_scl.m_offset + (_scl.m_factor * _value));
       break;
     case C15::Properties::SmootherScale::Expon_Lin_Pitch:
-      result = m_convert.eval_lin_pitch(_scaleOffset + (_scaleFactor * _value));
+      result = m_convert.eval_lin_pitch(_scl.m_offset + (_scl.m_factor * _value));
       break;
     case C15::Properties::SmootherScale::Expon_Shaper_Drive:
-      result = (m_convert.eval_level(_value * _scaleFactor) * _scaleOffset) - _scaleOffset;
+      result = (m_convert.eval_level(_value * _scl.m_factor) * _scl.m_offset) - _scl.m_offset;
       break;
     case C15::Properties::SmootherScale::Expon_Mix_Drive:
-      result = _scaleOffset + (_scaleFactor * m_convert.eval_level(_value));
+      result = _scl.m_offset + (_scl.m_factor * m_convert.eval_level(_value));
       break;
     case C15::Properties::SmootherScale::Expon_Env_Time:
-      result = m_convert.eval_time((_value * _scaleFactor * 104.0781f) + _scaleOffset);
+      result = m_convert.eval_time((_value * _scl.m_factor * 104.0781f) + _scl.m_offset);
       break;
   }
   return result;
@@ -541,8 +577,7 @@ void dsp_host_dual::mod_event_mc_chain(const uint32_t _index, const uint32_t _la
     if(param->modulate(_position))
     {
       param->m_position = param->m_unclipped < 0.0f ? 0.0f : param->m_unclipped > 1.0f ? 1.0f : param->m_unclipped;
-      const float dest
-          = scale(param->m_scaleId, param->m_scaleFactor, param->m_scaleOffset, param->polarize(param->m_position));
+      const float dest = scale(param->m_scaling, param->polarize(param->m_position));
       transition_event(id, _layer, _time, param->m_section, param->m_clock, dest);
     }
   }
@@ -589,7 +624,9 @@ void dsp_host_dual::transition_event(const uint32_t _id, const uint32_t _layer, 
       }
       break;
   }
-  nltools::Log::info("transition(id:", _id, ", dest:", _dest, ")");
+#if LOG_TRANSITIONS
+  nltools::Log::info("local_transition(id:", _id, ", dest:", _dest, ")");
+#endif
 }
 
 void dsp_host_dual::transition_event(const uint32_t _id, const Time_Parameter _time,
@@ -616,4 +653,7 @@ void dsp_host_dual::transition_event(const uint32_t _id, const Time_Parameter _t
       }
       break;
   }
+#if LOG_TRANSITIONS
+  nltools::Log::info("global_transition(id:", _id, ", dest:", _dest, ")");
+#endif
 }

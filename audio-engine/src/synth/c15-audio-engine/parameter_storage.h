@@ -27,6 +27,13 @@ struct Time_Parameter
   float m_dx_audio = 0.0f, m_dx_fast = 0.0f, m_dx_slow = 0.0f;
 };
 
+// scaling abstraction
+template <typename Scale> struct Parameter_Scale
+{
+  Scale m_id;
+  float m_factor = 0.0f, m_offset = 0.0f;
+};
+
 // derived parameter types
 struct Hardware_Source_Parameter : Proto_Parameter
 {
@@ -40,8 +47,7 @@ struct Hardware_Amount_Parameter : Proto_Parameter
 template <typename Scale> struct Macro_Time_Parameter : Proto_Parameter
 {
   Time_Parameter m_dx;
-  float m_scaleFactor = 0.0f, m_scaleOffset = 0.0f;
-  Scale m_scaleId;
+  Parameter_Scale<Scale> m_scaling;
 };
 
 template <typename Scale> struct Macro_Control_Parameter : Proto_Parameter
@@ -54,7 +60,6 @@ template <typename Scale> struct Macro_Control_Parameter : Proto_Parameter
   {
     m_mod = _mod;
     m_unclipped = m_base + m_mod;
-    //m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
     return m_position != m_unclipped;  // basic change detection (position needs to be updated from outside)
   }
   inline void update_modulation_aspects()
@@ -66,9 +71,9 @@ template <typename Scale> struct Macro_Control_Parameter : Proto_Parameter
 template <typename Scale, typename Section, typename Clock, typename Signal>
 struct Modulateable_Parameter : Proto_Parameter
 {
-  float m_amount = 0.0f, m_base = 0.0f, m_ceil = 0.0f, m_scaleFactor = 0.0f, m_scaleOffset = 0.0f, m_unclipped = 0.0f;
+  float m_amount = 0.0f, m_base = 0.0f, m_ceil = 0.0f, m_unclipped = 0.0f;
   C15::Parameters::Macro_Controls m_source = C15::Parameters::Macro_Controls::None;
-  Scale m_scaleId;
+  Parameter_Scale<Scale> m_scaling;
   Section m_section;
   Clock m_clock;
   uint32_t m_renderIndex = 0;
@@ -92,7 +97,6 @@ struct Modulateable_Parameter : Proto_Parameter
   inline bool modulate(const float _mod)
   {
     m_unclipped = m_base + (m_amount * _mod);
-    //m_position = m_unclipped < 0.0f ? 0.0f : m_unclipped > 1.0f ? 1.0f : m_unclipped;
     return m_position != m_unclipped;  // basic change detection (position needs to be updated from outside)
   }
   inline void update_modulation_aspects(const float _mod)
@@ -105,8 +109,7 @@ struct Modulateable_Parameter : Proto_Parameter
 template <typename Scale, typename Section, typename Clock, typename Signal>
 struct Unmodulateable_Parameter : Proto_Parameter
 {
-  float m_scaleFactor = 0.0f, m_scaleOffset = 0.0f;
-  Scale m_scaleId;
+  Parameter_Scale<Scale> m_scaling;
   Section m_section;
   Clock m_clock;
   uint32_t m_renderIndex;
