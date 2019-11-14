@@ -113,6 +113,9 @@ void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateablePa
 {
   //nltools::Log::info("Received modulateable parameter message!");
   // dispatch and safety check
+#if LOG_DISPATCH
+  nltools::Log::info("dispatch_modulateable(", msg.parameterId, ")");
+#endif
   auto element = C15::ParameterList[msg.parameterId];
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Modulateable_Parameter)
   {
@@ -138,6 +141,9 @@ void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::Unmodulateab
 {
   //nltools::Log::info("Received unmodulateable parameter message!");
   // dispatch and safety check
+#if LOG_DISPATCH
+  nltools::Log::info("dispatch_unmodulateable(", msg.parameterId, ")");
+#endif
   auto element = C15::ParameterList[msg.parameterId];
   switch(element.m_param.m_type)
   {
@@ -178,6 +184,9 @@ void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlCh
 {
   //nltools::Log::info("Received macro control parameter message!");
   // dispatch and safety check
+#if LOG_DISPATCH
+  nltools::Log::info("dispatch_macro_control(", msg.parameterId, ")");
+#endif
   auto element = C15::ParameterList[msg.parameterId];
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
   {
@@ -201,6 +210,9 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage &msg
 {
   //nltools::Log::info("Received hwAmount parameter message!");
   // dispatch and safety check
+#if LOG_DISPATCH
+  nltools::Log::info("dispatch_hw_amount(", msg.parameterId, ")");
+#endif
   auto element = C15::ParameterList[msg.parameterId];
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Amount)
   {
@@ -224,26 +236,15 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage &msg
 {
   //nltools::Log::info("Received hwSource parameter message!");
   // dispatch and safety check
+#if LOG_DISPATCH
+  nltools::Log::info("dispatch_hw_source(", msg.parameterId, ")");
+#endif
   auto element = C15::ParameterList[msg.parameterId];
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
     const float pos = static_cast<float>(msg.controlPosition);
     // later: optimize and only use one single descriptive enum for that (probably from nltools)
-    switch(msg.returnMode)
-    {
-      case ReturnMode::None:
-        m_dsp->update_event_hw_source(element.m_param.m_index, msg.lock, C15::Properties::HW_Return_Behavior::Stay,
-                                      pos);
-        break;
-      case ReturnMode::Center:
-        m_dsp->update_event_hw_source(element.m_param.m_index, msg.lock, C15::Properties::HW_Return_Behavior::Center,
-                                      pos);
-        break;
-      case ReturnMode::Zero:
-        m_dsp->update_event_hw_source(element.m_param.m_index, msg.lock, C15::Properties::HW_Return_Behavior::Zero,
-                                      pos);
-        break;
-    }
+    m_dsp->update_event_hw_source(element.m_param.m_index, msg.lock, m_dsp->getBehavior(msg.returnMode), pos);
   }
   else
   {

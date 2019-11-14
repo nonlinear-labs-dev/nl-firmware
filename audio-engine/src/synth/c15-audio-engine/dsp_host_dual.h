@@ -22,6 +22,20 @@
 #include "ae_mono_section.h"
 #include "ae_fadepoint.h"
 
+// basic logging switches
+#define LOG_INIT 0
+#define LOG_MIDI 0
+#define LOG_DISPATCH 0
+#define LOG_EDITS 0
+#define LOG_SETTINGS 0
+#define LOG_RECALL 1
+#define LOG_TIMES 0
+#define LOG_KEYS 0
+#define LOG_TRANSITIONS 0
+#define LOG_RESET 0
+// engine safety
+#define IGNORE_MONO_GROUP 1
+
 class dsp_host_dual
 {
  public:
@@ -31,6 +45,11 @@ class dsp_host_dual
   dsp_host_dual();
   // public methods
   void init(const uint32_t _samplerate, const uint32_t _polyphony);
+  // handles for inconvenient stuff
+  C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
+  C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
+  C15::Parameters::Macro_Controls getMacro(const MacroControls _mc);
+  // event bindings
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   void onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   void onPresetMessage(const nltools::msg::SinglePresetMessage &_msg);
@@ -65,6 +84,21 @@ class dsp_host_dual
   void transition_event(const uint32_t _id, const Time_Parameter _time,
                         const C15::Descriptors::SmootherSection _section, const C15::Descriptors::SmootherClock _clock,
                         const float _dest);
+  bool recall_event_changed(const C15::Properties::LayerId _layerId, const float _value);
+  void recall_event_global(const nltools::msg::ParameterGroups::PedalParameter &source);
+  void recall_event_global(const nltools::msg::ParameterGroups::BenderParameter &source);
+  void recall_event_global(const nltools::msg::ParameterGroups::AftertouchParameter &source);
+  void recall_event_global(const nltools::msg::ParameterGroups::RibbonParameter &source);
+  void recall_event_global(const nltools::msg::ParameterGroups::Parameter &source);
+  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::MonoParameter &source);
+  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::MacroParameter &source);
+  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &source);
+  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::ModulateableParameter &source);
+  void recall_event_direct_param(const uint32_t _layer, const uint32_t _index, const float _position);
+  void recall_event_target_param(const uint32_t _layer, const uint32_t _index, const float _position,
+                                 const C15::Parameters::Macro_Controls _source, const float _amount);
+  void recall_event_target_aspects(const uint32_t _layer, const uint32_t _index);
+  void recall_event_single();
   // preloadable preset buffers
   nltools::msg::SinglePresetMessage m_preloaded_single_data;
   nltools::msg::SplitPresetMessage m_preloaded_split_data;
