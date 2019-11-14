@@ -5,16 +5,6 @@ public class PhysicalControlParameterModel extends BasicParameterModel {
 		super(id);
 	}
 
-	@Override
-	public boolean isValueChanged() {
-		return false;
-	}
-
-	@Override
-	public boolean isChanged() {
-		return false;
-	}
-
 	public boolean isReturning() {
 		return false;
 	}

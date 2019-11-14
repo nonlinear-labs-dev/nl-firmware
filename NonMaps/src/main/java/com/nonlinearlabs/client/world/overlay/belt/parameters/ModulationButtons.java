@@ -5,6 +5,8 @@ import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
@@ -25,11 +27,12 @@ public class ModulationButtons extends OverlayLayout {
 
 		@Override
 		public String getDrawText(Context2d ctx) {
-			BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
+			// TODO: move into presenter
+			BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
 			if (bpm instanceof ModulateableParameterModel) {
-				ModulateableParameterModel modP = (ModulateableParameterModel) bpm;
-				if (modP.isModSourceChanged())
-					return "(" + modP.ogModSource.getValue().toString() + ")";
+				ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+				// if (p.modulation.isModSourceChanged)
+				// return "(" + p.modulation.ogModSource.getValue().toString() + ")";
 			}
 			return "";
 		}
@@ -58,11 +61,8 @@ public class ModulationButtons extends OverlayLayout {
 	}
 
 	private boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
-		if (bpm instanceof ModulateableParameterModel) {
-			return ((ModulateableParameterModel) bpm).isModSourceChanged();
-		}
-		return false;
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.modulation.isModSourceChanged;
 	}
 
 	@Override

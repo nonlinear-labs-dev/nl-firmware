@@ -219,8 +219,20 @@ void ParameterDualGroupSet::writeDocument(Writer &writer, UpdateDocumentContribu
 #warning "TODO add webui focus!!! see and do @PresetDualParameterGroups"
   super::writeDocument(writer, knownRevision);
 
-  for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::I))
-    p->writeDocument(writer, knownRevision);
+  writer.writeTag("global-parameters", [&] {
+    for(tParameterGroupPtr p : m_globalParameterGroups)
+      p->writeDocument(writer, knownRevision);
+  });
+
+  writer.writeTag("voice-group-I-parameters", [&] {
+    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::I))
+      p->writeDocument(writer, knownRevision);
+  });
+
+  writer.writeTag("voice-group-II-parameters", [&] {
+    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::II))
+      p->writeDocument(writer, knownRevision);
+  });
 }
 
 const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &

@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.Updater;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 
 public class EditBufferModelUpdater extends Updater {
@@ -14,44 +15,64 @@ public class EditBufferModelUpdater extends Updater {
 	public void doUpdate() {
 		if (root != null) {
 			String selParam = getAttributeValue(root, "selected-parameter");
-			EditBufferModel.selectedParameter.setValue(Integer.valueOf(selParam));
+			EditBufferModel.get().selectedParameter.setValue(Integer.valueOf(selParam));
 			String loadedPreset = getAttributeValue(root, "loaded-preset");
-			EditBufferModel.loadedPreset.setValue(loadedPreset);
+			EditBufferModel.get().loadedPreset.setValue(loadedPreset);
 			String loadedPresetName = getAttributeValue(root, "loaded-presets-name");
-			EditBufferModel.loadedPresetName.setValue(loadedPresetName);
+			EditBufferModel.get().loadedPresetName.setValue(loadedPresetName);
 			String loadedPresetBankName = getAttributeValue(root, "loaded-presets-bank-name");
-			EditBufferModel.loadedPresetBankName.setValue(loadedPresetBankName);
+			EditBufferModel.get().loadedPresetBankName.setValue(loadedPresetBankName);
 			String isZombie = getAttributeValue(root, "preset-is-zombie");
-			EditBufferModel.isZombie.setValue(Boolean.valueOf(isZombie));
+			EditBufferModel.get().isZombie.setValue(Boolean.valueOf(isZombie));
 			String isModified = getAttributeValue(root, "is-modified");
-			EditBufferModel.isModified.setValue(Boolean.valueOf(isModified));
+			EditBufferModel.get().isModified.setValue(Boolean.valueOf(isModified));
 			String changed = getAttributeValue(root, "changed");
-			EditBufferModel.isChanged.setValue(Boolean.valueOf(changed));
+			EditBufferModel.get().isChanged.setValue(Boolean.valueOf(changed));
 
-			processChildrenElements(root, "sound-type", n -> {
+			processChildrenElements(root, "editbuffer-type", n -> {
 				String soundType = getText(n);
-				EditBufferModel.soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
+				EditBufferModel.get().soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
 			});
 
 			processChangedChildrenElements(root, "recall-data", c -> processOriginal(c));
 		}
 
-		processChangedChildrenElements(root, "parameter-group", child -> processGroup(child));
+		processChangedChildrenElements(root, "global-parameters", child -> {
+			processChangedChildrenElements(root, "parameter-group", group -> processGroup(group, VoiceGroup.Global));
+		});
+
+		processChangedChildrenElements(root, "voice-group-I-parameters", child -> {
+			processChangedChildrenElements(root, "parameter-group", group -> processGroup(group, VoiceGroup.I));
+		});
+
+		processChangedChildrenElements(root, "voice-group-I-parameters", child -> {
+			processChangedChildrenElements(root, "parameter-group", group -> processGroup(group, VoiceGroup.II));
+		});
 	}
 
 	private void processOriginal(Node c) {
-		processChildrenElements(c, "param", child -> processOriginalParameter(child));
+		processChildrenElements(c, "global-parameters", child -> {
+			processChildrenElements(c, "param", p -> processOriginalParameter(p, VoiceGroup.Global));
+		});
+
+		processChildrenElements(c, "voice-group-I-parameters", child -> {
+			processChildrenElements(c, "param", p -> processOriginalParameter(p, VoiceGroup.I));
+		});
+
+		processChildrenElements(c, "voice-group-II-parameters", child -> {
+			processChildrenElements(c, "param", p -> processOriginalParameter(p, VoiceGroup.II));
+		});
 	}
 
-	private void processGroup(Node c) {
+	private void processGroup(Node c, VoiceGroup vg) {
 		String groupId = getAttributeValue(c, "id");
 
-		ParameterGroupModel target = EditBufferModel.getGroup(groupId);
-		ParameterGroupModelUpdater updater = new ParameterGroupModelUpdater(c, target, groupId);
+		ParameterGroupModel target = EditBufferModel.get().getOrCreateGroup(groupId, vg);
+		ParameterGroupModelUpdater updater = new ParameterGroupModelUpdater(c, target, groupId, vg);
 		updater.doUpdate();
 	}
 
-	private void processOriginalParameter(Node param) {
+	private void processOriginalParameter(Node param, VoiceGroup vg) {
 		if (param != null) {
 			String id = getAttributeValue(param, "id");
 			String val = getAttributeValue(param, "value");
@@ -59,7 +80,7 @@ public class EditBufferModelUpdater extends Updater {
 			String modAmt = getAttributeValue(param, "mod-amt");
 
 			if (!id.isEmpty()) {
-				BasicParameterModel bpm = EditBufferModel.findParameter(Integer.valueOf(id));
+				BasicParameterModel bpm = EditBufferModel.get().getOrCreateParameter(Integer.valueOf(id), vg);
 				if (!val.isEmpty())
 					bpm.originalValue.setValue(Double.valueOf(val));
 

@@ -68,7 +68,7 @@ public class SplitSoundLayout extends SoundLayout {
 		private class SplitPointValue extends ValueEdit {
 
 			public SplitPointValue(OverlayLayout parent) {
-				super(parent, EditBufferModel.findParameter(248));
+				super(parent, EditBufferModel.get().getOrCreateParameter(10001, VoiceGroup.Global));
 			}
 		}
 
@@ -165,7 +165,7 @@ public class SplitSoundLayout extends SoundLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return EditBufferModel.getPresetNameOfVoiceGroup(group);
+				return EditBufferModel.get().getPresetNameOfVoiceGroup(group);
 			}
 
 			@Override
@@ -177,13 +177,13 @@ public class SplitSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.findParameter(248));
+				super(parent, EditBufferModel.get().getOrCreateParameter(10003, group));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.findParameter(248));
+				super(parent, EditBufferModel.get().getOrCreateParameter(10002, group));
 			}
 		}
 	}

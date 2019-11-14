@@ -368,19 +368,18 @@ public class ServerProxy {
 	}
 
 	public void loadParameterDescription(int id, final Consumer<String> client) {
-		downloadFile("/resources/parameter-descriptions/" + id + ".txt",
-				new DownloadHandler() {
+		downloadFile("/resources/parameter-descriptions/" + id + ".txt", new DownloadHandler() {
 
-					@Override
-					public void onFileDownloaded(String text) {
-						client.accept(text);
-					}
+			@Override
+			public void onFileDownloaded(String text) {
+				client.accept(text);
+			}
 
-					@Override
-					public void onError() {
-						client.accept("");
-					}
-				});
+			@Override
+			public void onError() {
+				client.accept("");
+			}
+		});
 	}
 
 	public void appendPreset(IPreset srcPreset, Bank targetBank) {
@@ -961,5 +960,20 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-amount-for-current-mod-param");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
+	}
+
+	public void convertToSingle() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-single");
+		queueJob(new StaticURI(path), false);
+	}
+
+	public void convertToSplit() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-split");
+		queueJob(new StaticURI(path), false);
+	}
+
+	public void convertToLayer() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-layer");
+		queueJob(new StaticURI(path), false);
 	}
 }

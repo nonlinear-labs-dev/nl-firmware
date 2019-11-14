@@ -25,7 +25,8 @@ public class EditBufferUseCases {
 
 	private void setParameterValue(int id, double newValue, boolean oracle, boolean setAnimationTimeout) {
 
-		BasicParameterModel p = EditBufferModel.findParameter(id);
+		BasicParameterModel p = EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		double oldQ = p.value.getQuantizedAndClipped(true);
 		p.value.value.setValue(newValue);
 		double newQ = p.value.getQuantizedAndClipped(true);
@@ -72,15 +73,15 @@ public class EditBufferUseCases {
 	}
 
 	private <T> T findParameter(int id) {
-		return (T) EditBufferModel.findParameter(id);
+		return (T) EditBufferModel.get().getOrCreateParameter(id, EditBufferModel.get().voiceGroup.getValue());
 	}
 
 	private void applyPhysicalControlModulation(PhysicalControlParameterModel p, double diff) {
 		if (Math.abs(diff) > 0.0) {
 			for (int router = 0; router < 4; router++) {
 				int routerId = p.id + router + 1;
-				ModulationRouterParameterModel routerParameter = (ModulationRouterParameterModel) EditBufferModel
-						.findParameter(routerId);
+				ModulationRouterParameterModel routerParameter = (ModulationRouterParameterModel) EditBufferModel.get()
+						.getOrCreateParameter(routerId, EditBufferModel.get().voiceGroup.getValue());
 
 				if (p.isReturning())
 					applyReturningModulation(routerParameter, diff);
@@ -101,7 +102,8 @@ public class EditBufferUseCases {
 	}
 
 	private void applyModulation(int macroControlID, double delta) {
-		BasicParameterModel macroControl = EditBufferModel.findParameter(macroControlID);
+		BasicParameterModel macroControl = EditBufferModel.get().getOrCreateParameter(macroControlID,
+				EditBufferModel.get().voiceGroup.getValue());
 
 		double oldQ = macroControl.value.getQuantizedAndClipped(true);
 		double v = macroControl.value.value.getValue();
@@ -113,7 +115,7 @@ public class EditBufferUseCases {
 	private void applyModulationToModulateableParameters(int macroControlID, double d) {
 		if (d != 0) {
 			ModSource m = ModSource.fromParameterId(macroControlID);
-			for (ModulateableParameterModel t : EditBufferModel.getAllModulateableParameters()) {
+			for (ModulateableParameterModel t : EditBufferModel.get().getAllModulateableParameters()) {
 				if (t.modSource.getValue() == m) {
 					double amount = t.modAmount.getQuantizedAndClipped(true);
 					if (t.value.metaData.bipolar.getBool())
@@ -122,14 +124,15 @@ public class EditBufferUseCases {
 				}
 			}
 
-			MacroControlParameterModel mc = EditBufferModel.findParameter(m);
+			MacroControlParameterModel mc = EditBufferModel.get().getOrCreateParameter(m,
+					EditBufferModel.get().voiceGroup.getValue());
 			handleBidirectionalRibbonBinding(mc);
 		}
 	}
 
 	private void applyDirectModulation(ModulationRouterParameterModel routerParameter, double newValue) {
-		MacroControlParameterModel m = (MacroControlParameterModel) EditBufferModel
-				.findParameter(routerParameter.getAssociatedMacroControlID());
+		MacroControlParameterModel m = (MacroControlParameterModel) EditBufferModel.get().getOrCreateParameter(
+				routerParameter.getAssociatedMacroControlID(), EditBufferModel.get().voiceGroup.getValue());
 		double oldQ = m.value.getQuantizedAndClipped(true);
 		m.value.value.setValue(newValue);
 		double newQ = m.value.getQuantizedAndClipped(true);
@@ -137,7 +140,7 @@ public class EditBufferUseCases {
 	}
 
 	public void selectParameter(int id) {
-		if (EditBufferModel.selectedParameter.setValue(id))
+		if (EditBufferModel.get().selectedParameter.setValue(id))
 			NonMaps.get().getServerProxy().selectParameter(id);
 	}
 
@@ -150,7 +153,8 @@ public class EditBufferUseCases {
 	}
 
 	private void incDecParameter(int id, boolean fine, int inc) {
-		BasicParameterModel p = EditBufferModel.findParameter(id);
+		BasicParameterModel p = EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
 	}
@@ -164,28 +168,30 @@ public class EditBufferUseCases {
 	}
 
 	public void convertToSingleSound() {
-		// TODO: connect ServerProxy
-		EditBufferModel.soundType.setValue(SoundType.Single);
+		NonMaps.get().getServerProxy().convertToSingle();
+		EditBufferModel.get().soundType.setValue(SoundType.Single);
 	}
 
 	public void convertToSplitSound() {
-		// TODO: connect ServerProxy
-		EditBufferModel.soundType.setValue(SoundType.Split);
+		NonMaps.get().getServerProxy().convertToSplit();
+		EditBufferModel.get().soundType.setValue(SoundType.Split);
 	}
 
 	public void convertToLayerSound() {
-		// TODO: connect ServerProxy
-		EditBufferModel.soundType.setValue(SoundType.Layer);
+		NonMaps.get().getServerProxy().convertToLayer();
+		EditBufferModel.get().soundType.setValue(SoundType.Layer);
 	}
 
 	public void setToDefault(int parameterID) {
-		BasicParameterModel p = EditBufferModel.findParameter(parameterID);
+		BasicParameterModel p = EditBufferModel.get().getOrCreateParameter(parameterID,
+				EditBufferModel.get().voiceGroup.getValue());
 		double v = p.value.metaData.defaultValue.getValue();
 		setParameterValue(parameterID, v, true);
 	}
 
 	public void toggleBoolean(int parameterID) {
-		BasicParameterModel p = EditBufferModel.findParameter(parameterID);
+		BasicParameterModel p = EditBufferModel.get().getOrCreateParameter(parameterID,
+				EditBufferModel.get().voiceGroup.getValue());
 
 		if (p.value.getQuantizedAndClipped(true) != 0.0)
 			setParameterValue(parameterID, 0, true);
@@ -206,13 +212,15 @@ public class EditBufferUseCases {
 	}
 
 	private void incDecModulationAmount(int id, boolean fine, int inc) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		double v = p.modAmount.getIncDecValue(fine, inc);
 		setModulationAmount(id, v, true);
 	}
 
 	public void setModulationAmount(int id, double newValue, boolean fine) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		double oldValue = p.modAmount.getQuantizedAndClipped(fine);
 		p.modAmount.value.setValue(newValue);
 		newValue = p.modAmount.getQuantizedAndClipped(fine);
@@ -223,15 +231,17 @@ public class EditBufferUseCases {
 	}
 
 	private void setModulationUpperBound(int parameterId, double newAmount, boolean fine) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(parameterId);
-		MacroControlParameterModel mc = EditBufferModel.findParameter(p.modSource.getValue());
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get()
+				.getOrCreateParameter(parameterId, EditBufferModel.get().voiceGroup.getValue());
+		MacroControlParameterModel mc = EditBufferModel.get().getOrCreateParameter(p.modSource.getValue(),
+				EditBufferModel.get().voiceGroup.getValue());
 
 		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
 		double oldAmount = p.modAmount.getClippedValue();
 		double oldValue = p.value.getClippedValue();
 		double mcValue = mc.value.getClippedValue();
 		double oldLowerBound = oldValue - (factor * oldAmount) * mcValue;
-		
+
 		setModulationAmount(parameterId, newAmount, true);
 
 		double newLowerBound = oldValue - (factor * newAmount) * mcValue;
@@ -240,15 +250,17 @@ public class EditBufferUseCases {
 	}
 
 	private void setModulationLowerBound(int parameterId, double newAmount, boolean fine) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(parameterId);
-		MacroControlParameterModel mc = EditBufferModel.findParameter(p.modSource.getValue());
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get()
+				.getOrCreateParameter(parameterId, EditBufferModel.get().voiceGroup.getValue());
+		MacroControlParameterModel mc = EditBufferModel.get().getOrCreateParameter(p.modSource.getValue(),
+				EditBufferModel.get().voiceGroup.getValue());
 
 		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
 		double oldAmount = p.modAmount.getClippedValue();
 		double oldValue = p.value.getClippedValue();
 		double mcValue = mc.value.getClippedValue();
 		double oldUpperBound = oldValue + (factor * oldAmount) * (1.0 - mcValue);
-		
+
 		setModulationAmount(parameterId, newAmount, true);
 
 		double newUpperBound = oldValue + (factor * newAmount) * (1.0 - mcValue);
@@ -257,13 +269,15 @@ public class EditBufferUseCases {
 	}
 
 	public void setModulationSource(int id, ModSource src) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		if (p.modSource.setValue(src))
 			NonMaps.get().getServerProxy().setModulationSource(src);
 	}
 
 	public IncrementalChanger startEditParameterValue(int id, double pixelsPerRange) {
-		BasicParameterModel p = EditBufferModel.findParameter(id);
+		BasicParameterModel p = EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> setParameterValue(id, v, true, b), () -> {
 			if (p instanceof PhysicalControlParameterModel) {
 				PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
@@ -274,12 +288,14 @@ public class EditBufferUseCases {
 	}
 
 	public IncrementalChanger startEditMCAmount(int id, double pixelsPerRange) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationAmount(id, v, true), null);
 	}
 
 	public IncrementalChanger startEditMacroControlValue(int id, double pixelsPerRange) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 
 		if (p.modSource.getValue() != ModSource.None)
 			return startEditParameterValue(p.modSource.getValue().toParameterId(), pixelsPerRange);
@@ -288,25 +304,27 @@ public class EditBufferUseCases {
 	}
 
 	public IncrementalChanger startEditModulationAmountLowerBound(int id, double pixelsPerRange) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
-		return new IncrementalChanger(p.modAmount, pixelsPerRange,
-				(v, b) -> setModulationLowerBound(id, v, true), null) {
-					@Override
-					public double bendAmount(double i) {
-						return -i / 2;
-					}
-				};
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
+		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationLowerBound(id, v, true),
+				null) {
+			@Override
+			public double bendAmount(double i) {
+				return -i / 2;
+			}
+		};
 	}
 
 	public IncrementalChanger startEditModulationAmountUpperBound(int id, double pixelsPerRange) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.findParameter(id);
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getOrCreateParameter(id,
+				EditBufferModel.get().voiceGroup.getValue());
 		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationUpperBound(id, v, true),
 				null) {
-					@Override
-					public double bendAmount(double i) {
-						return i / 2;
-					}
-				};
+			@Override
+			public double bendAmount(double i) {
+				return i / 2;
+			}
+		};
 	}
 
 	public void renameMacroControl(int parameterID, String newName) {

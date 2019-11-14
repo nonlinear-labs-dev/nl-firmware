@@ -7,7 +7,6 @@ import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Updater;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
-import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout;
 
 public class ModulateableParameterModel extends BasicParameterModel {
 
@@ -57,57 +56,8 @@ public class ModulateableParameterModel extends BasicParameterModel {
 	}
 
 	@Override
-	public boolean isChanged() {
-		boolean src = isModSourceChanged();
-		boolean amt = isModAmountChanged();
-		boolean val = isValueChanged();
-		return src || amt || val;
-	}
-
-	public boolean isMCPosChanged() {
-		if (modSource.getValue() != ModSource.None) {
-			BasicParameterModel mcBPM = EditBufferModel.findParameter(modSource.getValue());
-			if (mcBPM != null && mcBPM instanceof MacroControlParameterModel) {
-				return mcBPM.isChanged();
-			}
-		}
-		return false;
-	}
-
-	public boolean isModAmountChanged() {
-		int denominator = modAmount.metaData.fineDenominator.getValue();
-		int ogRounded = (int) (ogModAmount.getValue() * denominator);
-		int nowRounded = (int) (modAmount.value.getValue() * denominator);
-		return ogRounded != nowRounded;
-	}
-
-	public boolean isModSourceChanged() {
-		return ogModSource.getValue() != modSource.getValue();
-	}
-
-	@Override
 	public Updater createUpdater(Node c) {
 		return new ModulateableParameterModelUpdater(c, this);
-	}
-
-	public boolean isChanged(BeltParameterLayout.Mode mode) {
-		switch (mode) {
-		case mcAmount:
-			return isModAmountChanged();
-		case mcSource:
-			return isModSourceChanged();
-		case mcValue:
-			return isMCPosChanged();
-		case modulateableParameter:
-		case paramValue:
-		case unmodulateableParameter:
-			super.isChanged();
-		case mcUpper:
-		case mcLower:
-		default:
-			break;
-		}
-		return false;
 	}
 
 	@Override

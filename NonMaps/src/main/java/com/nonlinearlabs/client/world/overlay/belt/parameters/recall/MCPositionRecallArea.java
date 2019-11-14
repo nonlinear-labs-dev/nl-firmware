@@ -1,8 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters.recall;
 
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout;
 
 public class MCPositionRecallArea extends RecallArea {
@@ -15,12 +14,8 @@ public class MCPositionRecallArea extends RecallArea {
 
 	@Override
 	public boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
-		if (bpm instanceof ModulateableParameterModel) {
-			ModulateableParameterModel modP = (ModulateableParameterModel) bpm;
-			return modP.isMCPosChanged();
-		}
-		return false;
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.modulation.isMCPosChanged;
 	}
 
 	@Override

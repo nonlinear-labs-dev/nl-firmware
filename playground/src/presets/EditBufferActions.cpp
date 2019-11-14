@@ -199,6 +199,30 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
       }
     }
   });
+
+  addAction("convert-to-single", [=](auto) {
+    auto scope = editBuffer->getUndoScope().startTransaction("Convert to Single");
+    auto transaction = scope->getTransaction();
+    auto currentVoiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    editBuffer->undoableConvertToSingle(transaction, currentVoiceGroup);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+  });
+
+  addAction("convert-to-split", [=](auto) {
+    auto scope = editBuffer->getUndoScope().startTransaction("Convert to Split");
+    auto transaction = scope->getTransaction();
+    auto currentSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    editBuffer->undoableConvertToDual(transaction, SoundType::Split, currentSelection);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+  });
+
+  addAction("convert-to-layer", [=](auto) {
+    auto scope = editBuffer->getUndoScope().startTransaction("Convert to Layer");
+    auto transaction = scope->getTransaction();
+    auto currentSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    editBuffer->undoableConvertToDual(transaction, SoundType::Layer, currentSelection);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+  });
 }
 
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer)

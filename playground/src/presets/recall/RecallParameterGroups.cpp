@@ -12,7 +12,7 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    const auto index = static_cast<int>(vg);
+    const auto index = static_cast<size_t>(vg);
     for(auto &g : m_editBuffer->getParameterGroups(vg))
     {
       for(auto &parameter : g->getParameters())
@@ -31,7 +31,7 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
 
 RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg)
 {
-  return m_polyParameters[static_cast<int>(vg)];
+  return m_polyParameters[static_cast<size_t>(vg)];
 }
 
 RecallParameterGroups::tParameterMap &RecallParameterGroups::getGlobalParameters()
@@ -42,10 +42,8 @@ RecallParameterGroups::tParameterMap &RecallParameterGroups::getGlobalParameters
 RecallParameter *RecallParameterGroups::findGlobalParameterByID(int id)
 {
   for(auto &p : m_globalParameters)
-  {
     if(p.second->getID() == id)
       return p.second.get();
-  }
 
   return nullptr;
 }
@@ -54,7 +52,7 @@ RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg)
 {
   try
   {
-    return m_polyParameters.at(static_cast<int>(vg)).at(id).get();
+    return m_polyParameters.at(static_cast<size_t>(vg)).at(id).get();
   }
   catch(...)
   {
@@ -78,7 +76,7 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    const auto index = static_cast<int>(vg);
+    const auto index = static_cast<size_t>(vg);
     for(auto &g : other->getParameterGroups(vg))
     {
       for(auto &parameter : g->getParameters())
@@ -102,8 +100,6 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
 
   if(m_splitPoint && other->getSplitPoint())
     m_splitPoint->copyFrom(transaction, other->getSplitPoint());
-
-
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -112,11 +108,20 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   if(changed)
   {
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
-      for(auto &parameterpair : m_polyParameters[0])
-      {
-        auto &parameter = parameterpair.second;
-        parameter->writeDocument(writer, knownRevision);
-      }
+      writer.writeTag("voice-group-I-parameters", [&] {
+        for(auto &parameterpair : m_polyParameters[0])
+          parameterpair.second->writeDocument(writer, knownRevision);
+      });
+
+      writer.writeTag("voice-group-II-parameters", [&] {
+        for(auto &parameterpair : m_polyParameters[1])
+          parameterpair.second->writeDocument(writer, knownRevision);
+      });
+
+      writer.writeTag("global-parameters", [&] {
+        for(auto &parameterpair : m_globalParameters)
+          parameterpair.second->writeDocument(writer, knownRevision);
+      });
     });
   }
 }

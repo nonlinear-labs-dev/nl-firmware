@@ -443,7 +443,9 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed) },
       [&]() {
         if(changed)
+        {
           super::writeDocument(writer, knownRevision);
+        }
 
         m_recallSet.writeDocument(writer, knownRevision);
       });

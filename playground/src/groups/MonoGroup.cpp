@@ -11,6 +11,7 @@ MonoGroup::MonoGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
 
 void MonoGroup::init()
 {
+#warning "Really!?"
   appendParameter(new MonoModeEnableParameter(this, 12345));
   appendParameter(new MonoLegatoParameter(this, 12346));
   appendParameter(new MonoGlideTimeParameter(this, 12347));

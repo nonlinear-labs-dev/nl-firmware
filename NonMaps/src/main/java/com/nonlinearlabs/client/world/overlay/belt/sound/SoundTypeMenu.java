@@ -18,7 +18,7 @@ public class SoundTypeMenu extends SVGImage {
 		public SoundTypeMenuContextMenu(OverlayLayout parent) {
 			super(parent);
 
-			EditBufferModel.SoundType currentSetting = EditBufferModel.soundType.getValue();
+			EditBufferModel.SoundType currentSetting = EditBufferModel.get().soundType.getValue();
 
 			if (currentSetting != EditBufferModel.SoundType.Single) {
 				addChild(new ContextMenuItem(this, "Single") {
@@ -58,7 +58,7 @@ public class SoundTypeMenu extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-		switch (EditBufferModel.soundType.getValue()) {
+		switch (EditBufferModel.get().soundType.getValue()) {
 		case Single:
 			return 0;
 		case Split:

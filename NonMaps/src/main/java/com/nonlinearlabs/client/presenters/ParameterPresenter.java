@@ -18,6 +18,7 @@ public class ParameterPresenter {
 	public boolean locked = false;
 	public boolean isBoolean = false;
 	public boolean changed = false;
+	public boolean valueChanged = false;
 	public String shortName = "---";
 	public String longName = "---";
 	public String fullNameWithGroup = "";
@@ -39,6 +40,10 @@ public class ParameterPresenter {
 		public String originalModulationAmountDecoratedString = "---";
 		public String originalModulationPositionDecoratedString = "---";
 		public double modulationAmount = 0;
+
+		public boolean isMCPosChanged = false;
+		public boolean isModAmountChanged = false;
+		public boolean isModSourceChanged = false;
 	}
 
 	public Modulation modulation = new Modulation();

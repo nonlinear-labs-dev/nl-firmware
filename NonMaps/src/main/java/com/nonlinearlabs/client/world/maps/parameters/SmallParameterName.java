@@ -9,7 +9,7 @@ public class SmallParameterName extends LabelSmall {
 	public SmallParameterName(Parameter parent, int parameterID) {
 		super(parent);
 
-		ParameterPresenterProviders.get().register(parameterID, v -> {
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(parameterID, v -> {
 			presenter = v;
 			return true;
 		});
