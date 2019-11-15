@@ -774,99 +774,100 @@ bool dsp_host_dual::recall_event_changed(const C15::Properties::LayerId _layerId
   return reset;
 }
 
-void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::PedalParameter &source)
+void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::PedalParameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_hw_source(", source.id, ")");
+  nltools::Log::info("dispatch_hw_source(", _source.id, ")");
 #endif
-  auto target = m_params.get_source(C15::ParameterList[source.id].m_param.m_index);
+  auto target = m_params.get_source(C15::ParameterList[_source.id].m_param.m_index);
   // target->m_lock appears to be redundant, so locking can disappear from parameter changes messages
-  if(!source.locked)
+  if(!_source.locked)
   {
-    target->m_behavior = getBehavior(source.returnMode);  // msg: pedal mode?
+    target->m_behavior = getBehavior(_source.returnMode);  // msg: pedal mode?
     // (audio engine only requires one return type for all sources)
-    target->m_position = source.controlPosition;
+    target->m_position = _source.controlPosition;
   }
 }
 
-void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::BenderParameter &source)
+void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::BenderParameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_hw_source(", source.id, ")");
+  nltools::Log::info("dispatch_hw_source(", _source.id, ")");
 #endif
-  auto target = m_params.get_source(C15::ParameterList[source.id].m_param.m_index);
+  auto target = m_params.get_source(C15::ParameterList[_source.id].m_param.m_index);
   // target->m_lock appears to be redundant, so locking can disappear from parameter changes messages
-  if(!source.locked)
+  if(!_source.locked)
   {
-    target->m_behavior = getBehavior(source.returnMode);
+    target->m_behavior = getBehavior(_source.returnMode);
     // seems obsolete, since bender behavior is constant
-    target->m_position = source.controlPosition;
+    target->m_position = _source.controlPosition;
   }
 }
 
-void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::AftertouchParameter &source)
+void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::AftertouchParameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_hw_source(", source.id, ")");
+  nltools::Log::info("dispatch_hw_source(", _source.id, ")");
 #endif
-  auto target = m_params.get_source(C15::ParameterList[source.id].m_param.m_index);
+  auto target = m_params.get_source(C15::ParameterList[_source.id].m_param.m_index);
   // target->m_lock appears to be redundant, so locking can disappear from parameter changes messages
-  if(!source.locked)
+  if(!_source.locked)
   {
-    target->m_behavior = getBehavior(source.returnMode);
+    target->m_behavior = getBehavior(_source.returnMode);
     // seems obsolete, since aftertouch behavior is constant
-    target->m_position = source.controlPosition;
+    target->m_position = _source.controlPosition;
   }
 }
 
-void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::RibbonParameter &source)
+void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::RibbonParameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_hw_source(", source.id, ")");
+  nltools::Log::info("dispatch_hw_source(", _source.id, ")");
 #endif
-  auto target = m_params.get_source(C15::ParameterList[source.id].m_param.m_index);
+  auto target = m_params.get_source(C15::ParameterList[_source.id].m_param.m_index);
   // target->m_lock appears to be redundant, so locking can disappear from parameter changes messages
-  if(!source.locked)
+  if(!_source.locked)
   {
-    target->m_behavior = getBehavior(source.ribbonReturnMode);  // msg: ribbonReturnMode?
+    target->m_behavior = getBehavior(_source.ribbonReturnMode);  // msg: ribbonReturnMode?
     // (audio engine only requires one return type for all sources)
-    target->m_position = source.controlPosition;
+    target->m_position = _source.controlPosition;
   }
 }
 
-void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::Parameter &source)
+void dsp_host_dual::recall_event_global(const nltools::msg::ParameterGroups::Parameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_global(", source.id, ")");
+  nltools::Log::info("dispatch_global(", _source.id, ")");
 #endif
-  auto target = m_params.get_global(C15::ParameterList[source.id].m_param.m_index);
+  auto target = m_params.get_global(C15::ParameterList[_source.id].m_param.m_index);
   // target->m_lock appears to be redundant, so locking can disappear from parameter changes messages
-  if(!source.locked)
+  if(!_source.locked)
   {
-    target->m_position = source.controlPosition;
+    target->m_position = _source.controlPosition;
     const float dest = scale(target->m_scaling, target->m_position);
     transition_event(target->m_renderIndex, m_transition_time, target->m_section, target->m_clock, dest);
   }
 }
 
-void dsp_host_dual::recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::MonoParameter &source)
+void dsp_host_dual::recall_event_local(const uint32_t layer,
+                                       const nltools::msg::ParameterGroups::MonoParameter &_source)
 {
   // could be locked
-  if(!source.locked)
+  if(!_source.locked)
   {
     // could be direct or target
 #if LOG_DISPATCH
-    nltools::Log::info("dispatch_mono(", source.id, ")");
+    nltools::Log::info("dispatch_mono(", _source.id, ")");
 #endif
-    auto param = C15::ParameterList[source.id];
+    auto param = C15::ParameterList[_source.id];
     switch(param.m_param.m_type)
     {
       case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
-        recall_event_direct_param(layer, param.m_param.m_index, source.controlPosition);
+        recall_event_direct_param(layer, param.m_param.m_index, _source.controlPosition);
         break;
       case C15::Descriptors::ParameterType::Modulateable_Parameter:
         // bug: MonoParameter doesn't feature aspects yet (should be part of modulateables/unmodulateables) ...
-        recall_event_target_param(layer, param.m_param.m_index, source.controlPosition,
+        recall_event_target_param(layer, param.m_param.m_index, _source.controlPosition,
                                   C15::Parameters::Macro_Controls::None, 0.0f);
         // hack: just update control pos, fake rest
         break;
@@ -875,44 +876,44 @@ void dsp_host_dual::recall_event_local(const uint32_t layer, const nltools::msg:
 }
 
 void dsp_host_dual::recall_event_local(const uint32_t layer,
-                                       const nltools::msg::ParameterGroups::MacroParameter &source)
+                                       const nltools::msg::ParameterGroups::MacroParameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_macro(", source.id, ")");
+  nltools::Log::info("dispatch_macro(", _source.id, ")");
 #endif
-  auto target = m_params.get_macro(layer, C15::ParameterList[source.id].m_param.m_index);
+  auto target = m_params.get_macro(layer, C15::ParameterList[_source.id].m_param.m_index);
   // target->m_lock appears to be redundant, so locking can disappear from parameter changes messages
-  if(!source.locked)
+  if(!_source.locked)
   {
-    target->m_position = source.controlPosition;
+    target->m_position = _source.controlPosition;
     target->update_modulation_aspects();
   }
 }
 
 void dsp_host_dual::recall_event_local(const uint32_t layer,
-                                       const nltools::msg::ParameterGroups::UnmodulatebaleParameter &source)
+                                       const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_unmodulateable(", source.id, ")");
+  nltools::Log::info("dispatch_unmodulateable(", _source.id, ")");
 #endif
-  if(!source.locked)
+  if(!_source.locked)
   {
-    recall_event_direct_param(layer, C15::ParameterList[source.id].m_param.m_index, source.controlPosition);
+    recall_event_direct_param(layer, C15::ParameterList[_source.id].m_param.m_index, _source.controlPosition);
   }
 }
 
 void dsp_host_dual::recall_event_local(const uint32_t layer,
-                                       const nltools::msg::ParameterGroups::ModulateableParameter &source)
+                                       const nltools::msg::ParameterGroups::ModulateableParameter &_source)
 {
 #if LOG_DISPATCH
-  nltools::Log::info("dispatch_modulateable(", source.id, ")");
+  nltools::Log::info("dispatch_modulateable(", _source.id, ")");
 #endif
-  if(!source.locked)
+  if(!_source.locked)
   {
-    recall_event_target_param(layer, C15::ParameterList[source.id].m_param.m_index, source.controlPosition,
-                              getMacro(source.mc), source.modulationAmount);
+    recall_event_target_param(layer, C15::ParameterList[_source.id].m_param.m_index, _source.controlPosition,
+                              getMacro(_source.mc), _source.modulationAmount);
   }
-  recall_event_target_aspects(layer, C15::ParameterList[source.id].m_param.m_index);
+  recall_event_target_aspects(layer, C15::ParameterList[_source.id].m_param.m_index);
 }
 
 void dsp_host_dual::recall_event_direct_param(const uint32_t _layer, const uint32_t _index, const float _position)

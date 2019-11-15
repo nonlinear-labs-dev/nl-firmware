@@ -85,15 +85,15 @@ class dsp_host_dual
                         const C15::Descriptors::SmootherSection _section, const C15::Descriptors::SmootherClock _clock,
                         const float _dest);
   bool recall_event_changed(const C15::Properties::LayerId _layerId, const float _value);
-  void recall_event_global(const nltools::msg::ParameterGroups::PedalParameter &source);
-  void recall_event_global(const nltools::msg::ParameterGroups::BenderParameter &source);
-  void recall_event_global(const nltools::msg::ParameterGroups::AftertouchParameter &source);
-  void recall_event_global(const nltools::msg::ParameterGroups::RibbonParameter &source);
-  void recall_event_global(const nltools::msg::ParameterGroups::Parameter &source);
-  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::MonoParameter &source);
-  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::MacroParameter &source);
-  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &source);
-  void recall_event_local(const uint32_t layer, const nltools::msg::ParameterGroups::ModulateableParameter &source);
+  void recall_event_global(const nltools::msg::ParameterGroups::PedalParameter &_source);
+  void recall_event_global(const nltools::msg::ParameterGroups::BenderParameter &_source);
+  void recall_event_global(const nltools::msg::ParameterGroups::AftertouchParameter &_source);
+  void recall_event_global(const nltools::msg::ParameterGroups::RibbonParameter &_source);
+  void recall_event_global(const nltools::msg::ParameterGroups::Parameter &_source);
+  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source);
+  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::MacroParameter &_source);
+  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
+  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::ModulateableParameter &_source);
   void recall_event_direct_param(const uint32_t _layer, const uint32_t _index, const float _position);
   void recall_event_target_param(const uint32_t _layer, const uint32_t _index, const float _position,
                                  const C15::Parameters::Macro_Controls _source, const float _amount);
