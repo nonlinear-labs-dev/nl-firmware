@@ -68,16 +68,21 @@ endforeach(lib)
 
 include_directories(src)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -Wno-deprecated-declarations")
 
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
+
+message ("Before filtering: ${SOURCE_FILES}")
 
 IF(NOT DSL_LAYOUTS)
-list(FILTER SOURCE_FILES EXCLUDE REGEX ".*/proxies/hwui/descriptive-layouts/dsl/.*")
+list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${DSL_SOURCE_FILES})
 ENDIF()
+
+message ("After filtering: ${SOURCE_FILES}")
 
 set(SOURCE_FILES
     ${SOURCE_FILES}
