@@ -14,13 +14,13 @@
 dsp_host_dual::dsp_host_dual()
 {
   m_mainOut_L = m_mainOut_R = 0.0f;
-  m_layer_mode = C15::Properties::LayerMode::Single;
+  m_layer_mode = m_preloaded_layer_mode = C15::Properties::LayerMode::Single;
 }
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
 {
   const float samplerate = static_cast<float>(_samplerate);
-  m_alloc.init(&m_layer_mode);
+  m_alloc.init(&m_layer_mode, &m_preloaded_layer_mode);
   m_convert.init();
   m_clock.init(_samplerate);
   m_time.init(_samplerate);
@@ -358,7 +358,7 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
 void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_msg)
 {
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Single;
-  m_layer_mode = C15::Properties::LayerMode::Single;
+  m_preloaded_layer_mode = C15::Properties::LayerMode::Single;
   m_preloaded_single_data = _msg;
 #if LOG_RECALL
   nltools::Log::info("Received Single Preset Message! (@", m_clock.m_index, ")");
@@ -376,7 +376,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_ms
 void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg)
 {
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Split;
-  m_layer_mode = C15::Properties::LayerMode::Split;
+  m_preloaded_layer_mode = C15::Properties::LayerMode::Split;
   m_preloaded_split_data = _msg;
 #if LOG_RECALL
   nltools::Log::info("Received Split Preset Message!, (@", m_clock.m_index, ")");
@@ -387,7 +387,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg
 void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg)
 {
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Layer;
-  m_layer_mode = C15::Properties::LayerMode::Layer;
+  m_preloaded_layer_mode = C15::Properties::LayerMode::Layer;
   m_preloaded_layer_data = _msg;
 #if LOG_RECALL
   nltools::Log::info("Received Layer Preset Message!, (@", m_clock.m_index, ")");
@@ -952,13 +952,15 @@ void dsp_host_dual::recall_event_single()
   if(recall_event_changed(C15::Properties::LayerId::I, data->unisonVoices.controlPosition))
   {
     // reset voice allocation and envelopes (fade point is zero at this time when glitch suppression is active)
-    m_alloc.reset();  // clear all keys
-    for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
-    {
-      // todo: stop envelopes (abruptly) by key->localIndex, key->voiceId (poly_section)
-    }
+    //m_alloc.reset();  // clear all keys
+    //for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
+    //{
+    // todo: stop envelopes (abruptly) by key->localIndex, key->voiceId (poly_section)
+    //}
     // apply unison to voice allocation
-    m_alloc.setUnison(AllocatorId::Global, data->unisonVoices.controlPosition);
+    //m_alloc.setUnison(AllocatorId::Global, data->unisonVoices.controlPosition);
+    // REWORK:
+    // ...
 #if LOG_RESET
     nltools::Log::info("reset detected");
 #endif

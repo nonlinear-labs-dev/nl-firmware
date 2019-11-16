@@ -118,7 +118,7 @@ class dsp_host_dual
   const Parameter_Scale<C15::Properties::SmootherScale> m_transition_scale
       = { C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f };
   // layer handling
-  C15::Properties::LayerMode m_layer_mode;
+  C15::Properties::LayerMode m_layer_mode, m_preloaded_layer_mode;
   uint32_t m_layer_focus;  // probably obsolete
   // global dsp components
   GlobalSection m_global;
