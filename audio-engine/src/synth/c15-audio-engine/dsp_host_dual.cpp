@@ -959,7 +959,7 @@ void dsp_host_dual::recall_event_single()
     }
     // apply unison to voice allocation
     m_alloc.setUnison(AllocatorId::Global, data->unisonVoices.controlPosition);
-#if LOG_RECALL
+#if LOG_RESET
     nltools::Log::info("reset detected");
 #endif
   }
