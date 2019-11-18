@@ -23,18 +23,19 @@
 #include "ae_fadepoint.h"
 
 // basic logging switches
-#define LOG_INIT 0
+#define LOG_MISSING 1
+#define LOG_FAIL 1
+#define LOG_INIT 1
 #define LOG_MIDI 0
 #define LOG_DISPATCH 0
-#define LOG_EDITS 0
-#define LOG_SETTINGS 0
+#define LOG_EDITS 1
+#define LOG_TIMES 1
+#define LOG_SETTINGS 1
 #define LOG_RECALL 1
-#define LOG_TIMES 0
-#define LOG_KEYS 0
+#define LOG_KEYS 1
 #define LOG_TRANSITIONS 0
-#define LOG_RESET 0
-// engine safety
-#define IGNORE_MONO_GROUP 1
+#define LOG_LOCKED 1
+#define LOG_RESET 1
 
 class dsp_host_dual
 {
@@ -46,85 +47,53 @@ class dsp_host_dual
   // public methods
   void init(const uint32_t _samplerate, const uint32_t _polyphony);
   // handles for inconvenient stuff
-  C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
-  C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
-  C15::Parameters::Macro_Controls getMacro(const MacroControls _mc);
-  // event bindings
+  C15::ParameterDescriptor getParameter(const int _id);
+  // event bindings: LPC or MIDI Device (in Dev_PC mode)
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   void onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
+  // event bindings: Preset Messages
   void onPresetMessage(const nltools::msg::SinglePresetMessage &_msg);
   void onPresetMessage(const nltools::msg::SplitPresetMessage &_msg);
   void onPresetMessage(const nltools::msg::LayerPresetMessage &_msg);
-  void update_event_hw_source(const uint32_t _index, const bool _lock,
-                              const C15::Properties::HW_Return_Behavior _behavior, const float _position);
-  void update_event_hw_amount(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
-  void update_event_macro_ctrl(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
-  void update_event_macro_time(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
-  void update_event_direct_param(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position);
-  void update_event_target_param(const uint32_t _index, const uint32_t _layer, const bool _lock, const float _position,
-                                 const C15::Parameters::Macro_Controls _source, const float _amount);
-  void update_event_global_param(const uint32_t _index, const bool _lock, const float _position);
-  void update_event_edit_time(const float _position);
-  void update_event_transition_time(const float _position);
-  void update_event_note_shift(const float _shift);
-  void update_event_glitch_suppr(const bool _enabled);
+  // event bindings: Parameter Changed Messages
+  void globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void globalParChg(const uint32_t _id, const nltools::msg::HWSourceChangedMessage &_msg);
+  void localParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage &_msg);
+  void localParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage &_msg);
+  void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage &_msg);
+  void localTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localUnisonChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void onSettingEditTime(const float _position);
+  void onSettingTransitionTime(const float _position);
+  void onSettingNoteShift(const float _shift);
+  void onSettingGlitchSuppr(const bool _enabled);
   void render();
   void reset();
 
  private:
-  void keyDown(const float _vel);
-  void keyUp(const float _vel);
-  float scale(const Parameter_Scale<C15::Properties::SmootherScale> _scl, float _value);
-  void update_event_time(Time_Parameter *_param, const float _ms);
-  void mod_event_mc_chain(const uint32_t _index, const uint32_t _layer, const float _position,
-                          const Time_Parameter _time);
-  void transition_event(const uint32_t _id, const uint32_t _layer, const Time_Parameter _time,
-                        const C15::Descriptors::SmootherSection _section, const C15::Descriptors::SmootherClock _clock,
-                        const float _dest);
-  void transition_event(const uint32_t _id, const Time_Parameter _time,
-                        const C15::Descriptors::SmootherSection _section, const C15::Descriptors::SmootherClock _clock,
-                        const float _dest);
-  bool recall_event_changed(const C15::Properties::LayerId _layerId, const float _value);
-  void recall_event_global(const nltools::msg::ParameterGroups::PedalParameter &_source);
-  void recall_event_global(const nltools::msg::ParameterGroups::BenderParameter &_source);
-  void recall_event_global(const nltools::msg::ParameterGroups::AftertouchParameter &_source);
-  void recall_event_global(const nltools::msg::ParameterGroups::RibbonParameter &_source);
-  void recall_event_global(const nltools::msg::ParameterGroups::Parameter &_source);
-  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source);
-  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::MacroParameter &_source);
-  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
-  void recall_event_local(const uint32_t _layer, const nltools::msg::ParameterGroups::ModulateableParameter &_source);
-  void recall_event_direct_param(const uint32_t _layer, const uint32_t _index, const float _position);
-  void recall_event_target_param(const uint32_t _layer, const uint32_t _index, const float _position,
-                                 const C15::Parameters::Macro_Controls _source, const float _amount);
-  void recall_event_target_aspects(const uint32_t _layer, const uint32_t _index);
-  void recall_event_single();
   // preloadable preset buffers
   nltools::msg::SinglePresetMessage m_preloaded_single_data;
   nltools::msg::SplitPresetMessage m_preloaded_split_data;
   nltools::msg::LayerPresetMessage m_preloaded_layer_data;
   // parameters
-  ParameterHandle<C15::Properties::SmootherScale, C15::Descriptors::SmootherSection, C15::Descriptors::SmootherClock,
-                  C15::Descriptors::ParameterSignal, C15::Properties::LayerId, C15::Parameters::Hardware_Sources,
-                  C15::Parameters::Global_Parameters, C15::Parameters::Hardware_Amounts,
-                  C15::Parameters::Macro_Controls, C15::Parameters::Modulateable_Parameters,
-                  C15::Parameters::Unmodulateable_Parameters>
-      m_params;
+  Engine::Param_Handle m_params;
+  Time_Param m_edit_time, m_transition_time;
+  Setting_Param m_reference;
+  const C15::ParameterDescriptor m_invalid_param = { C15::None };
   // essential tools
   exponentiator m_convert;
-  ClockHandle m_clock;
-  TimeHandle m_time;
-  Time_Parameter m_edit_time, m_transition_time;
-  const Parameter_Scale<C15::Properties::SmootherScale> m_transition_scale
-      = { C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f };
+  Engine::Handle::Clock_Handle m_clock;
+  Engine::Handle::Time_Handle m_time;
   // layer handling
   C15::Properties::LayerMode m_layer_mode, m_preloaded_layer_mode;
   uint32_t m_layer_focus;  // probably obsolete
   // global dsp components
   GlobalSection m_global;
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;
+  // dsp components
   ae_fade_table m_fade;
-  // layered dsp components
+  ae_fader m_output_mute;
   PolySection m_poly[2];
   MonoSection m_mono[2];
   // helper values
@@ -132,4 +101,43 @@ class dsp_host_dual
               m_norm_vel = 1.0f / 4095.0f, m_norm_hw = 1.0f / 8000.0f;
   uint32_t m_key_pos = 0;
   bool m_key_valid = false, m_layer_changed = false, m_glitch_suppression = false;
+  // handles for inconvenient stuff
+  C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
+  C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
+  C15::Parameters::Macro_Controls getMacro(const MacroControls _mc);
+  uint32_t getMacroId(const MacroControls _mc);
+  C15::Properties::LayerId getLayer(const VoiceGroup _vg);
+  uint32_t getLayerId(const VoiceGroup _vg);
+  // key events
+  void keyDown(const float _vel);
+  void keyUp(const float _vel);
+  float scale(const Scale_Aspect _scl, float _value);
+  // inner event flow
+  void updateHW(const uint32_t _id, const uint32_t _raw);
+  void updateTime(Time_Aspect *_param, const float _ms);
+  void updateModChain(Macro_Param *_mc);
+  void updateModChain(const uint32_t _layer, Macro_Param *_mc);
+  void globalTransition(const Direct_Param *_param, const Time_Aspect _time);
+  void localTransition(const uint32_t _layer, const Direct_Param *_param, const Time_Aspect _time);
+  void localTransition(const uint32_t _layer, const Target_Param *_param, const Time_Aspect _time);
+  void evalFadePoint();
+  Direct_Param *evalVoiceChg(const C15::Properties::LayerId _layerId,
+                             const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_unisonVoices);
+  void recallSingle();
+  void recallSplit();
+  void recallLayer();
+  void globalParRcl(const nltools::msg::ParameterGroups::PedalParameter &_source);
+  void globalParRcl(const nltools::msg::ParameterGroups::BenderParameter &_source);
+  void globalParRcl(const nltools::msg::ParameterGroups::AftertouchParameter &_source);
+  void globalParRcl(const nltools::msg::ParameterGroups::RibbonParameter &_source);
+  void globalParRcl(const nltools::msg::ParameterGroups::Parameter &_source);
+  void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
+  void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MacroParameter &_source);
+  void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source);
+  void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::ModulateableParameter &_source);
+  void localTimeRcl(const uint32_t _layer, const uint32_t _id, const float _value);
+  void localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
+  void localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source);
+  void localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::ModulateableParameter &_source);
+  void localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source);
 };

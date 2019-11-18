@@ -221,22 +221,20 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       case LayerMode::Single:
         voices += static_cast<uint32_t>(_value * (static_cast<float>(GlobalVoices - 1)));
         m_global.setUnison(voices);
-        m_unison = voices;
         validity = true;
         break;
       case LayerMode::Split:
         voices += static_cast<uint32_t>(_value * (static_cast<float>(LocalVoices - 1)));
         m_local[_layer].setUnison(voices);
-        m_unison = voices;
         validity = true;
         break;
       case LayerMode::Layer:
         voices += static_cast<uint32_t>(_value * (static_cast<float>(LocalVoices - 1)));
         m_local[0].setUnison(voices);
-        m_unison = voices;
         validity = true;
         break;
     }
+    m_unison = voices;
     return validity;
   }
   // resets everything

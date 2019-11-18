@@ -19,48 +19,49 @@
 
 #include "mappable_list.h"
 
-template<class MC, class MP>
-class MC_Assignment
+template <class MC, class MP> class MC_Assignment
 {
-public:
-    inline MC_Assignment()
-    {}
-    inline void reset()
-    {
-        m_list.reset();
-    }
-    inline void reset(const uint32_t _mcId)
-    {
-        m_list.reset(_mcId);
-    }
-    inline void reset(const MC _mcId)
-    {
-        m_list.reset(static_cast<uint32_t>(_mcId));
-    }
-    inline void reassign(const uint32_t _paramId, const uint32_t _mcId)
-    {
-        m_list.reassign(_paramId, _mcId);
-    }
-    inline void reassign(const MP _paramId, const MC _mcId)
-    {
-        m_list.reassign(static_cast<uint32_t>(_paramId), static_cast<uint32_t>(_mcId));
-    }
-    inline int32_t first(const uint32_t _mcId)
-    {
-        return m_list.first(_mcId);
-    }
-    inline int32_t first(const MC _mcId)
-    {
-        return m_list.first(static_cast<uint32_t>(_mcId));
-    }
-    inline bool running()
-    {
-        return m_list.running();
-    }
-    inline int32_t next()
-    {
-        return m_list.next();
-    }
-private:
-    MappableList<static_cast<uint32_t>(MC::_LENGTH_), static_cast<uint32_t>(MP::_LENGTH_)> m_list;
+ public:
+  inline MC_Assignment()
+  {
+  }
+  inline void reset()
+  {
+    m_list.reset();
+  }
+  inline void reset(const uint32_t _mcId)
+  {
+    m_list.reset(_mcId);
+  }
+  inline void reset(const MC _mcId)
+  {
+    m_list.reset(static_cast<uint32_t>(_mcId));
+  }
+  inline void reassign(const uint32_t _paramId, const uint32_t _mcId)
+  {
+    m_list.reassign(_paramId, _mcId);
+  }
+  inline void reassign(const MP _paramId, const MC _mcId)
+  {
+    m_list.reassign(static_cast<uint32_t>(_paramId), static_cast<uint32_t>(_mcId));
+  }
+  inline int32_t first(const uint32_t _mcId)
+  {
+    return m_list.first(_mcId);
+  }
+  inline int32_t first(const MC _mcId)
+  {
+    return m_list.first(static_cast<uint32_t>(_mcId));
+  }
+  inline bool running()
+  {
+    return m_list.running();
+  }
+  inline int32_t next()
+  {
+    return m_list.next();
+  }
+
+ private:
+  MappableList<static_cast<uint32_t>(MC::_LENGTH_), static_cast<uint32_t>(MP::_LENGTH_)> m_list;
 };
