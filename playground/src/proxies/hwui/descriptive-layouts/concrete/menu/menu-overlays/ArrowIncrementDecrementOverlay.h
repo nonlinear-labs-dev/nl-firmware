@@ -5,6 +5,7 @@
 #include <proxies/hwui/controls/ArrowLeft.h>
 #include <proxies/hwui/controls/LabelRegular8.h>
 #include "LeftRightUpDownCommitOverlay.h"
+#include <nltools/threading/Expiration.h>
 
 class ArrowIncrementDecrementOverlay : public LeftRightUpDownCommitOverlay
 {
@@ -22,4 +23,8 @@ class ArrowIncrementDecrementOverlay : public LeftRightUpDownCommitOverlay
 private:
   ArrowRight* m_rightArrow;
   ArrowLeft* m_leftArrow;
+
+  void installResetHighlight(Control* controlToReset);
+
+  std::unique_ptr<Expiration> m_resetHighlight;
 };
