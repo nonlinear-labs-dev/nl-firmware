@@ -30,7 +30,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter{}
 {
   m_hashOnStore = getHash();
 }
@@ -346,9 +346,9 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
 
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
-  if(m_lastSelectedParameter.m_id != p->getID())
+  if(m_lastSelectedParameter.m_id != p->getID() || m_lastSelectedParameter.m_voiceGroup != p->getVoiceGroup())
   {
-    auto swapData = UNDO::createSwapData(LastSelection(p->getID(), p->getVoiceGroup()));
+    auto swapData = UNDO::createSwapData(LastSelection(p));
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       auto oldSelection = m_lastSelectedParameter;

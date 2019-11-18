@@ -95,7 +95,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
-  void undoableLoadPresetIntoDualSound(UNDO::Transaction* transaction, Preset* preset, VoiceGroup target);
+  void undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup target);
 
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();
@@ -127,11 +127,17 @@ class EditBuffer : public ParameterDualGroupSet
 
   struct LastSelection
   {
-    LastSelection(Parameter::ID id, VoiceGroup vg)
-        : m_id{ id }
-        , m_voiceGroup{ vg }
+    LastSelection() = default;
+
+    explicit LastSelection(const Parameter *param)
     {
+      if(param)
+      {
+        m_id = param->getID();
+        m_voiceGroup = param->getVoiceGroup();
+      }
     }
+
     Parameter::ID m_id = 0;
     VoiceGroup m_voiceGroup = VoiceGroup::I;
   };
