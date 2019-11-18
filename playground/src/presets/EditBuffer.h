@@ -30,8 +30,6 @@ class EditBuffer : public ParameterDualGroupSet
 
   void setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid);
 
-  static void sanitizeVoiceGroup(VoiceGroup &vg);
-
   void undoableSelectParameter(const Glib::ustring &id);
   void undoableSelectParameter(uint16_t id);
   void undoableSelectParameter(uint16_t id, VoiceGroup vg);
