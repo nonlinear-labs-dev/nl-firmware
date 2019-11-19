@@ -94,5 +94,11 @@ bool DualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, But
     return true;
   }
 
+  if(down && i == Buttons::BUTTON_EDIT)
+  {
+    Application::get().getHWUI()->setFocusAndMode({UIFocus::Parameters, UIMode::Edit, UIDetail::Init});
+    return true;
+  }
+
   return ParameterSelectLayout2::onButton(i, down, modifiers);
 }

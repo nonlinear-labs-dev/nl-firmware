@@ -7,6 +7,7 @@
 #include <testing/parameter/TestParameter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, uint16_t id)
     : Parameter(group, id, ScaleConverter::get<KeyWithOctaveScaleConverter>(), 0.5, 60, 60)
@@ -20,7 +21,16 @@ ustring SplitPointParameter::getGroupAndParameterName() const
 
 DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  return new DualVoiceGroupMasterAndSplitPointLayout();
+  switch(focusAndMode.mode)
+  {
+    case UIMode::Info:
+      return new ParameterInfoLayout();
+    case UIMode::Edit:
+      return new UnmodulateableParameterEditLayout2();
+    case UIMode::Select:
+    default:
+      return new DualVoiceGroupMasterAndSplitPointLayout();
+  }
 }
 
 std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
