@@ -34,12 +34,6 @@ void MonoParameterCarousel::setup(Parameter *selectedParameter)
   setDirty();
 }
 
-bool MonoParameterCarousel::monoParametersActive()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->findParameterByID(12345, getVoiceGroup())->getDisplayString() == "On";
-}
-
 VoiceGroup MonoParameterCarousel::getVoiceGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -57,9 +51,6 @@ void MonoParameterCarousel::rebuild()
 
 void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
 {
-  if(!monoParametersActive())
-    return;
-
   const auto ySpaceing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
