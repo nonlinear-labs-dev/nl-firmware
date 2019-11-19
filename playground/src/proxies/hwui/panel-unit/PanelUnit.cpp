@@ -103,7 +103,7 @@ PanelUnit::~PanelUnit()
 int PanelUnit::choseHWBestSourceForMC(int mcParamId) const
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(mcParamId)))
+         Application::get().getPresetManager()->getEditBuffer()->findParameterByID(mcParamId)))
   {
     return mc->getUiSelectedHardwareSource();
   }
@@ -150,8 +150,11 @@ void PanelUnit::installUsageMode(FocusAndMode focusAndMode)
   {
     case UIFocus::Presets:
     case UIFocus::Banks:
-    case UIFocus::Sound:
       setUsageMode(new PanelUnitPresetMode());
+      break;
+
+    case UIFocus::Sound:
+      setUsageMode(new PanelUnitSoundMode());
       break;
 
     case UIFocus::Parameters:

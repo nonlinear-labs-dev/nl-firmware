@@ -20,11 +20,12 @@ class UsageMode : public Uncopyable
   virtual void setup() = 0;
   virtual void setupFocusAndMode(FocusAndMode focusAndMode);
   virtual void bruteForceUpdateLeds();
-
  protected:
+
   typedef std::function<bool(Buttons button, ButtonModifiers modifiers, bool state)> tAction;
 
   void setupButtonConnection(Buttons buttonID, tAction action);
+  void removeButtonConnection(Buttons buttonID);
 
 #if _TESTS
   std::set<gint32> assignedAudioIDs;

@@ -27,3 +27,11 @@ class PanelUnitPresetMode : public PanelUnitParameterEditMode
                               std::array<TwoStateLED::LedState, numLeds>& states);
   void applyStateToLeds(std::array<TwoStateLED::LedState, numLeds>& states);
 };
+
+class PanelUnitSoundMode : public PanelUnitPresetMode
+{
+ public:
+  PanelUnitSoundMode();
+
+  void setup() override;
+};
