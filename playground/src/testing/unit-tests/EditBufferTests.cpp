@@ -684,7 +684,6 @@ TEST_CASE("Convert Sound Leads to Converted UUID")
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
   }
 
-
   SECTION("Convert from Single to Layer")
   {
     auto scope = TestHelper::createTestScope();
@@ -697,5 +696,63 @@ TEST_CASE("Convert Sound Leads to Converted UUID")
     auto scope = TestHelper::createTestScope();
     eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
+  }
+}
+
+namespace PartNaming
+{
+  void renamePresetPartsToEinsAndZwo(Preset* p)
+  {
+    auto scope = TestHelper::createTestScope();
+    p->undoableSetVoiceGroupName(scope->getTransaction(), VoiceGroup::I, "Eins");
+    p->undoableSetVoiceGroupName(scope->getTransaction(), VoiceGroup::II, "Zwo");
+    REQUIRE(p->getVoiceGroupName(VoiceGroup::I) == "Eins");
+    REQUIRE(p->getVoiceGroupName(VoiceGroup::II) == "Zwo");
+  }
+}
+
+TEST_CASE("Convert Dual To Single Label Naming")
+{
+  MockPresetStorage presets;
+  auto eb = TestHelper::getEditBuffer();
+  auto layerPreset = presets.getLayerPreset();
+  auto splitPreset = presets.getSplitPreset();
+  PartNaming::renamePresetPartsToEinsAndZwo(layerPreset);
+  PartNaming::renamePresetPartsToEinsAndZwo(splitPreset);
+
+  SECTION("Convert Layer I to Single")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), layerPreset);
+
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    REQUIRE(eb->getName() == "Eins");
+  }
+
+  SECTION("Convert Layer II to Single")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), layerPreset);
+
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::II);
+    REQUIRE(eb->getName() == "Zwo");
+  }
+
+  SECTION("Convert Split I to Single")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), splitPreset);
+
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    REQUIRE(eb->getName() == "Eins");
+  }
+
+  SECTION("Convert Split II to Single")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), splitPreset);
+
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::II);
+    REQUIRE(eb->getName() == "Zwo");
   }
 }

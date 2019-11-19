@@ -128,6 +128,12 @@ Glib::ustring Preset::getVoiceGroupName(VoiceGroup vg) const
   return m_voiceGroupLabels[static_cast<int>(vg)];
 }
 
+void Preset::undoableSetVoiceGroupName(UNDO::Transaction *transaction, VoiceGroup vg, const Glib::ustring &name)
+{
+  nltools_assertAlways(vg == VoiceGroup::I || vg == VoiceGroup::II);
+  transaction->addUndoSwap(this, m_voiceGroupLabels[static_cast<int>(vg)], name);
+}
+
 const Uuid &Preset::getUuid() const
 {
   return m_uuid;

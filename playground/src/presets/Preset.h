@@ -41,6 +41,7 @@ class Preset : public PresetDualParameterGroups
 
   SoundType getType() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
+  void undoableSetVoiceGroupName(UNDO::Transaction* transaction, VoiceGroup vg, const Glib::ustring& name);
 
   // accessors
   const Uuid &getUuid() const;

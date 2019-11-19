@@ -647,12 +647,11 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGr
   if(m_type == SoundType::Single)
     return;
 
+  setName(transaction, getVoiceGroupName(copyFrom));
   setVoiceGroupName(transaction, "", VoiceGroup::I);
   setVoiceGroupName(transaction, "", VoiceGroup::II);
-
   undoableConvertDualToSingle(transaction, copyFrom);
   initRecallValues(transaction);
-
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
 }
 
