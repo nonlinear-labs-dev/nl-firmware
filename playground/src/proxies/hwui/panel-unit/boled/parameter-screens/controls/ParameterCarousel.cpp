@@ -32,9 +32,13 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
     {
       auto button = edit->findButtonForParameter(selectedParameter);
 
-      if(static_cast<int>(button) != -1)
+      if(button != Buttons::INVALID && static_cast<int>(button) != -1)
       {
         setupChildControls(edit, selectedParameter, button);
+      }
+      else
+      {
+        setupChildControlsForParameterWithoutButtonMapping(selectedParameter);
       }
     }
   }
@@ -152,4 +156,16 @@ bool ParameterCarousel::containsSelectedParameter() const
     }
   }
   return false;
+}
+
+void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)
+{
+  switch(selectedParameter->getID())
+  {
+    case 247:
+    case 248:
+    case 312:
+      setupChildControls(selectedParameter, { 247, 248, 312 });
+      break;
+  }
 }
