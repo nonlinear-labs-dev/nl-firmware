@@ -58,7 +58,7 @@ void C15Synth::doAudio(SampleFrame *target, size_t numFrames)
 
 void C15Synth::printAndResetTcdInputLog()
 {
-  nltools::Log::info("currently disabled");
+  m_dsp->logStatus();
 }
 
 void C15Synth::resetDSP()
@@ -69,7 +69,19 @@ void C15Synth::resetDSP()
 
 void C15Synth::toggleTestTone()
 {
-  nltools::Log::info("currently disabled");
+  switch(m_dsp->onSettingToneToggle())
+  {
+    case 0:
+      nltools::Log::info("toggle TestTone: C15 only");
+      break;
+    case 1:
+      nltools::Log::info("toggle TestTone: Tone only");
+      break;
+    case 2:
+      nltools::Log::info("toggle TestTone: C15 and Tone");
+      break;
+  }
+  nltools::Log::info("TestTone is implemented before soft clipper and switches via Fadepoint now");
 }
 
 void C15Synth::selectTestToneFrequency()
@@ -215,7 +227,7 @@ void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage &msg)
 
 void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage &msg)
 {
-  m_dsp->onSettingNoteShift(msg.m_shift);
+  m_dsp->onSettingNoteShift(static_cast<float>(msg.m_shift));
 }
 
 void C15Synth::onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage &msg)

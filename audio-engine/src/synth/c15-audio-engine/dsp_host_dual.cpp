@@ -32,6 +32,11 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_transition_time.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
   m_reference.init(C15::Properties::SmootherScale::Linear, 80.0f, 400.0f, 0.5f);
   m_reference.m_scaled = scale(m_reference.m_scaling, m_reference.m_position);
+  // dsp sections init
+  m_global.init(m_time.m_sample_inc);
+  m_global.update_tone_amplitude(-12.0f);
+  m_global.update_tone_frequency(m_reference.m_scaled);
+  m_global.update_tone_mode(0);
   // init parameters by parameter list
   m_params.init_modMatrix();
   for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
@@ -180,6 +185,16 @@ C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
   nltools::Log::warning("dispatch(", _id, "):", "failed!");
 #endif
   return m_invalid_param;
+}
+
+void dsp_host_dual::logStatus()
+{
+  nltools::Log::info("engine status:");
+  nltools::Log::info("-clock(index:", m_clock.m_index, ", fast:", m_clock.m_fast, ", slow:", m_clock.m_slow, ")");
+  nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_output_mute.get_value(), ")");
+  nltools::Log::info("-master(vol:", m_global.m_signals.get(C15::Signals::Global_Signals::Master_Volume),
+                     ", tune:", m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune), ")");
+  nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
 }
 
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
@@ -629,6 +644,14 @@ void dsp_host_dual::onSettingGlitchSuppr(const bool _enabled)
 #endif
 }
 
+uint32_t dsp_host_dual::onSettingToneToggle()
+{
+  m_tone_state = (m_tone_state + 1) % 3;
+  m_fade.enable(FadeEvent::ToneMute, 0);
+  m_output_mute.pick(0);
+  return m_tone_state;
+}
+
 void dsp_host_dual::render()
 {
   // clock & fadepoint
@@ -637,12 +660,22 @@ void dsp_host_dual::render()
   // slow rendering
   if(m_clock.m_slow)
   {
+    m_global.render_slow();
   }
   // fast rendering
   if(m_clock.m_fast)
+    m_global.render_fast();
   {
   }
   // audio rendering (always)
+  const float mute = m_output_mute.get_value();
+  // todo: audio dsp poly
+  // todo: audio dsp mono
+  // audio dsp global - main out: combine layers, apply test_tone and soft clip
+  m_global.render_audio(0.0f, 0.0f, 0.0f, 0.0f);  // todo: feed mono outs (I.L, I.R, II.L, II.R)
+  // final: output mute
+  m_mainOut_L = m_global.m_out_l * mute;
+  m_mainOut_R = m_global.m_out_r * mute;
 }
 
 void dsp_host_dual::reset()
@@ -741,8 +774,10 @@ void dsp_host_dual::keyDown(const float _vel)
 {
   if(m_alloc.keyDown(m_key_pos))
   {
+    // get centered, scaled, note_shifted keyPosition (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
+    const float keyPos = m_global.key_position(m_key_pos);
 #if LOG_KEYS
-    nltools::Log::info("key_down(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_down(pos:", keyPos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
 #endif
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
@@ -763,8 +798,10 @@ void dsp_host_dual::keyUp(const float _vel)
 {
   if(m_alloc.keyUp(m_key_pos))
   {
+    // get centered, scaled, note_shifted keyPosition (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
+    const float keyPos = m_global.key_position(m_key_pos);
 #if LOG_KEYS
-    nltools::Log::info("key_up(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_up(pos:", keyPos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
 #endif
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
@@ -1080,6 +1117,16 @@ void dsp_host_dual::evalFadePoint()
         m_fade.stop();
         m_output_mute.stop();
         break;
+      case FadeEvent::ToneMute:
+        m_global.update_tone_mode(m_tone_state);
+        m_fade.stop();
+        m_output_mute.pick(2);
+        m_fade.enable(FadeEvent::ToneUnmute, 1);
+        break;
+      case FadeEvent::ToneUnmute:
+        m_fade.stop();
+        m_output_mute.stop();
+        break;
     }
   }
 }
@@ -1379,7 +1426,6 @@ void dsp_host_dual::localParRcl(const uint32_t _layer,
         localTimeRcl(_layer, element.m_param.m_index, static_cast<float>(_source.controlPosition));
         break;
       case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
-        //m_params.get_direct(_layer, id)->update_position(static_cast<float>(_source.controlPosition));
         localDirectRcl(m_params.get_direct(_layer, id), _source);
         break;
       default:
@@ -1513,7 +1559,7 @@ void dsp_host_dual::localTargetRcl(Target_Param *_param,
   _param->update_amount(static_cast<float>(_source.modulationAmount));
   if(_param->update_position(static_cast<float>(_source.controlPosition)))
   {
-    _param->m_scaled = scale(_param->m_scaling, _param->m_position);
+    _param->m_scaled = scale(_param->m_scaling, _param->polarize(_param->m_position));
     _param->m_changed = true;
   }
 }
@@ -1528,7 +1574,7 @@ void dsp_host_dual::localTargetRcl(Target_Param *_param, const nltools::msg::Par
   //_param->update_amount(static_cast<float>(_source.modulationAmount));
   if(_param->update_position(static_cast<float>(_source.controlPosition)))
   {
-    _param->m_scaled = scale(_param->m_scaling, _param->m_position);
+    _param->m_scaled = scale(_param->m_scaling, _param->polarize(_param->m_position));
     _param->m_changed = true;
   }
 }

@@ -48,6 +48,8 @@ class dsp_host_dual
   void init(const uint32_t _samplerate, const uint32_t _polyphony);
   // handles for inconvenient stuff
   C15::ParameterDescriptor getParameter(const int _id);
+  // event bindings: debug
+  void logStatus();
   // event bindings: LPC or MIDI Device (in Dev_PC mode)
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   void onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
@@ -68,6 +70,7 @@ class dsp_host_dual
   void onSettingTransitionTime(const float _position);
   void onSettingNoteShift(const float _shift);
   void onSettingGlitchSuppr(const bool _enabled);
+  uint32_t onSettingToneToggle();
   void render();
   void reset();
 
@@ -99,7 +102,7 @@ class dsp_host_dual
   // helper values
   const float m_format_vel = 4095.0f / 127.0f, m_format_hw = 8000.0f / 127.0f, m_format_pb = 8000.0f / 16383.0f,
               m_norm_vel = 1.0f / 4095.0f, m_norm_hw = 1.0f / 8000.0f;
-  uint32_t m_key_pos = 0;
+  uint32_t m_key_pos = 0, m_tone_state = 0;
   bool m_key_valid = false, m_layer_changed = false, m_glitch_suppression = false;
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);

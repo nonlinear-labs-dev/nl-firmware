@@ -16,7 +16,9 @@ enum class FadeEvent
 {
   None,
   RecallMute,
-  RecallUnmute
+  RecallUnmute,
+  ToneMute,
+  ToneUnmute
 };
 
 class ae_fade_table
