@@ -17,9 +17,6 @@ IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* e
 EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     : super("/presets/param-editor/")
 {
-
-#warning "Add VoiceGroup Parameter"
-
   addAction("sync-lpc", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Application::get().getSettings()->sendToLPC();
     Application::get().getLPCProxy()->sendEditBuffer();

@@ -534,8 +534,8 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    for(auto group : getParameterGroups(vg))
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto &group : getParameterGroups(vg))
       group->undoableRandomize(transaction, initiator, amount);
 
   transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
@@ -546,8 +546,8 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   UNDO::ActionCommand::tAction sendEditBuffer([](auto) -> void { EditBuffer::sendToLPC(); });
   transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
 
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    for(auto group : getParameterGroups(vg))
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto& group : getParameterGroups(vg))
       group->undoableClear(transaction);
 
   auto swap = UNDO::createSwapData(Uuid::init());

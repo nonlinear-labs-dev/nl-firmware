@@ -226,6 +226,11 @@ void ParameterDualGroupSet::writeDocument(Writer &writer, UpdateDocumentContribu
 const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
     ParameterDualGroupSet::getParameterGroups(VoiceGroup vg) const
 {
+  if(vg == VoiceGroup::Global)
+  {
+    return m_globalParameterGroups;
+  }
+
   if(vg == VoiceGroup::Invalid)
   {
     vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();

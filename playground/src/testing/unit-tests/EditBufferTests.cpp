@@ -10,6 +10,7 @@
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
+#include <device-settings/RandomizeAmount.h>
 #include "MockPresetStorage.h"
 
 inline EditBuffer* getEditBuffer()
@@ -603,5 +604,53 @@ TEST_CASE("Voice Group Label")
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == ebName);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == ebName);
     REQUIRE_FALSE(eb->anyParameterChanged());
+  }
+}
+
+void randomizeRequireChangedAndInitSoundTest(const Preset* preset)
+{
+  auto eb = TestHelper::getEditBuffer();
+  {
+    auto scope = TestHelper::createTestScope();
+
+    //setup randomize amount
+    Application::get().getSettings()->getSetting<RandomizeAmount>()->set(0.5);
+
+    eb->undoableRandomize(scope->getTransaction(), Initiator::EXPLICIT_OTHER);
+    REQUIRE(eb->anyParameterChanged());
+    eb->undoableInitSound(scope->getTransaction());
+    REQUIRE(!eb->anyParameterChanged());
+    auto masterVolume = eb->findParameterByID(247, VoiceGroup::Global);
+    REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getDefaultValue()));
+    auto masterTune = eb->findParameterByID(248, VoiceGroup::Global);
+    REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getDefaultValue()));
+
+    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+    {
+      auto vgVolume = eb->findParameterByID(10002, vg);
+      REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getDefaultValue()));
+      auto vgTune = eb->findParameterByID(10003, vg);
+      REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getDefaultValue()));
+    }
+  }
+}
+
+TEST_CASE("Init Sound resets all Parameters")
+{
+  MockPresetStorage presets;
+
+  SECTION("Init Single Sound")
+  {
+    randomizeRequireChangedAndInitSoundTest(presets.getSinglePreset());
+  }
+
+  SECTION("Init Split Preset")
+  {
+    randomizeRequireChangedAndInitSoundTest(presets.getSplitPreset());
+  }
+
+  SECTION("Init Layer Preset")
+  {
+    randomizeRequireChangedAndInitSoundTest(presets.getLayerPreset());
   }
 }

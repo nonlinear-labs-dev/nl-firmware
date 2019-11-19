@@ -5,9 +5,19 @@
 
 namespace TestHelper
 {
-  inline auto createTestScope() -> std::unique_ptr<UNDO::TransactionCreationScope>
+  inline PresetManager* getPresetManager()
   {
-    return std::move(Application::get().getPresetManager()->getUndoScope().startTestTransaction());
+    return Application::get().getPresetManager();
+  }
+
+  inline EditBuffer* getEditBuffer()
+  {
+    return getPresetManager()->getEditBuffer();
+  }
+
+  inline std::unique_ptr<UNDO::TransactionCreationScope> createTestScope()
+  {
+    return std::move(getPresetManager()->getUndoScope().startTestTransaction());
   }
 
   inline void forceParameterChange(UNDO::Transaction* transaction, Parameter* param)
