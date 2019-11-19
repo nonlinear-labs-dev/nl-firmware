@@ -53,8 +53,8 @@ std::string sanitize(const std::string &in)
   mod = StringTools::replaceAll(mod, "Ⓑ", u8"\ue001");
   mod = StringTools::replaceAll(mod, "Ⓒ", u8"\ue002");
   mod = StringTools::replaceAll(mod, "Ⓓ", u8"\ue003");
-  mod = StringTools::replaceAll(mod, "Ⓔ", u8"\ue0004");
-  mod = StringTools::replaceAll(mod, "Ⓕ", u8"\ue0005");
+  mod = StringTools::replaceAll(mod, "Ⓔ", u8"\ue200");
+  mod = StringTools::replaceAll(mod, "Ⓕ", u8"\ue201");
   return mod;
 }
 
