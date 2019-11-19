@@ -763,8 +763,8 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGro
   copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
 
   auto globalMaster = getGlobalParameterGroupByID("Master");
-  auto vgMasterI = getParameterGroupByID("VGM", VoiceGroup::I);
-  auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
+  auto vgMasterI = getParameterGroupByID("PART", VoiceGroup::I);
+  auto vgMasterII = getParameterGroupByID("PART", VoiceGroup::II);
 
   //Copy Global Master to VG Master
   for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
@@ -796,8 +796,8 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGro
 
   auto globalMaster = getGlobalParameterGroupByID("Master");
 
-  auto vgMasterI = getParameterGroupByID("VGM", VoiceGroup::I);
-  auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
+  auto vgMasterI = getParameterGroupByID("PART", VoiceGroup::I);
+  auto vgMasterII = getParameterGroupByID("PART", VoiceGroup::II);
 
   //Copy Global Master to VG Master
   for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })

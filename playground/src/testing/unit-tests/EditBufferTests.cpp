@@ -179,25 +179,25 @@ TEST_CASE("Sound Conversion - Master Volume Parameter")
 {
   MockPresetStorage presets;
 
-  SECTION("I Split to Single copy Voice Group Master Volume to Global Master Volume")
+  SECTION("I Split to Single copy Part Master Volume to Global Master Volume")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10002, 247>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
-  SECTION("II Split to Single copy Voice Group Master Volume to Global Master Volume")
+  SECTION("II Split to Single copy Part Master Volume to Global Master Volume")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10002, 247>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
-  SECTION("I Layer to Single copy Voice Group Master Volume to Global Master Volume")
+  SECTION("I Layer to Single copy Part Master Volume to Global Master Volume")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10002, 247>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 
-  SECTION("II Layer to Single copy Voice Group Master Volume to Global Master Volume")
+  SECTION("II Layer to Single copy Part Master Volume to Global Master Volume")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10002, 247>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
@@ -208,25 +208,25 @@ TEST_CASE("Sound Conversion - Master Tune Parameter")
 {
   MockPresetStorage presets;
 
-  SECTION("I Split to Single copy Voice Group Tune to Global Master Tune")
+  SECTION("I Split to Single copy Part Tune to Global Master Tune")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10003, 248>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
-  SECTION("II Split to Single copy Voice Group Tune to Global Master Tune")
+  SECTION("II Split to Single copy Part Tune to Global Master Tune")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10003, 248>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
-  SECTION("I Layer to Single copy Voice Group Tune to Global Master Tune")
+  SECTION("I Layer to Single copy Part Tune to Global Master Tune")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10003, 248>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 
-  SECTION("II Layer to Single copy Voice Group Tune to Global Master Tune")
+  SECTION("II Layer to Single copy Part Tune to Global Master Tune")
   {
     dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10003, 248>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
@@ -247,7 +247,7 @@ TEST_CASE("poly groups initialization")
   const auto monoLegato = editBuffer->findParameterByID(12347, VoiceGroup::I)->getControlPositionValue();
   const auto monoGlide = editBuffer->findParameterByID(12348, VoiceGroup::I)->getControlPositionValue();
 
-  SECTION("Convert to Layer initializes Voice Groups from VoiceGroup::I ")
+  SECTION("Convert to Layer initializes Parts from VoiceGroup::I ")
   {
     {
       auto scope = TestHelper::createTestScope();
@@ -278,7 +278,7 @@ TEST_CASE("poly groups initialization")
     }
   }
 
-  SECTION("Convert to Split initializes Voice Groups from VoiceGroup::I")
+  SECTION("Convert to Split initializes Parts from VoiceGroup::I")
   {
     {
       auto scope = TestHelper::createTestScope();
@@ -562,7 +562,7 @@ TEST_CASE("Load Presets of all types")
   }
 }
 
-TEST_CASE("Voice Group Label")
+TEST_CASE("Part Label")
 {
   auto eb = getEditBuffer();
 
@@ -578,7 +578,7 @@ TEST_CASE("Voice Group Label")
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "II");
   }
 
-  SECTION("Convert to Single clears Voice Group Labels")
+  SECTION("Convert to Single clears Part Labels")
   {
     auto scope = TestHelper::createTestScope();
     eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
@@ -587,7 +587,7 @@ TEST_CASE("Voice Group Label")
     REQUIRE_FALSE(eb->anyParameterChanged());
   }
 
-  SECTION("Load Single into Voice Group sets Voice Group Label to Preset Name")
+  SECTION("Load Single into Part sets Part Label to Preset Name")
   {
     auto scope = TestHelper::createTestScope();
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "I");
@@ -595,7 +595,7 @@ TEST_CASE("Voice Group Label")
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
   }
 
-  SECTION("Convert Single to Dual sets Voice Group Labels to prior EB Name")
+  SECTION("Convert Single to Dual sets Part Labels to prior EB Name")
   {
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
