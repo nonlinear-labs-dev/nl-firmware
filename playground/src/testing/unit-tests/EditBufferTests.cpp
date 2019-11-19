@@ -654,3 +654,48 @@ TEST_CASE("Init Sound resets all Parameters")
     randomizeRequireChangedAndInitSoundTest(presets.getLayerPreset());
   }
 }
+
+TEST_CASE("Convert Sound Leads to Converted UUID")
+{
+  auto eb = TestHelper::getEditBuffer();
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    REQUIRE(eb->getType() == SoundType::Single);
+  }
+
+  SECTION("Convert from Layer to Single")
+  {
+    MockPresetStorage presets;
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
+  }
+
+  SECTION("Convert from Split to Single")
+  {
+    MockPresetStorage presets;
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
+
+    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
+  }
+
+
+  SECTION("Convert from Single to Layer")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+    REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
+  }
+
+  SECTION("Convert from Single to Split")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+    REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
+  }
+}
