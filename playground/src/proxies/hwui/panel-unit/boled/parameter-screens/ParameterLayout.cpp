@@ -316,7 +316,9 @@ bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
     return true;
   }
 
-  getOLEDProxy().resetOverlay();
+  if(i == Buttons::BUTTON_SHIFT && !down)
+    getOLEDProxy().resetOverlay();
+
   return false;
 }
 
