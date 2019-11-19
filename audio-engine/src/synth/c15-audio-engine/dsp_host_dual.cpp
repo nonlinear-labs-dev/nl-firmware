@@ -20,11 +20,13 @@ dsp_host_dual::dsp_host_dual()
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
 {
   const float samplerate = static_cast<float>(_samplerate);
+  // init of crucial components: voiceAlloc, conversion, clock, time, ae_fade_table ("fadepoint"), ae_fader ("pickup")
   m_alloc.init(&m_layer_mode, &m_preloaded_layer_mode);
   m_convert.init();
   m_clock.init(_samplerate);
   m_time.init(_samplerate);
   m_fade.init(samplerate);
+  m_output_mute.init(&m_fade.m_value);
   // these could also be part of parameter list (later), currently hard-coded
   m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.0f);
   m_transition_time.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
@@ -362,15 +364,18 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_ms
   m_preloaded_layer_mode = C15::Properties::LayerMode::Single;
   m_preloaded_single_data = _msg;
 #if LOG_RECALL
+  // log preset with primitive timestamp (for debugging fade events)
   nltools::Log::info("Received Single Preset Message! (@", m_clock.m_index, ")");
 #endif
   if(m_glitch_suppression)
   {
-    m_fade.enable(FadeEvent::RecallMute, 0);
-    m_output_mute.pick(0);
+    // glitch suppression: start outputMute fade
+    m_fade.enable(FadeEvent::RecallMute, 0);  // enable fader with event
+    m_output_mute.pick(0);                    // pickup fade-out
   }
   else
   {
+    // direct apply: recall single preset buffer
     m_layer_mode = m_preloaded_layer_mode;
     recallSingle();
   }

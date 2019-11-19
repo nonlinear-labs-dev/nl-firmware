@@ -33,8 +33,8 @@ class ae_fade_table
 
  private:
   std::vector<float> m_data;
-  uint32_t m_table_index, m_table_offset, m_flush_index;
-  bool m_flush;
+  uint32_t m_table_index, m_table_offset, m_trigger_index;
+  bool m_trigger;
 };
 
 class ae_fader
