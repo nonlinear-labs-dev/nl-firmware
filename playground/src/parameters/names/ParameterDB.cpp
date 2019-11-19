@@ -49,11 +49,12 @@ std::vector<std::string> ParameterDB::textRowToVector(const std::string &row) co
 
 std::string sanitize(const std::string &in)
 {
-  auto f = u8"\ue000";
-  auto mod = StringTools::replaceAll(in, "Ⓐ", f);
+  auto mod = StringTools::replaceAll(in, "Ⓐ", u8"\ue000");
   mod = StringTools::replaceAll(mod, "Ⓑ", u8"\ue001");
   mod = StringTools::replaceAll(mod, "Ⓒ", u8"\ue002");
   mod = StringTools::replaceAll(mod, "Ⓓ", u8"\ue003");
+  mod = StringTools::replaceAll(mod, "Ⓔ", u8"\ue0004");
+  mod = StringTools::replaceAll(mod, "Ⓕ", u8"\ue0005");
   return mod;
 }
 

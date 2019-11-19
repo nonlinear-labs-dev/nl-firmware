@@ -431,3 +431,5 @@ When the time of the flanger is set to zero, the allpass becomes the dominant pa
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,2 Bit für MC Select,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,(8192 = kein MC),,
 328,,UI Parameters,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+1247,,1,,Ⓔ,,,,Ⓔ,Big Hor. Slider,1.0,,N,79,NA,1,LINEAR_100_PERCENT,lin,100,0...100,50,0.5,0.1,%,%,,1/100,1/1000,-25600 ... 28800,0 ... 3200,3200,-,TG - MC,,The info text of Macro Control E is user-definable and defaults to an empty string.,
+1248,,1,,Ⓕ,,,,Ⓕ,Big Hor. Slider,1.0,,N,79,NA,1,LINEAR_100_PERCENT,lin,100,0...100,50,0.5,0.1,%,%,,1/100,1/1000,-25600 ... 28800,0 ... 3200,3200,-,TG - MC,,The info text of Macro Control F is user-definable and defaults to an empty string.,
