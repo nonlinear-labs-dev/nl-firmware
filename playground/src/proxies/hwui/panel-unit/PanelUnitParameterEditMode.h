@@ -65,7 +65,6 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
   const BOLED &getBoled() const;
   BOLED &getBoled();
   bool handleMacroControlButton(bool state, int mcParamId);
-  void assertAllButtonsAssigned();
 
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
 

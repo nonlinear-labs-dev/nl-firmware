@@ -75,33 +75,6 @@ void PanelUnitParameterEditMode::setupFocusAndMode(FocusAndMode focusAndMode)
   bruteForceUpdateLeds();
 }
 
-void PanelUnitParameterEditMode::assertAllButtonsAssigned()
-{
-#if _TESTS
-  if(Application::get().getPresetManager()->getEditBuffer()->countParameters() != assignedAudioIDs.size())
-  {
-    int lastOne = -1;
-    for(int id : assignedAudioIDs)
-    {
-      int expected = lastOne + 1;
-      if(expected != 122)  // unused param
-      {
-        if(id != expected)
-        {
-          auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(expected);
-          if(!dynamic_cast<const PedalParameter *>(param))
-            g_assert(false);
-        }
-      }
-      lastOne = id;
-      auto lastParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(lastOne);
-      if(dynamic_cast<ModulateableParameter *>(lastParam))
-        lastOne++;
-    }
-  }
-#endif
-}
-
 static EditPanel &getEditPanel()
 {
   auto hwui = Application::get().getHWUI();
@@ -135,8 +108,6 @@ void PanelUnitParameterEditMode::setup()
                         bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 246));
 
   FOR_TESTS(assignedAudioIDs.insert(246));
-
-  assertAllButtonsAssigned();
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     getEditPanel().getUndoStateMachine().traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
