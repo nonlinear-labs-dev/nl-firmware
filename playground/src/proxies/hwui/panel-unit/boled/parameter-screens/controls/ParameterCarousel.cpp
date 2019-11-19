@@ -167,5 +167,12 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
     case 312:
       setupChildControls(selectedParameter, { 247, 248, 312 });
       break;
+
+    case 249:
+    case 250:
+    case 252:
+    case 253:
+      setupChildControls(selectedParameter, { 249, 250, 252, 253 });
+      break;
   }
 }
