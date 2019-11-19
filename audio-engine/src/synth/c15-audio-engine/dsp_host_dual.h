@@ -99,6 +99,7 @@ class dsp_host_dual
   ae_fader m_output_mute;
   PolySection m_poly[2];
   MonoSection m_mono[2];
+  PolyValue m_poly_feedback[4] = {};
   // helper values
   const float m_format_vel = 4095.0f / 127.0f, m_format_hw = 8000.0f / 127.0f, m_format_pb = 8000.0f / 16383.0f,
               m_norm_vel = 1.0f / 4095.0f, m_norm_hw = 1.0f / 8000.0f;

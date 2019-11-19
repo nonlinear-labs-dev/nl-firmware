@@ -81,7 +81,7 @@ void C15Synth::toggleTestTone()
       nltools::Log::info("toggle TestTone: C15 and Tone");
       break;
   }
-  nltools::Log::info("TestTone is implemented before soft clipper and switches via Fadepoint now");
+  //nltools::Log::info("TestTone is implemented before soft clipper and switches via Fadepoint now");
 }
 
 void C15Synth::selectTestToneFrequency()

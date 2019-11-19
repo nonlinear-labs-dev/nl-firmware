@@ -37,6 +37,15 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.update_tone_amplitude(-12.0f);
   m_global.update_tone_frequency(m_reference.m_scaled);
   m_global.update_tone_mode(0);
+  // init feedback pointers
+  m_poly[0].m_fb_osc_a = &m_poly_feedback[2];
+  m_poly[0].m_fb_osc_b = &m_poly_feedback[3];
+  m_poly[1].m_fb_osc_a = &m_poly_feedback[0];
+  m_poly[1].m_fb_osc_b = &m_poly_feedback[1];
+  m_poly[0].m_fb0_dry = m_poly[1].m_fb0_dry = &m_mono[0].m_dry;
+  m_poly[0].m_fb0_wet = m_poly[1].m_fb0_wet = &m_mono[0].m_wet;
+  m_poly[0].m_fb1_dry = m_poly[1].m_fb1_dry = &m_mono[1].m_dry;
+  m_poly[0].m_fb1_wet = m_poly[1].m_fb1_wet = &m_mono[1].m_wet;
   // init parameters by parameter list
   m_params.init_modMatrix();
   for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
@@ -154,12 +163,13 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     }
   }
 #if LOG_INIT
-  nltools::Log::info("dsp_host_dual::init");
+  nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
   nltools::Log::info("todo: engine - modulation matrix (triggers, behavior, etc.)");
   nltools::Log::info("todo: engine - dsp components implementation");
   nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
   nltools::Log::info(
       "issue: nltools::presetMsg - parameter structure, param ids, lock, unsorted param groups, global group");
+  nltools::Log::info("(param_ids: mono_grp, master, voice_grp?, split_point?)");
   nltools::Log::info("todo: nltools::parameterMsg - lock can disappear");
   nltools::Log::info("todo: ParameterList - Unison Voices, Macro Times: no smoothing - but scaling");
 #endif
@@ -654,26 +664,45 @@ uint32_t dsp_host_dual::onSettingToneToggle()
 
 void dsp_host_dual::render()
 {
-  // clock & fadepoint
+  // clock & fadepoint rendering
   m_clock.render();
   evalFadePoint();
   // slow rendering
   if(m_clock.m_slow)
   {
+    // render components
     m_global.render_slow();
+    m_poly[0].render_slow();
+    m_poly[1].render_slow();
+    m_mono[0].render_slow();
+    m_mono[1].render_slow();
   }
   // fast rendering
   if(m_clock.m_fast)
-    m_global.render_fast();
   {
+    // render components
+    m_global.render_fast();
+    m_poly[0].render_fast();
+    m_poly[1].render_fast();
+    m_mono[0].render_fast();
+    m_mono[1].render_fast();
   }
   // audio rendering (always)
   const float mute = m_output_mute.get_value();
-  // todo: audio dsp poly
-  // todo: audio dsp mono
-  // audio dsp global - main out: combine layers, apply test_tone and soft clip
-  m_global.render_audio(0.0f, 0.0f, 0.0f, 0.0f);  // todo: feed mono outs (I.L, I.R, II.L, II.R)
-  // final: output mute
+  // - resolve poly feedback
+  m_poly_feedback[0] = m_poly[0].m_osc_a;
+  m_poly_feedback[1] = m_poly[0].m_osc_b;
+  m_poly_feedback[2] = m_poly[1].m_osc_a;
+  m_poly_feedback[3] = m_poly[1].m_osc_b;
+  // - audio dsp poly - both layers
+  m_poly[0].render_audio(mute);
+  m_poly[1].render_audio(mute);
+  // - audio dsp mono - each layer with separate sends - left, right)
+  m_mono[0].render_audio(m_poly[0].m_send0_l + m_poly[1].m_send0_l, m_poly[0].m_send0_r + m_poly[1].m_send0_r);
+  m_mono[1].render_audio(m_poly[0].m_send1_l + m_poly[1].m_send1_l, m_poly[0].m_send1_r + m_poly[1].m_send1_r);
+  // - audio dsp global - main out: combine layers, apply test_tone and soft clip
+  m_global.render_audio(m_mono[0].m_out_l, m_mono[0].m_out_r, m_mono[1].m_out_l, m_mono[1].m_out_r);
+  // - final: main out, output mute
   m_mainOut_L = m_global.m_out_l * mute;
   m_mainOut_R = m_global.m_out_r * mute;
 }
@@ -774,22 +803,29 @@ void dsp_host_dual::keyDown(const float _vel)
 {
   if(m_alloc.keyDown(m_key_pos))
   {
-    // get centered, scaled, note_shifted keyPosition (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
-    const float keyPos = m_global.key_position(m_key_pos);
+    // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
+    const float keyTune = m_global.key_position(m_key_pos);
 #if LOG_KEYS
-    nltools::Log::info("key_down(pos:", keyPos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_down(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
 #endif
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
-#if LOG_MISSING
-      nltools::Log::info("todo: start local env(layer:", key->m_localIndex, ", voice:", key->m_voiceId, ")");
-#endif
+      m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel);
+    }
+    if(m_layer_mode == LayerMode::Split)
+    {
+      m_mono[m_alloc.m_traversal.first()->m_localIndex].keyDown(_vel);
+    }
+    else
+    {
+      m_mono[0].keyDown(_vel);
+      m_mono[1].keyDown(_vel);
     }
   }
 #if LOG_FAIL
   else
   {
-    nltools::Log::warning("keyUp(pos:", m_key_pos, ") failed!");
+    nltools::Log::warning("keyDown(pos:", m_key_pos, ") failed!");
   }
 #endif
 }
@@ -798,16 +834,14 @@ void dsp_host_dual::keyUp(const float _vel)
 {
   if(m_alloc.keyUp(m_key_pos))
   {
-    // get centered, scaled, note_shifted keyPosition (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
-    const float keyPos = m_global.key_position(m_key_pos);
+    // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
+    const float keyTune = m_global.key_position(m_key_pos);
 #if LOG_KEYS
-    nltools::Log::info("key_up(pos:", keyPos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_up(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
 #endif
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
-#if LOG_MISSING
-      nltools::Log::info("todo: stop local env(layer:", key->m_localIndex, ", voice:", key->m_voiceId, ")");
-#endif
+      m_poly[key->m_localIndex].keyUp(key->m_voiceId, keyTune, _vel);
     }
   }
 #if LOG_FAIL

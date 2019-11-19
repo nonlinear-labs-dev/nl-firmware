@@ -48,7 +48,7 @@ void PolySection::start_slow(const uint32_t _id, const float _dx, const float _d
   m_smoothers.start_slow(_id, _dx, _dest);
 }
 
-void PolySection::render_audio(const float _left, const float _right)
+void PolySection::render_audio(const float _mute)
 {
   m_smoothers.render_audio();
   postProcess_audio();
@@ -64,6 +64,15 @@ void PolySection::render_slow()
 {
   m_smoothers.render_slow();
   postProcess_slow();
+}
+
+void PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
+                          const float _vel)
+{
+}
+
+void PolySection::keyUp(const uint32_t _voiceId, const float _tune, const float _vel)
+{
 }
 
 void PolySection::postProcess_audio()

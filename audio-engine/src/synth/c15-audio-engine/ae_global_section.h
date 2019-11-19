@@ -13,7 +13,6 @@
 #include "ae_info.h"
 #include "nltoolbox.h"
 
-// master (volume, tune), scale, test tone (freq, amp, follow_key), soft clip
 class GlobalSection
 {
  public:

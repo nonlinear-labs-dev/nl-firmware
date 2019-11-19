@@ -66,6 +66,10 @@ void MonoSection::render_slow()
   postProcess_slow();
 }
 
+void MonoSection::keyDown(const float _vel)
+{
+}
+
 void MonoSection::postProcess_audio()
 {
   auto traversal = &m_smoothers.m_copy_audio;
