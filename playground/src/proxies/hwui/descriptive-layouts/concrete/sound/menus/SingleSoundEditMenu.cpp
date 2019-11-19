@@ -1,13 +1,7 @@
 #include "SingleSoundEditMenu.h"
 
-#include <device-settings/TuneReference.h>
-#include <device-settings/TransitionTime.h>
-#include <proxies/hwui/HWUI.h>
-#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/GenericItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/InitSound.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/RandomizeItem.h>
-#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/TextItem.h>
-#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/SettingItem.h>
 
 SingleSoundEditMenu::SingleSoundEditMenu(const Rect &r)
     : SoundEditMenu(r)
@@ -17,9 +11,7 @@ SingleSoundEditMenu::SingleSoundEditMenu(const Rect &r)
 
 void SingleSoundEditMenu::init()
 {
-  const auto height = 52 / 4;
-  auto fullWidth = Rect{ 0, 0, 254, height };
-  addItem<TextItem>("-- Single --", fullWidth);
+  auto fullWidth = Rect{ 0, 0, 254, 13 };
   addItem<InitSound>(fullWidth);
   addItem<RandomizeItem>(fullWidth);
 }
