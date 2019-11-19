@@ -34,8 +34,8 @@ class PolySection
   void render_audio(const float _mute);
   void render_fast();
   void render_slow();
-  void keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
-               const float _vel);
+  void keyDown(const uint32_t _voiceId, const uint32_t _unisonVoices, const uint32_t _unisonIndex, const bool _stolen,
+               const float _tune, const float _vel);
   void keyUp(const uint32_t _voiceId, const float _tune, const float _vel);
 
  private:
@@ -43,7 +43,9 @@ class PolySection
   SmootherHandle<C15::Smoothers::Poly_Sync, C15::Smoothers::Poly_Audio, C15::Smoothers::Poly_Fast,
                  C15::Smoothers::Poly_Slow>
       m_smoothers;
-  void postProcess_audio();
-  void postProcess_fast();
-  void postProcess_slow();
+  const uint32_t m_voices = C15::Config::local_polyphony;
+  void postProcess_audio(const uint32_t _voiceId);
+  void postProcess_fast(const uint32_t _voiceId);
+  void postProcess_slow(const uint32_t _voiceId);
+  void postProcess_key(const uint32_t _voiceId);
 };

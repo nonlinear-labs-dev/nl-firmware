@@ -33,6 +33,7 @@
 #define LOG_SETTINGS 1
 #define LOG_RECALL 1
 #define LOG_KEYS 1
+#define LOG_KEYS_POLY 1
 #define LOG_TRANSITIONS 0
 #define LOG_LOCKED 1
 #define LOG_RESET 1

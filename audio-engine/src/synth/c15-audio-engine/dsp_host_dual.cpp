@@ -810,7 +810,12 @@ void dsp_host_dual::keyDown(const float _vel)
 #endif
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
-      m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel);
+      m_poly[key->m_localIndex].keyDown(key->m_voiceId, m_alloc.m_unison, key->m_unisonIndex, key->m_stolen, keyTune,
+                                        _vel);
+#if LOG_KEYS_POLY
+      nltools::Log::info("key_down_poly(voice:", key->m_voiceId, ", unisonIndex:", key->m_unisonIndex,
+                         ", stolen:", key->m_stolen, ", tune:", keyTune, ", velocity:", _vel, ")");
+#endif
     }
     if(m_layer_mode == LayerMode::Split)
     {
@@ -842,6 +847,9 @@ void dsp_host_dual::keyUp(const float _vel)
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
       m_poly[key->m_localIndex].keyUp(key->m_voiceId, keyTune, _vel);
+#if LOG_KEYS_POLY
+      nltools::Log::info("key_up_poly(voice:", key->m_voiceId, ", tune:", keyTune, ", velocity:", _vel, ")");
+#endif
     }
   }
 #if LOG_FAIL
