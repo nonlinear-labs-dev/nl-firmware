@@ -709,6 +709,14 @@ namespace PartNaming
     REQUIRE(p->getVoiceGroupName(VoiceGroup::I) == "Eins");
     REQUIRE(p->getVoiceGroupName(VoiceGroup::II) == "Zwo");
   }
+
+  template<typename tStr>
+  void renamePresetTo(Preset* p, const tStr& s)
+  {
+    auto scope = TestHelper::createTestScope();
+    p->setName(scope->getTransaction(), s);
+    REQUIRE(p->getName() == s);
+  }
 }
 
 TEST_CASE("Convert Dual To Single Label Naming")
@@ -717,6 +725,8 @@ TEST_CASE("Convert Dual To Single Label Naming")
   auto eb = TestHelper::getEditBuffer();
   auto layerPreset = presets.getLayerPreset();
   auto splitPreset = presets.getSplitPreset();
+  auto singlePreset = presets.getSinglePreset();
+
   PartNaming::renamePresetPartsToEinsAndZwo(layerPreset);
   PartNaming::renamePresetPartsToEinsAndZwo(splitPreset);
 
@@ -754,5 +764,35 @@ TEST_CASE("Convert Dual To Single Label Naming")
 
     eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::II);
     REQUIRE(eb->getName() == "Zwo");
+  }
+
+  SECTION("Convert Single to Layer")
+  {
+    {
+      PartNaming::renamePresetTo(singlePreset, "foo");
+    }
+    {
+      auto scope = TestHelper::createTestScope();
+      eb->undoableLoad(scope->getTransaction(), singlePreset);
+
+      eb->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "foo");
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "foo");
+    }
+  }
+
+  SECTION("Convert Single to Split")
+  {
+    {
+      PartNaming::renamePresetTo(singlePreset, "foo");
+    }
+    {
+      auto scope = TestHelper::createTestScope();
+      eb->undoableLoad(scope->getTransaction(), singlePreset);
+
+      eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "foo");
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "foo");
+    }
   }
 }
