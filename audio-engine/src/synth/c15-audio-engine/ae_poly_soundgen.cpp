@@ -65,7 +65,7 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const float _fe
   m_oscA_phase = keepFractional(m_oscA_phase);
   oscSampleA = m_mute_state_A * sinP3_noWrap(oscSampleA);
   //**************************** Modulation B ******************************//
-  auto oscSampleB = m_oscB_selfmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_PM_Self_Env_A);  // wrong label?
+  auto oscSampleB = m_oscB_selfmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_PM_Self_Env_B);
   oscSampleB = oscSampleB + m_oscA_crossmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_PM_A_Env_A);
   oscSampleB = oscSampleB + m_feedback_phase * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_PM_FB_Env_C);
   //**************************** Oscillator B ******************************//

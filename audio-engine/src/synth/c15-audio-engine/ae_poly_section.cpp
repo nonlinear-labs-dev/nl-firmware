@@ -214,8 +214,8 @@ void PolySection::postProcess_audio(const uint32_t _voiceId, const float _mute)
                     m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), tmp_env));
   // poly osc b signals
   tmp_amt = m_smoothers.get(C15::Smoothers::Poly_Fast::Osc_B_PM_Self);
-  tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_PM_Self_Env_A);    // wrong label
-  m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_PM_Self_Env_A, _voiceId,  // wrong label
+  tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_PM_Self_Env_B);
+  m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_PM_Self_Env_B, _voiceId,
                 NlToolbox::Crossfades::unipolarCrossFade(
                     1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_B_Tmb, _voiceId), tmp_env)
                     * tmp_amt);

@@ -181,7 +181,8 @@ C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
 #if LOG_DISPATCH
     if(C15::ParameterList[_id].m_param.m_type != C15::Descriptors::ParameterType::None)
     {
-      nltools::Log::info("dispatch(", _id, "):", C15::ParameterList[_id].m_pg.m_param_label_short);
+      nltools::Log::info("dispatch(", _id, "):", C15::ParameterList[_id].m_pg.m_group_id, "-",
+                         C15::ParameterList[_id].m_pg.m_param_label_short);
     }
     else
     {
@@ -201,8 +202,6 @@ void dsp_host_dual::logStatus()
   nltools::Log::info("engine status:");
   nltools::Log::info("-clock(index:", m_clock.m_index, ", fast:", m_clock.m_fast, ", slow:", m_clock.m_slow, ")");
   nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_output_mute.get_value(), ")");
-  nltools::Log::info("-master(vol:", m_global.m_signals.get(C15::Signals::Global_Signals::Master_Volume),
-                     ", tune:", m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune), ")");
   nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
   // maybe, log parameter values by groups?
 }

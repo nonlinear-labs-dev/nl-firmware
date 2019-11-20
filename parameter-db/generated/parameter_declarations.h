@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2019-11-07, 14:51
-    @version    1.7B-1
+    @date       2019-11-20, 17:22
+    @version	1.7B-1
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
     @todo
@@ -343,7 +343,7 @@ namespace C15
       Osc_B_Pitch_KT,
       Osc_B_Pitch_Env_C,
       Osc_B_Fluct_Env_C,
-      Osc_B_PM_Self_Env_A,
+      Osc_B_PM_Self_Env_B,
       Osc_B_PM_Self_Shp,
       Osc_B_PM_A_Env_A,
       Osc_B_PM_A_Shp,
@@ -436,13 +436,6 @@ namespace C15
 
     enum class Poly_Sync
     {
-      MC_Time_A,
-      MC_Time_B,
-      MC_Time_C,
-      MC_Time_D,
-      MC_Time_E,
-      MC_Time_F,
-      Unison_Voices,
       Voice_Grp_Split_Point,
       Mono_Grp_Enable,
       Mono_Grp_Prio,
@@ -583,7 +576,7 @@ namespace C15
       Osc_B_Pitch_Env_C,
       Osc_B_Fluct,
       Osc_B_Fluct_Env_C,
-      Osc_B_PM_Self_Env_A,
+      Osc_B_PM_Self_Env_B,
       Osc_B_PM_Self_Shp,
       Osc_B_PM_A_Env_A,
       Osc_B_PM_A_Shp,
@@ -686,7 +679,6 @@ namespace C15
 
     enum class Global_Signals
     {
-      Master_Volume,
       Master_Tune,
       _LENGTH_
     };
@@ -745,6 +737,7 @@ namespace C15
 
     enum class Truepoly_Signals
     {
+      Unison_PolyPhase,
       Env_A_Mag,
       Env_A_Tmb,
       Env_B_Mag,
@@ -761,7 +754,7 @@ namespace C15
       Shp_A_FB_Env_C,
       Osc_B_Freq,
       Osc_B_Fluct_Env_C,
-      Osc_B_PM_Self_Env_A,
+      Osc_B_PM_Self_Env_B,
       Osc_B_PM_A_Env_A,
       Osc_B_PM_FB_Env_C,
       Shp_B_Drive_Env_B,
