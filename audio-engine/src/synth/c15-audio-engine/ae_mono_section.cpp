@@ -52,22 +52,27 @@ void MonoSection::render_audio(const float _left, const float _right)
 {
   m_smoothers.render_audio();
   postProcess_audio();
+  // todo: mono audio dsp (makemonosound)
 }
 
 void MonoSection::render_fast()
 {
   m_smoothers.render_fast();
   postProcess_fast();
+  // todo: mono fast triggers
 }
 
 void MonoSection::render_slow()
 {
   m_smoothers.render_slow();
   postProcess_slow();
+  // todo: mono slow triggers
 }
 
 void MonoSection::keyDown(const float _vel)
 {
+  m_flanger_env.setSegmentDest(0, 1, _vel);
+  m_flanger_env.start(0);
 }
 
 void MonoSection::postProcess_audio()
@@ -77,6 +82,9 @@ void MonoSection::postProcess_audio()
   {
     m_signals.set(traversal->m_signalId[i], m_smoothers.get_audio(traversal->m_smootherId[i]));
   }
+  m_flanger_env.tick(0);
+  float env = (m_flanger_env.m_body[0].m_signal_magnitude * 2.0f) - 1.0f;
+  // todo: remaining audio mono dsp
 }
 
 void MonoSection::postProcess_fast()
@@ -86,6 +94,7 @@ void MonoSection::postProcess_fast()
   {
     m_signals.set(traversal->m_signalId[i], m_smoothers.get_fast(traversal->m_smootherId[i]));
   }
+  // todo: remaining fast mono dsp
 }
 
 void MonoSection::postProcess_slow()
@@ -95,4 +104,5 @@ void MonoSection::postProcess_slow()
   {
     m_signals.set(traversal->m_signalId[i], m_smoothers.get_slow(traversal->m_smootherId[i]));
   }
+  // todo: remaining slow mono dsp
 }

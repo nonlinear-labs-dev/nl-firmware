@@ -17,7 +17,7 @@ class GlobalSection
 {
  public:
   GlobalSignals m_signals;
-  float m_out_l = 0.0f, m_out_r = 0.0f, m_note_shift = 0.0f;
+  float m_out_l = 0.0f, m_out_r = 0.0f;
   GlobalSection();
   void init(const float _sampleInc);
   void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);

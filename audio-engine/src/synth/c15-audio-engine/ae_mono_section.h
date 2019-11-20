@@ -11,6 +11,7 @@
 
 #include "smoother_handle.h"
 #include "ae_info.h"
+#include "ae_envelopes.h"
 
 class MonoSection
 {
@@ -34,6 +35,7 @@ class MonoSection
   SmootherHandle<C15::Smoothers::Mono_Sync, C15::Smoothers::Mono_Audio, C15::Smoothers::Mono_Fast,
                  C15::Smoothers::Mono_Slow>
       m_smoothers;
+  Engine::Envelopes::DecayEnvelope<1> m_flanger_env;
   void postProcess_audio();
   void postProcess_fast();
   void postProcess_slow();

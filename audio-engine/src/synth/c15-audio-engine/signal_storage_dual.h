@@ -92,6 +92,10 @@ template <class P, class M> class PolySignalStorage
   {
     m_poly[_id][_voiceId] = _value;
   }
+  inline void set_poly(const P _id, const uint32_t _voiceId, const float _value)
+  {
+    m_poly[static_cast<uint32_t>(_id)][_voiceId] = _value;
+  }
   inline void set(const P _id, const uint32_t _voiceId, const float _value)
   {
     m_poly[static_cast<uint32_t>(_id)][_voiceId] = _value;

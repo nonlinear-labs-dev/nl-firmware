@@ -37,15 +37,11 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.update_tone_amplitude(-12.0f);
   m_global.update_tone_frequency(m_reference.m_scaled);
   m_global.update_tone_mode(0);
-  // init feedback pointers
-  m_poly[0].m_fb_osc_a = &m_poly_feedback[2];
-  m_poly[0].m_fb_osc_b = &m_poly_feedback[3];
-  m_poly[1].m_fb_osc_a = &m_poly_feedback[0];
-  m_poly[1].m_fb_osc_b = &m_poly_feedback[1];
-  m_poly[0].m_fb0_dry = m_poly[1].m_fb0_dry = &m_mono[0].m_dry;
-  m_poly[0].m_fb0_wet = m_poly[1].m_fb0_wet = &m_mono[0].m_wet;
-  m_poly[0].m_fb1_dry = m_poly[1].m_fb1_dry = &m_mono[1].m_dry;
-  m_poly[0].m_fb1_wet = m_poly[1].m_fb1_wet = &m_mono[1].m_wet;
+  // init poly: exponentiator, feedback pointers
+  m_poly[0].init(&m_convert, &m_poly_feedback[2], &m_poly_feedback[3], &m_mono[0].m_dry, &m_mono[0].m_wet,
+                 &m_mono[1].m_dry, &m_mono[1].m_wet, m_time.m_millisecond, env_init_gateRelease);
+  m_poly[1].init(&m_convert, &m_poly_feedback[0], &m_poly_feedback[1], &m_mono[0].m_dry, &m_mono[0].m_wet,
+                 &m_mono[1].m_dry, &m_mono[1].m_wet, m_time.m_millisecond, env_init_gateRelease);
   // init parameters by parameter list
   m_params.init_modMatrix();
   for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
@@ -172,6 +168,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   nltools::Log::info("(param_ids: mono_grp, master, voice_grp?, split_point?)");
   nltools::Log::info("todo: nltools::parameterMsg - lock can disappear");
   nltools::Log::info("todo: ParameterList - Unison Voices, Macro Times: no smoothing - but scaling");
+  nltools::Log::info("todo: provide truepoly unison phase signal (parameter list)");
 #endif
 }
 
@@ -602,11 +599,19 @@ void dsp_host_dual::localUnisonChg(const nltools::msg::UnmodulateableParameterCh
     nltools::Log::info("unison_edit(layer:", layerId, ", pos:", param->m_position, ")");
 #endif
     m_alloc.setUnison(layerId, param->m_position);
-    for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
+    const uint32_t uVoice = m_alloc.m_unison - 1;
+    if(m_layer_mode == LayerMode::Split)
     {
-#if LOG_MISSING
-      nltools::Log::info("todo: reset local env(layer:", key->m_localIndex, ", voice:", key->m_voiceId, ")");
-#endif
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = uVoice;
+      m_poly[layerId].m_key_active = 0;
+    }
+    else
+    {
+      m_poly[0].resetEnvelopes();
+      m_poly[1].resetEnvelopes();
+      m_poly[0].m_uVoice = m_poly[1].m_uVoice = uVoice;
+      m_poly[0].m_key_active = m_poly[1].m_key_active = 0;
     }
 #if LOG_MISSING
     nltools::Log::info("todo: unison voices should not possess a smoother ...");
@@ -640,7 +645,7 @@ void dsp_host_dual::onSettingTransitionTime(const float _position)
 
 void dsp_host_dual::onSettingNoteShift(const float _shift)
 {
-  m_global.m_note_shift = _shift;
+  m_poly[0].m_note_shift = m_poly[1].m_note_shift = _shift;
 #if LOG_SETTINGS
   nltools::Log::info("note_shift:", _shift);
 #endif
@@ -810,21 +815,34 @@ void dsp_host_dual::keyDown(const float _vel)
 #endif
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
-      m_poly[key->m_localIndex].keyDown(key->m_voiceId, m_alloc.m_unison, key->m_unisonIndex, key->m_stolen, keyTune,
-                                        _vel);
+      m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel);
 #if LOG_KEYS_POLY
       nltools::Log::info("key_down_poly(voice:", key->m_voiceId, ", unisonIndex:", key->m_unisonIndex,
                          ", stolen:", key->m_stolen, ", tune:", keyTune, ", velocity:", _vel, ")");
 #endif
     }
+    const uint32_t index = m_alloc.m_traversal.first()->m_localIndex;
     if(m_layer_mode == LayerMode::Split)
     {
-      m_mono[m_alloc.m_traversal.first()->m_localIndex].keyDown(_vel);
+      // only in split mode, the mono flanger envelope should be started in corresponding mono section
+      // flanger legato
+      if(m_poly[index].m_key_active == 0)
+      {
+        m_mono[index].keyDown(_vel);
+      }
     }
     else
     {
-      m_mono[0].keyDown(_vel);
-      m_mono[1].keyDown(_vel);
+      // in single and layer mode, both mono flanger envelopes should be started
+      // flanger legato
+      if(m_poly[0].m_key_active == 0)
+      {
+        m_mono[0].keyDown(_vel);
+      }
+      if(m_poly[1].m_key_active == 0)
+      {
+        m_mono[1].keyDown(_vel);
+      }
     }
   }
 #if LOG_FAIL
@@ -846,7 +864,7 @@ void dsp_host_dual::keyUp(const float _vel)
 #endif
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
-      m_poly[key->m_localIndex].keyUp(key->m_voiceId, keyTune, _vel);
+      m_poly[key->m_localIndex].keyUp(key->m_voiceId, key->m_unisonIndex, keyTune, _vel);
 #if LOG_KEYS_POLY
       nltools::Log::info("key_up_poly(voice:", key->m_voiceId, ", tune:", keyTune, ", velocity:", _vel, ")");
 #endif
@@ -1198,12 +1216,11 @@ void dsp_host_dual::recallSingle()
     nltools::Log::info("recall single voice reset");
 #endif
     m_alloc.setUnison(0, unison->m_position);
-    for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
-    {
-#if LOG_MISSING
-      nltools::Log::info("todo: reset local env(layer:", key->m_localIndex, ", voice:", key->m_voiceId, ")");
-#endif
-    }
+    const uint32_t uVoice = m_alloc.m_unison - 1;
+    m_poly[0].resetEnvelopes();
+    m_poly[1].resetEnvelopes();
+    m_poly[0].m_uVoice = m_poly[1].m_uVoice = uVoice;
+    m_poly[0].m_key_active = m_poly[1].m_key_active = 0;
   }
   // reset macro assignments
   m_params.m_layer[0].m_assignment.reset();

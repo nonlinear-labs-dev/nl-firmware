@@ -59,7 +59,7 @@ float GlobalSection::key_position(const uint32_t _pos)
   // provide scaled pitch (without master tune)
   float pos = static_cast<float>(_pos);                // start with pure keyPosition [0 ... 60]
   pos -= static_cast<float>(C15::Config::key_center);  // center to C3 -> 0.0
-  pos += m_note_shift + evalScale(_pos);               // add note_shift and scaling
+  pos += evalScale(_pos);                              // add scaling
   return pos;
 }
 
