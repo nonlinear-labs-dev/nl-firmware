@@ -63,8 +63,9 @@ void C15Synth::printAndResetTcdInputLog()
 
 void C15Synth::resetDSP()
 {
-  m_dsp->reset();
-  nltools::Log::info("DSP has been reset.");
+  //m_dsp->reset();
+  //nltools::Log::info("DSP has been reset.");
+  m_dsp->onSettingInitialSinglePreset();
 }
 
 void C15Synth::toggleTestTone()

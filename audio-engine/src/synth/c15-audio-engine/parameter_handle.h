@@ -98,6 +98,7 @@ namespace Engine
           param->m_id = _element.m_param.m_index;
           param->m_index = _element.m_param.m_index - 1;
           param->m_base = param->m_position = _element.m_initial;
+          param->m_initial = _element.m_initial;
         }
       }
       inline void init_macro_time(const C15::ParameterDescriptor _element)
@@ -107,6 +108,7 @@ namespace Engine
           auto param = get_macro(i, _element.m_param.m_index);
           param->m_time.init(_element.m_ae.m_scaleId, _element.m_ae.m_scaleFactor, _element.m_ae.m_scaleOffset,
                              _element.m_initial);
+          param->m_initial = _element.m_initial;
         }
       }
       inline void init_modulateable(const C15::ParameterDescriptor _element)
@@ -122,6 +124,7 @@ namespace Engine
           param->m_scaling.m_factor = _element.m_ae.m_scaleFactor;
           param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
           param->m_position = param->depolarize(_element.m_initial);
+          param->m_initial = _element.m_initial;
         }
       }
       inline void init_unmodulateable(const C15::ParameterDescriptor _element)
@@ -136,6 +139,7 @@ namespace Engine
           param->m_scaling.m_factor = _element.m_ae.m_scaleFactor;
           param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
           param->m_position = _element.m_initial;
+          param->m_initial = _element.m_initial;
         }
       }
       inline void init_global(const C15::ParameterDescriptor _element)
@@ -148,6 +152,7 @@ namespace Engine
         param->m_scaling.m_factor = _element.m_ae.m_scaleFactor;
         param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
         param->m_position = _element.m_initial;
+        param->m_initial = _element.m_initial;
       }
       inline HW_Src_Param* get_hw_src(const uint32_t _id)
       {

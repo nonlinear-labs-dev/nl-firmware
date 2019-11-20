@@ -24,7 +24,7 @@ namespace Engine
 
     struct Parameter
     {
-      float m_position = 0.0f;
+      float m_position = 0.0f, m_initial = 0.0f;
       inline bool update_position(const float _position)
       {
         if(_position != m_position)

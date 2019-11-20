@@ -204,6 +204,7 @@ void dsp_host_dual::logStatus()
   nltools::Log::info("-master(vol:", m_global.m_signals.get(C15::Signals::Global_Signals::Master_Volume),
                      ", tune:", m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune), ")");
   nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
+  // maybe, log parameter values by groups?
 }
 
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
@@ -659,6 +660,89 @@ void dsp_host_dual::onSettingGlitchSuppr(const bool _enabled)
 #if LOG_SETTINGS
   nltools::Log::info("glitch_suppression:", _enabled);
 #endif
+}
+
+void dsp_host_dual::onSettingInitialSinglePreset()
+{
+#if LOG_RECALL
+  nltools::Log::info("recallInitialSinglePreset(@", m_clock.m_index, ")");
+  auto unison = m_params.get(C15::Properties::LayerId::I, C15::Parameters::Unmodulateable_Parameters::Unison_Voices);
+  unison->update_position(unison->m_initial);
+#endif
+#if LOG_RESET
+  nltools::Log::info("recall single voice reset");
+#endif
+  m_alloc.setUnison(0, unison->m_position);
+  const uint32_t uVoice = m_alloc.m_unison - 1;
+  m_poly[0].resetEnvelopes();
+  m_poly[1].resetEnvelopes();
+  m_poly[0].m_uVoice = m_poly[1].m_uVoice = uVoice;
+  m_poly[0].m_key_active = m_poly[1].m_key_active = 0;
+  m_params.m_layer[0].m_assignment.reset();
+  m_params.m_layer[1].m_assignment.reset();
+  for(uint32_t i = 0; i < m_params.m_layer[0].m_macro_count; i++)
+  {
+    m_params.m_layer[0].m_macro[i].update_position(0.5f);
+    m_params.m_layer[0].m_macro[i].update_modulation_aspects();
+    m_params.m_layer[1].m_macro[i].update_position(0.5f);
+    m_params.m_layer[1].m_macro[i].update_modulation_aspects();
+  }
+#if LOG_RECALL
+  nltools::Log::info("recall: hw_sources:");
+#endif
+  for(uint32_t i = 0; i < m_params.m_global.m_source_count; i++)
+  {
+    auto param = m_params.get_hw_src(i);
+    //param->update_behavior(C15::Properties::HW_Return_Behavior::Zero);
+    param->update_position(param->m_initial);
+  }
+#if LOG_RECALL
+  nltools::Log::info("recall: global:");
+#endif
+  for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
+  {
+    auto param = m_params.get_global(i);
+    param->update_position(param->m_initial);
+    param->m_scaled = scale(param->m_scaling, param->m_position);
+    globalTransition(param, m_transition_time.m_dx);
+  }
+#if LOG_RECALL
+  nltools::Log::info("recall: unmodulateables:");
+#endif
+  for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
+  {
+    auto param = m_params.get_direct(0, i);
+    param->update_position(param->m_initial);
+    param->m_scaled = scale(param->m_scaling, param->m_position);
+    localTransition(0, param, m_transition_time.m_dx);
+    localTransition(1, param, m_transition_time.m_dx);
+  }
+#if LOG_MISSING
+  nltools::Log::info("todo: re-evaluate hw matrix for macro offsets!");
+#endif
+#if LOG_RECALL
+  nltools::Log::info("recall: macros:");
+#endif
+  for(uint32_t i = 0; i < m_params.m_layer[0].m_macro_count; i++)
+  {
+    auto param = m_params.get_macro(0, i);
+    param->update_position(param->m_initial);
+    param->update_modulation_aspects();
+  }
+#if LOG_RECALL
+  nltools::Log::info("recall: modulateables:");
+#endif
+  for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
+  {
+    auto param = m_params.get_target(0, i);
+    param->update_source(C15::Parameters::Macro_Controls::None);
+    param->update_amount(0.0f);
+    param->update_position(param->depolarize(param->m_initial));
+    param->update_modulation_aspects(m_params.get_macro(0, static_cast<uint32_t>(param->m_source))->m_position);
+    param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
+    localTransition(0, param, m_transition_time.m_dx);
+    localTransition(1, param, m_transition_time.m_dx);
+  }
 }
 
 uint32_t dsp_host_dual::onSettingToneToggle()
