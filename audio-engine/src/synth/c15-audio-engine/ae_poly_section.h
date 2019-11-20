@@ -15,6 +15,10 @@
 #include "ae_info.h"
 #include "ae_envelopes.h"
 #include "ae_poly_soundgen.h"
+#include "ae_poly_comb.h"
+#include "ae_poly_svf.h"
+#include "ae_poly_fb_mix.h"
+#include "ae_poly_out_mix.h"
 
 class PolySection
 {
@@ -59,6 +63,10 @@ class PolySection
   Engine::Envelopes::RetriggerEnvelope<C15::Config::local_polyphony> m_env_c;
   Engine::Envelopes::GateEnvelope<C15::Config::local_polyphony> m_env_g;
   Engine::PolySoundGenerator m_soundgenerator;
+  Engine::PolyCombFilter m_combfilter;
+  Engine::PolyStateVariableFilter m_svfilter;
+  Engine::PolyFeedbackMixer m_feedbackmixer;
+  Engine::PolyOutputMixer m_outputmixer;
   float m_shift[C15::Config::local_polyphony] = {}, m_key_tune[C15::Config::local_polyphony] = {}, m_master_tune = 0.0f,
         m_nyquist;
   uint32_t m_unison_index[C15::Config::local_polyphony] = {};

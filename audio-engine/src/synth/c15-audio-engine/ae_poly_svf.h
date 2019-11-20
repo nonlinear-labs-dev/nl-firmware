@@ -1,0 +1,32 @@
+#pragma once
+
+/******************************************************************************/
+/** @file       ae_poly_svf.h
+    @date
+    @version    1.7-0
+    @author     M. Seeber
+    @brief      state variable filter
+    @todo
+*******************************************************************************/
+
+#include "nltoolbox.h"
+#include "ae_info.h"
+
+namespace Engine
+{
+  class PolyStateVariableFilter
+  {
+   public:
+    PolyValue m_out;
+    PolyStateVariableFilter();
+    void init(const float _samplerate);
+    void apply(const PolyValue &_sampleA, const PolyValue &_sampleB, const PolyValue &_sampleComb,
+               PolySignals &_signals);
+    void resetDSP();
+
+   private:
+    PolyValue m_first_int1_stateVar, m_first_int2_stateVar, m_second_int1_stateVar, m_second_int2_stateVar,
+        m_first_sat_stateVar, m_second_sat_stateVar;
+    float m_warpConst_2PI;
+  };
+}  // namespace Engine
