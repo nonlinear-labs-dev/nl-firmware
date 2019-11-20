@@ -99,8 +99,9 @@ void PolySection::render_fast()
   }
 }
 
-void PolySection::render_slow()
+void PolySection::render_slow(const float _masterTune)
 {
+  m_master_tune = _masterTune;
   m_smoothers.render_slow();
   auto traversal = &m_smoothers.m_copy_slow;
   for(uint32_t i = 0; i < traversal->m_length; i++)
@@ -119,7 +120,7 @@ void PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, 
 {
   const float noteShift = m_shift[_voiceId] = m_note_shift,
               unisonDetune = m_smoothers.get(C15::Smoothers::Poly_Slow::Unison_Detune),
-              masterTune = m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune);  // missing: master tune
+              masterTune = m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune);
   m_unison_index[_voiceId] = _unisonIndex;
   m_key_tune[_voiceId] = _tune;
   const float notePitch = _tune + (unisonDetune * m_spread.m_detune[m_uVoice][_unisonIndex]) + masterTune + noteShift;
@@ -258,7 +259,7 @@ void PolySection::postProcess_slow(const uint32_t _voiceId)
   const uint32_t uIndex = m_unison_index[_voiceId];
   const float notePitch = m_key_tune[_voiceId]
       + (m_smoothers.get(C15::Smoothers::Poly_Slow::Unison_Detune) * m_spread.m_detune[m_uVoice][uIndex])
-      + m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune) + m_shift[_voiceId];  // missing: master tune
+      + m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune) + m_shift[_voiceId] + m_master_tune;
   float keyTracking, unitPitch, envMod, unitSign, unitSpread, unitMod;
   // osc a
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Pitch_KT);
@@ -306,7 +307,7 @@ void PolySection::postProcess_key(const uint32_t _voiceId)
   const float basePitch = m_key_tune[_voiceId],
               notePitch = basePitch
       + (m_smoothers.get(C15::Smoothers::Poly_Slow::Unison_Detune) * m_spread.m_detune[m_uVoice][uIndex])
-      + m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune) + m_shift[_voiceId];  // missing: master tune
+      + m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune) + m_shift[_voiceId] + m_master_tune;
   float keyTracking, unitPitch, envMod, unitSign, unitSpread, unitMod;
   // osc a
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Pitch_KT);

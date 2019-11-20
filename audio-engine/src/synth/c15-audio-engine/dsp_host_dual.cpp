@@ -679,8 +679,8 @@ void dsp_host_dual::render()
   {
     // render components
     m_global.render_slow();
-    m_poly[0].render_slow();
-    m_poly[1].render_slow();
+    m_poly[0].render_slow(m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune));
+    m_poly[1].render_slow(m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune));
     m_mono[0].render_slow();
     m_mono[1].render_slow();
   }

@@ -43,7 +43,7 @@ class PolySection
   void start_slow(const uint32_t _id, const float _dx, const float _dest);
   void render_audio(const float _mute);
   void render_fast();
-  void render_slow();
+  void render_slow(const float _masterTune);
   void keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
                const float _vel);
   void keyUp(const uint32_t _voiceId, const uint32_t _unisonIndex, const float _tune, const float _vel);
@@ -59,7 +59,8 @@ class PolySection
   Engine::Envelopes::RetriggerEnvelope<C15::Config::local_polyphony> m_env_c;
   Engine::Envelopes::GateEnvelope<C15::Config::local_polyphony> m_env_g;
   Engine::PolySoundGenerator m_soundgenerator;
-  float m_shift[C15::Config::local_polyphony] = {}, m_key_tune[C15::Config::local_polyphony] = {}, m_nyquist;
+  float m_shift[C15::Config::local_polyphony] = {}, m_key_tune[C15::Config::local_polyphony] = {}, m_master_tune = 0.0f,
+        m_nyquist;
   uint32_t m_unison_index[C15::Config::local_polyphony] = {};
   const uint32_t m_voices = C15::Config::local_polyphony;
   float evalNyquist(const float _value);
