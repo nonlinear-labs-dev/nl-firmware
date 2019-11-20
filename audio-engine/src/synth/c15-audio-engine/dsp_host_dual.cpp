@@ -39,9 +39,11 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.update_tone_mode(0);
   // init poly: exponentiator, feedback pointers
   m_poly[0].init(&m_convert, &m_poly_feedback[2], &m_poly_feedback[3], &m_mono[0].m_dry, &m_mono[0].m_wet,
-                 &m_mono[1].m_dry, &m_mono[1].m_wet, m_time.m_millisecond, env_init_gateRelease);
+                 &m_mono[1].m_dry, &m_mono[1].m_wet, &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
+                 samplerate);
   m_poly[1].init(&m_convert, &m_poly_feedback[0], &m_poly_feedback[1], &m_mono[0].m_dry, &m_mono[0].m_wet,
-                 &m_mono[1].m_dry, &m_mono[1].m_wet, m_time.m_millisecond, env_init_gateRelease);
+                 &m_mono[1].m_dry, &m_mono[1].m_wet, &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
+                 samplerate);
   // init parameters by parameter list
   m_params.init_modMatrix();
   for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)

@@ -14,6 +14,7 @@
 #include "ParallelData.h"
 
 using PolyValue = ParallelData<float, C15::Config::local_polyphony>;
+using PolyInt = ParallelData<int32_t, C15::Config::local_polyphony>;
 
 // global and mono sections require mono signals
 template <class M> class MonoSignalStorage
