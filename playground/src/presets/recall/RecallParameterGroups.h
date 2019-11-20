@@ -9,28 +9,24 @@ class RecallParameter;
 
 class RecallParameterGroups : public UpdateDocumentContributor
 {
-public:
+ public:
   using tParameterMap = std::unordered_map<int, std::unique_ptr<RecallParameter>>;
   RecallParameterGroups(EditBuffer *editBuffer);
 
-  RecallParameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::I) const;
+  RecallParameter *findParameterByID(int id, VoiceGroup vg) const;
+  tParameterMap &getParameters(VoiceGroup vg);
+  const tParameterMap &getParameters(VoiceGroup vg) const;
 
   void copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   tUpdateID onChange(uint64_t flags) override;
 
-  tParameterMap& getParameters(VoiceGroup vg = VoiceGroup::I);
-  tParameterMap& getGlobalParameters();
-  RecallParameter* findGlobalParameterByID(int id);
-
  private:
-  EditBuffer* m_editBuffer;
+  EditBuffer *m_editBuffer;
   Signal<void> m_signalRecallValues;
 
-  std::array<tParameterMap, 2> m_polyParameters;
-  tParameterMap m_globalParameters;
-  std::unique_ptr<RecallParameter> m_splitPoint;
+  std::array<tParameterMap, static_cast<size_t>(VoiceGroup::Global)> m_parameters;
 
   friend class EditBuffer;
   friend class RecallEditBufferSerializer;

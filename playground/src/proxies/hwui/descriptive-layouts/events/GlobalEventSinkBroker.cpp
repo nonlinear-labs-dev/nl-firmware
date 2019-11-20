@@ -92,7 +92,7 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() {
       if(eb->getType() != SoundType::Single)
       {
-        Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
+        Application::get().getHWUI()->toggleCurrentVoiceGroup();
       }
     });
 
@@ -242,7 +242,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
       if(eb->getType() == SoundType::Split)
         eb->undoableSelectParameter(10001);

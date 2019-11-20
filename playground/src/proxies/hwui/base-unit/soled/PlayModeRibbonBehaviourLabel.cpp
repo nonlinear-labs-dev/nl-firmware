@@ -7,8 +7,9 @@
 PlayModeRibbonBehaviourLabel::PlayModeRibbonBehaviourLabel(int paramID, const Rect &rect)
     : super(rect)
 {
-  getEditBuffer()->findParameterByID(paramID)->onParameterChanged(
-      mem_fun(this, &PlayModeRibbonBehaviourLabel::updateText));
+  getEditBuffer()
+      ->findParameterByID(paramID, VoiceGroup::Global)
+      ->onParameterChanged(mem_fun(this, &PlayModeRibbonBehaviourLabel::updateText));
 }
 
 PlayModeRibbonBehaviourLabel::~PlayModeRibbonBehaviourLabel()

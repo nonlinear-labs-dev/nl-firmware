@@ -77,7 +77,8 @@ void PanelUnitParameterEditMode::setupFocusAndMode(FocusAndMode focusAndMode)
 
 void PanelUnitParameterEditMode::assertAllButtonsAssigned()
 {
-#if _TESTS
+#warning "TODO"
+#if _TESTS && 0
   if(Application::get().getPresetManager()->getEditBuffer()->countParameters() != assignedAudioIDs.size())
   {
     int lastOne = -1;
@@ -112,7 +113,7 @@ static EditPanel &getEditPanel()
 void PanelUnitParameterEditMode::setup()
 {
   m_mappings.forEachButton([=](Buttons buttonID, std::list<int> parameterIDs) {
-    std::vector<int> para{ parameterIDs.begin(), parameterIDs.end() };
+    std::vector<int> para { parameterIDs.begin(), parameterIDs.end() };
 
     if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
        && buttonID != Buttons::BUTTON_87)
@@ -201,16 +202,18 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
 
 void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Parameter *newParam)
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+
   if(auto mc = dynamic_cast<MacroControlParameter *>(oldParam))
   {
     if(auto ph = dynamic_cast<PhysicalControlParameter *>(newParam))
     {
       if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM")))
+             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM", vg)))
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {
-          ph->setUiSelectedModulationRouter(router->getID());
+          ph->setUiSelectedModulationRouter(router->getID(), vg);
         }
       }
     }
@@ -234,7 +237,8 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button) 
 
 UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::vector<gint32> toggleAudioIDs)
 {
-#if _TESTS
+#warning "TODO"
+#if _TESTS && 0
 
   for(gint32 id : toggleAudioIDs)
   {
@@ -253,7 +257,7 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
 
 bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> ids, bool state)
 {
-  auto voiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto voiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto firstParameterInList = editBuffer->findParameterByID(ids.front(), voiceGroup);
 
@@ -308,9 +312,11 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
     {
       if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
       {
+#warning "might be a global parameter?"
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         for(auto paramId : ids)
         {
-          auto param = editBuffer->findParameterByID(paramId);
+          auto param = editBuffer->findParameterByID(paramId, vg);
           if(param->isChangedFromLoaded())
           {
             setParameterSelection(paramId, state);
@@ -375,8 +381,9 @@ bool PanelUnitParameterEditMode::setParameterSelection(gint32 audioID, bool stat
     DebugLevel::gassy("setParameterSelection - state == true");
 
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-    if(auto p = editBuffer->findParameterByID(audioID))
+    if(auto p = editBuffer->findParameterByID(audioID, vg))
     {
       DebugLevel::gassy("selecting param");
       editBuffer->undoableSelectParameter(p);
@@ -438,9 +445,10 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
     if(auto p = dynamic_cast<PhysicalControlParameter *>(selParam))
     {
-      auto selModRouter = p->getUiSelectedModulationRouter();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto selModRouter = p->getUiSelectedModulationRouter(vg);
 
-      if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID(selModRouter)))
+      if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID(selModRouter, vg)))
       {
         collectLedStates(states, router->getTargetParameter()->getID());
       }
@@ -513,8 +521,9 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
 
 bool isScaleParameter(int paramID)
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   return dynamic_cast<ScaleParameter *>(
-             Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID))
+             Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID, vg))
       != nullptr;
 }
 
@@ -575,7 +584,8 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
   for(auto targetID : targets)
   {
-    const auto currentParam = editBuffer->findParameterByID(targetID);
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    const auto currentParam = editBuffer->findParameterByID(targetID, vg);
 
     if(isSignalFlowingThrough(currentParam))
     {
@@ -592,19 +602,20 @@ bool PanelUnitParameterEditMode::isSignalFlowingThrough(const Parameter *p) cons
 
 void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets)
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
-  const auto stateVariableFilterFMAB = editBuffer->findParameterByID(SVFilterFMAB);
-  const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB);
+  const auto stateVariableFilterFMAB = editBuffer->findParameterByID(SVFilterFMAB, vg);
+  const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB, vg);
   constexpr const auto IdCombMix = 138;
-  const auto SVCombMix = editBuffer->findParameterByID(IdCombMix);
+  const auto SVCombMix = editBuffer->findParameterByID(IdCombMix, vg);
   const auto combMax = SVCombMix->getValue().getUpperBorder();
   const auto combMin = SVCombMix->getValue().getLowerBorder();
 
   for(auto targetID : targets)
   {
-    const auto currentParam = editBuffer->findParameterByID(targetID);
+    const auto currentParam = editBuffer->findParameterByID(targetID, vg);
     switch(targetID)
     {
       case SVFilterAB:
@@ -634,19 +645,20 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &targets)
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
-  const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB);
-  const auto stateVariableFilterFMAB = editBuffer->findParameterByID(SVFilterFMAB);
+  const auto combFilterPMAB = editBuffer->findParameterByID(CombFilterPMAB, vg);
+  const auto stateVariableFilterFMAB = editBuffer->findParameterByID(SVFilterFMAB, vg);
   constexpr const auto IdCombMix = 138;
-  const auto SVCombMix = editBuffer->findParameterByID(IdCombMix);
+  const auto SVCombMix = editBuffer->findParameterByID(IdCombMix, vg);
   const auto combMax = SVCombMix->getValue().getUpperBorder();
   const auto combMin = SVCombMix->getValue().getLowerBorder();
 
   for(auto targetID : targets)
   {
-    auto currentParam = editBuffer->findParameterByID(targetID);
+    auto currentParam = editBuffer->findParameterByID(targetID, vg);
     switch(targetID)
     {
       case SVFilterAB:
@@ -676,13 +688,14 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   for(auto targetID : targets)
   {
-    const auto currentParam = editBuffer->findParameterByID(targetID);
-    const auto effectParam = editBuffer->findParameterByID(effectsID);
+    const auto currentParam = editBuffer->findParameterByID(targetID, vg);
+    const auto effectParam = editBuffer->findParameterByID(effectsID, vg);
 
     if(isSignalFlowingThrough(currentParam) && isSignalFlowingThrough(effectParam))
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);

@@ -123,13 +123,15 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
   {
     auto swapData = UNDO::createSwapData(src);
 
+    auto vg = getParentGroup()->getVoiceGroup();
+
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource), vg));
           modSrc->unregisterTarget(this);
         }
 
@@ -138,7 +140,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource), vg));
           modSrc->registerTarget(this);
         }
 
@@ -450,7 +452,7 @@ MacroControlParameter *ModulateableParameter::getMacroControl() const
   {
     auto myMCID = MacroControlsGroup::modSrcToParamID(src);
     return dynamic_cast<MacroControlParameter *>(
-        Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID));
+        Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID, getVoiceGroup()));
   }
   return nullptr;
 }
@@ -493,5 +495,3 @@ void ModulateableParameter::undoableRecallMCAmount()
   }
   onChange(ChangeFlags::Generic);
 }
-
-

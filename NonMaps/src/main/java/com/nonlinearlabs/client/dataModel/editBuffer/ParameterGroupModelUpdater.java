@@ -24,7 +24,7 @@ public class ParameterGroupModelUpdater extends Updater {
 
 	private void processParameter(Node c) {
 		String id = getAttributeValue(c, "id");
-		BasicParameterModel p = EditBufferModel.get().getOrCreateParameter(Integer.parseInt(id), this.vg);
+		BasicParameterModel p = EditBufferModel.get().getParameter(Integer.parseInt(id), this.vg);
 		if (p != null) {
 			p.setGroup(target);
 			Updater u = p.createUpdater(c);

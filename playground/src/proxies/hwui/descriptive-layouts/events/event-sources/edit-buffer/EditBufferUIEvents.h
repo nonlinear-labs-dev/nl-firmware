@@ -16,7 +16,7 @@ namespace DescriptiveLayouts
         setValue({ typeStr, 0 });
       else
       {
-        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
         setValue({ typeStr + (sel == VoiceGroup::I ? "[I]" : "[II]"), 0 });
       }
     }
@@ -29,7 +29,7 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         if(auto param = eb->findParameterByID(12345, vg))
         {
           setValue({ param->getDisplayString(), 0 });
@@ -50,7 +50,7 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         if(auto param = eb->findParameterByID(12345, vg))
           setValue(param->getDisplayString() == "On");
       }
@@ -69,7 +69,7 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         if(auto param = eb->findParameterByID(249, vg))
           setValue(param->getControlPositionValue() > 0);
       }
@@ -89,7 +89,7 @@ namespace DescriptiveLayouts
       auto currentType = eb->getType();
       if(currentType != SoundType::Single)
       {
-        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
         setValue({ sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
       }
       else
@@ -104,7 +104,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(247);
+      auto param = eb->findParameterByID(247, VoiceGroup::Global);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -114,7 +114,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto param = eb->findParameterByID(248);
+      auto param = eb->findParameterByID(248, VoiceGroup::Global);
       setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -127,7 +127,7 @@ namespace DescriptiveLayouts
       auto type = eb->getType();
       if(type == SoundType::Split)
       {
-        auto selection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto selection = Application::get().getHWUI()->getCurrentVoiceGroup();
         setValue({ "Voices " + toString(selection), 0 });
       }
       else if(type == SoundType::Layer)
@@ -156,7 +156,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(auto param = eb->findParameterByID(id, vg))
         setValue({ param->getDisplayString(), 0 });
     }
@@ -169,7 +169,7 @@ namespace DescriptiveLayouts
     {
       if(editBuffer->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         if(auto param = editBuffer->findParameterByID(249, vg))
           setValue({ param->getControlPositionValue() == 0 ? "Off" : param->getDisplayString(), 0 });
       }
@@ -226,7 +226,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(auto splitPoint = dynamic_cast<const SplitPointParameter *>(eb->getSplitPoint()))  //TODO change 18700
       {
         setValue({ splitPoint->getDisplayValue(vg), 0 });

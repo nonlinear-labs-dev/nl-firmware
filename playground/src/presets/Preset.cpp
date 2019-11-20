@@ -17,8 +17,8 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_type{ SoundType::Single }
-    , m_voiceGroupLabels{ { "I", "II" } }
+    , m_type { SoundType::Single }
+    , m_voiceGroupLabels { { "I", "II" } }
 {
 }
 
@@ -26,14 +26,14 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_type{ other.getType() }
-    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
+    , m_type { other.getType() }
+    , m_voiceGroupLabels { other.m_voiceGroupLabels }
 {
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, bool copyUUID)
     : super(parent, editBuffer)
-    , m_type{ editBuffer.getType() }
+    , m_type { editBuffer.getType() }
 {
   m_name = editBuffer.getName();
   m_voiceGroupLabels[0] = editBuffer.getVoiceGroupName(VoiceGroup::I);
@@ -168,9 +168,7 @@ void Preset::guessName(UNDO::Transaction *transaction)
 
 PresetParameter *Preset::findParameterByID(int id, VoiceGroup vg) const
 {
-  nltools_assertAlways(vg != VoiceGroup::Invalid);
-
-  for(auto &g : m_parameterGroups[static_cast<int>(vg)])
+  for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
     if(auto p = g.second->findParameterByID(id))
       return p;
 
@@ -179,18 +177,7 @@ PresetParameter *Preset::findParameterByID(int id, VoiceGroup vg) const
 
 PresetParameterGroup *Preset::findParameterGroup(const std::string &id, VoiceGroup vg) const
 {
-  nltools_assertAlways(vg != VoiceGroup::Invalid);
-
-  auto it = m_parameterGroups[static_cast<int>(vg)].find(id);
-
-  if(it != m_parameterGroups[static_cast<int>(vg)].end())
-    return it->second.get();
-
-  auto globalit = m_globalParameterGroups.find(id);
-  if(globalit != m_globalParameterGroups.end())
-    return globalit->second.get();
-
-  return nullptr;
+  return m_parameterGroups[static_cast<size_t>(vg)].at(id).get();
 }
 
 void Preset::copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid)
@@ -363,9 +350,7 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
 void Preset::writeGroups(Writer &writer, const Preset *other) const
 {
-#warning "CHANGE ME!"
-  for(auto &g : m_parameterGroups[0])
-  {
-    g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first));
-  }
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
+    for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
+      g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first, vg), vg);
 }

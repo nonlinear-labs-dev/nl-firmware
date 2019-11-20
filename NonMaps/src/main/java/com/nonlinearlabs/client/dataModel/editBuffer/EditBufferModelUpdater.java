@@ -37,16 +37,16 @@ public class EditBufferModelUpdater extends Updater {
 			processChangedChildrenElements(root, "recall-data", c -> processOriginal(c));
 		}
 
-		processChangedChildrenElements(root, "global-parameters", child -> {
-			processChangedChildrenElements(root, "parameter-group", group -> processGroup(group, VoiceGroup.Global));
+		processChildrenElements(root, "global-parameters", child -> {
+			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.Global));
 		});
 
-		processChangedChildrenElements(root, "voice-group-I-parameters", child -> {
-			processChangedChildrenElements(root, "parameter-group", group -> processGroup(group, VoiceGroup.I));
+		processChildrenElements(root, "voice-group-I-parameters", child -> {
+			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.I));
 		});
 
-		processChangedChildrenElements(root, "voice-group-I-parameters", child -> {
-			processChangedChildrenElements(root, "parameter-group", group -> processGroup(group, VoiceGroup.II));
+		processChildrenElements(root, "voice-group-I-parameters", child -> {
+			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.II));
 		});
 	}
 
@@ -67,7 +67,7 @@ public class EditBufferModelUpdater extends Updater {
 	private void processGroup(Node c, VoiceGroup vg) {
 		String groupId = getAttributeValue(c, "id");
 
-		ParameterGroupModel target = EditBufferModel.get().getOrCreateGroup(groupId, vg);
+		ParameterGroupModel target = EditBufferModel.get().getGroup(groupId, vg);
 		ParameterGroupModelUpdater updater = new ParameterGroupModelUpdater(c, target, groupId, vg);
 		updater.doUpdate();
 	}
@@ -80,7 +80,7 @@ public class EditBufferModelUpdater extends Updater {
 			String modAmt = getAttributeValue(param, "mod-amt");
 
 			if (!id.isEmpty()) {
-				BasicParameterModel bpm = EditBufferModel.get().getOrCreateParameter(Integer.valueOf(id), vg);
+				BasicParameterModel bpm = EditBufferModel.get().getParameter(Integer.valueOf(id), vg);
 				if (!val.isEmpty())
 					bpm.originalValue.setValue(Double.valueOf(val));
 

@@ -3,16 +3,14 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 Slider::Slider(Parameter *param, const Rect &rect)
     : super(rect)
     , m_value(0)
     , m_bipolar(false)
 {
-  m_voiceGroupSelectionConnection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &Slider::voiceGroupSelectionChanged));
-
-  setParameter(param);
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &Slider::voiceGroupSelectionChanged));
 }
 
 Slider::Slider(const Rect &rect)
@@ -24,19 +22,19 @@ Slider::~Slider()
 {
 }
 
-void Slider::voiceGroupSelectionChanged()
+void Slider::voiceGroupSelectionChanged(VoiceGroup newVoiceGroup)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto vgSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+
   if(auto param = getParameter())
   {
     auto id = param->getID();
     auto vg = param->getVoiceGroup();
 
-    if(auto normalParameter = editBuffer->findParameterByID(id, vgSelection))
-      setParameter(normalParameter);
-    else if(auto globalParameter = editBuffer->findParameterByID(id, VoiceGroup::Global))
-      setParameter(globalParameter);
+    if(vg == VoiceGroup::Global)
+      newVoiceGroup = vg;
+
+    setParameter(editBuffer->findParameterByID(id, newVoiceGroup));
   }
 }
 

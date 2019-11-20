@@ -16,9 +16,8 @@ namespace DescriptiveLayouts
       : m_cursor(filter)
   {
     createEventSources<Text::DisplayString>(
-        EventSources::PreviousNumber, EventSources::PreviousName,
-        EventSources::CurrentNumber, EventSources::CurrentName, EventSources::NextNumber,
-        EventSources::NextName, EventSources::PresetListBankName);
+        EventSources::PreviousNumber, EventSources::PreviousName, EventSources::CurrentNumber,
+        EventSources::CurrentName, EventSources::NextNumber, EventSources::NextName, EventSources::PresetListBankName);
     createEventSources<bool>(EventSources::CanLeft, EventSources::CanRight);
 
     m_cursor.moveToSelected();
@@ -59,7 +58,7 @@ namespace DescriptiveLayouts
       case EventSinks::Commit:
         if(auto preset = m_cursor.getPreset())
         {
-          auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+          auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
           Application::get().getPresetManager()->getEditBuffer()->undoableLoadPresetIntoDualSound(preset, vg);
           Application::get().getHWUI()->setFocusAndMode(UIMode::Select);
         }

@@ -47,16 +47,16 @@ void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::Para
       g.second->copyFrom(transaction, o);
 }
 
-void PresetParameterGroup::writeDiff(Writer &writer, const std::string &groupId,
-                                     const PresetParameterGroup *other) const
+void PresetParameterGroup::writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other,
+                                     VoiceGroup vg) const
 {
-  auto name = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(groupId)->getLongName();
+  auto name = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(groupId, vg)->getLongName();
 
   writer.writeTag("group", Attribute("name", name), [&] {
     for(auto &parameter : m_parameters)
     {
       auto otherParameter = other->findParameterByID(parameter.first);
-      parameter.second->writeDiff(writer, parameter.first, otherParameter);
+      parameter.second->writeDiff(writer, parameter.first, otherParameter, vg);
     }
   });
 }

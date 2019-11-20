@@ -50,7 +50,7 @@ class PresetParameter
   void copyFrom(UNDO::Transaction *transaction, const ::Parameter *other);
 
   // algorithm
-  void writeDiff(Writer &writer, int parameterID, const PresetParameter *other) const;
+  void writeDiff(Writer &writer, int parameterID, const PresetParameter *other, VoiceGroup vg) const;
   void writeDocument(Writer &writer) const;
 
  private:

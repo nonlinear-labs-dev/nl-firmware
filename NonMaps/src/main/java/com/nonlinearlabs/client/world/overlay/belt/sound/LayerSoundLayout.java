@@ -108,13 +108,13 @@ public class LayerSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.get().getOrCreateParameter(10003, group));
+				super(parent, EditBufferModel.get().getParameter(10003, group));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.get().getOrCreateParameter(10002, group));
+				super(parent, EditBufferModel.get().getParameter(10002, group));
 			}
 		}
 	}

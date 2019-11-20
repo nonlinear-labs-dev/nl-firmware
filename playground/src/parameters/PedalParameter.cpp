@@ -63,11 +63,15 @@ void PedalParameter::setRoutersModeAccordingToReturnMode()
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
   if(auto eb = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
   {
-    auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
-    for(auto router : mappings->getModulationRoutingParametersFor(this))
-    {
+    auto mappingsVgI = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM", VoiceGroup::I));
+
+    for(auto router : mappingsVgI->getModulationRoutingParametersFor(this))
       router->getValue().setIsBoolean(routersAreBoolean);
-    }
+
+    auto mappingsVgII = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM", VoiceGroup::II));
+
+    for(auto router : mappingsVgII->getModulationRoutingParametersFor(this))
+      router->getValue().setIsBoolean(routersAreBoolean);
   }
 }
 

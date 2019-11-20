@@ -10,10 +10,11 @@ MCViewContentManager::MCViewContentManager() = default;
 
 void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
   g_signal_connect(connection, "message", G_CALLBACK(&MCViewContentManager::onWebSocketMessage), this);
   m_webSockets.emplace_back(std::make_shared<WebsocketConnection>(connection));
-  for(auto &param :
-      Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCs")->getParameters())
+#warning "Respect voice groups"
+  for(auto &param : eb->getParameterGroupByID("MCs", VoiceGroup::I)->getParameters())
   {
     if(auto mc = dynamic_cast<MacroControlParameter *>(param))
     {
@@ -43,7 +44,9 @@ void MCViewContentManager::handleRequest(std::shared_ptr<WebSocketRequest> reque
     auto id = std::stoi(request->get("id"));
     auto value = std::stod(request->get("value"));
     auto uuid = request->get("uuid");
-    Application::get().getPresetManager()->getEditBuffer()->setMacroControlValueFromMCView(id, value, uuid);
+#warning "Todo: adjust js"
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
+    Application::get().getPresetManager()->getEditBuffer()->setMacroControlValueFromMCView(id, voiceGroup, value, uuid);
   }
 }
 

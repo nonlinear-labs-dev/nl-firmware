@@ -1,6 +1,7 @@
 #include "RecallMCPositionLabel.h"
 #include <parameters/ModulateableParameter.h>
 #include <Application.h>
+#include <proxies/hwui/HWUI.h>
 #include <presets/PresetManager.h>
 #include <presets/PresetParameter.h>
 #include <presets/EditBuffer.h>
@@ -13,7 +14,8 @@ RecallMCPositionLabel::RecallMCPositionLabel(Rect pos)
      = dynamic_cast<ModulateableParameter*>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
   {
     uint16_t id = MacroControlsGroup::modSrcToParamID(modP->getModulationSource());
-    if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, vg))
     {
       if(auto originalMC = mc->getOriginalParameter())
       {

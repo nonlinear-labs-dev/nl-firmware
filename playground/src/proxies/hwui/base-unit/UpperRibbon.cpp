@@ -49,7 +49,7 @@ Parameter* UpperRibbon::getResponsibleParameter()
     return Application::get().getPresetManager()->getEditBuffer()->getSelected();
 
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-      HardwareSourcesGroup::getUpperRibbonParameterID());
+      HardwareSourcesGroup::getUpperRibbonParameterID(), VoiceGroup::Global);
 }
 
 void UpperRibbon::onParamValueChanged(const Parameter* param)

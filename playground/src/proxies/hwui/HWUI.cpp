@@ -31,7 +31,7 @@
 
 HWUI::HWUI()
     : m_readersCancel(Gio::Cancellable::create())
-    , m_buttonStates{ false }
+    , m_buttonStates { false }
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
 {
@@ -256,7 +256,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected();
         p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-            HardwareSourcesGroup::getUpperRibbonParameterID());
+            HardwareSourcesGroup::getUpperRibbonParameterID(), VoiceGroup::Global);
 
         if(auto h = dynamic_cast<PhysicalControlParameter *>(p))
         {
@@ -272,7 +272,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected();
         p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-            HardwareSourcesGroup::getUpperRibbonParameterID());
+            HardwareSourcesGroup::getUpperRibbonParameterID(), VoiceGroup::Global);
 
         if(auto h = dynamic_cast<PhysicalControlParameter *>(p))
         {
@@ -530,6 +530,30 @@ void HWUI::undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode 
 FocusAndMode HWUI::getFocusAndMode() const
 {
   return m_focusAndMode;
+}
+
+VoiceGroup HWUI::getCurrentVoiceGroup() const
+{
+  return m_currentVoiceGroup;
+}
+
+void HWUI::setCurrentVoiceGroup(VoiceGroup v)
+{
+  if(v == VoiceGroup::I || v == VoiceGroup::II)
+    m_currentVoiceGroup = v;
+}
+
+void HWUI::toggleCurrentVoiceGroup()
+{
+  if(m_currentVoiceGroup == VoiceGroup::I)
+    setCurrentVoiceGroup(VoiceGroup::II);
+  else if(m_currentVoiceGroup == VoiceGroup::II)
+    setCurrentVoiceGroup(VoiceGroup::I);
+}
+
+sigc::connection HWUI::onCurrentVoiceGroupChanged(sigc::slot<void, VoiceGroup> cb)
+{
+  return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
 }
 
 void HWUI::setFocusAndMode(const UIDetail &detail)

@@ -45,7 +45,7 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 
 void VoiceGroupMasterParameterCarousel::rebuild()
 {
-  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   setup(s);
 }
@@ -58,7 +58,7 @@ void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<
   const auto numMissing = 4 - parameters.size();
   int yPos = ySpaceing + (numMissing * (miniParamHeight + ySpaceing));
 
-  const auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  const auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   const auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
 
   for(auto p : parameters)

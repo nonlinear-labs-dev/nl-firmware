@@ -22,7 +22,7 @@ EditBufferSnapshotMaker::EditBufferSnapshotMaker()
 void EditBufferSnapshotMaker::addSnapshotIfRequired(UNDO::Transaction *transaction)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto hardwareSources = editBuffer->getParameterGroupByID("CS");
+  auto hardwareSources = editBuffer->getParameterGroupByID("CS", VoiceGroup::Global);
   auto updateID = hardwareSources->getUpdateIDOfLastChange();
 
   if(updateID != m_lastKnownUpdateID)
@@ -42,20 +42,23 @@ auto EditBufferSnapshotMaker::collectDirtyParameters(EditBuffer *editBuffer) -> 
 {
   EditBufferSnapshotMaker::tParams ret;
 
-  for(auto group : editBuffer->getParameterGroups())
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
-    if(group->getUpdateIDOfLastChange() > m_lastKnownUpdateID)
+    for(auto group : editBuffer->getParameterGroups(vg))
     {
-      for(auto param : group->getParameters())
+      if(group->getUpdateIDOfLastChange() > m_lastKnownUpdateID)
       {
-        if(param->getUpdateIDOfLastChange() > m_lastKnownUpdateID)
+        for(auto param : group->getParameters())
         {
-          auto snValue = param->expropriateSnapshotValue();
-          auto curValue = param->getControlPositionValue();
-
-          if(snValue != curValue)
+          if(param->getUpdateIDOfLastChange() > m_lastKnownUpdateID)
           {
-            ret.push_back({ param, param->expropriateSnapshotValue() });
+            auto snValue = param->expropriateSnapshotValue();
+            auto curValue = param->getControlPositionValue();
+
+            if(snValue != curValue)
+            {
+              ret.push_back({ param, param->expropriateSnapshotValue() });
+            }
           }
         }
       }

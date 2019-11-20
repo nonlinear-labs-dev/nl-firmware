@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/controls/Button.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
@@ -50,7 +51,8 @@ bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, Butt
     {
       if(auto p = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
       {
-        p->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+        p->getSourceParameter()->setUiSelectedModulationRouter(p->getID(), vg);
 
         Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getTargetParameter());
       }

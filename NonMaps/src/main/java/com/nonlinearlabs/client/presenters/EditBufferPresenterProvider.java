@@ -8,6 +8,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ScaleOffsetParameterModel;
+import com.nonlinearlabs.client.world.RGB;
+import com.nonlinearlabs.client.world.RGBA;
 
 public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private static EditBufferPresenterProvider theProvider = new EditBufferPresenterProvider();
@@ -19,6 +21,23 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private EditBufferPresenterProvider() {
         EditBufferModel.get().voiceGroup.onChange(v -> {
             monitorSelectedParameter();
+            switch (v) {
+            case Global:
+                presenter.voiceGroup = "";
+                presenter.voiceGroupIndicationColor = RGBA.transparent();
+                break;
+
+            case I:
+                presenter.voiceGroup = "I";
+                presenter.voiceGroupIndicationColor = new RGB(255,0,0);
+                break;
+
+            case II:
+                presenter.voiceGroup = "II";
+                presenter.voiceGroupIndicationColor = new RGB(0, 255,0);
+                break;
+            }
+
             return true;
         });
 
@@ -87,10 +106,8 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private void monitorSelectedParameter() {
         int localSubscription = ++selectedParameterSubscription;
 
-        VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
-
         EditBufferModel.get().selectedParameter.onChange(selectedParameterID -> {
-            ParameterPresenterProviders.get().register(selectedParameterID, vg, v -> {
+            ParameterPresenterProviders.get().registerForCurrentVoiceGroup(selectedParameterID, v -> {
                 if (localSubscription != selectedParameterSubscription)
                     return false;
 
@@ -104,8 +121,8 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 
     private boolean isAnyScaleOffsetParameterNotDefault() {
         for (int scaleParamID : ParameterFactory.getScaleOffsetParameters()) {
-            ScaleOffsetParameterModel p = (ScaleOffsetParameterModel) EditBufferModel.get()
-                    .getOrCreateParameter(scaleParamID, EditBufferModel.get().voiceGroup.getValue());
+            ScaleOffsetParameterModel p = (ScaleOffsetParameterModel) EditBufferModel.get().getParameter(scaleParamID,
+                    VoiceGroup.Global);
 
             double currentValue = p.value.getQuantizedAndClipped(true);
             double defaultValue = p.value.metaData.defaultValue.getValue();

@@ -34,7 +34,8 @@ PanelUnit::PanelUnit()
 
     if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
     {
-      mrp->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
+      mrp->getSourceParameter()->setUiSelectedModulationRouter(p->getID(),
+                                                               Application::get().getHWUI()->getCurrentVoiceGroup());
     }
 
     auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
@@ -48,7 +49,7 @@ PanelUnit::PanelUnit()
     auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID());
 
     auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();
-    auto target = editBuffer->findParameterByID(targetId);
+    auto target = editBuffer->findParameterByID(targetId, Application::get().getHWUI()->getCurrentVoiceGroup());
 
     if(auto modParam = dynamic_cast<ModulateableParameter *>(target))
     {
@@ -62,8 +63,6 @@ PanelUnit::PanelUnit()
         auto scope = Application::get().getUndoScope()->startTransaction("Set Modulation Source");
         modParam->undoableSelectModSource(scope->getTransaction(), mc);
 
-        auto Editbuffer = Application::get().getPresetManager()->getEditBuffer();
-
         editBuffer->undoableSelectParameter(scope->getTransaction(), modParam);
 
         auto hwui = Application::get().getHWUI();
@@ -71,7 +70,6 @@ PanelUnit::PanelUnit()
 
         if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(layout.get()))
         {
-
           modParamLayout->installMcAmountScreen();
           m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
           return true;
@@ -102,8 +100,10 @@ PanelUnit::~PanelUnit()
 
 int PanelUnit::choseHWBestSourceForMC(int mcParamId) const
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+
   if(auto mc = dynamic_cast<MacroControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(mcParamId)))
+         Application::get().getPresetManager()->getEditBuffer()->findParameterByID(mcParamId, vg)))
   {
     return mc->getUiSelectedHardwareSource();
   }

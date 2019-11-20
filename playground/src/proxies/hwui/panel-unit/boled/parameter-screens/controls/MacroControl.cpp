@@ -5,6 +5,7 @@
 #include "parameters/ModulateableParameter.h"
 #include "groups/MacroControlsGroup.h"
 #include "Application.h"
+#include <proxies/hwui/HWUI.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 
@@ -36,8 +37,9 @@ void MacroControl::onTargetChanged(const Parameter *modulatedParameter)
   {
     auto src = p->getModulationSource();
     uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID))
+    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID, vg))
       srcParam = dynamic_cast<MacroControlParameter *>(pa);
   }
 

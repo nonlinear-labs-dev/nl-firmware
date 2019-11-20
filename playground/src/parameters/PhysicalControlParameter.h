@@ -26,9 +26,9 @@ class PhysicalControlParameter : public Parameter
   virtual ReturnMode getReturnMode() const = 0;
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
-  void setUiSelectedModulationRouter(int paramID);
-  void toggleUiSelectedModulationRouter(int inc = 1);
-  int getUiSelectedModulationRouter() const;
+  void setUiSelectedModulationRouter(int paramID, VoiceGroup vg);
+  void toggleUiSelectedModulationRouter(int inc, VoiceGroup vg);
+  int getUiSelectedModulationRouter(VoiceGroup vg) const;
 
   virtual void onSelected() override;
   virtual void onUnselected() override;
@@ -44,10 +44,10 @@ class PhysicalControlParameter : public Parameter
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
-private:
+ private:
   void sendParameterMessage() const override;
 
-private:
+ private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
 
   bool m_changingFromHWUI = false;

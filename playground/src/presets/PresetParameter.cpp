@@ -10,7 +10,7 @@
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 
 PresetParameter::PresetParameter(int id)
-    : m_id{ id }
+    : m_id { id }
 {
 }
 
@@ -63,9 +63,9 @@ void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter
   other->copyTo(transaction, this);
 }
 
-void PresetParameter::writeDiff(Writer &writer, int parameterID, const PresetParameter *other) const
+void PresetParameter::writeDiff(Writer &writer, int parameterID, const PresetParameter *other, VoiceGroup vg) const
 {
-  auto ebParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(parameterID);
+  auto ebParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(parameterID, vg);
 
   writer.writeTag("parameter", Attribute("name", ebParam->getLongName()), [&] {
     auto sc = ebParam->getValue().getScaleConverter();
@@ -199,9 +199,9 @@ enum PedalModes PresetParameter::getPedalMode() const
 void PresetParameter::writeDocument(Writer &writer) const
 {
   writer.writeTag("param",
-                  { Attribute{ "id", to_string(m_id) }, Attribute{ "value", to_string(m_value) },
-                    Attribute{ "mod-src", to_string(static_cast<int>(getModulationSource())) },
-                    Attribute{ "mod-amt", to_string(getModulationAmount()) } },
+                  { Attribute { "id", to_string(m_id) }, Attribute { "value", to_string(m_value) },
+                    Attribute { "mod-src", to_string(static_cast<int>(getModulationSource())) },
+                    Attribute { "mod-amt", to_string(getModulationAmount()) } },
                   []() {});
 }
 

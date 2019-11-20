@@ -71,9 +71,10 @@ Parameter *MacroControlParameterLayout2::getCurrentRouter() const
     {
       int selectedHWSource = tgtParam->getUiSelectedHardwareSource();
 
-      if(auto srcParam = editBuffer->findParameterByID(selectedHWSource))
+      if(auto srcParam = editBuffer->findParameterByID(selectedHWSource, VoiceGroup::Global))
       {
-        auto csGroup = static_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID("MCM"));
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+        auto csGroup = static_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID("MCM", vg));
         auto routers = csGroup->getModulationRoutingParametersFor(tgtParam);
 
         for(auto router : routers)
@@ -96,7 +97,7 @@ Parameter *MacroControlParameterLayout2::getCurrentPlayControl() const
   {
     int selectedHWSource = p->getUiSelectedHardwareSource();
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    return editBuffer->findParameterByID(selectedHWSource);
+    return editBuffer->findParameterByID(selectedHWSource, VoiceGroup::Global);
   }
 
   return nullptr;

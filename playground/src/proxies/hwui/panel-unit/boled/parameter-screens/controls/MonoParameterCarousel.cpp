@@ -44,7 +44,7 @@ VoiceGroup MonoParameterCarousel::getVoiceGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   if(eb->getType() == SoundType::Split)
-    return Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    return Application::get().getHWUI()->getCurrentVoiceGroup();
   else
     return VoiceGroup::I;
 }

@@ -41,7 +41,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		presenter.id = parameterId;
 
-		BasicParameterModel p = EditBufferModel.get().getOrCreateParameter(parameterId, vg);
+		BasicParameterModel p = EditBufferModel.get().getParameter(parameterId, vg);
 		p.onChange(e -> {
 			updatePresenter(e);
 			return true;
@@ -124,7 +124,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updatePresenter(ModulationRouterParameterModel p) {
 		PhysicalControlParameterModel m = (PhysicalControlParameterModel) EditBufferModel.get()
-				.getOrCreateParameter(p.getAssociatedPhysicalControlID(), VoiceGroup.Global);
+				.getParameter(p.getAssociatedPhysicalControlID(), VoiceGroup.Global);
 		presenter.isBoolean = !m.isReturning();
 	}
 
@@ -132,7 +132,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.modulation.isMCPosChanged = false;
 
 		if (p.modSource.getValue() != ModSource.None) {
-			BasicParameterModel mcBPM = EditBufferModel.get().getOrCreateParameter(p.modSource.getValue(), vg);
+			BasicParameterModel mcBPM = EditBufferModel.get().getParameter(p.modSource.getValue(), vg);
 			if (mcBPM != null && mcBPM instanceof MacroControlParameterModel) {
 				presenter.modulation.isMCPosChanged = isValueChanged(mcBPM);
 			}
@@ -162,7 +162,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			if (isBiPolar)
 				modAmount *= 2;
 
-			MacroControlParameterModel mc = EditBufferModel.get().getOrCreateParameter(p.modSource.getValue(), vg);
+			MacroControlParameterModel mc = EditBufferModel.get().getParameter(p.modSource.getValue(), vg);
 
 			modLeft = value - modAmount * mc.value.getQuantizedAndClipped(true);
 			modRight = modLeft + modAmount;
@@ -236,8 +236,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 				presenter.modulation.originalModulationAmountDecoratedString = p.modAmount.getDecoratedValue(true,
 						p.ogModAmount.getValue(), true);
 
-				MacroControlParameterModel macroControl = EditBufferModel.get()
-						.getOrCreateParameter(p.modSource.getValue(), vg);
+				MacroControlParameterModel macroControl = EditBufferModel.get().getParameter(p.modSource.getValue(),
+						vg);
 				presenter.modulation.originalModulationPositionDecoratedString = macroControl.value
 						.getDecoratedValue(true, macroControl.originalValue.getValue(), true);
 
@@ -259,7 +259,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updateClipping(ModulateableParameterModel m) {
 		if (m.modSource.getValue() != ModSource.None) {
-			MacroControlParameterModel mc = EditBufferModel.get().getOrCreateParameter(m.modSource.getValue(), vg);
+			MacroControlParameterModel mc = EditBufferModel.get().getParameter(m.modSource.getValue(), vg);
 			double modAmount = m.modAmount.getClippedValue();
 			boolean bipolar = m.value.metaData.bipolar.getBool();
 
@@ -287,29 +287,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private void updatePresenter(PhysicalControlParameterModel p) {
 		presenter.changed = false;
 		presenter.showContextMenu = p.id != 274 && p.id != 279;
-
-		int idWithLargestAmount = 0;
-		double largestAmount = 0;
-		boolean isNegative = false;
-
-		for (int i : p.getAssociatedModulationRouters()) {
-			ModulationRouterParameterModel router = (ModulationRouterParameterModel) EditBufferModel.get()
-					.getOrCreateParameter(i, vg);
-			double amount = router.value.getQuantizedAndClipped(true);
-			if (Math.abs(amount) > largestAmount) {
-				idWithLargestAmount = router.getAssociatedMacroControlID();
-				largestAmount = Math.abs(amount);
-				isNegative = amount < 0;
-			}
-		}
-
-		if (idWithLargestAmount == 0)
-			presenter.longName = "Not assigned";
-		else {
-			BasicParameterModel mc = EditBufferModel.get().getOrCreateParameter(idWithLargestAmount, vg);
-			presenter.longName = (isNegative ? "-" : "") + mc.longName.getValue();
-		}
-
+		
 		if (p instanceof RibbonParameterModel) {
 			RibbonParameterModel r = (RibbonParameterModel) p;
 			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;

@@ -1,6 +1,7 @@
 #include <tools/TextSplitter.h>
 #include "ParameterNameLabel.h"
 #include "Application.h"
+#include <proxies/hwui/HWUI.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -18,8 +19,8 @@ ParameterNameLabel::ParameterNameLabel(const Rect &pos)
   Application::get().getPresetManager()->getEditBuffer()->onRecallValuesChanged(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
 
-  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded)));
 }
 
 ParameterNameLabel::~ParameterNameLabel()

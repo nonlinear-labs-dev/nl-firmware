@@ -5,7 +5,7 @@
 
 inline static Glib::ustring currentVoiceGroupToString()
 {
-  auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   return toString(currentVG);
 }
 

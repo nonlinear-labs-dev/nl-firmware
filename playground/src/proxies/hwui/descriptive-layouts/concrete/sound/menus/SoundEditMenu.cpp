@@ -2,6 +2,7 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 SoundEditMenu::SoundEditMenu(const Rect &r)
     : ScrollMenu(r)

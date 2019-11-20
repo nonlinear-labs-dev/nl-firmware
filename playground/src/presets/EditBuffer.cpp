@@ -9,6 +9,7 @@
 #include "presets/PresetManager.h"
 #include "EditBufferSnapshotMaker.h"
 #include "proxies/lpc/LPCProxy.h"
+#include "proxies/hwui/HWUI.h"
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include "parameters/ModulateableParameter.h"
 #include <parameters/PhysicalControlParameter.h>
@@ -30,7 +31,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -67,13 +68,9 @@ size_t EditBuffer::getHash() const
 {
   size_t hash = AttributesOwner::getHash();
 
-  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
+  for(auto &vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(const auto g : getParameterGroups(vg))
       hash_combine(hash, g->getHash());
-
-  for(auto &global : getGlobalParameterGroups())
-    for(auto p : global->getParameters())
-      hash_combine(hash, p->getHash());
 
   if(getSplitPoint())
     hash_combine(hash, getSplitPoint()->getHash());
@@ -205,18 +202,15 @@ void EditBuffer::undoableSelectParameter(const Glib::ustring &id)
 
 void EditBuffer::undoableSelectParameter(uint16_t id)
 {
-  if(auto p = findParameterByID(id))
+  if(auto p = findParameterByID(id, m_lastSelectedParameter.m_voiceGroup))
     undoableSelectParameter(p);
-  else if(auto g = findGlobalParameterByID(id))
+  else if(auto g = findParameterByID(id, VoiceGroup::Global))
     undoableSelectParameter(g);
 }
 
 void EditBuffer::undoableSelectParameter(uint16_t id, VoiceGroup vg)
 {
   if(auto p = findParameterByID(id, vg))
-    undoableSelectParameter(p);
-
-  if(auto p = findGlobalParameterByID(id))
     undoableSelectParameter(p);
 }
 
@@ -231,7 +225,7 @@ void EditBuffer::setParameter(size_t id, double cpValue, VoiceGroup vg)
   if(auto p = findParameterByID(id, vg))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue, toString(vg));
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -272,32 +266,10 @@ bool EditBuffer::hasLocks(VoiceGroup vg) const
 
 bool EditBuffer::anyParameterChanged(VoiceGroup vg) const
 {
-  if(vg == VoiceGroup::I || vg == VoiceGroup::II)
-  {
-    for(auto &paramGroup : getParameterGroups(vg))
-    {
-      for(auto &param : paramGroup->getParameters())
-      {
-        if(param->isChangedFromLoaded())
-        {
-          return true;
-        }
-      }
-    }
-  }
-  else if(vg == VoiceGroup::Global)
-  {
-    for(auto &g : getGlobalParameterGroups())
-    {
-      for(auto &param : g->getParameters())
-      {
-        if(param->isChangedFromLoaded())
-        {
-          return true;
-        }
-      }
-    }
-  }
+  for(auto &paramGroup : getParameterGroups(vg))
+    for(auto &param : paramGroup->getParameters())
+      if(param->isChangedFromLoaded())
+        return true;
 
   if(getType() == SoundType::Split)
     return getSplitPoint()->isChangedFromLoaded();
@@ -391,19 +363,12 @@ bool isIDMonoGroup(int id)
 
 Parameter *EditBuffer::getSelected() const
 {
-  if(m_lastSelectedParameter.m_voiceGroup == VoiceGroup::Global)
-    if(auto p = findGlobalParameterByID(m_lastSelectedParameter.m_id))
-      return p;
-
   return findParameterByID(m_lastSelectedParameter.m_id, m_lastSelectedParameter.m_voiceGroup);
 }
 
 Parameter *EditBuffer::getSelected(VoiceGroup vg) const
 {
-  if(auto p = findParameterByID(m_lastSelectedParameter.m_id, vg))
-    return p;
-
-  return findGlobalParameterByID(m_lastSelectedParameter.m_id);
+  return findParameterByID(m_lastSelectedParameter.m_id, vg);
 }
 
 void EditBuffer::setName(UNDO::Transaction *transaction, const Glib::ustring &name)
@@ -414,12 +379,11 @@ void EditBuffer::setName(UNDO::Transaction *transaction, const Glib::ustring &na
 void EditBuffer::setVoiceGroupName(UNDO::Transaction *transaction, const Glib::ustring &name, VoiceGroup vg)
 {
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
-  transaction->addUndoSwap(this, m_voiceGroupLabels[static_cast<int>(vg)], name);
+  transaction->addUndoSwap(this, m_voiceGroupLabels[static_cast<size_t>(vg)], name);
 }
 
 bool EditBuffer::isZombie() const
 {
-
   if(getUUIDOfLastLoadedPreset() == Uuid::init())
     return false;
 
@@ -462,10 +426,15 @@ void EditBuffer::undoableLoadSelectedPreset()
   }
 }
 
-void EditBuffer::undoableLoad(Preset *preset, VoiceGroup target)
+void EditBuffer::undoableLoad(Preset *preset)
 {
   UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
   undoableLoad(scope->getTransaction(), preset);
+}
+
+void EditBuffer::undoableLoadIntoVoiceGroup(Preset *preset, VoiceGroup vg)
+{
+#warning "TODO";
 }
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
@@ -495,9 +464,7 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
 
   transaction->addUndoSwap(this, m_type, preset->getType());
-
   super::copyFrom(transaction, preset);
-
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -627,9 +594,9 @@ Parameter *EditBuffer::searchForAnyParameterWithLock(VoiceGroup vg) const
   return nullptr;
 }
 
-void EditBuffer::setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid)
+void EditBuffer::setMacroControlValueFromMCView(int id, VoiceGroup vg, double value, const Glib::ustring &uuid)
 {
-  if(auto mcs = getParameterGroupByID("MCs"))
+  if(auto mcs = getParameterGroupByID("MCs", vg))
   {
     if(auto mc = dynamic_cast<MacroControlParameter *>(mcs->getParameterByID(id)))
     {
@@ -644,26 +611,20 @@ VoiceGroup invert(VoiceGroup vg)
   return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
 }
 
-void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  if(m_type == SoundType::Single)
-    return;
-
-  setVoiceGroupName(transaction, "", VoiceGroup::I);
-  setVoiceGroupName(transaction, "", VoiceGroup::II);
-
-  undoableConvertDualToSingle(transaction, copyFrom);
-  initRecallValues(transaction);
+  if(getType() != SoundType::Single)
+    undoableConvertDualToSingle(transaction, vg);
 }
 
-void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  auto masterGroup = getGlobalParameterGroupByID("Master");
+  auto masterGroup = getParameterGroupByID("Master", VoiceGroup::Global);
   auto masterVolumeParameter = masterGroup->getParameterByID(247);
   auto masterTuneParameter = masterGroup->getParameterByID(248);
 
-  auto originVolume = findParameterByID(10002, copyFrom);
-  auto originTune = findParameterByID(10003, copyFrom);
+  auto originVolume = findParameterByID(10002, vg);
+  auto originTune = findParameterByID(10003, vg);
 
   auto newVolume = originVolume->getControlPositionValue() + masterVolumeParameter->getControlPositionValue();
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
@@ -671,33 +632,32 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);
   masterTuneParameter->setCPFromHwui(transaction, newTune);
 
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    auto vgVolume = findParameterByID(10002, vg);
-    auto vgTune = findParameterByID(10003, vg);
+  auto vgVolume = findParameterByID(10002, vg);
+  auto vgTune = findParameterByID(10003, vg);
 
-    vgVolume->setDefaultFromHwui(transaction);
-    vgTune->setDefaultFromHwui(transaction);
-  }
+  vgVolume->setDefaultFromHwui(transaction);
+  vgTune->setDefaultFromHwui(transaction);
 
-  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
+  if(vg != VoiceGroup::I)
+    copyVoiceGroup(transaction, vg, VoiceGroup::I);
 
   undoableSetType(transaction, SoundType::Single);
 }
 
-void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom)
+void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
 {
-
   if(m_type == type)
     return;
+
+  auto vg = m_lastSelectedParameter.m_voiceGroup;
 
   switch(type)
   {
     case SoundType::Split:
-      undoableConvertToSplit(transaction, copyFrom);
+      undoableConvertToSplit(transaction, vg);
       break;
     case SoundType::Layer:
-      undoableConvertToLayer(transaction, copyFrom);
+      undoableConvertToLayer(transaction, vg);
       break;
     case SoundType::Single:
     case SoundType::Invalid:
@@ -709,12 +669,10 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   undoableSetType(transaction, type);
 
-  if(copyFrom == VoiceGroup::II)
-    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+  if(vg == VoiceGroup::II)
+    copyVoiceGroup(transaction, vg, VoiceGroup::I);
 
-  transaction->addSimpleCommand(
-      [](auto) { Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(VoiceGroup::I); });
-
+  transaction->addUndoSwap(m_lastSelectedParameter.m_voiceGroup, VoiceGroup::I);
   initRecallValues(transaction);
 }
 
@@ -729,17 +687,17 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
   });
 }
 
-void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target)
+void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg)
 {
   auto scope = getUndoScope().startTransaction("Load Preset into Voicegroup");
   auto transaction = scope->getTransaction();
-  undoableLoadPresetIntoDualSound(transaction, preset, target);
+  undoableLoadPresetIntoDualSound(transaction, preset, vg);
 }
 
-void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup target)
+void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup vg)
 {
-  setVoiceGroupName(transaction, preset->getName(), target);
-  loadIntoVoiceGroup(transaction, preset, target);
+  setVoiceGroupName(transaction, preset->getName(), vg);
+  loadIntoVoiceGroup(transaction, preset, vg);
   initRecallValues(transaction);
 }
 
@@ -764,12 +722,12 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGro
   //Copy Voice Group from one to the other -> real initialize
   copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
 
-  auto globalMaster = getGlobalParameterGroupByID("Master");
+  auto globalMaster = getParameterGroupByID("Master", VoiceGroup::Global);
   auto vgMasterI = getParameterGroupByID("VGM", VoiceGroup::I);
   auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 10002, 247 }, { 10003, 248 } })
   {
     auto mI = vgMasterI->findParameterByID(ids.first);
     auto mII = vgMasterII->findParameterByID(ids.first);
@@ -796,13 +754,12 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGro
   //Copy Voice Group from one to the other -> real initialize
   copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
 
-  auto globalMaster = getGlobalParameterGroupByID("Master");
-
+  auto globalMaster = getParameterGroupByID("Master", VoiceGroup::Global);
   auto vgMasterI = getParameterGroupByID("VGM", VoiceGroup::I);
   auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 10002, 247 }, { 10003, 248 } })
   {
     auto mI = vgMasterI->findParameterByID(ids.first);
     auto mII = vgMasterII->findParameterByID(ids.first);

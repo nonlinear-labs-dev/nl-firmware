@@ -37,7 +37,7 @@ void LowerRibbon::reconnect()
 Parameter *LowerRibbon::getResponsibleParameter()
 {
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-      HardwareSourcesGroup::getLowerRibbonParameterID());
+      HardwareSourcesGroup::getLowerRibbonParameterID(), VoiceGroup::Global);
 }
 
 void LowerRibbon::onParamValueChanged(const Parameter *param)

@@ -61,25 +61,34 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	public StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity("Chili");
 	public StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity("Jalapeño");
 
-	public ParameterGroupModel getOrCreateGroup(String id, VoiceGroup vg) {
-		ParameterGroupModel g = byVoiceGroup[vg.ordinal()].parameterGroups.get(id);
+	private EditBufferModel() {
+		ParameterFactory.assertSorted();
 
-		if (g == null) {
-			g = new ParameterGroupModel();
-			byVoiceGroup[vg.ordinal()].parameterGroups.put(id, g);
-			notifyChanges();
+		for (String groupdId : ParameterFactory.getParameterGroups()) {
+			if (ParameterFactory.isGlobalParameterGroup(groupdId)) {
+				byVoiceGroup[VoiceGroup.Global.ordinal()].parameterGroups.put(groupdId, new ParameterGroupModel());
+			} else {
+				byVoiceGroup[VoiceGroup.I.ordinal()].parameterGroups.put(groupdId, new ParameterGroupModel());
+				byVoiceGroup[VoiceGroup.II.ordinal()].parameterGroups.put(groupdId, new ParameterGroupModel());
+			}
 		}
 
-		return g;
+		for (int id : ParameterFactory.getAllParameters()) {
+			if (ParameterFactory.isGlobalParameter(id)) {
+				addParameter(id, VoiceGroup.Global);
+			} else {
+				addParameter(id, VoiceGroup.I);
+				addParameter(id, VoiceGroup.II);
+			}
+		}
 	}
 
-	public BasicParameterModel getOrCreateParameter(int id, VoiceGroup vg) {
-		BasicParameterModel p = byVoiceGroup[vg.ordinal()].parameters.get(id);
+	public ParameterGroupModel getGroup(String id, VoiceGroup vg) {
+		return byVoiceGroup[vg.ordinal()].parameterGroups.get(id);
+	}
 
-		if (p == null)
-			p = addParameter(id, vg);
-
-		return p;
+	public BasicParameterModel getParameter(int id, VoiceGroup vg) {
+		return byVoiceGroup[vg.ordinal()].parameters.get(id);
 	}
 
 	public BasicParameterModel getSelectedParameter() {
@@ -91,7 +100,7 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 		return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
 	}
 
-	public BasicParameterModel addParameter(int id, VoiceGroup vg) {
+	private void addParameter(int id, VoiceGroup vg) {
 		BasicParameterModel p = ParameterFactory.create(id);
 
 		if (p != null) {
@@ -100,8 +109,6 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 			if (p instanceof ModulateableParameterModel)
 				byVoiceGroup[vg.ordinal()].modulateableParametersCache.add((ModulateableParameterModel) p);
 		}
-		notifyChanges();
-		return p;
 	}
 
 	public String getPresetNameOfVoiceGroup(VoiceGroup group) {
@@ -116,8 +123,8 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 		return "";
 	}
 
-	public MacroControlParameterModel getOrCreateParameter(ModSource value, VoiceGroup vg) {
-		return (MacroControlParameterModel) getOrCreateParameter(value.toParameterId(), vg);
+	public MacroControlParameterModel getParameter(ModSource value, VoiceGroup vg) {
+		return (MacroControlParameterModel) getParameter(value.toParameterId(), vg);
 	}
 
 	public List<ModulateableParameterModel> getAllModulateableParameters() {

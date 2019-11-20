@@ -37,7 +37,7 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
       return;
 
-    std::array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
+    std::array<TwoStateLED::LedState, numLeds> states { TwoStateLED::OFF };
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
       getMappings().forEachButton([&](Buttons buttonId, const std::list<int>& parameters) {
@@ -60,9 +60,10 @@ void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::li
                                                  std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto currentParams = getMappings().findParameters(buttonId);
-  auto ebParameters = editBuffer->getParametersSortedById();
-  auto globalParameters = editBuffer->getGlobalParametersSortedById();
+  auto ebParameters = editBuffer->getParametersSortedById(vg);
+  auto globalParameters = editBuffer->getParametersSortedById(VoiceGroup::Global);
 
   bool anyChanged = false;
   for(const auto paramID : currentParams)
@@ -83,11 +84,14 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
                                             std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   for(const auto i : parameters)
   {
     auto signalFlowIndicator = ParameterDB::get().getSignalPathIndication(i);
-    auto parameter = editBuffer->findParameterByID(static_cast<size_t>(i));
+
+#warning "param might be global?"
+    auto parameter = editBuffer->findParameterByID(i, vg);
 
     if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
     {

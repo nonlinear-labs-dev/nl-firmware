@@ -3,15 +3,17 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/PhysicalControlParameter.h"
+#include "proxies/hwui/HWUI.h"
 
 RibbonLabel::RibbonLabel(int paramID, const Rect &rect)
     : super(rect)
     , m_parameterID(paramID)
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->getParameterGroupByID("CS")->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID("MCs")->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID("MCM")->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID("CS", VoiceGroup::Global)->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID("MCs", vg)->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID("MCM", vg)->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
 }
 
 RibbonLabel::~RibbonLabel()
@@ -21,7 +23,7 @@ RibbonLabel::~RibbonLabel()
 Label::StringAndSuffix RibbonLabel::getText() const
 {
   auto param = dynamic_cast<PhysicalControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(m_parameterID));
+      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(m_parameterID, VoiceGroup::Global));
   return crop(param->generateName());
 }
 

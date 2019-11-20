@@ -127,8 +127,7 @@ public class DeviceSettingsProvider {
 	}
 
 	public void connectToPedal(int id, Pedal target) {
-		PedalParameterModel srcPedal = (PedalParameterModel) EditBufferModel.get().getOrCreateParameter(id,
-				VoiceGroup.Global);
+		PedalParameterModel srcPedal = (PedalParameterModel) EditBufferModel.get().getParameter(id, VoiceGroup.Global);
 		srcPedal.value.onChange(t -> {
 			double v = t.value.getValue();
 			target.displayValue = Stringizers.get().stringize(srcPedal.value.metaData.scaling.getValue(), v);

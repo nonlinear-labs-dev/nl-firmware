@@ -16,6 +16,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManager;
@@ -32,7 +33,6 @@ import com.nonlinearlabs.client.world.Uuid;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.MacroControlParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
@@ -155,9 +155,10 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
-	public void setParameter(int id, double v, boolean oracle) {
+	public void setParameter(int id, VoiceGroup vg, double v, boolean oracle) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id), new StaticURI.KeyValue("value", v));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
+				new StaticURI.KeyValue("voice-group", vg.toString()), new StaticURI.KeyValue("value", v));
 		queueJob(uri, oracle);
 	}
 
@@ -608,10 +609,10 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void renameMacroControl(int parameterID, String newName) {
+	public void renameMacroControl(int parameterID, VoiceGroup vg, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-mc");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID),
-				new StaticURI.KeyValue("new-name", newName));
+				new StaticURI.KeyValue("voice-group", vg.toString()), new StaticURI.KeyValue("new-name", newName));
 		queueJob(uri, false);
 	}
 
@@ -629,9 +630,10 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void resetModulation(MacroControlParameter param) {
+	public void resetModulation(int id, VoiceGroup vg) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "reset-modulation");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
+				new StaticURI.KeyValue("voice-group", vg.toString()));
 		queueJob(uri, false);
 	}
 
@@ -753,10 +755,10 @@ public class ServerProxy {
 		setSetting("TransitionTime", Double.toString(t));
 	}
 
-	public void setMacroControlInfo(int parameterID, String text) {
+	public void setMacroControlInfo(int parameterID, VoiceGroup vg, String text) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-macrocontrol-info");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID),
-				new StaticURI.KeyValue("info", text));
+				new StaticURI.KeyValue("voice-group", vg.toString()), new StaticURI.KeyValue("info", text));
 		queueJob(uri, false);
 	}
 
@@ -767,9 +769,11 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void setModulationAmountAndValue(ModulatableParameter param, double newModAmount, double newValue) {
+	public void setModulationAmountAndValue(ModulatableParameter param, VoiceGroup vg, double newModAmount,
+			double newValue) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modamount-and-value");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()),
+				new StaticURI.KeyValue("voice-group", vg.toString()),
 				new StaticURI.KeyValue("mod-amount", newModAmount), new StaticURI.KeyValue("value", newValue));
 		queueJob(uri, false);
 	}

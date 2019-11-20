@@ -8,6 +8,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <proxies/lpc/LPCProxy.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <boost/algorithm/string.hpp>
 
@@ -33,8 +34,9 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("set-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto id = std::stoi(request->get("id"));
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
     auto value = std::stod(request->get("value"));
-    editBuffer->setParameter(id, value);
+    editBuffer->setParameter(id, value, voiceGroup);
   });
 
   addAction("set-mod-amount", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -55,10 +57,11 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   addAction("rename-mc", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring parameterId = request->get("id");
     Glib::ustring newName = request->get("new-name");
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
 
     size_t id = std::stoull(parameterId);
 
-    if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id)))
+    if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id, voiceGroup)))
     {
       param->undoableSetGivenName(newName);
     }
@@ -76,11 +79,12 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("set-macrocontrol-info", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring parameterId = request->get("id");
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
     Glib::ustring info = request->get("info");
 
     size_t id = std::stoull(parameterId);
 
-    if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id)))
+    if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id, voiceGroup)))
     {
       param->undoableSetInfo(info);
     }
@@ -90,7 +94,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto parameterId = std::stoi(request->get("id"));
     Glib::ustring mode = request->get("mode");
 
-    if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(parameterId)))
+    if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(parameterId, VoiceGroup::Global)))
     {
       auto scope = editBuffer->getUndoScope().startTransaction("Set ribbon touch behaviour");
       param->undoableSetRibbonTouchBehaviour(scope->getTransaction(), mode);
@@ -101,7 +105,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto parameterId = std::stoi(request->get("id"));
     Glib::ustring mode = request->get("mode");
 
-    if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(parameterId)))
+    if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(parameterId, VoiceGroup::Global)))
     {
       auto scope = editBuffer->getUndoScope().startTransaction("Set ribbon return mode");
       param->undoableSetRibbonReturnMode(scope->getTransaction(), mode);
@@ -112,7 +116,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto parameterId = std::stoi(request->get("id"));
     Glib::ustring mode = request->get("mode");
 
-    if(auto param = dynamic_cast<PedalParameter*>(editBuffer->findParameterByID(parameterId)))
+    if(auto param = dynamic_cast<PedalParameter*>(editBuffer->findParameterByID(parameterId, VoiceGroup::Global)))
     {
       auto scope = editBuffer->getUndoScope().startTransaction("Set pedal mode");
       param->undoableSetPedalMode(scope->getTransaction(), mode);
@@ -121,8 +125,9 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("reset-modulation", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto parameterId = std::stoi(request->get("id"));
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
 
-    if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(parameterId)))
+    if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(parameterId, voiceGroup)))
     {
       param->undoableResetConnectionsToTargets();
     }
@@ -140,8 +145,9 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("set-modamount-and-value", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto id = std::stoi(request->get("id"));
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
 
-    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(id)))
+    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(id, voiceGroup)))
     {
       auto modAmount = std::stod(request->get("mod-amount"));
       auto value = std::stod(request->get("value"));
@@ -200,33 +206,31 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("convert-to-single", [=](auto) {
+  addAction("convert-to-single", [=](auto request) {
     auto scope = editBuffer->getUndoScope().startTransaction("Convert to Single");
     auto transaction = scope->getTransaction();
-    auto currentVoiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    editBuffer->undoableConvertToSingle(transaction, currentVoiceGroup);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
+    editBuffer->undoableConvertToSingle(transaction, voiceGroup);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
 
   addAction("convert-to-split", [=](auto) {
     auto scope = editBuffer->getUndoScope().startTransaction("Convert to Split");
     auto transaction = scope->getTransaction();
-    auto currentSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    editBuffer->undoableConvertToDual(transaction, SoundType::Split, currentSelection);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    editBuffer->undoableConvertToDual(transaction, SoundType::Split);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
 
   addAction("convert-to-layer", [=](auto) {
     auto scope = editBuffer->getUndoScope().startTransaction("Convert to Layer");
     auto transaction = scope->getTransaction();
-    auto currentSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    editBuffer->undoableConvertToDual(transaction, SoundType::Layer, currentSelection);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    editBuffer->undoableConvertToDual(transaction, SoundType::Layer);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
 }
 
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer)
 {
-  auto paramGroup = editBuffer->getParameterGroupByID("Scale");
+  auto paramGroup = editBuffer->getParameterGroupByID("Scale", VoiceGroup::Global);
   return paramGroup->getParameters();
 }

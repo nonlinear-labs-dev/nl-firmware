@@ -761,26 +761,21 @@ void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
   {
     m_editBuffer->undoableSelectParameter(trans, param);
   }
-  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers{});
+  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers {});
 }
 
 void PresetManager::stressAllParams(int numParamChangedForEachParameter)
 {
-
   Glib::MainContext::get_default()->signal_timeout().connect_once(
       [=]() {
         auto scope = getUndoScope().startTransaction("Stress All Parameters");
         auto trans = scope->getTransaction();
-        for(auto &group : m_editBuffer->getParameterGroups())
-        {
-          for(auto &param : group->getParameters())
-          {
-            for(auto i = 0; i < numParamChangedForEachParameter; i++)
-            {
-              stressParam(trans, param);
-            }
-          }
-        }
+
+        for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
+          for(auto &group : m_editBuffer->getParameterGroups(vg))
+            for(auto &param : group->getParameters())
+              for(auto i = 0; i < numParamChangedForEachParameter; i++)
+                stressParam(trans, param);
       },
       20);
 }
@@ -841,13 +836,11 @@ void PresetManager::incAllParamsFine()
       [=]() {
         auto scope = getUndoScope().startTransaction("Inc All Parameters Fine");
         auto trans = scope->getTransaction();
-        for(auto &group : m_editBuffer->getParameterGroups())
-        {
-          for(auto &param : group->getParameters())
-          {
-            param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
-          }
-        }
+
+        for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
+          for(auto &group : m_editBuffer->getParameterGroups(vg))
+            for(auto &param : group->getParameters())
+              param->stepCPFromHwui(trans, 1, ButtonModifiers { ButtonModifier::FINE });
       },
       20);
 }

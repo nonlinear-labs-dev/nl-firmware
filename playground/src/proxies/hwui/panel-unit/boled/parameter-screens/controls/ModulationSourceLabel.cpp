@@ -1,5 +1,6 @@
 #include "ModulationSourceLabel.h"
 #include "Application.h"
+#include <proxies/hwui/HWUI.h>
 #include "parameters/ModulateableParameter.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
@@ -36,10 +37,10 @@ void ModulationSourceLabel::onParamValueChanged(const Parameter *param)
 
     if(src != MacroControls::NONE)
     {
-
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       uint16_t id = MacroControlsGroup::modSrcToParamID(src);
 
-      if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+      if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, vg))
       {
         setText(mc->getShortName());
         return;

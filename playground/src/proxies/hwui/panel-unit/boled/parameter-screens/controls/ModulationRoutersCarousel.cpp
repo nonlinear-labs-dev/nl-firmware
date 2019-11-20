@@ -35,7 +35,8 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(newOne))
   {
-    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM");
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM", vg);
     auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
     auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 
@@ -54,14 +55,16 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
 void ModulationRoutersCarousel::turn()
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   if(auto p
      = dynamic_cast<PhysicalControlParameter *>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
-    p->toggleUiSelectedModulationRouter(1);
+    p->toggleUiSelectedModulationRouter(1, vg);
 }
 
 void ModulationRoutersCarousel::antiTurn()
 {
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   if(auto p
      = dynamic_cast<PhysicalControlParameter *>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
-    p->toggleUiSelectedModulationRouter(-1);
+    p->toggleUiSelectedModulationRouter(-1, vg);
 }

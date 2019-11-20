@@ -37,11 +37,12 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 
 ustring SplitPointParameter::getDisplayString() const
 {
-  auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  if(currentVG == VoiceGroup::I)
-    return getDisplayValue(VoiceGroup::I);
-  else
-    return getDisplayValue(VoiceGroup::II);
+#warning "TODO!"
+  //auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  //if(currentVG == VoiceGroup::I)
+  return getDisplayValue(VoiceGroup::I);
+  //else
+  //return getDisplayValue(VoiceGroup::II);
 }
 
 void SplitPointParameter::registerTests()
@@ -49,7 +50,7 @@ void SplitPointParameter::registerTests()
 
   g_test_add_func("/SplitPointParameter/stringize", [] {
     TestRootDocument root;
-    TestGroupSet set{ &root };
+    TestGroupSet set { &root };
     TestGroup group(&set, VoiceGroup::I);
     group.addParameter(new TestParameter<SplitPointParameter>(&group, uint16_t(1)));
 

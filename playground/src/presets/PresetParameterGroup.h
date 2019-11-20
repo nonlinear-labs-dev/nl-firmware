@@ -36,7 +36,7 @@ class PresetParameterGroup
   }
 
   // algorithm
-  void writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other) const;
+  void writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other, VoiceGroup vg) const;
 
  protected:
   std::unordered_map<int, ParameterPtr> m_parameters;

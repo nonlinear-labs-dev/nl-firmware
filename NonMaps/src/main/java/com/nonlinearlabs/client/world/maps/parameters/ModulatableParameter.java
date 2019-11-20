@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.maps.parameters;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.RGB;
@@ -73,11 +74,11 @@ public class ModulatableParameter extends Parameter {
 		return presenter.fullNameWithGroup;
 	}
 
-	public void modulationAmountInc(boolean fine) {
+	public void modulationAmountInc(boolean fine, VoiceGroup vg) {
 		EditBufferUseCases.get().incModulationAmount(getParameterID(), fine);
 	}
 
-	public void modulationAmountDec(boolean fine) {
+	public void modulationAmountDec(boolean fine, VoiceGroup vg) {
 		EditBufferUseCases.get().decModulationAmount(getParameterID(), fine);
 	}
 }

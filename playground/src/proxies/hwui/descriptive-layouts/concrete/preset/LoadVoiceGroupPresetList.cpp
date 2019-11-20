@@ -14,8 +14,8 @@ void LoadVoiceGroupPresetList::action()
 {
   if(auto preset = getPresetAtSelected())
   {
-    Application::get().getPresetManager()->getEditBuffer()->undoableLoad(preset,
-                                                                         Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+    Application::get().getPresetManager()->getEditBuffer()->undoableLoadIntoVoiceGroup(
+        preset, Application::get().getHWUI()->getCurrentVoiceGroup());
     Application::get().getHWUI()->setFocusAndMode(UIDetail::Init);
   }
 }

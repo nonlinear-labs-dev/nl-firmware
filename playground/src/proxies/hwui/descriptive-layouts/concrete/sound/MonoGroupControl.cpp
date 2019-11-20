@@ -1,4 +1,5 @@
 #include <Application.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/descriptive-layouts/primitives/Border.h>
 #include <proxies/hwui/panel-unit/boled/setup/SmallerParameterValueLabel.h>
 #include "MonoGroupControl.h"
@@ -7,9 +8,9 @@
 
 MonoGroupControl::MonoGroupControl(const Rect &r)
     : ControlWithChildren(r)
-    , m_grid{ nullptr }
+    , m_grid { nullptr }
 {
-  m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() { rebuild(); });
+  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged([this](auto) { rebuild(); });
 }
 
 MonoGroupControl::~MonoGroupControl()
@@ -22,11 +23,11 @@ void MonoGroupControl::rebuild()
   clear();
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto monoEnableParam = eb->findParameterByID(12345, vg);
   auto monoEnable = monoEnableParam->getDisplayString() == "On";
 
-  auto paramid = std::array<int, 4>{ 12345, 12346, 12347, 12348 };
+  auto paramid = std::array<int, 4> { 12345, 12346, 12347, 12348 };
 
   const auto width = 62;
   const auto height = 16;

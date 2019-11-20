@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupMasterParameterCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualSpecialParameterModuleCaption.h>
 #include <proxies/hwui/buttons.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterValueLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -18,8 +19,8 @@ Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentParameter() const
 DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout()
     : UnmodulateableParameterSelectLayout2()
 {
-  m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
+  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update)));
 
   m_connection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
@@ -27,7 +28,7 @@ DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout
 
 void DualVoiceGroupMasterAndSplitPointLayout::update()
 {
-  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   getCarousel()->setup(selected);
 
@@ -76,7 +77,7 @@ bool DualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, But
 {
   if(down && i == Buttons::BUTTON_A)
   {
-    Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
+    Application::get().getHWUI()->toggleCurrentVoiceGroup();
     return true;
   }
 

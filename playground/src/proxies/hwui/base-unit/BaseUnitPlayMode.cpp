@@ -36,7 +36,8 @@ void BaseUnitPlayMode::toggleTouchBehaviour()
     auto trans = pm->getUndoScope().startTransaction("Set ribbon mode");
     auto id = Application::get().getLPCProxy()->getLastTouchedRibbonParameterID();
 
-    if(auto ribbonParam = dynamic_cast<RibbonParameter*>(pm->getEditBuffer()->findParameterByID(id)))
+    if(auto ribbonParam
+       = dynamic_cast<RibbonParameter*>(pm->getEditBuffer()->findParameterByID(id, VoiceGroup::Global)))
       ribbonParam->undoableIncRibbonTouchBehaviour(trans->getTransaction());
   }
 }

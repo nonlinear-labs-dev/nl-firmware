@@ -51,7 +51,9 @@ void HWSourceAmountCarousel::setup(Parameter *newOne)
     if(p->getUiSelectedHardwareSource() == 0)
       p->toggleUiSelectedHardwareSource(1);
 
-    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM");
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM", vg);
     auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
     auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 

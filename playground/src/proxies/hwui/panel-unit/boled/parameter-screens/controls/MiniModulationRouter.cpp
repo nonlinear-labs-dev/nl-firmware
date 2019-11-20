@@ -4,6 +4,8 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <proxies/hwui/controls/LabelRegular8.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterBarSlider.h>
+#include <proxies/hwui/HWUI.h>
+#include <Application.h>
 
 MiniModulationRouter::MiniModulationRouter(ModulationRoutingParameter *param, const Rect &rect)
     : super(rect)
@@ -21,6 +23,7 @@ void MiniModulationRouter::onSourceParameterChanged(const Parameter *p)
 {
   if(auto a = dynamic_cast<const PhysicalControlParameter *>(p))
   {
-    setHighlight(a->getUiSelectedModulationRouter() == m_param->getID());
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    setHighlight(a->getUiSelectedModulationRouter(vg) == m_param->getID());
   }
 }
