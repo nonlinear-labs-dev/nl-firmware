@@ -23,8 +23,9 @@ namespace Engine
     PolyFeedbackMixer();
     void init(const float _samplerate);
     void set(PolySignals &_signals, const uint32_t _voiceId);
-    void apply(const PolyValue &_sampleComb, const PolyValue &_sampleSVF, const PolyValue &_sampleFX,
-               PolySignals &_signals);
+    void apply(PolySignals &_signals, const PolyValue &_oscA, const PolyValue &_oscB, const PolyValue &_cmb0,
+               const PolyValue &_cmb1, const PolyValue &_svf0, const PolyValue &_svf1, const float _fx0_dry,
+               const float _fx0_wet, const float _fx1_dry, const float _fx1_wet);
     void resetDSP();
 
    private:

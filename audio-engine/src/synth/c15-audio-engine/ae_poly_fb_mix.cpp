@@ -35,13 +35,33 @@ void Engine::PolyFeedbackMixer::set(PolySignals &_signals, const uint32_t _voice
   m_hp_b1[_voiceId] = (1.0f / (1.0f + omega)) * -1.0f;
 }
 
-void Engine::PolyFeedbackMixer::apply(const PolyValue &_sampleComb, const PolyValue &_sampleSVF,
-                                      const PolyValue &_sampleFX, PolySignals &_signals)
+void Engine::PolyFeedbackMixer::apply(PolySignals &_signals, const PolyValue &_oscA, const PolyValue &_oscB,
+                                      const PolyValue &_cmb0, const PolyValue &_cmb1, const PolyValue &_svf0,
+                                      const PolyValue &_svf1, const float _fx0_dry, const float _fx0_wet,
+                                      const float _fx1_dry, const float _fx1_wet)
 {
-  // sampleFx: PolyValue?
-  auto tmpVar = _sampleFX * _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_FX)
-      + _sampleComb * _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_Comb)
-      + _sampleSVF * _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_SVF);
+  PolyValue polyFaded, tmpVar = 0.0f;
+  float monoFaded, fade;
+  // Osc
+  fade = _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_Osc_Src);
+  polyFaded = ((1.0f - fade) * _oscA) + (fade * _oscB);
+  tmpVar += _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_Osc) * polyFaded;
+  // Comb
+  fade = _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_Comb_Src);
+  polyFaded = ((1.0f - fade) * _cmb0) + (fade * _cmb1);
+  tmpVar += _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_Comb) * polyFaded;
+  // SVF
+  fade = _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_SVF_Src);
+  polyFaded = ((1.0f - fade) * _svf0) + (fade * _svf1);
+  tmpVar += _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_SVF) * polyFaded;
+  // FX
+  fade = _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_Rvb);
+  monoFaded = NlToolbox::Crossfades::unipolarCrossFade(_fx0_dry, _fx0_wet, fade);
+  tmpVar += (1.0f - _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_FX_Src)) * monoFaded
+      * _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_FX);
+  monoFaded = NlToolbox::Crossfades::unipolarCrossFade(_fx1_dry, _fx1_wet, fade);
+  tmpVar += _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_FX_Src) * monoFaded
+      * _signals.get(C15::Signals::Quasipoly_Signals::FB_Mix_FX);
   m_out = m_hp_b0 * tmpVar;  // HP
   m_out += m_hp_b1 * m_hp_stateVar_1;
   m_out += m_hp_a1 * m_hp_stateVar_2;
