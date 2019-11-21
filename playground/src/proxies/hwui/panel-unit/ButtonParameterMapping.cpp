@@ -109,7 +109,6 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_93, { 209 });
 
   addMapping(Buttons::BUTTON_94, { 241 });
-
   addMapping(Buttons::BUTTON_95, { 1248 });
 }
 

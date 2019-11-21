@@ -41,6 +41,7 @@
 #include <parameters/PedalParameter.h>
 
 class ParameterInfoLayout;
+
 class ParameterLayout2;
 
 const constexpr auto CombFilterAB = 113;
@@ -88,7 +89,7 @@ void PanelUnitParameterEditMode::setup()
     std::vector<int> para{ parameterIDs.begin(), parameterIDs.end() };
 
     if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
-       && buttonID != Buttons::BUTTON_87)
+       && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
       setupButtonConnection(buttonID, createParameterSelectAction(para));
   });
 
@@ -108,6 +109,16 @@ void PanelUnitParameterEditMode::setup()
                         bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 246));
 
   FOR_TESTS(assignedAudioIDs.insert(246));
+
+  setupButtonConnection(Buttons::BUTTON_91,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 1247));
+
+  FOR_TESTS(assignedAudioIDs.insert(1247));
+
+  setupButtonConnection(Buttons::BUTTON_95,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 1248));
+
+  FOR_TESTS(assignedAudioIDs.insert(1248));
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     getEditPanel().getUndoStateMachine().traverse(state ? UNDO_PRESSED : UNDO_RELEASED);

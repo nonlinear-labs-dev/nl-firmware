@@ -93,7 +93,8 @@ void ParameterNameLabel::handleParameterName(const Parameter *pParameter)
 void ParameterNameLabel::onParameterChanged(const Parameter *param)
 {
   auto id = param->getID();
-  if(id == 243 || id == 244 || id == 245 || id == 246)
+
+  if(id == 243 || id == 244 || id == 245 || id == 246 || id == 1247 || id == 1248)
   {
     handleMCParameterName(param);
   }
