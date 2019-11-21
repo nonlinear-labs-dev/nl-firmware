@@ -5,6 +5,7 @@
 #include <parameters/MacroControlParameter.h>
 #include <tools/StringTools.h>
 #include "WebSocketRequest.h"
+#include <ParameterId.h>
 
 MCViewContentManager::MCViewContentManager() = default;
 
@@ -19,7 +20,7 @@ void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
     if(auto mc = dynamic_cast<MacroControlParameter *>(param))
     {
       using namespace std::string_literals;
-      const auto idString = to_string(mc->getID());
+      const auto idString = mc->getID().toString();
       const auto valueD = mc->getValue().getClippedValue();
       const auto value = to_string(valueD);
       const auto uuid = "FORCE"s;
@@ -41,12 +42,10 @@ void MCViewContentManager::handleRequest(std::shared_ptr<WebSocketRequest> reque
 {
   if(request->getPath().find("set-mc") != Glib::ustring::npos)
   {
-    auto id = std::stoi(request->get("id"));
+    auto id = ParameterId(request->get("id"));
     auto value = std::stod(request->get("value"));
     auto uuid = request->get("uuid");
-#warning "Todo: adjust js"
-    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
-    Application::get().getPresetManager()->getEditBuffer()->setMacroControlValueFromMCView(id, voiceGroup, value, uuid);
+    Application::get().getPresetManager()->getEditBuffer()->setMacroControlValueFromMCView(id, value, uuid);
   }
 }
 

@@ -36,7 +36,7 @@ void MacroControl::onTargetChanged(const Parameter *modulatedParameter)
   if(const ModulateableParameter *p = dynamic_cast<const ModulateableParameter *>(modulatedParameter))
   {
     auto src = p->getModulationSource();
-    uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
+    uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
     auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
     if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID, vg))

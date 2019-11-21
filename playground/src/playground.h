@@ -10,16 +10,14 @@
 #include <iostream>
 #include <iomanip>
 #include <nltools/Types.h>
+#include "tools/Signal.h"
+#include "Compatibility.h"
 
 #define TRACE_LOC_AND_ARGS(loc, arg) std::cout << loc << ": " << arg << std::endl
 #define TRACE(arg) TRACE_LOC_AND_ARGS(G_STRLOC, arg)
 #define TRACE_CALL() TRACE_LOC_AND_ARGS(G_STRLOC, "called")
 
-#include "tools/Signal.h"
-
 void printLastFunctions();
-
-#include "Compatibility.h"
 
 using namespace Glib;
 using namespace sigc;

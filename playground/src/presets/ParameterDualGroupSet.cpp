@@ -66,14 +66,14 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     appendParameterGroup(new MonoGroup(this, vg), vg);
     appendParameterGroup(new VoiceGroupMasterGroup(this, vg), vg);
 
-    m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedById(vg);
+    m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
   }
 
   appendParameterGroup(new GlobalParameterGroups(this), VoiceGroup::Global);
   appendParameterGroup(new MasterGroup(this), VoiceGroup::Global);
   appendParameterGroup(new ScaleGroup(this), VoiceGroup::Global);
 
-  m_idToParameterMap[static_cast<size_t>(VoiceGroup::Global)] = getParametersSortedById(VoiceGroup::Global);
+  m_idToParameterMap[static_cast<size_t>(VoiceGroup::Global)] = getParametersSortedByNumber(VoiceGroup::Global);
 }
 
 ParameterDualGroupSet::~ParameterDualGroupSet()
@@ -111,18 +111,18 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
         g->copyFrom(transaction, c);
 }
 
-Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
+Parameter *ParameterDualGroupSet::findParameterByID(ParameterId id) const
 {
-  return m_idToParameterMap.at(static_cast<size_t>(vg)).at(id);
+  return m_idToParameterMap.at(static_cast<size_t>(id.getVoiceGroup())).at(id.getNumber());
 }
 
-std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedById(VoiceGroup vg) const
+std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedByNumber(VoiceGroup vg) const
 {
   std::map<int, Parameter *> sorted;
 
   for(auto group : getParameterGroups(vg))
     for(auto param : group->getParameters())
-      sorted[param->getID()] = param;
+      sorted[param->getID().getNumber()] = param;
 
   return sorted;
 }
@@ -171,6 +171,6 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
 
   for(auto &g : getParameterGroups(VoiceGroup::Global))
     for(auto &globalParam : g->getParameters())
-      if(auto presetGlobalParam = p->findParameterByID(globalParam->getID(), VoiceGroup::Global))
+      if(auto presetGlobalParam = p->findParameterByID(globalParam->getID()))
         globalParam->copyFrom(transaction, presetGlobalParam);
 }

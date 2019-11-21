@@ -8,7 +8,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
 
-SplitPointParameter::SplitPointParameter(ParameterGroup *group, uint16_t id)
+SplitPointParameter::SplitPointParameter(ParameterGroup *group, ParameterId id)
     : Parameter(group, id, ScaleConverter::get<KeyWithOctaveScaleConverter>(), 0.5, 60, 60)
 {
 }
@@ -50,11 +50,11 @@ void SplitPointParameter::registerTests()
 
   g_test_add_func("/SplitPointParameter/stringize", [] {
     TestRootDocument root;
-    TestGroupSet set { &root };
+    TestGroupSet set{ &root };
     TestGroup group(&set, VoiceGroup::I);
-    group.addParameter(new TestParameter<SplitPointParameter>(&group, uint16_t(1)));
+    group.addParameter(new TestParameter<SplitPointParameter>(&group, ParameterId{ 1, VoiceGroup::Global }));
 
-    auto parameter = dynamic_cast<SplitPointParameter *>(group.findParameterByID(1));
+    auto parameter = dynamic_cast<SplitPointParameter *>(group.findParameterByID({ 1, VoiceGroup::Global }));
     g_assert(parameter != nullptr);
 
     auto transScope = UNDO::Scope::startTrashTransaction();

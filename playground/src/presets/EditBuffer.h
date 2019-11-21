@@ -25,16 +25,14 @@ class EditBuffer : public ParameterDualGroupSet
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
-  Parameter *getSelected(VoiceGroup vg) const;
   bool isZombie() const;
 
-  void setMacroControlValueFromMCView(int id, VoiceGroup vg, double value, const Glib::ustring &uuid);
+  void setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid);
 
   static void sanitizeVoiceGroup(VoiceGroup &vg);
 
   void undoableSelectParameter(const Glib::ustring &id);
-  void undoableSelectParameter(uint16_t id);
-  void undoableSelectParameter(uint16_t id, VoiceGroup vg);
+  void undoableSelectParameter(ParameterId id);
   void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
 
@@ -92,7 +90,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   SoundType getType() const;
 
-  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup vg);
+  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg);
@@ -103,16 +101,17 @@ class EditBuffer : public ParameterDualGroupSet
 
  private:
   Glib::ustring getEditBufferName() const;
-
   bool anyParameterChanged(VoiceGroup vg) const;
-
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
-
   UNDO::Scope &getUndoScope() override;
-
-  void setParameter(size_t id, double cpValuem, VoiceGroup target);
+  void setParameter(ParameterId id, double cpValue);
 
   void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id);
+  void undoableSetType(UNDO::Transaction *transaction, SoundType type);
+  void undoableConvertToSplit(UNDO::Transaction *transaction);
+  void undoableConvertToLayer(UNDO::Transaction *transaction);
+  void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
+
   void setModulationSource(MacroControls src);
   void setModulationAmount(double amount);
 
@@ -126,18 +125,7 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalLocksChanged;
   Signal<void> m_signalTypeChanged;
 
-  struct LastSelection
-  {
-    LastSelection(Parameter::ID id, VoiceGroup vg)
-        : m_id{ id }
-        , m_voiceGroup{ vg }
-    {
-    }
-    Parameter::ID m_id = 0;
-    VoiceGroup m_voiceGroup = VoiceGroup::I;
-  };
-
-  LastSelection m_lastSelectedParameter;
+  ParameterId m_lastSelectedParameter;
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;
@@ -161,11 +149,4 @@ class EditBuffer : public ParameterDualGroupSet
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
-
-  void undoableSetType(UNDO::Transaction *transaction, SoundType type);
-
-  void undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-  void undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-
-  void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
 };

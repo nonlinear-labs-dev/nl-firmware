@@ -9,7 +9,7 @@ class PhysicalControlParameter : public Parameter
   typedef Parameter super;
 
  public:
-  PhysicalControlParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
+  PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
 
   bool isChangedFromLoaded() const override;
@@ -26,9 +26,9 @@ class PhysicalControlParameter : public Parameter
   virtual ReturnMode getReturnMode() const = 0;
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
-  void setUiSelectedModulationRouter(int paramID, VoiceGroup vg);
-  void toggleUiSelectedModulationRouter(int inc, VoiceGroup vg);
-  int getUiSelectedModulationRouter(VoiceGroup vg) const;
+  void setUiSelectedModulationRouter(int paramNumber);
+  void toggleUiSelectedModulationRouter(int inc);
+  int getUiSelectedModulationRouter() const;
 
   virtual void onSelected() override;
   virtual void onUnselected() override;

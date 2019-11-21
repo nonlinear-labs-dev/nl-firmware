@@ -23,8 +23,8 @@ class ParameterDualGroupSet : public AttributesOwner
   virtual tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id, VoiceGroup vg) const;
   virtual const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg) const;
 
-  virtual std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg) const;
-  virtual Parameter *findParameterByID(int id, VoiceGroup vg) const;
+  virtual std::map<int, Parameter *> getParametersSortedByNumber(VoiceGroup vg) const;
+  virtual Parameter *findParameterByID(ParameterId id) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 

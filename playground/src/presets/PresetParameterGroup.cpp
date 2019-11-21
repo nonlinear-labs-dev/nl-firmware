@@ -25,7 +25,7 @@ PresetParameterGroup::PresetParameterGroup(const PresetParameterGroup &other)
 
 PresetParameterGroup::~PresetParameterGroup() = default;
 
-PresetParameter *PresetParameterGroup::findParameterByID(int id) const
+PresetParameter *PresetParameterGroup::findParameterByID(ParameterId id) const
 {
   auto it = m_parameters.find(id);
   if(it != m_parameters.end())
@@ -47,8 +47,8 @@ void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::Para
       g.second->copyFrom(transaction, o);
 }
 
-void PresetParameterGroup::writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other,
-                                     VoiceGroup vg) const
+void PresetParameterGroup::writeDiff(Writer &writer, const std::string &groupId,
+                                     const PresetParameterGroup *other) const
 {
   auto name = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(groupId, vg)->getLongName();
 
@@ -56,7 +56,7 @@ void PresetParameterGroup::writeDiff(Writer &writer, const std::string &groupId,
     for(auto &parameter : m_parameters)
     {
       auto otherParameter = other->findParameterByID(parameter.first);
-      parameter.second->writeDiff(writer, parameter.first, otherParameter, vg);
+      parameter.second->writeDiff(writer, parameter.first, otherParameter);
     }
   });
 }

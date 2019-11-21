@@ -8,7 +8,7 @@
 
 RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)
-    , m_editBuffer { editBuffer }
+    , m_editBuffer{ editBuffer }
 {
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
@@ -33,9 +33,9 @@ const RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters
   return m_parameters[static_cast<size_t>(vg)];
 }
 
-RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
+RecallParameter *RecallParameterGroups::findParameterByID(ParameterId id) const
 {
-  return m_parameters.at(static_cast<size_t>(vg)).at(id).get();
+  return m_parameters.at(static_cast<size_t>(vg.getVoiceGroup())).at(id.getNumber()).get();
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
@@ -44,8 +44,6 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
     for(auto &g : other->getParameterGroups(vg))
       for(auto &parameter : g->getParameters())
         m_parameters[static_cast<size_t>(vg)].at(parameter->getID())->copyFrom(transaction, parameter);
-
-#warning "TODO" what about the split point"
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -53,7 +51,7 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   auto changed = getUpdateIDOfLastChange() > knownRevision;
   if(changed)
   {
-    writer.writeTag("recall-data", Attribute { "changed", changed }, [this, &writer, knownRevision] {
+    writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
       writer.writeTag("voice-group-I-parameters", [&] {
         for(auto &parameterpair : getParameters(VoiceGroup::I))
           parameterpair.second->writeDocument(writer, knownRevision);

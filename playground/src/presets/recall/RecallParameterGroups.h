@@ -13,7 +13,7 @@ class RecallParameterGroups : public UpdateDocumentContributor
   using tParameterMap = std::unordered_map<int, std::unique_ptr<RecallParameter>>;
   RecallParameterGroups(EditBuffer *editBuffer);
 
-  RecallParameter *findParameterByID(int id, VoiceGroup vg) const;
+  RecallParameter *findParameterByID(ParameterId id) const;
   tParameterMap &getParameters(VoiceGroup vg);
   const tParameterMap &getParameters(VoiceGroup vg) const;
 

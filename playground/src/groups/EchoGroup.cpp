@@ -23,20 +23,22 @@ EchoGroup::~EchoGroup()
 
 void EchoGroup::init()
 {
-  appendParameter(
-      new ModulateableParameter(this, 225, ScaleConverter::get<Parabolic2000MsScaleConverter>(), 0.433, 200, 2000));
+  appendParameter(new ModulateableParameter(this, { 225, getVoiceGroup() },
+                                            ScaleConverter::get<Parabolic2000MsScaleConverter>(), 0.433, 200, 2000));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 227, ScaleConverter::get<LinearBipolar33PercentScaleConverter>(),
+      this, { 227, getVoiceGroup() }, ScaleConverter::get<LinearBipolar33PercentScaleConverter>(),
       ScaleConverter::get<LinearBipolar66PercentScaleConverter>(), 0, 66, 660));
 
-  appendParameter(
-      new ModulateableParameter(this, 229, ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { 229, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
 
-  appendParameter(new Parameter(this, 231, ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+  appendParameter(new Parameter(this, { 231, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
+                                0.5, 100, 1000));
 
-  appendParameter(new Parameter(this, 232, ScaleConverter::get<Linear60To140StScaleConverter>(), 0.75, 80, 800));
+  appendParameter(new Parameter(this, { 232, getVoiceGroup() }, ScaleConverter::get<Linear60To140StScaleConverter>(),
+                                0.75, 80, 800));
 
-  appendParameter(
-      new ModulateableParameter(this, 233, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { 233, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
 }

@@ -45,7 +45,7 @@ void ModulationBoundLabel::onParameterChanged(const Parameter *param)
       m_mc = m->getModulationSource();
       m_mcConnection.disconnect();
 
-      auto mcID = MacroControlsGroup::modSrcToParamID(m_mc);
+      auto mcID = MacroControlsGroup::modSrcToParamNumber(m_mc);
       auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
       if((m_mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID, vg))))

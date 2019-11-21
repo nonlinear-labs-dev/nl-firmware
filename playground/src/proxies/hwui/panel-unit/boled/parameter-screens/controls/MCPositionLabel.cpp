@@ -37,7 +37,7 @@ void MCPositionLabel::updateTarget(const Parameter *parameter)
   {
     auto src = modP->getModulationSource();
     auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-    uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
+    uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
 
     if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID, vg))
     {

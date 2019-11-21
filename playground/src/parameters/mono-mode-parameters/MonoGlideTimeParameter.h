@@ -4,7 +4,7 @@
 class MonoGlideTimeParameter : public MonoParameter
 {
  public:
-  MonoGlideTimeParameter(ParameterGroup* group, Parameter::ID id);
+  MonoGlideTimeParameter(ParameterGroup* group, ParameterId id);
 
   ustring getLongName() const override;
 

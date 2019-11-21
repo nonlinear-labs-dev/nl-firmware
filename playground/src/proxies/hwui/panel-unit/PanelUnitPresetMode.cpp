@@ -62,8 +62,8 @@ void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::li
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto currentParams = getMappings().findParameters(buttonId);
-  auto ebParameters = editBuffer->getParametersSortedById(vg);
-  auto globalParameters = editBuffer->getParametersSortedById(VoiceGroup::Global);
+  auto ebParameters = editBuffer->getParametersSortedByNumber(vg);
+  auto globalParameters = editBuffer->getParametersSortedByNumber(VoiceGroup::Global);
 
   bool anyChanged = false;
   for(const auto paramID : currentParams)

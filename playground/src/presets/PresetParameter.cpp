@@ -9,8 +9,8 @@
 #include <presets/EditBuffer.h>
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 
-PresetParameter::PresetParameter(int id)
-    : m_id { id }
+PresetParameter::PresetParameter(ParameterId id)
+    : m_id{ id }
 {
 }
 
@@ -199,9 +199,9 @@ enum PedalModes PresetParameter::getPedalMode() const
 void PresetParameter::writeDocument(Writer &writer) const
 {
   writer.writeTag("param",
-                  { Attribute { "id", to_string(m_id) }, Attribute { "value", to_string(m_value) },
-                    Attribute { "mod-src", to_string(static_cast<int>(getModulationSource())) },
-                    Attribute { "mod-amt", to_string(getModulationAmount()) } },
+                  { Attribute{ "id", to_string(m_id) }, Attribute{ "value", to_string(m_value) },
+                    Attribute{ "mod-src", to_string(static_cast<int>(getModulationSource())) },
+                    Attribute{ "mod-amt", to_string(getModulationAmount()) } },
                   []() {});
 }
 

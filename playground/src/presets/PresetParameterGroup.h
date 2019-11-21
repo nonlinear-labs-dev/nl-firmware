@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AttributesOwner.h"
-
+#include "ParameterId.h"
 #include <memory>
 #include <unordered_map>
 
@@ -22,7 +22,7 @@ class PresetParameterGroup
   ~PresetParameterGroup();
 
   // accessors
-  PresetParameter *findParameterByID(int id) const;
+  PresetParameter *findParameterByID(ParameterId id) const;
 
   void writeDocument(Writer &writer) const;
 
@@ -30,16 +30,16 @@ class PresetParameterGroup
   void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
   void copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other);
 
-  const std::unordered_map<int, ParameterPtr> &getParameters() const
+  const std::map<ParameterId, ParameterPtr> &getParameters() const
   {
     return m_parameters;
   }
 
   // algorithm
-  void writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other, VoiceGroup vg) const;
+  void writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other) const;
 
  protected:
-  std::unordered_map<int, ParameterPtr> m_parameters;
+  std::map<ParameterId, ParameterPtr> m_parameters;
 
   friend class PresetParameterGroupSerializer;
 };

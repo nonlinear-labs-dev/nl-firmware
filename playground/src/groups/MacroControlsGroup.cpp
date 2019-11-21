@@ -13,22 +13,22 @@ MacroControlsGroup::~MacroControlsGroup()
 
 void MacroControlsGroup::init()
 {
-  appendParameter(new MacroControlParameter(this, 243));
-  appendParameter(new MacroControlParameter(this, 244));
-  appendParameter(new MacroControlParameter(this, 245));
-  appendParameter(new MacroControlParameter(this, 246));
+  appendParameter(new MacroControlParameter(this, { 243, getVoiceGroup() }));
+  appendParameter(new MacroControlParameter(this, { 244, getVoiceGroup() }));
+  appendParameter(new MacroControlParameter(this, { 245, getVoiceGroup() }));
+  appendParameter(new MacroControlParameter(this, { 246, getVoiceGroup() }));
 
-  appendParameter(
-      new Parameter(this, 324, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(
-      new Parameter(this, 325, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(
-      new Parameter(this, 326, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(
-      new Parameter(this, 327, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
+  appendParameter(new Parameter(this, { 324, getVoiceGroup() },
+                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
+  appendParameter(new Parameter(this, { 325, getVoiceGroup() },
+                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
+  appendParameter(new Parameter(this, { 326, getVoiceGroup() },
+                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
+  appendParameter(new Parameter(this, { 327, getVoiceGroup() },
+                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
 }
 
-uint16_t MacroControlsGroup::modSrcToParamID(MacroControls src)
+int MacroControlsGroup::modSrcToParamNumber(MacroControls src)
 {
   switch(src)
   {
@@ -49,7 +49,7 @@ uint16_t MacroControlsGroup::modSrcToParamID(MacroControls src)
   }
 }
 
-MacroControls MacroControlsGroup::paramIDToModSrc(uint16_t pid)
+MacroControls MacroControlsGroup::paramIDToModSrc(int pid)
 {
   switch(pid)
   {

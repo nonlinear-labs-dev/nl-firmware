@@ -226,7 +226,7 @@ Parameter *ModulateableParameterSelectLayout2::getCurrentEditParameter() const
     {
       auto src = p->getModulationSource();
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
+      uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
       return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID, vg);
     }
   }

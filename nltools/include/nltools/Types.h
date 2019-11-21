@@ -1,4 +1,5 @@
 #pragma once
+
 #include "nltools/enums/EnumTools.h"
 
 ENUM(SoundType, int8_t, Single, Split, Layer, Invalid);

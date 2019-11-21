@@ -21,10 +21,10 @@ MacroControlMappingGroup::~MacroControlMappingGroup()
 
 void MacroControlMappingGroup::init()
 {
-  auto mc_a = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(243));
-  auto mc_b = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(244));
-  auto mc_c = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(245));
-  auto mc_d = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(246));
+  auto mc_a = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 243, getVoiceGroup() }));
+  auto mc_b = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 244, getVoiceGroup() }));
+  auto mc_c = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 245, getVoiceGroup() }));
+  auto mc_d = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 246, getVoiceGroup() }));
 
   auto pedal1
       = dynamic_cast<PhysicalControlParameter *>(m_hw->getParameterByID(HardwareSourcesGroup::getPedal1ParameterID()));
@@ -43,100 +43,100 @@ void MacroControlMappingGroup::init()
   auto ribbon2 = dynamic_cast<PhysicalControlParameter *>(
       m_hw->getParameterByID(HardwareSourcesGroup::getLowerRibbonParameterID()));
 
-  appendParameter(new ModulationRoutingParameter(this, 255, pedal1, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 255, getVoiceGroup() }, pedal1, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 256, pedal1, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 256, getVoiceGroup() }, pedal1, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 257, pedal1, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 257, getVoiceGroup() }, pedal1, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 258, pedal1, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 258, getVoiceGroup() }, pedal1, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 260, pedal2, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 260, getVoiceGroup() }, pedal2, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 261, pedal2, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 261, getVoiceGroup() }, pedal2, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 262, pedal2, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 262, getVoiceGroup() }, pedal2, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 263, pedal2, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 263, getVoiceGroup() }, pedal2, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 265, pedal3, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 265, getVoiceGroup() }, pedal3, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 266, pedal3, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 266, getVoiceGroup() }, pedal3, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 267, pedal3, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 267, getVoiceGroup() }, pedal3, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 268, pedal3, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 268, getVoiceGroup() }, pedal3, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 270, pedal4, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 270, getVoiceGroup() }, pedal4, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 271, pedal4, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 271, getVoiceGroup() }, pedal4, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 272, pedal4, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 272, getVoiceGroup() }, pedal4, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 273, pedal4, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 273, getVoiceGroup() }, pedal4, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 275, pitchbend, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 275, getVoiceGroup() }, pitchbend, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 276, pitchbend, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 276, getVoiceGroup() }, pitchbend, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 277, pitchbend, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 277, getVoiceGroup() }, pitchbend, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 278, pitchbend, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 278, getVoiceGroup() }, pitchbend, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 280, aftertouch, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 280, getVoiceGroup() }, aftertouch, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 281, aftertouch, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 281, getVoiceGroup() }, aftertouch, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 282, aftertouch, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 282, getVoiceGroup() }, aftertouch, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 283, aftertouch, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 283, getVoiceGroup() }, aftertouch, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 285, ribbon1, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 285, getVoiceGroup() }, ribbon1, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 286, ribbon1, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 286, getVoiceGroup() }, ribbon1, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 287, ribbon1, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 287, getVoiceGroup() }, ribbon1, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 288, ribbon1, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 288, getVoiceGroup() }, ribbon1, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 290, ribbon2, mc_a,
+  appendParameter(new ModulationRoutingParameter(this, { 290, getVoiceGroup() }, ribbon2, mc_a,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 291, ribbon2, mc_b,
+  appendParameter(new ModulationRoutingParameter(this, { 291, getVoiceGroup() }, ribbon2, mc_b,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 292, ribbon2, mc_c,
+  appendParameter(new ModulationRoutingParameter(this, { 292, getVoiceGroup() }, ribbon2, mc_c,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 293, ribbon2, mc_d,
+  appendParameter(new ModulationRoutingParameter(this, { 293, getVoiceGroup() }, ribbon2, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 }
 

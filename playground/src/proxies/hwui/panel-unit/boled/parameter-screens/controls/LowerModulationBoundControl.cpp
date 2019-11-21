@@ -44,7 +44,7 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
   {
     auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
     auto mc = modulatedParam->getModulationSource();
-    auto mcID = MacroControlsGroup::modSrcToParamID(mc);
+    auto mcID = MacroControlsGroup::modSrcToParamNumber(mc);
 
     if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID, vg)))
     {

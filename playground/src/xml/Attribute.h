@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include "ParameterId.h"
 #include <sstream>
 
 namespace attribute_detail
@@ -10,6 +11,11 @@ namespace attribute_detail
     std::stringstream str;
     str << v;
     return str.str();
+  }
+
+  template <> inline ustring toString(const ParameterId &v)
+  {
+    return v.toString();
   }
 
   template <> inline ustring toString(const ustring &v)

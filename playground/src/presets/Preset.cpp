@@ -17,8 +17,8 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_type { SoundType::Single }
-    , m_voiceGroupLabels { { "I", "II" } }
+    , m_type{ SoundType::Single }
+    , m_voiceGroupLabels{ { "I", "II" } }
 {
 }
 
@@ -26,14 +26,14 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_type { other.getType() }
-    , m_voiceGroupLabels { other.m_voiceGroupLabels }
+    , m_type{ other.getType() }
+    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
 {
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, bool copyUUID)
     : super(parent, editBuffer)
-    , m_type { editBuffer.getType() }
+    , m_type{ editBuffer.getType() }
 {
   m_name = editBuffer.getName();
   m_voiceGroupLabels[0] = editBuffer.getVoiceGroupName(VoiceGroup::I);
@@ -166,7 +166,7 @@ void Preset::guessName(UNDO::Transaction *transaction)
   setName(transaction, Application::get().getPresetManager()->createPresetNameBasedOn(currentName));
 }
 
-PresetParameter *Preset::findParameterByID(int id, VoiceGroup vg) const
+PresetParameter *Preset::findParameterByID(ParameterId id, VoiceGroup vg) const
 {
   for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
     if(auto p = g.second->findParameterByID(id))
@@ -352,5 +352,5 @@ void Preset::writeGroups(Writer &writer, const Preset *other) const
 {
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
-      g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first, vg), vg);
+      g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first, vg));
 }

@@ -1,7 +1,7 @@
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include "MonoPriorityParameter.h"
 
-MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, Parameter::ID id)
+MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, ParameterId id)
     : MonoParameter(parent, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 2, 2)
 {
 }
