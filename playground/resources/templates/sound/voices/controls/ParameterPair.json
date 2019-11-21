@@ -37,11 +37,11 @@
       },
       "Left": {
         "Class": "Bar",
-        "Rect": "0, 2, 1, 11"
+        "Rect": "0, 2, 1, 10"
       },
       "Right": {
         "Class": "Bar",
-        "Rect": "91, 2, 1, 11"
+        "Rect": "91, 2, 1, 10"
       },
       "Top": {
         "Class": "Bar",
@@ -87,7 +87,7 @@
         "ControlClasses": "ParameterPairTop"
       },
       "styles": {
-        "Color": "C255",
+        "Color": "C77",
         "HighlightColor": "C255",
         "BackgroundColor": "C179",
         "HighlightBackgroundColor": "C179"
