@@ -343,8 +343,8 @@ namespace nltools
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
     {
       std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 100> unmodulateables;
+      std::array<ParameterGroups::ModulateableParameter, 98> modulateables;
+      std::array<ParameterGroups::UnmodulatebaleParameter, 107> unmodulateables;
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
       ParameterGroups::UnmodulatebaleParameter unisonVoices;

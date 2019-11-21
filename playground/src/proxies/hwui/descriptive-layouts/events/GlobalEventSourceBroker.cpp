@@ -84,9 +84,9 @@ namespace DescriptiveLayouts
     m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
     m_map[EventSources::MonoEnabled] = std::make_unique<MonoEnabledBool>();
 
-    m_map[EventSources::MonoPrioText] = std::make_unique<ParameterValueCurrentVG<12348>>();
-    m_map[EventSources::MonoLegatoText] = std::make_unique<ParameterValueCurrentVG<12346>>();
-    m_map[EventSources::MonoGlideText] = std::make_unique<ParameterValueCurrentVG<12347>>();
+    m_map[EventSources::MonoPrioText] = std::make_unique<ParameterValueCurrentVG<365>>();
+    m_map[EventSources::MonoLegatoText] = std::make_unique<ParameterValueCurrentVG<366>>();
+    m_map[EventSources::MonoGlideText] = std::make_unique<ParameterValueCurrentVG<367>>();
 
     m_map[EventSources::UnisonVoicesText] = std::make_unique<UnisonVoicesText>();
     m_map[EventSources::UnisonDetuneText] = std::make_unique<ParameterValueCurrentVG<250>>();

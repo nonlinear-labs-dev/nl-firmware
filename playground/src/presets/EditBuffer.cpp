@@ -386,7 +386,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
 bool isIDMonoGroup(int id)
 {
-  return id >= 12345 && id <= 12348;
+  return id >= 364 && id <= 365;
 }
 
 Parameter *EditBuffer::getSelected() const
@@ -679,8 +679,6 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
     vgTune->setDefaultFromHwui(transaction);
   }
 
-  copyVoiceGroup(transaction, copyFrom, invert(copyFrom));
-
   undoableSetType(transaction, SoundType::Single);
 }
 
@@ -747,14 +745,14 @@ void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction,
 const SplitPointParameter *EditBuffer::getSplitPoint() const
 {
   if(getType() == SoundType::Split)
-    return dynamic_cast<const SplitPointParameter *>(findParameterByID(10001, VoiceGroup::Global));
+    return dynamic_cast<const SplitPointParameter *>(findParameterByID(356, VoiceGroup::Global));
   return nullptr;
 }
 
 SplitPointParameter *EditBuffer::getSplitPoint()
 {
   if(getType() == SoundType::Split)
-    return dynamic_cast<SplitPointParameter *>(findParameterByID(10001, VoiceGroup::Global));
+    return dynamic_cast<SplitPointParameter *>(findParameterByID(356, VoiceGroup::Global));
   return nullptr;
 }
 

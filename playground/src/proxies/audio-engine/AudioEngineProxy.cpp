@@ -64,6 +64,53 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
       }
     }
   }
+
+  nltools_assertAlways(msg.globalparams.size() == globalParams);
+  nltools_assertAlways(msg.hwsources.size() == hwSource);
+}
+
+template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, size_t &mod)
+{
+  using MockParam = std::pair<int, double>;
+  using MockParams = std::vector<MockParam>;
+  for(auto p :
+      MockParams{ { 328, 0.0 }, { 330, 0.0 }, { 332, 0.0 }, { 334, 0.0 }, { 336, 0.0 }, { 338, 0.0 }, { 340, 0.0 } })
+  {
+    auto &item = msg.unmodulateables[unmod++];
+    item.id = p.first;
+    item.controlPosition = p.second;
+  }
+
+  for(auto p : MockParams{ { 346, 0.0 },
+                           { 348, 0.5 },
+                           { 350, 0.5 },
+                           { 352, 0.5 },
+                           { 354, 0.5 },
+                           { 389, 0.0 },
+                           { 342, 0.0 },
+                           { 344, 0.0 } })
+  {
+    auto &item = msg.modulateables[mod++];
+    item.id = p.first;
+    item.controlPosition = p.second;
+    item.modulationAmount = 0.0;
+    item.mc = MacroControls::NONE;
+  }
+}
+
+template <typename tMsg> bool handleMockModulateable(Parameter *p, tMsg &msg, size_t &modP)
+{
+  auto id = p->getID();
+  if(id == 358 || id == 360 || id == 362 || id == 367)
+  {
+    auto &item = msg.modulateables[modP++];
+    item.id = id;
+    item.controlPosition = p->getControlPositionValue();
+    item.modulationAmount = 0.0;
+    item.mc = MacroControls::NONE;
+    return true;
+  }
+  return false;
 }
 
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
@@ -77,10 +124,22 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
   size_t modP = 0;
   size_t unMod = 0;
 
+  insertMockedParameters(msg, unMod, modP);
+  nltools_assertAlways(unMod == 7);
+  nltools_assertAlways(modP == 8);
+
   for(auto &g : editBuffer->getParameterGroups(VoiceGroup::I))
   {
     for(auto p : g->getParameters())
     {
+#warning "Mock"
+      /*
+      if(handleMockModulateable(p, msg, modP))
+      {
+        continue;
+      }
+       */
+
       if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
         auto &macro = msg.macros[mc++];
@@ -113,6 +172,10 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
     }
   }
 
+  nltools_assertAlways(msg.modulateables.size() == modP + 1);
+  nltools_assertAlways(msg.unmodulateables.size() == unMod + 1);
+  nltools_assertAlways(msg.macros.size() == mc + 1);
+  nltools_assertAlways(msg.hwamounts.size() == modR + 1);
   return msg;
 }
 

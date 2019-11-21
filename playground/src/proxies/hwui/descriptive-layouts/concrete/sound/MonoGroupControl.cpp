@@ -23,10 +23,10 @@ void MonoGroupControl::rebuild()
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  auto monoEnableParam = eb->findParameterByID(12345, vg);
+  auto monoEnableParam = eb->findParameterByID(364, vg);
   auto monoEnable = monoEnableParam->getDisplayString() == "On";
 
-  auto paramid = std::array<int, 4>{ 12345, 12346, 12347, 12348 };
+  auto paramid = std::array<int, 4>{ 364, 366, 367, 365 };
 
   const auto width = 62;
   const auto height = 16;
@@ -39,7 +39,7 @@ void MonoGroupControl::rebuild()
     {
       auto param = eb->findParameterByID(paramid[index++], vg);
 
-      if(paramid[y + x] != 12345)
+      if(paramid[y + x] != 364)
       {
         auto str = param->getShortName() + ": " + param->getDisplayString();
         m_grid[y][x] = addControl(new Label(str, { (x * width) + (x), y * height + (y), width, height }));

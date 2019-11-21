@@ -235,14 +235,14 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
-      eb->undoableSelectParameter(12345);
+      eb->undoableSelectParameter(364);
     });
 
     registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
       auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
 
       if(eb->getType() == SoundType::Split)
-        eb->undoableSelectParameter(10001);
+        eb->undoableSelectParameter(356);
       else
         eb->undoableSelectParameter(358, vg);
     });

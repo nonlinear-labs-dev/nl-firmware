@@ -242,10 +242,10 @@ TEST_CASE("poly groups initialization")
   const auto unisonPhase = editBuffer->findParameterByID(252, VoiceGroup::I)->getControlPositionValue();
   const auto unisonPan = editBuffer->findParameterByID(253, VoiceGroup::I)->getControlPositionValue();
 
-  const auto monoEnable = editBuffer->findParameterByID(12345, VoiceGroup::I)->getControlPositionValue();
-  const auto monoPrio = editBuffer->findParameterByID(12346, VoiceGroup::I)->getControlPositionValue();
-  const auto monoLegato = editBuffer->findParameterByID(12347, VoiceGroup::I)->getControlPositionValue();
-  const auto monoGlide = editBuffer->findParameterByID(12348, VoiceGroup::I)->getControlPositionValue();
+  const auto monoEnable = editBuffer->findParameterByID(364, VoiceGroup::I)->getControlPositionValue();
+  const auto monoPrio = editBuffer->findParameterByID(366, VoiceGroup::I)->getControlPositionValue();
+  const auto monoLegato = editBuffer->findParameterByID(367, VoiceGroup::I)->getControlPositionValue();
+  const auto monoGlide = editBuffer->findParameterByID(365, VoiceGroup::I)->getControlPositionValue();
 
   SECTION("Convert to Layer initializes Parts from VoiceGroup::I ")
   {
@@ -261,10 +261,10 @@ TEST_CASE("poly groups initialization")
       const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
       const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
 
-      const auto vgEnable = editBuffer->findParameterByID(12345, vg)->getControlPositionValue();
-      const auto vgPrio = editBuffer->findParameterByID(12346, vg)->getControlPositionValue();
-      const auto vgLegato = editBuffer->findParameterByID(12347, vg)->getControlPositionValue();
-      const auto vgGlide = editBuffer->findParameterByID(12348, vg)->getControlPositionValue();
+      const auto vgEnable = editBuffer->findParameterByID(364, vg)->getControlPositionValue();
+      const auto vgPrio = editBuffer->findParameterByID(366, vg)->getControlPositionValue();
+      const auto vgLegato = editBuffer->findParameterByID(367, vg)->getControlPositionValue();
+      const auto vgGlide = editBuffer->findParameterByID(365, vg)->getControlPositionValue();
 
       REQUIRE(unisonVoices == vgVoices);
       REQUIRE(unisonDetune == vgDetune);
@@ -292,10 +292,10 @@ TEST_CASE("poly groups initialization")
       const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
       const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
 
-      const auto vgEnable = editBuffer->findParameterByID(12345, vg)->getControlPositionValue();
-      const auto vgPrio = editBuffer->findParameterByID(12346, vg)->getControlPositionValue();
-      const auto vgLegato = editBuffer->findParameterByID(12347, vg)->getControlPositionValue();
-      const auto vgGlide = editBuffer->findParameterByID(12348, vg)->getControlPositionValue();
+      const auto vgEnable = editBuffer->findParameterByID(364, vg)->getControlPositionValue();
+      const auto vgPrio = editBuffer->findParameterByID(366, vg)->getControlPositionValue();
+      const auto vgLegato = editBuffer->findParameterByID(367, vg)->getControlPositionValue();
+      const auto vgGlide = editBuffer->findParameterByID(365, vg)->getControlPositionValue();
 
       REQUIRE(unisonVoices == vgVoices);
       REQUIRE(unisonDetune == vgDetune);

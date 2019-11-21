@@ -30,14 +30,14 @@ namespace DescriptiveLayouts
       if(eb->getType() == SoundType::Split)
       {
         auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        if(auto param = eb->findParameterByID(12345, vg))
+        if(auto param = eb->findParameterByID(364, vg))
         {
           setValue({ param->getDisplayString(), 0 });
         }
       }
       else
       {
-        if(auto param = eb->findParameterByID(12345, VoiceGroup::I))
+        if(auto param = eb->findParameterByID(364, VoiceGroup::I))
           setValue({ param->getDisplayString(), 0 });
       }
     }
@@ -51,12 +51,12 @@ namespace DescriptiveLayouts
       if(eb->getType() == SoundType::Split)
       {
         auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        if(auto param = eb->findParameterByID(12345, vg))
+        if(auto param = eb->findParameterByID(364, vg))
           setValue(param->getDisplayString() == "On");
       }
       else
       {
-        if(auto param = eb->findParameterByID(12345, VoiceGroup::I))
+        if(auto param = eb->findParameterByID(364, VoiceGroup::I))
           setValue(param->getDisplayString() == "On");
       }
     }
