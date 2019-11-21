@@ -25,8 +25,8 @@ void MacroControlMappingGroup::init()
   auto mc_b = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(244));
   auto mc_c = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(245));
   auto mc_d = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(246));
-  auto mc_e = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(1247));
-  auto mc_f = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(1248));
+  auto mc_e = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(369));
+  auto mc_f = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID(370));
 
   auto pedal1
       = dynamic_cast<PhysicalControlParameter *>(m_hw->getParameterByID(HardwareSourcesGroup::getPedal1ParameterID()));
@@ -57,10 +57,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 258, pedal1, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1259, pedal1, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 373, pedal1, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1260, pedal1, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 374, pedal1, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulationRoutingParameter(this, 260, pedal2, mc_a,
@@ -75,10 +75,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 263, pedal2, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1264, pedal2, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 375, pedal2, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1265, pedal2, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 376, pedal2, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulationRoutingParameter(this, 265, pedal3, mc_a,
@@ -93,10 +93,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 268, pedal3, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1269, pedal3, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 377, pedal3, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1270, pedal3, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 378, pedal3, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulationRoutingParameter(this, 270, pedal4, mc_a,
@@ -111,10 +111,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 273, pedal4, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1274, pedal4, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 379, pedal4, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1275, pedal4, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 380, pedal4, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulationRoutingParameter(this, 275, pitchbend, mc_a,
@@ -129,10 +129,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 278, pitchbend, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1279, pitchbend, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 381, pitchbend, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1280, pitchbend, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 382, pitchbend, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulationRoutingParameter(this, 280, aftertouch, mc_a,
@@ -147,10 +147,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 283, aftertouch, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1284, aftertouch, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 383, aftertouch, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1285, aftertouch, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 384, aftertouch, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulationRoutingParameter(this, 285, ribbon1, mc_a,
@@ -165,10 +165,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 288, ribbon1, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1289, ribbon1, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 385, ribbon1, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1290, ribbon1, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 386, ribbon1, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulationRoutingParameter(this, 290, ribbon2, mc_a,
@@ -183,10 +183,10 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, 293, ribbon2, mc_d,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1294, ribbon2, mc_e,
+  appendParameter(new ModulationRoutingParameter(this, 387, ribbon2, mc_e,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulationRoutingParameter(this, 1295, ribbon2, mc_f,
+  appendParameter(new ModulationRoutingParameter(this, 388, ribbon2, mc_f,
                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 }
 

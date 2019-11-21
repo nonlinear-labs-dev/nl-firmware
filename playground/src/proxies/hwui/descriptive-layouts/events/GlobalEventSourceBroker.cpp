@@ -51,10 +51,10 @@ namespace DescriptiveLayouts
     m_map[EventSources::EditBufferMasterVolume] = std::make_unique<ParameterValue<247, VoiceGroup::Global>>();
     m_map[EventSources::EditBufferMasterTune] = std::make_unique<ParameterValue<248, VoiceGroup::Global>>();
 
-    m_map[EventSources::VGIMasterTuneText] = std::make_unique<ParameterValue<10003, VoiceGroup::I>>();
-    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<ParameterValue<10003, VoiceGroup::II>>();
-    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<ParameterValue<10002, VoiceGroup::I>>();
-    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<ParameterValue<10002, VoiceGroup::II>>();
+    m_map[EventSources::VGIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::II>>();
+    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<ParameterValue<358, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<ParameterValue<358, VoiceGroup::II>>();
 
     m_map[EventSources::BooleanTrue] = std::make_unique<BooleanTrue>();
     m_map[EventSources::BooleanFalse] = std::make_unique<BooleanFalse>();

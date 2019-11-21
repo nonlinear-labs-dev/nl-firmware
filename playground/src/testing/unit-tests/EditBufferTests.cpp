@@ -94,7 +94,7 @@ void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Pr
                                              Preset* presetToLoad)
 {
   auto editBuffer = getEditBuffer();
-  auto vgMaster = editBuffer->findParameterByID(10002, tVoiceGroup);
+  auto vgMaster = editBuffer->findParameterByID(358, tVoiceGroup);
   auto globalMaster = editBuffer->findParameterByID(247, VoiceGroup::Global);
 
   REQUIRE(vgMaster != nullptr);
@@ -105,7 +105,7 @@ void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Pr
   //Prepare Split-Preset initialize Master Values
   {
     auto scope = TestHelper::createTestScope();
-    auto presetMaster = presetToLoad->findParameterByID(10002, tVoiceGroup);
+    auto presetMaster = presetToLoad->findParameterByID(358, tVoiceGroup);
     REQUIRE(presetMaster != nullptr);
 
     presetMaster->setValue(scope->getTransaction(), 0.125);
@@ -181,25 +181,25 @@ TEST_CASE("Sound Conversion - Master Volume Parameter")
 
   SECTION("I Split to Single copy Part Master Volume to Global Master Volume")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10002, 247>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 358, 247>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
   SECTION("II Split to Single copy Part Master Volume to Global Master Volume")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10002, 247>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 358, 247>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
   SECTION("I Layer to Single copy Part Master Volume to Global Master Volume")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10002, 247>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 358, 247>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 
   SECTION("II Layer to Single copy Part Master Volume to Global Master Volume")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10002, 247>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 358, 247>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 }
@@ -210,25 +210,25 @@ TEST_CASE("Sound Conversion - Master Tune Parameter")
 
   SECTION("I Split to Single copy Part Tune to Global Master Tune")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10003, 248>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 360, 248>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
   SECTION("II Split to Single copy Part Tune to Global Master Tune")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10003, 248>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 360, 248>(
         &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
   }
 
   SECTION("I Layer to Single copy Part Tune to Global Master Tune")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 10003, 248>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 360, 248>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 
   SECTION("II Layer to Single copy Part Tune to Global Master Tune")
   {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 10003, 248>(
+    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 360, 248>(
         &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 }
@@ -627,9 +627,9 @@ void randomizeRequireChangedAndInitSoundTest(const Preset* preset)
 
     for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      auto vgVolume = eb->findParameterByID(10002, vg);
+      auto vgVolume = eb->findParameterByID(358, vg);
       REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getDefaultValue()));
-      auto vgTune = eb->findParameterByID(10003, vg);
+      auto vgTune = eb->findParameterByID(360, vg);
       REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getDefaultValue()));
     }
   }

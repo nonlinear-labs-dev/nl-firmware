@@ -17,8 +17,8 @@ void MacroControlsGroup::init()
   appendParameter(new MacroControlParameter(this, 244));
   appendParameter(new MacroControlParameter(this, 245));
   appendParameter(new MacroControlParameter(this, 246));
-  appendParameter(new MacroControlParameter(this, 1247));
-  appendParameter(new MacroControlParameter(this, 1248));
+  appendParameter(new MacroControlParameter(this, 369));
+  appendParameter(new MacroControlParameter(this, 371));
 
   appendParameter(
       new Parameter(this, 324, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
@@ -29,9 +29,9 @@ void MacroControlsGroup::init()
   appendParameter(
       new Parameter(this, 327, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
   appendParameter(
-      new Parameter(this, 1328, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
+      new Parameter(this, 370, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
   appendParameter(
-      new Parameter(this, 1329, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
+      new Parameter(this, 372, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
 }
 
 uint16_t MacroControlsGroup::modSrcToParamID(MacroControls src)
@@ -51,10 +51,10 @@ uint16_t MacroControlsGroup::modSrcToParamID(MacroControls src)
       return 246;
 
     case MacroControls::MC5:
-      return 1247;
+      return 369;
 
     case MacroControls::MC6:
-      return 1248;
+      return 371;
 
     default:
       return -1;
@@ -77,10 +77,10 @@ MacroControls MacroControlsGroup::paramIDToModSrc(uint16_t pid)
     case 246:
       return MacroControls::MC4;
 
-    case 1247:
+    case 369:
       return MacroControls::MC5;
 
-    case 1248:
+    case 371:
       return MacroControls::MC6;
 
     default:

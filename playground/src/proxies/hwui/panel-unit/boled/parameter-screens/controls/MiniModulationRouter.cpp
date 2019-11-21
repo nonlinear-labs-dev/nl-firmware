@@ -9,12 +9,15 @@ MiniModulationRouter::MiniModulationRouter(ModulationRoutingParameter *param, co
     : super(rect)
     , m_param(param)
 {
-  Glib::ustring str = "to ";
-  addControl(new LabelRegular8(str + param->getTargetParameter()->getMiniParameterEditorName(),
-                               Rect(0, 1, rect.getWidth(), 11)));
-  addControl(new MiniParameterBarSlider(param, Rect(0, 13, rect.getWidth(), 2)));
 
-  param->getSourceParameter()->onParameterChanged(mem_fun(this, &MiniModulationRouter::onSourceParameterChanged));
+  if(auto targetParam = param->getTargetParameter())
+  {
+    Glib::ustring str = "to ";
+    addControl(new LabelRegular8(str + targetParam->getMiniParameterEditorName(), Rect(0, 1, rect.getWidth(), 11)));
+    addControl(new MiniParameterBarSlider(param, Rect(0, 13, rect.getWidth(), 2)));
+
+    param->getSourceParameter()->onParameterChanged(mem_fun(this, &MiniModulationRouter::onSourceParameterChanged));
+  }
 }
 
 void MiniModulationRouter::onSourceParameterChanged(const Parameter *p)

@@ -244,7 +244,7 @@ namespace DescriptiveLayouts
       if(eb->getType() == SoundType::Split)
         eb->undoableSelectParameter(10001);
       else
-        eb->undoableSelectParameter(10002, vg);
+        eb->undoableSelectParameter(358, vg);
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter(247); });

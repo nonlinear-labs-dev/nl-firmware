@@ -547,7 +547,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
-    for(auto& group : getParameterGroups(vg))
+    for(auto &group : getParameterGroups(vg))
       group->undoableClear(transaction);
 
   auto swap = UNDO::createSwapData(Uuid::init());
@@ -661,8 +661,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   auto masterVolumeParameter = masterGroup->getParameterByID(247);
   auto masterTuneParameter = masterGroup->getParameterByID(248);
 
-  auto originVolume = findParameterByID(10002, copyFrom);
-  auto originTune = findParameterByID(10003, copyFrom);
+  auto originVolume = findParameterByID(358, copyFrom);
+  auto originTune = findParameterByID(360, copyFrom);
 
   auto newVolume = originVolume->getControlPositionValue() + masterVolumeParameter->getControlPositionValue();
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
@@ -672,8 +672,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    auto vgVolume = findParameterByID(10002, vg);
-    auto vgTune = findParameterByID(10003, vg);
+    auto vgVolume = findParameterByID(358, vg);
+    auto vgTune = findParameterByID(360, vg);
 
     vgVolume->setDefaultFromHwui(transaction);
     vgTune->setDefaultFromHwui(transaction);
@@ -770,7 +770,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGro
   auto vgMasterII = getParameterGroupByID("PART", VoiceGroup::II);
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID(ids.first);
     auto mII = vgMasterII->findParameterByID(ids.first);
@@ -803,7 +803,7 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGro
   auto vgMasterII = getParameterGroupByID("PART", VoiceGroup::II);
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID(ids.first);
     auto mII = vgMasterII->findParameterByID(ids.first);

@@ -71,7 +71,7 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
 
   appendGlobalParameterGroup(new GlobalParameterGroups(this));
   appendGlobalParameterGroup(new MasterGroup(this));
-  appendGlobalParameterGroup(new ScaleGroup(this, VoiceGroup::Global));
+  appendGlobalParameterGroup(new ScaleGroup(this));
 
   m_globalIDToParameterMap = getGlobalParametersSortedById();
 }

@@ -28,9 +28,9 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
   clear();
 
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Split)
-    setupMasterParameters({ 10001, 10002, 10003 });
+    setupMasterParameters({ 10001, 358, 360 });
   else
-    setupMasterParameters({ 10002, 10003 });
+    setupMasterParameters({ 358, 360 });
 
   if(getNumChildren() == 0)
   {

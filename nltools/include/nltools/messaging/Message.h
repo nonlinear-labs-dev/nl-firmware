@@ -289,7 +289,16 @@ namespace nltools
       {
       };
 
-      struct MonoParameter : Parameter
+      struct GlobalParameter : Parameter
+      {
+      };
+
+      struct HardwareSourceParameter : Parameter
+      {
+        ReturnMode returnMode = ReturnMode::None;
+      };
+
+      struct HardwareAmountParameter : Parameter
       {
       };
 
@@ -333,20 +342,13 @@ namespace nltools
 
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
     {
-      std::array<ParameterGroups::MacroParameter, 4> macros;
+      std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 123> unmodulateables;
-      std::array<ParameterGroups::MonoParameter, 4> monos;
-
-      std::array<ParameterGroups::PedalParameter, 4> pedals;
-      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
-      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
-      std::array<ParameterGroups::BenderParameter, 1> bender;
-
+      std::array<ParameterGroups::UnmodulatebaleParameter, 100> unmodulateables;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
       ParameterGroups::UnmodulatebaleParameter unisonVoices;
-
-      std::array<ParameterGroups::Parameter, 2> master;
-      std::array<ParameterGroups::Parameter, 12> scale;
+      std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
@@ -354,7 +356,6 @@ namespace nltools
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
-      std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
       std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
@@ -374,7 +375,6 @@ namespace nltools
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
-      std::array<ParameterGroups::MonoParameter, 4> monos;
       std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;

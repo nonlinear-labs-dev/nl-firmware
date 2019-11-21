@@ -13,6 +13,9 @@
 #include <parameters/RibbonParameter.h>
 #include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
+#include <groups/HardwareSourcesGroup.h>
+#include <groups/MasterGroup.h>
+#include <groups/ScaleGroup.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -28,115 +31,86 @@ void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transac
   });
 }
 
-nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
+template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer *editBuffer)
 {
-  nltools::msg::SinglePresetMessage msg;
+  size_t hwSource = 0;
+  size_t globalParams = 0;
 
-  size_t aftertouch = 0;
-  size_t bender = 0;
-  size_t macros = 0;
-  size_t modulateables = 0;
-  size_t pedals = 0;
-  size_t ribbons = 0;
-  size_t unmodulateables = 0;
-  size_t monos = 0;
-  size_t scale = 0;
-  size_t vgMaster = 0;
-
-  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  for(auto &g : editBuffer->getParameterGroups())
+  for(auto &g : editBuffer->getParameterGroups(VoiceGroup::Global))
   {
-    for(auto &p : g->getParameters())
+    for(auto p : g->getParameters())
     {
-      if(auto a = dynamic_cast<AftertouchParameter *>(p))
+      auto isHardwareSource = dynamic_cast<HardwareSourcesGroup *>(p->getParentGroup()) != nullptr;
+      auto isMaster = dynamic_cast<MasterGroup *>(p->getParentGroup()) != nullptr;
+      auto isScale = dynamic_cast<ScaleGroup *>(p->getParentGroup()) != nullptr;
+
+      if(isHardwareSource)
       {
-        auto &t = msg.aftertouch[aftertouch++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        t.returnMode = a->getReturnMode();
-      }
-      else if(auto a = dynamic_cast<PitchbendParameter *>(p))
-      {
-        auto &t = msg.bender[bender++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        t.returnMode = a->getReturnMode();
-      }
-      else if(auto a = dynamic_cast<MacroControlParameter *>(p))
-      {
-        auto &t = msg.macros[macros++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<double>(a->getControlPositionValue());
-      }
-      else if(auto a = dynamic_cast<ModulateableParameter *>(p))
-      {
-        auto &t = msg.modulateables[modulateables++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        t.mc = a->getModulationSource();
-        t.modulationAmount = static_cast<double>(a->getModulationAmount());
-      }
-      else if(auto a = dynamic_cast<PedalParameter *>(p))
-      {
-        auto &t = msg.pedals[pedals++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        t.pedalMode = a->getPedalMode();
-        t.returnMode = a->getReturnMode();
-      }
-      else if(auto a = dynamic_cast<RibbonParameter *>(p))
-      {
-        auto &t = msg.ribbons[ribbons++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        t.ribbonReturnMode = a->getRibbonReturnMode();
-        t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
-      }
-      else if(auto a = dynamic_cast<MonoParameter *>(p))
-      {
-        auto &t = msg.monos[monos++];
-        t.id = p->getID();
-        t.controlPosition = p->getControlPositionValue();
-      }
-      else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
-      {
-        //IGNORE
-        vgMaster++;
-      }
-      else if(auto a = dynamic_cast<Parameter *>(p))
-      {
-        if(a->getID() == 249)
+        auto &pItem = msg.hwsources[hwSource++];
+        pItem.id = p->getID();
+        pItem.controlPosition = p->getControlPositionValue();
+        pItem.locked = p->isLocked();
+
+        if(auto physicalControl = dynamic_cast<PhysicalControlParameter *>(p))
         {
-          auto &t = msg.unisonVoices;
-          t.locked = a->isLocked();
-          t.id = a->getID();
-          t.controlPosition = t.controlPosition;
+          pItem.returnMode = physicalControl->getReturnMode();
         }
-        else
-        {
-          auto &t = msg.unmodulateables[unmodulateables++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        }
+      }
+      else if(isMaster || isScale)
+      {
+        auto &pItem = msg.globalparams[globalParams++];
+        pItem.id = p->getID();
+        pItem.controlPosition = p->getControlPositionValue();
       }
     }
   }
+}
 
-  size_t master = 0;
+nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
+{
+  nltools::msg::SinglePresetMessage msg{};
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  fillMessageWithGlobalParams(msg, editBuffer);
 
-  for(auto &p : editBuffer->getGlobalParameterGroupByID("Master")->getParameters())
+  size_t mc = 0;
+  size_t modR = 0;
+  size_t modP = 0;
+  size_t unMod = 0;
+
+  for(auto &g : editBuffer->getParameterGroups(VoiceGroup::I))
   {
-    auto &t = msg.master[master++];
-    t.id = p->getID();
-    t.controlPosition = p->getControlPositionValue();
-  }
-
-  for(auto &s : editBuffer->getGlobalParameterGroupByID("Scale")->getParameters())
-  {
-    auto &t = msg.scale[scale++];
-    t.id = s->getID();
-    t.controlPosition = s->getControlPositionValue();
+    for(auto p : g->getParameters())
+    {
+      if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
+      {
+        auto &macro = msg.macros[mc++];
+        macro.id = p->getID();
+        macro.controlPosition = p->getControlPositionValue();
+        macro.locked = p->isLocked();
+      }
+      else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
+      {
+        auto &hwAmount = msg.hwamounts[modR++];
+        hwAmount.id = p->getID();
+        hwAmount.controlPosition = p->getControlPositionValue();
+        hwAmount.locked = p->isLocked();
+      }
+      else if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
+      {
+        auto &mod = msg.modulateables[modP++];
+        mod.id = p->getID();
+        mod.controlPosition = modParam->getControlPositionValue();
+        mod.modulationAmount = modParam->getModulationAmount();
+        mod.mc = modParam->getModulationSource();
+      }
+      else
+      {
+        auto &unModulateable = msg.unmodulateables[unMod++];
+        unModulateable.id = p->getID();
+        unModulateable.controlPosition = p->getControlPositionValue();
+        unModulateable.locked = p->isLocked();
+      }
+    }
   }
 
   return msg;
@@ -177,9 +151,6 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
         }
         else if(auto a = dynamic_cast<MonoParameter *>(p))
         {
-          auto &t = msg.monos[index][monos++];
-          t.id = p->getID();
-          t.controlPosition = p->getControlPositionValue();
         }
         else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
         {
@@ -323,9 +294,6 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
         {
           if(index == 0)
           {
-            auto &t = msg.monos[monos++];
-            t.id = p->getID();
-            t.controlPosition = p->getControlPositionValue();
           }
         }
         else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
