@@ -33,24 +33,24 @@ void Engine::PolySoundGenerator::set(PolySignals &_signals, const uint32_t _voic
 
 void Engine::PolySoundGenerator::generate(PolySignals &_signals, const float _feedbackSample)
 {
-  //**************************** Modulation A ******************************//
+  // modulation a
   auto oscSampleA = m_oscA_selfmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_A_PM_Self_Env_A);
   oscSampleA = oscSampleA + m_oscB_crossmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_A_PM_B_Env_B);
   oscSampleA = oscSampleA + m_feedback_phase * _signals.get(C15::Signals::Truepoly_Signals::Osc_A_PM_FB_Env_C);
-  //**************************** Oscillator A ******************************//
-  oscSampleA -= (m_chiA_a1 * m_chiA_stateVar);  // Chirp IIR
+  // oscillator a
+  oscSampleA -= (m_chiA_a1 * m_chiA_stateVar);  // chirp IIR
   oscSampleA *= m_chiA_a0;
   auto tmpVarA = oscSampleA;
-  oscSampleA = (oscSampleA + m_chiA_stateVar) * m_chiA_omega;  // Chirp FIR
+  oscSampleA = (oscSampleA + m_chiA_stateVar) * m_chiA_omega;  // chirp FIR
   m_chiA_stateVar = tmpVarA + NlToolbox::Constants::DNC_const;
   oscSampleA += m_oscA_phase;
-  oscSampleA += _signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Phase) + 0.0f;
-  // NEW Phase Offset (missing: unison phase signal)
-  oscSampleA += (-0.25f);  // Wrap
+  oscSampleA += _signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Phase)
+      + _signals.get(C15::Signals::Truepoly_Signals::Unison_PolyPhase);
+  oscSampleA += (-0.25f);  // wrap
   oscSampleA = keepFractional(oscSampleA);
   for(size_t i = 0; i < m_voices; i++)
   {
-    if(std::abs(m_oscA_phase_stateVar[i] - oscSampleA[i]) > 0.5f)  // Check edge
+    if(std::abs(m_oscA_phase_stateVar[i] - oscSampleA[i]) > 0.5f)  // check edge
     {
       m_OscA_randVal_int[i] = m_OscA_randVal_int[i] * 1103515245 + 12345;
       m_OscA_randVal_float[i] = static_cast<float>(m_OscA_randVal_int[i]) * 4.5657e-10f;
@@ -64,24 +64,24 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const float _fe
   m_oscA_phase += m_oscA_phaseInc;
   m_oscA_phase = keepFractional(m_oscA_phase);
   oscSampleA = m_mute_state_A * sinP3_noWrap(oscSampleA);
-  //**************************** Modulation B ******************************//
+  // modulation b
   auto oscSampleB = m_oscB_selfmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_PM_Self_Env_B);
   oscSampleB = oscSampleB + m_oscA_crossmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_PM_A_Env_A);
   oscSampleB = oscSampleB + m_feedback_phase * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_PM_FB_Env_C);
-  //**************************** Oscillator B ******************************//
-  oscSampleB -= (m_chiB_a1 * m_chiB_stateVar);  // Chirp IIR
+  // oscillator b
+  oscSampleB -= (m_chiB_a1 * m_chiB_stateVar);  // cChirp IIR
   oscSampleB *= m_chiB_a0;
   auto tmpVarB = oscSampleB;
-  oscSampleB = (oscSampleB + m_chiB_stateVar) * m_chiB_omega;  // Chirp FIR
+  oscSampleB = (oscSampleB + m_chiB_stateVar) * m_chiB_omega;  // chirp FIR
   m_chiB_stateVar = tmpVarB + NlToolbox::Constants::DNC_const;
   oscSampleB += m_oscB_phase;
-  oscSampleB += _signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Phase) + 0.0f;
-  // NEW Phase Offset (missing: unison phase signal)
-  oscSampleB += (-0.25f);  // Warp
+  oscSampleB += _signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Phase)
+      + _signals.get(C15::Signals::Truepoly_Signals::Unison_PolyPhase);
+  oscSampleB += (-0.25f);  // wrap
   oscSampleB = keepFractional(oscSampleB);
   for(size_t i = 0; i < m_voices; i++)
   {
-    if(std::abs(m_oscB_phase_stateVar[i] - oscSampleB[i]) > 0.5f)  // Check edge
+    if(std::abs(m_oscB_phase_stateVar[i] - oscSampleB[i]) > 0.5f)  // check edge
     {
       m_OscB_randVal_int[i] = m_OscB_randVal_int[i] * 1103515245 + 12345;
       m_OscB_randVal_float[i] = static_cast<float>(m_OscB_randVal_int[i]) * 4.5657e-10f;
@@ -95,21 +95,21 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const float _fe
   m_oscB_phase += m_oscB_phaseInc;
   m_oscB_phase = keepFractional(m_oscB_phase);
   oscSampleB = m_mute_state_B * sinP3_noWrap(oscSampleB);
-  //******************************* Shaper A *******************************//
+  // shaper a
   auto shaperSampleA = oscSampleA * _signals.get(C15::Signals::Truepoly_Signals::Shp_A_Drive_Env_A);
   auto tmpVarShapeA = shaperSampleA;
   shaperSampleA = sinP3_wrap(shaperSampleA);
   shaperSampleA = threeRanges(shaperSampleA, tmpVarShapeA, _signals.get(C15::Signals::Quasipoly_Signals::Shp_A_Fold));
   auto tmpVarShapeAQ = shaperSampleA * shaperSampleA + (-0.5f);
   shaperSampleA = parAsym(shaperSampleA, tmpVarShapeAQ, _signals.get(C15::Signals::Quasipoly_Signals::Shp_A_Asym));
-  //******************************* Shaper B *******************************//
+  // shaper b
   auto shaperSampleB = oscSampleB * _signals.get(C15::Signals::Truepoly_Signals::Shp_B_Drive_Env_B);
   auto tmpVarShapeB = shaperSampleB;
   shaperSampleB = sinP3_wrap(shaperSampleB);
   shaperSampleB = threeRanges(shaperSampleB, tmpVarShapeB, _signals.get(C15::Signals::Quasipoly_Signals::Shp_B_Fold));
   auto tmpVarShapeBQ = shaperSampleB * shaperSampleB + (-0.5f);
   shaperSampleB = parAsym(shaperSampleB, tmpVarShapeBQ, _signals.get(C15::Signals::Quasipoly_Signals::Shp_B_Asym));
-  //****************************** Crossfades ******************************//
+  // crossfades
   m_oscA_selfmix
       = bipolarCrossFade(oscSampleA, shaperSampleA, _signals.get(C15::Signals::Quasipoly_Signals::Osc_A_PM_Self_Shp));
   m_oscA_crossmix
@@ -119,24 +119,18 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const float _fe
       = bipolarCrossFade(oscSampleB, shaperSampleB, _signals.get(C15::Signals::Quasipoly_Signals::Osc_B_PM_Self_Shp));
   m_oscB_crossmix
       = bipolarCrossFade(oscSampleB, shaperSampleB, _signals.get(C15::Signals::Quasipoly_Signals::Osc_A_PM_B_Shp));
-
   m_out_A = bipolarCrossFade(oscSampleA, shaperSampleA, _signals.get(C15::Signals::Quasipoly_Signals::Shp_A_Mix));
   m_out_B = bipolarCrossFade(oscSampleB, shaperSampleB, _signals.get(C15::Signals::Quasipoly_Signals::Shp_B_Mix));
-
-  //******************* Envelope Influence (Magnitudes) ********************//
+  // env influence (magnitudes)
   m_out_A *= _signals.get(C15::Signals::Truepoly_Signals::Env_A_Mag);
   m_out_B *= _signals.get(C15::Signals::Truepoly_Signals::Env_B_Mag);
-
-  //**************************** Feedback Mix ******************************//
+  // fb mix
   auto tmpVarFBA = _feedbackSample * _signals.get(C15::Signals::Truepoly_Signals::Shp_A_FB_Env_C);
   m_out_A = unipolarCrossFade(m_out_A, tmpVarFBA, _signals.get(C15::Signals::Quasipoly_Signals::Shp_A_FB_Mix));
-
   auto tmpVarFBB = _feedbackSample * _signals.get(C15::Signals::Truepoly_Signals::Shp_B_FB_Env_C);
   m_out_B = unipolarCrossFade(m_out_B, tmpVarFBB, _signals.get(C15::Signals::Quasipoly_Signals::Shp_B_FB_Mix));
-
-  //************************** Ring Modulation *****************************//
+  // ring mod
   auto res = m_out_A * m_out_B;
-
   m_out_A = unipolarCrossFade(m_out_A, res, _signals.get(C15::Signals::Quasipoly_Signals::Shp_A_Ring_Mod));
   m_out_B = unipolarCrossFade(m_out_B, res, _signals.get(C15::Signals::Quasipoly_Signals::Shp_B_Ring_Mod));
 }

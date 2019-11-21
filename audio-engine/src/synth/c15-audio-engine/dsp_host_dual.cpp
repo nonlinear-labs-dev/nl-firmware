@@ -27,13 +27,14 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_time.init(_samplerate);
   m_fade.init(samplerate);
   m_output_mute.init(&m_fade.m_value);
-  // these could also be part of parameter list (later), currently hard-coded
+  // proper time init
   m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
   m_edit_time.m_scaled = scale(m_edit_time.m_scaling, m_edit_time.m_position);
   updateTime(&m_edit_time.m_dx, m_edit_time.m_scaled);
   m_transition_time.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
   m_transition_time.m_scaled = scale(m_transition_time.m_scaling, m_transition_time.m_position);
   updateTime(&m_transition_time.m_dx, m_transition_time.m_scaled);
+  // note: time and reference setting params are currently hard-coded but could also be part of parameter list
   m_reference.init(C15::Properties::SmootherScale::Linear, 80.0f, 400.0f, 0.5f);
   m_reference.m_scaled = scale(m_reference.m_scaling, m_reference.m_position);
   // dsp sections init
@@ -171,7 +172,6 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
   nltools::Log::info("issue: nltools::presetMsg - parameter structure, param ids, unsorted param groups, global group");
   nltools::Log::info("(param_ids: mono_grp, master, voice_grp?, split_point?)");
-  nltools::Log::info("todo: initialization??? (transition times, etc.)");
 #endif
 }
 

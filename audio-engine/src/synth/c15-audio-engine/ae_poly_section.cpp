@@ -243,8 +243,11 @@ void PolySection::postProcess_audio(const uint32_t _voiceId, const float _mute)
                 NlToolbox::Crossfades::unipolarCrossFade(
                     m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig, _voiceId),
                     m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), tmp_env));
-  // todo: provide truepoly unison phase signal (parameter list), remaining audio post processing
-  // todo: remainig audio poly post processing - comb, unison
+  // todo: remainig audio poly post processing - comb
+  // unison (phase)
+  const float phase = m_smoothers.get(C15::Smoothers::Poly_Audio::Unison_Phase)
+      * m_spread.m_phase[m_uVoice][m_unison_index[_voiceId]];
+  m_signals.set(C15::Signals::Truepoly_Signals::Unison_PolyPhase, _voiceId, phase);
 }
 
 void PolySection::postProcess_fast(const uint32_t _voiceId)
