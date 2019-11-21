@@ -67,7 +67,8 @@ void ModuleCaption::updateText(Parameter *newOne)
 
 void ModuleCaption::onSelectionChanged()
 {
-  setDirty();
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+  updateText(selected);
 }
 
 bool ModuleCaption::redraw(FrameBuffer &fb)

@@ -14,7 +14,6 @@
 #include <presets/PresetParameter.h>
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/controls/Button.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <parameters/ModulateableParameter.h>
 
@@ -164,6 +163,10 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
   {
     switch(i)
     {
+      case Buttons::BUTTON_A:
+        Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
+        return true;
+
       case Buttons::BUTTON_D:
         if(m_carousel)
         {

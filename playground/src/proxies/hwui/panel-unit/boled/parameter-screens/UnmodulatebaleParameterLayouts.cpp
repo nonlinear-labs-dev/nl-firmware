@@ -5,6 +5,7 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
+#include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 
 UnmodulateableParameterLayout2::UnmodulateableParameterLayout2()
     : super()
@@ -19,7 +20,7 @@ void UnmodulateableParameterLayout2::init()
 
 void UnmodulateableParameterLayout2::addButtons()
 {
-  addControl(new Button("", Buttons::BUTTON_A));
+  addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("", Buttons::BUTTON_C));
 }
