@@ -58,7 +58,7 @@ void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
 
   const auto vg = getVoiceGroup();
 
-  for(int i : { 12345, 12346, 12347, 12348 })
+  for(int i : { 12345, 12348, 12346, 12347 })
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i, vg);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
