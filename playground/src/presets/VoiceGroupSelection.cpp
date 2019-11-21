@@ -1,4 +1,11 @@
 #include "VoiceGroupSelection.h"
+#include "presets/PresetManager.h"
+#include "presets/EditBuffer.h"
+
+void VoiceGroupSelection::connectToPresetManager(const PresetManager* p)
+{
+  p->getEditBuffer()->onPresetLoaded(sigc::mem_fun(this, &VoiceGroupSelection::resetSelection));
+}
 
 void VoiceGroupSelection::setHWUIEditBufferSelection(VoiceGroup vg)
 {
@@ -6,6 +13,11 @@ void VoiceGroupSelection::setHWUIEditBufferSelection(VoiceGroup vg)
   {
     m_voiceGroupSelectionChanged.send();
   }
+}
+
+void VoiceGroupSelection::resetSelection()
+{
+  setHWUIEditBufferSelection(VoiceGroup::I);
 }
 
 VoiceGroup VoiceGroupSelection::getEditBufferSelection() const

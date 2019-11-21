@@ -15,6 +15,11 @@ namespace TestHelper
     return getPresetManager()->getEditBuffer();
   }
 
+  inline VoiceGroupSelection* getVoiceGroupSelectionObject()
+  {
+    return Application::get().getVoiceGroupSelectionHardwareUI();
+  }
+
   inline std::unique_ptr<UNDO::TransactionCreationScope> createTestScope()
   {
     return std::move(getPresetManager()->getUndoScope().startTestTransaction());

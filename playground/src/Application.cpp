@@ -88,6 +88,8 @@ Application::Application(int numArgs, char **argv)
   m_presetManager->init();
   DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+
+  m_hwuiEditBufferSelection->connectToPresetManager(m_presetManager.get());
   runWatchDog();
 
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);
