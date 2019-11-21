@@ -21,4 +21,12 @@ public class EnumDataModelEntity<T extends Enum<T>> extends DataModelEntity<T> {
 		}
 	}
 
+	public void fromInt(int i) {
+		for (T v : klass.getEnumConstants()) {
+			if (v.ordinal() == i) {
+				setValue(v);
+				return;
+			}
+		}
+	}
 }

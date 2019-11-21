@@ -5,6 +5,10 @@ public class StringDataModelEntity extends DataModelEntity<String> {
 		super("");
 	}
 
+	public StringDataModelEntity(String s) {
+		super(s);
+	}
+
 	@Override
 	public void fromString(String str) {
 		setValue(str);

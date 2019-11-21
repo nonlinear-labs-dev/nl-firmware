@@ -32,9 +32,13 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
     {
       auto button = edit->findButtonForParameter(selectedParameter);
 
-      if(static_cast<int>(button) != -1)
+      if(button != Buttons::INVALID && static_cast<int>(button) != -1)
       {
         setupChildControls(edit, selectedParameter, button);
+      }
+      else
+      {
+        setupChildControlsForParameterWithoutButtonMapping(selectedParameter);
       }
     }
   }
@@ -67,13 +71,15 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
   const int ySpaceing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
-  int yPos = ySpaceing;
-  size_t maxNumParameters = 4;
-  size_t missingParams = maxNumParameters - buttonAssignments.size();
+  auto yPos = ySpaceing;
+  auto maxNumParameters = 4;
+  auto missingParams = maxNumParameters - buttonAssignments.size();
   yPos += missingParams * (miniParamHeight + ySpaceing);
   for(int i : buttonAssignments)
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i);
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    auto param = eb->findParameterByID(i, selectedParameter->getVoiceGroup());
+    nltools_assertAlways(param != nullptr);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr)
     {
@@ -150,4 +156,23 @@ bool ParameterCarousel::containsSelectedParameter() const
     }
   }
   return false;
+}
+
+void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)
+{
+  switch(selectedParameter->getID())
+  {
+    case 247:
+    case 248:
+    case 312:
+      setupChildControls(selectedParameter, { 247, 248, 312 });
+      break;
+
+    case 249:
+    case 250:
+    case 252:
+    case 253:
+      setupChildControls(selectedParameter, { 249, 250, 252, 253 });
+      break;
+  }
 }

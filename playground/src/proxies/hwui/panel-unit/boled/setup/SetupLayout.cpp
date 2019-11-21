@@ -52,6 +52,9 @@
 #include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicationView.h>
 #include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicatorEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingEditor.h>
+#include <proxies/hwui/panel-unit/boled/setup/SettingView.h>
+#include <proxies/hwui/panel-unit/boled/setup/EnumSettingEditor.h>
+#include <proxies/hwui/panel-unit/boled/setup/NumericSettingEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingView.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
@@ -62,6 +65,8 @@
 #include <chrono>
 #include <list>
 #include <memory>
+#include <device-settings/TuneReference.h>
+#include <device-settings/TransitionTime.h>
 #include "UISoftwareVersionEditor.h"
 #include "LayoutModeView.h"
 #include "LayoutModeEditor.h"
@@ -233,6 +238,56 @@ namespace NavTree
     }
   };
 
+  template <typename tSetting> struct SettingItem : EditableLeaf
+  {
+   private:
+    tSetting *getSetting()
+    {
+      return Application::get().getSettings()->getSetting<tSetting>().get();
+    }
+
+   public:
+    SettingItem(InnerNode *parent, const char *name)
+        : EditableLeaf(parent, name)
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SettingView<tSetting>();
+    }
+
+    Control *createEditor() override
+    {
+      return new NumericSettingEditor<tSetting>();
+    }
+  };
+
+  template <typename tSetting> struct EnumSettingItem : EditableLeaf
+  {
+   private:
+    tSetting *getSetting()
+    {
+      return Application::get().getSettings()->getSetting<tSetting>();
+    }
+
+   public:
+    EnumSettingItem(InnerNode *parent, const char *name)
+        : EditableLeaf(parent, name)
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SettingView<tSetting>();
+    }
+
+    Control *createEditor() override
+    {
+      return new EnumSettingEditor<tSetting>();
+    }
+  };
+
   struct PresetGlitchSuppression : EditableLeaf
   {
     PresetGlitchSuppression(InnerNode *parent)
@@ -287,6 +342,8 @@ namespace NavTree
         : InnerNode(parent, "Device Settings")
     {
       children.emplace_back(new EditSmoothingTime(this));
+      children.emplace_back(new SettingItem<TuneReference>(this, "Tune Reference"));
+      children.emplace_back(new SettingItem<TransitionTime>(this, "Transition Time"));
       children.emplace_back(new Velocity(this));
       children.emplace_back(new Aftertouch(this));
       children.emplace_back(new BenderCurveSetting(this));

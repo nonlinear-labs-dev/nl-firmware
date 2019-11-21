@@ -1,4 +1,4 @@
-# pragma once
+#pragma once
 
 /******************************************************************************/
 /** @file       ae_fadepoint.h
@@ -9,42 +9,44 @@
     @todo
 *******************************************************************************/
 
-#include "c15_config.h"
+#include "parameter-db/generated/c15_config.h"
 #include <vector>
 
 enum class FadeEvent
 {
-    None
+  None
 };
 
 class ae_fade_table
 {
-public:
-    FadeEvent m_event;
-    float m_value;
-    ae_fade_table();
-    void init(const float _samplerate);
-    bool enable(const FadeEvent _event, const uint32_t _in_or_out);
-    bool get_state();
-    void render();
-    void stop();
-private:
-    std::vector<float> m_data;
-    uint32_t m_table_index, m_table_offset, m_flush_index;
-    bool m_flush;
+ public:
+  FadeEvent m_event;
+  float m_value;
+  ae_fade_table();
+  void init(const float _samplerate);
+  bool enable(const FadeEvent _event, const uint32_t _in_or_out);
+  bool get_state();
+  void render();
+  void stop();
+
+ private:
+  std::vector<float> m_data;
+  uint32_t m_table_index, m_table_offset, m_flush_index;
+  bool m_flush;
 };
 
 class ae_fader
 {
-public:
-    ae_fader();
-    void init(float *_fade_table);
-    void pick(const uint32_t _index);
-    float get_value();
-    void stop();
-private:
-    float* m_data[3];
-    float m_zero = 0.0f;
-    float m_one = 1.0f;
-    uint32_t m_index, m_current;
+ public:
+  ae_fader();
+  void init(float* _fade_table);
+  void pick(const uint32_t _index);
+  float get_value();
+  void stop();
+
+ private:
+  float* m_data[3];
+  float m_zero = 0.0f;
+  float m_one = 1.0f;
+  uint32_t m_index, m_current;
 };

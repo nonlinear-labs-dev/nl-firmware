@@ -272,7 +272,9 @@ void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
 
 void LPCProxy::sendEditBuffer()
 {
-  DebugLevel::info("send preset to LPC");
+  DebugLevel::info("not send preset to LPC");
+
+  return;
 
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 

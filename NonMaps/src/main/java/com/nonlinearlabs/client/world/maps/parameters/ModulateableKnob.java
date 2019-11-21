@@ -6,9 +6,9 @@ public class ModulateableKnob extends ModulatableParameter {
 
 	public ModulateableKnob(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new ModulationSourceLabel(this));
-		addChild(new KnobLarge(this));
-		addChild(new ValueDisplayLarge(this));
+		addChild(new ModulationSourceLabel(this, getParameterID()));
+		addChild(new KnobLarge(this, getParameterID()));
+		addChild(new ValueDisplayLarge(this, getParameterID()));
 	}
 
 }

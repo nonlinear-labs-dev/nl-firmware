@@ -1,9 +1,13 @@
 {
   "controls": {
     "SplitVoiceGroupII": {
+      "PaddingLeft": {
+        "Class": "Bar",
+        "Rect": "84, 1, 2, 27"
+      },
       "VoiceGroupIdentifier": {
         "Class": "Text",
-        "Rect": "84, 1, 10, 27",
+        "Rect": "86, 1, 8, 27",
         "Tag": "ident"
       },
       "Border": {

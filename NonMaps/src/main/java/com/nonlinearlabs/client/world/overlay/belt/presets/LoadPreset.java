@@ -60,11 +60,11 @@ class LoadPreset extends SVGImage {
 		if (!isSelectedPresetLoaded())
 			return true;
 
-		return EditBufferModel.get().isAnyParamChanged();
+		return EditBufferModel.isAnyParamChanged();
 	}
 
 	protected boolean isSelectedPresetLoaded() {
-		String loadedPresetUUID = EditBufferModel.get().loadedPreset.getValue();
+		String loadedPresetUUID = EditBufferModel.loadedPreset.getValue();
 
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		String b = pm.getSelectedBank();

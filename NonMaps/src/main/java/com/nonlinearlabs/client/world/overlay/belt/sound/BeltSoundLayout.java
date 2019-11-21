@@ -18,7 +18,7 @@ public class BeltSoundLayout extends OverlayLayout {
 		super(belt);
 
 		child = addChild(createLayout(EditBufferModel.SoundType.Single));
-		EditBufferModel.get().soundType.onChange(t -> adaptToSoundType(t));
+		EditBufferModel.soundType.onChange(t -> adaptToSoundType(t));
 
 		/*
 		 * addChild(new InitSoundArea(this)); addChild(randomize = new

@@ -1,0 +1,97 @@
+{
+  "controls": {
+    "SingleSoundBottom": {
+        "Label": {
+            "Class": "Text",
+            "Rect": "1, 0, 50, 13"
+        },
+        "Value": {
+            "Class": "Text",
+            "Rect": "50, 0, 50, 13"
+        },
+        "l1": {
+            "Class": "Bar",
+            "Rect": "1, 12, 1, 1"
+        },
+        "l2": {
+            "Class": "Bar",
+            "Rect": "99, 12, 1, 1"
+        },
+        "rb": {
+            "Class": "Bar",
+            "Rect": "100, 0, 1, 12"
+        },
+        "l": {
+             "Class": "Bar",
+             "Rect": "0, 0, 1, 12"
+        },
+        "b": {
+            "Class": "Bar",
+            "Rect": "2, 13, 97, 1"
+        }
+    },
+    "SingleSoundTop": {
+      "Label": {
+        "Class": "Text",
+        "Rect": "1, 1, 50, 13"
+      },
+      "Value": {
+        "Class": "Text",
+        "Rect": "50, 1, 50, 13"
+      },
+      "T": {
+      "Class": "Bar",
+      "Rect": "2, 0, 97, 1"
+      },
+      "l1": {
+      "Class": "Bar",
+      "Rect": "1, 1, 1, 1"
+      },
+      "l2": {
+        "Class": "Bar",
+        "Rect": "99, 1, 1, 1"
+      },
+      "l3": {
+        "Class": "Bar",
+        "Rect": "0, 2, 1, 13"
+      },
+      "L4": {
+        "Class": "Bar",
+        "Rect": "100, 2, 1, 13"
+      },
+      "b": {
+        "Class": "Bar",
+        "Rect": "0, 14, 101, 1"
+      }
+    }
+  },
+  "styles": {
+    "bottom": {
+        "selector": {
+          "ControlClasses":"SingleSoundBottom"
+        },
+        "styles": {
+            "BackgroundColor": "C77",
+            "Color": "C179"
+        }
+    },
+    "Top": {
+            "selector": {
+              "ControlClasses":"SingleSoundTop"
+            },
+            "styles": {
+                "BackgroundColor": "C77",
+                "Color": "C179"
+            }
+        },
+        "Top-Border": {
+            "selector": {
+            "ControlClasses": "SingleSoundTop",
+            "PrimitiveClasses": "Bar"
+            },
+            "styles": {
+                "Color": "C179"
+            }
+        }
+  }
+}

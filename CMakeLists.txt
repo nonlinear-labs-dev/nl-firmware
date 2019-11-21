@@ -16,6 +16,7 @@ OPTION(BUILD_PLAYGROUND "Enable building of the Playground and NonMaps sub proje
 add_subdirectory(nltools)
 
 IF(BUILD_AUDIOENGINE)
+    add_subdirectory(parameter-db)
     add_subdirectory(audio-engine)
 ENDIF(BUILD_AUDIOENGINE)
 

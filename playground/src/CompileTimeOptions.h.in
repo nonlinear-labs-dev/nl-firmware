@@ -1,0 +1,5 @@
+
+static constexpr const char *getInstallPrefix()
+{
+  return "@CMAKE_INSTALL_PREFIX@";
+}

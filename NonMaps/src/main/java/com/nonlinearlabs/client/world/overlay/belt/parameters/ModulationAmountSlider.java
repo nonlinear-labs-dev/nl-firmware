@@ -2,12 +2,11 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.contextStates.ClipContext;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 
 public class ModulationAmountSlider extends OverlayControl {
@@ -27,31 +26,17 @@ public class ModulationAmountSlider extends OverlayControl {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		try (ClipContext c = new ClipContext(ctx, this)) {
-			Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-			if (p instanceof ModulatableParameter) {
-				ModulatableParameter modulatedParameter = (ModulatableParameter) p;
-				MacroControls modSource = modulatedParameter.getModulationSource();
-
-				if (modSource != MacroControls.NONE)
-					drawSlider(ctx, modulatedParameter, modSource);
-			}
+			ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+			if (p.modulation.isModulated)
+				drawSlider(ctx, p);
 		}
 	}
 
-	protected void drawSlider(Context2d ctx, ModulatableParameter modulatedParameter, MacroControls modSource) {
-		Parameter modulator = getNonMaps().getNonLinearWorld().getParameterEditor().getMacroControls()
-				.getControl(modSource);
-
-		boolean isBiPolar = modulatedParameter.isBiPolar();
-		double modulationAmount = modulatedParameter.getModulationAmount().getQuantizedClipped();
-
-		if (isBiPolar)
-			modulationAmount *= 2;
-
-		double targetValue = modulatedParameter.getValue().getRawValue();
-		double macroControlValue = modulator.getValue().getClippedValue();
-		double modLeft = targetValue - modulationAmount * macroControlValue;
-		double modRight = targetValue + modulationAmount * (1 - macroControlValue);
+	protected void drawSlider(Context2d ctx, ParameterPresenter p) {
+		boolean isBiPolar = p.bipolar;
+		double targetValue = p.controlPosition;
+		double modLeft = p.modulation.modulationRange.left;
+		double modRight = p.modulation.modulationRange.right;
 
 		Rect r = getPixRect().copy();
 		boolean isMCHighlight = isHighlit();
@@ -84,7 +69,7 @@ public class ModulationAmountSlider extends OverlayControl {
 
 		Rect leftRect = r.copy();
 		leftRect.setRight(targetX);
-		RGB fillColor = modLeft < modRight ? darker : lighter;
+		RGB fillColor = p.modulation.modulationAmount > 0 ? darker : lighter;
 		leftRect.fill(ctx, fillColor);
 		drawTopAndBottomContour(ctx, leftRect, fillColor);
 
@@ -93,7 +78,7 @@ public class ModulationAmountSlider extends OverlayControl {
 		rightRect.setLeft(targetX);
 		rightRect.setWidth(oldWidth);
 
-		fillColor = modLeft < modRight ? lighter : darker;
+		fillColor = p.modulation.modulationAmount > 0 ? lighter : darker;
 		rightRect.fill(ctx, fillColor);
 
 		drawTopAndBottomContour(ctx, rightRect, fillColor);

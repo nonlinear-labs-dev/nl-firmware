@@ -13,6 +13,11 @@ class TuneReference : public Setting
   ustring getDisplayString() const override;
   void incDec(int inc, ButtonModifiers mod);
 
+  Glib::ustring getName() const
+  {
+    return "Tune Reference";
+  }
+
  private:
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
 

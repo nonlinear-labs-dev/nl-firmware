@@ -27,6 +27,11 @@ class TransitionTime : public Setting
   ustring getDisplayString() const;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
+  Glib::ustring getName() const
+  {
+    return "Transition Time";
+  }
+
  private:
   void sendToLPC() const override;
 

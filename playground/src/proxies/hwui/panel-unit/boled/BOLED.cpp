@@ -46,6 +46,9 @@ void BOLED::setupFocusAndModeMixed(FocusAndMode focusAndMode)
 {
   try
   {
+    if(focusAndMode.mode == UIMode::Info && focusAndMode.focus == UIFocus::Sound)
+      focusAndMode.mode = UIMode::Select;
+
     reset(DescriptiveLayouts::BoledLayoutFactory::get().instantiate(focusAndMode));
   }
   catch(...)

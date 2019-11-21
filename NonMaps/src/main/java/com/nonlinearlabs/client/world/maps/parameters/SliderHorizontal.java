@@ -8,8 +8,8 @@ public class SliderHorizontal extends Slider {
 
 	private boolean isVisible = false;
 
-	public SliderHorizontal(MapsLayout parent) {
-		super(parent);
+	public SliderHorizontal(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

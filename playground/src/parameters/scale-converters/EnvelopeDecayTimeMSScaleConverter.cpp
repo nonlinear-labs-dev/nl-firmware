@@ -2,7 +2,7 @@
 #include "dimension/TimeDimension.h"
 
 EnvelopeDecayTimeMSScaleConverter::EnvelopeDecayTimeMSScaleConverter()
-    : ScaleConverter(TimeDimension::get())
+    : ScaleConverter(TimeDimension<3>::get())
     , m_tcdRange(0, 16000)
     , m_displayRange(0.0, 16000.0)
 {

@@ -1,10 +1,18 @@
 #pragma once
+
 #include "UnmodulatebaleParameterLayouts.h"
 
-class MonoModeParameterLayout : public UnmodulateableParameterSelectLayout2 {
-public:
+class MonoModeParameterLayout : public UnmodulateableParameterSelectLayout2
+{
+ public:
   MonoModeParameterLayout();
-protected:
+
+ protected:
   Parameter *getCurrentParameter() const override;
+
   Carousel *createCarousel(const Rect &rect) override;
+
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+
+  void init() override;
 };

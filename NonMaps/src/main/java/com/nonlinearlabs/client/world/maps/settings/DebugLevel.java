@@ -2,7 +2,7 @@ package com.nonlinearlabs.client.world.maps.settings;
 
 import java.util.function.Function;
 
-import com.nonlinearlabs.client.dataModel.setup.Setup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.useCases.SystemSettings;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.NonLinearWorld;
@@ -102,10 +102,10 @@ public class DebugLevel extends Setting {
 	DebugLevel(DeveloperSettings parent) {
 		super(parent, "Debug Level", Items.WARNING.toDisplayString());
 
-		Setup.get().systemSettings.debugLevel.onChange(new Function<Setup.DebugLevel, Boolean>() {
+		SetupModel.get().systemSettings.debugLevel.onChange(new Function<SetupModel.DebugLevel, Boolean>() {
 
 			@Override
-			public Boolean apply(Setup.DebugLevel t) {
+			public Boolean apply(SetupModel.DebugLevel t) {
 				setCurrentValue(Items.values()[t.ordinal()].toDisplayString());
 				return true;
 			}
@@ -113,7 +113,7 @@ public class DebugLevel extends Setting {
 	}
 
 	public void setValue(Items value) {
-		SystemSettings.get().setDebugLevel(Setup.DebugLevel.values()[value.ordinal()]);
+		SystemSettings.get().setDebugLevel(SetupModel.DebugLevel.values()[value.ordinal()]);
 	}
 
 	@Override

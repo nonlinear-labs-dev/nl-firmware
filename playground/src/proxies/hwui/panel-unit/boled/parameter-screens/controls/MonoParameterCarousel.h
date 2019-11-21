@@ -8,7 +8,6 @@ public:
   explicit MonoParameterCarousel(const Rect& rect);
   ~MonoParameterCarousel() override;
   void setup(Parameter *selectedParameter) override;
-  static bool monoParametersActive();
   static VoiceGroup getVoiceGroup();
 
   void setupMonoControls(MonoParameter *parameter);

@@ -78,11 +78,18 @@ Application::Application(int numArgs, char **argv)
   Profiler::get().enable(true);
 #endif
 
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_settings->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_hwui->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_http->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_presetManager->init();
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+
+  m_hwuiEditBufferSelection->connectToPresetManager(m_presetManager.get());
   runWatchDog();
 
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);
@@ -118,17 +125,22 @@ Application &Application::get()
   return *theApp;
 }
 
-Glib::ustring Application::getSelfPath() const
-{
-  return getOptions()->getSelfPath();
-}
-
 Glib::ustring Application::getResourcePath() const
 {
-  RefPtr<Gio::File> app = Gio::File::create_for_path(getSelfPath());
-  RefPtr<Gio::File> parent = app->get_parent();
-  Glib::ustring parentPath = parent->get_path();
-  return parentPath + "/resources/";
+#ifdef _DEVELOPMENT_PC
+  return getOptions()->getInstallDir() + "/nonlinear/playground/resources/";
+#else
+  return "/nonlinear/playground/resources/";
+#endif
+}
+
+ustring Application::getNonMapsPath() const
+{
+#ifdef _DEVELOPMENT_PC
+  return getOptions()->getInstallDir() + "/nonlinear/playground/";
+#else
+  return "/nonlinear/playground/";
+#endif
 }
 
 void Application::run()

@@ -2,8 +2,8 @@ package com.nonlinearlabs.client.world.maps.settings;
 
 import java.util.function.Function;
 
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.useCases.SystemSettings;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.ContextMenu;
@@ -16,11 +16,11 @@ class BlockingMainThreadIndication extends Setting {
 	BlockingMainThreadIndication(DeveloperSettings parent) {
 		super(parent, "Indicate blocked UI on Lower Ribbon", "Off");
 
-		Setup.get().systemSettings.indicateBlockedUI.onChange(new Function<Setup.BooleanValues, Boolean>() {
+		SetupModel.get().systemSettings.indicateBlockedUI.onChange(new Function<SetupModel.BooleanValues, Boolean>() {
 
 			@Override
-			public Boolean apply(Setup.BooleanValues t) {
-				setCurrentValue(t == Setup.BooleanValues.on);
+			public Boolean apply(SetupModel.BooleanValues t) {
+				setCurrentValue(t == SetupModel.BooleanValues.on);
 				return true;
 			}
 		});

@@ -103,15 +103,13 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_89, { 204, 207, 206 });
 
   addMapping(Buttons::BUTTON_90, { 238, 240 });
-  addMapping(Buttons::BUTTON_91, { 249, 250, 252, 253 });
+  addMapping(Buttons::BUTTON_91, { 1247 });
 
   addMapping(Buttons::BUTTON_92, { 223 });
   addMapping(Buttons::BUTTON_93, { 209 });
 
   addMapping(Buttons::BUTTON_94, { 241 });
-  addMapping(Buttons::BUTTON_95, { 247, 248, 312 });
-
-  //addMapping(Buttons::INVALID, {12345, 12346, 12347, 12348});
+  addMapping(Buttons::BUTTON_95, { 1248 });
 }
 
 ButtonParameterMapping::~ButtonParameterMapping()

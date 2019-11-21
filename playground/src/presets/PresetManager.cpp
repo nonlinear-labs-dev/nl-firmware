@@ -29,8 +29,11 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent)
     , m_autoLoadThrottler(std::chrono::milliseconds(200))
     , m_saveJob(std::bind(&PresetManager::doSaveTask, this))
 {
+  DebugLevel::error("PRESET MANAGER CONSTRUCTOR", __PRETTY_FUNCTION__, __LINE__);
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_actionManagers.emplace_back(new BankActions(*this));
+  DebugLevel::error(__PRETTY_FUNCTION__, __LINE__);
   m_actionManagers.emplace_back(new EditBufferActions(m_editBuffer.get()));
 }
 

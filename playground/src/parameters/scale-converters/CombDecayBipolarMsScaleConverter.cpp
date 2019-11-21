@@ -2,7 +2,7 @@
 #include "dimension/TimeDimension.h"
 
 CombDecayBipolarMsScaleConverter::CombDecayBipolarMsScaleConverter()
-    : ScaleConverter(TimeDimension::get())
+    : ScaleConverter(TimeDimension<3>::get())
     , m_displayRange(1, 100000)
     , m_tcdRange(-8000, 8000)
 {

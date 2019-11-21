@@ -1,0 +1,79 @@
+#include "playground-helpers.h"
+
+namespace Environment
+{
+  void printStackTrace(int i)
+  {
+    DebugLevel::warning("Crash signal caught!");
+
+    const size_t max_frames = 64;
+    void* addrlist[max_frames + 1];
+
+    // retrieve current stack addresses
+    guint32 addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
+
+    if(addrlen == 0)
+    {
+      DebugLevel::warning("");
+      return;
+    }
+
+    DebugLevel::warning("\n\nThe stack trace:");
+
+    // create readable strings to each frame. __attribute__((no_instrument_function))
+    char** symbollist = backtrace_symbols(addrlist, addrlen);
+
+    // print the stack trace.
+    for(guint32 i = 0; i < addrlen; i++)
+      DebugLevel::warning(symbollist[i]);
+
+    free(symbollist);
+    exit(EXIT_FAILURE);
+  }
+
+  std::string getStackTrace(const std::string& prefix)
+  {
+    std::stringstream str;
+    str << prefix << ":" << std::endl << std::endl;
+
+    const size_t max_frames = 16;
+    void* addrlist[max_frames + 1];
+    guint32 addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
+
+    if(addrlen != 0)
+    {
+      char** symbollist = backtrace_symbols(addrlist, addrlen);
+
+      for(guint32 i = 0; i < addrlen; i++)
+        str << symbollist[i] << std::endl;
+
+      free(symbollist);
+    }
+
+    DebugLevel::error("Collected StackTrace: ", str.str());
+    return str.str();
+  }
+
+  void setupLocale()
+  {
+    const char* desiredLocales[] = { "en_US.utf8@nonlinear", "en_US.utf8" };
+
+    for(const auto desiredLocale : desiredLocales)
+    {
+      if(auto ret = setlocale(LC_ALL, desiredLocale))
+      {
+        if(g_strcmp0(ret, desiredLocale))
+        {
+          DebugLevel::warning("Desired locale was", desiredLocale, ", but current locale is:", ret);
+        }
+        else
+        {
+          DebugLevel::info("Successfully set locale to", desiredLocale);
+          return;
+        }
+      }
+    }
+
+    DebugLevel::error("Could not set locale to any desired");
+  }
+}

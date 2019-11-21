@@ -3,13 +3,10 @@ package com.nonlinearlabs.client.world.maps.parameters.FBMixer;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.DoubleParameterColumn;
-import com.nonlinearlabs.client.world.maps.parameters.KnobSmall;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.SizeLinkedParameterColumn;
-import com.nonlinearlabs.client.world.maps.parameters.SmallParameterName;
-import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
+import com.nonlinearlabs.client.world.maps.parameters.SmallKnobParameter;
 
 class DriveColumn extends DoubleParameterColumn {
 
@@ -35,13 +32,10 @@ class DriveColumn extends DoubleParameterColumn {
 
 	class FoldAndAsymetryColumn extends ParameterColumn {
 
-		private class Fold extends Parameter {
+		private class Fold extends SmallKnobParameter {
 
 			private Fold(MapsLayout parent) {
 				super(parent, 166);
-				addChild(new SmallParameterName(this, getName()));
-				addChild(new KnobSmall(this));
-				addChild(new ValueDisplaySmall(this));
 			}
 
 			@Override
@@ -50,13 +44,10 @@ class DriveColumn extends DoubleParameterColumn {
 			}
 		}
 
-		private class Asym extends Parameter {
+		private class Asym extends SmallKnobParameter {
 
 			private Asym(MapsLayout parent) {
 				super(parent, 167);
-				addChild(new SmallParameterName(this, getName()));
-				addChild(new KnobSmall(this));
-				addChild(new ValueDisplaySmall(this));
 			}
 
 			@Override

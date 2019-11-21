@@ -18,7 +18,7 @@
         "Name": {
           "Class": "WideHighlightLabel",
           "Position": "64, 0",
-          "Events": "EditBufferName => Text[Text]"
+          "Events": "CurrentVoiceGroupLabel => Text[Text]"
         },
         "ButtonA": {
           "Class": "Button",
@@ -30,21 +30,24 @@
           "Position": "BUTTON_B",
           "Init": {
             "Text[Text]": "Params.."
-          }
+          },
+          "Events": "SoundParamsButtonText => Text[Text]"
         },
         "ButtonC": {
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
             "Text[Text]": "Voices.."
-          }
+          },
+          "Events": "SoundVoicesButtonText => Text[Text]"
         },
         "ButtonD": {
           "Class": "Button",
           "Position": "BUTTON_D",
           "Init": {
             "Text[Text]": "Master.."
-          }
+          },
+          "Events": "SoundMasterButtonText => Text[Text]"
         },
         "Left": {
           "Class": "SplitVoiceGroupI",
@@ -77,7 +80,12 @@
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "OpenParamsScreen",
-        "BUTTON_C": "SwitchToVoicesDetail"
+        "BUTTON_C": "SwitchToVoicesDetail",
+        "BUTTON_D": "OpenMasterParameter",
+        "BUTTON_INC": "ToggleVoiceGroup",
+        "ROTARY_PLUS": "ToggleVoiceGroup",
+        "BUTTON_DEC": "ToggleVoiceGroup",
+        "ROTARY_MINUS": "ToggleVoiceGroup"
       }
     }
   }

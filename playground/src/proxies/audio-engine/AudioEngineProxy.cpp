@@ -12,6 +12,7 @@
 #include <parameters/PitchbendParameter.h>
 #include <parameters/RibbonParameter.h>
 #include <parameters/mono-mode-parameters/MonoParameter.h>
+#include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -27,7 +28,7 @@ void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transac
   });
 }
 
-void AudioEngineProxy::sendSingleEditBuffer()
+nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
 {
   nltools::msg::SinglePresetMessage msg;
 
@@ -39,6 +40,8 @@ void AudioEngineProxy::sendSingleEditBuffer()
   size_t ribbons = 0;
   size_t unmodulateables = 0;
   size_t monos = 0;
+  size_t scale = 0;
+  size_t vgMaster = 0;
 
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
@@ -50,35 +53,35 @@ void AudioEngineProxy::sendSingleEditBuffer()
       {
         auto &t = msg.aftertouch[aftertouch++];
         t.id = a->getID();
-        t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.controlPosition = static_cast<double>(a->getControlPositionValue());
         t.returnMode = a->getReturnMode();
       }
       else if(auto a = dynamic_cast<PitchbendParameter *>(p))
       {
         auto &t = msg.bender[bender++];
         t.id = a->getID();
-        t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.controlPosition = static_cast<double>(a->getControlPositionValue());
         t.returnMode = a->getReturnMode();
       }
       else if(auto a = dynamic_cast<MacroControlParameter *>(p))
       {
         auto &t = msg.macros[macros++];
         t.id = a->getID();
-        t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.controlPosition = static_cast<double>(a->getControlPositionValue());
       }
       else if(auto a = dynamic_cast<ModulateableParameter *>(p))
       {
         auto &t = msg.modulateables[modulateables++];
         t.id = a->getID();
-        t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.controlPosition = static_cast<double>(a->getControlPositionValue());
         t.mc = a->getModulationSource();
-        t.modulationAmount = static_cast<float>(a->getModulationAmount());
+        t.modulationAmount = static_cast<double>(a->getModulationAmount());
       }
       else if(auto a = dynamic_cast<PedalParameter *>(p))
       {
         auto &t = msg.pedals[pedals++];
         t.id = a->getID();
-        t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.controlPosition = static_cast<double>(a->getControlPositionValue());
         t.pedalMode = a->getPedalMode();
         t.returnMode = a->getReturnMode();
       }
@@ -86,7 +89,7 @@ void AudioEngineProxy::sendSingleEditBuffer()
       {
         auto &t = msg.ribbons[ribbons++];
         t.id = a->getID();
-        t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        t.controlPosition = static_cast<double>(a->getControlPositionValue());
         t.ribbonReturnMode = a->getRibbonReturnMode();
         t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
       }
@@ -96,84 +99,81 @@ void AudioEngineProxy::sendSingleEditBuffer()
         t.id = p->getID();
         t.controlPosition = p->getControlPositionValue();
       }
+      else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
+      {
+        //IGNORE
+        vgMaster++;
+      }
       else if(auto a = dynamic_cast<Parameter *>(p))
       {
-        auto &t = msg.unmodulateables[unmodulateables++];
-        t.id = a->getID();
-        t.controlPosition = static_cast<float>(a->getControlPositionValue());
+        if(a->getID() == 249)
+        {
+          auto &t = msg.unisonVoices;
+          t.locked = a->isLocked();
+          t.id = a->getID();
+          t.controlPosition = t.controlPosition;
+        }
+        else
+        {
+          auto &t = msg.unmodulateables[unmodulateables++];
+          t.id = a->getID();
+          t.controlPosition = static_cast<double>(a->getControlPositionValue());
+        }
       }
     }
   }
 
-  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  size_t master = 0;
+
+  for(auto &p : editBuffer->getGlobalParameterGroupByID("Master")->getParameters())
+  {
+    auto &t = msg.master[master++];
+    t.id = p->getID();
+    t.controlPosition = p->getControlPositionValue();
+  }
+
+  for(auto &s : editBuffer->getGlobalParameterGroupByID("Scale")->getParameters())
+  {
+    auto &t = msg.scale[scale++];
+    t.id = s->getID();
+    t.controlPosition = s->getControlPositionValue();
+  }
+
+  return msg;
 }
 
-void AudioEngineProxy::sendSplitEditBuffer()
+nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage()
 {
   nltools::msg::SplitPresetMessage msg;
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     const auto index = static_cast<int>(vg);
 
-    size_t aftertouch = 0;
-    size_t bender = 0;
     size_t macros = 0;
     size_t modulateables = 0;
-    size_t pedals = 0;
-    size_t ribbons = 0;
     size_t unmodulateables = 0;
     size_t monos = 0;
-
-    auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    size_t vgmaster = 0;
 
     for(auto &g : editBuffer->getParameterGroups(vg))
     {
       for(auto &p : g->getParameters())
       {
-        if(auto a = dynamic_cast<AftertouchParameter *>(p))
-        {
-          auto &t = msg.aftertouch[index][aftertouch++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.returnMode = a->getReturnMode();
-        }
-        else if(auto a = dynamic_cast<PitchbendParameter *>(p))
-        {
-          auto &t = msg.bender[index][bender++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.returnMode = a->getReturnMode();
-        }
-        else if(auto a = dynamic_cast<MacroControlParameter *>(p))
+        if(auto a = dynamic_cast<MacroControlParameter *>(p))
         {
           auto &t = msg.macros[index][macros++];
           t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
+          t.controlPosition = static_cast<double>(a->getControlPositionValue());
         }
         else if(auto a = dynamic_cast<ModulateableParameter *>(p))
         {
           auto &t = msg.modulateables[index][modulateables++];
           t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
+          t.controlPosition = static_cast<double>(a->getControlPositionValue());
           t.mc = a->getModulationSource();
-          t.modulationAmount = static_cast<float>(a->getModulationAmount());
-        }
-        else if(auto a = dynamic_cast<PedalParameter *>(p))
-        {
-          auto &t = msg.pedals[index][pedals++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.pedalMode = a->getPedalMode();
-          t.returnMode = a->getReturnMode();
-        }
-        else if(auto a = dynamic_cast<RibbonParameter *>(p))
-        {
-          auto &t = msg.ribbons[index][ribbons++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.ribbonReturnMode = a->getRibbonReturnMode();
-          t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
+          t.modulationAmount = static_cast<double>(a->getModulationAmount());
         }
         else if(auto a = dynamic_cast<MonoParameter *>(p))
         {
@@ -181,85 +181,143 @@ void AudioEngineProxy::sendSplitEditBuffer()
           t.id = p->getID();
           t.controlPosition = p->getControlPositionValue();
         }
+        else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
+        {
+          auto &t = msg.vgMaster[index][vgmaster++];
+          t.id = a->getID();
+          t.controlPosition = static_cast<double>(a->getControlPositionValue());
+        }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {
-          auto &t = msg.unmodulateables[index][unmodulateables++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
+          if(a->getID() == 249)
+          {
+            auto &t = msg.unisonVoices.at(index);
+            t.locked = a->isLocked();
+            t.id = a->getID();
+            t.controlPosition = t.controlPosition;
+          }
+          else
+          {
+            auto &t = msg.unmodulateables[index][unmodulateables++];
+            t.id = a->getID();
+            t.controlPosition = static_cast<double>(a->getControlPositionValue());
+            t.locked = a->isLocked();
+          }
         }
       }
     }
   }
 
-  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  size_t master = 0;
+  if(auto g = editBuffer->getParameterGroupByID("Master", VoiceGroup::Global))
+  {
+    for(auto &p : g->getParameters())
+    {
+      auto &t = msg.master[master++];
+      t.id = p->getID();
+      t.controlPosition = p->getControlPositionValue();
+      t.locked = p->isLocked();
+    }
+  }
+
+  size_t scale = 0;
+  if(auto g = editBuffer->getParameterGroupByID("Scale", VoiceGroup::Global))
+  {
+    for(auto &p : g->getParameters())
+    {
+      auto &t = msg.scale[scale++];
+      t.id = p->getID();
+      t.controlPosition = p->getControlPositionValue();
+      t.locked = p->isLocked();
+    }
+  }
+
+  size_t pedal = 0;
+  size_t ribbons = 0;
+  size_t aftertouch = 0;
+  size_t bender = 0;
+  if(auto g = editBuffer->getParameterGroupByID("CS", VoiceGroup::Global))
+  {
+    for(auto &p : g->getParameters())
+    {
+      if(auto pedalParam = dynamic_cast<const PedalParameter *>(p))
+      {
+        auto &t = msg.pedals.at(pedal++);
+        t.controlPosition = pedalParam->getControlPositionValue();
+        t.id = pedalParam->getID();
+        t.returnMode = pedalParam->getReturnMode();
+        t.pedalMode = pedalParam->getPedalMode();
+        t.locked = pedalParam->isLocked();
+      }
+      else if(auto ribbonParam = dynamic_cast<const RibbonParameter *>(p))
+      {
+        auto &t = msg.ribbons.at(ribbons++);
+        t.id = ribbonParam->getID();
+        t.controlPosition = ribbonParam->getControlPositionValue();
+        t.locked = ribbonParam->isLocked();
+        t.ribbonReturnMode = ribbonParam->getRibbonReturnMode();
+        t.ribbonTouchBehaviour = ribbonParam->getRibbonTouchBehaviour();
+      }
+      else if(auto afterTouchParameter = dynamic_cast<const AftertouchParameter *>(p))
+      {
+        auto &t = msg.aftertouch.at(aftertouch++);
+        t.id = afterTouchParameter->getID();
+        t.controlPosition = afterTouchParameter->getControlPositionValue();
+        t.locked = afterTouchParameter->isLocked();
+        t.returnMode = afterTouchParameter->getReturnMode();
+      }
+      else if(auto pitchBendParameter = dynamic_cast<PitchbendParameter *>(p))
+      {
+        auto &t = msg.bender.at(bender++);
+        t.id = pitchBendParameter->getID();
+        t.controlPosition = pitchBendParameter->getControlPositionValue();
+        t.returnMode = pitchBendParameter->getReturnMode();
+      }
+    }
+  }
+
+  if(auto sp = editBuffer->getSplitPoint())
+  {
+    auto &t = msg.splitpoint;
+    t.id = sp->getID();
+    t.controlPosition = sp->getControlPositionValue();
+  }
+
+  return msg;
 }
 
-void AudioEngineProxy::sendLayerEditBuffer()
+nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage()
 {
   nltools::msg::LayerPresetMessage msg;
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     const auto index = static_cast<int>(vg);
 
-    size_t aftertouch = 0;
-    size_t bender = 0;
     size_t macros = 0;
     size_t modulateables = 0;
-    size_t pedals = 0;
-    size_t ribbons = 0;
     size_t unmodulateables = 0;
     size_t monos = 0;
-
-    auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    size_t vgmaster = 0;
 
     for(auto &g : editBuffer->getParameterGroups(vg))
     {
       for(auto &p : g->getParameters())
       {
-        if(auto a = dynamic_cast<AftertouchParameter *>(p))
-        {
-          auto &t = msg.aftertouch[index][aftertouch++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.returnMode = a->getReturnMode();
-        }
-        else if(auto a = dynamic_cast<PitchbendParameter *>(p))
-        {
-          auto &t = msg.bender[index][bender++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.returnMode = a->getReturnMode();
-        }
-        else if(auto a = dynamic_cast<MacroControlParameter *>(p))
+        if(auto a = dynamic_cast<MacroControlParameter *>(p))
         {
           auto &t = msg.macros[index][macros++];
           t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
+          t.controlPosition = a->getControlPositionValue();
         }
         else if(auto a = dynamic_cast<ModulateableParameter *>(p))
         {
           auto &t = msg.modulateables[index][modulateables++];
           t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
+          t.controlPosition = a->getControlPositionValue();
           t.mc = a->getModulationSource();
-          t.modulationAmount = static_cast<float>(a->getModulationAmount());
-        }
-        else if(auto a = dynamic_cast<PedalParameter *>(p))
-        {
-          auto &t = msg.pedals[index][pedals++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.pedalMode = a->getPedalMode();
-          t.returnMode = a->getReturnMode();
-        }
-        else if(auto a = dynamic_cast<RibbonParameter *>(p))
-        {
-          auto &t = msg.ribbons[index][ribbons++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
-          t.ribbonReturnMode = a->getRibbonReturnMode();
-          t.ribbonTouchBehaviour = a->getRibbonTouchBehaviour();
+          t.modulationAmount = a->getModulationAmount();
         }
         else if(auto a = dynamic_cast<MonoParameter *>(p))
         {
@@ -270,17 +328,101 @@ void AudioEngineProxy::sendLayerEditBuffer()
             t.controlPosition = p->getControlPositionValue();
           }
         }
+        else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
+        {
+          auto &t = msg.vgMaster[index][vgmaster++];
+          t.id = a->getID();
+          t.controlPosition = a->getControlPositionValue();
+        }
         else if(auto a = dynamic_cast<Parameter *>(p))
         {
-          auto &t = msg.unmodulateables[index][unmodulateables++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<float>(a->getControlPositionValue());
+          if(a->getID() == 249)
+          {
+            auto &t = msg.unisonVoices.at(index);
+            t.locked = a->isLocked();
+            t.id = a->getID();
+            t.controlPosition = t.controlPosition;
+          }
+          else
+          {
+            auto &t = msg.unmodulateables[index][unmodulateables++];
+            t.id = a->getID();
+            t.controlPosition = static_cast<double>(a->getControlPositionValue());
+            t.locked = a->isLocked();
+          }
         }
       }
     }
   }
 
-  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  size_t master = 0;
+  if(auto g = editBuffer->getParameterGroupByID("Master", VoiceGroup::Global))
+  {
+    for(auto &p : g->getParameters())
+    {
+      auto &t = msg.master[master++];
+      t.id = p->getID();
+      t.controlPosition = p->getControlPositionValue();
+    }
+  }
+
+  size_t scale = 0;
+  if(auto g = editBuffer->getParameterGroupByID("Scale", VoiceGroup::Global))
+  {
+    for(auto &p : g->getParameters())
+    {
+      auto &t = msg.scale[scale++];
+      t.id = p->getID();
+      t.controlPosition = p->getControlPositionValue();
+    }
+  }
+
+  size_t aftertouch = 0;
+  size_t pedal = 0;
+  size_t bender = 0;
+  size_t ribbons = 0;
+
+  if(auto g = editBuffer->getParameterGroupByID("CS", VoiceGroup::Global))
+  {
+    for(auto &p : g->getParameters())
+    {
+      if(auto pedalParam = dynamic_cast<const PedalParameter *>(p))
+      {
+        auto &t = msg.pedals.at(pedal++);
+        t.controlPosition = pedalParam->getControlPositionValue();
+        t.id = pedalParam->getID();
+        t.returnMode = pedalParam->getReturnMode();
+        t.pedalMode = pedalParam->getPedalMode();
+        t.locked = pedalParam->isLocked();
+      }
+      else if(auto ribbonParam = dynamic_cast<const RibbonParameter *>(p))
+      {
+        auto &t = msg.ribbons.at(ribbons++);
+        t.id = ribbonParam->getID();
+        t.controlPosition = ribbonParam->getControlPositionValue();
+        t.locked = ribbonParam->isLocked();
+        t.ribbonReturnMode = ribbonParam->getRibbonReturnMode();
+        t.ribbonTouchBehaviour = ribbonParam->getRibbonTouchBehaviour();
+      }
+      else if(auto afterTouchParameter = dynamic_cast<const AftertouchParameter *>(p))
+      {
+        auto &t = msg.aftertouch.at(aftertouch++);
+        t.id = afterTouchParameter->getID();
+        t.controlPosition = afterTouchParameter->getControlPositionValue();
+        t.locked = afterTouchParameter->isLocked();
+        t.returnMode = afterTouchParameter->getReturnMode();
+      }
+      else if(auto pitchBendParameter = dynamic_cast<PitchbendParameter *>(p))
+      {
+        auto &t = msg.bender.at(bender++);
+        t.id = pitchBendParameter->getID();
+        t.controlPosition = pitchBendParameter->getControlPositionValue();
+        t.returnMode = pitchBendParameter->getReturnMode();
+      }
+    }
+  }
+
+  return msg;
 }
 
 void AudioEngineProxy::sendEditBuffer()
@@ -289,13 +431,13 @@ void AudioEngineProxy::sendEditBuffer()
   switch(eb->getType())
   {
     case SoundType::Single:
-      sendSingleEditBuffer();
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSingleEditBufferMessage());
       break;
     case SoundType::Split:
-      sendSplitEditBuffer();
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSplitEditBufferMessage());
       break;
     case SoundType::Layer:
-      sendLayerEditBuffer();
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage());
       break;
     default:
       return;

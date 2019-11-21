@@ -1,6 +1,8 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
@@ -9,71 +11,47 @@ import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 
 public class EditBufferModel {
 
-	private static EditBufferModel theInstance = new EditBufferModel();
-	private static ParameterFactory factory = new ParameterFactory();
-
-	public enum Color {
+	public static enum Color {
 		green, blue, yellow, orange, purple, red, none;
 	}
 
-	public enum SoundType {
+	public static enum SoundType {
 		Single, Split, Layer
 	}
 
-	public enum VoiceGroup {
+	public static enum VoiceGroup {
 		I, II
 	}
 
-	private HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
-	private HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
+	private static HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
+	private static HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
+	private static ArrayList<ModulateableParameterModel> modulateableParametersCache = new ArrayList<ModulateableParameterModel>();
 
-	public IntegerDataModelEntity selectedParameter = new IntegerDataModelEntity();
-	public StringDataModelEntity loadedPreset = new StringDataModelEntity();
-	public StringDataModelEntity loadedPresetName = new StringDataModelEntity();
-	public StringDataModelEntity loadedPresetBankName = new StringDataModelEntity();
-	public BooleanDataModelEntity isZombie = new BooleanDataModelEntity();
-	public BooleanDataModelEntity isModified = new BooleanDataModelEntity();
-	public BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
+	public static IntegerDataModelEntity selectedParameter = new IntegerDataModelEntity();
+	public static StringDataModelEntity loadedPreset = new StringDataModelEntity();
+	public static StringDataModelEntity loadedPresetName = new StringDataModelEntity();
+	public static StringDataModelEntity loadedPresetBankName = new StringDataModelEntity();
+	public static BooleanDataModelEntity isZombie = new BooleanDataModelEntity();
+	public static BooleanDataModelEntity isModified = new BooleanDataModelEntity();
+	public static BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
 
-	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
-	public EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
+	public static EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
+	public static EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
 			SoundType.Split);
-	public StringDataModelEntity comment = new StringDataModelEntity();
-	public StringDataModelEntity deviceName = new StringDataModelEntity();
-	public DateDataModelEntity storeTime = new DateDataModelEntity();
+	public static StringDataModelEntity comment = new StringDataModelEntity();
+	public static StringDataModelEntity deviceName = new StringDataModelEntity();
+	public static DateDataModelEntity storeTime = new DateDataModelEntity();
 
 	// dual voice mock
 	// TODO
-	public StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity();
-	public StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity();
+	public static StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity("Chili");
+	public static StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity("Jalapeño");
 
-	static public EditBufferModel get() {
-		return theInstance;
-	}
-
-	private EditBufferModel() {
-		// mock
-		loadedPresetInVG1.setValue("Chili");
-		loadedPresetInVG2.setValue("Jalapeño");
-	}
-
-	@Override
-	public String toString() {
-		String ret = "";
-		ret += "Selected Parameter: " + selectedParameter.getValue().toString() + "\n";
-		ret += "Loaded Preset: " + loadedPreset.getValue() + "\n";
-		ret += "Loaded Preset Name: " + loadedPresetName.getValue() + "\n";
-		ret += "Loaded Preset Bank Name: " + loadedPresetBankName.getValue() + "\n";
-		ret += "Is Zombie: " + isZombie.getValue().toString() + "\n";
-		ret += "Is Modified: " + isModified.getValue().toString() + "\n";
-		ret += "Is Changed: " + isChanged.getValue().toString() + "\n";
-		return ret;
-	}
-
-	public ParameterGroupModel getGroup(String id) {
+	public static ParameterGroupModel getGroup(String id) {
 		ParameterGroupModel g = parameterGroups.get(id);
 
 		if (g == null) {
@@ -84,7 +62,7 @@ public class EditBufferModel {
 		return g;
 	}
 
-	public BasicParameterModel findParameter(int id) {
+	public static BasicParameterModel findParameter(int id) {
 		BasicParameterModel p = parameters.get(id);
 
 		if (p == null)
@@ -93,24 +71,28 @@ public class EditBufferModel {
 		return p;
 	}
 
-	public BasicParameterModel getSelectedParameter() {
+	public static BasicParameterModel getSelectedParameter() {
 		return parameters.get(selectedParameter.getValue());
 	}
 
-	public BasicParameterModel addParameter(int id) {
-		BasicParameterModel p = factory.create(id);
+	public static BasicParameterModel addParameter(int id) {
+		BasicParameterModel p = ParameterFactory.create(id);
 
-		if (p != null)
+		if (p != null) {
 			parameters.put(id, p);
+
+			if (p instanceof ModulateableParameterModel)
+				modulateableParametersCache.add((ModulateableParameterModel) p);
+		}
 
 		return p;
 	}
 
-	public void onParameterChange(int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
+	public static void onParameterChange(int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
 		findParameter(parameterId).value.onChange(cb);
 	}
 
-	public boolean isAnyParamChanged() {
+	public static boolean isAnyParamChanged() {
 		for (BasicParameterModel param : parameters.values()) {
 			if (param.isChanged())
 				return true;
@@ -118,7 +100,7 @@ public class EditBufferModel {
 		return false;
 	}
 
-	public String getPresetNameOfVoiceGroup(VoiceGroup group) {
+	public static String getPresetNameOfVoiceGroup(VoiceGroup group) {
 		switch (group) {
 		case I:
 			return loadedPresetInVG1.getValue();
@@ -129,4 +111,11 @@ public class EditBufferModel {
 		return "";
 	}
 
+	public static MacroControlParameterModel findParameter(ModSource value) {
+		return (MacroControlParameterModel) findParameter(value.toParameterId());
+	}
+
+	public static List<ModulateableParameterModel> getAllModulateableParameters() {
+		return modulateableParametersCache;
+	}
 }

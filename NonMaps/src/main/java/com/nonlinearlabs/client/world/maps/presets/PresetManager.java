@@ -14,7 +14,7 @@ import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IPreset;
 import com.nonlinearlabs.client.world.NonLinearWorld;
@@ -26,7 +26,6 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.NonRect;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape;
 import com.nonlinearlabs.client.world.maps.presets.bank.Updater;
@@ -567,7 +566,7 @@ public class PresetManager extends MapsLayout {
 
 	public void handleUpKey() {
 		if (getMultiSelection() == null) {
-			selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
+			selectPreviousPreset();
 		} else {
 			getMultiSelection().handleUpKey();
 		}
@@ -575,7 +574,7 @@ public class PresetManager extends MapsLayout {
 
 	private void handleDownKey() {
 		if (getMultiSelection() == null) {
-			selectNextPreset(Initiator.EXPLICIT_USER_ACTION);
+			selectNextPreset();
 		} else {
 			getMultiSelection().handleDownKey();
 		}
@@ -634,7 +633,7 @@ public class PresetManager extends MapsLayout {
 		return this;
 	}
 
-	public void selectPreviousPreset(Initiator initiator) {
+	public void selectPreviousPreset() {
 		if (isInStoreSelectMode()) {
 			getStoreSelectMode().selectPreviousPreset();
 			return;
@@ -642,10 +641,10 @@ public class PresetManager extends MapsLayout {
 
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			b.getPresetList().selectPrev(initiator);
+			b.getPresetList().selectPrev();
 	}
 
-	public void selectNextPreset(Initiator initiator) {
+	public void selectNextPreset() {
 		if (isInStoreSelectMode()) {
 			getStoreSelectMode().selectNextPreset();
 			return;
@@ -653,7 +652,7 @@ public class PresetManager extends MapsLayout {
 
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
-			b.getPresetList().selectNext(initiator);
+			b.getPresetList().selectNext();
 	}
 
 	public boolean hasSelectedBank() {

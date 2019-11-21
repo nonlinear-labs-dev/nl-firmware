@@ -4,8 +4,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class NumericalControlSmall extends NumericalControlLarge {
 
-	public NumericalControlSmall(MapsLayout parent) {
-		super(parent);
+	public NumericalControlSmall(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

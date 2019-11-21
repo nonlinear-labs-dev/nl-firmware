@@ -2,6 +2,7 @@
 
 #include "Messaging.h"
 #include <nltools/Types.h>
+#include <nltools/Testing.h>
 #include <cstring>
 
 namespace nltools
@@ -17,6 +18,69 @@ namespace nltools
 
     using tID = int;
     using tControlPosition = double;
+
+    namespace Setting
+    {
+      struct NoteShiftMessage : Message<MessageType::NoteShiftSetting>
+      {
+        NoteShiftMessage()
+            : m_shift{ 0 }
+        {
+        }
+
+        NoteShiftMessage(int offset)
+            : m_shift{ offset }
+        {
+        }
+
+        int m_shift{};
+      };
+
+      struct PresetGlitchMessage : Message<MessageType::PresetGlitchSetting>
+      {
+        PresetGlitchMessage()
+            : m_enabled{ false }
+        {
+        }
+
+        PresetGlitchMessage(bool enabled)
+            : m_enabled{ enabled }
+        {
+        }
+
+        bool m_enabled{};
+      };
+
+      struct TransitionTimeMessage : Message<MessageType::TransitionTimeSetting>
+      {
+        TransitionTimeMessage()
+            : m_value{ 0.0 }
+        {
+        }
+
+        TransitionTimeMessage(float value)
+            : m_value{ value }
+        {
+        }
+
+        float m_value{};
+      };
+
+      struct EditSmoothingTimeMessage : Message<MessageType::EditSmoothingTimeSetting>
+      {
+        EditSmoothingTimeMessage()
+            : m_time{ 0 }
+        {
+        }
+
+        EditSmoothingTimeMessage(float time)
+            : m_time{ time }
+        {
+        }
+
+        float m_time{};
+      };
+    }
 
     struct HWSourceChangedMessage : Message<MessageType::HWSourceParameter>
     {
@@ -57,12 +121,11 @@ namespace nltools
 
     struct MacroControlChangedMessage : Message<MessageType::MacroControlParameter>
     {
-      MacroControlChangedMessage(tID id = 0, tControlPosition pos = 0.0, tControlPosition time = 0.0,
-                                 bool locked = false, VoiceGroup vg = VoiceGroup::I)
+      MacroControlChangedMessage(tID id = 0, tControlPosition pos = 0.0, bool locked = false,
+                                 VoiceGroup vg = VoiceGroup::I)
           : lock{ locked }
           , parameterId{ id }
           , controlPosition{ pos }
-          , smoothingTime{ time }
           , voiceGroup{ vg }
       {
       }
@@ -70,7 +133,6 @@ namespace nltools
       bool lock;
       tID parameterId;
       tControlPosition controlPosition;
-      tControlPosition smoothingTime;
 
       VoiceGroup voiceGroup;
     };
@@ -161,20 +223,20 @@ namespace nltools
     namespace detail
     {
       // default (de)serialization for messages, may be specialized for more compilcated types:
-      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage &s)
+      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage& s)
       {
         LPCMessage ret;
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(s->get_data(numBytes));
+        auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
         ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
         return ret;
       }
 
-      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage &msg)
+      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage& msg)
       {
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(msg.message->get_data(numBytes));
-        auto scratch = reinterpret_cast<uint16_t *>(g_malloc(numBytes + 2));
+        auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
+        auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
         scratch[0] = static_cast<uint16_t>(MessageType::LPC);
         std::memcpy(&scratch[1], data, numBytes);
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
@@ -186,30 +248,31 @@ namespace nltools
     {
       struct Parameter
       {
-        int32_t id;
-        float controlPosition = 0;
+        uint16_t id{};
+        double controlPosition = 0;
+        bool locked = false;
       };
 
       struct RibbonParameter : Parameter
       {
-        RibbonTouchBehaviour ribbonTouchBehaviour;
-        RibbonReturnMode ribbonReturnMode;
+        RibbonTouchBehaviour ribbonTouchBehaviour{};
+        RibbonReturnMode ribbonReturnMode{};
       };
 
       struct PedalParameter : Parameter
       {
-        PedalModes pedalMode;
-        ReturnMode returnMode;
+        PedalModes pedalMode{};
+        ReturnMode returnMode{};
       };
 
       struct AftertouchParameter : Parameter
       {
-        ReturnMode returnMode;
+        ReturnMode returnMode{};
       };
 
       struct BenderParameter : Parameter
       {
-        ReturnMode returnMode;
+        ReturnMode returnMode{};
       };
 
       struct MacroParameter : Parameter
@@ -219,7 +282,7 @@ namespace nltools
       struct ModulateableParameter : Parameter
       {
         MacroControls mc = MacroControls::NONE;
-        float modulationAmount = 0;
+        double modulationAmount = 0;
       };
 
       struct UnmodulatebaleParameter : Parameter
@@ -229,42 +292,100 @@ namespace nltools
       struct MonoParameter : Parameter
       {
       };
+
+      struct SplitPoint : Parameter
+      {
+      };
+
+      inline bool operator==(const Parameter& lhs, const Parameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition;
+      }
+
+      inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.mc == rhs.mc
+            && lhs.modulationAmount == rhs.modulationAmount;
+      }
+
+      inline bool operator==(const AftertouchParameter& lhs, const AftertouchParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.returnMode == rhs.returnMode;
+      }
+
+      inline bool operator==(const BenderParameter& lhs, const BenderParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.returnMode == rhs.returnMode;
+      }
+
+      inline bool operator==(const PedalParameter& lhs, const PedalParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.pedalMode == rhs.pedalMode
+            && lhs.returnMode == rhs.returnMode;
+      }
+
+      inline bool operator==(const RibbonParameter& lhs, const RibbonParameter& rhs)
+      {
+        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition
+            && lhs.ribbonTouchBehaviour == rhs.ribbonTouchBehaviour && lhs.ribbonReturnMode == rhs.ribbonReturnMode;
+      }
     }
 
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
     {
+      std::array<ParameterGroups::MacroParameter, 4> macros;
+      std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
+      std::array<ParameterGroups::UnmodulatebaleParameter, 123> unmodulateables;
+      std::array<ParameterGroups::MonoParameter, 4> monos;
+
       std::array<ParameterGroups::PedalParameter, 4> pedals;
       std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
       std::array<ParameterGroups::RibbonParameter, 2> ribbons;
       std::array<ParameterGroups::BenderParameter, 1> bender;
-      std::array<ParameterGroups::MacroParameter, 4> macros;
-      std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 138> unmodulateables;
-      std::array<ParameterGroups::MonoParameter, 4> monos;
+
+      ParameterGroups::UnmodulatebaleParameter unisonVoices;
+
+      std::array<ParameterGroups::Parameter, 2> master;
+      std::array<ParameterGroups::Parameter, 12> scale;
     };
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
     {
-      std::array<std::array<ParameterGroups::PedalParameter, 4>, 2> pedals;
-      std::array<std::array<ParameterGroups::AftertouchParameter, 1>, 2> aftertouch;
-      std::array<std::array<ParameterGroups::RibbonParameter, 2>, 2> ribbons;
-      std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
       std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
+      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+
+      std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
+
+      std::array<ParameterGroups::PedalParameter, 4> pedals;
+      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
+      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
+      std::array<ParameterGroups::BenderParameter, 1> bender;
+
+      std::array<ParameterGroups::Parameter, 2> master;
+      std::array<ParameterGroups::Parameter, 12> scale;
+      ParameterGroups::SplitPoint splitpoint;
     };
 
     struct LayerPresetMessage : Message<MessageType::LayerPreset>
     {
-      std::array<std::array<ParameterGroups::PedalParameter, 4>, 2> pedals;
-      std::array<std::array<ParameterGroups::AftertouchParameter, 1>, 2> aftertouch;
-      std::array<std::array<ParameterGroups::RibbonParameter, 2>, 2> ribbons;
-      std::array<std::array<ParameterGroups::BenderParameter, 1>, 2> bender;
       std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 138>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
       std::array<ParameterGroups::MonoParameter, 4> monos;
+      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+
+      std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
+
+      std::array<ParameterGroups::PedalParameter, 4> pedals;
+      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
+      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
+      std::array<ParameterGroups::BenderParameter, 1> bender;
+
+      std::array<ParameterGroups::Parameter, 2> master;
+      std::array<ParameterGroups::Parameter, 12> scale;
     };
   }
 }

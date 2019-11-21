@@ -10,7 +10,7 @@
 
 std::string to_string(Bank::AttachmentDirection dir);
 
-EditBuffer *getEditBuffer()
+inline EditBuffer *getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }

@@ -11,7 +11,7 @@ class ScrollArea : public ControlWithChildren
 
  public:
   ScrollArea(Scrollable *content, const Rect &position);
-  void scroll(int diff);
+  virtual void scroll(int diff);
 
  private:
   Scrollable *m_content = nullptr;

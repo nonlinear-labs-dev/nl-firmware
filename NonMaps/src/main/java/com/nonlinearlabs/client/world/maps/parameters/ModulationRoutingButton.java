@@ -1,16 +1,25 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.nonlinearlabs.client.Checksum;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.world.maps.SVGImage;
 
 public class ModulationRoutingButton extends SVGImage {
 
-	public ModulationRoutingButton(ModulationRoutingParameter parent) {
-		this(parent, "Control_Through_Disabled.svg", "Control_Through_Enabled.svg", "Control_Through_Active.svg");
+	ParameterPresenter presenter;
+
+	public ModulationRoutingButton(ModulationRoutingParameter parent, int parameterId) {
+		this(parent, parameterId, "Control_Through_Disabled.svg", "Control_Through_Enabled.svg", "Control_Through_Active.svg");
 	}
 
-	public ModulationRoutingButton(ModulationRoutingParameter parent, String... images) {
+	public ModulationRoutingButton(ModulationRoutingParameter parent, int parameterId, String... images) {
 		super(parent, images);
+
+		ParameterPresenterProviders.get().register(parameterId, p -> {
+			presenter = p;
+			return true;
+		});
 	}
 
 	@Override
@@ -21,12 +30,12 @@ public class ModulationRoutingButton extends SVGImage {
 	@Override
 	public void getStateHash(Checksum crc) {
 		super.getStateHash(crc);
-		crc.eat(getParent().getValue().getQuantizedClipped());
+		crc.eat(presenter.hash);
 	}
 
 	@Override
 	public int getSelectedPhase() {
-		return getParent().getValue().getQuantizedClipped() != 0.0 ? 1 : 0;
+		return presenter.controlPosition != 0.0 ? 1 : 0;
 	}
 
 	@Override

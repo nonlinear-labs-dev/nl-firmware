@@ -10,7 +10,6 @@ import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.client.world.maps.NonPosition;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.ZoomReactingControl;
 
 class PrevNextButtons extends LayoutResizingHorizontal {
@@ -109,7 +108,7 @@ class PrevNextButtons extends LayoutResizingHorizontal {
 
 		@Override
 		public Control click(Position eventPoint) {
-			getParent().getParent().getPresetList().selectPrev(Initiator.EXPLICIT_USER_ACTION);
+			getParent().getParent().getPresetList().selectPrev();
 			return this;
 		}
 
@@ -143,7 +142,7 @@ class PrevNextButtons extends LayoutResizingHorizontal {
 
 		@Override
 		public Control click(Position eventPoint) {
-			getParent().getParent().getPresetList().selectNext(Initiator.EXPLICIT_USER_ACTION);
+			getParent().getParent().getPresetList().selectNext();
 			return this;
 		}
 

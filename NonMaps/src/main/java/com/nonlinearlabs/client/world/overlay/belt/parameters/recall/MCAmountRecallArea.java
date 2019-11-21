@@ -2,7 +2,7 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters.recall;
 
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout.Mode;
 
@@ -16,9 +16,9 @@ public class MCAmountRecallArea extends RecallArea {
 
 	@Override
 	public boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		if (bpm instanceof ModulateableParameter) {
-			return ((ModulateableParameter) bpm).isModAmountChanged();
+		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
+		if (bpm instanceof ModulateableParameterModel) {
+			return ((ModulateableParameterModel) bpm).isModAmountChanged();
 		}
 		return false;
 	}

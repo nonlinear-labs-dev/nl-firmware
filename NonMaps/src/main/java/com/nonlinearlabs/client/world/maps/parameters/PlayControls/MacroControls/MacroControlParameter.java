@@ -1,19 +1,13 @@
 package com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls;
 
-import java.util.LinkedList;
-
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ColorTable;
-import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
-import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.world.Name;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.LabelLarge;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontalWithHandle;
+import com.nonlinearlabs.client.world.maps.parameters.UnModulateableParameterName;
 import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.Overlay;
@@ -25,8 +19,8 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 	private String info = "";
 
 	private class MacroControlValueDisplay extends ValueDisplaySmall {
-		private MacroControlValueDisplay(MapsLayout parent) {
-			super(parent);
+		private MacroControlValueDisplay(MapsLayout parent, int parameterID) {
+			super(parent, parameterID);
 		}
 
 		@Override
@@ -36,16 +30,14 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 	}
 
 	private class MacroControlSlider extends SliderHorizontalWithHandle {
-		private MacroControlSlider(MapsLayout parent) {
-			super(parent);
+		private MacroControlSlider(MapsLayout parent, int parameterID) {
+			super(parent, parameterID);
 		}
 	}
 
-	private LinkedList<ModulatableParameter> targets = new LinkedList<ModulatableParameter>();
-
 	MacroControlParameter(MacrosCol parent, String defName, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelLarge(this, getName()) {
+		addChild(new UnModulateableParameterName(this) {
 			@Override
 			protected double getBasicHeight() {
 				return 23;
@@ -57,8 +49,8 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 			}
 
 		});
-		addChild(new MacroControlSlider(this));
-		addChild(new MacroControlValueDisplay(this));
+		addChild(new MacroControlSlider(this, getParameterID()));
+		addChild(new MacroControlValueDisplay(this, getParameterID()));
 	}
 
 	@Override
@@ -71,50 +63,13 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 	}
 
 	@Override
-	public boolean shouldHaveHandleOnly() {
-		return true;
-	}
-
-	@Override
-	protected Name createName() {
-		return new MacroParameterName(this);
-	}
-
-	public void applyModulation(Initiator initiator, double delta) {
-		getValue().applyModulation(initiator, delta);
-	}
-
-	public void addModulatableParameter(ModulatableParameter modulatableParameter) {
-		targets.add(modulatableParameter);
-	}
-
-	public void removeModulatableParameter(ModulatableParameter modulatableParameter) {
-		targets.remove(modulatableParameter);
-	}
-
-	@Override
-	public void onQuantizedValueChanged(Initiator initiator, double diff) {
-		super.onQuantizedValueChanged(initiator, diff);
-
-		if (initiator == Initiator.EXPLICIT_USER_ACTION || initiator == Initiator.MODULATION)
-			if (Math.abs(diff) > 0.0)
-				for (ModulatableParameter p : targets)
-					p.applyModulation(Initiator.MODULATION, diff);
-	}
-
-	@Override
-	public MacroParameterName getName() {
-		return (MacroParameterName) super.getName();
-	}
-
-	@Override
 	public String getCurrentName() {
-		return getName().getEditName();
+		return presenter.userGivenName;
 	}
 
 	@Override
 	public String getTitleName() {
-		return getName().getLongName();
+		return presenter.longName;
 	}
 
 	@Override
@@ -124,33 +79,12 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	@Override
 	public void setName(String newName) {
-		NonMaps.theMaps.getServerProxy().renameMacroControl(this, newName);
+		EditBufferUseCases.get().renameMacroControl(getParameterID(), newName);
 	}
 
 	@Override
 	public ContextMenu createContextMenu(Overlay o) {
 		return new MacroControlContextMenu(o, this);
-	}
-
-	@Override
-	public boolean hasContextMenu() {
-		return true;
-	}
-
-	@Override
-	protected boolean updateValues(Node child) {
-		if (super.updateValues(child))
-			return true;
-
-		String nodeName = child.getNodeName();
-		if (nodeName != null && nodeName.equals("info")) {
-			try {
-				setInfo(ServerProxy.getText(child));
-			} catch (Exception e) {
-			}
-		}
-
-		return false;
 	}
 
 	public void setInfo(String text) {

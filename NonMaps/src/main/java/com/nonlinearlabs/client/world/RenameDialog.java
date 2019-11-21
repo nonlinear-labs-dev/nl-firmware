@@ -132,9 +132,8 @@ public class RenameDialog extends DialogBox {
 	}
 
 	public static void awaitNewPreset(String uuid) {
-		EditBufferModel editBuffer = EditBufferModel.get();
-		boolean isModified = editBuffer.isAnyParamChanged();
-		boolean storedInPlace = editBuffer.loadedPreset.getValue().equals(uuid);
+		boolean isModified = EditBufferModel.isAnyParamChanged();
+		boolean storedInPlace = EditBufferModel.loadedPreset.getValue().equals(uuid);
 
 		if (isModified && !storedInPlace) {
 			presetToWaitFor = uuid;

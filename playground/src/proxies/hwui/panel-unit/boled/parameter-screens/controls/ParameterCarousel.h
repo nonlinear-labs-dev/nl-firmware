@@ -32,4 +32,6 @@ class ParameterCarousel : public Carousel
   void setupChildControls(const std::shared_ptr<PanelUnitParameterEditMode> &edit, Parameter *selectedParameter,
                           Buttons button);
   void setupChildControls(Parameter *selectedParameter, const std::__cxx11::list<int> &buttonAssignments);
+
+  void setupChildControlsForParameterWithoutButtonMapping(Parameter *selectedParameter);
 };

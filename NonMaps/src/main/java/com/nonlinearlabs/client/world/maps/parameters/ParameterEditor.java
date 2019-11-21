@@ -1,25 +1,17 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
-import com.nonlinearlabs.client.world.AppendOverwriteInsertPresetDialog;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
-import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.parameters.Cabinet.Cabinet;
 import com.nonlinearlabs.client.world.maps.parameters.CombFilter.CombFilter;
 import com.nonlinearlabs.client.world.maps.parameters.Echo.Echo;
@@ -43,14 +35,11 @@ import com.nonlinearlabs.client.world.maps.parameters.ShapeB.ShapeB;
 import com.nonlinearlabs.client.world.maps.parameters.VoiceGroup.VoiceGroup;
 import com.nonlinearlabs.client.world.maps.parameters.Voices.Voices;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
-import com.nonlinearlabs.client.world.overlay.CompareDialog;
 
 public class ParameterEditor extends LayoutResizingVertical {
 
-	private String loadedPreset = "";
 	private PlayControls playControls;
 	private static ParameterEditor theEditor = null;
-	private HashMap<String, String> attributes = new HashMap<String, String>();
 	private String hash = "";
 
 	private class PlayControlsArea extends ResizingHorizontalCenteringLayout {
@@ -152,7 +141,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 						addChild(new VoiceGroup(this));
 						addChild(new SpacerLarge(this));
 
-						EditBufferModel.get().soundType.onChange(v -> {
+						EditBufferModel.soundType.onChange(v -> {
 							requestLayout();
 							return true;
 						});
@@ -160,7 +149,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 					@Override
 					public void doFirstLayoutPass(double levelOfDetail) {
-						if (EditBufferModel.get().soundType.getValue() == SoundType.Single) {
+						if (EditBufferModel.soundType.getValue() == SoundType.Single) {
 							setNonSize(new NonDimension(0, 0));
 						} else {
 							super.doFirstLayoutPass(levelOfDetail);
@@ -225,6 +214,17 @@ public class ParameterEditor extends LayoutResizingVertical {
 		addChild(new SpacerLarge(this));
 		addChild(new SpacerLarge(this));
 		addChild(new SynthParameters(this));
+
+		EditBufferModel.selectedParameter.onChange(i -> {
+			boolean autoScroll = LocalSettingsProvider.get().getSettings().selectionAutoScroll
+					.isOneOf(SelectionAutoScroll.parameter, SelectionAutoScroll.parameter_and_preset);
+
+			if (autoScroll && EditBufferModel.findParameter(i).group != null) {
+				scrollToSelectedParameterGroup(EditBufferModel.findParameter(i).group.id);
+			}
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return true;
+		});
 	}
 
 	public Control onKey(final KeyDownEvent event) {
@@ -243,184 +243,23 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return theEditor;
 	}
 
-	private Parameter selectedObject = null;
+	private void scrollToSelectedParameterGroup(String groupID) {
+		if (groupID == "CS")
+			groupID = "MCM";
+			
+		ParameterGroup p = findParameterGroup(groupID);
 
-	public void select(Initiator initiator, Parameter sel) {
-		if (selectedObject != sel) {
-			Parameter oldSel = selectedObject;
-			selectedObject = sel;
-
-			for (SelectionListener listener : listeners) {
-				listener.onSelectionChanged(oldSel, sel);
-			}
-
-			if (initiator == Initiator.EXPLICIT_USER_ACTION)
-				getNonMaps().getServerProxy().onParameterSelectionChanged(this);
-
-			if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "parameter",
-					"parameter-and-preset"))
-				scrollToSelectedParameter();
-
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
+		if (!p.isVisible())
+			p.scrollToMakeFullyVisible();
 	}
 
-	private void scrollToSelectedParameter() {
-		if (!selectedObject.isVisible())
-			((MapsLayout) selectedObject.getParameterGroup()).scrollToMakeFullyVisible();
-	}
-
-	public Parameter getSelection() {
-		return selectedObject;
-	}
-
-	private HashSet<SelectionListener> listeners = new HashSet<SelectionListener>();
-	private String loadedPresetsName = "Init";
-
-	public void registerListener(SelectionListener listener) {
-		listeners.add(listener);
-		listener.onSelectionChanged(null, selectedObject);
-	}
-
-	public void removeListener(SelectionListener listener) {
-		listeners.remove(listener);
-	}
-
-	public void update(Node node, boolean omitOracles) {
-		if (node == null)
-			return;
-
-		if (ServerProxy.didChange(node)) {
-			updateHash(node);
-			updateCompare(node);
-
-			if (!omitOracles) {
-				updateParameterGroups(node);
-				updatePreset(node);
-				updateSelection(node);
-			} else {
-				Tracer.log(
-						"did not change parameters in parameter editor from update doc, because it says the changes can be omitted");
-			}
-		}
-
-		String loadedPreset = node.getAttributes().getNamedItem("loaded-preset").getNodeValue();
-
-		if (loadedPreset != null && !loadedPreset.equals(this.loadedPreset)) {
-			this.loadedPreset = loadedPreset;
-			AppendOverwriteInsertPresetDialog.close();
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
-
-		String loadedPresetsName = node.getAttributes().getNamedItem("loaded-presets-name").getNodeValue();
-
-		if (loadedPresetsName != null && !loadedPresetsName.equals(this.loadedPresetsName)) {
-			this.loadedPresetsName = loadedPresetsName;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-		}
-	}
-
-	public void updateHash(Node node) {
-		String hash = node.getAttributes().getNamedItem("hash").getNodeValue();
-		if (!hash.equals(this.hash)) {
-			this.hash = hash;
-		}
-	}
-
-	private void updatePreset(Node node) {
-		NodeList children = node.getChildNodes();
-
-		for (int i = 0; i < children.getLength(); i++) {
-			Node n = children.item(i);
-			String nodesName = n.getNodeName();
-
-			if (nodesName.equals("preset")) {
-				updateAttributes(n);
-			}
-		}
-	}
-
-	private void updateAttributes(Node node) {
-		NodeList children = node.getChildNodes();
-
-		for (int i = 0; i < children.getLength(); i++) {
-			Node n = children.item(i);
-			String nodesName = n.getNodeName();
-
-			if (nodesName.equals("attribute")) {
-				updateAttribute(n);
-			}
-		}
-	}
-
-	private void updateAttribute(Node n) {
-		String key = n.getAttributes().getNamedItem("key").getNodeValue();
-		String value = ServerProxy.getText(n);
-		attributes.put(key, value);
-	}
-
-	public String getAttribute(String key) {
-		String ret = attributes.get(key);
-		if (ret != null)
-			return ret;
-		return "";
-	}
-
-	private void updateParameterGroups(Node node) {
-		NodeList parameterGroups = node.getChildNodes();
-
-		for (int i = 0; i < parameterGroups.getLength(); i++) {
-			Node n = parameterGroups.item(i);
-			String nodesName = n.getNodeName();
-
-			if (nodesName.equals("parameter-group")) {
-				updateParameters(n);
-			}
-		}
-	}
-
-	private void updateParameters(Node parameterGroupNode) {
-		if (ServerProxy.didChange(parameterGroupNode)) {
-			String longGroupName = parameterGroupNode.getAttributes().getNamedItem("long-name").getNodeValue();
-			String shortGroupName = parameterGroupNode.getAttributes().getNamedItem("short-name").getNodeValue();
-			String groupID = parameterGroupNode.getAttributes().getNamedItem("id").getNodeValue();
-
-			ParameterGroupIface grp = findParameterGroup(groupID);
-
-			if (grp != null)
-				grp.setName(new Name(longGroupName, shortGroupName));
-
-			NodeList parameters = parameterGroupNode.getChildNodes();
-
-			for (int i = 0; i < parameters.getLength(); i++) {
-				Node n = parameters.item(i);
-
-				if (n.getNodeName().equals("parameter")) {
-					updateParameter(n);
-				}
-			}
-		}
-	}
-
-	private void updateParameter(Node n) {
-		if (ServerProxy.didChange(n)) {
-			String id = n.getAttributes().getNamedItem("id").getNodeValue();
-			Parameter sel = findSelectable(Integer.parseInt(id));
-
-			if (sel != null) {
-				Parameter param = (Parameter) sel;
-				param.update(n);
-			}
-		}
-	}
-
-	public ParameterGroupIface findParameterGroup(final String groupID) {
+	public ParameterGroup findParameterGroup(final String groupID) {
 		Control found = recurseChildren(new ControlFinder() {
 
 			@Override
 			public boolean onWayDownFound(Control child) {
-				if (child instanceof ParameterGroupIface) {
-					ParameterGroupIface i = (ParameterGroupIface) child;
+				if (child instanceof ParameterGroup) {
+					ParameterGroup i = (ParameterGroup) child;
 					if (i.getID().equals(groupID))
 						return true;
 				}
@@ -428,57 +267,19 @@ public class ParameterEditor extends LayoutResizingVertical {
 			}
 		});
 
-		return (ParameterGroupIface) found;
-	}
-
-	private void updateSelection(Node node) {
-		String selected = node.getAttributes().getNamedItem("selected-parameter").getNodeValue();
-		Parameter sel = findSelectable(Integer.parseInt(selected));
-
-		if (sel != selectedObject) {
-			select(Initiator.INDIRECT_USER_ACTION, sel);
-		}
-	}
-
-	private void updateCompare(Node node) {
-		for (CompareDialog compareDialog : NonMaps.get().getNonLinearWorld().getViewport().getOverlay()
-				.getCompareDialogs()) {
-			compareDialog.update();
-		}
-	}
-
-	private HashMap<Integer, Parameter> parameterMap = new HashMap<Integer, Parameter>();
-
-	public void registerSelectable(Parameter sel) {
-		Parameter pl = (Parameter) sel;
-		parameterMap.put(pl.getParameterID(), pl);
-	}
-
-	Parameter findSelectable(int parameterID) {
-		return parameterMap.get(parameterID);
+		return (ParameterGroup) found;
 	}
 
 	public String getLoadedPresetUUID() {
-		return loadedPreset;
+		return EditBufferPresenterProvider.getPresenter().loadedPresetUUID;
 	}
 
 	public String getLoadedPresetName() {
-		return loadedPresetsName;
+		return "Init";
 	}
 
 	public Macros getMacroControls() {
 		return playControls.getMacroControls();
-	}
-
-	public Parameter getSelectedOrSome() {
-		if (selectedObject != null)
-			return (Parameter) selectedObject;
-
-		return parameterMap.values().iterator().next();
-	}
-
-	public Parameter findParameter(int parameterID) {
-		return (Parameter) findSelectable(parameterID);
 	}
 
 	public PlayControls getPlayControls() {
@@ -494,7 +295,8 @@ public class ParameterEditor extends LayoutResizingVertical {
 	}
 
 	public String getLoadedPresetInfo() {
-		Preset p = NonMaps.get().getNonLinearWorld().getPresetManager().findPreset(loadedPreset);
+		String uuid = EditBufferPresenterProvider.getPresenter().loadedPresetUUID;
+		Preset p = NonMaps.get().getNonLinearWorld().getPresetManager().findPreset(uuid);
 
 		if (p != null)
 			return p.getAttribute("Comment");
@@ -523,11 +325,23 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return c != null;
 	}
 
-	public boolean areAllParametersLocked() {
-		for (Parameter p : parameterMap.values()) {
-			if (p.isLocked() == false)
+	public Parameter findParameter(int id) {
+		return (Parameter) recurseChildren(new ControlFinder() {
+			@Override
+			public boolean onWayDownFound(Control ctrl) {
+				if (ctrl instanceof Parameter) {
+					Parameter p = (Parameter) ctrl;
+					if (p.getParameterID() == id) {
+						return true;
+					}
+				}
 				return false;
-		}
-		return true;
+			}
+		});
 	}
+
+	public Parameter getSelectedParameter() {
+		return findParameter(EditBufferModel.selectedParameter.getValue());
+	}
+
 }

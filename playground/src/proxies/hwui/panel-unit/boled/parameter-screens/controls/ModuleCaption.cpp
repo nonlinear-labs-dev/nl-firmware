@@ -1,3 +1,4 @@
+#include <proxies/hwui/TextCropper.h>
 #include "ModuleCaption.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
@@ -15,14 +16,34 @@ ModuleCaption::ModuleCaption(const Rect &pos)
       sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
 }
 
-ModuleCaption::~ModuleCaption()
+Label::StringAndSuffix ModuleCaption::shortenStringIfNeccessary(std::shared_ptr<Font> font,
+                                                                const Label::StringAndSuffix &text) const
 {
+  return TextCropper::shortenStringIfNeccessary(font, text.text, getWidth());
 }
 
 void ModuleCaption::onParameterSelected(Parameter *newOne)
 {
   updateText(newOne);
 }
+
+bool ModuleCaption::enableVoiceGroupSuffix() const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto selected = eb->getSelected();
+
+  if(selected->getVoiceGroup() == VoiceGroup::Global)
+    return false;
+
+  if(dynamic_cast<MonoParameter *>(selected))
+    return eb->getType() == SoundType::Split;
+  if(dynamic_cast<UnisonGroup *>(selected->getParent()))
+    return eb->getType() == SoundType::Split;
+
+  if(dynamic_cast<MasterGroup *>(selected->getParent()))
+    return false;
+  return dynamic_cast<ScaleGroup *>(selected->getParent()) == nullptr;
+};
 
 void ModuleCaption::updateText(Parameter *newOne)
 {
@@ -31,7 +52,7 @@ void ModuleCaption::updateText(Parameter *newOne)
     auto group = newOne->getParentGroup();
     auto groupName = group->getShortName();
 
-    if(ModuleCaption::enableVoiceGroupSuffix())
+    if(enableVoiceGroupSuffix())
     {
       auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
       auto suffix = std::string{};
@@ -46,7 +67,8 @@ void ModuleCaption::updateText(Parameter *newOne)
 
 void ModuleCaption::onSelectionChanged()
 {
-  setDirty();
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+  updateText(selected);
 }
 
 bool ModuleCaption::redraw(FrameBuffer &fb)

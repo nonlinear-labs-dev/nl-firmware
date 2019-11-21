@@ -38,8 +38,10 @@
 #include "PanelUnitParameterEditMode.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
+#include <parameters/PedalParameter.h>
 
 class ParameterInfoLayout;
+
 class ParameterLayout2;
 
 const constexpr auto CombFilterAB = 113;
@@ -74,33 +76,6 @@ void PanelUnitParameterEditMode::setupFocusAndMode(FocusAndMode focusAndMode)
   bruteForceUpdateLeds();
 }
 
-void PanelUnitParameterEditMode::assertAllButtonsAssigned()
-{
-#if _TESTS
-  if(Application::get().getPresetManager()->getEditBuffer()->countParameters() != assignedAudioIDs.size())
-  {
-    int lastOne = -1;
-    for(int id : assignedAudioIDs)
-    {
-      int expected = lastOne + 1;
-      if(expected != 122)  // unused param
-      {
-        if(id != expected)
-        {
-          auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(expected);
-          if(param->getLongName().find("Pedal") != 0)
-            g_assert(false);
-        }
-      }
-      lastOne = id;
-      auto lastParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(lastOne);
-      if(dynamic_cast<ModulateableParameter *>(lastParam))
-        lastOne++;
-    }
-  }
-#endif
-}
-
 static EditPanel &getEditPanel()
 {
   auto hwui = Application::get().getHWUI();
@@ -114,10 +89,9 @@ void PanelUnitParameterEditMode::setup()
     std::vector<int> para{ parameterIDs.begin(), parameterIDs.end() };
 
     if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
-       && buttonID != Buttons::BUTTON_87)
+       && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
       setupButtonConnection(buttonID, createParameterSelectAction(para));
   });
-
 
   setupButtonConnection(Buttons::BUTTON_75,
                         bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 243));
@@ -136,8 +110,15 @@ void PanelUnitParameterEditMode::setup()
 
   FOR_TESTS(assignedAudioIDs.insert(246));
 
-#warning ADLER
-  //assertAllButtonsAssigned();
+  setupButtonConnection(Buttons::BUTTON_91,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 1247));
+
+  FOR_TESTS(assignedAudioIDs.insert(1247));
+
+  setupButtonConnection(Buttons::BUTTON_95,
+                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 1248));
+
+  FOR_TESTS(assignedAudioIDs.insert(1248));
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     getEditPanel().getUndoStateMachine().traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
@@ -152,8 +133,12 @@ void PanelUnitParameterEditMode::setup()
   setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     if(state)
     {
-      if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Sound)
-        Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
+      auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+      if(focusAndMode.focus == UIFocus::Sound)
+        if(focusAndMode.mode == UIMode::Edit)
+          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+        else
+          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
       else
         Application::get().getHWUI()->undoableSetFocusAndMode(UIFocus::Sound);
     }
@@ -203,7 +188,7 @@ void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Pa
     if(auto ph = dynamic_cast<PhysicalControlParameter *>(newParam))
     {
       if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-          Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM")))
+             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM")))
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {
@@ -235,8 +220,8 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
 
   for(gint32 id : toggleAudioIDs)
   {
-    auto voiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, voiceGroup))
+    if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id)
+       && !Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(id))
       g_error("Attempt to link a button to parameter ID %d, which does not exist!", id);
 
     g_assert(assignedAudioIDs.find(id) == assignedAudioIDs.end());

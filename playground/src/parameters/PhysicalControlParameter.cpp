@@ -24,11 +24,6 @@ PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, uint16
 {
 }
 
-bool PhysicalControlParameter::isValueChangedFromLoaded() const
-{
-  return false;
-}
-
 bool PhysicalControlParameter::isChangedFromLoaded() const
 {
   return false;
@@ -171,7 +166,7 @@ void PhysicalControlParameter::setUiSelectedModulationRouter(int pos)
 
   if(current != pos)
   {
-    if(auto *grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent()))
+    if(auto *grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent()))
     {
       if(auto oldRouter = grandPa->findParameterByID(current))
         oldRouter->onUnselected();
@@ -194,7 +189,7 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 {
   int id = getUiSelectedModulationRouter();
 
-  if(auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent()))
+  if(auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent()))
   {
     auto mappings = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID("MCM"));
     auto routers = mappings->getModulationRoutingParametersFor(this);

@@ -2,11 +2,12 @@ package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
-import com.nonlinearlabs.client.world.Name;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
@@ -33,10 +34,8 @@ public class LabelModuleHeader extends LabelSmall {
 				}
 			});
 
-			boolean isAnyParameterLocked = NonMaps.get().getNonLinearWorld().getParameterEditor()
-					.isAnyParameterLocked();
-			boolean areAllParametersLocked = NonMaps.get().getNonLinearWorld().getParameterEditor()
-					.areAllParametersLocked();
+			boolean areAllParametersLocked = EditBufferPresenterProvider.getPresenter().allParametersLocked;
+			boolean isAnyParameterLocked = EditBufferPresenterProvider.getPresenter().isAnyParameterLocked;
 
 			if (!areAllParametersLocked) {
 				addChild(new ContextMenuItem(this, "Lock all Groups") {
@@ -60,13 +59,18 @@ public class LabelModuleHeader extends LabelSmall {
 		}
 	}
 
-	public LabelModuleHeader(ParameterGroupVertical parent, Name name) {
-		super(parent, name);
+	public LabelModuleHeader(ParameterGroup parent) {
+		super(parent);
 	}
 
 	@Override
-	public ParameterGroupVertical getParent() {
-		return (ParameterGroupVertical) super.getParent();
+	public ParameterGroup getParent() {
+		return (ParameterGroup) super.getParent();
+	}
+
+	@Override
+	protected String getDisplayText() {
+		return EditBufferModel.getGroup(getParent().getID()).longName.getValue();
 	}
 
 	protected boolean isLocked() {
@@ -154,7 +158,7 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	public Control onContextMenu(Position pos) {
-		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+		boolean showContextMenus = SetupModel.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 
 		if (showContextMenus) {
 			Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();

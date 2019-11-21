@@ -2,16 +2,15 @@ package com.nonlinearlabs.client.dataModel.value;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 
 public class QuantizedClippedValue extends ClippedValue {
 
 	public interface ChangeListener {
-		public void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue);
+		public void onClippedValueChanged(double oldClippedValue, double newClippedValue);
 
-		public void onQuantizedValueChanged(Initiator initiator, double oldQuantizedValue, double newQuantizedValue);
+		public void onQuantizedValueChanged(double oldQuantizedValue, double newQuantizedValue);
 
-		public void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue);
+		public void onRawValueChanged(double oldRawValue, double newRawValue);
 	}
 
 	private int coarseDenominator = 100;
@@ -61,15 +60,15 @@ public class QuantizedClippedValue extends ClippedValue {
 		return v / steps;
 	}
 
-	public void inc(Initiator initiator, boolean fine) {
-		incDec(initiator, fine, 1);
+	public void inc(boolean fine) {
+		incDec(fine, 1);
 	}
 
-	public void dec(Initiator initiator, boolean fine) {
-		incDec(initiator, fine, -1);
+	public void dec(boolean fine) {
+		incDec(fine, -1);
 	}
 
-	private void incDec(Initiator initiator, boolean fine, int inc) {
+	private void incDec(boolean fine, int inc) {
 		if (!fine && !isValueCoarseQuantized()) {
 			double fineValue = getQuantizedClippedValue(true);
 			double coarseValue = getQuantizedClippedValue(false);
@@ -86,18 +85,18 @@ public class QuantizedClippedValue extends ClippedValue {
 		double unRounded = controlVal * denominator;
 		double rounded = Math.round(unRounded);
 		double newValue = clip((rounded + inc) / denominator);
-		setRawValue(initiator, newValue);
+		setRawValue(newValue);
 	}
 
 	protected boolean isValueCoarseQuantized() {
 		return getQuantizedClippedValue(false) == getQuantizedClippedValue(true);
 	}
 
-	public void applyModulation(Initiator initiator, double delta) {
+	public void applyModulation(double delta) {
 		if (isBipolar())
 			delta *= 2;
 
-		setRawValue(initiator, getRawValue() + delta);
+		setRawValue(getRawValue() + delta);
 	}
 
 	public void update(Node child) {
@@ -118,26 +117,26 @@ public class QuantizedClippedValue extends ClippedValue {
 	}
 
 	@Override
-	protected void onRawValueChanged(Initiator initiator, double oldRawValue, double newRawValue) {
-		listener.onRawValueChanged(initiator, oldRawValue, newRawValue);
-		super.onRawValueChanged(initiator, oldRawValue, newRawValue);
+	protected void onRawValueChanged(double oldRawValue, double newRawValue) {
+		listener.onRawValueChanged(oldRawValue, newRawValue);
+		super.onRawValueChanged(oldRawValue, newRawValue);
 	}
 
 	@Override
-	protected void onClippedValueChanged(Initiator initiator, double oldClippedValue, double newClippedValue) {
-		listener.onClippedValueChanged(initiator, oldClippedValue, newClippedValue);
+	protected void onClippedValueChanged(double oldClippedValue, double newClippedValue) {
+		listener.onClippedValueChanged(oldClippedValue, newClippedValue);
 
 		double oldFine = getQuantizedValue(oldClippedValue, true);
 		double newFine = getQuantizedValue(newClippedValue, true);
 
 		if (oldFine != newFine)
-			onFineQuantizedChanged(initiator, oldFine, newFine);
+			onFineQuantizedChanged(oldFine, newFine);
 
-		super.onClippedValueChanged(initiator, oldClippedValue, newClippedValue);
+		super.onClippedValueChanged(oldClippedValue, newClippedValue);
 	}
 
-	private void onFineQuantizedChanged(Initiator initiator, double oldFine, double newFine) {
-		listener.onQuantizedValueChanged(initiator, oldFine, newFine);
+	private void onFineQuantizedChanged(double oldFine, double newFine) {
+		listener.onQuantizedValueChanged(oldFine, newFine);
 	}
 
 	/*-public void update(ValueDataModelEntity e) {

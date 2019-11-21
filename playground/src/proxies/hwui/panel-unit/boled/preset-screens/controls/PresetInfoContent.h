@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/panel-unit/boled/InfoContent.h>
+#include <proxies/hwui/panel-unit/boled/info/InfoContent.h>
 
 class Preset;
 class Uuid;
@@ -14,14 +14,15 @@ class PresetInfoContent : public InfoContent
   PresetInfoContent();
   virtual ~PresetInfoContent();
 
+  void fillContents() override;
+
  private:
   void onBankChanged(const Uuid &selectedBank);
   void onPresetSelectionChanged();
 
-  void fixLayout();
-  bool fillFromPreset(const Preset *preset);
+  void fillFromPreset(const Preset *preset);
   bool fillDefaults();
-  Preset *getCurrentPreset();
+  static Preset *getCurrentPreset();
   void onPresetChanged();
   void connectToPreset(Preset *preset);
 

@@ -12,12 +12,12 @@ public class ModulateableNumericalControl extends LayoutResizingVertical {
 	NumericalControlLarge numericalControl;
 	NumericalControlsModulation modControls;
 
-	public ModulateableNumericalControl(MapsLayout parent) {
+	public ModulateableNumericalControl(MapsLayout parent, int parameterID) {
 		super(parent);
 
-		addChild(new ModulationSourceLabel(this));
+		addChild(new ModulationSourceLabel(this, parameterID));
 
-		numericalControl = addChild(new NumericalControlLarge(this) {
+		numericalControl = addChild(new NumericalControlLarge(this, parameterID) {
 			@Override
 			protected double getInsetY() {
 				return 0;
@@ -45,7 +45,7 @@ public class ModulateableNumericalControl extends LayoutResizingVertical {
 
 		});
 
-		modControls = addChild(new NumericalControlsModulation(this) {
+		modControls = addChild(new NumericalControlsModulation(this, parameterID) {
 			@Override
 			public double getLevelOfDetailForFullVisibility() {
 				return getParent().getLevelOfDetailForFullVisibility();

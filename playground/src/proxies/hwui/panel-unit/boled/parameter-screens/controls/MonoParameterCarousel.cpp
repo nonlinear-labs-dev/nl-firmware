@@ -34,12 +34,6 @@ void MonoParameterCarousel::setup(Parameter *selectedParameter)
   setDirty();
 }
 
-bool MonoParameterCarousel::monoParametersActive()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->findParameterByID(12345, getVoiceGroup())->getDisplayString() == "On";
-}
-
 VoiceGroup MonoParameterCarousel::getVoiceGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -51,15 +45,12 @@ VoiceGroup MonoParameterCarousel::getVoiceGroup()
 
 void MonoParameterCarousel::rebuild()
 {
-  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(getVoiceGroup());
+  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   setup(s);
 }
 
 void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
 {
-  if(!monoParametersActive())
-    return;
-
   const auto ySpaceing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
@@ -67,7 +58,7 @@ void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
 
   const auto vg = getVoiceGroup();
 
-  for(int i : { 12345, 12346, 12347, 12348 })
+  for(int i : { 12345, 12348, 12346, 12347 })
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i, vg);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
