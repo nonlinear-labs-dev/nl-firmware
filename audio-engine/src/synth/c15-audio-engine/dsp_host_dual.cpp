@@ -29,7 +29,11 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_output_mute.init(&m_fade.m_value);
   // these could also be part of parameter list (later), currently hard-coded
   m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
+  m_edit_time.m_scaled = scale(m_edit_time.m_scaling, m_edit_time.m_position);
+  updateTime(&m_edit_time.m_dx, m_edit_time.m_scaled);
   m_transition_time.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
+  m_transition_time.m_scaled = scale(m_transition_time.m_scaling, m_transition_time.m_position);
+  updateTime(&m_transition_time.m_dx, m_transition_time.m_scaled);
   m_reference.init(C15::Properties::SmootherScale::Linear, 80.0f, 400.0f, 0.5f);
   m_reference.m_scaled = scale(m_reference.m_scaling, m_reference.m_position);
   // dsp sections init
