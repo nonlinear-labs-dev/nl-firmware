@@ -36,7 +36,8 @@ void SelectedMacroControlsHWSourceSlider::onMCChanged(const Parameter *param)
       m_hwParamID = hwSourceID;
 
       if(hwSourceID > 0)
-        setParameter(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(hwSourceID));
+        setParameter(
+            Application::get().getPresetManager()->getEditBuffer()->findParameterByID(hwSourceID, VoiceGroup::Global));
     }
   }
 }

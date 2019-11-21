@@ -54,9 +54,7 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
 {
   SplashLayout::addStatus("Reading Edit Buffer");
 
-  reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable {
-    m_editBuffer->m_type = to<SoundType>(text);
-  });
+  reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable { m_editBuffer->m_type = to<SoundType>(text); });
 
   reader.onTag(VoiceGroupsSerializer::getTagName(),
                [&](auto) mutable { return new VoiceGroupsSerializer(m_editBuffer); });
@@ -78,7 +76,8 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
                [&](auto) mutable { return new VoiceGroupsLockSerializer(m_editBuffer); });
 
   reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
-    m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
+#warning "TODO: locked parameters per voice group?"
+    //m_editBuffer->findParameterByID(std::stoi(text))->undoableLock(reader.getTransaction());
   });
 
   reader.onTag(RecallEditBufferSerializer::getTagName(),

@@ -31,7 +31,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter { 0, VoiceGroup::I }
+    , m_lastSelectedParameter{ 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -225,7 +225,7 @@ void EditBuffer::setParameter(size_t id, double cpValue, VoiceGroup vg)
   if(auto p = findParameterByID(id, vg))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue, toString(vg));
-    Glib::ustring name {};
+    Glib::ustring name{};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -644,12 +644,10 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   undoableSetType(transaction, SoundType::Single);
 }
 
-void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
+void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup vg)
 {
   if(m_type == type)
     return;
-
-  auto vg = m_lastSelectedParameter.m_voiceGroup;
 
   switch(type)
   {
@@ -727,7 +725,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGro
   auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>> { { 10002, 247 }, { 10003, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
   {
     auto mI = vgMasterI->findParameterByID(ids.first);
     auto mII = vgMasterII->findParameterByID(ids.first);
@@ -759,7 +757,7 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGro
   auto vgMasterII = getParameterGroupByID("VGM", VoiceGroup::II);
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>> { { 10002, 247 }, { 10003, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 10002, 247 }, { 10003, 248 } })
   {
     auto mI = vgMasterI->findParameterByID(ids.first);
     auto mII = vgMasterII->findParameterByID(ids.first);

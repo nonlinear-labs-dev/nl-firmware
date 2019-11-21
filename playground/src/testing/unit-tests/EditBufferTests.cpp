@@ -372,7 +372,7 @@ TEST_CASE("Editbuffer Contents loaded")
   auto editBuffer = getEditBuffer();
   {
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
@@ -599,7 +599,7 @@ TEST_CASE("Voice Group Label")
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
     auto ebName = eb->getName();
-    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == ebName);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == ebName);
     REQUIRE_FALSE(eb->anyParameterChanged());

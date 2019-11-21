@@ -2,6 +2,7 @@
 #include <libundo/undo/TransactionCreationScope.h>
 #include <memory>
 #include <presets/PresetManager.h>
+#include <parameters/Parameter.h>
 
 namespace TestHelper
 {

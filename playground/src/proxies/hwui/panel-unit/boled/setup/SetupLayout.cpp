@@ -198,7 +198,7 @@ namespace NavTree
         : EditableLeaf(parent, "")
     {
       param = dynamic_cast<PedalParameter *>(
-          Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id));
+          Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, VoiceGroup::Global));
       name = param->getLongName();
     }
 

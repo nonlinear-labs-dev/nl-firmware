@@ -211,21 +211,23 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto transaction = scope->getTransaction();
     auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
     editBuffer->undoableConvertToSingle(transaction, voiceGroup);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
 
-  addAction("convert-to-split", [=](auto) {
+  addAction("convert-to-split", [=](auto request) {
     auto scope = editBuffer->getUndoScope().startTransaction("Convert to Split");
     auto transaction = scope->getTransaction();
-    editBuffer->undoableConvertToDual(transaction, SoundType::Split);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
+    editBuffer->undoableConvertToDual(transaction, SoundType::Split, voiceGroup);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
 
-  addAction("convert-to-layer", [=](auto) {
+  addAction("convert-to-layer", [=](auto request) {
     auto scope = editBuffer->getUndoScope().startTransaction("Convert to Layer");
     auto transaction = scope->getTransaction();
-    editBuffer->undoableConvertToDual(transaction, SoundType::Layer);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
+    editBuffer->undoableConvertToDual(transaction, SoundType::Layer, voiceGroup);
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
 }
 

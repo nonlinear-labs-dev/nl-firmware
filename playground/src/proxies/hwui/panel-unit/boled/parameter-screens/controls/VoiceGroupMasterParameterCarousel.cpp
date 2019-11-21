@@ -13,8 +13,8 @@ VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect 
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
 
-  m_selectConnection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
+  m_selectConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild)));
 }
 
 VoiceGroupMasterParameterCarousel::~VoiceGroupMasterParameterCarousel()
@@ -65,7 +65,7 @@ void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p, vg);
     if(!param)
-      param = Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(p);
+      param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p, VoiceGroup::Global);
 
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     miniParam->setSelected(param == selected);

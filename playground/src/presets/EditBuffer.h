@@ -92,7 +92,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   SoundType getType() const;
 
-  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type);
+  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup vg);
   void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg);
@@ -129,8 +129,8 @@ class EditBuffer : public ParameterDualGroupSet
   struct LastSelection
   {
     LastSelection(Parameter::ID id, VoiceGroup vg)
-        : m_id { id }
-        , m_voiceGroup { vg }
+        : m_id{ id }
+        , m_voiceGroup{ vg }
     {
     }
     Parameter::ID m_id = 0;
@@ -156,7 +156,7 @@ class EditBuffer : public ParameterDualGroupSet
   SoundType m_type;
   size_t m_hashOnStore;
 
-  mutable Preset *m_originCache { nullptr };
+  mutable Preset *m_originCache{ nullptr };
   RecallParameterGroups m_recallSet;
 
   friend class PresetManager;

@@ -43,7 +43,8 @@ void SelectedMacroControlsHWSourceValue::onMCChanged(const Parameter *param)
 
     if(hwSourceID > 0)
     {
-      if(auto hwParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(hwSourceID))
+      if(auto hwParam
+         = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(hwSourceID, VoiceGroup::Global))
       {
         m_hwChanged = hwParam->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::updateText));
       }

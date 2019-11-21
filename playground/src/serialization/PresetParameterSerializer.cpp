@@ -37,7 +37,9 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
       auto converted = ParameterImportConversions::get().convert(m_param->m_id, v, reader.getFileVersion());
 
       auto eb = Application::get().getPresetManager()->getEditBuffer();
-      if(auto param = eb->findParameterByID(m_param->m_id))
+      if(auto param = eb->findParameterByID(m_param->m_id, VoiceGroup::Global))
+        converted = param->getValue().getQuantizedValue(converted, true);
+      else if(auto param = eb->findParameterByID(m_param->m_id, VoiceGroup::I))
         converted = param->getValue().getQuantizedValue(converted, true);
 
       m_param->setValue(reader.getTransaction(), converted);

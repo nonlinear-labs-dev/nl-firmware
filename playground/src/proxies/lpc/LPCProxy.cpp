@@ -136,7 +136,9 @@ void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
   notifyRibbonTouch(id);
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
-  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id);
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+#warning "TODO: respect globals"
+  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id, vg);
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
   {
@@ -279,7 +281,8 @@ void LPCProxy::sendEditBuffer()
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   tMessageComposerPtr cmp(new EditBufferMessageComposer());
-
+#warning "TODO"
+#if 0
   auto sorted = editBuffer->getParametersSortedById();
 
   for(auto &it : sorted)
@@ -290,6 +293,7 @@ void LPCProxy::sendEditBuffer()
 
   for(auto &it : sorted)
     it.second->onPresetSentToLpc();
+#endif
 }
 
 void LPCProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)

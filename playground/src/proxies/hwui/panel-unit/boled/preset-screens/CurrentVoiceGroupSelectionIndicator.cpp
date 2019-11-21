@@ -2,6 +2,7 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 inline static Glib::ustring currentVoiceGroupToString()
 {
@@ -12,8 +13,8 @@ inline static Glib::ustring currentVoiceGroupToString()
 CurrentVoiceGroupSelectionIndicator::CurrentVoiceGroupSelectionIndicator(const Rect &r)
     : LabelRegular8(currentVoiceGroupToString(), r)
 {
-  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged)));
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
