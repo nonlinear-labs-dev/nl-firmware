@@ -169,8 +169,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
       "issue: nltools::presetMsg - parameter structure, param ids, lock, unsorted param groups, global group");
   nltools::Log::info("(param_ids: mono_grp, master, voice_grp?, split_point?)");
   nltools::Log::info("todo: nltools::parameterMsg - lock can disappear");
-  nltools::Log::info("todo: ParameterList - Unison Voices, Macro Times: no smoothing - but scaling");
-  nltools::Log::info("todo: provide truepoly unison phase signal (parameter list)");
+  nltools::Log::info("todo: initialization??? (transition times, etc.)");
 #endif
 }
 

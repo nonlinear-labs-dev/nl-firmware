@@ -40,9 +40,9 @@ template <uint32_t Size> struct UnisonSpreadTable
       // zero padding
       for(uint32_t p = i + 1; p < Size; p++)
       {
-        m_detune[i][p] = 0.f;
-        m_phase[i][p] = 0.f;
-        m_pan[i][p] = 0.f;
+        m_detune[i][p] = 0.0f;
+        m_phase[i][p] = 0.0f;
+        m_pan[i][p] = 0.0f;
       }
     }
   }
