@@ -45,7 +45,7 @@ class Preset : public PresetDualParameterGroups
   // accessors
   const Uuid &getUuid() const;
   Glib::ustring getName() const;
-  PresetParameter *findParameterByID(ParameterId id, VoiceGroup vg) const;
+  PresetParameter *findParameterByID(ParameterId id) const;
   PresetParameterGroup *findParameterGroup(const std::string &id, VoiceGroup vg) const;
 
   // transactions

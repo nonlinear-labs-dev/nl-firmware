@@ -166,9 +166,9 @@ void Preset::guessName(UNDO::Transaction *transaction)
   setName(transaction, Application::get().getPresetManager()->createPresetNameBasedOn(currentName));
 }
 
-PresetParameter *Preset::findParameterByID(ParameterId id, VoiceGroup vg) const
+PresetParameter *Preset::findParameterByID(ParameterId id) const
 {
-  for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
+  for(auto &g : m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())])
     if(auto p = g.second->findParameterByID(id))
       return p;
 

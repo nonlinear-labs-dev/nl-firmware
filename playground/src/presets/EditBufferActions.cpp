@@ -18,9 +18,6 @@ IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* e
 EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     : super("/presets/param-editor/")
 {
-
-#warning "Add VoiceGroup Parameter"
-
   addAction("sync-lpc", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Application::get().getSettings()->sendToLPC();
     Application::get().getLPCProxy()->sendEditBuffer();
@@ -35,7 +32,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   addAction("set-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto id = request->get("id");
     auto value = std::stod(request->get("value"));
-    editBuffer->setParameter(id, value, voiceGroup);
+    editBuffer->setParameter(id, value);
   });
 
   addAction("set-mod-amount", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -54,7 +51,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 
   addAction("rename-mc", [=](std::shared_ptr<NetworkRequest> request) mutable {
-    auto parameterId = request->get("id");
+    auto id = request->get("id");
     auto newName = request->get("new-name");
 
     if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id)))
@@ -72,7 +69,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 
   addAction("set-macrocontrol-info", [=](std::shared_ptr<NetworkRequest> request) mutable {
-    auto parameterId = request->get("id");
+    auto id = request->get("id");
     auto info = request->get("info");
 
     if(auto param = dynamic_cast<MacroControlParameter*>(editBuffer->findParameterByID(id)))
@@ -132,10 +129,9 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 
   addAction("set-modamount-and-value", [=](std::shared_ptr<NetworkRequest> request) mutable {
-    auto id = std::stoi(request->get("id"));
-    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
+    auto id = request->get("id");
 
-    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(id, voiceGroup)))
+    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(id)))
     {
       auto modAmount = std::stod(request->get("mod-amount"));
       auto value = std::stod(request->get("value"));

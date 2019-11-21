@@ -27,11 +27,8 @@ class ParameterId
   VoiceGroup m_group;
 };
 
-namespace std
+std::ostream &operator<<(std::ostream &stream, const ParameterId &e)
 {
-  template <typename O> O &operator<<(O &o, const ParameterId &id)
-  {
-    o << id.toString();
-    return o;
-  }
+  stream << e.toString();
+  return stream;
 }
