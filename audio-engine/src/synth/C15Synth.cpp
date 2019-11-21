@@ -58,18 +58,31 @@ void C15Synth::doAudio(SampleFrame *target, size_t numFrames)
 
 void C15Synth::printAndResetTcdInputLog()
 {
-  nltools::Log::info("currently disabled");
+  m_dsp->logStatus();
 }
 
 void C15Synth::resetDSP()
 {
-  m_dsp->reset();
-  nltools::Log::info("DSP has been reset.");
+  //m_dsp->reset();
+  //nltools::Log::info("DSP has been reset.");
+  m_dsp->onSettingInitialSinglePreset();
 }
 
 void C15Synth::toggleTestTone()
 {
-  nltools::Log::info("currently disabled");
+  switch(m_dsp->onSettingToneToggle())
+  {
+    case 0:
+      nltools::Log::info("toggle TestTone: C15 only");
+      break;
+    case 1:
+      nltools::Log::info("toggle TestTone: Tone only");
+      break;
+    case 2:
+      nltools::Log::info("toggle TestTone: C15 and Tone");
+      break;
+  }
+  //nltools::Log::info("TestTone is implemented before soft clipper and switches via Fadepoint now");
 }
 
 void C15Synth::selectTestToneFrequency()
@@ -111,144 +124,91 @@ void C15Synth::changeSelectedValueBy(int i)
 
 void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage &msg)
 {
-  //nltools::Log::info("Received modulateable parameter message!");
-  // dispatch and safety check
-  auto element = C15::ParameterList[msg.parameterId];
+  // (fail-safe) dispatch by ParameterList
+  auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Modulateable_Parameter)
   {
-    float pos = static_cast<float>(msg.controlPosition), amt = static_cast<float>(msg.mcAmount);
-    C15::Parameters::Macro_Controls src = static_cast<C15::Parameters::Macro_Controls>(msg.sourceMacro);
-    switch(msg.voiceGroup)
-    {
-      case VoiceGroup::I:
-        m_dsp->update_event_target_param(element.m_param.m_index, 0, msg.lock, pos, src, amt);
-        break;
-      case VoiceGroup::II:
-        m_dsp->update_event_target_param(element.m_param.m_index, 1, msg.lock, pos, src, amt);
-        break;
-    }
+    // trigger localParamChange event (modulateables)
+    return m_dsp->localParChg(element.m_param.m_index, msg);
   }
-  else
-  {
-    nltools::Log::info("invalid Modulateable_Parameter ID:", msg.parameterId);
-  }
+#if LOG_FAIL
+  nltools::Log::warning("invalid Modulateable_Parameter ID:", msg.parameterId);
+#endif
 }
 
 void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage &msg)
 {
-  //nltools::Log::info("Received unmodulateable parameter message!");
-  // dispatch and safety check
-  auto element = C15::ParameterList[msg.parameterId];
-  switch(element.m_param.m_type)
+  // (fail-safe) dispatch by ParameterList
+  auto element = m_dsp->getParameter(msg.parameterId);
+  // unison detection
+  if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Unmodulateable_Parameters::Unison_Voices))
   {
-    case C15::Descriptors::ParameterType::Global_Parameter:
-      m_dsp->update_event_global_param(element.m_param.m_index, msg.lock, static_cast<float>(msg.controlPosition));
-      break;
-    case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
-      switch(msg.voiceGroup)
-      {
-        case VoiceGroup::I:
-          m_dsp->update_event_direct_param(element.m_param.m_index, 0, msg.lock,
-                                           static_cast<float>(msg.controlPosition));
-          break;
-        case VoiceGroup::II:
-          m_dsp->update_event_direct_param(element.m_param.m_index, 1, msg.lock,
-                                           static_cast<float>(msg.controlPosition));
-          break;
-      }
-      break;
-    case C15::Descriptors::ParameterType::Macro_Time:
-      switch(msg.voiceGroup)
-      {
-        case VoiceGroup::I:
-          m_dsp->update_event_macro_time(element.m_param.m_index, 0, msg.lock, static_cast<float>(msg.controlPosition));
-          break;
-        case VoiceGroup::II:
-          m_dsp->update_event_macro_time(element.m_param.m_index, 1, msg.lock, static_cast<float>(msg.controlPosition));
-          break;
-      }
-      break;
-    default:
-      nltools::Log::info("invalid Unmodulateable_Parameter ID:", msg.parameterId);
-      break;
+    // trigger localUnisonChange event
+    return m_dsp->localUnisonChg(msg);
   }
+  else
+  {
+    // further (subtype) distinction
+    switch(element.m_param.m_type)
+    {
+      case C15::Descriptors::ParameterType::Global_Parameter:
+        // trigger globalParamChange event
+        return m_dsp->globalParChg(element.m_param.m_index, msg);
+      case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
+        // trigger localParamChange event (unmodulateables)
+        return m_dsp->localParChg(element.m_param.m_index, msg);
+      case C15::Descriptors::ParameterType::Macro_Time:
+        // trigger localTimeChange event (mc smoothing times)
+        return m_dsp->localTimeChg(element.m_param.m_index, msg);
+      default:
+        break;
+    }
+  }
+#if LOG_FAIL
+  nltools::Log::warning("invalid Unmodulateable_Parameter ID:", msg.parameterId);
+#endif
 }
 
 void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage &msg)
 {
-  //nltools::Log::info("Received macro control parameter message!");
-  // dispatch and safety check
-  auto element = C15::ParameterList[msg.parameterId];
+  // (fail-safe) dispatch by ParameterList
+  auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
   {
-    switch(msg.voiceGroup)
-    {
-      case VoiceGroup::I:
-        m_dsp->update_event_macro_ctrl(element.m_param.m_index, 0, msg.lock, static_cast<float>(msg.controlPosition));
-        break;
-      case VoiceGroup::II:
-        m_dsp->update_event_macro_ctrl(element.m_param.m_index, 1, msg.lock, static_cast<float>(msg.controlPosition));
-        break;
-    }
+    // trigger localParamChange event (macros)
+    return m_dsp->localParChg(element.m_param.m_index, msg);
   }
-  else
-  {
-    nltools::Log::info("invalid HW_Amount ID:", msg.parameterId);
-  }
+#if LOG_FAIL
+  nltools::Log::warning("invalid Macro_Control ID:", msg.parameterId);
+#endif
 }
 
 void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage &msg)
 {
-  //nltools::Log::info("Received hwAmount parameter message!");
-  // dispatch and safety check
-  auto element = C15::ParameterList[msg.parameterId];
+  // (fail-safe) dispatch by ParameterList
+  auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Amount)
   {
-    switch(msg.voiceGroup)
-    {
-      case VoiceGroup::I:
-        m_dsp->update_event_hw_amount(element.m_param.m_index, 0, msg.lock, static_cast<float>(msg.controlPosition));
-        break;
-      case VoiceGroup::II:
-        m_dsp->update_event_hw_amount(element.m_param.m_index, 1, msg.lock, static_cast<float>(msg.controlPosition));
-        break;
-    }
+    // trigger localParamChange event (hw_amounts)
+    return m_dsp->localParChg(element.m_param.m_index, msg);
   }
-  else
-  {
-    nltools::Log::info("invalid HW_Amount ID:", msg.parameterId);
-  }
+#if LOG_FAIL
+  nltools::Log::warning("invalid HW_Amount ID:", msg.parameterId);
+#endif
 }
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage &msg)
 {
-  //nltools::Log::info("Received hwSource parameter message!");
-  // dispatch and safety check
-  auto element = C15::ParameterList[msg.parameterId];
+  // (fail-safe) dispatch by ParameterList
+  auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
-    const float pos = static_cast<float>(msg.controlPosition);
-    // later: optimize and only use one single descriptive enum for that (probably from nltools)
-    switch(msg.returnMode)
-    {
-      case ReturnMode::None:
-        m_dsp->update_event_hw_source(element.m_param.m_index, msg.lock, C15::Properties::HW_Return_Behavior::Stay,
-                                      pos);
-        break;
-      case ReturnMode::Center:
-        m_dsp->update_event_hw_source(element.m_param.m_index, msg.lock, C15::Properties::HW_Return_Behavior::Center,
-                                      pos);
-        break;
-      case ReturnMode::Zero:
-        m_dsp->update_event_hw_source(element.m_param.m_index, msg.lock, C15::Properties::HW_Return_Behavior::Zero,
-                                      pos);
-        break;
-    }
+    // trigger globalPatamChange event (hw_sources)
+    return m_dsp->globalParChg(element.m_param.m_index, msg);
   }
-  else
-  {
-    nltools::Log::info("invalid HW_Source ID:", msg.parameterId);
-  }
+#if LOG_FAIL
+  nltools::Log::warning("invalid HW_Source ID:", msg.parameterId);
+#endif
 }
 
 void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage &msg)
@@ -264,25 +224,24 @@ void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage &ms
 void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage &msg)
 {
   m_dsp->onPresetMessage(msg);
-  nltools::Log::info("Received Layer Preset Message!");
 }
 
 void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage &msg)
 {
-  nltools::Log::info("Received NoteShift Message!");
+  m_dsp->onSettingNoteShift(static_cast<float>(msg.m_shift));
 }
 
 void C15Synth::onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage &msg)
 {
-  nltools::Log::info("Received Preset Glitch Suppression Message!");
+  m_dsp->onSettingGlitchSuppr(msg.m_enabled);
 }
 
 void C15Synth::onTransitionTimeMessage(const nltools::msg::Setting::TransitionTimeMessage &msg)
 {
-  nltools::Log::info("Received Transition Time Message!");
+  m_dsp->onSettingTransitionTime(msg.m_value);
 }
 
 void C15Synth::onEditSmoothingTimeMessage(const nltools::msg::Setting::EditSmoothingTimeMessage &msg)
 {
-  nltools::Log::info("Received EditSmoothing Time Message!");
+  m_dsp->onSettingEditTime(msg.m_time);
 }

@@ -214,7 +214,8 @@ namespace C15
 
     struct PlaygroundParamDescriptor
     {
-      const char *m_inactive_cp = nullptr, *m_param_label_long = nullptr, *m_param_label_short = nullptr;
+      const char *m_inactive_cp = nullptr, *m_group_id = nullptr, *m_param_label_long = nullptr,
+                 *m_param_label_short = nullptr;
     };
 
   }  // namespace C15::Descriptors

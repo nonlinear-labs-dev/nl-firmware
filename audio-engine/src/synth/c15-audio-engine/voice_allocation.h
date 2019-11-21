@@ -143,9 +143,10 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   inline VoiceAllocation()
   {
   }
-  inline void init(LayerMode* _mode)
+  inline void init(LayerMode* _current, LayerMode* _next)
   {
-    m_mode = _mode;
+    m_current = _current;
+    m_next = _next;
     // prepare lookup tables for local index (I, II) and voices (0 ... LocalVoices -1)
     for(uint32_t v = 0; v < GlobalVoices; v++)
     {
@@ -199,38 +200,41 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     }
     return validity;
   }
-  inline bool setUnison(const AllocatorId _allocator, const float _value)
+  inline bool setUnison(const uint32_t _layer, const float _value)
   {
     uint32_t voices = 1;
     bool validity = false;
-    switch(_allocator)
+    switch(*m_current)
     {
-      case AllocatorId::None:
-        break;
-      case AllocatorId::Global:
-        voices += static_cast<uint32_t>(_value * (static_cast<float>(GlobalVoices - 1)));
+      case LayerMode::Single:
         clear_keyState(AllocatorId::Global);
-        m_global.setUnison(voices);
-        m_unison = voices;
-        validity = true;
         break;
-      case AllocatorId::Local_I:
-        voices += static_cast<uint32_t>(_value * (static_cast<float>(LocalVoices - 1)));
-        clear_keyState(AllocatorId::Local_I);
-        m_local[0].setUnison(voices);
-        m_unison = voices;
-        validity = true;
+      case LayerMode::Split:
+        clear_keyState(m_layerId[_layer]);
         break;
-      case AllocatorId::Local_II:
-        voices += static_cast<uint32_t>(_value * (static_cast<float>(LocalVoices - 1)));
-        clear_keyState(AllocatorId::Local_II);
-        m_local[1].setUnison(voices);
-        m_unison = voices;
-        validity = true;
-        break;
-      case AllocatorId::Dual:
+      case LayerMode::Layer:
+        clear_keyState(AllocatorId::Dual);
         break;
     }
+    switch(*m_next)
+    {
+      case LayerMode::Single:
+        voices += static_cast<uint32_t>(_value * (static_cast<float>(GlobalVoices - 1)));
+        m_global.setUnison(voices);
+        validity = true;
+        break;
+      case LayerMode::Split:
+        voices += static_cast<uint32_t>(_value * (static_cast<float>(LocalVoices - 1)));
+        m_local[_layer].setUnison(voices);
+        validity = true;
+        break;
+      case LayerMode::Layer:
+        voices += static_cast<uint32_t>(_value * (static_cast<float>(LocalVoices - 1)));
+        m_local[0].setUnison(voices);
+        validity = true;
+        break;
+    }
+    m_unison = voices;
     return validity;
   }
   // resets everything
@@ -245,12 +249,13 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   KeyAssignment m_keyState[Keys];
   VoiceAssignment m_voiceState[GlobalVoices];
   uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {}, m_splitPoint = {};
-  LayerMode* m_mode;
+  const AllocatorId m_layerId[2] = { AllocatorId::Local_I, AllocatorId::Local_II };
+  LayerMode *m_current, *m_next;
   inline void keyDown_apply(KeyAssignment* _keyState, const uint32_t _keyPos)
   {
     uint32_t firstVoice, unisonVoices;
     // determine associated allocator (by mode)
-    switch(*m_mode)
+    switch(*m_current)
     {
       case LayerMode::Single:
         _keyState->m_origin = AllocatorId::Global;
