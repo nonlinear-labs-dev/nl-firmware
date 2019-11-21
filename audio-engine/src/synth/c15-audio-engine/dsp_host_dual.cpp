@@ -28,7 +28,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_fade.init(samplerate);
   m_output_mute.init(&m_fade.m_value);
   // these could also be part of parameter list (later), currently hard-coded
-  m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.0f);
+  m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
   m_transition_time.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
   m_reference.init(C15::Properties::SmootherScale::Linear, 80.0f, 400.0f, 0.5f);
   m_reference.m_scaled = scale(m_reference.m_scaling, m_reference.m_position);
@@ -165,10 +165,8 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   nltools::Log::info("todo: engine - modulation matrix (triggers, behavior, etc.)");
   nltools::Log::info("todo: engine - dsp components implementation");
   nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
-  nltools::Log::info(
-      "issue: nltools::presetMsg - parameter structure, param ids, lock, unsorted param groups, global group");
+  nltools::Log::info("issue: nltools::presetMsg - parameter structure, param ids, unsorted param groups, global group");
   nltools::Log::info("(param_ids: mono_grp, master, voice_grp?, split_point?)");
-  nltools::Log::info("todo: nltools::parameterMsg - lock can disappear");
   nltools::Log::info("todo: initialization??? (transition times, etc.)");
 #endif
 }
@@ -1279,10 +1277,7 @@ Direct_Param *dsp_host_dual::evalVoiceChg(const C15::Properties::LayerId _layerI
                                           const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_unisonVoices)
 {
   auto param = m_params.get(_layerId, C15::Parameters::Unmodulateable_Parameters::Unison_Voices);
-  if(!_unisonVoices.locked)
-  {
-    m_layer_changed |= param->update_position(static_cast<float>(_unisonVoices.controlPosition));
-  }
+  m_layer_changed |= param->update_position(static_cast<float>(_unisonVoices.controlPosition));
   return param;
 }
 
@@ -1424,131 +1419,89 @@ void dsp_host_dual::recallLayer()
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::PedalParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
-    auto element = getParameter(_source.id);
-    if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
-    {
 
-      auto param = m_params.get_hw_src(element.m_param.m_index);
-      param->update_behavior(getBehavior(_source.returnMode));
-      param->update_position(static_cast<float>(_source.controlPosition));
-    }
-#if LOG_FAIL
-    else
-    {
-      nltools::Log::warning("failed to recall Pedal(id:", _source.id, ")");
-    }
-#endif
+    auto param = m_params.get_hw_src(element.m_param.m_index);
+    param->update_behavior(getBehavior(_source.returnMode));
+    param->update_position(static_cast<float>(_source.controlPosition));
   }
-#if LOG_LOCKED
+#if LOG_FAIL
   else
   {
-    nltools::Log::info("locked(id:", _source.id, ")");
+    nltools::Log::warning("failed to recall Pedal(id:", _source.id, ")");
   }
 #endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::BenderParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
-    auto element = getParameter(_source.id);
-    if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
-    {
 
-      auto param = m_params.get_hw_src(element.m_param.m_index);
-      param->update_position(static_cast<float>(_source.controlPosition));
-    }
-#if LOG_FAIL
-    else
-    {
-      nltools::Log::warning("failed to recall Bender(id:", _source.id, ")");
-    }
-#endif
+    auto param = m_params.get_hw_src(element.m_param.m_index);
+    param->update_position(static_cast<float>(_source.controlPosition));
   }
+#if LOG_FAIL
+  else
+  {
+    nltools::Log::warning("failed to recall Bender(id:", _source.id, ")");
+  }
+#endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::AftertouchParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
-    auto element = getParameter(_source.id);
-    if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
-    {
-
-      auto param = m_params.get_hw_src(element.m_param.m_index);
-      param->update_position(static_cast<float>(_source.controlPosition));
-    }
-#if LOG_FAIL
-    else
-    {
-      nltools::Log::warning("failed to recall Aftertouch(id:", _source.id, ")");
-    }
-#endif
+    auto param = m_params.get_hw_src(element.m_param.m_index);
+    param->update_position(static_cast<float>(_source.controlPosition));
   }
-#if LOG_LOCKED
+#if LOG_FAIL
   else
   {
-    nltools::Log::info("locked(id:", _source.id, ")");
+    nltools::Log::warning("failed to recall Aftertouch(id:", _source.id, ")");
   }
 #endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::RibbonParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
-    auto element = getParameter(_source.id);
-    if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
-    {
-
-      auto param = m_params.get_hw_src(element.m_param.m_index);
-      param->update_behavior(getBehavior(_source.ribbonReturnMode));
-      param->update_position(static_cast<float>(_source.controlPosition));
-    }
-#if LOG_FAIL
-    else
-    {
-      nltools::Log::warning("failed to recall Ribbon(id:", _source.id, ")");
-    }
-#endif
+    auto param = m_params.get_hw_src(element.m_param.m_index);
+    param->update_behavior(getBehavior(_source.ribbonReturnMode));
+    param->update_position(static_cast<float>(_source.controlPosition));
   }
-#if LOG_LOCKED
+#if LOG_FAIL
   else
   {
-    nltools::Log::info("locked(id:", _source.id, ")");
+    nltools::Log::warning("failed to recall Ribbon(id:", _source.id, ")");
   }
 #endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Parameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Parameter)
   {
-    auto element = getParameter(_source.id);
-    if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Parameter)
+    auto param = m_params.get_global(element.m_param.m_index);
+    param->m_changed = false;
+    if(param->update_position(static_cast<float>(_source.controlPosition)))
     {
-
-      auto param = m_params.get_global(element.m_param.m_index);
-      param->m_changed = false;
-      if(param->update_position(static_cast<float>(_source.controlPosition)))
-      {
-        param->m_scaled = scale(param->m_scaling, param->m_position);
-        param->m_changed = true;
-      }
+      param->m_scaled = scale(param->m_scaling, param->m_position);
+      param->m_changed = true;
     }
-#if LOG_FAIL
-    else
-    {
-      nltools::Log::warning("failed to recall Global(id:", _source.id, ")");
-    }
-#endif
   }
-#if LOG_LOCKED
+#if LOG_FAIL
   else
   {
-    nltools::Log::info("locked(id:", _source.id, ")");
+    nltools::Log::warning("failed to recall Global(id:", _source.id, ")");
   }
 #endif
 }
@@ -1556,110 +1509,74 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Parameter 
 void dsp_host_dual::localParRcl(const uint32_t _layer,
                                 const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  const uint32_t id = element.m_param.m_index;
+  switch(element.m_param.m_type)
   {
-    auto element = getParameter(_source.id);
-    const uint32_t id = element.m_param.m_index;
-    switch(element.m_param.m_type)
-    {
-      case C15::Descriptors::ParameterType::Hardware_Amount:
-        m_params.get_hw_amt(_layer, id)->update_position(static_cast<float>(_source.controlPosition));
-        break;
-      case C15::Descriptors::ParameterType::Macro_Time:
-        localTimeRcl(_layer, element.m_param.m_index, static_cast<float>(_source.controlPosition));
-        break;
-      case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
-        localDirectRcl(m_params.get_direct(_layer, id), _source);
-        break;
-      default:
+    case C15::Descriptors::ParameterType::Hardware_Amount:
+      m_params.get_hw_amt(_layer, id)->update_position(static_cast<float>(_source.controlPosition));
+      break;
+    case C15::Descriptors::ParameterType::Macro_Time:
+      localTimeRcl(_layer, element.m_param.m_index, static_cast<float>(_source.controlPosition));
+      break;
+    case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
+      localDirectRcl(m_params.get_direct(_layer, id), _source);
+      break;
+    default:
 #if LOG_FAIL
-        nltools::Log::warning("failed to recall Unmodulateable(id:", _source.id, ")");
+      nltools::Log::warning("failed to recall Unmodulateable(id:", _source.id, ")");
 #endif
-        break;
-    }
+      break;
   }
-#if LOG_LOCKED
-  else
-  {
-    nltools::Log::info("locked(id:", _source.id, ")");
-  }
-#endif
 }
 
 void dsp_host_dual::localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MacroParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
   {
-    auto element = getParameter(_source.id);
-    if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
-    {
-      auto param = m_params.get_macro(_layer, element.m_param.m_index);
-      param->update_position(static_cast<float>(_source.controlPosition));
-    }
-#if LOG_FAIL
-    else
-    {
-      nltools::Log::warning("failed to recall Macro(id:", _source.id, ")");
-    }
-#endif
+    auto param = m_params.get_macro(_layer, element.m_param.m_index);
+    param->update_position(static_cast<float>(_source.controlPosition));
   }
-#if LOG_LOCKED
+#if LOG_FAIL
   else
   {
-    nltools::Log::info("locked(id:", _source.id, ")");
+    nltools::Log::warning("failed to recall Macro(id:", _source.id, ")");
   }
 #endif
 }
 
 void dsp_host_dual::localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  switch(element.m_param.m_type)
   {
-    auto element = getParameter(_source.id);
-    switch(element.m_param.m_type)
-    {
-      case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
-        localDirectRcl(m_params.get_direct(_layer, element.m_param.m_index), _source);
-        break;
-      case C15::Descriptors::ParameterType::Modulateable_Parameter:
-        localTargetRcl(m_params.get_target(_layer, element.m_param.m_index), _source);
-        break;
-      default:
+    case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
+      localDirectRcl(m_params.get_direct(_layer, element.m_param.m_index), _source);
+      break;
+    case C15::Descriptors::ParameterType::Modulateable_Parameter:
+      localTargetRcl(m_params.get_target(_layer, element.m_param.m_index), _source);
+      break;
+    default:
 #if LOG_FAIL
-        nltools::Log::warning("failed to recall Mono(id:", _source.id, ")");
+      nltools::Log::warning("failed to recall Mono(id:", _source.id, ")");
 #endif
-        break;
-    }
+      break;
   }
-#if LOG_LOCKED
-  else
-  {
-    nltools::Log::info("locked(id:", _source.id, ")");
-  }
-#endif
 }
 
 void dsp_host_dual::localParRcl(const uint32_t _layer,
                                 const nltools::msg::ParameterGroups::ModulateableParameter &_source)
 {
-  if(!_source.locked)
+  auto element = getParameter(_source.id);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Modulateable_Parameter)
   {
-    auto element = getParameter(_source.id);
-    if(element.m_param.m_type == C15::Descriptors::ParameterType::Modulateable_Parameter)
-    {
-      localTargetRcl(m_params.get_target(_layer, element.m_param.m_index), _source);
-    }
-#if LOG_FAIL
-    else
-    {
-      nltools::Log::warning("failed to recall Modulateable(id:", _source.id, ")");
-    }
-#endif
+    localTargetRcl(m_params.get_target(_layer, element.m_param.m_index), _source);
   }
-#if LOG_LOCKED
+#if LOG_FAIL
   else
   {
-    nltools::Log::info("locked(id:", _source.id, ")");
+    nltools::Log::warning("failed to recall Modulateable(id:", _source.id, ")");
   }
 #endif
 }
