@@ -21,8 +21,8 @@ void Engine::PolyStateVariableFilter::init(const float _samplerate)
       = m_second_sat_stateVar = 0.0f;
 }
 
-void Engine::PolyStateVariableFilter::apply(const PolyValue &_sampleA, const PolyValue &_sampleB,
-                                            const PolyValue &_sampleComb, PolySignals &_signals)
+void Engine::PolyStateVariableFilter::apply(PolySignals &_signals, const PolyValue &_sampleA, const PolyValue &_sampleB,
+                                            const PolyValue &_sampleComb)
 {
   // damp, fmax (from res)
   auto damp = _signals.get(C15::Signals::Truepoly_Signals::SV_Flt_Res_Damp);

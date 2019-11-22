@@ -39,7 +39,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_reference.m_scaled = scale(m_reference.m_scaling, m_reference.m_position);
   // dsp sections init
   m_global.init(m_time.m_sample_inc);
-  m_global.update_tone_amplitude(-12.0f);
+  m_global.update_tone_amplitude(-6.0f);
   m_global.update_tone_frequency(m_reference.m_scaled);
   m_global.update_tone_mode(0);
   // init poly: exponentiator, feedback pointers
@@ -780,7 +780,7 @@ void dsp_host_dual::render()
   }
   // audio rendering (always)
   const float mute = m_output_mute.get_value();
-  // - resolve poly feedback
+  // - resolve poly feedback -- todo: re-evaluate...
   m_poly_feedback[0] = m_poly[0].m_osc_a;
   m_poly_feedback[1] = m_poly[0].m_osc_b;
   m_poly_feedback[2] = m_poly[1].m_osc_a;

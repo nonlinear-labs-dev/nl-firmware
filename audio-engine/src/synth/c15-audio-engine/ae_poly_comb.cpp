@@ -34,7 +34,7 @@ void Engine::PolyCombFilter::init(const float _samplerate, const uint32_t _upsam
   m_delaySamples = m_delayStateVar = 0.0f;
 }
 
-void Engine::PolyCombFilter::apply(const PolyValue &_sampleA, const PolyValue &_sampleB, PolySignals &_signals)
+void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_sampleA, const PolyValue &_sampleB)
 {
   // ab sample mix
   auto tmpCmbAB = _signals.get(C15::Signals::Quasipoly_Signals::Comb_Flt_In_A_B);

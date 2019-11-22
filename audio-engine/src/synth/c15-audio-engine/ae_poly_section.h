@@ -67,15 +67,20 @@ class PolySection
   Engine::PolyStateVariableFilter m_svfilter;
   Engine::PolyFeedbackMixer m_feedbackmixer;
   Engine::PolyOutputMixer m_outputmixer;
-  float m_shift[C15::Config::local_polyphony] = {}, m_key_tune[C15::Config::local_polyphony] = {}, m_master_tune = 0.0f,
-        m_nyquist;
+  NlToolbox::Curves::Shaper_1_BP m_comb_decayCurve, m_svf_LBH1Curve, m_svf_LBH2Curve;
+  NlToolbox::Curves::Shaper_2_BP m_svf_resCurve;
+  const float m_svf_resFactor = 1.0f / 60.0f;
+  float m_shift[C15::Config::local_polyphony] = {}, m_key_tune[C15::Config::local_polyphony] = {},
+        m_comb_decay_times[2] = {}, m_master_tune = 0.0f, m_samplerate, m_nyquist;
   uint32_t m_unison_index[C15::Config::local_polyphony] = {};
   const uint32_t m_voices = C15::Config::local_polyphony;
   float evalNyquist(const float _value);
-  void postProcess_audio(const uint32_t _voiceId, const float _mute);
-  void postProcess_fast(const uint32_t _voiceId);
-  void postProcess_slow(const uint32_t _voiceId);
-  void postProcess_key(const uint32_t _voiceId);
+  void postProcess_poly_audio(const uint32_t _voiceId, const float _mute);
+  void postProcess_poly_fast(const uint32_t _voiceId);
+  void postProcess_mono_fast();
+  void postProcess_poly_slow(const uint32_t _voiceId);
+  void postProcess_mono_slow();
+  void postProcess_poly_key(const uint32_t _voiceId);
   void startEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
   void stopEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
   void updateEnvLevels(const uint32_t _voiceId);

@@ -26,9 +26,8 @@ void Engine::PolyOutputMixer::init(const float _samplerate, const uint32_t _numO
   m_hp_stateVar_L1 = m_hp_stateVar_L2 = m_hp_stateVar_R1 = m_hp_stateVar_R2 = 0.0f;
 }
 
-void Engine::PolyOutputMixer::combine(const PolyValue &_sampleA, const PolyValue &_sampleB,
-                                      const PolyValue &_sampleComb, const PolyValue &_sampleSVFilter,
-                                      PolySignals &_signals)
+void Engine::PolyOutputMixer::combine(PolySignals &_signals, const PolyValue &_sampleA, const PolyValue &_sampleB,
+                                      const PolyValue &_sampleComb, const PolyValue &_sampleSVFilter)
 {
   // left
   auto mainSample = (_signals.get(C15::Signals::Truepoly_Signals::Out_Mix_A_Left) * _sampleA)

@@ -20,8 +20,8 @@ namespace Engine
     PolyValue m_out;
     PolyStateVariableFilter();
     void init(const float _samplerate);
-    void apply(const PolyValue &_sampleA, const PolyValue &_sampleB, const PolyValue &_sampleComb,
-               PolySignals &_signals);
+    void apply(PolySignals &_signals, const PolyValue &_sampleA, const PolyValue &_sampleB,
+               const PolyValue &_sampleComb);
     void resetDSP();
 
    private:

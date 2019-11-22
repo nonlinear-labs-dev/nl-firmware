@@ -31,7 +31,7 @@ void Engine::PolySoundGenerator::set(PolySignals &_signals, const uint32_t _voic
   m_chiB_a1[_voiceId] = m_chiB_omega[_voiceId] - 1.0f;
 }
 
-void Engine::PolySoundGenerator::generate(PolySignals &_signals, const float _feedbackSample)
+void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue _feedbackSample)
 {
   // modulation a
   auto oscSampleA = m_oscA_selfmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_A_PM_Self_Env_A);

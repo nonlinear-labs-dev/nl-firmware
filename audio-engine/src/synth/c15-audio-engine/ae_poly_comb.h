@@ -23,7 +23,7 @@ namespace Engine
     PolyValue m_out;
     PolyCombFilter();
     void init(const float _samplerate, const uint32_t _upsampleFactor);
-    void apply(const PolyValue &_sampleA, const PolyValue &_sampleB, PolySignals &_signals);
+    void apply(PolySignals &_signals, const PolyValue &_sampleA, const PolyValue &_sampleB);
     void set(PolySignals &_signals, const float _samplerate, const uint32_t _voiceId);
     void setDelaySmoother(const uint32_t _voiceId);
     void resetDSP();
