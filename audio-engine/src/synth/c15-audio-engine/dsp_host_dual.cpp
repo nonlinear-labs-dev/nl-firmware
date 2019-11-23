@@ -778,7 +778,7 @@ void dsp_host_dual::render()
     m_mono[0].render_fast();
     m_mono[1].render_fast();
   }
-  // audio rendering (always)
+  // audio rendering (always) -- temporary soundgenerator patching
   const float mute = m_output_mute.get_value();
   // - resolve poly feedback -- todo: re-evaluate...
   m_poly_feedback[0] = m_poly[0].m_osc_a;
@@ -789,10 +789,12 @@ void dsp_host_dual::render()
   m_poly[0].render_audio(mute);
   m_poly[1].render_audio(mute);
   // - audio dsp mono - each layer with separate sends - left, right)
-  m_mono[0].render_audio(m_poly[0].m_send0_l + m_poly[1].m_send0_l, m_poly[0].m_send0_r + m_poly[1].m_send0_r);
-  m_mono[1].render_audio(m_poly[0].m_send1_l + m_poly[1].m_send1_l, m_poly[0].m_send1_r + m_poly[1].m_send1_r);
+  //m_mono[0].render_audio(m_poly[0].m_send0_l + m_poly[1].m_send0_l, m_poly[0].m_send0_r + m_poly[1].m_send0_r);
+  //m_mono[1].render_audio(m_poly[0].m_send1_l + m_poly[1].m_send1_l, m_poly[0].m_send1_r + m_poly[1].m_send1_r);
   // - audio dsp global - main out: combine layers, apply test_tone and soft clip
-  m_global.render_audio(m_mono[0].m_out_l, m_mono[0].m_out_r, m_mono[1].m_out_l, m_mono[1].m_out_r);
+  //m_global.render_audio(m_mono[0].m_out_l, m_mono[0].m_out_r, m_mono[1].m_out_l, m_mono[1].m_out_r);
+  m_global.render_audio(sumUp(m_poly[0].m_osc_a), sumUp(m_poly[0].m_osc_b), sumUp(m_poly[1].m_osc_a),
+                        sumUp(m_poly[1].m_osc_b));  // temporary
   // - final: main out, output mute
   m_mainOut_L = m_global.m_out_l * mute;
   m_mainOut_R = m_global.m_out_r * mute;
