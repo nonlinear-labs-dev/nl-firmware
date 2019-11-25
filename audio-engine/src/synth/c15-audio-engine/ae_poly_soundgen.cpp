@@ -31,7 +31,7 @@ void Engine::PolySoundGenerator::set(PolySignals &_signals, const uint32_t _voic
   m_chiB_a1[_voiceId] = m_chiB_omega[_voiceId] - 1.0f;
 }
 
-void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue _feedbackSample)
+void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue _feedbackSignal)
 {
   // modulation a
   auto oscSampleA = m_oscA_selfmix * _signals.get(C15::Signals::Truepoly_Signals::Osc_A_PM_Self_Env_A);
@@ -125,9 +125,9 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue
   m_out_A *= _signals.get(C15::Signals::Truepoly_Signals::Env_A_Mag);
   m_out_B *= _signals.get(C15::Signals::Truepoly_Signals::Env_B_Mag);
   // fb mix
-  auto tmpVarFBA = _feedbackSample * _signals.get(C15::Signals::Truepoly_Signals::Shp_A_FB_Env_C);
+  auto tmpVarFBA = _feedbackSignal * _signals.get(C15::Signals::Truepoly_Signals::Shp_A_FB_Env_C);
   m_out_A = unipolarCrossFade(m_out_A, tmpVarFBA, _signals.get(C15::Signals::Quasipoly_Signals::Shp_A_FB_Mix));
-  auto tmpVarFBB = _feedbackSample * _signals.get(C15::Signals::Truepoly_Signals::Shp_B_FB_Env_C);
+  auto tmpVarFBB = _feedbackSignal * _signals.get(C15::Signals::Truepoly_Signals::Shp_B_FB_Env_C);
   m_out_B = unipolarCrossFade(m_out_B, tmpVarFBB, _signals.get(C15::Signals::Quasipoly_Signals::Shp_B_FB_Mix));
   // ring mod
   auto res = m_out_A * m_out_B;
