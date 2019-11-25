@@ -12,6 +12,11 @@
 #include "smoother_handle.h"
 #include "ae_info.h"
 #include "ae_envelopes.h"
+#include "ae_mono_flanger.h"
+#include "ae_mono_cabinet.h"
+#include "ae_mono_gapfilter.h"
+#include "ae_mono_echo.h"
+#include "ae_mono_reverb.h"
 
 class MonoSection
 {
@@ -38,6 +43,11 @@ class MonoSection
       m_smoothers;
   LayerSignalCollection *m_z_self;
   Engine::Envelopes::DecayEnvelope<1> m_flanger_env;
+  Engine::MonoFlanger m_flanger;
+  Engine::MonoCabinet m_cabinet;
+  Engine::MonoGapFilter m_gapfilter;
+  Engine::MonoEcho m_echo;
+  Engine::MonoReverb m_reverb;
   void postProcess_audio();
   void postProcess_fast();
   void postProcess_slow();
