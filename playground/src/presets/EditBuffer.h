@@ -89,7 +89,7 @@ class EditBuffer : public ParameterDualGroupSet
   SoundType getType() const;
 
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type);
-  void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
+  void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
   void undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup target);
@@ -108,7 +108,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertToSplit(UNDO::Transaction *transaction);
   void undoableConvertToLayer(UNDO::Transaction *transaction);
-  void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
+  void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
   void setModulationSource(MacroControls src);
   void setModulationAmount(double amount);

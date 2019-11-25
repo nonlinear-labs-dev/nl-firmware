@@ -596,18 +596,20 @@ VoiceGroup invert(VoiceGroup vg)
   return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
 }
 
-void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup vg)
+void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
   if(getType() != SoundType::Single)
-    undoableConvertDualToSingle(transaction, vg);
+    undoableConvertDualToSingle(transaction, copyFrom);
 }
 
-void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup vg)
+void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
+  setName(transaction, getVoiceGroupName(copyFrom));
+
   auto masterGroup = getParameterGroupByID("Master", VoiceGroup::Global);
 
-  auto originVolume = findParameterByID({ 358, vg });
-  auto originTune = findParameterByID({ 360, vg });
+  auto originVolume = findParameterByID({ 358, copyFrom });
+  auto originTune = findParameterByID({ 360, copyFrom });
 
   auto masterVolumeParameter = masterGroup->getParameterByID({ 247, VoiceGroup::Global });
   auto masterTuneParameter = masterGroup->getParameterByID({ 248, VoiceGroup::Global });
@@ -627,9 +629,14 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
     vgTune->setDefaultFromHwui(transaction);
   }
 
-  if(vg != VoiceGroup::I)
-    copyVoiceGroup(transaction, vg, VoiceGroup::I);
+  if(copyFrom != VoiceGroup::I)
+    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 
+  transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
+  setVoiceGroupName(transaction, "", VoiceGroup::I);
+  setVoiceGroupName(transaction, "", VoiceGroup::II);
+
+  initRecallValues(transaction);
   undoableSetType(transaction, SoundType::Single);
 }
 
