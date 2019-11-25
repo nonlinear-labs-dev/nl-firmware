@@ -1,10 +1,8 @@
 #pragma once
 
-template <typename tCollection>
-inline int getIdOfAdvancedParameter(const tCollection &c, int currentSelectionID, int inc)
+template <typename tCollection> inline int getIdOfAdvancedParameter(const tCollection &c, int currentSelection, int inc)
 {
-  auto found = find_if(c.begin(), c.end(),
-                       [&](typename tCollection::value_type e) { return e->getID() == currentSelectionID; });
+  auto found = find_if(c.begin(), c.end(), [&](auto e) { return e->getID().getNumber() == currentSelection; });
 
   if(found == c.end())
     found = c.begin();
@@ -21,5 +19,5 @@ inline int getIdOfAdvancedParameter(const tCollection &c, int currentSelectionID
   found = c.begin();
   advance(found, dist);
 
-  return (*found)->getID();
+  return (*found)->getID().getNumber();
 }

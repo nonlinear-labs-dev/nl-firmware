@@ -9,7 +9,7 @@ void BaseUnitEditMode::toggleTouchBehaviour()
 {
   auto p = Application::get().getLPCProxy();
 
-  if(p->getLastTouchedRibbonParameterID() == HardwareSourcesGroup::getUpperRibbonParameterID())
+  if(p->getLastTouchedRibbonParameterID() == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
     toggleParameterEditModeRibbonBehaviour();
   else
     super::toggleTouchBehaviour();

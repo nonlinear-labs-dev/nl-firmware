@@ -11,6 +11,7 @@
 #include <parameters/PedalParameter.h>
 #include <parameters/PitchbendParameter.h>
 #include <parameters/RibbonParameter.h>
+#include <parameters/ScaleParameter.h>
 #include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include <groups/HardwareSourcesGroup.h>
@@ -47,19 +48,14 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
       if(isHardwareSource)
       {
         auto &pItem = msg.hwsources[hwSource++];
-        pItem.id = p->getID();
+        pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
         pItem.locked = p->isLocked();
-
-        if(auto physicalControl = dynamic_cast<PhysicalControlParameter *>(p))
-        {
-          pItem.returnMode = physicalControl->getReturnMode();
-        }
       }
       else if(isMaster || isScale)
       {
         auto &pItem = msg.globalparams[globalParams++];
-        pItem.id = p->getID();
+        pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
       }
     }
@@ -153,28 +149,28 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
       if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
         auto &macro = msg.macros[mc++];
-        macro.id = mcParameter->getID();
+        macro.id = mcParameter->getID().getNumber();
         macro.controlPosition = mcParameter->getControlPositionValue();
         macro.locked = mcParameter->isLocked();
       }
       else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
       {
         auto &hwAmount = msg.hwamounts[modR++];
-        hwAmount.id = hwAmounts->getID();
+        hwAmount.id = hwAmounts->getID().getNumber();
         hwAmount.controlPosition = hwAmounts->getControlPositionValue();
         hwAmount.locked = hwAmounts->isLocked();
       }
       else if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
       {
         auto &mod = msg.modulateables[modP++];
-        mod.id = modParam->getID();
+        mod.id = modParam->getID().getNumber();
         mod.controlPosition = modParam->getControlPositionValue();
         mod.modulationAmount = modParam->getModulationAmount();
         mod.mc = modParam->getModulationSource();
       }
       else
       {
-        if(p->getID() == 249)
+        if(p->getID().getNumber() == 249)
         {
           auto &unisonVoices = msg.unisonVoices;
           unisonVoices.id = 249;
@@ -184,7 +180,7 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
         else
         {
           auto &unModulateable = msg.unmodulateables[unMod++];
-          unModulateable.id = p->getID();
+          unModulateable.id = p->getID().getNumber();
           unModulateable.controlPosition = p->getControlPositionValue();
           unModulateable.locked = p->isLocked();
         }
@@ -220,28 +216,28 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
         if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
         {
           auto &macro = msg.macros[arrayIndex][mc++];
-          macro.id = mcParameter->getID();
+          macro.id = mcParameter->getID().getNumber();
           macro.controlPosition = mcParameter->getControlPositionValue();
           macro.locked = mcParameter->isLocked();
         }
         else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
         {
           auto &hwAmount = msg.hwamounts[arrayIndex][modR++];
-          hwAmount.id = hwAmounts->getID();
+          hwAmount.id = hwAmounts->getID().getNumber();
           hwAmount.controlPosition = hwAmounts->getControlPositionValue();
           hwAmount.locked = hwAmounts->isLocked();
         }
         else if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
         {
           auto &mod = msg.modulateables[arrayIndex][modP++];
-          mod.id = modParam->getID();
+          mod.id = modParam->getID().getNumber();
           mod.controlPosition = modParam->getControlPositionValue();
           mod.modulationAmount = modParam->getModulationAmount();
           mod.mc = modParam->getModulationSource();
         }
         else
         {
-          if(p->getID() == 249)
+          if(p->getID().getNumber() == 249)
           {
             auto &unisonVoices = msg.unisonVoices[arrayIndex];
             unisonVoices.id = 249;
@@ -251,7 +247,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
           else
           {
             auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
-            unModulateable.id = p->getID();
+            unModulateable.id = p->getID().getNumber();
             unModulateable.controlPosition = p->getControlPositionValue();
             unModulateable.locked = p->isLocked();
           }
@@ -276,7 +272,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
   if(auto sp = editBuffer->getSplitPoint())
   {
     auto &t = msg.splitpoint;
-    t.id = sp->getID();
+    t.id = sp->getID().getNumber();
     t.controlPosition = sp->getControlPositionValue();
   }
 

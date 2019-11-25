@@ -25,19 +25,18 @@ class EditBuffer : public ParameterDualGroupSet
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;
-  Parameter *getSelected(VoiceGroup vg) const;
   bool isZombie() const;
 
-  void setMacroControlValueFromMCView(int id, double value, const Glib::ustring &uuid);
+  void setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid);
 
   void undoableSelectParameter(const Glib::ustring &id);
-  void undoableSelectParameter(uint16_t id);
-  void undoableSelectParameter(uint16_t id, VoiceGroup vg);
+  void undoableSelectParameter(ParameterId id);
   void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
 
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
-  void undoableLoad(Preset *preset, VoiceGroup target = VoiceGroup::Invalid);
+  void undoableLoad(Preset *preset);
+  void undoableLoadIntoVoiceGroup(Preset *preset, VoiceGroup vg);
 
   void undoableLoadSelectedPreset();
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
@@ -67,7 +66,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
-  bool hasLocks(VoiceGroup vg = VoiceGroup::Invalid) const;
+  bool hasLocks(VoiceGroup vg) const;
   bool anyParameterChanged() const;
   void resetOriginIf(const Preset *p);
 
@@ -89,8 +88,8 @@ class EditBuffer : public ParameterDualGroupSet
 
   SoundType getType() const;
 
-  void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup copyFrom = VoiceGroup::I);
+  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type);
+  void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
 
   void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
   void undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup target);
@@ -100,16 +99,17 @@ class EditBuffer : public ParameterDualGroupSet
 
  private:
   Glib::ustring getEditBufferName() const;
-
   bool anyParameterChanged(VoiceGroup vg) const;
-
-  Parameter *searchForAnyParameterWithLock(VoiceGroup vg = VoiceGroup::Invalid) const;
-
+  Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
   UNDO::Scope &getUndoScope() override;
+  void setParameter(ParameterId id, double cpValue);
 
-  void setParameter(size_t id, double cpValuem, VoiceGroup target = VoiceGroup::Invalid);
+  void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id);
+  void undoableSetType(UNDO::Transaction *transaction, SoundType type);
+  void undoableConvertToSplit(UNDO::Transaction *transaction);
+  void undoableConvertToLayer(UNDO::Transaction *transaction);
+  void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup vg);
 
-  void undoableSelectParameter(UNDO::Transaction *transaction, const Glib::ustring &id);
   void setModulationSource(MacroControls src);
   void setModulationAmount(double amount);
 
@@ -123,24 +123,7 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalLocksChanged;
   Signal<void> m_signalTypeChanged;
 
-  struct LastSelection
-  {
-    LastSelection() = default;
-
-    explicit LastSelection(const Parameter *param)
-    {
-      if(param)
-      {
-        m_id = param->getID();
-        m_voiceGroup = param->getVoiceGroup();
-      }
-    }
-
-    Parameter::ID m_id = 0;
-    VoiceGroup m_voiceGroup = VoiceGroup::I;
-  };
-
-  LastSelection m_lastSelectedParameter;
+  ParameterId m_lastSelectedParameter;
 
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;
@@ -164,11 +147,4 @@ class EditBuffer : public ParameterDualGroupSet
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
-
-  void undoableSetType(UNDO::Transaction *transaction, SoundType type);
-
-  void undoableConvertToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-  void undoableConvertToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-
-  void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 };

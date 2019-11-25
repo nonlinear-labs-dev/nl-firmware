@@ -1,6 +1,7 @@
 #include <proxies/hwui/TextCropper.h>
 #include "ModuleCaption.h"
 #include "Application.h"
+#include <proxies/hwui/HWUI.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -12,8 +13,7 @@ ModuleCaption::ModuleCaption(const Rect &pos)
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)));
 
-  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &ModuleCaption::onSelectionChanged));
 }
 
 Label::StringAndSuffix ModuleCaption::shortenStringIfNeccessary(std::shared_ptr<Font> font,
@@ -54,8 +54,8 @@ void ModuleCaption::updateText(Parameter *newOne)
 
     if(enableVoiceGroupSuffix())
     {
-      auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      auto suffix = std::string{};
+      auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto suffix = std::string {};
       if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
         suffix = " " + toString(sel);
       setText(groupName + suffix);
@@ -65,7 +65,7 @@ void ModuleCaption::updateText(Parameter *newOne)
   }
 }
 
-void ModuleCaption::onSelectionChanged()
+void ModuleCaption::onSelectionChanged(VoiceGroup v)
 {
   auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   updateText(selected);

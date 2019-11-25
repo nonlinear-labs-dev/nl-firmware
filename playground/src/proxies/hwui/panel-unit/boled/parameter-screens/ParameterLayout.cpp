@@ -52,8 +52,7 @@ void ParameterLayout2::showRecallScreenIfAppropriate()
 
 Parameter *ParameterLayout2::getCurrentParameter() const
 {
-  auto hwSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  return Application::get().getPresetManager()->getEditBuffer()->getSelected(hwSelection);
+  return Application::get().getPresetManager()->getEditBuffer()->getSelected();
 }
 
 Parameter *ParameterLayout2::getCurrentEditParameter() const
@@ -164,7 +163,7 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
     switch(i)
     {
       case Buttons::BUTTON_A:
-        Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
+        Application::get().getHWUI()->toggleCurrentVoiceGroup();
         return true;
 
       case Buttons::BUTTON_D:
@@ -198,8 +197,7 @@ ParameterEditLayout2::ParameterEditLayout2()
 }
 
 ParameterEditLayout2::~ParameterEditLayout2()
-{
-}
+= default;
 
 void ParameterEditLayout2::init()
 {

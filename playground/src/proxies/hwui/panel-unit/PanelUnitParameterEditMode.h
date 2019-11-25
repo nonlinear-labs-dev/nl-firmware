@@ -46,12 +46,12 @@ class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
   tAction createParameterSelectAction(std::vector<gint32> toggleAudioIDs);
 
   bool toggleParameterSelection(std::vector<gint32> ids, bool state);
-  bool setParameterSelection(gint32 audioID, bool state);
+  bool setParameterSelection(const ParameterId &audioID, bool state);
 
   bool isShowingParameterScreen() const;
   bool switchToNormalModeInCurrentParameterLayout();
 
-  void collectLedStates(tLedStates &states, int selectedParameterID);
+  void collectLedStates(tLedStates &states, ParameterId selectedParameterID);
 
   void letTargetsBlink(Parameter *selParam);
   void letMacroControlTargetsBlink();

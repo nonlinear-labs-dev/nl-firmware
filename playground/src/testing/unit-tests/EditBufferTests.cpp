@@ -45,7 +45,7 @@ TEST_CASE("Simple EditBuffer Conversion")
   SECTION("Convert Single to Layer Sound")
   {
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
@@ -54,7 +54,7 @@ TEST_CASE("Simple EditBuffer Conversion")
   SECTION("Convert Single to Split Sound")
   {
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+    editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
@@ -64,7 +64,7 @@ TEST_CASE("Simple EditBuffer Conversion")
   {
     {
       auto scope = TestHelper::createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
     }
 
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
@@ -78,7 +78,7 @@ TEST_CASE("Simple EditBuffer Conversion")
   {
     {
       auto scope = TestHelper::createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
     }
 
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
@@ -94,8 +94,8 @@ void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Pr
                                              Preset* presetToLoad)
 {
   auto editBuffer = getEditBuffer();
-  auto vgMaster = editBuffer->findParameterByID(358, tVoiceGroup);
-  auto globalMaster = editBuffer->findParameterByID(247, VoiceGroup::Global);
+  auto vgMaster = editBuffer->findParameterByID({ 358, tVoiceGroup });
+  auto globalMaster = editBuffer->findParameterByID({ 247, VoiceGroup::Global });
 
   REQUIRE(vgMaster != nullptr);
   REQUIRE(globalMaster != nullptr);
@@ -105,7 +105,7 @@ void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Pr
   //Prepare Split-Preset initialize Master Values
   {
     auto scope = TestHelper::createTestScope();
-    auto presetMaster = presetToLoad->findParameterByID(358, tVoiceGroup);
+    auto presetMaster = presetToLoad->findParameterByID({ 358, tVoiceGroup });
     REQUIRE(presetMaster != nullptr);
 
     presetMaster->setValue(scope->getTransaction(), 0.125);
@@ -137,8 +137,8 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
                                                 Preset* dualPreset)
 {
   auto editBuffer = getEditBuffer();
-  auto vgParameter = editBuffer->findParameterByID(polyID, tVoiceGroup);
-  auto globalParameter = editBuffer->findParameterByID(globalID, VoiceGroup::Global);
+  auto vgParameter = editBuffer->findParameterByID({ polyID, tVoiceGroup });
+  auto globalParameter = editBuffer->findParameterByID({ globalID, VoiceGroup::Global });
 
   REQUIRE(vgParameter != nullptr);
   REQUIRE(globalParameter != nullptr);
@@ -148,7 +148,7 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
   //Prepare Split-Preset initialize Tune Values
   {
     auto scope = TestHelper::createTestScope();
-    auto presetParameter = dualPreset->findParameterByID(polyID, tVoiceGroup);
+    auto presetParameter = dualPreset->findParameterByID({ polyID, tVoiceGroup });
     REQUIRE(presetParameter != nullptr);
 
     presetParameter->setValue(scope->getTransaction(), 0.125);
@@ -237,34 +237,34 @@ TEST_CASE("poly groups initialization")
 {
   auto editBuffer = getEditBuffer();
 
-  const auto unisonVoices = editBuffer->findParameterByID(249, VoiceGroup::I)->getControlPositionValue();
-  const auto unisonDetune = editBuffer->findParameterByID(250, VoiceGroup::I)->getControlPositionValue();
-  const auto unisonPhase = editBuffer->findParameterByID(252, VoiceGroup::I)->getControlPositionValue();
-  const auto unisonPan = editBuffer->findParameterByID(253, VoiceGroup::I)->getControlPositionValue();
+  const auto unisonVoices = editBuffer->findParameterByID({ 249, VoiceGroup::I })->getControlPositionValue();
+  const auto unisonDetune = editBuffer->findParameterByID({ 250, VoiceGroup::I })->getControlPositionValue();
+  const auto unisonPhase = editBuffer->findParameterByID({ 252, VoiceGroup::I })->getControlPositionValue();
+  const auto unisonPan = editBuffer->findParameterByID({ 253, VoiceGroup::I })->getControlPositionValue();
 
-  const auto monoEnable = editBuffer->findParameterByID(364, VoiceGroup::I)->getControlPositionValue();
-  const auto monoPrio = editBuffer->findParameterByID(366, VoiceGroup::I)->getControlPositionValue();
-  const auto monoLegato = editBuffer->findParameterByID(367, VoiceGroup::I)->getControlPositionValue();
-  const auto monoGlide = editBuffer->findParameterByID(365, VoiceGroup::I)->getControlPositionValue();
+  const auto monoEnable = editBuffer->findParameterByID({ 364, VoiceGroup::I })->getControlPositionValue();
+  const auto monoPrio = editBuffer->findParameterByID({ 366, VoiceGroup::I })->getControlPositionValue();
+  const auto monoLegato = editBuffer->findParameterByID({ 367, VoiceGroup::I })->getControlPositionValue();
+  const auto monoGlide = editBuffer->findParameterByID({ 365, VoiceGroup::I })->getControlPositionValue();
 
   SECTION("Convert to Layer initializes Parts from VoiceGroup::I ")
   {
     {
       auto scope = TestHelper::createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
     }
 
     for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      const auto vgVoices = editBuffer->findParameterByID(249, vg)->getControlPositionValue();
-      const auto vgDetune = editBuffer->findParameterByID(250, vg)->getControlPositionValue();
-      const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
-      const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
+      const auto vgVoices = editBuffer->findParameterByID({ 249, vg })->getControlPositionValue();
+      const auto vgDetune = editBuffer->findParameterByID({ 250, vg })->getControlPositionValue();
+      const auto vgPhase = editBuffer->findParameterByID({ 252, vg })->getControlPositionValue();
+      const auto vgPan = editBuffer->findParameterByID({ 253, vg })->getControlPositionValue();
 
-      const auto vgEnable = editBuffer->findParameterByID(364, vg)->getControlPositionValue();
-      const auto vgPrio = editBuffer->findParameterByID(366, vg)->getControlPositionValue();
-      const auto vgLegato = editBuffer->findParameterByID(367, vg)->getControlPositionValue();
-      const auto vgGlide = editBuffer->findParameterByID(365, vg)->getControlPositionValue();
+      const auto vgEnable = editBuffer->findParameterByID({ 364, vg })->getControlPositionValue();
+      const auto vgPrio = editBuffer->findParameterByID({ 366, vg })->getControlPositionValue();
+      const auto vgLegato = editBuffer->findParameterByID({ 367, vg })->getControlPositionValue();
+      const auto vgGlide = editBuffer->findParameterByID({ 365, vg })->getControlPositionValue();
 
       REQUIRE(unisonVoices == vgVoices);
       REQUIRE(unisonDetune == vgDetune);
@@ -282,20 +282,20 @@ TEST_CASE("poly groups initialization")
   {
     {
       auto scope = TestHelper::createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+      editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
     }
 
     for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      const auto vgVoices = editBuffer->findParameterByID(249, vg)->getControlPositionValue();
-      const auto vgDetune = editBuffer->findParameterByID(250, vg)->getControlPositionValue();
-      const auto vgPhase = editBuffer->findParameterByID(252, vg)->getControlPositionValue();
-      const auto vgPan = editBuffer->findParameterByID(253, vg)->getControlPositionValue();
+      const auto vgVoices = editBuffer->findParameterByID({ 249, vg })->getControlPositionValue();
+      const auto vgDetune = editBuffer->findParameterByID({ 250, vg })->getControlPositionValue();
+      const auto vgPhase = editBuffer->findParameterByID({ 252, vg })->getControlPositionValue();
+      const auto vgPan = editBuffer->findParameterByID({ 253, vg })->getControlPositionValue();
 
-      const auto vgEnable = editBuffer->findParameterByID(364, vg)->getControlPositionValue();
-      const auto vgPrio = editBuffer->findParameterByID(366, vg)->getControlPositionValue();
-      const auto vgLegato = editBuffer->findParameterByID(367, vg)->getControlPositionValue();
-      const auto vgGlide = editBuffer->findParameterByID(365, vg)->getControlPositionValue();
+      const auto vgEnable = editBuffer->findParameterByID({ 364, vg })->getControlPositionValue();
+      const auto vgPrio = editBuffer->findParameterByID({ 366, vg })->getControlPositionValue();
+      const auto vgLegato = editBuffer->findParameterByID({ 367, vg })->getControlPositionValue();
+      const auto vgGlide = editBuffer->findParameterByID({ 365, vg })->getControlPositionValue();
 
       REQUIRE(unisonVoices == vgVoices);
       REQUIRE(unisonDetune == vgDetune);
@@ -412,7 +412,7 @@ TEST_CASE("Load <-> Changed")
 
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
 
-    auto param = editBuffer->findParameterByID(2, VoiceGroup::I);
+    auto param = editBuffer->findParameterByID({ 2, VoiceGroup::I });
 
     REQUIRE(param != nullptr);
     REQUIRE_FALSE(param->isChangedFromLoaded());
@@ -430,7 +430,7 @@ TEST_CASE("Load <-> Changed")
     editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
 
-    auto param = editBuffer->findParameterByID(2, VoiceGroup::I);
+    auto param = editBuffer->findParameterByID({ 2, VoiceGroup::I });
     REQUIRE(param != nullptr);
     REQUIRE_FALSE(param->isChangedFromLoaded());
 
@@ -447,7 +447,7 @@ TEST_CASE("Load <-> Changed")
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
 
-      param = editBuffer->findParameterByID(2, VoiceGroup::I);
+      param = editBuffer->findParameterByID({ 2, VoiceGroup::I });
       REQUIRE(param != nullptr);
       REQUIRE_FALSE(param->isChangedFromLoaded());
 
@@ -474,7 +474,7 @@ TEST_CASE("Load <-> Changed")
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
 
-      param = editBuffer->findParameterByID(15, VoiceGroup::II);
+      param = editBuffer->findParameterByID({ 15, VoiceGroup::II });
       REQUIRE(param != nullptr);
       REQUIRE_FALSE(param->isChangedFromLoaded());
 
@@ -501,7 +501,7 @@ TEST_CASE("Load <-> Changed")
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
 
-      param = editBuffer->findParameterByID(247, VoiceGroup::Global);
+      param = editBuffer->findParameterByID({ 247, VoiceGroup::Global });
       REQUIRE(param != nullptr);
       REQUIRE_FALSE(param->isChangedFromLoaded());
 
@@ -620,16 +620,16 @@ void randomizeRequireChangedAndInitSoundTest(const Preset* preset)
     REQUIRE(eb->anyParameterChanged());
     eb->undoableInitSound(scope->getTransaction());
     REQUIRE(!eb->anyParameterChanged());
-    auto masterVolume = eb->findParameterByID(247, VoiceGroup::Global);
+    auto masterVolume = eb->findParameterByID({247, VoiceGroup::Global});
     REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getDefaultValue()));
-    auto masterTune = eb->findParameterByID(248, VoiceGroup::Global);
+    auto masterTune = eb->findParameterByID({248, VoiceGroup::Global});
     REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getDefaultValue()));
 
     for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      auto vgVolume = eb->findParameterByID(358, vg);
+      auto vgVolume = eb->findParameterByID({358, vg});
       REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getDefaultValue()));
-      auto vgTune = eb->findParameterByID(360, vg);
+      auto vgTune = eb->findParameterByID({360, vg});
       REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getDefaultValue()));
     }
   }
@@ -687,14 +687,14 @@ TEST_CASE("Convert Sound Leads to Converted UUID")
   SECTION("Convert from Single to Layer")
   {
     auto scope = TestHelper::createTestScope();
-    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Layer, VoiceGroup::I);
+    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
   }
 
   SECTION("Convert from Single to Split")
   {
     auto scope = TestHelper::createTestScope();
-    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split, VoiceGroup::I);
+    eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
   }
 }
@@ -710,8 +710,7 @@ namespace PartNaming
     REQUIRE(p->getVoiceGroupName(VoiceGroup::II) == "Zwo");
   }
 
-  template<typename tStr>
-  void renamePresetTo(Preset* p, const tStr& s)
+  template <typename tStr> void renamePresetTo(Preset* p, const tStr& s)
   {
     auto scope = TestHelper::createTestScope();
     p->setName(scope->getTransaction(), s);

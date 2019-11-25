@@ -13,7 +13,7 @@ class MCRoutings : public Control
   typedef Control super;
 
  public:
-  MCRoutings(int ribbonParamID, const Rect &pos);
+  MCRoutings(const ParameterId &ribbonParamID, const Rect &pos);
   virtual ~MCRoutings();
 
   bool redraw(FrameBuffer &fb) override;
@@ -31,5 +31,5 @@ class MCRoutings : public Control
 
   MacroControlMappingGroup::tModRoutingParams getRoutingParameters();
 
-  int m_ribbonParamID;
+  ParameterId m_ribbonParamID;
 };

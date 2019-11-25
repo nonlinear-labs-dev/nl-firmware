@@ -20,7 +20,7 @@ namespace DescriptiveLayouts
     {
       if(newParam)
       {
-        auto button = m_mapping.findButton(newParam->getID());
+        auto button = m_mapping.findButton(newParam->getID().getNumber());
         forwardValue(m_mapping.findParameters(button).size() == 1);
       }
       else

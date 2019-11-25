@@ -3,7 +3,6 @@
 #include <playground.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <nltools/enums/EnumTools.h>
-#include <boost/serialization/strong_typedef.hpp>
 #include <device-settings/DebugLevel.h>
 #include <proxies/hwui/buttons.h>
 

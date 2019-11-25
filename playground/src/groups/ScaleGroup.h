@@ -13,7 +13,7 @@ class ScaleGroup : public ParameterGroup
 
   void init();
   bool isAnyOffsetChanged() const;
-  static int getScaleBaseParameterID();
+  static int getScaleBaseParameterNumber();
 
  private:
   void onBaseKeyParameterChanged(const Parameter *baseKeyParameter);

@@ -5,8 +5,6 @@ import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Tracer;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
@@ -30,14 +28,14 @@ import com.nonlinearlabs.client.world.pointer.TouchPinch;
 public abstract class Parameter extends LayoutResizingVertical {
 
 	public ParameterPresenter presenter;
-	
+
 	protected IncrementalChanger currentParameterChanger = null;
 	protected int id;
 
 	public Parameter(MapsLayout parent, int id) {
 		super(parent);
 		this.id = id;
-		ParameterPresenterProviders.get().register(id, p -> onPresenterUpdated(p));
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(id, p -> onPresenterUpdated(p));
 	}
 
 	private boolean onPresenterUpdated(ParameterPresenter p) {
@@ -298,12 +296,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getFullNameWithGroup() {
-		BasicParameterModel bpm = EditBufferModel.findParameter(getParameterID());
-		return getGroupName() + "   \u2013   " + bpm.longName.getValue() + (bpm.isChanged() ? " *" : "");
+		return presenter.fullNameWithGroup;
 	}
 
 	public String getGroupName() {
-		return EditBufferModel.findParameter(getParameterID()).longName.getValue();
+		return presenter.longName;
 	}
 
 	public boolean isLocked() {

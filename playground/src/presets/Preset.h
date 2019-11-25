@@ -46,8 +46,8 @@ class Preset : public PresetDualParameterGroups
   // accessors
   const Uuid &getUuid() const;
   Glib::ustring getName() const;
-  PresetParameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::Invalid) const;
-  PresetParameterGroup *findParameterGroup(const std::string &id, VoiceGroup vg = VoiceGroup::Invalid) const;
+  PresetParameter *findParameterByID(ParameterId id) const;
+  PresetParameterGroup *findParameterGroup(const std::string &id, VoiceGroup vg) const;
 
   // transactions
   void copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid);

@@ -14,7 +14,8 @@ TEST_CASE("Modulateable Parameter")
   SECTION("1.4pct to 112 lpc")
   {
     auto scope = TestHelper::createTestScope();
-    ModulateableParameter peter(&group, 1, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
+    ModulateableParameter peter(&group, { 1, VoiceGroup::Global },
+                                ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
     peter.setModulationAmount(scope->getTransaction(), 0.014);
     peter.setModulationSource(scope->getTransaction(), MacroControls::MC1);
     auto packed = peter.getModulationSourceAndAmountPacked();

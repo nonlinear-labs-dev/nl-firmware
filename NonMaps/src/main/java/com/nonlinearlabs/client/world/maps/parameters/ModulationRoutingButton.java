@@ -10,13 +10,14 @@ public class ModulationRoutingButton extends SVGImage {
 	ParameterPresenter presenter;
 
 	public ModulationRoutingButton(ModulationRoutingParameter parent, int parameterId) {
-		this(parent, parameterId, "Control_Through_Disabled.svg", "Control_Through_Enabled.svg", "Control_Through_Active.svg");
+		this(parent, parameterId, "Control_Through_Disabled.svg", "Control_Through_Enabled.svg",
+				"Control_Through_Active.svg");
 	}
 
 	public ModulationRoutingButton(ModulationRoutingParameter parent, int parameterId, String... images) {
 		super(parent, images);
 
-		ParameterPresenterProviders.get().register(parameterId, p -> {
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(parameterId, p -> {
 			presenter = p;
 			return true;
 		});

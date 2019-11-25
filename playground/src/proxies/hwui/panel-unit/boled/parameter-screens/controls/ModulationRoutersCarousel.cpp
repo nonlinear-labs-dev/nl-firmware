@@ -20,8 +20,7 @@ ModulationRoutersCarousel::ModulationRoutersCarousel(const Rect &pos)
 }
 
 ModulationRoutersCarousel::~ModulationRoutersCarousel()
-{
-}
+= default;
 
 void ModulationRoutersCarousel::setup(Parameter *newOne)
 {
@@ -35,7 +34,8 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(newOne))
   {
-    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM");
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM", vg);
     auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
     auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 

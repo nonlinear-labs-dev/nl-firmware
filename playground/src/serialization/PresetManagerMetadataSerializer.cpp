@@ -2,6 +2,8 @@
 #include "PresetBankOrderSerializer.h"
 #include "EditBufferSerializer.h"
 #include <presets/PresetManager.h>
+#include <proxies/hwui/HWUI.h>
+#include <Application.h>
 
 PresetManagerMetadataSerializer::PresetManagerMetadataSerializer(PresetManager *pm)
     : Serializer(getTagName())
@@ -16,7 +18,7 @@ Glib::ustring PresetManagerMetadataSerializer::getTagName()
 
 void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
 {
-  writer.writeTextElement("selected-editbuffer-group", toString(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection()));
+  writer.writeTextElement("selected-editbuffer-group", toString(Application::get().getHWUI()->getCurrentVoiceGroup()));
 
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
 
@@ -29,8 +31,8 @@ void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
 
 void PresetManagerMetadataSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("selected-editbuffer-group", [](const auto& text, auto) {
-    Application::get().getVoiceGroupSelectionHardwareUI()->setHWUIEditBufferSelection(to<VoiceGroup>(text));
+  reader.onTextElement("selected-editbuffer-group", [](const auto &text, auto) {
+    Application::get().getHWUI()->setCurrentVoiceGroup(to<VoiceGroup>(text));
   });
 
   reader.onTextElement("selected-bank-uuid",

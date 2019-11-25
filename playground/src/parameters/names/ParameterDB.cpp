@@ -84,6 +84,11 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
 
 ustring ParameterDB::getLongName(int id) const
 {
+  if(id == 369)
+    return "MC E";
+  if(id == 371)
+    return "MC F";
+
   try
   {
     return m_spec.at(id).longName;
@@ -120,7 +125,7 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
 
 bool ParameterDB::isActive(const Parameter *p) const
 {
-  const auto inActiveCP = getSignalPathIndication(p->getID());
+  const auto inActiveCP = getSignalPathIndication(p->getID().getNumber());
   const auto diff = std::abs(inActiveCP - p->getControlPositionValue());
   return diff > std::numeric_limits<tControlPositionValue>::epsilon();
 }

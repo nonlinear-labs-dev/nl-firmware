@@ -3,9 +3,9 @@
 #include <presets/VoiceGroupSelection.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
-    : Button(getTextFor(getCurrentSelection()), pos)
+    : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)
 {
-  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(sigc::mem_fun(this, &SwitchVoiceGroupButton::update));
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &SwitchVoiceGroupButton::update));
 }
 
 Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
@@ -16,12 +16,7 @@ Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
     return "Select I";
 }
 
-VoiceGroup SwitchVoiceGroupButton::getCurrentSelection()
+void SwitchVoiceGroupButton::update(VoiceGroup newVoiceGroup)
 {
-  return Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-}
-
-void SwitchVoiceGroupButton::update()
-{
-  setText({getTextFor(getCurrentSelection()), 0});
+  setText({getTextFor(newVoiceGroup), 0});
 }

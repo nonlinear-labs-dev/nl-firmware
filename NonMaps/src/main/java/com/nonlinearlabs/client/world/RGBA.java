@@ -36,4 +36,8 @@ public class RGBA extends RGB {
 		return brighter(-amount);
 	}
 
+	public static RGB transparent() {
+		return new RGBA(0, 0, 0, 0);
+	}
+
 }

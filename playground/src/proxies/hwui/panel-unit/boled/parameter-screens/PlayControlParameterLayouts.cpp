@@ -65,9 +65,10 @@ bool PlayControlParameterLayout2::onRotary(int i, ButtonModifiers modifiers)
   if(s_mode == Mode::Select)
   {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    auto hw = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID("CS"));
-    auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), getCurrentParameter()->getID(), i);
-    editBuffer->undoableSelectParameter(newParamID);
+    auto hw = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID("CS", VoiceGroup::Global));
+    auto currentID = getCurrentParameter()->getID();
+    auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID.getNumber(), i);
+    editBuffer->undoableSelectParameter({newParamID, currentID.getVoiceGroup()});
     return true;
   }
 
@@ -265,19 +266,20 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
   if(down)
   {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
     switch(i)
     {
       case Buttons::BUTTON_B:
         if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
         {
-          auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM");
+          auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM", vg);
           auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
           auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 
           for(auto routingParam : routingParams)
           {
-            if(routingParam->getID() == p->getUiSelectedModulationRouter())
+            if(routingParam->getID().getNumber() == p->getUiSelectedModulationRouter())
             {
               editBuffer->undoableSelectParameter(routingParam->getTargetParameter()->getID());
               return true;
@@ -289,7 +291,7 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
 
       case Buttons::BUTTON_C:
         if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
-          editBuffer->undoableSelectParameter(p->getUiSelectedModulationRouter());
+          editBuffer->undoableSelectParameter({p->getUiSelectedModulationRouter(), vg});
 
         return true;
     }
@@ -298,7 +300,8 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
   return super::onButton(i, down, modifiers);
 }
 
-ModuleCaption *PlayControlParameterSelectLayout2::createModuleCaption() const {
+ModuleCaption *PlayControlParameterSelectLayout2::createModuleCaption() const
+{
   return ParameterLayout2::createModuleCaption();
 }
 

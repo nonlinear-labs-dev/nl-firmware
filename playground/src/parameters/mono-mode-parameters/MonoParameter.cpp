@@ -16,7 +16,7 @@ DFBLayout *MonoParameter::createLayout(FocusAndMode focusAndMode) const
   }
 }
 
-MonoParameter::MonoParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
+MonoParameter::MonoParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling,
                              tControlPositionValue def, tControlPositionValue coarseDenominator,
                              tControlPositionValue fineDenominator)
     : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)

@@ -12,7 +12,7 @@ class PlayModeRibbonBehaviourLabel : public Label
   typedef Label super;
 
  public:
-  PlayModeRibbonBehaviourLabel(int paramID, const Rect& rect);
+  PlayModeRibbonBehaviourLabel(const ParameterId &paramID, const Rect& rect);
   virtual ~PlayModeRibbonBehaviourLabel();
 
  private:

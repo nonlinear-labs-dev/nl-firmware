@@ -4,15 +4,12 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MonoParameterCarousel.h>
 #include "MonoModeParameterLayout.h"
 #include <proxies/hwui/controls/Button.h>
+#include <proxies/hwui/HWUI.h>
 
 Parameter *MonoModeParameterLayout::getCurrentParameter() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-
-  if(eb->getType() == SoundType::Split)
-    return eb->getSelected();
-  else
-    return eb->getSelected(VoiceGroup::I);
+  return eb->getSelected();
 }
 
 MonoModeParameterLayout::MonoModeParameterLayout()

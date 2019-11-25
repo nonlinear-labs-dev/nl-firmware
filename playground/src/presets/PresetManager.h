@@ -54,6 +54,7 @@ class PresetManager : public ContentSection
   }
 
   // ???
+  void connectToVoiceGroupSelection();
   void doAutoLoadSelectedPreset();
   bool isLoading() const;
   std::shared_ptr<ScopedGuard::Lock> getLoadingLock();

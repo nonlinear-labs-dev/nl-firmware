@@ -11,5 +11,5 @@ GlobalParameterGroups::GlobalParameterGroups(ParameterDualGroupSet *parent)
 
 void GlobalParameterGroups::init()
 {
-  appendParameter(new SplitPointParameter(this, 356));
+  appendParameter(new SplitPointParameter(this, {356, VoiceGroup::Global}));
 }

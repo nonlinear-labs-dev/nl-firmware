@@ -19,7 +19,7 @@ void ParameterInfoText::loadInfoText(Parameter *oldParam, Parameter *newParam)
   {
     auto &db = ParameterDescriptionDatabase::get();
     m_connection.disconnect();
-    m_connection = db.load(newParam->getID(), newParam->getVoiceGroup(), mem_fun(this, &ParameterInfoText::onTextLoaded));
+    m_connection = db.load(newParam->getID(), mem_fun(this, &ParameterInfoText::onTextLoaded));
     scrollTop();
   }
 }

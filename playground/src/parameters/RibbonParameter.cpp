@@ -59,10 +59,12 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
   {
-    auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
-    for(auto router : mappings->getModulationRoutingParametersFor(this))
+    for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      router->getValue().setIsBoolean(routersAreBoolean);
+      auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM", vg));
+
+      for(auto router : mappings->getModulationRoutingParametersFor(this))
+        router->getValue().setIsBoolean(routersAreBoolean);
     }
   }
 
@@ -160,23 +162,19 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
   {
     if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
     {
-      auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM"));
-      auto routers = mappings->getModulationRoutingParametersFor(this);
-      auto highest = *routers.begin();
-      for(auto router : routers)
+      for(auto vg : { VoiceGroup::I, VoiceGroup::II })
       {
-        if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
-        {
-          highest = router;
-        }
-      }
+        auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM", vg));
+        auto routers = mappings->getModulationRoutingParametersFor(this);
+        auto highest = *routers.begin();
 
-      for(auto router : routers)
-      {
-        if(router != highest)
-        {
-          router->onExclusiveRoutingLost();
-        }
+        for(auto router : routers)
+          if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
+            highest = router;
+
+        for(auto router : routers)
+          if(router != highest)
+            router->onExclusiveRoutingLost();
       }
     }
   }

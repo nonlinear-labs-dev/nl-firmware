@@ -38,7 +38,7 @@ VoiceGroup MonoParameterCarousel::getVoiceGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   if(eb->getType() == SoundType::Split)
-    return Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    return Application::get().getHWUI()->getCurrentVoiceGroup();
   else
     return VoiceGroup::I;
 }
@@ -60,7 +60,7 @@ void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
 
   for(int i : { 364, 365, 366, 367 })
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(i, vg);
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({i, vg});
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     miniParam->setSelected(param == parameter);
     addControl(miniParam);

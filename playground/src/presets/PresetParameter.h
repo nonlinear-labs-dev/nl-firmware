@@ -4,6 +4,7 @@
 #include "AttributesOwner.h"
 #include <unordered_map>
 #include <type_traits>
+#include <ParameterId.h>
 
 namespace UNDO
 {
@@ -17,8 +18,8 @@ class Writer;
 class PresetParameter
 {
  public:
-  PresetParameter(int id);
-  PresetParameter(const ::Parameter &other);
+  explicit PresetParameter(const ParameterId &id);
+  explicit PresetParameter(const ::Parameter &other);
   PresetParameter(const PresetParameter &other);
 
   enum Fields : uint8_t
@@ -38,7 +39,7 @@ class PresetParameter
   double getModulationAmount() const;
   std::string getGivenName() const;
   std::string getInfo() const;
-  const int getID() const;
+  const ParameterId getID() const;
   enum RibbonReturnMode getRibbonReturnMode() const;
   enum RibbonTouchBehaviour getRibbonTouchBehaviour() const;
   enum PedalModes getPedalMode() const;
@@ -50,11 +51,11 @@ class PresetParameter
   void copyFrom(UNDO::Transaction *transaction, const ::Parameter *other);
 
   // algorithm
-  void writeDiff(Writer &writer, int parameterID, const PresetParameter *other) const;
+  void writeDiff(Writer &writer, ParameterId parameterID, const PresetParameter *other) const;
   void writeDocument(Writer &writer) const;
 
  private:
-  int m_id;
+  ParameterId m_id;
   tControlPositionValue m_value = 0;
   std::unordered_map<Fields, std::string, std::hash<uint8_t>> m_fields;
 

@@ -11,6 +11,8 @@ import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Position;
@@ -32,7 +34,7 @@ public class Overlay extends OverlayLayout {
 		public LayerDisplay(OverlayLayout parent) {
 			super(parent);
 
-			EditBufferModel.soundType.onChange(v -> {
+			EditBufferModel.get().soundType.onChange(v -> {
 				setVisible(v != SoundType.Single);
 				return true;
 			});
@@ -40,7 +42,7 @@ public class Overlay extends OverlayLayout {
 
 		@Override
 		public String getDrawText(Context2d ctx) {
-			return "II";
+			return EditBufferPresenterProvider.getPresenter().voiceGroup;
 		}
 
 		@Override
@@ -58,8 +60,19 @@ public class Overlay extends OverlayLayout {
 
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
-			getPixRect().fill(ctx, new RGBA(255, 0, 0, 0.25));
+			RGB c = new RGBA(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor, 0.25);
+			getPixRect().fill(ctx, c);
 			super.draw(ctx, invalidationMask);
+		}
+
+		@Override
+		public Control click(Position eventPoint) {
+			if (isVisible()) {
+				EditBufferUseCases.get().toggleVoiceGroup();
+				return this;
+			}
+
+			return super.click(eventPoint);
 		}
 
 	}
@@ -132,7 +145,7 @@ public class Overlay extends OverlayLayout {
 		drawBackground(ctx);
 		buttons.drawActiveButton(ctx, invalidationMask);
 
-		if (EditBufferModel.soundType.getValue() != SoundType.Single)
+		if (EditBufferModel.get().soundType.getValue() != SoundType.Single)
 			drawDualSoundIndication(ctx);
 
 		super.draw(ctx, invalidationMask);
@@ -180,7 +193,7 @@ public class Overlay extends OverlayLayout {
 		ctx.stroke();
 
 		ctx.setLineWidth(Math.ceil(w));
-		ctx.setStrokeStyle(RGB.red().toString());
+		ctx.setStrokeStyle(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor.toString());
 		ctx.stroke();
 	}
 

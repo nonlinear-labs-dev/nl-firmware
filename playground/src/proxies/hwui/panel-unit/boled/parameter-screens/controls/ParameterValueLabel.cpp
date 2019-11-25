@@ -1,6 +1,7 @@
 #include "ParameterValueLabel.h"
 #include <parameters/Parameter.h>
 #include <Application.h>
+#include <proxies/hwui/HWUI.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 
@@ -10,8 +11,8 @@ ParameterValueLabel::ParameterValueLabel(const Parameter *param, const Rect &pos
   if(param)
     m_connection = param->onParameterChanged(mem_fun(this, &ParameterValueLabel::updateText));
 
-  m_vgSelectionConnection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &ParameterValueLabel::updateVoiceGroup));
+  m_vgSelectionConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &ParameterValueLabel::updateVoiceGroup)));
 }
 
 ParameterValueLabel::~ParameterValueLabel()
@@ -27,8 +28,8 @@ void ParameterValueLabel::updateText(const Parameter *param)
 
 void ParameterValueLabel::updateVoiceGroup()
 {
-  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  updateText(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg));
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  updateText(Application::get().getPresetManager()->getEditBuffer()->getSelected());
 }
 
 void ParameterValueLabel::updateParameter(const Parameter *param)

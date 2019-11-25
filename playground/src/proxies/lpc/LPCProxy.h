@@ -88,7 +88,7 @@ class LPCProxy
   void queueToLPC(tMessageComposerPtr cmp);
 
   gint16 separateSignedBitToComplementary(uint16_t v) const;
-  void traceBytes(const RefPtr<Bytes> bytes) const;
+  void traceBytes(const RefPtr<Bytes>& bytes) const;
 
   void notifyRibbonTouch(int ribbonsParameterID);
   void onParamMessageReceived(const MessageParser::NLMessage &msg);

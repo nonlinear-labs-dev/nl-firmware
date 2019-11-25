@@ -21,13 +21,16 @@ UnisonGroup::~UnisonGroup()
 
 void UnisonGroup::init()
 {
-  appendParameter(new Parameter(this, 249, ScaleConverter::get<Linear12CountScaleConverter>(), 0, 11, 11));
+  appendParameter(
+      new Parameter(this, { 249, getVoiceGroup() }, ScaleConverter::get<Linear12CountScaleConverter>(), 0, 11, 11));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(this, 250, ScaleConverter::get<Fine12STScaleConverter>(),
-                                                              ScaleConverter::get<FineBipolar12STScaleConverter>(), 0,
-                                                              120, 12000));
+  appendParameter(new ModulateableParameterWithUnusualModUnit(
+      this, { 250, getVoiceGroup() }, ScaleConverter::get<Fine12STScaleConverter>(),
+      ScaleConverter::get<FineBipolar12STScaleConverter>(), 0, 120, 12000));
 
-  appendParameter(new Parameter(this, 252, ScaleConverter::get<Linear360DegreeScaleConverter>(), 0, 360, 3600));
+  appendParameter(new Parameter(this, { 252, getVoiceGroup() }, ScaleConverter::get<Linear360DegreeScaleConverter>(), 0,
+                                360, 3600));
 
-  appendParameter(new Parameter(this, 253, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 253, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
+                                0, 100, 1000));
 }

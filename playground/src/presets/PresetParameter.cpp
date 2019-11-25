@@ -9,7 +9,7 @@
 #include <presets/EditBuffer.h>
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 
-PresetParameter::PresetParameter(int id)
+PresetParameter::PresetParameter(const ParameterId &id)
     : m_id{ id }
 {
 }
@@ -63,7 +63,7 @@ void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter
   other->copyTo(transaction, this);
 }
 
-void PresetParameter::writeDiff(Writer &writer, int parameterID, const PresetParameter *other) const
+void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const PresetParameter *other) const
 {
   auto ebParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(parameterID);
 
@@ -159,7 +159,7 @@ std::string PresetParameter::getInfo() const
   return "";
 }
 
-const int PresetParameter::getID() const
+const ParameterId PresetParameter::getID() const
 {
   return m_id;
 }
@@ -199,7 +199,7 @@ enum PedalModes PresetParameter::getPedalMode() const
 void PresetParameter::writeDocument(Writer &writer) const
 {
   writer.writeTag("param",
-                  { Attribute{ "id", to_string(m_id) }, Attribute{ "value", to_string(m_value) },
+                  { Attribute{ "id", m_id.toString() }, Attribute{ "value", to_string(m_value) },
                     Attribute{ "mod-src", to_string(static_cast<int>(getModulationSource())) },
                     Attribute{ "mod-amt", to_string(getModulationAmount()) } },
                   []() {});

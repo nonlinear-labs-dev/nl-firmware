@@ -11,10 +11,13 @@ VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, Voic
 
 void VoiceGroupMasterGroup::init()
 {
-  appendParameter(new VoiceGroupMasterParameter(this, 358, ScaleConverter::get<ParabolicGainDbScaleConverter>(), 0.5, 100,
-                                                1000, "Level", "Part Level", getVoiceGroup()));
-  appendParameter(new VoiceGroupMasterParameter(this, 360, ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48,
-                                                4800, "Tune", "Part Tune", getVoiceGroup()));
+  appendParameter(new VoiceGroupMasterParameter(this, { 358, getVoiceGroup() },
+                                                ScaleConverter::get<ParabolicGainDbScaleConverter>(), 0.5, 100, 1000,
+                                                "Level", "Output Level", getVoiceGroup()));
+  appendParameter(new VoiceGroupMasterParameter(this, { 360, getVoiceGroup() },
+                                                ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48, 4800,
+                                                "Tune", "Voice Group Tune", getVoiceGroup()));
 
-  appendParameter(new Parameter(this, 362, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 362, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
+                                0, 100, 1000));
 }

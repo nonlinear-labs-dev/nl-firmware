@@ -77,13 +77,15 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
   yPos += missingParams * (miniParamHeight + ySpaceing);
   for(int i : buttonAssignments)
   {
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
-    auto param = eb->findParameterByID(i, selectedParameter->getVoiceGroup());
-    nltools_assertAlways(param != nullptr);
+#warning "Respect globals here"
+    auto param = eb->findParameterByID({ i, vg });
+
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr)
     {
-      miniParam->setSelected(param->getID() == ScaleGroup::getScaleBaseParameterID());
+      miniParam->setSelected(param->getID().getNumber() == ScaleGroup::getScaleBaseParameterNumber());
     }
     else
     {
@@ -105,7 +107,7 @@ void ParameterCarousel::antiTurn()
       if(p->isSelected())
       {
         Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-            to_string(foundCtrl->getParameter()->getID()));
+            foundCtrl->getParameter()->getID());
         return;
       }
       foundCtrl = p;
@@ -122,8 +124,7 @@ void ParameterCarousel::turn()
     {
       if(found)
       {
-        Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-            p->getParameter()->getID(), p->getParameter()->getVoiceGroup());
+        Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getParameter()->getID());
         handled = true;
         return false;
       }
@@ -141,8 +142,7 @@ void ParameterCarousel::turn()
 
   if(!handled)
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(first()))
-      Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-          p->getParameter()->getID(), p->getParameter()->getVoiceGroup());
+      Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getParameter()->getID());
 }
 
 bool ParameterCarousel::containsSelectedParameter() const
@@ -160,7 +160,7 @@ bool ParameterCarousel::containsSelectedParameter() const
 
 void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)
 {
-  switch(selectedParameter->getID())
+  switch(selectedParameter->getID().getNumber())
   {
     case 247:
     case 248:

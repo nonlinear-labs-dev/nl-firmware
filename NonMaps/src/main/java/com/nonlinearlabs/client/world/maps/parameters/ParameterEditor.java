@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterGroupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
@@ -141,7 +142,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 						addChild(new VoiceGroup(this));
 						addChild(new SpacerLarge(this));
 
-						EditBufferModel.soundType.onChange(v -> {
+						EditBufferModel.get().soundType.onChange(v -> {
 							requestLayout();
 							return true;
 						});
@@ -149,7 +150,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 
 					@Override
 					public void doFirstLayoutPass(double levelOfDetail) {
-						if (EditBufferModel.soundType.getValue() == SoundType.Single) {
+						if (EditBufferModel.get().soundType.getValue() == SoundType.Single) {
 							setNonSize(new NonDimension(0, 0));
 						} else {
 							super.doFirstLayoutPass(levelOfDetail);
@@ -215,12 +216,13 @@ public class ParameterEditor extends LayoutResizingVertical {
 		addChild(new SpacerLarge(this));
 		addChild(new SynthParameters(this));
 
-		EditBufferModel.selectedParameter.onChange(i -> {
+		EditBufferModel.get().selectedParameter.onChange(i -> {
 			boolean autoScroll = LocalSettingsProvider.get().getSettings().selectionAutoScroll
 					.isOneOf(SelectionAutoScroll.parameter, SelectionAutoScroll.parameter_and_preset);
 
-			if (autoScroll && EditBufferModel.findParameter(i).group != null) {
-				scrollToSelectedParameterGroup(EditBufferModel.findParameter(i).group.id);
+			ParameterGroupModel group = EditBufferModel.get().getAnyParameter(i).group;
+			if (autoScroll && group != null) {
+				scrollToSelectedParameterGroup(group.id);
 			}
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return true;
@@ -246,7 +248,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 	private void scrollToSelectedParameterGroup(String groupID) {
 		if (groupID == "CS")
 			groupID = "MCM";
-			
+
 		ParameterGroup p = findParameterGroup(groupID);
 
 		if (!p.isVisible())
@@ -341,7 +343,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 	}
 
 	public Parameter getSelectedParameter() {
-		return findParameter(EditBufferModel.selectedParameter.getValue());
+		return findParameter(EditBufferModel.get().selectedParameter.getValue());
 	}
 
 }

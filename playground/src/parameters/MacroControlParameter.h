@@ -12,7 +12,7 @@ class MacroControlParameter : public Parameter
   typedef Parameter super;
 
  public:
-  MacroControlParameter(ParameterGroup *group, uint16_t id);
+  MacroControlParameter(ParameterGroup *group, ParameterId id);
   ~MacroControlParameter() override;
 
   typedef std::set<ModulateableParameter *> tTargets;
@@ -42,8 +42,8 @@ class MacroControlParameter : public Parameter
   const tTargets &getTargets() const;
   sigc::connection onTargetListChanged(sigc::slot<void> cb);
 
-  bool isSourceOfTargetIn(const std::list<gint32> &ids) const;
-  bool isSourceOf(gint32 id) const;
+  bool isSourceOfTargetIn(const std::list<ParameterId> &ids) const;
+  bool isSourceOf(ParameterId id) const;
 
   void onSelected() override;
 
@@ -54,7 +54,7 @@ class MacroControlParameter : public Parameter
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
   void applyLpcPhysicalControl(tControlPositionValue diff);
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
-  void setUiSelectedHardwareSource(int pos);
+  void setUiSelectedHardwareSource(int paramNumber);
   void toggleUiSelectedHardwareSource(int inc);
   int getUiSelectedHardwareSource() const;
 
@@ -72,7 +72,7 @@ class MacroControlParameter : public Parameter
                                    tControlPositionValue newValue) override;
 
   tTargets m_targets;
-  int m_UiSelectedHardwareSourceParameterID;
+  int m_UiSelectedHardwareSourceParameterID = 0;
   Glib::ustring m_givenName;
   Glib::ustring m_info;
   Glib::ustring m_lastMCViewUuid;

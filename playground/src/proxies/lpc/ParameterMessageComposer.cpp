@@ -6,7 +6,7 @@
 ParameterMessageComposer::ParameterMessageComposer(const Parameter *p)
     : MessageComposer(MessageParser::PARAM)
 {
-  m_parameterID = p->getID();
+  m_parameterID = p->getID().getNumber();
   *this << m_parameterID;
   p->writeToLPC(*this);
 }

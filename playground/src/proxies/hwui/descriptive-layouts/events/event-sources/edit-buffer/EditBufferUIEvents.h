@@ -16,7 +16,7 @@ namespace DescriptiveLayouts
         setValue({ typeStr + " " + eb->getName(), 0 });
       else
       {
-        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
         setValue({ typeStr + (sel == VoiceGroup::I ? " I" : " II") + " " + eb->getVoiceGroupName(sel), 0 });
       }
     }
@@ -29,15 +29,15 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        if(auto param = eb->findParameterByID(364, vg))
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+        if(auto param = eb->findParameterByID({ 364, vg }))
         {
           setValue({ param->getDisplayString(), 0 });
         }
       }
       else
       {
-        if(auto param = eb->findParameterByID(364, VoiceGroup::I))
+        if(auto param = eb->findParameterByID({ 364, VoiceGroup::I }))
           setValue({ param->getDisplayString(), 0 });
       }
     }
@@ -50,13 +50,13 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        if(auto param = eb->findParameterByID(364, vg))
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+        if(auto param = eb->findParameterByID({ 364, vg }))
           setValue(param->getDisplayString() == "On");
       }
       else
       {
-        if(auto param = eb->findParameterByID(364, VoiceGroup::I))
+        if(auto param = eb->findParameterByID({ 364, VoiceGroup::I }))
           setValue(param->getDisplayString() == "On");
       }
     }
@@ -69,13 +69,13 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        if(auto param = eb->findParameterByID(249, vg))
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+        if(auto param = eb->findParameterByID({ 249, vg }))
           setValue(param->getControlPositionValue() > 0);
       }
       else
       {
-        if(auto param = eb->findParameterByID(249, VoiceGroup::I))
+        if(auto param = eb->findParameterByID({ 249, VoiceGroup::I }))
           setValue(param->getControlPositionValue() > 0);
       }
     }
@@ -89,33 +89,13 @@ namespace DescriptiveLayouts
       auto currentType = eb->getType();
       if(currentType != SoundType::Single)
       {
-        auto sel = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
         setValue({ sel == VoiceGroup::I ? "Select II" : "Select I", 0 });
       }
       else
       {
         setValue({ "", 0 });
       }
-    }
-  };
-
-  class EditBufferMasterVolumeText : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      auto param = eb->findParameterByID(247);
-      setValue({ param->getDisplayString(), 0 });
-    }
-  };
-
-  class EditBufferMasterTuneText : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      auto param = eb->findParameterByID(248);
-      setValue({ param->getDisplayString(), 0 });
     }
   };
 
@@ -127,7 +107,7 @@ namespace DescriptiveLayouts
       auto type = eb->getType();
       if(type == SoundType::Split)
       {
-        auto selection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+        auto selection = Application::get().getHWUI()->getCurrentVoiceGroup();
         setValue({ "Voices " + toString(selection), 0 });
       }
       else if(type == SoundType::Layer)
@@ -146,7 +126,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      if(auto param = eb->findParameterByID(id, vg))
+      if(auto param = eb->findParameterByID({ id, vg }))
         setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -156,8 +136,8 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto param = eb->findParameterByID(id, vg))
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      if(auto param = eb->findParameterByID({ id, vg }))
         setValue({ param->getDisplayString(), 0 });
     }
   };
@@ -169,55 +149,15 @@ namespace DescriptiveLayouts
     {
       if(editBuffer->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-        if(auto param = editBuffer->findParameterByID(249, vg))
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+        if(auto param = editBuffer->findParameterByID({ 249, vg }))
           setValue({ param->getControlPositionValue() == 0 ? "Off" : param->getDisplayString(), 0 });
       }
       else
       {
-        if(auto param = editBuffer->findParameterByID(249, VoiceGroup::I))
+        if(auto param = editBuffer->findParameterByID({ 249, VoiceGroup::I }))
           setValue({ param->getControlPositionValue() == 0 ? "Off" : param->getDisplayString(), 0 });
       }
-    }
-  };
-
-  class VGIMasterVolumeText : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      if(auto param = eb->findParameterByID(11247, VoiceGroup::I))
-        setValue({ param->getDisplayString(), 0 });
-    }
-  };
-
-  class VGIIMasterVolumeText : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      if(auto param = eb->findParameterByID(11247, VoiceGroup::II))
-        setValue({ param->getDisplayString(), 0 });
-    }
-  };
-
-  class VGIMasterTuneText : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      if(auto param = eb->findParameterByID(248, VoiceGroup::I))
-        setValue({ param->getDisplayString(), 0 });
-    }
-  };
-
-  class VGIIMasterTuneText : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      if(auto param = eb->findParameterByID(248, VoiceGroup::II))
-        setValue({ param->getDisplayString(), 0 });
     }
   };
 
@@ -226,55 +166,14 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-      if(auto splitPoint = dynamic_cast<const SplitPointParameter *>(eb->getSplitPoint()))  //TODO change 18700
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      if(auto splitPoint = eb->getSplitPoint())
       {
         setValue({ splitPoint->getDisplayValue(vg), 0 });
       }
       else
       {
         setValue({ "", 0 });
-      }
-    }
-  };
-
-  class SoundInfoHeader : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      setValue({ "Sound Info", 0 });
-    }
-  };
-
-  class VoiceGroupILabel : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      auto vgILabel = eb->getVoiceGroupName(VoiceGroup::I);
-      setValue({ vgILabel, 0 });
-    }
-  };
-
-  class VoiceGroupIILabel : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      auto vgIILabel = eb->getVoiceGroupName(VoiceGroup::II);
-      setValue({ vgIILabel, 0 });
-    }
-  };
-
-  class SoundInfoSplitPoint : public EditBufferEvent<DisplayString>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override
-    {
-      if(auto splitPoint = eb->getSplitPoint())
-      {
-        setValue({ splitPoint->getDisplayString(), 0 });
       }
     }
   };

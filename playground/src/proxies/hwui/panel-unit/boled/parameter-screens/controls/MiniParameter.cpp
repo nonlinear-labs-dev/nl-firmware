@@ -12,7 +12,7 @@ MiniParameter::MiniParameter(Parameter *param, const Rect &pos)
 {
   m_label = addControl(new MiniParameterLabel(param, Rect(0, 0, 56, 9)));
 
-  if(param->getID() == ScaleGroup::getScaleBaseParameterID())
+  if(param->getID().getNumber() == ScaleGroup::getScaleBaseParameterNumber())
   {
     addControl(new ScaleGroupMiniParameterBarSlider(param, Rect(0, 10, 56, 2)));
   }

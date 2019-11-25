@@ -23,7 +23,7 @@
 #include <nltools/messaging/Message.h>
 
 LPCProxy::LPCProxy()
-    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID())
+    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
     , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))
     , m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
 {
@@ -136,7 +136,9 @@ void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
   notifyRibbonTouch(id);
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
-  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id);
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+#warning "TODO: respect globals"
+  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, vg});
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
   {
@@ -224,8 +226,8 @@ void LPCProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 
 void LPCProxy::notifyRibbonTouch(int ribbonsParameterID)
 {
-  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbonParameterID()
-     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbonParameterID())
+  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbonParameterID().getNumber()
+     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
   {
     m_lastTouchedRibbon = ribbonsParameterID;
     m_signalRibbonTouched.send(ribbonsParameterID);
@@ -252,12 +254,12 @@ void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
   nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
 }
 
-void LPCProxy::traceBytes(const RefPtr<Bytes> bytes) const
+void LPCProxy::traceBytes(const RefPtr<Bytes>& bytes) const
 {
   if(Application::get().getSettings()->getSetting<DebugLevel>()->get() == DebugLevels::DEBUG_LEVEL_GASSY)
   {
     gsize numBytes = 0;
-    uint8_t *data = (uint8_t *) bytes->get_data(numBytes);
+    auto *data = (uint8_t *) bytes->get_data(numBytes);
 
     char txt[numBytes * 4];
     char *ptr = txt;
@@ -279,7 +281,8 @@ void LPCProxy::sendEditBuffer()
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   tMessageComposerPtr cmp(new EditBufferMessageComposer());
-
+#warning "TODO"
+#if 0
   auto sorted = editBuffer->getParametersSortedById();
 
   for(auto &it : sorted)
@@ -290,6 +293,7 @@ void LPCProxy::sendEditBuffer()
 
   for(auto &it : sorted)
     it.second->onPresetSentToLpc();
+#endif
 }
 
 void LPCProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)

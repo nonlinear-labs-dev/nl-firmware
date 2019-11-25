@@ -3,17 +3,21 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.DateDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
+import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
-import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 
-public class EditBufferModel {
+public class EditBufferModel extends Notifier<EditBufferModel> {
+	private static EditBufferModel theModel = new EditBufferModel();
+
+	public static EditBufferModel get() {
+		return theModel;
+	}
 
 	public static enum Color {
 		green, blue, yellow, orange, purple, red, none;
@@ -24,85 +28,93 @@ public class EditBufferModel {
 	}
 
 	public static enum VoiceGroup {
-		I, II
+		I, II, Global
 	}
 
-	private static HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
-	private static HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
-	private static ArrayList<ModulateableParameterModel> modulateableParametersCache = new ArrayList<ModulateableParameterModel>();
+	public static class ByVoiceGroup {
+		public HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
+		public HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();
+		public ArrayList<ModulateableParameterModel> modulateableParametersCache = new ArrayList<ModulateableParameterModel>();
+	}
 
-	public static IntegerDataModelEntity selectedParameter = new IntegerDataModelEntity();
-	public static StringDataModelEntity loadedPreset = new StringDataModelEntity();
-	public static StringDataModelEntity loadedPresetName = new StringDataModelEntity();
-	public static StringDataModelEntity loadedPresetBankName = new StringDataModelEntity();
-	public static BooleanDataModelEntity isZombie = new BooleanDataModelEntity();
-	public static BooleanDataModelEntity isModified = new BooleanDataModelEntity();
-	public static BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
+	public ByVoiceGroup[] byVoiceGroup = { new ByVoiceGroup(), new ByVoiceGroup(), new ByVoiceGroup() };
 
-	public static EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
-	public static EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
+	public IntegerDataModelEntity selectedParameter = new IntegerDataModelEntity();
+	public StringDataModelEntity loadedPreset = new StringDataModelEntity();
+	public StringDataModelEntity loadedPresetName = new StringDataModelEntity();
+	public StringDataModelEntity loadedPresetBankName = new StringDataModelEntity();
+	public BooleanDataModelEntity isZombie = new BooleanDataModelEntity();
+	public BooleanDataModelEntity isModified = new BooleanDataModelEntity();
+	public BooleanDataModelEntity isChanged = new BooleanDataModelEntity();
+
+	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
+	public EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
 			SoundType.Split);
-	public static StringDataModelEntity comment = new StringDataModelEntity();
-	public static StringDataModelEntity deviceName = new StringDataModelEntity();
-	public static DateDataModelEntity storeTime = new DateDataModelEntity();
+	public EnumDataModelEntity<VoiceGroup> voiceGroup = new EnumDataModelEntity<VoiceGroup>(VoiceGroup.class,
+			VoiceGroup.I);
+	public StringDataModelEntity comment = new StringDataModelEntity();
+	public StringDataModelEntity deviceName = new StringDataModelEntity();
+	public DateDataModelEntity storeTime = new DateDataModelEntity();
 
 	// dual voice mock
 	// TODO
-	public static StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity("Chili");
-	public static StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity("Jalapeño");
+	public StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity("Chili");
+	public StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity("Jalapeño");
 
-	public static ParameterGroupModel getGroup(String id) {
-		ParameterGroupModel g = parameterGroups.get(id);
+	private EditBufferModel() {
+		ParameterFactory.assertSorted();
 
-		if (g == null) {
-			g = new ParameterGroupModel();
-			parameterGroups.put(id, g);
+		for (String groupdId : ParameterFactory.getParameterGroups()) {
+			if (ParameterFactory.isGlobalParameterGroup(groupdId)) {
+				byVoiceGroup[VoiceGroup.Global.ordinal()].parameterGroups.put(groupdId, new ParameterGroupModel());
+			} else {
+				byVoiceGroup[VoiceGroup.I.ordinal()].parameterGroups.put(groupdId, new ParameterGroupModel());
+				byVoiceGroup[VoiceGroup.II.ordinal()].parameterGroups.put(groupdId, new ParameterGroupModel());
+			}
 		}
 
-		return g;
+		for (int id : ParameterFactory.getAllParameters()) {
+			if (ParameterFactory.isGlobalParameter(id)) {
+				addParameter(id, VoiceGroup.Global);
+			} else {
+				addParameter(id, VoiceGroup.I);
+				addParameter(id, VoiceGroup.II);
+			}
+		}
 	}
 
-	public static BasicParameterModel findParameter(int id) {
-		BasicParameterModel p = parameters.get(id);
-
-		if (p == null)
-			p = addParameter(id);
-
-		return p;
+	public ParameterGroupModel getGroup(String id, VoiceGroup vg) {
+		return byVoiceGroup[vg.ordinal()].parameterGroups.get(id);
 	}
 
-	public static BasicParameterModel getSelectedParameter() {
-		return parameters.get(selectedParameter.getValue());
+	public BasicParameterModel getParameter(int id, VoiceGroup vg) {
+		return byVoiceGroup[vg.ordinal()].parameters.get(id);
 	}
 
-	public static BasicParameterModel addParameter(int id) {
+	public BasicParameterModel getSelectedParameter() {
+		int paramID = selectedParameter.getValue();
+		BasicParameterModel global = byVoiceGroup[VoiceGroup.Global.ordinal()].parameters.get(paramID);
+		if (global != null)
+			return global;
+
+		return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
+	}
+
+	private void addParameter(int id, VoiceGroup vg) {
 		BasicParameterModel p = ParameterFactory.create(id);
 
 		if (p != null) {
-			parameters.put(id, p);
+			byVoiceGroup[vg.ordinal()].parameters.put(id, p);
 
 			if (p instanceof ModulateableParameterModel)
-				modulateableParametersCache.add((ModulateableParameterModel) p);
+				byVoiceGroup[vg.ordinal()].modulateableParametersCache.add((ModulateableParameterModel) p);
 		}
-
-		return p;
 	}
 
-	public static void onParameterChange(int parameterId, Function<ValueDataModelEntity, Boolean> cb) {
-		findParameter(parameterId).value.onChange(cb);
-	}
-
-	public static boolean isAnyParamChanged() {
-		for (BasicParameterModel param : parameters.values()) {
-			if (param.isChanged())
-				return true;
-		}
-		return false;
-	}
-
-	public static String getPresetNameOfVoiceGroup(VoiceGroup group) {
+	public String getPresetNameOfVoiceGroup(VoiceGroup group) {
 		switch (group) {
 		case I:
+		case Global:
 			return loadedPresetInVG1.getValue();
 
 		case II:
@@ -111,11 +123,33 @@ public class EditBufferModel {
 		return "";
 	}
 
-	public static MacroControlParameterModel findParameter(ModSource value) {
-		return (MacroControlParameterModel) findParameter(value.toParameterId());
+	public MacroControlParameterModel getParameter(ModSource value, VoiceGroup vg) {
+		return (MacroControlParameterModel) getParameter(value.toParameterId(), vg);
 	}
 
-	public static List<ModulateableParameterModel> getAllModulateableParameters() {
-		return modulateableParametersCache;
+	public List<ModulateableParameterModel> getAllModulateableParameters() {
+		return byVoiceGroup[voiceGroup.getValue().ordinal()].modulateableParametersCache;
 	}
+
+	public ParameterGroupModel getAnyGroup(String id) {
+		ParameterGroupModel g = byVoiceGroup[VoiceGroup.Global.ordinal()].parameterGroups.get(id);
+		if (g != null)
+			return g;
+		return byVoiceGroup[VoiceGroup.I.ordinal()].parameterGroups.get(id);
+	}
+
+	public BasicParameterModel getAnyParameter(int id) {
+		BasicParameterModel p = byVoiceGroup[VoiceGroup.Global.ordinal()].parameters.get(id);
+
+		if (p != null)
+			return p;
+
+		return byVoiceGroup[VoiceGroup.I.ordinal()].parameters.get(id);
+	}
+
+	@Override
+	public EditBufferModel getValue() {
+		return this;
+	}
+
 }

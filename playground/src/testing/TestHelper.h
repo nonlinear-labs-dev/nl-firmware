@@ -2,6 +2,7 @@
 #include <libundo/undo/TransactionCreationScope.h>
 #include <memory>
 #include <presets/PresetManager.h>
+#include <parameters/Parameter.h>
 
 namespace TestHelper
 {
@@ -13,11 +14,6 @@ namespace TestHelper
   inline EditBuffer* getEditBuffer()
   {
     return getPresetManager()->getEditBuffer();
-  }
-
-  inline VoiceGroupSelection* getVoiceGroupSelectionObject()
-  {
-    return Application::get().getVoiceGroupSelectionHardwareUI();
   }
 
   inline std::unique_ptr<UNDO::TransactionCreationScope> createTestScope()

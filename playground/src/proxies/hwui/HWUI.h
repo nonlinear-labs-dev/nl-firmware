@@ -40,6 +40,11 @@ class HWUI
   void setFocusAndMode(FocusAndMode focusAndMode);
   FocusAndMode getFocusAndMode() const;
 
+  VoiceGroup getCurrentVoiceGroup() const;
+  void setCurrentVoiceGroup(VoiceGroup v);
+  void toggleCurrentVoiceGroup();
+  sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup>& cb);
+
   void freezeFocusAndMode();
   void thawFocusAndMode();
 
@@ -47,15 +52,14 @@ class HWUI
   const PanelUnit &getPanelUnit() const;
 
   BaseUnit &getBaseUnit();
-  const BaseUnit &getBaseUnit() const;
 
   ButtonModifiers getButtonModifiers() const;
   bool isResolutionFine() const;
   void unsetFineMode();
   bool isModifierSet(ButtonModifier m) const;
 
-  sigc::connection onModifiersChanged(slot<void, ButtonModifiers> cb);
-  sigc::connection connectToBlinkTimer(slot<void, int> cb);
+  sigc::connection onModifiersChanged(const slot<void, ButtonModifiers>& cb);
+  sigc::connection connectToBlinkTimer(const slot<void, int>& cb);
   void deInit();
 
  private:
@@ -89,6 +93,7 @@ class HWUI
   sigc::connection m_blinkTimerConnection;
   Signal<void, ButtonModifiers> m_modifersChanged;
   Signal<void, int> m_blinkTimer;
+  Signal<void, VoiceGroup> m_voiceGoupSignal;
   std::array<bool, (size_t) Buttons::NUM_BUTTONS> m_buttonStates;
 
   int m_affengriffState = 0;
@@ -97,6 +102,8 @@ class HWUI
 
   int m_blinkCount;
   Expiration m_switchOffBlockingMainThreadIndicator;
+
+  VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
 
   bool m_focusAndModeFrozen = false;
 };

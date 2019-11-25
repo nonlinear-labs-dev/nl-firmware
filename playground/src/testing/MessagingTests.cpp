@@ -50,7 +50,7 @@ struct MessagingTests
       nltools::msg::init(conf);
 
       int numMessages = 0;
-      UnmodulateableParameterChangedMessage msgToSend(12, 0.3);
+      UnmodulateableParameterChangedMessage msgToSend(12, 0.3, false, VoiceGroup::I);
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
       auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
       send(EndPoint::TestEndPoint, msgToSend);
@@ -69,7 +69,7 @@ struct MessagingTests
       int numRecMessages = 0;
       int numSendMessages = 1000;
 
-      UnmodulateableParameterChangedMessage msgToSend(12, 0.3);
+      UnmodulateableParameterChangedMessage msgToSend(12, 0.3, false, VoiceGroup::I);
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
       auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
 
@@ -91,7 +91,7 @@ struct MessagingTests
       int numRecMessages = 0;
       int numSendMessages = 100;
 
-      UnmodulateableParameterChangedMessage msgToSend(12, 0.3);
+      UnmodulateableParameterChangedMessage msgToSend(12, 0.3, false, VoiceGroup::I);
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
       auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
 

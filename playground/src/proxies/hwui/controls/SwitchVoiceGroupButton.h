@@ -6,7 +6,6 @@ public:
   explicit SwitchVoiceGroupButton(Buttons pos);
 private:
   static Glib::ustring getTextFor(VoiceGroup vg);
-  static VoiceGroup getCurrentSelection();
 
-  void update();
+  void update(VoiceGroup newVoiceGroup);
 };

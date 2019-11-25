@@ -4,7 +4,7 @@
 class MonoModeEnableParameter : public MonoParameter
 {
  public:
-  MonoModeEnableParameter(ParameterGroup *group, uint16_t id);
+  MonoModeEnableParameter(ParameterGroup *group, ParameterId id);
   ustring getDisplayString() const override;
 
   ustring getLongName() const override;

@@ -18,7 +18,7 @@ Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
     , m_type{ SoundType::Single }
-    , m_voiceGroupLabels{ { "I", "II" } }
+    , m_voiceGroupLabels{ { "", "" } }
 {
 }
 
@@ -172,42 +172,25 @@ void Preset::guessName(UNDO::Transaction *transaction)
   setName(transaction, Application::get().getPresetManager()->createPresetNameBasedOn(currentName));
 }
 
-PresetParameter *Preset::findParameterByID(int id, VoiceGroup vg) const
+PresetParameter *Preset::findParameterByID(ParameterId id) const
 {
-  if(vg == VoiceGroup::Global)
-  {
-    for(auto &g : m_globalParameterGroups)
-    {
-      if(auto p = g.second->findParameterByID(id))
-      {
-        return p;
-      }
-    }
-  }
-
-  nltools_assertAlways(vg == VoiceGroup::I || vg == VoiceGroup::II);
-
-  for(auto &g : m_parameterGroups[static_cast<int>(vg)])
+  for(auto &g : m_parameterGroups[static_cast<int>(id.getVoiceGroup())])
     if(auto p = g.second->findParameterByID(id))
       return p;
 
-  throw std::runtime_error("no such parameter in " + toString(vg));
+  throw std::runtime_error("no such parameter in " + toString(id.getVoiceGroup()));
 }
 
 PresetParameterGroup *Preset::findParameterGroup(const std::string &id, VoiceGroup vg) const
 {
-  nltools_assertAlways(vg != VoiceGroup::Invalid);
-
-  auto it = m_parameterGroups[static_cast<int>(vg)].find(id);
-
-  if(it != m_parameterGroups[static_cast<int>(vg)].end())
-    return it->second.get();
-
-  auto globalit = m_globalParameterGroups.find(id);
-  if(globalit != m_globalParameterGroups.end())
-    return globalit->second.get();
-
-  return nullptr;
+  try
+  {
+    return m_parameterGroups.at(static_cast<size_t>(vg)).at(id).get();
+  }
+  catch(...)
+  {
+    return nullptr;
+  }
 }
 
 void Preset::copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid)
@@ -381,9 +364,7 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
 void Preset::writeGroups(Writer &writer, const Preset *other) const
 {
-#warning "CHANGE ME!"
-  for(auto &g : m_parameterGroups[0])
-  {
-    g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first));
-  }
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
+    for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
+      g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first, vg), vg);
 }

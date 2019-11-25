@@ -44,7 +44,7 @@ int PlayOrEditModeLayout::getBehaviourLeft() const
 
 void PlayOrEditModeLayout::onLastTouchedRibbonChanged(int lastTouchedRibbonParameterID)
 {
-  bool upper = (lastTouchedRibbonParameterID == HardwareSourcesGroup::getUpperRibbonParameterID());
+  bool upper = (lastTouchedRibbonParameterID == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber());
   m_upperArrow->setVisible(upper);
   m_lowerArrow->setVisible(!upper);
 }

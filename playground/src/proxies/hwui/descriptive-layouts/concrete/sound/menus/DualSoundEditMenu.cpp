@@ -3,6 +3,8 @@
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/ConvertToSingleItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/LoadPresetIntoVoiceGroupItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/PartLabelItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/TextItem.h>
+#include <proxies/hwui/HWUI.h>
 
 DualSoundEditMenu::DualSoundEditMenu(const Rect &r)
     : ScrollMenu(r)

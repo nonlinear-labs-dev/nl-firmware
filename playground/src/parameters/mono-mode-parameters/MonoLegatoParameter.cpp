@@ -1,7 +1,7 @@
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include "MonoLegatoParameter.h"
 
-MonoLegatoParameter::MonoLegatoParameter(ParameterGroup *group, uint16_t id)
+MonoLegatoParameter::MonoLegatoParameter(ParameterGroup *group, ParameterId id)
     : MonoParameter(group, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 1, 1)
 {
 }

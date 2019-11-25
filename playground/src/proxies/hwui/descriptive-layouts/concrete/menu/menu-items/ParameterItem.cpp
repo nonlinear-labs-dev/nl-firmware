@@ -2,7 +2,7 @@
 #include "ParameterItem.h"
 #include "parameters/Parameter.h"
 
-ParameterItem::ParameterItem(const Parameter *parameter, const Rect &r)
+ParameterItem::ParameterItem(Parameter * const parameter, const Rect &r)
     : EditorItem(parameter->getLongName(), r)
     , m_parameter{ parameter }
 {

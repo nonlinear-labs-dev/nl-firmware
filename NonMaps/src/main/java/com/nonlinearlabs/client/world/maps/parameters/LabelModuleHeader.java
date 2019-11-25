@@ -70,7 +70,7 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	protected String getDisplayText() {
-		return EditBufferModel.getGroup(getParent().getID()).longName.getValue();
+		return EditBufferModel.get().getAnyGroup(getParent().getID()).longName.getValue();
 	}
 
 	protected boolean isLocked() {

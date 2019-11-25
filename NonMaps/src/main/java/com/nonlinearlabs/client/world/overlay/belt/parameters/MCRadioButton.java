@@ -2,9 +2,8 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
@@ -26,11 +25,8 @@ class MCRadioButton extends SVGImage {
 	}
 
 	private boolean isChanged() {
-		BasicParameterModel bpm = EditBufferModel.getSelectedParameter();
-		if (bpm instanceof ModulateableParameterModel) {
-			return ((ModulateableParameterModel) bpm).isChanged(this.mode);
-		}
-		return false;
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.changed;
 	}
 
 	@Override

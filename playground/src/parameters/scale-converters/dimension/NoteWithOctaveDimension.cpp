@@ -19,6 +19,12 @@ ustring NoteWithOctaveDimension::stringize(const tDisplayValue &displayValue) co
   return stringizeNote(static_cast<int>(displayValue * NoteWithOctaveDimension::KeyCount));
 }
 
+Glib::ustring NoteWithOctaveDimension::getStingizerJS() const
+{
+#warning "TODO!"
+  return "formatNote(cpValue)";
+}
+
 const NoteWithOctaveDimension &NoteWithOctaveDimension::get()
 {
   static NoteWithOctaveDimension dim;

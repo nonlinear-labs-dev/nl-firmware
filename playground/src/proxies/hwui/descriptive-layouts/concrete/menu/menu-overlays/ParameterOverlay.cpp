@@ -4,7 +4,7 @@
 #include "presets/PresetManager.h"
 #include "ParameterOverlay.h"
 
-ParameterOverlay::ParameterOverlay(const Rect& rect, const Parameter* parameter)
+ParameterOverlay::ParameterOverlay(const Rect& rect, Parameter * const parameter)
     : ArrowIncrementDecrementOverlay(rect)
     , m_parameter{ parameter }
 {
@@ -30,8 +30,9 @@ void ParameterOverlay::onRight(bool down)
   param->stepCPFromHwui(transaction, 1, {});
 }
 
+#warning "Adlerauge"
 Parameter* ParameterOverlay::getNonConstParameter(const Parameter* param) const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->findParameterByID(param->getID(), param->getVoiceGroup());
+  return eb->findParameterByID(param->getID());
 }
