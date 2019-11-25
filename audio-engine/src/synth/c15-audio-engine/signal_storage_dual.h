@@ -16,6 +16,12 @@
 using PolyValue = ParallelData<float, C15::Config::local_polyphony>;
 using PolyInt = ParallelData<int32_t, C15::Config::local_polyphony>;
 
+struct LayerSignalCollection
+{
+  PolyValue m_osc_a = {}, m_osc_b = {}, m_comb = {}, m_svf = {};
+  float m_fx_dry = 0.0f, m_fx_wet = {};
+};
+
 // global and mono sections require mono signals
 template <class M> class MonoSignalStorage
 {

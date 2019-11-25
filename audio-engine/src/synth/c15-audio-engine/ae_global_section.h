@@ -28,7 +28,7 @@ class GlobalSection
   void start_fast(const uint32_t _id, const float _dx, const float _dest);
   void start_slow(const uint32_t _id, const float _dx, const float _dest);
   float key_position(const uint32_t _pos);
-  void render_audio(const float _left0, const float _right0, const float _left1, const float _right1);
+  void render_audio(const float _left, const float _right);
   void render_fast();
   void render_slow();
   void update_tone_amplitude(const float _db);

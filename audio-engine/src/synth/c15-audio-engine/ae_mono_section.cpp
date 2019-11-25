@@ -13,6 +13,11 @@ MonoSection::MonoSection()
 {
 }
 
+void MonoSection::init(LayerSignalCollection *_z_self)
+{
+  m_z_self = _z_self;
+}
+
 void MonoSection::add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId)
 {
   m_smoothers.m_copy_audio.add_copy_id(_smootherId, _signalId);
@@ -48,11 +53,13 @@ void MonoSection::start_slow(const uint32_t _id, const float _dx, const float _d
   m_smoothers.start_slow(_id, _dx, _dest);
 }
 
-void MonoSection::render_audio(const float _left, const float _right)
+void MonoSection::render_audio(const float _left, const float _right, const float _vol)
 {
   m_smoothers.render_audio();
   postProcess_audio();
   // todo: mono audio dsp (makemonosound)
+  m_out_l = _left * _vol;   // temporary
+  m_out_r = _right * _vol;  // temporary
 }
 
 void MonoSection::render_fast()

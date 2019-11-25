@@ -13,19 +13,12 @@ PolySection::PolySection()
 {
 }
 
-void PolySection::init(exponentiator *_convert, PolyValue *_fb_osc_a, PolyValue *_fb_osc_b, float *_fb0_dry,
-                       float *_fb0_wet, float *_fb1_dry, float *_fb1_wet, float *_reference, const float _ms,
+void PolySection::init(exponentiator *_convert, LayerSignalCollection *_z_self, float *_reference, const float _ms,
                        const float _gateRelease, const float _samplerate)
 {
-  // link scale converter (from dsp_host_dual)
+  // pointer linking (from dsp_host_dual)
   m_convert = _convert;
-  // link fb pointers
-  m_fb_osc_a = _fb_osc_a;
-  m_fb_osc_b = _fb_osc_b;
-  m_fb0_dry = _fb0_dry;
-  m_fb0_wet = _fb0_wet;
-  m_fb1_dry = _fb1_dry;
-  m_fb1_wet = _fb1_wet;
+  m_z_self = _z_self;
   // init crucial variables
   m_reference = _reference;
   m_millisecond = _ms;
@@ -92,17 +85,30 @@ void PolySection::render_audio(const float _mute)
   {
     postProcess_poly_audio(v, _mute);
   }
-  // todo: main poly audio dsp (makepolysound) -- todo: feedback resolution ... (cross comb and svf currently missing...)
-  m_soundgenerator.generate(m_signals, 0.0f);
+  m_soundgenerator.generate(m_signals, m_feedbackmixer.m_out);
   m_combfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B);
   m_svfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out);
-  m_feedbackmixer.apply(m_signals, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-  m_soundgenerator.m_feedback_phase = 0.0f;
   m_outputmixer.combine(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out,
                         m_svfilter.m_out);
-  //
-  m_osc_a = m_soundgenerator.m_out_A;
-  m_osc_b = m_soundgenerator.m_out_B;
+  m_outputmixer.filter_level(m_signals);
+  // capture z samples
+  m_z_self->m_osc_a = m_soundgenerator.m_out_A;
+  m_z_self->m_osc_b = m_soundgenerator.m_out_B;
+  m_z_self->m_comb = m_combfilter.m_out;
+  m_z_self->m_svf = m_svfilter.m_out;
+  // eval sends
+  float send = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_To_FX);
+  m_send_self_l = m_outputmixer.m_out_l * send;
+  m_send_self_r = m_outputmixer.m_out_r * send;
+  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_To_FX);
+  m_send_other_l = m_outputmixer.m_out_l * send;
+  m_send_other_r = m_outputmixer.m_out_r * send;
+}
+
+void PolySection::render_feedback(const LayerSignalCollection &_z_other)
+{
+  m_feedbackmixer.apply(m_signals, *m_z_self, _z_other);
+  m_soundgenerator.m_feedback_phase = m_feedbackmixer.m_out;
 }
 
 void PolySection::render_fast()
@@ -174,6 +180,11 @@ void PolySection::resetEnvelopes()
   m_env_b.reset();
   m_env_c.reset();
   m_env_g.reset();
+}
+
+float PolySection::getVoiceGroupVolume()
+{
+  return m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Volume);
 }
 
 float PolySection::evalNyquist(const float _value)

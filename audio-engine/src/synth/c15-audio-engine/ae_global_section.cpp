@@ -63,7 +63,7 @@ float GlobalSection::key_position(const uint32_t _pos)
   return pos;
 }
 
-void GlobalSection::render_audio(const float _left0, const float _right0, const float _left1, const float _right1)
+void GlobalSection::render_audio(const float _left, const float _right)
 {
   // common dsp: smoothers, signal post processing
   m_smoothers.render_audio();
@@ -79,32 +79,28 @@ void GlobalSection::render_audio(const float _left0, const float _right0, const 
   m_tonePhase += m_sampleInc * m_toneFreq;
   m_tonePhase -= NlToolbox::Conversion::float2int(m_tonePhase);
   m_signal[1] = signal;
-  // left: master volume, layer combination
-  signal = vol * (_left0 + _left1);
+  // left: volume and test tone combination
+  m_signal[0] = vol * _left;
+  m_signal[2] = m_signal[0] + m_signal[1];
+  signal = m_signal[m_combinationMode];
   // left: soft clipping
   signal = std::clamp(signal * 0.1588f, -0.25f, 0.25f);
   signal += -0.25f;
   signal += signal;
   signal = 0.5f - std::abs(signal);
   squared = signal * signal;
-  signal *= ((((2.26548f * squared) - 5.13274f) * squared) + 3.14159f);
-  // left: output signal and test tone combination (mute applied in host)
-  m_signal[0] = signal;
-  m_signal[2] = signal + m_signal[1];
-  m_out_l = m_signal[m_combinationMode];  // 0: C15, 1: Tone, 2: C15 + Tone
-  // right: master volume, layer combination
-  signal = vol * (_right0 + _right1);
+  m_out_l = signal * ((((2.26548f * squared) - 5.13274f) * squared) + 3.14159f);
+  // right: volume and test tone combination
+  m_signal[0] = vol * _right;
+  m_signal[2] = m_signal[0] + m_signal[1];
+  signal = m_signal[m_combinationMode];
   // right: soft clipping
   signal = std::clamp(signal * 0.1588f, -0.25f, 0.25f);
   signal += -0.25f;
   signal += signal;
   signal = 0.5f - std::abs(signal);
   squared = signal * signal;
-  signal *= ((((2.26548f * squared) - 5.13274f) * squared) + 3.14159f);
-  // right: output signal and test tone combination (mute applied in host)
-  m_signal[0] = signal;
-  m_signal[2] = signal + m_signal[1];
-  m_out_r = m_signal[m_combinationMode];  // 0: C15, 1: Tone, 2: C15 + Tone
+  m_out_r = signal * ((((2.26548f * squared) - 5.13274f) * squared) + 3.14159f);
 }
 
 void GlobalSection::render_fast()

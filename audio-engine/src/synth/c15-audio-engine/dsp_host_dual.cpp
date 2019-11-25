@@ -42,13 +42,14 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.update_tone_amplitude(-6.0f);
   m_global.update_tone_frequency(m_reference.m_scaled);
   m_global.update_tone_mode(0);
-  // init poly: exponentiator, feedback pointers
-  m_poly[0].init(&m_convert, &m_poly_feedback[2], &m_poly_feedback[3], &m_mono[0].m_dry, &m_mono[0].m_wet,
-                 &m_mono[1].m_dry, &m_mono[1].m_wet, &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
+  // init poly dsp: exponentiator, feedback pointers
+  m_poly[0].init(&m_convert, &m_z_layers[0], &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
                  samplerate);
-  m_poly[1].init(&m_convert, &m_poly_feedback[0], &m_poly_feedback[1], &m_mono[0].m_dry, &m_mono[0].m_wet,
-                 &m_mono[1].m_dry, &m_mono[1].m_wet, &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
+  m_poly[1].init(&m_convert, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
                  samplerate);
+  // init mono dsp
+  m_mono[0].init(&m_z_layers[0]);
+  m_mono[1].init(&m_z_layers[1]);
   // init parameters by parameter list
   m_params.init_modMatrix();
   for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
@@ -780,21 +781,20 @@ void dsp_host_dual::render()
   }
   // audio rendering (always) -- temporary soundgenerator patching
   const float mute = m_output_mute.get_value();
-  // - resolve poly feedback -- todo: re-evaluate...
-  m_poly_feedback[0] = m_poly[0].m_osc_a;
-  m_poly_feedback[1] = m_poly[0].m_osc_b;
-  m_poly_feedback[2] = m_poly[1].m_osc_a;
-  m_poly_feedback[3] = m_poly[1].m_osc_b;
-  // - audio dsp poly - both layers
+  // - audio dsp poly - first stage - both layers (up to Output Mixer)
   m_poly[0].render_audio(mute);
   m_poly[1].render_audio(mute);
   // - audio dsp mono - each layer with separate sends - left, right)
-  //m_mono[0].render_audio(m_poly[0].m_send0_l + m_poly[1].m_send0_l, m_poly[0].m_send0_r + m_poly[1].m_send0_r);
-  //m_mono[1].render_audio(m_poly[0].m_send1_l + m_poly[1].m_send1_l, m_poly[0].m_send1_r + m_poly[1].m_send1_r);
+  m_mono[0].render_audio(m_poly[0].m_send_self_l + m_poly[1].m_send_other_l,
+                         m_poly[0].m_send_self_r + m_poly[1].m_send_other_r, m_poly[0].getVoiceGroupVolume());
+  m_mono[1].render_audio(m_poly[0].m_send_other_l + m_poly[1].m_send_self_l,
+                         m_poly[0].m_send_other_r + m_poly[1].m_send_self_r, m_poly[1].getVoiceGroupVolume());
+  // audio dsp poly - second stage - both layers (FB Mixer)
+  m_poly[0].render_feedback(m_z_layers[1]);  // pass other layer's signals as arg
+  m_poly[1].render_feedback(m_z_layers[0]);  // pass other layer's signals as arg
   // - audio dsp global - main out: combine layers, apply test_tone and soft clip
   //m_global.render_audio(m_mono[0].m_out_l, m_mono[0].m_out_r, m_mono[1].m_out_l, m_mono[1].m_out_r);
-  m_global.render_audio(sumUp(m_poly[0].m_osc_a), sumUp(m_poly[0].m_osc_b), sumUp(m_poly[1].m_osc_a),
-                        sumUp(m_poly[1].m_osc_b));  // temporary
+  m_global.render_audio(m_mono[0].m_out_l + m_mono[1].m_out_l, m_mono[0].m_out_r + m_mono[1].m_out_r);
   // - final: main out, output mute
   m_mainOut_L = m_global.m_out_l * mute;
   m_mainOut_R = m_global.m_out_r * mute;
