@@ -343,7 +343,7 @@ namespace nltools
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
     {
       std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::ModulateableParameter, 98> modulateables;
+      std::array<ParameterGroups::ModulateableParameter, 97> modulateables;
       std::array<ParameterGroups::UnmodulatebaleParameter, 107> unmodulateables;
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
@@ -353,39 +353,29 @@ namespace nltools
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
     {
-      std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
-      std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
-      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+      std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::HardwareAmountParameter, 48>, 2> hwamounts;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 
-      std::array<ParameterGroups::PedalParameter, 4> pedals;
-      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
-      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
-      std::array<ParameterGroups::BenderParameter, 1> bender;
-
-      std::array<ParameterGroups::Parameter, 2> master;
-      std::array<ParameterGroups::Parameter, 12> scale;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::GlobalParameter, 14> globalparams;
       ParameterGroups::SplitPoint splitpoint;
     };
 
     struct LayerPresetMessage : Message<MessageType::LayerPreset>
     {
-      std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
-      std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
-      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+      std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::HardwareAmountParameter, 48>, 2> hwamounts;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 
-      std::array<ParameterGroups::PedalParameter, 4> pedals;
-      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
-      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
-      std::array<ParameterGroups::BenderParameter, 1> bender;
-
-      std::array<ParameterGroups::Parameter, 2> master;
-      std::array<ParameterGroups::Parameter, 12> scale;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
   }
 }

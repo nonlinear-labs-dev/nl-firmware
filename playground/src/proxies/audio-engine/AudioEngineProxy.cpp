@@ -73,6 +73,7 @@ template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, s
 {
   using MockParam = std::pair<int, double>;
   using MockParams = std::vector<MockParam>;
+
   for(auto p :
       MockParams{ { 328, 0.0 }, { 330, 0.0 }, { 332, 0.0 }, { 334, 0.0 }, { 336, 0.0 }, { 338, 0.0 }, { 340, 0.0 } })
   {
@@ -98,19 +99,36 @@ template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, s
   }
 }
 
-template <typename tMsg> bool handleMockModulateable(Parameter *p, tMsg &msg, size_t &modP)
+template <typename tMsg> void insertMockedParameters(tMsg &msg, VoiceGroup vg, size_t &unmod, size_t &mod)
 {
-  auto id = p->getID();
-  if(id == 358 || id == 360 || id == 362 || id == 367)
+  using MockParam = std::pair<int, double>;
+  using MockParams = std::vector<MockParam>;
+
+  const auto index = static_cast<int>(vg);
+
+  for(auto p :
+      MockParams{ { 328, 0.0 }, { 330, 0.0 }, { 332, 0.0 }, { 334, 0.0 }, { 336, 0.0 }, { 338, 0.0 }, { 340, 0.0 } })
   {
-    auto &item = msg.modulateables[modP++];
-    item.id = id;
-    item.controlPosition = p->getControlPositionValue();
+    auto &item = msg.unmodulateables[index][unmod++];
+    item.id = p.first;
+    item.controlPosition = p.second;
+  }
+
+  for(auto p : MockParams{ { 346, 0.0 },
+                           { 348, 0.5 },
+                           { 350, 0.5 },
+                           { 352, 0.5 },
+                           { 354, 0.5 },
+                           { 389, 0.0 },
+                           { 342, 0.0 },
+                           { 344, 0.0 } })
+  {
+    auto &item = msg.modulateables[index][mod++];
+    item.id = p.first;
+    item.controlPosition = p.second;
     item.modulationAmount = 0.0;
     item.mc = MacroControls::NONE;
-    return true;
   }
-  return false;
 }
 
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
@@ -132,183 +150,128 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
   {
     for(auto p : g->getParameters())
     {
-#warning "Mock"
-      /*
-      if(handleMockModulateable(p, msg, modP))
-      {
-        continue;
-      }
-       */
-
       if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
         auto &macro = msg.macros[mc++];
-        macro.id = p->getID();
-        macro.controlPosition = p->getControlPositionValue();
-        macro.locked = p->isLocked();
+        macro.id = mcParameter->getID();
+        macro.controlPosition = mcParameter->getControlPositionValue();
+        macro.locked = mcParameter->isLocked();
       }
       else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
       {
         auto &hwAmount = msg.hwamounts[modR++];
-        hwAmount.id = p->getID();
-        hwAmount.controlPosition = p->getControlPositionValue();
-        hwAmount.locked = p->isLocked();
+        hwAmount.id = hwAmounts->getID();
+        hwAmount.controlPosition = hwAmounts->getControlPositionValue();
+        hwAmount.locked = hwAmounts->isLocked();
       }
       else if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
       {
         auto &mod = msg.modulateables[modP++];
-        mod.id = p->getID();
+        mod.id = modParam->getID();
         mod.controlPosition = modParam->getControlPositionValue();
         mod.modulationAmount = modParam->getModulationAmount();
         mod.mc = modParam->getModulationSource();
       }
       else
       {
-        auto &unModulateable = msg.unmodulateables[unMod++];
-        unModulateable.id = p->getID();
-        unModulateable.controlPosition = p->getControlPositionValue();
-        unModulateable.locked = p->isLocked();
+        if(p->getID() == 249)
+        {
+          auto &unisonVoices = msg.unisonVoices;
+          unisonVoices.id = 249;
+          unisonVoices.controlPosition = p->getControlPositionValue();
+          unisonVoices.locked = p->isLocked();
+        }
+        else
+        {
+          auto &unModulateable = msg.unmodulateables[unMod++];
+          unModulateable.id = p->getID();
+          unModulateable.controlPosition = p->getControlPositionValue();
+          unModulateable.locked = p->isLocked();
+        }
       }
     }
   }
 
-  nltools_assertAlways(msg.modulateables.size() == modP + 1);
-  nltools_assertAlways(msg.unmodulateables.size() == unMod + 1);
-  nltools_assertAlways(msg.macros.size() == mc + 1);
-  nltools_assertAlways(msg.hwamounts.size() == modR + 1);
+  nltools_assertAlways(msg.modulateables.size() == modP);
+  nltools_assertAlways(msg.unmodulateables.size() == unMod);
+  nltools_assertAlways(msg.macros.size() == mc);
+  nltools_assertAlways(msg.hwamounts.size() == modR);
   return msg;
+}
+
+template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    size_t mc = 0;
+    size_t modP = 0;
+    size_t unMod = 0;
+    size_t modR = 0;
+
+    insertMockedParameters(msg, vg, unMod, modP);
+    nltools_assertAlways(unMod == 7);
+    nltools_assertAlways(modP == 8);
+
+    auto arrayIndex = static_cast<int>(vg);
+    for(auto &g : editBuffer->getParameterGroups(vg))
+    {
+      for(auto p : g->getParameters())
+      {
+        if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
+        {
+          auto &macro = msg.macros[arrayIndex][mc++];
+          macro.id = mcParameter->getID();
+          macro.controlPosition = mcParameter->getControlPositionValue();
+          macro.locked = mcParameter->isLocked();
+        }
+        else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
+        {
+          auto &hwAmount = msg.hwamounts[arrayIndex][modR++];
+          hwAmount.id = hwAmounts->getID();
+          hwAmount.controlPosition = hwAmounts->getControlPositionValue();
+          hwAmount.locked = hwAmounts->isLocked();
+        }
+        else if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
+        {
+          auto &mod = msg.modulateables[arrayIndex][modP++];
+          mod.id = modParam->getID();
+          mod.controlPosition = modParam->getControlPositionValue();
+          mod.modulationAmount = modParam->getModulationAmount();
+          mod.mc = modParam->getModulationSource();
+        }
+        else
+        {
+          if(p->getID() == 249)
+          {
+            auto &unisonVoices = msg.unisonVoices[arrayIndex];
+            unisonVoices.id = 249;
+            unisonVoices.controlPosition = p->getControlPositionValue();
+            unisonVoices.locked = p->isLocked();
+          }
+          else
+          {
+            auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
+            unModulateable.id = p->getID();
+            unModulateable.controlPosition = p->getControlPositionValue();
+            unModulateable.locked = p->isLocked();
+          }
+        }
+      }
+    }
+
+    nltools_assertAlways(msg.modulateables[arrayIndex].size() == modP);
+    nltools_assertAlways(msg.unmodulateables[arrayIndex].size() == unMod);
+    nltools_assertAlways(msg.macros[arrayIndex].size() == mc);
+    nltools_assertAlways(msg.hwamounts[arrayIndex].size() == modR);
+  }
 }
 
 nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage()
 {
-  nltools::msg::SplitPresetMessage msg;
+  nltools::msg::SplitPresetMessage msg{};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    const auto index = static_cast<int>(vg);
-
-    size_t macros = 0;
-    size_t modulateables = 0;
-    size_t unmodulateables = 0;
-    size_t monos = 0;
-    size_t vgmaster = 0;
-
-    for(auto &g : editBuffer->getParameterGroups(vg))
-    {
-      for(auto &p : g->getParameters())
-      {
-        if(auto a = dynamic_cast<MacroControlParameter *>(p))
-        {
-          auto &t = msg.macros[index][macros++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        }
-        else if(auto a = dynamic_cast<ModulateableParameter *>(p))
-        {
-          auto &t = msg.modulateables[index][modulateables++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<double>(a->getControlPositionValue());
-          t.mc = a->getModulationSource();
-          t.modulationAmount = static_cast<double>(a->getModulationAmount());
-        }
-        else if(auto a = dynamic_cast<MonoParameter *>(p))
-        {
-        }
-        else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
-        {
-          auto &t = msg.vgMaster[index][vgmaster++];
-          t.id = a->getID();
-          t.controlPosition = static_cast<double>(a->getControlPositionValue());
-        }
-        else if(auto a = dynamic_cast<Parameter *>(p))
-        {
-          if(a->getID() == 249)
-          {
-            auto &t = msg.unisonVoices.at(index);
-            t.locked = a->isLocked();
-            t.id = a->getID();
-            t.controlPosition = t.controlPosition;
-          }
-          else
-          {
-            auto &t = msg.unmodulateables[index][unmodulateables++];
-            t.id = a->getID();
-            t.controlPosition = static_cast<double>(a->getControlPositionValue());
-            t.locked = a->isLocked();
-          }
-        }
-      }
-    }
-  }
-
-  size_t master = 0;
-  if(auto g = editBuffer->getParameterGroupByID("Master", VoiceGroup::Global))
-  {
-    for(auto &p : g->getParameters())
-    {
-      auto &t = msg.master[master++];
-      t.id = p->getID();
-      t.controlPosition = p->getControlPositionValue();
-      t.locked = p->isLocked();
-    }
-  }
-
-  size_t scale = 0;
-  if(auto g = editBuffer->getParameterGroupByID("Scale", VoiceGroup::Global))
-  {
-    for(auto &p : g->getParameters())
-    {
-      auto &t = msg.scale[scale++];
-      t.id = p->getID();
-      t.controlPosition = p->getControlPositionValue();
-      t.locked = p->isLocked();
-    }
-  }
-
-  size_t pedal = 0;
-  size_t ribbons = 0;
-  size_t aftertouch = 0;
-  size_t bender = 0;
-  if(auto g = editBuffer->getParameterGroupByID("CS", VoiceGroup::Global))
-  {
-    for(auto &p : g->getParameters())
-    {
-      if(auto pedalParam = dynamic_cast<const PedalParameter *>(p))
-      {
-        auto &t = msg.pedals.at(pedal++);
-        t.controlPosition = pedalParam->getControlPositionValue();
-        t.id = pedalParam->getID();
-        t.returnMode = pedalParam->getReturnMode();
-        t.pedalMode = pedalParam->getPedalMode();
-        t.locked = pedalParam->isLocked();
-      }
-      else if(auto ribbonParam = dynamic_cast<const RibbonParameter *>(p))
-      {
-        auto &t = msg.ribbons.at(ribbons++);
-        t.id = ribbonParam->getID();
-        t.controlPosition = ribbonParam->getControlPositionValue();
-        t.locked = ribbonParam->isLocked();
-        t.ribbonReturnMode = ribbonParam->getRibbonReturnMode();
-        t.ribbonTouchBehaviour = ribbonParam->getRibbonTouchBehaviour();
-      }
-      else if(auto afterTouchParameter = dynamic_cast<const AftertouchParameter *>(p))
-      {
-        auto &t = msg.aftertouch.at(aftertouch++);
-        t.id = afterTouchParameter->getID();
-        t.controlPosition = afterTouchParameter->getControlPositionValue();
-        t.locked = afterTouchParameter->isLocked();
-        t.returnMode = afterTouchParameter->getReturnMode();
-      }
-      else if(auto pitchBendParameter = dynamic_cast<PitchbendParameter *>(p))
-      {
-        auto &t = msg.bender.at(bender++);
-        t.id = pitchBendParameter->getID();
-        t.controlPosition = pitchBendParameter->getControlPositionValue();
-        t.returnMode = pitchBendParameter->getReturnMode();
-      }
-    }
-  }
+  fillMessageWithGlobalParams(msg, editBuffer);
+  fillDualMessage(msg, editBuffer);
 
   if(auto sp = editBuffer->getSplitPoint())
   {
@@ -322,137 +285,10 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 
 nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage()
 {
-  nltools::msg::LayerPresetMessage msg;
+  nltools::msg::LayerPresetMessage msg{};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    const auto index = static_cast<int>(vg);
-
-    size_t macros = 0;
-    size_t modulateables = 0;
-    size_t unmodulateables = 0;
-    size_t monos = 0;
-    size_t vgmaster = 0;
-
-    for(auto &g : editBuffer->getParameterGroups(vg))
-    {
-      for(auto &p : g->getParameters())
-      {
-        if(auto a = dynamic_cast<MacroControlParameter *>(p))
-        {
-          auto &t = msg.macros[index][macros++];
-          t.id = a->getID();
-          t.controlPosition = a->getControlPositionValue();
-        }
-        else if(auto a = dynamic_cast<ModulateableParameter *>(p))
-        {
-          auto &t = msg.modulateables[index][modulateables++];
-          t.id = a->getID();
-          t.controlPosition = a->getControlPositionValue();
-          t.mc = a->getModulationSource();
-          t.modulationAmount = a->getModulationAmount();
-        }
-        else if(auto a = dynamic_cast<MonoParameter *>(p))
-        {
-          if(index == 0)
-          {
-          }
-        }
-        else if(auto a = dynamic_cast<VoiceGroupMasterParameter *>(p))
-        {
-          auto &t = msg.vgMaster[index][vgmaster++];
-          t.id = a->getID();
-          t.controlPosition = a->getControlPositionValue();
-        }
-        else if(auto a = dynamic_cast<Parameter *>(p))
-        {
-          if(a->getID() == 249)
-          {
-            auto &t = msg.unisonVoices.at(index);
-            t.locked = a->isLocked();
-            t.id = a->getID();
-            t.controlPosition = t.controlPosition;
-          }
-          else
-          {
-            auto &t = msg.unmodulateables[index][unmodulateables++];
-            t.id = a->getID();
-            t.controlPosition = static_cast<double>(a->getControlPositionValue());
-            t.locked = a->isLocked();
-          }
-        }
-      }
-    }
-  }
-
-  size_t master = 0;
-  if(auto g = editBuffer->getParameterGroupByID("Master", VoiceGroup::Global))
-  {
-    for(auto &p : g->getParameters())
-    {
-      auto &t = msg.master[master++];
-      t.id = p->getID();
-      t.controlPosition = p->getControlPositionValue();
-    }
-  }
-
-  size_t scale = 0;
-  if(auto g = editBuffer->getParameterGroupByID("Scale", VoiceGroup::Global))
-  {
-    for(auto &p : g->getParameters())
-    {
-      auto &t = msg.scale[scale++];
-      t.id = p->getID();
-      t.controlPosition = p->getControlPositionValue();
-    }
-  }
-
-  size_t aftertouch = 0;
-  size_t pedal = 0;
-  size_t bender = 0;
-  size_t ribbons = 0;
-
-  if(auto g = editBuffer->getParameterGroupByID("CS", VoiceGroup::Global))
-  {
-    for(auto &p : g->getParameters())
-    {
-      if(auto pedalParam = dynamic_cast<const PedalParameter *>(p))
-      {
-        auto &t = msg.pedals.at(pedal++);
-        t.controlPosition = pedalParam->getControlPositionValue();
-        t.id = pedalParam->getID();
-        t.returnMode = pedalParam->getReturnMode();
-        t.pedalMode = pedalParam->getPedalMode();
-        t.locked = pedalParam->isLocked();
-      }
-      else if(auto ribbonParam = dynamic_cast<const RibbonParameter *>(p))
-      {
-        auto &t = msg.ribbons.at(ribbons++);
-        t.id = ribbonParam->getID();
-        t.controlPosition = ribbonParam->getControlPositionValue();
-        t.locked = ribbonParam->isLocked();
-        t.ribbonReturnMode = ribbonParam->getRibbonReturnMode();
-        t.ribbonTouchBehaviour = ribbonParam->getRibbonTouchBehaviour();
-      }
-      else if(auto afterTouchParameter = dynamic_cast<const AftertouchParameter *>(p))
-      {
-        auto &t = msg.aftertouch.at(aftertouch++);
-        t.id = afterTouchParameter->getID();
-        t.controlPosition = afterTouchParameter->getControlPositionValue();
-        t.locked = afterTouchParameter->isLocked();
-        t.returnMode = afterTouchParameter->getReturnMode();
-      }
-      else if(auto pitchBendParameter = dynamic_cast<PitchbendParameter *>(p))
-      {
-        auto &t = msg.bender.at(bender++);
-        t.id = pitchBendParameter->getID();
-        t.controlPosition = pitchBendParameter->getControlPositionValue();
-        t.returnMode = pitchBendParameter->getReturnMode();
-      }
-    }
-  }
-
+  fillMessageWithGlobalParams(msg, editBuffer);
+  fillDualMessage(msg, editBuffer);
   return msg;
 }
 
