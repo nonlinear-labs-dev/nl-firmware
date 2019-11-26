@@ -236,6 +236,11 @@ TEST_CASE("Sound Conversion - Master Tune Parameter")
 TEST_CASE("poly groups initialization")
 {
   auto editBuffer = getEditBuffer();
+  {
+    auto scope = TestHelper::createTestScope();
+    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
+  }
 
   const auto unisonVoices = editBuffer->findParameterByID({ 249, VoiceGroup::I })->getControlPositionValue();
   const auto unisonDetune = editBuffer->findParameterByID({ 250, VoiceGroup::I })->getControlPositionValue();
@@ -620,16 +625,16 @@ void randomizeRequireChangedAndInitSoundTest(const Preset* preset)
     REQUIRE(eb->anyParameterChanged());
     eb->undoableInitSound(scope->getTransaction());
     REQUIRE(!eb->anyParameterChanged());
-    auto masterVolume = eb->findParameterByID({247, VoiceGroup::Global});
+    auto masterVolume = eb->findParameterByID({ 247, VoiceGroup::Global });
     REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getDefaultValue()));
-    auto masterTune = eb->findParameterByID({248, VoiceGroup::Global});
+    auto masterTune = eb->findParameterByID({ 248, VoiceGroup::Global });
     REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getDefaultValue()));
 
     for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      auto vgVolume = eb->findParameterByID({358, vg});
+      auto vgVolume = eb->findParameterByID({ 358, vg });
       REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getDefaultValue()));
-      auto vgTune = eb->findParameterByID({360, vg});
+      auto vgTune = eb->findParameterByID({ 360, vg });
       REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getDefaultValue()));
     }
   }
