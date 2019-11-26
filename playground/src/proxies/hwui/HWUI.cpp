@@ -540,6 +540,9 @@ void HWUI::setCurrentVoiceGroup(VoiceGroup v)
 
 void HWUI::toggleCurrentVoiceGroup()
 {
+  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+    return;
+
   if(m_currentVoiceGroup == VoiceGroup::I)
     setCurrentVoiceGroup(VoiceGroup::II);
   else if(m_currentVoiceGroup == VoiceGroup::II)

@@ -10,7 +10,7 @@ Slider::Slider(Parameter *param, const Rect &rect)
     , m_value(0)
     , m_bipolar(false)
 {
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &Slider::voiceGroupSelectionChanged));
+  setParameter(param);
 }
 
 Slider::Slider(const Rect &rect)
@@ -20,22 +20,6 @@ Slider::Slider(const Rect &rect)
 
 Slider::~Slider()
 {
-}
-
-void Slider::voiceGroupSelectionChanged(VoiceGroup newVoiceGroup)
-{
-  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  if(auto param = getParameter())
-  {
-    auto id = param->getID();
-    auto vg = param->getVoiceGroup();
-
-    if(vg == VoiceGroup::Global)
-      newVoiceGroup = vg;
-
-    setParameter(editBuffer->findParameterByID({ id.getNumber(), newVoiceGroup }));
-  }
 }
 
 void Slider::setParameter(Parameter *param)

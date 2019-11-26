@@ -1,6 +1,8 @@
 #include "SwitchVoiceGroupButton.h"
 #include <Application.h>
 #include <presets/VoiceGroupSelection.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)
@@ -10,6 +12,8 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 
 Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
 {
+  if(vg == VoiceGroup::Global)
+    return "";
   if(vg == VoiceGroup::I)
     return "Select II";
   else
@@ -18,5 +22,10 @@ Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
 
 void SwitchVoiceGroupButton::update(VoiceGroup newVoiceGroup)
 {
-  setText({getTextFor(newVoiceGroup), 0});
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  if(eb->getType() == SoundType::Single)
+    setText({ "", 0 });
+  else
+    setText({ getTextFor(newVoiceGroup), 0 });
 }

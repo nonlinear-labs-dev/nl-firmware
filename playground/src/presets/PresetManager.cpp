@@ -850,5 +850,7 @@ void PresetManager::connectToVoiceGroupSelection() {
   {
     auto hwui = Application::get().getHWUI();
     eb->onPresetLoaded(sigc::bind(sigc::mem_fun(hwui, &HWUI::setCurrentVoiceGroup), VoiceGroup::I));
+
+    hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(eb, &EditBuffer::onHWUIVoiceGroupSelectionChanged));
   }
 }

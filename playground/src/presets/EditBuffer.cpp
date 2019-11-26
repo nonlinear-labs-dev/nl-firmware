@@ -195,11 +195,6 @@ sigc::connection EditBuffer::onSelectionChanged(const slot<void, Parameter *, Pa
   return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected());
 }
 
-void EditBuffer::undoableSelectParameter(const Glib::ustring &id)
-{
-  undoableSelectParameter(id);
-}
-
 void EditBuffer::undoableSelectParameter(ParameterId id)
 {
   if(auto p = findParameterByID(id))
@@ -774,4 +769,15 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 {
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
   return m_voiceGroupLabels[static_cast<size_t>(vg)];
+}
+
+void EditBuffer::onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection)
+{
+  if(auto current = getSelected())
+  {
+    auto currentID = current->getID();
+    if(currentID.getVoiceGroup() != VoiceGroup::Global)
+      undoableSelectParameter(
+          { currentID.getNumber(), currentID.getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I });
+  }
 }

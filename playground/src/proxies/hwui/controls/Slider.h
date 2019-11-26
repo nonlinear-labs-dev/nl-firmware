@@ -27,7 +27,6 @@ class Slider : public Control
   virtual bool hasBorder() const;
   virtual bool isBiPolar() const;
   virtual void onParamValueChanged(const Parameter *param);
-  virtual void voiceGroupSelectionChanged(VoiceGroup v);
 
  private:
   tDisplayValue m_value;

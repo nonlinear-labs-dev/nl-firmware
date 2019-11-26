@@ -29,7 +29,6 @@ class EditBuffer : public ParameterDualGroupSet
 
   void setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid);
 
-  void undoableSelectParameter(const Glib::ustring &id);
   void undoableSelectParameter(ParameterId id);
   void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
@@ -70,6 +69,8 @@ class EditBuffer : public ParameterDualGroupSet
   bool hasLocks(VoiceGroup vg) const;
   bool anyParameterChanged() const;
   void resetOriginIf(const Preset *p);
+
+  void onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection);
 
   // CALLBACKS
   sigc::connection onSelectionChanged(const slot<void, Parameter *, Parameter *> &s);

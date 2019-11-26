@@ -26,7 +26,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("select-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring id = request->get("id");
-    editBuffer->undoableSelectParameter(id);
+    editBuffer->undoableSelectParameter(ParameterId(id));
   });
 
   addAction("set-param", [=](std::shared_ptr<NetworkRequest> request) mutable {

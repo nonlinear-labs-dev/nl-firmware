@@ -18,9 +18,6 @@ ParameterNameLabel::ParameterNameLabel(const Rect &pos)
 
   Application::get().getPresetManager()->getEditBuffer()->onRecallValuesChanged(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
-
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::hide(sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded)));
 }
 
 ParameterNameLabel::~ParameterNameLabel()
@@ -61,7 +58,7 @@ void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter)
   setText({ name, changed ? 1u : 0u });
 }
 
-const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
+Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
 {
   Glib::ustring ret = name;
 
