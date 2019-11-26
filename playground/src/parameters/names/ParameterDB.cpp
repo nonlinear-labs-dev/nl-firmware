@@ -95,7 +95,7 @@ ustring ParameterDB::getLongName(int id) const
   }
   catch(...)
   {
-    return std::to_string(id) + " not found";
+    return "";
   }
 }
 
@@ -107,7 +107,7 @@ ustring ParameterDB::getShortName(int id) const
   }
   catch(...)
   {
-    return std::to_string(id) + " not found";
+    return "";
   }
 }
 

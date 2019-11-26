@@ -82,6 +82,9 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
 #warning "Respect globals here"
     auto param = eb->findParameterByID({ i, vg });
 
+    if(!param)
+      param = eb->findParameterByID({i, VoiceGroup::Global});
+
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr)
     {

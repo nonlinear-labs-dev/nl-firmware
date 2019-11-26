@@ -210,6 +210,8 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const P
 {
   if(auto p = findParameterByID(id))
     undoableSelectParameter(transaction, p);
+  else
+    throw std::runtime_error("could not select parameter: " + id.toString());
 }
 
 void EditBuffer::setParameter(ParameterId id, double cpValue)

@@ -440,7 +440,8 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
     if(auto router = dynamic_cast<ModulationRoutingParameter *>(selParam))
     {
-      collectLedStates(states, router->getTargetParameter()->getID());
+      if(auto tgt = router->getTargetParameter())
+        collectLedStates(states, tgt->getID());
     }
 
     setLedStates(states);

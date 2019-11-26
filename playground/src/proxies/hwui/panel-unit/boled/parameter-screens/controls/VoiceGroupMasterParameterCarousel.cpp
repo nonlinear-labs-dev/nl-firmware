@@ -30,7 +30,7 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
   auto vg = selectedParameter->getVoiceGroup();
 
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Split)
-    setupMasterParameters({ { 356, vg }, { 358, vg }, { 360, vg } });
+    setupMasterParameters({ { 356, VoiceGroup::Global }, { 358, vg }, { 360, vg } });
   else
     setupMasterParameters({ { 358, vg }, { 360, vg } });
 
@@ -47,7 +47,6 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 
 void VoiceGroupMasterParameterCarousel::rebuild()
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   setup(s);
 }
@@ -65,14 +64,12 @@ void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<
   for(const auto &p : parameters)
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p);
-    if(!param)
-      param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          { p.getNumber(), VoiceGroup::Global });
-
-    auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
-    miniParam->setSelected(param == selected);
-    addControl(miniParam);
-    yPos += ySpacing;
-    yPos += miniParamHeight;
+    if(param) {
+      auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
+      miniParam->setSelected(param == selected);
+      addControl(miniParam);
+      yPos += ySpacing;
+      yPos += miniParamHeight;
+    }
   }
 }

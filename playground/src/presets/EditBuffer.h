@@ -33,6 +33,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableSelectParameter(ParameterId id);
   void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
+  void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id);
 
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset);
@@ -104,7 +105,6 @@ class EditBuffer : public ParameterDualGroupSet
   UNDO::Scope &getUndoScope() override;
   void setParameter(ParameterId id, double cpValue);
 
-  void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id);
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertToSplit(UNDO::Transaction *transaction);
   void undoableConvertToLayer(UNDO::Transaction *transaction);
