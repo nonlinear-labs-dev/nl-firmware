@@ -37,7 +37,7 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
       return;
 
-    std::array<TwoStateLED::LedState, numLeds> states { TwoStateLED::OFF };
+    std::array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
       getMappings().forEachButton([&](Buttons buttonId, const std::list<int>& parameters) {
@@ -90,23 +90,34 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
   {
     auto signalFlowIndicator = ParameterDB::get().getSignalPathIndication(i);
 
-#warning "param might be global?"
-    auto parameter = editBuffer->findParameterByID({i, vg});
+    Parameter* parameter = nullptr;
 
-    if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
+    try
     {
-      if(!mc->getTargets().empty())
-      {
-        states[(int) buttonId] = TwoStateLED::ON;
-        break;
-      }
+      parameter = editBuffer->findParameterByID({ i, vg });
     }
-    else if(signalFlowIndicator != invalidSignalFlowIndicator)
+    catch(...)
     {
-      if(parameter->getControlPositionValue() != signalFlowIndicator)
+      parameter = editBuffer->findParameterByID({ i, VoiceGroup::Global });
+    }
+
+    if(parameter != nullptr)
+    {
+      if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
       {
-        states[(int) buttonId] = TwoStateLED::ON;
-        break;
+        if(!mc->getTargets().empty())
+        {
+          states[(int) buttonId] = TwoStateLED::ON;
+          break;
+        }
+      }
+      else if(signalFlowIndicator != invalidSignalFlowIndicator)
+      {
+        if(parameter->getControlPositionValue() != signalFlowIndicator)
+        {
+          states[(int) buttonId] = TwoStateLED::ON;
+          break;
+        }
       }
     }
   }
