@@ -41,6 +41,11 @@ EditBuffer::~EditBuffer()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
+void EditBuffer::initVoiceGroupConnection(HWUI *hwui)
+{
+  hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &EditBuffer::onHWUIVoiceGroupSelectionChanged));
+}
+
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
 {
   m_recallSet.copyFromEditBuffer(transaction, this);
@@ -441,6 +446,8 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   lpc->toggleSuppressParameterChanges(transaction);
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
+
+  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
@@ -777,7 +784,9 @@ void EditBuffer::onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection)
   {
     auto currentID = current->getID();
     if(currentID.getVoiceGroup() != VoiceGroup::Global)
+    {
       undoableSelectParameter(
           { currentID.getNumber(), currentID.getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I });
+    }
   }
 }

@@ -23,6 +23,7 @@
 #include <tools/ExceptionTools.h>
 #include <nltools/messaging/Messaging.h>
 #include <device-settings/LayoutMode.h>
+#include <presets/EditBuffer.h>
 
 Application *Application::theApp = nullptr;
 
@@ -83,7 +84,8 @@ Application::Application(int numArgs, char **argv)
   m_presetManager->init();
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
 
-  m_presetManager->connectToVoiceGroupSelection();
+  m_presetManager->getEditBuffer()->initVoiceGroupConnection(m_hwui.get());
+
   runWatchDog();
 
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);

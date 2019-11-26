@@ -53,8 +53,6 @@ class PresetManager : public ContentSection
     throw std::runtime_error("ActionManager does not exist in object");
   }
 
-  // ???
-  void connectToVoiceGroupSelection();
   void doAutoLoadSelectedPreset();
   bool isLoading() const;
   std::shared_ptr<ScopedGuard::Lock> getLoadingLock();

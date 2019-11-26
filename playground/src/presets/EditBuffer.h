@@ -10,6 +10,7 @@
 class Application;
 class Writer;
 class PresetManager;
+class HWUI;
 
 class EditBuffer : public ParameterDualGroupSet
 {
@@ -19,6 +20,8 @@ class EditBuffer : public ParameterDualGroupSet
  public:
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
+
+  void initVoiceGroupConnection(HWUI* hwui);
 
   Glib::ustring getName() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
