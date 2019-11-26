@@ -534,6 +534,8 @@ void HWUI::setCurrentVoiceGroup(VoiceGroup v)
 {
   if(v == VoiceGroup::I || v == VoiceGroup::II)
     m_currentVoiceGroup = v;
+
+  m_voiceGoupSignal.send(m_currentVoiceGroup);
 }
 
 void HWUI::toggleCurrentVoiceGroup()

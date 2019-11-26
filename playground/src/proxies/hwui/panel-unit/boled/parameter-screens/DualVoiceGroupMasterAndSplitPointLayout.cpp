@@ -19,10 +19,10 @@ Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentParameter() const
 DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout()
     : UnmodulateableParameterSelectLayout2()
 {
-  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_connectionVoiceGroup = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update)));
 
-  m_connection = Application::get().getPresetManager()->getEditBuffer()->onChange(
+  m_connectionEditBuffer = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
 }
 
@@ -55,7 +55,8 @@ void DualVoiceGroupMasterAndSplitPointLayout::update()
 
 DualVoiceGroupMasterAndSplitPointLayout::~DualVoiceGroupMasterAndSplitPointLayout()
 {
-  m_connection.disconnect();
+  m_connectionEditBuffer.disconnect();
+  m_connectionVoiceGroup.disconnect();
 }
 
 Carousel *DualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)

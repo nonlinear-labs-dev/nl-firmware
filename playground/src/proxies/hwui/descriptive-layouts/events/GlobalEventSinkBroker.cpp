@@ -241,13 +241,14 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      eb->undoableSelectParameter({ 358, vg });
+      if(eb->getType() != SoundType::Split)
+        eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
+      else
+        eb->undoableSelectParameter({ 356, VoiceGroup::Global });
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      eb->undoableSelectParameter({ 247, vg });
+      eb->undoableSelectParameter({ 247, VoiceGroup::Global });
     });
 
     registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() {
