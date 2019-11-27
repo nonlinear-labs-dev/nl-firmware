@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include "GroupId.h"
 #include "parameters/Parameter.h"
 #include "http/UpdateDocumentContributor.h"
 #include "tools/IntrusiveList.h"
@@ -13,8 +14,8 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   typedef UpdateDocumentContributor super;
 
  public:
-  ParameterGroup(ParameterDualGroupSet *parent, const char *id, const char *shortName, const char *longName,
-                 const char *webUIName, VoiceGroup voiceGroup);
+  ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
+                 const char *webUIName);
   virtual ~ParameterGroup();
 
   virtual void init() = 0;
@@ -51,7 +52,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
   void undoableSetDefaultValues(UNDO::Transaction *transaction, const PresetParameterGroup *values);
 
-  Glib::ustring getID() const;
+  GroupId getID() const;
   size_t getHash() const;
 
   virtual void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
@@ -71,11 +72,10 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   tParameterPtr appendParameter(Parameter *p);
 
  private:
-  const char *m_id;
+  const GroupId m_id;
   const char *m_shortName;
   const char *m_longName;
   const char *m_webUIName;
   IntrusiveList<tParameterPtr> m_parameters;
   Signal<void> m_signalGroupChanged;
-  const VoiceGroup m_voiceGroup;
 };

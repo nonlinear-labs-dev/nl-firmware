@@ -30,8 +30,8 @@ static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamNumber(Ma
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, ParameterId id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID().getNumber())
-    , m_lastMCViewUuid{ "NONE" }
-    , mcviewThrottler{ Expiration::Duration(5) }
+    , m_lastMCViewUuid { "NONE" }
+    , mcviewThrottler { Expiration::Duration(5) }
 {
 }
 
@@ -139,7 +139,7 @@ void MacroControlParameter::updateBoundRibbon()
   if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
   {
     auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-        groups->getParameterGroupByID("MCM", getParentGroup()->getVoiceGroup()));
+        groups->getParameterGroupByID({ "MCM", getParentGroup()->getVoiceGroup() }));
 
     auto routers = mcm->getModulationRoutingParametersFor(this);
 
@@ -179,7 +179,8 @@ void MacroControlParameter::toggleUiSelectedHardwareSource(int inc)
   auto id = getUiSelectedHardwareSource();
 
   auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
-  auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS", VoiceGroup::Global));
+  auto controlSources
+      = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID({ "CS", VoiceGroup::Global }));
   auto availableSources = controlSources->getPhysicalControlParameters();
   setUiSelectedHardwareSource(getIdOfAdvancedParameter(availableSources, id, inc));
 }
@@ -357,7 +358,8 @@ void MacroControlParameter::onSelected()
 void MacroControlParameter::onUnselected()
 {
   auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
-  auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS", VoiceGroup::Global));
+  auto controlSources
+      = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID({ "CS", VoiceGroup::Global }));
 
   for(auto source : controlSources->getPhysicalControlParameters())
     source->onUnselected();

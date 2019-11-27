@@ -52,7 +52,7 @@ void NoteShift::sendToLPC() const
   value |= abs(m_shift);
   Application::get().getLPCProxy()->sendSetting(c_NoteShiftSettingKey, value);
 
-  nltools::msg::Setting::NoteShiftMessage msg(m_shift);
+  nltools::msg::Setting::NoteShiftMessage msg { m_shift };
   Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::NoteShiftMessage>(msg);
 }
 

@@ -54,7 +54,7 @@ void TransitionTime::sendToLPC() const
 {
   Application::get().getLPCProxy()->sendSetting(TRANSITION_TIME, m_time.getTcdValue());
 
-  nltools::msg::Setting::TransitionTimeMessage msg(m_time.getRawValue());
+  nltools::msg::Setting::TransitionTimeMessage msg { static_cast<float>(m_time.getRawValue()) };
   Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TransitionTimeMessage>(msg);
 }
 

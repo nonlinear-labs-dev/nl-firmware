@@ -11,7 +11,7 @@ import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
 
 public class BasicParameterModel extends Notifier<BasicParameterModel> {
 
-	public int id;
+	public ParameterId id;
 	public ParameterGroupModel group;
 	public ValueDataModelEntity value = new ValueDataModelEntity();
 	public StringDataModelEntity shortName = new StringDataModelEntity();
@@ -20,7 +20,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 	public BooleanDataModelEntity locked = new BooleanDataModelEntity();
 	public StringDataModelEntity info = new StringDataModelEntity();
 
-	public BasicParameterModel(int id) {
+	public BasicParameterModel(ParameterId id) {
 		this.id = id;
 		value.onChange(e -> notifyChanges());
 		shortName.onChange(e -> notifyChanges());

@@ -22,7 +22,7 @@ EditBufferSnapshotMaker::EditBufferSnapshotMaker()
 void EditBufferSnapshotMaker::addSnapshotIfRequired(UNDO::Transaction *transaction)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto hardwareSources = editBuffer->getParameterGroupByID("CS", VoiceGroup::Global);
+  auto hardwareSources = editBuffer->getParameterGroupByID({ "CS", VoiceGroup::Global });
   auto updateID = hardwareSources->getUpdateIDOfLastChange();
 
   if(updateID != m_lastKnownUpdateID)

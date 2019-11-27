@@ -8,7 +8,7 @@ public class PedalParameterModel extends PhysicalControlParameterModel {
 
 	public EnumDataModelEntity<Modes> mode = new EnumDataModelEntity<Modes>(Modes.class, Modes.stay);
 
-	public PedalParameterModel(int id) {
+	public PedalParameterModel(ParameterId id) {
 		super(id);
 		mode.onChange(v -> notifyChanges());
 	}

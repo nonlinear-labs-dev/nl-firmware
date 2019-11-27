@@ -4,8 +4,8 @@
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include "VoiceGroupMasterGroup.h"
 
-VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
-    : ParameterGroup(parent, "PART", "Part", "Part Master", "Part Master", voicegroup)
+VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+    : ParameterGroup(parent, { "PART", vg }, "Part", "Part Master", "Part Master")
 {
 }
 

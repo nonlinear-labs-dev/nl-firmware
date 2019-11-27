@@ -11,6 +11,8 @@ class ParameterGroup;
 class PresetParameter;
 class PresetParameterGroupSerializer;
 
+class GroupId;
+
 using ParameterPtr = std::unique_ptr<PresetParameter>;
 
 class PresetParameterGroup
@@ -36,8 +38,7 @@ class PresetParameterGroup
   }
 
   // algorithm
-  void writeDiff(Writer &writer, const std::string &groupId, const PresetParameterGroup *other,
-                 VoiceGroup vg) const;
+  void writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const;
 
  protected:
   std::map<ParameterId, ParameterPtr> m_parameters;

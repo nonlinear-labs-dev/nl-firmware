@@ -10,199 +10,186 @@ namespace nltools
   namespace msg
   {
 
-    template <MessageType msgType> struct Message
-    {
-      static const MessageType theType = msgType;
-      MessageType type = msgType;
-    };
-
     using tID = int;
     using tControlPosition = double;
 
     namespace Setting
     {
-      struct NoteShiftMessage : Message<MessageType::NoteShiftSetting>
+      struct NoteShiftMessage
       {
-        explicit NoteShiftMessage(int offset = 0)
-            : m_shift{ offset }
+        constexpr static MessageType getType()
         {
+          return MessageType::NoteShiftSetting;
         }
 
-        int m_shift{};
+        int m_shift;
       };
 
-      struct PresetGlitchMessage : Message<MessageType::PresetGlitchSetting>
+      struct PresetGlitchMessage
       {
-        explicit PresetGlitchMessage(bool enabled = false)
-            : m_enabled{ enabled }
+        constexpr static MessageType getType()
         {
+          return MessageType::PresetGlitchSetting;
         }
-
-        bool m_enabled{};
+        bool m_enabled;
       };
 
-      struct TransitionTimeMessage : Message<MessageType::TransitionTimeSetting>
+      struct TransitionTimeMessage
       {
-        explicit TransitionTimeMessage(float value = 0.0f)
-            : m_value{ value }
+        constexpr static MessageType getType()
         {
+          return MessageType::TransitionTimeSetting;
         }
-
-        float m_value{};
+        float m_value;
       };
 
-      struct EditSmoothingTimeMessage : Message<MessageType::EditSmoothingTimeSetting>
+      struct EditSmoothingTimeMessage
       {
-        explicit EditSmoothingTimeMessage(float time = 0.0f)
-            : m_time{ time }
+        constexpr static MessageType getType()
         {
+          return MessageType::EditSmoothingTimeSetting;
         }
-
-        float m_time{};
+        float m_time;
       };
     }
 
-    struct HWSourceChangedMessage : Message<MessageType::HWSourceParameter>
+    struct HWSourceChangedMessage
     {
-      HWSourceChangedMessage(tID id = -1, tControlPosition controlPosition = 0.0, ReturnMode mode = ReturnMode::None,
-                             bool locked = false, VoiceGroup vg = VoiceGroup::NumGroups)
-          : parameterId{ id }
-          , controlPosition{ controlPosition }
-          , returnMode{ mode }
-          , lock(locked)
-          , voiceGroup{ vg }
+      constexpr static MessageType getType()
       {
+        return MessageType::HWSourceParameter;
       }
 
       tID parameterId;
       tControlPosition controlPosition;
       ReturnMode returnMode;
       bool lock;
-
       VoiceGroup voiceGroup;
     };
 
-    struct HWAmountChangedMessage : Message<MessageType::HWAmountParameter>
+    struct HWAmountChangedMessage
     {
-      HWAmountChangedMessage(tID id = -1, tControlPosition pos = 0.0, bool locked = false,
-                             VoiceGroup vg = VoiceGroup::NumGroups)
-          : parameterId{ id }
-          , controlPosition{ pos }
-          , lock{ locked }
-          , voiceGroup{ vg }
+      constexpr static MessageType getType()
       {
+        return MessageType::HWAmountParameter;
       }
 
       tID parameterId;
       tControlPosition controlPosition;
       bool lock;
-
       VoiceGroup voiceGroup;
     };
 
-    struct MacroControlChangedMessage : Message<MessageType::MacroControlParameter>
+    struct MacroControlChangedMessage
     {
-      MacroControlChangedMessage(tID id, tControlPosition pos, bool locked, VoiceGroup vg)
-          : lock{ locked }
-          , parameterId{ id }
-          , controlPosition{ pos }
-          , voiceGroup{ vg }
+      constexpr static MessageType getType()
       {
+        return MessageType::MacroControlParameter;
       }
 
-      bool lock;
       tID parameterId;
       tControlPosition controlPosition;
-
+      bool lock;
       VoiceGroup voiceGroup;
     };
 
-    struct UnmodulateableParameterChangedMessage : Message<MessageType::UnmodulateableParameter>
+    struct UnmodulateableParameterChangedMessage
     {
-      UnmodulateableParameterChangedMessage(tID id = -1, tControlPosition controlPosition = 0.0, bool locked = false,
-                                            VoiceGroup vg = VoiceGroup::NumGroups)
-          : lock{ locked }
-          , parameterId(id)
-          , controlPosition(controlPosition)
-          , voiceGroup{ vg }
+      constexpr static MessageType getType()
       {
+        return MessageType::UnmodulateableParameter;
       }
 
-      bool lock;
       tID parameterId;
       tControlPosition controlPosition;
-
+      bool lock;
       VoiceGroup voiceGroup;
     };
 
-    struct ModulateableParameterChangedMessage : Message<MessageType::ModulateableParameter>
+    struct ModulateableParameterChangedMessage
     {
-      ModulateableParameterChangedMessage(tID id = -1, tControlPosition pos = .0,
-                                          MacroControls source = MacroControls::NONE, tControlPosition amount = 0.0,
-                                          tControlPosition upper = 0.0, tControlPosition lower = 0.0,
-                                          bool locked = false, VoiceGroup vg = VoiceGroup::NumGroups)
-          : lock{ locked }
-          , parameterId{ id }
-          , controlPosition{ pos }
-          , sourceMacro{ source }
-          , mcAmount{ amount }
-          , mcUpper{ upper }
-          , mcLower{ lower }
-          , voiceGroup{ vg }
+      constexpr static MessageType getType()
       {
+        return MessageType::ModulateableParameter;
       }
 
-      bool lock;
       tID parameterId;
       tControlPosition controlPosition;
       MacroControls sourceMacro;
       tControlPosition mcAmount;
       tControlPosition mcUpper;
       tControlPosition mcLower;
-
+      bool lock;
       VoiceGroup voiceGroup;
     };
 
-    struct RotaryChangedMessage : Message<MessageType::RotaryChanged>
+    struct RotaryChangedMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::RotaryChanged;
+      }
       int8_t increment;
     };
 
-    struct ButtonChangedMessage : Message<MessageType::ButtonChanged>
+    struct ButtonChangedMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::ButtonChanged;
+      }
       int8_t buttonId;
       bool pressed;
     };
 
-    struct SetRibbonLEDMessage : Message<MessageType::SetRibbonLED>
+    struct SetRibbonLEDMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetRibbonLED;
+      }
       uint8_t id;
       uint8_t brightness;
     };
 
-    struct SetPanelLEDMessage : Message<MessageType::SetPanelLED>
+    struct SetPanelLEDMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetPanelLED;
+      }
       uint8_t id;
       bool on;
     };
 
-    struct SetOLEDMessage : Message<MessageType::SetOLED>
+    struct SetOLEDMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetOLED;
+      }
       uint8_t pixels[256][96];
     };
 
-    struct LPCMessage : Message<MessageType::LPC>
+    struct LPCMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::LPC;
+      }
       Glib::RefPtr<Glib::Bytes> message;
     };
 
-    struct PingMessage : Message<MessageType::Ping>
+    struct PingMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::Ping;
+      }
     };
 
     namespace detail
     {
-      // default (de)serialization for messages, may be specialized for more compilcated types:
       template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage& s)
       {
         LPCMessage ret;
@@ -228,31 +215,31 @@ namespace nltools
     {
       struct Parameter
       {
-        uint16_t id{};
+        uint16_t id {};
         double controlPosition = 0;
         bool locked = false;
       };
 
       struct RibbonParameter : Parameter
       {
-        RibbonTouchBehaviour ribbonTouchBehaviour{};
-        RibbonReturnMode ribbonReturnMode{};
+        RibbonTouchBehaviour ribbonTouchBehaviour {};
+        RibbonReturnMode ribbonReturnMode {};
       };
 
       struct PedalParameter : Parameter
       {
-        PedalModes pedalMode{};
-        ReturnMode returnMode{};
+        PedalModes pedalMode {};
+        ReturnMode returnMode {};
       };
 
       struct AftertouchParameter : Parameter
       {
-        ReturnMode returnMode{};
+        ReturnMode returnMode {};
       };
 
       struct BenderParameter : Parameter
       {
-        ReturnMode returnMode{};
+        ReturnMode returnMode {};
       };
 
       struct MacroParameter : Parameter
@@ -323,8 +310,13 @@ namespace nltools
 #endif
     }
 
-    struct SinglePresetMessage : Message<MessageType::SinglePreset>
+    struct SinglePresetMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SinglePreset;
+      }
+
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::ModulateableParameter, 97> modulateables;
       std::array<ParameterGroups::UnmodulatebaleParameter, 107> unmodulateables;
@@ -334,8 +326,13 @@ namespace nltools
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
 
-    struct SplitPresetMessage : Message<MessageType::SplitPreset>
+    struct SplitPresetMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SplitPreset;
+      }
+
       std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;
@@ -348,8 +345,13 @@ namespace nltools
       ParameterGroups::SplitPoint splitpoint;
     };
 
-    struct LayerPresetMessage : Message<MessageType::LayerPreset>
+    struct LayerPresetMessage
     {
+      constexpr static MessageType getType()
+      {
+        return MessageType::LayerPreset;
+      }
+
       std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
       std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;

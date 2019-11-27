@@ -9,8 +9,8 @@
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-ShaperBGroup::ShaperBGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
-    : ParameterGroup(parent, "Sh B", "Shaper B", "Shaper B", "Shaper B", voicegroup)
+ShaperBGroup::ShaperBGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+    : ParameterGroup(parent, { "Sh B", vg }, "Shaper B", "Shaper B", "Shaper B")
 {
 }
 

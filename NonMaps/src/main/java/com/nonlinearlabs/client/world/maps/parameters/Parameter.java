@@ -242,7 +242,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public String getParameterGroupID() {
-		return getParameterGroup().getID();
+		return getParameterGroup().getName();
 	}
 
 	public boolean isBoolean() {

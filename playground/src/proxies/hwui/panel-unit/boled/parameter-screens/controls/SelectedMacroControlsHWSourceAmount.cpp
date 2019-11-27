@@ -43,14 +43,14 @@ void SelectedMacroControlsHWSourceAmount::onMCChanged(const Parameter *param)
 
     if(hwSourceID > 0)
     {
-      if(auto hwParam = getEditBuffer()->findParameterByID({hwSourceID, VoiceGroup::Global}))
+      if(auto hwParam = getEditBuffer()->findParameterByID({ hwSourceID, VoiceGroup::Global }))
       {
         m_srcChanged.disconnect();
         m_srcChanged = hwParam->onParameterChanged(
             sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::updateTextFromRouter));
 
         auto vg = param->getVoiceGroup();
-        auto csGroup = static_cast<MacroControlMappingGroup *>(getEditBuffer()->getParameterGroupByID("MCM", vg));
+        auto csGroup = static_cast<MacroControlMappingGroup *>(getEditBuffer()->getParameterGroupByID({ "MCM", vg }));
         auto routers = csGroup->getModulationRoutingParametersFor(dynamic_cast<const MacroControlParameter *>(param));
 
         for(auto router : routers)

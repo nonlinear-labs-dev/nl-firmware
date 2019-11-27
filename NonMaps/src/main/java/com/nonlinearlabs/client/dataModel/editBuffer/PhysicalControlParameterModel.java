@@ -1,7 +1,9 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+
 public class PhysicalControlParameterModel extends BasicParameterModel {
-	public PhysicalControlParameterModel(int id) {
+	public PhysicalControlParameterModel(ParameterId id) {
 		super(id);
 	}
 
@@ -9,11 +11,14 @@ public class PhysicalControlParameterModel extends BasicParameterModel {
 		return false;
 	}
 
-	public int[] getAssociatedModulationRouters() {
-		int[] h = new int[4];
+	public ParameterId[] getAssociatedModulationRouters() {
+		ParameterId[] h = new ParameterId[8];
 
 		for (int i = 0; i < 4; i++)
-			h[i] = id + i + 1;
+		{
+			h[i] = new ParameterId(id.getNumber() + i + 1, VoiceGroup.I);
+			h[i + 4] = new ParameterId(id.getNumber() + i + 1, VoiceGroup.II);
+		}
 
 		return h;
 	}

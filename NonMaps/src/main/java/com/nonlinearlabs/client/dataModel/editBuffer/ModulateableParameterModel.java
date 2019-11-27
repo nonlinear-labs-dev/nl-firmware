@@ -46,7 +46,7 @@ public class ModulateableParameterModel extends BasicParameterModel {
 	public EnumDataModelEntity<ModSource> ogModSource = new EnumDataModelEntity<ModSource>(ModSource.class,
 			ModSource.None);
 
-	public ModulateableParameterModel(int id) {
+	public ModulateableParameterModel(ParameterId id) {
 		super(id);
 		modAmount.metaData.bipolar.setValue(BooleanValues.on);
 		modAmount.onChange(e -> notifyChanges());

@@ -12,8 +12,8 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 
-EnvelopeAGroup::EnvelopeAGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
-    : ParameterGroup(parent, "Env A", "Envelope A", "Envelope A", "Envelope A", voicegroup)
+EnvelopeAGroup::EnvelopeAGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+    : ParameterGroup(parent, { "Env A", vg }, "Envelope A", "Envelope A", "Envelope A")
 {
 }
 

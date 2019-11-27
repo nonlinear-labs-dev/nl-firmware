@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCurve;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
@@ -159,13 +160,13 @@ public class Setup extends Composite {
 				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
 
 		pedal1Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(254, VoiceGroup.Global, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(254, VoiceGroup.Global), e.getValue().doubleValue(), true));
 		pedal2Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(259, VoiceGroup.Global, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(259, VoiceGroup.Global), e.getValue().doubleValue(), true));
 		pedal3Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(264, VoiceGroup.Global,e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(264, VoiceGroup.Global),e.getValue().doubleValue(), true));
 		pedal4Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(269, VoiceGroup.Global,e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(269, VoiceGroup.Global),e.getValue().doubleValue(), true));
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
 

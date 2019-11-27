@@ -9,7 +9,7 @@ public class RibbonParameterModel extends PhysicalControlParameterModel {
 	public EnumDataModelEntity<ReturnModes> mode = new EnumDataModelEntity<ReturnModes>(ReturnModes.class,
 			ReturnModes.non_return);
 
-	public RibbonParameterModel(int id) {
+	public RibbonParameterModel(ParameterId id) {
 		super(id);
 		mode.onChange(v -> notifyChanges());
 	}

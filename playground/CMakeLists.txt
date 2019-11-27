@@ -22,8 +22,11 @@ string(STRIP ${HEAD_REF} HEAD_REF)
 string(STRIP ${BRANCH_NAME} BRANCH_NAME)
 
 set(LIBS
+glibmm-2.4
   gio-unix-2.0
+  giomm-2.4
   uuid
+  libsoup-2.4
   freetype2
   avahi-glib
   avahi-gobject

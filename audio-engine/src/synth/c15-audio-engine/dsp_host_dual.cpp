@@ -1314,33 +1314,18 @@ void dsp_host_dual::recallSingle()
 #if LOG_RECALL
   nltools::Log::info("recall: hw_sources:");
 #endif
-  for(uint32_t i = 0; i < msg->pedals.size(); i++)
+  for(uint32_t i = 0; i < msg->hwsources.size(); i++)
   {
-    globalParRcl(msg->pedals[i]);
-  }
-  for(uint32_t i = 0; i < msg->bender.size(); i++)
-  {
-    globalParRcl(msg->bender[i]);
-  }
-  for(uint32_t i = 0; i < msg->aftertouch.size(); i++)
-  {
-    globalParRcl(msg->aftertouch[i]);
-  }
-  for(uint32_t i = 0; i < msg->ribbons.size(); i++)
-  {
-    globalParRcl(msg->ribbons[i]);
+    globalParRcl(msg->hwsources[i]);
   }
 #if LOG_RECALL
   nltools::Log::info("recall: global:");
 #endif
-  for(uint32_t i = 0; i < msg->master.size(); i++)
+  for(uint32_t i = 0; i < msg->globalparams.size(); i++)
   {
-    globalParRcl(msg->master[i]);
+    globalParRcl(msg->globalparams[i]);
   }
-  for(uint32_t i = 0; i < msg->scale.size(); i++)
-  {
-    globalParRcl(msg->scale[i]);
-  }
+
   // local updates: params[I] -> transitions[I & II]
   // order: unmodulateables (amounts, mc times, direct), macros, mono (direct | target), modulateables
 #if LOG_RECALL
@@ -1366,9 +1351,11 @@ void dsp_host_dual::recallSingle()
 #if LOG_RECALL
   nltools::Log::info("recall: monos:");
 #endif
-  for(uint32_t i = 0; i < msg->monos.size(); i++)
+
+#warning "@mse: is this still needed?"
+  //for(uint32_t i = 0; i < msg->monos.size(); i++)
   {
-    localParRcl(0, msg->monos[i]);
+    //localParRcl(0, msg->monos[i]);
   }
 #if LOG_RECALL
   nltools::Log::info("recall: modulateables:");
@@ -1552,6 +1539,8 @@ void dsp_host_dual::localParRcl(const uint32_t _layer, const nltools::msg::Param
 #endif
 }
 
+#warning "@mse: is this still needed?"
+#if 0
 void dsp_host_dual::localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source)
 {
   auto element = getParameter(_source.id);
@@ -1570,6 +1559,7 @@ void dsp_host_dual::localParRcl(const uint32_t _layer, const nltools::msg::Param
       break;
   }
 }
+#endif
 
 void dsp_host_dual::localParRcl(const uint32_t _layer,
                                 const nltools::msg::ParameterGroups::ModulateableParameter &_source)
@@ -1607,6 +1597,8 @@ void dsp_host_dual::localDirectRcl(Direct_Param *_param,
   }
 }
 
+#warning "@mse: is this still needed?"
+#if 0
 void dsp_host_dual::localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source)
 {
   _param->m_changed = false;
@@ -1616,6 +1608,7 @@ void dsp_host_dual::localDirectRcl(Direct_Param *_param, const nltools::msg::Par
     _param->m_changed = true;
   }
 }
+#endif
 
 void dsp_host_dual::localTargetRcl(Target_Param *_param,
                                    const nltools::msg::ParameterGroups::ModulateableParameter &_source)
@@ -1630,6 +1623,8 @@ void dsp_host_dual::localTargetRcl(Target_Param *_param,
   }
 }
 
+#warning "@mse: is this still needed?"
+#if 0
 void dsp_host_dual::localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source)
 {
   _param->m_changed = false;
@@ -1644,3 +1639,4 @@ void dsp_host_dual::localTargetRcl(Target_Param *_param, const nltools::msg::Par
     _param->m_changed = true;
   }
 }
+#endif

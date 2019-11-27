@@ -28,6 +28,8 @@ class ParameterId
     return stream;
   }
 
+  static bool isGlobal(int number);
+
  private:
   int m_num;
   VoiceGroup m_group;

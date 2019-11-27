@@ -12,18 +12,18 @@ import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonRect;
 
-public abstract class ParameterGroup extends LayoutResizingVertical  {
+public abstract class ParameterGroup extends LayoutResizingVertical {
 
 	private NonRect m_viewportPosAtClick;
-	private String groupID;
+	private String groupName;
 
-	public ParameterGroup(MapsLayout parent, String groupID) {
+	public ParameterGroup(MapsLayout parent, String groupName) {
 		super(parent);
-		this.groupID = groupID;
+		this.groupName = groupName;
 	}
 
-	public String getID() {
-		return groupID;
+	public String getName() {
+		return groupName;
 	}
 
 	public boolean isLocked() {

@@ -73,22 +73,22 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 			}
 		}
 
-		for (int id : ParameterFactory.getAllParameters()) {
-			if (ParameterFactory.isGlobalParameter(id)) {
-				addParameter(id, VoiceGroup.Global);
+		for (int number : ParameterFactory.getAllParameters()) {
+			if (ParameterFactory.isGlobalParameter(number)) {
+				addParameter(new ParameterId(number, VoiceGroup.Global));
 			} else {
-				addParameter(id, VoiceGroup.I);
-				addParameter(id, VoiceGroup.II);
+				addParameter(new ParameterId(number, VoiceGroup.I));
+				addParameter(new ParameterId(number, VoiceGroup.II));
 			}
 		}
 	}
 
-	public ParameterGroupModel getGroup(String id, VoiceGroup vg) {
-		return byVoiceGroup[vg.ordinal()].parameterGroups.get(id);
+	public ParameterGroupModel getGroup(GroupId id) {
+		return byVoiceGroup[id.getVoiceGroup().ordinal()].parameterGroups.get(id.getName());
 	}
 
-	public BasicParameterModel getParameter(int id, VoiceGroup vg) {
-		return byVoiceGroup[vg.ordinal()].parameters.get(id);
+	public BasicParameterModel getParameter(ParameterId id) {
+		return byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.get(id.getNumber());
 	}
 
 	public BasicParameterModel getSelectedParameter() {
@@ -100,14 +100,14 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 		return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
 	}
 
-	private void addParameter(int id, VoiceGroup vg) {
+	private void addParameter(ParameterId id) {
 		BasicParameterModel p = ParameterFactory.create(id);
 
 		if (p != null) {
-			byVoiceGroup[vg.ordinal()].parameters.put(id, p);
+			byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.put(id.getNumber(), p);
 
 			if (p instanceof ModulateableParameterModel)
-				byVoiceGroup[vg.ordinal()].modulateableParametersCache.add((ModulateableParameterModel) p);
+				byVoiceGroup[id.getVoiceGroup().ordinal()].modulateableParametersCache.add((ModulateableParameterModel) p);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	}
 
 	public MacroControlParameterModel getParameter(ModSource value, VoiceGroup vg) {
-		return (MacroControlParameterModel) getParameter(value.toParameterId(), vg);
+		return (MacroControlParameterModel) getParameter(new ParameterId(value.toParameterId(), vg));
 	}
 
 	public List<ModulateableParameterModel> getAllModulateableParameters() {

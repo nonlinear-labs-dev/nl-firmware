@@ -17,11 +17,12 @@ public class ModulationRoutingParameter extends Parameter {
 		ModulationRouterParameterModel p = (ModulationRouterParameterModel) EditBufferModel.get()
 				.getAnyParameter(paramID);
 
-		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(p.getAssociatedPhysicalControlID(), v -> {
-			physicalControlParameterPresenter = v;
-			onReturningModeChanged();
-			return true;
-		});
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(p.getAssociatedPhysicalControlID().getNumber(),
+				v -> {
+					physicalControlParameterPresenter = v;
+					onReturningModeChanged();
+					return true;
+				});
 	}
 
 	@Override

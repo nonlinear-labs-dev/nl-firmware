@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.GroupId;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterGroupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -245,24 +246,24 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return theEditor;
 	}
 
-	private void scrollToSelectedParameterGroup(String groupID) {
-		if (groupID == "CS")
-			groupID = "MCM";
+	private void scrollToSelectedParameterGroup(GroupId id) {
+		if (id.getName() == "CS")
+			id = new GroupId("MCM", id.getVoiceGroup());
 
-		ParameterGroup p = findParameterGroup(groupID);
+		ParameterGroup p = findParameterGroup(id);
 
 		if (!p.isVisible())
 			p.scrollToMakeFullyVisible();
 	}
 
-	public ParameterGroup findParameterGroup(final String groupID) {
+	public ParameterGroup findParameterGroup(final GroupId groupID) {
 		Control found = recurseChildren(new ControlFinder() {
 
 			@Override
 			public boolean onWayDownFound(Control child) {
 				if (child instanceof ParameterGroup) {
 					ParameterGroup i = (ParameterGroup) child;
-					if (i.getID().equals(groupID))
+					if (i.getName().equals(groupID.getName()))
 						return true;
 				}
 				return false;

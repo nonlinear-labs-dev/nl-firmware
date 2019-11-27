@@ -70,7 +70,7 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	protected String getDisplayText() {
-		return EditBufferModel.get().getAnyGroup(getParent().getID()).longName.getValue();
+		return EditBufferModel.get().getAnyGroup(getParent().getName()).longName.getValue();
 	}
 
 	protected boolean isLocked() {
@@ -86,7 +86,7 @@ public class LabelModuleHeader extends LabelSmall {
 	}
 
 	protected void toggleLock() {
-		NonMaps.get().getServerProxy().toggleGroupLock(getParent().getID());
+		NonMaps.get().getServerProxy().toggleGroupLock(getParent().getName());
 	}
 
 	public LabelModuleHeader(SourcesAndAmounts parent, String text) {

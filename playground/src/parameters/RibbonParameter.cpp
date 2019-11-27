@@ -61,7 +61,7 @@ void RibbonParameter::setupScalingAndDefaultValue()
   {
     for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM", vg));
+      auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", vg }));
 
       for(auto router : mappings->getModulationRoutingParametersFor(this))
         router->getValue().setIsBoolean(routersAreBoolean);
@@ -164,7 +164,7 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
     {
       for(auto vg : { VoiceGroup::I, VoiceGroup::II })
       {
-        auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM", vg));
+        auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", vg }));
         auto routers = mappings->getModulationRoutingParametersFor(this);
         auto highest = *routers.begin();
 

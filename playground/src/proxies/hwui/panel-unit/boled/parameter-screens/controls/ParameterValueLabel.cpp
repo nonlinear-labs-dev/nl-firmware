@@ -28,7 +28,6 @@ void ParameterValueLabel::updateText(const Parameter *param)
 
 void ParameterValueLabel::updateVoiceGroup()
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   updateText(Application::get().getPresetManager()->getEditBuffer()->getSelected());
 }
 

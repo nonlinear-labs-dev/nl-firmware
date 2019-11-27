@@ -15,6 +15,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
@@ -41,7 +42,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		presenter.id = parameterId;
 
-		BasicParameterModel p = EditBufferModel.get().getParameter(parameterId, vg);
+		BasicParameterModel p = EditBufferModel.get().getParameter(new ParameterId(parameterId, vg));
 		p.onChange(e -> {
 			updatePresenter(e);
 			return true;
@@ -64,7 +65,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.drawCenterReturnIndicator = false;
 		presenter.drawZeroReturnIndicator = false;
 		presenter.isReturning = false;
-		presenter.drawHandleOnly = handleOnlyParameters.contains(e.id);
+		presenter.drawHandleOnly = handleOnlyParameters.contains(e.id.getNumber());
 		presenter.highlightChanged = false;
 		presenter.modulation.isModulateable = false;
 		presenter.modulation.lowerClipping = false;
@@ -124,7 +125,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updatePresenter(ModulationRouterParameterModel p) {
 		PhysicalControlParameterModel m = (PhysicalControlParameterModel) EditBufferModel.get()
-				.getParameter(p.getAssociatedPhysicalControlID(), VoiceGroup.Global);
+				.getParameter(p.getAssociatedPhysicalControlID());
 		presenter.isBoolean = !m.isReturning();
 	}
 
@@ -286,7 +287,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updatePresenter(PhysicalControlParameterModel p) {
 		presenter.changed = false;
-		presenter.showContextMenu = p.id != 274 && p.id != 279;
+		presenter.showContextMenu = p.id .getNumber()!= 274 && p.id.getNumber() != 279;
 		
 		if (p instanceof RibbonParameterModel) {
 			RibbonParameterModel r = (RibbonParameterModel) p;

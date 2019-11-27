@@ -85,8 +85,8 @@ namespace DescriptiveLayouts
         case SoundType::Layer:
         case SoundType::Split:
         {
-          auto vgI = eb->getParameterGroupByID("PART", VoiceGroup::I)->isAnyParameterChanged();
-          auto vgII = eb->getParameterGroupByID("PART", VoiceGroup::II)->isAnyParameterChanged();
+          auto vgI = eb->getParameterGroupByID({ "PART", VoiceGroup::I })->isAnyParameterChanged();
+          auto vgII = eb->getParameterGroupByID({ "PART", VoiceGroup::II })->isAnyParameterChanged();
           if(type == SoundType::Split)
             return vgI || vgII || (eb->getSplitPoint() != nullptr && eb->getSplitPoint()->isChangedFromLoaded());
           return vgI || vgII;
@@ -112,17 +112,17 @@ namespace DescriptiveLayouts
       auto type = eb->getType();
       if(type == SoundType::Split)
       {
-        auto monoI = eb->getParameterGroupByID("Mono", VoiceGroup::I);
-        auto monoII = eb->getParameterGroupByID("Mono", VoiceGroup::II);
-        auto vgUnisonI = eb->getParameterGroupByID("Unison", VoiceGroup::I);
-        auto vgUnisonII = eb->getParameterGroupByID("Unison", VoiceGroup::II);
+        auto monoI = eb->getParameterGroupByID({ "Mono", VoiceGroup::I });
+        auto monoII = eb->getParameterGroupByID({ "Mono", VoiceGroup::II });
+        auto vgUnisonI = eb->getParameterGroupByID({ "Unison", VoiceGroup::I });
+        auto vgUnisonII = eb->getParameterGroupByID({ "Unison", VoiceGroup::II });
         return (monoI && monoI->isAnyParameterChanged()) || (monoII && monoII->isAnyParameterChanged())
             || (vgUnisonI && vgUnisonI->isAnyParameterChanged()) || (vgUnisonII && vgUnisonII->isAnyParameterChanged());
       }
       else if(type == SoundType::Layer || type == SoundType::Single)
       {
-        auto mono = eb->getParameterGroupByID("Mono", VoiceGroup::I);
-        auto vgUnison = eb->getParameterGroupByID("Unison", VoiceGroup::I);
+        auto mono = eb->getParameterGroupByID({ "Mono", VoiceGroup::I });
+        auto vgUnison = eb->getParameterGroupByID({ "Unison", VoiceGroup::I });
         return (mono && mono->isAnyParameterChanged()) || (vgUnison && vgUnison->isAnyParameterChanged());
       }
       return false;
@@ -142,8 +142,8 @@ namespace DescriptiveLayouts
    private:
     bool isChanged(const EditBuffer *eb)
     {
-      auto masterGroup = eb->getParameterGroupByID("Master", VoiceGroup::Global);
-      auto scale = eb->getParameterGroupByID("Scale", VoiceGroup::Global);
+      auto masterGroup = eb->getParameterGroupByID({ "Master", VoiceGroup::Global });
+      auto scale = eb->getParameterGroupByID({ "Scale", VoiceGroup::Global });
       return (scale && scale->isAnyParameterChanged()) || (masterGroup && masterGroup->isAnyParameterChanged());
     }
   };
@@ -167,12 +167,12 @@ namespace DescriptiveLayouts
         case SoundType::Invalid:
         case SoundType::Layer:
         {
-          auto mono = eb->getParameterGroupByID("Mono", VoiceGroup::I);
+          auto mono = eb->getParameterGroupByID({ "Mono", VoiceGroup::I });
           return mono && mono->isAnyParameterChanged();
         }
         case SoundType::Split:
         {
-          auto mono = eb->getParameterGroupByID("Mono", Application::get().getHWUI()->getCurrentVoiceGroup());
+          auto mono = eb->getParameterGroupByID({ "Mono", Application::get().getHWUI()->getCurrentVoiceGroup() });
           return mono && mono->isAnyParameterChanged();
         }
       }
@@ -199,12 +199,12 @@ namespace DescriptiveLayouts
         case SoundType::Invalid:
         case SoundType::Layer:
         {
-          auto unison = eb->getParameterGroupByID("Unison", Application::get().getHWUI()->getCurrentVoiceGroup());
+          auto unison = eb->getParameterGroupByID({ "Unison", Application::get().getHWUI()->getCurrentVoiceGroup() });
           return unison && unison->isAnyParameterChanged();
         }
         case SoundType::Split:
         {
-          auto unison = eb->getParameterGroupByID("Unison", Application::get().getHWUI()->getCurrentVoiceGroup());
+          auto unison = eb->getParameterGroupByID({ "Unison", Application::get().getHWUI()->getCurrentVoiceGroup() });
           return unison && unison->isAnyParameterChanged();
         }
       }
