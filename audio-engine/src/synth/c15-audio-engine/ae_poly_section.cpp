@@ -85,6 +85,7 @@ void PolySection::render_audio(const float _mute)
   {
     postProcess_poly_audio(v, _mute);
   }
+  // render dsp components (former makepolysound)
   m_soundgenerator.generate(m_signals, m_feedbackmixer.m_out);
   m_combfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B);
   m_svfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out);

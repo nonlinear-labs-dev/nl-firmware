@@ -49,8 +49,8 @@ namespace Engine
     float m_out_L, m_out_R, m_out_dry, m_out_wet;
     MonoReverb();
     void init(const float _samplerate, const uint32_t _upsampleFactor);
-    void apply(MonoSignals &_signals, const float _rawSample_L, const float _rawSample_R);
     void set(MonoSignals &_signals);
+    void apply(MonoSignals &_signals, const float _rawSample_L, const float _rawSample_R);
     void resetDSP();
 
    private:
