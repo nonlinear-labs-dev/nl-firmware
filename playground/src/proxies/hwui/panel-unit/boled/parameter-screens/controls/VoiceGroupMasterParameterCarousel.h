@@ -13,7 +13,7 @@ class VoiceGroupMasterParameterCarousel : public ParameterCarousel
 
 protected:
   void setup(Parameter *selectedParameter) override;
-  void setupMasterParameters(const std::vector<Parameter::ID> &parameters);
+  void setupMasterParameters(const std::vector<ParameterId> &parameters);
 
 private:
   sigc::connection m_editbufferConnection;

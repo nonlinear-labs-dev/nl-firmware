@@ -9,7 +9,7 @@ class ModulateableParameter : public Parameter
   typedef Parameter super;
 
  public:
-  ModulateableParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
+  ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
                         tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
   virtual ~ModulateableParameter();
 

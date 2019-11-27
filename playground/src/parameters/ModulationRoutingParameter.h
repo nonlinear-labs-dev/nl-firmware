@@ -16,7 +16,7 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   tSrcParameterPtr m_srcParameter;
 
  public:
-  ModulationRoutingParameter(ParameterGroup *group, uint16_t id, tSrcParameterPtr srcParam, tMCParameterPtr tgtParam,
+  ModulationRoutingParameter(ParameterGroup *group, ParameterId id, tSrcParameterPtr srcParam, tMCParameterPtr tgtParam,
                              const ScaleConverter *scaling);
   virtual ~ModulationRoutingParameter();
 
@@ -38,6 +38,6 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
 
   void onExclusiveRoutingLost();
 
-private:
+ private:
   void sendParameterMessage() const override;
 };

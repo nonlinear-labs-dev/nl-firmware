@@ -11,7 +11,7 @@ ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, const char *id, co
     , m_id(id)
     , m_shortName(shortName)
     , m_longName(longName)
-    , m_webUIName(webUIName ?: m_longName)
+    , m_webUIName(webUIName ? webUIName : m_longName)
     , m_voiceGroup{ voiceGroup }
 {
 }
@@ -56,7 +56,7 @@ size_t ParameterGroup::countParameters() const
   return i;
 }
 
-ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(gint32 id) const
+ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(ParameterId id) const
 {
   for(auto a : m_parameters)
   {
@@ -67,74 +67,13 @@ ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(gint32 id) const
   return nullptr;
 }
 
-ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(gint32 id) const
+ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(ParameterId id) const
 {
   return getParameterByID(id);
 }
 
-std::map<int, std::pair<tDisplayValue, Glib::ustring>> &getDefaultValues()
-{
-  static std::map<int, std::pair<tDisplayValue, Glib::ustring>> m;
-
-  if(m.empty())
-  {
-    std::ifstream in("/tmp/paramid-to-default.txt");
-
-    char txt[1024];
-
-    while(in.getline(txt, 1024))
-    {
-      Glib::ustring str(txt);
-      auto cpos = str.find(',');
-
-      if(cpos != Glib::ustring::npos)
-      {
-        Glib::ustring id = str.substr(0, cpos);
-        Glib::ustring def = str.substr(cpos + 1);
-
-        auto slashPos = def.find('/');
-
-        std::pair<tDisplayValue, Glib::ustring> e;
-        e.second = def;
-
-        if(slashPos != Glib::ustring::npos)
-        {
-          Glib::ustring first = def.substr(0, slashPos);
-          Glib::ustring second = def.substr(slashPos + 1);
-          e.first = std::stod(first) / std::stod(second);
-        }
-        else
-        {
-          e.first = std::stod(def);
-        }
-
-        m[std::stoi(id)] = e;
-      }
-    }
-  }
-
-  return m;
-}
-
 ParameterGroup::tParameterPtr ParameterGroup::appendParameter(Parameter *p)
 {
-#if _TESTS
-  auto &m = getDefaultValues();
-
-  if(!m.empty())
-  {
-    auto it = m.find(p->getID());
-    g_assert(it != m.end());
-
-    if(p->getDefaultValue() != it->second.first)
-    {
-      g_error("Parameter %s (%d) in group %s has wrong default value. Current value is %f, should be %s\n",
-              p->getLongName().c_str(), p->getID(), getShortName().c_str(), p->getDefaultValue(),
-              it->second.second.c_str());
-    }
-  }
-#endif
-
   m_parameters.append(p);
   return p;
 }

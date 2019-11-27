@@ -31,13 +31,9 @@ set(LIBS
   avahi-client
   )
 
-OPTION(DEV_PC
-  "Enable some tests and tools not suitable for embedded device"
-  OFF)
-
-OPTION(PROFILING
-  "Enable built in profiler"
-  OFF)
+OPTION(DEV_PC "Enable some tests and tools not suitable for embedded device" OFF)
+OPTION(PROFILING "Enable built in profiler" OFF)
+OPTION(DSL_LAYOUTS "Enable experimental and not yet working DSL for HWUI layouts" OFF)
 
 IF(NOT DEFINED SYSTEMD_CONFIGURATION_FILES_DIR)
   set(SYSTEMD_CONFIGURATION_FILES_DIR "${CMAKE_INSTALL_PREFIX}/etc/systemd/system")
@@ -53,6 +49,10 @@ IF(PROFILING)
   ADD_DEFINITIONS(-D_PROFILING)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -finstrument-functions -finstrument-functions-exclude-file-list=Profiler.h,Profiler.cpp,map,/c++/")
 ENDIF(PROFILING)
+
+IF(DSL_LAYOUTS)
+  ADD_DEFINITIONS(-D_DSL_LAYOUTS)
+ENDIF(DSL_LAYOUTS)
 
 function(addLib name)
   pkg_check_modules(${name} REQUIRED ${name})
@@ -71,7 +71,7 @@ endforeach(lib)
 include_directories(src)
 include_directories(${PROJECT_BINARY_DIR}/src)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -Wno-deprecated-declarations")
 
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
@@ -82,6 +82,15 @@ SET(GENERATED_SOURCES
     ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
+
+message ("Before filtering: ${SOURCE_FILES}")
+
+IF(NOT DSL_LAYOUTS)
+list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${DSL_SOURCE_FILES})
+ENDIF()
+
+message ("After filtering: ${SOURCE_FILES}")
 
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/playground.cpp)
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/testing/unit-tests/playground-tests.cpp)

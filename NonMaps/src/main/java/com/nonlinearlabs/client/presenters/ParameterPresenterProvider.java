@@ -10,6 +10,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BenderParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
@@ -26,11 +27,13 @@ import com.nonlinearlabs.client.world.Range;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();
+	private VoiceGroup vg;
 
 	static Set<Integer> handleOnlyParameters = new TreeSet<Integer>(
 			Arrays.asList(135, 155, 254, 259, 264, 269, 284, 289, 274, 279, 243, 244, 245, 246));
 
-	public ParameterPresenterProvider(int parameterId) {
+	public ParameterPresenterProvider(int parameterId, VoiceGroup vg) {
+		this.vg = vg;
 		NonMaps.get().getServerProxy().loadParameterDescription(parameterId, v -> {
 			presenter.parameterInfo = v;
 			notifyChanges();
@@ -38,10 +41,13 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		presenter.id = parameterId;
 
-		BasicParameterModel p = EditBufferModel.findParameter(parameterId);
-		p.onChange(e -> updatePresenter(e));
+		BasicParameterModel p = EditBufferModel.get().getParameter(parameterId, vg);
+		p.onChange(e -> {
+			updatePresenter(e);
+			return true;
+		});
 
-		EditBufferModel.selectedParameter.onChange(id -> {
+		EditBufferModel.get().selectedParameter.onChange(id -> {
 			boolean isSelected = parameterId == id;
 			if (isSelected != presenter.selected) {
 				presenter.selected = isSelected;
@@ -52,7 +58,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		});
 	}
 
-	private boolean updatePresenter(BasicParameterModel e) {
+	private void updatePresenter(BasicParameterModel e) {
 		presenter.parameterInfo = e.info.getValue();
 		presenter.isBoolean = e.value.metaData.isBoolean.getBool();
 		presenter.drawCenterReturnIndicator = false;
@@ -74,9 +80,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		presenter.shortName = e.shortName.getValue();
 		presenter.longName = e.longName.getValue();
-		presenter.changed = e.isChanged();
 
-		presenter.fullNameWithGroup = getFullNameWithGroup(e);
+		presenter.valueChanged = isValueChanged(e);
+
 		presenter.showContextMenu = false;
 
 		if (e instanceof ModulateableParameterModel)
@@ -91,19 +97,53 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		if (e instanceof ModulationRouterParameterModel)
 			updatePresenter((ModulationRouterParameterModel) e);
 
+		presenter.changed = presenter.valueChanged || presenter.modulation.isModAmountChanged
+				|| presenter.modulation.isModSourceChanged;
+
+		boolean highlight = SetupModel.get().systemSettings.highlightChangedParameters.isTrue();
+		boolean forceHighlight = SetupModel.get().systemSettings.forceHighlightChangedParameters.isTrue();
+		presenter.highlightChanged = presenter.changed && (highlight || forceHighlight);
+
+		boolean changed = presenter.changed;
+		if (e.group == null)
+			presenter.fullNameWithGroup = "---";
+		else
+			presenter.fullNameWithGroup = e.group.longName.getValue() + "   \u2013   " + e.longName.getValue()
+					+ (changed ? " *" : "");
+
 		if (presenter.updateHash())
 			notifyChanges();
+	}
 
-		return true;
+	private boolean isValueChanged(BasicParameterModel e) {
+		int denominator = e.value.metaData.fineDenominator.getValue();
+		long rVal = Math.round(e.value.value.getValue() * denominator);
+		long rOgVal = Math.round(e.originalValue.getValue() * denominator);
+		return rVal != rOgVal;
 	}
 
 	private void updatePresenter(ModulationRouterParameterModel p) {
-		PhysicalControlParameterModel m = (PhysicalControlParameterModel) EditBufferModel
-				.findParameter(p.getAssociatedPhysicalControlID());
+		PhysicalControlParameterModel m = (PhysicalControlParameterModel) EditBufferModel.get()
+				.getParameter(p.getAssociatedPhysicalControlID(), VoiceGroup.Global);
 		presenter.isBoolean = !m.isReturning();
 	}
 
 	private void updatePresenter(ModulateableParameterModel p) {
+		presenter.modulation.isMCPosChanged = false;
+
+		if (p.modSource.getValue() != ModSource.None) {
+			BasicParameterModel mcBPM = EditBufferModel.get().getParameter(p.modSource.getValue(), vg);
+			if (mcBPM != null && mcBPM instanceof MacroControlParameterModel) {
+				presenter.modulation.isMCPosChanged = isValueChanged(mcBPM);
+			}
+		}
+
+		int denominator = p.modAmount.metaData.fineDenominator.getValue();
+		int ogRounded = (int) (p.ogModAmount.getValue() * denominator);
+		int nowRounded = (int) (p.modAmount.value.getValue() * denominator);
+		presenter.modulation.isModAmountChanged = ogRounded != nowRounded;
+		presenter.modulation.isModSourceChanged = p.ogModSource.getValue() != p.modSource.getValue();
+
 		presenter.showContextMenu = true;
 		presenter.modulation.isModulateable = true;
 		presenter.modulation.isModulated = p.modSource.getValue() != ModSource.None;
@@ -122,7 +162,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			if (isBiPolar)
 				modAmount *= 2;
 
-			MacroControlParameterModel mc = EditBufferModel.findParameter(p.modSource.getValue());
+			MacroControlParameterModel mc = EditBufferModel.get().getParameter(p.modSource.getValue(), vg);
 
 			modLeft = value - modAmount * mc.value.getQuantizedAndClipped(true);
 			modRight = modLeft + modAmount;
@@ -196,7 +236,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 				presenter.modulation.originalModulationAmountDecoratedString = p.modAmount.getDecoratedValue(true,
 						p.ogModAmount.getValue(), true);
 
-				MacroControlParameterModel macroControl = EditBufferModel.findParameter(p.modSource.getValue());
+				MacroControlParameterModel macroControl = EditBufferModel.get().getParameter(p.modSource.getValue(),
+						vg);
 				presenter.modulation.originalModulationPositionDecoratedString = macroControl.value
 						.getDecoratedValue(true, macroControl.originalValue.getValue(), true);
 
@@ -218,7 +259,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updateClipping(ModulateableParameterModel m) {
 		if (m.modSource.getValue() != ModSource.None) {
-			MacroControlParameterModel mc = EditBufferModel.findParameter(m.modSource.getValue());
+			MacroControlParameterModel mc = EditBufferModel.get().getParameter(m.modSource.getValue(), vg);
 			double modAmount = m.modAmount.getClippedValue();
 			boolean bipolar = m.value.metaData.bipolar.getBool();
 
@@ -244,32 +285,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	private void updatePresenter(PhysicalControlParameterModel p) {
+		presenter.changed = false;
 		presenter.showContextMenu = p.id != 274 && p.id != 279;
-		boolean highlight = SetupModel.get().systemSettings.highlightChangedParameters.isTrue();
-		boolean forceHighlight = SetupModel.get().systemSettings.forceHighlightChangedParameters.isTrue();
-		presenter.highlightChanged = p.isChanged() && (highlight || forceHighlight);
-
-		int idWithLargestAmount = 0;
-		double largestAmount = 0;
-		boolean isNegative = false;
-
-		for (int i : p.getAssociatedModulationRouters()) {
-			ModulationRouterParameterModel router = (ModulationRouterParameterModel) EditBufferModel.findParameter(i);
-			double amount = router.value.getQuantizedAndClipped(true);
-			if (Math.abs(amount) > largestAmount) {
-				idWithLargestAmount = router.getAssociatedMacroControlID();
-				largestAmount = Math.abs(amount);
-				isNegative = amount < 0;
-			}
-		}
-
-		if (idWithLargestAmount == 0)
-			presenter.longName = "Not assigned";
-		else {
-			BasicParameterModel mc = EditBufferModel.findParameter(idWithLargestAmount);
-			presenter.longName = (isNegative ? "-" : "") + mc.longName.getValue();
-		}
-
+		
 		if (p instanceof RibbonParameterModel) {
 			RibbonParameterModel r = (RibbonParameterModel) p;
 			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;
@@ -328,11 +346,4 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		return presenter;
 	}
 
-	public String getFullNameWithGroup(BasicParameterModel e) {
-		boolean changed = e.isChanged();
-		if (e.group == null)
-			return "---";
-
-		return e.group.longName.getValue() + "   \u2013   " + e.longName.getValue() + (changed ? " *" : "");
-	}
 }

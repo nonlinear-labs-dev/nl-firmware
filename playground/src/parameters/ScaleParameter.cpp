@@ -8,7 +8,7 @@
 #include "scale-converters/dimension/NoteDimension.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-ScaleParameter::ScaleParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
+ScaleParameter::ScaleParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                tControlPositionValue def, tControlPositionValue coarseDenominator,
                                tControlPositionValue fineDenominator)
     : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
@@ -57,12 +57,12 @@ size_t ScaleParameter::getHash() const
 
 Glib::ustring ScaleParameter::getLongName() const
 {
-  static const int baseKeyParameterID = 312;
+  static const auto baseKeyParameterID = ParameterId(312, VoiceGroup::Global);
 
   if(getID() != baseKeyParameterID)
   {
     const auto baseKey = getParentGroup()->getParameterByID(baseKeyParameterID);
-    const auto offset = getID() - baseKeyParameterID;
+    const auto offset = getID().getNumber() - baseKeyParameterID.getNumber();
     const auto key = static_cast<int>(baseKey->getDisplayValue() + offset);
     const auto stringizedKey = NoteDimension::get().stringize(key % 12);
     return UNDO::StringTools::buildString(super::getLongName(), " (", stringizedKey, ")");

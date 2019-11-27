@@ -8,5 +8,4 @@ class EditSmoothingTimeMSScaleConverter : public LinearScaleConverter
 
  public:
   EditSmoothingTimeMSScaleConverter();
-  virtual ~EditSmoothingTimeMSScaleConverter();
 };

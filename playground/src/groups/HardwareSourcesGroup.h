@@ -9,51 +9,51 @@ class MacroControlParameter;
 class HardwareSourcesGroup : public ParameterGroup
 {
  public:
-  HardwareSourcesGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  HardwareSourcesGroup(ParameterDualGroupSet* parent);
   virtual ~HardwareSourcesGroup();
 
   typedef PhysicalControlParameter* tPhysicalControlParameter;
   typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;
   tPhysicalControlParameters getPhysicalControlParameters();
 
-  constexpr static int getUpperRibbonParameterID()
+  static ParameterId getUpperRibbonParameterID()
   {
-    return 284;
+    return { 284, VoiceGroup::Global };
   }
 
-  constexpr static int getLowerRibbonParameterID()
+  static ParameterId getLowerRibbonParameterID()
   {
-    return 289;
+    return { 289, VoiceGroup::Global };
   }
 
-  constexpr static int getPedal1ParameterID()
+  static ParameterId getPedal1ParameterID()
   {
-    return 254;
+    return { 254, VoiceGroup::Global };
   }
 
-  constexpr static int getPedal2ParameterID()
+  static ParameterId getPedal2ParameterID()
   {
-    return 259;
+    return { 259, VoiceGroup::Global };
   }
 
-  constexpr static int getPedal3ParameterID()
+  static ParameterId getPedal3ParameterID()
   {
-    return 264;
+    return { 264, VoiceGroup::Global };
   }
 
-  constexpr static int getPedal4ParameterID()
+  static ParameterId getPedal4ParameterID()
   {
-    return 269;
+    return { 269, VoiceGroup::Global };
   }
 
-  constexpr static int getPitchbendParameterID()
+  static ParameterId getPitchbendParameterID()
   {
-    return 274;
+    return { 274, VoiceGroup::Global };
   }
 
-  constexpr static int getAftertouchParameterID()
+  static ParameterId getAftertouchParameterID()
   {
-    return 279;
+    return { 279, VoiceGroup::Global };
   }
 
   virtual void init() override;

@@ -4,7 +4,10 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
+import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
+import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -68,7 +71,7 @@ public class SplitSoundLayout extends SoundLayout {
 		private class SplitPointValue extends ValueEdit {
 
 			public SplitPointValue(OverlayLayout parent) {
-				super(parent, EditBufferModel.findParameter(248));
+				super(parent, EditBufferModel.get().getParameter(10001, VoiceGroup.Global));
 			}
 		}
 
@@ -115,6 +118,12 @@ public class SplitSoundLayout extends SoundLayout {
 					contentRight - contentLeft + 1 * margin, getPixRect().getHeight() - 2 * margin);
 			contentRect.drawRoundedArea(ctx, margin, 1, new Gray(30), new Gray(30));
 			super.draw(ctx, invalidationMask);
+		}
+
+		@Override
+		public Control click(Position eventPoint) {
+			EditBufferUseCases.get().selectVoiceGroup(group);
+			return this;
 		}
 
 		private class VoiceGroupLabel extends Label {
@@ -165,7 +174,7 @@ public class SplitSoundLayout extends SoundLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return EditBufferModel.getPresetNameOfVoiceGroup(group);
+				return EditBufferModel.get().getPresetNameOfVoiceGroup(group);
 			}
 
 			@Override
@@ -177,13 +186,13 @@ public class SplitSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.findParameter(248));
+				super(parent, EditBufferModel.get().getParameter(10003, group));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.findParameter(248));
+				super(parent, EditBufferModel.get().getParameter(10002, group));
 			}
 		}
 	}

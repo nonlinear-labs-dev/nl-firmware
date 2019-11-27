@@ -36,10 +36,10 @@ void MCPositionLabel::updateTarget(const Parameter *parameter)
   if(const auto *modP = dynamic_cast<const ModulateableParameter *>(parameter))
   {
     auto src = modP->getModulationSource();
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
 
-    uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
-
-    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID))
+    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({srcParamID, vg}))
     {
       m_mcValueConnection.disconnect();
       m_mcValueConnection = pa->onParameterChanged(sigc::mem_fun(this, &MCPositionLabel::updateSource));

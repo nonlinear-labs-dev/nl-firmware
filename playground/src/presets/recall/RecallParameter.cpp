@@ -4,7 +4,7 @@
 #include "parameters/Parameter.h"
 #include "xml/Writer.h"
 
-RecallParameter::RecallParameter(RecallParameterGroups *parent, const int id)
+RecallParameter::RecallParameter(RecallParameterGroups *parent, ParameterId id)
     : UpdateDocumentContributor(parent)
     , m_id{ id }
 {
@@ -26,7 +26,7 @@ void RecallParameter::copyFrom(UNDO::Transaction *transaction, const Parameter *
   }
 }
 
-int RecallParameter::getID() const
+ParameterId RecallParameter::getID() const
 {
   return m_id;
 }
@@ -36,7 +36,7 @@ void RecallParameter::writeDocument(Writer &writer, UpdateDocumentContributor::t
   if(getUpdateIDOfLastChange() > knownRevision)
   {
     writer.writeTag("param",
-                    { Attribute{ "id", to_string(m_id) }, Attribute{ "value", to_string(m_recallValue) },
+                    { Attribute{ "id", m_id.toString() }, Attribute{ "value", to_string(m_recallValue) },
                       Attribute{ "mod-src", to_string(static_cast<int>(m_recallModSource)) },
                       Attribute{ "mod-amt", to_string(m_recallModAmount) } },
                     []() {});

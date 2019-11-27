@@ -14,9 +14,10 @@ public class ModulationRoutingParameter extends Parameter {
 	public ModulationRoutingParameter(MapsLayout parent, int paramID) {
 		super(parent, paramID);
 
-		ModulationRouterParameterModel p = (ModulationRouterParameterModel) EditBufferModel.findParameter(paramID);
+		ModulationRouterParameterModel p = (ModulationRouterParameterModel) EditBufferModel.get()
+				.getAnyParameter(paramID);
 
-		ParameterPresenterProviders.get().register(p.getAssociatedPhysicalControlID(), v -> {
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(p.getAssociatedPhysicalControlID(), v -> {
 			physicalControlParameterPresenter = v;
 			onReturningModeChanged();
 			return true;

@@ -55,7 +55,7 @@ namespace Detail
    protected:
     void writeTagContent(Writer &writer) const override
     {
-      for(auto &g : m_editBuffer->getGlobalParameterGroups())
+      for(auto &g : m_editBuffer->getParameterGroups(VoiceGroup::Global))
       {
         ParameterGroupSerializer ser(g);
         ser.write(writer);
@@ -65,7 +65,7 @@ namespace Detail
     void readTagContent(Reader &reader) const override
     {
       reader.onTag(ParameterGroupSerializer::getTagName(), [this](const auto attr) mutable {
-        auto group = m_editBuffer->getGlobalParameterGroupByID(attr.get("id"));
+        auto group = m_editBuffer->getParameterGroupByID(attr.get("id"), VoiceGroup::Global);
         if(group)
           return new ParameterGroupSerializer(group);
         return static_cast<ParameterGroupSerializer *>(nullptr);

@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupMasterParameterCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualSpecialParameterModuleCaption.h>
 #include <proxies/hwui/buttons.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterValueLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -18,17 +19,17 @@ Parameter *DualVoiceGroupMasterAndSplitPointLayout::getCurrentParameter() const
 DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout()
     : UnmodulateableParameterSelectLayout2()
 {
-  m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
+  m_connectionVoiceGroup = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update)));
 
-  m_connection = Application::get().getPresetManager()->getEditBuffer()->onChange(
+  m_connectionEditBuffer = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &DualVoiceGroupMasterAndSplitPointLayout::update));
 }
 
 void DualVoiceGroupMasterAndSplitPointLayout::update()
 {
-  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   getCarousel()->setup(selected);
 
   for(auto &i : getControls<DualSpecialParameterModuleCaption>())
@@ -54,7 +55,8 @@ void DualVoiceGroupMasterAndSplitPointLayout::update()
 
 DualVoiceGroupMasterAndSplitPointLayout::~DualVoiceGroupMasterAndSplitPointLayout()
 {
-  m_connection.disconnect();
+  m_connectionEditBuffer.disconnect();
+  m_connectionVoiceGroup.disconnect();
 }
 
 Carousel *DualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
@@ -76,7 +78,7 @@ bool DualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, But
 {
   if(down && i == Buttons::BUTTON_A)
   {
-    Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
+    Application::get().getHWUI()->toggleCurrentVoiceGroup();
     return true;
   }
 
@@ -91,6 +93,12 @@ bool DualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, But
       getCarousel()->antiTurn();
     else
       getCarousel()->turn();
+    return true;
+  }
+
+  if(down && i == Buttons::BUTTON_EDIT)
+  {
+    Application::get().getHWUI()->setFocusAndMode({UIFocus::Parameters, UIMode::Edit, UIDetail::Init});
     return true;
   }
 

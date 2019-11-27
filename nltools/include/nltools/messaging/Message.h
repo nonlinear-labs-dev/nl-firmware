@@ -23,12 +23,7 @@ namespace nltools
     {
       struct NoteShiftMessage : Message<MessageType::NoteShiftSetting>
       {
-        NoteShiftMessage()
-            : m_shift{ 0 }
-        {
-        }
-
-        NoteShiftMessage(int offset)
+        explicit NoteShiftMessage(int offset = 0)
             : m_shift{ offset }
         {
         }
@@ -38,12 +33,7 @@ namespace nltools
 
       struct PresetGlitchMessage : Message<MessageType::PresetGlitchSetting>
       {
-        PresetGlitchMessage()
-            : m_enabled{ false }
-        {
-        }
-
-        PresetGlitchMessage(bool enabled)
+        explicit PresetGlitchMessage(bool enabled = false)
             : m_enabled{ enabled }
         {
         }
@@ -53,12 +43,7 @@ namespace nltools
 
       struct TransitionTimeMessage : Message<MessageType::TransitionTimeSetting>
       {
-        TransitionTimeMessage()
-            : m_value{ 0.0 }
-        {
-        }
-
-        TransitionTimeMessage(float value)
+        explicit TransitionTimeMessage(float value = 0.0f)
             : m_value{ value }
         {
         }
@@ -68,12 +53,7 @@ namespace nltools
 
       struct EditSmoothingTimeMessage : Message<MessageType::EditSmoothingTimeSetting>
       {
-        EditSmoothingTimeMessage()
-            : m_time{ 0 }
-        {
-        }
-
-        EditSmoothingTimeMessage(float time)
+        explicit EditSmoothingTimeMessage(float time = 0.0f)
             : m_time{ time }
         {
         }
@@ -84,8 +64,8 @@ namespace nltools
 
     struct HWSourceChangedMessage : Message<MessageType::HWSourceParameter>
     {
-      HWSourceChangedMessage(tID id = 0, tControlPosition controlPosition = 0, ReturnMode mode = ReturnMode::None,
-                             bool locked = false, VoiceGroup vg = VoiceGroup::I)
+      HWSourceChangedMessage(tID id = -1, tControlPosition controlPosition = 0.0, ReturnMode mode = ReturnMode::None,
+                             bool locked = false, VoiceGroup vg = VoiceGroup::NumGroups)
           : parameterId{ id }
           , controlPosition{ controlPosition }
           , returnMode{ mode }
@@ -104,7 +84,8 @@ namespace nltools
 
     struct HWAmountChangedMessage : Message<MessageType::HWAmountParameter>
     {
-      HWAmountChangedMessage(tID id = 0, tControlPosition pos = 0.0, bool locked = false, VoiceGroup vg = VoiceGroup::I)
+      HWAmountChangedMessage(tID id = -1, tControlPosition pos = 0.0, bool locked = false,
+                             VoiceGroup vg = VoiceGroup::NumGroups)
           : parameterId{ id }
           , controlPosition{ pos }
           , lock{ locked }
@@ -121,8 +102,7 @@ namespace nltools
 
     struct MacroControlChangedMessage : Message<MessageType::MacroControlParameter>
     {
-      MacroControlChangedMessage(tID id = 0, tControlPosition pos = 0.0, bool locked = false,
-                                 VoiceGroup vg = VoiceGroup::I)
+      MacroControlChangedMessage(tID id, tControlPosition pos, bool locked, VoiceGroup vg)
           : lock{ locked }
           , parameterId{ id }
           , controlPosition{ pos }
@@ -139,8 +119,8 @@ namespace nltools
 
     struct UnmodulateableParameterChangedMessage : Message<MessageType::UnmodulateableParameter>
     {
-      UnmodulateableParameterChangedMessage(tID id = 0, tControlPosition controlPosition = 0, bool locked = false,
-                                            VoiceGroup vg = VoiceGroup::I)
+      UnmodulateableParameterChangedMessage(tID id = -1, tControlPosition controlPosition = 0.0, bool locked = false,
+                                            VoiceGroup vg = VoiceGroup::NumGroups)
           : lock{ locked }
           , parameterId(id)
           , controlPosition(controlPosition)
@@ -157,10 +137,10 @@ namespace nltools
 
     struct ModulateableParameterChangedMessage : Message<MessageType::ModulateableParameter>
     {
-      ModulateableParameterChangedMessage(tID id = 0, tControlPosition pos = 0.0,
+      ModulateableParameterChangedMessage(tID id = -1, tControlPosition pos = .0,
                                           MacroControls source = MacroControls::NONE, tControlPosition amount = 0.0,
                                           tControlPosition upper = 0.0, tControlPosition lower = 0.0,
-                                          bool locked = false, VoiceGroup vg = VoiceGroup::I)
+                                          bool locked = false, VoiceGroup vg = VoiceGroup::NumGroups)
           : lock{ locked }
           , parameterId{ id }
           , controlPosition{ pos }
@@ -289,7 +269,16 @@ namespace nltools
       {
       };
 
-      struct MonoParameter : Parameter
+      struct GlobalParameter : Parameter
+      {
+      };
+
+      struct HardwareSourceParameter : Parameter
+      {
+        ReturnMode returnMode = ReturnMode::None;
+      };
+
+      struct HardwareAmountParameter : Parameter
       {
       };
 
@@ -297,9 +286,11 @@ namespace nltools
       {
       };
 
+#if 0
+
       inline bool operator==(const Parameter& lhs, const Parameter& rhs)
       {
-        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition;
+        return std::tie(lhs.id, lhs.controlPosition, lhs.locked) == std::tie(rhs.id, rhs.controlPosition, rhs.locked);
       }
 
       inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
@@ -329,63 +320,45 @@ namespace nltools
         return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition
             && lhs.ribbonTouchBehaviour == rhs.ribbonTouchBehaviour && lhs.ribbonReturnMode == rhs.ribbonReturnMode;
       }
+#endif
     }
 
     struct SinglePresetMessage : Message<MessageType::SinglePreset>
     {
-      std::array<ParameterGroups::MacroParameter, 4> macros;
-      std::array<ParameterGroups::ModulateableParameter, 89> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 123> unmodulateables;
-      std::array<ParameterGroups::MonoParameter, 4> monos;
-
-      std::array<ParameterGroups::PedalParameter, 4> pedals;
-      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
-      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
-      std::array<ParameterGroups::BenderParameter, 1> bender;
-
+      std::array<ParameterGroups::MacroParameter, 6> macros;
+      std::array<ParameterGroups::ModulateableParameter, 97> modulateables;
+      std::array<ParameterGroups::UnmodulatebaleParameter, 107> unmodulateables;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
       ParameterGroups::UnmodulatebaleParameter unisonVoices;
-
-      std::array<ParameterGroups::Parameter, 2> master;
-      std::array<ParameterGroups::Parameter, 12> scale;
+      std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
 
     struct SplitPresetMessage : Message<MessageType::SplitPreset>
     {
-      std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
-      std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
-      std::array<std::array<ParameterGroups::MonoParameter, 4>, 2> monos;
-      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+      std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::HardwareAmountParameter, 48>, 2> hwamounts;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 
-      std::array<ParameterGroups::PedalParameter, 4> pedals;
-      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
-      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
-      std::array<ParameterGroups::BenderParameter, 1> bender;
-
-      std::array<ParameterGroups::Parameter, 2> master;
-      std::array<ParameterGroups::Parameter, 12> scale;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::GlobalParameter, 14> globalparams;
       ParameterGroups::SplitPoint splitpoint;
     };
 
     struct LayerPresetMessage : Message<MessageType::LayerPreset>
     {
-      std::array<std::array<ParameterGroups::MacroParameter, 4>, 2> macros;
-      std::array<std::array<ParameterGroups::ModulateableParameter, 89>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 123>, 2> unmodulateables;
-      std::array<ParameterGroups::MonoParameter, 4> monos;
-      std::array<std::array<ParameterGroups::Parameter, 2>, 2> vgMaster;
+      std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::HardwareAmountParameter, 48>, 2> hwamounts;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 
-      std::array<ParameterGroups::PedalParameter, 4> pedals;
-      std::array<ParameterGroups::AftertouchParameter, 1> aftertouch;
-      std::array<ParameterGroups::RibbonParameter, 2> ribbons;
-      std::array<ParameterGroups::BenderParameter, 1> bender;
-
-      std::array<ParameterGroups::Parameter, 2> master;
-      std::array<ParameterGroups::Parameter, 12> scale;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
   }
 }

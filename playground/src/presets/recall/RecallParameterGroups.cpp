@@ -10,100 +10,40 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)
     , m_editBuffer{ editBuffer }
 {
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
-    const auto index = static_cast<int>(vg);
+    const auto index = static_cast<size_t>(vg);
     for(auto &g : m_editBuffer->getParameterGroups(vg))
     {
       for(auto &parameter : g->getParameters())
       {
-        m_polyParameters[index][parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
+        m_parameters[index][parameter->getID().getNumber()] = std::make_unique<RecallParameter>(this, parameter->getID());
       }
     }
-  }
-
-  for(auto g : m_editBuffer->getGlobalParameterGroups())
-  {
-    for(auto &p : g->getParameters())
-      m_globalParameters[p->getID()] = std::make_unique<RecallParameter>(this, p->getID());
   }
 }
 
 RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg)
 {
-  return m_polyParameters[static_cast<int>(vg)];
+  return m_parameters[static_cast<size_t>(vg)];
 }
 
-RecallParameterGroups::tParameterMap &RecallParameterGroups::getGlobalParameters()
+const RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg) const
 {
-  return m_globalParameters;
+  return m_parameters[static_cast<size_t>(vg)];
 }
 
-RecallParameter *RecallParameterGroups::findGlobalParameterByID(int id)
+RecallParameter *RecallParameterGroups::findParameterByID(ParameterId id) const
 {
-  for(auto &p : m_globalParameters)
-  {
-    if(p.second->getID() == id)
-      return p.second.get();
-  }
-
-  return nullptr;
-}
-
-RecallParameter *RecallParameterGroups::findParameterByID(int id, VoiceGroup vg) const
-{
-  try
-  {
-    return m_polyParameters.at(static_cast<int>(vg)).at(id).get();
-  }
-  catch(...)
-  {
-  }
-
-  try
-  {
-    return m_globalParameters.at(id).get();
-  }
-  catch(...)
-  {
-  }
-
-  if(m_splitPoint && m_splitPoint->getID() == id)
-    return m_splitPoint.get();
-
-  return nullptr;
+  return m_parameters.at(static_cast<size_t>(id.getVoiceGroup())).at(id.getNumber()).get();
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
 {
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    const auto index = static_cast<int>(vg);
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(auto &g : other->getParameterGroups(vg))
-    {
       for(auto &parameter : g->getParameters())
-      {
-        m_polyParameters[index].at(parameter->getID())->copyFrom(transaction, parameter);
-      }
-    }
-  }
-
-  for(auto &g : other->getGlobalParameterGroups())
-  {
-    for(auto &p : g->getParameters())
-    {
-      m_globalParameters.at(p->getID())->copyFrom(transaction, p);
-    }
-  }
-
-  if(m_splitPoint == nullptr)
-    if(other->getSplitPoint() != nullptr)
-      m_splitPoint = std::make_unique<RecallParameter>(this, other->getSplitPoint()->getID());
-
-  if(m_splitPoint && other->getSplitPoint())
-    m_splitPoint->copyFrom(transaction, other->getSplitPoint());
-
-
+        m_parameters[static_cast<size_t>(vg)].at(parameter->getID().getNumber())->copyFrom(transaction, parameter);
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -112,11 +52,20 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   if(changed)
   {
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
-      for(auto &parameterpair : m_polyParameters[0])
-      {
-        auto &parameter = parameterpair.second;
-        parameter->writeDocument(writer, knownRevision);
-      }
+      writer.writeTag("voice-group-I-parameters", [&] {
+        for(auto &parameterpair : getParameters(VoiceGroup::I))
+          parameterpair.second->writeDocument(writer, knownRevision);
+      });
+
+      writer.writeTag("voice-group-II-parameters", [&] {
+        for(auto &parameterpair : getParameters(VoiceGroup::II))
+          parameterpair.second->writeDocument(writer, knownRevision);
+      });
+
+      writer.writeTag("global-parameters", [&] {
+        for(auto &parameterpair : getParameters(VoiceGroup::Global))
+          parameterpair.second->writeDocument(writer, knownRevision);
+      });
     });
   }
 }

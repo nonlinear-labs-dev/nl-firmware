@@ -35,19 +35,6 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		return this;
 	}
 
-	public boolean isValueChanged() {
-		int denominator = value.metaData.fineDenominator.getValue();
-
-		long rVal = Math.round(value.value.getValue() * denominator);
-		long rOgVal = Math.round(originalValue.getValue() * denominator);
-
-		return rVal != rOgVal;
-	}
-
-	public boolean isChanged() {
-		return isValueChanged();
-	}
-
 	public Updater createUpdater(Node c) {
 		return new BasicParameterModelUpdater(c, this);
 	}

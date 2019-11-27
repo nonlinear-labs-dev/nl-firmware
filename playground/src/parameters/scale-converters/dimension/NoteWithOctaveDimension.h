@@ -7,7 +7,7 @@ class NoteWithOctaveDimension : public Dimension
   static ustring stringizeNote(int note);
   ustring stringize(const tDisplayValue &displayValue) const override;
   static const NoteWithOctaveDimension &get();
-  //TODO stringize JS
+  Glib::ustring getStingizerJS() const override;
   static void registerTests();
 
   static constexpr auto OctaveCount = 5;

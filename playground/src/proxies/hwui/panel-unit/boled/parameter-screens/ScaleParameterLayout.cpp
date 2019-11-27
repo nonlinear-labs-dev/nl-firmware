@@ -15,8 +15,8 @@ void ScaleParameterSelectLayout::init()
   super::init();
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->getParameterGroupByID("Scale")->onGroupChanged(
-      sigc::mem_fun(this, &ScaleParameterSelectLayout::updateResetButton));
+  eb->getParameterGroupByID("Scale", VoiceGroup::Global)
+      ->onGroupChanged(sigc::mem_fun(this, &ScaleParameterSelectLayout::updateResetButton));
 }
 
 void ScaleParameterSelectLayout::addButtons()
@@ -30,7 +30,7 @@ void ScaleParameterSelectLayout::addButtons()
 void ScaleParameterSelectLayout::updateResetButton()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID("Scale"));
+  auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID("Scale", VoiceGroup::Global));
   auto changed = scaleGroup->isAnyOffsetChanged();
   m_resetButton->setText(changed ? "Reset" : "");
 }
@@ -74,7 +74,8 @@ void ScaleParameterSelectLayout::reset()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto scope = Application::get().getUndoScope()->startTransaction("Reset Custom Scale");
-  eb->getParameterGroupByID("Scale")->undoableReset(scope->getTransaction(), Initiator::EXPLICIT_HWUI);
+  eb->getParameterGroupByID("Scale", VoiceGroup::Global)
+      ->undoableReset(scope->getTransaction(), Initiator::EXPLICIT_HWUI);
 }
 
 void ScaleParameterSelectLayout::selectParameter(int inc)
@@ -84,7 +85,8 @@ void ScaleParameterSelectLayout::selectParameter(int inc)
   const auto range = (max - min) + 1;
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto id = eb->getSelected()->getID() + inc;
+  auto selectedID = eb->getSelected()->getID();
+  auto id = selectedID.getNumber() + inc;
 
   while(id > max)
     id -= range;
@@ -92,7 +94,7 @@ void ScaleParameterSelectLayout::selectParameter(int inc)
   while(id < min)
     id += range;
 
-  eb->undoableSelectParameter(id);
+  eb->undoableSelectParameter({id, selectedID.getVoiceGroup()});
 }
 
 void toggleHightlight(Control* c)

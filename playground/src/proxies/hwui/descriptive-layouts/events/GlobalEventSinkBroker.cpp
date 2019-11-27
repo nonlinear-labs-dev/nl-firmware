@@ -92,7 +92,7 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() {
       if(eb->getType() != SoundType::Single)
       {
-        Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
+        Application::get().getHWUI()->toggleCurrentVoiceGroup();
       }
     });
 
@@ -235,24 +235,26 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
-      if(eb->getType() == SoundType::Split)
-        eb->undoableSelectParameter(12345);
-      else
-        eb->undoableSelectParameter(12345, VoiceGroup::I);
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+      eb->undoableSelectParameter({ 364, vg });
     });
 
     registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
-      auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-
-      if(eb->getType() == SoundType::Split)
-        eb->undoableSelectParameter(10001);
+      if(eb->getType() != SoundType::Split)
+        eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
       else
-        eb->undoableSelectParameter(10002, vg);
+        eb->undoableSelectParameter({ 356, VoiceGroup::Global });
     });
 
-    registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter(247); });
+    registerEvent(EventSinks::OpenMasterParameter, [eb] {
+      eb->undoableSelectParameter({ 247, VoiceGroup::Global });
+    });
 
-    registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() { eb->undoableSelectParameter(249); });
+    registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() {
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      eb->undoableSelectParameter({ 249, vg });
+    });
   }
 
   void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)

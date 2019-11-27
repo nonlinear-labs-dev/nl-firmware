@@ -10,7 +10,7 @@ class RibbonLabel : public Label
   typedef Label super;
 
  public:
-  RibbonLabel(int paramID, const Rect &rect);
+  RibbonLabel(const ParameterId& paramID, const Rect &rect);
   virtual ~RibbonLabel();
 
   StringAndSuffix getText() const override;
@@ -22,5 +22,5 @@ class RibbonLabel : public Label
   Glib::ustring crop(const Glib::ustring &text) const;
   Glib::ustring binarySearchLength(const Glib::ustring &text, int min, int max) const;
 
-  int m_parameterID;
+  ParameterId m_parameterID;
 };

@@ -4,7 +4,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/RenameVoiceGroupLayout.h>
 
-#include "VoiceGroupLabelItem.h"
+#include "PartLabelItem.h"
 
 inline EditBuffer* getEditBuffer()
 {
@@ -13,21 +13,21 @@ inline EditBuffer* getEditBuffer()
 
 VoiceGroup currentVoiceGroup()
 {
-  return Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+  return Application::get().getHWUI()->getCurrentVoiceGroup();
 }
 
-Glib::ustring getVoiceGroupLabel(VoiceGroup vg)
+Glib::ustring getPartLabel(VoiceGroup vg)
 {
   auto eb = getEditBuffer();
   return eb->getVoiceGroupName(vg);
 }
 
-VoiceGroupLabelItem::VoiceGroupLabelItem(const Rect& r)
-    : BasicItemWithValueText("Voice Group Label", getVoiceGroupLabel(currentVoiceGroup()), r)
+PartLabelItem::PartLabelItem(const Rect& r)
+    : BasicItemWithValueText("Part Label", getPartLabel(currentVoiceGroup()), r)
 {
 }
 
-void VoiceGroupLabelItem::doAction()
+void PartLabelItem::doAction()
 {
   auto hwui = Application::get().getHWUI();
   hwui->getPanelUnit().getEditPanel().getBoled().reset(new RenameVoiceGroupLayout(currentVoiceGroup()));

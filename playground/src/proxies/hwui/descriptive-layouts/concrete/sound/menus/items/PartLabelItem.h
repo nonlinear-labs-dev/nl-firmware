@@ -2,9 +2,9 @@
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/BasicItemWithValueText.h>
 
-class VoiceGroupLabelItem : public BasicItemWithValueText
+class PartLabelItem : public BasicItemWithValueText
 {
  public:
-  VoiceGroupLabelItem(const Rect& r);
+  PartLabelItem(const Rect& r);
   void doAction() override;
 };

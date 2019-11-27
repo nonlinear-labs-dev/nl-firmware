@@ -13,8 +13,8 @@ VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect 
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
 
-  m_selectConnection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-      sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
+  m_selectConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild)));
 }
 
 VoiceGroupMasterParameterCarousel::~VoiceGroupMasterParameterCarousel()
@@ -27,10 +27,12 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 {
   clear();
 
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Split)
-    setupMasterParameters({ 10001, 10002, 10003 });
+    setupMasterParameters({ { 356, VoiceGroup::Global }, { 358, vg }, { 360, vg } });
   else
-    setupMasterParameters({ 10002, 10003 });
+    setupMasterParameters({ { 358, vg }, { 360, vg } });
 
   if(getNumChildren() == 0)
   {
@@ -45,32 +47,29 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 
 void VoiceGroupMasterParameterCarousel::rebuild()
 {
-  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
   auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   setup(s);
 }
 
-void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<Parameter::ID> &parameters)
+void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<ParameterId> &parameters)
 {
-  const auto ySpaceing = 3;
+  const int ySpacing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
   const auto numMissing = 4 - parameters.size();
-  int yPos = ySpaceing + (numMissing * (miniParamHeight + ySpaceing));
+  auto yPos = ySpacing + (numMissing * (miniParamHeight + ySpacing));
 
-  const auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  const auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+  const auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
 
-  for(auto p : parameters)
+  for(const auto &p : parameters)
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p, vg);
-    if(!param)
-      param = Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(p);
-
-    auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
-    miniParam->setSelected(param == selected);
-    addControl(miniParam);
-    yPos += ySpaceing;
-    yPos += miniParamHeight;
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p);
+    if(param) {
+      auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
+      miniParam->setSelected(param == selected);
+      addControl(miniParam);
+      yPos += ySpacing;
+      yPos += miniParamHeight;
+    }
   }
 }

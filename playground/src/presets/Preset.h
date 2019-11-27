@@ -41,12 +41,13 @@ class Preset : public PresetDualParameterGroups
 
   SoundType getType() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
+  void undoableSetVoiceGroupName(UNDO::Transaction* transaction, VoiceGroup vg, const Glib::ustring& name);
 
   // accessors
   const Uuid &getUuid() const;
   Glib::ustring getName() const;
-  PresetParameter *findParameterByID(int id, VoiceGroup vg = VoiceGroup::Invalid) const;
-  PresetParameterGroup *findParameterGroup(const std::string &id, VoiceGroup vg = VoiceGroup::Invalid) const;
+  PresetParameter *findParameterByID(ParameterId id) const;
+  PresetParameterGroup *findParameterGroup(const std::string &id, VoiceGroup vg) const;
 
   // transactions
   void copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid);

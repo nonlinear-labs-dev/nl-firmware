@@ -17,7 +17,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
@@ -132,8 +133,9 @@ public class RenameDialog extends DialogBox {
 	}
 
 	public static void awaitNewPreset(String uuid) {
-		boolean isModified = EditBufferModel.isAnyParamChanged();
-		boolean storedInPlace = EditBufferModel.loadedPreset.getValue().equals(uuid);
+		EditBufferPresenter p = EditBufferPresenterProvider.getPresenter();
+		boolean isModified = p.isAnyParameterChanged;
+		boolean storedInPlace = p.loadedPresetUUID.equals(uuid);
 
 		if (isModified && !storedInPlace) {
 			presetToWaitFor = uuid;

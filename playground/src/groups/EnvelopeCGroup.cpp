@@ -23,35 +23,42 @@ EnvelopeCGroup::~EnvelopeCGroup()
 
 void EnvelopeCGroup::init()
 {
-  appendParameter(new ModulateableParameter(this, 38, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0,
-                                            100, 1000));
+  appendParameter(new ModulateableParameter(
+      this, { 38, getVoiceGroup() }, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0, 100, 1000));
 
-  appendParameter(new Parameter(this, 296, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 296, getVoiceGroup() },
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
 
-  appendParameter(new ModulateableParameter(this, 40, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
-                                            0.59, 100, 1000));
+  appendParameter(new ModulateableParameter(
+      this, { 40, getVoiceGroup() }, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.59, 100, 1000));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 42, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+      this, { 42, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
       ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0.5, 100, 1000));
 
-  appendParameter(new ModulateableParameter(this, 44, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
-                                            0.79, 100, 1000));
+  appendParameter(new ModulateableParameter(
+      this, { 44, getVoiceGroup() }, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.79, 100, 1000));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 297, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+      this, { 297, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
       ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
 
   appendParameter(new ModulateableParameterWithUnusualModDenominator(
-      this, 46, ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>(), 0.53, 101, 1010, 100, 1000));
+      this, { 46, getVoiceGroup() }, ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>(), 0.53, 101, 1010, 100,
+      1000));
 
-  appendParameter(new Parameter(this, 48, ScaleConverter::get<Linear60DbScaleConverter>(), 0.5, 60, 600));
+  appendParameter(
+      new Parameter(this, { 48, getVoiceGroup() }, ScaleConverter::get<Linear60DbScaleConverter>(), 0.5, 60, 600));
 
-  appendParameter(new Parameter(this, 49, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
+  appendParameter(
+      new Parameter(this, { 49, getVoiceGroup() }, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
 
-  appendParameter(new Parameter(this, 50, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
+  appendParameter(
+      new Parameter(this, { 50, getVoiceGroup() }, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
 
-  appendParameter(new Parameter(this, 51, ScaleConverter::get<LinearBipolar1DbstScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 51, getVoiceGroup() }, ScaleConverter::get<LinearBipolar1DbstScaleConverter>(),
+                                0, 100, 1000));
 
-  appendParameter(new Parameter(this, 52, ScaleConverter::get<Linear100PercentScaleConverter>(), 0.05, 100, 1000));
+  appendParameter(new Parameter(this, { 52, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
+                                0.05, 100, 1000));
 }

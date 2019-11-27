@@ -76,7 +76,7 @@ namespace Detail
    protected:
     void writeTagContent(Writer &writer) const override
     {
-      auto &parameters = m_editBuffer->getRecallParameterSet().getGlobalParameters();
+      auto &parameters = m_editBuffer->getRecallParameterSet().getParameters(VoiceGroup::Global);
       for(auto &param : parameters)
       {
         RecallParameterSerializer serializer(param.second.get());
@@ -91,7 +91,7 @@ namespace Detail
         auto &rps = m_editBuffer->getRecallParameterSet();
         try
         {
-          auto param = rps.findParameterByID(id, VoiceGroup::Global);
+          auto param = rps.findParameterByID({id, VoiceGroup::Global});
           auto serializer = new RecallParameterSerializer(param);
           return serializer;
         }

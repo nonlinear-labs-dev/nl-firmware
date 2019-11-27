@@ -72,15 +72,16 @@ class AnimatedGenericItem : public GenericItem
 
   void startAnimation()
   {
-    m_animator = std::make_unique<Animator>(std::chrono::milliseconds(500), [this] { this->setDirty(); },
-                                            [this] {
-                                              this->setDirty();
+    if(!m_animator)
+      m_animator = std::make_unique<Animator>(std::chrono::milliseconds(500), [this] { this->setDirty(); },
+                                              [this] {
+                                                this->setDirty();
 
-                                              m_animator.reset();
+                                                m_animator.reset();
 
-                                              if(m_animationFinishedCB)
-                                                m_animationFinishedCB();
-                                            });
+                                                if(m_animationFinishedCB)
+                                                  m_animationFinishedCB();
+                                              });
   }
 
   bool drawAnimationZug(FrameBuffer &buffer)
@@ -90,7 +91,8 @@ class AnimatedGenericItem : public GenericItem
 
     auto pos = getPosition();
     auto p = m_animator->getAnimationPosition();
-    pos.setWidth(static_cast<int>(pos.getWidth() * p));
+    float newWidth = p * static_cast<float>(pos.getWidth());
+    pos.setWidth(static_cast<int>(newWidth));
     buffer.setColor(FrameBuffer::C255);
     buffer.fillRect(pos);
     return true;

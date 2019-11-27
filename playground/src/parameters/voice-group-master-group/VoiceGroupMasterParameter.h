@@ -5,9 +5,10 @@
 class VoiceGroupMasterParameter : public Parameter
 {
  public:
-  VoiceGroupMasterParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
-                            tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator,
-                            const std::string &shortName, const std::string &longName, VoiceGroup vg);
+  VoiceGroupMasterParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling,
+                            tControlPositionValue def, tControlPositionValue coarseDenominator,
+                            tControlPositionValue fineDenominator, std::string shortName, const std::string &longName,
+                            VoiceGroup vg);
 
   ustring getLongName() const override;
 

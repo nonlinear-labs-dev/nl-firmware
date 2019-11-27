@@ -8,12 +8,12 @@ class ParameterDualGroupSet;
 class ScaleGroup : public ParameterGroup
 {
  public:
-  ScaleGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  ScaleGroup(ParameterDualGroupSet *parent);
   virtual ~ScaleGroup();
 
   void init();
   bool isAnyOffsetChanged() const;
-  static int getScaleBaseParameterID();
+  static int getScaleBaseParameterNumber();
 
  private:
   void onBaseKeyParameterChanged(const Parameter *baseKeyParameter);

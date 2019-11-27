@@ -5,7 +5,7 @@
 class MonoLegatoParameter : public MonoParameter
 {
  public:
-  MonoLegatoParameter(ParameterGroup *group, uint16_t id);
+  MonoLegatoParameter(ParameterGroup *group, ParameterId id);
   ustring getDisplayString() const override;
 
   ustring getLongName() const override;

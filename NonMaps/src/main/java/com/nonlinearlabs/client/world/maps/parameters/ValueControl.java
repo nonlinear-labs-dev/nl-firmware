@@ -13,7 +13,7 @@ abstract class ValueControl extends ZoomReactingControl {
 	ValueControl(MapsLayout parent, int parameterID) {
 		super(parent);
 
-		ParameterPresenterProviders.get().register(parameterID, v -> {
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(parameterID, v -> {
 			presenter = v;
 			return true;
 		});

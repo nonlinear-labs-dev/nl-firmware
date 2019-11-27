@@ -1,4 +1,5 @@
 #include <Application.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/descriptive-layouts/primitives/Border.h>
 #include <proxies/hwui/panel-unit/boled/setup/SmallerParameterValueLabel.h>
 #include "MonoGroupControl.h"
@@ -9,7 +10,7 @@ MonoGroupControl::MonoGroupControl(const Rect &r)
     : ControlWithChildren(r)
     , m_grid{ nullptr }
 {
-  m_connection = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged([this]() { rebuild(); });
+  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged([this](auto) { rebuild(); });
 }
 
 MonoGroupControl::~MonoGroupControl()
@@ -22,11 +23,10 @@ void MonoGroupControl::rebuild()
   clear();
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  auto monoEnableParam = eb->findParameterByID(12345, vg);
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto monoEnableParam = eb->findParameterByID({ 364, vg });
   auto monoEnable = monoEnableParam->getDisplayString() == "On";
-
-  auto paramid = std::array<int, 4>{ 12345, 12346, 12347, 12348 };
+  auto paramid = std::array<int, 4>{ 364, 366, 367, 365 };
 
   const auto width = 62;
   const auto height = 16;
@@ -37,9 +37,9 @@ void MonoGroupControl::rebuild()
   {
     for(auto x = 0; x < 2; x++)
     {
-      auto param = eb->findParameterByID(paramid[index++], vg);
+      auto param = eb->findParameterByID({paramid[index++], vg});
 
-      if(paramid[y + x] != 12345)
+      if(paramid[y + x] != 364)
       {
         auto str = param->getShortName() + ": " + param->getDisplayString();
         m_grid[y][x] = addControl(new Label(str, { (x * width) + (x), y * height + (y), width, height }));

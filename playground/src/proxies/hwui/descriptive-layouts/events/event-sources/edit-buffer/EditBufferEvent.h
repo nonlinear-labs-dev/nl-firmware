@@ -3,6 +3,7 @@
 #include <presets/EditBuffer.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
+#include <proxies/hwui/HWUI.h>
 
 #include "../base/EventSource.h"
 
@@ -17,9 +18,8 @@ namespace DescriptiveLayouts
       m_changedConnection = eb->onChange(sigc::mem_fun(this, &EditBufferEvent<T>::onEditBufferChanged));
       m_presetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &EditBufferEvent<T>::onPresetLoaded));
       m_onRecallChanged = eb->onRecallValuesChanged(sigc::mem_fun(this, &EditBufferEvent<T>::onRecallChanged));
-      m_onHardwareUIVoiceGroupSelectionChanged
-          = Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
-              sigc::mem_fun(this, &EditBufferEvent<T>::onHWUIVoiceGroupSelectionChanged));
+      m_onHardwareUIVoiceGroupSelectionChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+          sigc::mem_fun(this, &EditBufferEvent<T>::onHWUIVoiceGroupSelectionChanged));
     }
 
     ~EditBufferEvent()
@@ -44,7 +44,7 @@ namespace DescriptiveLayouts
       onChange(getEditBuffer());
     }
 
-    virtual void onHWUIVoiceGroupSelectionChanged()
+    virtual void onHWUIVoiceGroupSelectionChanged(VoiceGroup v)
     {
       onChange(getEditBuffer());
     }

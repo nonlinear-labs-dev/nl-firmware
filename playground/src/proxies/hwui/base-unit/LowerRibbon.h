@@ -21,7 +21,7 @@ class LowerRibbon : public Ribbon
   void onParamValueChanged(const Parameter* param);
   void reconnect();
 
-  Parameter* getResponsibleParameter();
+  static Parameter* getResponsibleParameter();
 
   int posToLedID(int pos) const;
 

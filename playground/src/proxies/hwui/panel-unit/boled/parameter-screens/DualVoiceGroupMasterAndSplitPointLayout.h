@@ -20,5 +20,6 @@ class DualVoiceGroupMasterAndSplitPointLayout : public UnmodulateableParameterSe
 
   ModuleCaption *createModuleCaption() const override;
 
-  sigc::connection m_connection;
+  sigc::connection m_connectionEditBuffer;
+  sigc::connection m_connectionVoiceGroup;
 };

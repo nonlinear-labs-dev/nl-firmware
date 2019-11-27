@@ -11,7 +11,7 @@
 
 EditSmoothingTime::EditSmoothingTime(Settings &parent)
     : super(parent)
-    , m_time(nullptr, ScaleConverter::get<EditSmoothingTimeMSScaleConverter>(), 0, 200, 2000)
+    , m_time(nullptr, ScaleConverter::get<EditSmoothingTimeMSScaleConverter>(), 0, 100, 1000)
 {
 }
 

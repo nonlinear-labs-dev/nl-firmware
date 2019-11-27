@@ -18,8 +18,7 @@ namespace DescriptiveLayouts
       }
       else
       {
-        const auto suffix
-            = " " + toString(Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection());
+        const auto suffix = " " + toString(Application::get().getHWUI()->getCurrentVoiceGroup());
         setValue({ typeStr + suffix, suffix.size() });
       }
     }
@@ -39,7 +38,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
       setValue({ eb->getVoiceGroupName(currentVG), 0 });
     }
   };
@@ -49,7 +48,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto val = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+      auto val = Application::get().getHWUI()->getCurrentVoiceGroup();
       setValue(val == VoiceGroup::I);
     }
   };
@@ -59,8 +58,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto val = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-
+      auto val = Application::get().getHWUI()->getCurrentVoiceGroup();
       setValue(val == VoiceGroup::II);
     }
   };
@@ -87,8 +85,8 @@ namespace DescriptiveLayouts
         case SoundType::Layer:
         case SoundType::Split:
         {
-          auto vgI = eb->getParameterGroupByID("VGM", VoiceGroup::I)->isAnyParameterChanged();
-          auto vgII = eb->getParameterGroupByID("VGM", VoiceGroup::II)->isAnyParameterChanged();
+          auto vgI = eb->getParameterGroupByID("PART", VoiceGroup::I)->isAnyParameterChanged();
+          auto vgII = eb->getParameterGroupByID("PART", VoiceGroup::II)->isAnyParameterChanged();
           if(type == SoundType::Split)
             return vgI || vgII || (eb->getSplitPoint() != nullptr && eb->getSplitPoint()->isChangedFromLoaded());
           return vgI || vgII;
@@ -144,8 +142,8 @@ namespace DescriptiveLayouts
    private:
     bool isChanged(const EditBuffer *eb)
     {
-      auto masterGroup = eb->getGlobalParameterGroupByID("Master");
-      auto scale = eb->getGlobalParameterGroupByID("Scale");
+      auto masterGroup = eb->getParameterGroupByID("Master", VoiceGroup::Global);
+      auto scale = eb->getParameterGroupByID("Scale", VoiceGroup::Global);
       return (scale && scale->isAnyParameterChanged()) || (masterGroup && masterGroup->isAnyParameterChanged());
     }
   };
@@ -174,7 +172,7 @@ namespace DescriptiveLayouts
         }
         case SoundType::Split:
         {
-          auto mono = eb->getParameterGroupByID("Mono");
+          auto mono = eb->getParameterGroupByID("Mono", Application::get().getHWUI()->getCurrentVoiceGroup());
           return mono && mono->isAnyParameterChanged();
         }
       }
@@ -201,12 +199,12 @@ namespace DescriptiveLayouts
         case SoundType::Invalid:
         case SoundType::Layer:
         {
-          auto unison = eb->getParameterGroupByID("Unison", VoiceGroup::I);
+          auto unison = eb->getParameterGroupByID("Unison", Application::get().getHWUI()->getCurrentVoiceGroup());
           return unison && unison->isAnyParameterChanged();
         }
         case SoundType::Split:
         {
-          auto unison = eb->getParameterGroupByID("Unison");
+          auto unison = eb->getParameterGroupByID("Unison", Application::get().getHWUI()->getCurrentVoiceGroup());
           return unison && unison->isAnyParameterChanged();
         }
       }

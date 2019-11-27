@@ -30,42 +30,51 @@ OscillatorBGroup::~OscillatorBGroup()
 void OscillatorBGroup::init()
 {
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 83, ScaleConverter::get<PitchOscLinearStScaleConverter>(),
+      this, { 83, getVoiceGroup() }, ScaleConverter::get<PitchOscLinearStScaleConverter>(),
       ScaleConverter::get<PitchOscLinearStScaleModulationConverter>(), 80.0 / 150.0, 150, 15000));
 
-  appendParameter(
-      new Parameter(this, 85, ScaleConverter::get<Fine105PercentScaleConverter>(), 100.0 / 105.0, 105, 10500));
-
-  appendParameter(new Parameter(this, 86, ScaleConverter::get<FineBipolar80StScaleConverter>(), 0, 80, 8000));
+  appendParameter(new Parameter(this, { 85, getVoiceGroup() }, ScaleConverter::get<Fine105PercentScaleConverter>(),
+                                100.0 / 105.0, 105, 10500));
 
   appendParameter(
-      new ModulateableParameter(this, 87, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+      new Parameter(this, { 86, getVoiceGroup() }, ScaleConverter::get<FineBipolar80StScaleConverter>(), 0, 80, 8000));
 
-  appendParameter(new Parameter(this, 89, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { 87, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 90, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new Parameter(this, 92, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new Parameter(this, 93, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 89, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(), 0,
+                                100, 1000));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 94, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+      this, { 90, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
       ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
 
-  appendParameter(new Parameter(this, 96, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 92, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(), 0,
+                                100, 1000));
 
-  appendParameter(new Parameter(this, 97, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 93, getVoiceGroup() },
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, 98, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+      this, { 94, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
       ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
 
-  appendParameter(new Parameter(this, 100, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new Parameter(this, { 96, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(), 0,
+                                100, 1000));
 
-  appendParameter(new Parameter(this, 302, ScaleConverter::get<PhaseBipolar180DegreeScaleConverter>(), 0, 180, 1800));
+  appendParameter(new Parameter(this, { 97, getVoiceGroup() },
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
 
-  appendParameter(new Parameter(this, 304, ScaleConverter::get<Linear80To140StScaleConverter>(), 4.0 / 6.0, 60, 600));
+  appendParameter(new ModulateableParameterWithUnusualModUnit(
+      this, { 98, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
+
+  appendParameter(new Parameter(this, { 100, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
+                                0, 100, 1000));
+
+  appendParameter(new Parameter(this, { 302, getVoiceGroup() },
+                                ScaleConverter::get<PhaseBipolar180DegreeScaleConverter>(), 0, 180, 1800));
+
+  appendParameter(new Parameter(this, { 304, getVoiceGroup() }, ScaleConverter::get<Linear80To140StScaleConverter>(),
+                                4.0 / 6.0, 60, 600));
 }

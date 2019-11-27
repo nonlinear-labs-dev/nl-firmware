@@ -14,14 +14,16 @@ AnyParameterLockedIndicator::AnyParameterLockedIndicator(const Rect &pos)
 
 void AnyParameterLockedIndicator::onParameterGroupChanged()
 {
-  auto anyParamLocked = false;
-  for(auto g : Application::get().getPresetManager()->getEditBuffer()->getParameterGroups())
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
-    if(g->isAnyParameterLocked())
+    for(auto g : Application::get().getPresetManager()->getEditBuffer()->getParameterGroups(vg))
     {
-      anyParamLocked = true;
-      break;
+      if(g->isAnyParameterLocked())
+      {
+        setText("\ue20a");
+        return;
+      }
     }
   }
-  setText(anyParamLocked ? "\ue20a" : "");
+  setText("");
 }

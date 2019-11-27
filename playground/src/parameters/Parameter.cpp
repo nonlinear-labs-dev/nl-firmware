@@ -23,7 +23,7 @@
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
-Parameter::Parameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
+Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
                      tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
     : UpdateDocumentContributor(group)
     , m_id(id)
@@ -230,7 +230,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  auto ret = eb->getRecallParameterSet().findParameterByID(getID(), m_voiceGroup);
+  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
   nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
   return ret;
 }
@@ -258,7 +258,7 @@ ParameterGroup *Parameter::getParentGroup()
   return static_cast<ParameterGroup *>(getParent());
 }
 
-Parameter::ID Parameter::getID() const
+ParameterId Parameter::getID() const
 {
   return m_id;
 }
@@ -304,12 +304,12 @@ void Parameter::invalidate()
 
 Glib::ustring Parameter::getLongName() const
 {
-  return ParameterDB::get().getLongName(getID());
+  return ParameterDB::get().getLongName(getID().getNumber());
 }
 
 Glib::ustring Parameter::getShortName() const
 {
-  return ParameterDB::get().getShortName(getID());
+  return ParameterDB::get().getShortName(getID().getNumber());
 }
 
 Glib::ustring Parameter::getMiniParameterEditorName() const
@@ -436,7 +436,7 @@ void Parameter::onSelected()
 
 Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
 {
-  switch(getID())
+  switch(getID().getNumber())
   {
     case 135:
     case 155:

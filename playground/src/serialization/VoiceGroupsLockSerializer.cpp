@@ -5,7 +5,7 @@ namespace Detail
   template <VoiceGroup VG> class VoiceGroupLockSerializer : public Serializer
   {
    public:
-    VoiceGroupLockSerializer(EditBuffer *eb)
+    explicit VoiceGroupLockSerializer(EditBuffer *eb)
         : Serializer(getTag())
         , m_editBuffer{ eb }
     {
@@ -22,13 +22,14 @@ namespace Detail
       for(auto g : m_editBuffer->getParameterGroups(VG))
         for(auto p : g->getParameters())
           if(p->isLocked())
-            writer.writeTextElement("locked-parameter", to_string(p->getID()));
+            writer.writeTextElement("locked-parameter", p->getID().toString());
     }
 
     void readTagContent(Reader &reader) const override
     {
       reader.onTextElement("locked-parameter", [&](auto text, auto) mutable {
-        m_editBuffer->findParameterByID(std::stoi(text), VG)->undoableLock(reader.getTransaction());
+        ParameterId id(text);
+        m_editBuffer->findParameterByID(id)->undoableLock(reader.getTransaction());
       });
     }
 

@@ -63,7 +63,7 @@ Preset *MockPresetStorage::createSplitPreset(UNDO::Transaction *transaction)
 
   editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
 
-  editBuffer->undoableConvertToDual(transaction, SoundType::Split, VoiceGroup::I);
+  editBuffer->undoableConvertToDual(transaction, SoundType::Split);
 
   auto bank = pm->addBank(transaction);
   auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
@@ -76,7 +76,7 @@ Preset *MockPresetStorage::createLayerPreset(UNDO::Transaction *transaction)
   auto editBuffer = getEditBuffer();
   auto pm = editBuffer->getParent();
 
-  editBuffer->undoableConvertToDual(transaction, SoundType::Layer, VoiceGroup::I);
+  editBuffer->undoableConvertToDual(transaction, SoundType::Layer);
   auto bank = pm->addBank(transaction);
   auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *editBuffer));
   preset->setName(transaction, "Layer Preset");

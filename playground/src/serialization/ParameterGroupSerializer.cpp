@@ -12,7 +12,7 @@ ParameterGroupSerializer::ParameterGroupSerializer(ParameterGroup *paramGroup)
     , m_paramGroup(paramGroup)
 {
   for(auto p : m_paramGroup->getParameters())
-    m_parameterById[p->getID()] = p;
+    m_parameterById[p->getID().getNumber()] = p;
 }
 
 ParameterGroupSerializer::~ParameterGroupSerializer() = default;
@@ -28,7 +28,7 @@ void ParameterGroupSerializer::writeTagContent(Writer &writer) const
   for(auto param : m_paramGroup->getParameters())
   {
     ParameterSerializer paramSerializer(param);
-    paramSerializer.write(writer, Attribute("id", param->getID()));
+    paramSerializer.write(writer, Attribute("id", param->getID().getNumber()));
   }
 }
 

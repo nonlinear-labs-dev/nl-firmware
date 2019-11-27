@@ -198,21 +198,21 @@ namespace NavTree
         : EditableLeaf(parent, "")
     {
       param = dynamic_cast<PedalParameter *>(
-          Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id));
+          Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, VoiceGroup::Global}));
       name = param->getLongName();
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new PedalView(param->getAssociatedPedalTypeSetting());
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new PedalEditor(param->getAssociatedPedalTypeSetting());
     }
 
-    virtual Control *createSelectionControl()
+    Control *createSelectionControl() override
     {
       return new PedalSelectionControl(param);
     }
@@ -227,12 +227,12 @@ namespace NavTree
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new WiFiSettingView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new WiFiSettingEditor();
     }
@@ -295,12 +295,12 @@ namespace NavTree
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new PresetGlitchSuppressionView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new PresetGlitchSuppressionEditor();
     }
@@ -313,12 +313,12 @@ namespace NavTree
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new EditSmoothingTimeView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new EditSmoothingTimeEditor();
     }
@@ -329,10 +329,10 @@ namespace NavTree
     PedalSettings(InnerNode *parent)
         : InnerNode(parent, "Pedals")
     {
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal1ParameterID()));
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal2ParameterID()));
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal3ParameterID()));
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal4ParameterID()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal1ParameterID().getNumber()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal2ParameterID().getNumber()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal3ParameterID().getNumber()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal4ParameterID().getNumber()));
     }
   };
 

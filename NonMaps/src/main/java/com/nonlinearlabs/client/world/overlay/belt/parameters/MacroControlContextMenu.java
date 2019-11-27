@@ -1,6 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
-import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RenameDialog;
@@ -24,7 +24,7 @@ public class MacroControlContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, "Mod Reset") {
 			@Override
 			public Control click(Position eventPoint) {
-				NonMaps.theMaps.getServerProxy().resetModulation(param);
+				EditBufferUseCases.get().resetModulation(param.getParameterID());
 				return super.click(eventPoint);
 			}
 		});

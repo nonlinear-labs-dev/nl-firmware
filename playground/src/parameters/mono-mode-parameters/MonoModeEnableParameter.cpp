@@ -1,7 +1,7 @@
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include "MonoModeEnableParameter.h"
 
-MonoModeEnableParameter::MonoModeEnableParameter(ParameterGroup *group, uint16_t id)
+MonoModeEnableParameter::MonoModeEnableParameter(ParameterGroup *group, ParameterId id)
     : MonoParameter(group, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 1, 1)
 {
 }

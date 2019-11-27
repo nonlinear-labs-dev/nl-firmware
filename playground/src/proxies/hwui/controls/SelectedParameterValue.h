@@ -22,7 +22,7 @@ class SelectedParameterValue : public Label
   void setSuffixFontColor(FrameBuffer &fb) const override;
   virtual void onModifiersChanged(ButtonModifiers mods);
 
-  void onVoiceGroupSelectionChanged();
+  void onVoiceGroupSelectionChanged(VoiceGroup v);
 
   bool redraw(FrameBuffer &fb) override;
 

@@ -7,6 +7,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
@@ -126,7 +127,7 @@ public class DeviceSettingsProvider {
 	}
 
 	public void connectToPedal(int id, Pedal target) {
-		PedalParameterModel srcPedal = (PedalParameterModel) EditBufferModel.findParameter(id);
+		PedalParameterModel srcPedal = (PedalParameterModel) EditBufferModel.get().getParameter(id, VoiceGroup.Global);
 		srcPedal.value.onChange(t -> {
 			double v = t.value.getValue();
 			target.displayValue = Stringizers.get().stringize(srcPedal.value.metaData.scaling.getValue(), v);

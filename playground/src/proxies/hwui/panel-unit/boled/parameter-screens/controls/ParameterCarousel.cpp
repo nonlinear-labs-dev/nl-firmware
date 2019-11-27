@@ -32,9 +32,13 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
     {
       auto button = edit->findButtonForParameter(selectedParameter);
 
-      if(static_cast<int>(button) != -1)
+      if(button != Buttons::INVALID && static_cast<int>(button) != -1)
       {
         setupChildControls(edit, selectedParameter, button);
+      }
+      else
+      {
+        setupChildControlsForParameterWithoutButtonMapping(selectedParameter);
       }
     }
   }
@@ -67,25 +71,31 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
   const int ySpaceing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
-  int yPos = ySpaceing;
-  size_t maxNumParameters = 4;
-  size_t missingParams = maxNumParameters - buttonAssignments.size();
+  auto yPos = ySpaceing;
+  auto maxNumParameters = 4;
+  auto missingParams = maxNumParameters - buttonAssignments.size();
   yPos += missingParams * (miniParamHeight + ySpaceing);
   for(int i : buttonAssignments)
   {
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
-    auto param = eb->findParameterByID(i);
+
+    auto param = eb->findParameterByID({ i, vg });
+
     if(!param)
-      param = eb->findGlobalParameterByID(i);
+      param = eb->findParameterByID({i, VoiceGroup::Global});
+
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
+
     if(dynamic_cast<ScaleParameter*>(selectedParameter) != nullptr)
     {
-      miniParam->setSelected(param->getID() == ScaleGroup::getScaleBaseParameterID());
+      miniParam->setSelected(param->getID().getNumber() == ScaleGroup::getScaleBaseParameterNumber());
     }
     else
     {
-      miniParam->setSelected(param == selectedParameter);
+      miniParam->setSelected(param->getID().getNumber() == selectedParameter->getID().getNumber());
     }
+
     addControl(miniParam);
     yPos += ySpaceing;
     yPos += miniParamHeight;
@@ -102,7 +112,7 @@ void ParameterCarousel::antiTurn()
       if(p->isSelected())
       {
         Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-            to_string(foundCtrl->getParameter()->getID()));
+            foundCtrl->getParameter()->getID());
         return;
       }
       foundCtrl = p;
@@ -119,8 +129,7 @@ void ParameterCarousel::turn()
     {
       if(found)
       {
-        Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-            p->getParameter()->getID(), p->getParameter()->getVoiceGroup());
+        Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getParameter()->getID());
         handled = true;
         return false;
       }
@@ -138,8 +147,7 @@ void ParameterCarousel::turn()
 
   if(!handled)
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(first()))
-      Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-          p->getParameter()->getID(), p->getParameter()->getVoiceGroup());
+      Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getParameter()->getID());
 }
 
 bool ParameterCarousel::containsSelectedParameter() const
@@ -153,4 +161,23 @@ bool ParameterCarousel::containsSelectedParameter() const
     }
   }
   return false;
+}
+
+void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)
+{
+  switch(selectedParameter->getID().getNumber())
+  {
+    case 247:
+    case 248:
+    case 312:
+      setupChildControls(selectedParameter, { 247, 248, 312 });
+      break;
+
+    case 249:
+    case 250:
+    case 252:
+    case 253:
+      setupChildControls(selectedParameter, { 249, 250, 252, 253 });
+      break;
+  }
 }

@@ -1,6 +1,7 @@
 #include <tools/TextSplitter.h>
 #include "ParameterNameLabel.h"
 #include "Application.h"
+#include <proxies/hwui/HWUI.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -16,9 +17,6 @@ ParameterNameLabel::ParameterNameLabel(const Rect &pos)
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
 
   Application::get().getPresetManager()->getEditBuffer()->onRecallValuesChanged(
-      sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
-
-  Application::get().getVoiceGroupSelectionHardwareUI()->onHwuiSelectionChanged(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
 }
 
@@ -60,7 +58,7 @@ void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter)
   setText({ name, changed ? 1u : 0u });
 }
 
-const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
+Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
 {
   Glib::ustring ret = name;
 
@@ -92,8 +90,9 @@ void ParameterNameLabel::handleParameterName(const Parameter *pParameter)
 
 void ParameterNameLabel::onParameterChanged(const Parameter *param)
 {
-  auto id = param->getID();
-  if(id == 243 || id == 244 || id == 245 || id == 246)
+  auto id = param->getID().getNumber();
+
+  if(id == 243 || id == 244 || id == 245 || id == 246 || id == 369 || id == 371)
   {
     handleMCParameterName(param);
   }

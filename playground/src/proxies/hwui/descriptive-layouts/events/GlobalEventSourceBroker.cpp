@@ -51,10 +51,10 @@ namespace DescriptiveLayouts
     m_map[EventSources::EditBufferMasterVolume] = std::make_unique<ParameterValue<247, VoiceGroup::Global>>();
     m_map[EventSources::EditBufferMasterTune] = std::make_unique<ParameterValue<248, VoiceGroup::Global>>();
 
-    m_map[EventSources::VGIMasterTuneText] = std::make_unique<ParameterValue<10003, VoiceGroup::I>>();
-    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<ParameterValue<10003, VoiceGroup::II>>();
-    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<ParameterValue<10002, VoiceGroup::I>>();
-    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<ParameterValue<10002, VoiceGroup::II>>();
+    m_map[EventSources::VGIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::II>>();
+    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<ParameterValue<358, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<ParameterValue<358, VoiceGroup::II>>();
 
     m_map[EventSources::BooleanTrue] = std::make_unique<BooleanTrue>();
     m_map[EventSources::BooleanFalse] = std::make_unique<BooleanFalse>();
@@ -84,9 +84,9 @@ namespace DescriptiveLayouts
     m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
     m_map[EventSources::MonoEnabled] = std::make_unique<MonoEnabledBool>();
 
-    m_map[EventSources::MonoPrioText] = std::make_unique<ParameterValueCurrentVG<12348>>();
-    m_map[EventSources::MonoLegatoText] = std::make_unique<ParameterValueCurrentVG<12346>>();
-    m_map[EventSources::MonoGlideText] = std::make_unique<ParameterValueCurrentVG<12347>>();
+    m_map[EventSources::MonoPrioText] = std::make_unique<ParameterValueCurrentVG<365>>();
+    m_map[EventSources::MonoLegatoText] = std::make_unique<ParameterValueCurrentVG<366>>();
+    m_map[EventSources::MonoGlideText] = std::make_unique<ParameterValueCurrentVG<367>>();
 
     m_map[EventSources::UnisonVoicesText] = std::make_unique<UnisonVoicesText>();
     m_map[EventSources::UnisonDetuneText] = std::make_unique<ParameterValueCurrentVG<250>>();

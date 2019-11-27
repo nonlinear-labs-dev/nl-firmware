@@ -19,19 +19,15 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
   {
     auto scope = pm->getUndoScope().startTransaction("Convert to " + toString(newType));
     auto transaction = scope->getTransaction();
-    auto currentSelection = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToDual(transaction, newType,
-                                                                                  currentSelection);
-
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToDual(transaction, newType);
     Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }
   else
   {
     auto scope = pm->getUndoScope().startTransaction("Convert to Single");
     auto transaction = scope->getTransaction();
-    auto currentVoiceGroup = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction, currentVoiceGroup);
-
+    auto copyFromVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+    Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction, copyFromVoiceGroup);
     Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }
 }

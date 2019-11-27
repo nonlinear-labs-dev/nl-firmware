@@ -81,7 +81,11 @@
         "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "OpenParamsScreen",
         "BUTTON_C": "SwitchToVoicesDetail",
-        "BUTTON_D": "OpenMasterParameter"
+        "BUTTON_D": "OpenMasterParameter",
+        "BUTTON_INC": "ToggleVoiceGroup",
+        "ROTARY_PLUS": "ToggleVoiceGroup",
+        "BUTTON_DEC": "ToggleVoiceGroup",
+        "ROTARY_MINUS": "ToggleVoiceGroup"
       }
     }
   }

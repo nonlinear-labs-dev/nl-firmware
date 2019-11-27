@@ -14,7 +14,7 @@ public class ModulationSourceLabel extends Label {
 
 	public ModulationSourceLabel(MapsLayout parent, int parameterID) {
 		super(parent, "");
-		ParameterPresenterProviders.get().register(parameterID, p -> {
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(parameterID, p -> {
 			presenter = p;
 			return true;
 		});

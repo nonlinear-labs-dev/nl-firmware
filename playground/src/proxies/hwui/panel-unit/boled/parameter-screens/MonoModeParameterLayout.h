@@ -11,4 +11,8 @@ class MonoModeParameterLayout : public UnmodulateableParameterSelectLayout2
   Parameter *getCurrentParameter() const override;
 
   Carousel *createCarousel(const Rect &rect) override;
+
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+
+  void init() override;
 };
