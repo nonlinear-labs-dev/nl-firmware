@@ -342,8 +342,15 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       {
         if(auto hwui = Application::get().getHWUI())
         {
-          if(!isInSoundScreen())
+          if(hwui->getFocusAndMode().focus == UIFocus::Sound)
+          {
+            if(oldP->getID().getNumber() != newP->getID().getNumber())
+              hwui->setFocusAndMode(UIFocus::Parameters);
+          }
+          else
+          {
             hwui->setFocusAndMode(UIFocus::Parameters);
+          }
         }
       }
 
