@@ -49,7 +49,7 @@ void CombFilterGroup::init()
   appendParameter(new Parameter(this, { 121, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
                                 0.33, 100, 1000));
 
-  appendParameter(new Parameter(this, { 122, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
+  appendParameter(new Parameter(this, { 305, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
                                 0, 100, 1000));
 
   appendParameter(new ModulateableParameter(this, { 305, getVoiceGroup() },
