@@ -52,9 +52,9 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/"); //Local
+    //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/"); //Local
     //this.webSocket = new WebSocket("ws://192.168.0.2:8080/ws-mc/"); //Buildserver
-    //this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/'); //Production
+    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/'); //Production
     this.uuid = new UUID();
     this.webSocket.onopen =  onStartCB;
     this.webSocket.onmessage = this.onMessage;
