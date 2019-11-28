@@ -1,3 +1,4 @@
+#include <cmath>
 #include "VoicesDimension.h"
 
 VoicesDimension::VoicesDimension()
@@ -26,6 +27,6 @@ Glib::ustring VoicesDimension::stringize(const tDisplayValue &displayValue) cons
     return "1 voice (off)";
 
   char txt[256];
-  sprintf(txt, "%d voices", (int) displayValue);
+  sprintf(txt, "%ld voices", std::lround(displayValue));
   return txt;
 }

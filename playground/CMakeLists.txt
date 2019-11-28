@@ -87,20 +87,17 @@ SET(GENERATED_SOURCES
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
 
-message ("Before filtering: ${SOURCE_FILES}")
-
 IF(NOT DSL_LAYOUTS)
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${DSL_SOURCE_FILES})
 ENDIF()
 
-message ("After filtering: ${SOURCE_FILES}")
-
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/playground.cpp)
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/testing/unit-tests/playground-tests.cpp)
 
-add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
-
 file(GLOB_RECURSE UNIT_TEST_FILES src/testing/unit-tests/*.cpp)
+
+list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UNIT_TEST_FILES})
+add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 
 target_link_libraries(playground-lib pthread)
 target_link_libraries(playground-lib stdc++fs)
