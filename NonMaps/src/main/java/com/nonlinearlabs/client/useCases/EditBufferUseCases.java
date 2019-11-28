@@ -80,12 +80,10 @@ public class EditBufferUseCases {
 
 	private void applyPhysicalControlModulation(PhysicalControlParameterModel p, double diff) {
 		if (Math.abs(diff) > 0.0) {
-			// TODO: which voice group? Both?
-			for (int router = 0; router < 4; router++) {
-				ParameterId routerId = new ParameterId(p.id.getNumber() + router + 1,
-						EditBufferModel.get().voiceGroup.getValue());
+
+			for (ParameterId router : p.getAssociatedModulationRouters()) {
 				ModulationRouterParameterModel routerParameter = (ModulationRouterParameterModel) EditBufferModel.get()
-						.getParameter(routerId);
+						.getParameter(router);
 
 				if (p.isReturning())
 					applyReturningModulation(routerParameter, diff);
@@ -236,10 +234,10 @@ public class EditBufferUseCases {
 			NonMaps.get().getServerProxy().setModulationAmount(newValue);
 	}
 
-	private void setModulationUpperBound(ParameterId id,  double newAmount, boolean fine) {
+	private void setModulationUpperBound(ParameterId id, double newAmount, boolean fine) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		ParameterId mcId = new ParameterId(p.modSource.getValue(), id.getVoiceGroup());
-		MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(		mcId);
+		MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(mcId);
 
 		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
 		double oldAmount = p.modAmount.getClippedValue();
@@ -257,8 +255,8 @@ public class EditBufferUseCases {
 	private void setModulationLowerBound(ParameterId id, double newAmount, boolean fine) {
 
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
-				ParameterId mcId = new ParameterId(p.modSource.getValue(), id.getVoiceGroup());
-				MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(		mcId);
+		ParameterId mcId = new ParameterId(p.modSource.getValue(), id.getVoiceGroup());
+		MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(mcId);
 
 		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
 		double oldAmount = p.modAmount.getClippedValue();
@@ -295,8 +293,7 @@ public class EditBufferUseCases {
 	public IncrementalChanger startEditMCAmount(int paramNumber, double pixelsPerRange) {
 		ParameterId id = toParamId(paramNumber);
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
-		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationAmount(id, v, true),
-				null);
+		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationAmount(id, v, true), null);
 	}
 
 	public IncrementalChanger startEditMacroControlValue(int paramNumber, double pixelsPerRange) {

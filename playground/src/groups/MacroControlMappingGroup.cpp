@@ -8,8 +8,8 @@
 #include "parameters/scale-converters/LinearBipolar100PercentScaleConverter.h"
 
 MacroControlMappingGroup::MacroControlMappingGroup(ParameterDualGroupSet *parent, ParameterGroup *hw,
-                                                   ParameterGroup *mc, VoiceGroup vg)
-    : ParameterGroup(parent, { "MCM", vg }, "HW Amount", "Hardware Amount", "Hardware Amount")
+                                                   ParameterGroup *mc)
+    : ParameterGroup(parent, { "MCM", VoiceGroup::Global }, "HW Amount", "Hardware Amount", "Hardware Amount")
     , m_mc(mc)
     , m_hw(hw)
 {

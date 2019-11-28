@@ -25,13 +25,13 @@
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamNumber(MacroControls::MC1);
+static ParameterId lastSelectedMacroControl = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
 
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, ParameterId id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID().getNumber())
-    , m_lastMCViewUuid { "NONE" }
-    , mcviewThrottler { Expiration::Duration(5) }
+    , m_lastMCViewUuid{ "NONE" }
+    , mcviewThrottler{ Expiration::Duration(5) }
 {
 }
 
@@ -138,8 +138,7 @@ void MacroControlParameter::updateBoundRibbon()
 {
   if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
   {
-    auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-        groups->getParameterGroupByID({ "MCM", getParentGroup()->getVoiceGroup() }));
+    auto mcm = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
 
     auto routers = mcm->getModulationRoutingParametersFor(this);
 
@@ -159,7 +158,7 @@ void MacroControlParameter::updateBoundRibbon()
   }
 }
 
-void MacroControlParameter::setUiSelectedHardwareSource(int number)
+void MacroControlParameter::setUiSelectedHardwareSource(ParameterId number)
 {
   if(m_UiSelectedHardwareSourceParameterID != number)
   {
@@ -185,7 +184,7 @@ void MacroControlParameter::toggleUiSelectedHardwareSource(int inc)
   setUiSelectedHardwareSource(getIdOfAdvancedParameter(availableSources, id, inc));
 }
 
-int MacroControlParameter::getUiSelectedHardwareSource() const
+ParameterId MacroControlParameter::getUiSelectedHardwareSource() const
 {
   return m_UiSelectedHardwareSourceParameterID;
 }
@@ -345,14 +344,12 @@ DFBLayout *MacroControlParameter::createLayout(FocusAndMode focusAndMode) const
     default:
       return new MacroControlParameterSelectLayout2();
   }
-
-  g_return_val_if_reached(nullptr);
 }
 
 void MacroControlParameter::onSelected()
 {
   super::onSelected();
-  lastSelectedMacroControl = getID().getNumber();
+  lastSelectedMacroControl = getID();
 }
 
 void MacroControlParameter::onUnselected()
@@ -365,12 +362,12 @@ void MacroControlParameter::onUnselected()
     source->onUnselected();
 }
 
-int MacroControlParameter::getLastSelectedMacroControl()
+ParameterId MacroControlParameter::getLastSelectedMacroControl()
 {
   return lastSelectedMacroControl;
 }
 
-void MacroControlParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
+void MacroControlParameter::undoableRandomize(UNDO::Transaction *, Initiator, double)
 {
 }
 

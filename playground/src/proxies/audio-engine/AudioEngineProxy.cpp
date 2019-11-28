@@ -36,6 +36,8 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
 {
   size_t hwSource = 0;
   size_t globalParams = 0;
+  size_t mc = 0;
+  size_t modR = 0;
 
   for(auto &g : editBuffer->getParameterGroups(VoiceGroup::Global))
   {
@@ -58,11 +60,27 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
         pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
       }
+      else if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
+      {
+        auto &macro = msg.macros[mc++];
+        macro.id = mcParameter->getID().getNumber();
+        macro.controlPosition = mcParameter->getControlPositionValue();
+        macro.locked = mcParameter->isLocked();
+      }
+      else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
+      {
+        auto &hwAmount = msg.hwamounts[modR++];
+        hwAmount.id = hwAmounts->getID().getNumber();
+        hwAmount.controlPosition = hwAmounts->getControlPositionValue();
+        hwAmount.locked = hwAmounts->isLocked();
+      }
     }
   }
 
   nltools_assertAlways(msg.globalparams.size() == globalParams);
   nltools_assertAlways(msg.hwsources.size() == hwSource);
+  nltools_assertAlways(msg.macros.size() == mc);
+  nltools_assertAlways(msg.hwamounts.size() == modR);
 }
 
 template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, size_t &mod)
@@ -199,10 +217,8 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    size_t mc = 0;
     size_t modP = 0;
     size_t unMod = 0;
-    size_t modR = 0;
 
     insertMockedParameters(msg, vg, unMod, modP);
     nltools_assertAlways(unMod == 7);
@@ -213,21 +229,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
     {
       for(auto p : g->getParameters())
       {
-        if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
-        {
-          auto &macro = msg.macros[arrayIndex][mc++];
-          macro.id = mcParameter->getID().getNumber();
-          macro.controlPosition = mcParameter->getControlPositionValue();
-          macro.locked = mcParameter->isLocked();
-        }
-        else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
-        {
-          auto &hwAmount = msg.hwamounts[arrayIndex][modR++];
-          hwAmount.id = hwAmounts->getID().getNumber();
-          hwAmount.controlPosition = hwAmounts->getControlPositionValue();
-          hwAmount.locked = hwAmounts->isLocked();
-        }
-        else if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
+        if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
         {
           auto &mod = msg.modulateables[arrayIndex][modP++];
           mod.id = modParam->getID().getNumber();
@@ -257,8 +259,6 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
 
     nltools_assertAlways(msg.modulateables[arrayIndex].size() == modP);
     nltools_assertAlways(msg.unmodulateables[arrayIndex].size() == unMod);
-    nltools_assertAlways(msg.macros[arrayIndex].size() == mc);
-    nltools_assertAlways(msg.hwamounts[arrayIndex].size() == modR);
   }
 }
 
@@ -267,6 +267,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
   nltools::msg::SplitPresetMessage msg{};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
+
   fillDualMessage(msg, editBuffer);
 
   if(auto sp = editBuffer->getSplitPoint())

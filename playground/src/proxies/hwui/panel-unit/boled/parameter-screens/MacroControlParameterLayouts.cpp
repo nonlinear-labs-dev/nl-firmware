@@ -73,8 +73,8 @@ Parameter *MacroControlParameterLayout2::getCurrentRouter() const
 
       if(auto srcParam = editBuffer->findParameterByID({ selectedHWSource, VoiceGroup::Global }))
       {
-        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-        auto csGroup = static_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID({ "MCM", vg }));
+        auto csGroup
+            = static_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
         auto routers = csGroup->getModulationRoutingParametersFor(tgtParam);
 
         for(auto router : routers)

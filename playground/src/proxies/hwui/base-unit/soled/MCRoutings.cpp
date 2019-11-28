@@ -54,10 +54,9 @@ EditBuffer *MCRoutings::getEditBuffer() const
 
 MacroControlMappingGroup::tModRoutingParams MCRoutings::getRoutingParameters()
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto eb = getEditBuffer();
   auto cs = dynamic_cast<HardwareSourcesGroup *>(eb->getParameterGroupByID({ "CS", VoiceGroup::Global }));
-  auto routers = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({ "MCM", vg }));
+  auto routers = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
   auto ribbonParam = dynamic_cast<PhysicalControlParameter *>(cs->getParameterByID(m_ribbonParamID));
   auto routingParams = routers->getModulationRoutingParametersFor(ribbonParam);
   return routingParams;

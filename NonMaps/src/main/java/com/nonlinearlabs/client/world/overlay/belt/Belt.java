@@ -108,7 +108,6 @@ public class Belt extends OverlayLayout {
 
 	public void update(Node settingsNode, Node editBufferNode, Node presetManagerNode) {
 		presetLayout.update(settingsNode, editBufferNode, presetManagerNode);
-		soundLayout.update(settingsNode);
 	}
 
 	public boolean isPresetView() {

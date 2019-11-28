@@ -33,8 +33,8 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(newOne))
   {
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", vg });
+    auto group
+        = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
     auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
     auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 

@@ -61,6 +61,10 @@ public class ModulatableParameter extends Parameter {
 			return ModulateableParameterModel.ModSource.C;
 		case D:
 			return ModulateableParameterModel.ModSource.D;
+		case E:
+			return ModulateableParameterModel.ModSource.E;
+		case F:
+			return ModulateableParameterModel.ModSource.F;
 		}
 		return ModulateableParameterModel.ModSource.None;
 	}

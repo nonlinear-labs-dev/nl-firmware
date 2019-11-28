@@ -9,11 +9,10 @@ RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
     : super(rect)
     , m_parameterID(paramID)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->getParameterGroupByID({ "CS", VoiceGroup::Global })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID({ "MCs", vg })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID({ "MCM", vg })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
 }
 
 RibbonLabel::~RibbonLabel() = default;

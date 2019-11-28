@@ -40,12 +40,11 @@ void MacroControlEditButtonMenu::setup()
     addButton("Lock Group", std::bind(&MacroControlEditButtonMenu::lockGroup, this));
 
   addButton("Lock all", std::bind(&MacroControlEditButtonMenu::lockAll, this));
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  if(eb->hasLocks(vg))
+  if(eb->hasLocks(VoiceGroup::Global))
     addButton("Unlock all", std::bind(&MacroControlEditButtonMenu::unlockAll, this));
 
-  auto mcGroup = eb->getParameterGroupByID({ "MCs", vg });
+  auto mcGroup = eb->getParameterGroupByID({ "MCs", VoiceGroup::Global });
   mcGroup->onGroupChanged(mem_fun(this, &MacroControlEditButtonMenu::onGroupChanged));
 
   selectButton(s_lastAction);
@@ -54,8 +53,7 @@ void MacroControlEditButtonMenu::setup()
 void MacroControlEditButtonMenu::onGroupChanged()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-  auto mcGroup = eb->getParameterGroupByID({ "MCs", vg });
+  auto mcGroup = eb->getParameterGroupByID({ "MCs", VoiceGroup::Global });
   auto allParametersLocked = mcGroup->areAllParametersLocked();
   setItemTitle(3, allParametersLocked ? "Unlock Group" : "Lock Group");
 }

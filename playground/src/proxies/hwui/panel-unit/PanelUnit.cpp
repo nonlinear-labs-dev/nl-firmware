@@ -34,7 +34,7 @@ PanelUnit::PanelUnit()
 
     if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
     {
-      mrp->getSourceParameter()->setUiSelectedModulationRouter(p->getID().getNumber());
+      mrp->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
     }
 
     auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
@@ -45,7 +45,7 @@ PanelUnit::PanelUnit()
   m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::Assign, [=]() {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     auto selParam = editBuffer->getSelected();
-    auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID().getNumber());
+    auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID());
 
     auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();
     auto target = editBuffer->findParameterByID({ targetId, Application::get().getHWUI()->getCurrentVoiceGroup() });

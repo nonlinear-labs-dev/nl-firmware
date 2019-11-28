@@ -184,14 +184,13 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
 
 void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Parameter *newParam)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-
   if(auto mc = dynamic_cast<MacroControlParameter *>(oldParam))
   {
     if(auto ph = dynamic_cast<PhysicalControlParameter *>(newParam))
     {
       if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", vg })))
+             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(
+                 { "MCM", VoiceGroup::Global })))
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {

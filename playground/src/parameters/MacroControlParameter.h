@@ -49,14 +49,14 @@ class MacroControlParameter : public Parameter
 
   void onUnselected() override;
 
-  static int getLastSelectedMacroControl();
+  static ParameterId getLastSelectedMacroControl();
 
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
   void applyLpcPhysicalControl(tControlPositionValue diff);
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
-  void setUiSelectedHardwareSource(int paramNumber);
+  void setUiSelectedHardwareSource(ParameterId paramNumber);
   void toggleUiSelectedHardwareSource(int inc);
-  int getUiSelectedHardwareSource() const;
+  ParameterId getUiSelectedHardwareSource() const;
 
   DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
@@ -72,7 +72,7 @@ class MacroControlParameter : public Parameter
                                    tControlPositionValue newValue) override;
 
   tTargets m_targets;
-  int m_UiSelectedHardwareSourceParameterID = 0;
+  ParameterId m_UiSelectedHardwareSourceParameterID{ 254, VoiceGroup::Global };
   Glib::ustring m_givenName;
   Glib::ustring m_info;
   Glib::ustring m_lastMCViewUuid;

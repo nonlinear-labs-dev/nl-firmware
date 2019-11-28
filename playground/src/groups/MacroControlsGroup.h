@@ -6,11 +6,11 @@
 class MacroControlsGroup : public ParameterGroup
 {
  public:
-  MacroControlsGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  MacroControlsGroup(ParameterDualGroupSet *parent);
   virtual ~MacroControlsGroup();
 
   void init();
 
-  static int modSrcToParamNumber(MacroControls src);
-  static MacroControls paramIDToModSrc(int pid);
+  static ParameterId modSrcToParamId(MacroControls src);
+  static MacroControls paramIDToModSrc(ParameterId pid);
 };

@@ -9,6 +9,8 @@ import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmo
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol2;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol3;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol4;
+import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol5;
+import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol6;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.HardwareSourcesCol1;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 
@@ -25,6 +27,8 @@ class SourcesAndAmountsControls extends ParameterGroupControls {
 		addChild(new AmountsCol2(this));
 		addChild(new AmountsCol3(this));
 		addChild(new AmountsCol4(this));
+		addChild(new AmountsCol5(this));
+		addChild(new AmountsCol6(this));
 	}
 
 	@Override

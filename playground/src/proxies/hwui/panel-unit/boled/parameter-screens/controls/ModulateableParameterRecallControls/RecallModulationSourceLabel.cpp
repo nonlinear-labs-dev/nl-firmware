@@ -14,14 +14,14 @@ RecallModulationSourceLabel::RecallModulationSourceLabel(Rect pos)
   if(auto modP
      = dynamic_cast<ModulateableParameter*>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
   {
-    auto vg = modP->getVoiceGroup();
-    uint16_t id = MacroControlsGroup::modSrcToParamNumber(modP->getOriginalParameter()->getRecallModSource());
-    if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, vg}))
-    {
+    auto id = MacroControlsGroup::modSrcToParamId(modP->getOriginalParameter()->getRecallModSource());
+
+    if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
       text = mc->getShortName();
-    }
+
     if(text.empty())
       text = "[-]";
+
     setText(text);
     return;
   }

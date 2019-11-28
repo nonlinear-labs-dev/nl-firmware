@@ -266,14 +266,14 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
   if(down)
   {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
     switch(i)
     {
       case Buttons::BUTTON_B:
         if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
         {
-          auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", vg });
+          auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(
+              { "MCM", VoiceGroup::Global });
           auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
           auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 
@@ -291,7 +291,7 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
 
       case Buttons::BUTTON_C:
         if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
-          editBuffer->undoableSelectParameter({ p->getUiSelectedModulationRouter(), vg });
+          editBuffer->undoableSelectParameter(p->getUiSelectedModulationRouter());
 
         return true;
     }

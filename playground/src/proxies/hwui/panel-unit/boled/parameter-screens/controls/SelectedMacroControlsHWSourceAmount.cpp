@@ -49,8 +49,8 @@ void SelectedMacroControlsHWSourceAmount::onMCChanged(const Parameter *param)
         m_srcChanged = hwParam->onParameterChanged(
             sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::updateTextFromRouter));
 
-        auto vg = param->getVoiceGroup();
-        auto csGroup = static_cast<MacroControlMappingGroup *>(getEditBuffer()->getParameterGroupByID({ "MCM", vg }));
+        auto csGroup = static_cast<MacroControlMappingGroup *>(
+            getEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
         auto routers = csGroup->getModulationRoutingParametersFor(dynamic_cast<const MacroControlParameter *>(param));
 
         for(auto router : routers)
