@@ -9,6 +9,25 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 };
 
+function MacroIDToIndex(mcID) {
+  switch(mcID) {
+    case 243:
+      return 0;
+    case 244:
+      return 1;
+    case 245:
+      return 2;
+    case 246:
+      return 3;
+    case 369:
+      return 4;
+    case 371:
+      return 5;
+  }
+
+  return -1;
+}
+
 class UUID {
   constructor() {
     this.uuid = guid();
@@ -64,7 +83,7 @@ class ServerProxy {
       var uuid = serverProxy.getValueForKeyFromMessage(message, "UUID");
       var name = serverProxy.getValueForKeyFromMessage(message, "NAME");
 
-      var mc = model.mcs[id - 243];
+      var mc = model.mcs[MacroIDToIndex(id)];
       if(mc !== undefined) {
         mc.setName(name);
         if(uuid !== serverProxy.uuid.uuid || uuid === "FORCE") {
@@ -107,10 +126,7 @@ class MC {
     this.updateThrottler = new Timer(20);
     this.callBackAfterUpdate = undefined;
     this.active = false;
-    var temp = ""
-    if(mcID > 246)
-      temp = "Not Used";
-    this.givenName = temp;
+    this.givenName = "";
   }
 
   setCallbackAfterUpdate(cb) {
@@ -150,9 +166,6 @@ class MC {
   }
 
   sendMC() {
-    if(Number(this.paramID) > 246)
-      return;
-
     var scaled = this.paramValue.toFixed(3) / 100;
     serverProxy.send("/set-mc", "?id="+this.paramID+"&value="+scaled);
   }
@@ -172,15 +185,18 @@ class MC {
 class MCModel {
   constructor() {
     this.mcs = [];
+    this.mcs[0] = new MC(243);
+    this.mcs[1] = new MC(244);
+    this.mcs[2] = new MC(245);
+    this.mcs[3] = new MC(246);
+    this.mcs[4] = new MC(369);
+    this.mcs[5] = new MC(371);
 
-    for(var i = 0; i < 6; i++) {
-      this.mcs[i] = new MC(243 + i);
-    }
     setInterval(this.update.bind(this), 20);
   }
 
   setTarget(id, target) {
-    model.mcs[id - 243].setTarget(target);
+    model.mcs[MacroIDToIndex(id)].setTarget(target);
   }
 
   update() {
@@ -197,7 +213,7 @@ class MCModel {
 class RangeDivision {
   constructor() {
     this.controls = [{"ID":0,"x":0,   "y":0,    "w":0.5,  "h":0.62,  "type":"xy",  "MCX":243,  "MCY":244},
-                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.62,  "type":"xy",  "MCX":247, "MCY":248},
+                     {"ID":1,"x":0.5, "y":0,    "w":0.5,  "h":0.62,  "type":"xy",  "MCX":369, "MCY":371},
                      {"ID":2,"x":0,   "y":0.62,  "w":1,    "h":0.19, "type":"x",   "MCX":245,  "MCY":null},
                      {"ID":3,"x":0,   "y":0.81, "w":1,    "h":0.19, "type":"x",   "MCX":246,  "MCY":null}];
 
@@ -506,14 +522,14 @@ class MCView {
     var w = wD;
     var h = hD;
 
-    var xTarget = model.mcs[division.MCX - 243].targetValue;
-    var yTarget = model.mcs[division.MCY - 243].targetValue;
-    var xVal = model.mcs[division.MCX - 243].paramValue;
-    var yVal = model.mcs[division.MCY - 243].paramValue;
+    var xTarget = model.mcs[MacroIDToIndex(division.MCX)].targetValue;
+    var yTarget = model.mcs[MacroIDToIndex(division.MCY)].targetValue;
+    var xVal = model.mcs[MacroIDToIndex(division.MCX)].paramValue;
+    var yVal = model.mcs[MacroIDToIndex(division.MCY)].paramValue;
     var yLabel = getUnicodeForMC(division.MCY);
-    var yName =  model.mcs[division.MCY - 243].givenName;
+    var yName =  model.mcs[MacroIDToIndex(division.MCY)].givenName;
     var xLabel = getUnicodeForMC(division.MCX);
-    var xName = model.mcs[division.MCX - 243].givenName;
+    var xName = model.mcs[MacroIDToIndex(division.MCX)].givenName;
 
     var size = canvas.width / 100;
 
@@ -580,10 +596,10 @@ class MCView {
     var w = wD;
     var h = hD;
 
-    var xVal = model.mcs[division.MCX - 243].paramValue;
-    var xTarget = model.mcs[division.MCX - 243].targetValue;
+    var xVal = model.mcs[MacroIDToIndex(division.MCX)].paramValue;
+    var xTarget = model.mcs[MacroIDToIndex(division.MCX)].targetValue;
     var xLabel = getUnicodeForMC(division.MCX);
-    var xName = model.mcs[division.MCX - 243].givenName;
+    var xName = model.mcs[MacroIDToIndex(division.MCX)].givenName;
 
     ctx.beginPath();
     ctx.strokeStyle = new ColorScheme().markerColor;
@@ -642,9 +658,9 @@ function getUnicodeForMC(mcId) {
 		return "\uE102";
 		case 246:
 		return "\uE103";
-		case 247:
+		case 369:
 		return "\uE104";
-		case 248:
+		case 371:
 		return "\uE105";
 	}
 }
@@ -731,7 +747,7 @@ class MCController {
       });
 
       //HUH?! TODO: Investigate
-      if(division.type.startsWith("xy") && (division.MCX === 247 || division.MCX === 245)) {
+      if(division.type.startsWith("xy") && (division.MCX === 369 || division.MCX === 245)) {
         x -= xD;
         x += (dW - wD) / 2;
       } else {
@@ -751,13 +767,13 @@ class MCController {
       yVal = Math.min(100, Math.max(yVal, 0));
 
       if(division.type.startsWith("xy") && division.MCX !== null && division.MCY !== null) {
-        if(  xVal !== model.mcs[division.MCX - 243].targetValue ||
-          yVal !== model.mcs[division.MCY - 243].targetValue) {
+        if(  xVal !== model.mcs[MacroIDToIndex(division.MCX)].targetValue ||
+          yVal !== model.mcs[MacroIDToIndex(division.MCY)].targetValue) {
           model.setTarget(division.MCX, xVal);
           model.setTarget(division.MCY, yVal);
         }
       } else if(division.type.startsWith("x") && division.MCX) {
-        if(xVal !== model.mcs[division.MCX - 243].targetValue) {
+        if(xVal !== model.mcs[MacroIDToIndex(division.MCX)].targetValue) {
           model.setTarget(division.MCX, xVal);
         }
       }
@@ -792,12 +808,12 @@ var controller;
 var serverProxy;
 
 function setCDX(range) {
-   range.controls[1]["MCX"] = 247;
-   range.controls[1]["MCY"] = 248;
+   range.controls[1]["MCX"] = 369;
+   range.controls[1]["MCY"] = 371;
    range.controls[2]["MCX"] = 245;
-   range.controls[2]["MCY"] = null;
+   range.controls[2]["MCY"] = 369;
    range.controls[3]["MCX"] = 246;
-   range.controls[3]["MCY"] = null;
+   range.controls[3]["MCY"] = 371;
 
    try {
      window.localStorage.setItem("xy", false);
@@ -809,10 +825,10 @@ function setCDX(range) {
 function setCDXY(range) {
   range.controls[1]["MCX"] = 245;
   range.controls[1]["MCY"] = 246;
-  range.controls[2]["MCX"] = 247;
-  range.controls[2]["MCY"] = null;
-  range.controls[3]["MCX"] = 248;
-  range.controls[3]["MCY"] = null;
+  range.controls[2]["MCX"] = 369;
+  range.controls[2]["MCY"] = 379;
+  range.controls[3]["MCX"] = 371;
+  range.controls[3]["MCY"] = 371;
 
   try {
     window.localStorage.setItem("xy", true);
