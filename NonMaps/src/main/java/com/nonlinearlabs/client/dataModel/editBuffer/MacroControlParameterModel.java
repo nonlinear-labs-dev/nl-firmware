@@ -8,14 +8,22 @@ public class MacroControlParameterModel extends BasicParameterModel {
 	public StringDataModelEntity givenName = new StringDataModelEntity();
 	public StringDataModelEntity info = new StringDataModelEntity();
 
-	public MacroControlParameterModel(int id) {
+	public MacroControlParameterModel(ParameterId id) {
 		super(id);
 
 		givenName.onChange(e -> notifyChanges());
 	}
 
-	public int[] getRouterIDs() {
-		return new int[] { id + 12, id + 17, id + 22, id + 27, id + 32, id + 37, id + 42, id + 47 };
+	public ParameterId[] getRouterIDs() {
+		return new ParameterId[] { 
+			new ParameterId(id.getNumber() + 12, id.getVoiceGroup()),
+			new ParameterId(id.getNumber() + 17, id.getVoiceGroup()),
+			new ParameterId(id.getNumber() + 22, id.getVoiceGroup()),
+			new ParameterId(id.getNumber() + 27, id.getVoiceGroup()),
+			new ParameterId(id.getNumber() + 32, id.getVoiceGroup()),
+			new ParameterId(id.getNumber() + 37, id.getVoiceGroup()),
+			new ParameterId(id.getNumber() + 42, id.getVoiceGroup()),
+			new ParameterId(id.getNumber() + 47, id.getVoiceGroup())};
 	}
 
 	@Override

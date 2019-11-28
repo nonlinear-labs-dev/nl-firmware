@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -71,7 +72,8 @@ public class SplitSoundLayout extends SoundLayout {
 		private class SplitPointValue extends ValueEdit {
 
 			public SplitPointValue(OverlayLayout parent) {
-				super(parent, EditBufferModel.get().getParameter(10001, VoiceGroup.Global));
+				// TODO: no direct connection to model!
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(10001, VoiceGroup.Global)));
 			}
 		}
 
@@ -186,13 +188,15 @@ public class SplitSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.get().getParameter(10003, group));
+				// TODO: no direct connection to model!
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(10003, group)));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.get().getParameter(10002, group));
+				// TODO: no direct connection to model!
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(10002, group)));
 			}
 		}
 	}

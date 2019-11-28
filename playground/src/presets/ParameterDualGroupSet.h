@@ -20,7 +20,7 @@ class ParameterDualGroupSet : public AttributesOwner
 
   typedef ParameterGroup *tParameterGroupPtr;
 
-  virtual tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id, VoiceGroup vg) const;
+  virtual tParameterGroupPtr getParameterGroupByID(const GroupId &id) const;
   virtual const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg) const;
 
   virtual std::map<int, Parameter *> getParametersSortedByNumber(VoiceGroup vg) const;
@@ -30,7 +30,7 @@ class ParameterDualGroupSet : public AttributesOwner
 
  protected:
   void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
-  virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
+  virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
 
   void copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);

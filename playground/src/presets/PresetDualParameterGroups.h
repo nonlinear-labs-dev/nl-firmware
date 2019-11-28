@@ -3,6 +3,7 @@
 #include <http/UpdateDocumentContributor.h>
 #include "AttributesOwner.h"
 #include "PresetParameterGroup.h"
+#include "GroupId.h"
 
 class Preset;
 class ParameterDualGroupSet;
@@ -20,7 +21,7 @@ class PresetDualParameterGroups : public AttributesOwner
 
  protected:
   using GroupPtr = std::unique_ptr<PresetParameterGroup>;
-  using GroupsMap = std::unordered_map<std::string, GroupPtr>;
+  using GroupsMap = std::map<GroupId, GroupPtr>;
   SoundType m_type;
 
   std::array<GroupsMap, static_cast<size_t>(VoiceGroup::NumGroups)> m_parameterGroups;

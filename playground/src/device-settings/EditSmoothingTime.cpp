@@ -54,7 +54,7 @@ void EditSmoothingTime::sendToLPC() const
 {
   Application::get().getLPCProxy()->sendSetting(EDIT_SMOOTHING_TIME, m_time.getTcdValue());
 
-  nltools::msg::Setting::EditSmoothingTimeMessage msg(m_time.getRawValue());
+  nltools::msg::Setting::EditSmoothingTimeMessage msg { static_cast<float>(m_time.getRawValue()) };
   Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::EditSmoothingTimeMessage>(msg);
 }
 

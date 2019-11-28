@@ -2,8 +2,8 @@
 #include "parameters/MacroControlParameter.h"
 #include "parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h"
 
-MacroControlsGroup::MacroControlsGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup)
-    : ParameterGroup(parent, "MCs", "Macro Control", "Macro Control", "Macro Control", voicegroup)
+MacroControlsGroup::MacroControlsGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+    : ParameterGroup(parent, { "MCs", vg }, "Macro Control", "Macro Control", "Macro Control")
 {
 }
 

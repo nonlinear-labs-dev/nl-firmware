@@ -138,11 +138,11 @@ class dsp_host_dual
   void globalParRcl(const nltools::msg::ParameterGroups::Parameter &_source);
   void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
   void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MacroParameter &_source);
-  void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source);
+  //void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source);
   void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::ModulateableParameter &_source);
   void localTimeRcl(const uint32_t _layer, const uint32_t _id, const float _value);
   void localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
-  void localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source);
+  //void localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source);
   void localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::ModulateableParameter &_source);
-  void localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source);
+  //void localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source);
 };

@@ -7,14 +7,15 @@ class GroupId
  public:
   GroupId(const std::string &name, VoiceGroup group);
   GroupId(const GroupId &other);
-  GroupId(const std::string &str);
-  GroupId(const Glib::ustring &str);
+
+  explicit GroupId(const std::string &str);
+  explicit GroupId(const Glib::ustring &str);
 
   bool operator<(const GroupId &other) const;
   bool operator==(const GroupId &other) const;
   bool operator!=(const GroupId &other) const;
 
-  const std::string& getName() const;
+  const std::string &getName() const;
   VoiceGroup getVoiceGroup() const;
 
   std::string toString() const
@@ -22,12 +23,14 @@ class GroupId
     return ::toString(getVoiceGroup()) + "-" + getName();
   }
 
+  static bool isGlobal(const std::string &name);
+
  private:
   std::string m_name;
   VoiceGroup m_group;
 };
 
-std::ostream &operator<<(std::ostream &stream, const GroupId &e)
+inline std::ostream &operator<<(std::ostream &stream, const GroupId &e)
 {
   stream << e.toString();
   return stream;

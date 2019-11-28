@@ -5,11 +5,11 @@
 #include "GlobalParameterGroups.h"
 
 GlobalParameterGroups::GlobalParameterGroups(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "Split", "Split", "Split", "Split", VoiceGroup::Global)
+    : ParameterGroup(parent, { "Split", VoiceGroup::Global }, "Split", "Split", "Split")
 {
 }
 
 void GlobalParameterGroups::init()
 {
-  appendParameter(new SplitPointParameter(this, {356, VoiceGroup::Global}));
+  appendParameter(new SplitPointParameter(this, { 356, VoiceGroup::Global }));
 }

@@ -19,6 +19,7 @@ import com.nonlinearlabs.client.contextStates.StopWatchState;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManager;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
@@ -155,10 +156,10 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
-	public void setParameter(int id, VoiceGroup vg, double v, boolean oracle) {
+	public void setParameter(ParameterId id,  double v, boolean oracle) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
-				new StaticURI.KeyValue("voice-group", vg.toString()), new StaticURI.KeyValue("value", v));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
+				new StaticURI.KeyValue("value", v));
 		queueJob(uri, oracle);
 	}
 
@@ -609,10 +610,10 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void renameMacroControl(int parameterID, VoiceGroup vg, String newName) {
+	public void renameMacroControl(ParameterId id, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-mc");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID),
-				new StaticURI.KeyValue("voice-group", vg.toString()), new StaticURI.KeyValue("new-name", newName));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
+				 new StaticURI.KeyValue("new-name", newName));
 		queueJob(uri, false);
 	}
 
@@ -755,10 +756,10 @@ public class ServerProxy {
 		setSetting("TransitionTime", Double.toString(t));
 	}
 
-	public void setMacroControlInfo(int parameterID, VoiceGroup vg, String text) {
+	public void setMacroControlInfo(ParameterId id,  String text) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-macrocontrol-info");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", parameterID),
-				new StaticURI.KeyValue("voice-group", vg.toString()), new StaticURI.KeyValue("info", text));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
+				 new StaticURI.KeyValue("info", text));
 		queueJob(uri, false);
 	}
 

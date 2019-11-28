@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client;
 
 import com.google.gwt.http.client.URL;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 
 class StaticURI implements RemoteProcedureCall {
 
@@ -19,6 +20,10 @@ class StaticURI implements RemoteProcedureCall {
 
 		public KeyValue(String key, boolean d) {
 			this(key, d ? "1" : "0");
+		}
+
+		public KeyValue(String key, ParameterId d) {
+			this(key, d.toString());
 		}
 
 		@Override

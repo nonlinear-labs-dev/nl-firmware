@@ -7,7 +7,7 @@
 #include <parameters/AftertouchParameter.h>
 
 HardwareSourcesGroup::HardwareSourcesGroup(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "CS", "HW Source", "Hardware Source", "Hardware Source", VoiceGroup::Global)
+    : ParameterGroup(parent, { "CS", VoiceGroup::Global }, "HW Source", "Hardware Source", "Hardware Source")
 {
 }
 

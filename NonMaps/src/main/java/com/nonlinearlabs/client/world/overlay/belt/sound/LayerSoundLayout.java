@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
@@ -108,13 +109,15 @@ public class LayerSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.get().getParameter(10003, group));
+				// todo: no connection to the model!
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(10003, group)));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				super(parent, EditBufferModel.get().getParameter(10002, group));
+				// todo: no connection to the model!
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(10002, group)));
 			}
 		}
 	}

@@ -14,6 +14,7 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 class ValueEdit extends Label {
 
 	private IncrementalChanger changer;
+	// TODO: no direct connection to model!
 	private BasicParameterModel param;
 
 	ValueEdit(OverlayLayout parent, BasicParameterModel param) {
@@ -38,10 +39,10 @@ class ValueEdit extends Label {
 		Rect rightRect = getPixRect().copy();
 		rightRect.setLeft(getPixRect().getRight() - getPixRect().getWidth() / 2);
 		if (leftRect.contains(eventPoint)) {
-			EditBufferUseCases.get().decParameter(param.id, false);
+			EditBufferUseCases.get().decParameter(param.id.getNumber(), false);
 			return this;
 		} else if (rightRect.contains(eventPoint)) {
-			EditBufferUseCases.get().incParameter(param.id, false);
+			EditBufferUseCases.get().incParameter(param.id.getNumber(), false);
 			return this;
 		}
 		return super.click(eventPoint);
@@ -49,7 +50,7 @@ class ValueEdit extends Label {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		changer = EditBufferUseCases.get().startEditParameterValue(param.id, Millimeter.toPixels(100));
+		changer = EditBufferUseCases.get().startEditParameterValue(param.id.getNumber(), Millimeter.toPixels(100));
 		return this;
 	}
 
@@ -77,9 +78,9 @@ class ValueEdit extends Label {
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		if (amount > 0)
-			EditBufferUseCases.get().incParameter(param.id, fine);
+			EditBufferUseCases.get().incParameter(param.id.getNumber(), fine);
 		else if (amount < 0)
-			EditBufferUseCases.get().incParameter(param.id, fine);
+			EditBufferUseCases.get().incParameter(param.id.getNumber(), fine);
 
 		return this;
 	}

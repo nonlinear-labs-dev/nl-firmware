@@ -35,36 +35,36 @@ public class ParameterFactory {
 	static private int[] scaleOffsetParameters = { 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323 };
 
 	static private String[] parameterGroups = { "CS", "Cab", "Comb", "Echo", "Env A", "Env B", "Env C", "FB", "Flang",
-			"Gap Filt", "MCM", "MCs", "Master", "Mixer", "Mono", "Osc A", "Osc B", "Reverb", "SVF", "Scale", "Sh A", "Sh B",
-			"Split", "Unison", "VGM" };
+			"Gap Filt", "MCM", "MCs", "Master", "Mixer", "Mono", "Osc A", "Osc B", "PART", "Reverb", "SVF", "Scale", "Sh A",
+			"Sh B", "Split", "Unison", "VGM" };
 	static private String[] globalParameterGroups = { "CS", "Master", "Scale", "Split" };
 
-	static public BasicParameterModel create(int id) {
-		if (Arrays.binarySearch(parameters, id) < 0)
+	static public BasicParameterModel create(ParameterId id) {
+		if (Arrays.binarySearch(parameters, id.getNumber()) < 0)
 			throw new NoSuchElementException();
 
-		if (Arrays.binarySearch(modulateableParameters, id) >= 0)
+		if (Arrays.binarySearch(modulateableParameters, id.getNumber()) >= 0)
 			return new ModulateableParameterModel(id);
 
-		if (Arrays.binarySearch(pedals, id) >= 0)
+		if (Arrays.binarySearch(pedals, id.getNumber()) >= 0)
 			return new PedalParameterModel(id);
 
-		if (Arrays.binarySearch(ribbons, id) >= 0)
+		if (Arrays.binarySearch(ribbons, id.getNumber()) >= 0)
 			return new RibbonParameterModel(id);
 
-		if (id == 274)
+		if (id.getNumber() == 274)
 			return new BenderParameterModel(id);
 
-		if (id == 279)
+		if (id.getNumber() == 279)
 			return new AftertouchParameterModel(id);
 
-		if (Arrays.binarySearch(macroControls, id) >= 0)
+		if (Arrays.binarySearch(macroControls, id.getNumber()) >= 0)
 			return new MacroControlParameterModel(id);
 
-		if (Arrays.binarySearch(modulationRouters, id) >= 0)
+		if (Arrays.binarySearch(modulationRouters, id.getNumber()) >= 0)
 			return new ModulationRouterParameterModel(id);
 
-		if (Arrays.binarySearch(scaleOffsetParameters, id) >= 0)
+		if (Arrays.binarySearch(scaleOffsetParameters, id.getNumber()) >= 0)
 			return new ScaleOffsetParameterModel(id);
 
 		return new BasicParameterModel(id);

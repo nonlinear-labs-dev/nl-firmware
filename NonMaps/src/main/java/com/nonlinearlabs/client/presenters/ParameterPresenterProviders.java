@@ -7,19 +7,28 @@ import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 
 public class ParameterPresenterProviders {
 	private final class NotifierRelay extends Notifier<ParameterPresenter> {
-		private final int parameterId;
+		private final int parameterNumber;
 
-		private NotifierRelay(int parameterId) {
-			this.parameterId = parameterId;
-			register(parameterId, VoiceGroup.I, v -> notifyChanges());
-			register(parameterId, VoiceGroup.II, v -> notifyChanges());
+		private NotifierRelay(int parameterNumber) {
+			this.parameterNumber = parameterNumber;
+
+			register(new ParameterId(parameterNumber, VoiceGroup.I), v -> {
+				notifyChanges();
+				return true;
+			});
+
+			register(new ParameterId(parameterNumber, VoiceGroup.II), v -> {
+				notifyChanges();
+				return true;
+			});
 		}
 
 		public ParameterPresenter getValue() {
-			return findMap(EditBufferModel.get().voiceGroup.getValue()).get(parameterId).getValue();
+			return findMap(EditBufferModel.get().voiceGroup.getValue()).get(parameterNumber).getValue();
 		}
 
 	}
@@ -54,8 +63,8 @@ public class ParameterPresenterProviders {
 		});
 	}
 
-	public void register(int parameterId, VoiceGroup vg, Function<ParameterPresenter, Boolean> cb) {
-		findMap(vg).get(parameterId).onChange(cb);
+	public void register(ParameterId id, Function<ParameterPresenter, Boolean> cb) {
+		findMap(id.getVoiceGroup()).get(id.getNumber()).onChange(cb);
 	}
 
 	private HashMap<Integer, ParameterPresenterProvider> findMap(VoiceGroup vg) {
@@ -72,14 +81,14 @@ public class ParameterPresenterProviders {
 		return null;
 	}
 
-	public void registerForCurrentVoiceGroup(int parameterId, Function<ParameterPresenter, Boolean> cb) {
-		if (ParameterFactory.isGlobalParameter(parameterId)) {
-			register(parameterId, VoiceGroup.Global, cb);
+	public void registerForCurrentVoiceGroup(int parameterNumber, Function<ParameterPresenter, Boolean> cb) {
+		if (ParameterFactory.isGlobalParameter(parameterNumber)) {
+			register(new ParameterId(parameterNumber, VoiceGroup.Global), cb);
 		} else {
-			if (!voiceGroupRelatedParameterSubcribtions.containsKey(parameterId))
-				voiceGroupRelatedParameterSubcribtions.put(parameterId, new NotifierRelay(parameterId));
+			if (!voiceGroupRelatedParameterSubcribtions.containsKey(parameterNumber))
+				voiceGroupRelatedParameterSubcribtions.put(parameterNumber, new NotifierRelay(parameterNumber));
 
-			voiceGroupRelatedParameterSubcribtions.get(parameterId).onChange(cb);
+			voiceGroupRelatedParameterSubcribtions.get(parameterNumber).onChange(cb);
 
 		}
 	}

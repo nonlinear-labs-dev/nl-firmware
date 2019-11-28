@@ -14,8 +14,9 @@ public class EditBufferModelUpdater extends Updater {
 	@Override
 	public void doUpdate() {
 		if (root != null) {
-			String selParam = getAttributeValue(root, "selected-parameter");
-			EditBufferModel.get().selectedParameter.setValue(Integer.valueOf(selParam));
+			String selParamStr = getAttributeValue(root, "selected-parameter");
+			ParameterId selParam = new ParameterId(selParamStr);
+			EditBufferModel.get().selectedParameter.setValue(selParam.getNumber());
 			String loadedPreset = getAttributeValue(root, "loaded-preset");
 			EditBufferModel.get().loadedPreset.setValue(loadedPreset);
 			String loadedPresetName = getAttributeValue(root, "loaded-presets-name");
@@ -45,7 +46,7 @@ public class EditBufferModelUpdater extends Updater {
 			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.I));
 		});
 
-		processChildrenElements(root, "voice-group-I-parameters", child -> {
+		processChildrenElements(root, "voice-group-II-parameters", child -> {
 			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.II));
 		});
 	}
@@ -65,10 +66,10 @@ public class EditBufferModelUpdater extends Updater {
 	}
 
 	private void processGroup(Node c, VoiceGroup vg) {
-		String groupId = getAttributeValue(c, "id");
-
-		ParameterGroupModel target = EditBufferModel.get().getGroup(groupId, vg);
-		ParameterGroupModelUpdater updater = new ParameterGroupModelUpdater(c, target, groupId, vg);
+		String groupIdStr = getAttributeValue(c, "id");
+		GroupId groupId = new GroupId(groupIdStr);
+		ParameterGroupModel target = EditBufferModel.get().getGroup(groupId);
+		ParameterGroupModelUpdater updater = new ParameterGroupModelUpdater(c, target, groupId);
 		updater.doUpdate();
 	}
 
@@ -80,7 +81,7 @@ public class EditBufferModelUpdater extends Updater {
 			String modAmt = getAttributeValue(param, "mod-amt");
 
 			if (!id.isEmpty()) {
-				BasicParameterModel bpm = EditBufferModel.get().getParameter(Integer.valueOf(id), vg);
+				BasicParameterModel bpm = EditBufferModel.get().getParameter(new ParameterId(id));
 				if (!val.isEmpty())
 					bpm.originalValue.setValue(Double.valueOf(val));
 

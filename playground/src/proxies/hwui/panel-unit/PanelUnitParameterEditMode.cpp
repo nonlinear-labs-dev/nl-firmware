@@ -191,7 +191,7 @@ void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Pa
     if(auto ph = dynamic_cast<PhysicalControlParameter *>(newParam))
     {
       if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCM", vg)))
+             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", vg })))
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {
@@ -446,7 +446,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
     setLedStates(states);
 
-    if(selParam->getParentGroup()->getID() == "MCs")
+    if(selParam->getParentGroup()->getID().getName() == "MCs")
     {
       letMacroControlTargetsBlink();
     }
@@ -459,45 +459,46 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
 {
   auto group = selParam->getParentGroup();
+  auto groupName = group->getID().getName();
 
-  if(group->getID() == "Env A")
+  if(groupName == "Env A")
   {
     letOtherTargetsBlink({ 62, 73, 96 });
   }
-  else if(group->getID() == "Env B")
+  else if(groupName == "Env B")
   {
     letOtherTargetsBlink({ 66, 92, 103 });
   }
-  else if(group->getID() == "Env C")
+  else if(groupName == "Env C")
   {
     letOtherTargetsBlink({ 56, 59, 70, 80, 86, 89, 100, 110, 118, 126, 132, 143, 147 });
   }
-  else if(group->getID() == "Osc A" || group->getID() == "Sh A")
+  else if(groupName == "Osc A" || groupName == "Sh A")
   {
     letOscAShaperABlink({ 94, 111, 113, 133, 136, 153, 169 });
   }
-  else if(group->getID() == "Osc B" || group->getID() == "Sh B")
+  else if(groupName == "Osc B" || groupName == "Sh B")
   {
     letOscBShaperBBlink({ 64, 81, 113, 133, 136, 153, 172 });
   }
-  else if(group->getID() == "Comb")
+  else if(groupName == "Comb")
   {
     letOtherTargetsBlink({ 138, 175, 156 });
   }
-  else if(group->getID() == "FB")
+  else if(groupName == "FB")
   {
     letOtherTargetsBlink({ 68, 78, 98, 108 });
   }
-  else if(group->getID() == "SVF")
+  else if(groupName == "SVF")
   {
     letOtherTargetsBlink({ 178, 158 });
   }
-  else if(group->getID() == "Gap Filt" || group->getID() == "Cab" || group->getID() == "Echo"
-          || group->getID() == "Reverb" || group->getID() == "Flang")
+  else if(groupName == "Gap Filt" || groupName == "Cab" || groupName == "Echo" || groupName == "Reverb"
+          || groupName == "Flang")
   {
     letOtherTargetsBlink({ 160 });
 
-    if(group->getID() == "Reverb")
+    if(groupName == "Reverb")
     {
       letReverbBlink({ 162 });
     }

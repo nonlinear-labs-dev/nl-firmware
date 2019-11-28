@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -56,9 +57,11 @@ public class SingleSoundSettings extends OverlayLayout {
 	protected SingleSoundSettings(Control parent) {
 		super(parent);
 
+		// TODO: no direct connection to model!
+
 		presetName = addChild(new PresetName(this));
-		tune = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(248, VoiceGroup.Global)));
-		volume = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(247, VoiceGroup.Global)));
+		tune = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(new ParameterId(248, VoiceGroup.Global))));
+		volume = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(new ParameterId(247, VoiceGroup.Global))));
 	}
 
 	public void doLayout(double x, double y, double w, double h) {

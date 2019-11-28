@@ -15,7 +15,7 @@ void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
   g_signal_connect(connection, "message", G_CALLBACK(&MCViewContentManager::onWebSocketMessage), this);
   m_webSockets.emplace_back(std::make_shared<WebsocketConnection>(connection));
 #warning "Respect voice groups"
-  for(auto &param : eb->getParameterGroupByID("MCs", VoiceGroup::I)->getParameters())
+  for(auto &param : eb->getParameterGroupByID({ "MCs", VoiceGroup::I })->getParameters())
   {
     if(auto mc = dynamic_cast<MacroControlParameter *>(param))
     {

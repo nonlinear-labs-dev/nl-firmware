@@ -9,6 +9,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
 public abstract class Notifier<T> {
 
+	static boolean debug = true;
+
 	private LinkedList<Function<T, Boolean>> consumers = new LinkedList<Function<T, Boolean>>();
 	private boolean scheduled = false;
 
@@ -18,6 +20,11 @@ public abstract class Notifier<T> {
 	}
 
 	public boolean notifyChanges() {
+		if (debug) {
+			notifyNow();
+			return true;
+		}
+
 		if (!scheduled) {
 			scheduled = true;
 

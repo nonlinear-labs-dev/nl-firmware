@@ -1,21 +1,24 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+
 public class ModulationRouterParameterModel extends BasicParameterModel {
 
-    public ModulationRouterParameterModel(int id) {
+    public ModulationRouterParameterModel(ParameterId id) {
         super(id);
     }
 
-    public int getAssociatedMacroControlID() {
-        return (id % 5) + 243;
+    public ParameterId getAssociatedMacroControlID() {
+        return new ParameterId((id.getNumber() % 5) + 243, id.getVoiceGroup());
     }
 
-    public int getAssociatedPhysicalControlID() {
-        int l = id % 10;
-        int ret = (id / 10) * 10 - 1;
+    public ParameterId getAssociatedPhysicalControlID() {
+        int l = id.getNumber() % 10;
+        int ret = (id.getNumber() / 10) * 10 - 1;
         if (l >= 4)
             ret += 5;
-        return ret;
+
+        return new ParameterId(ret, VoiceGroup.Global);
     }
 
 }

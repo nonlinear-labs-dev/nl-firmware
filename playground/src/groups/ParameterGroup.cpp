@@ -5,14 +5,13 @@
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
 
-ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, const char *id, const char *shortName,
-                               const char *longName, const char *webUIName, VoiceGroup voiceGroup)
+ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
+                               const char *webUIName)
     : UpdateDocumentContributor(parent)
     , m_id(id)
     , m_shortName(shortName)
     , m_longName(longName)
     , m_webUIName(webUIName ? webUIName : m_longName)
-    , m_voiceGroup{ voiceGroup }
 {
 }
 
@@ -21,7 +20,7 @@ ParameterGroup::~ParameterGroup()
   m_parameters.deleteItems();
 }
 
-Glib::ustring ParameterGroup::getID() const
+GroupId ParameterGroup::getID() const
 {
   return m_id;
 }
@@ -85,7 +84,7 @@ sigc::connection ParameterGroup::onGroupChanged(const slot<void> &slot)
 
 VoiceGroup ParameterGroup::getVoiceGroup() const
 {
-  return m_voiceGroup;
+  return m_id.getVoiceGroup();
 }
 
 ParameterGroup::tUpdateID ParameterGroup::onChange(uint64_t flags)

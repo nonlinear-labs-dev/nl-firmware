@@ -38,40 +38,40 @@
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
 {
-  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this), VoiceGroup::Global);
+  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this));
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    appendParameterGroup(new EnvelopeAGroup(this, vg), vg);
-    appendParameterGroup(new EnvelopeBGroup(this, vg), vg);
-    appendParameterGroup(new EnvelopeCGroup(this, vg), vg);
-    appendParameterGroup(new OscillatorAGroup(this, vg), vg);
-    appendParameterGroup(new ShaperAGroup(this, vg), vg);
-    appendParameterGroup(new OscillatorBGroup(this, vg), vg);
-    appendParameterGroup(new ShaperBGroup(this, vg), vg);
-    appendParameterGroup(new FBMixerGroup(this, vg), vg);
-    appendParameterGroup(new CombFilterGroup(this, vg), vg);
-    appendParameterGroup(new SVFilterGroup(this, vg), vg);
-    appendParameterGroup(new OutputMixerGroup(this, vg), vg);
-    appendParameterGroup(new FlangerGroup(this, vg), vg);
-    appendParameterGroup(new CabinetGroup(this, vg), vg);
-    appendParameterGroup(new GapFilterGroup(this, vg), vg);
-    appendParameterGroup(new EchoGroup(this, vg), vg);
-    appendParameterGroup(new ReverbGroup(this, vg), vg);
-    appendParameterGroup(new UnisonGroup(this, vg), vg);
+    appendParameterGroup(new EnvelopeAGroup(this, vg));
+    appendParameterGroup(new EnvelopeBGroup(this, vg));
+    appendParameterGroup(new EnvelopeCGroup(this, vg));
+    appendParameterGroup(new OscillatorAGroup(this, vg));
+    appendParameterGroup(new ShaperAGroup(this, vg));
+    appendParameterGroup(new OscillatorBGroup(this, vg));
+    appendParameterGroup(new ShaperBGroup(this, vg));
+    appendParameterGroup(new FBMixerGroup(this, vg));
+    appendParameterGroup(new CombFilterGroup(this, vg));
+    appendParameterGroup(new SVFilterGroup(this, vg));
+    appendParameterGroup(new OutputMixerGroup(this, vg));
+    appendParameterGroup(new FlangerGroup(this, vg));
+    appendParameterGroup(new CabinetGroup(this, vg));
+    appendParameterGroup(new GapFilterGroup(this, vg));
+    appendParameterGroup(new EchoGroup(this, vg));
+    appendParameterGroup(new ReverbGroup(this, vg));
+    appendParameterGroup(new UnisonGroup(this, vg));
 
-    auto macroControls = appendParameterGroup(new MacroControlsGroup(this, vg), vg);
-    appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls, vg), vg);
+    auto macroControls = appendParameterGroup(new MacroControlsGroup(this, vg));
+    appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls, vg));
 
-    appendParameterGroup(new MonoGroup(this, vg), vg);
-    appendParameterGroup(new VoiceGroupMasterGroup(this, vg), vg);
+    appendParameterGroup(new MonoGroup(this, vg));
+    appendParameterGroup(new VoiceGroupMasterGroup(this, vg));
 
     m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
   }
 
-  appendParameterGroup(new GlobalParameterGroups(this), VoiceGroup::Global);
-  appendParameterGroup(new MasterGroup(this), VoiceGroup::Global);
-  appendParameterGroup(new ScaleGroup(this), VoiceGroup::Global);
+  appendParameterGroup(new GlobalParameterGroups(this));
+  appendParameterGroup(new MasterGroup(this));
+  appendParameterGroup(new ScaleGroup(this));
 
   m_idToParameterMap[static_cast<size_t>(VoiceGroup::Global)] = getParametersSortedByNumber(VoiceGroup::Global);
 }
@@ -82,22 +82,21 @@ ParameterDualGroupSet::~ParameterDualGroupSet()
     i.deleteItems();
 }
 
-ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGroupByID(const Glib::ustring &id,
-                                                                                       VoiceGroup vg) const
+ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGroupByID(const GroupId &id) const
 {
-  for(auto a : m_parameterGroups[static_cast<size_t>(vg)])
-    if(a->getID() == id)
+  for(auto a : m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())])
+    if(a->getID().getName() == id.getName())
       return a;
 
   return nullptr;
 }
 
-ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameterGroup(ParameterGroup *p, VoiceGroup v)
+ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameterGroup(ParameterGroup *p)
 {
   p->init();
-  g_assert(getParameterGroupByID(p->getID(), v) == nullptr);
+  g_assert(getParameterGroupByID(p->getID()) == nullptr);
   auto wrapped = tParameterGroupPtr(p);
-  m_parameterGroups[static_cast<size_t>(v)].append(wrapped);
+  m_parameterGroups[static_cast<size_t>(p->getID().getVoiceGroup())].append(wrapped);
   return wrapped;
 }
 
@@ -107,7 +106,7 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
 
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(auto &g : getParameterGroups(vg))
-      if(auto c = other->findParameterGroup(g->getID(), vg))
+      if(auto c = other->findParameterGroup(g->getID()))
         g->copyFrom(transaction, c);
 }
 
@@ -157,20 +156,13 @@ void ParameterDualGroupSet::writeDocument(Writer &writer, UpdateDocumentContribu
 const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
     ParameterDualGroupSet::getParameterGroups(VoiceGroup vg) const
 {
-  try
-  {
-    return m_parameterGroups.at(static_cast<size_t>(vg));
-  }
-  catch(...)
-  {
-    nltools::fail("Could not find Parameter Groups", __FILE__, __LINE__, __FUNCTION__);
-  }
+  return m_parameterGroups.at(static_cast<size_t>(vg));
 }
 
 void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
 {
   for(auto &group : getParameterGroups(to))
-    group->copyFrom(transaction, getParameterGroupByID(group->getID(), from));
+    group->copyFrom(transaction, getParameterGroupByID({ group->getID().getName(), from }));
 }
 
 void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target)
@@ -180,7 +172,7 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
   super::copyFrom(transaction, p);
 
   for(auto &g : getParameterGroups(target))
-    if(auto c = p->findParameterGroup(g->getID(), VoiceGroup::I))
+    if(auto c = p->findParameterGroup({ g->getID().getName(), VoiceGroup::I }))
       g->copyFrom(transaction, c);
 
   for(auto &g : getParameterGroups(VoiceGroup::Global))

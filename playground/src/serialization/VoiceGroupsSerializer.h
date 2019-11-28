@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 #include <presets/ParameterDualGroupSet.h>
 #include "Serializer.h"
@@ -15,3 +16,4 @@ class VoiceGroupsSerializer : public Serializer
 
   EditBuffer *m_editBuffer;
 };
+#endif

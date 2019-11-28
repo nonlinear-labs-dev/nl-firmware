@@ -31,7 +31,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -219,7 +219,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -532,7 +532,7 @@ void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     for(auto &g : getParameterGroups(vg))
-      if(auto otherGroup = other->findParameterGroup(g->getID(), vg))
+      if(auto otherGroup = other->findParameterGroup(g->getID()))
         g->undoableSetDefaultValues(transaction, otherGroup);
 }
 
@@ -569,7 +569,7 @@ void EditBuffer::undoableLockAllGroups(UNDO::Transaction *transaction)
 void EditBuffer::undoableToggleGroupLock(UNDO::Transaction *transaction, const Glib::ustring &groupId)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    if(auto g = getParameterGroupByID(groupId, vg))
+    if(auto g = getParameterGroupByID({ groupId, vg }))
       g->undoableToggleLock(transaction);
 }
 
@@ -610,7 +610,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 {
   setName(transaction, getVoiceGroupName(copyFrom));
 
-  auto masterGroup = getParameterGroupByID("Master", VoiceGroup::Global);
+  auto masterGroup = getParameterGroupByID({ "Master", VoiceGroup::Global });
 
   auto originVolume = findParameterByID({ 358, copyFrom });
   auto originTune = findParameterByID({ 360, copyFrom });
@@ -718,12 +718,12 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
   //Copy Voice Group from one to the other -> real initialize
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
 
-  auto globalMaster = getParameterGroupByID("Master", VoiceGroup::Global);
-  auto vgMasterI = getParameterGroupByID("PART", VoiceGroup::I);
-  auto vgMasterII = getParameterGroupByID("PART", VoiceGroup::II);
+  auto globalMaster = getParameterGroupByID({ "Master", VoiceGroup::Global });
+  auto vgMasterI = getParameterGroupByID({ "PART", VoiceGroup::I });
+  auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -750,12 +750,12 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction)
   //Copy Voice Group from one to the other -> real initialize
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
 
-  auto globalMaster = getParameterGroupByID("Master", VoiceGroup::Global);
-  auto vgMasterI = getParameterGroupByID("PART", VoiceGroup::I);
-  auto vgMasterII = getParameterGroupByID("PART", VoiceGroup::II);
+  auto globalMaster = getParameterGroupByID({ "Master", VoiceGroup::Global });
+  auto vgMasterI = getParameterGroupByID({ "PART", VoiceGroup::I });
+  auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });

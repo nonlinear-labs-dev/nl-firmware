@@ -6,10 +6,12 @@
 #include "xml/Reader.h"
 #include "xml/Writer.h"
 #include "PresetParameterGroupsSerializer.h"
+#include "ParameterGroupSerializer.h"
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
 #include "VoiceGroupsSerializer.h"
 #include "VoiceGroupsLockSerializer.h"
+#include <nltools/logging/Log.h>
 
 EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
     : Serializer(getTagName())
@@ -30,8 +32,14 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
 {
   SplashLayout::addStatus("Writing Edit Buffer");
 
-  VoiceGroupsSerializer groups(m_editBuffer);
-  groups.write(writer);
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
+  {
+    for(auto group : m_editBuffer->getParameterGroups(vg))
+    {
+      ParameterGroupSerializer s(group);
+      s.write(writer);
+    }
+  }
 
   if(auto selectedParam = m_editBuffer->getSelected())
     writer.writeTextElement("selected-parameter", selectedParam->getID().toString());
@@ -56,8 +64,18 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
 
   reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable { m_editBuffer->m_type = to<SoundType>(text); });
 
-  reader.onTag(VoiceGroupsSerializer::getTagName(),
-               [&](auto) mutable { return new VoiceGroupsSerializer(m_editBuffer); });
+  reader.onTag(ParameterGroupSerializer::getTagName(), [&](auto attr) -> ParameterGroupSerializer * {
+    auto id = attr.get("id");
+    auto group = m_editBuffer->getParameterGroupByID(GroupId(id));
+
+    if(!group)
+    {
+      nltools::Log::error("Could not find group:", id, "which is parsed to:", GroupId(id));
+      return nullptr;
+    }
+
+    return new ParameterGroupSerializer(group);
+  });
 
   reader.onTextElement("selected-parameter", [&](auto text, auto) mutable {
     m_editBuffer->undoableSelectParameter(reader.getTransaction(), ParameterId(text));

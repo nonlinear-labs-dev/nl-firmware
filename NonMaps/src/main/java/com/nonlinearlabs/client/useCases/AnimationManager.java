@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.Scheduler;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 
 public class AnimationManager {
@@ -43,11 +43,11 @@ public class AnimationManager {
         }
     }
 
-    private Map<Integer, Animation> runningAnimations = new HashMap<Integer, Animation>();
+    private Map<ParameterId, Animation> runningAnimations = new HashMap<ParameterId, Animation>();
     private boolean recursionGuard = false;
 
-    public void startReturnAnimation(PhysicalControlParameterModel p, VoiceGroup vg) {
-        startDelayedAnimation(p, vg, 0);
+    public void startReturnAnimation(PhysicalControlParameterModel p) {
+        startDelayedAnimation(p, 0);
     }
 
     public void cancelAnimation(PhysicalControlParameterModel m) {
@@ -57,7 +57,7 @@ public class AnimationManager {
         runningAnimations.remove(m.id);
     }
 
-    public void startDelayedAnimation(PhysicalControlParameterModel p, VoiceGroup vg, int delay) {
+    public void startDelayedAnimation(PhysicalControlParameterModel p,  int delay) {
         if (recursionGuard)
             return;
 
@@ -68,7 +68,7 @@ public class AnimationManager {
             if (runningAnimations.get(p.id) == animation) {
                 recursionGuard = true;
 
-                EditBufferUseCases.get().setParameterValue(p.id, vg, v, true);
+                EditBufferUseCases.get().setParameterValue(p.id, v, true);
                 recursionGuard = false;
             }
         });

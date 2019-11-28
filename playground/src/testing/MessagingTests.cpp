@@ -38,7 +38,7 @@ struct MessagingTests
 
       for(int i = 0; i < 100; i++)
       {
-        Configuration conf{ { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
+        Configuration conf { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
         nltools::msg::init(conf);
       }
     });
@@ -46,13 +46,14 @@ struct MessagingTests
     g_test_add_func("/Messaging/send-receive", [] {
       using namespace nltools::msg;
 
-      Configuration conf{ { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
+      Configuration conf { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
       nltools::msg::init(conf);
 
       int numMessages = 0;
-      UnmodulateableParameterChangedMessage msgToSend(12, 0.3, false, VoiceGroup::I);
+      UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, false, VoiceGroup::I };
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
-      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
+      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint,
+                                                              [&](const auto &msg) { numMessages++; });
       send(EndPoint::TestEndPoint, msgToSend);
       doMainLoop(0s, 2s, [&] { return numMessages == 1; });
       c.disconnect();
@@ -63,15 +64,16 @@ struct MessagingTests
 
       nltools::Log::setLevel(nltools::Log::Debug);
 
-      Configuration conf{ { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
+      Configuration conf { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
       nltools::msg::init(conf);
 
       int numRecMessages = 0;
       int numSendMessages = 1000;
 
-      UnmodulateableParameterChangedMessage msgToSend(12, 0.3, false, VoiceGroup::I);
+      UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, false, VoiceGroup::I };
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
-      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
+      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint,
+                                                              [&](const auto &msg) { numRecMessages++; });
 
       for(int i = 0; i < numSendMessages; i++)
         send(EndPoint::TestEndPoint, msgToSend);
@@ -85,15 +87,16 @@ struct MessagingTests
 
       nltools::Log::setLevel(nltools::Log::Debug);
 
-      Configuration conf{ { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
+      Configuration conf { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
       nltools::msg::init(conf);
 
       int numRecMessages = 0;
       int numSendMessages = 100;
 
-      UnmodulateableParameterChangedMessage msgToSend(12, 0.3, false, VoiceGroup::I);
+      UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, false, VoiceGroup::I };
       nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
-      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
+      auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint,
+                                                              [&](const auto &msg) { numRecMessages++; });
 
       for(int i = 0; i < numSendMessages; i++)
         send(EndPoint::TestEndPoint, msgToSend);
@@ -106,7 +109,7 @@ struct MessagingTests
       using namespace nltools::msg;
 
       bool received = false;
-      Configuration conf{ { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
+      Configuration conf { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint } };
       nltools::msg::init(conf);
       auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
       doMainLoop(0s, 5s, [&] { return received; });

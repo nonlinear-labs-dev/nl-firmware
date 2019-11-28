@@ -37,15 +37,20 @@ namespace nltools
       template <typename Msg> Msg deserialize(const SerializedMessage &s)
       {
         Msg ret;
-        nltools_assertAlways(s->get_size() == sizeof(Msg));
+        nltools_assertAlways(s->get_size() == sizeof(Msg) + 2);
         gsize numBytes = 0;
-        memcpy(&ret, s->get_data(numBytes), sizeof(Msg));
+        auto ptr = reinterpret_cast<const uint8_t *>(s->get_data(numBytes));
+        memcpy(&ret, ptr + 2, sizeof(Msg));
         return ret;
       }
 
       template <typename Msg> SerializedMessage serialize(const Msg &msg)
       {
-        return Glib::Bytes::create(&msg, sizeof(Msg));
+        uint8_t scratch[sizeof(Msg) + 2];
+        auto type = Msg::getType();
+        memcpy(scratch, &type, 2);
+        memcpy(scratch + 2, &msg, sizeof(Msg));
+        return Glib::Bytes::create(scratch, sizeof(scratch));
       }
 
       // send raw bytes to receiver
@@ -95,7 +100,7 @@ namespace nltools
 
     template <typename Msg> sigc::connection receive(EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)
     {
-      return detail::receive<Msg>(Msg::theType, receivingEndPoint, [=](const auto &s) { cb(s); });
+      return detail::receive<Msg>(Msg::getType(), receivingEndPoint, [=](const auto &s) { cb(s); });
     }
 
     sigc::connection onConnectionEstablished(EndPoint endPoint, std::function<void()> cb);

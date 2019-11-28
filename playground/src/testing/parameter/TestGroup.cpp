@@ -1,7 +1,7 @@
 #include "TestGroup.h"
 
 TestGroup::TestGroup(TestGroupSet *root, VoiceGroup vg)
-    : ParameterGroup(root, "test", "test", "test", "test", vg)
+    : ParameterGroup(root, { "test", vg }, "test", "test", "test")
 {
 }
 
@@ -13,6 +13,7 @@ void TestGroup::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdate
 {
 }
 
-void TestGroup::addParameter(Parameter *p) {
+void TestGroup::addParameter(Parameter *p)
+{
   appendParameter(p);
 }

@@ -5,7 +5,7 @@
 #include "parameters/scale-converters/ParabolicGainDbScaleConverter.h"
 
 MasterGroup::MasterGroup(ParameterDualGroupSet *parent)
-    : ParameterGroup(parent, "Master", "Master", "Master", "Master", VoiceGroup::Global)
+    : ParameterGroup(parent, { "Master", VoiceGroup::Global }, "Master", "Master", "Master")
 {
 }
 
