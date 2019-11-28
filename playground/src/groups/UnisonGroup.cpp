@@ -9,6 +9,8 @@
 #include "parameters/scale-converters/Fine12STScaleConverter.h"
 #include "parameters/scale-converters/FineBipolar12STScaleConverter.h"
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
+#include <parameters/scale-converters/dimension/VoicesDimension.h>
+#include <parameters/scale-converters/LinearCountScaleConverter.h>
 
 UnisonGroup::UnisonGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Unison", vg }, "Unison", "Unison", "Unison")
@@ -21,8 +23,8 @@ UnisonGroup::~UnisonGroup()
 
 void UnisonGroup::init()
 {
-  appendParameter(
-      new Parameter(this, { 249, getVoiceGroup() }, ScaleConverter::get<Linear12CountScaleConverter>(), 0, 11, 11));
+  appendParameter(new Parameter(this, { 249, getVoiceGroup() },
+                                ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { 250, getVoiceGroup() }, ScaleConverter::get<Fine12STScaleConverter>(),
