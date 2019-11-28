@@ -48,8 +48,8 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_poly[1].init(&m_convert, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
                  samplerate);
   // init mono dsp
-  m_mono[0].init(&m_z_layers[0]);
-  m_mono[1].init(&m_z_layers[1]);
+  m_mono[0].init(&m_convert, &m_z_layers[0], m_time.m_millisecond, samplerate);
+  m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate);
   // init parameters by parameter list
   m_params.init_modMatrix();
   for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
@@ -1244,7 +1244,12 @@ void dsp_host_dual::evalFadePoint()
     {
       case FadeEvent::RecallMute:
         m_layer_mode = m_preloaded_layer_mode;
-        // flush, load preset
+        // flush - currently global ... (?)
+        m_poly[0].flushDSP();
+        m_poly[1].flushDSP();
+        m_mono[0].flushDSP();
+        m_mono[1].flushDSP();
+        //load preset
         switch(m_layer_mode)
         {
           case C15::Properties::LayerMode::Single:

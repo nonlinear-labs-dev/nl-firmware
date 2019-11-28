@@ -46,6 +46,7 @@ class PolySection
                const float _vel);
   void keyUp(const uint32_t _voiceId, const uint32_t _unisonIndex, const float _tune, const float _vel);
   void resetEnvelopes();
+  void flushDSP();
   float getVoiceGroupVolume();
 
  private:

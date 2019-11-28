@@ -17,6 +17,8 @@
 #include "ae_mono_gapfilter.h"
 #include "ae_mono_echo.h"
 #include "ae_mono_reverb.h"
+#include "pe_exponentiator.h"
+#include "pe_lfo_engine.h"
 
 class MonoSection
 {
@@ -24,7 +26,7 @@ class MonoSection
   MonoSignals m_signals;
   float m_out_l = 0.0f, m_out_r = 0.0f, m_dry = 0.0f, m_wet = 0.0f;
   MonoSection();
-  void init(LayerSignalCollection *_z_self);
+  void init(exponentiator *_convert, LayerSignalCollection *_z_self, const float _ms, const float _samplerate);
   void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_fast_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_slow_id(const uint32_t _smootherId, const uint32_t _signalId);
@@ -36,11 +38,13 @@ class MonoSection
   void render_fast();
   void render_slow();
   void keyDown(const float _vel);
+  void flushDSP();
 
  private:
   SmootherHandle<C15::Smoothers::Mono_Sync, C15::Smoothers::Mono_Audio, C15::Smoothers::Mono_Fast,
                  C15::Smoothers::Mono_Slow>
       m_smoothers;
+  exponentiator *m_convert;
   LayerSignalCollection *m_z_self;
   Engine::Envelopes::DecayEnvelope<1> m_flanger_env;
   Engine::MonoFlanger m_flanger;
@@ -48,6 +52,13 @@ class MonoSection
   Engine::MonoGapFilter m_gapfilter;
   Engine::MonoEcho m_echo;
   Engine::MonoReverb m_reverb;
+  NlToolbox::Curves::Shaper_2_BP m_flanger_fb_curve;
+  NlToolbox::Curves::Shaper_1_BP m_reverb_color_curve_1, m_reverb_color_curve_2;
+  stereo_lfo m_flanger_lfo;
+  const float m_flanger_norm_phase = 1.0f / 360.0f, m_flanger_rate_to_decay = 0.55f, m_cabinet_tilt_floor = 2.e-20f,
+              m_delay_norm_stereo = 1.0f / 99.0f;
+  float m_samplerate, m_reciprocal_samplerate, m_nyquist, m_millisecond;
+  float evalNyquist(const float _value);
   void postProcess_audio();
   void postProcess_fast();
   void postProcess_slow();
