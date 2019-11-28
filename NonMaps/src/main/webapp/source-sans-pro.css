@@ -3,25 +3,23 @@
     font-weight: 300;
     font-style: normal;
     font-stretch: normal;
-    src: url('./SourceSansPro-Light.otf.woff');
+    src: url('./SSP-LW00-Light.otf') format("opentype");
 }
-
 
 @font-face{
     font-family: 'Source Sans Pro';
     font-weight: 400;
     font-style: normal;
     font-stretch: normal;
-    src: url('./SourceSansPro-Regular.otf.woff');
+    src: url('./SSP-LW00-Regular.otf') format("opentype");
 }
-
 
 @font-face{
     font-family: 'Source Sans Pro';
     font-weight: 600;
     font-style: normal;
     font-stretch: normal;
-    src: url('./SourceSansPro-Semibold.otf.woff');
+    src: url('./SSP-LW00-Semibold.otf') format("opentype");
 }
 
 @font-face{
@@ -29,7 +27,7 @@
     font-weight: 300;
     font-style: normal;
     font-stretch: normal;
-    src: url('./SourceSansProLW25-Light.otf');
+    src: url('./SSP-LW25-Light.otf') format("opentype");
 }
 
 @font-face{
@@ -37,7 +35,7 @@
     font-weight: 400;
     font-style: normal;
     font-stretch: normal;
-    src: url('./SourceSansProLW25-Regular.otf');
+    src: url('./SSP-LW25-Regular.otf') format("opentype");
 }
 
 @font-face{
@@ -45,5 +43,5 @@
     font-weight: 600;
     font-style: normal;
     font-stretch: normal;
-    src: url('./SourceSansProLW25-SemiBold.otf');
+    src: url('./SSP-LW25-Semibold.otf') format("opentype");
 }
