@@ -38,6 +38,7 @@ class MonoSection
   void render_fast();
   void render_slow();
   void keyDown(const float _vel);
+  void flushDSP();
 
  private:
   SmootherHandle<C15::Smoothers::Mono_Sync, C15::Smoothers::Mono_Audio, C15::Smoothers::Mono_Fast,

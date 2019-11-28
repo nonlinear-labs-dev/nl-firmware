@@ -183,6 +183,15 @@ void PolySection::resetEnvelopes()
   m_env_g.reset();
 }
 
+void PolySection::flushDSP()
+{
+  m_soundgenerator.resetDSP();
+  m_combfilter.resetDSP();
+  m_svfilter.resetDSP();
+  m_feedbackmixer.resetDSP();
+  m_outputmixer.resetDSP();
+}
+
 float PolySection::getVoiceGroupVolume()
 {
   return m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Volume);

@@ -1244,7 +1244,12 @@ void dsp_host_dual::evalFadePoint()
     {
       case FadeEvent::RecallMute:
         m_layer_mode = m_preloaded_layer_mode;
-        // flush, load preset
+        // flush - currently global ... (?)
+        m_poly[0].flushDSP();
+        m_poly[1].flushDSP();
+        m_mono[0].flushDSP();
+        m_mono[1].flushDSP();
+        //load preset
         switch(m_layer_mode)
         {
           case C15::Properties::LayerMode::Single:

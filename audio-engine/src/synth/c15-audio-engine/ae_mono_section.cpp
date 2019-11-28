@@ -111,6 +111,15 @@ void MonoSection::keyDown(const float _vel)
   m_flanger_env.start(0);
 }
 
+void MonoSection::flushDSP()
+{
+  m_flanger.resetDSP();
+  m_cabinet.resetDSP();
+  m_gapfilter.resetDSP();
+  m_echo.resetDSP();
+  m_reverb.resetDSP();
+}
+
 float MonoSection::evalNyquist(const float _value)
 {
   return _value > m_nyquist ? m_nyquist : _value;
