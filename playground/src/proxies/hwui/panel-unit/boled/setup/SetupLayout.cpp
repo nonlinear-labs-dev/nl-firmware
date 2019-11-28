@@ -52,6 +52,9 @@
 #include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicationView.h>
 #include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicatorEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingEditor.h>
+#include <proxies/hwui/panel-unit/boled/setup/SettingView.h>
+#include <proxies/hwui/panel-unit/boled/setup/EnumSettingEditor.h>
+#include <proxies/hwui/panel-unit/boled/setup/NumericSettingEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingView.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
@@ -62,6 +65,8 @@
 #include <chrono>
 #include <list>
 #include <memory>
+#include <device-settings/TuneReference.h>
+#include <device-settings/TransitionTime.h>
 #include "UISoftwareVersionEditor.h"
 #include "LayoutModeView.h"
 #include "LayoutModeEditor.h"
@@ -193,21 +198,21 @@ namespace NavTree
         : EditableLeaf(parent, "")
     {
       param = dynamic_cast<PedalParameter *>(
-          Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id));
+          Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, VoiceGroup::Global}));
       name = param->getLongName();
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new PedalView(param->getAssociatedPedalTypeSetting());
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new PedalEditor(param->getAssociatedPedalTypeSetting());
     }
 
-    virtual Control *createSelectionControl()
+    Control *createSelectionControl() override
     {
       return new PedalSelectionControl(param);
     }
@@ -222,14 +227,64 @@ namespace NavTree
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new WiFiSettingView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new WiFiSettingEditor();
+    }
+  };
+
+  template <typename tSetting> struct SettingItem : EditableLeaf
+  {
+   private:
+    tSetting *getSetting()
+    {
+      return Application::get().getSettings()->getSetting<tSetting>().get();
+    }
+
+   public:
+    SettingItem(InnerNode *parent, const char *name)
+        : EditableLeaf(parent, name)
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SettingView<tSetting>();
+    }
+
+    Control *createEditor() override
+    {
+      return new NumericSettingEditor<tSetting>();
+    }
+  };
+
+  template <typename tSetting> struct EnumSettingItem : EditableLeaf
+  {
+   private:
+    tSetting *getSetting()
+    {
+      return Application::get().getSettings()->getSetting<tSetting>();
+    }
+
+   public:
+    EnumSettingItem(InnerNode *parent, const char *name)
+        : EditableLeaf(parent, name)
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SettingView<tSetting>();
+    }
+
+    Control *createEditor() override
+    {
+      return new EnumSettingEditor<tSetting>();
     }
   };
 
@@ -240,12 +295,12 @@ namespace NavTree
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new PresetGlitchSuppressionView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new PresetGlitchSuppressionEditor();
     }
@@ -258,12 +313,12 @@ namespace NavTree
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new EditSmoothingTimeView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new EditSmoothingTimeEditor();
     }
@@ -274,10 +329,10 @@ namespace NavTree
     PedalSettings(InnerNode *parent)
         : InnerNode(parent, "Pedals")
     {
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal1ParameterID()));
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal2ParameterID()));
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal3ParameterID()));
-      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal4ParameterID()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal1ParameterID().getNumber()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal2ParameterID().getNumber()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal3ParameterID().getNumber()));
+      children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal4ParameterID().getNumber()));
     }
   };
 
@@ -287,6 +342,8 @@ namespace NavTree
         : InnerNode(parent, "Device Settings")
     {
       children.emplace_back(new EditSmoothingTime(this));
+      children.emplace_back(new SettingItem<TuneReference>(this, "Tune Reference"));
+      children.emplace_back(new SettingItem<TransitionTime>(this, "Transition Time"));
       children.emplace_back(new Velocity(this));
       children.emplace_back(new Aftertouch(this));
       children.emplace_back(new BenderCurveSetting(this));

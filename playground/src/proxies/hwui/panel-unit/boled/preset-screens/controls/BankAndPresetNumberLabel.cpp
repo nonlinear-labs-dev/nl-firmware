@@ -39,6 +39,10 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
 
     text = UNDO::StringTools::buildString(bankPos, "-", presetPosStr.str());
   }
+  else if(uuid == Uuid::converted())
+  {
+    text = "Converted";
+  }
   else if(uuid == Uuid::init())
   {
     text = "Init";

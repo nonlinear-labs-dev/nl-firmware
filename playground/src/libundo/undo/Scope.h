@@ -54,6 +54,7 @@ namespace UNDO
 
     tTransactionScopePtr startTransaction(const Glib::ustring &name);
     static tTransactionScopePtr startTrashTransaction();
+    tTransactionScopePtr startTestTransaction();
 
     tTransactionScopePtr startCuckooTransaction();
     void resetCukooTransaction();

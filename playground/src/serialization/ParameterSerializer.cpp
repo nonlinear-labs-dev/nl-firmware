@@ -76,7 +76,7 @@ void ParameterSerializer::readTagContent(Reader &reader) const
   {
     reader.onTextElement("value", [&](const Glib::ustring &text, const Attributes &attr) mutable {
       auto v = std::stod(text);
-      auto converted = ParameterImportConversions::get().convert(m_param->getID(), v, reader.getFileVersion());
+      auto converted = ParameterImportConversions::get().convert(m_param->getID().getNumber(), v, reader.getFileVersion());
       m_param->loadFromPreset(reader.getTransaction(), converted);
     });
 
@@ -92,7 +92,7 @@ void ParameterSerializer::tryLoadModulateableParameter(Reader &reader) const
   {
     reader.onTextElement("modAmount", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
       auto v = std::stod(text);
-      auto converted = ParameterImportConversions::get().convertMCAmount(m_param->getID(), v, reader.getFileVersion());
+      auto converted = ParameterImportConversions::get().convertMCAmount(m_param->getID().getNumber(), v, reader.getFileVersion());
       p->setModulationAmount(reader.getTransaction(), converted);
     });
 
@@ -111,8 +111,8 @@ void ParameterSerializer::loadModulationAmount(Reader &reader, const Glib::ustri
     if(i == -1)
       i = 0;
 
-    MacroControls s = (MacroControls)((i));
-    p->setModulationSource(reader.getTransaction(), s);
+    auto macro = static_cast<MacroControls>(i);
+    p->setModulationSource(reader.getTransaction(), macro);
   }
 }
 

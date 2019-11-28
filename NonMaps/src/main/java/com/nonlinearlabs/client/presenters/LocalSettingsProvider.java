@@ -3,8 +3,8 @@ package com.nonlinearlabs.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 public class LocalSettingsProvider {
 	public static LocalSettingsProvider theInstance = new LocalSettingsProvider();
@@ -17,10 +17,11 @@ public class LocalSettingsProvider {
 	private LocalSettings settings = new LocalSettings();
 
 	private LocalSettingsProvider() {
-		com.nonlinearlabs.client.dataModel.setup.Setup.LocalSettings s = Setup.get().localSettings;
+		com.nonlinearlabs.client.dataModel.setup.SetupModel.LocalSettings s = SetupModel.get().localSettings;
 
 		s.selectionAutoScroll.onChange(t -> {
 			settings.selectionAutoScroll.selected = t.ordinal();
+			settings.selectionAutoScroll.selectedOption = t;
 			notifyClients();
 			return true;
 		});
@@ -75,5 +76,9 @@ public class LocalSettingsProvider {
 	public void register(Function<LocalSettings, Boolean> cb) {
 		clients.add(cb);
 		cb.apply(settings);
+	}
+
+	public LocalSettings getSettings() {
+		return settings;
 	}
 }

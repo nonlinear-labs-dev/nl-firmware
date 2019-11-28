@@ -6,12 +6,11 @@
 #include "parameters/ModulationRoutingParameter.h"
 #include "parameters/PhysicalControlParameter.h"
 #include <groups/HardwareSourcesGroup.h>
+#include <proxies/hwui/HWUI.h>
 
-MCRoutings::MCRoutings(int ribbonParamID, const Rect &pos)
+MCRoutings::MCRoutings(const ParameterId &ribbonParamID, const Rect &pos)
     : super(pos)
-    ,
-
-    m_ribbonParamID(ribbonParamID)
+    , m_ribbonParamID(ribbonParamID)
 {
   connectToRoutingParameters();
 }
@@ -55,9 +54,10 @@ EditBuffer *MCRoutings::getEditBuffer() const
 
 MacroControlMappingGroup::tModRoutingParams MCRoutings::getRoutingParameters()
 {
-  auto editBuffer = getEditBuffer();
-  auto cs = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID("CS"));
-  auto routers = dynamic_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID("MCM"));
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto eb = getEditBuffer();
+  auto cs = dynamic_cast<HardwareSourcesGroup *>(eb->getParameterGroupByID("CS", VoiceGroup::Global));
+  auto routers = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM", vg));
   auto ribbonParam = dynamic_cast<PhysicalControlParameter *>(cs->getParameterByID(m_ribbonParamID));
   auto routingParams = routers->getModulationRoutingParametersFor(ribbonParam);
   return routingParams;

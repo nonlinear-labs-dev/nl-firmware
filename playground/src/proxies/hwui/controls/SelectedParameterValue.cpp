@@ -11,10 +11,14 @@ SelectedParameterValue::SelectedParameterValue(const Rect &rect)
       sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)));
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
+
+  m_voiceGroupSelectionConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
 }
 
 SelectedParameterValue::~SelectedParameterValue()
 {
+  m_voiceGroupSelectionConnection.disconnect();
 }
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)
@@ -55,4 +59,9 @@ bool SelectedParameterValue::redraw(FrameBuffer &fb)
 void SelectedParameterValue::setSuffixFontColor(FrameBuffer &fb) const
 {
   fb.setColor(FrameBuffer::C128);
+}
+
+void SelectedParameterValue::onVoiceGroupSelectionChanged(VoiceGroup v)
+{
+  setDirty();
 }

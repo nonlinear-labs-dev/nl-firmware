@@ -9,7 +9,7 @@
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <Application.h>
 
-ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, uint16_t id, tSrcParameterPtr srcParam,
+ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, ParameterId id, tSrcParameterPtr srcParam,
                                                        tMCParameterPtr tgtParam, const ScaleConverter *scaling)
     : super(group, id, scaling, 0, 100, 1000)
     , m_tgtParameter(tgtParam)
@@ -18,8 +18,7 @@ ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, ui
   srcParam->registerTarget(this);
 }
 
-ModulationRoutingParameter::~ModulationRoutingParameter()
-= default;
+ModulationRoutingParameter::~ModulationRoutingParameter() = default;
 
 void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                                 tControlPositionValue newValue)

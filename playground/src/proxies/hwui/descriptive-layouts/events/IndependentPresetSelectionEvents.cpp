@@ -2,6 +2,7 @@
 #include "proxies/hwui/descriptive-layouts/primitives/Text.h"
 #include "Application.h"
 #include "presets/PresetManager.h"
+#include "presets/EditBuffer.h"
 #include "presets/Bank.h"
 #include "presets/Preset.h"
 #include "event-sources/base/EventSource.h"
@@ -12,7 +13,7 @@ namespace DescriptiveLayouts
 {
 
   IndependentPresetSelectionEvents::IndependentPresetSelectionEvents()
-      : m_cursor([](auto) { return true; })
+      : m_cursor([](const Preset *preset) { return preset->getType() == SoundType::Single; })
   {
     createEventSources<Text::DisplayString>(
         EventSources::PreviousNumber, EventSources::PreviousName, EventSources::CurrentNumber,
@@ -51,6 +52,16 @@ namespace DescriptiveLayouts
       case EventSinks::Down:
         if(m_cursor.canNextPreset())
           m_cursor.nextPreset();
+        break;
+
+      case EventSinks::Commit:
+        if(auto preset = m_cursor.getPreset())
+        {
+          auto eb = Application::get().getPresetManager()->getEditBuffer();
+          auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+          eb->undoableLoadPresetIntoDualSound(preset, currentVG);
+          Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
+        }
         break;
 
       default:

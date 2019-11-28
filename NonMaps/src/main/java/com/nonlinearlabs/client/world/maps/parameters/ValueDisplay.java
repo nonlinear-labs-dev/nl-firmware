@@ -12,8 +12,8 @@ class ValueDisplay extends ValueControl {
 
 	private boolean isVisible = false;
 
-	ValueDisplay(MapsLayout parent) {
-		super(parent);
+	ValueDisplay(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

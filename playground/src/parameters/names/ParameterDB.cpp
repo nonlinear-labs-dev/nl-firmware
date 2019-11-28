@@ -49,11 +49,12 @@ std::vector<std::string> ParameterDB::textRowToVector(const std::string &row) co
 
 std::string sanitize(const std::string &in)
 {
-  auto f = u8"\ue000";
-  auto mod = StringTools::replaceAll(in, "Ⓐ", f);
+  auto mod = StringTools::replaceAll(in, "Ⓐ", u8"\ue000");
   mod = StringTools::replaceAll(mod, "Ⓑ", u8"\ue001");
   mod = StringTools::replaceAll(mod, "Ⓒ", u8"\ue002");
   mod = StringTools::replaceAll(mod, "Ⓓ", u8"\ue003");
+  mod = StringTools::replaceAll(mod, "Ⓔ", u8"\ue200");
+  mod = StringTools::replaceAll(mod, "Ⓕ", u8"\ue201");
   return mod;
 }
 
@@ -83,22 +84,48 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
 
 ustring ParameterDB::getLongName(int id) const
 {
-  return m_spec.at(id).longName;
+  if(id == 369)
+    return "MC E";
+  if(id == 371)
+    return "MC F";
+
+  try
+  {
+    return m_spec.at(id).longName;
+  }
+  catch(...)
+  {
+    return "";
+  }
 }
 
 ustring ParameterDB::getShortName(int id) const
 {
-  return m_spec.at(id).shortName;
+  try
+  {
+    return m_spec.at(id).shortName;
+  }
+  catch(...)
+  {
+    return "";
+  }
 }
 
 tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
 {
-  return m_spec.at(id).signalPathIndication;
+  try
+  {
+    return m_spec.at(id).signalPathIndication;
+  }
+  catch(...)
+  {
+    return 0;
+  }
 }
 
 bool ParameterDB::isActive(const Parameter *p) const
 {
-  const auto inActiveCP = getSignalPathIndication(p->getID());
+  const auto inActiveCP = getSignalPathIndication(p->getID().getNumber());
   const auto diff = std::abs(inActiveCP - p->getControlPositionValue());
   return diff > std::numeric_limits<tControlPositionValue>::epsilon();
 }

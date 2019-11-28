@@ -4,7 +4,7 @@
 #include <device-settings/DebugLevel.h>
 
 ModulateableParameterWithUnusualModUnit::ModulateableParameterWithUnusualModUnit(
-    ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, const ScaleConverter *modAmountScaling,
+    ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, const ScaleConverter *modAmountScaling,
     tDisplayValue def, int coarseDenominator, int fineDenominator)
     : ModulateableParameter(group, id, scaling, def, coarseDenominator, fineDenominator)
     , m_modAmountScaling(modAmountScaling)

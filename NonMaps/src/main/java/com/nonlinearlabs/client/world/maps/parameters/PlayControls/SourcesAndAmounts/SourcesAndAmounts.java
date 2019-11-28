@@ -2,23 +2,22 @@ package com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAm
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
-import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
-public class SourcesAndAmounts extends ParameterGroupVertical {
+public class SourcesAndAmounts extends ParameterGroup {
 
 	private SourcesAndAmountsControls controls;
 
@@ -63,12 +62,12 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 	}
 
 	public SourcesAndAmounts(MapsLayout parent) {
-		super(parent);
+		super(parent, "MCM");
 		addChild(new LabelModuleHeader(this, "Hardware Sources and Amounts") {
 
 			@Override
 			public Control onContextMenu(Position pos) {
-				boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+				boolean showContextMenus = SetupModel.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 
 				if (showContextMenus) {
 					Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
@@ -120,15 +119,6 @@ public class SourcesAndAmounts extends ParameterGroupVertical {
 		});
 
 		addChild(controls = new SourcesAndAmountsControls(this));
-	}
-
-	@Override
-	public String getID() {
-		return "MCM";
-	}
-
-	public void onReturningModeChanged(PhysicalControlParameter src) {
-		controls.onReturningModeChanged(src);
 	}
 
 	public Pedal getPedal(int i) {

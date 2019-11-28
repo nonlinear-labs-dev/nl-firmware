@@ -1,7 +1,7 @@
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include "MonoPriorityParameter.h"
 
-MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, Parameter::ID id)
+MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, ParameterId id)
     : MonoParameter(parent, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 2, 2)
 {
 }
@@ -15,7 +15,7 @@ ustring MonoPriorityParameter::getDisplayString() const
   }
   else if(value == 50)
   {
-    return "Last";
+    return "Latest";
   }
   else
   {
@@ -25,10 +25,10 @@ ustring MonoPriorityParameter::getDisplayString() const
 
 ustring MonoPriorityParameter::getLongName() const
 {
-  return "Mono Priority";
+  return "Priority";
 }
 
 ustring MonoPriorityParameter::getShortName() const
 {
-  return "Priority";
+  return "Prio";
 }

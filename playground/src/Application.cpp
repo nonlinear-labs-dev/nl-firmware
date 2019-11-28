@@ -23,6 +23,7 @@
 #include <tools/ExceptionTools.h>
 #include <nltools/messaging/Messaging.h>
 #include <device-settings/LayoutMode.h>
+#include <presets/EditBuffer.h>
 
 Application *Application::theApp = nullptr;
 
@@ -63,7 +64,6 @@ Application::Application(int numArgs, char **argv)
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_presetManager(new PresetManager(m_http->getUpdateDocumentMaster()))
-    , m_hwuiEditBufferSelection(new VoiceGroupSelection())
     , m_lpcProxy(new LPCProxy())
     , m_audioEngineProxy(new AudioEngineProxy)
     , m_hwui(new HWUI())
@@ -83,6 +83,9 @@ Application::Application(int numArgs, char **argv)
   m_http->init();
   m_presetManager->init();
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+
+  m_presetManager->getEditBuffer()->initVoiceGroupConnection(m_hwui.get());
+
   runWatchDog();
 
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);
@@ -118,17 +121,22 @@ Application &Application::get()
   return *theApp;
 }
 
-Glib::ustring Application::getSelfPath() const
-{
-  return getOptions()->getSelfPath();
-}
-
 Glib::ustring Application::getResourcePath() const
 {
-  RefPtr<Gio::File> app = Gio::File::create_for_path(getSelfPath());
-  RefPtr<Gio::File> parent = app->get_parent();
-  Glib::ustring parentPath = parent->get_path();
-  return parentPath + "/resources/";
+#ifdef _DEVELOPMENT_PC
+  return getOptions()->getInstallDir() + "/nonlinear/playground/resources/";
+#else
+  return "/nonlinear/playground/resources/";
+#endif
+}
+
+ustring Application::getNonMapsPath() const
+{
+#ifdef _DEVELOPMENT_PC
+  return getOptions()->getInstallDir() + "/nonlinear/playground/";
+#else
+  return "/nonlinear/playground/";
+#endif
 }
 
 void Application::run()
@@ -256,11 +264,6 @@ UndoScope *Application::getUndoScope()
 DeviceInformation *Application::getDeviceInformation()
 {
   return m_deviceInformation.get();
-}
-
-VoiceGroupSelection *Application::getVoiceGroupSelectionHardwareUI()
-{
-  return m_hwuiEditBufferSelection.get();
 }
 
 bool Application::heartbeat()

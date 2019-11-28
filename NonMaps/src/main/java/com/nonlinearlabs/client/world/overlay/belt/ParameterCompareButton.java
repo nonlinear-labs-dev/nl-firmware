@@ -1,6 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt;
 
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
@@ -15,8 +15,7 @@ public class ParameterCompareButton extends SVGImage {
 
 	@Override
 	public int getSelectedPhase() {
-
-		if (EditBufferModel.get().isAnyParamChanged()) {
+		if (EditBufferPresenterProvider.getPresenter().isAnyParameterChanged) {
 			if (inCompare) {
 				return 1;
 			} else {
@@ -33,7 +32,7 @@ public class ParameterCompareButton extends SVGImage {
 
 	@Override
 	public Control click(Position eventPos) {
-		if (inCompare || EditBufferModel.get().isAnyParamChanged()) {
+		if (inCompare || EditBufferPresenterProvider.getPresenter().isAnyParameterChanged) {
 			inCompare = !inCompare;
 		}
 		return this;

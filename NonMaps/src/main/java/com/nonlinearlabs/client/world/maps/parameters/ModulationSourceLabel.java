@@ -2,14 +2,22 @@ package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.nonlinearlabs.client.ColorTable;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.Label;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class ModulationSourceLabel extends Label {
 
-	public ModulationSourceLabel(MapsLayout parent) {
+	ParameterPresenter presenter;
+
+	public ModulationSourceLabel(MapsLayout parent, int parameterID) {
 		super(parent, "");
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(parameterID, p -> {
+			presenter = p;
+			return true;
+		});
 	}
 
 	@Override
@@ -36,9 +44,7 @@ public class ModulationSourceLabel extends Label {
 
 	@Override
 	protected String getDisplayText() {
-		Parameter p = Parameter.findInParents(getParent());
-		ModulatableParameter mp = (ModulatableParameter) p;
-		return mp.getModSourceString();
+		return presenter.modulation.modulationSourceLabel;
 	}
 
 	@Override

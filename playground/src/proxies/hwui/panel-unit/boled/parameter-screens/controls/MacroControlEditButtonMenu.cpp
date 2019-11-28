@@ -40,11 +40,12 @@ void MacroControlEditButtonMenu::setup()
     addButton("Lock Group", std::bind(&MacroControlEditButtonMenu::lockGroup, this));
 
   addButton("Lock all", std::bind(&MacroControlEditButtonMenu::lockAll, this));
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  if(eb->hasLocks())
+  if(eb->hasLocks(vg))
     addButton("Unlock all", std::bind(&MacroControlEditButtonMenu::unlockAll, this));
 
-  auto mcGroup = eb->getParameterGroupByID("MCs");
+  auto mcGroup = eb->getParameterGroupByID("MCs", vg);
   mcGroup->onGroupChanged(mem_fun(this, &MacroControlEditButtonMenu::onGroupChanged));
 
   selectButton(s_lastAction);
@@ -53,7 +54,8 @@ void MacroControlEditButtonMenu::setup()
 void MacroControlEditButtonMenu::onGroupChanged()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto mcGroup = eb->getParameterGroupByID("MCs");
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto mcGroup = eb->getParameterGroupByID("MCs", vg);
   auto allParametersLocked = mcGroup->areAllParametersLocked();
   setItemTitle(3, allParametersLocked ? "Unlock Group" : "Lock Group");
 }
@@ -74,8 +76,8 @@ void MacroControlEditButtonMenu::smoothing()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   const auto currentID = eb->getSelected()->getID();
   const auto diffBetweenMacroControlIDAndItsSmoothing = 81;
-  const auto smoothingID = currentID + diffBetweenMacroControlIDAndItsSmoothing;
-  eb->undoableSelectParameter(smoothingID);
+  const auto smoothingID = currentID.getNumber() + diffBetweenMacroControlIDAndItsSmoothing;
+  eb->undoableSelectParameter({ smoothingID, currentID.getVoiceGroup() });
 }
 
 void MacroControlEditButtonMenu::editInfo()

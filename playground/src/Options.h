@@ -15,7 +15,8 @@ class Options
   const ustring &getBBBB() const;
   const ustring &getLayoutFolder() const;
   const ustring &getAudioEngineHost() const;
-  const ustring &getSelfPath() const;
+
+  ustring getInstallDir() const;
 
  private:
   void setDefaults();
@@ -30,5 +31,4 @@ class Options
   Glib::ustring m_layoutFolder;
   Glib::ustring m_bbbb = "localhost";
   Glib::ustring m_audioEngineHost = "localhost";
-  Glib::ustring m_selfPath;
 };

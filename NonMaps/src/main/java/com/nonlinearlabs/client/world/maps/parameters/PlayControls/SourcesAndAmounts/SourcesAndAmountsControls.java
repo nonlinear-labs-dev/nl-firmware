@@ -2,12 +2,9 @@ package com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAm
 
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupControls;
-import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol1;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol2;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol3;
@@ -28,15 +25,6 @@ class SourcesAndAmountsControls extends ParameterGroupControls {
 		addChild(new AmountsCol2(this));
 		addChild(new AmountsCol3(this));
 		addChild(new AmountsCol4(this));
-	}
-
-	public void onReturningModeChanged(PhysicalControlParameter src) {
-		for (MapsControl c : getChildren()) {
-			if (c instanceof AmountsCol) {
-				AmountsCol col = (AmountsCol) c;
-				col.onReturningModeChanged(src);
-			}
-		}
 	}
 
 	@Override

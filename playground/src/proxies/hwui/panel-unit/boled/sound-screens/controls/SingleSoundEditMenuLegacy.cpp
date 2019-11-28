@@ -45,7 +45,6 @@ Font::Justification SingleSoundEditMenuLegacy::getDefaultButtonJustification() c
   return Font::Justification::Left;
 }
 
- #warning"adlerauge"
 SoundMenu::SoundMenu(const Rect &r)
     : ButtonMenu(r, 5)
 {

@@ -3,7 +3,6 @@ package com.nonlinearlabs.client.world.overlay.belt.presets;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
@@ -45,7 +44,7 @@ class PreviousPreset extends SVGImage {
 
 	private void doPresetSelection() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
-		pm.selectPreviousPreset(Initiator.EXPLICIT_USER_ACTION);
+		pm.selectPreviousPreset();
 	}
 
 	@Override

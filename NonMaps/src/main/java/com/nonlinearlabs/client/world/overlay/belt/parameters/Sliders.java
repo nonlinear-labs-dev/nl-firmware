@@ -3,14 +3,13 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class Sliders extends OverlayLayout {
 
 	OverlayControl upper;
-	OverlayControl middle;
+	ParameterValueSlider middle;
 	OverlayControl lower;
 
 	public Sliders(BeltParameterLayout parent) {
@@ -26,6 +25,10 @@ public class Sliders extends OverlayLayout {
 		return (BeltParameterLayout) super.getParent();
 	}
 
+	public double getParamSliderVisibleWidth() {
+		return middle.getPixRect().getWidth();
+	}
+
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
@@ -35,10 +38,6 @@ public class Sliders extends OverlayLayout {
 		upper.doLayout(0, (h - middleHeight) / 2 - upperLowerHeight, w, upperLowerHeight);
 		middle.doLayout(0, (h - middleHeight) / 2, w, middleHeight);
 		lower.doLayout(0, (h + middleHeight) / 2, w, upperLowerHeight);
-	}
-
-	protected Parameter getParameter() {
-		return getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
 	}
 
 	@Override

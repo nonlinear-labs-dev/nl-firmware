@@ -5,20 +5,22 @@
 #include <parameters/MacroControlParameter.h>
 #include <tools/StringTools.h>
 #include "WebSocketRequest.h"
+#include <ParameterId.h>
 
 MCViewContentManager::MCViewContentManager() = default;
 
 void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
   g_signal_connect(connection, "message", G_CALLBACK(&MCViewContentManager::onWebSocketMessage), this);
   m_webSockets.emplace_back(std::make_shared<WebsocketConnection>(connection));
-  for(auto &param :
-      Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID("MCs")->getParameters())
+#warning "Respect voice groups"
+  for(auto &param : eb->getParameterGroupByID("MCs", VoiceGroup::I)->getParameters())
   {
     if(auto mc = dynamic_cast<MacroControlParameter *>(param))
     {
       using namespace std::string_literals;
-      const auto idString = to_string(mc->getID());
+      const auto idString = mc->getID().toString();
       const auto valueD = mc->getValue().getClippedValue();
       const auto value = to_string(valueD);
       const auto uuid = "FORCE"s;
@@ -40,7 +42,7 @@ void MCViewContentManager::handleRequest(std::shared_ptr<WebSocketRequest> reque
 {
   if(request->getPath().find("set-mc") != Glib::ustring::npos)
   {
-    auto id = std::stoi(request->get("id"));
+    auto id = ParameterId(request->get("id"));
     auto value = std::stod(request->get("value"));
     auto uuid = request->get("uuid");
     Application::get().getPresetManager()->getEditBuffer()->setMacroControlValueFromMCView(id, value, uuid);

@@ -10,7 +10,7 @@
         "Header": {
           "Class": "InvertedLabel",
           "Position": "0, 0",
-          "Events": "EditBufferTypeText => Text[Text]"
+          "Events": "VoicesParameterHeader => Text[Text]"
         },
         "ButtonA": {
           "Class": "Button",
@@ -22,72 +22,90 @@
           "Position": "BUTTON_B",
           "Init": {
             "Text[Text]": "Mono .."
-          }
+          },
+          "Events": "MonoButtonText => Text[Text]"
         },
         "ButtonC": {
           "Class": "Button",
-          "Position": "BUTTON_C",
-          "Init": {
-            "Text[Text]": "Unison .."
-          }
+          "Position": "BUTTON_C"
         },
         "ButtonD": {
           "Class": "Button",
-          "Position": "BUTTON_D"
-        },
-        "Mono": {
-          "Class": "Label",
-          "Position": "66, 0",
+          "Position": "BUTTON_D",
           "Init": {
-            "Text[Text]": "Mono"
+            "Text[Text]": "Unison .."
           },
-          "Events": "MonoEnabledText => Text[Text]"
+          "Events": "UnisonButtonText => Text[Text]"
         },
-        "Mono-Group": {
-          "Class": "MonoGroupControl",
-          "Position": "10, 15"
+        "MonoEnable": {
+          "Class": "ParameterPairTop",
+          "Position": "67, 1",
+          "Init": {
+            "Label[Text]": "Mono"
+          },
+          "Events": "MonoEnabledText => Value[Text], MonoEnabled => ANY[Highlight]"
+        },
+        "Priority": {
+          "Class": "ParameterPair",
+          "Position": "67, 13",
+          "Init": {
+            "Label[Text]": "Priority"
+          },
+          "Events": "MonoPrioText => Value[Text], MonoEnabled => ANY[Highlight]"
+        },
+        "Legato": {
+          "Class": "ParameterPair",
+          "Position": "67, 25",
+          "Init": {
+            "Label[Text]": "Legato"
+          },
+          "Events": "MonoLegatoText => Value[Text], MonoEnabled => ANY[Highlight]"
+        },
+        "Glide": {
+          "Class": "ParameterPairBottom",
+          "Position": "67, 37",
+          "Init": {
+            "Label[Text]": "Glide"
+          },
+          "Events": "MonoGlideText => Value[Text], MonoEnabled => ANY[Highlight]"
         },
         "Voices": {
-          "Class": "ParameterPair",
-          "Position": "127, 2",
+          "Class": "ParameterPairTop",
+          "Position": "161, 1",
           "Init": {
-            "Value[Text]": "1",
-            "Label[Text]": "Voices"
-          }
-        },
-        "Unison-Group": {
-          "Class": "Group-Control-Border",
-          "Position": "133, 15"
+            "Label[Text]": "Unison"
+          },
+          "Events": "UnisonVoicesText => Value[Text], UnisonEnabled => ANY[Highlight]"
         },
         "Detune": {
           "Class": "ParameterPair",
-          "Position": "132, 16",
+          "Position": "161, 13",
           "Init": {
-            "Value[Text]": "2.88%",
             "Label[Text]": "Detune"
-          }
+          },
+          "Events": "UnisonDetuneText => Value[Text], UnisonEnabled => ANY[Highlight]"
         },
         "Phase": {
           "Class": "ParameterPair",
-          "Position": "132, 26",
+          "Position": "161, 25",
           "Init": {
-            "Value[Text]": "No",
             "Label[Text]": "Phase"
-          }
+          },
+          "Events": "UnisonPhaseText => Value[Text], UnisonEnabled => ANY[Highlight]"
         },
         "Pan": {
-          "Class": "ParameterPair",
-          "Position": "132, 36",
+          "Class": "ParameterPairBottom",
+          "Position": "161, 37",
           "Init": {
-            "Value[Text]": "-50%",
             "Label[Text]": "Pan"
-          }
+          },
+          "Events": "UnisonPanText => Value[Text], UnisonEnabled => ANY[Highlight]"
         }
       },
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "OpenMonoParameterScreen",
-        "BUTTON_C": "OpenUnisonParameterScreen"
+        "BUTTON_D": "OpenUnisonParameter"
       }
     }
   }

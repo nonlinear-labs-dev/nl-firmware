@@ -1,8 +1,8 @@
 package com.nonlinearlabs.client.world.maps.settings;
 
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.Position;
@@ -37,7 +37,7 @@ class BenderRampBypassSetting extends Setting {
 	protected BenderRampBypassSetting(DeveloperSettings parent) {
 		super(parent, "Bender Ramp Bypass", "Off");
 
-		Setup.get().systemSettings.benderRampBypass.onChange(v -> {
+		SetupModel.get().systemSettings.benderRampBypass.onChange(v -> {
 			setCurrentValue(v == BooleanValues.on);
 			return true;
 		});

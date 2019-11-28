@@ -33,6 +33,19 @@ void UsageMode::setupButtonConnection(Buttons buttonID, tAction action)
   }
 }
 
+void UsageMode::removeButtonConnection(Buttons buttonID)
+{
+  try
+  {
+    m_actions.erase(buttonID);
+  }
+  catch(...)
+  {
+    nltools::Log::error("Could not remove button connection for:", buttonID,
+                        nltools::handle_eptr(std::current_exception()));
+  }
+}
+
 void UsageMode::setupFocusAndMode(FocusAndMode focusAndMode)
 {
 }

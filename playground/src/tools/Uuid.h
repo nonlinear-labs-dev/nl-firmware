@@ -28,6 +28,7 @@ class Uuid
 
   static Uuid none();
   static Uuid init();
+  static Uuid converted();
 
  private:
   std::string id;

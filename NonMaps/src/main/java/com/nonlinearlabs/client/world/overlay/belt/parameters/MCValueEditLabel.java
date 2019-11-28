@@ -2,9 +2,10 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.overlay.Label;
 
 public class MCValueEditLabel extends Label {
@@ -20,17 +21,10 @@ public class MCValueEditLabel extends Label {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		Parameter q = getParent().getMacroControl();
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 
-		if (q != null) {
-			String decorated = q.getDecoratedValue(true);
-			String unDecorated = q.getDecoratedValue(false);
-
-			String str[] = { "MC Position: \t" + decorated, "MC Position: \t" + unDecorated, "MC Pos: \t" + unDecorated,
-					"Pos: \t" + unDecorated, unDecorated };
-
-			return chooseFittingString(ctx, str);
-		}
+		if (p.modulation.isModulated)
+			return chooseFittingString(ctx, p.modulation.macroControlDisplayValues);
 
 		String str[] = { "MC Position", "MC Pos", "Pos" };
 		return chooseFittingString(ctx, str);

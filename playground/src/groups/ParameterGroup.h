@@ -25,8 +25,8 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   typedef Parameter *tParameterPtr;
 
   size_t countParameters() const;
-  tParameterPtr getParameterByID(gint32 id) const;
-  tParameterPtr findParameterByID(gint32 id) const;
+  tParameterPtr getParameterByID(ParameterId id) const;
+  tParameterPtr findParameterByID(ParameterId id) const;
 
   const IntrusiveList<tParameterPtr> &getParameters() const
   {
@@ -46,6 +46,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   void undoableToggleLock(UNDO::Transaction *transaction);
   bool areAllParametersLocked() const;
   bool isAnyParameterLocked() const;
+  bool isAnyParameterChanged() const;
 
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
   void undoableSetDefaultValues(UNDO::Transaction *transaction, const PresetParameterGroup *values);

@@ -15,7 +15,7 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/DualSpecialParameterScreen.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 
 namespace DescriptiveLayouts
 {
@@ -92,7 +92,7 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() {
       if(eb->getType() != SoundType::Single)
       {
-        Application::get().getVoiceGroupSelectionHardwareUI()->toggleHWEditBufferSelection();
+        Application::get().getHWUI()->toggleCurrentVoiceGroup();
       }
     });
 
@@ -122,7 +122,6 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::SwitchToButtonCDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonC); });
     registerEvent(EventSinks::SwitchToButtonDDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonD); });
     registerEvent(EventSinks::SwitchToVoicesDetail, [hwui] { hwui->setUiModeDetail(UIDetail::Voices); });
-
     registerEvent(EventSinks::SelectPresetForVoiceGroup, [hwui] {
       hwui->setUiModeDetail(UIDetail::SoundSelectPresetForVoiceGroup);
       hwui->getPanelUnit().getEditPanel().getBoled().bruteForce();
@@ -236,17 +235,25 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
-      if(eb->getType() == SoundType::Split)
-        eb->undoableSelectParameter(12345);
-      else
-        eb->undoableSelectParameter(12345, VoiceGroup::I);
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+      eb->undoableSelectParameter({ 364, vg });
     });
 
     registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
-      if(eb->getType() == SoundType::Split && Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection() == VoiceGroup::I)
-        eb->undoableSelectParameter(18700, VoiceGroup::I);
+      if(eb->getType() != SoundType::Split)
+        eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
       else
-        eb->undoableSelectParameter(11247);
+        eb->undoableSelectParameter({ 356, VoiceGroup::Global });
+    });
+
+    registerEvent(EventSinks::OpenMasterParameter, [eb] {
+      eb->undoableSelectParameter({ 247, VoiceGroup::Global });
+    });
+
+    registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() {
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      eb->undoableSelectParameter({ 249, vg });
     });
   }
 

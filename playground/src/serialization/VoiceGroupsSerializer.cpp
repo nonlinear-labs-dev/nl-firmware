@@ -32,13 +32,54 @@ namespace Detail
     {
       reader.onTag(ParameterGroupSerializer::getTagName(), [this](const auto attr) mutable {
         auto group = m_editBuffer->getParameterGroupByID(attr.get("id"), m_voiceGroup);
-        return new ParameterGroupSerializer(group);
+        if(group)
+          return new ParameterGroupSerializer(group);
+        return static_cast<ParameterGroupSerializer *>(nullptr);
       });
     }
 
    private:
     EditBuffer *m_editBuffer;
     VoiceGroup m_voiceGroup;
+  };
+
+  class GlobalParameterGroupsSerializer : public Serializer
+  {
+   public:
+    GlobalParameterGroupsSerializer(EditBuffer *e)
+        : Serializer(tagName())
+        , m_editBuffer(e)
+    {
+    }
+
+   protected:
+    void writeTagContent(Writer &writer) const override
+    {
+      for(auto &g : m_editBuffer->getParameterGroups(VoiceGroup::Global))
+      {
+        ParameterGroupSerializer ser(g);
+        ser.write(writer);
+      }
+    }
+
+    void readTagContent(Reader &reader) const override
+    {
+      reader.onTag(ParameterGroupSerializer::getTagName(), [this](const auto attr) mutable {
+        auto group = m_editBuffer->getParameterGroupByID(attr.get("id"), VoiceGroup::Global);
+        if(group)
+          return new ParameterGroupSerializer(group);
+        return static_cast<ParameterGroupSerializer *>(nullptr);
+      });
+    }
+
+   public:
+    static std::string tagName()
+    {
+      return "Global-Groups";
+    }
+
+   private:
+    EditBuffer *m_editBuffer;
   };
 }
 
@@ -62,6 +103,9 @@ void VoiceGroupsSerializer::writeTagContent(Writer &writer) const
       s.write(writer);
     });
   }
+
+  Detail::GlobalParameterGroupsSerializer ser(m_editBuffer);
+  ser.write(writer);
 }
 
 void VoiceGroupsSerializer::readTagContent(Reader &reader) const
@@ -71,4 +115,7 @@ void VoiceGroupsSerializer::readTagContent(Reader &reader) const
     reader.onTag(toString(vg),
                  [this, vg](const auto &attr) mutable { return new Detail::VoiceGroupSerializer(m_editBuffer, vg); });
   }
+
+  reader.onTag(Detail::GlobalParameterGroupsSerializer::tagName(),
+               [this](const auto &atttr) mutable { return new Detail::GlobalParameterGroupsSerializer(m_editBuffer); });
 }

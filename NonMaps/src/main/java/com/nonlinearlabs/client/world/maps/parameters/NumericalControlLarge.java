@@ -6,8 +6,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class NumericalControlLarge extends ValueDisplayLarge {
 
-	public NumericalControlLarge(MapsLayout parent) {
-		super(parent);
+	public NumericalControlLarge(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

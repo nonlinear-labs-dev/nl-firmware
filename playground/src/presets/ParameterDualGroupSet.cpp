@@ -32,11 +32,14 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <groups/MonoGroup.h>
+#include <groups/GlobalParameterGroups.h>
 #include <groups/VoiceGroupMasterGroup.h>
 
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
 {
+  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this), VoiceGroup::Global);
+
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
     appendParameterGroup(new EnvelopeAGroup(this, vg), vg);
@@ -55,18 +58,22 @@ ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     appendParameterGroup(new GapFilterGroup(this, vg), vg);
     appendParameterGroup(new EchoGroup(this, vg), vg);
     appendParameterGroup(new ReverbGroup(this, vg), vg);
-    appendParameterGroup(new MasterGroup(this, vg), vg);
     appendParameterGroup(new UnisonGroup(this, vg), vg);
 
     auto macroControls = appendParameterGroup(new MacroControlsGroup(this, vg), vg);
-    auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, vg), vg);
     appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls, vg), vg);
-    appendParameterGroup(new ScaleGroup(this, vg), vg);
+
     appendParameterGroup(new MonoGroup(this, vg), vg);
     appendParameterGroup(new VoiceGroupMasterGroup(this, vg), vg);
 
-    m_idToParameterMap[static_cast<int>(vg)] = getParametersSortedById(vg);
+    m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
   }
+
+  appendParameterGroup(new GlobalParameterGroups(this), VoiceGroup::Global);
+  appendParameterGroup(new MasterGroup(this), VoiceGroup::Global);
+  appendParameterGroup(new ScaleGroup(this), VoiceGroup::Global);
+
+  m_idToParameterMap[static_cast<size_t>(VoiceGroup::Global)] = getParametersSortedByNumber(VoiceGroup::Global);
 }
 
 ParameterDualGroupSet::~ParameterDualGroupSet()
@@ -78,12 +85,7 @@ ParameterDualGroupSet::~ParameterDualGroupSet()
 ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::getParameterGroupByID(const Glib::ustring &id,
                                                                                        VoiceGroup vg) const
 {
-  if(vg == VoiceGroup::Invalid)
-  {
-    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  }
-
-  for(auto a : m_parameterGroups[static_cast<int>(vg)])
+  for(auto a : m_parameterGroups[static_cast<size_t>(vg)])
     if(a->getID() == id)
       return a;
 
@@ -95,37 +97,25 @@ ParameterDualGroupSet::tParameterGroupPtr ParameterDualGroupSet::appendParameter
   p->init();
   g_assert(getParameterGroupByID(p->getID(), v) == nullptr);
   auto wrapped = tParameterGroupPtr(p);
-  m_parameterGroups[static_cast<int>(v)].append(wrapped);
+  m_parameterGroups[static_cast<size_t>(v)].append(wrapped);
   return wrapped;
 }
 
 void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *other)
 {
-
   super::copyFrom(transaction, other);
 
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(auto &g : getParameterGroups(vg))
-    {
       if(auto c = other->findParameterGroup(g->getID(), vg))
-      {
         g->copyFrom(transaction, c);
-      }
-    }
-  }
 }
 
-Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
+Parameter *ParameterDualGroupSet::findParameterByID(ParameterId id) const
 {
-  if(vg == VoiceGroup::Invalid)
-  {
-    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  }
-
   try
   {
-    return m_idToParameterMap[static_cast<int>(vg)].at(id);
+    return m_idToParameterMap.at(static_cast<size_t>(id.getVoiceGroup())).at(id.getNumber());
   }
   catch(...)
   {
@@ -133,55 +123,54 @@ Parameter *ParameterDualGroupSet::findParameterByID(int id, VoiceGroup vg) const
   }
 }
 
-size_t ParameterDualGroupSet::countParameters() const
-{
-  size_t count = 0;
-
-  for(auto group : m_parameterGroups[0])
-    count += group->countParameters();
-
-  return count;
-}
-
-std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedById(VoiceGroup vg) const
+std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedByNumber(VoiceGroup vg) const
 {
   std::map<int, Parameter *> sorted;
 
   for(auto group : getParameterGroups(vg))
     for(auto param : group->getParameters())
-      sorted[param->getID()] = param;
+      sorted[param->getID().getNumber()] = param;
 
   return sorted;
 }
 
 void ParameterDualGroupSet::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-#warning "TODO add webui focus!!! see and do @PresetDualParameterGroups"
   super::writeDocument(writer, knownRevision);
 
-  for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::I))
-    p->writeDocument(writer, knownRevision);
+  writer.writeTag("global-parameters", [&] {
+    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::Global))
+      p->writeDocument(writer, knownRevision);
+  });
+
+  writer.writeTag("voice-group-I-parameters", [&] {
+    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::I))
+      p->writeDocument(writer, knownRevision);
+  });
+
+  writer.writeTag("voice-group-II-parameters", [&] {
+    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::II))
+      p->writeDocument(writer, knownRevision);
+  });
 }
 
 const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
     ParameterDualGroupSet::getParameterGroups(VoiceGroup vg) const
 {
-  if(vg == VoiceGroup::Invalid)
+  try
   {
-    vg = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
+    return m_parameterGroups.at(static_cast<size_t>(vg));
   }
-
-  return m_parameterGroups[static_cast<int>(vg)];
+  catch(...)
+  {
+    nltools::fail("Could not find Parameter Groups", __FILE__, __LINE__, __FUNCTION__);
+  }
 }
 
 void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
 {
-  nltools_assertOnDevPC(from != to && to != VoiceGroup::Invalid && from != VoiceGroup::Invalid);
-
   for(auto &group : getParameterGroups(to))
-  {
     group->copyFrom(transaction, getParameterGroupByID(group->getID(), from));
-  }
 }
 
 void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target)
@@ -191,10 +180,11 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
   super::copyFrom(transaction, p);
 
   for(auto &g : getParameterGroups(target))
-  {
     if(auto c = p->findParameterGroup(g->getID(), VoiceGroup::I))
-    {
       g->copyFrom(transaction, c);
-    }
-  }
+
+  for(auto &g : getParameterGroups(VoiceGroup::Global))
+    for(auto &globalParam : g->getParameters())
+      if(auto presetGlobalParam = p->findParameterByID(globalParam->getID()))
+        globalParam->copyFrom(transaction, presetGlobalParam);
 }

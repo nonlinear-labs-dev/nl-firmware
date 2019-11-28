@@ -192,7 +192,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       else if(line == "dump-editbuffer")
       {
         auto eb = Application::get().getPresetManager()->getEditBuffer();
-        auto wtf = std::shared_ptr<std::ostream>(&std::cout, [](void*){});
+        auto wtf = std::shared_ptr<std::ostream>(&std::cout, [](void *) {});
         auto os = std::make_shared<StandardOutStream>(wtf);
         XmlWriter writer(os);
         eb->writeDocument(writer, 0);
@@ -252,10 +252,9 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         auto c = static_cast<signed char>(roundf(f));
         m_panelUnit.getEditPanel().getKnob().fake(c);
       }
-      else if(line.find("z") == 0)
+      else if(line.find('z') == 0)
       {
-        auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected();
-        p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        auto p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
             HardwareSourcesGroup::getUpperRibbonParameterID());
 
         if(auto h = dynamic_cast<PhysicalControlParameter *>(p))
@@ -268,10 +267,9 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
           changer->changeBy(1.0 / p->getValue().getCoarseDenominator());
         }
       }
-      else if(line.find("x") == 0)
+      else if(line.find('x') == 0)
       {
-        auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected();
-        p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        auto p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
             HardwareSourcesGroup::getUpperRibbonParameterID());
 
         if(auto h = dynamic_cast<PhysicalControlParameter *>(p))
@@ -332,11 +330,6 @@ const PanelUnit &HWUI::getPanelUnit() const
 }
 
 BaseUnit &HWUI::getBaseUnit()
-{
-  return m_baseUnit;
-}
-
-const BaseUnit &HWUI::getBaseUnit() const
 {
   return m_baseUnit;
 }
@@ -477,14 +470,14 @@ void HWUI::removeModifier(ButtonModifier i)
   setModifiers(cp);
 }
 
-sigc::connection HWUI::onModifiersChanged(slot<void, ButtonModifiers> cb)
+sigc::connection HWUI::onModifiersChanged(const slot<void, ButtonModifiers> &cb)
 {
   return m_modifersChanged.connectAndInit(cb, m_modifiers);
 }
 
-sigc::connection HWUI::connectToBlinkTimer(slot<void, int> cb)
+sigc::connection HWUI::connectToBlinkTimer(const slot<void, int> &cb)
 {
-  if(m_blinkTimer.size() == 0)
+  if(m_blinkTimer.empty())
   {
     m_blinkTimerConnection.disconnect();
     m_blinkTimerConnection
@@ -530,6 +523,35 @@ void HWUI::undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode 
 FocusAndMode HWUI::getFocusAndMode() const
 {
   return m_focusAndMode;
+}
+
+VoiceGroup HWUI::getCurrentVoiceGroup() const
+{
+  return m_currentVoiceGroup;
+}
+
+void HWUI::setCurrentVoiceGroup(VoiceGroup v)
+{
+  if(v == VoiceGroup::I || v == VoiceGroup::II)
+    m_currentVoiceGroup = v;
+
+  m_voiceGoupSignal.deferedSend(m_currentVoiceGroup);
+}
+
+void HWUI::toggleCurrentVoiceGroup()
+{
+  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+    return;
+
+  if(m_currentVoiceGroup == VoiceGroup::I)
+    setCurrentVoiceGroup(VoiceGroup::II);
+  else if(m_currentVoiceGroup == VoiceGroup::II)
+    setCurrentVoiceGroup(VoiceGroup::I);
+}
+
+sigc::connection HWUI::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
+{
+  return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
 }
 
 void HWUI::setFocusAndMode(const UIDetail &detail)

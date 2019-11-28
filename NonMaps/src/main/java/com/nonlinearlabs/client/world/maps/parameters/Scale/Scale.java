@@ -2,23 +2,22 @@ package com.nonlinearlabs.client.world.maps.parameters.Scale;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.ColorTable;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Scale extends ParameterGroupVertical {
-
-	private ScaleControls m_scaleControls;
+public class Scale extends ParameterGroup {
 
 	public Scale(MapsLayout parent) {
-		super(parent);
-		addChild(new ScaleLabelModuleHeader(this, getName()) {
+		super(parent, "Scale");
+		addChild(new ScaleLabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();
 			}
 		});
-		m_scaleControls = addChild(new ScaleControls(this));
+		addChild(new ScaleControls(this));
 	}
 
 	@Override
@@ -78,19 +77,7 @@ public class Scale extends ParameterGroupVertical {
 	}
 
 	public boolean anyValueNotDefault() {
-		boolean notDefault = false;
-		for (ScaleParameter param : m_scaleControls.getParameters()) {
-			if (param.getParameterID() != 312) {
-				double value = param.getValue().getRawValue();
-				double defaultValue = param.getDefaultValue();
-				notDefault |= value != defaultValue;
-			}
-		}
-		return notDefault;
+		return EditBufferPresenterProvider.getPresenter().isAnyScaleOffsetParameterNotDefault;
 	}
 
-	@Override
-	public String getID() {
-		return "Scale";
-	}
 }

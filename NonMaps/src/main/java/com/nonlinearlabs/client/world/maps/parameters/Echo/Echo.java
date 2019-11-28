@@ -4,13 +4,13 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupVertical;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Echo extends ParameterGroupVertical {
+public class Echo extends ParameterGroup {
 
 	public Echo(MapsLayout parent) {
-		super(parent);
-		addChild(new LabelModuleHeader(this, getName()));
+		super(parent, "Echo");
+		addChild(new LabelModuleHeader(this));
 		addChild(new EchoControls(this));
 	}
 
@@ -64,8 +64,4 @@ public class Echo extends ParameterGroupVertical {
 		return ColorTable.getColorIndicator();
 	}
 
-	@Override
-	public String getID() {
-		return "Echo";
-	}
 }

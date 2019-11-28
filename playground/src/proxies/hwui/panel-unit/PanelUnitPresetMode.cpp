@@ -60,13 +60,22 @@ void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::li
                                                  std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto currentParams = getMappings().findParameters(buttonId);
-  auto ebParameters = editBuffer->getParametersSortedById();
+  auto ebParameters = editBuffer->getParametersSortedByNumber(vg);
+  auto globalParameters = editBuffer->getParametersSortedByNumber(VoiceGroup::Global);
 
   bool anyChanged = false;
   for(const auto paramID : currentParams)
   {
-    anyChanged |= ebParameters[paramID]->isChangedFromLoaded();
+    try
+    {
+      anyChanged |= ebParameters.at(paramID)->isChangedFromLoaded();
+    }
+    catch(...)
+    {
+      anyChanged |= globalParameters.at(paramID)->isChangedFromLoaded();
+    }
   }
   states[(int) buttonId] = anyChanged ? TwoStateLED::BLINK : TwoStateLED::OFF;
 }
@@ -75,26 +84,40 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
                                             std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   for(const auto i : parameters)
   {
     auto signalFlowIndicator = ParameterDB::get().getSignalPathIndication(i);
-    auto parameter = editBuffer->findParameterByID(static_cast<size_t>(i));
 
-    if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
+    Parameter* parameter = nullptr;
+
+    try
     {
-      if(!mc->getTargets().empty())
-      {
-        states[(int) buttonId] = TwoStateLED::ON;
-        break;
-      }
+      parameter = editBuffer->findParameterByID({ i, vg });
     }
-    else if(signalFlowIndicator != invalidSignalFlowIndicator)
+    catch(...)
     {
-      if(parameter->getControlPositionValue() != signalFlowIndicator)
+      parameter = editBuffer->findParameterByID({ i, VoiceGroup::Global });
+    }
+
+    if(parameter != nullptr)
+    {
+      if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
       {
-        states[(int) buttonId] = TwoStateLED::ON;
-        break;
+        if(!mc->getTargets().empty())
+        {
+          states[(int) buttonId] = TwoStateLED::ON;
+          break;
+        }
+      }
+      else if(signalFlowIndicator != invalidSignalFlowIndicator)
+      {
+        if(parameter->getControlPositionValue() != signalFlowIndicator)
+        {
+          states[(int) buttonId] = TwoStateLED::ON;
+          break;
+        }
       }
     }
   }
@@ -107,4 +130,31 @@ void PanelUnitPresetMode::applyStateToLeds(std::array<TwoStateLED::LedState, num
   {
     panelUnit.getLED((Buttons) i)->setState(states[i]);
   }
+}
+
+PanelUnitSoundMode::PanelUnitSoundMode()
+{
+}
+
+void PanelUnitSoundMode::setup()
+{
+  PanelUnitPresetMode::setup();
+
+  removeButtonConnection(Buttons::BUTTON_SOUND);
+
+  setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
+    if(state)
+    {
+      auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+      if(focusAndMode.focus == UIFocus::Sound)
+        if(focusAndMode.mode == UIMode::Edit || focusAndMode.detail == UIDetail::Voices)
+          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+        else
+          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
+      else
+        Application::get().getHWUI()->undoableSetFocusAndMode(UIFocus::Sound);
+    }
+
+    return true;
+  });
 }

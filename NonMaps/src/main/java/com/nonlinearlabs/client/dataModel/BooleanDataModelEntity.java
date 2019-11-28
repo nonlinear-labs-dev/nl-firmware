@@ -1,6 +1,6 @@
 package com.nonlinearlabs.client.dataModel;
 
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 public class BooleanDataModelEntity extends EnumDataModelEntity<BooleanValues> {
 	public BooleanDataModelEntity() {

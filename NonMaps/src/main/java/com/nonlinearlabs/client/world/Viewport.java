@@ -3,7 +3,7 @@ package com.nonlinearlabs.client.world;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.overlay.Overlay;
@@ -16,7 +16,7 @@ public class Viewport extends MapsLayout {
 	Viewport(NonLinearWorld parent) {
 		super(parent);
 
-		Setup.get().localSettings.stripeBrightness.onChange(v -> {
+		SetupModel.get().localSettings.stripeBrightness.onChange(v -> {
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return true;
 		});
@@ -150,7 +150,7 @@ public class Viewport extends MapsLayout {
 		double arcInc = 2 * Math.PI / numStripes;
 		double arc = -0.15 * 2 * Math.PI;
 
-		double brightness = Setup.get().localSettings.stripeBrightness.toPercent();
+		double brightness = SetupModel.get().localSettings.stripeBrightness.toPercent();
 
 		if (brightness > 0) {
 			ctx.setStrokeStyle(new Gray((int) (255 * brightness / 100)).toString());

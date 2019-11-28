@@ -4,8 +4,6 @@
 #include "proxies/lpc/MessageComposer.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
-#include "testing/TestDriver.h"
-#include "http/UpdateDocumentMaster.h"
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
 #include <libundo/undo/Transaction.h>
@@ -14,18 +12,14 @@
 #include <presets/ParameterDualGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <Application.h>
-#include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
+#include <third-party/include/catch.hpp>
 #include <testing/TestRootDocument.h>
-#include <testing/parameter/TestGroupSet.h>
-#include <testing/parameter/TestGroup.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/messaging/ParameterMessageFactory.h>
 
-static TestDriver<ModulateableParameter> tests;
-
-ModulateableParameter::ModulateableParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
+ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                              tDisplayValue def, tControlPositionValue coarseDenominator,
                                              tControlPositionValue fineDenominator)
     : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
@@ -129,13 +123,15 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
   {
     auto swapData = UNDO::createSwapData(src);
 
+    auto vg = getParentGroup()->getVoiceGroup();
+
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+              groups->findParameterByID({ MacroControlsGroup::modSrcToParamNumber(m_modSource), vg }));
           modSrc->unregisterTarget(this);
         }
 
@@ -144,7 +140,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamID(m_modSource)));
+              groups->findParameterByID({ MacroControlsGroup::modSrcToParamNumber(m_modSource), vg }));
           modSrc->registerTarget(this);
         }
 
@@ -348,12 +344,12 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
   auto src = getModulationSource();
   if(src != MacroControls::NONE)
   {
-    uint16_t srcParamID = MacroControlsGroup::modSrcToParamID(src);
+    uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
     auto editBuffer = dynamic_cast<const EditBuffer *>(getParentGroup()->getParent());
 
     if(editBuffer)
     {
-      if(auto srcParam = editBuffer->findParameterByID(srcParamID, getVoiceGroup()))
+      if(auto srcParam = editBuffer->findParameterByID({ srcParamID, getVoiceGroup() }))
       {
         auto modAmount = getModulationAmount();
         auto srcValue = srcParam->getValue().getRawValue();
@@ -402,22 +398,6 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
     ret = "! " + ret;
 
   return ret;
-}
-
-void ModulateableParameter::registerTests()
-{
-  g_test_add_func("/ModulateableParameter/1.4pct-to-112lpc", []() {
-    TestRootDocument root;
-    TestGroupSet groupSet(&root);
-    TestGroup group(&groupSet, VoiceGroup::I);
-
-    ModulateableParameter peter(&group, 1, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000);
-    peter.m_modulationAmount = 0.014;
-    peter.m_modSource = MacroControls::MC1;
-    uint16_t packed = peter.getModulationSourceAndAmountPacked();
-    packed &= 0x3FFF;
-    g_assert(packed == 14);
-  });
 }
 
 bool ModulateableParameter::isChangedFromLoaded() const
@@ -470,9 +450,9 @@ MacroControlParameter *ModulateableParameter::getMacroControl() const
   auto src = getModulationSource();
   if(src != MacroControls::NONE)
   {
-    auto myMCID = MacroControlsGroup::modSrcToParamID(src);
+    auto myMCID = MacroControlsGroup::modSrcToParamNumber(src);
     return dynamic_cast<MacroControlParameter *>(
-        Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID));
+        Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ myMCID, getVoiceGroup() }));
   }
   return nullptr;
 }
@@ -485,6 +465,7 @@ void ModulateableParameter::undoableRecallMCPos()
     onChange(ChangeFlags::Generic);
   }
 }
+
 void ModulateableParameter::undoableRecallMCSource()
 {
   if(!isModSourceChanged())
@@ -499,6 +480,7 @@ void ModulateableParameter::undoableRecallMCSource()
   }
   onChange(ChangeFlags::Generic);
 }
+
 void ModulateableParameter::undoableRecallMCAmount()
 {
   if(!isModAmountChanged())

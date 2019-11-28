@@ -4,6 +4,7 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceHighPriority;
+import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupControls;
 import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontal;
 import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
@@ -14,9 +15,9 @@ class EnvALevelVelLevelKTTimeKT extends ParameterGroupControls {
 
 		private LvlVel(MapsLayout parent) {
 			super(parent, 14);
-			addChild(new LabelModulationSource(this, getName()));
-			addChild(new SliderHorizontal(this));
-			addChild(new ValueDisplaySmall(this));
+			addChild(new LabelModulationSource(this, getParameterID()));
+			addChild(new SliderHorizontal(this, getParameterID()));
+			addChild(new ValueDisplaySmall(this, getParameterID()));
 		}
 
 		@Override
@@ -25,13 +26,10 @@ class EnvALevelVelLevelKTTimeKT extends ParameterGroupControls {
 		}
 	}
 
-	private class LvlKT extends ModulationSourceHighPriority {
+	private class LvlKT extends ModulationSourceSlider {
 
 		private LvlKT(MapsLayout parent) {
 			super(parent, 17);
-			addChild(new LabelModulationSource(this, getName()));
-			addChild(new SliderHorizontal(this));
-			addChild(new ValueDisplaySmall(this));
 		}
 
 		@Override
@@ -40,13 +38,10 @@ class EnvALevelVelLevelKTTimeKT extends ParameterGroupControls {
 		}
 	}
 
-	private class TimeKT extends ModulationSourceHighPriority {
+	private class TimeKT extends ModulationSourceSlider {
 
 		private TimeKT(MapsLayout parent) {
 			super(parent, 18);
-			addChild(new LabelModulationSource(this, getName()));
-			addChild(new SliderHorizontal(this));
-			addChild(new ValueDisplaySmall(this));
 		}
 
 		@Override

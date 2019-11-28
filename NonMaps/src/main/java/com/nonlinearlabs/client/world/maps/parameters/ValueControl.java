@@ -1,13 +1,22 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.nonlinearlabs.client.Checksum;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 abstract class ValueControl extends ZoomReactingControl {
 
-	ValueControl(MapsLayout parent) {
+	protected ParameterPresenter presenter;
+
+	ValueControl(MapsLayout parent, int parameterID) {
 		super(parent);
+
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(parameterID, v -> {
+			presenter = v;
+			return true;
+		});
 	}
 
 	@Override
@@ -17,15 +26,15 @@ abstract class ValueControl extends ZoomReactingControl {
 	}
 
 	protected boolean isBiPolar() {
-		return getParentParameterLayout().isBiPolar();
+		return presenter.bipolar;
 	}
 
 	public double getValue() {
-		return getParentParameterLayout().getValue().getQuantizedClipped();
+		return presenter.controlPosition;
 	}
 
 	public String getDisplayValue() {
-		return getParentParameterLayout().getDecoratedValue(false);
+		return presenter.displayValues[presenter.displayValues.length - 1];
 	}
 
 	public Parameter getParentParameterLayout() {

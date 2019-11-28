@@ -22,18 +22,17 @@ PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *
 {
   m_type = editbuffer.getType();
 
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(auto &g : editbuffer.getParameterGroups(vg))
-      m_parameterGroups[static_cast<int>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
+      m_parameterGroups[static_cast<size_t>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
 }
 
 void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
-#warning "TODO add second paramset to document!!"
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
+    for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
+      g.second->writeDocument(writer);
 
-  for(auto &pair : m_parameterGroups[static_cast<int>(
-          Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection())])
-    pair.second->writeDocument(writer);
   AttributesOwner::writeDocument(writer, knownRevision);
 }
 
@@ -41,7 +40,7 @@ void PresetDualParameterGroups::init(const Preset *preset)
 {
   m_type = preset->getType();
 
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    for(auto &group : preset->m_parameterGroups[static_cast<int>(vg)])
-      m_parameterGroups[static_cast<int>(vg)][group.first] = std::make_unique<PresetParameterGroup>(*group.second);
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
+    for(auto &group : preset->m_parameterGroups[static_cast<size_t>(vg)])
+      m_parameterGroups[static_cast<size_t>(vg)][group.first] = std::make_unique<PresetParameterGroup>(*group.second);
 }

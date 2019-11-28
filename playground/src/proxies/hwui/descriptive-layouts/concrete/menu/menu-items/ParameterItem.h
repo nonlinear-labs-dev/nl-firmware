@@ -3,11 +3,12 @@
 
 class Parameter;
 
-class ParameterItem : public EditorItem {
-public:
-  ParameterItem(const Parameter *parameter, const Rect &r);
+class ParameterItem : public EditorItem
+{
+ public:
+  ParameterItem(Parameter *const parameter, const Rect &r);
   MenuOverlay *createOverlay() override;
 
-private:
-  const Parameter* m_parameter;
+ private:
+  Parameter *const m_parameter;
 };

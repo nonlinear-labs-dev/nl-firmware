@@ -8,7 +8,7 @@ class ModulateableParameterWithUnusualModUnit : public ModulateableParameter
   typedef ModulateableParameter super;
 
  public:
-  ModulateableParameterWithUnusualModUnit(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling,
+  ModulateableParameterWithUnusualModUnit(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                           const ScaleConverter *modAmountScaling, tDisplayValue def,
                                           int coarseDenominator, int fineDenominator);
 

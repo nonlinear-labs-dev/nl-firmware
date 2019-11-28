@@ -14,6 +14,8 @@ class ParameterNameLabel : public Label
   ParameterNameLabel(const Rect &pos);
   virtual ~ParameterNameLabel();
 
+  void updateParameter(const Parameter* parameter);
+
  protected:
   virtual void setSuffixFontColor(FrameBuffer &fb) const;
 
@@ -34,7 +36,7 @@ class ParameterNameLabel : public Label
 
   void handleParameterName(const Parameter *pParameter);
 
-  const Glib::ustring truncateMCName(const bool changed, const Glib::ustring &name) const;
+  Glib::ustring truncateMCName(const bool changed, const Glib::ustring &name) const;
 
   void onPresetLoaded();
 };

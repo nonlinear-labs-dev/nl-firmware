@@ -9,5 +9,5 @@ class PresetTypeLabel : public PresetLabel
 
   void drawBackground(FrameBuffer &fb) override;
 
-  std::string typeToString(const SoundType& type);
+  static std::string typeToString(const SoundType& type);
 };

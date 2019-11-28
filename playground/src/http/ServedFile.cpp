@@ -26,7 +26,7 @@ void ServedFile::startServing()
 
 Glib::ustring ServedFile::getFilePathFromMessagePath() const
 {
-  Glib::ustring p = Application::get().getSelfPath();
+  Glib::ustring p = Application::get().getNonMapsPath();
   size_t lastSlash = p.rfind('/');
   Glib::ustring path = m_request->getPath();
   p = p.substr(0, lastSlash) + path;

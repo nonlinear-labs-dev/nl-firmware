@@ -4,7 +4,7 @@
 #include "presets/EditBuffer.h"
 #include <parameters/RibbonParameter.h>
 
-PlayModeRibbonBehaviourLabel::PlayModeRibbonBehaviourLabel(int paramID, const Rect &rect)
+PlayModeRibbonBehaviourLabel::PlayModeRibbonBehaviourLabel(const ParameterId &paramID, const Rect &rect)
     : super(rect)
 {
   getEditBuffer()->findParameterByID(paramID)->onParameterChanged(

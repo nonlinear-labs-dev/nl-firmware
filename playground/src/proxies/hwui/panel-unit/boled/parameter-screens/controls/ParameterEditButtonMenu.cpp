@@ -27,6 +27,7 @@ ParameterEditButtonMenu::~ParameterEditButtonMenu()
 void ParameterEditButtonMenu::setup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   clear();
 
@@ -38,7 +39,7 @@ void ParameterEditButtonMenu::setup()
   if(eb->getSelected()->getParentGroup()->areAllParametersLocked() == false)
     addButton("Lock all", std::bind(&ParameterEditButtonMenu::lockAll, this));
 
-  if(eb->hasLocks())
+  if(eb->hasLocks(vg))
     addButton("Unlock all", std::bind(&ParameterEditButtonMenu::unlockAll, this));
 
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged));

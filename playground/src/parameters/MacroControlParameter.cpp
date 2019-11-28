@@ -25,13 +25,13 @@
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamID(MacroControls::MC1);
+static int lastSelectedMacroControl = MacroControlsGroup::modSrcToParamNumber(MacroControls::MC1);
 
-MacroControlParameter::MacroControlParameter(ParameterGroup *group, uint16_t id)
+MacroControlParameter::MacroControlParameter(ParameterGroup *group, ParameterId id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
-    , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID())
-    , mcviewThrottler{ Expiration::Duration(5) }
+    , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID().getNumber())
     , m_lastMCViewUuid{ "NONE" }
+    , mcviewThrottler{ Expiration::Duration(5) }
 {
 }
 
@@ -120,7 +120,7 @@ void MacroControlParameter::updateMCViewsFromMCChange(const Initiator &initiator
 
 void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiatior)
 {
-  const auto idString = to_string(getID());
+  const auto idString = getID().toString();
   const auto valueD = getValue().getClippedValue();
   const auto value = to_string(valueD);
   const auto uuid = initiatior == Initiator::EXPLICIT_MCVIEW ? m_lastMCViewUuid.c_str() : "NONE";
@@ -138,21 +138,20 @@ void MacroControlParameter::updateBoundRibbon()
 {
   if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
   {
-    if(auto eb = dynamic_cast<EditBuffer *>(groups->getParent()))
-    {
-      auto mcm = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
-      auto routers = mcm->getModulationRoutingParametersFor(this);
+    auto mcm = dynamic_cast<MacroControlMappingGroup *>(
+        groups->getParameterGroupByID("MCM", getParentGroup()->getVoiceGroup()));
 
-      for(auto router : routers)
+    auto routers = mcm->getModulationRoutingParametersFor(this);
+
+    for(auto router : routers)
+    {
+      if(auto ribbon = dynamic_cast<RibbonParameter *>(router->getSourceParameter()))
       {
-        if(auto ribbon = dynamic_cast<RibbonParameter *>(router->getSourceParameter()))
+        if(router->getControlPositionValue() > 0)
         {
-          if(router->getControlPositionValue() > 0)
+          if(ribbon->getRibbonReturnMode() == RibbonReturnMode::STAY)
           {
-            if(ribbon->getRibbonReturnMode() == RibbonReturnMode::STAY)
-            {
-              ribbon->boundToMacroControl(getControlPositionValue());
-            }
+            ribbon->boundToMacroControl(getControlPositionValue());
           }
         }
       }
@@ -160,16 +159,16 @@ void MacroControlParameter::updateBoundRibbon()
   }
 }
 
-void MacroControlParameter::setUiSelectedHardwareSource(int pos)
+void MacroControlParameter::setUiSelectedHardwareSource(int number)
 {
-  if(m_UiSelectedHardwareSourceParameterID != pos)
+  if(m_UiSelectedHardwareSourceParameterID != number)
   {
-    if(auto *eb = dynamic_cast<EditBuffer *>(getParent()->getParent()))
+    if(auto *eb = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent()))
     {
-      if(auto old = eb->findParameterByID(m_UiSelectedHardwareSourceParameterID))
+      if(auto old = eb->findParameterByID({ m_UiSelectedHardwareSourceParameterID, VoiceGroup::Global }))
         old->onUnselected();
 
-      m_UiSelectedHardwareSourceParameterID = pos;
+      m_UiSelectedHardwareSourceParameterID = number;
       invalidate();
     }
   }
@@ -177,10 +176,10 @@ void MacroControlParameter::setUiSelectedHardwareSource(int pos)
 
 void MacroControlParameter::toggleUiSelectedHardwareSource(int inc)
 {
-  int id = getUiSelectedHardwareSource();
+  auto id = getUiSelectedHardwareSource();
 
-  auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent());
-  auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
+  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
+  auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS", VoiceGroup::Global));
   auto availableSources = controlSources->getPhysicalControlParameters();
   setUiSelectedHardwareSource(getIdOfAdvancedParameter(availableSources, id, inc));
 }
@@ -312,17 +311,17 @@ sigc::connection MacroControlParameter::onTargetListChanged(sigc::slot<void> cb)
   return m_targetListChanged.connect(cb);
 }
 
-bool MacroControlParameter::isSourceOfTargetIn(const std::list<gint32> &ids) const
+bool MacroControlParameter::isSourceOfTargetIn(const std::list<ParameterId> &ids) const
 {
-  for(auto t : m_targets)
-    for(int id : ids)
+  for(const auto t : m_targets)
+    for(const auto &id : ids)
       if(t->getID() == id)
         return true;
 
   return false;
 }
 
-bool MacroControlParameter::isSourceOf(gint32 id) const
+bool MacroControlParameter::isSourceOf(ParameterId id) const
 {
   for(auto t : m_targets)
     if(t->getID() == id)
@@ -352,13 +351,13 @@ DFBLayout *MacroControlParameter::createLayout(FocusAndMode focusAndMode) const
 void MacroControlParameter::onSelected()
 {
   super::onSelected();
-  lastSelectedMacroControl = getID();
+  lastSelectedMacroControl = getID().getNumber();
 }
 
 void MacroControlParameter::onUnselected()
 {
-  auto grandPa = dynamic_cast<EditBuffer *>(getParent()->getParent());
-  auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS"));
+  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
+  auto controlSources = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID("CS", VoiceGroup::Global));
 
   for(auto source : controlSources->getPhysicalControlParameters())
     source->onUnselected();

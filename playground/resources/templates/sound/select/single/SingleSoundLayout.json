@@ -36,36 +36,38 @@
           "Position": "BUTTON_C",
           "Init": {
             "Text[Text]": "Voices.."
-          }
+          },
+          "Events": "SoundVoicesButtonText => Text[Text]"
         },
         "ButtonD": {
           "Class": "Button",
           "Position": "BUTTON_D",
           "Init": {
             "Text[Text]": "Master.."
-          }
+          },
+          "Events": "SoundMasterButtonText => Text[Text]"
         },
         "UnisonLabel": {
-          "Class": "SoundParameterLabel",
-          "Position": "128, 25",
+          "Class": "SingleSoundTop",
+          "Position": "80, 15",
           "Init": {
-            "Text[Text]": "+12.00 st"
+            "Label[Text]": "Volume"
           },
-          "Events": "EditBufferUnisonText => Text[Text]"
+          "Events": "EditBufferMasterVolume => Value[Text]"
         },
         "MasterLabel": {
-          "Class": "SoundParameterLabel",
-          "Position": "192, 25",
+          "Class": "SingleSoundBottom",
+          "Position": "80, 30",
           "Init": {
-            "Text[Text]": "-3.5 dB"
+            "Label[Text]": "Tune"
           },
-          "Events": "EditBufferMasterText => Text[Text]"
+          "Events": "EditBufferMasterTune => Value[Text]"
         }
       },
       "EventSinks": {
         "BUTTON_A": "SwitchToButtonADetail",
         "BUTTON_C": "SwitchToVoicesDetail",
-        "BUTTON_D": "OpenMasterParameterScreen"
+        "BUTTON_D": "OpenMasterParameter"
       }
     }
   }

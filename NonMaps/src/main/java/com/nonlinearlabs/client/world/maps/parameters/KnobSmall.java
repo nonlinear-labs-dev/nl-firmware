@@ -4,8 +4,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class KnobSmall extends Knob {
 
-	public KnobSmall(MapsLayout parent) {
-		super(parent);
+	public KnobSmall(MapsLayout parent, int parameterId) {
+		super(parent, parameterId);
 	}
 
 	@Override

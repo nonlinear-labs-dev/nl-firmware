@@ -8,7 +8,7 @@ class ScaleParameter : public Parameter
   typedef Parameter super;
 
  public:
-  ScaleParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
+  ScaleParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
                  tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
 
   DFBLayout *createLayout(FocusAndMode focusAndMode) const override;

@@ -3,7 +3,7 @@
 #include <math.h>
 
 TimeScaleConverter::TimeScaleConverter(const tTcdRange &tcdRange, const tDisplayRange &displayRange)
-    : ScaleConverter(TimeDimension::get())
+    : ScaleConverter(TimeDimension<3>::get())
     , m_tcdRange(tcdRange)
     , m_displayRange(displayRange)
 {

@@ -1,5 +1,9 @@
 #include "Slider.h"
 #include "parameters/Parameter.h"
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 Slider::Slider(Parameter *param, const Rect &rect)
     : super(rect)

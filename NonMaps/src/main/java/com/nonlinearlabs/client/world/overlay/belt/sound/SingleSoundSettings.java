@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -56,8 +57,8 @@ public class SingleSoundSettings extends OverlayLayout {
 		super(parent);
 
 		presetName = addChild(new PresetName(this));
-		tune = addChild(new NamedValueEdit(this, EditBufferModel.get().findParameter(248)));
-		volume = addChild(new NamedValueEdit(this, EditBufferModel.get().findParameter(247)));
+		tune = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(248, VoiceGroup.Global)));
+		volume = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(247, VoiceGroup.Global)));
 	}
 
 	public void doLayout(double x, double y, double w, double h) {

@@ -1,12 +1,8 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters.recall;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 
 public class MCAmountRecallValue extends RecallValue {
 
@@ -16,18 +12,11 @@ public class MCAmountRecallValue extends RecallValue {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-
 		if (!isActive())
 			return "";
 
-		BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
-		Parameter p = NonMaps.get().getNonLinearWorld().getParameterEditor().getSelection();
-		if (p instanceof ModulatableParameter && bpm instanceof ModulateableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			return m.getModulationAmount().getDecoratedValue(true,
-					((ModulateableParameter) bpm).ogModAmount.getValue());
-		}
-		return null;
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.modulation.originalModulationAmountDecoratedString;
 	}
 
 }

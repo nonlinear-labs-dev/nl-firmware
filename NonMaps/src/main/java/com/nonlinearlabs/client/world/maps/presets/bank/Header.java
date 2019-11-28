@@ -6,8 +6,8 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.contextStates.ClipContext;
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
 import com.nonlinearlabs.client.world.IPreset;
@@ -108,7 +108,7 @@ public class Header extends Label {
 		if (b == dragProxy.getOrigin())
 			return null;
 
-		if (Setup.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
+		if (SetupModel.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
 
 			if (dragProxy.getOrigin() instanceof IPreset) {
 				if (pm.hasMultiplePresetSelection()) {
@@ -292,7 +292,7 @@ public class Header extends Label {
 
 	@Override
 	public Control drag(Position pos, DragProxy dragProxy) {
-		if (Setup.get().localSettings.presetDragDrop.getValue() == BooleanValues.off)
+		if (SetupModel.get().localSettings.presetDragDrop.getValue() == BooleanValues.off)
 			return null;
 
 		if (getParent().isDraggingControl())
@@ -341,7 +341,7 @@ public class Header extends Label {
 
 		bank.getParent().pushBankOntoTop(bank);
 
-		boolean showContextMenus = Setup.get().localSettings.contextMenus.getValue() == BooleanValues.on;
+		boolean showContextMenus = SetupModel.get().localSettings.contextMenus.getValue() == BooleanValues.on;
 
 		if (showContextMenus) {
 

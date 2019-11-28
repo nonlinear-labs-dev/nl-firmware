@@ -8,6 +8,7 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <tools/FlagOwner.h>
 #include <presets/recall/RecallParameter.h>
+#include <ParameterId.h>
 
 class Layout;
 class DFBLayout;
@@ -31,8 +32,6 @@ class Parameter : public UpdateDocumentContributor,
                   public FlagOwner<ParameterFlags, uint8_t>
 {
  public:
-  using ID = uint16_t;
-
   enum class Step
   {
     STEP_INC,
@@ -45,7 +44,7 @@ class Parameter : public UpdateDocumentContributor,
     Dot
   };
 
-  Parameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tControlPositionValue def,
+  Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
             tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
   virtual ~Parameter();
 
@@ -53,7 +52,7 @@ class Parameter : public UpdateDocumentContributor,
 
   const ParameterGroup *getParentGroup() const;
   ParameterGroup *getParentGroup();
-  ID getID() const;
+  ParameterId getID() const;
 
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
@@ -123,10 +122,11 @@ class Parameter : public UpdateDocumentContributor,
 
   //Recall
   void undoableRecallFromPreset();
+  void undoableRecallFromPreset(UNDO::Transaction *transaction);
   const RecallParameter *getOriginalParameter() const;
 
   virtual bool isChangedFromLoaded() const;
-  virtual bool isValueChangedFromLoaded() const;
+  bool isValueDifferentFrom(double d) const;
 
   VoiceGroup getVoiceGroup() const;
 
@@ -144,7 +144,7 @@ class Parameter : public UpdateDocumentContributor,
  private:
   mutable Signal<void, const Parameter *> m_signalParamChanged;
 
-  ID m_id;
+  ParameterId m_id;
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
   VoiceGroup m_voiceGroup;

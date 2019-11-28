@@ -8,4 +8,5 @@
   <entry-point class="com.nonlinearlabs.client.NonMaps" />
   <source path="client" />
   <add-linker name="xsiframe" />
+  <set-property name="compiler.useSourceMaps" value="true" />
 </module>

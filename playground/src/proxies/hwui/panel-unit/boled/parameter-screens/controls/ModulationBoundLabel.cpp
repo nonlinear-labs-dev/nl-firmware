@@ -41,13 +41,14 @@ void ModulationBoundLabel::onParameterChanged(const Parameter *param)
   {
     if(m_mc != m->getModulationSource())
     {
+      auto vg = m->getVoiceGroup();
       m_mc = m->getModulationSource();
       m_mcConnection.disconnect();
 
-      auto mcID = MacroControlsGroup::modSrcToParamID(m_mc);
+      auto mcID = MacroControlsGroup::modSrcToParamNumber(m_mc);
       auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-      if((m_mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID))))
+      if((m_mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID({mcID, vg}))))
       {
         m_mcConnection = m_mcParam->onParameterChanged(mem_fun(this, &ModulationBoundLabel::onMCParameterChanged));
       }

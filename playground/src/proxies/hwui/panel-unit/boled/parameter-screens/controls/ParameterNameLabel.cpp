@@ -1,6 +1,7 @@
 #include <tools/TextSplitter.h>
 #include "ParameterNameLabel.h"
 #include "Application.h"
+#include <proxies/hwui/HWUI.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -32,6 +33,11 @@ void ParameterNameLabel::onParameterSelected(Parameter *param)
   }
 }
 
+void ParameterNameLabel::updateParameter(const Parameter *parameter)
+{
+  onParameterChanged(parameter);
+}
+
 Glib::ustring removeLastChar(const Glib::ustring &s)
 {
   if(!s.empty())
@@ -52,7 +58,7 @@ void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter)
   setText({ name, changed ? 1u : 0u });
 }
 
-const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
+Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
 {
   Glib::ustring ret = name;
 
@@ -78,14 +84,15 @@ const Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const
 
 void ParameterNameLabel::handleParameterName(const Parameter *pParameter)
 {
-  const auto changed = pParameter->isValueChangedFromLoaded();
+  const auto changed = pParameter->isChangedFromLoaded();
   setText({ pParameter->getLongName() + (changed ? "*" : ""), changed ? 1u : 0u });
 }
 
 void ParameterNameLabel::onParameterChanged(const Parameter *param)
 {
-  auto id = param->getID();
-  if(id == 243 || id == 244 || id == 245 || id == 246)
+  auto id = param->getID().getNumber();
+
+  if(id == 243 || id == 244 || id == 245 || id == 246 || id == 369 || id == 371)
   {
     handleMCParameterName(param);
   }

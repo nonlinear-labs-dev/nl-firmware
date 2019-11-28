@@ -46,16 +46,15 @@ namespace DescriptiveLayouts
     m_map[EventSources::MCModRange] = std::make_unique<CurrentModParamModRangeEventSource>();
     m_map[EventSources::EditBufferTypeText] = std::make_unique<EditBufferTypeStringEvent>();
     m_map[EventSources::EditBufferName] = std::make_unique<EditBufferName>();
-    m_map[EventSources::CurrentVoiceGroupName] = std::make_unique<CurrentVoiceGroupName>();
     m_map[EventSources::ParameterControlPosition] = std::make_unique<CurrentParameterControlPosition>();
 
-    m_map[EventSources::EditBufferMasterText] = std::make_unique<EditBufferMasterVolumeText>();
-    m_map[EventSources::EditBufferUnisonText] = std::make_unique<EditBufferMasterTuneText>();
+    m_map[EventSources::EditBufferMasterVolume] = std::make_unique<ParameterValue<247, VoiceGroup::Global>>();
+    m_map[EventSources::EditBufferMasterTune] = std::make_unique<ParameterValue<248, VoiceGroup::Global>>();
 
-    m_map[EventSources::VGIMasterTuneText] = std::make_unique<VGIMasterTuneText>();
-    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<VGIIMasterTuneText>();
-    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<VGIMasterVolumeText>();
-    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<VGIIMasterVolumeText>();
+    m_map[EventSources::VGIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::II>>();
+    m_map[EventSources::VGIMasterVolumeText] = std::make_unique<ParameterValue<358, VoiceGroup::I>>();
+    m_map[EventSources::VGIIMasterVolumeText] = std::make_unique<ParameterValue<358, VoiceGroup::II>>();
 
     m_map[EventSources::BooleanTrue] = std::make_unique<BooleanTrue>();
     m_map[EventSources::BooleanFalse] = std::make_unique<BooleanFalse>();
@@ -83,6 +82,28 @@ namespace DescriptiveLayouts
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();
     m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
+    m_map[EventSources::MonoEnabled] = std::make_unique<MonoEnabledBool>();
+
+    m_map[EventSources::MonoPrioText] = std::make_unique<ParameterValueCurrentVG<365>>();
+    m_map[EventSources::MonoLegatoText] = std::make_unique<ParameterValueCurrentVG<366>>();
+    m_map[EventSources::MonoGlideText] = std::make_unique<ParameterValueCurrentVG<367>>();
+
+    m_map[EventSources::UnisonVoicesText] = std::make_unique<UnisonVoicesText>();
+    m_map[EventSources::UnisonDetuneText] = std::make_unique<ParameterValueCurrentVG<250>>();
+    m_map[EventSources::UnisonPhaseText] = std::make_unique<ParameterValueCurrentVG<252>>();
+    m_map[EventSources::UnisonPanText] = std::make_unique<ParameterValueCurrentVG<253>>();
+
+    m_map[EventSources::VoicesParameterHeader] = std::make_unique<VoicesParameterHeader>();
+    m_map[EventSources::UnisonEnabled] = std::make_unique<UnisonEnabledBool>();
+
+    m_map[EventSources::CurrentVoiceGroupLabel] = std::make_unique<CurrentVoiceGroupLabel>();
+
+    m_map[EventSources::SoundParamsButtonText] = std::make_unique<SoundParamsButtonText>();
+    m_map[EventSources::SoundVoicesButtonText] = std::make_unique<SoundVoicesButtonText>();
+    m_map[EventSources::SoundMasterButtonText] = std::make_unique<SoundMasterButtonText>();
+
+    m_map[EventSources::MonoButtonText] = std::make_unique<MonoButtonText>();
+    m_map[EventSources::UnisonButtonText] = std::make_unique<UnisonButtonText>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

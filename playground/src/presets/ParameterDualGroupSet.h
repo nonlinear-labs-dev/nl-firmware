@@ -15,32 +15,32 @@ class ParameterDualGroupSet : public AttributesOwner
   using super = AttributesOwner;
 
  public:
-  ParameterDualGroupSet(UpdateDocumentContributor *parent);
+  explicit ParameterDualGroupSet(UpdateDocumentContributor *parent);
   ~ParameterDualGroupSet() override;
 
   typedef ParameterGroup *tParameterGroupPtr;
 
-  size_t countParameters() const;
-  virtual tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id, VoiceGroup vg = VoiceGroup::Invalid) const;
-  virtual const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg = VoiceGroup::Invalid) const;
-  virtual std::map<int, Parameter *> getParametersSortedById(VoiceGroup vg = VoiceGroup::Invalid) const;
-  virtual Parameter *findParameterByID(int id, VoiceGroup vgI = VoiceGroup::Invalid) const;
+  virtual tParameterGroupPtr getParameterGroupByID(const Glib::ustring &id, VoiceGroup vg) const;
+  virtual const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg) const;
+
+  virtual std::map<int, Parameter *> getParametersSortedByNumber(VoiceGroup vg) const;
+  virtual Parameter *findParameterByID(ParameterId id) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  protected:
+  void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
   virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p, VoiceGroup v);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
 
   void copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
-  void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
 
  private:
   using tParamGroups = IntrusiveList<tParameterGroupPtr>;
   using tParamMap = std::map<int, Parameter *>;
 
-  std::array<tParamGroups, 2> m_parameterGroups;
-  std::array<tParamMap, 2> m_idToParameterMap;
+  std::array<tParamGroups, static_cast<size_t>(VoiceGroup::NumGroups)> m_parameterGroups;
+  std::array<tParamMap, static_cast<size_t>(VoiceGroup::NumGroups)> m_idToParameterMap;
 
   friend class VoiceGroupSerializer;
 };

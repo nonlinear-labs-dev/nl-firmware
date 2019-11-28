@@ -12,22 +12,12 @@ public class HardwareSourcesCol1 extends ParameterColumn {
 		private Pitchbend(MapsLayout parent) {
 			super(parent, 274);
 		}
-
-		@Override
-		public ReturnMode getReturnMode() {
-			return ReturnMode.Center;
-		}
 	}
 
 	private class Aftertouch extends PhysicalControlParameter {
 
 		private Aftertouch(MapsLayout parent) {
 			super(parent, 279);
-		}
-
-		@Override
-		public ReturnMode getReturnMode() {
-			return ReturnMode.Zero;
 		}
 	}
 

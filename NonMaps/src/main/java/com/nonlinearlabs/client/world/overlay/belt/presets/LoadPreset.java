@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.world.overlay.belt.presets;
 
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
@@ -60,7 +61,7 @@ class LoadPreset extends SVGImage {
 		if (!isSelectedPresetLoaded())
 			return true;
 
-		return EditBufferModel.get().isAnyParamChanged();
+		return EditBufferPresenterProvider.getPresenter().isAnyParameterChanged;
 	}
 
 	protected boolean isSelectedPresetLoaded() {

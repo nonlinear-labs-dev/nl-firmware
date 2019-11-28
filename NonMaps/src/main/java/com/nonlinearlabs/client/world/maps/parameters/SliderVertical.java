@@ -9,8 +9,8 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class SliderVertical extends ModulateableValueControl {
 
-	public SliderVertical(MapsLayout parent) {
-		super(parent);
+	public SliderVertical(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override

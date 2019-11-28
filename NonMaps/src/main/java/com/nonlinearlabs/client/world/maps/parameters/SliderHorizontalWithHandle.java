@@ -1,12 +1,13 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
 public class SliderHorizontalWithHandle extends SliderHorizontal {
-	public SliderHorizontalWithHandle(MapsLayout parent) {
-		super(parent);
+	public SliderHorizontalWithHandle(MapsLayout parent, int parameterID) {
+		super(parent, parameterID);
 	}
 
 	@Override
@@ -56,30 +57,21 @@ public class SliderHorizontalWithHandle extends SliderHorizontal {
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
 
-		Parameter p = getParentParameterLayout();
-		if (p instanceof PhysicalControlParameter) {
-			PhysicalControlParameter ph = (PhysicalControlParameter) p;
-			Rect bgRect = calcBackgroundRect();
-			Rect pixRect = getPixRect().copy();
-			pixRect.setLeft(bgRect.getLeft() + toXPixels(1));
-			pixRect.setWidth(bgRect.getWidth() - toXPixels(2));
+		ParameterPresenter p = getParentParameterLayout().presenter;
 
-			double top = pixRect.getTop();
-			double bottom = pixRect.getBottom();
+		Rect bgRect = calcBackgroundRect();
+		Rect pixRect = getPixRect().copy();
+		pixRect.setLeft(bgRect.getLeft() + toXPixels(1));
+		pixRect.setWidth(bgRect.getWidth() - toXPixels(2));
 
-			switch (ph.getReturnMode()) {
-			case Center:
-				drawReturnArrow(ctx, pixRect.getCenterPoint().getX(), top, bottom);
-				break;
+		double top = pixRect.getTop();
+		double bottom = pixRect.getBottom();
 
-			case Zero:
-				drawReturnArrow(ctx, pixRect.getLeft(), top, bottom);
-				break;
+		if (p.drawCenterReturnIndicator)
+			drawReturnArrow(ctx, pixRect.getCenterPoint().getX(), top, bottom);
 
-			default:
-				break;
-			}
-		}
+		if (p.drawZeroReturnIndicator)
+			drawReturnArrow(ctx, pixRect.getLeft(), top, bottom);
 	}
 
 	protected void drawReturnArrow(Context2d ctx, double x, double top, double bottom) {

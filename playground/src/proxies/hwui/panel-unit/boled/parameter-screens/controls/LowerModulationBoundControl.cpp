@@ -42,10 +42,11 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 
   if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected()))
   {
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
     auto mc = modulatedParam->getModulationSource();
-    auto mcID = MacroControlsGroup::modSrcToParamID(mc);
+    auto mcID = MacroControlsGroup::modSrcToParamNumber(mc);
 
-    if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID)))
+    if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID({mcID, vg})))
     {
       auto range = modulatedParam->getModulationRange(true);
 

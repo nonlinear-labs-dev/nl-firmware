@@ -17,6 +17,7 @@
 #include <presets/ParameterDualGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <presets/EditBuffer.h>
+#include <nltools/messaging/Message.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -56,13 +57,14 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
-  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
-    if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
-      auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
+  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  {
+    for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+    {
+      auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM", vg));
+
       for(auto router : mappings->getModulationRoutingParametersFor(this))
-      {
         router->getValue().setIsBoolean(routersAreBoolean);
-      }
     }
   }
 
@@ -123,11 +125,13 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       swapData->swapWith(m_returnMode);
       setupScalingAndDefaultValue();
+      onChange();
     });
   }
   else
   {
     setupScalingAndDefaultValue();
+    onChange();
   }
 }
 
@@ -144,17 +148,6 @@ RibbonReturnMode RibbonParameter::getRibbonReturnMode() const
   return m_returnMode;
 }
 
-void RibbonParameter::undoableIncRibbonReturnMode(UNDO::Transaction *transaction)
-{
-  int e = static_cast<int>(m_returnMode);
-  e++;
-
-  if(e >= static_cast<int>(RibbonReturnMode::NUM_RETURN_MODES))
-    e = 0;
-
-  undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(e));
-}
-
 ReturnMode RibbonParameter::getReturnMode() const
 {
   if(m_returnMode == RibbonReturnMode::RETURN)
@@ -167,28 +160,22 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
-    if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent())) {
-      if(auto eb = dynamic_cast<EditBuffer*>(groups->getParent())) {
-        auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
+    if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+    {
+      for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+      {
+        auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID("MCM", vg));
         auto routers = mappings->getModulationRoutingParametersFor(this);
         auto highest = *routers.begin();
+
         for(auto router : routers)
-        {
           if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
-          {
             highest = router;
-          }
-        }
 
         for(auto router : routers)
-        {
           if(router != highest)
-          {
             router->onExclusiveRoutingLost();
-          }
-        }
       }
-
     }
   }
 }
@@ -225,6 +212,8 @@ void RibbonParameter::sendModeToLpc() const
     v += 2;
 
   Application::get().getLPCProxy()->sendSetting(id, v);
+
+  sendToLpc();
 }
 
 void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)

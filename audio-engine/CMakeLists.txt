@@ -58,6 +58,7 @@ ENDIF(DEV_PC)
 
 target_link_libraries(audio-engine pthread)
 target_link_libraries(audio-engine nltools)
+target_link_libraries(audio-engine parameterDB)
 include_directories(audio-engine ${CMAKE_SOURCE_DIR}/nltools/include/)
 
 function(linkLib name)

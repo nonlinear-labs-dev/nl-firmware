@@ -13,15 +13,16 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
-import com.nonlinearlabs.client.dataModel.setup.Setup.AftertouchCurve;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BenderCurve;
-import com.nonlinearlabs.client.dataModel.setup.Setup.BooleanValues;
-import com.nonlinearlabs.client.dataModel.setup.Setup.DisplayScaling;
-import com.nonlinearlabs.client.dataModel.setup.Setup.EditParameter;
-import com.nonlinearlabs.client.dataModel.setup.Setup.PedalType;
-import com.nonlinearlabs.client.dataModel.setup.Setup.SelectionAutoScroll;
-import com.nonlinearlabs.client.dataModel.setup.Setup.StripeBrightness;
-import com.nonlinearlabs.client.dataModel.setup.Setup.VelocityCurve;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCurve;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.DisplayScaling;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalType;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.StripeBrightness;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.VelocityCurve;
 import com.nonlinearlabs.client.presenters.DeviceInformation;
 import com.nonlinearlabs.client.presenters.DeviceInformationProvider;
 import com.nonlinearlabs.client.presenters.DeviceSettings;
@@ -158,13 +159,13 @@ public class Setup extends Composite {
 				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
 
 		pedal1Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(254, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(254, VoiceGroup.Global, e.getValue().doubleValue(), true));
 		pedal2Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(259, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(259, VoiceGroup.Global, e.getValue().doubleValue(), true));
 		pedal3Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(264, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(264, VoiceGroup.Global,e.getValue().doubleValue(), true));
 		pedal4Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(269, e.getValue().doubleValue(), true));
+				e -> EditBufferUseCases.get().setParameterValue(269, VoiceGroup.Global,e.getValue().doubleValue(), true));
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
 

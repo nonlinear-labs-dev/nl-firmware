@@ -1,11 +1,10 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter.Initiator;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 
 public class MCAmountEdit extends MCSomething {
 
@@ -16,39 +15,29 @@ public class MCAmountEdit extends MCSomething {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 
-		if (p instanceof ModulatableParameter) {
-			getParent().setMode(BeltParameterLayout.Mode.mcAmount);
-			ModulatableParameter m = (ModulatableParameter) p;
-			if (m.getModulationSource() != MacroControls.NONE)
-				getParent().setValueChanger(m.getModulationAmount().startUserEdit(getPixRect().getWidth()));
-		}
-
+		if (p.modulation.isModulated)
+			getParent().startEdit(BeltParameterLayout.Mode.mcAmount, getPixRect().getWidth());
+		
 		return getParent();
 	}
 
 	@Override
 	public Control doubleClick() {
-		Parameter p = getNonMaps().getNonLinearWorld().getParameterEditor().getSelectedOrSome();
-
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
-			if (m.getModulationSource() != MacroControls.NONE)
-				m.getModulationAmount().setToDefault(Parameter.Initiator.EXPLICIT_USER_ACTION);
-		}
-
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		EditBufferUseCases.get().resetModulationAmount(p.id);
 		return this;
 	}
 
 	@Override
-	protected void inc(ModulatableParameter m, boolean fine) {
-		m.getModulationAmount().inc(Initiator.EXPLICIT_USER_ACTION, fine);
+	protected void inc(int id, boolean fine) {
+		EditBufferUseCases.get().incModulationAmount(id, fine);
 	}
 
 	@Override
-	protected void dec(ModulatableParameter m, boolean fine) {
-		m.getModulationAmount().dec(Initiator.EXPLICIT_USER_ACTION, fine);
+	protected void dec(int id, boolean fine) {
+		EditBufferUseCases.get().decModulationAmount(id, fine);
 	}
 
 }

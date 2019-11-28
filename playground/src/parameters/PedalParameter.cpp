@@ -61,12 +61,17 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
 void PedalParameter::setRoutersModeAccordingToReturnMode()
 {
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
-  if(auto eb = dynamic_cast<EditBuffer *>(getParentGroup()->getParent())) {
-    auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM"));
-    for(auto router : mappings->getModulationRoutingParametersFor(this))
-    {
+  if(auto eb = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  {
+    auto mappingsVgI = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM", VoiceGroup::I));
+
+    for(auto router : mappingsVgI->getModulationRoutingParametersFor(this))
       router->getValue().setIsBoolean(routersAreBoolean);
-    }
+
+    auto mappingsVgII = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID("MCM", VoiceGroup::II));
+
+    for(auto router : mappingsVgII->getModulationRoutingParametersFor(this))
+      router->getValue().setIsBoolean(routersAreBoolean);
   }
 }
 
@@ -130,26 +135,22 @@ void PedalParameter::sendModeToLpc() const
   uint16_t id = mapParameterIdToLPCSetting();
   uint16_t v = (uint16_t) m_mode;
   Application::get().getLPCProxy()->sendSetting(id, v);
+
+  sendToLpc();
 }
 
 uint16_t PedalParameter::mapParameterIdToLPCSetting() const
 {
-  switch(getID())
-  {
-    case HardwareSourcesGroup::getPedal1ParameterID():
-      return LPCSettingIDs::PEDAL_1_MODE;
+  if(getID() == HardwareSourcesGroup::getPedal1ParameterID())
+    return LPCSettingIDs::PEDAL_1_MODE;
+  else if(getID() == HardwareSourcesGroup::getPedal2ParameterID())
+    return LPCSettingIDs::PEDAL_2_MODE;
+  else if(getID() == HardwareSourcesGroup::getPedal3ParameterID())
+    return LPCSettingIDs::PEDAL_3_MODE;
+  else if(getID() == HardwareSourcesGroup::getPedal4ParameterID())
+    return LPCSettingIDs::PEDAL_4_MODE;
 
-    case HardwareSourcesGroup::getPedal2ParameterID():
-      return LPCSettingIDs::PEDAL_2_MODE;
-
-    case HardwareSourcesGroup::getPedal3ParameterID():
-      return LPCSettingIDs::PEDAL_3_MODE;
-
-    case HardwareSourcesGroup::getPedal4ParameterID():
-      return LPCSettingIDs::PEDAL_4_MODE;
-  }
-
-  throw std::exception();
+  throw std::runtime_error("Pedal parameter has no pedal parameter id!?");
 }
 
 ReturnMode PedalParameter::getReturnMode() const

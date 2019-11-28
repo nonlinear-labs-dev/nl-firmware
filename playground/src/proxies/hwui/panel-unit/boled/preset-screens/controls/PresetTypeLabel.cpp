@@ -42,9 +42,9 @@ std::string PresetTypeLabel::typeToString(const SoundType &type)
     case SoundType::Invalid:
       return "";
     case SoundType::Layer:
-      return "=";
+      return "\uE0F3";
     case SoundType::Split:
-      return "||";
+      return "\uE0F0";
   }
   return {};
 }

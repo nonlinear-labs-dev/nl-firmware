@@ -26,6 +26,11 @@ namespace nltools
       s_level = l;
     }
 
+    static Level getLevel()
+    {
+      return s_level;
+    }
+
     enum class LogMode
     {
       Plain,
@@ -33,8 +38,6 @@ namespace nltools
       InsertSpaces,
       InsertSpacesAndAppendNewLine
     };
-
-
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void debug(const Args&... args)

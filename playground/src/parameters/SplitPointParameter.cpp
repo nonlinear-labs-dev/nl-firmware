@@ -5,10 +5,11 @@
 #include <testing/TestRootDocument.h>
 #include <testing/parameter/TestGroup.h>
 #include <testing/parameter/TestParameter.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/DualSpecialParameterScreen.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-SplitPointParameter::SplitPointParameter(ParameterGroup *group, uint16_t id)
+SplitPointParameter::SplitPointParameter(ParameterGroup *group, ParameterId id)
     : Parameter(group, id, ScaleConverter::get<KeyWithOctaveScaleConverter>(), 0.5, 60, 60)
 {
 }
@@ -20,16 +21,25 @@ ustring SplitPointParameter::getGroupAndParameterName() const
 
 DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  return new DualSpecialParameterScreen();
+  switch(focusAndMode.mode)
+  {
+    case UIMode::Info:
+      return new ParameterInfoLayout();
+    case UIMode::Edit:
+      return new UnmodulateableParameterEditLayout2();
+    case UIMode::Select:
+    default:
+      return new DualVoiceGroupMasterAndSplitPointLayout();
+  }
 }
 
 std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 {
   auto converter = ScaleConverter::get<KeyWithOctaveScaleConverter>();
 
-  if(vg == VoiceGroup::I)
+  if(vg == VoiceGroup::II)
     return converter->getDimension().stringize(getValue().getRawValue());
-  else if(vg == VoiceGroup::II)
+  else if(vg == VoiceGroup::I)
     return converter->getDimension().stringize(getNextStepValue(-1, {}));
 
   return "";
@@ -37,11 +47,12 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 
 ustring SplitPointParameter::getDisplayString() const
 {
-  auto currentVG = Application::get().getVoiceGroupSelectionHardwareUI()->getEditBufferSelection();
-  if(currentVG == VoiceGroup::I)
-    return getDisplayValue(VoiceGroup::I);
-  else
-    return getDisplayValue(VoiceGroup::II);
+#warning "TODO!"
+  //auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  //if(currentVG == VoiceGroup::I)
+  return getDisplayValue(VoiceGroup::I);
+  //else
+  //return getDisplayValue(VoiceGroup::II);
 }
 
 void SplitPointParameter::registerTests()
@@ -51,21 +62,21 @@ void SplitPointParameter::registerTests()
     TestRootDocument root;
     TestGroupSet set{ &root };
     TestGroup group(&set, VoiceGroup::I);
-    group.addParameter(new TestParameter<SplitPointParameter>(&group, uint16_t(1)));
+    group.addParameter(new TestParameter<SplitPointParameter>(&group, ParameterId{ 1, VoiceGroup::Global }));
 
-    auto parameter = dynamic_cast<SplitPointParameter *>(group.findParameterByID(1));
+    auto parameter = dynamic_cast<SplitPointParameter *>(group.findParameterByID({ 1, VoiceGroup::Global }));
     g_assert(parameter != nullptr);
 
     auto transScope = UNDO::Scope::startTrashTransaction();
     auto transaction = transScope->getTransaction();
 
     parameter->stepCPFromHwui(transaction, 1, {});
-    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "G3");
-    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "F#3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "F#3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "G3");
 
     parameter->stepCPFromHwui(transaction, 1, {});
-    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "G#3");
-    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "G3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::I) == "G3");
+    g_assert(parameter->getDisplayValue(VoiceGroup::II) == "G#3");
   });
 }
 
@@ -79,4 +90,4 @@ ustring SplitPointParameter::getShortName() const
   return "Split P.";
 }
 
-//static TestDriver<SplitPointParameter> driver;
+static TestDriver<SplitPointParameter> driver;

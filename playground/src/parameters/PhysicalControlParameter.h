@@ -9,10 +9,9 @@ class PhysicalControlParameter : public Parameter
   typedef Parameter super;
 
  public:
-  PhysicalControlParameter(ParameterGroup *group, uint16_t id, const ScaleConverter *scaling, tDisplayValue def,
+  PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
 
-  bool isValueChangedFromLoaded() const override;
   bool isChangedFromLoaded() const override;
   virtual void onChangeFromLpc(tControlPositionValue newValue);
   void registerTarget(ModulationRoutingParameter *target);
@@ -27,8 +26,8 @@ class PhysicalControlParameter : public Parameter
   virtual ReturnMode getReturnMode() const = 0;
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
-  void setUiSelectedModulationRouter(int paramID);
-  void toggleUiSelectedModulationRouter(int inc = 1);
+  void setUiSelectedModulationRouter(int paramNumber);
+  void toggleUiSelectedModulationRouter(int inc);
   int getUiSelectedModulationRouter() const;
 
   virtual void onSelected() override;
@@ -45,10 +44,10 @@ class PhysicalControlParameter : public Parameter
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
-private:
+ private:
   void sendParameterMessage() const override;
 
-private:
+ private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
 
   bool m_changingFromHWUI = false;

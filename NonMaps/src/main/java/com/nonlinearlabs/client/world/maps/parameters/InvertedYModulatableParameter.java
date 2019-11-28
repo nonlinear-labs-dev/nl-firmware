@@ -1,7 +1,7 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.nonlinearlabs.client.dataModel.setup.Setup;
-import com.nonlinearlabs.client.dataModel.setup.Setup.EditParameter;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
@@ -14,7 +14,7 @@ public abstract class InvertedYModulatableParameter extends ModulatableParameter
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-		boolean noDrag = Setup.get().localSettings.editParameter.getValue() == EditParameter.never;
+		boolean noDrag = SetupModel.get().localSettings.editParameter.getValue() == EditParameter.never;
 
 		if (isSelected() && !noDrag) {
 
