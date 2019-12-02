@@ -794,8 +794,7 @@ void EditBuffer::onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection)
     auto currentID = current->getID();
     if(currentID.getVoiceGroup() != VoiceGroup::Global)
     {
-      undoableSelectParameter(
-          { currentID.getNumber(), currentID.getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I });
+      undoableSelectParameter({ currentID.getNumber(), newSelection });
     }
   }
 }
