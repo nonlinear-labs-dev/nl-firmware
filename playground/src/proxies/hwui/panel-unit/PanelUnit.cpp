@@ -38,7 +38,7 @@ PanelUnit::PanelUnit()
     }
 
     auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
-    editBuffer->undoableSelectParameter({ currentMc, Application::get().getHWUI()->getCurrentVoiceGroup() });
+    editBuffer->undoableSelectParameter({ currentMc, VoiceGroup::Global });
     return true;
   });
 
@@ -48,7 +48,7 @@ PanelUnit::PanelUnit()
     auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID());
 
     auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();
-    auto target = editBuffer->findParameterByID({ targetId, Application::get().getHWUI()->getCurrentVoiceGroup() });
+    auto target = editBuffer->findParameterByID(targetId);
 
     if(auto modParam = dynamic_cast<ModulateableParameter *>(target))
     {

@@ -246,7 +246,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
 
   if(auto modParam = dynamic_cast<ModulateableParameter *>(firstParameterInList))
   {
-    mcStateMachine.setCurrentModulateableParameter(ids.front());
+    mcStateMachine.setCurrentModulateableParameter({ ids.front(), voiceGroup });
 
     if(mcStateMachine.traverse(state ? MacroControlAssignmentEvents::ModParamPressed
                                      : MacroControlAssignmentEvents::ModParamReleased))

@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/MacroControlAssignmentStateMachine.h>
 
 MacroControlAssignmentStateMachine::MacroControlAssignmentStateMachine()
+    : m_modParamId{ ParameterId::invalid() }
 {
   registerTraversal(MacroControlAssignmentStates::Initial, MacroControlAssignmentEvents::MCPressedWhileUnselected,
                     MacroControlAssignmentStates::Selected);
@@ -34,12 +35,12 @@ int MacroControlAssignmentStateMachine::getCurrentMCParameter() const
   return m_mcParamId;
 }
 
-void MacroControlAssignmentStateMachine::setCurrentModulateableParameter(int id)
+void MacroControlAssignmentStateMachine::setCurrentModulateableParameter(const ParameterId& id)
 {
   m_modParamId = id;
 }
 
-int MacroControlAssignmentStateMachine::getCurrentModulateableParameter() const
+const ParameterId& MacroControlAssignmentStateMachine::getCurrentModulateableParameter() const
 {
   return m_modParamId;
 }
