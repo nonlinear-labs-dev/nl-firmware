@@ -90,3 +90,8 @@ bool ParameterId::isGlobal(int number)
 
   return false;
 }
+
+ParameterId ParameterId::invalid()
+{
+  return ParameterId{ std::numeric_limits<decltype(m_num)>::max(), VoiceGroup::NumGroups };
+}

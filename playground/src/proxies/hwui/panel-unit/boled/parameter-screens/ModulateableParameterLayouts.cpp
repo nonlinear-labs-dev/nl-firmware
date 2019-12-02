@@ -35,6 +35,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include "ModulateableParameterLayouts.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
@@ -57,7 +58,7 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
     , super1()
     , super2()
 {
-  m_mcPosButton = addControl(new MCPositionButton(Buttons::BUTTON_A));
+  m_mcPosButton = addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
   m_mcSelButton = addControl(new MCSelectButton(Buttons::BUTTON_B));
   m_mcAmtButton = addControl(new MCAmountButton(Buttons::BUTTON_C));
 
@@ -184,8 +185,8 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
     switch(i)
     {
       case Buttons::BUTTON_A:
-        if(hasModulationSource())
-          toggleMode(Mode::MacroControlPosition);
+        if(m_mode == Mode::ParameterValue)
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
         return true;
 
       case Buttons::BUTTON_B:

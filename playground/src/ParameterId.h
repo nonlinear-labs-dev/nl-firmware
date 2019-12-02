@@ -30,6 +30,8 @@ class ParameterId
 
   static bool isGlobal(int number);
 
+  static ParameterId invalid();
+
  private:
   uint16_t m_num;
   VoiceGroup m_group;

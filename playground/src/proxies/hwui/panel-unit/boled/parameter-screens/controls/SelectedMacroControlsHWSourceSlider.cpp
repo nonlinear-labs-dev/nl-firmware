@@ -7,7 +7,7 @@
 
 SelectedMacroControlsHWSourceSlider::SelectedMacroControlsHWSourceSlider(const Rect &rect)
     : super(rect)
-    , m_hwParamID(0, VoiceGroup::NumGroups)
+    , m_hwParamID(ParameterId::invalid())
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onParameterSelected)));

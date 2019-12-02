@@ -59,8 +59,7 @@ ParameterId MacroControlsGroup::modSrcToParamId(MacroControls src)
       break;
   }
 
-  nltools::throwException("Unkown macro control id");
-  return { -1, VoiceGroup::Global };
+  return ParameterId::invalid();
 }
 
 MacroControls MacroControlsGroup::paramIDToModSrc(ParameterId pid)
