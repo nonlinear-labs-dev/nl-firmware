@@ -1,13 +1,15 @@
 #pragma once
+
 #include <parameters/Parameter.h>
 #include <parameters/names/ParameterDB.h>
+#include <parameters/ModulateableParameter.h>
 
-class VoiceGroupMasterParameter : public Parameter
+class VoiceGroupMasterParameter : public ModulateableParameter
 {
  public:
   VoiceGroupMasterParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling,
                             tControlPositionValue def, tControlPositionValue coarseDenominator,
-                            tControlPositionValue fineDenominator, std::string shortName, const std::string &longName,
+                            tControlPositionValue fineDenominator, std::string shortName, std::string longName,
                             VoiceGroup vg);
 
   ustring getLongName() const override;

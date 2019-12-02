@@ -13,12 +13,12 @@
 #include <device-settings/RandomizeAmount.h>
 #include "MockPresetStorage.h"
 
-inline EditBuffer* getEditBuffer()
+inline EditBuffer *getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }
 
-template <SoundType tNewSoundType> void loadPreset(Preset* newPreset)
+template <SoundType tNewSoundType> void loadPreset(Preset *newPreset)
 {
   auto editBuffer = getEditBuffer();
   auto scope = TestHelper::createTestScope();
@@ -90,8 +90,8 @@ TEST_CASE("Simple EditBuffer Conversion")
 }
 
 template <VoiceGroup tVoiceGroup, typename LoadPresetFunction>
-void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Preset* singlePreset,
-                                             Preset* presetToLoad)
+void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Preset *singlePreset,
+                                             Preset *presetToLoad)
 {
   auto editBuffer = getEditBuffer();
   auto vgMaster = editBuffer->findParameterByID({ 358, tVoiceGroup });
@@ -133,8 +133,8 @@ void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Pr
 }
 
 template <VoiceGroup tVoiceGroup, int polyID, int globalID, typename LoadPresetFunction>
-void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB, Preset* singlePreset,
-                                                Preset* dualPreset)
+void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB, Preset *singlePreset,
+                                                Preset *dualPreset)
 {
   auto editBuffer = getEditBuffer();
   auto vgParameter = editBuffer->findParameterByID({ polyID, tVoiceGroup });
@@ -259,7 +259,7 @@ TEST_CASE("poly groups initialization")
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
     }
 
-    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+    for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
     {
       const auto vgVoices = editBuffer->findParameterByID({ 249, vg })->getControlPositionValue();
       const auto vgDetune = editBuffer->findParameterByID({ 250, vg })->getControlPositionValue();
@@ -290,7 +290,7 @@ TEST_CASE("poly groups initialization")
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
     }
 
-    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+    for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
     {
       const auto vgVoices = editBuffer->findParameterByID({ 249, vg })->getControlPositionValue();
       const auto vgDetune = editBuffer->findParameterByID({ 250, vg })->getControlPositionValue();
@@ -446,7 +446,7 @@ TEST_CASE("Load <-> Changed")
 
   SECTION("Recall Poly Parameter (I) in Dual EditBuffer")
   {
-    Parameter* param{ nullptr };
+    Parameter *param{ nullptr };
 
     {
       auto scope = TestHelper::createTestScope();
@@ -473,7 +473,7 @@ TEST_CASE("Load <-> Changed")
 
   SECTION("Recall Poly Parameter (II) in Dual EditBuffer")
   {
-    Parameter* param{ nullptr };
+    Parameter *param{ nullptr };
 
     {
       auto scope = TestHelper::createTestScope();
@@ -500,7 +500,7 @@ TEST_CASE("Load <-> Changed")
 
   SECTION("Recall Global Parameter in Dual EditBuffer")
   {
-    Parameter* param{ nullptr };
+    Parameter *param{ nullptr };
 
     {
       auto scope = TestHelper::createTestScope();
@@ -612,7 +612,7 @@ TEST_CASE("Part Label")
   }
 }
 
-void randomizeRequireChangedAndInitSoundTest(const Preset* preset)
+void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
 {
   auto eb = TestHelper::getEditBuffer();
   {
@@ -630,7 +630,7 @@ void randomizeRequireChangedAndInitSoundTest(const Preset* preset)
     auto masterTune = eb->findParameterByID({ 248, VoiceGroup::Global });
     REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getDefaultValue()));
 
-    for(auto& vg : { VoiceGroup::I, VoiceGroup::II })
+    for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
     {
       auto vgVolume = eb->findParameterByID({ 358, vg });
       REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getDefaultValue()));
@@ -706,7 +706,7 @@ TEST_CASE("Convert Sound Leads to Converted UUID")
 
 namespace PartNaming
 {
-  void renamePresetPartsToEinsAndZwo(Preset* p)
+  void renamePresetPartsToEinsAndZwo(Preset *p)
   {
     auto scope = TestHelper::createTestScope();
     p->undoableSetVoiceGroupName(scope->getTransaction(), VoiceGroup::I, "Eins");
@@ -715,7 +715,7 @@ namespace PartNaming
     REQUIRE(p->getVoiceGroupName(VoiceGroup::II) == "Zwo");
   }
 
-  template <typename tStr> void renamePresetTo(Preset* p, const tStr& s)
+  template <typename tStr> void renamePresetTo(Preset *p, const tStr &s)
   {
     auto scope = TestHelper::createTestScope();
     p->setName(scope->getTransaction(), s);

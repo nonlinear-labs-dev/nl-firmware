@@ -282,8 +282,8 @@ namespace nltools
       }
 
       std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::ModulateableParameter, 97> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 107> unmodulateables;
+      std::array<ParameterGroups::ModulateableParameter, 100> modulateables;
+      std::array<ParameterGroups::UnmodulatebaleParameter, 97> unmodulateables;
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
       ParameterGroups::UnmodulatebaleParameter unisonVoices;
@@ -297,8 +297,8 @@ namespace nltools
         return MessageType::SplitPreset;
       }
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 101>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 100>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 97>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 
@@ -320,8 +320,8 @@ namespace nltools
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
       std::array<ParameterGroups::MacroParameter, 6> macros;
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 101>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 100>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 97>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 

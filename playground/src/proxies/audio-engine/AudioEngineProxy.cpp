@@ -59,6 +59,7 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
         auto &pItem = msg.globalparams[globalParams++];
         pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
+        pItem.locked = p->isLocked();
       }
       else if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
@@ -145,6 +146,21 @@ template <typename tMsg> void insertMockedParameters(tMsg &msg, VoiceGroup vg, s
   }
 }
 
+template <typename tParameterType, typename tParameterArray>
+void forEachParameterInGroup(EditBuffer *eb, const GroupId &group, tParameterArray &array, size_t &index)
+{
+  for(auto &p : eb->getParameterGroupByID(group)->getParameters())
+  {
+    if(auto param = dynamic_cast<tParameterType *>(p))
+    {
+      auto &msgParam = array[index++];
+      msgParam.controlPosition = param->getControlPositionValue();
+      msgParam.id = param->getID().getNumber();
+      msgParam.locked = param->isLocked();
+    }
+  }
+}
+
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
 {
   nltools::msg::SinglePresetMessage msg{};
@@ -160,25 +176,14 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
   nltools_assertAlways(unMod == 7);
   nltools_assertAlways(modP == 8);
 
+  forEachParameterInGroup<MacroControlParameter>(editBuffer, { "MCs", VoiceGroup::Global }, msg.macros, mc);
+  forEachParameterInGroup<ModulationRoutingParameter>(editBuffer, { "MCM", VoiceGroup::Global }, msg.hwamounts, modR);
+
   for(auto &g : editBuffer->getParameterGroups(VoiceGroup::I))
   {
     for(auto p : g->getParameters())
     {
-      if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
-      {
-        auto &macro = msg.macros[mc++];
-        macro.id = mcParameter->getID().getNumber();
-        macro.controlPosition = mcParameter->getControlPositionValue();
-        macro.locked = mcParameter->isLocked();
-      }
-      else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
-      {
-        auto &hwAmount = msg.hwamounts[modR++];
-        hwAmount.id = hwAmounts->getID().getNumber();
-        hwAmount.controlPosition = hwAmounts->getControlPositionValue();
-        hwAmount.locked = hwAmounts->isLocked();
-      }
-      else if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
+      if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
       {
         auto &mod = msg.modulateables[modP++];
         mod.id = modParam->getID().getNumber();
