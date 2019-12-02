@@ -7,9 +7,7 @@ MacroControlsGroup::MacroControlsGroup(ParameterDualGroupSet *parent)
 {
 }
 
-MacroControlsGroup::~MacroControlsGroup()
-{
-}
+MacroControlsGroup::~MacroControlsGroup() = default;
 
 void MacroControlsGroup::init()
 {

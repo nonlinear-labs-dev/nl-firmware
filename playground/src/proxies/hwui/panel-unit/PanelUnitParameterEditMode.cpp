@@ -194,7 +194,7 @@ void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Pa
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {
-          ph->setUiSelectedModulationRouter(router->getID().getNumber());
+          ph->setUiSelectedModulationRouter(router->getID());
         }
       }
     }
@@ -431,7 +431,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       auto selModRouter = p->getUiSelectedModulationRouter();
 
-      if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID({ selModRouter, vg })))
+      if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID(selModRouter)))
       {
         collectLedStates(states, router->getTargetParameter()->getID());
       }

@@ -40,10 +40,10 @@ void SelectedParamsMacroControlSlider::onTargetParamValueChanged(const Parameter
   if(const auto *modP = dynamic_cast<const ModulateableParameter *>(param))
   {
     auto src = modP->getModulationSource();
-    uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
+    auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
     auto vg = modP->getVoiceGroup();
 
-    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({srcParamID, vg}))
+    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID))
       setParameter(pa);
     else
       setParameter(nullptr);

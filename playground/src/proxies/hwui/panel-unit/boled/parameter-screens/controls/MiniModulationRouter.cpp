@@ -27,6 +27,6 @@ void MiniModulationRouter::onSourceParameterChanged(const Parameter *p)
   if(auto a = dynamic_cast<const PhysicalControlParameter *>(p))
   {
     auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-    setHighlight(a->getUiSelectedModulationRouter() == m_param->getID().getNumber());
+    setHighlight(a->getUiSelectedModulationRouter() == m_param->getID());
   }
 }

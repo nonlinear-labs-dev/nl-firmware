@@ -22,10 +22,9 @@ bool UpperModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
   if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected()))
   {
     auto mc = modulatedParam->getModulationSource();
-    auto mcID = MacroControlsGroup::modSrcToParamNumber(mc);
-    auto vg = modulatedParam->getVoiceGroup();
+    auto mcID = MacroControlsGroup::modSrcToParamId(mc);
 
-    if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID({mcID, vg})))
+    if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID)))
     {
       auto range = modulatedParam->getModulationRange(true);
 

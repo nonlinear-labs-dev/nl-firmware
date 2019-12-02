@@ -7,6 +7,7 @@
 
 SelectedMacroControlsHWSourceValue::SelectedMacroControlsHWSourceValue(const Rect &rect)
     : super(rect)
+    , m_hwParamID{ 0, VoiceGroup::NumGroups }
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onParameterSelected)));
@@ -25,26 +26,26 @@ void SelectedMacroControlsHWSourceValue::onParameterSelected(Parameter *newOne)
   m_mcChanged = newOne->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onMCChanged));
 }
 
-int SelectedMacroControlsHWSourceValue::getHWSourceID(const Parameter *param) const
+ParameterId SelectedMacroControlsHWSourceValue::getHWSourceID(const Parameter *param) const
 {
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
     return mc->getUiSelectedHardwareSource();
-  return 0;
+  return { 0, VoiceGroup::NumGroups };
 }
 
 void SelectedMacroControlsHWSourceValue::onMCChanged(const Parameter *param)
 {
-  int hwSourceID = getHWSourceID(param);
+  auto hwSourceID = getHWSourceID(param);
 
   if(m_hwParamID != hwSourceID)
   {
     m_hwParamID = hwSourceID;
     m_hwChanged.disconnect();
 
-    if(hwSourceID > 0)
+    if(hwSourceID.getNumber() > 0)
     {
-      if(auto hwParam
-         = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({hwSourceID, VoiceGroup::Global}))
+      if(auto hwParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+             { hwSourceID.getNumber(), VoiceGroup::Global }))
       {
         m_hwChanged = hwParam->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::updateText));
       }

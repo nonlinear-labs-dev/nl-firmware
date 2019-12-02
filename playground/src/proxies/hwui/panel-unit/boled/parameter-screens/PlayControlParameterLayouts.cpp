@@ -67,8 +67,8 @@ bool PlayControlParameterLayout2::onRotary(int i, ButtonModifiers modifiers)
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     auto hw = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID({ "CS", VoiceGroup::Global }));
     auto currentID = getCurrentParameter()->getID();
-    auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID.getNumber(), i);
-    editBuffer->undoableSelectParameter({ newParamID, currentID.getVoiceGroup() });
+    auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID, i);
+    editBuffer->undoableSelectParameter(newParamID);
     return true;
   }
 
@@ -279,7 +279,7 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
 
           for(auto routingParam : routingParams)
           {
-            if(routingParam->getID().getNumber() == p->getUiSelectedModulationRouter())
+            if(routingParam->getID() == p->getUiSelectedModulationRouter())
             {
               editBuffer->undoableSelectParameter(routingParam->getTargetParameter()->getID());
               return true;

@@ -81,8 +81,8 @@ PanelUnit::PanelUnit()
   m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::SelectSource, [=]() {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     auto p = editBuffer->getSelected();
-    auto currentSource = choseHWBestSourceForMC(p->getID().getNumber());
-    editBuffer->undoableSelectParameter({ currentSource, Application::get().getHWUI()->getCurrentVoiceGroup() });
+    auto currentSource = choseHWBestSourceForMC(p->getID());
+    editBuffer->undoableSelectParameter(currentSource);
     m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
     return true;
   });
@@ -93,16 +93,12 @@ PanelUnit::PanelUnit()
                                         sigc::mem_fun(this, &PanelUnit::onBBBBConnected));
 }
 
-PanelUnit::~PanelUnit()
-{
-}
+PanelUnit::~PanelUnit() = default;
 
-int PanelUnit::choseHWBestSourceForMC(int mcParamId) const
+ParameterId PanelUnit::choseHWBestSourceForMC(const ParameterId &mcParamId) const
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-
   if(auto mc = dynamic_cast<MacroControlParameter *>(
-         Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ mcParamId, vg })))
+         Application::get().getPresetManager()->getEditBuffer()->findParameterByID(mcParamId)))
   {
     return mc->getUiSelectedHardwareSource();
   }

@@ -142,7 +142,7 @@ void PhysicalControlParameter::onSelected()
   {
     auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
     dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl))
-        ->setUiSelectedHardwareSource(getID().getNumber());
+        ->setUiSelectedHardwareSource(getID());
   }
 }
 
@@ -160,7 +160,7 @@ void PhysicalControlParameter::onUnselected()
   }
 }
 
-void PhysicalControlParameter::setUiSelectedModulationRouter(ParameterId paramNumber)
+void PhysicalControlParameter::setUiSelectedModulationRouter(const ParameterId &paramNumber)
 {
   auto current = getUiSelectedModulationRouter();
 

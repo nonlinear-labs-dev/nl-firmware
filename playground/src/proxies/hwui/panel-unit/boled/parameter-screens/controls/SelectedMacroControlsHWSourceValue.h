@@ -23,9 +23,9 @@ class SelectedMacroControlsHWSourceValue : public Label
   void onMCChanged(const Parameter *param);
   void updateText(const Parameter *param);
   virtual void setSuffixFontColor(FrameBuffer &fb) const override;
-  int getHWSourceID(const Parameter *param) const;
+  ParameterId getHWSourceID(const Parameter *param) const;
 
-  int m_hwParamID = 0;
+  ParameterId m_hwParamID;
   sigc::connection m_mcChanged;
   sigc::connection m_hwChanged;
 };

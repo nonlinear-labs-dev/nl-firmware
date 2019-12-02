@@ -37,10 +37,8 @@ void ModulationSourceLabel::onParamValueChanged(const Parameter *param)
 
     if(src != MacroControls::NONE)
     {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      uint16_t id = MacroControlsGroup::modSrcToParamNumber(src);
-
-      if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, vg}))
+      auto id = MacroControlsGroup::modSrcToParamId(src);
+      if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
       {
         setText(mc->getShortName());
         return;

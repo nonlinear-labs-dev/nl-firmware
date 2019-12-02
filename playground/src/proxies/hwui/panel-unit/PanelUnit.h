@@ -36,7 +36,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
 
  private:
   void installUsageMode(FocusAndMode focusAndMode);
-  int choseHWBestSourceForMC(int mcParamId) const;
+  ParameterId choseHWBestSourceForMC(const ParameterId &mcParamId) const;
   void onBBBBConnected();
 
   EditPanel m_editPanel;

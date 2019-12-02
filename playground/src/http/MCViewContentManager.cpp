@@ -38,7 +38,7 @@ void MCViewContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gin
   pThis->handleRequest(request);
 }
 
-void MCViewContentManager::handleRequest(std::shared_ptr<WebSocketRequest> request)
+void MCViewContentManager::handleRequest(const std::shared_ptr<WebSocketRequest> &request)
 {
   if(request->getPath().find("set-mc") != Glib::ustring::npos)
   {
