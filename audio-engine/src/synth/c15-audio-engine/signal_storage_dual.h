@@ -19,7 +19,7 @@ using PolyInt = ParallelData<int32_t, C15::Config::local_polyphony>;
 struct LayerSignalCollection
 {
   PolyValue m_osc_a = {}, m_osc_b = {}, m_comb = {}, m_svf = {};
-  float m_fx_dry = 0.0f, m_fx_wet = {};
+  float m_fx_dry = 0.0f, m_fx_wet = 0.0f;
 };
 
 // global and mono sections require mono signals
