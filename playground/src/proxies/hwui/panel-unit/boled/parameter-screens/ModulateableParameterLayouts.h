@@ -32,6 +32,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   virtual bool switchToNormalMode() override;
 
  private:
+  void handleSelectPartButton();
   void onModfiersChanged(ButtonModifiers modifiers);
   void onSelectedParameterChanged(Parameter *oldParam, Parameter *newParam);
   void onCurrentParameterChanged(const Parameter *p);
