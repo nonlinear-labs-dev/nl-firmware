@@ -16,9 +16,7 @@ SelectedMacroControlsHWSourceValue::SelectedMacroControlsHWSourceValue(const Rec
       sigc::hide(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onModifiersChanged)));
 }
 
-SelectedMacroControlsHWSourceValue::~SelectedMacroControlsHWSourceValue()
-{
-}
+SelectedMacroControlsHWSourceValue::~SelectedMacroControlsHWSourceValue() = default;
 
 void SelectedMacroControlsHWSourceValue::onParameterSelected(Parameter *newOne)
 {
@@ -74,5 +72,5 @@ void SelectedMacroControlsHWSourceValue::setSuffixFontColor(FrameBuffer &fb) con
 
 void SelectedMacroControlsHWSourceValue::onModifiersChanged()
 {
-  updateText(Application::get().getPresetManager()->getEditBuffer()->getSelected());
+  updateText(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(m_hwParamID));
 }
