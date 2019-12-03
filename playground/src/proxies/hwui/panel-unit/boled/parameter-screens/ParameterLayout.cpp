@@ -172,6 +172,7 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
             return true;
           }
         }
+        break;
 
       case Buttons::BUTTON_D:
         if(m_carousel)
