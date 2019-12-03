@@ -5,7 +5,7 @@
 class GroupId
 {
  public:
-  GroupId(const std::string &name, VoiceGroup group);
+  GroupId(std::string name, VoiceGroup group);
   GroupId(const GroupId &other);
 
   explicit GroupId(const std::string &str);

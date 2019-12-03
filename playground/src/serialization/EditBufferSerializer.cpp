@@ -37,7 +37,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
     for(auto group : m_editBuffer->getParameterGroups(vg))
     {
       ParameterGroupSerializer s(group);
-      s.write(writer);
+      s.write(writer, Attribute{ "id", group->getID().toString() });
     }
   }
 
