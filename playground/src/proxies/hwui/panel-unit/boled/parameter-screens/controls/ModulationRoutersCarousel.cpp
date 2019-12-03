@@ -10,9 +10,8 @@
 #include "parameters/MacroControlParameter.h"
 #include "parameters/ModulationRoutingParameter.h"
 #include "parameters/PhysicalControlParameter.h"
-#include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterBarSlider.h>
+#include <proxies/hwui/controls/LabelRegular8.h>
 
 ModulationRoutersCarousel::ModulationRoutersCarousel(const Rect &pos)
     : super(pos)
@@ -26,10 +25,16 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
   clear();
 
   const int ySpaceing = 0;
-  const int sliderHeight = 16;
-  const int paramWidth = 56;
+  const int sliderHeight = 17;
+  const int paramWidth = 28;
+  constexpr const auto startY = 10;
 
-  int yPos = ySpaceing;
+  int yPos = startY;
+  addControl(new LabelRegular8("to", { 0, 0, 56, 10 }));
+
+  int xPos = 0;
+
+  int numItemsInColumn = 0;
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(newOne))
   {
@@ -40,8 +45,16 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
     for(auto routingParam : routingParams)
     {
-      auto miniParam = new MiniModulationRouter(routingParam, Rect(0, yPos, paramWidth, sliderHeight));
+      if(numItemsInColumn == 3)
+      {
+        xPos += paramWidth + 1;
+        yPos = startY;
+        numItemsInColumn = 0;
+      }
+
+      auto miniParam = new MiniModulationRouter(routingParam, Rect(xPos, yPos, paramWidth, sliderHeight));
       addControl(miniParam);
+      numItemsInColumn++;
 
       yPos += sliderHeight;
       yPos += ySpaceing;

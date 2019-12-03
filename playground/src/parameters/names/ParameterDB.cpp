@@ -84,6 +84,7 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
 
 ustring ParameterDB::getLongName(int id) const
 {
+#warning "Update ParamDB"
   if(id == 369)
   {
     return u8"\ue200";
@@ -105,6 +106,16 @@ ustring ParameterDB::getLongName(int id) const
 
 ustring ParameterDB::getShortName(int id) const
 {
+#warning "Update ParamDB"
+  if(id == 369)
+  {
+    return u8"\ue200";
+  }
+  else if(id == 371)
+  {
+    return u8"\ue201";
+  }
+
   try
   {
     return m_spec.at(id).shortName;
