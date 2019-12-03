@@ -265,13 +265,12 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
 
     if(isShowingParameterScreen())
     {
-      auto pos = find(ids.begin(), ids.end(), selParam->getID().getNumber());
+      auto selParamID = selParam->getID();
+      auto pos = find(ids.begin(), ids.end(), selParamID.getNumber());
 
       if(pos != ids.end())
         if(switchToNormalModeInCurrentParameterLayout())
           return true;
-
-      auto selParamID = selParam->getID();
 
       for(auto it = ids.begin(); it != ids.end(); ++it)
       {
@@ -287,16 +286,21 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
         }
       }
 
-      setParameterSelection({ ids.front(), selParamID.getVoiceGroup() }, state);
+      if(ParameterId::isGlobal(ids.front()))
+        setParameterSelection({ ids.front(), VoiceGroup::Global }, state);
+      else
+        setParameterSelection({ ids.front(), Application::get().getHWUI()->getCurrentVoiceGroup() }, state);
     }
     else
     {
       if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
       {
-#warning "might be a global parameter?"
-        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         for(auto paramId : ids)
         {
+          auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+          if(ParameterId::isGlobal(paramId))
+            vg = VoiceGroup::Global;
+
           auto param = editBuffer->findParameterByID({ paramId, vg });
           if(param->isChangedFromLoaded())
           {
