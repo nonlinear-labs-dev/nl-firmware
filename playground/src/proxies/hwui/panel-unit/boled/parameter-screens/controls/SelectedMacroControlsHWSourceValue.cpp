@@ -53,6 +53,12 @@ void SelectedMacroControlsHWSourceValue::onMCChanged(const Parameter *param)
 
 void SelectedMacroControlsHWSourceValue::updateText(const Parameter *param)
 {
+  if(!param)
+  {
+    setText("");
+    return;
+  }
+
   auto str = param->getDisplayString();
 
   if(isHighlight() && Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))

@@ -13,6 +13,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/HWUI.h>
+#include <parameters/scale-converters/dimension/VoicesDimension.h>
+#include <parameters/scale-converters/LinearCountScaleConverter.h>
 
 UnisonGroup::UnisonGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Unison", vg }, "Unison", "Unison", "Unison")
@@ -77,7 +79,8 @@ namespace Detail
 void UnisonGroup::init()
 {
   appendParameter(new Detail::UnisonParameter<Parameter>(
-      this, ParameterId{ 249, getVoiceGroup() }, ScaleConverter::get<Linear12CountScaleConverter>(), 0, 11, 11));
+      this, ParameterId{ 249, getVoiceGroup() }, ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension> >(),
+      0, 11, 11));
 
   appendParameter(new Detail::UnisonParameter<ModulateableParameterWithUnusualModUnit>(
       this, ParameterId{ 250, getVoiceGroup() }, ScaleConverter::get<Fine12STScaleConverter>(),

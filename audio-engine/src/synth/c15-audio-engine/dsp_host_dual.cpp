@@ -1354,15 +1354,6 @@ void dsp_host_dual::recallSingle()
   nltools::Log::info("todo: update macro mod aspects!");
 #endif
 #if LOG_RECALL
-  nltools::Log::info("recall: monos:");
-#endif
-
-#warning "@mse: is this still needed?"
-  //for(uint32_t i = 0; i < msg->monos.size(); i++)
-  {
-    //localParRcl(0, msg->monos[i]);
-  }
-#if LOG_RECALL
   nltools::Log::info("recall: modulateables:");
 #endif
   for(uint32_t i = 0; i < msg->modulateables.size(); i++)
@@ -1415,7 +1406,7 @@ void dsp_host_dual::recallLayer()
 #endif
 }
 
-void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::PedalParameter &_source)
+void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter &_source)
 {
   auto element = getParameter(_source.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
@@ -1428,62 +1419,12 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::PedalParam
 #if LOG_FAIL
   else
   {
-    nltools::Log::warning("failed to recall Pedal(id:", _source.id, ")");
+    nltools::Log::warning("failed to recall HW Source(id:", _source.id, ")");
   }
 #endif
 }
 
-void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::BenderParameter &_source)
-{
-  auto element = getParameter(_source.id);
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
-  {
-
-    auto param = m_params.get_hw_src(element.m_param.m_index);
-    param->update_position(static_cast<float>(_source.controlPosition));
-  }
-#if LOG_FAIL
-  else
-  {
-    nltools::Log::warning("failed to recall Bender(id:", _source.id, ")");
-  }
-#endif
-}
-
-void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::AftertouchParameter &_source)
-{
-  auto element = getParameter(_source.id);
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
-  {
-    auto param = m_params.get_hw_src(element.m_param.m_index);
-    param->update_position(static_cast<float>(_source.controlPosition));
-  }
-#if LOG_FAIL
-  else
-  {
-    nltools::Log::warning("failed to recall Aftertouch(id:", _source.id, ")");
-  }
-#endif
-}
-
-void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::RibbonParameter &_source)
-{
-  auto element = getParameter(_source.id);
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
-  {
-    auto param = m_params.get_hw_src(element.m_param.m_index);
-    param->update_behavior(getBehavior(_source.ribbonReturnMode));
-    param->update_position(static_cast<float>(_source.controlPosition));
-  }
-#if LOG_FAIL
-  else
-  {
-    nltools::Log::warning("failed to recall Ribbon(id:", _source.id, ")");
-  }
-#endif
-}
-
-void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Parameter &_source)
+void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter &_source)
 {
   auto element = getParameter(_source.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Parameter)
@@ -1544,28 +1485,6 @@ void dsp_host_dual::localParRcl(const uint32_t _layer, const nltools::msg::Param
 #endif
 }
 
-#warning "@mse: is this still needed?"
-#if 0
-void dsp_host_dual::localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::MonoParameter &_source)
-{
-  auto element = getParameter(_source.id);
-  switch(element.m_param.m_type)
-  {
-    case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
-      localDirectRcl(m_params.get_direct(_layer, element.m_param.m_index), _source);
-      break;
-    case C15::Descriptors::ParameterType::Modulateable_Parameter:
-      localTargetRcl(m_params.get_target(_layer, element.m_param.m_index), _source);
-      break;
-    default:
-#if LOG_FAIL
-      nltools::Log::warning("failed to recall Mono(id:", _source.id, ")");
-#endif
-      break;
-  }
-}
-#endif
-
 void dsp_host_dual::localParRcl(const uint32_t _layer,
                                 const nltools::msg::ParameterGroups::ModulateableParameter &_source)
 {
@@ -1602,19 +1521,6 @@ void dsp_host_dual::localDirectRcl(Direct_Param *_param,
   }
 }
 
-#warning "@mse: is this still needed?"
-#if 0
-void dsp_host_dual::localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source)
-{
-  _param->m_changed = false;
-  if(_param->update_position(static_cast<float>(_source.controlPosition)))
-  {
-    _param->m_scaled = scale(_param->m_scaling, _param->m_position);
-    _param->m_changed = true;
-  }
-}
-#endif
-
 void dsp_host_dual::localTargetRcl(Target_Param *_param,
                                    const nltools::msg::ParameterGroups::ModulateableParameter &_source)
 {
@@ -1627,21 +1533,3 @@ void dsp_host_dual::localTargetRcl(Target_Param *_param,
     _param->m_changed = true;
   }
 }
-
-#warning "@mse: is this still needed?"
-#if 0
-void dsp_host_dual::localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::MonoParameter &_source)
-{
-  _param->m_changed = false;
-#if LOG_FAIL
-  nltools::Log::warning("failed to recall modulateable MonoParameter mod-aspects!");
-#endif
-  //_param->update_source(getMacro(_source.mc));
-  //_param->update_amount(static_cast<float>(_source.modulationAmount));
-  if(_param->update_position(static_cast<float>(_source.controlPosition)))
-  {
-    _param->m_scaled = scale(_param->m_scaling, _param->polarize(_param->m_position));
-    _param->m_changed = true;
-  }
-}
-#endif

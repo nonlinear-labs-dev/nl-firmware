@@ -109,7 +109,7 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
         g->copyFrom(transaction, c);
 }
 
-Parameter *ParameterDualGroupSet::findParameterByID(ParameterId id) const
+Parameter *ParameterDualGroupSet::findParameterByID(const ParameterId &id) const
 {
   try
   {
