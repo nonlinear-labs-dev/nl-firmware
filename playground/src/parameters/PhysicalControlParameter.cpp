@@ -172,7 +172,8 @@ void PhysicalControlParameter::setUiSelectedModulationRouter(const ParameterId &
         oldRouter->onUnselected();
 
       if(auto newRouter = dynamic_cast<ModulationRoutingParameter *>(grandPa->findParameterByID(paramNumber)))
-        newRouter->getTargetParameter()->onSelected();
+        if(auto tgt = newRouter->getTargetParameter())
+          tgt->onSelected();
 
       invalidate();
 

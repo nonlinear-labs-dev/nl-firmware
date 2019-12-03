@@ -112,8 +112,7 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_95, { 371 });
 }
 
-ButtonParameterMapping::~ButtonParameterMapping()
-= default;
+ButtonParameterMapping::~ButtonParameterMapping() = default;
 
 void ButtonParameterMapping::addMapping(Buttons buttonID, std::initializer_list<int> parameterIDs)
 {

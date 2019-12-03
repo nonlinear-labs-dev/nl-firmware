@@ -85,9 +85,13 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
 ustring ParameterDB::getLongName(int id) const
 {
   if(id == 369)
-    return "MC E";
-  if(id == 371)
-    return "MC F";
+  {
+    return u8"\ue200";
+  }
+  else if(id == 371)
+  {
+    return u8"\ue201";
+  }
 
   try
   {
