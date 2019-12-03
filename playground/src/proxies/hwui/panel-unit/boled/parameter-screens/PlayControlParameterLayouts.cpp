@@ -133,6 +133,12 @@ PitchbendParameterSelectLayout2::PitchbendParameterSelectLayout2()
 
 bool PitchbendParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 
@@ -172,6 +178,12 @@ AftertouchParameterSelectLayout2::AftertouchParameterSelectLayout2()
 
 bool AftertouchParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 
@@ -395,6 +407,12 @@ PedalParameterSelectLayout2::PedalParameterSelectLayout2()
 
 bool PedalParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 
@@ -468,6 +486,12 @@ RibbonParameterSelectLayout2::RibbonParameterSelectLayout2()
 
 bool RibbonParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Mode::Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 
