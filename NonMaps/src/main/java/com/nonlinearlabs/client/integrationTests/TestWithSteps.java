@@ -61,7 +61,7 @@ public class TestWithSteps {
     }
 
     protected void addStep(Runnable task, BooleanSupplier done) {
-        steps.add(new Step(1000, done, task));
+        steps.add(new Step(5000, done, task));
     }
 
     public void start() {

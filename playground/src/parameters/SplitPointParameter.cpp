@@ -47,12 +47,7 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 
 Glib::ustring SplitPointParameter::getDisplayString() const
 {
-#warning "TODO!"
-  //auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-  //if(currentVG == VoiceGroup::I)
   return getDisplayValue(VoiceGroup::I);
-  //else
-  //return getDisplayValue(VoiceGroup::II);
 }
 
 void SplitPointParameter::registerTests()
@@ -60,9 +55,9 @@ void SplitPointParameter::registerTests()
 
   g_test_add_func("/SplitPointParameter/stringize", [] {
     TestRootDocument root;
-    TestGroupSet set{ &root };
+    TestGroupSet set { &root };
     TestGroup group(&set, VoiceGroup::I);
-    group.addParameter(new TestParameter<SplitPointParameter>(&group, ParameterId{ 1, VoiceGroup::Global }));
+    group.addParameter(new TestParameter<SplitPointParameter>(&group, ParameterId { 1, VoiceGroup::Global }));
 
     auto parameter = dynamic_cast<SplitPointParameter *>(group.findParameterByID({ 1, VoiceGroup::Global }));
     g_assert(parameter != nullptr);

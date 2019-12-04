@@ -12,11 +12,11 @@ import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 
-class SoundTypeTests extends TestWithSteps {
+class ConvertSoundTypeTests extends TestWithSteps {
 
     String bankName = "SoundTypeTests-testbank-" + DOM.createUniqueId();
 
-    public SoundTypeTests() {
+    public ConvertSoundTypeTests() {
         createBank();
         initSound();
         convertToSingle();
@@ -77,7 +77,7 @@ class SoundTypeTests extends TestWithSteps {
 
     private void assertParameter(int i, VoiceGroup vg, double d) {
         double v = EditBufferModel.get().getParameter(new ParameterId(i, vg)).value.value.getValue();
-        assert (v == d);
+        assert (Math.abs(v - d) < 0.005);
     }
 
     private void setParameter(int i, VoiceGroup vg, double d) {

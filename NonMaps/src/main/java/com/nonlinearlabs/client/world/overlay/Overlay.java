@@ -55,7 +55,7 @@ public class Overlay extends OverlayLayout {
 
 		@Override
 		protected double getFontHeight(Rect pixRect) {
-			return super.getFontHeight(pixRect) * 1;
+			return super.getFontHeight(pixRect) * 2;
 		}
 
 		@Override

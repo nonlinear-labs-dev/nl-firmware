@@ -136,12 +136,12 @@ public class SplitSoundLayout extends SoundLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return group == VoiceGroup.I ? "I" : "II";
+				return group == VoiceGroup.I ? "\uE071" : "\uE072";
 			}
 
 			@Override
 			protected double getFontHeight(Rect pixRect) {
-				return pixRect.getHeight();
+				return pixRect.getHeight() / 2;
 			}
 		}
 
