@@ -49,8 +49,8 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 			}
 
 		});
-		addChild(new MacroControlSlider(this, getParameterID()));
-		addChild(new MacroControlValueDisplay(this, getParameterID()));
+		addChild(new MacroControlSlider(this, getParameterNumber()));
+		addChild(new MacroControlValueDisplay(this, getParameterNumber()));
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	@Override
 	public void setName(String newName) {
-		EditBufferUseCases.get().renameMacroControl(getParameterID(), newName);
+		EditBufferUseCases.get().renameMacroControl(getParameterNumber(), newName);
 	}
 
 	@Override

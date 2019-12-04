@@ -14,9 +14,9 @@ class CombFilterCol7 extends ParameterColumn {
 
 		private PMAB(MapsLayout parent) {
 			super(parent, 135);
-			addChild(new LabelModulationSource(this, getParameterID()));
-			addChild(new LittleKnobSlider(this, getParameterID()));
-			addChild(new ValueDisplaySmall(this, getParameterID()));
+			addChild(new LabelModulationSource(this, getParameterNumber()));
+			addChild(new LittleKnobSlider(this, getParameterNumber()));
+			addChild(new ValueDisplaySmall(this, getParameterNumber()));
 		}
 
 	}

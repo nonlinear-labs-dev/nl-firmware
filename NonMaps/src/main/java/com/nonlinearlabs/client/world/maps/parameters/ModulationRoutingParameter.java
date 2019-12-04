@@ -51,7 +51,7 @@ public class ModulationRoutingParameter extends Parameter {
 				}
 			});
 
-			addChild(new SliderHorizontal(this, getParameterID()) {
+			addChild(new SliderHorizontal(this, getParameterNumber()) {
 				@Override
 				protected double getBasicWidth() {
 					return 120;
@@ -63,7 +63,7 @@ public class ModulationRoutingParameter extends Parameter {
 				}
 			});
 
-			addChild(new ValueDisplaySmall(this, getParameterID()));
+			addChild(new ValueDisplaySmall(this, getParameterNumber()));
 		} else {
 			addChild(createRoutingButton());
 		}
@@ -72,7 +72,7 @@ public class ModulationRoutingParameter extends Parameter {
 	}
 
 	protected ModulationRoutingButton createRoutingButton() {
-		return new ModulationRoutingButton(this, getParameterID());
+		return new ModulationRoutingButton(this, getParameterNumber());
 	}
 
 	public void onReturningModeChanged() {

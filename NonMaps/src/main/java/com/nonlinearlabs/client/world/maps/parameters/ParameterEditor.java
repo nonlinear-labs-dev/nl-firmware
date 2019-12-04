@@ -334,7 +334,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 			public boolean onWayDownFound(Control ctrl) {
 				if (ctrl instanceof Parameter) {
 					Parameter p = (Parameter) ctrl;
-					if (p.getParameterID() == id) {
+					if (p.getParameterNumber() == id) {
 						return true;
 					}
 				}

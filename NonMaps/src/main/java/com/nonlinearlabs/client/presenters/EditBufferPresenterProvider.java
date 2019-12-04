@@ -29,13 +29,13 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
                 break;
 
             case I:
-                presenter.voiceGroup = "I";
-                presenter.voiceGroupIndicationColor = new RGB(255, 0, 0);
+                presenter.voiceGroup = "\u2160";
+                presenter.voiceGroupIndicationColor = new RGB(0x26, 0xb0, 0xff);
                 break;
 
             case II:
-                presenter.voiceGroup = "II";
-                presenter.voiceGroupIndicationColor = new RGB(0, 255, 0);
+                presenter.voiceGroup = "\u2161";
+                presenter.voiceGroupIndicationColor = new RGB(0xff, 0x99, 0x33);
                 break;
             }
 

@@ -12,7 +12,7 @@ public class VoiceGroupColumn extends ParameterColumn {
         private Volume(MapsLayout parent) {
             super(parent, 249);
             addChild(new UnModulateableParameterName(this));
-            addChild(new NumericalControlSmall(this, getParameterID()));
+            addChild(new NumericalControlSmall(this, getParameterNumber()));
         }
     }
 
@@ -21,7 +21,7 @@ public class VoiceGroupColumn extends ParameterColumn {
         private Tune(MapsLayout parent) {
             super(parent, 249);
             addChild(new UnModulateableParameterName(this));
-            addChild(new NumericalControlSmall(this, getParameterID()));
+            addChild(new NumericalControlSmall(this, getParameterNumber()));
         }
 
     }

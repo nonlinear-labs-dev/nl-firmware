@@ -64,8 +64,8 @@ public class EditBufferUseCases {
 				int ribbon2 = 289;
 
 				if (physicalControlID.getNumber() == ribbon1 || physicalControlID.getNumber() == ribbon2) {
-					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(
-							new ParameterId(physicalControlID.getNumber(), VoiceGroup.Global));
+					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
+
 					if (!ribbon.isReturning()) {
 						ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
 					}
@@ -125,8 +125,7 @@ public class EditBufferUseCases {
 				}
 			}
 
-			MacroControlParameterModel mc = EditBufferModel.get().getParameter(m,
-					EditBufferModel.get().voiceGroup.getValue());
+			MacroControlParameterModel mc = this.<MacroControlParameterModel>findParameter(macroControlID);
 			handleBidirectionalRibbonBinding(mc);
 		}
 	}
@@ -141,8 +140,9 @@ public class EditBufferUseCases {
 	}
 
 	public void selectParameter(int paramNumber) {
-		if (EditBufferModel.get().selectedParameter.setValue(paramNumber))
-			NonMaps.get().getServerProxy().selectParameter(paramNumber);
+		ParameterId id = toParamId(paramNumber);
+		if (EditBufferModel.get().selectedParameter.setValue(id.getNumber()))
+			NonMaps.get().getServerProxy().selectParameter(id);
 	}
 
 	public void incParameter(int paramNumber, boolean fine) {
@@ -173,7 +173,7 @@ public class EditBufferUseCases {
 	}
 
 	public void convertToSingleSound() {
-		NonMaps.get().getServerProxy().convertToSingle();
+		NonMaps.get().getServerProxy().convertToSingle(EditBufferModel.get().voiceGroup.getValue());
 		EditBufferModel.get().soundType.setValue(SoundType.Single);
 	}
 
@@ -236,7 +236,7 @@ public class EditBufferUseCases {
 
 	private void setModulationUpperBound(ParameterId id, double newAmount, boolean fine) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
-		ParameterId mcId = new ParameterId(p.modSource.getValue(), id.getVoiceGroup());
+		ParameterId mcId = new ParameterId(p.modSource.getValue());
 		MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(mcId);
 
 		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
@@ -255,7 +255,7 @@ public class EditBufferUseCases {
 	private void setModulationLowerBound(ParameterId id, double newAmount, boolean fine) {
 
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
-		ParameterId mcId = new ParameterId(p.modSource.getValue(), id.getVoiceGroup());
+		ParameterId mcId = new ParameterId(p.modSource.getValue());
 		MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(mcId);
 
 		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;

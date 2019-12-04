@@ -58,11 +58,20 @@ size_t ParameterGroup::countParameters() const
 ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(ParameterId id) const
 {
   for(auto a : m_parameters)
-  {
     if(a->getID() == id)
       return a;
-  }
 
+  nltools::throwException("Parameter not found!");
+  return nullptr;
+}
+
+ParameterGroup::tParameterPtr ParameterGroup::getParameterByNumber(uint16_t number) const
+{
+  for(auto a : m_parameters)
+    if(a->getID().getNumber() == number)
+      return a;
+
+  nltools::throwException("Parameter not found!");
   return nullptr;
 }
 
@@ -214,7 +223,7 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGro
 {
   for(auto &g : getParameters())
   {
-    if(auto c = other->findParameterByID(g->getID()))
+    if(auto c = other->getParameterByNumber(g->getID().getNumber()))
     {
       g->copyFrom(transaction, c);
     }

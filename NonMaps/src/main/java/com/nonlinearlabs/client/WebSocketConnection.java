@@ -58,7 +58,11 @@ class WebSocketConnection {
 	public void startPolling(ServerListener listener) {
 		Tracer.log("startPolling");
 		this.listener = listener;
-		webSocketOpen(Window.Location.getHost());
+		if (Window.Location.getPort() == "8888") {
+			webSocketOpen(Window.Location.getHostName() + ":8080");
+		} else {
+			webSocketOpen(Window.Location.getHost());
+		}
 	}
 
 	private native int getBufferedAmount()

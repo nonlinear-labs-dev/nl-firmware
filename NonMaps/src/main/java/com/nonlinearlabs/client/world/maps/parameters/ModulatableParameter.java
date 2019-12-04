@@ -70,7 +70,7 @@ public class ModulatableParameter extends Parameter {
 	}
 
 	public void setModulationSource(MacroControls src) {
-		EditBufferUseCases.get().setModulationSource(getParameterID(), toModSource(src));
+		EditBufferUseCases.get().setModulationSource(getParameterNumber(), toModSource(src));
 	}
 
 	@Override
@@ -79,10 +79,10 @@ public class ModulatableParameter extends Parameter {
 	}
 
 	public void modulationAmountInc(boolean fine, VoiceGroup vg) {
-		EditBufferUseCases.get().incModulationAmount(getParameterID(), fine);
+		EditBufferUseCases.get().incModulationAmount(getParameterNumber(), fine);
 	}
 
 	public void modulationAmountDec(boolean fine, VoiceGroup vg) {
-		EditBufferUseCases.get().decModulationAmount(getParameterID(), fine);
+		EditBufferUseCases.get().decModulationAmount(getParameterNumber(), fine);
 	}
 }

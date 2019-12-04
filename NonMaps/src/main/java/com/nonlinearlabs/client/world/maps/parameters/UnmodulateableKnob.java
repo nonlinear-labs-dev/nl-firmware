@@ -6,9 +6,9 @@ public abstract class UnmodulateableKnob extends Parameter {
 
 	public UnmodulateableKnob(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new SmallParameterName(this, getParameterID()));
-		addChild(new KnobSmall(this, getParameterID()));
-		addChild(new ValueDisplaySmall(this, getParameterID()));
+		addChild(new SmallParameterName(this, getParameterNumber()));
+		addChild(new KnobSmall(this, getParameterNumber()));
+		addChild(new ValueDisplaySmall(this, getParameterNumber()));
 	}
 
 }

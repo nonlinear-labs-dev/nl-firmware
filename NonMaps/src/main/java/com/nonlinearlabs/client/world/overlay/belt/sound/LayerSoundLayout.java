@@ -110,14 +110,14 @@ public class LayerSoundLayout extends SoundLayout {
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
 				// todo: no connection to the model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(10003, group)));
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(360, group)));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
 				// todo: no connection to the model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(10002, group)));
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(358, group)));
 			}
 		}
 	}

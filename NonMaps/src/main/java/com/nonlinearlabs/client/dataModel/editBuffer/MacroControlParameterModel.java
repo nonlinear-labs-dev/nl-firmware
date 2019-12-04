@@ -15,15 +15,7 @@ public class MacroControlParameterModel extends BasicParameterModel {
 	}
 
 	public ParameterId[] getRouterIDs() {
-		return new ParameterId[] { 
-			new ParameterId(id.getNumber() + 12, id.getVoiceGroup()),
-			new ParameterId(id.getNumber() + 17, id.getVoiceGroup()),
-			new ParameterId(id.getNumber() + 22, id.getVoiceGroup()),
-			new ParameterId(id.getNumber() + 27, id.getVoiceGroup()),
-			new ParameterId(id.getNumber() + 32, id.getVoiceGroup()),
-			new ParameterId(id.getNumber() + 37, id.getVoiceGroup()),
-			new ParameterId(id.getNumber() + 42, id.getVoiceGroup()),
-			new ParameterId(id.getNumber() + 47, id.getVoiceGroup())};
+		return ParameterFactory.getModulationRoutersForMC(id);
 	}
 
 	@Override
