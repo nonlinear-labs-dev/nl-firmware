@@ -59,13 +59,11 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
   {
-    for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    {
-      auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", vg }));
+    auto mappings
+        = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
 
-      for(auto router : mappings->getModulationRoutingParametersFor(this))
-        router->getValue().setIsBoolean(routersAreBoolean);
-    }
+    for(auto router : mappings->getModulationRoutingParametersFor(this))
+      router->getValue().setIsBoolean(routersAreBoolean);
   }
 
   ensureExclusiveRoutingIfNeeded();
@@ -162,20 +160,18 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
   {
     if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
     {
-      for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-      {
-        auto mappings = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", vg }));
-        auto routers = mappings->getModulationRoutingParametersFor(this);
-        auto highest = *routers.begin();
+      auto mappings
+          = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
+      auto routers = mappings->getModulationRoutingParametersFor(this);
+      auto highest = *routers.begin();
 
-        for(auto router : routers)
-          if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
-            highest = router;
+      for(auto router : routers)
+        if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
+          highest = router;
 
-        for(auto router : routers)
-          if(router != highest)
-            router->onExclusiveRoutingLost();
-      }
+      for(auto router : routers)
+        if(router != highest)
+          router->onExclusiveRoutingLost();
     }
   }
 }

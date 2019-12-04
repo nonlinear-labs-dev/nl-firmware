@@ -4,15 +4,14 @@
 #include <utility>
 #include "VoiceGroupMasterParameter.h"
 
-VoiceGroupMasterParameter::VoiceGroupMasterParameter(ParameterGroup *group, const ParameterId& id,
+VoiceGroupMasterParameter::VoiceGroupMasterParameter(ParameterGroup *group, const ParameterId &id,
                                                      const ScaleConverter *scaling, tControlPositionValue def,
                                                      tControlPositionValue coarseDenominator,
-                                                     tControlPositionValue fineDenominator,
-                                                     std::string shortName, const std::string &longName,
-                                                     VoiceGroup vg)
-    : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
-    , m_longname{ longName }
-    , m_shortname{std::move( shortName )}
+                                                     tControlPositionValue fineDenominator, std::string shortName,
+                                                     std::string longName, VoiceGroup vg)
+    : ModulateableParameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+    , m_longname{ std::move(longName) }
+    , m_shortname{ std::move(shortName) }
     , m_vg{ vg }
 {
 }

@@ -62,7 +62,7 @@ bool ParameterId::operator!=(const ParameterId &other) const
   return std::tie(m_num, m_group) != std::tie(other.m_num, other.m_group);
 }
 
-int ParameterId::getNumber() const
+uint16_t ParameterId::getNumber() const
 {
   return m_num;
 }
@@ -80,7 +80,7 @@ bool ParameterId::isGlobal(int number)
   if(number == 356)
     return true;
 
-  std::array<int, 8> physicalContols { 284, 289, 254, 259, 264, 269, 274, 279 };
+  std::array<int, 8> physicalContols{ 284, 289, 254, 259, 264, 269, 274, 279 };
 
   if(std::find(physicalContols.begin(), physicalContols.end(), number) != physicalContols.end())
     return true;
@@ -89,4 +89,9 @@ bool ParameterId::isGlobal(int number)
     return true;
 
   return false;
+}
+
+ParameterId ParameterId::invalid()
+{
+  return ParameterId{ std::numeric_limits<decltype(m_num)>::max(), VoiceGroup::NumGroups };
 }

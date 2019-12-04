@@ -11,13 +11,23 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 public class ModulateableParameterModel extends BasicParameterModel {
 
 	public enum ModSource {
-		None, A, B, C, D;
+		None, A, B, C, D, E, F;
 
 		public int toInt() {
 			return ordinal();
 		}
 
 		public int toParameterId() {
+			switch (this) {
+			case E:
+				return 369;
+
+			case F:
+				return 371;
+
+			default:
+				break;
+			}
 			return 242 + ordinal();
 		}
 
@@ -34,6 +44,12 @@ public class ModulateableParameterModel extends BasicParameterModel {
 
 			case 246:
 				return D;
+
+			case 369:
+				return E;
+
+			case 371:
+				return F;
 			}
 			return None;
 		}

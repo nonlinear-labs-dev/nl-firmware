@@ -51,7 +51,7 @@ bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, Butt
     {
       if(auto p = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
       {
-        p->getSourceParameter()->setUiSelectedModulationRouter(p->getID().getNumber());
+        p->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
         Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getTargetParameter());
       }
 

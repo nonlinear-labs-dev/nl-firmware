@@ -22,17 +22,17 @@ string(STRIP ${HEAD_REF} HEAD_REF)
 string(STRIP ${BRANCH_NAME} BRANCH_NAME)
 
 set(LIBS
-glibmm-2.4
-  gio-unix-2.0
-  giomm-2.4
-  uuid
-  libsoup-2.4
-  freetype2
-  avahi-glib
-  avahi-gobject
-  avahi-core
-  avahi-client
-  )
+    glibmm-2.4
+    gio-unix-2.0
+    giomm-2.4
+    uuid
+    libsoup-2.4
+    freetype2
+    avahi-glib
+    avahi-gobject
+    avahi-core
+    avahi-client
+)
 
 OPTION(DEV_PC "Enable some tests and tools not suitable for embedded device" OFF)
 OPTION(PROFILING "Enable built in profiler" OFF)
@@ -95,8 +95,8 @@ list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/playground.cpp)
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/testing/unit-tests/playground-tests.cpp)
 
 file(GLOB_RECURSE UNIT_TEST_FILES src/testing/unit-tests/*.cpp)
-
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UNIT_TEST_FILES})
+
 add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 
 target_link_libraries(playground-lib pthread)

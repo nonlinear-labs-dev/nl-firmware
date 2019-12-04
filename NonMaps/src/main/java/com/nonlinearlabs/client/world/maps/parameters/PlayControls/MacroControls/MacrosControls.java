@@ -10,6 +10,8 @@ class MacrosControls extends ParameterGroupControls {
 	private MacrosCol2 col2;
 	private MacrosCol3 col3;
 	private MacrosCol4 col4;
+	private MacrosCol5 col5;
+	private MacrosCol6 col6;
 
 	MacrosControls(MapsLayout parent) {
 		super(parent);
@@ -18,6 +20,8 @@ class MacrosControls extends ParameterGroupControls {
 		col2 = addChild(new MacrosCol2(this));
 		col3 = addChild(new MacrosCol3(this));
 		col4 = addChild(new MacrosCol4(this));
+		col5 = addChild(new MacrosCol5(this));
+		col6 = addChild(new MacrosCol6(this));
 	}
 
 	MacroControlParameter getControl(MacroControls mc) {
@@ -33,6 +37,12 @@ class MacrosControls extends ParameterGroupControls {
 
 		case D:
 			return col4.getParameter();
+
+		case E:
+			return col5.getParameter();
+
+		case F:
+			return col6.getParameter();
 
 		default:
 			break;

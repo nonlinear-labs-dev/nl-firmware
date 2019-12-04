@@ -25,5 +25,5 @@ class SelectedMacroControlsHWSourceSlider : public DotSlider
   void onMCChanged(const Parameter* param);
 
   sigc::connection m_mcChanged;
-  int m_hwParamID;
+  ParameterId m_hwParamID;
 };

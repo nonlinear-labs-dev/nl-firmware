@@ -35,10 +35,10 @@ class MacroControlAssignmentStateMachine
   void setCurrentMCParameter(int mcParamId);
   int getCurrentMCParameter() const;
 
-  void setCurrentModulateableParameter(int id);
-  int getCurrentModulateableParameter() const;
+  void setCurrentModulateableParameter(const ParameterId& id);
+  const ParameterId& getCurrentModulateableParameter() const;
 
  private:
   int m_mcParamId = 0;
-  int m_modParamId = 0;
+  ParameterId m_modParamId;
 };

@@ -28,7 +28,7 @@ class SelectedMacroControlsHWSourceAmount : public Label
 
   virtual void setSuffixFontColor(FrameBuffer& fb) const override;
 
-  int m_hwParamID = 0;
+  ParameterId m_hwParamID;
   Parameter* m_router = nullptr;
   sigc::connection m_mcChanged;
   sigc::connection m_amountChanged;

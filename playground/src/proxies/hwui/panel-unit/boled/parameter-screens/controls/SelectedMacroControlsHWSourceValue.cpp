@@ -7,6 +7,7 @@
 
 SelectedMacroControlsHWSourceValue::SelectedMacroControlsHWSourceValue(const Rect &rect)
     : super(rect)
+    , m_hwParamID{ ParameterId::invalid() }
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onParameterSelected)));
@@ -15,9 +16,7 @@ SelectedMacroControlsHWSourceValue::SelectedMacroControlsHWSourceValue(const Rec
       sigc::hide(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onModifiersChanged)));
 }
 
-SelectedMacroControlsHWSourceValue::~SelectedMacroControlsHWSourceValue()
-{
-}
+SelectedMacroControlsHWSourceValue::~SelectedMacroControlsHWSourceValue() = default;
 
 void SelectedMacroControlsHWSourceValue::onParameterSelected(Parameter *newOne)
 {
@@ -25,26 +24,26 @@ void SelectedMacroControlsHWSourceValue::onParameterSelected(Parameter *newOne)
   m_mcChanged = newOne->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onMCChanged));
 }
 
-int SelectedMacroControlsHWSourceValue::getHWSourceID(const Parameter *param) const
+ParameterId SelectedMacroControlsHWSourceValue::getHWSourceID(const Parameter *param) const
 {
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
     return mc->getUiSelectedHardwareSource();
-  return 0;
+  return ParameterId::invalid();
 }
 
 void SelectedMacroControlsHWSourceValue::onMCChanged(const Parameter *param)
 {
-  int hwSourceID = getHWSourceID(param);
+  auto hwSourceID = getHWSourceID(param);
 
   if(m_hwParamID != hwSourceID)
   {
     m_hwParamID = hwSourceID;
     m_hwChanged.disconnect();
 
-    if(hwSourceID > 0)
+    if(hwSourceID.getNumber() > 0)
     {
-      if(auto hwParam
-         = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({hwSourceID, VoiceGroup::Global}))
+      if(auto hwParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+             { hwSourceID.getNumber(), VoiceGroup::Global }))
       {
         m_hwChanged = hwParam->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::updateText));
       }
@@ -54,6 +53,12 @@ void SelectedMacroControlsHWSourceValue::onMCChanged(const Parameter *param)
 
 void SelectedMacroControlsHWSourceValue::updateText(const Parameter *param)
 {
+  if(!param)
+  {
+    setText("");
+    return;
+  }
+
   auto str = param->getDisplayString();
 
   if(isHighlight() && Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
@@ -73,5 +78,5 @@ void SelectedMacroControlsHWSourceValue::setSuffixFontColor(FrameBuffer &fb) con
 
 void SelectedMacroControlsHWSourceValue::onModifiersChanged()
 {
-  updateText(Application::get().getPresetManager()->getEditBuffer()->getSelected());
+  updateText(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(m_hwParamID));
 }

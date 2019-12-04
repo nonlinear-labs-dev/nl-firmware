@@ -36,10 +36,10 @@ void MacroControl::onTargetChanged(const Parameter *modulatedParameter)
   if(const auto *p = dynamic_cast<const ModulateableParameter *>(modulatedParameter))
   {
     auto src = p->getModulationSource();
-    uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
+    auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
     auto vg = p->getVoiceGroup();
 
-    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({srcParamID, vg}))
+    if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID))
       srcParam = dynamic_cast<MacroControlParameter *>(pa);
   }
 

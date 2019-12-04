@@ -47,7 +47,7 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, 
 
 Preset::~Preset()
 {
-  if(auto pm = Application::get().getPresetManager())
+  if(auto pm = dynamic_cast<PresetManager *>(getParent()))
     if(auto eb = pm->getEditBuffer())
       eb->resetOriginIf(this);
 }

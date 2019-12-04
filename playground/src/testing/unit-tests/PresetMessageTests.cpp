@@ -52,9 +52,9 @@ template <int vg, typename tMsg> void collectDual(const tMsg &msg)
   collectID(msg.unisonVoices[vg], count);
   collectIDs(msg.unmodulateables[vg], count);
   collectIDs(msg.modulateables[vg], count);
-  collectIDs(msg.hwamounts[vg], count);
+  collectIDs(msg.hwamounts, count);
   collectIDs(msg.hwsources, count);
-  collectIDs(msg.macros[vg], count);
+  collectIDs(msg.macros, count);
   collectIDs(msg.globalparams, count);
   collectID(msg.splitpoint, count);
   assertMap(count);
@@ -66,9 +66,9 @@ template <int vg> void collectDual(const nltools::msg::LayerPresetMessage &msg)
   collectID(msg.unisonVoices[vg], count);
   collectIDs(msg.unmodulateables[vg], count);
   collectIDs(msg.modulateables[vg], count);
-  collectIDs(msg.hwamounts[vg], count);
+  collectIDs(msg.hwamounts, count);
   collectIDs(msg.hwsources, count);
-  collectIDs(msg.macros[vg], count);
+  collectIDs(msg.macros, count);
   collectIDs(msg.globalparams, count);
   assertMap(count);
 }

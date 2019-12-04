@@ -16,6 +16,7 @@
 #include <proxies/hwui/controls/Button.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <parameters/ModulateableParameter.h>
+#include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -163,8 +164,15 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
     switch(i)
     {
       case Buttons::BUTTON_A:
-        Application::get().getHWUI()->toggleCurrentVoiceGroup();
-        return true;
+        if(auto x = findControlOfType<SwitchVoiceGroupButton>())
+        {
+          if(x->isVisible())
+          {
+            Application::get().getHWUI()->toggleCurrentVoiceGroup();
+            return true;
+          }
+        }
+        break;
 
       case Buttons::BUTTON_D:
         if(m_carousel)
@@ -196,8 +204,7 @@ ParameterEditLayout2::ParameterEditLayout2()
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
 }
 
-ParameterEditLayout2::~ParameterEditLayout2()
-= default;
+ParameterEditLayout2::~ParameterEditLayout2() = default;
 
 void ParameterEditLayout2::init()
 {

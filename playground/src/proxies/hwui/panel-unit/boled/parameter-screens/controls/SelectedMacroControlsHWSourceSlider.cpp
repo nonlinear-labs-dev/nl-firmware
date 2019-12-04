@@ -7,16 +7,13 @@
 
 SelectedMacroControlsHWSourceSlider::SelectedMacroControlsHWSourceSlider(const Rect &rect)
     : super(rect)
-    ,
-
-    m_hwParamID(0)
+    , m_hwParamID(ParameterId::invalid())
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onParameterSelected)));
 }
 
-SelectedMacroControlsHWSourceSlider::~SelectedMacroControlsHWSourceSlider()
-= default;
+SelectedMacroControlsHWSourceSlider::~SelectedMacroControlsHWSourceSlider() = default;
 
 void SelectedMacroControlsHWSourceSlider::onParameterSelected(Parameter *newOne)
 {
@@ -28,15 +25,15 @@ void SelectedMacroControlsHWSourceSlider::onMCChanged(const Parameter *param)
 {
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
   {
-    int hwSourceID = mc->getUiSelectedHardwareSource();
+    auto hwSourceID = mc->getUiSelectedHardwareSource();
 
     if(m_hwParamID != hwSourceID)
     {
       m_hwParamID = hwSourceID;
 
-      if(hwSourceID > 0)
-        setParameter(
-            Application::get().getPresetManager()->getEditBuffer()->findParameterByID({hwSourceID, VoiceGroup::Global}));
+      if(hwSourceID.getNumber() > 0)
+        setParameter(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+            { hwSourceID.getNumber(), VoiceGroup::Global }));
     }
   }
 }

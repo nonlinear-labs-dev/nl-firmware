@@ -1,5 +1,6 @@
 #pragma once
 
+#include <proxies/hwui/controls/ButtonMenu.h>
 #include "Carousel.h"
 
 class Application;
@@ -11,14 +12,14 @@ class ModulationRoutersCarousel : public Carousel
   typedef Carousel super;
 
  public:
-  ModulationRoutersCarousel(const Rect &pos);
-  virtual ~ModulationRoutersCarousel();
+  explicit ModulationRoutersCarousel(const Rect &pos);
+  ~ModulationRoutersCarousel() override;
 
-  virtual void turn() override;
-  virtual void antiTurn() override;
+  void turn() override;
+  void antiTurn() override;
 
  protected:
-  virtual void setup(Parameter *selectedParameter) override;
+  void setup(Parameter *selectedParameter) override;
 
  private:
   ModulationRoutersCarousel(const ModulationRoutersCarousel &other);

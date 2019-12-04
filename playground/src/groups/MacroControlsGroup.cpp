@@ -2,14 +2,12 @@
 #include "parameters/MacroControlParameter.h"
 #include "parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h"
 
-MacroControlsGroup::MacroControlsGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
-    : ParameterGroup(parent, { "MCs", vg }, "Macro Control", "Macro Control", "Macro Control")
+MacroControlsGroup::MacroControlsGroup(ParameterDualGroupSet *parent)
+    : ParameterGroup(parent, { "MCs", VoiceGroup::Global }, "Macro Control", "Macro Control", "Macro Control")
 {
 }
 
-MacroControlsGroup::~MacroControlsGroup()
-{
-}
+MacroControlsGroup::~MacroControlsGroup() = default;
 
 void MacroControlsGroup::init()
 {
@@ -35,36 +33,38 @@ void MacroControlsGroup::init()
                                 ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
 }
 
-int MacroControlsGroup::modSrcToParamNumber(MacroControls src)
+ParameterId MacroControlsGroup::modSrcToParamId(MacroControls src)
 {
   switch(src)
   {
     case MacroControls::MC1:
-      return 243;
+      return ParameterId(243, VoiceGroup::Global);
 
     case MacroControls::MC2:
-      return 244;
+      return ParameterId(244, VoiceGroup::Global);
 
     case MacroControls::MC3:
-      return 245;
+      return ParameterId(245, VoiceGroup::Global);
 
     case MacroControls::MC4:
-      return 246;
+      return ParameterId(246, VoiceGroup::Global);
 
     case MacroControls::MC5:
-      return 369;
+      return ParameterId(369, VoiceGroup::Global);
 
     case MacroControls::MC6:
-      return 371;
+      return ParameterId(371, VoiceGroup::Global);
 
     default:
-      return -1;
+      break;
   }
+
+  return ParameterId::invalid();
 }
 
-MacroControls MacroControlsGroup::paramIDToModSrc(int pid)
+MacroControls MacroControlsGroup::paramIDToModSrc(ParameterId pid)
 {
-  switch(pid)
+  switch(pid.getNumber())
   {
     case 243:
       return MacroControls::MC1;

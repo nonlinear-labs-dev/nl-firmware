@@ -9,7 +9,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 public class Macros extends ParameterGroup {
 
 	public enum MacroControls {
-		NONE, A, B, C, D;
+		NONE, A, B, C, D, E, F;
 
 		public String toString() {
 			return Integer.toString(ordinal());
@@ -25,6 +25,10 @@ public class Macros extends ParameterGroup {
 				return "\uE002";
 			case D:
 				return "\uE003";
+			case E:
+				return "\uE004";
+			case F:
+				return "\uE005";
 			case NONE:
 				return "";
 			}
@@ -53,6 +57,10 @@ public class Macros extends ParameterGroup {
 				return C;
 			case D:
 				return D;
+			case E:
+				return E;
+			case F:
+				return F;
 			case None:
 				return NONE;
 			}
@@ -69,6 +77,10 @@ public class Macros extends ParameterGroup {
 				return ModSource.C;
 			case D:
 				return ModSource.D;
+			case E:
+				return ModSource.E;
+			case F:
+				return ModSource.F;
 			case NONE:
 				return ModSource.None;
 			}

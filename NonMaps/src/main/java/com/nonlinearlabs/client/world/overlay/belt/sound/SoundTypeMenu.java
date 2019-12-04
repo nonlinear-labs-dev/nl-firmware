@@ -53,7 +53,7 @@ public class SoundTypeMenu extends SVGImage {
 	}
 
 	public SoundTypeMenu(OverlayLayout parent) {
-		super(parent, "Append_Enabled.svg", "Insert_Enabled.svg", "Overwrite_Enabled.svg");
+		super(parent, "Menu_Single_Enabled_L.svg", "Menu_Split_Enabled_L.svg", "Menu_Layer_Enabled_L.svg");
 	}
 
 	@Override

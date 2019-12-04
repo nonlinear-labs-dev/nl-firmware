@@ -28,8 +28,7 @@
 #include <memory>
 
 MacroControlParameterLayout2::MacroControlParameterLayout2()
-    : super()
-{
+    : super() {
   addControl(new SelectedParameterDotSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
   addControl(new ModulationSourceLabel(Rect(77, 33, 11, 12)));
   m_modeOverlay = addControl(new Overlay(Rect(0, 0, 256, 64)));
@@ -37,18 +36,15 @@ MacroControlParameterLayout2::MacroControlParameterLayout2()
   setMode(Mode::MacroControlValue);
 }
 
-void MacroControlParameterLayout2::copyFrom(Layout *other)
-{
-  if(auto p = dynamic_cast<MacroControlParameterLayout2 *>(other))
+void MacroControlParameterLayout2::copyFrom(Layout *other) {
+  if (auto p = dynamic_cast<MacroControlParameterLayout2 *>(other))
     setMode(p->m_mode);
 
   super::copyFrom(other);
 }
 
-Parameter *MacroControlParameterLayout2::getCurrentEditParameter() const
-{
-  switch(m_mode)
-  {
+Parameter *MacroControlParameterLayout2::getCurrentEditParameter() const {
+  switch (m_mode) {
     case Mode::PlayControlSelection:
     case Mode::PlayControlAmount:
       return getCurrentRouter();
@@ -63,24 +59,18 @@ Parameter *MacroControlParameterLayout2::getCurrentEditParameter() const
   return super::getCurrentEditParameter();
 }
 
-Parameter *MacroControlParameterLayout2::getCurrentRouter() const
-{
-  if(auto editBuffer = Application::get().getPresetManager()->getEditBuffer())
-  {
-    if(auto tgtParam = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
-    {
-      int selectedHWSource = tgtParam->getUiSelectedHardwareSource();
+Parameter *MacroControlParameterLayout2::getCurrentRouter() const {
+  if (auto editBuffer = Application::get().getPresetManager()->getEditBuffer()) {
+    if (auto tgtParam = dynamic_cast<MacroControlParameter *>(getCurrentParameter())) {
+      auto selectedHWSource = tgtParam->getUiSelectedHardwareSource();
 
-      if(auto srcParam = editBuffer->findParameterByID({ selectedHWSource, VoiceGroup::Global }))
-      {
-        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-        auto csGroup = static_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID({ "MCM", vg }));
+      if (auto srcParam = editBuffer->findParameterByID(selectedHWSource)) {
+        auto csGroup
+            = static_cast<MacroControlMappingGroup *>(editBuffer->getParameterGroupByID({"MCM", VoiceGroup::Global}));
         auto routers = csGroup->getModulationRoutingParametersFor(tgtParam);
 
-        for(auto router : routers)
-        {
-          if(router->routes(dynamic_cast<const PhysicalControlParameter *>(srcParam)))
-          {
+        for (auto router : routers) {
+          if (router->routes(dynamic_cast<const PhysicalControlParameter *>(srcParam))) {
             return router;
           }
         }
@@ -91,24 +81,19 @@ Parameter *MacroControlParameterLayout2::getCurrentRouter() const
   return nullptr;
 }
 
-Parameter *MacroControlParameterLayout2::getCurrentPlayControl() const
-{
-  if(auto p = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
-  {
-    int selectedHWSource = p->getUiSelectedHardwareSource();
+Parameter *MacroControlParameterLayout2::getCurrentPlayControl() const {
+  if (auto p = dynamic_cast<MacroControlParameter *>(getCurrentParameter())) {
+    auto selectedHWSource = p->getUiSelectedHardwareSource();
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    return editBuffer->findParameterByID({ selectedHWSource, VoiceGroup::Global });
+    return editBuffer->findParameterByID(selectedHWSource);
   }
 
   return nullptr;
 }
 
-bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
-{
-  if(down)
-  {
-    switch(i)
-    {
+bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers) {
+  if (down) {
+    switch (i) {
       case Buttons::BUTTON_A:
         toggleMode(Mode::PlayControlPosition);
         return true;
@@ -127,11 +112,9 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
   return super::onButton(i, down, modifiers);
 }
 
-bool MacroControlParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
-{
-  if(m_mode == Mode::PlayControlSelection)
-  {
-    if(auto p = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
+bool MacroControlParameterLayout2::onRotary(int inc, ButtonModifiers modifiers) {
+  if (m_mode == Mode::PlayControlSelection) {
+    if (auto p = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
       p->toggleUiSelectedHardwareSource(inc);
 
     return true;
@@ -140,29 +123,25 @@ bool MacroControlParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
   return super::onRotary(inc, modifiers);
 }
 
-void MacroControlParameterLayout2::toggleMode(Mode desiredMode)
-{
-  if(m_mode == desiredMode)
+void MacroControlParameterLayout2::toggleMode(Mode desiredMode) {
+  if (m_mode == desiredMode)
     setMode(Mode::MacroControlValue);
   else
     setMode(desiredMode);
 }
 
-MacroControlParameterLayout2::Mode MacroControlParameterLayout2::getMode() const
-{
+MacroControlParameterLayout2::Mode MacroControlParameterLayout2::getMode() const {
   return m_mode;
 }
 
-void MacroControlParameterLayout2::setMode(Mode desiredMode)
-{
+void MacroControlParameterLayout2::setMode(Mode desiredMode) {
   m_mode = desiredMode;
 
   m_modeOverlay->clear();
   noHighlight();
   setDirty();
 
-  switch(m_mode)
-  {
+  switch (m_mode) {
     case Mode::MacroControlValue:
       m_modeOverlay->addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
 
@@ -212,72 +191,58 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
 }
 
 MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
-    : virtual_base()
-    , super1()
-    , super2()
-{
+    : virtual_base(), super1(), super2() {
   addControl(new Button("HW Pos", Buttons::BUTTON_A));
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
   addControl(new Button("HW Amt", Buttons::BUTTON_C));
 }
 
-void MacroControlParameterSelectLayout2::init()
-{
+void MacroControlParameterSelectLayout2::init() {
   super1::init();
   super2::init();
 }
 
-Carousel *MacroControlParameterSelectLayout2::createCarousel(const Rect &rect)
-{
+Carousel *MacroControlParameterSelectLayout2::createCarousel(const Rect &rect) {
   return new HWSourceAmountCarousel(Rect(195, 0, 58, 64));
 }
 
-bool MacroControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
-{
-  if(Buttons::BUTTON_D == i && getMode() == Mode::MacroControlValue)
-  {
+bool MacroControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers) {
+  if (Buttons::BUTTON_D == i && getMode() == Mode::MacroControlValue) {
     toggleMode(Mode::PlayControlAmount);
     return true;
   }
 
-  if(super1::onButton(i, down, modifiers))
+  if (super1::onButton(i, down, modifiers))
     return true;
 
   return super2::onButton(i, down, modifiers);
 }
 
-void MacroControlParameterSelectLayout2::setMode(Mode desiredMode)
-{
+void MacroControlParameterSelectLayout2::setMode(Mode desiredMode) {
   super2::setMode(desiredMode);
 }
 
 MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()
-    : virtual_base()
-    , super1()
-    , super2()
-{
+    : virtual_base(), super1(), super2() {
   addControl(new Button("", Buttons::BUTTON_A));
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("", Buttons::BUTTON_C));
 }
 
-ButtonMenu *MacroControlParameterEditLayout2::createMenu(const Rect &rect)
-{
+ButtonMenu *MacroControlParameterEditLayout2::createMenu(const Rect &rect) {
   return new MacroControlEditButtonMenu(rect);
 }
 
-void MacroControlParameterEditLayout2::setMode(Mode desiredMode)
-{
+void MacroControlParameterEditLayout2::setMode(Mode desiredMode) {
   super2::setMode(desiredMode);
   getMenu()->highlightSelectedButton();
 }
 
-bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
-{
-  if(super1::onButton(i, down, modifiers))
+bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers) {
+  if (super1::onButton(i, down, modifiers))
     return true;
 
-  if(i == Buttons::BUTTON_A || i == Buttons::BUTTON_B || i == Buttons::BUTTON_C)
+  if (i == Buttons::BUTTON_A || i == Buttons::BUTTON_B || i == Buttons::BUTTON_C)
     return true;
 
   return super2::onButton(i, down, modifiers);

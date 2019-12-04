@@ -11,7 +11,7 @@ class MCViewContentManager
 
   void sendToAllWebsockets(const Glib::ustring &message) const;
 
-  void handleRequest(std::shared_ptr<WebSocketRequest> request);
+  void handleRequest(const std::shared_ptr<WebSocketRequest>& request);
 
   struct WebsocketConnection
   {

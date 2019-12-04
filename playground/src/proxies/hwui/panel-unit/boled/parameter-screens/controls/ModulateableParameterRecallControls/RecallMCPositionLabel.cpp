@@ -13,9 +13,8 @@ RecallMCPositionLabel::RecallMCPositionLabel(Rect pos)
   if(auto modP
      = dynamic_cast<ModulateableParameter*>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
   {
-    uint16_t id = MacroControlsGroup::modSrcToParamNumber(modP->getModulationSource());
-    auto vg = modP->getID().getVoiceGroup();
-    if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, vg}))
+    auto id = MacroControlsGroup::modSrcToParamId(modP->getModulationSource());
+    if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
     {
       if(auto originalMC = mc->getOriginalParameter())
       {

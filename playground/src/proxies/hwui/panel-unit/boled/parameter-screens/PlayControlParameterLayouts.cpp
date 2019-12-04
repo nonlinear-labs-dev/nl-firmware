@@ -67,8 +67,8 @@ bool PlayControlParameterLayout2::onRotary(int i, ButtonModifiers modifiers)
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     auto hw = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID({ "CS", VoiceGroup::Global }));
     auto currentID = getCurrentParameter()->getID();
-    auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID.getNumber(), i);
-    editBuffer->undoableSelectParameter({ newParamID, currentID.getVoiceGroup() });
+    auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID, i);
+    editBuffer->undoableSelectParameter(newParamID);
     return true;
   }
 
@@ -133,6 +133,12 @@ PitchbendParameterSelectLayout2::PitchbendParameterSelectLayout2()
 
 bool PitchbendParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 
@@ -172,6 +178,12 @@ AftertouchParameterSelectLayout2::AftertouchParameterSelectLayout2()
 
 bool AftertouchParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 
@@ -266,20 +278,20 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
   if(down)
   {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
     switch(i)
     {
       case Buttons::BUTTON_B:
         if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
         {
-          auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", vg });
+          auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(
+              { "MCM", VoiceGroup::Global });
           auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
           auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 
           for(auto routingParam : routingParams)
           {
-            if(routingParam->getID().getNumber() == p->getUiSelectedModulationRouter())
+            if(routingParam->getID() == p->getUiSelectedModulationRouter())
             {
               editBuffer->undoableSelectParameter(routingParam->getTargetParameter()->getID());
               return true;
@@ -291,7 +303,7 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
 
       case Buttons::BUTTON_C:
         if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
-          editBuffer->undoableSelectParameter({ p->getUiSelectedModulationRouter(), vg });
+          editBuffer->undoableSelectParameter(p->getUiSelectedModulationRouter());
 
         return true;
     }
@@ -395,6 +407,12 @@ PedalParameterSelectLayout2::PedalParameterSelectLayout2()
 
 bool PedalParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 
@@ -468,6 +486,12 @@ RibbonParameterSelectLayout2::RibbonParameterSelectLayout2()
 
 bool RibbonParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_A)
+  {
+    toggleMode(Mode::Select);
+    return true;
+  }
+
   if(super1::onButton(i, down, modifiers))
     return true;
 

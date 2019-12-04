@@ -35,6 +35,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include "ModulateableParameterLayouts.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
@@ -57,7 +58,7 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
     , super1()
     , super2()
 {
-  m_mcPosButton = addControl(new MCPositionButton(Buttons::BUTTON_A));
+  m_mcPosButton = addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
   m_mcSelButton = addControl(new MCSelectButton(Buttons::BUTTON_B));
   m_mcAmtButton = addControl(new MCAmountButton(Buttons::BUTTON_C));
 
@@ -79,6 +80,27 @@ void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *,
   if(newParam)
     m_paramConnection = newParam->onParameterChanged(
         sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onCurrentParameterChanged));
+}
+
+void ModulateableParameterSelectLayout2::handleSelectPartButton()
+{
+  if(m_mcPosButton)
+  {
+    remove(m_mcPosButton);
+    m_mcPosButton = nullptr;
+  }
+
+  if(!m_mcPosButton)
+  {
+    if(m_mode == Mode::ParameterValue)
+    {
+      m_mcPosButton = addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
+    }
+    else
+    {
+      m_mcPosButton = addControl(new MCPositionButton(Buttons::BUTTON_A));
+    }
+  }
 }
 
 void ModulateableParameterSelectLayout2::onModfiersChanged(ButtonModifiers modifiers)
@@ -184,9 +206,16 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
     switch(i)
     {
       case Buttons::BUTTON_A:
-        if(hasModulationSource())
-          toggleMode(Mode::MacroControlPosition);
-        return true;
+        if(m_mode == Mode::ParameterValue)
+        {
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+          return true;
+        }
+        else
+        {
+          setMode(Mode::MacroControlPosition);
+          return true;
+        }
 
       case Buttons::BUTTON_B:
         toggleMode(Mode::MacroControlSelection);
@@ -225,8 +254,8 @@ Parameter *ModulateableParameterSelectLayout2::getCurrentEditParameter() const
     if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
     {
       auto src = p->getModulationSource();
-      uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
-      return Application::get().getPresetManager()->getEditBuffer()->findParameterByID({srcParamID, p->getVoiceGroup()});
+      auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
+      return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID);
     }
   }
 
@@ -343,6 +372,9 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
   m_modeOverlay->clear();
   m_mcAmtButton->setVisible(true);
   m_mcSelButton->setVisible(true);
+
+  handleSelectPartButton();
+
   m_mcPosButton->setVisible(true);
 
   noHighlight();

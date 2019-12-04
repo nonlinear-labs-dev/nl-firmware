@@ -10,8 +10,7 @@ class MacroControlParameter;
 class MacroControlMappingGroup : public ParameterGroup
 {
  public:
-  MacroControlMappingGroup(ParameterDualGroupSet *parent, ParameterGroup *hw,
-                           ParameterGroup *mc, VoiceGroup voicegroup);
+  MacroControlMappingGroup(ParameterDualGroupSet *parent, ParameterGroup *hw, ParameterGroup *mc);
   virtual ~MacroControlMappingGroup();
 
   typedef ModulationRoutingParameter *tModRoutingParam;

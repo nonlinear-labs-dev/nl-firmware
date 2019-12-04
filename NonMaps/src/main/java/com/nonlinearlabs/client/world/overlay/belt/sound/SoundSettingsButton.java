@@ -8,7 +8,7 @@ import com.nonlinearlabs.client.world.overlay.html.soundSettings.SoundSettingsDi
 public class SoundSettingsButton extends SVGImage {
 
 	public SoundSettingsButton(Control parent) {
-		super(parent, "Append_Enabled.svg");
+		super(parent, "More_A_Enabled.svg");
 	}
 
 	public double getPictureHeight() {

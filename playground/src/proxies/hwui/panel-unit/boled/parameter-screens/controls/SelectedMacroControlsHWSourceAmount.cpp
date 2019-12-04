@@ -11,6 +11,7 @@
 
 SelectedMacroControlsHWSourceAmount::SelectedMacroControlsHWSourceAmount(const Rect &rect)
     : super(rect)
+    , m_hwParamID(ParameterId::invalid())
 {
   getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::onParameterSelected)));
@@ -37,20 +38,20 @@ void SelectedMacroControlsHWSourceAmount::onMCChanged(const Parameter *param)
 {
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
   {
-    int hwSourceID = mc->getUiSelectedHardwareSource();
+    auto hwSourceID = mc->getUiSelectedHardwareSource();
 
     m_hwParamID = hwSourceID;
 
-    if(hwSourceID > 0)
+    if(hwSourceID.getNumber() > 0)
     {
-      if(auto hwParam = getEditBuffer()->findParameterByID({ hwSourceID, VoiceGroup::Global }))
+      if(auto hwParam = getEditBuffer()->findParameterByID(hwSourceID))
       {
         m_srcChanged.disconnect();
         m_srcChanged = hwParam->onParameterChanged(
             sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::updateTextFromRouter));
 
-        auto vg = param->getVoiceGroup();
-        auto csGroup = static_cast<MacroControlMappingGroup *>(getEditBuffer()->getParameterGroupByID({ "MCM", vg }));
+        auto csGroup = dynamic_cast<MacroControlMappingGroup *>(
+            getEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
         auto routers = csGroup->getModulationRoutingParametersFor(dynamic_cast<const MacroControlParameter *>(param));
 
         for(auto router : routers)

@@ -18,6 +18,7 @@ void VoiceGroupMasterGroup::init()
                                                 ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48, 4800,
                                                 "Tune", "Voice Group Tune", getVoiceGroup()));
 
-  appendParameter(new Parameter(this, { 362, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
-                                0, 100, 1000));
+  appendParameter(new VoiceGroupMasterParameter(this, { 362, getVoiceGroup() },
+                                                ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000,
+                                                "To FX", "To FX", getVoiceGroup()));
 }

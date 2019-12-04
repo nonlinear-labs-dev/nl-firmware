@@ -14,7 +14,7 @@ class ParameterId
   bool operator==(const ParameterId &other) const;
   bool operator!=(const ParameterId &other) const;
 
-  int getNumber() const;
+  uint16_t getNumber() const;
   VoiceGroup getVoiceGroup() const;
 
   std::string toString() const
@@ -30,7 +30,9 @@ class ParameterId
 
   static bool isGlobal(int number);
 
+  static ParameterId invalid();
+
  private:
-  int m_num;
+  uint16_t m_num;
   VoiceGroup m_group;
 };

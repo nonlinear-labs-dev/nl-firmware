@@ -13,8 +13,18 @@ static VoiceGroup parseGroup(const std::string &in)
   return to<VoiceGroup>(in.substr(0, p));
 }
 
-GroupId::GroupId(const std::string &name, VoiceGroup group)
-    : m_name(name)
+static std::string parseName(const std::string &in)
+{
+  auto p = in.find('-');
+
+  if(p == std::string::npos)
+    return "";
+
+  return in.substr(p + 1);
+}
+
+GroupId::GroupId(std::string name, VoiceGroup group)
+    : m_name(std::move(name))
     , m_group(group)
 {
 }
@@ -26,7 +36,7 @@ GroupId::GroupId(const GroupId &other)
 }
 
 GroupId::GroupId(const std::string &str)
-    : m_name(str)
+    : m_name(parseName(str))
     , m_group(parseGroup(str))
 {
 }

@@ -215,31 +215,31 @@ namespace nltools
     {
       struct Parameter
       {
-        uint16_t id {};
+        uint16_t id{};
         double controlPosition = 0;
         bool locked = false;
       };
 
       struct RibbonParameter : Parameter
       {
-        RibbonTouchBehaviour ribbonTouchBehaviour {};
-        RibbonReturnMode ribbonReturnMode {};
+        RibbonTouchBehaviour ribbonTouchBehaviour{};
+        RibbonReturnMode ribbonReturnMode{};
       };
 
       struct PedalParameter : Parameter
       {
-        PedalModes pedalMode {};
-        ReturnMode returnMode {};
+        PedalModes pedalMode{};
+        ReturnMode returnMode{};
       };
 
       struct AftertouchParameter : Parameter
       {
-        ReturnMode returnMode {};
+        ReturnMode returnMode{};
       };
 
       struct BenderParameter : Parameter
       {
-        ReturnMode returnMode {};
+        ReturnMode returnMode{};
       };
 
       struct MacroParameter : Parameter
@@ -272,42 +272,6 @@ namespace nltools
       struct SplitPoint : Parameter
       {
       };
-
-#if 0
-
-      inline bool operator==(const Parameter& lhs, const Parameter& rhs)
-      {
-        return std::tie(lhs.id, lhs.controlPosition, lhs.locked) == std::tie(rhs.id, rhs.controlPosition, rhs.locked);
-      }
-
-      inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
-      {
-        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.mc == rhs.mc
-            && lhs.modulationAmount == rhs.modulationAmount;
-      }
-
-      inline bool operator==(const AftertouchParameter& lhs, const AftertouchParameter& rhs)
-      {
-        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.returnMode == rhs.returnMode;
-      }
-
-      inline bool operator==(const BenderParameter& lhs, const BenderParameter& rhs)
-      {
-        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.returnMode == rhs.returnMode;
-      }
-
-      inline bool operator==(const PedalParameter& lhs, const PedalParameter& rhs)
-      {
-        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition && lhs.pedalMode == rhs.pedalMode
-            && lhs.returnMode == rhs.returnMode;
-      }
-
-      inline bool operator==(const RibbonParameter& lhs, const RibbonParameter& rhs)
-      {
-        return lhs.id == rhs.id && lhs.controlPosition == rhs.controlPosition
-            && lhs.ribbonTouchBehaviour == rhs.ribbonTouchBehaviour && lhs.ribbonReturnMode == rhs.ribbonReturnMode;
-      }
-#endif
     }
 
     struct SinglePresetMessage
@@ -318,8 +282,8 @@ namespace nltools
       }
 
       std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::ModulateableParameter, 97> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 107> unmodulateables;
+      std::array<ParameterGroups::ModulateableParameter, 100> modulateables;
+      std::array<ParameterGroups::UnmodulatebaleParameter, 97> unmodulateables;
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
       ParameterGroups::UnmodulatebaleParameter unisonVoices;
@@ -333,14 +297,14 @@ namespace nltools
         return MessageType::SplitPreset;
       }
 
-      std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
-      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;
-      std::array<std::array<ParameterGroups::HardwareAmountParameter, 48>, 2> hwamounts;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 100>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 97>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+      std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
       ParameterGroups::SplitPoint splitpoint;
     };
@@ -352,14 +316,15 @@ namespace nltools
         return MessageType::LayerPreset;
       }
 
-      std::array<std::array<ParameterGroups::MacroParameter, 6>, 2> macros;
-      std::array<std::array<ParameterGroups::ModulateableParameter, 97>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 107>, 2> unmodulateables;
-      std::array<std::array<ParameterGroups::HardwareAmountParameter, 48>, 2> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+      std::array<ParameterGroups::MacroParameter, 6> macros;
+
+      std::array<std::array<ParameterGroups::ModulateableParameter, 100>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 97>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
   }

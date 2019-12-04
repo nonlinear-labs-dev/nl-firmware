@@ -31,7 +31,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter { 0, VoiceGroup::I }
+    , m_lastSelectedParameter{ 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -219,7 +219,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name {};
+    Glib::ustring name{};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -310,6 +310,12 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
   }
 }
 
+bool isInSoundScreen()
+{
+  auto fum = Application::get().getHWUI()->getFocusAndMode();
+  return fum.focus == UIFocus::Sound && fum.mode == UIMode::Select;
+}
+
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
   if(m_lastSelectedParameter != p->getID())
@@ -336,7 +342,15 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       {
         if(auto hwui = Application::get().getHWUI())
         {
-          hwui->setFocusAndMode(UIFocus::Parameters);
+          if(hwui->getFocusAndMode().focus == UIFocus::Sound)
+          {
+            if(oldP->getID().getNumber() != newP->getID().getNumber())
+              hwui->setFocusAndMode(UIFocus::Parameters);
+          }
+          else
+          {
+            hwui->setFocusAndMode(UIFocus::Parameters);
+          }
         }
       }
 
@@ -348,11 +362,6 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       hwui->unsetFineMode();
     }
   }
-}
-
-bool isIDMonoGroup(int id)
-{
-  return id >= 364 && id <= 365;
 }
 
 Parameter *EditBuffer::getSelected() const
@@ -723,7 +732,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -755,7 +764,7 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -785,8 +794,7 @@ void EditBuffer::onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection)
     auto currentID = current->getID();
     if(currentID.getVoiceGroup() != VoiceGroup::Global)
     {
-      undoableSelectParameter(
-          { currentID.getNumber(), currentID.getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I });
+      undoableSelectParameter({ currentID.getNumber(), newSelection });
     }
   }
 }

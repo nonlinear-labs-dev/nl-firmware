@@ -18,23 +18,22 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
  public:
   ModulationRoutingParameter(ParameterGroup *group, ParameterId id, tSrcParameterPtr srcParam, tMCParameterPtr tgtParam,
                              const ScaleConverter *scaling);
-  virtual ~ModulationRoutingParameter();
+  ~ModulationRoutingParameter() override;
 
-  virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue,
-                              tControlPositionValue newValue) override;
+  void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
   void applyLpcPhysicalControl(tControlPositionValue diff);
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
 
-  virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
+  void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
 
   tMCParameterPtr getTargetParameter() const;
   tSrcParameterPtr getSourceParameter() const;
 
   bool routes(const PhysicalControlParameter *p) const;
-  virtual Glib::ustring getDisplayString() const override;
-  virtual tControlPositionValue getControlPositionValue() const override;
-  virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+  Glib::ustring getDisplayString() const override;
+  tControlPositionValue getControlPositionValue() const override;
+  DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
   void onExclusiveRoutingLost();
 

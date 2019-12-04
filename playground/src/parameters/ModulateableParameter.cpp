@@ -123,15 +123,13 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
   {
     auto swapData = UNDO::createSwapData(src);
 
-    auto vg = getParentGroup()->getVoiceGroup();
-
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID({ MacroControlsGroup::modSrcToParamNumber(m_modSource), vg }));
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
           modSrc->unregisterTarget(this);
         }
 
@@ -140,7 +138,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID({ MacroControlsGroup::modSrcToParamNumber(m_modSource), vg }));
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
           modSrc->registerTarget(this);
         }
 
@@ -344,12 +342,12 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
   auto src = getModulationSource();
   if(src != MacroControls::NONE)
   {
-    uint16_t srcParamID = MacroControlsGroup::modSrcToParamNumber(src);
+    auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
     auto editBuffer = dynamic_cast<const EditBuffer *>(getParentGroup()->getParent());
 
     if(editBuffer)
     {
-      if(auto srcParam = editBuffer->findParameterByID({ srcParamID, getVoiceGroup() }))
+      if(auto srcParam = editBuffer->findParameterByID(srcParamID))
       {
         auto modAmount = getModulationAmount();
         auto srcValue = srcParam->getValue().getRawValue();
@@ -450,9 +448,9 @@ MacroControlParameter *ModulateableParameter::getMacroControl() const
   auto src = getModulationSource();
   if(src != MacroControls::NONE)
   {
-    auto myMCID = MacroControlsGroup::modSrcToParamNumber(src);
+    auto myMCID = MacroControlsGroup::modSrcToParamId(src);
     return dynamic_cast<MacroControlParameter *>(
-        Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ myMCID, getVoiceGroup() }));
+        Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID));
   }
   return nullptr;
 }

@@ -48,12 +48,11 @@ void HWSourceAmountCarousel::setup(Parameter *newOne)
 
   if(auto p = dynamic_cast<MacroControlParameter *>(newOne))
   {
-    if(p->getUiSelectedHardwareSource() == 0)
+    if(p->getUiSelectedHardwareSource().getNumber() == 0)
       p->toggleUiSelectedHardwareSource(1);
 
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-
-    auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", vg });
+    auto group
+        = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
     auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
     auto routingParams = csGroup->getModulationRoutingParametersFor(p);
 
@@ -90,8 +89,8 @@ void HWSourceAmountCarousel::onMacroControlChanged(const Parameter *param)
     forEach([=](tControlPtr c) {
       if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
         if(auto p = dynamic_cast<ModulationRoutingParameter *>(miniSlider->getParameter()))
-          miniSlider->setHighlight(
-              isHighlight() || (mc->getUiSelectedHardwareSource() == p->getSourceParameter()->getID().getNumber()));
+          miniSlider->setHighlight(isHighlight()
+                                   || (mc->getUiSelectedHardwareSource() == p->getSourceParameter()->getID()));
     });
   }
 }

@@ -68,10 +68,20 @@ abstract class MacrosCol extends ParameterColumn {
 	MacrosCol(final MapsLayout parent, String defName, final int macroControlID) {
 		super(parent);
 
-		int diffBetweenMacroControlIDAndItsSmoothing = 81;
 		this.param = new MacroControlParameterSlider(this, defName, macroControlID);
 		addChild(param);
-		addChild(new Smoothing(this, macroControlID + diffBetweenMacroControlIDAndItsSmoothing));
+		addChild(new Smoothing(this, getMacroTimeParameterNumber(macroControlID)));
+	}
+
+	private int getMacroTimeParameterNumber(final int macroControlID) {
+		if (macroControlID == 369)
+			return 370;
+
+		if (macroControlID == 371)
+			return 372;
+
+		int diffBetweenMacroControlIDAndItsSmoothing = 81;
+		return macroControlID + diffBetweenMacroControlIDAndItsSmoothing;
 	}
 
 	public MacroControlParameter getParameter() {

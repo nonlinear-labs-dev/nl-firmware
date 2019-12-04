@@ -22,9 +22,11 @@ TEST_CASE("HWUI Voice Group Selection")
 
   SECTION("Reset Voice Group Selection to I on Preset Load")
   {
-    auto scope = TestHelper::createTestScope();
-    REQUIRE(hwui->getCurrentVoiceGroup() == VoiceGroup::II);
-    eb->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
+    {
+      auto scope = TestHelper::createTestScope();
+      REQUIRE(hwui->getCurrentVoiceGroup() == VoiceGroup::II);
+      eb->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
+    }
 
     REQUIRE(TestHelper::MainLoop::hasPending());
 

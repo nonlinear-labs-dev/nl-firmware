@@ -23,6 +23,6 @@ class SelectedMacroControlsHWSourceName : public Label
   void onParameterSelected(Parameter* newOne);
   void onMCChanged(const Parameter* param);
 
-  int m_hwParamID = 0;
+  ParameterId m_hwParamID;
   sigc::connection m_mcChanged;
 };

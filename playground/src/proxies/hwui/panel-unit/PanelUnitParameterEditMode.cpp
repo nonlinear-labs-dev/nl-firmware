@@ -184,18 +184,17 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
 
 void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Parameter *newParam)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-
   if(auto mc = dynamic_cast<MacroControlParameter *>(oldParam))
   {
     if(auto ph = dynamic_cast<PhysicalControlParameter *>(newParam))
     {
       if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(
-             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID({ "MCM", vg })))
+             Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(
+                 { "MCM", VoiceGroup::Global })))
       {
         if(auto router = mcm->getModulationRoutingParameterFor(ph, mc))
         {
-          ph->setUiSelectedModulationRouter(router->getID().getNumber());
+          ph->setUiSelectedModulationRouter(router->getID());
         }
       }
     }
@@ -247,7 +246,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
 
   if(auto modParam = dynamic_cast<ModulateableParameter *>(firstParameterInList))
   {
-    mcStateMachine.setCurrentModulateableParameter(ids.front());
+    mcStateMachine.setCurrentModulateableParameter({ ids.front(), voiceGroup });
 
     if(mcStateMachine.traverse(state ? MacroControlAssignmentEvents::ModParamPressed
                                      : MacroControlAssignmentEvents::ModParamReleased))
@@ -266,13 +265,12 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
 
     if(isShowingParameterScreen())
     {
-      auto pos = find(ids.begin(), ids.end(), selParam->getID().getNumber());
+      auto selParamID = selParam->getID();
+      auto pos = find(ids.begin(), ids.end(), selParamID.getNumber());
 
       if(pos != ids.end())
         if(switchToNormalModeInCurrentParameterLayout())
           return true;
-
-      auto selParamID = selParam->getID();
 
       for(auto it = ids.begin(); it != ids.end(); ++it)
       {
@@ -288,16 +286,21 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
         }
       }
 
-      setParameterSelection({ ids.front(), selParamID.getVoiceGroup() }, state);
+      if(ParameterId::isGlobal(ids.front()))
+        setParameterSelection({ ids.front(), VoiceGroup::Global }, state);
+      else
+        setParameterSelection({ ids.front(), Application::get().getHWUI()->getCurrentVoiceGroup() }, state);
     }
     else
     {
       if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
       {
-#warning "might be a global parameter?"
-        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         for(auto paramId : ids)
         {
+          auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+          if(ParameterId::isGlobal(paramId))
+            vg = VoiceGroup::Global;
+
           auto param = editBuffer->findParameterByID({ paramId, vg });
           if(param->isChangedFromLoaded())
           {
@@ -432,7 +435,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       auto selModRouter = p->getUiSelectedModulationRouter();
 
-      if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID({ selModRouter, vg })))
+      if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID(selModRouter)))
       {
         collectLedStates(states, router->getTargetParameter()->getID());
       }

@@ -8,16 +8,14 @@
 #include "parameters/scale-converters/LinearBipolar100PercentScaleConverter.h"
 
 MacroControlMappingGroup::MacroControlMappingGroup(ParameterDualGroupSet *parent, ParameterGroup *hw,
-                                                   ParameterGroup *mc, VoiceGroup vg)
-    : ParameterGroup(parent, { "MCM", vg }, "HW Amount", "Hardware Amount", "Hardware Amount")
+                                                   ParameterGroup *mc)
+    : ParameterGroup(parent, { "MCM", VoiceGroup::Global }, "HW Amount", "Hardware Amount", "Hardware Amount")
     , m_mc(mc)
     , m_hw(hw)
 {
 }
 
-MacroControlMappingGroup::~MacroControlMappingGroup()
-{
-}
+MacroControlMappingGroup::~MacroControlMappingGroup() = default;
 
 void MacroControlMappingGroup::init()
 {
@@ -26,7 +24,7 @@ void MacroControlMappingGroup::init()
   auto mc_c = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 245, getVoiceGroup() }));
   auto mc_d = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 246, getVoiceGroup() }));
   auto mc_e = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 369, getVoiceGroup() }));
-  auto mc_f = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 370, getVoiceGroup() }));
+  auto mc_f = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 371, getVoiceGroup() }));
 
   auto pedal1
       = dynamic_cast<PhysicalControlParameter *>(m_hw->getParameterByID(HardwareSourcesGroup::getPedal1ParameterID()));
