@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/** @file       parameter_descriptor.h
-    @date       2019-11-07
-    @version    1.7B-1
-    @author     M. Seeber
-    @brief      provide a flexible descriptor structure
-    @todo
+/**   @file       parameter_descriptor.h
+      @date       2019-11-07
+      @version    1.7B-2
+      @author     M. Seeber
+      @brief      provide a flexible descriptor structure
+      @todo
 *******************************************************************************/
 
 #include <stdint.h>
@@ -40,11 +40,6 @@ namespace C15
           , m_index(static_cast<uint32_t>(_param))
       {
       }
-      inline TypeDescriptor(const Parameters::Global_Parameters _param)
-          : m_type(ParameterType::Global_Parameter)
-          , m_index(static_cast<uint32_t>(_param))
-      {
-      }
       inline TypeDescriptor(const Parameters::Hardware_Amounts _param)
           : m_type(ParameterType::Hardware_Amount)
           , m_index(static_cast<uint32_t>(_param))
@@ -60,13 +55,23 @@ namespace C15
           , m_index(static_cast<uint32_t>(_param))
       {
       }
-      inline TypeDescriptor(const Parameters::Modulateable_Parameters _param)
-          : m_type(ParameterType::Modulateable_Parameter)
+      inline TypeDescriptor(const Parameters::Global_Modulateables _param)
+          : m_type(ParameterType::Global_Modulateable)
           , m_index(static_cast<uint32_t>(_param))
       {
       }
-      inline TypeDescriptor(const Parameters::Unmodulateable_Parameters _param)
-          : m_type(ParameterType::Unmodulateable_Parameter)
+      inline TypeDescriptor(const Parameters::Global_Unmodulateables _param)
+          : m_type(ParameterType::Global_Unmodulateable)
+          , m_index(static_cast<uint32_t>(_param))
+      {
+      }
+      inline TypeDescriptor(const Parameters::Local_Modulateables _param)
+          : m_type(ParameterType::Local_Modulateable)
+          , m_index(static_cast<uint32_t>(_param))
+      {
+      }
+      inline TypeDescriptor(const Parameters::Local_Unmodulateables _param)
+          : m_type(ParameterType::Local_Unmodulateable)
           , m_index(static_cast<uint32_t>(_param))
       {
       }
@@ -223,6 +228,7 @@ namespace C15
   struct ParameterDescriptor
   {
     Descriptors::TypeDescriptor m_param;
+    int m_param_id = -1;
     float m_initial = 0.0f;
     Descriptors::AudioEngineParamDescriptor m_ae;
     Descriptors::PlaygroundParamDescriptor m_pg;
