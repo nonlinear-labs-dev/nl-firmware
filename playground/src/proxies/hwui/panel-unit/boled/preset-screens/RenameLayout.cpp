@@ -90,7 +90,7 @@ void RenameLayout::addControlKeys()
   }
 }
 
-void RenameLayout::onTextChanged(const ustring &text)
+void RenameLayout::onTextChanged(const Glib::ustring &text)
 {
   setDirty();
 }

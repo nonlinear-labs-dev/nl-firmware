@@ -110,17 +110,17 @@ class PresetManager : public ContentSection
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
 
  private:
-  void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
-  void loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
-  void loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder);
+  void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
+  void loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
+  void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
-  Glib::ustring getBaseName(const ustring &basedOn) const;
+  Glib::ustring getBaseName(const Glib::ustring &basedOn) const;
   void scheduleAutoLoadSelectedPreset();
 
   std::list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
-  SaveResult saveMetadata(RefPtr<Gio::File> pmFolder);
-  SaveResult saveInitSound(RefPtr<Gio::File> pmFolder);
-  SaveResult saveBanks(RefPtr<Gio::File> pmFolder);
+  SaveResult saveMetadata(Glib::RefPtr<Gio::File> pmFolder);
+  SaveResult saveInitSound(Glib::RefPtr<Gio::File> pmFolder);
+  SaveResult saveBanks(Glib::RefPtr<Gio::File> pmFolder);
 
   void doSaveTask();
   void popSaveTaskAndRecurseSynchronously();

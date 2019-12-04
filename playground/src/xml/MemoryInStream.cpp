@@ -16,7 +16,7 @@ namespace
   }
 }
 
-MemoryInStream::MemoryInStream(const ustring &mem, bool zipped)
+MemoryInStream::MemoryInStream(const Glib::ustring &mem, bool zipped)
     : MemoryInStream(toBuffer(mem), zipped)
 {
 }
@@ -59,7 +59,7 @@ bool MemoryInStream::eof() const
   return m_eof;
 }
 
-ustring MemoryInStream::read()
+Glib::ustring MemoryInStream::read()
 {
   GError *error = nullptr;
   gsize length = 0;

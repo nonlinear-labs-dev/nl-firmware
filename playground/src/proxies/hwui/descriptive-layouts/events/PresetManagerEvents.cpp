@@ -32,7 +32,7 @@ namespace DescriptiveLayouts
 
   PresetManagerEvents::~PresetManagerEvents() = default;
 
-  connection PresetManagerEvents::connect(EventSources source, const Callback &cb)
+  sigc::connection PresetManagerEvents::connect(EventSources source, const Callback &cb)
   {
     return eventSources.at(source)->connect(cb);
   }

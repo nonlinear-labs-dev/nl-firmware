@@ -130,7 +130,7 @@ Glib::ustring Application::getResourcePath() const
 #endif
 }
 
-ustring Application::getNonMapsPath() const
+Glib::ustring Application::getNonMapsPath() const
 {
 #ifdef _DEVELOPMENT_PC
   return getOptions()->getInstallDir() + "/nonlinear/playground/";

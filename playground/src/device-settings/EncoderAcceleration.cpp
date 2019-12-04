@@ -78,7 +78,7 @@ void EncoderAcceleration::incDec(int incs, ButtonModifiers modifiers)
   sendToLPC();
 }
 
-ustring EncoderAcceleration::getDisplayString() const
+Glib::ustring EncoderAcceleration::getDisplayString() const
 {
   return m_acceleration.getDisplayString();
 }

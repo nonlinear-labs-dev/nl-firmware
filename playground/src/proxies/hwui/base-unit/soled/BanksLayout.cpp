@@ -19,7 +19,7 @@
 class ShortenLabel : public Label
 {
  public:
-  ShortenLabel(const ustring &text, const Rect &pos)
+  ShortenLabel(const Glib::ustring &text, const Rect &pos)
       : Label(text, pos)
   {
   }
@@ -66,7 +66,7 @@ void BanksLayout::updateFromBank(const Bank *bank) const
   if(bank)
   {
     auto order = Application::get().getPresetManager()->getBankPosition(bank->getUuid()) + 1;
-    auto str = ustring::format(order);
+    auto str = Glib::ustring::format(order);
     m_number->setText(str);
     m_name->setText({ bank->getName(true) });
   }

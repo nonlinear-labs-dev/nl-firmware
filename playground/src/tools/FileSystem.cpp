@@ -2,8 +2,8 @@
 
 void FileSystem::deleteFolder(Glib::RefPtr<Gio::File> folder)
 {
-  RefPtr<Gio::FileEnumerator> enumerator = folder->enumerate_children();
-  std::list<RefPtr<Gio::FileInfo>> toDelete;
+  Glib::RefPtr<Gio::FileEnumerator> enumerator = folder->enumerate_children();
+  std::list<Glib::RefPtr<Gio::FileInfo>> toDelete;
 
   while(auto file = enumerator->next_file())
   {
@@ -26,7 +26,7 @@ void FileSystem::deleteFolder(Glib::RefPtr<Gio::File> folder)
   folder->remove();
 }
 
-bool FileSystem::isNameAUUID(const ustring &name)
+bool FileSystem::isNameAUUID(const Glib::ustring &name)
 {
   auto fileName = name.substr(0, name.find("."));
   return fileName.size() == 36;

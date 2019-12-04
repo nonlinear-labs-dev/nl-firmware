@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
+#include <ParameterId.h>
 
 class Application;
 class Parameter;

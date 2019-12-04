@@ -29,7 +29,7 @@ class RenameLayout : public DFBLayout
   std::shared_ptr<TextEditUsageMode> m_textUsageMode;
 
  private:
-  virtual void onTextChanged(const ustring &text);
+  virtual void onTextChanged(const Glib::ustring &text);
   void replaceUsageMode();
   void addLetters();
   void addControlKeys();

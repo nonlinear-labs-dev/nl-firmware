@@ -9,6 +9,7 @@
 #include <tools/FlagOwner.h>
 #include <presets/recall/RecallParameter.h>
 #include <ParameterId.h>
+#include <tools/Signal.h>
 
 class Layout;
 class DFBLayout;
@@ -116,7 +117,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual VisualizationStyle getVisualizationStyle() const;
 
   // CALLBACKS
-  sigc::connection onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall = true) const;
+  sigc::connection onParameterChanged(sigc::slot<void, const Parameter *> slot, bool doInitCall = true) const;
 
   void check();
 

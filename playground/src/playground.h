@@ -1,18 +1,9 @@
 #pragma once
 
-#include <glib.h>
+#include <stdlib.h>
 #include <glibmm.h>
-#include <giomm.h>
-#include <sigc++/sigc++.h>
-#include <sigc++/trackable.h>
-#include <memory>
-#include <stdio.h>
-#include <iostream>
 #include <iomanip>
-#include <nltools/Types.h>
-#include "tools/Signal.h"
-#include "Compatibility.h"
-#include "ParameterId.h"
+#include <Compatibility.h>
 
 #define TRACE_LOC_AND_ARGS(loc, arg) std::cout << loc << ": " << arg << std::endl
 #define TRACE(arg) TRACE_LOC_AND_ARGS(G_STRLOC, arg)
@@ -20,10 +11,7 @@
 
 void printLastFunctions();
 
-using namespace Glib;
-using namespace sigc;
-
-typedef gint32 tAudioControlValue;
+typedef int32_t tAudioControlValue;
 
 namespace std
 {

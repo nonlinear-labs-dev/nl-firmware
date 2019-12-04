@@ -81,7 +81,7 @@ void TransitionTime::incDec(int incs, ButtonModifiers mods)
   notify();
 }
 
-ustring TransitionTime::getDisplayString() const
+Glib::ustring TransitionTime::getDisplayString() const
 {
   return m_time.getDisplayString();
 }

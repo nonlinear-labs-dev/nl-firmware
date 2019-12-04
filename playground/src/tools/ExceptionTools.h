@@ -39,22 +39,21 @@ namespace ExceptionTools
   class TemplateException : public std::exception
   {
    protected:
-    using ustring = Glib::ustring;
-    ustring m_what, m_where;
+    Glib::ustring m_what, m_where;
 
    public:
-    TemplateException(ustring what, ustring where)
+    TemplateException(Glib::ustring what, Glib::ustring where)
         : m_what(std::move(what))
         , m_where(std::move(where))
     {
     }
 
-    ustring what()
+    Glib::ustring what()
     {
       return m_what;
     }
 
-    ustring where()
+    Glib::ustring where()
     {
       return m_where;
     }

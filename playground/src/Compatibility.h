@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glib.h>
+#include <glibmm.h>
 
 namespace std
 {

@@ -17,7 +17,7 @@ Glib::ustring DeviceInformationItem::getDisplayString() const
   return get();
 }
 
-connection DeviceInformationItem::onChange(slot<void, const DeviceInformationItem *> slot)
+connection DeviceInformationItem::onChange(sigc::slot<void, const DeviceInformationItem *> slot)
 {
   return m_signal.connectAndInit(slot, this);
 }

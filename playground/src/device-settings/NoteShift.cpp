@@ -81,7 +81,7 @@ void NoteShift::decOctave()
   set(get() - 12);
 }
 
-ustring NoteShift::getDisplayString() const
+Glib::ustring NoteShift::getDisplayString() const
 {
   return std::to_string(get());
 }

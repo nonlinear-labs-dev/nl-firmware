@@ -1,7 +1,7 @@
 #include <testing/TestDriver.h>
 #include "NoteWithOctaveDimension.h"
 
-ustring NoteWithOctaveDimension::stringizeNote(int note)
+Glib::ustring NoteWithOctaveDimension::stringizeNote(int note)
 {
   const std::array<const char *, NoteWithOctaveDimension::KeysPerOctave> keyLabels
       = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
@@ -14,7 +14,7 @@ ustring NoteWithOctaveDimension::stringizeNote(int note)
   return base + std::to_string(octave);
 }
 
-ustring NoteWithOctaveDimension::stringize(const tDisplayValue &displayValue) const
+Glib::ustring NoteWithOctaveDimension::stringize(const tDisplayValue &displayValue) const
 {
   return stringizeNote(static_cast<int>(displayValue * NoteWithOctaveDimension::KeyCount));
 }

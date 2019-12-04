@@ -66,7 +66,7 @@ Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib:
   {
     ret = removeLastChar(ret);
 
-    while(getFont()->getStringWidth(ustring(ret + ".." + (changed ? "*" : ""))) > getWidth())
+    while(getFont()->getStringWidth(Glib::ustring(ret + ".." + (changed ? "*" : ""))) > getWidth())
     {
       ret = removeLastChar(ret);
       if(ret.empty())

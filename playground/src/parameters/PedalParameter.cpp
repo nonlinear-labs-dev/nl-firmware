@@ -249,7 +249,7 @@ std::shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
   else if(getID() == HardwareSourcesGroup::getPedal4ParameterID())
     key = 4;
 
-  auto str = ustring::format("Pedal", key, "Type");
+  auto str = Glib::ustring::format("Pedal", key, "Type");
   return std::dynamic_pointer_cast<PedalType>(Application::get().getSettings()->getSetting(str));
 }
 

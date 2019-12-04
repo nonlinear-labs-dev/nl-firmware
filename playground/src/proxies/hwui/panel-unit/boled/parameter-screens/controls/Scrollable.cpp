@@ -6,7 +6,7 @@ void Scrollable::notifyDirty(bool b)
   m_sigDirty.send(b);
 }
 
-sigc::connection Scrollable::onDirtyStateChanged(slot<void, bool> cb)
+sigc::connection Scrollable::onDirtyStateChanged(sigc::slot<void, bool> cb)
 {
   return m_sigDirty.connect(cb);
 }

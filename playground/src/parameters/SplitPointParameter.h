@@ -8,12 +8,12 @@ class SplitPointParameter : public Parameter
   std::string getDisplayValue(VoiceGroup vg) const;
   static void registerTests();
 
-  ustring getLongName() const override;
-  ustring getShortName() const override;
+  Glib::ustring getLongName() const override;
+  Glib::ustring getShortName() const override;
 
   DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
-  ustring getGroupAndParameterName() const override;
+  Glib::ustring getGroupAndParameterName() const override;
 
-  ustring getDisplayString() const override;
+  Glib::ustring getDisplayString() const override;
 };

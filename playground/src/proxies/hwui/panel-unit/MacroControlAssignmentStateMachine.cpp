@@ -1,7 +1,7 @@
 #include <proxies/hwui/panel-unit/MacroControlAssignmentStateMachine.h>
 
 MacroControlAssignmentStateMachine::MacroControlAssignmentStateMachine()
-    : m_modParamId{ ParameterId::invalid() }
+    : m_modParamId { ParameterId::invalid() }
 {
   registerTraversal(MacroControlAssignmentStates::Initial, MacroControlAssignmentEvents::MCPressedWhileUnselected,
                     MacroControlAssignmentStates::Selected);

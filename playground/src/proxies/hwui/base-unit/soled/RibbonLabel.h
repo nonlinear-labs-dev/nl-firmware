@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
+#include <ParameterId.h>
 
 class Application;
 
@@ -10,7 +11,7 @@ class RibbonLabel : public Label
   typedef Label super;
 
  public:
-  RibbonLabel(const ParameterId& paramID, const Rect &rect);
+  RibbonLabel(const ParameterId &paramID, const Rect &rect);
   virtual ~RibbonLabel();
 
   StringAndSuffix getText() const override;

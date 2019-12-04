@@ -6,8 +6,8 @@ class MonoLegatoParameter : public MonoParameter
 {
  public:
   MonoLegatoParameter(ParameterGroup *group, ParameterId id);
-  ustring getDisplayString() const override;
+  Glib::ustring getDisplayString() const override;
 
-  ustring getLongName() const override;
-  ustring getShortName() const override;
+  Glib::ustring getLongName() const override;
+  Glib::ustring getShortName() const override;
 };

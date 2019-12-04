@@ -288,7 +288,7 @@ tControlPositionValue Parameter::getControlPositionValue() const
   return m_value.getQuantizedClipped();
 }
 
-sigc::connection Parameter::onParameterChanged(slot<void, const Parameter *> slot, bool doInitCall) const
+sigc::connection Parameter::onParameterChanged(sigc::slot<void, const Parameter *> slot, bool doInitCall) const
 {
   if(doInitCall)
     return m_signalParamChanged.connectAndInit(slot, this);

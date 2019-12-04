@@ -6,12 +6,12 @@ MonoGlideTimeParameter::MonoGlideTimeParameter(ParameterGroup *group, ParameterI
 {
 }
 
-ustring MonoGlideTimeParameter::getLongName() const
+Glib::ustring MonoGlideTimeParameter::getLongName() const
 {
   return "Glide Time";
 }
 
-ustring MonoGlideTimeParameter::getShortName() const
+Glib::ustring MonoGlideTimeParameter::getShortName() const
 {
   return "Glide";
 }

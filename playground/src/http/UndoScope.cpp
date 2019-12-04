@@ -8,7 +8,7 @@ UndoScope::tUpdateID UndoScope::onChange(uint64_t flags)
   return i;
 }
 
-sigc::connection UndoScope::onUndoScopeChanged(slot<void> cb)
+sigc::connection UndoScope::onUndoScopeChanged(sigc::slot<void> cb)
 {
   return m_sigUndoScopeChanged.connectAndInit(cb);
 }

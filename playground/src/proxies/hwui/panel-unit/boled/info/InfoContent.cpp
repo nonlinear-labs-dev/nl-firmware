@@ -32,7 +32,7 @@ InfoField* InfoContent::addInfoField(const std::string& lineIdentifier, const Gl
   return infoFields[lineIdentifier].get();
 }
 
-InfoField* InfoContent::addInfoField(const std::string& lineIdentifier, const ustring& labelText)
+InfoField* InfoContent::addInfoField(const std::string& lineIdentifier, const Glib::ustring& labelText)
 {
   return addInfoField(lineIdentifier, labelText, new SingleLineInfoContent());
 }

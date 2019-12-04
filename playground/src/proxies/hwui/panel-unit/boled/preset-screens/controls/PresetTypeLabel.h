@@ -1,5 +1,7 @@
 #pragma once
+
 #include "PresetLabel.h"
+#include <nltools/Types.h>
 
 class PresetTypeLabel : public PresetLabel
 {
@@ -7,7 +9,7 @@ class PresetTypeLabel : public PresetLabel
   explicit PresetTypeLabel(const Rect& pos);
   void update(const SoundType& type, bool selected, bool loaded);
 
-  void drawBackground(FrameBuffer &fb) override;
+  void drawBackground(FrameBuffer& fb) override;
 
   static std::string typeToString(const SoundType& type);
 };

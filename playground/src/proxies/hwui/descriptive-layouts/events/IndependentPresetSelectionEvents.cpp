@@ -25,7 +25,7 @@ namespace DescriptiveLayouts
 
   IndependentPresetSelectionEvents::~IndependentPresetSelectionEvents() = default;
 
-  connection IndependentPresetSelectionEvents::connect(EventSources source, const Callback &cb)
+  sigc::connection IndependentPresetSelectionEvents::connect(EventSources source, const Callback &cb)
   {
     return eventSources.at(source)->connect(cb);
   }

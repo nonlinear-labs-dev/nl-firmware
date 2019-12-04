@@ -13,7 +13,7 @@ namespace DescriptiveLayouts
     IndependentPresetSelectionEvents();
     ~IndependentPresetSelectionEvents() override;
 
-    connection connect(EventSources source, const Callback &cb) override;
+    sigc::connection connect(EventSources source, const Callback &cb) override;
     void fire(EventSinks e) override;
 
    private:

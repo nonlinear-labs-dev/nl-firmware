@@ -18,7 +18,7 @@ template <typename tSetting> class EnumSettingEditor : public MenuEditor
     Application::get().getSettings()->getSetting<tSetting>()->incDec(inc, false);
   }
 
-  const std::vector<ustring>& getDisplayStrings() const override
+  const std::vector<Glib::ustring>& getDisplayStrings() const override
   {
     return Application::get().getSettings()->getSetting<tSetting>()->enumToDisplayString();
   }

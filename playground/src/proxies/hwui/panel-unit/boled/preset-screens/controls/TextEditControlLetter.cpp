@@ -31,7 +31,7 @@ bool TextEditControlLetter::redraw(FrameBuffer &fb)
 
 Label::StringAndSuffix TextEditControlLetter::getText() const
 {
-  ustring ret;
+  Glib::ustring ret;
   ret += m_textUsageMode->getCharAtRelativeToCursorPosition(m_relativeToCursor);
   return ret;
 }

@@ -30,7 +30,7 @@ namespace DescriptiveLayouts
 
   struct GlobalEventProvider : EventProvider
   {
-    connection connect(EventSources source, const Callback &cb) override
+    sigc::connection connect(EventSources source, const Callback &cb) override
     {
       return getGlobalEventSourceBroker().connect(source, cb);
     }
@@ -58,7 +58,7 @@ namespace DescriptiveLayouts
     return nullptr;
   }
 
-  connection EventProvider::connect(EventSources source, const Callback &cb)
+  sigc::connection EventProvider::connect(EventSources source, const Callback &cb)
   {
     return {};
   }

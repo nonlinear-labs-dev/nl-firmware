@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tools/StateMachine.h>
+#include <ParameterId.h>
 
 enum class MacroControlAssignmentEvents
 {

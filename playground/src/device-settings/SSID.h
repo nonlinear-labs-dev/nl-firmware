@@ -10,7 +10,7 @@ class SSID : public HostAPDSetting
   typedef HostAPDSetting super;
 
  public:
-  ustring getDisplayString() const override;
+  Glib::ustring getDisplayString() const override;
 
  public:
   SSID(Settings &parent);

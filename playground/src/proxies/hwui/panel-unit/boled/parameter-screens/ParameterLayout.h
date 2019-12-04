@@ -108,6 +108,6 @@ class ParameterRecallLayout2 : public virtual ParameterLayout2
   Button *m_buttonA;
   bool m_paramLikeInPreset;
   Button *m_buttonD;
-  ustring m_recallString;
+  Glib::ustring m_recallString;
   sigc::connection m_paramConnection;
 };

@@ -6,7 +6,7 @@ MonoLegatoParameter::MonoLegatoParameter(ParameterGroup *group, ParameterId id)
 {
 }
 
-ustring MonoLegatoParameter::getDisplayString() const
+Glib::ustring MonoLegatoParameter::getDisplayString() const
 {
   if(getValue().getDisplayValue() != 0.0)
   {
@@ -18,12 +18,12 @@ ustring MonoLegatoParameter::getDisplayString() const
   }
 }
 
-ustring MonoLegatoParameter::getLongName() const
+Glib::ustring MonoLegatoParameter::getLongName() const
 {
   return "Legato";
 }
 
-ustring MonoLegatoParameter::getShortName() const
+Glib::ustring MonoLegatoParameter::getShortName() const
 {
   return "Legato";
 }

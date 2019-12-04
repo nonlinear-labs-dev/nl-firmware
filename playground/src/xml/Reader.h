@@ -2,7 +2,8 @@
 
 #include "playground.h"
 #include "InStream.h"
-#include "libundo/undo/Scope.h"
+#include <tools/Signal.h>
+#include <libundo/undo/Scope.h>
 #include <libundo/undo/Transaction.h>
 
 class Attributes;
@@ -14,32 +15,32 @@ class Reader
   Reader(InStream &in, UNDO::Transaction *transaction);
   virtual ~Reader();
 
-  typedef std::function<void(const ustring &text, const Attributes &attr)> tTextElementCB;
+  typedef std::function<void(const Glib::ustring &text, const Attributes &attr)> tTextElementCB;
   typedef std::function<Serializer *(const Attributes &attr)> tTagElementCB;
 
   void onTextElement(size_t nameHash, tTextElementCB cb);
-  void onTextElement(const ustring &name, tTextElementCB cb);
+  void onTextElement(const Glib::ustring &name, tTextElementCB cb);
 
   int getFileVersion() const;
 
   void onTag(size_t nameHash, tTagElementCB cb);
-  void onTag(const ustring &name, tTagElementCB cb);
+  void onTag(const Glib::ustring &name, tTagElementCB cb);
 
   void preProcess();
 
-  void loadTextElement(size_t nameHash, ustring &target);
+  void loadTextElement(size_t nameHash, Glib::ustring &target);
   void loadTextElement(size_t nameHash, std::string &target);
-  void loadTextElement(const ustring &name, ustring &target);
-  void loadTextElement(const ustring &name, std::string &target);
+  void loadTextElement(const Glib::ustring &name, Glib::ustring &target);
+  void loadTextElement(const Glib::ustring &name, std::string &target);
 
-  template <typename T> void loadElement(const ustring &name, T &target)
+  template <typename T> void loadElement(const Glib::ustring &name, T &target)
   {
     loadElement(m_hash(name), target);
   }
 
   template <typename T> void loadElement(size_t nameHash, T &target)
   {
-    onTextElement(nameHash, [&](const ustring &text, const Attributes &attr) mutable {
+    onTextElement(nameHash, [&](const Glib::ustring &text, const Attributes &attr) mutable {
       T foo;
       std::stringstream str;
       str << text;
@@ -79,7 +80,7 @@ class Reader
 
   bool onStartElement(size_t nameHash, const Attributes &attributes);
   void onEndElement();
-  void onTextElement(size_t nameHash, const Attributes &attributes, const ustring &text);
+  void onTextElement(size_t nameHash, const Attributes &attributes, const Glib::ustring &text);
 
  private:
   virtual void feed() = 0;
@@ -107,7 +108,7 @@ class Reader
 
   std::list<StackEntry> m_stack;
   size_t m_treeDepth;
-  std::hash<ustring> m_hash;
+  std::hash<Glib::ustring> m_hash;
   int m_fileVersion = 0;
   Signal<FileVersionCheckResult, int> m_sigFileVersionRead;
   FileVersionCheckResult m_versionCheck = FileVersionCheckResult::OK;

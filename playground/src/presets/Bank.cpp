@@ -46,7 +46,7 @@ Bank::~Bank()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
-SaveResult Bank::save(RefPtr<Gio::File> bankFolder)
+SaveResult Bank::save(Glib::RefPtr<Gio::File> bankFolder)
 {
   try
   {
@@ -65,7 +65,7 @@ SaveResult Bank::save(RefPtr<Gio::File> bankFolder)
   return SaveResult::Nothing;
 }
 
-SaveResult Bank::saveMetadata(RefPtr<Gio::File> bankFolder)
+SaveResult Bank::saveMetadata(Glib::RefPtr<Gio::File> bankFolder)
 {
   if(m_metadataLastSavedForUpdateID != getUpdateIDOfLastChange())
   {
@@ -77,7 +77,7 @@ SaveResult Bank::saveMetadata(RefPtr<Gio::File> bankFolder)
   return SaveResult::Nothing;
 }
 
-SaveResult Bank::savePresets(RefPtr<Gio::File> bankFolder)
+SaveResult Bank::savePresets(Glib::RefPtr<Gio::File> bankFolder)
 {
   if(m_presetsLastSavedForUpdateID != getUpdateIDOfLastChange())
   {
@@ -95,7 +95,7 @@ Preset *Bank::clonePreset(const Preset *p)
   return new Preset(this, *p, true);
 }
 
-void Bank::load(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder, int numBank, int numBanks)
+void Bank::load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder, int numBank, int numBanks)
 {
   auto lastChangedDateOfFile = loadMetadata(transaction, bankFolder);
   loadPresets(transaction, bankFolder);
@@ -105,11 +105,11 @@ void Bank::load(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder, in
   // to be overwritten by PresetBankMetadataSerializer addPostfixCommand, if timestamp exists in file
 }
 
-void Bank::deleteOldPresetFiles(RefPtr<Gio::File> bankFolder)
+void Bank::deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder)
 {
   if(bankFolder->query_exists())
   {
-    RefPtr<Gio::FileEnumerator> enumerator = bankFolder->enumerate_children();
+    Glib::RefPtr<Gio::FileEnumerator> enumerator = bankFolder->enumerate_children();
 
     while(auto file = enumerator->next_file())
     {
@@ -131,12 +131,12 @@ void Bank::deleteOldPresetFiles(RefPtr<Gio::File> bankFolder)
   }
 }
 
-uint64_t Bank::loadMetadata(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder)
+uint64_t Bank::loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder)
 {
   return Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", this, false);
 }
 
-void Bank::loadPresets(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder)
+void Bank::loadPresets(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder)
 {
   m_presets.forEach([&](Preset *p) { p->load(transaction, bankFolder); });
 }
@@ -318,7 +318,7 @@ size_t Bank::getPreviousPresetPosition() const
   return m_presets.getPreviousPosition(getSelectedPresetUuid());
 }
 
-void Bank::rename(const ustring &name)
+void Bank::rename(const Glib::ustring &name)
 {
   auto scope = getUndoScope().startTransaction("Rename Preset '%0'", name);
   setName(scope->getTransaction(), name);
@@ -567,7 +567,7 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
   int h = 0;
 
   m_presets.forEach([&](auto p) {
-    ustring name = p->getName();
+    Glib::ustring name = p->getName();
 
     if(name == baseName)
     {

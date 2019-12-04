@@ -91,7 +91,7 @@ void RibbonRelativeFactor::incDec(int incs, ButtonModifiers modifiers)
   sendToLPC();
 }
 
-ustring RibbonRelativeFactor::getDisplayString() const
+Glib::ustring RibbonRelativeFactor::getDisplayString() const
 {
   return m_factor.getDisplayString();
 }

@@ -22,9 +22,9 @@ void PassphraseEditor::incSetting(int inc)
   updateOnSettingChanged();
 }
 
-const std::vector<ustring> &PassphraseEditor::getDisplayStrings() const
+const std::vector<Glib::ustring> &PassphraseEditor::getDisplayStrings() const
 {
-  static std::vector<ustring> r = { "Cancel", "Create New" };
+  static std::vector<Glib::ustring> r = { "Cancel", "Create New" };
   return r;
 }
 

@@ -85,7 +85,7 @@ namespace DescriptiveLayouts
 
   std::experimental::any getAnyFromProperty(const json& value, const PrimitiveProperty& eventTargetProperty)
   {
-    std::experimental::any ret{};
+    std::experimental::any ret {};
     switch(eventTargetProperty)
     {
       case PrimitiveProperty::ControlPosition:
@@ -107,7 +107,7 @@ namespace DescriptiveLayouts
       case PrimitiveProperty::Highlight:
       case PrimitiveProperty::Visibility:
       {
-        bool val{};
+        bool val {};
         std::istringstream(value.template get<std::string>()) >> std::boolalpha >> val;
         return val;
       }
@@ -122,7 +122,7 @@ namespace DescriptiveLayouts
 
   ControlInstance::StaticInitList parseInit(const json& j)
   {
-    ControlInstance::StaticInitList ret{};
+    ControlInstance::StaticInitList ret {};
 
     JSONTools::forEachJsonInTag(j, "Init", [&](const auto& init) {
       JSONTools::forEachJsonChild(init, [&](const auto& obj) {
@@ -176,7 +176,7 @@ namespace DescriptiveLayouts
 
   LayoutClass::ControlInstanceList toControlInstanceList(const json& j)
   {
-    LayoutClass::ControlInstanceList l{};
+    LayoutClass::ControlInstanceList l {};
     JSONTools::forEachJsonChild(j, [&](const auto& obj) {
       auto key = obj.key();
       auto value = obj.value();
@@ -192,7 +192,7 @@ namespace DescriptiveLayouts
 
   LayoutClass::EventSinkList toEventSinkList(const json& j)
   {
-    LayoutClass::EventSinkList l{};
+    LayoutClass::EventSinkList l {};
     JSONTools::forEachJsonChild(j, [&](const auto& obj) {
       auto button = std::to_string(obj.key());
       auto target = obj.value();

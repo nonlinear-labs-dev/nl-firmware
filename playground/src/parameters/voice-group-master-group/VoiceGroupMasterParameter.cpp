@@ -16,17 +16,17 @@ VoiceGroupMasterParameter::VoiceGroupMasterParameter(ParameterGroup *group, cons
 {
 }
 
-ustring VoiceGroupMasterParameter::getLongName() const
+Glib::ustring VoiceGroupMasterParameter::getLongName() const
 {
   return m_longname;
 }
 
-ustring VoiceGroupMasterParameter::getShortName() const
+Glib::ustring VoiceGroupMasterParameter::getShortName() const
 {
   return m_shortname;
 }
 
-ustring VoiceGroupMasterParameter::getGroupAndParameterName() const
+Glib::ustring VoiceGroupMasterParameter::getGroupAndParameterName() const
 {
   return getParentGroup()->getShortName() + getLongName();
 }

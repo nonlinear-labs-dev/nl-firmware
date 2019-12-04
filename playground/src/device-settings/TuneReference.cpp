@@ -13,12 +13,12 @@ void TuneReference::load(const Glib::ustring& text)
   m_value.setRawValue(Initiator::EXPLICIT_OTHER, std::stof(text));
 }
 
-ustring TuneReference::save() const
+Glib::ustring TuneReference::save() const
 {
   return std::to_string(m_value.getRawValue());
 }
 
-ustring TuneReference::getDisplayString() const
+Glib::ustring TuneReference::getDisplayString() const
 {
   return m_value.getDisplayString();
 }

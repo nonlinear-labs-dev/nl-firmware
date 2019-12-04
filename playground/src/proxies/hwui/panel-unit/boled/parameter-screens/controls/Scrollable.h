@@ -15,7 +15,7 @@ class Scrollable
 
   void setArea(ScrollArea *area);
 
-  connection onDirtyStateChanged(slot<void, bool> cb);
+  sigc::connection onDirtyStateChanged(sigc::slot<void, bool> cb);
 
  protected:
   void notifyDirty(bool b);

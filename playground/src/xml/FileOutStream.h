@@ -2,6 +2,7 @@
 
 #include "OutStream.h"
 #include <fstream>
+#include <giomm.h>
 
 class FileOutStream : public OutStream
 {

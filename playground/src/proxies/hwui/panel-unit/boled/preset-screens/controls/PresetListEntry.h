@@ -39,8 +39,8 @@ class PresetListEntry : public ControlWithChildren
   PresetNameLabel *m_name = nullptr;
   PresetTypeLabel *m_type = nullptr;
 
-  connection m_animationConnection;
-  connection m_presetConnection;
+  sigc::connection m_animationConnection;
+  sigc::connection m_presetConnection;
 
   bool m_selected = false;
 };

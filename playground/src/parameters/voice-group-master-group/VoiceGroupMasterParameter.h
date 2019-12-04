@@ -12,13 +12,13 @@ class VoiceGroupMasterParameter : public ModulateableParameter
                             tControlPositionValue fineDenominator, std::string shortName, std::string longName,
                             VoiceGroup vg);
 
-  ustring getLongName() const override;
+  Glib::ustring getLongName() const override;
 
-  ustring getGroupAndParameterName() const override;
+  Glib::ustring getGroupAndParameterName() const override;
 
   DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
 
-  ustring getShortName() const override;
+  Glib::ustring getShortName() const override;
 
  private:
   std::string m_shortname;

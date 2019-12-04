@@ -76,13 +76,13 @@ class EditBuffer : public ParameterDualGroupSet
   void onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection);
 
   // CALLBACKS
-  sigc::connection onSelectionChanged(const slot<void, Parameter *, Parameter *> &s);
-  sigc::connection onModificationStateChanged(const slot<void, bool> &s);
-  sigc::connection onChange(const slot<void> &s);
-  sigc::connection onPresetLoaded(const slot<void> &s);
-  sigc::connection onLocksChanged(const slot<void> &s);
-  sigc::connection onRecallValuesChanged(const slot<void> &s);
-  sigc::connection onSoundTypeChanged(slot<void> s);
+  sigc::connection onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s);
+  sigc::connection onModificationStateChanged(const sigc::slot<void, bool> &s);
+  sigc::connection onChange(const sigc::slot<void> &s);
+  sigc::connection onPresetLoaded(const sigc::slot<void> &s);
+  sigc::connection onLocksChanged(const sigc::slot<void> &s);
+  sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);
+  sigc::connection onSoundTypeChanged(sigc::slot<void> s);
 
   bool isModified() const;
   static void sendToLPC();

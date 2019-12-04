@@ -18,11 +18,11 @@ void XmlWriter::implWriteTextElement(const Glib::ustring &name, const Glib::ustr
   writeToStream(Glib::ustring(m_stackSize, ' '));
   writeToStream("<");
 
-  Glib::ustring escapedName = Markup::escape_text(name);
+  Glib::ustring escapedName = Glib::Markup::escape_text(name);
   writeToStream(escapedName);
   writeAttributes(attributes);
   writeToStream(">");
-  writeToStream(Markup::escape_text(to_string(text)));
+  writeToStream(Glib::Markup::escape_text(to_string(text)));
   writeToStream("</");
   writeToStream(escapedName);
   writeToStream(">\n");
@@ -33,7 +33,7 @@ void XmlWriter::implWriteTag(const Glib::ustring &name, const std::initializer_l
 {
   writeToStream(Glib::ustring(m_stackSize, ' '));
   writeToStream("<");
-  Glib::ustring escapedName = Markup::escape_text(name);
+  Glib::ustring escapedName = Glib::Markup::escape_text(name);
   writeToStream(escapedName);
   writeAttributes(attributes);
   writeToStream(">\n");

@@ -61,7 +61,7 @@ FileInStream::~FileInStream()
     g_object_unref(m_stream);
 }
 
-ustring FileInStream::read()
+Glib::ustring FileInStream::read()
 {
   if(!m_stream)
   {
@@ -71,7 +71,7 @@ ustring FileInStream::read()
 
   try
   {
-    ustring str;
+    Glib::ustring str;
     GError *error = nullptr;
 
     if(char *tmp = g_data_input_stream_read_line_utf8(m_stream, 0, 0, &error))

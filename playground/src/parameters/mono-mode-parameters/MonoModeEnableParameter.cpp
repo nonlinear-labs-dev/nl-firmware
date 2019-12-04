@@ -6,7 +6,7 @@ MonoModeEnableParameter::MonoModeEnableParameter(ParameterGroup *group, Paramete
 {
 }
 
-ustring MonoModeEnableParameter::getDisplayString() const
+Glib::ustring MonoModeEnableParameter::getDisplayString() const
 {
   if(getValue().getDisplayValue() != 0.0)
   {
@@ -18,12 +18,12 @@ ustring MonoModeEnableParameter::getDisplayString() const
   }
 }
 
-ustring MonoModeEnableParameter::getLongName() const
+Glib::ustring MonoModeEnableParameter::getLongName() const
 {
   return "Mono Enable";
 }
 
-ustring MonoModeEnableParameter::getShortName() const
+Glib::ustring MonoModeEnableParameter::getShortName() const
 {
   return "Enable";
 }

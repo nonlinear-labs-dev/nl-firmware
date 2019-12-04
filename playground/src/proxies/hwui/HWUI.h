@@ -11,6 +11,7 @@
 #include <tools/Signal.h>
 #include <array>
 #include <memory>
+#include <giomm.h>
 
 class Application;
 class UsageMode;
@@ -45,7 +46,7 @@ class HWUI
   void setCurrentVoiceGroup(VoiceGroup v);
 
   void toggleCurrentVoiceGroup();
-  sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup>& cb);
+  sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
 
   void freezeFocusAndMode();
   void thawFocusAndMode();
@@ -60,8 +61,8 @@ class HWUI
   void unsetFineMode();
   bool isModifierSet(ButtonModifier m) const;
 
-  sigc::connection onModifiersChanged(const slot<void, ButtonModifiers>& cb);
-  sigc::connection connectToBlinkTimer(const slot<void, int>& cb);
+  sigc::connection onModifiersChanged(const sigc::slot<void, ButtonModifiers> &cb);
+  sigc::connection connectToBlinkTimer(const sigc::slot<void, int> &cb);
   void deInit();
 
  private:
@@ -86,8 +87,8 @@ class HWUI
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;
 
-  RefPtr<Gio::Cancellable> m_readersCancel;
-  RefPtr<Gio::DataInputStream> m_keyboardInput;
+  Glib::RefPtr<Gio::Cancellable> m_readersCancel;
+  Glib::RefPtr<Gio::DataInputStream> m_keyboardInput;
 
   FineButton m_fineButton;
   ButtonModifiers m_modifiers;
@@ -97,7 +98,7 @@ class HWUI
   Signal<void, int> m_blinkTimer;
 
   Signal<void, VoiceGroup> m_voiceGoupSignal;
-  Signal<void, UNDO::Transaction*, VoiceGroup> m_voiceGroupWithTransactionSignal;
+  Signal<void, UNDO::Transaction *, VoiceGroup> m_voiceGroupWithTransactionSignal;
 
   std::array<bool, (size_t) Buttons::NUM_BUTTONS> m_buttonStates;
 

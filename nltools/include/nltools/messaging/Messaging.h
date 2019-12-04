@@ -88,8 +88,8 @@ namespace nltools
     void init(const Configuration &conf);
     void deInit();
 
-    // wait at most timeOut for the connection to be established
-    // return true if there is a connection to receiver
+    // wait at most timeOut for the sigc::connection to be established
+    // return true if there is a sigc::connection to receiver
     bool waitForConnection(EndPoint receiver, std::chrono::milliseconds timeOut = std::chrono::seconds(10));
 
     // Send msg to receiver. If there is no receiver, does nothing.

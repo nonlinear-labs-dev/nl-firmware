@@ -27,7 +27,7 @@ class InfoContent : public Scrollable, public ControlWithChildren
   void updateContent();
 
   InfoField* addInfoField(const std::string& lineIdentifier, const Glib::ustring& labelText, Control* field);
-  InfoField* addInfoField(const std::string& lineIdentifier, const ustring& labelText);
+  InfoField* addInfoField(const std::string& lineIdentifier, const Glib::ustring& labelText);
 
  protected:
   void fixLayout();

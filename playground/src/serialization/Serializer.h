@@ -7,6 +7,7 @@
 #include "xml/XmlReader.h"
 #include "xml/XmlWriter.h"
 #include "xml/FileInStream.h"
+#include <giomm.h>
 
 class Writer;
 class Reader;
@@ -18,7 +19,7 @@ class Serializer
   Serializer(const Glib::ustring &tag);
   virtual ~Serializer();
 
-  void write(RefPtr<Gio::File> folder, const std::string &name);
+  void write(Glib::RefPtr<Gio::File> folder, const std::string &name);
 
   const Glib::ustring &getTagName() const;
   void write(Writer &writer) const;
@@ -26,7 +27,7 @@ class Serializer
   void read(Reader &read) const;
 
   template <typename tSerializer, typename... tArgs>
-  static uint64_t read(UNDO::Transaction *transaction, RefPtr<Gio::File> folder, const std::string &fileName,
+  static uint64_t read(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> folder, const std::string &fileName,
                        tArgs... args)
   {
     auto xmlFile = folder->get_child(fileName);

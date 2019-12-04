@@ -20,7 +20,7 @@ void Passphrase::dice()
   set(r);
 }
 
-ustring Passphrase::getDisplayString() const
+Glib::ustring Passphrase::getDisplayString() const
 {
   return get();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libundo/undo/Scope.h"
+#include <tools/Signal.h>
 
 class UndoScope : public UNDO::Scope
 {
@@ -11,7 +12,7 @@ class UndoScope : public UNDO::Scope
   using UNDO::Scope::Scope;
 
   virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
-  sigc::connection onUndoScopeChanged(slot<void> cb);
+  sigc::connection onUndoScopeChanged(sigc::slot<void> cb);
 
  private:
   Signal<void> m_sigUndoScopeChanged;

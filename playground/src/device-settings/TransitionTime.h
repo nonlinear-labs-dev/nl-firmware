@@ -24,7 +24,7 @@ class TransitionTime : public Setting
 
   void setDefault();
 
-  ustring getDisplayString() const;
+  Glib::ustring getDisplayString() const;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   Glib::ustring getName() const

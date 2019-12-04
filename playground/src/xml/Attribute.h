@@ -2,23 +2,24 @@
 
 #include "playground.h"
 #include "ParameterId.h"
+#include <glibmm.h>
 #include <sstream>
 
 namespace attribute_detail
 {
-  template <typename tValue> inline ustring toString(const tValue &v)
+  template <typename tValue> inline Glib::ustring toString(const tValue &v)
   {
     std::stringstream str;
     str << v;
     return str.str();
   }
 
-  template <> inline ustring toString(const ParameterId &v)
+  template <> inline Glib::ustring toString(const ParameterId &v)
   {
     return v.toString();
   }
 
-  template <> inline ustring toString(const ustring &v)
+  template <> inline Glib::ustring toString(const Glib::ustring &v)
   {
     return v;
   }
@@ -37,7 +38,7 @@ class Attribute
 
   Glib::ustring toXmlString() const
   {
-    return Markup::escape_text(m_name) + "=\"" + Markup::escape_text(m_value) + "\"";
+    return Glib::Markup::escape_text(m_name) + "=\"" + Glib::Markup::escape_text(m_value) + "\"";
   }
 
   const Glib::ustring &getName() const

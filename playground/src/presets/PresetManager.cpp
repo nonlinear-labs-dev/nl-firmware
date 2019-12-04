@@ -113,7 +113,7 @@ std::list<PresetManager::SaveSubTask> PresetManager::createListOfSaveSubTasks()
            std::bind(&PresetManager::saveBanks, this, file) };
 }
 
-SaveResult PresetManager::saveMetadata(RefPtr<Gio::File> pmFolder)
+SaveResult PresetManager::saveMetadata(Glib::RefPtr<Gio::File> pmFolder)
 {
   if(m_lastSavedMetaDataUpdateID != getUpdateIDOfLastChange())
   {
@@ -126,7 +126,7 @@ SaveResult PresetManager::saveMetadata(RefPtr<Gio::File> pmFolder)
   return SaveResult::Nothing;
 }
 
-SaveResult PresetManager::saveInitSound(RefPtr<Gio::File> pmFolder)
+SaveResult PresetManager::saveInitSound(Glib::RefPtr<Gio::File> pmFolder)
 {
   if(m_lastSavedInitSoundUpdateID != m_initSound->getUpdateIDOfLastChange())
   {
@@ -196,7 +196,7 @@ void PresetManager::scheduleSave()
   }
 }
 
-SaveResult PresetManager::saveBanks(RefPtr<Gio::File> pmFolder)
+SaveResult PresetManager::saveBanks(Glib::RefPtr<Gio::File> pmFolder)
 {
   for(auto &b : m_banks.getElements())
   {
@@ -282,7 +282,7 @@ std::shared_ptr<ScopedGuard::Lock> PresetManager::getLoadingLock()
   return m_isLoading.lock();
 }
 
-void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
+void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder)
 {
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
@@ -290,7 +290,7 @@ void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transa
   m_editBuffer->sendToLPC();
 }
 
-void PresetManager::loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
+void PresetManager::loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder)
 {
   DebugLevel::gassy("loadInitSound", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Init Sound");
@@ -301,7 +301,7 @@ void PresetManager::loadInitSound(UNDO::Transaction *transaction, RefPtr<Gio::Fi
   m_lastSavedInitSoundUpdateID = getUpdateIDOfLastChange();
 }
 
-void PresetManager::loadBanks(UNDO::Transaction *transaction, RefPtr<Gio::File> pmFolder)
+void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder)
 {
   DebugLevel::gassy("loadBanks", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Banks");
@@ -588,7 +588,7 @@ void PresetManager::resetInitSound(UNDO::Transaction *transaction)
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
 }
 
-ustring PresetManager::createPresetNameBasedOn(const ustring &basedOn) const
+Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedOn) const
 {
   const Glib::ustring base = getBaseName(basedOn);
 
@@ -604,7 +604,7 @@ ustring PresetManager::createPresetNameBasedOn(const ustring &basedOn) const
   return base + " " + to_string(highestPostfix + 1);
 }
 
-void PresetManager::searchPresets(Writer &writer, const ustring &q, const ustring &mode,
+void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
                                   std::vector<SearchQuery::Fields> &&fieldsToSearch) const
 {
   SearchQuery query(q, mode, std::move(fieldsToSearch));
@@ -614,7 +614,7 @@ void PresetManager::searchPresets(Writer &writer, const ustring &q, const ustrin
   });
 }
 
-Glib::ustring PresetManager::getBaseName(const ustring &basedOn) const
+Glib::ustring PresetManager::getBaseName(const Glib::ustring &basedOn) const
 {
   auto regex = Glib::Regex::create("^(.*)\\s([0-9]+)$");
   Glib::MatchInfo matchInfo;

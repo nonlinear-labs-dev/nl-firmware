@@ -18,7 +18,7 @@ void Reader::onTextElement(size_t nameHash, tTextElementCB cb)
   m_stack.back().m_textCallbacks[nameHash] = cb;
 }
 
-void Reader::onTextElement(const ustring &name, tTextElementCB cb)
+void Reader::onTextElement(const Glib::ustring &name, tTextElementCB cb)
 {
   onTextElement(m_hash(name), cb);
 }
@@ -28,14 +28,14 @@ void Reader::onTag(size_t nameHash, tTagElementCB cb)
   m_stack.back().m_tagCallbacks[nameHash] = cb;
 }
 
-void Reader::onTag(const ustring &name, tTagElementCB cb)
+void Reader::onTag(const Glib::ustring &name, tTagElementCB cb)
 {
   onTag(m_hash(name), cb);
 }
 
-void Reader::loadTextElement(size_t nameHash, ustring &target)
+void Reader::loadTextElement(size_t nameHash, Glib::ustring &target)
 {
-  onTextElement(nameHash, [&](const ustring &text, const Attributes &attr) mutable {
+  onTextElement(nameHash, [&](const Glib::ustring &text, const Attributes &attr) mutable {
     auto scope = UNDO::createSwapData(text);
     getTransaction()->addSimpleCommand([=, &target](UNDO::Command::State) mutable { scope->swapWith(target); });
   });
@@ -43,18 +43,18 @@ void Reader::loadTextElement(size_t nameHash, ustring &target)
 
 void Reader::loadTextElement(size_t nameHash, std::string &target)
 {
-  onTextElement(nameHash, [&](const ustring &text, const Attributes &attr) mutable {
+  onTextElement(nameHash, [&](const Glib::ustring &text, const Attributes &attr) mutable {
     auto scope = UNDO::createSwapData(text.raw());
     getTransaction()->addSimpleCommand([=, &target](UNDO::Command::State) mutable { scope->swapWith(target); });
   });
 }
 
-void Reader::loadTextElement(const ustring &name, ustring &target)
+void Reader::loadTextElement(const Glib::ustring &name, Glib::ustring &target)
 {
   loadTextElement(m_hash(name), target);
 }
 
-void Reader::loadTextElement(const ustring &name, std::string &target)
+void Reader::loadTextElement(const Glib::ustring &name, std::string &target)
 {
   loadTextElement(m_hash(name), target);
 }
@@ -111,7 +111,7 @@ void Reader::onEndElement()
   }
 }
 
-void Reader::onTextElement(size_t nameHash, const Attributes &attributes, const ustring &text)
+void Reader::onTextElement(size_t nameHash, const Attributes &attributes, const Glib::ustring &text)
 {
   if(m_versionCheck == FileVersionCheckResult::OK)
   {

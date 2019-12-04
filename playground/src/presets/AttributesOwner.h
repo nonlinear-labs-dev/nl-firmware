@@ -16,7 +16,7 @@ class AttributesOwner : public UpdateDocumentContributor
   AttributesOwner(UpdateDocumentContributor *parent, const AttributesOwner *other);
   ~AttributesOwner() override;
 
-  virtual void setAttribute(UNDO::Transaction *transaction, const std::string &key, const ustring &value);
+  virtual void setAttribute(UNDO::Transaction *transaction, const std::string &key, const Glib::ustring &value);
   virtual void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
   virtual void clear(UNDO::Transaction *transaction);
 

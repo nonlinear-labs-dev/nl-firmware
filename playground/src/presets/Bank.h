@@ -35,8 +35,8 @@ class Bank : public AttributesOwner
   Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids);
   ~Bank() override;
 
-  void load(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder, int numBank, int numBanks);
-  SaveResult save(RefPtr<Gio::File> bankFolder);
+  void load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder, int numBank, int numBanks);
+  SaveResult save(Glib::RefPtr<Gio::File> bankFolder);
 
   // supported interfaces
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -118,12 +118,12 @@ class Bank : public AttributesOwner
  private:
   using Attributes = std::map<std::string, std::string>;
 
-  uint64_t loadMetadata(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder);
-  void loadPresets(UNDO::Transaction *transaction, RefPtr<Gio::File> bankFolder);
-  void deleteOldPresetFiles(RefPtr<Gio::File> bankFolder);
+  uint64_t loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder);
+  void loadPresets(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder);
+  void deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder);
 
-  SaveResult saveMetadata(RefPtr<Gio::File> bankFolder);
-  SaveResult savePresets(RefPtr<Gio::File> bankFolder);
+  SaveResult saveMetadata(Glib::RefPtr<Gio::File> bankFolder);
+  SaveResult savePresets(Glib::RefPtr<Gio::File> bankFolder);
 
   std::pair<double, double> calcDefaultPosition() const;
   bool resolveCyclicAttachments(UNDO::Transaction *transaction, std::vector<Bank *> stackedBanks);

@@ -26,7 +26,7 @@ namespace DescriptiveLayouts
 
   PresetSelectionEvents::~PresetSelectionEvents() = default;
 
-  connection PresetSelectionEvents::connect(EventSources source, const Callback &cb)
+  sigc::connection PresetSelectionEvents::connect(EventSources source, const Callback &cb)
   {
     return eventSources.at(source)->connect(cb);
   }
