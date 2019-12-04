@@ -4,6 +4,7 @@
 #include <tuple>
 #include <Application.h>
 #include <proxies/hwui/TwoStateLED.h>
+#include <tools/Signal.h>
 
 class ButtonRepeat;
 
@@ -18,16 +19,15 @@ class TextEditUsageMode : public UsageMode
 
   virtual void setup();
 
-
   virtual bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state);
 
-  ustring getKeyLabel(Buttons buttonID) const;
-  connection onTextChanged(const slot<void, const ustring &> &cb);
+  Glib::ustring getKeyLabel(Buttons buttonID) const;
+  sigc::connection onTextChanged(const sigc::slot<void, const Glib::ustring &> &cb);
 
   gunichar getCharAtRelativeToCursorPosition(int pos) const;
   bool isInserting() const;
   void moveCursor(int step);
-  ustring getText() const;
+  Glib::ustring getText() const;
 
   enum class Layout
   {
@@ -47,7 +47,7 @@ class TextEditUsageMode : public UsageMode
   void insertChar(gunichar c);
   void onCharPressed(gunichar c);
   bool handleSpecialChar(gunichar c);
-  ustring stringizeSpecialChar(gunichar c) const;
+  Glib::ustring stringizeSpecialChar(gunichar c) const;
   void installButtonRepeat(std::function<void()> cb);
   gunichar getCharForButton(Buttons buttonID) const;
   void toggleCapsLock();
@@ -57,9 +57,9 @@ class TextEditUsageMode : public UsageMode
   void chooseLayout();
   void handleShiftButton(bool state);
 
-  ustring m_text;
+  Glib::ustring m_text;
   int m_position;
-  Signal<void, const ustring &> m_sigTextChanged;
+  Signal<void, const Glib::ustring &> m_sigTextChanged;
 
   Layout m_layout;
 

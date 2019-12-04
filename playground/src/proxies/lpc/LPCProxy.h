@@ -9,6 +9,7 @@
 #include <parameters/value/QuantizedValue.h>
 #include <memory>
 #include <nltools/threading/Throttler.h>
+#include <tools/Signal.h>
 
 class Application;
 class Parameter;
@@ -73,8 +74,8 @@ class LPCProxy
 
   void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
 
-  connection onRibbonTouched(slot<void, int> s);
-  connection onLPCSoftwareVersionChanged(slot<void, int> s);
+  sigc::connection onRibbonTouched(sigc::slot<void, int> s);
+  sigc::connection onLPCSoftwareVersionChanged(sigc::slot<void, int> s);
   int getLastTouchedRibbonParameterID() const;
 
   void requestLPCSoftwareVersion();
@@ -88,7 +89,7 @@ class LPCProxy
   void queueToLPC(tMessageComposerPtr cmp);
 
   gint16 separateSignedBitToComplementary(uint16_t v) const;
-  void traceBytes(const RefPtr<Bytes>& bytes) const;
+  void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
 
   void notifyRibbonTouch(int ribbonsParameterID);
   void onParamMessageReceived(const MessageParser::NLMessage &msg);

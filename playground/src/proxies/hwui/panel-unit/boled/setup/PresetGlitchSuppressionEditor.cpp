@@ -19,7 +19,7 @@ void PresetGlitchSuppressionEditor::incSetting(int inc)
   Application::get().getSettings()->getSetting<PresetGlitchSuppression>()->inc(inc, false);
 }
 
-const std::vector<ustring> &PresetGlitchSuppressionEditor::getDisplayStrings() const
+const std::vector<Glib::ustring> &PresetGlitchSuppressionEditor::getDisplayStrings() const
 {
   return Application::get().getSettings()->getSetting<PresetGlitchSuppression>()->enumToDisplayString();
 }

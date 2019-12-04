@@ -31,5 +31,5 @@ class BankActions : public RPCActionManager
 
   PresetManager &m_presetManager;
 
-  void insertBankInCluster(Bank *bankToInsert, Bank *bankAtInsert, const ustring directionSeenFromBankInCluster);
+  void insertBankInCluster(Bank *bankToInsert, Bank *bankAtInsert, const Glib::ustring directionSeenFromBankInCluster);
 };

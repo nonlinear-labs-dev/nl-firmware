@@ -77,7 +77,7 @@ ParameterGroup::tParameterPtr ParameterGroup::appendParameter(Parameter *p)
   return p;
 }
 
-sigc::connection ParameterGroup::onGroupChanged(const slot<void> &slot)
+sigc::connection ParameterGroup::onGroupChanged(const sigc::slot<void> &slot)
 {
   return m_signalGroupChanged.connectAndInit(slot);
 }

@@ -27,5 +27,5 @@ class ModulationBoundSlider : public Control
   void onParameterChanged(const Parameter *);
 
   ModulateableParameter *m_param = nullptr;
-  connection m_paramChanged;
+  sigc::connection m_paramChanged;
 };

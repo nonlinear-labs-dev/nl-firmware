@@ -15,7 +15,7 @@ class ParameterDescriptionDatabase::Job
     load();
   }
 
-  connection connect(slot<void, const Glib::ustring &> cb)
+  sigc::connection connect(sigc::slot<void, const Glib::ustring &> cb)
   {
     return sigLoaded.connectAndInit(cb, text);
   }
@@ -123,7 +123,7 @@ class ParameterDescriptionDatabase::Job
   Glib::RefPtr<Gio::File> file;
   Glib::RefPtr<Gio::FileInputStream> stream;
   Signal<void, const Glib::ustring &> sigLoaded;
-  connection m_connection;
+  sigc::connection m_connection;
 };
 
 ParameterDescriptionDatabase &ParameterDescriptionDatabase::get()
@@ -136,7 +136,7 @@ ParameterDescriptionDatabase::ParameterDescriptionDatabase()
 {
 }
 
-connection ParameterDescriptionDatabase::load(ParameterId paramID, slot<void, const Glib::ustring &> cb)
+connection ParameterDescriptionDatabase::load(ParameterId paramID, sigc::slot<void, const Glib::ustring &> cb)
 {
   auto it = m_jobs.find(paramID);
 

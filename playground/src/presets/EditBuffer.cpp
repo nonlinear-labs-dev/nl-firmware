@@ -31,7 +31,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -120,32 +120,32 @@ bool EditBuffer::isModified() const
   return m_isModified;
 }
 
-connection EditBuffer::onModificationStateChanged(const slot<void, bool> &s)
+connection EditBuffer::onModificationStateChanged(const sigc::slot<void, bool> &s)
 {
   return m_signalModificationState.connectAndInit(s, m_isModified);
 }
 
-connection EditBuffer::onChange(const slot<void> &s)
+connection EditBuffer::onChange(const sigc::slot<void> &s)
 {
   return m_signalChange.connectAndInit(s);
 }
 
-connection EditBuffer::onPresetLoaded(const slot<void> &s)
+connection EditBuffer::onPresetLoaded(const sigc::slot<void> &s)
 {
   return m_signalPresetLoaded.connect(s);
 }
 
-connection EditBuffer::onLocksChanged(const slot<void> &s)
+connection EditBuffer::onLocksChanged(const sigc::slot<void> &s)
 {
   return m_signalLocksChanged.connectAndInit(s);
 }
 
-connection EditBuffer::onRecallValuesChanged(const slot<void> &s)
+connection EditBuffer::onRecallValuesChanged(const sigc::slot<void> &s)
 {
   return m_recallSet.m_signalRecallValues.connect(s);
 }
 
-connection EditBuffer::onSoundTypeChanged(slot<void> s)
+connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
 {
   return m_signalTypeChanged.connect(s);
 }
@@ -195,7 +195,7 @@ const PresetManager *EditBuffer::getParent() const
   return static_cast<const PresetManager *>(super::getParent());
 }
 
-sigc::connection EditBuffer::onSelectionChanged(const slot<void, Parameter *, Parameter *> &s)
+sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s)
 {
   return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected());
 }
@@ -219,7 +219,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -344,7 +344,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
         {
           if(hwui->getFocusAndMode().focus == UIFocus::Sound)
           {
-            if(oldP->getID().getNumber() != newP->getID().getNumber())
+            if(oldP->getID() != newP->getID())
               hwui->setFocusAndMode(UIFocus::Parameters);
           }
           else
@@ -732,7 +732,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -764,7 +764,7 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });

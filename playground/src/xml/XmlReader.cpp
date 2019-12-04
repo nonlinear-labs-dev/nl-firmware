@@ -61,12 +61,12 @@ void XmlReader::on_end_element(ParseContext& context, const Glib::ustring& eleme
   onEndElement();
 }
 
-ustring XmlReader::trim(const Glib::ustring& text)
+Glib::ustring XmlReader::trim(const Glib::ustring& text)
 {
   static std::unordered_set<std::string> emptyStrings;
 
   if(emptyStrings.find(text.raw()) != emptyStrings.end())
-    return ustring();
+    return Glib::ustring();
 
   auto begin = text.end();
   auto end = text.end();
@@ -93,7 +93,7 @@ ustring XmlReader::trim(const Glib::ustring& text)
   if(end != text.end())
     end++;
 
-  auto ret = ustring(begin, end);
+  auto ret = Glib::ustring(begin, end);
 
   if(ret.empty())
     emptyStrings.insert(text.raw());

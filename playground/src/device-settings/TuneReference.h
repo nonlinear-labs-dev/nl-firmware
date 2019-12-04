@@ -9,8 +9,8 @@ class TuneReference : public Setting
 
  public:
   void load(const Glib::ustring& text) override;
-  ustring save() const override;
-  ustring getDisplayString() const override;
+  Glib::ustring save() const override;
+  Glib::ustring getDisplayString() const override;
   void incDec(int inc, ButtonModifiers mod);
 
   Glib::ustring getName() const

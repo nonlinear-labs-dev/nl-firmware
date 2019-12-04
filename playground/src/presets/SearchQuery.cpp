@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <testing/TestDriver.h>
 #include <xml/XmlReader.h>
+#include <iostream>
 
 TestDriver<SearchQuery> driver;
 
@@ -75,7 +76,7 @@ std::vector<SearchQuery::Fields> SearchQuery::getFields() const
   return m_searchFields;
 }
 
-bool SearchQuery::iterate(const std::function<bool(const ustring &, const std::vector<Fields> &)> &cb) const
+bool SearchQuery::iterate(const std::function<bool(const Glib::ustring &, const std::vector<Fields> &)> &cb) const
 {
   bool match = false;
 

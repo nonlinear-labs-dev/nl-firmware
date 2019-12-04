@@ -81,7 +81,7 @@ void EditSmoothingTime::incDec(int incs, ButtonModifiers modifiers)
   notify();
 }
 
-ustring EditSmoothingTime::getDisplayString() const
+Glib::ustring EditSmoothingTime::getDisplayString() const
 {
   return m_time.getDisplayString();
 }

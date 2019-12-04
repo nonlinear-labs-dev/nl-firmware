@@ -11,8 +11,8 @@ class ParameterDB
 
   virtual ~ParameterDB();
 
-  ustring getLongName(int id) const;
-  ustring getShortName(int id) const;
+  Glib::ustring getLongName(int id) const;
+  Glib::ustring getShortName(int id) const;
   tControlPositionValue getSignalPathIndication(int id) const;
 
   static constexpr tControlPositionValue getInvalidSignalPathIndication()
@@ -33,8 +33,8 @@ class ParameterDB
 
   struct ParameterSpec
   {
-    ustring longName;
-    ustring shortName;
+    Glib::ustring longName;
+    Glib::ustring shortName;
     tControlPositionValue signalPathIndication;
   };
 

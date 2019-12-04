@@ -9,7 +9,7 @@ class FileInStream : public InStream
   FileInStream(const Glib::ustring &fileName, bool tryZip);
   virtual ~FileInStream();
 
-  ustring read() override;
+  Glib::ustring read() override;
   std::vector<uint8_t> readAll() override;
   bool eof() const;
 

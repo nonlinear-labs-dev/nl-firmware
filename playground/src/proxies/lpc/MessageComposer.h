@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include <giomm.h>
 
 class MessageComposer
 {
@@ -18,5 +19,5 @@ class MessageComposer
   virtual bool canReplace(const MessageComposer *other) const;
 
  private:
-  RefPtr<Gio::DataOutputStream> m_stream;
+  Glib::RefPtr<Gio::DataOutputStream> m_stream;
 };

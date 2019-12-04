@@ -2,6 +2,7 @@
 
 #include <playground.h>
 #include <http/UpdateDocumentContributor.h>
+#include <tools/Signal.h>
 
 class Settings;
 
@@ -18,7 +19,7 @@ class Setting : public UpdateDocumentContributor
   virtual void load(const Glib::ustring &text) = 0;
   virtual Glib::ustring save() const = 0;
 
-  connection onChange(slot<void, const Setting *> slot);
+  sigc::connection onChange(sigc::slot<void, const Setting *> slot);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   virtual void sendToLPC() const;

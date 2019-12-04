@@ -4,8 +4,8 @@
 class NoteWithOctaveDimension : public Dimension
 {
  public:
-  static ustring stringizeNote(int note);
-  ustring stringize(const tDisplayValue &displayValue) const override;
+  static Glib::ustring stringizeNote(int note);
+  Glib::ustring stringize(const tDisplayValue &displayValue) const override;
   static const NoteWithOctaveDimension &get();
   Glib::ustring getStingizerJS() const override;
   static void registerTests();

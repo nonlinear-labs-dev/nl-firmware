@@ -182,9 +182,9 @@ void HTTPServer::serverCallback(SoupServer *, SoupMessage *msg, const char *path
     std::shared_ptr<NetworkRequest> request(new HTTPRequest(msg));
     pThis->handleRequest(request);
   }
-  catch(MarkupError &err)
+  catch(Glib::MarkupError &err)
   {
-    DebugLevel::warning("handled MarkupError exception for accessing path", path, err.code());
+    DebugLevel::warning("handled Glib::MarkupError exception for accessing path", path, err.code());
   }
   catch(...)
   {

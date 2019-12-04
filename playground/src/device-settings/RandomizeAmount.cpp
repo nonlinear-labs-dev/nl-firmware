@@ -67,7 +67,7 @@ void RandomizeAmount::incDec(int incs, ButtonModifiers mods)
   notify();
 }
 
-ustring RandomizeAmount::getDisplayString() const
+Glib::ustring RandomizeAmount::getDisplayString() const
 {
   return m_amount.getDisplayString();
 }

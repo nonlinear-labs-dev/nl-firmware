@@ -19,7 +19,7 @@ void PedalEditor::incSetting(int inc)
   m_mode->inc(inc, false);
 }
 
-const std::vector<ustring> &PedalEditor::getDisplayStrings() const
+const std::vector<Glib::ustring> &PedalEditor::getDisplayStrings() const
 {
   return m_mode->enumToDisplayString();
 }

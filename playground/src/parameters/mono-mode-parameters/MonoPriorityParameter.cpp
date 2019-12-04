@@ -6,7 +6,7 @@ MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, ParameterId
 {
 }
 
-ustring MonoPriorityParameter::getDisplayString() const
+Glib::ustring MonoPriorityParameter::getDisplayString() const
 {
   auto value = getValue().getDisplayValue();
   if(value == 0)
@@ -23,12 +23,12 @@ ustring MonoPriorityParameter::getDisplayString() const
   }
 }
 
-ustring MonoPriorityParameter::getLongName() const
+Glib::ustring MonoPriorityParameter::getLongName() const
 {
   return "Priority";
 }
 
-ustring MonoPriorityParameter::getShortName() const
+Glib::ustring MonoPriorityParameter::getShortName() const
 {
   return "Prio";
 }

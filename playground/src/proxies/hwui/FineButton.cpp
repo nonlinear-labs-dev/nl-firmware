@@ -22,7 +22,8 @@ void FineButton::setButtonState(bool pressed)
   if(pressed)
   {
     traverse(DEPRESSED);
-    m_timeout = MainContext::get_default()->signal_timeout().connect(sigc::mem_fun(this, &FineButton::onTimeout), 250);
+    m_timeout
+        = Glib::MainContext::get_default()->signal_timeout().connect(sigc::mem_fun(this, &FineButton::onTimeout), 250);
   }
   else
   {

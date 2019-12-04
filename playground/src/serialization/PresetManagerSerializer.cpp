@@ -15,7 +15,7 @@ PresetManagerSerializer::~PresetManagerSerializer()
   m_pm->m_sigRestoreHappened.send();
 }
 
-ustring PresetManagerSerializer::getTagName()
+Glib::ustring PresetManagerSerializer::getTagName()
 {
   return "preset-manager";
 }

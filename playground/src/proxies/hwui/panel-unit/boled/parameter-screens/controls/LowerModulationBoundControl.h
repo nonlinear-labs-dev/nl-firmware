@@ -15,5 +15,5 @@ class LowerModulationBoundControl : public ModulationBoundControl
   void onSelectionChanged(Parameter *, Parameter *newParam);
   void onParameterChanged(const Parameter *p);
 
-  connection m_paramChanged;
+  sigc::connection m_paramChanged;
 };

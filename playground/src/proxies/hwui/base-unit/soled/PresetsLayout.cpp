@@ -20,7 +20,7 @@
 class ShortenLabel : public Label
 {
  public:
-  ShortenLabel(const ustring &text, const Rect &pos)
+  ShortenLabel(const Glib::ustring &text, const Rect &pos)
       : Label(text, pos)
   {
   }

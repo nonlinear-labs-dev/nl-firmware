@@ -29,5 +29,5 @@ class ParameterInfoText : public MultiLineLabel, public Scrollable
 
   ControlOwner *m_parent;
   RecursionGuard m_dirtyGuard;
-  connection m_connection;
+  sigc::connection m_connection;
 };

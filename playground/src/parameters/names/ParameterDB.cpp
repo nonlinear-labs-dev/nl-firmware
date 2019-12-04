@@ -82,7 +82,7 @@ tControlPositionValue ParameterDB::parseSignalPathIndication(const std::string &
   return getInvalidSignalPathIndication();
 }
 
-ustring ParameterDB::getLongName(int id) const
+Glib::ustring ParameterDB::getLongName(int id) const
 {
 #warning "Update ParamDB"
   if(id == 369)
@@ -104,7 +104,7 @@ ustring ParameterDB::getLongName(int id) const
   }
 }
 
-ustring ParameterDB::getShortName(int id) const
+Glib::ustring ParameterDB::getShortName(int id) const
 {
 #warning "Update ParamDB"
   if(id == 369)

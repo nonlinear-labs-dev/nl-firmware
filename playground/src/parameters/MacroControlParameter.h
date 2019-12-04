@@ -24,8 +24,8 @@ class MacroControlParameter : public Parameter
   void unregisterTarget(ModulateableParameter *target);
 
   void setCPFromMCView(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
-  void undoableSetGivenName(const ustring &newName);
-  void undoableSetGivenName(UNDO::Transaction *transaction, const ustring &newName);
+  void undoableSetGivenName(const Glib::ustring &newName);
+  void undoableSetGivenName(UNDO::Transaction *transaction, const Glib::ustring &newName);
   void undoableSetInfo(const Glib::ustring &newName);
   void undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &newName);
 

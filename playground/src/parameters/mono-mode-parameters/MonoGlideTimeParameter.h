@@ -6,7 +6,7 @@ class MonoGlideTimeParameter : public MonoParameter
  public:
   MonoGlideTimeParameter(ParameterGroup* group, ParameterId id);
 
-  ustring getLongName() const override;
+  Glib::ustring getLongName() const override;
 
-  ustring getShortName() const override;
+  Glib::ustring getShortName() const override;
 };

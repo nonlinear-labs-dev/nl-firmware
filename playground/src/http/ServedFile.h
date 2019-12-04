@@ -17,7 +17,7 @@ class ServedFile : public ServedStream
 
  private:
   Glib::ustring getFilePathFromMessagePath() const;
-  void startServingLocalFile(RefPtr<Gio::File> file);
-  void setFilesContentType(RefPtr<Gio::File> file);
-  void onAsyncFileRead(RefPtr<Gio::AsyncResult> res, RefPtr<Gio::File> file);
+  void startServingLocalFile(Glib::RefPtr<Gio::File> file);
+  void setFilesContentType(Glib::RefPtr<Gio::File> file);
+  void onAsyncFileRead(Glib::RefPtr<Gio::AsyncResult> res, Glib::RefPtr<Gio::File> file);
 };

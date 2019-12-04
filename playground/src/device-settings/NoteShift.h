@@ -23,7 +23,7 @@ class NoteShift : public Setting
   void incOctave();
   void decOctave();
 
-  ustring getDisplayString() const override;
+  Glib::ustring getDisplayString() const override;
 
  private:
   NoteShift(const NoteShift& other) = delete;

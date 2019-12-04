@@ -16,7 +16,7 @@ class PedalEditor : public MenuEditor
   virtual ~PedalEditor();
 
   virtual void incSetting(int inc) override;
-  virtual const std::vector<ustring> &getDisplayStrings() const override;
+  virtual const std::vector<Glib::ustring> &getDisplayStrings() const override;
   virtual int getSelectedIndex() const override;
 
  private:

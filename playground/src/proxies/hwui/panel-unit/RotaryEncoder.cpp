@@ -57,7 +57,7 @@ void RotaryEncoder::fake(tIncrement i)
   m_signalRotaryChanged.send(i);
 }
 
-sigc::connection RotaryEncoder::onRotaryChanged(slot<void, tIncrement> slot)
+sigc::connection RotaryEncoder::onRotaryChanged(sigc::slot<void, tIncrement> slot)
 {
   return m_signalRotaryChanged.connect(slot);
 }

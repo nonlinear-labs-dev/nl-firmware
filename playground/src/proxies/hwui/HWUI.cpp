@@ -470,12 +470,12 @@ void HWUI::removeModifier(ButtonModifier i)
   setModifiers(cp);
 }
 
-sigc::connection HWUI::onModifiersChanged(const slot<void, ButtonModifiers> &cb)
+sigc::connection HWUI::onModifiersChanged(const sigc::slot<void, ButtonModifiers> &cb)
 {
   return m_modifersChanged.connectAndInit(cb, m_modifiers);
 }
 
-sigc::connection HWUI::connectToBlinkTimer(const slot<void, int> &cb)
+sigc::connection HWUI::connectToBlinkTimer(const sigc::slot<void, int> &cb)
 {
   if(m_blinkTimer.empty())
   {

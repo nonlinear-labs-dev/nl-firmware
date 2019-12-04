@@ -98,7 +98,7 @@ void ContentManager::handleRequest(std::shared_ptr<NetworkRequest> request)
 {
   auto oldUpdateID = getUpdateIDOfLastChange();
 
-  if(request->getPath().find("/ping/") != ustring::npos)
+  if(request->getPath().find("/ping/") != Glib::ustring::npos)
   {
     auto answer = request->createStream("text/plain", false);
     auto receivedPingCookie = request->getPath().substr(6);

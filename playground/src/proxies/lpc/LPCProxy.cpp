@@ -55,12 +55,12 @@ void LPCProxy::onLPCMessage(const nltools::msg::LPCMessage &msg)
   }
 }
 
-connection LPCProxy::onRibbonTouched(slot<void, int> s)
+connection LPCProxy::onRibbonTouched(sigc::slot<void, int> s)
 {
   return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
 }
 
-connection LPCProxy::onLPCSoftwareVersionChanged(slot<void, int> s)
+connection LPCProxy::onLPCSoftwareVersionChanged(sigc::slot<void, int> s)
 {
   return m_signalLPCSoftwareVersionChanged.connectAndInit(s, m_lpcSoftwareVersion);
 }
@@ -254,7 +254,7 @@ void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
   nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
 }
 
-void LPCProxy::traceBytes(const RefPtr<Bytes>& bytes) const
+void LPCProxy::traceBytes(const Glib::RefPtr<Glib::Bytes>& bytes) const
 {
   if(Application::get().getSettings()->getSetting<DebugLevel>()->get() == DebugLevels::DEBUG_LEVEL_GASSY)
   {

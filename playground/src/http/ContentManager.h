@@ -58,7 +58,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
   tSections m_sections;
 
   bool m_sendResponsesScheduled = false;
-  std::list<connection> m_connections;
+  std::list<sigc::connection> m_connections;
 
   std::chrono::steady_clock::time_point m_lastUpdateSentAt;
 

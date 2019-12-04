@@ -380,7 +380,7 @@ UpdateDocumentContributor::tUpdateID Clipboard::onChange(uint64_t flags)
   return ret;
 }
 
-connection Clipboard::onClipboardChanged(slot<void> cb)
+connection Clipboard::onClipboardChanged(sigc::slot<void> cb)
 {
   return m_sigChanged.connectAndInit(cb);
 }

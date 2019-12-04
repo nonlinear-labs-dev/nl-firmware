@@ -953,7 +953,7 @@ Glib::ustring BankActions::guessNameBasedOnEditBuffer() const
 }
 
 void BankActions::insertBankInCluster(Bank *bankToInsert, Bank *bankAtInsert,
-                                      const ustring directionSeenFromBankInCluster)
+                                      const Glib::ustring directionSeenFromBankInCluster)
 {
   auto scope
       = m_presetManager.getUndoScope().startTransaction("Insert Bank %0 into Cluster", bankToInsert->getName(true));

@@ -16,16 +16,16 @@ const gunichar c_back = 0x8;
 const gunichar c_space = 0x20;
 const gunichar c_ins = 0x11;
 
-static ustring layout[]
+static Glib::ustring layout[]
     = { u8"qwertyuiop[]", u8"asdfghjkl;'ü", u8"zxcvbnm,./öä", u8"\x12\x12\x7F\x7F\x8\x8\x20\x20\x11\x11\x13\x13" };
 
-static ustring shiftLayout[]
+static Glib::ustring shiftLayout[]
     = { u8"QWERTYUIOP{}", u8"ASDFGHJKL:\"Ü", u8"ZXCVBNM<>?ÖÄ", u8"\x12\x12\x7F\x7F\x8\x8\x20\x20\x11\x11\x13\x13" };
 
-static ustring symbolLayout[]
+static Glib::ustring symbolLayout[]
     = { u8"1234567890()", u8"~`!@#$%^&*_+", u8"|\\§°€    ß-=", u8"\x12\x12\x7F\x7F\x8\x8\x20\x20\x11\x11\x13\x13" };
 
-static ustring symbolShiftLayout[]
+static Glib::ustring symbolShiftLayout[]
     = { u8"1234567890()", u8"~`!@#$%^&*_+", u8"|\\§°€    ß-=", u8"\x12\x12\x7F\x7F\x8\x8\x20\x20\x11\x11\x13\x13" };
 
 TextEditUsageMode::TextEditUsageMode(const Glib::ustring &initalText)
@@ -56,7 +56,7 @@ void TextEditUsageMode::setup()
   }
 }
 
-ustring TextEditUsageMode::getKeyLabel(Buttons buttonID) const
+Glib::ustring TextEditUsageMode::getKeyLabel(Buttons buttonID) const
 {
   try
   {
@@ -64,7 +64,7 @@ ustring TextEditUsageMode::getKeyLabel(Buttons buttonID) const
 
     if(g_unichar_isgraph(uni))
     {
-      ustring ret;
+      Glib::ustring ret;
       ret = uni;
       return ret;
     }
@@ -100,7 +100,7 @@ gunichar TextEditUsageMode::getCharForButton(Buttons buttonID) const
   }
 }
 
-ustring TextEditUsageMode::stringizeSpecialChar(gunichar c) const
+Glib::ustring TextEditUsageMode::stringizeSpecialChar(gunichar c) const
 {
   switch(c)
   {
@@ -275,7 +275,7 @@ bool TextEditUsageMode::handleSpecialChar(gunichar c)
   return false;
 }
 
-connection TextEditUsageMode::onTextChanged(const slot<void, const ustring &> &cb)
+connection TextEditUsageMode::onTextChanged(const sigc::slot<void, const Glib::ustring &> &cb)
 {
   return m_sigTextChanged.connectAndInit(cb, m_text);
 }
@@ -305,7 +305,7 @@ void TextEditUsageMode::moveCursor(int step)
   m_sigTextChanged.send(m_text);
 }
 
-ustring TextEditUsageMode::getText() const
+Glib::ustring TextEditUsageMode::getText() const
 {
   return m_text;
 }

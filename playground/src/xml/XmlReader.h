@@ -31,7 +31,7 @@ class XmlReader : public Parser, public Reader
  private:
   void feed() override;
 
-  Markup::ParseContext m_context;
+  Glib::Markup::ParseContext m_context;
 
   Attributes m_lastAttributes;
   Glib::ustring m_lastTag;

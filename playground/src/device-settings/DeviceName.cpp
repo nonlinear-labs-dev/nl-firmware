@@ -60,7 +60,7 @@ void DeviceName::sanitize()
   }
 }
 
-ustring DeviceName::getDisplayString() const
+Glib::ustring DeviceName::getDisplayString() const
 {
   return m_name;
 }

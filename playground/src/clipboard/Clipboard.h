@@ -35,7 +35,7 @@ class Clipboard : public ContentSection
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags
                                                 = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
-  connection onClipboardChanged(slot<void> cb);
+  sigc::connection onClipboardChanged(sigc::slot<void> cb);
 
  private:
   void pastePresetOnBank(const Uuid &bankUuid);

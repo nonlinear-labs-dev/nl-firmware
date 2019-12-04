@@ -45,7 +45,7 @@ Options::Options(int &argc, char **&argv)
 
 void Options::setDefaults()
 {
-  ustring prefered = "/internalstorage/preset-manager/";
+  Glib::ustring prefered = "/internalstorage/preset-manager/";
 
   auto file = Gio::File::create_for_path(prefered);
 
@@ -96,37 +96,37 @@ bool Options::setLayoutFolder(const Glib::ustring &, const Glib::ustring &path, 
   return true;
 }
 
-const ustring &Options::getPresetManagerPath() const
+const Glib::ustring &Options::getPresetManagerPath() const
 {
   return m_pmPath;
 }
 
-const ustring &Options::getBBBB() const
+const Glib::ustring &Options::getBBBB() const
 {
   return m_bbbb;
 }
 
-const ustring &Options::getAudioEngineHost() const
+const Glib::ustring &Options::getAudioEngineHost() const
 {
   return m_audioEngineHost;
 }
 
-ustring Options::getInstallDir() const
+Glib::ustring Options::getInstallDir() const
 {
   return getInstallPrefix();
 }
 
-const ustring &Options::getSettingsFile() const
+const Glib::ustring &Options::getSettingsFile() const
 {
   return m_settingsFile;
 }
 
-const ustring &Options::getKioskModeFile() const
+const Glib::ustring &Options::getKioskModeFile() const
 {
   return m_kioskModeFile;
 }
 
-const ustring &Options::getLayoutFolder() const
+const Glib::ustring &Options::getLayoutFolder() const
 {
   return m_layoutFolder;
 }

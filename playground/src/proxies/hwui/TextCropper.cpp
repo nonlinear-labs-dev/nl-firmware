@@ -48,7 +48,8 @@ Glib::ustring TextCropper::shortenStringIfNeccessary(std::shared_ptr<Font> font,
   return text;
 }
 
-ustring TextCropper::preserveEndShorten(const std::shared_ptr<Font> &font, const ustring &text, double maxWidth)
+Glib::ustring TextCropper::preserveEndShorten(const std::shared_ptr<Font> &font, const Glib::ustring &text,
+                                              double maxWidth)
 {
   const auto textLen = text.length();
   const auto min = 0;
@@ -70,38 +71,40 @@ ustring TextCropper::preserveEndShorten(const std::shared_ptr<Font> &font, const
   return rigidSplit(font, text, maxWidth);
 }
 
-Glib::ustring TextCropper::rigidSplit(const std::shared_ptr<Font> &font, const ustring &text, const double maxWidth)
+Glib::ustring TextCropper::rigidSplit(const std::shared_ptr<Font> &font, const Glib::ustring &text,
+                                      const double maxWidth)
 {
 
-  ustring front;
-  ustring back;
-  const ustring padding = "..";
+  Glib::ustring front;
+  Glib::ustring back;
+  const Glib::ustring padding = "..";
   int i = 0;
   while(font->getStringWidth(front + padding) < maxWidth / 2)
   {
-    front.push_back(text.at(static_cast<ustring::size_type>(i++)));
+    front.push_back(text.at(static_cast<Glib::ustring::size_type>(i++)));
   }
   i = static_cast<int>(text.length() - 1);
   while(font->getStringWidth(back + padding) < maxWidth / 2)
   {
-    back.insert(back.begin(), text.at(static_cast<ustring::size_type>(i--)));
+    back.insert(back.begin(), text.at(static_cast<Glib::ustring::size_type>(i--)));
   }
   return front + ".." + back;
 }
 
-Glib::ustring TextCropper::edgeCases(const int min, const ustring::size_type len, const ustring &ustring)
+Glib::ustring TextCropper::edgeCases(const int min, const Glib::ustring::size_type len, const Glib::ustring &str)
 {
   if(len == 0)
     return "";
   if(len < min)
-    return ustring;
+    return str;
   if((min + 1) == len)
-    return ustring.substr(0, static_cast<ustring::size_type>(min + 1)) + "..";
+    return str.substr(0, static_cast<Glib::ustring::size_type>(min + 1)) + "..";
 
   return "";
 }
 
-Glib::ustring TextCropper::spaceBasedCropping(const ustring &text, const std::shared_ptr<Font> &font, double maxWidth)
+Glib::ustring TextCropper::spaceBasedCropping(const Glib::ustring &text, const std::shared_ptr<Font> &font,
+                                              double maxWidth)
 {
   const auto &c = text;
   if(maxWidth == 0)

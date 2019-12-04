@@ -29,6 +29,6 @@ class Tests : public Job
   void startTest();
 
   std::shared_ptr<Options> m_options;
-  RefPtr<MainLoop> m_theMainLoop;
+  Glib::RefPtr<MainLoop> m_theMainLoop;
   std::unique_ptr<Job> m_test;
 };

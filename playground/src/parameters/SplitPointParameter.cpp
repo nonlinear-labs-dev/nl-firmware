@@ -14,7 +14,7 @@ SplitPointParameter::SplitPointParameter(ParameterGroup *group, ParameterId id)
 {
 }
 
-ustring SplitPointParameter::getGroupAndParameterName() const
+Glib::ustring SplitPointParameter::getGroupAndParameterName() const
 {
   return "Split Point";
 }
@@ -45,7 +45,7 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
   return "";
 }
 
-ustring SplitPointParameter::getDisplayString() const
+Glib::ustring SplitPointParameter::getDisplayString() const
 {
 #warning "TODO!"
   //auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
@@ -80,12 +80,12 @@ void SplitPointParameter::registerTests()
   });
 }
 
-ustring SplitPointParameter::getLongName() const
+Glib::ustring SplitPointParameter::getLongName() const
 {
   return "Split Point";
 }
 
-ustring SplitPointParameter::getShortName() const
+Glib::ustring SplitPointParameter::getShortName() const
 {
   return "Split P.";
 }

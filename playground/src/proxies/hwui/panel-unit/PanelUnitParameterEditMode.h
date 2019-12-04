@@ -4,6 +4,7 @@
 #include <proxies/hwui/panel-unit/ButtonParameterMapping.h>
 #include <proxies/hwui/panel-unit/UndoButtonsStateMachine.h>
 #include <proxies/hwui/UsageMode.h>
+#include <ParameterId.h>
 #include <sigc++/trackable.h>
 #include <array>
 #include <list>

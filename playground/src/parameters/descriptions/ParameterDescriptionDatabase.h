@@ -10,7 +10,7 @@ class ParameterDescriptionDatabase
  public:
   static ParameterDescriptionDatabase &get();
 
-  connection load(ParameterId paramID, slot<void, const Glib::ustring &>);
+  sigc::connection load(ParameterId paramID, sigc::slot<void, const Glib::ustring &>);
 
  private:
   ParameterDescriptionDatabase();

@@ -7,6 +7,6 @@ class LayoutMode : public EnumSetting<LayoutVersionMode>
 {
  public:
   explicit LayoutMode(Settings*);
-  const std::vector<ustring>& enumToString() const override;
-  const std::vector<ustring>& enumToDisplayString() const override;
+  const std::vector<Glib::ustring>& enumToString() const override;
+  const std::vector<Glib::ustring>& enumToDisplayString() const override;
 };

@@ -17,13 +17,13 @@ void RecallParameterSerializer::writeTagContent(Writer &writer) const
 void RecallParameterSerializer::readTagContent(Reader &reader) const
 {
   reader.onTextElement(
-      "value", [this](const ustring &text, const Attributes &attr) { m_parameter->m_recallValue = std::stod(text); });
+      "value", [this](const Glib::ustring &text, const Attributes &attr) { m_parameter->m_recallValue = std::stod(text); });
 
-  reader.onTextElement("mod-amt", [this](const ustring &text, const Attributes &attr) {
+  reader.onTextElement("mod-amt", [this](const Glib::ustring &text, const Attributes &attr) {
     m_parameter->m_recallModAmount = std::stod(text);
   });
 
-  reader.onTextElement("mod-source", [this](const ustring &text, const Attributes &attr) {
+  reader.onTextElement("mod-source", [this](const Glib::ustring &text, const Attributes &attr) {
     m_parameter->m_recallModSource = static_cast<MacroControls>(std::stoi(text));
   });
 }

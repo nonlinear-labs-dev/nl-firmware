@@ -3,7 +3,7 @@
 #include "playground.h"
 #include "proxies/hwui/HWUIEnums.h"
 #include <nltools/threading/Throttler.h>
-#include <chrono>
+#include <tools/Signal.h>
 
 namespace nltools
 {

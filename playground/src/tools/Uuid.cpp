@@ -21,7 +21,7 @@ Uuid::Uuid(const std::string &id)
 {
 }
 
-Uuid::Uuid(const ustring &id)
+Uuid::Uuid(const Glib::ustring &id)
     : id(id)
 {
 }

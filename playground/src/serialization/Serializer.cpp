@@ -40,7 +40,7 @@ void Serializer::readProlog(Reader &reader) const
 {
 }
 
-void Serializer::write(RefPtr<Gio::File> folder, const std::string &name)
+void Serializer::write(Glib::RefPtr<Gio::File> folder, const std::string &name)
 {
   try
   {

@@ -19,7 +19,7 @@ class EncoderAcceleration : public Setting
   tControlPositionValue get() const;
   void setDefault();
   void incDec(int incs, ButtonModifiers modifiers);
-  ustring getDisplayString() const;
+  Glib::ustring getDisplayString() const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 

@@ -44,7 +44,7 @@ MessageComposer::tBufferPtr MessageComposer::flush()
   m_stream->flush();
   m_stream->close();
 
-  RefPtr<Gio::MemoryOutputStream> memStream = RefPtr<Gio::MemoryOutputStream>::cast_static(m_stream->get_base_stream());
+  Glib::RefPtr<Gio::MemoryOutputStream> memStream = Glib::RefPtr<Gio::MemoryOutputStream>::cast_static(m_stream->get_base_stream());
   size_t numBytes = memStream->get_data_size();
   gconstpointer data = (gconstpointer) memStream->get_data();
   tBufferPtr ret = tBuffer::create(data, numBytes);

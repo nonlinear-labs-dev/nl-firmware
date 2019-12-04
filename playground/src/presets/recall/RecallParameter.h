@@ -1,6 +1,8 @@
 #pragma once
+
 #include <libundo/undo/Transaction.h>
 #include <http/UpdateDocumentContributor.h>
+#include <ParameterId.h>
 
 class RecallParameterGroups;
 class Parameter;

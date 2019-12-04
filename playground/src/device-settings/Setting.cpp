@@ -16,7 +16,7 @@ bool Setting::persistent() const
   return true;
 }
 
-connection Setting::onChange(slot<void, const Setting *> slot)
+connection Setting::onChange(sigc::slot<void, const Setting *> slot)
 {
   return m_signal.connectAndInit(slot, this);
 }

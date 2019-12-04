@@ -16,7 +16,7 @@ void WiFiSettingEditor::incSetting(int inc)
   setting->inc(1, true);
 }
 
-const std::vector<ustring> &WiFiSettingEditor::getDisplayStrings() const
+const std::vector<Glib::ustring> &WiFiSettingEditor::getDisplayStrings() const
 {
   return Application::get().getSettings()->getSetting<WifiSetting>()->enumToDisplayString();
 }

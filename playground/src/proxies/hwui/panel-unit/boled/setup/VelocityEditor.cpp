@@ -19,7 +19,7 @@ void VelocityEditor::incSetting(int inc)
   Application::get().getSettings()->getSetting<VelocityCurve>()->inc(inc, false);
 }
 
-const std::vector<ustring> &VelocityEditor::getDisplayStrings() const
+const std::vector<Glib::ustring> &VelocityEditor::getDisplayStrings() const
 {
   return Application::get().getSettings()->getSetting<VelocityCurve>()->enumToDisplayString();
 }

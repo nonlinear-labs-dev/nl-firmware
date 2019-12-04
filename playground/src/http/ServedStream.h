@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include <libsoup/soup.h>
+#include <giomm.h>
 
 class HTTPServer;
 class HTTPRequest;
@@ -20,12 +21,12 @@ class ServedStream
   void startResponseFromStream(Glib::RefPtr<Gio::InputStream> stream);
 
   std::shared_ptr<HTTPRequest> m_request;
-  RefPtr<Gio::Cancellable> m_cancellable;
+  Glib::RefPtr<Gio::Cancellable> m_cancellable;
 
  private:
   gsize writeReadBytesToResponse(gsize numBytes);
-  void doAsyncReadFromStream(RefPtr<Gio::InputStream> stream);
-  void onAsyncStreamRead(RefPtr<Gio::AsyncResult> res, RefPtr<Gio::InputStream> stream);
+  void doAsyncReadFromStream(Glib::RefPtr<Gio::InputStream> stream);
+  void onAsyncStreamRead(Glib::RefPtr<Gio::AsyncResult> res, Glib::RefPtr<Gio::InputStream> stream);
   void serveStream(const Glib::RefPtr<Gio::InputStream> &stream);
 
   HTTPServer &m_server;

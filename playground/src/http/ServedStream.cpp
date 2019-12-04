@@ -42,13 +42,13 @@ gsize ServedStream::writeReadBytesToResponse(gsize numBytes)
   return numBytes;
 }
 
-void ServedStream::doAsyncReadFromStream(RefPtr<Gio::InputStream> stream)
+void ServedStream::doAsyncReadFromStream(Glib::RefPtr<Gio::InputStream> stream)
 {
   stream->read_async(m_readBuffer, sizeof(m_readBuffer),
                      sigc::bind(mem_fun(this, &ServedStream::onAsyncStreamRead), stream), m_cancellable);
 }
 
-void ServedStream::onAsyncStreamRead(RefPtr<Gio::AsyncResult> res, RefPtr<Gio::InputStream> stream)
+void ServedStream::onAsyncStreamRead(Glib::RefPtr<Gio::AsyncResult> res, Glib::RefPtr<Gio::InputStream> stream)
 {
   try
   {

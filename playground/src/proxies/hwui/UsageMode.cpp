@@ -41,7 +41,7 @@ void UsageMode::removeButtonConnection(Buttons buttonID)
   }
   catch(...)
   {
-    nltools::Log::error("Could not remove button connection for:", buttonID,
+    nltools::Log::error("Could not remove button sigc::connection for:", buttonID,
                         nltools::handle_eptr(std::current_exception()));
   }
 }

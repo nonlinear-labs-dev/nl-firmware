@@ -1,22 +1,22 @@
 #pragma once
 
 #include "playground.h"
-#include <giomm/file.h>
+#include <giomm.h>
 
 class Options
 {
  public:
   Options(int &argc, char **&argv);
 
-  const ustring &getPresetManagerPath() const;
-  const ustring &getSettingsFile() const;
-  const ustring &getKioskModeFile() const;
-  const ustring &getHardwareTestsFolder() const;
-  const ustring &getBBBB() const;
-  const ustring &getLayoutFolder() const;
-  const ustring &getAudioEngineHost() const;
+  const Glib::ustring &getPresetManagerPath() const;
+  const Glib::ustring &getSettingsFile() const;
+  const Glib::ustring &getKioskModeFile() const;
+  const Glib::ustring &getHardwareTestsFolder() const;
+  const Glib::ustring &getBBBB() const;
+  const Glib::ustring &getLayoutFolder() const;
+  const Glib::ustring &getAudioEngineHost() const;
 
-  ustring getInstallDir() const;
+  Glib::ustring getInstallDir() const;
 
  private:
   void setDefaults();

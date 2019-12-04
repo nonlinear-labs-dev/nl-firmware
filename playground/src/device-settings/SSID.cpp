@@ -23,7 +23,7 @@ SSID::SSID(Settings &parent)
 
 SSID::~SSID() = default;
 
-ustring SSID::getDisplayString() const
+Glib::ustring SSID::getDisplayString() const
 {
   return get();
 }

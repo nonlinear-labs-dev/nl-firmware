@@ -5,6 +5,7 @@
 class Application;
 class EditBuffer;
 class Parameter;
+class ParameterId;
 
 class PlayModeRibbonBehaviourLabel : public Label
 {
@@ -12,7 +13,7 @@ class PlayModeRibbonBehaviourLabel : public Label
   typedef Label super;
 
  public:
-  PlayModeRibbonBehaviourLabel(const ParameterId &paramID, const Rect& rect);
+  PlayModeRibbonBehaviourLabel(const ParameterId& paramID, const Rect& rect);
   virtual ~PlayModeRibbonBehaviourLabel();
 
  private:

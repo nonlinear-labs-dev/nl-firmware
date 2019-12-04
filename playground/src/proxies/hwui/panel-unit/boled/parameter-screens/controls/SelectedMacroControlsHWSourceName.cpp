@@ -6,7 +6,7 @@
 
 SelectedMacroControlsHWSourceName::SelectedMacroControlsHWSourceName(const Rect &rect)
     : super(rect)
-    , m_hwParamID{ ParameterId::invalid() }
+    , m_hwParamID { ParameterId::invalid() }
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceName::onParameterSelected)));
@@ -34,8 +34,7 @@ void SelectedMacroControlsHWSourceName::onMCChanged(const Parameter *param)
 
       if(hwSourceID.getNumber() > 0)
       {
-        if(auto hwParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-               { hwSourceID.getNumber(), VoiceGroup::Global }))
+        if(auto hwParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(hwSourceID))
         {
           setText(hwParam->getLongName());
         }

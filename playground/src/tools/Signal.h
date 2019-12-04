@@ -48,7 +48,7 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
 
     if(!m_deferedCallbackConnection.connected())
     {
-      auto ctx = MainContext::get_default();
+      auto ctx = Glib::MainContext::get_default();
       m_deferedCallbackConnection
           = ctx->signal_idle().connect(mem_fun(this, &Signal::emitDefered), Glib::PRIORITY_DEFAULT);
     }
@@ -84,7 +84,7 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
 
     if(!m_initCallbackScheduled.exchange(true))
     {
-      m_initCallbackConnection = MainContext::get_default()->signal_idle().connect(
+      m_initCallbackConnection = Glib::MainContext::get_default()->signal_idle().connect(
           mem_fun(this, &Signal::doTheCallbacks), Glib::PRIORITY_HIGH);
     }
   }

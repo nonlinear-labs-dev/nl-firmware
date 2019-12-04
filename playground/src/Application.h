@@ -27,7 +27,7 @@ class Application
   static Application &get();
 
   void run();
-  RefPtr<MainContext> getMainContext();
+  Glib::RefPtr<Glib::MainContext> getMainContext();
 
   PresetManager *getPresetManager() const;
   HTTPServer *getHTTPServer();
@@ -53,7 +53,7 @@ class Application
 
   static Application *theApp;
   std::unique_ptr<Options> m_options;
-  RefPtr<MainLoop> m_theMainLoop;
+  Glib::RefPtr<Glib::MainLoop> m_theMainLoop;
 
   std::unique_ptr<HTTPServer> m_http;
   std::unique_ptr<Settings> m_settings;

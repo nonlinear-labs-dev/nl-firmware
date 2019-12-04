@@ -24,7 +24,7 @@ class EditSmoothingTime : public Setting
 
   void setDefault();
 
-  ustring getDisplayString() const;
+  Glib::ustring getDisplayString() const;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  private:
