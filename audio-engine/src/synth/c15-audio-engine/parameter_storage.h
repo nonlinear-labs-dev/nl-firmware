@@ -212,24 +212,26 @@ namespace Engine
   namespace Storage
   {
 
-    template <class HW, class GP> struct Global_Parameter_Storage
+    template <class HW, class HA, class MC, class TP, class DP> struct Global_Parameter_Storage
     {
       HW_Src_Param m_source[static_cast<uint32_t>(HW::_LENGTH_)];
-      Direct_Param m_direct[static_cast<uint32_t>(GP::_LENGTH_)];
-      const uint32_t m_source_count = static_cast<uint32_t>(HW::_LENGTH_),
-                     m_direct_count = static_cast<uint32_t>(GP::_LENGTH_);
-    };
-
-    template <class HA, class MC, class TP, class DP> struct Layer_Parameter_Storage
-    {
       HW_Amt_Param m_amount[static_cast<uint32_t>(HA::_LENGTH_)];
       Macro_Param m_macro[static_cast<uint32_t>(MC::_LENGTH_)];
       Target_Param m_target[static_cast<uint32_t>(TP::_LENGTH_)];
       Direct_Param m_direct[static_cast<uint32_t>(DP::_LENGTH_)];
       MC_Assignment<MC, TP> m_assignment;
-      const uint32_t m_amount_count = static_cast<uint32_t>(HA::_LENGTH_),
-                     m_macro_count = static_cast<uint32_t>(MC::_LENGTH_),
-                     m_target_count = static_cast<uint32_t>(TP::_LENGTH_),
+      const uint32_t m_source_count
+          = static_cast<uint32_t>(HW::_LENGTH_),
+          m_amount_count = static_cast<uint32_t>(HA::_LENGTH_), m_macro_count = static_cast<uint32_t>(MC::_LENGTH_),
+          m_target_count = static_cast<uint32_t>(TP::_LENGTH_), m_direct_count = static_cast<uint32_t>(DP::_LENGTH_);
+    };
+
+    template <class MC, class TP, class DP> struct Layer_Parameter_Storage
+    {
+      Target_Param m_target[static_cast<uint32_t>(TP::_LENGTH_)];
+      Direct_Param m_direct[static_cast<uint32_t>(DP::_LENGTH_)];
+      MC_Assignment<MC, TP> m_assignment;
+      const uint32_t m_target_count = static_cast<uint32_t>(TP::_LENGTH_),
                      m_direct_count = static_cast<uint32_t>(DP::_LENGTH_);
     };
 
@@ -240,9 +242,10 @@ namespace Engine
 // storage types
 
 using Global_Storage
-    = Engine::Storage::Global_Parameter_Storage<C15::Parameters::Hardware_Sources, C15::Parameters::Global_Parameters>;
+    = Engine::Storage::Global_Parameter_Storage<C15::Parameters::Hardware_Sources, C15::Parameters::Hardware_Amounts,
+                                                C15::Parameters::Macro_Controls, C15::Parameters::Global_Modulateables,
+                                                C15::Parameters::Global_Unmodulateables>;
 
 using Layer_Storage
-    = Engine::Storage::Layer_Parameter_Storage<C15::Parameters::Hardware_Amounts, C15::Parameters::Macro_Controls,
-                                               C15::Parameters::Modulateable_Parameters,
-                                               C15::Parameters::Unmodulateable_Parameters>;
+    = Engine::Storage::Layer_Parameter_Storage<C15::Parameters::Macro_Controls, C15::Parameters::Local_Modulateables,
+                                               C15::Parameters::Local_Unmodulateables>;

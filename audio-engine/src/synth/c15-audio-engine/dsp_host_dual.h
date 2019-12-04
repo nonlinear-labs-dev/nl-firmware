@@ -27,15 +27,17 @@
 #define LOG_FAIL 1
 #define LOG_INIT 1
 #define LOG_MIDI 0
-#define LOG_DISPATCH 0
+#define LOG_DISPATCH 1
 #define LOG_EDITS 1
 #define LOG_TIMES 1
 #define LOG_SETTINGS 1
 #define LOG_RECALL 1
 #define LOG_KEYS 1
 #define LOG_KEYS_POLY 1
-#define LOG_TRANSITIONS 0
+#define LOG_TRANSITIONS 1
 #define LOG_RESET 1
+
+#define TEMP_REWORK 1
 
 class dsp_host_dual
 {
@@ -58,6 +60,7 @@ class dsp_host_dual
   void onPresetMessage(const nltools::msg::SplitPresetMessage &_msg);
   void onPresetMessage(const nltools::msg::LayerPresetMessage &_msg);
   // event bindings: Parameter Changed Messages
+#if TEMP_REWORK < 1
   void globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
   void globalParChg(const uint32_t _id, const nltools::msg::HWSourceChangedMessage &_msg);
   void localParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage &_msg);
@@ -66,6 +69,17 @@ class dsp_host_dual
   void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage &_msg);
   void localTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
   void localUnisonChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+#else
+  void globalParChg(const uint32_t _id, const nltools::msg::HWSourceChangedMessage &_msg);
+  void globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage &_msg);
+  void globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage &_msg);
+  void globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage &_msg);
+  void globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage &_msg);
+  void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localUnisonChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+#endif
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
   void onSettingNoteShift(const float _shift);
@@ -120,8 +134,10 @@ class dsp_host_dual
   // inner event flow
   void updateHW(const uint32_t _id, const uint32_t _raw);
   void updateTime(Time_Aspect *_param, const float _ms);
-  void updateModChain(Macro_Param *_mc);
-  void updateModChain(const uint32_t _layer, Macro_Param *_mc);
+  void globalModChain(Macro_Param *_mc);
+  void localModChain(Macro_Param *_mc);
+  void localModChain(const uint32_t _layer, Macro_Param *_mc);
+  void globalTransition(const Target_Param *_param, const Time_Aspect _time);
   void globalTransition(const Direct_Param *_param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Direct_Param *_param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Target_Param *_param, const Time_Aspect _time);
@@ -131,6 +147,7 @@ class dsp_host_dual
   void recallSingle();
   void recallSplit();
   void recallLayer();
+#if TEMP_REWORK < 1
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter &_source);
   void globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter &_source);
   void localParRcl(const uint32_t _layer, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
@@ -139,4 +156,15 @@ class dsp_host_dual
   void localTimeRcl(const uint32_t _layer, const uint32_t _id, const float _value);
   void localDirectRcl(Direct_Param *_param, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_source);
   void localTargetRcl(Target_Param *_param, const nltools::msg::ParameterGroups::ModulateableParameter &_source);
+#else
+  void globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter &_param);
+  void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter &_param);
+  void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter &_param);
+  void globalParRcl(const nltools::msg::ParameterGroups::ModulateableParameter &_param);
+  void globalParRcl(const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param);
+  void globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter &_param);
+  void globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param);
+  void localParRcl(const nltools::msg::ParameterGroups::ModulateableParameter &_param);
+  void localParRcl(const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param);
+#endif
 };
