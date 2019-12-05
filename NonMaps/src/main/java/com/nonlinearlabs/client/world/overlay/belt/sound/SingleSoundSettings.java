@@ -1,9 +1,10 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.overlay.Label;
@@ -27,15 +28,20 @@ public class SingleSoundSettings extends OverlayLayout {
 
 		Label label;
 		ValueEdit edit;
+		ParameterPresenter presenter;
 
-		protected NamedValueEdit(Control parent, BasicParameterModel param) {
+		protected NamedValueEdit(Control parent, ParameterId param) {
 			super(parent);
+			ParameterPresenterProviders.get().register(param, p -> {
+				presenter = p;
+				return true;
+			});
 
 			label = addChild(new Label(this) {
 
 				@Override
 				public String getDrawText(Context2d ctx) {
-					return param.longName.getValue();
+					return presenter.longName;
 				}
 			});
 
@@ -56,12 +62,9 @@ public class SingleSoundSettings extends OverlayLayout {
 
 	protected SingleSoundSettings(Control parent) {
 		super(parent);
-
-		// TODO: no direct connection to model!
-
 		presetName = addChild(new PresetName(this));
-		tune = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(new ParameterId(248, VoiceGroup.Global))));
-		volume = addChild(new NamedValueEdit(this, EditBufferModel.get().getParameter(new ParameterId(247, VoiceGroup.Global))));
+		tune = addChild(new NamedValueEdit(this, new ParameterId(248, VoiceGroup.Global)));
+		volume = addChild(new NamedValueEdit(this, new ParameterId(247, VoiceGroup.Global)));
 	}
 
 	public void doLayout(double x, double y, double w, double h) {

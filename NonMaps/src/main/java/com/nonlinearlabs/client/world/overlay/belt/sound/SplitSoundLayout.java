@@ -72,11 +72,9 @@ public class SplitSoundLayout extends SoundLayout {
 		private class SplitPointValue extends ValueEdit {
 
 			public SplitPointValue(OverlayLayout parent) {
-				// TODO: no direct connection to model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.Global)));
+				super(parent, new ParameterId(356, VoiceGroup.Global));
 			}
 		}
-
 	}
 
 	private class VoiceGroupSoundSettings extends OverlayLayout {
@@ -188,15 +186,13 @@ public class SplitSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				// TODO: no direct connection to model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(360, group)));
+				super(parent, new ParameterId(360, group));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				// TODO: no direct connection to model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(358, group)));
+				super(parent, new ParameterId(358, group));
 			}
 		}
 	}

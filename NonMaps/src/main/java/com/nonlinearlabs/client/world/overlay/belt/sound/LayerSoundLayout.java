@@ -53,8 +53,8 @@ public class LayerSoundLayout extends SoundLayout {
 			double parts = 20;
 			double unit = (w - 2 * margin) / parts;
 
-			getChildren().get(0).doLayout(margin + 0 * unit + margin, margin, 1 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(1).doLayout(margin + 1 * unit + margin, margin, 9 * unit - 2 * margin, h - 2 * margin);
+			getChildren().get(0).doLayout(margin + 0 * unit + margin, margin, 2 * unit - 2 * margin, h - 2 * margin);
+			getChildren().get(1).doLayout(margin + 2 * unit + margin, margin, 8 * unit - 2 * margin, h - 2 * margin);
 			getChildren().get(2).doLayout(margin + 10 * unit + margin, margin, 5 * unit - 2 * margin, h - 2 * margin);
 			getChildren().get(3).doLayout(margin + 15 * unit + margin, margin, 5 * unit - 2 * margin, h - 2 * margin);
 		}
@@ -85,7 +85,7 @@ public class LayerSoundLayout extends SoundLayout {
 
 			@Override
 			protected double getFontHeight(Rect pixRect) {
-				return pixRect.getHeight() / 2;
+				return pixRect.getHeight();
 			}
 
 		}
@@ -109,15 +109,13 @@ public class LayerSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				// todo: no connection to the model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(360, group)));
+				super(parent, new ParameterId(360, group));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				// todo: no connection to the model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(358, group)));
+				super(parent, new ParameterId(358, group));
 			}
 		}
 	}
