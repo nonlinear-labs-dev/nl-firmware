@@ -13,9 +13,9 @@ class ABColumn extends ParameterColumn {
 
 		private AB(MapsLayout parent) {
 			super(parent, "A - B", 136);
-			addChild(new ModulationSourceLabel(this, getParameterID()));
-			addChild(new ABSlider(this, getParameterID()));
-			addChild(new ValueDisplayLarge(this, getParameterID()));
+			addChild(new ModulationSourceLabel(this, getParameterNumber()));
+			addChild(new ABSlider(this, getParameterNumber()));
+			addChild(new ValueDisplayLarge(this, getParameterNumber()));
 		}
 
 	}

@@ -30,12 +30,12 @@ public abstract class Parameter extends LayoutResizingVertical {
 	public ParameterPresenter presenter;
 
 	protected IncrementalChanger currentParameterChanger = null;
-	protected int id;
+	protected int parameterNumber;
 
-	public Parameter(MapsLayout parent, int id) {
+	public Parameter(MapsLayout parent, int number) {
 		super(parent);
-		this.id = id;
-		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(id, p -> onPresenterUpdated(p));
+		this.parameterNumber = number;
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(number, p -> onPresenterUpdated(p));
 	}
 
 	private boolean onPresenterUpdated(ParameterPresenter p) {
@@ -53,8 +53,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 		return presenter.highlightChanged;
 	}
 
-	public int getParameterID() {
-		return id;
+	public int getParameterNumber() {
+		return parameterNumber;
 	}
 
 	protected RGB getRoundingColor() {
@@ -100,11 +100,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public void setDefault() {
-		EditBufferUseCases.get().setToDefault(getParameterID());
+		EditBufferUseCases.get().setToDefault(getParameterNumber());
 	}
 
 	public void select() {
-		EditBufferUseCases.get().selectParameter(getParameterID());
+		EditBufferUseCases.get().selectParameter(getParameterNumber());
 	}
 
 	public boolean isSelected() {
@@ -165,7 +165,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private void startMouseEdit() {
-		currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterID(),
+		currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterNumber(),
 				Millimeter.toPixels(100));
 	}
 
@@ -234,11 +234,11 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	public void inc(boolean fine) {
-		EditBufferUseCases.get().incParameter(getParameterID(), fine);
+		EditBufferUseCases.get().incParameter(getParameterNumber(), fine);
 	}
 
 	public void dec(boolean fine) {
-		EditBufferUseCases.get().decParameter(getParameterID(), fine);
+		EditBufferUseCases.get().decParameter(getParameterNumber(), fine);
 	}
 
 	public String getParameterGroupID() {
@@ -250,7 +250,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private void toggleBoolean() {
-		EditBufferUseCases.get().toggleBoolean(getParameterID());
+		EditBufferUseCases.get().toggleBoolean(getParameterNumber());
 	}
 
 	public ContextMenu createContextMenu(Overlay o) {

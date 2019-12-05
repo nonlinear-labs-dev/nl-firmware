@@ -13,9 +13,9 @@ class FMColumn extends ParameterColumn {
 
 		private AB(MapsLayout parent) {
 			super(parent, 155);
-			addChild(new LabelModulationSource(this, getParameterID()));
-			addChild(new LittleKnobSlider(this, getParameterID()));
-			addChild(new ValueDisplaySmall(this, getParameterID()));
+			addChild(new LabelModulationSource(this, getParameterNumber()));
+			addChild(new LittleKnobSlider(this, getParameterNumber()));
+			addChild(new ValueDisplaySmall(this, getParameterNumber()));
 		}
 
 	}

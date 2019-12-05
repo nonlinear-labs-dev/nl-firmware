@@ -1,13 +1,12 @@
-package com.nonlinearlabs.client.world.maps.parameters.Voices;
+package com.nonlinearlabs.client.world.maps.parameters.Unison;
 
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroupControls;
 
-class VoicesControls extends ParameterGroupControls {
+class UnisonControls extends ParameterGroupControls {
 
-	VoicesControls(MapsLayout parent) {
+	UnisonControls(MapsLayout parent) {
 		super(parent);
-		addChild(new MonoColumn(this));
 		addChild(new UnisonColumn(this));
 	}
 }

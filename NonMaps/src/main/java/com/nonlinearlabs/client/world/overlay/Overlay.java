@@ -49,7 +49,7 @@ public class Overlay extends OverlayLayout {
 		protected void drawText(Context2d ctx, String text, Position left) {
 			ctx.setStrokeStyle(RGB.black().toString());
 			ctx.strokeText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
-			ctx.setStrokeStyle(RGB.white().toString());
+			ctx.setFillStyle(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor.toString());
 			ctx.fillText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
 		}
 
@@ -63,6 +63,13 @@ public class Overlay extends OverlayLayout {
 			RGB c = new RGBA(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor, 0.25);
 			getPixRect().fill(ctx, c);
 			super.draw(ctx, invalidationMask);
+		}
+
+		@Override
+		public Control mouseDown(Position eventPoint) {
+			if (isVisible()) 
+				return this;
+			return super.mouseDown(eventPoint);
 		}
 
 		@Override

@@ -17,7 +17,7 @@ public class RibbonContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, noneString) {
 			@Override
 			public Control click(Position eventPoint) {
-				getNonMaps().getServerProxy().setRibbonReturnMode(param.getParameterID(), "stay");
+				getNonMaps().getServerProxy().setRibbonReturnMode(param.getParameterNumber(), "stay");
 				return super.click(eventPoint);
 			}
 		});
@@ -25,7 +25,7 @@ public class RibbonContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, centerString) {
 			@Override
 			public Control click(Position eventPoint) {
-				getNonMaps().getServerProxy().setRibbonReturnMode(param.getParameterID(), "return");
+				getNonMaps().getServerProxy().setRibbonReturnMode(param.getParameterNumber(), "return");
 				return super.click(eventPoint);
 			}
 		});

@@ -1,28 +1,22 @@
-package com.nonlinearlabs.client.world.maps.parameters.Voices;
+package com.nonlinearlabs.client.world.maps.parameters.VoiceGroupMaster;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Voices extends ParameterGroup {
+public class VoiceGroupMaster extends ParameterGroup {
 
-	public Voices(MapsLayout parent) {
-		super(parent, "Unison");
+	public VoiceGroupMaster(MapsLayout parent) {
+		super(parent, "PART");
 		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
 				return RGB.lighterGray();
 			}
 		});
-		addChild(new VoicesControls(this));
-	}
-
-	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
-		super.draw(ctx, invalidationMask);
+		addChild(new VoiceGroupMasterControls(this));
 	}
 
 	@Override
@@ -74,4 +68,5 @@ public class Voices extends ParameterGroup {
 	public RGB getColorIndicator() {
 		return ColorTable.getColorIndicator();
 	}
+
 }

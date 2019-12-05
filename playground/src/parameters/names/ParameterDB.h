@@ -24,19 +24,4 @@ class ParameterDB
 
  private:
   ParameterDB();
-
-  void read();
-  void parseCSVRow(const std::string &row);
-  std::vector<std::string> textRowToVector(const std::string &row) const;
-  void importParsedRow(std::vector<std::string> &&items);
-  tControlPositionValue parseSignalPathIndication(const std::string &c) const;
-
-  struct ParameterSpec
-  {
-    Glib::ustring longName;
-    Glib::ustring shortName;
-    tControlPositionValue signalPathIndication;
-  };
-
-  std::map<int, ParameterSpec> m_spec;
 };

@@ -24,7 +24,7 @@ public class MacroControlContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, "Mod Reset") {
 			@Override
 			public Control click(Position eventPoint) {
-				EditBufferUseCases.get().resetModulation(param.getParameterID());
+				EditBufferUseCases.get().resetModulation(param.getParameterNumber());
 				return super.click(eventPoint);
 			}
 		});

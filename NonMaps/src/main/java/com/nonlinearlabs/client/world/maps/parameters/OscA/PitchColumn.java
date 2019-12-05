@@ -15,7 +15,7 @@ class PitchColumn extends ParameterColumn {
 
 		private Pitch(MapsLayout parent) {
 			super(parent, 53);
-			addChild(new ModulateableNumericalControl(this, getParameterID()));
+			addChild(new ModulateableNumericalControl(this, getParameterNumber()));
 		}
 
 		@Override
@@ -28,8 +28,8 @@ class PitchColumn extends ParameterColumn {
 
 		private Keytracking(MapsLayout parent) {
 			super(parent, 55);
-			addChild(new LabelModulationSource(this, getParameterID()));
-			addChild(new KeyTrackParameter(this, getParameterID()));
+			addChild(new LabelModulationSource(this, getParameterNumber()));
+			addChild(new KeyTrackParameter(this, getParameterNumber()));
 		}
 
 	}

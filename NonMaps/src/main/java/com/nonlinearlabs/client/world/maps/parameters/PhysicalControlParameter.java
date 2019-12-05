@@ -8,8 +8,8 @@ abstract public class PhysicalControlParameter extends Parameter {
 	public PhysicalControlParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
 		addChild(new UnModulateableParameterName(this));
-		addChild(new SliderHorizontalWithHandle(this, getParameterID()));
-		addChild(new ValueDisplaySmall(this, getParameterID()));
+		addChild(new SliderHorizontalWithHandle(this, getParameterNumber()));
+		addChild(new ValueDisplaySmall(this, getParameterNumber()));
 	}
 
 	@Override

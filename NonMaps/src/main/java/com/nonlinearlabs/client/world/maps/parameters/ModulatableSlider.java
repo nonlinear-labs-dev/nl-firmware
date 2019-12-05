@@ -6,8 +6,8 @@ public class ModulatableSlider extends ModulatableParameter {
 
 	public ModulatableSlider(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new ModulationSourceLabel(this, getParameterID()));
-		addChild(new SliderVertical(this, getParameterID()));
-		addChild(new ValueDisplayLarge(this, getParameterID()));
+		addChild(new ModulationSourceLabel(this, getParameterNumber()));
+		addChild(new SliderVertical(this, getParameterNumber()));
+		addChild(new ValueDisplayLarge(this, getParameterNumber()));
 	}
 }

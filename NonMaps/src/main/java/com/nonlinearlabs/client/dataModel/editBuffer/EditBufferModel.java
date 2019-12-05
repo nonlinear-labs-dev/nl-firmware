@@ -88,7 +88,12 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	}
 
 	public BasicParameterModel getParameter(ParameterId id) {
-		return byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.get(id.getNumber());
+		BasicParameterModel r = byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.get(id.getNumber());
+		
+		if (r == null)
+			throw new IllegalArgumentException();
+
+		return r;
 	}
 
 	public BasicParameterModel getSelectedParameter() {
@@ -107,7 +112,8 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 			byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.put(id.getNumber(), p);
 
 			if (p instanceof ModulateableParameterModel)
-				byVoiceGroup[id.getVoiceGroup().ordinal()].modulateableParametersCache.add((ModulateableParameterModel) p);
+				byVoiceGroup[id.getVoiceGroup().ordinal()].modulateableParametersCache
+						.add((ModulateableParameterModel) p);
 		}
 	}
 

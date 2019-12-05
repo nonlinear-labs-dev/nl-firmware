@@ -12,8 +12,8 @@ public class ParameterId {
         this.number = number;
     }
 
-    public ParameterId(ModSource modSrc, VoiceGroup vg) {
-        this(modSrc.toParameterId(), vg);
+    public ParameterId(ModSource modSrc) {
+        this(modSrc.toParameterId(), VoiceGroup.Global);
     }
 
     public ParameterId(String id) {

@@ -12,24 +12,24 @@ MacroControlsGroup::~MacroControlsGroup() = default;
 void MacroControlsGroup::init()
 {
 
-  appendParameter(new MacroControlParameter(this, { 243, getVoiceGroup() }));
-  appendParameter(new MacroControlParameter(this, { 244, getVoiceGroup() }));
-  appendParameter(new MacroControlParameter(this, { 245, getVoiceGroup() }));
-  appendParameter(new MacroControlParameter(this, { 246, getVoiceGroup() }));
-  appendParameter(new MacroControlParameter(this, { 369, getVoiceGroup() }));
-  appendParameter(new MacroControlParameter(this, { 371, getVoiceGroup() }));
+  appendParameter(new MacroControlParameter(this, { 243, VoiceGroup::Global }));
+  appendParameter(new MacroControlParameter(this, { 244, VoiceGroup::Global }));
+  appendParameter(new MacroControlParameter(this, { 245, VoiceGroup::Global }));
+  appendParameter(new MacroControlParameter(this, { 246, VoiceGroup::Global }));
+  appendParameter(new MacroControlParameter(this, { 369, VoiceGroup::Global }));
+  appendParameter(new MacroControlParameter(this, { 371, VoiceGroup::Global }));
 
-  appendParameter(new Parameter(this, { 324, getVoiceGroup() },
+  appendParameter(new Parameter(this, { 324, VoiceGroup::Global },
                                 ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 325, getVoiceGroup() },
+  appendParameter(new Parameter(this, { 325, VoiceGroup::Global },
                                 ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 326, getVoiceGroup() },
+  appendParameter(new Parameter(this, { 326, VoiceGroup::Global },
                                 ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 327, getVoiceGroup() },
+  appendParameter(new Parameter(this, { 327, VoiceGroup::Global },
                                 ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 370, getVoiceGroup() },
+  appendParameter(new Parameter(this, { 370, VoiceGroup::Global },
                                 ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 372, getVoiceGroup() },
+  appendParameter(new Parameter(this, { 372, VoiceGroup::Global },
                                 ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
 }
 

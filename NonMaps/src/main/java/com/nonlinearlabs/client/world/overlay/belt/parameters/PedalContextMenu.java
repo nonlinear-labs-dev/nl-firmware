@@ -18,7 +18,7 @@ public class PedalContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, noneString) {
 			@Override
 			public Control click(Position eventPoint) {
-				getNonMaps().getServerProxy().setPedalMode(param.getParameterID(), "stay");
+				getNonMaps().getServerProxy().setPedalMode(param.getParameterNumber(), "stay");
 				return super.click(eventPoint);
 			}
 		});
@@ -26,7 +26,7 @@ public class PedalContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, zeroString) {
 			@Override
 			public Control click(Position eventPoint) {
-				getNonMaps().getServerProxy().setPedalMode(param.getParameterID(), "return-to-zero");
+				getNonMaps().getServerProxy().setPedalMode(param.getParameterNumber(), "return-to-zero");
 				return super.click(eventPoint);
 			}
 		});
@@ -34,7 +34,7 @@ public class PedalContextMenu extends ParameterContextMenu {
 		addChild(new ContextMenuItem(this, centerString) {
 			@Override
 			public Control click(Position eventPoint) {
-				getNonMaps().getServerProxy().setPedalMode(param.getParameterID(), "return-to-center");
+				getNonMaps().getServerProxy().setPedalMode(param.getParameterNumber(), "return-to-center");
 				return super.click(eventPoint);
 			}
 		});

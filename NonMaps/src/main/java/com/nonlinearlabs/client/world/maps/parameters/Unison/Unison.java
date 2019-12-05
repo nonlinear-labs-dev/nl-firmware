@@ -1,4 +1,4 @@
-package com.nonlinearlabs.client.world.maps.parameters.VoiceGroup;
+package com.nonlinearlabs.client.world.maps.parameters.Unison;
 
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.world.RGB;
@@ -6,9 +6,9 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class VoiceGroup extends ParameterGroup {
+public class Unison extends ParameterGroup {
 
-	public VoiceGroup(MapsLayout parent) {
+	public Unison(MapsLayout parent) {
 		super(parent, "Unison");
 		addChild(new LabelModuleHeader(this) {
 			@Override
@@ -16,7 +16,7 @@ public class VoiceGroup extends ParameterGroup {
 				return RGB.lighterGray();
 			}
 		});
-		addChild(new VoicesGroupControls(this));
+		addChild(new UnisonControls(this));
 	}
 
 	@Override
@@ -68,5 +68,4 @@ public class VoiceGroup extends ParameterGroup {
 	public RGB getColorIndicator() {
 		return ColorTable.getColorIndicator();
 	}
-
 }

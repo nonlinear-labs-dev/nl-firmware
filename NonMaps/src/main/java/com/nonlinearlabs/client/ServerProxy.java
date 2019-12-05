@@ -16,6 +16,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
+import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
@@ -44,6 +45,14 @@ public class ServerProxy {
 	private WebSocketConnection webSocket;
 	private String nonmapsVersion = null;
 	private String playgroundVersion = null;
+
+	public Notifier<Integer> documentFromPlayground = new Notifier<Integer>() {
+
+		@Override
+		public Integer getValue() {
+			return 1;
+		}
+	};
 
 	ServerProxy(NonMaps nonMaps) {
 		this.nonMaps = nonMaps;
@@ -115,6 +124,8 @@ public class ServerProxy {
 
 			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManager.get());
 			pmu.doUpdate();
+
+			documentFromPlayground.notifyChanges();
 		}
 	}
 
@@ -150,13 +161,13 @@ public class ServerProxy {
 		return false;
 	}
 
-	public void selectParameter(int id) {
+	public void selectParameter(ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-param");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
 		queueJob(uri, true);
 	}
 
-	public void setParameter(ParameterId id,  double v, boolean oracle) {
+	public void setParameter(ParameterId id, double v, boolean oracle) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
 				new StaticURI.KeyValue("value", v));
@@ -613,7 +624,7 @@ public class ServerProxy {
 	public void renameMacroControl(ParameterId id, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-mc");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
-				 new StaticURI.KeyValue("new-name", newName));
+				new StaticURI.KeyValue("new-name", newName));
 		queueJob(uri, false);
 	}
 
@@ -756,10 +767,9 @@ public class ServerProxy {
 		setSetting("TransitionTime", Double.toString(t));
 	}
 
-	public void setMacroControlInfo(ParameterId id,  String text) {
+	public void setMacroControlInfo(ParameterId id, String text) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-macrocontrol-info");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
-				 new StaticURI.KeyValue("info", text));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id), new StaticURI.KeyValue("info", text));
 		queueJob(uri, false);
 	}
 
@@ -773,7 +783,7 @@ public class ServerProxy {
 	public void setModulationAmountAndValue(ModulatableParameter param, VoiceGroup vg, double newModAmount,
 			double newValue) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modamount-and-value");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterID()),
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterNumber()),
 				new StaticURI.KeyValue("voice-group", vg.toString()),
 				new StaticURI.KeyValue("mod-amount", newModAmount), new StaticURI.KeyValue("value", newValue));
 		queueJob(uri, false);
@@ -967,9 +977,10 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void convertToSingle() {
+	public void convertToSingle(VoiceGroup vg) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-single");
-		queueJob(new StaticURI(path), false);
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("voice-group", vg.toString()));
+		queueJob(uri, false);
 	}
 
 	public void convertToSplit() {

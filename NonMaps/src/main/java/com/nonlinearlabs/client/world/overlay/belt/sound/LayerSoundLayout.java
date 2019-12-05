@@ -80,12 +80,12 @@ public class LayerSoundLayout extends SoundLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return group == VoiceGroup.I ? "I" : "II";
+				return group == VoiceGroup.I ? "\uE071" : "\uE072";
 			}
 
 			@Override
 			protected double getFontHeight(Rect pixRect) {
-				return pixRect.getHeight();
+				return pixRect.getHeight() / 2;
 			}
 
 		}
@@ -110,14 +110,14 @@ public class LayerSoundLayout extends SoundLayout {
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
 				// todo: no connection to the model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(10003, group)));
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(360, group)));
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
 				// todo: no connection to the model!
-				super(parent, EditBufferModel.get().getParameter(new ParameterId(10002, group)));
+				super(parent, EditBufferModel.get().getParameter(new ParameterId(358, group)));
 			}
 		}
 	}

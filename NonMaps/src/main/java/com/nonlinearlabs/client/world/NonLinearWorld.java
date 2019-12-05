@@ -6,6 +6,7 @@ import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.Animator;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.ClipboardManager;
@@ -14,6 +15,7 @@ import com.nonlinearlabs.client.contextStates.ContextState;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.integrationTests.IntegrationTests;
 import com.nonlinearlabs.client.world.maps.IContextMenu;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
@@ -460,6 +462,10 @@ public class NonLinearWorld extends MapsLayout {
 	}
 
 	public boolean handleKeyPress(final KeyDownEvent event) {
+		if (Window.Location.getPort() == "8080" || Window.Location.getPort() == "8888")
+			if (event.getNativeKeyCode() == com.google.gwt.event.dom.client.KeyCodes.KEY_T)
+				IntegrationTests.doAllTests();
+
 		isShiftDown = event.isShiftKeyDown();
 		isSpaceDown = event.getNativeKeyCode() == KeyCodes.KEY_SPACE;
 		isCtrlDown = event.isControlKeyDown();

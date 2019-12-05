@@ -34,8 +34,8 @@ import com.nonlinearlabs.client.world.maps.parameters.SVFilter.SVFilter;
 import com.nonlinearlabs.client.world.maps.parameters.Scale.Scale;
 import com.nonlinearlabs.client.world.maps.parameters.ShapeA.ShapeA;
 import com.nonlinearlabs.client.world.maps.parameters.ShapeB.ShapeB;
-import com.nonlinearlabs.client.world.maps.parameters.VoiceGroup.VoiceGroup;
-import com.nonlinearlabs.client.world.maps.parameters.Voices.Voices;
+import com.nonlinearlabs.client.world.maps.parameters.Unison.Unison;
+import com.nonlinearlabs.client.world.maps.parameters.VoiceGroupMaster.VoiceGroupMaster;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
 public class ParameterEditor extends LayoutResizingVertical {
@@ -135,12 +135,12 @@ public class ParameterEditor extends LayoutResizingVertical {
 				}
 			}
 
-			private class UnisonAndMaster extends LayoutResizingHorizontal {
+			private class Masters extends LayoutResizingHorizontal {
 
-				private class VoiceGroupAndSpacer extends LayoutResizingHorizontal {
-					VoiceGroupAndSpacer(UnisonAndMaster parent) {
+				private class VoiceGroupMasterAndSpacer extends LayoutResizingHorizontal {
+					VoiceGroupMasterAndSpacer(Masters parent) {
 						super(parent);
-						addChild(new VoiceGroup(this));
+						addChild(new VoiceGroupMaster(this));
 						addChild(new SpacerLarge(this));
 
 						EditBufferModel.get().soundType.onChange(v -> {
@@ -159,13 +159,13 @@ public class ParameterEditor extends LayoutResizingVertical {
 					}
 				}
 
-				public UnisonAndMaster() {
+				public Masters() {
 					super(SynthParameters.this);
 
-					addChild(new Voices(this));
+					addChild(new Unison(this));
 					addChild(new SpacerLarge(this));
 
-					addChild(new VoiceGroupAndSpacer(this));
+					addChild(new VoiceGroupMasterAndSpacer(this));
 
 					addChild(new Master(this));
 					addChild(new SpacerLarge(this));
@@ -189,7 +189,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 					}
 				});
 
-				addChild(new UnisonAndMaster());
+				addChild(new Masters());
 			}
 
 			@Override
@@ -334,7 +334,7 @@ public class ParameterEditor extends LayoutResizingVertical {
 			public boolean onWayDownFound(Control ctrl) {
 				if (ctrl instanceof Parameter) {
 					Parameter p = (Parameter) ctrl;
-					if (p.getParameterID() == id) {
+					if (p.getParameterNumber() == id) {
 						return true;
 					}
 				}
