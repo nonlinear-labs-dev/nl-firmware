@@ -89,24 +89,7 @@ MacroControls MacroControlsGroup::paramIDToModSrc(ParameterId pid)
   }
 }
 
-/*
-  appendParameter(new Parameter(this, { 324, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 325, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 326, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 327, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 370, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 372, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-
- */
-
 bool MacroControlsGroup::isMacroTime(const ParameterId &id)
 {
-  return id.getVoiceGroup() == VoiceGroup::Global
-      && ((id.getNumber() >= 324 && id.getNumber() <= 327) || (id.getNumber() == 370 || id.getNumber() == 372));
+  return (id.getNumber() >= 324 && id.getNumber() <= 327) || (id.getNumber() == 370 || id.getNumber() == 372);
 }
