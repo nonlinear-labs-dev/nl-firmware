@@ -18,7 +18,7 @@ static std::string parseName(const std::string &in)
   auto p = in.find('-');
 
   if(p == std::string::npos)
-    return "";
+    return in;
 
   return in.substr(p + 1);
 }
@@ -73,7 +73,7 @@ VoiceGroup GroupId::getVoiceGroup() const
 
 bool GroupId::isGlobal(const std::string &name)
 {
-  static std::vector<std::string> globals = { "Split", "CS", "Scale", "Master" };
+  static std::vector<std::string> globals = { "Split", "CS", "Scale", "Master", "MCs", "MCM" };
 
   for(auto &a : globals)
     if(a == name)

@@ -1422,7 +1422,7 @@ void dsp_host_dual::evalFadePoint()
 }
 
 Direct_Param *dsp_host_dual::evalVoiceChg(const C15::Properties::LayerId _layerId,
-                                          const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_unisonVoices)
+                                          const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices)
 {
   auto param = m_params.get(_layerId, C15::Parameters::Local_Unmodulateables::Unison_Voices);
   m_layer_changed |= param->update_position(static_cast<float>(_unisonVoices.controlPosition));
@@ -1620,6 +1620,7 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareAm
   }
 #endif
 }
+
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::MacroParameter &_param)
 {
   auto element = getParameter(_param.id);
@@ -1668,7 +1669,7 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
 #endif
 }
 
-void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param)
+void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param)
 {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
@@ -1715,7 +1716,8 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalPara
   }
 #endif
 }
-void dsp_host_dual::globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param)
+
+void dsp_host_dual::globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param)
 {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Time)
@@ -1767,7 +1769,7 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
 }
 
 void dsp_host_dual::localParRcl(const uint32_t _layerId,
-                                const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param)
+                                const nltools::msg::ParameterGroups::UnmodulateableParameter &_param)
 {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Unmodulateable)

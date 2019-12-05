@@ -1,4 +1,5 @@
 #include <presets/EditBuffer.h>
+#include <nltools/logging/Log.h>
 #include "RecallEditBufferSerializer.h"
 #include "PresetParameterGroupSerializer.h"
 #include "RecallParameterSerializer.h"
@@ -29,11 +30,12 @@ namespace Detail
    protected:
     void writeTagContent(Writer &writer) const override
     {
-      auto &parameters = m_editBuffer->getRecallParameterSet().getParameters(m_voiceGroup);
+      auto &parameters = m_editBuffer->getRecallParameterSet().getParameters();
       for(auto &param : parameters)
       {
-        RecallParameterSerializer serializer(param.second.get());
-        serializer.write(writer, Attribute("id", param.first));
+        auto parameter = param.second.get();
+        RecallParameterSerializer serializer(parameter);
+        serializer.write(writer, Attribute("id", parameter->getID().toString()));
       }
     }
 
@@ -41,16 +43,16 @@ namespace Detail
     {
       reader.onTag(RecallParameterSerializer::getTagName(),
                    [&, this](const Attributes &attr) mutable -> RecallParameterSerializer * {
-                     auto id = std::stoi(attr.get("id"));
+                     auto id = ParameterId(attr.get("id"));
                      auto &rps = m_editBuffer->getRecallParameterSet();
                      try
                      {
-                       auto param = rps.getParameters(m_voiceGroup).at(id).get();
-                       auto serializer = new RecallParameterSerializer(param);
-                       return serializer;
+                       if(auto param = rps.findParameterByID(id))
+                         return new RecallParameterSerializer(param);
                      }
                      catch(...)
                      {
+                       nltools::Log::error("Could not find Recall Parameter with ID", id);
                      }
                      return nullptr;
                    });

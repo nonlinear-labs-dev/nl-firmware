@@ -134,7 +134,7 @@ class dsp_host_dual
   void localTransition(const uint32_t _layer, const Target_Param *_param, const Time_Aspect _time);
   void evalFadePoint();
   Direct_Param *evalVoiceChg(const C15::Properties::LayerId _layerId,
-                             const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_unisonVoices);
+                             const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices);
   void recallSingle();
   void recallSplit();
   void recallLayer();
@@ -142,9 +142,9 @@ class dsp_host_dual
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter &_param);
   void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter &_param);
   void globalParRcl(const nltools::msg::ParameterGroups::ModulateableParameter &_param);
-  void globalParRcl(const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param);
+  void globalParRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param);
   void globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter &_param);
-  void globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param);
+  void globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param);
   void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::ModulateableParameter &_param);
-  void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::UnmodulatebaleParameter &_param);
+  void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::UnmodulateableParameter &_param);
 };

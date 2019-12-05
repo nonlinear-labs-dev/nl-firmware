@@ -577,10 +577,10 @@ TEST_CASE("Part Label")
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
     REQUIRE(eb->getType() == SoundType::Layer);
-    eb->setVoiceGroupName(scope->getTransaction(), "I", VoiceGroup::I);
-    eb->setVoiceGroupName(scope->getTransaction(), "II", VoiceGroup::II);
-    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "I");
-    REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "II");
+    eb->setVoiceGroupName(scope->getTransaction(), "\uE071", VoiceGroup::I);
+    eb->setVoiceGroupName(scope->getTransaction(), "\uE072", VoiceGroup::II);
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "\uE071");
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "\uE072");
   }
 
   SECTION("Convert to Single clears Part Labels")
@@ -595,7 +595,7 @@ TEST_CASE("Part Label")
   SECTION("Load Single into Part sets Part Label to Preset Name")
   {
     auto scope = TestHelper::createTestScope();
-    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "I");
+    REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "\uE071");
     eb->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
   }

@@ -88,3 +88,8 @@ MacroControls MacroControlsGroup::paramIDToModSrc(ParameterId pid)
       return MacroControls::NONE;
   }
 }
+
+bool MacroControlsGroup::isMacroTime(const ParameterId &id)
+{
+  return (id.getNumber() >= 324 && id.getNumber() <= 327) || (id.getNumber() == 370 || id.getNumber() == 372);
+}
