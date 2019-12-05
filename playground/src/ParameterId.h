@@ -36,3 +36,15 @@ class ParameterId
   uint16_t m_num;
   VoiceGroup m_group;
 };
+
+namespace std
+{
+  template <> struct hash<ParameterId> : public __hash_base<size_t, ParameterId>
+  {
+    size_t operator()(const ParameterId &p) const noexcept
+    {
+      std::hash<std::string> h;
+      return h(p.toString());
+    }
+  };
+}

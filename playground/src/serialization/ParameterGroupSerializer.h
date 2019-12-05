@@ -8,14 +8,14 @@ class Parameter;
 class ParameterGroupSerializer : public Serializer
 {
  public:
-  ParameterGroupSerializer(ParameterGroup *paramGroup);
-  virtual ~ParameterGroupSerializer();
+  explicit ParameterGroupSerializer(ParameterGroup *paramGroup);
+  ~ParameterGroupSerializer() override;
 
   static Glib::ustring getTagName();
 
  private:
-  void writeTagContent(Writer &writer) const;
-  void readTagContent(Reader &reader) const;
+  void writeTagContent(Writer &writer) const override;
+  void readTagContent(Reader &reader) const override;
 
   ParameterGroup *m_paramGroup = nullptr;
   std::map<int, Parameter *> m_parameterById;

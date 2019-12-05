@@ -595,8 +595,24 @@ void HWUI::thawFocusAndMode()
   m_focusAndModeFrozen = false;
 }
 
+FocusAndMode HWUI::fixFocusAndModeWithAnys(FocusAndMode in)
+{
+  if(in.focus == UIFocus::Any)
+    in.focus = UIFocus::Parameters;
+
+  if(in.mode == UIMode::Any)
+    in.mode = UIMode::Select;
+
+  if(in.detail == UIDetail::Any)
+    in.detail = UIDetail::Init;
+
+  return in;
+}
+
 FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
 {
+  in = fixFocusAndModeWithAnys(in);
+
   bool isCurrentPresetManager = (m_focusAndMode.focus == UIFocus::Banks) || (m_focusAndMode.focus == UIFocus::Presets);
   bool isDesiredParameter = (in.focus == UIFocus::Parameters);
   bool isDesiredPresetManager = (in.focus == UIFocus::Banks) || (in.focus == UIFocus::Presets);

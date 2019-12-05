@@ -9,7 +9,6 @@
 #include "ParameterGroupSerializer.h"
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
-#include "VoiceGroupsSerializer.h"
 #include "VoiceGroupsLockSerializer.h"
 #include <nltools/logging/Log.h>
 
@@ -19,9 +18,7 @@ EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
 {
 }
 
-EditBufferSerializer::~EditBufferSerializer()
-{
-}
+EditBufferSerializer::~EditBufferSerializer() = default;
 
 Glib::ustring EditBufferSerializer::getTagName()
 {

@@ -1,3 +1,4 @@
+#include <nltools/logging/Log.h>
 #include "RecallParameterGroups.h"
 #include "presets/Preset.h"
 #include "presets/EditBuffer.h"
@@ -12,30 +13,37 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
 {
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
-    const auto index = static_cast<size_t>(vg);
     for(auto &g : m_editBuffer->getParameterGroups(vg))
     {
       for(auto &parameter : g->getParameters())
       {
-        m_parameters[index][parameter->getID().getNumber()] = std::make_unique<RecallParameter>(this, parameter->getID());
+        m_parameters[parameter->getID()] = std::make_unique<RecallParameter>(this, parameter->getID());
       }
     }
   }
 }
 
-RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg)
+RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters()
 {
-  return m_parameters[static_cast<size_t>(vg)];
+  return m_parameters;
 }
 
-const RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters(VoiceGroup vg) const
+const RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters() const
 {
-  return m_parameters[static_cast<size_t>(vg)];
+  return m_parameters;
 }
 
-RecallParameter *RecallParameterGroups::findParameterByID(ParameterId id) const
+RecallParameter *RecallParameterGroups::findParameterByID(const ParameterId &id) const
 {
-  return m_parameters.at(static_cast<size_t>(id.getVoiceGroup())).at(id.getNumber()).get();
+  try
+  {
+    return m_parameters.at(id).get();
+  }
+  catch(...)
+  {
+    nltools::Log::error("Could not find Recall Parameter with id", id.toString());
+    return nullptr;
+  }
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
@@ -43,7 +51,7 @@ void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, c
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(auto &g : other->getParameterGroups(vg))
       for(auto &parameter : g->getParameters())
-        m_parameters[static_cast<size_t>(vg)].at(parameter->getID().getNumber())->copyFrom(transaction, parameter);
+        m_parameters.at(parameter->getID())->copyFrom(transaction, parameter);
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -52,20 +60,8 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   if(changed)
   {
     writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
-      writer.writeTag("voice-group-I-parameters", [&] {
-        for(auto &parameterpair : getParameters(VoiceGroup::I))
-          parameterpair.second->writeDocument(writer, knownRevision);
-      });
-
-      writer.writeTag("voice-group-II-parameters", [&] {
-        for(auto &parameterpair : getParameters(VoiceGroup::II))
-          parameterpair.second->writeDocument(writer, knownRevision);
-      });
-
-      writer.writeTag("global-parameters", [&] {
-        for(auto &parameterpair : getParameters(VoiceGroup::Global))
-          parameterpair.second->writeDocument(writer, knownRevision);
-      });
+      for(auto &parameterpair : getParameters())
+        parameterpair.second->writeDocument(writer, knownRevision);
     });
   }
 }

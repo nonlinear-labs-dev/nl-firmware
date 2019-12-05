@@ -82,6 +82,8 @@ class HWUI
   bool detectAffengriff(Buttons buttonID, bool state);
   bool isFineAllowed();
 
+  static FocusAndMode fixFocusAndModeWithAnys(FocusAndMode in);
+
   FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
 
   PanelUnit m_panelUnit;

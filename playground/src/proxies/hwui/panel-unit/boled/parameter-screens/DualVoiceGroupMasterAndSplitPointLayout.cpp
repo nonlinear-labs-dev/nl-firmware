@@ -47,7 +47,7 @@ void DualVoiceGroupMasterAndSplitPointLayout::update()
   {
     if(i->getPosition().getPosition().getX() == Button::getButtonPos(Buttons::BUTTON_A).getPosition().getX())
     {
-      auto text = to_string("Select ") + (vg == VoiceGroup::I ? "II" : "I");
+      auto text = to_string("Select ") + (vg == VoiceGroup::I ? "/uE072" : "/uE071");
       i->setText({ text, 0 });
     }
   }

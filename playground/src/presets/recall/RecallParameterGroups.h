@@ -2,6 +2,7 @@
 
 #include "presets/PresetDualParameterGroups.h"
 #include <tools/Signal.h>
+#include <ParameterId.h>
 
 class ParameterDualGroupSet;
 class EditBuffer;
@@ -11,12 +12,13 @@ class RecallParameter;
 class RecallParameterGroups : public UpdateDocumentContributor
 {
  public:
-  using tParameterMap = std::unordered_map<int, std::unique_ptr<RecallParameter>>;
+  using tParameterMap = std::unordered_map<ParameterId, std::unique_ptr<RecallParameter>>;
+
   RecallParameterGroups(EditBuffer *editBuffer);
 
-  RecallParameter *findParameterByID(ParameterId id) const;
-  tParameterMap &getParameters(VoiceGroup vg);
-  const tParameterMap &getParameters(VoiceGroup vg) const;
+  RecallParameter *findParameterByID(const ParameterId& id) const;
+  RecallParameterGroups::tParameterMap &getParameters();
+  const RecallParameterGroups::tParameterMap &getParameters() const;
 
   void copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -27,7 +29,7 @@ class RecallParameterGroups : public UpdateDocumentContributor
   EditBuffer *m_editBuffer;
   Signal<void> m_signalRecallValues;
 
-  std::array<tParameterMap, static_cast<size_t>(VoiceGroup::NumGroups)> m_parameters;
+  tParameterMap m_parameters;
 
   friend class EditBuffer;
   friend class RecallEditBufferSerializer;
