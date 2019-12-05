@@ -15,6 +15,7 @@
 #include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include <groups/HardwareSourcesGroup.h>
+#include <groups/MacroControlsGroup.h>
 #include <groups/MasterGroup.h>
 #include <groups/ScaleGroup.h>
 
@@ -37,6 +38,7 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
   size_t hwSource = 0;
   size_t globalParams = 0;
   size_t mc = 0;
+  size_t mcT = 0;
   size_t modR = 0;
 
   for(auto &g : editBuffer->getParameterGroups(VoiceGroup::Global))
@@ -75,6 +77,13 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
         hwAmount.controlPosition = hwAmounts->getControlPositionValue();
         hwAmount.locked = hwAmounts->isLocked();
       }
+      else if(MacroControlsGroup::isMacroTime(p->getID()))
+      {
+        auto &mcTime = msg.macrotimes[mcT++];
+        mcTime.id = p->getID().getNumber();
+        mcTime.controlPosition = p->getControlPositionValue();
+        mcTime.locked = p->isLocked();
+      }
     }
   }
 
@@ -82,6 +91,7 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
   nltools_assertAlways(msg.hwsources.size() == hwSource);
   nltools_assertAlways(msg.macros.size() == mc);
   nltools_assertAlways(msg.hwamounts.size() == modR);
+  nltools_assertAlways(msg.macrotimes.size() == mcT);
 }
 
 template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, size_t &mod)

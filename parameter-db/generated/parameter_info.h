@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file       parameter_info.h
-    @date       2019-11-07
-    @version    1.7B-1
-    @author     M. Seeber
-    @brief      parameter-related details outside of the parameter definition
-    @todo
+/**   @file       parameter_info.h
+      @date       2019-11-07
+      @version    1.7B-2
+      @author     M. Seeber
+      @brief      parameter-related details outside of the parameter definition
+      @todo
 *******************************************************************************/
 
 #include "parameter_declarations.h"

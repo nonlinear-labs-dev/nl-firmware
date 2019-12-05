@@ -149,12 +149,24 @@ public class EditBufferUseCases {
 		incDecParameter(paramNumber, fine, 1);
 	}
 
+	public void incParameter(ParameterId id, boolean fine) {
+		incDecParameter(id, fine, 1);
+	}
+
 	public void decParameter(int paramNumber, boolean fine) {
 		incDecParameter(paramNumber, fine, -1);
 	}
 
+	public void decParameter(ParameterId id, boolean fine) {
+		incDecParameter(id, fine, -1);
+	}
+
 	private void incDecParameter(int paramNumber, boolean fine, int inc) {
 		ParameterId id = toParamId(paramNumber);
+		incDecParameter(id, fine, inc);
+	}
+
+	private void incDecParameter(ParameterId id, boolean fine, int inc) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
@@ -278,8 +290,7 @@ public class EditBufferUseCases {
 			NonMaps.get().getServerProxy().setModulationSource(src);
 	}
 
-	public IncrementalChanger startEditParameterValue(int paramNumber, double pixelsPerRange) {
-		ParameterId id = toParamId(paramNumber);
+	public IncrementalChanger startEditParameterValue(ParameterId id, double pixelsPerRange) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
 		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> setParameterValue(id, v, true, b), () -> {
 			if (p instanceof PhysicalControlParameterModel) {
@@ -288,6 +299,11 @@ public class EditBufferUseCases {
 					startReturningAnimation(m);
 			}
 		});
+	}
+
+	public IncrementalChanger startEditParameterValue(int paramNumber, double pixelsPerRange) {
+		ParameterId id = toParamId(paramNumber);
+		return startEditParameterValue(id, pixelsPerRange);
 	}
 
 	public IncrementalChanger startEditMCAmount(int paramNumber, double pixelsPerRange) {

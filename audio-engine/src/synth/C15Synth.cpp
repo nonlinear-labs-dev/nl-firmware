@@ -126,10 +126,14 @@ void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateablePa
 {
   // (fail-safe) dispatch by ParameterList
   auto element = m_dsp->getParameter(msg.parameterId);
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Modulateable_Parameter)
+  switch(element.m_param.m_type)
   {
-    // trigger localParamChange event (modulateables)
-    return m_dsp->localParChg(element.m_param.m_index, msg);
+    case C15::Descriptors::ParameterType::Global_Modulateable:
+      m_dsp->globalParChg(element.m_param.m_index, msg);
+      return;
+    case C15::Descriptors::ParameterType::Local_Modulateable:
+      m_dsp->localParChg(element.m_param.m_index, msg);
+      return;
   }
 #if LOG_FAIL
   nltools::Log::warning("invalid Modulateable_Parameter ID:", msg.parameterId);
@@ -140,29 +144,28 @@ void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::Unmodulateab
 {
   // (fail-safe) dispatch by ParameterList
   auto element = m_dsp->getParameter(msg.parameterId);
-  // unison detection
-  if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Unmodulateable_Parameters::Unison_Voices))
+  // further (subtype) distinction
+  switch(element.m_param.m_type)
   {
-    // trigger localUnisonChange event
-    return m_dsp->localUnisonChg(msg);
-  }
-  else
-  {
-    // further (subtype) distinction
-    switch(element.m_param.m_type)
-    {
-      case C15::Descriptors::ParameterType::Global_Parameter:
-        // trigger globalParamChange event
-        return m_dsp->globalParChg(element.m_param.m_index, msg);
-      case C15::Descriptors::ParameterType::Unmodulateable_Parameter:
-        // trigger localParamChange event (unmodulateables)
-        return m_dsp->localParChg(element.m_param.m_index, msg);
-      case C15::Descriptors::ParameterType::Macro_Time:
-        // trigger localTimeChange event (mc smoothing times)
-        return m_dsp->localTimeChg(element.m_param.m_index, msg);
-      default:
-        break;
-    }
+    case C15::Descriptors::ParameterType::Global_Unmodulateable:
+      m_dsp->globalParChg(element.m_param.m_index, msg);
+      return;
+    case C15::Descriptors::ParameterType::Macro_Time:
+      m_dsp->globalTimeChg(element.m_param.m_index, msg);
+      return;
+    case C15::Descriptors::ParameterType::Local_Unmodulateable:
+      // unison detection
+      if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Unison_Voices))
+      {
+        m_dsp->localUnisonChg(msg);
+      }
+      else
+      {
+        m_dsp->localParChg(element.m_param.m_index, msg);
+      }
+      return;
+    default:
+      break;
   }
 #if LOG_FAIL
   nltools::Log::warning("invalid Unmodulateable_Parameter ID:", msg.parameterId);
@@ -175,8 +178,8 @@ void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlCh
   auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
   {
-    // trigger localParamChange event (macros)
-    return m_dsp->localParChg(element.m_param.m_index, msg);
+    m_dsp->globalParChg(element.m_param.m_index, msg);
+    return;
   }
 #if LOG_FAIL
   nltools::Log::warning("invalid Macro_Control ID:", msg.parameterId);
@@ -189,8 +192,8 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage &msg
   auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Amount)
   {
-    // trigger localParamChange event (hw_amounts)
-    return m_dsp->localParChg(element.m_param.m_index, msg);
+    m_dsp->globalParChg(element.m_param.m_index, msg);
+    return;
   }
 #if LOG_FAIL
   nltools::Log::warning("invalid HW_Amount ID:", msg.parameterId);
@@ -203,8 +206,8 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage &msg
   auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
-    // trigger globalPatamChange event (hw_sources)
-    return m_dsp->globalParChg(element.m_param.m_index, msg);
+    m_dsp->globalParChg(element.m_param.m_index, msg);
+    return;
   }
 #if LOG_FAIL
   nltools::Log::warning("invalid HW_Source ID:", msg.parameterId);

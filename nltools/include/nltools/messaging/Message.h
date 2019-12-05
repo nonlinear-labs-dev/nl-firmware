@@ -252,7 +252,7 @@ namespace nltools
         double modulationAmount = 0;
       };
 
-      struct UnmodulatebaleParameter : Parameter
+      struct UnmodulateableParameter : Parameter
       {
       };
 
@@ -282,11 +282,14 @@ namespace nltools
       }
 
       std::array<ParameterGroups::MacroParameter, 6> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+
       std::array<ParameterGroups::ModulateableParameter, 100> modulateables;
-      std::array<ParameterGroups::UnmodulatebaleParameter, 97> unmodulateables;
+      std::array<ParameterGroups::UnmodulateableParameter, 91> unmodulateables;
+
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
-      ParameterGroups::UnmodulatebaleParameter unisonVoices;
+      ParameterGroups::UnmodulateableParameter unisonVoices;
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
 
@@ -298,13 +301,16 @@ namespace nltools
       }
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 100>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 97>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 91>, 2> unmodulateables;
 
-      std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
+      std::array<ParameterGroups::UnmodulateableParameter, 2> unisonVoices;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+
       std::array<ParameterGroups::MacroParameter, 6> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
       ParameterGroups::SplitPoint splitpoint;
     };
@@ -318,12 +324,14 @@ namespace nltools
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+
       std::array<ParameterGroups::MacroParameter, 6> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 100>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulatebaleParameter, 97>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 91>, 2> unmodulateables;
 
-      std::array<ParameterGroups::UnmodulatebaleParameter, 2> unisonVoices;
+      std::array<ParameterGroups::UnmodulateableParameter, 2> unisonVoices;
 
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
