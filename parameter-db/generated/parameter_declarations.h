@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file       parameter_declarations.h
-    @date       2019-11-20, 17:22
-    @version	1.7B-1
-    @author     M. Seeber
-    @brief      descriptors for all parameter-related details
-    @todo
+/**	  @file	      parameter_declarations.h
+      @date	      2019-12-03, 17:17
+      @version	  1.7B-2
+      @author	  M. Seeber
+      @brief	  descriptors for all parameter-related details
+      @todo
 *******************************************************************************/
 
 namespace C15
@@ -19,12 +19,13 @@ namespace C15
     {
       None,
       Hardware_Source,
-      Global_Parameter,
       Hardware_Amount,
       Macro_Control,
       Macro_Time,
-      Modulateable_Parameter,
-      Unmodulateable_Parameter
+      Global_Modulateable,
+      Global_Unmodulateable,
+      Local_Modulateable,
+      Local_Unmodulateable
     };
 
     enum class SmootherSection
@@ -79,33 +80,14 @@ namespace C15
 
     enum class Hardware_Sources
     {
-      Ped_1,
-      Ped_2,
-      Ped_3,
-      Ped_4,
-      Bend,
-      AT,
-      Rib_1,
-      Rib_2,
-      _LENGTH_
-    };
-
-    enum class Global_Parameters
-    {
-      Master_Volume,
-      Master_Tune,
-      Scale_Base_Key,
-      Scale_Offset_1,
-      Scale_Offset_2,
-      Scale_Offset_3,
-      Scale_Offset_4,
-      Scale_Offset_5,
-      Scale_Offset_6,
-      Scale_Offset_7,
-      Scale_Offset_8,
-      Scale_Offset_9,
-      Scale_Offset_10,
-      Scale_Offset_11,
+      Pedal_1,
+      Pedal_2,
+      Pedal_3,
+      Pedal_4,
+      Bender,
+      Aftertouch,
+      Ribbon_1,
+      Ribbon_2,
       _LENGTH_
     };
 
@@ -186,10 +168,34 @@ namespace C15
       _LENGTH_
     };
 
-    enum class Modulateable_Parameters
+    enum class Global_Modulateables
+    {
+      Voice_Grp_Split_Point,
+      _LENGTH_
+    };
+
+    enum class Global_Unmodulateables
+    {
+      Master_Volume,
+      Master_Tune,
+      Scale_Base_Key,
+      Scale_Offset_1,
+      Scale_Offset_2,
+      Scale_Offset_3,
+      Scale_Offset_4,
+      Scale_Offset_5,
+      Scale_Offset_6,
+      Scale_Offset_7,
+      Scale_Offset_8,
+      Scale_Offset_9,
+      Scale_Offset_10,
+      Scale_Offset_11,
+      _LENGTH_
+    };
+
+    enum class Local_Modulateables
     {
       Unison_Detune,
-      Voice_Grp_Split_Point,
       Voice_Grp_Volume,
       Voice_Grp_Tune,
       Voice_Grp_To_FX,
@@ -293,7 +299,7 @@ namespace C15
       _LENGTH_
     };
 
-    enum class Unmodulateable_Parameters
+    enum class Local_Unmodulateables
     {
       Unison_Voices,
       Unison_Phase,
