@@ -3,6 +3,9 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.client.world.Control;
@@ -14,14 +17,15 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 class ValueEdit extends Label {
 
 	private IncrementalChanger changer;
-	// TODO: no direct connection to model!
-	private BasicParameterModel param;
+	private ParameterId parameter;
+	private ParameterPresenter presenter;
 
-	ValueEdit(OverlayLayout parent, BasicParameterModel param) {
+	ValueEdit(OverlayLayout parent, ParameterId param) {
 		super(parent);
-		this.param = param;
+		this.parameter = param;
 
-		param.value.value.onChange(i -> {
+		ParameterPresenterProviders.get().register(parameter, p -> {
+			presenter = p;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return true;
 		});
@@ -29,7 +33,7 @@ class ValueEdit extends Label {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		return param.value.getDecoratedValue(true, true);
+		return presenter.displayValues[0];
 	}
 
 	@Override
@@ -39,10 +43,10 @@ class ValueEdit extends Label {
 		Rect rightRect = getPixRect().copy();
 		rightRect.setLeft(getPixRect().getRight() - getPixRect().getWidth() / 2);
 		if (leftRect.contains(eventPoint)) {
-			EditBufferUseCases.get().decParameter(param.id.getNumber(), false);
+			EditBufferUseCases.get().decParameter(parameter, false);
 			return this;
 		} else if (rightRect.contains(eventPoint)) {
-			EditBufferUseCases.get().incParameter(param.id.getNumber(), false);
+			EditBufferUseCases.get().incParameter(parameter, false);
 			return this;
 		}
 		return super.click(eventPoint);
@@ -50,7 +54,7 @@ class ValueEdit extends Label {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		changer = EditBufferUseCases.get().startEditParameterValue(param.id.getNumber(), Millimeter.toPixels(100));
+		changer = EditBufferUseCases.get().startEditParameterValue(parameter, Millimeter.toPixels(100));
 		return this;
 	}
 
@@ -78,9 +82,9 @@ class ValueEdit extends Label {
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		if (amount > 0)
-			EditBufferUseCases.get().incParameter(param.id.getNumber(), fine);
+			EditBufferUseCases.get().incParameter(parameter, fine);
 		else if (amount < 0)
-			EditBufferUseCases.get().incParameter(param.id.getNumber(), fine);
+			EditBufferUseCases.get().incParameter(parameter, fine);
 
 		return this;
 	}
