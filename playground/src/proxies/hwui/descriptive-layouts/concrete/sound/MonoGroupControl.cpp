@@ -10,7 +10,7 @@ MonoGroupControl::MonoGroupControl(const Rect &r)
     : ControlWithChildren(r)
     , m_grid{ nullptr }
 {
-  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged([this](auto) { rebuild(); });
+  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged([this](auto) { this->rebuild(); });
 }
 
 MonoGroupControl::~MonoGroupControl()
