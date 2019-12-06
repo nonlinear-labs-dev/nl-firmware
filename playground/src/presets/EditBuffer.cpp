@@ -430,11 +430,6 @@ void EditBuffer::undoableLoad(Preset *preset)
   undoableLoad(scope->getTransaction(), preset);
 }
 
-void EditBuffer::undoableLoadIntoVoiceGroup(Preset *preset, VoiceGroup vg)
-{
-#warning "TODO";
-}
-
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
   auto lpc = Application::get().getLPCProxy();
