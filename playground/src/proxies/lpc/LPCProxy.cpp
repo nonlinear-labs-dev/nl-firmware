@@ -79,8 +79,6 @@ gint16 LPCProxy::separateSignedBitToComplementary(uint16_t v) const
 
 void LPCProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
-  nltools::Log::info("lpc message received type:", msg.type, "length", msg.length);
-
   if(msg.type == MessageParser::PARAM)
   {
     onParamMessageReceived(msg);
