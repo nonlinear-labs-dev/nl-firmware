@@ -13,6 +13,5 @@ class SwitchVoiceGroupButton : public Button
  private:
   static Glib::ustring getTextFor(VoiceGroup vg);
 
-  void update(VoiceGroup newVoiceGroup);
   void onParameterSelectionChanged(Parameter* oldSelected, Parameter* newSelection);
 };
