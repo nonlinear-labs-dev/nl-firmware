@@ -14,6 +14,7 @@ void VoiceGroupMasterGroup::init()
   appendParameter(new VoiceGroupMasterParameter(this, { 358, getVoiceGroup() },
                                                 ScaleConverter::get<ParabolicGainDbScaleConverter>(), 0.5, 100, 1000,
                                                 "Level", "Output Level", getVoiceGroup()));
+
   appendParameter(new VoiceGroupMasterParameter(this, { 360, getVoiceGroup() },
                                                 ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48, 4800,
                                                 "Tune", "Voice Group Tune", getVoiceGroup()));
