@@ -1,8 +1,8 @@
 #include "SwitchVoiceGroupButton.h"
 #include <Application.h>
-#include <presets/VoiceGroupSelection.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)

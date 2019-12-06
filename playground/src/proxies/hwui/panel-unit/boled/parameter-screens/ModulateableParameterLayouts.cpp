@@ -71,6 +71,9 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
 
   Application::get().getHWUI()->onModifiersChanged(
       sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onModfiersChanged));
+
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onVoiceGroupChanged));
 }
 
 void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *, Parameter *newParam)
@@ -121,6 +124,19 @@ void ModulateableParameterSelectLayout2::onModfiersChanged(ButtonModifiers modif
       {
         toggleMode(m_lastMode);
       }
+    }
+  }
+}
+
+void ModulateableParameterSelectLayout2::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
+{
+  if(auto current = getCurrentParameter())
+  {
+    auto currentID = current->getID();
+    if(currentID.getVoiceGroup() != VoiceGroup::Global)
+    {
+      Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
+          { currentID.getNumber(), newVoiceGroup });
     }
   }
 }

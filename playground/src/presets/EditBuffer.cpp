@@ -789,12 +789,4 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 
 void EditBuffer::onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection)
 {
-  if(auto current = getSelected())
-  {
-    auto currentID = current->getID();
-    if(currentID.getVoiceGroup() != VoiceGroup::Global)
-    {
-      undoableSelectParameter({ currentID.getNumber(), newSelection });
-    }
-  }
 }
