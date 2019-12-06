@@ -10,7 +10,7 @@ set(sourceDocument ${CMAKE_CURRENT_SOURCE_DIR}/src/ParameterList_1.7B.ods)
 set(headerDocument ${CMAKE_CURRENT_SOURCE_DIR}/generated/parameter_list.h)
 
 if(${sourceDocument} IS_NEWER_THAN ${headerDocument})
-    message( FATAL_ERROR "${sourceDocument} is newer than the generated header: ${headerDocument}! Please regenerate the headers from the spritesheet!" )
+    message( WARNING "${sourceDocument} is newer than the generated header: ${headerDocument}! Please regenerate the headers from the spritesheet!" )
 endif()
 
 file(GLOB_RECURSE HEADER_FILES ./generated/*.h)
