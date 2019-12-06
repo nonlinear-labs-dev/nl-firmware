@@ -7,12 +7,11 @@ class ParameterValueLabel;
 class ParameterOverlay : public ArrowIncrementDecrementOverlay
 {
  public:
-  explicit ParameterOverlay(const Rect &rect, Parameter * const parameter);
+  explicit ParameterOverlay(const Rect& rect, Parameter* const parameter);
   void onLeft(bool down) override;
   void onRight(bool down) override;
-private:
-  Parameter* getNonConstParameter(const Parameter* param) const;
 
+ private:
   ParameterValueLabel* m_label;
   Parameter* const m_parameter;
 };

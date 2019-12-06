@@ -442,6 +442,8 @@ TEST_CASE("Load <-> Changed")
     TestHelper::forceParameterChange(scope->getTransaction(), param);
     REQUIRE(param->isChangedFromLoaded());
     REQUIRE(editBuffer->anyParameterChanged());
+    editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+    REQUIRE_FALSE(editBuffer->anyParameterChanged());
   }
 
   SECTION("Recall Poly Parameter (I) in Dual EditBuffer")

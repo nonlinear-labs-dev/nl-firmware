@@ -41,11 +41,15 @@ TEST_CASE("Parameter Groups are conforming to GroupID rules")
     for(auto &group : TestHelper::getEditBuffer()->getParameterGroups(vg))
     {
       REQUIRE_FALSE(GroupId::isGlobal(group->getID().getName()));
+      for(auto &p : group->getParameters())
+        REQUIRE_FALSE(ParameterId::isGlobal(p->getID().getNumber()));
     }
   }
 
   for(auto &group : TestHelper::getEditBuffer()->getParameterGroups(VoiceGroup::Global))
   {
     REQUIRE(GroupId::isGlobal(group->getID().getName()));
+    for(auto &p : group->getParameters())
+      REQUIRE(ParameterId::isGlobal(p->getID().getNumber()));
   }
 }

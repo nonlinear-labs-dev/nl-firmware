@@ -79,6 +79,8 @@ gint16 LPCProxy::separateSignedBitToComplementary(uint16_t v) const
 
 void LPCProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
+  nltools::Log::info("lpc message received type:", msg.type, "length", msg.length);
+
   if(msg.type == MessageParser::PARAM)
   {
     onParamMessageReceived(msg);
@@ -130,24 +132,27 @@ void LPCProxy::onLPCConnected()
 
 void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
 {
-  DebugLevel::info("it is a param message");
-
   uint16_t id = msg.params[0];
+  DebugLevel::info("it is a param message for id", id);
+
   notifyRibbonTouch(id);
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-#warning "TODO: respect globals"
-
-  if(ParameterId::isGlobal(id))
-    vg = VoiceGroup::Global;
 
   auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, vg });
+
+  if(!param)
+    param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global });
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
   {
     DebugLevel::info("param:", p->getMiniParameterEditorName(), ": ", value);
     applyParamMessageAbsolutely(p, value);
+  }
+  else
+  {
+    DebugLevel::info("param for id", id, "-", toString(vg), "not found");
   }
 }
 
