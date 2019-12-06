@@ -138,7 +138,11 @@ void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 #warning "TODO: respect globals"
-  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, vg});
+
+  if(ParameterId::isGlobal(id))
+    vg = VoiceGroup::Global;
+
+  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, vg });
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
   {
@@ -254,7 +258,7 @@ void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
   nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
 }
 
-void LPCProxy::traceBytes(const Glib::RefPtr<Glib::Bytes>& bytes) const
+void LPCProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const
 {
   if(Application::get().getSettings()->getSetting<DebugLevel>()->get() == DebugLevels::DEBUG_LEVEL_GASSY)
   {
