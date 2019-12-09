@@ -34,7 +34,7 @@
 #define LOG_RECALL 1
 #define LOG_KEYS 0
 #define LOG_KEYS_POLY 0
-#define LOG_TRANSITIONS 0
+#define LOG_TRANSITIONS 1
 #define LOG_RESET 1
 #define LOG_HW 1
 

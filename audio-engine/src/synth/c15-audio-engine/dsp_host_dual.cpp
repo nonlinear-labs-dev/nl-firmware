@@ -474,9 +474,6 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWSourc
 #if LOG_EDITS
     nltools::Log::info("hw_edit(pos:", param->m_position, ", behavior:", static_cast<int>(param->m_behavior), ")");
 #endif
-#if LOG_MISSING
-    nltools::Log::info("todo: trigger hw behavior changed ...");
-#endif
   }
   else if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
@@ -508,7 +505,6 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::MacroCo
   auto param = m_params.get_macro(_id);
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-    param->update_modulation_aspects();  // re-evaluate relative offset to hw_modulation after editing control pos
 #if LOG_EDITS
     nltools::Log::info("mc_edit(pos:", param->m_position, ")");
 #endif
@@ -748,7 +744,6 @@ void dsp_host_dual::onSettingInitialSinglePreset()
   for(uint32_t i = 1; i < m_params.m_global.m_macro_count; i++)
   {
     m_params.m_global.m_macro[i].update_position(0.5f);
-    m_params.m_global.m_macro[i].update_modulation_aspects();
   }
 #if LOG_RECALL
   nltools::Log::info("recall: hw_sources:");
@@ -790,7 +785,6 @@ void dsp_host_dual::onSettingInitialSinglePreset()
   {
     auto param = m_params.get_macro(i);
     param->update_position(param->m_initial);
-    param->update_modulation_aspects();
   }
 #if LOG_RECALL
   nltools::Log::info("recall: global modulateables:");
@@ -1083,9 +1077,58 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
 
 void dsp_host_dual::updateHW(const uint32_t _id, const uint32_t _raw)
 {
-#if LOG_MISSING
-  nltools::Log::info("todo: implement hw triggers!");
+  auto source = m_params.get_hw_src(_id);
+  const float value = static_cast<float>(_raw) * m_norm_hw, inc = value - source->m_position;
+  source->m_position = value;
+#if LOG_HW
+  nltools::Log::info("hw_mod(id:", _id, ", pos:", value, ")");
 #endif
+  if(source->m_behavior == C15::Properties::HW_Return_Behavior::Stay)
+  {
+    for(uint32_t mId = 1; mId < m_params.m_global.m_macro_count; mId++)
+    {
+      auto macro = m_params.get_macro(mId + 1);
+      macro->m_position = value;
+      globalModChain(macro);
+      if(m_layer_mode == LayerMode::Single)
+      {
+        localModChain(macro);
+      }
+      else
+      {
+        for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+        {
+          localModChain(lId, macro);
+        }
+      }
+    }
+  }
+  else
+  {
+    for(uint32_t mId = 1; mId < m_params.m_global.m_macro_count; mId++)
+    {
+      auto macro = m_params.get_macro(mId);
+      auto amount = m_params.get_hw_amt(source->m_offset + mId - 1);
+      macro->m_unclipped = macro->m_position + (value * amount->m_position);
+      const float clipped = macro->m_unclipped < 0.0f ? 0.0f : macro->m_unclipped > 1.0f ? 1.0f : macro->m_unclipped;
+      if(macro->m_position != clipped)
+      {
+        macro->m_position = clipped;
+        globalModChain(macro);
+        if(m_layer_mode == LayerMode::Single)
+        {
+          localModChain(macro);
+        }
+        else
+        {
+          for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+          {
+            localModChain(lId, macro);
+          }
+        }
+      }
+    }
+  }
 }
 
 void dsp_host_dual::updateTime(Time_Aspect *_param, const float _ms)

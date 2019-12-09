@@ -95,7 +95,7 @@ namespace Engine
         auto param = get_macro(_element.m_param.m_index);
         param->m_id = _element.m_param.m_index;
         param->m_index = _element.m_param.m_index - 1;
-        param->m_base = param->m_position = _element.m_initial;
+        param->m_position = _element.m_initial;
         param->m_initial = _element.m_initial;
       }
       inline void init_macro_time(const C15::ParameterDescriptor _element)
