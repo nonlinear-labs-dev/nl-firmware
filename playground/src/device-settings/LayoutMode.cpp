@@ -20,5 +20,5 @@ const std::vector<Glib::ustring>& LayoutMode::enumToDisplayString() const
 
 void LayoutMode::load(const Glib::ustring& text)
 {
-  EnumSetting::load("Mixed");
+  EnumSetting::load(toString(LayoutVersionMode::Mixed));
 }

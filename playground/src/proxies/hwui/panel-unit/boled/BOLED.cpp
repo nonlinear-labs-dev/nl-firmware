@@ -93,13 +93,13 @@ void BOLED::setupFocusAndMode(FocusAndMode focusAndMode)
 {
   switch(Application::get().getSettings()->getSetting<LayoutMode>()->get())
   {
-    case Old:
+    case LayoutVersionMode::Old:
       installOldLayouts(focusAndMode);
       break;
-    case Mixed:
+    case LayoutVersionMode::Mixed:
       setupFocusAndModeMixed(focusAndMode);
       break;
-    case New:
+    case LayoutVersionMode::New:
       setupFocusAndModeDescriptiveLayouts(focusAndMode);
       break;
   }

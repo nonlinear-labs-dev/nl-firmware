@@ -80,12 +80,15 @@ bool ParameterId::isGlobal(int number)
   if(number == 356)
     return true;
 
-  static std::array<int, 8> physicalContols{ 284, 289, 254, 259, 264, 269, 274, 279 };
+  if(number == 247 || number == 248)
+    return true;
 
-  static std::array<int, 6> macroControls{ 243, 244, 245, 246, 369, 371 };
-  static std::array<int, 6> macroTimes{ 324, 325, 326, 327, 370, 372 };
+  constexpr const static std::array<int, 8> physicalContols{ 284, 289, 254, 259, 264, 269, 274, 279 };
 
-  static std::array<int, 48> macroRoutings{ 255, 256, 257, 258, 373, 374, 260, 261, 262, 263, 375, 376,
+  constexpr const static std::array<int, 6> macroControls{ 243, 244, 245, 246, 369, 371 };
+  constexpr const static std::array<int, 6> macroTimes{ 324, 325, 326, 327, 370, 372 };
+
+  constexpr const static std::array<int, 48> macroRoutings{ 255, 256, 257, 258, 373, 374, 260, 261, 262, 263, 375, 376,
                                             265, 266, 267, 268, 377, 378, 270, 271, 272, 273, 379, 380,
                                             275, 276, 277, 278, 381, 382, 280, 281, 282, 283, 383, 384,
                                             285, 286, 287, 288, 385, 386, 290, 291, 292, 293, 387, 388 };
@@ -100,9 +103,6 @@ bool ParameterId::isGlobal(int number)
     return true;
 
   if(std::find(macroControls.begin(), macroControls.end(), number) != macroControls.end())
-    return true;
-
-  if(number == 247 || number == 248)
     return true;
 
   return false;

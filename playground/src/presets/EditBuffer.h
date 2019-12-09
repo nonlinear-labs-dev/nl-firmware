@@ -21,8 +21,6 @@ class EditBuffer : public ParameterDualGroupSet
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
-  void initVoiceGroupConnection(HWUI* hwui);
-
   Glib::ustring getName() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
   size_t getHash() const;
@@ -71,8 +69,6 @@ class EditBuffer : public ParameterDualGroupSet
   bool hasLocks(VoiceGroup vg) const;
   bool anyParameterChanged() const;
   void resetOriginIf(const Preset *p);
-
-  void onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection);
 
   // CALLBACKS
   sigc::connection onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s);

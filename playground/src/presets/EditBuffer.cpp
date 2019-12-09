@@ -41,11 +41,6 @@ EditBuffer::~EditBuffer()
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
-void EditBuffer::initVoiceGroupConnection(HWUI *hwui)
-{
-  hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &EditBuffer::onHWUIVoiceGroupSelectionChanged));
-}
-
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
 {
   m_recallSet.copyFromEditBuffer(transaction, this);
@@ -782,6 +777,3 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
   return m_voiceGroupLabels[static_cast<size_t>(vg)];
 }
 
-void EditBuffer::onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection)
-{
-}
