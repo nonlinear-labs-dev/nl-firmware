@@ -5,7 +5,7 @@
     @date
     @version    1.7-0
     @author     M. Seeber
-    @brief      new main engine container
+    @brief      new main engine container.
     @todo
 *******************************************************************************/
 
