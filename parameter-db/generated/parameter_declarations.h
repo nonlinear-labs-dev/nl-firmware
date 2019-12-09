@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	  @file	      parameter_declarations.h
-      @date	      2019-12-03, 17:17
-      @version	  1.7B-2
-      @author	  M. Seeber
-      @brief	  descriptors for all parameter-related details
-      @todo
+/**	@file	parameter_declarations.h
+    @date	2019-12-05, 17:36
+    @version	1.7B-2
+    @author	M. Seeber
+    @brief	descriptors for all parameter-related details
+    @todo
 *******************************************************************************/
 
 namespace C15
@@ -170,7 +170,7 @@ namespace C15
 
     enum class Global_Modulateables
     {
-      Voice_Grp_Split_Point,
+      Split_Split_Point,
       _LENGTH_
     };
 
@@ -442,7 +442,7 @@ namespace C15
 
     enum class Poly_Sync
     {
-      Voice_Grp_Split_Point,
+      Split_Split_Point,
       Mono_Grp_Enable,
       Mono_Grp_Prio,
       Mono_Grp_Legato,
