@@ -6,10 +6,13 @@
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
+#include <proxies/hwui/HWUI.h>
 
 UnmodulateableParameterLayout2::UnmodulateableParameterLayout2()
     : super()
 {
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &UnmodulateableParameterLayout2::onVoiceGroupChanged));
 }
 
 void UnmodulateableParameterLayout2::init()
@@ -23,6 +26,19 @@ void UnmodulateableParameterLayout2::addButtons()
   addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("", Buttons::BUTTON_C));
+}
+
+void UnmodulateableParameterLayout2::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
+{
+  if(auto current = getCurrentParameter())
+  {
+    auto currentID = current->getID();
+    if(currentID.getVoiceGroup() != VoiceGroup::Global)
+    {
+      Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
+          { currentID.getNumber(), newVoiceGroup });
+    }
+  }
 }
 
 UnmodulateableParameterSelectLayout2::UnmodulateableParameterSelectLayout2()

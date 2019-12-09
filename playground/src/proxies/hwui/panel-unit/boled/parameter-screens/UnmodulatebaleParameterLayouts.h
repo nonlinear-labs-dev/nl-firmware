@@ -11,6 +11,7 @@ class UnmodulateableParameterLayout2 : public virtual ParameterLayout2
  protected:
   virtual void init() override;
   virtual void addButtons();
+  void onVoiceGroupChanged(VoiceGroup newVoiceGroup);
 };
 
 class UnmodulateableParameterSelectLayout2 : public ParameterSelectLayout2, public UnmodulateableParameterLayout2

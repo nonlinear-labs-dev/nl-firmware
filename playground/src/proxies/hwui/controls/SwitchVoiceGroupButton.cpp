@@ -1,8 +1,8 @@
 #include "SwitchVoiceGroupButton.h"
 #include <Application.h>
-#include <presets/VoiceGroupSelection.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/MonoParameter.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)

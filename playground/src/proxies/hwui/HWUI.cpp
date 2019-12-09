@@ -551,7 +551,7 @@ void HWUI::toggleCurrentVoiceGroup()
 
 sigc::connection HWUI::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
 {
-  return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
+  return m_voiceGoupSignal.connect(cb);
 }
 
 void HWUI::setFocusAndMode(const UIDetail &detail)
