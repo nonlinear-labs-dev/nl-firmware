@@ -12,6 +12,7 @@
 #include <parameters/PitchbendParameter.h>
 #include <parameters/RibbonParameter.h>
 #include <parameters/ScaleParameter.h>
+#include <parameters/PhysicalControlParameter.h>
 #include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include <groups/HardwareSourcesGroup.h>
@@ -45,16 +46,16 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
   {
     for(auto p : g->getParameters())
     {
-      auto isHardwareSource = dynamic_cast<HardwareSourcesGroup *>(p->getParentGroup()) != nullptr;
       auto isMaster = dynamic_cast<MasterGroup *>(p->getParentGroup()) != nullptr;
       auto isScale = dynamic_cast<ScaleGroup *>(p->getParentGroup()) != nullptr;
 
-      if(isHardwareSource)
+      if(auto hwSrcParam = dynamic_cast<PhysicalControlParameter *>(p))
       {
         auto &pItem = msg.hwsources[hwSource++];
         pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
         pItem.locked = p->isLocked();
+        pItem.returnMode = hwSrcParam->getReturnMode();
       }
       else if(isMaster || isScale)
       {
