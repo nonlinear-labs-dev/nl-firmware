@@ -77,6 +77,8 @@ namespace Engine
         {
           m_layer[l].m_assignment.reset();
         }
+        m_global.m_source[4].m_behavior = C15::Properties::HW_Return_Behavior::Center;
+        m_global.m_source[5].m_behavior = C15::Properties::HW_Return_Behavior::Zero;
         for(uint32_t s = 0; s < m_global.m_source_count; s++)
         {
           auto source = m_global.m_source[s];
@@ -191,33 +193,10 @@ namespace Engine
       {
         return &m_layer[_layerId].m_target[_id];
       }
-      inline HW_Src_Param* get(const C15::Parameters::Hardware_Sources _id)
+      inline Direct_Param* get_local_unison(const Layer _layerId)
       {
-        return &m_global.m_source[static_cast<uint32_t>(_id)];
-      }
-      inline HW_Amt_Param* get(const C15::Parameters::Hardware_Amounts _id)
-      {
-        return &m_global.m_amount[static_cast<uint32_t>(_id)];
-      }
-      inline Macro_Param* get(const C15::Parameters::Macro_Controls _id)
-      {
-        return &m_global.m_macro[static_cast<uint32_t>(_id)];
-      }
-      inline Target_Param* get(const C15::Parameters::Global_Modulateables _id)
-      {
-        return &m_global.m_target[static_cast<uint32_t>(_id)];
-      }
-      inline Direct_Param* get(const C15::Parameters::Global_Unmodulateables _id)
-      {
-        return &m_global.m_direct[static_cast<uint32_t>(_id)];
-      }
-      inline Target_Param* get(const Layer _layerId, const C15::Parameters::Local_Modulateables _id)
-      {
-        return &m_layer[static_cast<uint32_t>(_layerId)].m_target[static_cast<uint32_t>(_id)];
-      }
-      inline Direct_Param* get(const Layer _layerId, const C15::Parameters::Local_Unmodulateables _id)
-      {
-        return &m_layer[static_cast<uint32_t>(_layerId)].m_direct[static_cast<uint32_t>(_id)];
+        return &m_layer[static_cast<uint32_t>(_layerId)]
+                    .m_direct[static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Unison_Voices)];
       }
       inline Target_Param* globalChainFirst(const uint32_t _mcId)
       {

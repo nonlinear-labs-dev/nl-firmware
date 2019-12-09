@@ -655,7 +655,7 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
 void dsp_host_dual::localUnisonChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
   const uint32_t layerId = getLayerId(_msg.voiceGroup);
-  auto param = m_params.get(getLayer(_msg.voiceGroup), C15::Parameters::Local_Unmodulateables::Unison_Voices);
+  auto param = m_params.get_local_unison(getLayer(_msg.voiceGroup));
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
 #if LOG_EDITS
@@ -730,7 +730,7 @@ void dsp_host_dual::onSettingInitialSinglePreset()
   nltools::Log::info("recallInitialSinglePreset(@", m_clock.m_index, ")");
 #endif
   m_layer_mode = LayerMode::Single;
-  auto unison = m_params.get(C15::Properties::LayerId::I, C15::Parameters::Local_Unmodulateables::Unison_Voices);
+  auto unison = m_params.get_local_unison(C15::Properties::LayerId::I);
   unison->update_position(unison->m_initial);
 #if LOG_RESET
   nltools::Log::info("recall single voice reset");
@@ -1424,7 +1424,7 @@ void dsp_host_dual::evalFadePoint()
 Direct_Param *dsp_host_dual::evalVoiceChg(const C15::Properties::LayerId _layerId,
                                           const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices)
 {
-  auto param = m_params.get(_layerId, C15::Parameters::Local_Unmodulateables::Unison_Voices);
+  auto param = m_params.get_local_unison(_layerId);
   m_layer_changed |= param->update_position(static_cast<float>(_unisonVoices.controlPosition));
   return param;
 }
