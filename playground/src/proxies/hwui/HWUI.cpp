@@ -185,10 +185,6 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         Application::get().getPresetManager()->stressLoad(1000);
       }
-      else if(line == "stress-layouts")
-      {
-        Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().runPerformanceTest();
-      }
       else if(line == "dump-editbuffer")
       {
         auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -551,7 +547,7 @@ void HWUI::toggleCurrentVoiceGroup()
 
 sigc::connection HWUI::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
 {
-  return m_voiceGoupSignal.connect(cb);
+  return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
 }
 
 void HWUI::setFocusAndMode(const UIDetail &detail)

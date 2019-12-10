@@ -47,6 +47,7 @@ class ParameterSelectLayout2 : public virtual ParameterLayout2
  public:
   typedef ParameterLayout2 super;
   ParameterSelectLayout2();
+  ~ParameterSelectLayout2();
 
  protected:
   virtual void init() override;
@@ -57,7 +58,10 @@ class ParameterSelectLayout2 : public virtual ParameterLayout2
   void setCarousel(Carousel *c);
   Carousel *getCarousel();
 
+  void onVoiceGroupChanged(VoiceGroup newVoiceGroup);
+
  private:
+  sigc::connection m_connection;
   Carousel *m_carousel = nullptr;
 };
 

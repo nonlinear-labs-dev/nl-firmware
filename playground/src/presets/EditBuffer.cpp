@@ -38,6 +38,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
 
 EditBuffer::~EditBuffer()
 {
+  m_voiceGroupConnection.disconnect();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
@@ -78,6 +79,22 @@ size_t EditBuffer::getHash() const
   hash_combine(hash, static_cast<int>(getType()));
 
   return hash;
+}
+
+void EditBuffer::connectToHWUI(HWUI *hwui)
+{
+  m_voiceGroupConnection = hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &EditBuffer::onVoiceGroupChanged));
+}
+
+void EditBuffer::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
+{
+  auto selected = getSelected();
+  auto id = selected->getID();
+
+  if(id.getVoiceGroup() != VoiceGroup::Global)
+  {
+    undoableSelectParameter({ id.getNumber(), newVoiceGroup });
+  }
 }
 
 const Preset *EditBuffer::getOrigin() const
@@ -446,7 +463,8 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+#warning "Revisit!"
+  //Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
@@ -776,4 +794,3 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
   return m_voiceGroupLabels[static_cast<size_t>(vg)];
 }
-

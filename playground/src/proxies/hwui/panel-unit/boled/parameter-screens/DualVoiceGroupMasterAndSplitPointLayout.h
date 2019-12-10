@@ -9,14 +9,9 @@ class DualVoiceGroupMasterAndSplitPointLayout : public UnmodulateableParameterSe
   DualVoiceGroupMasterAndSplitPointLayout();
   ~DualVoiceGroupMasterAndSplitPointLayout();
  protected:
-  Parameter *getCurrentParameter() const override;
   Carousel *createCarousel(const Rect &rect) override;
 
-  void update();
-
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
-
-  Parameter *getCurrentEditParameter() const override;
 
   ModuleCaption *createModuleCaption() const override;
 

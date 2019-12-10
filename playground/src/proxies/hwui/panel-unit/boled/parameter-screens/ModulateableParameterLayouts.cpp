@@ -128,19 +128,6 @@ void ModulateableParameterSelectLayout2::onModfiersChanged(ButtonModifiers modif
   }
 }
 
-void ModulateableParameterSelectLayout2::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
-{
-  if(auto current = getCurrentParameter())
-  {
-    auto currentID = current->getID();
-    if(currentID.getVoiceGroup() != VoiceGroup::Global)
-    {
-      Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(
-          { currentID.getNumber(), newVoiceGroup });
-    }
-  }
-}
-
 void ModulateableParameterSelectLayout2::onCurrentParameterChanged(const Parameter *p)
 {
   fixModeIfNecessary(p);
