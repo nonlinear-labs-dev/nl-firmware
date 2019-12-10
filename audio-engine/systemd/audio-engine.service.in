@@ -5,6 +5,7 @@ StartLimitIntervalSec=0
 StartLimitInterval=0
 
 [Service]
+Environment="LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/nonlinear/audio-engine/"
 WorkingDirectory=@CMAKE_INSTALL_PREFIX@/nonlinear/audio-engine
 ExecStartPre=amixer -D hw:PCH set Master 100%
 ExecStart=@CMAKE_INSTALL_PREFIX@/nonlinear/audio-engine/audio-engine -m hw:EMPHASE -a hw:PCH -n 3 -s 49

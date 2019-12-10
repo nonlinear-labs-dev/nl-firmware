@@ -74,6 +74,15 @@ add_custom_command(TARGET audio-engine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:audio-engine> ${EXECUTABLE_NAME_WITH_BRANCH}
 )
 
+add_custom_command(TARGET audio-engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../nltools/libnltools.so ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine/libnltools.so
+    )
+
+add_custom_command(TARGET audio-engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../parameter-db/libparameterDB.so ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine/libparameterDB.so
+    )
+
+
 install(TARGETS audio-engine
   DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine
   )
