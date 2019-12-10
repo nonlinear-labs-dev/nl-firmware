@@ -1,5 +1,6 @@
 #include "ParameterId.h"
 #include <utility>
+#include <parameter-db/generated/parameter_list.h>
 
 static int parseNumber(const std::string &in)
 {
@@ -74,38 +75,13 @@ VoiceGroup ParameterId::getVoiceGroup() const
 
 bool ParameterId::isGlobal(int number)
 {
-  if(number >= 312 && number <= 323)
-    return true;
+  if(number >= 400 || number < 0)
+    return false;
 
-  if(number == 356)
-    return true;
-
-  if(number == 247 || number == 248)
-    return true;
-
-  constexpr const static std::array<int, 8> physicalContols{ 284, 289, 254, 259, 264, 269, 274, 279 };
-
-  constexpr const static std::array<int, 6> macroControls{ 243, 244, 245, 246, 369, 371 };
-  constexpr const static std::array<int, 6> macroTimes{ 324, 325, 326, 327, 370, 372 };
-
-  constexpr const static std::array<int, 48> macroRoutings{ 255, 256, 257, 258, 373, 374, 260, 261, 262, 263, 375, 376,
-                                            265, 266, 267, 268, 377, 378, 270, 271, 272, 273, 379, 380,
-                                            275, 276, 277, 278, 381, 382, 280, 281, 282, 283, 383, 384,
-                                            285, 286, 287, 288, 385, 386, 290, 291, 292, 293, 387, 388 };
-
-  if(std::find(physicalContols.begin(), physicalContols.end(), number) != physicalContols.end())
-    return true;
-
-  if(std::find(macroRoutings.begin(), macroRoutings.end(), number) != macroRoutings.end())
-    return true;
-
-  if(std::find(macroTimes.begin(), macroTimes.end(), number) != macroTimes.end())
-    return true;
-
-  if(std::find(macroControls.begin(), macroControls.end(), number) != macroControls.end())
-    return true;
-
-  return false;
+  auto &paramDescript = C15::ParameterList[number];
+  auto type = paramDescript.m_param.m_type;
+  return type != C15::Descriptors::ParameterType::Local_Modulateable
+      && type != C15::Descriptors::ParameterType::Local_Unmodulateable;
 }
 
 ParameterId ParameterId::invalid()
