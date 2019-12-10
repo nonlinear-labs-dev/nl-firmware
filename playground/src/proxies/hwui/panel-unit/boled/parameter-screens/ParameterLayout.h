@@ -47,7 +47,6 @@ class ParameterSelectLayout2 : public virtual ParameterLayout2
  public:
   typedef ParameterLayout2 super;
   ParameterSelectLayout2();
-  ~ParameterSelectLayout2();
 
  protected:
   virtual void init() override;
