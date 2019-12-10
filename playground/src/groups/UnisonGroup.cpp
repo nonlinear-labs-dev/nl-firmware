@@ -80,7 +80,7 @@ void UnisonGroup::init()
 {
   appendParameter(new Detail::UnisonParameter<Parameter>(
       this, ParameterId{ 249, getVoiceGroup() }, ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension> >(),
-      0, 11, 11));
+      0, 23, 23));
 
   appendParameter(new Detail::UnisonParameter<ModulateableParameterWithUnusualModUnit>(
       this, ParameterId{ 250, getVoiceGroup() }, ScaleConverter::get<Fine12STScaleConverter>(),

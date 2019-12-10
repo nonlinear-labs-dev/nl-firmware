@@ -1,5 +1,6 @@
 #include "ParameterId.h"
 #include <utility>
+#include <parameter-db/generated/parameter_list.h>
 
 static int parseNumber(const std::string &in)
 {
@@ -74,21 +75,13 @@ VoiceGroup ParameterId::getVoiceGroup() const
 
 bool ParameterId::isGlobal(int number)
 {
-  if(number >= 312 && number <= 323)
-    return true;
+  if(number >= 400 || number < 0)
+    return false;
 
-  if(number == 356)
-    return true;
-
-  std::array<int, 8> physicalContols{ 284, 289, 254, 259, 264, 269, 274, 279 };
-
-  if(std::find(physicalContols.begin(), physicalContols.end(), number) != physicalContols.end())
-    return true;
-
-  if(number == 247 || number == 248)
-    return true;
-
-  return false;
+  auto &paramDescript = C15::ParameterList[number];
+  auto type = paramDescript.m_param.m_type;
+  return type != C15::Descriptors::ParameterType::Local_Modulateable
+      && type != C15::Descriptors::ParameterType::Local_Unmodulateable;
 }
 
 ParameterId ParameterId::invalid()

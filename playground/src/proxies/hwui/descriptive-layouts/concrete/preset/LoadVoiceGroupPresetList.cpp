@@ -14,7 +14,7 @@ void LoadVoiceGroupPresetList::action()
 {
   if(auto preset = getPresetAtSelected())
   {
-    Application::get().getPresetManager()->getEditBuffer()->undoableLoadIntoVoiceGroup(
+    Application::get().getPresetManager()->getEditBuffer()->undoableLoadPresetIntoDualSound(
         preset, Application::get().getHWUI()->getCurrentVoiceGroup());
     Application::get().getHWUI()->setFocusAndMode(UIDetail::Init);
   }

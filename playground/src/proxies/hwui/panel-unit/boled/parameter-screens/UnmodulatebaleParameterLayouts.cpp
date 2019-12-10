@@ -6,6 +6,7 @@
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
+#include <proxies/hwui/HWUI.h>
 
 UnmodulateableParameterLayout2::UnmodulateableParameterLayout2()
     : super()

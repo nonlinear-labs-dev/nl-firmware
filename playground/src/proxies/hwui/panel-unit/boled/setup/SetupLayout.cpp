@@ -68,8 +68,6 @@
 #include <device-settings/TuneReference.h>
 #include <device-settings/TransitionTime.h>
 #include "UISoftwareVersionEditor.h"
-#include "LayoutModeView.h"
-#include "LayoutModeEditor.h"
 
 namespace NavTree
 {
@@ -198,7 +196,7 @@ namespace NavTree
         : EditableLeaf(parent, "")
     {
       param = dynamic_cast<PedalParameter *>(
-          Application::get().getPresetManager()->getEditBuffer()->findParameterByID({id, VoiceGroup::Global}));
+          Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global }));
       name = param->getLongName();
     }
 
@@ -572,24 +570,6 @@ namespace NavTree
     }
   };
 
-  struct LayoutModeSetting : EditableLeaf
-  {
-    LayoutModeSetting(InnerNode *parent)
-        : EditableLeaf(parent, "Layout Type")
-    {
-    }
-
-    Control *createView() override
-    {
-      return new LayoutModeView();
-    }
-
-    Control *createEditor() override
-    {
-      return new LayoutModeEditor();
-    }
-  };
-
   struct EncoderAcceleration : EditableLeaf
   {
     EncoderAcceleration(InnerNode *parent)
@@ -649,7 +629,6 @@ namespace NavTree
     HardwareUI(InnerNode *parent)
         : InnerNode(parent, "Hardware UI")
     {
-      children.emplace_back(new LayoutModeSetting(this));
       children.emplace_back(new EncoderAcceleration(this));
       children.emplace_back(new RibbonRelativeFactorSetting(this));
       children.emplace_back(new SignalFlowIndicationSetting(this));

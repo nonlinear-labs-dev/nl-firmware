@@ -9,7 +9,7 @@ class UnmodulateableParameterLayout2 : public virtual ParameterLayout2
   UnmodulateableParameterLayout2();
 
  protected:
-  virtual void init() override;
+  void init() override;
   virtual void addButtons();
 };
 
@@ -21,7 +21,7 @@ class UnmodulateableParameterSelectLayout2 : public ParameterSelectLayout2, publ
   UnmodulateableParameterSelectLayout2();
 
  protected:
-  virtual void init() override;
+  void init() override;
 };
 
 class UnmodulateableParameterEditLayout2 : public ParameterEditLayout2, public UnmodulateableParameterLayout2

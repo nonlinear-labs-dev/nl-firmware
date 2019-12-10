@@ -21,8 +21,6 @@ class EditBuffer : public ParameterDualGroupSet
   EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
-  void initVoiceGroupConnection(HWUI* hwui);
-
   Glib::ustring getName() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
   size_t getHash() const;
@@ -39,7 +37,6 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset);
-  void undoableLoadIntoVoiceGroup(Preset *preset, VoiceGroup vg);
 
   void undoableLoadSelectedPreset();
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
@@ -73,8 +70,6 @@ class EditBuffer : public ParameterDualGroupSet
   bool anyParameterChanged() const;
   void resetOriginIf(const Preset *p);
 
-  void onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection);
-
   // CALLBACKS
   sigc::connection onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s);
   sigc::connection onModificationStateChanged(const sigc::slot<void, bool> &s);
@@ -83,6 +78,8 @@ class EditBuffer : public ParameterDualGroupSet
   sigc::connection onLocksChanged(const sigc::slot<void> &s);
   sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);
   sigc::connection onSoundTypeChanged(sigc::slot<void> s);
+
+  void connectToHWUI(HWUI *hwui);
 
   bool isModified() const;
   static void sendToLPC();
@@ -103,6 +100,8 @@ class EditBuffer : public ParameterDualGroupSet
   SplitPointParameter *getSplitPoint();
 
  private:
+  void onVoiceGroupChanged(VoiceGroup newVoiceGroup);
+
   Glib::ustring getEditBufferName() const;
   bool anyParameterChanged(VoiceGroup vg) const;
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
@@ -126,6 +125,8 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
   Signal<void> m_signalTypeChanged;
+
+  sigc::connection m_voiceGroupConnection;
 
   ParameterId m_lastSelectedParameter;
 

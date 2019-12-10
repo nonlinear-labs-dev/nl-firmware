@@ -104,8 +104,6 @@ void PresetListEntry::animate(tCallback cb)
 
 bool PresetListEntry::animationProgress()
 {
-  setDirty();
-
   m_animationProgress += 100.0f / c_numAnimationSteps;
 
   if(m_animationProgress > 100)
