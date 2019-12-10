@@ -32,6 +32,7 @@
 #define LOG_TIMES 0
 #define LOG_SETTINGS 0
 #define LOG_RECALL 1
+#define LOG_RECALL_COMPARE_INITIAL 1
 #define LOG_KEYS 0
 #define LOG_KEYS_POLY 0
 #define LOG_TRANSITIONS 1
