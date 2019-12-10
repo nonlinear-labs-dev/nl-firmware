@@ -77,15 +77,15 @@ namespace Engine
         {
           m_layer[l].m_assignment.reset();
         }
+        // manually setting up constant return behaviors for bender (4), aftertouch (5)
         m_global.m_source[4].m_behavior = C15::Properties::HW_Return_Behavior::Center;
         m_global.m_source[5].m_behavior = C15::Properties::HW_Return_Behavior::Zero;
         for(uint32_t s = 0; s < m_global.m_source_count; s++)
         {
-          auto source = m_global.m_source[s];
-          source.m_offset = s * (m_global.m_macro_count - 1);
+          m_global.m_source[s].m_offset = s * (m_global.m_macro_count - 1);
           for(uint32_t i = 1; i < m_global.m_macro_count; i++)
           {
-            const uint32_t index = source.m_offset + i - 1;
+            const uint32_t index = m_global.m_source[s].m_offset + i - 1;
             m_global.m_amount[index].m_sourceId = s;
           }
         }
@@ -98,12 +98,13 @@ namespace Engine
         param->m_position = _element.m_initial;
         param->m_initial = _element.m_initial;
       }
-      inline void init_macro_time(const C15::ParameterDescriptor _element)
+      inline Macro_Param* init_macro_time(const C15::ParameterDescriptor _element)
       {
         auto param = get_macro(_element.m_param.m_index);
         param->m_time.init(_element.m_ae.m_scaleId, _element.m_ae.m_scaleFactor, _element.m_ae.m_scaleOffset,
                            _element.m_initial);
-        param->m_initial = _element.m_initial;
+        param->m_time.m_initial = _element.m_initial;
+        return param;
       }
       inline void init_global_modulateable(const C15::ParameterDescriptor _element)
       {
