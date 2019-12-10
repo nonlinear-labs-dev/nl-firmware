@@ -17,9 +17,6 @@
 #include <proxies/hwui/descriptive-layouts/LayoutFolderMonitor.h>
 #include <proxies/hwui/debug-oled/DebugLayout.h>
 #include <tools/ExceptionTools.h>
-#include <proxies/hwui/descriptive-layouts/ConditionRegistry.h>
-#include <device-settings/LayoutMode.h>
-#include "BOLED.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
 
@@ -42,7 +39,7 @@ void BOLED::bruteForce()
   setupFocusAndMode(Application::get().getHWUI()->getFocusAndMode());
 }
 
-void BOLED::setupFocusAndModeMixed(FocusAndMode focusAndMode)
+void BOLED::setupFocusAndMode(FocusAndMode focusAndMode)
 {
   try
   {
@@ -55,78 +52,6 @@ void BOLED::setupFocusAndModeMixed(FocusAndMode focusAndMode)
   {
     installOldLayouts(focusAndMode);
   }
-}
-
-void BOLED::setupFocusAndModeDescriptiveLayouts(FocusAndMode focusAndMode)
-{
-  try
-  {
-    if(auto newLayout = DescriptiveLayouts::BoledLayoutFactory::get().instantiate(focusAndMode))
-    {
-      if(focusAndMode.focus == UIFocus::Parameters)
-        if(isSameParameterScreen(dynamic_cast<const DescriptiveLayouts::GenericLayout*>(newLayout.get()), focusAndMode))
-          return;
-
-      reset(newLayout);
-    }
-    else
-    {
-      DebugLevel::throwException("No DescriptiveLayout for:", focusAndMode.toString(), "found!");
-    }
-  }
-  catch(...)
-  {
-    if(focusAndMode.focus == UIFocus::Setup)
-    {
-      reset(new SetupLayout(focusAndMode));
-    }
-    else
-    {
-      auto currException = ExceptionTools::handle_eptr(std::current_exception());
-      DebugLevel::error(currException);
-      reset(new DebugLayout(currException));
-    }
-  }
-}
-
-void BOLED::setupFocusAndMode(FocusAndMode focusAndMode)
-{
-  switch(Application::get().getSettings()->getSetting<LayoutMode>()->get())
-  {
-    case Old:
-      installOldLayouts(focusAndMode);
-      break;
-    case Mixed:
-      setupFocusAndModeMixed(focusAndMode);
-      break;
-    case New:
-      setupFocusAndModeDescriptiveLayouts(focusAndMode);
-      break;
-  }
-}
-
-bool BOLED::isSameParameterScreen(const DescriptiveLayouts::GenericLayout* layout,
-                                  const FocusAndMode& focusAndMode) const
-{
-  auto fam = layout->getPrototype().getDesiredFocusAndMode();
-
-  auto currentInstalledGenericLayout = dynamic_cast<const DescriptiveLayouts::GenericLayout*>(getLayout().get());
-
-  if(fam.focus == UIFocus::Parameters)
-  {
-    if(fam.mode == focusAndMode.mode && currentInstalledGenericLayout)
-    {
-      for(auto& controls : currentInstalledGenericLayout->getControls())
-      {
-        if(auto paramCarousel = dynamic_cast<const ParameterCarousel*>(controls.get()))
-        {
-          return paramCarousel->containsSelectedParameter();
-        }
-      }
-    }
-  }
-
-  return false;
 }
 
 void BOLED::installOldLayouts(FocusAndMode focusAndMode)
@@ -232,44 +157,6 @@ void BOLED::onRotary(signed char i)
 {
   if(auto l = std::dynamic_pointer_cast<DFBLayout>(getLayout()))
     l->onRotary(i, Application::get().getHWUI()->getButtonModifiers());
-}
-
-void BOLED::runPerformanceTest()
-{
-  Application::get().stopWatchDog();
-
-  for(auto& versionMode : { LayoutVersionMode::Old, LayoutVersionMode::New, LayoutVersionMode::Mixed })
-  {
-    Application::get().getSettings()->getSetting<LayoutMode>()->set(versionMode);
-
-    auto totalTries = 0;
-    auto totalValue = 0.0;
-
-    auto start = std::chrono::high_resolution_clock::now();
-    for(auto& focus : { UIFocus::Parameters, UIFocus::Presets, UIFocus::Sound, UIFocus::Banks, UIFocus::Setup })
-    {
-      for(auto& mode : { UIMode::Select, UIMode::Edit, UIMode::Info, UIMode::Store })
-      {
-        for(auto& detail : { UIDetail::ButtonA, UIDetail::ButtonB, UIDetail::ButtonC, UIDetail::ButtonD, UIDetail::Init,
-                             UIDetail::MCAmount, UIDetail::MCModRange, UIDetail::MCPosition, UIDetail::MCSelect })
-        {
-          auto start2 = std::chrono::high_resolution_clock::now();
-          setupFocusAndMode({ focus, mode, detail });
-          auto end2 = std::chrono::high_resolution_clock::now();
-          totalTries++;
-          totalValue += std::chrono::duration_cast<std::chrono::milliseconds>(end2 - start2).count();
-        }
-      }
-    }
-
-    std::cout << "Average over " << totalTries << " instantiations: " << totalValue / totalTries << "ms\n";
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    auto str = Application::get().getSettings()->getSetting<LayoutMode>()->getDisplayString();
-    std::cerr << str << " full FocusAndMode traversal took : " << diff.count() << " ms " << std::endl;
-  }
-  Application::get().runWatchDog();
 }
 
 void BOLED::showUndoScreen()

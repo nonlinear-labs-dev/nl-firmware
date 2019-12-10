@@ -102,6 +102,7 @@ add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 target_link_libraries(playground-lib pthread)
 target_link_libraries(playground-lib stdc++fs)
 target_link_libraries(playground-lib nltools)
+target_link_libraries(playground-lib parameterDB)
 
 include_directories(playground-lib ${CMAKE_SOURCE_DIR}/nltools/include/)
 include_directories(playground-lib ${CMAKE_SOURCE_DIR}/playground/src)

@@ -27,7 +27,10 @@
         },
         "ButtonC": {
           "Class": "Button",
-          "Position": "BUTTON_C"
+          "Position": "BUTTON_C",
+          "Init": {
+            "Text[Text]": "^"
+          }
         },
         "ButtonD": {
           "Class": "Button",

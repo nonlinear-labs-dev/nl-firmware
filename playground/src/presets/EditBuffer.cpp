@@ -38,12 +38,8 @@ EditBuffer::EditBuffer(PresetManager *parent)
 
 EditBuffer::~EditBuffer()
 {
+  m_voiceGroupConnection.disconnect();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-}
-
-void EditBuffer::initVoiceGroupConnection(HWUI *hwui)
-{
-  hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &EditBuffer::onHWUIVoiceGroupSelectionChanged));
 }
 
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
@@ -83,6 +79,22 @@ size_t EditBuffer::getHash() const
   hash_combine(hash, static_cast<int>(getType()));
 
   return hash;
+}
+
+void EditBuffer::connectToHWUI(HWUI *hwui)
+{
+  m_voiceGroupConnection = hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &EditBuffer::onVoiceGroupChanged));
+}
+
+void EditBuffer::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
+{
+  auto selected = getSelected();
+  auto id = selected->getID();
+
+  if(id.getVoiceGroup() != VoiceGroup::Global)
+  {
+    undoableSelectParameter({ id.getNumber(), newVoiceGroup });
+  }
 }
 
 const Preset *EditBuffer::getOrigin() const
@@ -430,11 +442,6 @@ void EditBuffer::undoableLoad(Preset *preset)
   undoableLoad(scope->getTransaction(), preset);
 }
 
-void EditBuffer::undoableLoadIntoVoiceGroup(Preset *preset, VoiceGroup vg)
-{
-#warning "TODO";
-}
-
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
   auto lpc = Application::get().getLPCProxy();
@@ -456,7 +463,8 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+#warning "Revisit!"
+  //Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
@@ -785,16 +793,4 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 {
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
   return m_voiceGroupLabels[static_cast<size_t>(vg)];
-}
-
-void EditBuffer::onHWUIVoiceGroupSelectionChanged(VoiceGroup newSelection)
-{
-  if(auto current = getSelected())
-  {
-    auto currentID = current->getID();
-    if(currentID.getVoiceGroup() != VoiceGroup::Global)
-    {
-      undoableSelectParameter({ currentID.getNumber(), newSelection });
-    }
-  }
 }

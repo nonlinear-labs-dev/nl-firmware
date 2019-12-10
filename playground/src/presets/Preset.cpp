@@ -17,8 +17,8 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_type { SoundType::Single }
-    , m_voiceGroupLabels { { "", "" } }
+    , m_type{ SoundType::Single }
+    , m_voiceGroupLabels{ { "", "" } }
 {
 }
 
@@ -26,14 +26,14 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_type { other.getType() }
-    , m_voiceGroupLabels { other.m_voiceGroupLabels }
+    , m_type{ other.getType() }
+    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
 {
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, bool copyUUID)
     : super(parent, editBuffer)
-    , m_type { editBuffer.getType() }
+    , m_type{ editBuffer.getType() }
 {
   m_name = editBuffer.getName();
   m_voiceGroupLabels[0] = editBuffer.getVoiceGroupName(VoiceGroup::I);
@@ -294,8 +294,6 @@ connection Preset::onChanged(sigc::slot<void> cb)
 
 void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-#warning "add type + dual buffer"
-
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("preset",

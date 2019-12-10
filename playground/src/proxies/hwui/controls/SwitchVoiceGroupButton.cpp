@@ -1,13 +1,15 @@
 #include "SwitchVoiceGroupButton.h"
 #include <Application.h>
-#include <presets/VoiceGroupSelection.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
+#include <parameters/mono-mode-parameters/MonoParameter.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)
 {
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &SwitchVoiceGroupButton::update));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged));
 }
 
 Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
@@ -20,12 +22,18 @@ Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
     return "Select I";
 }
 
-void SwitchVoiceGroupButton::update(VoiceGroup newVoiceGroup)
+void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected, Parameter* newSelection)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  if(!newSelection)
+    return;
 
-  if(eb->getType() == SoundType::Single)
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto newSelectionVoiceGroup = newSelection->getID().getVoiceGroup();
+
+  if(eb->getType() == SoundType::Single || newSelectionVoiceGroup == VoiceGroup::Global)
+    setText({ "", 0 });
+  else if(eb->getType() == SoundType::Layer && dynamic_cast<MonoParameter*>(newSelection))
     setText({ "", 0 });
   else
-    setText({ getTextFor(newVoiceGroup), 0 });
+    setText({ getTextFor(newSelectionVoiceGroup), 0 });
 }

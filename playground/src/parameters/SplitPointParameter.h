@@ -4,7 +4,7 @@
 class SplitPointParameter : public Parameter
 {
  public:
-  SplitPointParameter(ParameterGroup *group, ParameterId id);
+  SplitPointParameter(ParameterGroup *group, const ParameterId& id);
   std::string getDisplayValue(VoiceGroup vg) const;
   static void registerTests();
 
