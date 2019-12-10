@@ -37,8 +37,6 @@
 #define LOG_TRANSITIONS 0
 #define LOG_RESET 1
 
-#define TEMP_REWORK 1
-
 class dsp_host_dual
 {
  public:
