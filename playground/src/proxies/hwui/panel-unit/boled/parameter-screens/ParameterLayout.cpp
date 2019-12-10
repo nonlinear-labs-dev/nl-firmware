@@ -127,8 +127,6 @@ void ParameterLayout2::handlePresetValueRecall()
 ParameterSelectLayout2::ParameterSelectLayout2()
     : super()
 {
-  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::mem_fun(this, &ParameterSelectLayout2::onVoiceGroupChanged));
 }
 
 ParameterSelectLayout2::~ParameterSelectLayout2()
@@ -203,11 +201,6 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
   }
 
   return super::onButton(i, down, modifiers);
-}
-
-void ParameterSelectLayout2::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
-{
-
 }
 
 ParameterEditLayout2::ParameterEditLayout2()

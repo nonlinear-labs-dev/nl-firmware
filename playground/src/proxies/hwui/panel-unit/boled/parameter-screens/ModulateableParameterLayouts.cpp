@@ -71,9 +71,6 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
 
   Application::get().getHWUI()->onModifiersChanged(
       sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onModfiersChanged));
-
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onVoiceGroupChanged));
 }
 
 void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *, Parameter *newParam)
