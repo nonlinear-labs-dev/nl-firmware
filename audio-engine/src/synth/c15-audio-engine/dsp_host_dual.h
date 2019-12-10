@@ -32,10 +32,12 @@
 #define LOG_TIMES 0
 #define LOG_SETTINGS 0
 #define LOG_RECALL 1
+#define LOG_RECALL_COMPARE_INITIAL 0
 #define LOG_KEYS 0
 #define LOG_KEYS_POLY 0
 #define LOG_TRANSITIONS 0
 #define LOG_RESET 1
+#define LOG_HW 1
 
 class dsp_host_dual
 {
@@ -123,6 +125,7 @@ class dsp_host_dual
   // inner event flow
   void updateHW(const uint32_t _id, const uint32_t _raw);
   void updateTime(Time_Aspect *_param, const float _ms);
+  void hwModChain(HW_Src_Param *_src, const uint32_t _id, const float _inc);
   void globalModChain(Macro_Param *_mc);
   void localModChain(Macro_Param *_mc);
   void localModChain(const uint32_t _layer, Macro_Param *_mc);

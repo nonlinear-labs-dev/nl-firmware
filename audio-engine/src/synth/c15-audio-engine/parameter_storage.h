@@ -114,19 +114,8 @@ namespace Engine
     struct Macro_Control_Parameter : Proto::Parameter
     {
       Time_Parameter m_time;
-      float m_base = 0.0f, m_mod = 0.0f, m_unclipped = 0.0f;
+      float m_unclipped = 0.0f;
       uint32_t m_id = 0, m_index = 0;
-      bool m_bidir = false;
-      inline bool modulate(const float _mod)
-      {
-        m_mod = _mod;
-        m_unclipped = m_base + m_mod;
-        return m_position != m_unclipped;  // basic change detection (position needs to be updated from outside)
-      }
-      inline void update_modulation_aspects()
-      {
-        m_base = m_position - m_mod;
-      }
     };
 
     struct Modulateable_Parameter : Proto::Parameter
