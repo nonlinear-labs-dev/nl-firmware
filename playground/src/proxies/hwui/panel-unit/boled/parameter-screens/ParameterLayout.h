@@ -59,7 +59,6 @@ class ParameterSelectLayout2 : public virtual ParameterLayout2
   Carousel *getCarousel();
 
  private:
-  sigc::connection m_connection;
   Carousel *m_carousel = nullptr;
 };
 

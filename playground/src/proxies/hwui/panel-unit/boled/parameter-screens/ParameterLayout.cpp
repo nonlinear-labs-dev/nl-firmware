@@ -129,11 +129,6 @@ ParameterSelectLayout2::ParameterSelectLayout2()
 {
 }
 
-ParameterSelectLayout2::~ParameterSelectLayout2()
-{
-  m_connection.disconnect();
-}
-
 void ParameterSelectLayout2::init()
 {
   super::init();
