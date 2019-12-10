@@ -1688,6 +1688,11 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Modulateable)
   {
+#if LOG_RECALL_COMPARE_INITIAL
+    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                       ", initial:", element.m_initial, ")");
+#endif
     auto param = m_params.get_global_target(element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1717,6 +1722,11 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Unmodulate
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
+#if LOG_RECALL_COMPARE_INITIAL
+    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                       ", initial:", element.m_initial, ")");
+#endif
     auto param = m_params.get_global_direct(element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1741,6 +1751,11 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalPara
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
+#if LOG_RECALL_COMPARE_INITIAL
+    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                       ", initial:", element.m_initial, ")");
+#endif
     auto param = m_params.get_global_direct(element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1787,6 +1802,11 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
   {
+#if LOG_RECALL_COMPARE_INITIAL
+    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                       ", initial:", element.m_initial, ")");
+#endif
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1817,6 +1837,11 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Unmodulateable)
   {
+#if LOG_RECALL_COMPARE_INITIAL
+    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                       ", initial:", element.m_initial, ")");
+#endif
     auto param = m_params.get_local_direct(_layerId, element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
