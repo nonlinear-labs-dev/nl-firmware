@@ -186,7 +186,11 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         break;
     }
   }
-  onSettingInitialSinglePreset();
+#warning "Audio Engine: loading initial preset internally should be avoided, but currently solves missing sound..."
+  if(RECALL_INITIAL_ONINIT)
+  {
+    onSettingInitialSinglePreset();
+  }
   if(LOG_INIT)
   {
     nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
