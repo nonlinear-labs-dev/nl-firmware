@@ -18,7 +18,7 @@ IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* e
 EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     : super("/presets/param-editor/")
 {
-  addAction("sync-lpc", [=](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("sync-audioengine", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Application::get().getAudioEngineProxy()->sendEditBuffer();
   });
 
