@@ -23,7 +23,8 @@
 AudioEngineProxy::AudioEngineProxy()
 {
   using namespace nltools::msg;
-  onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
+  onConnectionEstablished(EndPoint::AudioEngine,
+                          sigc::mem_fun(this, &AudioEngineProxy::sendEditBufferAndSettings));
 }
 
 void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)
@@ -322,4 +323,11 @@ void AudioEngineProxy::sendEditBuffer()
     default:
       return;
   }
+}
+
+void AudioEngineProxy::sendEditBufferAndSettings()
+{
+  sendEditBuffer();
+  auto settings = Application::get().getSettings();
+  settings->sendToLPC();
 }
