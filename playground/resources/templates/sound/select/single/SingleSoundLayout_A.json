@@ -28,7 +28,7 @@
           "Events": "EditBufferName => Text[Text]"
         },
         "ButtonA": {
-          "Class": "Button",
+          "Class": "HighlightButton",
           "Position": "BUTTON_A",
           "Init": {
             "Text[Text]": "Convert To"
