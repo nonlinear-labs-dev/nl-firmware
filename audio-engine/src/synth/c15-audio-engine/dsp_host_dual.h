@@ -23,21 +23,24 @@
 #include "ae_fadepoint.h"
 
 // basic logging switches
-#define LOG_MISSING 1
-#define LOG_FAIL 1
-#define LOG_INIT 1
-#define LOG_MIDI 0
-#define LOG_DISPATCH 0
-#define LOG_EDITS 1
-#define LOG_TIMES 0
-#define LOG_SETTINGS 0
-#define LOG_RECALL 1
-#define LOG_RECALL_COMPARE_INITIAL 0
-#define LOG_KEYS 0
-#define LOG_KEYS_POLY 0
-#define LOG_TRANSITIONS 0
-#define LOG_RESET 1
-#define LOG_HW 1
+inline constexpr bool LOG_MISSING = true;
+inline constexpr bool LOG_FAIL = true;
+inline constexpr bool LOG_INIT = true;
+inline constexpr bool LOG_MIDI = false;
+inline constexpr bool LOG_DISPATCH = false;
+inline constexpr bool LOG_EDITS = true;
+inline constexpr bool LOG_TIMES = true;
+inline constexpr bool LOG_SETTINGS = true;
+inline constexpr bool LOG_RECALL = true;
+inline constexpr bool LOG_RECALL_COMPARE_INITIAL = false;
+inline constexpr bool LOG_KEYS = true;
+inline constexpr bool LOG_KEYS_POLY = false;
+inline constexpr bool LOG_TRANSITIONS = false;
+inline constexpr bool LOG_RESET = true;
+inline constexpr bool LOG_HW = true;
+// modifiers/settings
+inline constexpr bool RECALL_INITIAL_ONINIT = true;
+inline constexpr bool RECALL_TRANSITION_ONCHANGE = false;
 
 class dsp_host_dual
 {

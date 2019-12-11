@@ -186,34 +186,42 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         break;
     }
   }
-#if LOG_INIT
-  nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
-  nltools::Log::info("todo: engine - check reverb dsp/params ...");
-  nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
-  nltools::Log::info("todo: Mono stuff ...");
-#endif
+#warning "Audio Engine: loading initial preset internally should be avoided, but currently solves missing sound..."
+  if(RECALL_INITIAL_ONINIT)
+  {
+    onSettingInitialSinglePreset();
+  }
+  if(LOG_INIT)
+  {
+    nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
+    nltools::Log::info("todo: engine - check reverb dsp/params ...");
+    nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
+    nltools::Log::info("todo: Mono stuff ...");
+  }
 }
 
 C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
 {
   if((_id > -1) && (_id < C15::Config::tcd_elements))
   {
-#if LOG_DISPATCH
-    if(C15::ParameterList[_id].m_param.m_type != C15::Descriptors::ParameterType::None)
+    if(LOG_DISPATCH)
     {
-      nltools::Log::info("dispatch(", _id, "):", C15::ParameterList[_id].m_pg.m_group_label_short, "-",
-                         C15::ParameterList[_id].m_pg.m_param_label_short);
+      if(C15::ParameterList[_id].m_param.m_type != C15::Descriptors::ParameterType::None)
+      {
+        nltools::Log::info("dispatch(", _id, "):", C15::ParameterList[_id].m_pg.m_group_label_short, "-",
+                           C15::ParameterList[_id].m_pg.m_param_label_short);
+      }
+      else
+      {
+        nltools::Log::warning("dispatch(", _id, "): None!");
+      }
     }
-    else
-    {
-      nltools::Log::warning("dispatch(", _id, "): None!");
-    }
-#endif
     return C15::ParameterList[_id];
   }
-#if LOG_FAIL
-  nltools::Log::warning("dispatch(", _id, "):", "failed!");
-#endif
+  if(LOG_FAIL)
+  {
+    nltools::Log::warning("dispatch(", _id, "):", "failed!");
+  }
   return m_invalid_param;
 }
 
@@ -229,9 +237,10 @@ void dsp_host_dual::logStatus()
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
 
-#if LOG_MIDI
-  nltools::Log::info("midiMsg(status:", _status, ", data0:", _data0, ", data1:", _data1, ")");
-#endif
+  if(LOG_MIDI)
+  {
+    nltools::Log::info("midiMsg(status:", _status, ", data0:", _data0, ", data1:", _data1, ")");
+  }
   const uint32_t ch = _status & 15, st = (_status & 127) >> 4;
   uint32_t arg = 0;
   // LPC MIDI Protocol 1.7 transmits every LPC Message as MIDI PitchBend Message! (avoiding TCD Protocol collisions)
@@ -301,12 +310,10 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         {
           keyDown(static_cast<float>(arg) * m_norm_vel);
         }
-#if LOG_FAIL
-        else
+        else if(LOG_FAIL)
         {
           nltools::Log::warning("key_down(pos:", m_key_pos, ") failed!");
         }
-#endif
         // ...
         break;
       case 15:
@@ -316,12 +323,11 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         {
           keyUp(static_cast<float>(arg) * m_norm_vel);
         }
-#if LOG_FAIL
-        else
+        else if(LOG_FAIL)
         {
+
           nltools::Log::warning("key_up(pos:", m_key_pos, ") failed!");
         }
-#endif
         break;
       default:
         break;
@@ -407,10 +413,11 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_ms
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Single;
   m_preloaded_layer_mode = C15::Properties::LayerMode::Single;
   m_preloaded_single_data = _msg;
-#if LOG_RECALL
-  // log preset with primitive timestamp (for debugging fade events)
-  nltools::Log::info("Received Single Preset Message! (@", m_clock.m_index, ")");
-#endif
+  if(LOG_RECALL)
+  {
+    // log preset with primitive timestamp (for debugging fade events)
+    nltools::Log::info("Received Single Preset Message! (@", m_clock.m_index, ")");
+  }
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
@@ -430,9 +437,10 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Split;
   m_preloaded_layer_mode = C15::Properties::LayerMode::Split;
   m_preloaded_split_data = _msg;
-#if LOG_RECALL
-  nltools::Log::info("Received Split Preset Message!, (@", m_clock.m_index, ")");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("Received Split Preset Message!, (@", m_clock.m_index, ")");
+  }
   if(m_glitch_suppression)
   {
     m_fade.enable(FadeEvent::RecallMute, 0);
@@ -450,9 +458,10 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg
   m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Layer;
   m_preloaded_layer_mode = C15::Properties::LayerMode::Layer;
   m_preloaded_layer_data = _msg;
-#if LOG_RECALL
-  nltools::Log::info("Received Layer Preset Message!, (@", m_clock.m_index, ")");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("Received Layer Preset Message!, (@", m_clock.m_index, ")");
+  }
   if(m_glitch_suppression)
   {
     m_fade.enable(FadeEvent::RecallMute, 0);
@@ -472,15 +481,17 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWSourc
   if(param->update_behavior(getBehavior(_msg.returnMode)))
   {
     param->update_position(static_cast<float>(_msg.controlPosition));
-#if LOG_EDITS
-    nltools::Log::info("hw_edit(pos:", param->m_position, ", behavior:", static_cast<int>(param->m_behavior), ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("hw_edit(pos:", param->m_position, ", behavior:", static_cast<int>(param->m_behavior), ")");
+    }
   }
   else if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-#if LOG_EDITS
-    nltools::Log::info("hw_edit(pos:", param->m_position, ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("hw_edit(pos:", param->m_position, ")");
+    }
     inc += param->m_position;
     hwModChain(param, _id, inc);
   }
@@ -491,12 +502,14 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWAmoun
   auto param = m_params.get_hw_amt(_id);
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-#if LOG_EDITS
-    nltools::Log::info("ha_edit(srcId:", param->m_sourceId, ", amtId:", _id, ", pos:", param->m_position, ")");
-#endif
-#if LOG_MISSING
-    nltools::Log::info("todo: trigger (silent) mc offset update ...");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("ha_edit(srcId:", param->m_sourceId, ", amtId:", _id, ", pos:", param->m_position, ")");
+    }
+    if(LOG_MISSING)
+    {
+      nltools::Log::info("todo: trigger (silent) mc offset update ...");
+    }
   }
 }
 
@@ -505,9 +518,10 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::MacroCo
   auto param = m_params.get_macro(_id);
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-#if LOG_EDITS
-    nltools::Log::info("mc_edit(pos:", param->m_position, ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("mc_edit(pos:", param->m_position, ")");
+    }
     globalModChain(param);
     if(m_layer_mode == LayerMode::Single)
     {
@@ -537,21 +551,23 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Modulat
   {
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-#if LOG_EDITS
-    nltools::Log::info("global_target_edit(pos:", param->m_position, ", val:", param->m_scaled, ")");
-    if(aspect_update)
+    if(LOG_EDITS)
     {
-      nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
+      nltools::Log::info("global_target_edit(pos:", param->m_position, ", val:", param->m_scaled, ")");
+      if(aspect_update)
+      {
+        nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
+      }
     }
-#endif
     globalTransition(param, m_edit_time.m_dx);
   }
   else if(aspect_update)
   {
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
-#if LOG_EDITS
-    nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
+    }
   }
 }
 
@@ -561,9 +577,10 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Unmodul
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
     param->m_scaled = scale(param->m_scaling, param->m_position);
-#if LOG_EDITS
-    nltools::Log::info("global_direct_edit(pos:", param->m_position, ", val:", param->m_scaled, ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("global_direct_edit(pos:", param->m_position, ", val:", param->m_scaled, ")");
+    }
     globalTransition(param, m_edit_time.m_dx);
   }
 }
@@ -573,9 +590,10 @@ void dsp_host_dual::globalTimeChg(const uint32_t _id, const nltools::msg::Unmodu
   auto param = m_params.get_macro_time(_id);
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-#if LOG_EDITS
-    nltools::Log::info("mc_edit(time:", param->m_position, ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("mc_edit(time:", param->m_position, ")");
+    }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     updateTime(&param->m_dx, param->m_scaled);
   }
@@ -595,14 +613,15 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
   {
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-#if LOG_EDITS
-    nltools::Log::info("local_target_edit(layer:", layerId, ", pos:", param->m_position, ", val:", param->m_scaled,
-                       ")");
-    if(aspect_update)
+    if(LOG_EDITS)
     {
-      nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
+      nltools::Log::info("local_target_edit(layer:", layerId, ", pos:", param->m_position, ", val:", param->m_scaled,
+                         ")");
+      if(aspect_update)
+      {
+        nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
+      }
     }
-#endif
     if(m_layer_mode == LayerMode::Single)
     {
       for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
@@ -618,9 +637,10 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
   else if(aspect_update)
   {
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
-#if LOG_EDITS
-    nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
+    }
   }
 }
 
@@ -631,10 +651,11 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
     param->m_scaled = scale(param->m_scaling, param->m_position);
-#if LOG_EDITS
-    nltools::Log::info("local_direct_edit(layer:", layerId, ", pos:", param->m_position, ", val:", param->m_scaled,
-                       ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("local_direct_edit(layer:", layerId, ", pos:", param->m_position, ", val:", param->m_scaled,
+                         ")");
+    }
     if(m_layer_mode == LayerMode::Single)
     {
       for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
@@ -655,9 +676,10 @@ void dsp_host_dual::localUnisonChg(const nltools::msg::UnmodulateableParameterCh
   auto param = m_params.get_local_unison(getLayer(_msg.voiceGroup));
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-#if LOG_EDITS
-    nltools::Log::info("unison_edit(layer:", layerId, ", pos:", param->m_position, ")");
-#endif
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("unison_edit(layer:", layerId, ", pos:", param->m_position, ")");
+    }
     m_alloc.setUnison(layerId, param->m_position);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     if(m_layer_mode == LayerMode::Split)
@@ -675,9 +697,10 @@ void dsp_host_dual::localUnisonChg(const nltools::msg::UnmodulateableParameterCh
         m_poly[lId].m_key_active = 0;
       }
     }
-#if LOG_MISSING
-    nltools::Log::info("todo: unison voices should not possess a smoother ...");
-#endif
+    if(LOG_MISSING)
+    {
+      nltools::Log::info("todo: unison voices should not possess a smoother ...");
+    }
   }
 }
 
@@ -686,9 +709,10 @@ void dsp_host_dual::onSettingEditTime(const float _position)
   // inconvenient clamping of odd position range ...
   if(m_edit_time.update_position(_position < 0.0f ? 0.0f : _position > 1.0f ? 1.0f : _position))
   {
-#if LOG_SETTINGS
-    nltools::Log::info("edit_time(pos:", m_edit_time.m_position, ", raw:", _position, ")");
-#endif
+    if(LOG_SETTINGS)
+    {
+      nltools::Log::info("edit_time(pos:", m_edit_time.m_position, ", raw:", _position, ")");
+    }
     updateTime(&m_edit_time.m_dx, scale(m_edit_time.m_scaling, m_edit_time.m_position));
   }
 }
@@ -698,9 +722,10 @@ void dsp_host_dual::onSettingTransitionTime(const float _position)
   // inconvenient clamping of odd position range ...
   if(m_transition_time.update_position(_position < 0.0f ? 0.0f : _position > 1.0f ? 1.0f : _position))
   {
-#if LOG_SETTINGS
-    nltools::Log::info("transition_time(pos:", m_transition_time.m_position, ", raw:", _position, ")");
-#endif
+    if(LOG_SETTINGS)
+    {
+      nltools::Log::info("transition_time(pos:", m_transition_time.m_position, ", raw:", _position, ")");
+    }
     updateTime(&m_transition_time.m_dx, scale(m_transition_time.m_scaling, m_transition_time.m_position));
   }
 }
@@ -708,56 +733,76 @@ void dsp_host_dual::onSettingTransitionTime(const float _position)
 void dsp_host_dual::onSettingNoteShift(const float _shift)
 {
   m_poly[0].m_note_shift = m_poly[1].m_note_shift = _shift;
-#if LOG_SETTINGS
-  nltools::Log::info("note_shift:", _shift);
-#endif
+  if(LOG_SETTINGS)
+  {
+    nltools::Log::info("note_shift:", _shift);
+  }
 }
 
 void dsp_host_dual::onSettingGlitchSuppr(const bool _enabled)
 {
   m_glitch_suppression = _enabled;
-#if LOG_SETTINGS
-  nltools::Log::info("glitch_suppression:", _enabled);
-#endif
+  if(LOG_SETTINGS)
+  {
+    nltools::Log::info("glitch_suppression:", _enabled);
+  }
 }
 
 void dsp_host_dual::onSettingInitialSinglePreset()
 {
-#if LOG_RECALL
-  nltools::Log::info("recallInitialSinglePreset(@", m_clock.m_index, ")");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recallInitialSinglePreset(@", m_clock.m_index, ")");
+  }
   m_layer_mode = LayerMode::Single;
   auto unison = m_params.get_local_unison(C15::Properties::LayerId::I);
   unison->update_position(unison->m_initial);
-#if LOG_RESET
-  nltools::Log::info("recall single voice reset");
-#endif
+  if(LOG_RESET)
+  {
+    nltools::Log::info("recall single voice reset");
+  }
   m_alloc.setUnison(0, unison->m_position);
   m_params.m_global.m_assignment.reset();
   const uint32_t uVoice = m_alloc.m_unison - 1;
-  for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
-    m_poly[lId].resetEnvelopes();
-    m_poly[lId].m_uVoice = uVoice;
-    m_poly[lId].m_key_active = 0;
-    m_params.m_layer[lId].m_assignment.reset();
+    m_poly[layerId].resetEnvelopes();
+    m_poly[layerId].m_uVoice = uVoice;
+    m_poly[layerId].m_key_active = 0;
+    m_params.m_layer[layerId].m_assignment.reset();
   }
-  for(uint32_t i = 1; i < m_params.m_global.m_macro_count; i++)
+  if(LOG_RECALL)
   {
-    m_params.m_global.m_macro[i].update_position(0.5f);
+    nltools::Log::info("recall: hw_sources:");
   }
-#if LOG_RECALL
-  nltools::Log::info("recall: hw_sources:");
-#endif
   for(uint32_t i = 0; i < m_params.m_global.m_source_count; i++)
   {
     auto param = m_params.get_hw_src(i);
     //param->update_behavior(C15::Properties::HW_Return_Behavior::Zero);
     param->update_position(param->m_initial);
   }
-#if LOG_RECALL
-  nltools::Log::info("recall: global unmodulateables:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: hw_amounts:");
+  }
+  for(uint32_t i = 0; i < m_params.m_global.m_amount_count; i++)
+  {
+    auto param = m_params.get_hw_amt(i);
+    param->update_position(param->m_initial);
+  }
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: macros:");
+  }
+  for(uint32_t i = 0; i < m_params.m_global.m_macro_count; i++)
+  {
+    auto param = m_params.get_macro(i);
+    param->update_position(param->m_initial);
+  }
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: global unmodulateables:");
+  }
   for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
   {
     auto param = m_params.get_global_direct(i);
@@ -765,9 +810,10 @@ void dsp_host_dual::onSettingInitialSinglePreset()
     param->m_scaled = scale(param->m_scaling, param->m_position);
     globalTransition(param, m_transition_time.m_dx);
   }
-#if LOG_RECALL
-  nltools::Log::info("recall: local unmodulateables:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: local unmodulateables:");
+  }
   for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
   {
     auto param = m_params.get_local_direct(0, i);
@@ -776,20 +822,14 @@ void dsp_host_dual::onSettingInitialSinglePreset()
     localTransition(0, param, m_transition_time.m_dx);
     localTransition(1, param, m_transition_time.m_dx);
   }
-#if LOG_MISSING
-  nltools::Log::info("todo: re-evaluate hw matrix for macro offsets!");
-#endif
-#if LOG_RECALL
-  nltools::Log::info("recall: macros:");
-#endif
-  for(uint32_t i = 0; i < m_params.m_global.m_macro_count; i++)
+  if(LOG_MISSING)
   {
-    auto param = m_params.get_macro(i);
-    param->update_position(param->m_initial);
+    nltools::Log::info("todo: re-evaluate hw matrix for macro offsets!");
   }
-#if LOG_RECALL
-  nltools::Log::info("recall: global modulateables:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: global modulateables:");
+  }
   for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
   {
     auto param = m_params.get_global_target(i);
@@ -800,9 +840,10 @@ void dsp_host_dual::onSettingInitialSinglePreset()
     param->m_scaled = scale(param->m_scaling, param->m_position);
     globalTransition(param, m_transition_time.m_dx);
   }
-#if LOG_RECALL
-  nltools::Log::info("recall: local modulateables:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: local modulateables:");
+  }
   for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
   {
     auto param = m_params.get_local_target(0, i);
@@ -872,9 +913,10 @@ void dsp_host_dual::render()
 
 void dsp_host_dual::reset()
 {
-#if LOG_RESET
-  nltools::Log::info("dsp_reset()");
-#endif
+  if(LOG_RESET)
+  {
+    nltools::Log::info("dsp_reset()");
+  }
 }
 
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehavior(const ReturnMode _mode)
@@ -966,16 +1008,18 @@ void dsp_host_dual::keyDown(const float _vel)
   {
     // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
     const float keyTune = m_global.key_position(m_key_pos);
-#if LOG_KEYS
-    nltools::Log::info("key_down(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
-#endif
+    if(LOG_KEYS)
+    {
+      nltools::Log::info("key_down(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    }
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
       m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel);
-#if LOG_KEYS_POLY
-      nltools::Log::info("key_down_poly(voice:", key->m_voiceId, ", unisonIndex:", key->m_unisonIndex,
-                         ", stolen:", key->m_stolen, ", tune:", keyTune, ", velocity:", _vel, ")");
-#endif
+      if(LOG_KEYS_POLY)
+      {
+        nltools::Log::info("key_down_poly(voice:", key->m_voiceId, ", unisonIndex:", key->m_unisonIndex,
+                           ", stolen:", key->m_stolen, ", tune:", keyTune, ", velocity:", _vel, ")");
+      }
     }
     const uint32_t index = m_alloc.m_traversal.first()->m_localIndex;
     if(m_layer_mode == LayerMode::Split)
@@ -1001,12 +1045,11 @@ void dsp_host_dual::keyDown(const float _vel)
       }
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
+
   {
     nltools::Log::warning("keyDown(pos:", m_key_pos, ") failed!");
   }
-#endif
 }
 
 void dsp_host_dual::keyUp(const float _vel)
@@ -1015,23 +1058,23 @@ void dsp_host_dual::keyUp(const float _vel)
   {
     // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
     const float keyTune = m_global.key_position(m_key_pos);
-#if LOG_KEYS
-    nltools::Log::info("key_up(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
-#endif
+    if(LOG_KEYS)
+    {
+      nltools::Log::info("key_up(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    }
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
       m_poly[key->m_localIndex].keyUp(key->m_voiceId, key->m_unisonIndex, keyTune, _vel);
-#if LOG_KEYS_POLY
-      nltools::Log::info("key_up_poly(voice:", key->m_voiceId, ", tune:", keyTune, ", velocity:", _vel, ")");
-#endif
+      if(LOG_KEYS_POLY)
+      {
+        nltools::Log::info("key_up_poly(voice:", key->m_voiceId, ", tune:", keyTune, ", velocity:", _vel, ")");
+      }
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("keyUp(pos:", m_key_pos, ") failed!");
   }
-#endif
 }
 
 float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
@@ -1095,16 +1138,18 @@ void dsp_host_dual::updateTime(Time_Aspect *_param, const float _ms)
   _param->m_dx_audio = m_time.m_dx_audio;
   _param->m_dx_fast = m_time.m_dx_fast;
   _param->m_dx_slow = m_time.m_dx_slow;
-#if LOG_TIMES
-  nltools::Log::info("time_update(ms:", _ms, ", dx:", m_time.m_dx_audio, m_time.m_dx_fast, m_time.m_dx_slow, ")");
-#endif
+  if(LOG_TIMES)
+  {
+    nltools::Log::info("time_update(ms:", _ms, ", dx:", m_time.m_dx_audio, m_time.m_dx_fast, m_time.m_dx_slow, ")");
+  }
 }
 
 void dsp_host_dual::hwModChain(HW_Src_Param *_src, const uint32_t _id, const float _inc)
 {
-#if LOG_HW
-  nltools::Log::info("hw_move(id:", _id, ", pos:", _src->m_position, ")");
-#endif
+  if(LOG_HW)
+  {
+    nltools::Log::info("hw_move(id:", _id, ", pos:", _src->m_position, ")");
+  }
   if(_src->m_behavior == C15::Properties::HW_Return_Behavior::Stay)
   {
     for(uint32_t macroId = 1; macroId < m_params.m_global.m_macro_count; macroId++)
@@ -1117,19 +1162,22 @@ void dsp_host_dual::hwModChain(HW_Src_Param *_src, const uint32_t _id, const flo
         macro->m_position = _src->m_position;
         if(m_layer_mode == LayerMode::Single)
         {
-#if LOG_HW
-          nltools::Log::info("hw_nonreturn_to_mc(mode: single, srcId:", _id, ", mcId:", macroId,
-                             ", amtId:", amountIndex, ", amount:", amount->m_position, ", value:", macro->m_position,
-                             ")");
-#endif
+          if(LOG_HW)
+          {
+            nltools::Log::info("hw_nonreturn_to_mc(mode: single, srcId:", _id, ", mcId:", macroId,
+                               ", amtId:", amountIndex, ", amount:", amount->m_position, ", value:", macro->m_position,
+                               ")");
+          }
           localModChain(macro);
         }
         else
         {
-#if LOG_HW
-          nltools::Log::info("hw_nonreturn_to_mc(mode: dual, srcId:", _id, ", mcId:", macroId, ", amtId:", amountIndex,
-                             ", amount:", amount->m_position, ", value:", macro->m_position, ")");
-#endif
+          if(LOG_HW)
+          {
+            nltools::Log::info("hw_nonreturn_to_mc(mode: dual, srcId:", _id, ", mcId:", macroId,
+                               ", amtId:", amountIndex, ", amount:", amount->m_position, ", value:", macro->m_position,
+                               ")");
+          }
           for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
           {
             localModChain(layerId, macro);
@@ -1159,19 +1207,22 @@ void dsp_host_dual::hwModChain(HW_Src_Param *_src, const uint32_t _id, const flo
             macro->m_position = clipped;
             if(m_layer_mode == LayerMode::Single)
             {
-#if LOG_HW
-              nltools::Log::info("hw_return_to_mc(mode: single, srcId:", _id, ", mcId:", macroId,
-                                 ", amtId:", amountIndex, ", amount:", amount->m_position,
-                                 ", value:", macro->m_position, ")");
-#endif
+              if(LOG_HW)
+              {
+                nltools::Log::info("hw_return_to_mc(mode: single, srcId:", _id, ", mcId:", macroId,
+                                   ", amtId:", amountIndex, ", amount:", amount->m_position,
+                                   ", value:", macro->m_position, ")");
+              }
               localModChain(macro);
             }
             else
             {
-#if LOG_HW
-              nltools::Log::info("hw_return_to_mc(mode: dual, srcId:", _id, ", mcId:", macroId, ", amtId:", amountIndex,
-                                 ", amount:", amount->m_position, ", value:", macro->m_position, ")");
-#endif
+              if(LOG_HW)
+              {
+                nltools::Log::info("hw_return_to_mc(mode: dual, srcId:", _id, ", mcId:", macroId,
+                                   ", amtId:", amountIndex, ", amount:", amount->m_position,
+                                   ", value:", macro->m_position, ")");
+              }
               for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
               {
                 localModChain(layerId, macro);
@@ -1270,18 +1321,17 @@ void dsp_host_dual::globalTransition(const Target_Param *_param, const Time_Aspe
       valid = false;
       break;
   }
-#if LOG_TRANSITIONS
-  if(valid)
+  if(LOG_TRANSITIONS)
   {
-    nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
+    if(valid)
+    {
+      nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
+    }
+    else if(LOG_FAIL)
+    {
+      nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
+    }
   }
-#if LOG_FAIL
-  else
-  {
-    nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
-  }
-#endif
-#endif
 }
 
 void dsp_host_dual::globalTransition(const Direct_Param *_param, const Time_Aspect _time)
@@ -1314,18 +1364,17 @@ void dsp_host_dual::globalTransition(const Direct_Param *_param, const Time_Aspe
       valid = false;
       break;
   }
-#if LOG_TRANSITIONS
-  if(valid)
+  if(LOG_TRANSITIONS)
   {
-    nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
+    if(valid)
+    {
+      nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
+    }
+    else if(LOG_FAIL)
+    {
+      nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
+    }
   }
-#if LOG_FAIL
-  else
-  {
-    nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
-  }
-#endif
-#endif
 }
 
 void dsp_host_dual::localTransition(const uint32_t _layer, const Direct_Param *_param, const Time_Aspect _time)
@@ -1378,19 +1427,18 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Direct_Param *_
       valid = false;
       break;
   }
-#if LOG_TRANSITIONS
-  if(valid)
+  if(LOG_TRANSITIONS)
   {
-    nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
-                       ", dest:", dest, ")");
+    if(valid)
+    {
+      nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
+                         ", dest:", dest, ")");
+    }
+    else if(LOG_FAIL)
+    {
+      nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
+    }
   }
-#if LOG_FAIL
-  else
-  {
-    nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
-  }
-#endif
-#endif
 }
 void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param *_param, const Time_Aspect _time)
 {
@@ -1442,19 +1490,18 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param *_
       valid = false;
       break;
   }
-#if LOG_TRANSITIONS
-  if(valid)
+  if(LOG_TRANSITIONS)
   {
-    nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
-                       ", dest:", dest, ")");
+    if(valid)
+    {
+      nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
+                         ", dest:", dest, ")");
+    }
+    else if(LOG_FAIL)
+    {
+      nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
+    }
   }
-#if LOG_FAIL
-  else
-  {
-    nltools::Log::warning("failed to start global_transition(index:", _param->m_render.m_index, ")");
-  }
-#endif
-#endif
 }
 
 void dsp_host_dual::evalFadePoint()
@@ -1517,17 +1564,19 @@ Direct_Param *dsp_host_dual::evalVoiceChg(const C15::Properties::LayerId _layerI
 
 void dsp_host_dual::recallSingle()
 {
-#if LOG_RECALL
-  nltools::Log::info("recallSingle(@", m_clock.m_index, ")");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recallSingle(@", m_clock.m_index, ")");
+  }
   auto msg = &m_preloaded_single_data;
   // reset detection
   auto unison = evalVoiceChg(C15::Properties::LayerId::I, msg->unisonVoices);
   if(m_layer_changed)
   {
-#if LOG_RESET
-    nltools::Log::info("recall single voice reset");
-#endif
+    if(LOG_RESET)
+    {
+      nltools::Log::info("recall single voice reset");
+    }
     m_alloc.setUnison(0, unison->m_position);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     m_poly[0].resetEnvelopes();
@@ -1537,85 +1586,88 @@ void dsp_host_dual::recallSingle()
   }
   // reset macro assignments
   m_params.m_global.m_assignment.reset();
-  m_params.m_layer[0].m_assignment.reset();
-  m_params.m_layer[1].m_assignment.reset();
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    m_params.m_layer[layerId].m_assignment.reset();
+  }
   // global updates: hw sources
-#if LOG_RECALL
-  nltools::Log::info("recall: hw sources:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: hw sources:");
+  }
   for(uint32_t i = 0; i < msg->hwsources.size(); i++)
   {
     globalParRcl(msg->hwsources[i]);
   }
   // global updates: hw amounts
-#if LOG_RECALL
-  nltools::Log::info("recall: hw amounts:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: hw amounts:");
+  }
   for(uint32_t i = 0; i < msg->hwamounts.size(); i++)
   {
     globalParRcl(msg->hwamounts[i]);
   }
-#if LOG_MISSING
-  nltools::Log::info("todo: re-evaluate hw matrix for macro offsets!");
-#endif
   // global updates: macros
-#if LOG_RECALL
-  nltools::Log::info("recall: macros:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: macros:");
+  }
   for(uint32_t i = 0; i < msg->macros.size(); i++)
   {
     globalParRcl(msg->macros[i]);
   }
-#if LOG_MISSING
-  nltools::Log::info("todo: update macro mod aspects!");
-#endif
+  for(uint32_t i = 0; i < msg->macrotimes.size(); i++)
+  {
+    globalTimeRcl(msg->macrotimes[i]);
+  }
   // global updates: parameters (currently only unmodulateables)
-#if LOG_RECALL
-  nltools::Log::info("recall: global params (unmodulateables):");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: global params (unmodulateables):");
+  }
   for(uint32_t i = 0; i < msg->globalparams.size(); i++)
   {
     globalParRcl(msg->globalparams[i]);
   }
-#if LOG_MISSING
-  nltools::Log::info("todo: (later) global unmodulateable and modulateable params");
-#endif
+  if(LOG_MISSING)
+  {
+    nltools::Log::info("todo: (later) global unmodulateable and modulateable params");
+  }
   // local updates: unmodulateables
-#if LOG_RECALL
-  nltools::Log::info("recall: local unmodulateables/mc_times:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: local unmodulateables/mc_times:");
+  }
   for(uint32_t i = 0; i < msg->unmodulateables.size(); i++)
   {
-    // unmodulateables AND MC times currently are both within same array ...
-    switch(getParameter(msg->unmodulateables[i].id).m_param.m_type)
-    {
-      case C15::Descriptors::ParameterType::Macro_Time:
-        globalTimeRcl(msg->unmodulateables[i]);
-        break;
-      case C15::Descriptors::ParameterType::Local_Unmodulateable:
-        localParRcl(0, msg->unmodulateables[i]);
-        break;
-    }
+    localParRcl(0, msg->unmodulateables[i]);
   }
-#if LOG_MISSING
-  nltools::Log::info("todo: (later) mc times as separate array within preset msg ...");
-#endif
   // local updates: modulateables
-#if LOG_RECALL
-  nltools::Log::info("recall: local modulateables:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: local modulateables:");
+  }
   for(uint32_t i = 0; i < msg->modulateables.size(); i++)
   {
     localParRcl(0, msg->modulateables[i]);
   }
-#if LOG_RECALL
-  nltools::Log::info("recall: start transitions:");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: start transitions:");
+  }
   // start transitions: global unmodulateables
   for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
   {
     auto param = m_params.get_global_direct(i);
-    if(param->m_changed)
+    if(RECALL_TRANSITION_ONCHANGE)
+    {
+      if(param->m_changed)
+      {
+        globalTransition(param, m_transition_time.m_dx);
+      }
+    }
+    else
     {
       globalTransition(param, m_transition_time.m_dx);
     }
@@ -1624,7 +1676,14 @@ void dsp_host_dual::recallSingle()
   for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
   {
     auto param = m_params.get_global_target(i);
-    if(param->m_changed)
+    if(RECALL_TRANSITION_ONCHANGE)
+    {
+      if(param->m_changed)
+      {
+        globalTransition(param, m_transition_time.m_dx);
+      }
+    }
+    else
     {
       globalTransition(param, m_transition_time.m_dx);
     }
@@ -1633,11 +1692,21 @@ void dsp_host_dual::recallSingle()
   for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
   {
     auto param = m_params.get_local_direct(0, i);
-    if(param->m_changed)
+    if(RECALL_TRANSITION_ONCHANGE)
     {
-      for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+      if(param->m_changed)
       {
-        localTransition(lId, param, m_transition_time.m_dx);
+        for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+        {
+          localTransition(layerId, param, m_transition_time.m_dx);
+        }
+      }
+    }
+    else
+    {
+      for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+      {
+        localTransition(layerId, param, m_transition_time.m_dx);
       }
     }
   }
@@ -1645,11 +1714,21 @@ void dsp_host_dual::recallSingle()
   for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
   {
     auto param = m_params.get_local_target(0, i);
-    if(param->m_changed)
+    if(RECALL_TRANSITION_ONCHANGE)
     {
-      for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+      if(param->m_changed)
       {
-        localTransition(lId, param, m_transition_time.m_dx);
+        for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+        {
+          localTransition(layerId, param, m_transition_time.m_dx);
+        }
+      }
+    }
+    else
+    {
+      for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+      {
+        localTransition(layerId, param, m_transition_time.m_dx);
       }
     }
   }
@@ -1657,16 +1736,340 @@ void dsp_host_dual::recallSingle()
 
 void dsp_host_dual::recallSplit()
 {
-#if LOG_MISSING
-  nltools::Log::info("todo: implement recallSplit()!");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recallSplit(@", m_clock.m_index, ")");
+  }
+  const bool layer_changed = m_layer_changed;
+  auto msg = &m_preloaded_split_data;
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    m_layer_changed = layer_changed;
+    // reset detection
+    auto unison = evalVoiceChg(static_cast<C15::Properties::LayerId>(layerId), msg->unisonVoices[layerId]);
+    if(m_layer_changed)
+    {
+      if(LOG_RESET)
+      {
+        nltools::Log::info("recall single voice reset(layerId:", layerId, ")");
+      }
+      m_alloc.setUnison(layerId, unison->m_position);
+      const uint32_t uVoice = m_alloc.m_unison - 1;
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = uVoice;
+      m_poly[layerId].m_key_active = 0;
+    }
+    // reset macro assignments
+    m_params.m_layer[layerId].m_assignment.reset();
+  }
+  m_params.m_global.m_assignment.reset();
+  // global updates: hw sources
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: hw sources:");
+  }
+  for(uint32_t i = 0; i < msg->hwsources.size(); i++)
+  {
+    globalParRcl(msg->hwsources[i]);
+  }
+  // global updates: hw amounts
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: hw amounts:");
+  }
+  for(uint32_t i = 0; i < msg->hwamounts.size(); i++)
+  {
+    globalParRcl(msg->hwamounts[i]);
+  }
+  // global updates: macros
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: macros:");
+  }
+  for(uint32_t i = 0; i < msg->macros.size(); i++)
+  {
+    globalParRcl(msg->macros[i]);
+  }
+  for(uint32_t i = 0; i < msg->macrotimes.size(); i++)
+  {
+    globalTimeRcl(msg->macrotimes[i]);
+  }
+  // global updates: parameters (currently only unmodulateables)
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: global params (unmodulateables):");
+  }
+  for(uint32_t i = 0; i < msg->globalparams.size(); i++)
+  {
+    globalParRcl(msg->globalparams[i]);
+  }
+  if(LOG_MISSING)
+  {
+    nltools::Log::info("todo: (later) global unmodulateable and modulateable params");
+  }
+  // local updates (each layer)
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    // local updates: unmodulateables
+    if(LOG_RECALL)
+    {
+      nltools::Log::info("recall: local unmodulateables/mc_times:");
+    }
+    for(uint32_t i = 0; i < msg->unmodulateables[layerId].size(); i++)
+    {
+      localParRcl(layerId, msg->unmodulateables[layerId][i]);
+    }
+    // local updates: modulateables
+    if(LOG_RECALL)
+    {
+      nltools::Log::info("recall: local modulateables:");
+    }
+    for(uint32_t i = 0; i < msg->modulateables[layerId].size(); i++)
+    {
+      localParRcl(layerId, msg->modulateables[layerId][i]);
+    }
+  }
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: start transitions:");
+  }
+  // start transitions: global unmodulateables
+  for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
+  {
+    auto param = m_params.get_global_direct(i);
+    if(RECALL_TRANSITION_ONCHANGE)
+    {
+      if(param->m_changed)
+      {
+        globalTransition(param, m_transition_time.m_dx);
+      }
+    }
+    else
+    {
+      globalTransition(param, m_transition_time.m_dx);
+    }
+  }
+  // start transitions: global modulateables
+  for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
+  {
+    auto param = m_params.get_global_target(i);
+    if(RECALL_TRANSITION_ONCHANGE)
+    {
+      if(param->m_changed)
+      {
+        globalTransition(param, m_transition_time.m_dx);
+      }
+    }
+    else
+    {
+      globalTransition(param, m_transition_time.m_dx);
+    }
+  }
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    // start transitions: local unmodulateables
+    for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
+    {
+      auto param = m_params.get_local_direct(layerId, i);
+      if(RECALL_TRANSITION_ONCHANGE)
+      {
+        if(param->m_changed)
+        {
+          localTransition(layerId, param, m_transition_time.m_dx);
+        }
+      }
+      else
+      {
+        localTransition(layerId, param, m_transition_time.m_dx);
+      }
+    }
+    // start transitions: local modulateables
+    for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
+    {
+      auto param = m_params.get_local_target(layerId, i);
+      if(RECALL_TRANSITION_ONCHANGE)
+      {
+        if(param->m_changed)
+        {
+          localTransition(layerId, param, m_transition_time.m_dx);
+        }
+      }
+      else
+      {
+        localTransition(layerId, param, m_transition_time.m_dx);
+      }
+    }
+  }
 }
 
 void dsp_host_dual::recallLayer()
 {
-#if LOG_MISSING
-  nltools::Log::info("todo: implement recallLayer()!");
-#endif
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recallLayer(@", m_clock.m_index, ")");
+  }
+  auto msg = &m_preloaded_layer_data;
+  // reset detection: currently only unison voices (mono stuff should be taken into account as well)
+  auto unison = evalVoiceChg(C15::Properties::LayerId::I,
+                             msg->unisonVoices[0]);  // temporary: unison array instead of single unison param
+  if(m_layer_changed)
+  {
+    if(LOG_RESET)
+    {
+      nltools::Log::info("recall layer voice reset");
+      m_alloc.setUnison(0, unison->m_position);
+      const uint32_t uVoice = m_alloc.m_unison - 1;
+      for(uint32_t layerId; layerId < m_params.m_layer_count; layerId++)
+      {
+        m_poly[layerId].resetEnvelopes();
+        m_poly[layerId].m_uVoice = uVoice;
+        m_poly[layerId].m_key_active = 0;
+      }
+    }
+  }
+  // reset macro assignments
+  m_params.m_global.m_assignment.reset();
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    m_params.m_layer[layerId].m_assignment.reset();
+  }
+  // global updates: hw sources
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: hw sources:");
+  }
+  for(uint32_t i = 0; i < msg->hwsources.size(); i++)
+  {
+    globalParRcl(msg->hwsources[i]);
+  }
+  // global updates: hw amounts
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: hw amounts:");
+  }
+  for(uint32_t i = 0; i < msg->hwamounts.size(); i++)
+  {
+    globalParRcl(msg->hwamounts[i]);
+  }
+  // global updates: macros
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: macros:");
+  }
+  for(uint32_t i = 0; i < msg->macros.size(); i++)
+  {
+    globalParRcl(msg->macros[i]);
+  }
+  for(uint32_t i = 0; i < msg->macrotimes.size(); i++)
+  {
+    globalTimeRcl(msg->macrotimes[i]);
+  }
+  // global updates: parameters (currently only unmodulateables)
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: global params (unmodulateables):");
+  }
+  for(uint32_t i = 0; i < msg->globalparams.size(); i++)
+  {
+    globalParRcl(msg->globalparams[i]);
+  }
+  if(LOG_MISSING)
+  {
+    nltools::Log::info("todo: (later) global unmodulateable and modulateable params");
+  }
+  // local updates (each layer)
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    // local updates: unmodulateables
+    if(LOG_RECALL)
+    {
+      nltools::Log::info("recall: local unmodulateables/mc_times:");
+    }
+    for(uint32_t i = 0; i < msg->unmodulateables[layerId].size(); i++)
+    {
+      localParRcl(layerId, msg->unmodulateables[layerId][i]);
+    }
+    // local updates: modulateables
+    if(LOG_RECALL)
+    {
+      nltools::Log::info("recall: local modulateables:");
+    }
+    for(uint32_t i = 0; i < msg->modulateables[layerId].size(); i++)
+    {
+      localParRcl(layerId, msg->modulateables[layerId][i]);
+    }
+  }
+  if(LOG_RECALL)
+  {
+    nltools::Log::info("recall: start transitions:");
+  }
+  // start transitions: global unmodulateables
+  for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
+  {
+    auto param = m_params.get_global_direct(i);
+    if(RECALL_TRANSITION_ONCHANGE)
+    {
+      if(param->m_changed)
+      {
+        globalTransition(param, m_transition_time.m_dx);
+      }
+    }
+    else
+    {
+      globalTransition(param, m_transition_time.m_dx);
+    }
+  }
+  // start transitions: global modulateables
+  for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
+  {
+    auto param = m_params.get_global_target(i);
+    if(RECALL_TRANSITION_ONCHANGE)
+    {
+      if(param->m_changed)
+      {
+        globalTransition(param, m_transition_time.m_dx);
+      }
+    }
+    else
+    {
+      globalTransition(param, m_transition_time.m_dx);
+    }
+  }
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    // start transitions: local unmodulateables
+    for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
+    {
+      auto param = m_params.get_local_direct(layerId, i);
+      if(RECALL_TRANSITION_ONCHANGE)
+      {
+        if(param->m_changed)
+        {
+          localTransition(layerId, param, m_transition_time.m_dx);
+        }
+      }
+      else
+      {
+        localTransition(layerId, param, m_transition_time.m_dx);
+      }
+    }
+    // start transitions: local modulateables
+    for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
+    {
+      auto param = m_params.get_local_target(layerId, i);
+      if(RECALL_TRANSITION_ONCHANGE)
+      {
+        if(param->m_changed)
+        {
+          localTransition(layerId, param, m_transition_time.m_dx);
+        }
+      }
+      else
+      {
+        localTransition(layerId, param, m_transition_time.m_dx);
+      }
+    }
+  }
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter &_param)
@@ -1681,12 +2084,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareSo
       param->update_position(static_cast<float>(_param.controlPosition));
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall HW Source(id:", _param.id, ")");
   }
-#endif
 }
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter &_param)
 {
@@ -1699,12 +2100,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareAm
       param->update_position(static_cast<float>(_param.controlPosition));
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall HW Amount(id:", _param.id, ")");
   }
-#endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::MacroParameter &_param)
@@ -1718,12 +2117,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::MacroParam
       param->update_position(static_cast<float>(_param.controlPosition));
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall Macro(id:", _param.id, ")");
   }
-#endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::ModulateableParameter &_param)
@@ -1731,11 +2128,12 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Modulateable)
   {
-#if LOG_RECALL_COMPARE_INITIAL
-    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                       ", initial:", element.m_initial, ")");
-#endif
+    if(LOG_RECALL_COMPARE_INITIAL)
+    {
+      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
+    }
     auto param = m_params.get_global_target(element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1752,12 +2150,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
     m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall Global Modulateable(id:", _param.id, ")");
   }
-#endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param)
@@ -1765,11 +2161,12 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Unmodulate
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
-#if LOG_RECALL_COMPARE_INITIAL
-    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                       ", initial:", element.m_initial, ")");
-#endif
+    if(LOG_RECALL_COMPARE_INITIAL)
+    {
+      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
+    }
     auto param = m_params.get_global_direct(element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1781,12 +2178,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Unmodulate
       }
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall Global Unmodulateable(id:", _param.id, ")");
   }
-#endif
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter &_param)
@@ -1794,11 +2189,12 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalPara
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
-#if LOG_RECALL_COMPARE_INITIAL
-    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                       ", initial:", element.m_initial, ")");
-#endif
+    if(LOG_RECALL_COMPARE_INITIAL)
+    {
+      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
+    }
     auto param = m_params.get_global_direct(element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1810,12 +2206,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalPara
       }
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall GlobalParameter(id:", _param.id, ")");
   }
-#endif
 }
 
 void dsp_host_dual::globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param)
@@ -1832,12 +2226,10 @@ void dsp_host_dual::globalTimeRcl(const nltools::msg::ParameterGroups::Unmodulat
       }
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall Macro Time(id:", _param.id, ")");
   }
-#endif
 }
 void dsp_host_dual::localParRcl(const uint32_t _layerId,
                                 const nltools::msg::ParameterGroups::ModulateableParameter &_param)
@@ -1845,11 +2237,12 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
   {
-#if LOG_RECALL_COMPARE_INITIAL
-    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                       ", initial:", element.m_initial, ")");
-#endif
+    if(LOG_RECALL_COMPARE_INITIAL)
+    {
+      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
+    }
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1866,12 +2259,10 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
     m_params.m_layer[_layerId].m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall Local Target(id:", _param.id, ")");
   }
-#endif
 }
 
 void dsp_host_dual::localParRcl(const uint32_t _layerId,
@@ -1880,11 +2271,12 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Unmodulateable)
   {
-#if LOG_RECALL_COMPARE_INITIAL
-    nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                       element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                       ", initial:", element.m_initial, ")");
-#endif
+    if(LOG_RECALL_COMPARE_INITIAL)
+    {
+      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
+    }
     auto param = m_params.get_local_direct(_layerId, element.m_param.m_index);
     param->m_changed = false;
     if(!_param.locked)
@@ -1896,10 +2288,8 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
       }
     }
   }
-#if LOG_FAIL
-  else
+  else if(LOG_FAIL)
   {
     nltools::Log::warning("failed to recall Local Direct(id:", _param.id, ")");
   }
-#endif
 }

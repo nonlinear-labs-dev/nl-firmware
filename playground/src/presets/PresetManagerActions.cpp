@@ -229,7 +229,7 @@ void PresetManagerActions::handleImportBackupFile(UNDO::Transaction *transaction
     }
     else
     {
-      m_presetManager.getEditBuffer()->sendToLPC();
+      m_presetManager.getEditBuffer()->sendToAudioEngine();
     }
   }
 }

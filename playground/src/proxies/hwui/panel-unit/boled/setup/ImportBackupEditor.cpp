@@ -136,7 +136,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem:
       {
         if(reader.read<PresetManagerSerializer>(pm))
         {
-          pm->getEditBuffer()->sendToLPC();
+          pm->getEditBuffer()->sendToAudioEngine();
         }
         SplashLayout::addStatus("Restore Complete!");
         std::this_thread::sleep_for(0.7s);
