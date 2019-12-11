@@ -67,12 +67,10 @@ class LPCProxy
   virtual ~LPCProxy();
 
   void sendParameter(const Parameter *param);
-  void sendEditBuffer();
+
   void sendSetting(uint16_t key, gint16 value);
   void sendSetting(uint16_t key, uint16_t value);
   void sendSetting(uint16_t key, bool v);
-
-  void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
 
   sigc::connection onRibbonTouched(sigc::slot<void, int> s);
   sigc::connection onLPCSoftwareVersionChanged(sigc::slot<void, int> s);
@@ -99,7 +97,6 @@ class LPCProxy
   void applyParamMessageAbsolutely(PhysicalControlParameter *p, gint16 value);
   void onAssertionMessageReceived(const MessageParser::NLMessage &msg);
   void onNotificationMessageReceived(const MessageParser::NLMessage &msg);
-  void deliverPendingLPCMessages();
   void onLPCConnected();
 
   bool m_suppressParamChanges = false;

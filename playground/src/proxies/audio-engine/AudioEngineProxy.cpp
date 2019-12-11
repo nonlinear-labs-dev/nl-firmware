@@ -23,8 +23,7 @@
 AudioEngineProxy::AudioEngineProxy()
 {
   using namespace nltools::msg;
-  onConnectionEstablished(EndPoint::AudioEngine,
-                          sigc::mem_fun(this, &AudioEngineProxy::sendEditBufferAndSettings));
+  onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
 }
 
 void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)
@@ -320,14 +319,7 @@ void AudioEngineProxy::sendEditBuffer()
     case SoundType::Layer:
       nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage());
       break;
-    default:
-      return;
   }
-}
 
-void AudioEngineProxy::sendEditBufferAndSettings()
-{
-  sendEditBuffer();
-  auto settings = Application::get().getSettings();
-  settings->sendToLPC();
+  Application::get().getSettings()->sendToLPC();
 }

@@ -167,18 +167,10 @@ void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, vg });
-
-  if(!param)
-    param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global });
-
-  if(!param)
-    param = findPhysicalControlParameterFromID(id);
-
-  if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+  if(auto *param = dynamic_cast<PhysicalControlParameter *>(findPhysicalControlParameterFromID(id)))
   {
-    DebugLevel::info("param:", p->getMiniParameterEditorName(), ": ", value);
-    applyParamMessageAbsolutely(p, value);
+    DebugLevel::info("param:", param->getMiniParameterEditorName(), ": ", value);
+    applyParamMessageAbsolutely(param, value);
   }
   else
   {
@@ -309,42 +301,6 @@ void LPCProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const
     *ptr = '\0';
     DebugLevel::gassy((const char *) txt);
   }
-}
-
-void LPCProxy::sendEditBuffer()
-{
-  DebugLevel::info("not send preset to LPC");
-
-  return;
-
-  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  tMessageComposerPtr cmp(new EditBufferMessageComposer());
-#warning "TODO"
-#if 0
-  auto sorted = editBuffer->getParametersSortedById();
-
-  for(auto &it : sorted)
-    it.second->writeToLPC(*cmp);
-
-  queueToLPC(cmp);
-  Application::get().getSettings()->sendToLPC();
-
-  for(auto &it : sorted)
-    it.second->onPresetSentToLpc();
-#endif
-}
-
-void LPCProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)
-{
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    m_suppressParamChanges = !m_suppressParamChanges;
-
-    if(!m_suppressParamChanges)
-    {
-      sendEditBuffer();
-    }
-  });
 }
 
 void LPCProxy::sendSetting(uint16_t key, uint16_t value)

@@ -444,9 +444,7 @@ void EditBuffer::undoableLoad(Preset *preset)
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
-  auto lpc = Application::get().getLPCProxy();
   auto ae = Application::get().getAudioEngineProxy();
-  lpc->toggleSuppressParameterChanges(transaction);
   ae->toggleSuppressParameterChanges(transaction);
 
   copyFrom(transaction, preset);
@@ -459,7 +457,6 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
     pm->selectBank(transaction, bank->getUuid());
   }
 
-  lpc->toggleSuppressParameterChanges(transaction);
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
 
@@ -565,7 +562,6 @@ Uuid EditBuffer::getUUIDOfLastLoadedPreset() const
 
 void EditBuffer::sendToLPC()
 {
-  Application::get().getLPCProxy()->sendEditBuffer();
   Application::get().getAudioEngineProxy()->sendEditBuffer();
 }
 
