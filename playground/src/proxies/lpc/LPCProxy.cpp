@@ -128,6 +128,35 @@ void LPCProxy::onLPCConnected()
   requestLPCSoftwareVersion();
 }
 
+Parameter *findPhysicalControlParameterFromID(uint16_t id)
+{
+  auto paramId = [](uint16_t id) {
+    switch(id)
+    {
+      case 0:
+        return HardwareSourcesGroup::getPedal1ParameterID();
+      case 1:
+        return HardwareSourcesGroup::getPedal2ParameterID();
+      case 2:
+        return HardwareSourcesGroup::getPedal3ParameterID();
+      case 3:
+        return HardwareSourcesGroup::getPedal4ParameterID();
+      case 4:
+        return HardwareSourcesGroup::getPitchbendParameterID();
+      case 5:
+        return HardwareSourcesGroup::getAftertouchParameterID();
+      case 6:
+        return HardwareSourcesGroup::getUpperRibbonParameterID();
+      case 7:
+        return HardwareSourcesGroup::getLowerRibbonParameterID();
+      default:
+        return ParameterId::invalid();
+    }
+  }(id);
+
+  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramId);
+}
+
 void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
 {
   uint16_t id = msg.params[0];
@@ -142,6 +171,9 @@ void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
 
   if(!param)
     param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global });
+
+  if(!param)
+    param = findPhysicalControlParameterFromID(id);
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
   {
