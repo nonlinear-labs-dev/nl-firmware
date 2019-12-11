@@ -503,7 +503,7 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator)
 {
-  UNDO::ActionCommand::tAction sendEditBuffer([](auto) -> void { EditBuffer::sendToLPC(); });
+  UNDO::ActionCommand::tAction sendEditBuffer([](auto) -> void { EditBuffer::sendToAudioEngine(); });
   transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
@@ -517,7 +517,7 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
-  UNDO::ActionCommand::tAction sendEditBuffer([](auto) -> void { EditBuffer::sendToLPC(); });
+  UNDO::ActionCommand::tAction sendEditBuffer([](auto) -> void { EditBuffer::sendToAudioEngine(); });
   transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
@@ -560,7 +560,7 @@ Uuid EditBuffer::getUUIDOfLastLoadedPreset() const
   return m_lastLoadedPreset;
 }
 
-void EditBuffer::sendToLPC()
+void EditBuffer::sendToAudioEngine()
 {
   Application::get().getAudioEngineProxy()->sendEditBuffer();
 }
@@ -655,6 +655,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
   initRecallValues(transaction);
   undoableSetType(transaction, SoundType::Single);
+
+  transaction->addPostfixCommand([this](auto state) { sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
@@ -683,6 +685,8 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   initRecallValues(transaction);
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
+
+  transaction->addPostfixCommand([this](auto state) { sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
