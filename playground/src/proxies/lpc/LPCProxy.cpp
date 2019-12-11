@@ -159,19 +159,19 @@ Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) 
 void LPCProxy::onHardwareSourceReceived(const MessageParser::NLMessage &msg)
 {
   uint16_t id = msg.params[0];
-  DebugLevel::info("it is a hw source message with hw source id:", id);
+  DebugLevel::info("received hw source message with hw source id:", id);
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
   if(auto *param = dynamic_cast<PhysicalControlParameter *>(findPhysicalControlParameterFromLPCHWSourceID(id)))
   {
     notifyRibbonTouch(param->getID().getNumber());
-    DebugLevel::info("Parameter:", param->getMiniParameterEditorName(), ": ", value);
+    DebugLevel::info("physical control parameter:", param->getMiniParameterEditorName(), ": ", value);
     applyParamMessageAbsolutely(param, value);
   }
   else
   {
-    DebugLevel::info("could not parse hw id", id, " to physical control paramfor id");
+    DebugLevel::info("could not parse hw id", id, " to physical control parameter");
   }
 }
 
