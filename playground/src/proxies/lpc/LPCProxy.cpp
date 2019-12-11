@@ -7,7 +7,6 @@
 #include "parameters/PhysicalControlParameter.h"
 #include <parameters/RibbonParameter.h>
 #include "MessageParser.h"
-#include "ParameterMessageComposer.h"
 #include "EditBufferMessageComposer.h"
 #include "libundo/undo/Scope.h"
 #include "http/UndoScope.h"
@@ -79,9 +78,9 @@ gint16 LPCProxy::separateSignedBitToComplementary(uint16_t v) const
 
 void LPCProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
-  if(msg.type == MessageParser::PARAM)
+  if(msg.type == MessageParser::HARDWARE_SOURCE)
   {
-    onParamMessageReceived(msg);
+    onHardwareSourceReceived(msg);
   }
   else if(msg.type == MessageParser::EDIT_CONTROL)
   {
@@ -128,29 +127,51 @@ void LPCProxy::onLPCConnected()
   requestLPCSoftwareVersion();
 }
 
-void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
+Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) const
+{
+  auto paramId = [](uint16_t id) {
+    switch(id)
+    {
+      case 0:
+        return HardwareSourcesGroup::getPedal1ParameterID();
+      case 1:
+        return HardwareSourcesGroup::getPedal2ParameterID();
+      case 2:
+        return HardwareSourcesGroup::getPedal3ParameterID();
+      case 3:
+        return HardwareSourcesGroup::getPedal4ParameterID();
+      case 4:
+        return HardwareSourcesGroup::getPitchbendParameterID();
+      case 5:
+        return HardwareSourcesGroup::getAftertouchParameterID();
+      case 6:
+        return HardwareSourcesGroup::getUpperRibbonParameterID();
+      case 7:
+        return HardwareSourcesGroup::getLowerRibbonParameterID();
+      default:
+        return ParameterId::invalid();
+    }
+  }(id);
+
+  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramId);
+}
+
+void LPCProxy::onHardwareSourceReceived(const MessageParser::NLMessage &msg)
 {
   uint16_t id = msg.params[0];
-  DebugLevel::info("it is a param message for id", id);
-
-  notifyRibbonTouch(id);
+  DebugLevel::info("received hw source message with hw source id:", id);
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, vg });
-
-  if(!param)
-    param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global });
-
-  if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+  if(auto *param = dynamic_cast<PhysicalControlParameter *>(findPhysicalControlParameterFromLPCHWSourceID(id)))
   {
-    DebugLevel::info("param:", p->getMiniParameterEditorName(), ": ", value);
-    applyParamMessageAbsolutely(p, value);
+    notifyRibbonTouch(param->getID().getNumber());
+    DebugLevel::info("physical control parameter:", param->getMiniParameterEditorName(), ": ", value);
+    applyParamMessageAbsolutely(param, value);
   }
   else
   {
-    DebugLevel::info("param for id", id, "-", toString(vg), "not found");
+    DebugLevel::info("could not parse hw id", id, " to physical control parameter");
   }
 }
 
@@ -241,15 +262,6 @@ void LPCProxy::notifyRibbonTouch(int ribbonsParameterID)
   }
 }
 
-void LPCProxy::sendParameter(const Parameter *param)
-{
-  if(!m_suppressParamChanges)
-  {
-    tMessageComposerPtr cmp(new ParameterMessageComposer(param));
-    queueToLPC(cmp);
-  }
-}
-
 void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
 {
   auto flushed = cmp->flush();
@@ -277,42 +289,6 @@ void LPCProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const
     *ptr = '\0';
     DebugLevel::gassy((const char *) txt);
   }
-}
-
-void LPCProxy::sendEditBuffer()
-{
-  DebugLevel::info("not send preset to LPC");
-
-  return;
-
-  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  tMessageComposerPtr cmp(new EditBufferMessageComposer());
-#warning "TODO"
-#if 0
-  auto sorted = editBuffer->getParametersSortedById();
-
-  for(auto &it : sorted)
-    it.second->writeToLPC(*cmp);
-
-  queueToLPC(cmp);
-  Application::get().getSettings()->sendToLPC();
-
-  for(auto &it : sorted)
-    it.second->onPresetSentToLpc();
-#endif
-}
-
-void LPCProxy::toggleSuppressParameterChanges(UNDO::Transaction *transaction)
-{
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    m_suppressParamChanges = !m_suppressParamChanges;
-
-    if(!m_suppressParamChanges)
-    {
-      sendEditBuffer();
-    }
-  });
 }
 
 void LPCProxy::sendSetting(uint16_t key, uint16_t value)

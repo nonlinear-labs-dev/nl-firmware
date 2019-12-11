@@ -319,7 +319,7 @@ void AudioEngineProxy::sendEditBuffer()
     case SoundType::Layer:
       nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage());
       break;
-    default:
-      return;
   }
+
+  Application::get().getSettings()->sendToLPC();
 }
