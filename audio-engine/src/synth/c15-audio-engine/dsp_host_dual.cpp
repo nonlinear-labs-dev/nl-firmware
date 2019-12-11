@@ -22,6 +22,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   const float samplerate = static_cast<float>(_samplerate);
   // init of crucial components: voiceAlloc, conversion, clock, time, ae_fade_table ("fadepoint"), ae_fader ("pickup")
   m_alloc.init(&m_layer_mode, &m_preloaded_layer_mode);
+  m_alloc.setSplitPoint(30);  // temporary..?
   m_convert.init();
   m_clock.init(_samplerate);
   m_time.init(_samplerate);
@@ -251,50 +252,74 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       case 0:
         // Pedal 1
         arg = _data1 + (_data0 << 7);
-        updateHW(0, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Pedal1, raw:", arg, ")");
+        }
+        updateHW(0, static_cast<float>(arg));
         break;
       case 1:
         // Pedal 2
         arg = _data1 + (_data0 << 7);
-        updateHW(1, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Pedal2, raw:", arg, ")");
+        }
+        updateHW(1, static_cast<float>(arg));
         break;
       case 2:
         // Pedal 3
         arg = _data1 + (_data0 << 7);
-        updateHW(2, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Pedal3, raw:", arg, ")");
+        }
+        updateHW(2, static_cast<float>(arg));
         break;
       case 3:
         // Pedal 4
         arg = _data1 + (_data0 << 7);
-        updateHW(3, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Pedal4, raw:", arg, ")");
+        }
+        updateHW(3, static_cast<float>(arg));
         break;
       case 4:
         // Bender
         arg = _data1 + (_data0 << 7);
-        updateHW(4, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Bender, raw:", arg, ")");
+        }
+        updateHW(4, static_cast<float>(arg) * 0.5f);
         break;
       case 5:
         // Aftertouch
         arg = _data1 + (_data0 << 7);
-        updateHW(5, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Aftertouch, raw:", arg, ")");
+        }
+        updateHW(5, static_cast<float>(arg));
         break;
       case 6:
         // Ribbon 1
         arg = _data1 + (_data0 << 7);
-        updateHW(6, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Ribbon1, raw:", arg, ")");
+        }
+        updateHW(6, static_cast<float>(arg));
         break;
       case 7:
         // Ribbon 2
         arg = _data1 + (_data0 << 7);
-        updateHW(7, arg);
-        // ...
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:Ribbon2, raw:", arg, ")");
+        }
+        updateHW(7, static_cast<float>(arg));
         break;
       case 13:
         // Key Pos (down or up)
@@ -302,6 +327,10 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         m_key_pos = arg - C15::Config::key_from;
         // key position is only valid within range [36 ... 96]
         m_key_valid = (arg >= C15::Config::key_from) && (arg <= C15::Config::key_to);
+        if(LOG_MIDI_DETAIL)
+        {
+          nltools::Log::info("midiMsg(source:KeyPos, raw:", arg, ", valid:", m_key_valid, ")");
+        }
         break;
       case 14:
         // Key Down
@@ -325,7 +354,6 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         }
         else if(LOG_FAIL)
         {
-
           nltools::Log::warning("key_up(pos:", m_key_pos, ") failed!");
         }
         break;
@@ -812,22 +840,6 @@ void dsp_host_dual::onSettingInitialSinglePreset()
   }
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: local unmodulateables:");
-  }
-  for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
-  {
-    auto param = m_params.get_local_direct(0, i);
-    param->update_position(param->m_initial);
-    param->m_scaled = scale(param->m_scaling, param->m_position);
-    localTransition(0, param, m_transition_time.m_dx);
-    localTransition(1, param, m_transition_time.m_dx);
-  }
-  if(LOG_MISSING)
-  {
-    nltools::Log::info("todo: re-evaluate hw matrix for macro offsets!");
-  }
-  if(LOG_RECALL)
-  {
     nltools::Log::info("recall: global modulateables:");
   }
   for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
@@ -840,20 +852,34 @@ void dsp_host_dual::onSettingInitialSinglePreset()
     param->m_scaled = scale(param->m_scaling, param->m_position);
     globalTransition(param, m_transition_time.m_dx);
   }
-  if(LOG_RECALL)
+  // maybe, setting both voice groups resolves missing split sound?
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
-    nltools::Log::info("recall: local modulateables:");
-  }
-  for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
-  {
-    auto param = m_params.get_local_target(0, i);
-    param->update_source(C15::Parameters::Macro_Controls::None);
-    param->update_amount(0.0f);
-    param->update_position(param->depolarize(param->m_initial));
-    param->update_modulation_aspects(m_params.get_macro(static_cast<uint32_t>(param->m_source))->m_position);
-    param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-    localTransition(0, param, m_transition_time.m_dx);
-    localTransition(1, param, m_transition_time.m_dx);
+    if(LOG_RECALL)
+    {
+      nltools::Log::info("recall: local unmodulateables:");
+    }
+    for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
+    {
+      auto param = m_params.get_local_direct(layerId, i);
+      param->update_position(param->m_initial);
+      param->m_scaled = scale(param->m_scaling, param->m_position);
+      localTransition(layerId, param, m_transition_time.m_dx);
+    }
+    if(LOG_RECALL)
+    {
+      nltools::Log::info("recall: local modulateables:");
+    }
+    for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
+    {
+      auto param = m_params.get_local_target(layerId, i);
+      param->update_source(C15::Parameters::Macro_Controls::None);
+      param->update_amount(0.0f);
+      param->update_position(param->depolarize(param->m_initial));
+      param->update_modulation_aspects(m_params.get_macro(static_cast<uint32_t>(param->m_source))->m_position);
+      param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
+      localTransition(layerId, param, m_transition_time.m_dx);
+    }
   }
 }
 
@@ -1017,8 +1043,9 @@ void dsp_host_dual::keyDown(const float _vel)
       m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel);
       if(LOG_KEYS_POLY)
       {
-        nltools::Log::info("key_down_poly(voice:", key->m_voiceId, ", unisonIndex:", key->m_unisonIndex,
-                           ", stolen:", key->m_stolen, ", tune:", keyTune, ", velocity:", _vel, ")");
+        nltools::Log::info("key_down_poly(group:", key->m_localIndex, "voice:", key->m_voiceId,
+                           ", unisonIndex:", key->m_unisonIndex, ", stolen:", key->m_stolen, ", tune:", keyTune,
+                           ", velocity:", _vel, ")");
       }
     }
     const uint32_t index = m_alloc.m_traversal.first()->m_localIndex;
@@ -1035,13 +1062,12 @@ void dsp_host_dual::keyDown(const float _vel)
     {
       // in single and layer mode, both mono flanger envelopes should be started
       // flanger legato
-      if(m_poly[0].m_key_active == 0)
+      for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
       {
-        m_mono[0].keyDown(_vel);
-      }
-      if(m_poly[1].m_key_active == 0)
-      {
-        m_mono[1].keyDown(_vel);
+        if(m_poly[layerId].m_key_active == 0)
+        {
+          m_mono[layerId].keyDown(_vel);
+        }
       }
     }
   }
@@ -1067,7 +1093,8 @@ void dsp_host_dual::keyUp(const float _vel)
       m_poly[key->m_localIndex].keyUp(key->m_voiceId, key->m_unisonIndex, keyTune, _vel);
       if(LOG_KEYS_POLY)
       {
-        nltools::Log::info("key_up_poly(voice:", key->m_voiceId, ", tune:", keyTune, ", velocity:", _vel, ")");
+        nltools::Log::info("key_up_poly(group:", key->m_localIndex, "voice:", key->m_voiceId, ", tune:", keyTune,
+                           ", velocity:", _vel, ")");
       }
     }
   }
@@ -1119,10 +1146,10 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
   return result;
 }
 
-void dsp_host_dual::updateHW(const uint32_t _id, const uint32_t _raw)
+void dsp_host_dual::updateHW(const uint32_t _id, const float _raw)
 {
   auto source = m_params.get_hw_src(_id);
-  float value = static_cast<float>(_raw) * m_norm_hw;
+  float value = _raw * m_norm_hw;
   if(source->m_behavior == C15::Properties::HW_Return_Behavior::Center)
   {
     value = (2.0f * value) - 1.0f;  // make return_to_center sources bipolar
@@ -1732,6 +1759,11 @@ void dsp_host_dual::recallSingle()
       }
     }
   }
+  // logging levels after recall for debugging switching dual modes
+  if(LOG_RECALL_LEVELS)
+  {
+    debugLevels();
+  }
 }
 
 void dsp_host_dual::recallSplit()
@@ -1899,6 +1931,11 @@ void dsp_host_dual::recallSplit()
         localTransition(layerId, param, m_transition_time.m_dx);
       }
     }
+  }
+  // logging levels after recall for debugging switching dual modes
+  if(LOG_RECALL_LEVELS)
+  {
+    debugLevels();
   }
 }
 
@@ -2069,6 +2106,11 @@ void dsp_host_dual::recallLayer()
         localTransition(layerId, param, m_transition_time.m_dx);
       }
     }
+  }
+  // logging levels after recall for debugging switching dual modes
+  if(LOG_RECALL_LEVELS)
+  {
+    debugLevels();
   }
 }
 
@@ -2292,4 +2334,20 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   {
     nltools::Log::warning("failed to recall Local Direct(id:", _param.id, ")");
   }
+}
+
+void dsp_host_dual::debugLevels()
+{
+  nltools::Log::info(
+      "MasterLevel:",
+      m_params.get_global_direct(static_cast<uint32_t>(C15::Parameters::Global_Unmodulateables::Master_Volume))
+          ->m_scaled);
+  nltools::Log::info(
+      "VoiceGroupLevel[I]:",
+      m_params.get_local_target(0, static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Voice_Grp_Volume))
+          ->m_scaled);
+  nltools::Log::info(
+      "VoiceGroupLevel[II]:",
+      m_params.get_local_target(0, static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Voice_Grp_Volume))
+          ->m_scaled);
 }
