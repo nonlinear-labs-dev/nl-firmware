@@ -4,15 +4,14 @@
 #include <proxies/hwui/controls/Label.h>
 #include "TextCropper.h"
 #include "Oleds.h"
-#include "CompileTimeOptions.h"
+#include <CompileTimeOptions.h>
 
 static TestDriver<TextCropper> tests;
 
 void TextCropper::registerTests()
 {
   g_test_add_func("/TextCropper/shortenStringIfNeccessary", []() {
-    std::string installDir = getInstallPrefix();
-    auto pathToFont = installDir + "/nonlinear/playground/resources/Emphase_9_Regular.ttf";
+    auto pathToFont = getResourcesDir() + "/Emphase_9_Regular.ttf";
     auto font = std::make_shared<Font>(pathToFont, 9);
 
     auto testShortenStringIfNeccessary = [font](std::string in, int len, std::string expected) {

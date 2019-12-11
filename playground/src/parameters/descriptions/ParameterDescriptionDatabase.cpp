@@ -6,6 +6,7 @@
 #include <presets/PresetManager.h>
 #include <tools/Signal.h>
 #include <giomm/file.h>
+#include <CompileTimeOptions.h>
 
 class ParameterDescriptionDatabase::Job
 {
@@ -57,8 +58,8 @@ class ParameterDescriptionDatabase::Job
   {
     try
     {
-      file = Gio::File::create_for_path(Application::get().getResourcePath() + "/parameter-descriptions/"
-                                        + to_string(paramID.getNumber()) + ".txt");
+      file = Gio::File::create_for_path(getResourcesDir() + "/parameter-descriptions/" + to_string(paramID.getNumber())
+                                        + ".txt");
       if(file->query_exists())
       {
         file->read_async(mem_fun(this, &Job::onReadFinish));

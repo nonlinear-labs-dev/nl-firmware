@@ -4,6 +4,7 @@
 #include <proxies/hwui/Font.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <tools/PerformanceTimer.h>
+#include <CompileTimeOptions.h>
 
 Oleds &Oleds::get()
 {
@@ -62,7 +63,7 @@ Oleds::tFont Oleds::getFont(const Glib::ustring &name, int height)
   if(it != m_fonts.end())
     return it->second;
 
-  Glib::ustring path = Application::get().getResourcePath() + name + ".ttf";
+  Glib::ustring path = getResourcesDir() + "/" + name + ".ttf";
   auto font = std::make_shared<Font>(path, height);
   m_fonts[key] = font;
   return font;

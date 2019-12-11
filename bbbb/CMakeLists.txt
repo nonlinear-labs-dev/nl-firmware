@@ -1,20 +1,3 @@
-# Remove strings matching given regular expression from a list.
-# @param(in,out) aItems Reference of a list variable to filter.
-# @param aRegEx Value of regular expression to match.
-function (filter_items aItems aRegEx)
-    # For each item in our list
-    foreach (item ${${aItems}})
-        # Check if our items matches our regular expression
-        if ("${item}" MATCHES ${aRegEx})
-            # Remove current item from our list
-            list (REMOVE_ITEM ${aItems} ${item})
-        endif ("${item}" MATCHES ${aRegEx})
-    endforeach(item)
-    # Provide output parameter
-    set(${aItems} ${${aItems}} PARENT_SCOPE)
-endfunction (filter_items)
-
-
 cmake_minimum_required(VERSION 3.0)
 project(bbbb)
 
@@ -59,11 +42,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
-    IF(DEV_PC)
-        ELSE()
-filter_items(SOURCE_FILES "/ui/")
-    ENDIF(DEV_PC)
 
+IF(NOT DEV_PC)
+    file(GLOB_RECURSE UI_SOURCES src/ui/*.cpp)
+    list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UI_SOURCES})
+ENDIF(NOT DEV_PC)
 
 add_executable(bbbb ${SOURCE_FILES})
 
@@ -88,7 +71,7 @@ install(FILES ${PROJECT_BINARY_DIR}/systemd/bbbb.service
   )
 
 install(TARGETS bbbb
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
+  DESTINATION ${C15_INSTALL_PATH}/bbbb
   )
 
 ADD_CUSTOM_TARGET(

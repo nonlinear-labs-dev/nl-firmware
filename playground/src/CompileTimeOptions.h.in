@@ -1,5 +1,11 @@
+#include <string>
 
-static constexpr const char *getInstallPrefix()
+static inline std::string getResourcesDir()
 {
-  return "@CMAKE_INSTALL_PREFIX@";
+  return "@C15_INSTALL_PATH@/playground/resources";
+}
+
+static inline  std::string getInstallDir()
+{
+  return "@C15_INSTALL_PATH@";
 }

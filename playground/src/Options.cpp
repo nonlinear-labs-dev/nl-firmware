@@ -67,12 +67,7 @@ void Options::setDefaults()
 
   m_settingsFile = "./settings.xml";
   m_kioskModeFile = "./kiosk-mode.stamp";
-
-  Glib::ustring p = getInstallDir();
-  size_t lastSlash = p.rfind('/');
-  Glib::ustring path = "/resources/templates/";
-  p = p.substr(0, lastSlash) + path;
-  m_layoutFolder = p;
+  m_layoutFolder = getResourcesDir() + std::string("/templates/");
 }
 
 bool Options::makePresetManagerDirectory(Glib::RefPtr<Gio::File> file)
@@ -116,11 +111,6 @@ const Glib::ustring &Options::getBBBB() const
 const Glib::ustring &Options::getAudioEngineHost() const
 {
   return m_audioEngineHost;
-}
-
-Glib::ustring Options::getInstallDir() const
-{
-  return getInstallPrefix();
 }
 
 const Glib::ustring &Options::getSettingsFile() const

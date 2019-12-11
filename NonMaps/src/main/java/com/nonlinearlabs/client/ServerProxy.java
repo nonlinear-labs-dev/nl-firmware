@@ -377,7 +377,7 @@ public class ServerProxy {
 	}
 
 	public void loadParameterDescription(int id, final Consumer<String> client) {
-		downloadFile("/resources/parameter-descriptions/" + id + ".txt", new DownloadHandler() {
+        downloadFile("/playground/resources/parameter-descriptions/" + id + ".txt", new DownloadHandler() {
 
 			@Override
 			public void onFileDownloaded(String text) {

@@ -84,7 +84,7 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
 
 IF(NOT DSL_LAYOUTS)
-list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${DSL_SOURCE_FILES})
+    list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${DSL_SOURCE_FILES})
 ENDIF()
 
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/playground.cpp)
@@ -98,7 +98,6 @@ add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 target_link_libraries(playground-lib pthread)
 target_link_libraries(playground-lib stdc++fs)
 target_link_libraries(playground-lib nltools)
-target_link_libraries(playground-lib parameterDB)
 
 include_directories(playground-lib ${CMAKE_SOURCE_DIR}/nltools/include/)
 include_directories(playground-lib ${CMAKE_SOURCE_DIR}/playground/src)
@@ -121,40 +120,18 @@ add_executable(playground-test ${PLAYGROUND_TEST_SOURCES})
 target_link_libraries(playground PRIVATE playground-lib)
 target_link_libraries(playground-test PRIVATE playground-lib)
 
-
 configure_file(${PROJECT_SOURCE_DIR}/systemd/playground.service.in ${PROJECT_BINARY_DIR}/systemd/playground.service @ONLY)
 
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
 
-install(FILES ${PROJECT_BINARY_DIR}/systemd/playground.service
-    DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init
-)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/playground.service DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init)
+install(FILES ${PARAMETER_DESCRIPTIONS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/parameter-descriptions)
+install(FILES ${VERSION_INFOS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/version-infos)
+install(DIRECTORY resources USE_SOURCE_PERMISSIONS DESTINATION ${C15_INSTALL_PATH}/playground)
+install(TARGETS playground DESTINATION ${C15_INSTALL_PATH}/playground)
+install(TARGETS playground-test DESTINATION ${C15_INSTALL_PATH}/playground)
 
-install(FILES ${PARAMETER_DESCRIPTIONS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/parameter-descriptions
-)
-
-install(FILES ${VERSION_INFOS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground/resources/version-infos
-)
-
-install(DIRECTORY resources
-    USE_SOURCE_PERMISSIONS
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
-)
-
-install(TARGETS playground
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
-)
-
-install(TARGETS playground-test
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
-)
-
-ADD_CUSTOM_TARGET(
-    touch-cmakelists ALL
-    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE}
-)
+ADD_CUSTOM_TARGET(touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 
 
