@@ -354,7 +354,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       {
         if(auto hwui = Application::get().getHWUI())
         {
-          if(hwui->getFocusAndMode().focus == UIFocus::Sound)
+          if(hwui->getFocusAndMode().focus == UIFocus::Sound || hwui->getFocusAndMode().focus == UIFocus::Presets)
           {
             if(oldP->getID() != newP->getID())
               hwui->setFocusAndMode(UIFocus::Parameters);
@@ -463,8 +463,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
 
-#warning "Revisit!"
-  //Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)

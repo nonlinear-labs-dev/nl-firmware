@@ -100,7 +100,6 @@ class HWUI
   Signal<void, int> m_blinkTimer;
 
   Signal<void, VoiceGroup> m_voiceGoupSignal;
-  Signal<void, UNDO::Transaction *, VoiceGroup> m_voiceGroupWithTransactionSignal;
 
   std::array<bool, (size_t) Buttons::NUM_BUTTONS> m_buttonStates;
 

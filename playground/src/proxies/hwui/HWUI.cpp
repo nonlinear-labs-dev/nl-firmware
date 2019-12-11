@@ -528,10 +528,11 @@ VoiceGroup HWUI::getCurrentVoiceGroup() const
 
 void HWUI::setCurrentVoiceGroup(VoiceGroup v)
 {
-  if(v == VoiceGroup::I || v == VoiceGroup::II)
+  if((v == VoiceGroup::I || v == VoiceGroup::II) && m_currentVoiceGroup != v)
+  {
     m_currentVoiceGroup = v;
-
-  m_voiceGoupSignal.deferedSend(m_currentVoiceGroup);
+    m_voiceGoupSignal.deferedSend(m_currentVoiceGroup);
+  }
 }
 
 void HWUI::toggleCurrentVoiceGroup()
