@@ -7,7 +7,6 @@
 #include "parameters/PhysicalControlParameter.h"
 #include <parameters/RibbonParameter.h>
 #include "MessageParser.h"
-#include "ParameterMessageComposer.h"
 #include "EditBufferMessageComposer.h"
 #include "libundo/undo/Scope.h"
 #include "http/UndoScope.h"
@@ -79,9 +78,9 @@ gint16 LPCProxy::separateSignedBitToComplementary(uint16_t v) const
 
 void LPCProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
-  if(msg.type == MessageParser::PARAM)
+  if(msg.type == MessageParser::HARDWARE_SOURCE)
   {
-    onParamMessageReceived(msg);
+    onHardwareSourceReceived(msg);
   }
   else if(msg.type == MessageParser::EDIT_CONTROL)
   {
@@ -128,7 +127,7 @@ void LPCProxy::onLPCConnected()
   requestLPCSoftwareVersion();
 }
 
-Parameter *findPhysicalControlParameterFromID(uint16_t id)
+Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) const
 {
   auto paramId = [](uint16_t id) {
     switch(id)
@@ -157,24 +156,22 @@ Parameter *findPhysicalControlParameterFromID(uint16_t id)
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramId);
 }
 
-void LPCProxy::onParamMessageReceived(const MessageParser::NLMessage &msg)
+void LPCProxy::onHardwareSourceReceived(const MessageParser::NLMessage &msg)
 {
   uint16_t id = msg.params[0];
-  DebugLevel::info("it is a param message for id", id);
-
-  notifyRibbonTouch(id);
+  DebugLevel::info("it is a hw source message with hw source id:", id);
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  if(auto *param = dynamic_cast<PhysicalControlParameter *>(findPhysicalControlParameterFromID(id)))
+  if(auto *param = dynamic_cast<PhysicalControlParameter *>(findPhysicalControlParameterFromLPCHWSourceID(id)))
   {
-    DebugLevel::info("param:", param->getMiniParameterEditorName(), ": ", value);
+    notifyRibbonTouch(param->getID().getNumber());
+    DebugLevel::info("Parameter:", param->getMiniParameterEditorName(), ": ", value);
     applyParamMessageAbsolutely(param, value);
   }
   else
   {
-    DebugLevel::info("param for id", id, "-", toString(vg), "not found");
+    DebugLevel::info("could not parse hw id", id, " to physical control paramfor id");
   }
 }
 
@@ -262,15 +259,6 @@ void LPCProxy::notifyRibbonTouch(int ribbonsParameterID)
   {
     m_lastTouchedRibbon = ribbonsParameterID;
     m_signalRibbonTouched.send(ribbonsParameterID);
-  }
-}
-
-void LPCProxy::sendParameter(const Parameter *param)
-{
-  if(!m_suppressParamChanges)
-  {
-    tMessageComposerPtr cmp(new ParameterMessageComposer(param));
-    queueToLPC(cmp);
   }
 }
 

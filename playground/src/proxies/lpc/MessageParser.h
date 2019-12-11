@@ -13,7 +13,7 @@ class MessageParser
     PRESET_DIRECT = 0x0100,
     MORPH_TYPE_A = 0x0200,
     MORPH_TYPE_B = 0x0300,
-    PARAM = 0x0400,
+    HARDWARE_SOURCE = 0x0400,
     EDIT_CONTROL = 0x0500,
     MORPH_POS = 0x0600,
     SETTING = 0x0700,
