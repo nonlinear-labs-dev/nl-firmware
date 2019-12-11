@@ -38,6 +38,8 @@
 #define LOG_TRANSITIONS 0
 #define LOG_RESET 1
 #define LOG_HW 1
+// modifiers
+inline constexpr bool RECALL_TRANSITION_ONCHANGE = false;
 
 class dsp_host_dual
 {
