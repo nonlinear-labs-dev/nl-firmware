@@ -24,7 +24,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/AutoLoadSelectedPreset.h>
 #include <proxies/lpc/LPCProxy.h>
-#include <proxies/lpc/LPCParameterChangeSurpressor.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 #include <tools/TimeTools.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include <device-settings/DebugLevel.h>
@@ -168,11 +168,15 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       auto loadscope = presetManager.getUndoScope().startTransaction("Load Compare Buffer");
       auto loadtransaction = loadscope->getTransaction();
 
-      LPCParameterChangeSurpressor lpcParameterChangeSupressor(loadtransaction);
+      auto ae = Application::get().getAudioEngineProxy();
+      ae->toggleSuppressParameterChanges(loadtransaction);
+
       auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
       auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
       editBuffer->copyFrom(loadtransaction, &p);
       editBuffer->undoableSetLoadedPresetInfo(loadtransaction, &p);
+
+      ae->toggleSuppressParameterChanges(loadtransaction);
     }
   });
 

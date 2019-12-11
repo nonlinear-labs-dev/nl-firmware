@@ -114,8 +114,8 @@ template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, s
                            { 352, 0.5 },
                            { 354, 0.5 },
                            { 389, 0.0 },
-                           { 342, 0.0 },
-                           { 344, 0.0 } })
+                           { 342, 1.0 },
+                           { 344, 1.0 } })
   {
     auto &item = msg.modulateables[mod++];
     item.id = p.first;
@@ -319,7 +319,7 @@ void AudioEngineProxy::sendEditBuffer()
     case SoundType::Layer:
       nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage());
       break;
-    default:
-      return;
   }
+
+  Application::get().getSettings()->sendToLPC();
 }
