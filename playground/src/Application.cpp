@@ -83,7 +83,6 @@ Application::Application(int numArgs, char **argv)
   m_http->init();
   m_presetManager->init();
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
-  m_presetManager->getEditBuffer()->connectToHWUI(m_hwui.get());
   runWatchDog();
 
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);

@@ -168,7 +168,8 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         {
           if(x->isVisible())
           {
-            Application::get().getHWUI()->toggleCurrentVoiceGroup();
+            auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Toggle Part Selection");
+            Application::get().getHWUI()->toggleCurrentVoiceGroup(scope->getTransaction());
             return true;
           }
         }

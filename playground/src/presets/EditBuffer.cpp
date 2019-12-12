@@ -81,22 +81,6 @@ size_t EditBuffer::getHash() const
   return hash;
 }
 
-void EditBuffer::connectToHWUI(HWUI *hwui)
-{
-  m_voiceGroupConnection = hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &EditBuffer::onVoiceGroupChanged));
-}
-
-void EditBuffer::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
-{
-  auto selected = getSelected();
-  auto id = selected->getID();
-
-  if(id.getVoiceGroup() != VoiceGroup::Global)
-  {
-    undoableSelectParameter({ id.getNumber(), newVoiceGroup });
-  }
-}
-
 const Preset *EditBuffer::getOrigin() const
 {
   if(m_originCache && m_originCache->getUuid() == m_lastLoadedPreset)
@@ -322,12 +306,6 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
   }
 }
 
-bool isInSoundScreen()
-{
-  auto fum = Application::get().getHWUI()->getFocusAndMode();
-  return fum.focus == UIFocus::Sound && fum.mode == UIMode::Select;
-}
-
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
   if(m_lastSelectedParameter != p->getID())
@@ -460,8 +438,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
 
-#warning "Revisit!"
-  //Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
