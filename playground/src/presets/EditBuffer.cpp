@@ -24,6 +24,7 @@
 #include <parameters/PitchbendParameter.h>
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
+#include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -631,7 +632,12 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   auto masterVolumeParameter = masterGroup->getParameterByID({ 247, VoiceGroup::Global });
   auto masterTuneParameter = masterGroup->getParameterByID({ 248, VoiceGroup::Global });
 
-  auto newVolume = originVolume->getControlPositionValue() + masterVolumeParameter->getControlPositionValue();
+  ParabolicGainDbScaleConverter dbGainConverter;
+
+  auto vgVolumeDisplay = dbGainConverter.controlPositionToDisplay(originVolume->getControlPositionValue());
+  auto masterVolumeDisplay = dbGainConverter.controlPositionToDisplay(masterVolumeParameter->getControlPositionValue());
+
+  auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);

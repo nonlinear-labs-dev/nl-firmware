@@ -25,6 +25,15 @@ tDisplayValue ParabolicGainDbScaleConverter::controlPositionToDisplay(const tCon
   return 20 * log10(4 * in * in);
 }
 
+tControlPositionValue ParabolicGainDbScaleConverter::displayToControlPosition(const tDisplayValue &displayValue) const
+{
+  if(displayValue == -128)
+    return 0;
+
+  auto cp = std::sqrt( std::pow(10, (displayValue / 20)) / 4);
+  return getControlPositionRange().clip(cp);
+}
+
 tTcdValue ParabolicGainDbScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
 {
   return 16000 * cpValue;

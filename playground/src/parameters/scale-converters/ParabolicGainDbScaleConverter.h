@@ -9,6 +9,8 @@ class ParabolicGainDbScaleConverter : public ScaleConverter
   virtual ~ParabolicGainDbScaleConverter();
 
   bool isBiPolar() const override;
+
+  tControlPositionValue displayToControlPosition(const tDisplayValue &displayValue) const;
   tDisplayValue controlPositionToDisplay(const tControlPositionValue &cpValue) const override;
   tTcdValue controlPositionToTcd(const tControlPositionValue &cpValue) const override;
   tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
