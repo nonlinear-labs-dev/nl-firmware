@@ -35,7 +35,6 @@ TEST_CASE("HWUI Voice Group Selection")
 
     REQUIRE_FALSE(TestHelper::MainLoop::hasPending());
 
-#warning "Test is broke see EditBuffer::undoableLoad!"
-    REQUIRE_FALSE(hwui->getCurrentVoiceGroup() == VoiceGroup::I);
+    REQUIRE(hwui->getCurrentVoiceGroup() == VoiceGroup::I);
   }
 }

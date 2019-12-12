@@ -89,12 +89,12 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::ToggleVoiceGroup, [eb]() {
-      if(eb->getType() != SoundType::Single)
-      {
-        Application::get().getHWUI()->toggleCurrentVoiceGroup();
-      }
+    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [eb]() {
+      auto scope = eb->getParent()->getUndoScope().startTransaction("Toggle Part Selection");
+      Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
     });
+
+    registerEvent(EventSinks::ToggleVoiceGroup, [eb]() { Application::get().getHWUI()->toggleCurrentVoiceGroup(); });
 
     /*
        * UIFocus
@@ -247,9 +247,7 @@ namespace DescriptiveLayouts
         eb->undoableSelectParameter({ 356, VoiceGroup::Global });
     });
 
-    registerEvent(EventSinks::OpenMasterParameter, [eb] {
-      eb->undoableSelectParameter({ 247, VoiceGroup::Global });
-    });
+    registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter({ 247, VoiceGroup::Global }); });
 
     registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();

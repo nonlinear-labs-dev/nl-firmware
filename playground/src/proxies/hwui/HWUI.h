@@ -44,7 +44,9 @@ class HWUI
   VoiceGroup getCurrentVoiceGroup() const;
 
   void setCurrentVoiceGroup(VoiceGroup v);
+  void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
 
+  void toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction);
   void toggleCurrentVoiceGroup();
   sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
 
@@ -66,6 +68,7 @@ class HWUI
   void deInit();
 
  private:
+  void undoableUpdateParameterSelection(UNDO::Transaction* transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
   void onButtonPressed(Buttons buttonID, bool state);
 

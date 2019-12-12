@@ -534,6 +534,35 @@ void HWUI::setCurrentVoiceGroup(VoiceGroup v)
   m_voiceGoupSignal.deferedSend(m_currentVoiceGroup);
 }
 
+void HWUI::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v)
+{
+  setCurrentVoiceGroup(v);
+  undoableUpdateParameterSelection(transaction);
+}
+
+void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto selected = eb->getSelected();
+  auto id = selected->getID();
+
+  if(id.getVoiceGroup() != VoiceGroup::Global)
+  {
+    eb->undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup });
+  }
+}
+
+void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction)
+{
+  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+    return;
+
+  if(m_currentVoiceGroup == VoiceGroup::I)
+    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::II);
+  else if(m_currentVoiceGroup == VoiceGroup::II)
+    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
+}
+
 void HWUI::toggleCurrentVoiceGroup()
 {
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)

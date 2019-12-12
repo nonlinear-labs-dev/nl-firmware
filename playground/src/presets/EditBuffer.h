@@ -79,8 +79,6 @@ class EditBuffer : public ParameterDualGroupSet
   sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);
   sigc::connection onSoundTypeChanged(sigc::slot<void> s);
 
-  void connectToHWUI(HWUI *hwui);
-
   bool isModified() const;
   static void sendToAudioEngine();
 
@@ -100,8 +98,6 @@ class EditBuffer : public ParameterDualGroupSet
   SplitPointParameter *getSplitPoint();
 
  private:
-  void onVoiceGroupChanged(VoiceGroup newVoiceGroup);
-
   Glib::ustring getEditBufferName() const;
   bool anyParameterChanged(VoiceGroup vg) const;
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
