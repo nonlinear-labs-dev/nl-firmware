@@ -91,7 +91,7 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [eb]() {
       auto scope = eb->getParent()->getUndoScope().startTransaction("Toggle Part Selection");
-      Application::get().getHWUI()->toggleCurrentVoiceGroup(scope->getTransaction());
+      Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
     });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() { Application::get().getHWUI()->toggleCurrentVoiceGroup(); });

@@ -210,7 +210,7 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
         {
           auto scope
               = Application::get().getPresetManager()->getUndoScope().startTransaction("Toggle Part Selection");
-          Application::get().getHWUI()->toggleCurrentVoiceGroup(scope->getTransaction());
+          Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
           return true;
         }
         else

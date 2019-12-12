@@ -528,24 +528,19 @@ VoiceGroup HWUI::getCurrentVoiceGroup() const
 
 void HWUI::setCurrentVoiceGroup(VoiceGroup v)
 {
-  setCurrentVoiceGroupSuppressParameterSelection(v);
-}
-
-void HWUI::setCurrentVoiceGroupSuppressParameterSelection(VoiceGroup v)
-{
   if(v == VoiceGroup::I || v == VoiceGroup::II)
     m_currentVoiceGroup = v;
 
   m_voiceGoupSignal.deferedSend(m_currentVoiceGroup);
 }
 
-void HWUI::setCurrentVoiceGroup(UNDO::Transaction *transaction, VoiceGroup v)
+void HWUI::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v)
 {
-  setCurrentVoiceGroupSuppressParameterSelection(v);
-  undoableSelectParameterAfterVoiceGroupUpdate(transaction);
+  setCurrentVoiceGroup(v);
+  undoableUpdateParameterSelection(transaction);
 }
 
-void HWUI::undoableSelectParameterAfterVoiceGroupUpdate(UNDO::Transaction *transaction)
+void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto selected = eb->getSelected();
@@ -557,15 +552,15 @@ void HWUI::undoableSelectParameterAfterVoiceGroupUpdate(UNDO::Transaction *trans
   }
 }
 
-void HWUI::toggleCurrentVoiceGroup(UNDO::Transaction *transaction)
+void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction)
 {
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
     return;
 
   if(m_currentVoiceGroup == VoiceGroup::I)
-    setCurrentVoiceGroup(transaction, VoiceGroup::II);
+    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::II);
   else if(m_currentVoiceGroup == VoiceGroup::II)
-    setCurrentVoiceGroup(transaction, VoiceGroup::I);
+    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
 }
 
 void HWUI::toggleCurrentVoiceGroup()
