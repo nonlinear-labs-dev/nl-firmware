@@ -2120,11 +2120,8 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareSo
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
     auto param = m_params.get_hw_src(element.m_param.m_index);
-    if(!_param.locked)
-    {
-      param->update_behavior(getBehavior(_param.returnMode));
-      param->update_position(static_cast<float>(_param.controlPosition));
-    }
+    param->update_behavior(getBehavior(_param.returnMode));
+    param->update_position(static_cast<float>(_param.controlPosition));
   }
   else if(LOG_FAIL)
   {
@@ -2137,10 +2134,7 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareAm
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Amount)
   {
     auto param = m_params.get_hw_amt(element.m_param.m_index);
-    if(!_param.locked)
-    {
-      param->update_position(static_cast<float>(_param.controlPosition));
-    }
+    param->update_position(static_cast<float>(_param.controlPosition));
   }
   else if(LOG_FAIL)
   {
@@ -2154,10 +2148,7 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::MacroParam
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
   {
     auto param = m_params.get_macro(element.m_param.m_index);
-    if(!_param.locked)
-    {
-      param->update_position(static_cast<float>(_param.controlPosition));
-    }
+    param->update_position(static_cast<float>(_param.controlPosition));
   }
   else if(LOG_FAIL)
   {
@@ -2178,15 +2169,12 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
     }
     auto param = m_params.get_global_target(element.m_param.m_index);
     param->m_changed = false;
-    if(!_param.locked)
+    param->update_source(getMacro(_param.mc));
+    param->update_amount(static_cast<float>(_param.modulationAmount));
+    if(param->update_position(param->depolarize(static_cast<float>(_param.controlPosition))))
     {
-      param->update_source(getMacro(_param.mc));
-      param->update_amount(static_cast<float>(_param.modulationAmount));
-      if(param->update_position(param->depolarize(static_cast<float>(_param.controlPosition))))
-      {
-        param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-        param->m_changed = true;
-      }
+      param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
+      param->m_changed = true;
     }
     const uint32_t macroId = getMacroId(_param.mc);
     m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
@@ -2211,13 +2199,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Unmodulate
     }
     auto param = m_params.get_global_direct(element.m_param.m_index);
     param->m_changed = false;
-    if(!_param.locked)
+    if(param->update_position(static_cast<float>(_param.controlPosition)))
     {
-      if(param->update_position(static_cast<float>(_param.controlPosition)))
-      {
-        param->m_scaled = scale(param->m_scaling, param->m_position);
-        param->m_changed = true;
-      }
+      param->m_scaled = scale(param->m_scaling, param->m_position);
+      param->m_changed = true;
     }
   }
   else if(LOG_FAIL)
@@ -2239,13 +2224,10 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalPara
     }
     auto param = m_params.get_global_direct(element.m_param.m_index);
     param->m_changed = false;
-    if(!_param.locked)
+    if(param->update_position(static_cast<float>(_param.controlPosition)))
     {
-      if(param->update_position(static_cast<float>(_param.controlPosition)))
-      {
-        param->m_scaled = scale(param->m_scaling, param->m_position);
-        param->m_changed = true;
-      }
+      param->m_scaled = scale(param->m_scaling, param->m_position);
+      param->m_changed = true;
     }
   }
   else if(LOG_FAIL)
@@ -2260,12 +2242,9 @@ void dsp_host_dual::globalTimeRcl(const nltools::msg::ParameterGroups::Unmodulat
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Time)
   {
     auto param = m_params.get_macro_time(element.m_param.m_index);
-    if(!_param.locked)
+    if(param->update_position(static_cast<float>(_param.controlPosition)))
     {
-      if(param->update_position(static_cast<float>(_param.controlPosition)))
-      {
-        updateTime(&param->m_dx, scale(param->m_scaling, param->m_position));
-      }
+      updateTime(&param->m_dx, scale(param->m_scaling, param->m_position));
     }
   }
   else if(LOG_FAIL)
@@ -2287,15 +2266,12 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
     }
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
     param->m_changed = false;
-    if(!_param.locked)
+    param->update_source(getMacro(_param.mc));
+    param->update_amount(static_cast<float>(_param.modulationAmount));
+    if(param->update_position(param->depolarize(static_cast<float>(_param.controlPosition))))
     {
-      param->update_source(getMacro(_param.mc));
-      param->update_amount(static_cast<float>(_param.modulationAmount));
-      if(param->update_position(param->depolarize(static_cast<float>(_param.controlPosition))))
-      {
-        param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-        param->m_changed = true;
-      }
+      param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
+      param->m_changed = true;
     }
     const uint32_t macroId = getMacroId(_param.mc);
     m_params.m_layer[_layerId].m_assignment.reassign(element.m_param.m_index, macroId);
@@ -2321,13 +2297,10 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
     }
     auto param = m_params.get_local_direct(_layerId, element.m_param.m_index);
     param->m_changed = false;
-    if(!_param.locked)
+    if(param->update_position(static_cast<float>(_param.controlPosition)))
     {
-      if(param->update_position(static_cast<float>(_param.controlPosition)))
-      {
-        param->m_scaled = scale(param->m_scaling, param->m_position);
-        param->m_changed = true;
-      }
+      param->m_scaled = scale(param->m_scaling, param->m_position);
+      param->m_changed = true;
     }
   }
   else if(LOG_FAIL)
