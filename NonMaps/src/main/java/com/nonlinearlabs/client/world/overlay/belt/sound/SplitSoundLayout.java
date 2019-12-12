@@ -4,11 +4,14 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Position;
+import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -46,26 +49,31 @@ public class SplitSoundLayout extends SoundLayout {
 		public SplitPoint(OverlayLayout parent) {
 			super(parent);
 
-			addChild(new SplitPointLabel(this));
+			addChild(new SplitPointLabel(this, "Split-"));
+			addChild(new SplitPointLabel(this, "Point"));
 			addChild(new SplitPointValue(this));
 		}
 
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
-			getChildren().get(0).doLayout(0, 0, w, h / 3);
-			getChildren().get(1).doLayout(0, h / 2, w, h / 3);
+			getChildren().get(0).doLayout(0, 0, w, h / 4);
+			getChildren().get(1).doLayout(0, 1 * h / 4, w, h / 4);
+			getChildren().get(2).doLayout(0, 3 * h / 4, w, h / 4);
 		}
 
 		private class SplitPointLabel extends Label {
 
-			public SplitPointLabel(OverlayLayout parent) {
+			private String text;
+
+			public SplitPointLabel(OverlayLayout parent, String text) {
 				super(parent);
+				this.text = text;
 			}
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return "Split Point";
+				return text;
 			}
 		}
 
@@ -99,18 +107,22 @@ public class SplitSoundLayout extends SoundLayout {
 			double xunit = (w - 2 * margin) / parts;
 			double yunit = (h - 2 * margin) / parts;
 
-			getChildren().get(0).doLayout(margin + 0 * xunit, margin, xunit, 5 * yunit);
-			getChildren().get(1).doLayout(margin + 3 * xunit, margin, 17 * xunit, 5 * yunit);
-			getChildren().get(2).doLayout(margin + 0 * xunit, margin + 8 * yunit, 10 * xunit, 5 * yunit);
+			getChildren().get(0).doLayout(margin + 0 * xunit, margin, 2 * xunit, 5 * yunit);
+			getChildren().get(1).doLayout(margin + 4 * xunit, margin, 16 * xunit, 5 * yunit);
+			getChildren().get(2).doLayout(margin + 4 * xunit, margin + 8 * yunit, 6 * xunit, 5 * yunit);
 			getChildren().get(3).doLayout(margin + 10 * xunit, margin + 8 * yunit, 10 * xunit, 5 * yunit);
-			getChildren().get(4).doLayout(margin + 0 * xunit, margin + 15 * yunit, 10 * xunit, 5 * yunit);
+			getChildren().get(4).doLayout(margin + 4 * xunit, margin + 15 * yunit, 6 * xunit, 5 * yunit);
 			getChildren().get(5).doLayout(margin + 10 * xunit, margin + 15 * yunit, 10 * xunit, 5 * yunit);
 		}
 
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
 			double margin = Millimeter.toPixels(1);
-			getPixRect().drawRoundedArea(ctx, margin, 1, new Gray(100), new Gray(100));
+			EditBufferPresenter presenter = EditBufferPresenterProvider.getPresenter();
+			RGB bgColor = (group == VoiceGroup.I) ? presenter.voiceGroupI_BackgroundColor
+					: presenter.voiceGroupII_BackgroundColor;
+
+			getPixRect().drawRoundedArea(ctx, margin, 1, bgColor, bgColor);
 
 			double contentLeft = getChildren().get(1).getPixRect().getLeft();
 			double contentRight = getPixRect().getRight();
@@ -133,13 +145,25 @@ public class SplitSoundLayout extends SoundLayout {
 			}
 
 			@Override
+			protected String crop(Context2d ctx, Rect pixRect, String text) {
+				return text;
+			}
+
+			@Override
 			public String getDrawText(Context2d ctx) {
 				return group == VoiceGroup.I ? "\uE071" : "\uE072";
 			}
 
 			@Override
 			protected double getFontHeight(Rect pixRect) {
-				return pixRect.getHeight() / 2;
+				return pixRect.getHeight();
+			}
+
+			@Override
+			public RGB getColorFont() {
+				if (group == VoiceGroup.I)
+					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
+				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
 			}
 		}
 

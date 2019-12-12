@@ -4,8 +4,14 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
+import com.nonlinearlabs.client.world.Position;
+import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -47,6 +53,12 @@ public class LayerSoundLayout extends SoundLayout {
 		}
 
 		@Override
+		public Control click(Position eventPoint) {
+			EditBufferUseCases.get().selectVoiceGroup(group);
+			return this;
+		}
+
+		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 			double margin = Millimeter.toPixels(3);
@@ -62,7 +74,12 @@ public class LayerSoundLayout extends SoundLayout {
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
 			double margin = Millimeter.toPixels(1);
-			getPixRect().drawRoundedArea(ctx, margin, 1, new Gray(100), new Gray(100));
+
+			EditBufferPresenter presenter = EditBufferPresenterProvider.getPresenter();
+			RGB bgColor = (group == VoiceGroup.I) ? presenter.voiceGroupI_BackgroundColor
+					: presenter.voiceGroupII_BackgroundColor;
+
+			getPixRect().drawRoundedArea(ctx, margin, 1, bgColor, bgColor);
 
 			double contentLeft = getChildren().get(1).getPixRect().getLeft();
 			double contentRight = getPixRect().getRight();
@@ -86,6 +103,18 @@ public class LayerSoundLayout extends SoundLayout {
 			@Override
 			protected double getFontHeight(Rect pixRect) {
 				return pixRect.getHeight();
+			}
+
+			@Override
+			protected String crop(Context2d ctx, Rect pixRect, String text) {
+				return text;
+			}
+
+			@Override
+			public RGB getColorFont() {
+				if (group == VoiceGroup.I)
+					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
+				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
 			}
 
 		}

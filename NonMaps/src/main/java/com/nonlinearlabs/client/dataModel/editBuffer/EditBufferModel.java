@@ -49,7 +49,7 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 
 	public EnumDataModelEntity<Color> color = new EnumDataModelEntity<Color>(Color.class, Color.none);
 	public EnumDataModelEntity<SoundType> soundType = new EnumDataModelEntity<SoundType>(SoundType.class,
-			SoundType.Split);
+			SoundType.Single);
 	public EnumDataModelEntity<VoiceGroup> voiceGroup = new EnumDataModelEntity<VoiceGroup>(VoiceGroup.class,
 			VoiceGroup.I);
 	public StringDataModelEntity comment = new StringDataModelEntity();
@@ -89,7 +89,7 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 
 	public BasicParameterModel getParameter(ParameterId id) {
 		BasicParameterModel r = byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.get(id.getNumber());
-		
+
 		if (r == null)
 			throw new IllegalArgumentException();
 

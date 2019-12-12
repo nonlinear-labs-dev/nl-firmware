@@ -29,11 +29,14 @@ public class EditBufferModelUpdater extends Updater {
 			EditBufferModel.get().isModified.setValue(Boolean.valueOf(isModified));
 			String changed = getAttributeValue(root, "changed");
 			EditBufferModel.get().isChanged.setValue(Boolean.valueOf(changed));
+			String soundType = getAttributeValue(root, "editbuffer-type");
+			EditBufferModel.get().soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
 
-			processChildrenElements(root, "editbuffer-type", n -> {
-				String soundType = getText(n);
-				EditBufferModel.get().soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
-			});
+			String vgIName = getAttributeValue(root, "vg-I-name");
+			EditBufferModel.get().loadedPresetInVG1.setValue(vgIName);
+
+			String vgIIName = getAttributeValue(root, "vg-II-name");
+			EditBufferModel.get().loadedPresetInVG2.setValue(vgIIName);
 
 			processChangedChildrenElements(root, "recall-data", c -> processOriginal(c));
 		}
