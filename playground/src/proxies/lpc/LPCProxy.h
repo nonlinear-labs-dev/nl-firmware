@@ -66,13 +66,9 @@ class LPCProxy
   LPCProxy();
   virtual ~LPCProxy();
 
-  void sendParameter(const Parameter *param);
-  void sendEditBuffer();
   void sendSetting(uint16_t key, gint16 value);
   void sendSetting(uint16_t key, uint16_t value);
   void sendSetting(uint16_t key, bool v);
-
-  void toggleSuppressParameterChanges(UNDO::Transaction *transaction);
 
   sigc::connection onRibbonTouched(sigc::slot<void, int> s);
   sigc::connection onLPCSoftwareVersionChanged(sigc::slot<void, int> s);
@@ -92,17 +88,17 @@ class LPCProxy
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
 
   void notifyRibbonTouch(int ribbonsParameterID);
-  void onParamMessageReceived(const MessageParser::NLMessage &msg);
+  void onHardwareSourceReceived(const MessageParser::NLMessage &msg);
   void onEditControlMessageReceived(const MessageParser::NLMessage &msg);
   void onRelativeEditControlMessageReceived(Parameter *p, gint16 value);
   void onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value);
   void applyParamMessageAbsolutely(PhysicalControlParameter *p, gint16 value);
   void onAssertionMessageReceived(const MessageParser::NLMessage &msg);
   void onNotificationMessageReceived(const MessageParser::NLMessage &msg);
-  void deliverPendingLPCMessages();
   void onLPCConnected();
 
-  bool m_suppressParamChanges = false;
+  Parameter *findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) const;
+
   std::shared_ptr<MessageParser> m_msgParser;
 
   int m_lastTouchedRibbon;

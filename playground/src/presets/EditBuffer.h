@@ -82,7 +82,7 @@ class EditBuffer : public ParameterDualGroupSet
   void connectToHWUI(HWUI *hwui);
 
   bool isModified() const;
-  static void sendToLPC();
+  static void sendToAudioEngine();
 
   //RECALL
   RecallParameterGroups &getRecallParameterSet();

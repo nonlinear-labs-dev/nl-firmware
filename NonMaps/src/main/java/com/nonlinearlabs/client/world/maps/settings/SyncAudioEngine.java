@@ -5,15 +5,15 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.ContextMenu;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 
-class SyncLPCToBBB extends Setting {
+class SyncAudioEngine extends Setting {
 
-	SyncLPCToBBB(DeveloperSettings parent) {
-		super(parent, "Sync LPC to BBB", "Go!");
+	SyncAudioEngine(DeveloperSettings parent) {
+		super(parent, "Sync audioengine", "Go!");
 	}
 
 	@Override
 	public Control onValueButtonMouseDown(Position eventPoint) {
-		getNonMaps().getServerProxy().syncLPCToBBB();
+		getNonMaps().getServerProxy().syncAudioEngine();
 		return this;
 	}
 

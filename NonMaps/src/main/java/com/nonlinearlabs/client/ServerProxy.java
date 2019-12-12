@@ -729,8 +729,8 @@ public class ServerProxy {
 				+ "&fields=" + fields, handler);
 	}
 
-	public void syncLPCToBBB() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "sync-lpc");
+	public void syncAudioEngine() {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "sync-audioengine");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}

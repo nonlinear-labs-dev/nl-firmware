@@ -35,6 +35,7 @@ class AudioEngineProxy
   }
 
   void sendEditBuffer();
+
   void toggleSuppressParameterChanges(UNDO::Transaction* transaction);
 
   static nltools::msg::LayerPresetMessage createLayerEditBufferMessage();

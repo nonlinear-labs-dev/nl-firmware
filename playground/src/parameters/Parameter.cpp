@@ -218,7 +218,6 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
 
 void Parameter::sendToLpc() const
 {
-  Application::get().getLPCProxy()->sendParameter(this);
   sendParameterMessage();
 }
 

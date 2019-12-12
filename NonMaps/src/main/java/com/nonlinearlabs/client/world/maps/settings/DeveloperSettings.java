@@ -15,7 +15,7 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new SetupHeader(this));
 		addChild(new SendPresetAsLPCWriteFallback(this));
 		addChild(new ResetEditBuffer(this));
-		addChild(new SyncLPCToBBB(this));
+		addChild(new SyncAudioEngine(this));
 		addChild(new DebugLevel(this));
 		addChild(new DownloadEditBufferAsText(this));
 		addChild(new DownloadErrorReport(this));
