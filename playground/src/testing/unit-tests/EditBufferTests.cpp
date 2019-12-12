@@ -89,49 +89,6 @@ TEST_CASE("Simple EditBuffer Conversion")
   }
 }
 
-template <VoiceGroup tVoiceGroup, typename LoadPresetFunction>
-void masterVolumeDualToSingleConversionTests(LoadPresetFunction loadPresetCB, Preset *singlePreset,
-                                             Preset *presetToLoad)
-{
-  auto editBuffer = getEditBuffer();
-  auto vgMaster = editBuffer->findParameterByID({ 358, tVoiceGroup });
-  auto globalMaster = editBuffer->findParameterByID({ 247, VoiceGroup::Global });
-
-  REQUIRE(vgMaster != nullptr);
-  REQUIRE(globalMaster != nullptr);
-
-  loadPreset<SoundType::Single>(singlePreset);
-
-  //Prepare Split-Preset initialize Master Values
-  {
-    auto scope = TestHelper::createTestScope();
-    auto presetMaster = presetToLoad->findParameterByID({ 358, tVoiceGroup });
-    REQUIRE(presetMaster != nullptr);
-
-    presetMaster->setValue(scope->getTransaction(), 0.125);
-    REQUIRE(presetMaster->getValue() == 0.125);
-  }
-
-  //Load Preset and check for our value
-  {
-    loadPresetCB(presetToLoad);
-    REQUIRE(vgMaster->getControlPositionValue() == 0.125);
-  }
-
-  const auto globalMasterPreConversion = globalMaster->getControlPositionValue();
-  const auto voiceGroupMasterIPreConversion = vgMaster->getControlPositionValue();
-
-  //Convert and assert master conversion rules
-  {
-    auto scope = TestHelper::createTestScope();
-    editBuffer->undoableConvertToSingle(scope->getTransaction(), tVoiceGroup);
-    REQUIRE(editBuffer->getType() == SoundType::Single);
-    REQUIRE_FALSE(editBuffer->anyParameterChanged());
-    REQUIRE(vgMaster->getControlPositionValue() == vgMaster->getDefaultValue());
-    REQUIRE(globalMaster->getControlPositionValue() == globalMasterPreConversion + voiceGroupMasterIPreConversion);
-  }
-}
-
 template <VoiceGroup tVoiceGroup, int polyID, int globalID, typename LoadPresetFunction>
 void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB, Preset *singlePreset,
                                                 Preset *dualPreset)
@@ -145,7 +102,7 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
 
   loadPreset<SoundType::Single>(singlePreset);
 
-  //Prepare Split-Preset initialize Tune Values
+  //Prepare Split-Preset initialize Values
   {
     auto scope = TestHelper::createTestScope();
     auto presetParameter = dualPreset->findParameterByID({ polyID, tVoiceGroup });
@@ -161,17 +118,17 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
     REQUIRE(vgParameter->getControlPositionValue() == 0.125);
   }
 
-  const auto globalParameterPreConversion = globalParameter->getControlPositionValue();
-  const auto vGroupParameterPreConversion = vgParameter->getControlPositionValue();
+  const auto globalParameterPreConversion = globalParameter->getDisplayValue();
+  const auto vGroupParameterPreConversion = vgParameter->getDisplayValue();
 
-  //Convert and assert tune conversion rules
+  //Convert and assert conversion rules
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToSingle(scope->getTransaction(), tVoiceGroup);
     REQUIRE(editBuffer->getType() == SoundType::Single);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
     REQUIRE(vgParameter->getControlPositionValue() == vgParameter->getDefaultValue());
-    REQUIRE(globalParameter->getControlPositionValue() == globalParameterPreConversion + vGroupParameterPreConversion);
+    REQUIRE(globalParameter->getDisplayValue() == globalParameterPreConversion + vGroupParameterPreConversion);
   }
 }
 
