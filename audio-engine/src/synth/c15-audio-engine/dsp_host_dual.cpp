@@ -287,7 +287,7 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         {
           nltools::Log::info("midiMsg(source:Bender, raw:", arg, ")");
         }
-        updateHW(4, static_cast<float>(arg) * 0.5f);
+        updateHW(4, static_cast<float>(arg));
         break;
       case 5:
         // Aftertouch
