@@ -41,8 +41,7 @@ inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = true;
 inline constexpr bool LOG_HW = true;
 // modifiers/settings
-inline constexpr bool RECALL_INITIAL_ONINIT = true;
-inline constexpr bool RECALL_TRANSITION_ONCHANGE = false;
+inline constexpr bool RECALL_INITIAL_ONINIT = false;
 
 class dsp_host_dual
 {

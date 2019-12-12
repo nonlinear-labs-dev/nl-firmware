@@ -124,7 +124,7 @@ namespace Engine
       C15::Parameters::Macro_Controls m_source = C15::Parameters::Macro_Controls::None;
       Scale_Aspect m_scaling;
       Render_Aspect m_render;
-      bool m_polarity = false, m_changed = false;
+      bool m_polarity = false;
       inline bool update_source(const C15::Parameters::Macro_Controls _source)
       {
         if(_source != m_source)
@@ -176,7 +176,6 @@ namespace Engine
       float m_scaled = 0.0f;
       Scale_Aspect m_scaling;
       Render_Aspect m_render;
-      bool m_changed = false;
     };
 
   }  // namespace Engine::Parameters
