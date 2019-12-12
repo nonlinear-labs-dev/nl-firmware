@@ -23,7 +23,16 @@ import com.nonlinearlabs.client.world.pointer.TouchPinch;
 public class BeltParameterLayout extends OverlayLayout {
 
 	public enum Mode {
-		unmodulateableParameter, modulateableParameter, paramValue, mcValue, mcAmount, mcLower, mcUpper, mcSource
+		unmodulateableParameter, modulateableParameter, paramValue, mcValue, mcAmount, mcLower, mcUpper, mcSource;
+
+		public boolean isOneOf(final Mode... m) {
+			for (Mode v : m)
+				if (this == v)
+					return true;
+
+			return false;
+		}
+
 	}
 
 	private Mode mode = Mode.modulateableParameter;
@@ -48,7 +57,7 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	private RecallArea currentRecall;
 
-	public BeltParameterLayout(Belt parent) {
+	public BeltParameterLayout(final Belt parent) {
 		super(parent);
 
 		addChild(modulationButtons = new ModulationButtons(this));
@@ -93,7 +102,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	}
 
 	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
+	public void draw(final Context2d ctx, final int invalidationMask) {
 		fixMode();
 		super.draw(ctx, invalidationMask);
 	}
@@ -112,22 +121,22 @@ public class BeltParameterLayout extends OverlayLayout {
 	}
 
 	@Override
-	public void doLayout(double x, double y, double w, double h) {
+	public void doLayout(final double x, final double y, final double w, final double h) {
 		super.doLayout(x, y, w, h);
 
-		double undoWidth = Millimeter.toPixels(30);
-		double undoRedoMargin = Millimeter.toPixels(4.5);
+		final double undoWidth = Millimeter.toPixels(30);
+		final double undoRedoMargin = Millimeter.toPixels(4.5);
 
-		double third = h / 3.0;
+		final double third = h / 3.0;
 		final double buttonDim = Millimeter.toPixels(10);
 
-		double editorModeLeft = (Millimeter.toPixels(70) / 4) + (buttonDim / 2);
-		double modSrcDim = Millimeter.toPixels(10);
-		double modulationButtonsDimX = Millimeter.toPixels(25);
-		double modulationButtonsDimY = Millimeter.toPixels(25);
+		final double editorModeLeft = (Millimeter.toPixels(70) / 4) + (buttonDim / 2);
+		final double modSrcDim = Millimeter.toPixels(10);
+		final double modulationButtonsDimX = Millimeter.toPixels(25);
+		final double modulationButtonsDimY = Millimeter.toPixels(25);
 
-		double modulationButtonsLeft = Millimeter.toPixels(19.5 - 22.5 / 2);
-		double sliderLeft = modulationButtonsLeft + modulationButtonsDimX + Millimeter.toPixels(10);
+		final double modulationButtonsLeft = Millimeter.toPixels(19.5 - 22.5 / 2);
+		final double sliderLeft = modulationButtonsLeft + modulationButtonsDimX + Millimeter.toPixels(10);
 
 		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDimY) * 0.5, modulationButtonsDimX,
 				modulationButtonsDimY);
@@ -135,18 +144,18 @@ public class BeltParameterLayout extends OverlayLayout {
 				modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
 
-		double clipW = 20;
+		final double clipW = 20;
 		mcLowerClip.doLayout(sliderLeft - clipW, third, clipW, third);
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
 
-		double upperElementsY = Millimeter.toPixels(0.5);
+		final double upperElementsY = Millimeter.toPixels(0.5);
 
-		double sliderWidth = slider.getRelativePosition().getWidth();
-		double margin = Millimeter.toPixels(2.5);
-		double modulationButtonWidth = 1.5 * mcPositionRadioButton.getSelectedImage().getImgWidth();
+		final double sliderWidth = slider.getRelativePosition().getWidth();
+		final double margin = Millimeter.toPixels(2.5);
+		final double modulationButtonWidth = 1.5 * mcPositionRadioButton.getSelectedImage().getImgWidth();
 
-		HarmonicLayouter layouter = new HarmonicLayouter();
+		final HarmonicLayouter layouter = new HarmonicLayouter();
 
 		layouter.push(null, margin, margin, 0, 0);
 		layouter.push(null, 0, sliderWidth, 0, 2);
@@ -166,11 +175,11 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		double walkerX = sliderLeft;
 
-		double modAndParamValueYValue = h / 2.3;
+		final double modAndParamValueYValue = h / 2.3;
 
-		for (HarmonicLayouter.Result r : layouter.layout(sliderWidth)) {
+		for (final HarmonicLayouter.Result r : layouter.layout(sliderWidth)) {
 			if (r.record.attached != null) {
-				OverlayControl c = (OverlayControl) r.record.attached;
+				final OverlayControl c = (OverlayControl) r.record.attached;
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 			}
 			walkerX += r.width;
@@ -178,9 +187,9 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		parameterName.doLayout(sliderLeft, 2 * third - upperElementsY, slider.getRelativePosition().getWidth(), third);
 
-		double dottedLineInset = 5;
-		double lineWidth = slider.getRelativePosition().getLeft() - mcSourceDisplay.getRelativePosition().getRight()
-				+ dottedLineInset;
+		final double dottedLineInset = 5;
+		final double lineWidth = slider.getRelativePosition().getLeft()
+				- mcSourceDisplay.getRelativePosition().getRight() + dottedLineInset;
 
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight() - dottedLineInset, 0, lineWidth, h);
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
@@ -198,7 +207,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		slider.setVisible(true);
 		parameterName.setVisible(true);
 
-		boolean modAssigned = isModulationAssigned();
+		final boolean modAssigned = isModulationAssigned();
 
 		mcPositionRadioButton.setVisible(modAssigned
 				&& isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue));
@@ -215,8 +224,8 @@ public class BeltParameterLayout extends OverlayLayout {
 		dottedLine.setVisible(isOneOf(Mode.modulateableParameter));
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));
 
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.showContextMenu;
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		final boolean ctxMenuVisible = isOneOf(Mode.unmodulateableParameter) && p.showContextMenu;
 
 		contextMenu.setVisible(ctxMenuVisible);
 		currentRecall.setVisibleForMode(mode);
@@ -252,18 +261,18 @@ public class BeltParameterLayout extends OverlayLayout {
 		}
 	}
 
-	protected void toggleMcEditMode(Mode m) {
+	protected void toggleMcEditMode(final Mode m) {
 		if (mode != m)
 			setMode(m);
 		else
 			setMode(Mode.paramValue);
 	}
 
-	public void setMode(Mode m) {
+	public void setMode(final Mode m) {
 		setMode(m, false);
 	}
 
-	public void setMode(Mode m, boolean force) {
+	public void setMode(final Mode m, final boolean force) {
 		if (mode != m || force) {
 			mode = m;
 			showAndHideChildren();
@@ -272,39 +281,39 @@ public class BeltParameterLayout extends OverlayLayout {
 	}
 
 	public boolean isModulationAssigned() {
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		return p.modulation.isModulated;
 	}
 
-	public boolean isOneOf(Mode... m) {
+	public boolean isOneOf(final Mode... m) {
 		return isModeOneOf(mode, m);
 	}
 
-	public boolean isModeOneOf(Mode inQuestion, Mode... m) {
-		for (Mode u : m)
+	public boolean isModeOneOf(final Mode inQuestion, final Mode... m) {
+		for (final Mode u : m)
 			if (inQuestion == u)
 				return true;
 
 		return false;
 	}
 
-	public void setValueChanger(IncrementalChanger changer) {
+	public void setValueChanger(final IncrementalChanger changer) {
 		currentIncrementalChanger = changer;
 	}
 
 	@Override
-	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
+	public Control mouseDrag(final Position oldPoint, final Position newPoint, final boolean fine) {
 		if (currentIncrementalChanger != null) {
-			double amount = newPoint.getX() - oldPoint.getX();
+			final double amount = newPoint.getX() - oldPoint.getX();
 			currentIncrementalChanger.changeBy(fine, amount);
 		}
 		return this;
 	}
 
 	@Override
-	public Control pinch(Position eventPoint, double touchDist, TouchPinch pinch) {
+	public Control pinch(final Position eventPoint, final double touchDist, final TouchPinch pinch) {
 		if (currentIncrementalChanger != null) {
-			double maxDiff = pinch.getMaxTouchDistance();
+			final double maxDiff = pinch.getMaxTouchDistance();
 			currentIncrementalChanger.changeBy(true, maxDiff);
 		} else {
 			mouseDown(eventPoint);
@@ -314,7 +323,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	}
 
 	@Override
-	public Control mouseDown(Position eventPoint) {
+	public Control mouseDown(final Position eventPoint) {
 		startEdit();
 		return this;
 	}
@@ -323,13 +332,13 @@ public class BeltParameterLayout extends OverlayLayout {
 		return startEdit(slider.getParamSliderVisibleWidth());
 	}
 
-	public void startEdit(Mode mode, double width) {
+	public void startEdit(final Mode mode, final double width) {
 		setMode(mode);
 		startEdit(width);
 	}
 
-	public IncrementalChanger startEdit(double width) {
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+	public IncrementalChanger startEdit(final double width) {
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		switch (mode) {
 		case mcAmount:
 			currentIncrementalChanger = EditBufferUseCases.get().startEditMCAmount(p.id, width);
@@ -386,7 +395,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	}
 
 	@Override
-	public Control wheel(Position eventPoint, double amount, boolean fine) {
+	public Control wheel(final Position eventPoint, final double amount, final boolean fine) {
 		if (amount > 0)
 			startEdit().inc(fine);
 		else if (amount < 0)
@@ -395,13 +404,13 @@ public class BeltParameterLayout extends OverlayLayout {
 		return this;
 	}
 
-	public String getCurrentValuesName(double width) {
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+	public String getCurrentValuesName(final double width) {
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		return p.fullNameWithGroup;
 	}
 
-	public String[] getDecoratedValue(boolean b) {
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+	public String[] getDecoratedValue(final boolean b) {
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		switch (mode) {
 		case mcAmount:
 			return p.modulation.amountDisplayValues;

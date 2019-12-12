@@ -115,7 +115,7 @@ public class EditBufferUseCases {
 
 	private void applyModulationToModulateableParameters(ParameterId macroControlID, double d) {
 		if (d != 0) {
-			ModSource m = ModSource.fromParameterId(macroControlID.getNumber());
+			ModSource m = ModSource.fromParameterId(macroControlID);
 			for (ModulateableParameterModel t : EditBufferModel.get().getAllModulateableParameters()) {
 				if (t.modSource.getValue() == m) {
 					double amount = t.modAmount.getQuantizedAndClipped(true);

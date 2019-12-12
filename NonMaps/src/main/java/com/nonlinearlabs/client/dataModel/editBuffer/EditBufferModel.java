@@ -56,10 +56,8 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	public StringDataModelEntity deviceName = new StringDataModelEntity();
 	public DateDataModelEntity storeTime = new DateDataModelEntity();
 
-	// dual voice mock
-	// TODO
-	public StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity("Chili");
-	public StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity("Jalapeño");
+	public StringDataModelEntity loadedPresetInVG1 = new StringDataModelEntity("");
+	public StringDataModelEntity loadedPresetInVG2 = new StringDataModelEntity("");
 
 	private EditBufferModel() {
 		ParameterFactory.assertSorted();
@@ -130,7 +128,7 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	}
 
 	public MacroControlParameterModel getParameter(ModSource value, VoiceGroup vg) {
-		return (MacroControlParameterModel) getParameter(new ParameterId(value.toParameterId(), vg));
+		return (MacroControlParameterModel) getParameter(value.toParameterId());
 	}
 
 	public List<ModulateableParameterModel> getAllModulateableParameters() {

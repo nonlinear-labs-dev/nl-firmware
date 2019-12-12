@@ -6,6 +6,7 @@ import com.nonlinearlabs.client.dataModel.DoubleDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Updater;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 public class ModulateableParameterModel extends BasicParameterModel {
@@ -17,22 +18,22 @@ public class ModulateableParameterModel extends BasicParameterModel {
 			return ordinal();
 		}
 
-		public int toParameterId() {
+		public ParameterId toParameterId() {
 			switch (this) {
 			case E:
-				return 369;
+				return new ParameterId(369, VoiceGroup.Global);
 
 			case F:
-				return 371;
+				return new ParameterId(371, VoiceGroup.Global);
 
 			default:
 				break;
 			}
-			return 242 + ordinal();
+			return new ParameterId(242 + ordinal(), VoiceGroup.Global);
 		}
 
-		public static ModSource fromParameterId(int i) {
-			switch (i) {
+		public static ModSource fromParameterId(ParameterId i) {
+			switch (i.getNumber()) {
 			case 243:
 				return A;
 

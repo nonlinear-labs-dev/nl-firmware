@@ -13,7 +13,8 @@ public class ParameterId {
     }
 
     public ParameterId(ModSource modSrc) {
-        this(modSrc.toParameterId(), VoiceGroup.Global);
+        this.group = modSrc.toParameterId().group;
+        this.number = modSrc.toParameterId().number;
     }
 
     public ParameterId(String id) {

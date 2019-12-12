@@ -5,6 +5,7 @@ import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
@@ -35,9 +36,9 @@ public class ModulatableParameter extends Parameter {
 	}
 
 	public boolean isSelectedParameterMyMacroControl() {
-		int mySourceID = presenter.modulation.modulationSource.toParameterId();
+		ParameterId mySourceID = presenter.modulation.modulationSource.toParameterId();
 		int selectedParameterID = EditBufferModel.get().selectedParameter.getValue();
-		return mySourceID == selectedParameterID;
+		return mySourceID.getNumber() == selectedParameterID;
 	}
 
 	@Override
