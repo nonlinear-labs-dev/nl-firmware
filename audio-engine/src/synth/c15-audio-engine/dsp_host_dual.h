@@ -40,9 +40,6 @@ inline constexpr bool LOG_KEYS_POLY = true;
 inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = true;
 inline constexpr bool LOG_HW = true;
-// modifiers/settings
-inline constexpr bool RECALL_INITIAL_ONINIT = true;
-inline constexpr bool RECALL_TRANSITION_ONCHANGE = false;
 
 class dsp_host_dual
 {
@@ -112,8 +109,8 @@ class dsp_host_dual
   MonoSection m_mono[2];
   LayerSignalCollection m_z_layers[2];
   // helper values
-  const float m_format_vel = 4095.0f / 127.0f, m_format_hw = 8000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
-              m_norm_vel = 1.0f / 4095.0f, m_norm_hw = 1.0f / 8000.0f;
+  const float m_format_vel = 4095.0f / 127.0f, m_format_hw = 16000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
+              m_norm_vel = 1.0f / 4095.0f, m_norm_hw = 1.0f / 16000.0f;
   uint32_t m_key_pos = 0, m_tone_state = 0;
   bool m_key_valid = false, m_layer_changed = false, m_glitch_suppression = false;
   // handles for inconvenient stuff

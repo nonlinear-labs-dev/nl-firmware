@@ -272,7 +272,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         break;
       case LayerMode::Split:
         // determine split target
-        if(m_splitPoint > _keyPos)
+        if(_keyPos <= m_splitPoint)
         {
           _keyState->m_origin = AllocatorId::Local_I;
           _keyState->m_voiceId = m_local[0].keyDown();
