@@ -55,17 +55,7 @@ public class EditBufferModelUpdater extends Updater {
 	}
 
 	private void processOriginal(Node c) {
-		processChildrenElements(c, "global-parameters", child -> {
-			processChildrenElements(c, "param", p -> processOriginalParameter(p, VoiceGroup.Global));
-		});
-
-		processChildrenElements(c, "voice-group-I-parameters", child -> {
-			processChildrenElements(c, "param", p -> processOriginalParameter(p, VoiceGroup.I));
-		});
-
-		processChildrenElements(c, "voice-group-II-parameters", child -> {
-			processChildrenElements(c, "param", p -> processOriginalParameter(p, VoiceGroup.II));
-		});
+		processChildrenElements(c, "param", p -> processOriginalParameter(p));
 	}
 
 	private void processGroup(Node c, VoiceGroup vg) {
@@ -76,7 +66,7 @@ public class EditBufferModelUpdater extends Updater {
 		updater.doUpdate();
 	}
 
-	private void processOriginalParameter(Node param, VoiceGroup vg) {
+	private void processOriginalParameter(Node param) {
 		if (param != null) {
 			String id = getAttributeValue(param, "id");
 			String val = getAttributeValue(param, "value");

@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters.recall;
 
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout;
@@ -9,20 +10,26 @@ public class ParameterRecallArea extends RecallArea {
 
 	public ParameterRecallArea(BeltParameterLayout parent) {
 		super(parent);
-		addChild(button = new ParameterRecallButton(this));
 		addChild(value = new ParameterRecallValue(this));
 	}
 
 	@Override
 	public boolean isChanged() {
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		return p.valueChanged;
+		return EditBufferPresenterProvider.getPresenter().selectedParameter.valueChanged;
 	}
 
 	@Override
 	public void setVisibleForMode(Mode mode) {
-		setVisible(
-				mode == Mode.modulateableParameter || mode == Mode.unmodulateableParameter || mode == Mode.paramValue);
+		setVisible(mode.isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter, Mode.paramValue));
+	}
+
+	@Override
+	public void resetValue() {
+		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		if (p.changed) {
+			NonMaps.get().getServerProxy().recallCurrentParameterFromPreset();
+			getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		}
 	}
 
 }

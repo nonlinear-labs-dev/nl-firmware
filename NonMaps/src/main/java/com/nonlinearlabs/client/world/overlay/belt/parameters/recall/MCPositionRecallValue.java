@@ -12,11 +12,8 @@ public class MCPositionRecallValue extends RecallValue {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		if (!isActive())
-			return "";
-
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		return p.modulation.originalModulationPositionDecoratedString;
+		return EditBufferPresenterProvider
+				.getPresenter().selectedParameter.modulation.originalModulationPositionDecoratedString;
 	}
 
 }
