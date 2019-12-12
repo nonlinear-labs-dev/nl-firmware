@@ -57,6 +57,13 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			}
 			return true;
 		});
+
+		if (parameterId == 356) {
+			EditBufferModel.get().voiceGroup.onChange(v -> {
+				updatePresenter(p);
+				return true;
+			});
+		}
 	}
 
 	private void updatePresenter(BasicParameterModel e) {
@@ -73,9 +80,14 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.controlPosition = e.value.getQuantizedAndClipped(true);
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
 
-		presenter.displayValues = new String[] { e.value.getDecoratedValue(true, true),
-				e.value.getDecoratedValue(false, true) };
-
+		if (e.id.getNumber() == 356 && EditBufferModel.get().voiceGroup.getValue() == EditBufferModel.VoiceGroup.II) {
+			double nextValue = e.value.getIncDecValue(false, 1);
+			presenter.displayValues = new String[] { e.value.getDecoratedValue(true, nextValue, true),
+					e.value.getDecoratedValue(false, nextValue, true) };
+		} else {
+			presenter.displayValues = new String[] { e.value.getDecoratedValue(true, true),
+					e.value.getDecoratedValue(false, true) };
+		}
 		presenter.originalParameterValueDecoratedString = e.value.getDecoratedValue(true, e.originalValue.getValue(),
 				true);
 
@@ -287,8 +299,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updatePresenter(PhysicalControlParameterModel p) {
 		presenter.changed = false;
-		presenter.showContextMenu = p.id .getNumber()!= 274 && p.id.getNumber() != 279;
-		
+		presenter.showContextMenu = p.id.getNumber() != 274 && p.id.getNumber() != 279;
+
 		if (p instanceof RibbonParameterModel) {
 			RibbonParameterModel r = (RibbonParameterModel) p;
 			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;

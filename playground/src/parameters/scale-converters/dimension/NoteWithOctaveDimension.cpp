@@ -21,7 +21,6 @@ Glib::ustring NoteWithOctaveDimension::stringize(const tDisplayValue &displayVal
 
 Glib::ustring NoteWithOctaveDimension::getStingizerJS() const
 {
-#warning "TODO!"
   return "formatNote(cpValue)";
 }
 

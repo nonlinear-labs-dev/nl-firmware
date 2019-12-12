@@ -12,4 +12,9 @@ public class EditBufferPresenter {
     public ParameterPresenter selectedParameter;
     public String voiceGroup = "";
     public RGB voiceGroupIndicationColor = RGBA.transparent();
+
+    public RGB voiceGroupI_ForegroundColor = RGBA.transparent();
+    public RGB voiceGroupII_ForegroundColor = RGBA.transparent();
+    public RGB voiceGroupI_BackgroundColor = RGBA.transparent();
+    public RGB voiceGroupII_BackgroundColor = RGBA.transparent();
 }

@@ -9,6 +9,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.ScaleOffsetParameterModel;
+import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 
@@ -26,16 +27,28 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             case Global:
                 presenter.voiceGroup = "";
                 presenter.voiceGroupIndicationColor = RGBA.transparent();
+                presenter.voiceGroupI_ForegroundColor = RGBA.transparent();
+                presenter.voiceGroupII_ForegroundColor = RGBA.transparent();
+                presenter.voiceGroupI_BackgroundColor = RGBA.transparent();
+                presenter.voiceGroupII_BackgroundColor = RGBA.transparent();
                 break;
 
             case I:
                 presenter.voiceGroup = "\uE071";
                 presenter.voiceGroupIndicationColor = new RGB(0x26, 0xb0, 0xff);
+                presenter.voiceGroupI_ForegroundColor = new RGB(0x26, 0xb0, 0xff);
+                presenter.voiceGroupII_ForegroundColor = new Gray(0x08);
+                presenter.voiceGroupI_BackgroundColor = new Gray(0x66);
+                presenter.voiceGroupII_BackgroundColor = new Gray(0x4c);
                 break;
 
             case II:
                 presenter.voiceGroup = "\uE072";
                 presenter.voiceGroupIndicationColor = new RGB(0xff, 0x99, 0x33);
+                presenter.voiceGroupI_ForegroundColor = new Gray(0x08);
+                presenter.voiceGroupII_ForegroundColor = new RGB(0xff, 0x99, 0x33);
+                presenter.voiceGroupI_BackgroundColor = new Gray(0x4c);
+                presenter.voiceGroupII_BackgroundColor = new Gray(0x66);
                 break;
             }
 

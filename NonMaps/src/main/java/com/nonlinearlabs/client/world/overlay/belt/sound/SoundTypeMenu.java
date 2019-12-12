@@ -30,7 +30,7 @@ public class SoundTypeMenu extends SVGImage {
 				});
 			}
 
-			if (currentSetting != EditBufferModel.SoundType.Split) {
+			if (currentSetting == EditBufferModel.SoundType.Single) {
 				addChild(new ContextMenuItem(this, "Split") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -38,9 +38,7 @@ public class SoundTypeMenu extends SVGImage {
 						return super.click(eventPoint);
 					}
 				});
-			}
 
-			if (currentSetting != EditBufferModel.SoundType.Layer) {
 				addChild(new ContextMenuItem(this, "Layer") {
 					@Override
 					public Control click(Position eventPoint) {
