@@ -60,4 +60,7 @@ void FlangerGroup::init()
 
   appendParameter(new ModulateableParameter(this, { 310, getVoiceGroup() },
                                             ScaleConverter::get<Linear0To140StScaleConverter>(), 1.0, 140, 1400));
+
+  appendParameter(new ModulateableParameter(this, { 389, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.0, 100, 1000));
 }

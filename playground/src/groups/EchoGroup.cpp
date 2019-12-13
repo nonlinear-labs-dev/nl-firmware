@@ -41,4 +41,7 @@ void EchoGroup::init()
 
   appendParameter(new ModulateableParameter(this, { 233, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+
+  appendParameter(new ModulateableParameter(this, { 342, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 1.0, 100, 1000));
 }

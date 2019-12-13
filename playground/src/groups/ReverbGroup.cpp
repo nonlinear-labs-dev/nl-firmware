@@ -29,4 +29,7 @@ void ReverbGroup::init()
 
   appendParameter(new ModulateableParameter(this, { 241, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+
+  appendParameter(new ModulateableParameter(this, { 344, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 1.0, 100, 1000));
 }
