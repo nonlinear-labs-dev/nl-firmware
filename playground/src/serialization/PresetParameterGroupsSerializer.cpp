@@ -29,7 +29,10 @@ void PresetParameterGroupsSerializer::writeTagContent(Writer& writer) const
 void PresetParameterGroupsSerializer::readTagContent(Reader& reader) const
 {
   reader.onTag(PresetParameterGroupSerializer::getTagName(), [&](const Attributes& attr) mutable {
-    auto group = m_preset->findParameterGroup(GroupId(attr.get("id")));
+    auto groupID = GroupId(attr.get("id"));
+    auto group = m_preset->findParameterGroup(groupID);
+    if(!group)
+      group = m_preset->createParameterGroup(groupID);
     return new PresetParameterGroupSerializer(group);
   });
 }
