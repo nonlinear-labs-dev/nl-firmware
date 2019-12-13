@@ -95,36 +95,6 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
   nltools_assertAlways(msg.macrotimes.size() == mcT);
 }
 
-template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, size_t &mod)
-{
-  using MockParam = std::pair<int, double>;
-  using MockParams = std::vector<MockParam>;
-
-  for(auto p :
-      MockParams{ { 328, 0.0 }, { 330, 0.0 }, { 332, 0.0 }, { 334, 0.0 }, { 336, 0.0 }, { 338, 0.0 }, { 340, 0.0 } })
-  {
-    auto &item = msg.unmodulateables[unmod++];
-    item.id = p.first;
-    item.controlPosition = p.second;
-  }
-}
-
-template <typename tMsg> void insertMockedParameters(tMsg &msg, VoiceGroup vg, size_t &unmod, size_t &mod)
-{
-  using MockParam = std::pair<int, double>;
-  using MockParams = std::vector<MockParam>;
-
-  const auto index = static_cast<int>(vg);
-
-  for(auto p :
-      MockParams{ { 328, 0.0 }, { 330, 0.0 }, { 332, 0.0 }, { 334, 0.0 }, { 336, 0.0 }, { 338, 0.0 }, { 340, 0.0 } })
-  {
-    auto &item = msg.unmodulateables[index][unmod++];
-    item.id = p.first;
-    item.controlPosition = p.second;
-  }
-}
-
 template <typename tParameterType, typename tParameterArray>
 void forEachParameterInGroup(EditBuffer *eb, const GroupId &group, tParameterArray &array, size_t &index)
 {
@@ -150,10 +120,6 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
   size_t modR = 0;
   size_t modP = 0;
   size_t unMod = 0;
-
-  insertMockedParameters(msg, unMod, modP);
-  nltools_assertAlways(unMod == 7);
-  nltools_assertAlways(modP == 0);
 
   forEachParameterInGroup<MacroControlParameter>(editBuffer, { "MCs", VoiceGroup::Global }, msg.macros, mc);
   forEachParameterInGroup<ModulationRoutingParameter>(editBuffer, { "MCM", VoiceGroup::Global }, msg.hwamounts, modR);
@@ -203,10 +169,6 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
   {
     size_t modP = 0;
     size_t unMod = 0;
-
-    insertMockedParameters(msg, vg, unMod, modP);
-    nltools_assertAlways(unMod == 7);
-    nltools_assertAlways(modP == 0);
 
     auto arrayIndex = static_cast<int>(vg);
     for(auto &g : editBuffer->getParameterGroups(vg))

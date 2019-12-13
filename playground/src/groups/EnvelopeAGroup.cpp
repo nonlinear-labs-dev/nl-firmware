@@ -9,6 +9,7 @@
 #include <parameters/scale-converters/LinearBipolar1DbstScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar24DbScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar48DbScaleConverter.h>
+#include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 
@@ -63,4 +64,13 @@ void EnvelopeAGroup::init()
 
   appendParameter(new Parameter(this, { 18, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
                                 0.05, 100, 1000));
+
+  appendParameter(new Parameter(this, { 328, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60DbScaleConverter>(),
+                                0.0, 60, 600));
+
+  appendParameter(new Parameter(this, { 330, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60DbScaleConverter>(),
+                                0.0, 60, 600));
+
+  appendParameter(new Parameter(this, { 332, getVoiceGroup() },
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0.0, 100, 1000));
 }
