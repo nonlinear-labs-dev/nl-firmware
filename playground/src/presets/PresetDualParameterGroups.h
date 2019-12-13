@@ -20,7 +20,6 @@ class PresetDualParameterGroups : public AttributesOwner
   void init(const Preset* preset);
 
  protected:
-  void init();
 
   using GroupPtr = std::unique_ptr<PresetParameterGroup>;
   using GroupsMap = std::map<GroupId, GroupPtr>;

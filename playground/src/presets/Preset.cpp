@@ -377,6 +377,6 @@ PresetParameterGroup *Preset::createParameterGroup(GroupId id)
   }
   catch(...)
   {
-    return nullptr;
+    return findParameterGroup(id);
   }
 }
