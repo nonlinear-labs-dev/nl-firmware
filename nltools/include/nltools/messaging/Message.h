@@ -13,6 +13,29 @@ namespace nltools
     using tID = int;
     using tControlPosition = double;
 
+    namespace Keyboard
+    {
+      struct NoteDown
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::NoteDown;
+        }
+
+        int m_keyPos;
+      };
+
+      struct NoteUp
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::NoteUp;
+        }
+
+        int m_keyPos;
+      };
+    }
+
     namespace Setting
     {
       struct NoteShiftMessage
@@ -215,31 +238,31 @@ namespace nltools
     {
       struct Parameter
       {
-        uint16_t id{};
+        uint16_t id {};
         double controlPosition = 0;
         bool locked = false;
       };
 
       struct RibbonParameter : Parameter
       {
-        RibbonTouchBehaviour ribbonTouchBehaviour{};
-        RibbonReturnMode ribbonReturnMode{};
+        RibbonTouchBehaviour ribbonTouchBehaviour {};
+        RibbonReturnMode ribbonReturnMode {};
       };
 
       struct PedalParameter : Parameter
       {
-        PedalModes pedalMode{};
-        ReturnMode returnMode{};
+        PedalModes pedalMode {};
+        ReturnMode returnMode {};
       };
 
       struct AftertouchParameter : Parameter
       {
-        ReturnMode returnMode{};
+        ReturnMode returnMode {};
       };
 
       struct BenderParameter : Parameter
       {
-        ReturnMode returnMode{};
+        ReturnMode returnMode {};
       };
 
       struct MacroParameter : Parameter
