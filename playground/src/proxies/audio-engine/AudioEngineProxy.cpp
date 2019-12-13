@@ -54,7 +54,6 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
         auto &pItem = msg.hwsources[hwSource++];
         pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
-        pItem.locked = p->isLocked();
         pItem.returnMode = hwSrcParam->getReturnMode();
       }
       else if(isMaster || isScale)
@@ -62,28 +61,24 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
         auto &pItem = msg.globalparams[globalParams++];
         pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
-        pItem.locked = p->isLocked();
       }
       else if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
         auto &macro = msg.macros[mc++];
         macro.id = mcParameter->getID().getNumber();
         macro.controlPosition = mcParameter->getControlPositionValue();
-        macro.locked = mcParameter->isLocked();
       }
       else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
       {
         auto &hwAmount = msg.hwamounts[modR++];
         hwAmount.id = hwAmounts->getID().getNumber();
         hwAmount.controlPosition = hwAmounts->getControlPositionValue();
-        hwAmount.locked = hwAmounts->isLocked();
       }
       else if(MacroControlsGroup::isMacroTime(p->getID()))
       {
         auto &mcTime = msg.macrotimes[mcT++];
         mcTime.id = p->getID().getNumber();
         mcTime.controlPosition = p->getControlPositionValue();
-        mcTime.locked = p->isLocked();
       }
     }
   }
@@ -105,7 +100,6 @@ void forEachParameterInGroup(EditBuffer *eb, const GroupId &group, tParameterArr
       auto &msgParam = array[index++];
       msgParam.controlPosition = param->getControlPositionValue();
       msgParam.id = param->getID().getNumber();
-      msgParam.locked = param->isLocked();
     }
   }
 }
@@ -143,14 +137,12 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
           auto &unisonVoices = msg.unisonVoices;
           unisonVoices.id = 249;
           unisonVoices.controlPosition = p->getControlPositionValue();
-          unisonVoices.locked = p->isLocked();
         }
         else
         {
           auto &unModulateable = msg.unmodulateables[unMod++];
           unModulateable.id = p->getID().getNumber();
           unModulateable.controlPosition = p->getControlPositionValue();
-          unModulateable.locked = p->isLocked();
         }
       }
     }
@@ -190,14 +182,12 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
             auto &unisonVoices = msg.unisonVoices[arrayIndex];
             unisonVoices.id = 249;
             unisonVoices.controlPosition = p->getControlPositionValue();
-            unisonVoices.locked = p->isLocked();
           }
           else
           {
             auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
             unModulateable.id = p->getID().getNumber();
             unModulateable.controlPosition = p->getControlPositionValue();
-            unModulateable.locked = p->isLocked();
           }
         }
       }

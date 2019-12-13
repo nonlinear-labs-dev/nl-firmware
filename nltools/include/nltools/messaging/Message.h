@@ -63,8 +63,6 @@ namespace nltools
       tID parameterId;
       tControlPosition controlPosition;
       ReturnMode returnMode;
-      bool lock;
-      VoiceGroup voiceGroup;
     };
 
     struct HWAmountChangedMessage
@@ -76,8 +74,6 @@ namespace nltools
 
       tID parameterId;
       tControlPosition controlPosition;
-      bool lock;
-      VoiceGroup voiceGroup;
     };
 
     struct MacroControlChangedMessage
@@ -89,8 +85,6 @@ namespace nltools
 
       tID parameterId;
       tControlPosition controlPosition;
-      bool lock;
-      VoiceGroup voiceGroup;
     };
 
     struct UnmodulateableParameterChangedMessage
@@ -102,7 +96,6 @@ namespace nltools
 
       tID parameterId;
       tControlPosition controlPosition;
-      bool lock;
       VoiceGroup voiceGroup;
     };
 
@@ -119,7 +112,6 @@ namespace nltools
       tControlPosition mcAmount;
       tControlPosition mcUpper;
       tControlPosition mcLower;
-      bool lock;
       VoiceGroup voiceGroup;
     };
 
@@ -217,7 +209,6 @@ namespace nltools
       {
         uint16_t id{};
         double controlPosition = 0;
-        bool locked = false;
       };
 
       struct RibbonParameter : Parameter
