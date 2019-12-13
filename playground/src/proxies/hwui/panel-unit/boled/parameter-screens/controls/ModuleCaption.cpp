@@ -6,6 +6,7 @@
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include "parameters/mono-mode-parameters/MonoParameter.h"
 
 ModuleCaption::ModuleCaption(const Rect &pos)
     : super(pos)
@@ -35,7 +36,7 @@ bool ModuleCaption::enableVoiceGroupSuffix() const
   if(selected->getVoiceGroup() == VoiceGroup::Global)
     return false;
 
-  if(dynamic_cast<MonoParameter *>(selected))
+  if(dynamic_cast<MonoParameter<Parameter> *>(selected))
     return eb->getType() == SoundType::Split;
   if(dynamic_cast<UnisonGroup *>(selected->getParent()))
     return eb->getType() == SoundType::Split;
@@ -55,7 +56,7 @@ void ModuleCaption::updateText(Parameter *newOne)
     if(enableVoiceGroupSuffix())
     {
       auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
-      auto suffix = std::string {};
+      auto suffix = std::string{};
       if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
         suffix = " " + toString(sel);
       setText(groupName + suffix);

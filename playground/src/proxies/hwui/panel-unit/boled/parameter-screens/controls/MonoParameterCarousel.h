@@ -10,7 +10,7 @@ public:
   void setup(Parameter *selectedParameter) override;
   static VoiceGroup getVoiceGroup();
 
-  void setupMonoControls(MonoParameter *parameter);
+  void setupMonoControls(MonoParameter<Parameter> *parameter);
   void rebuild();
 private:
   sigc::connection m_editbufferConnection;

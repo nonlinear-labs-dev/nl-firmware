@@ -32,7 +32,7 @@ void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected,
 
   if(eb->getType() == SoundType::Single || newSelectionVoiceGroup == VoiceGroup::Global)
     setText({ "", 0 });
-  else if(eb->getType() == SoundType::Layer && dynamic_cast<MonoParameter*>(newSelection))
+  else if(eb->getType() == SoundType::Layer && dynamic_cast<MonoParameter<Parameter>*>(newSelection))
     setText({ "", 0 });
   else
     setText({ getTextFor(newSelectionVoiceGroup), 0 });

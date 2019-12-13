@@ -53,3 +53,51 @@ bool MonoModeParameterLayout::onButton(Buttons i, bool down, ButtonModifiers mod
 
   return ParameterSelectLayout2::onButton(i, down, modifiers);
 }
+
+Parameter *MonoModeModulateableParameterLayout::getCurrentParameter() const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  return eb->getSelected();
+}
+
+MonoModeModulateableParameterLayout::MonoModeModulateableParameterLayout()
+    : ModulateableParameterSelectLayout2()
+{
+}
+
+void MonoModeModulateableParameterLayout::init()
+{
+  ModulateableParameterSelectLayout2::init();
+
+  for(auto &c : getControls<Button>())
+  {
+    if(c->getButtonPos(Buttons::BUTTON_C) == c->getPosition())
+    {
+      c->setText({ "^", 0 });
+    }
+  }
+}
+
+Carousel *MonoModeModulateableParameterLayout::createCarousel(const Rect &rect)
+{
+  return new MonoParameterCarousel(rect);
+}
+
+bool MonoModeModulateableParameterLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  if(down && i == Buttons::BUTTON_A)
+  {
+    if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+    {
+      return true;
+    }
+  }
+
+  if(down && i == Buttons::BUTTON_C)
+  {
+    Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
+    return true;
+  }
+
+  return ModulateableParameterSelectLayout2::onButton(i, down, modifiers);
+}

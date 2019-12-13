@@ -1,6 +1,5 @@
 #pragma once
 
-#include <parameters/mono-mode-parameters/MonoParameter.h>
 #include "proxies/hwui/controls/Label.h"
 #include <Application.h>
 #include <presets/PresetManager.h>

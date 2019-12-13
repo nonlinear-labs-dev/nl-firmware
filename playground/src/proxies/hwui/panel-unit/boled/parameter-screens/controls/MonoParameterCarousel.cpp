@@ -17,7 +17,7 @@ void MonoParameterCarousel::setup(Parameter *selectedParameter)
 {
   clear();
 
-  if(auto monoParam = dynamic_cast<MonoParameter *>(selectedParameter))
+  if(auto monoParam = dynamic_cast<MonoParameter<Parameter> *>(selectedParameter))
   {
     setupMonoControls(monoParam);
   }
@@ -49,7 +49,7 @@ void MonoParameterCarousel::rebuild()
   setup(s);
 }
 
-void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
+void MonoParameterCarousel::setupMonoControls(MonoParameter<Parameter> *parameter)
 {
   const auto ySpaceing = 3;
   const int miniParamHeight = 12;
@@ -60,7 +60,7 @@ void MonoParameterCarousel::setupMonoControls(MonoParameter *parameter)
 
   for(int i : { 364, 365, 366, 367 })
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({i, vg});
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ i, vg });
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     miniParam->setSelected(param == parameter);
     addControl(miniParam);
