@@ -108,14 +108,7 @@ template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, s
     item.controlPosition = p.second;
   }
 
-  for(auto p : MockParams{ { 346, 0.0 },
-                           { 348, 0.5 },
-                           { 350, 0.5 },
-                           { 352, 0.5 },
-                           { 354, 0.5 },
-                           { 389, 0.0 },
-                           { 342, 1.0 },
-                           { 344, 1.0 } })
+  for(auto p : MockParams{ { 389, 0.0 }, { 342, 1.0 }, { 344, 1.0 } })
   {
     auto &item = msg.modulateables[mod++];
     item.id = p.first;
@@ -140,14 +133,7 @@ template <typename tMsg> void insertMockedParameters(tMsg &msg, VoiceGroup vg, s
     item.controlPosition = p.second;
   }
 
-  for(auto p : MockParams{ { 346, 0.0 },
-                           { 348, 0.5 },
-                           { 350, 0.5 },
-                           { 352, 0.5 },
-                           { 354, 0.5 },
-                           { 389, 0.0 },
-                           { 342, 0.0 },
-                           { 344, 0.0 } })
+  for(auto p : MockParams{ { 389, 0.0 }, { 342, 0.0 }, { 344, 0.0 } })
   {
     auto &item = msg.modulateables[index][mod++];
     item.id = p.first;
@@ -185,7 +171,7 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
 
   insertMockedParameters(msg, unMod, modP);
   nltools_assertAlways(unMod == 7);
-  nltools_assertAlways(modP == 8);
+  nltools_assertAlways(modP == 3);
 
   forEachParameterInGroup<MacroControlParameter>(editBuffer, { "MCs", VoiceGroup::Global }, msg.macros, mc);
   forEachParameterInGroup<ModulationRoutingParameter>(editBuffer, { "MCM", VoiceGroup::Global }, msg.hwamounts, modR);
@@ -238,7 +224,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
 
     insertMockedParameters(msg, vg, unMod, modP);
     nltools_assertAlways(unMod == 7);
-    nltools_assertAlways(modP == 8);
+    nltools_assertAlways(modP == 3);
 
     auto arrayIndex = static_cast<int>(vg);
     for(auto &g : editBuffer->getParameterGroups(vg))

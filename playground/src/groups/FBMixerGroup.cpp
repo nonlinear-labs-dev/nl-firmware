@@ -52,4 +52,19 @@ void FBMixerGroup::init()
 
   appendParameter(new ModulateableParameter(this, { 299, getVoiceGroup() },
                                             ScaleConverter::get<ParabolicGainDbScaleConverter>(), 0.38, 100, 1000));
+
+  appendParameter(new ModulateableParameter(
+      this, { 346, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0.0, 100, 1000));
+
+  appendParameter(new ModulateableParameter(this, { 348, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+
+  appendParameter(new ModulateableParameter(this, { 350, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+
+  appendParameter(new ModulateableParameter(this, { 352, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+
+  appendParameter(new ModulateableParameter(this, { 354, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
 }
