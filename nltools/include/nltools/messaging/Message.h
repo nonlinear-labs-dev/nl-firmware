@@ -269,7 +269,7 @@ namespace nltools
       {
       };
 
-      struct SplitPoint : Parameter
+      struct SplitPoint : ModulateableParameter
       {
       };
     }

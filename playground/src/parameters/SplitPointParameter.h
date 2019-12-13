@@ -1,7 +1,7 @@
 #pragma once
-#include "Parameter.h"
+#include "ModulateableParameter.h"
 
-class SplitPointParameter : public Parameter
+class SplitPointParameter : public ModulateableParameter
 {
  public:
   SplitPointParameter(ParameterGroup *group, const ParameterId& id);
