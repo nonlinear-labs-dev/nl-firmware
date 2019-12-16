@@ -31,7 +31,7 @@
           "Class": "HighlightButton",
           "Position": "BUTTON_A",
           "Init": {
-            "Text[Text]": "Convert To"
+            "Text[Text]": "Convert to"
           }
         },
         "ButtonB": {
@@ -74,7 +74,8 @@
         "BUTTON_B": "SwitchToInitDetail",
         "BUTTON_C": "SwitchToVoicesDetail",
         "BUTTON_D": "OpenMasterParameter",
-        "BUTTON_ENTER": "FireButtonMenu"
+        "BUTTON_ENTER": "FireButtonMenu",
+        "BUTTON_SOUND": "SwitchToInitDetail"
       }
     }
   }
