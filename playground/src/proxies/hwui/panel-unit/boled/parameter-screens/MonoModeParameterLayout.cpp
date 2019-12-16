@@ -96,9 +96,9 @@ bool MonoModeModulateableParameterLayout::onButton(Buttons i, bool down, ButtonM
 
   if(down && i == Buttons::BUTTON_C)
   {
-    if(auto current = dynamic_cast<const ModulateableMonoParameter *>(
-           Application::get().getPresetManager()->getEditBuffer()->getSelected());
-       current->getModulationSource() == MacroControls::NONE)
+    auto current = dynamic_cast<const ModulateableMonoParameter *>(
+        Application::get().getPresetManager()->getEditBuffer()->getSelected());
+    if(current && current->getModulationSource() == MacroControls::NONE)
     {
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
       return true;
