@@ -63,19 +63,33 @@ namespace Detail
 
     DFBLayout *createLayout(FocusAndMode focusAndMode) const override
     {
+      using dispatch = std::is_base_of<ModulateableParameter, tParameter>;
+      return createLayoutImpl(focusAndMode, dispatch());
+    }
+
+    DFBLayout *createLayoutImpl(FocusAndMode focusAndMode, std::true_type) const
+    {
       switch(focusAndMode.mode)
       {
         case UIMode::Select:
         default:
-          if constexpr(std::is_base_of_v<ModulateableParameter, tParameter>)
-            return new ModulateableParameterSelectLayout2();
-          else
-            return new UnisonLayout();
+          return new ModulateableParameterSelectLayout2();
         case UIMode::Edit:
-          if constexpr(std::is_base_of_v<ModulateableParameter, tParameter>)
-            return new ModulateableParameterEditLayout2();
-          else
-            return new UnmodulateableParameterEditLayout2();
+          return new ModulateableParameterEditLayout2();
+        case UIMode::Info:
+          return new ParameterInfoLayout();
+      }
+    }
+
+    DFBLayout *createLayoutImpl(FocusAndMode focusAndMode, std::false_type) const
+    {
+      switch(focusAndMode.mode)
+      {
+        case UIMode::Select:
+        default:
+          return new UnisonLayout();
+        case UIMode::Edit:
+          return new UnmodulateableParameterEditLayout2();
         case UIMode::Info:
           return new ParameterInfoLayout();
       }
