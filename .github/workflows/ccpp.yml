@@ -2,7 +2,7 @@ name: C/C++ CI
 
 on: [push]
 
-jobs:
+jobs
   build:
 
     runs-on: ubuntu-latest
@@ -13,10 +13,16 @@ jobs:
       run: sudo apt-get install libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
     - name: Download GWT
       run: cd /home/runner/work/ && wget https://storage.googleapis.com/gwt-releases/gwt-2.8.2.zip 
-    - name: unpack GWT  
+    - name: Unpack GWT  
       run: unzip /home/runner/work/gwt-2.8.2.zip -d /home/runner/work/gwt
     - uses: actions/checkout@v1
-    - name: configure
-      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt/gwt-2.8.2
-    - name: make
-      run: cd /home/runner/work/build && make -j4 -l4 install
+    - name: Configure
+      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt/gwt-2.8.2 -DCMAKE_INSTALL_PREFIX=/home/runner/work/out
+    - name: Make
+      run: cd /home/runner/work/build && make -j `nproc` install
+    - name: Pack artifacts
+      run: cd /home/runner/work && tar -zcvf /home/runner/work/C15-build.tar.gz ./out/
+    - uses: actions/upload-artifact@v1
+      with:
+        name: C15-build
+        path: /home/runner/work/C15-build.tar.gz
