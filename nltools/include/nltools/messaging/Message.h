@@ -345,7 +345,7 @@ namespace nltools
       std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 96>, 2> unmodulateables;
 
-      std::array<ParameterGroups::UnmodulateableParameter, 2> unisonVoices;
+      ParameterGroups::UnmodulateableParameter unisonVoices;
 
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };

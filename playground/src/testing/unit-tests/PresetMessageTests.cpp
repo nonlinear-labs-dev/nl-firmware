@@ -63,7 +63,7 @@ template <int vg, typename tMsg> void collectDual(const tMsg &msg)
 template <int vg> void collectDual(const nltools::msg::LayerPresetMessage &msg)
 {
   std::unordered_map<int, int> count;
-  collectID(msg.unisonVoices[vg], count);
+  collectID(msg.unisonVoices, count);
   collectIDs(msg.unmodulateables[vg], count);
   collectIDs(msg.modulateables[vg], count);
   collectIDs(msg.hwamounts, count);

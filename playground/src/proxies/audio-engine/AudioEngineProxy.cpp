@@ -33,6 +33,8 @@ void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transac
   });
 }
 
+constexpr auto cUnisonVoicesParameterNumber = 249;
+
 template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer *editBuffer)
 {
   size_t hwSource = 0;
@@ -131,10 +133,10 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
       }
       else
       {
-        if(p->getID().getNumber() == 249)
+        if(p->getID().getNumber() == cUnisonVoicesParameterNumber)
         {
           auto &unisonVoices = msg.unisonVoices;
-          unisonVoices.id = 249;
+          unisonVoices.id = cUnisonVoicesParameterNumber;
           unisonVoices.controlPosition = p->getControlPositionValue();
         }
         else
@@ -176,13 +178,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
         }
         else
         {
-          if(p->getID().getNumber() == 249)
-          {
-            auto &unisonVoices = msg.unisonVoices[arrayIndex];
-            unisonVoices.id = 249;
-            unisonVoices.controlPosition = p->getControlPositionValue();
-          }
-          else
+          if(p->getID().getNumber() != cUnisonVoicesParameterNumber)
           {
             auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
             unModulateable.id = p->getID().getNumber();
@@ -212,6 +208,16 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
     t.controlPosition = sp->getControlPositionValue();
   }
 
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    if(auto voicesParameter = editBuffer->findParameterByID({ cUnisonVoicesParameterNumber, vg }))
+    {
+      auto &unisonVoices = msg.unisonVoices[static_cast<int>(vg)];
+      unisonVoices.id = cUnisonVoicesParameterNumber;
+      unisonVoices.controlPosition = voicesParameter->getControlPositionValue();
+    }
+  }
+
   return msg;
 }
 
@@ -221,6 +227,14 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
   fillDualMessage(msg, editBuffer);
+
+  if(auto unisonVoicesParameter = editBuffer->findParameterByID({ cUnisonVoicesParameterNumber, VoiceGroup::I }))
+  {
+    auto &unisonVoices = msg.unisonVoices;
+    unisonVoices.id = cUnisonVoicesParameterNumber;
+    unisonVoices.controlPosition = unisonVoicesParameter->getControlPositionValue();
+  }
+
   return msg;
 }
 

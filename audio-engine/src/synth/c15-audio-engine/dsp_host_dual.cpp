@@ -1857,7 +1857,7 @@ void dsp_host_dual::recallLayer()
   auto msg = &m_preloaded_layer_data;
   // reset detection: currently only unison voices (mono stuff should be taken into account as well)
   auto unison = evalVoiceChg(C15::Properties::LayerId::I,
-                             msg->unisonVoices[0]);  // temporary: unison array instead of single unison param
+                             msg->unisonVoices);  // temporary: unison array instead of single unison param
   if(m_layer_changed)
   {
     if(LOG_RESET)
