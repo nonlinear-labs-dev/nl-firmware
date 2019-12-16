@@ -5,6 +5,7 @@
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
 #include <groups/MonoGroup.h>
+#include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -39,7 +40,8 @@ bool ModuleCaption::enableVoiceGroupSuffix() const
     return false;
 
   if(MonoGroup::isMonoParameter(selected))
-    return eb->getType() == SoundType::Split;
+    return eb->getType() == SoundType::Split
+        || (dynamic_cast<const MonoGlideTimeParameter *>(selected) && eb->getType() == SoundType::Layer);
   if(dynamic_cast<UnisonGroup *>(selected->getParent()))
     return eb->getType() == SoundType::Split;
 

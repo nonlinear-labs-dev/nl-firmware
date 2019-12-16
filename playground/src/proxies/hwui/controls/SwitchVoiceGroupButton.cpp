@@ -6,6 +6,7 @@
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <groups/MonoGroup.h>
+#include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)
@@ -34,7 +35,8 @@ void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected,
 
   if(eb->getType() == SoundType::Single || newSelectionVoiceGroup == VoiceGroup::Global)
     setText({ "", 0 });
-  else if(eb->getType() == SoundType::Layer && MonoGroup::isMonoParameter(newSelection))
+  else if(eb->getType() == SoundType::Layer && MonoGroup::isMonoParameter(newSelection)
+          && !dynamic_cast<const MonoGlideTimeParameter*>(newSelection))
     setText({ "", 0 });
   else
     setText({ getTextFor(newSelectionVoiceGroup), 0 });

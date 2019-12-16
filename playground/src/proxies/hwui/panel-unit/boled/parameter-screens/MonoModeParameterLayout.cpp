@@ -6,6 +6,7 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
+#include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 
 Parameter *MonoModeParameterLayout::getCurrentParameter() const
 {
@@ -40,7 +41,9 @@ bool MonoModeParameterLayout::onButton(Buttons i, bool down, ButtonModifiers mod
 {
   if(down && i == Buttons::BUTTON_A)
   {
-    if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    if((Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+       && (!dynamic_cast<const MonoGlideTimeParameter *>(eb->getSelected()) && eb->getType() == SoundType::Layer))
     {
       return true;
     }
@@ -88,7 +91,9 @@ bool MonoModeModulateableParameterLayout::onButton(Buttons i, bool down, ButtonM
 {
   if(down && i == Buttons::BUTTON_A)
   {
-    if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    if((Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+       && (!dynamic_cast<const MonoGlideTimeParameter *>(eb->getSelected()) && eb->getType() == SoundType::Layer))
     {
       return true;
     }
