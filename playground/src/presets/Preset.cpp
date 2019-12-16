@@ -367,16 +367,16 @@ void Preset::writeGroups(Writer &writer, const Preset *other) const
       g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first));
 }
 
-PresetParameterGroup *Preset::createParameterGroup(GroupId id)
+PresetParameterGroup *Preset::findOrCreateParameterGroup(const GroupId &id)
 {
-  try
+  if(auto ret = findParameterGroup(id))
+  {
+    return ret;
+  }
+  else
   {
     auto &vgMap = m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())];
-    auto ret = vgMap.insert(std::pair{ id.getName(), std::make_unique<PresetParameterGroup>() });
-    return ret.first->second.get();
-  }
-  catch(...)
-  {
-    return findParameterGroup(id);
+    auto inserted = vgMap.insert(std::pair{ id.getName(), std::make_unique<PresetParameterGroup>() });
+    return inserted.first->second.get();
   }
 }

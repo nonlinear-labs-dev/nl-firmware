@@ -98,5 +98,5 @@ class Preset : public PresetDualParameterGroups
 
   friend class RecallParameterGroups;
 
-  PresetParameterGroup *createParameterGroup(GroupId id);
+  PresetParameterGroup *findOrCreateParameterGroup(const GroupId& id);
 };
