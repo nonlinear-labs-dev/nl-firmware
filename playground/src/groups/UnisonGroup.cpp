@@ -10,6 +10,7 @@
 #include "parameters/scale-converters/FineBipolar12STScaleConverter.h"
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/UnmodulatebaleParameterLayouts.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/HWUI.h>
@@ -66,9 +67,15 @@ namespace Detail
       {
         case UIMode::Select:
         default:
-          return new UnisonLayout();
+          if constexpr(std::is_base_of_v<ModulateableParameter, tParameter>)
+            return new ModulateableParameterSelectLayout2();
+          else
+            return new UnisonLayout();
         case UIMode::Edit:
-          return new UnmodulateableParameterEditLayout2();
+          if constexpr(std::is_base_of_v<ModulateableParameter, tParameter>)
+            return new ModulateableParameterEditLayout2();
+          else
+            return new UnmodulateableParameterEditLayout2();
         case UIMode::Info:
           return new ParameterInfoLayout();
       }
