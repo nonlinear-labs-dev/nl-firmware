@@ -63,7 +63,8 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
   assert(id < C15::Config::tcd_elements);
 
   auto d = C15::ParameterList[id];
-  return (d.m_pg.m_inactive_cp && strlen(d.m_pg.m_inactive_cp) > 0) ? std::stod(d.m_pg.m_inactive_cp) : 0;
+  return (d.m_pg.m_inactive_cp && strlen(d.m_pg.m_inactive_cp) > 0) ? std::stod(d.m_pg.m_inactive_cp)
+                                                                    : getInvalidSignalPathIndication();
 }
 
 bool ParameterDB::isActive(const Parameter *p) const

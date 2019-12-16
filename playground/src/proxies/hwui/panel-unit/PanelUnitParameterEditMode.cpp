@@ -432,7 +432,6 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
     if(auto p = dynamic_cast<PhysicalControlParameter *>(selParam))
     {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       auto selModRouter = p->getUiSelectedModulationRouter();
 
       if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID(selModRouter)))
