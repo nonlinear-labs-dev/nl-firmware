@@ -17,6 +17,6 @@ jobs:
       run: unzip /home/runner/work/gwt-2.8.2.zip -d /home/runner/work/gwt
     - uses: actions/checkout@v1
     - name: configure
-      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt
+      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt/gwt-2.8.2
     - name: make
       run: cd /home/runner/work/build && make -j4 -l4 install
