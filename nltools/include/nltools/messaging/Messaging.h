@@ -29,7 +29,9 @@ namespace nltools
 
          EditBufferContext,
 
-         NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting);
+         NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting,
+
+         NoteDown, NoteUp);
 
     namespace detail
     {

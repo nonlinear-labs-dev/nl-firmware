@@ -20,6 +20,7 @@ class PresetDualParameterGroups : public AttributesOwner
   void init(const Preset* preset);
 
  protected:
+
   using GroupPtr = std::unique_ptr<PresetParameterGroup>;
   using GroupsMap = std::map<GroupId, GroupPtr>;
   SoundType m_type;
