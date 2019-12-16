@@ -7,9 +7,16 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    steps:
+    
+    steps:          
+    - name: Install Packages
+      run: sudo apt-get install libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
+    - name: Download GWT
+      run: wget https://goo.gl/pZZPXS /home/runner/work/
+    - name: unpack GWT  
+      run: gunzip /home/runner/work/gwt-2.8.2.zip
     - uses: actions/checkout@v1
     - name: configure
-      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15
+      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt-2.8.2
     - name: make
       run: make
