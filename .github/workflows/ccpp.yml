@@ -12,7 +12,7 @@ jobs:
     - name: Install Packages
       run: sudo apt-get install libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
     - name: Download GWT
-      run: wget https://goo.gl/pZZPXS /home/runner/work/
+      run: cd /home/runner/work/ && wget https://storage.googleapis.com/gwt-releases/gwt-2.8.2.zip 
     - name: unpack GWT  
       run: gunzip /home/runner/work/gwt-2.8.2.zip
     - uses: actions/checkout@v1
