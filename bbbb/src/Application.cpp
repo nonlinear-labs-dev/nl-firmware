@@ -19,7 +19,8 @@ char *Application::initStatic(Application *app, char *argv)
   theApp = app;
   Configuration conf;
   conf.offerEndpoints = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed };
-  conf.useEndpoints = { { EndPoint::Playground, app->getOptions()->getPlaygroundHost() } };
+  conf.useEndpoints = { { EndPoint::Playground, app->getOptions()->getPlaygroundHost() },
+                        { EndPoint::AudioEngine, app->getOptions()->getAudioEngineHost() } };
   nltools::msg::init(conf);
   return argv;
 }

@@ -8,6 +8,7 @@
 #include "PlayPanel.h"
 #include "Ribbon.h"
 #include "LowerRibbon.h"
+#include "Keyboard.h"
 
 namespace nltools
 {
@@ -34,6 +35,7 @@ class Window : public Gtk::Window
   PanelUnit m_editPanel;
   Ribbon m_ribbonUp;
   LowerRibbon m_ribbonDown;
+  Keyboard m_keyboard;
 };
 
 #endif
