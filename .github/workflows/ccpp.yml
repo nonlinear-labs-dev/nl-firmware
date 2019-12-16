@@ -10,6 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: configure
-      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15
+      run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15
     - name: make
       run: make
