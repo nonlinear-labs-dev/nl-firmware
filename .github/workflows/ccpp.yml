@@ -7,7 +7,6 @@ jobs
 
     runs-on: ubuntu-latest
     
-    
     steps:          
     - name: Install Packages
       run: sudo apt-get install libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
