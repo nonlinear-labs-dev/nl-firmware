@@ -19,4 +19,4 @@ jobs:
     - name: configure
       run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt
     - name: make
-      run: make
+      run: cd /home/runner/work/build && make -j4 -l4 install
