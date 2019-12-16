@@ -5,7 +5,6 @@ function runShell() {
     docker run \
         -u $(id -u ${USER}):${DOCKER_GROUP_ID} \
         --rm \
-        -it \
         -v ${WORKDIR}:/workdir ${DOCKERNAME} \
             bash -c "$PREPARE_COMMANDS && $1"
     return $?
