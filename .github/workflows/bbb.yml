@@ -1,0 +1,14 @@
+name: cross building for beagle bone
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Do docker cross build
+      run: ./build-tools/cross-build.sh
+    
