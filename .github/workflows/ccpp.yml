@@ -18,7 +18,7 @@ jobs:
     - name: Configure
       run: mkdir /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt/gwt-2.8.2 -DCMAKE_INSTALL_PREFIX=/home/runner/work/out
     - name: Make
-      run: cd /home/runner/work/build && make -j `nproc` install
+      run: cd /home/runner/work/build && make install
     - name: Pack artifacts
       run: cd /home/runner/work && tar -zcvf /home/runner/work/C15-build.tar.gz ./out/
     - uses: actions/upload-artifact@v1
