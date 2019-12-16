@@ -83,7 +83,7 @@ function checkPreconditions() {
 function checkoutNonlinux() {
     echo ${FUNCNAME[0]}
     if [ ! -d "$WORKDIR/nonlinux" ]; then
-        git -C "$WORKDIR" clone git@github.com:nonlinear-labs-dev/nonlinux.git || quit "Could not clone nonlinux repo!"
+        git -C "$WORKDIR" clone https://github.com/nonlinear-labs-dev/nonlinux.git || quit "Could not clone nonlinux repo!"
     fi
     git -C "$WORKDIR/nonlinux" fetch
     git -C "$WORKDIR/nonlinux" checkout project-restructuring || quit "Could not checkout branch 'nonlinear_2016.05' in nonlinux repo!"
@@ -118,7 +118,7 @@ function injectC15Dir() {
 function injectC15Branch() {
     echo ${FUNCNAME[0]}
     if [ ! -d "$WORKDIR/C15" ]; then
-        git -C "$WORKDIR" clone git@github.com:nonlinear-labs-dev/C15.git || quit "Could not clone C15 repo!"
+        git -C "$WORKDIR" clone https://github.com/nonlinear-labs-dev/C15.git || quit "Could not clone C15 repo!"
     fi 
 
     C15DIR="$WORKDIR/C15" 
