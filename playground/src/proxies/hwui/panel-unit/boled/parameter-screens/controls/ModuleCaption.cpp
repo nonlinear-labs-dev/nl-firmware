@@ -2,11 +2,13 @@
 #include "ModuleCaption.h"
 #include "Application.h"
 #include <proxies/hwui/HWUI.h>
+#include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
+#include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
+#include <groups/MonoGroup.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
-#include "parameters/mono-mode-parameters/MonoParameter.h"
 
 ModuleCaption::ModuleCaption(const Rect &pos)
     : super(pos)
@@ -36,7 +38,7 @@ bool ModuleCaption::enableVoiceGroupSuffix() const
   if(selected->getVoiceGroup() == VoiceGroup::Global)
     return false;
 
-  if(dynamic_cast<MonoParameter<Parameter> *>(selected))
+  if(MonoGroup::isMonoParameter(selected))
     return eb->getType() == SoundType::Split;
   if(dynamic_cast<UnisonGroup *>(selected->getParent()))
     return eb->getType() == SoundType::Split;

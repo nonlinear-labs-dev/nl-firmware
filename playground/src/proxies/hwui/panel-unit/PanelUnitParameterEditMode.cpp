@@ -558,7 +558,8 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
     for(auto t : mc->getTargets())
     {
       auto buttonID = m_mappings.findButton(t->getID().getNumber());
-      panelUnit.getLED(buttonID)->setState(TwoStateLED::BLINK);
+      if(buttonID != Buttons::INVALID)
+        panelUnit.getLED(buttonID)->setState(TwoStateLED::BLINK);
     }
 
     m_connectionToMacroControl

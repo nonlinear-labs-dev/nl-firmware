@@ -1,13 +1,11 @@
 #pragma once
-#include "MonoParameter.h"
-#include "parameters/ModulateableParameter.h"
+#include "ModulateableMonoParameter.h"
 
-class MonoGlideTimeParameter : public ModulateableParameter
+class MonoGlideTimeParameter : public ModulateableMonoParameter
 {
  public:
-  MonoGlideTimeParameter(ParameterGroup* group, ParameterId id);
+  MonoGlideTimeParameter(ParameterGroup* group, const ParameterId& id);
 
   Glib::ustring getLongName() const override;
   Glib::ustring getShortName() const override;
-  DFBLayout* createLayout(FocusAndMode focusAndMode) const override;
 };

@@ -5,6 +5,9 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
+#include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
+#include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
+#include <groups/MonoGroup.h>
 
 MonoParameterCarousel::MonoParameterCarousel(const Rect &rect)
     : ParameterCarousel(rect)
@@ -17,9 +20,9 @@ void MonoParameterCarousel::setup(Parameter *selectedParameter)
 {
   clear();
 
-  if(auto monoParam = dynamic_cast<MonoParameter<Parameter> *>(selectedParameter))
+  if(MonoGroup::isMonoParameter(selectedParameter))
   {
-    setupMonoControls(monoParam);
+    setupMonoControls(selectedParameter);
   }
 
   if(getNumChildren() == 0)
@@ -49,7 +52,7 @@ void MonoParameterCarousel::rebuild()
   setup(s);
 }
 
-void MonoParameterCarousel::setupMonoControls(MonoParameter<Parameter> *parameter)
+void MonoParameterCarousel::setupMonoControls(Parameter *parameter)
 {
   const auto ySpaceing = 3;
   const int miniParamHeight = 12;

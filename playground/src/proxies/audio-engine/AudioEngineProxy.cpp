@@ -13,7 +13,6 @@
 #include <parameters/RibbonParameter.h>
 #include <parameters/ScaleParameter.h>
 #include <parameters/PhysicalControlParameter.h>
-#include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlsGroup.h>
