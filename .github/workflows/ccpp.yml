@@ -10,7 +10,7 @@ jobs:
     
     steps:          
     - name: Install Packages
-      run: sudo apt-get install libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
+      run: sudo apt-get install libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
     - name: Download GWT
       run: cd /home/runner/work/ && wget https://storage.googleapis.com/gwt-releases/gwt-2.8.2.zip 
     - name: unpack GWT  
