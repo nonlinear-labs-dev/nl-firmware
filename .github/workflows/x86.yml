@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: x86-Build
 
 on: [push]
 
@@ -7,7 +7,17 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    steps:          
+    steps:       
+    - name: Cache GWT
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/work/gwt/gwt-2.8.2
+        key: ${{ runner.os }}-gwt-2.8.2
+    - name: Cache Build
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/work/build
+        key: ${{ runner.os }}-${{ github.ref }}   
     - name: Install Packages
       run: sudo apt-get install libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
     - name: Download GWT
