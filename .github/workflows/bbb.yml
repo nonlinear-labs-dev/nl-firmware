@@ -12,12 +12,12 @@ jobs:
       uses: actions/cache@v1
       with:
        path: /home/runner/work/nonlinux
-       key: ${{ runner.os }}-gwt-2.8.2
+       key: ${{ runner.os }}-nonlinux-${{ github.ref }}
     - uses: actions/checkout@v1
     - name: Clone
       run: git -C /home/runner/work clone https://github.com/nonlinear-labs-dev/nonlinux.git
     - name: Checkout
       run: cd /home/runner/work/nonlinux && git fetch && git checkout project-restructuring 
     - name: Build
-      run: cd /home/runner/work/nonlinux && make nonlinear_defconfig && make"
+      run: cd /home/runner/work/nonlinux && make nonlinear_defconfig && make
     
