@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - name: Install Packages
-      run: sudo apt-get update -y; apt-get install -y git locales; apt-get update; apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash
+      run: sudo apt-get update -y; sudo apt-get install -y git locales; sudo apt-get update; sudo apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash
     - name: Cache Nonlinux-Dir
       uses: actions/cache@v1
       with:
