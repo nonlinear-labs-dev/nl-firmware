@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2019-12-17, 17:50
+    @date       2019-12-17, 17:58
     @version	1.7B-2
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
