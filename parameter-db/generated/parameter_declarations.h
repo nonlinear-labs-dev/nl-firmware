@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_declarations.h
-	@date	2019-12-17, 15:51
-	@version	1.7B-2
-	@author	M. Seeber
-	@brief	descriptors for all parameter-related details
-	@todo
+/**	@file       parameter_declarations.h
+    @date       2019-12-17, 17:50
+    @version	1.7B-2
+    @author     M. Seeber
+    @brief      descriptors for all parameter-related details
+    @todo
 *******************************************************************************/
 
 namespace C15
@@ -645,9 +645,6 @@ namespace C15
       Echo_Cross_FB,
       Echo_Mix,
       Echo_Send,
-      Reverb_Size,
-      Reverb_Pre_Dly,
-      Reverb_Color,
       Reverb_Mix,
       Reverb_Send,
       _LENGTH_
@@ -674,6 +671,9 @@ namespace C15
       Echo_Time,
       Echo_Stereo,
       Echo_Hi_Cut,
+      Reverb_Size,
+      Reverb_Pre_Dly,
+      Reverb_Color,
       Reverb_Chorus,
       _LENGTH_
     };

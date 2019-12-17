@@ -269,7 +269,7 @@ void MonoSection::postProcess_slow()
   m_signals.set(C15::Signals::Mono_Signals::Echo_LPF,
                 evalNyquist(m_smoothers.get(C15::Smoothers::Mono_Slow::Echo_Hi_Cut) * 440.0f));
   // reverb
-  tmp_val = m_smoothers.get(C15::Smoothers::Mono_Fast::Reverb_Size);
+  tmp_val = m_smoothers.get(C15::Smoothers::Mono_Slow::Reverb_Size);
   tmp_val *= 2.0f - std::abs(tmp_val);
   m_signals.set(C15::Signals::Mono_Signals::Reverb_Size, tmp_val);
   tmp_fb = tmp_val * (0.6f + (0.4f * std::abs(tmp_val)));
@@ -277,8 +277,8 @@ void MonoSection::postProcess_slow()
   tmp_fb = tmp_val * (1.3f - (0.3f * std::abs(tmp_val)));
   m_signals.set(C15::Signals::Mono_Signals::Reverb_Bal, 0.9f * tmp_fb);
   m_signals.set(C15::Signals::Mono_Signals::Reverb_Pre,
-                m_smoothers.get(C15::Smoothers::Mono_Fast::Reverb_Pre_Dly) * 200.0f * m_millisecond);
-  tmp_val = m_smoothers.get(C15::Smoothers::Mono_Fast::Reverb_Color);
+                m_smoothers.get(C15::Smoothers::Mono_Slow::Reverb_Pre_Dly) * 200.0f * m_millisecond);
+  tmp_val = m_smoothers.get(C15::Smoothers::Mono_Slow::Reverb_Color);
   m_signals.set(C15::Signals::Mono_Signals::Reverb_LPF,
                 evalNyquist(m_convert->eval_lin_pitch(m_reverb_color_curve_1.applyCurve(tmp_val)) * 440.0f));
   m_signals.set(C15::Signals::Mono_Signals::Reverb_HPF,
