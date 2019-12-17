@@ -27,9 +27,9 @@ jobs:
 
     - name: Download GWT
       if: steps.cache-gwt.outputs.cache-hit != 'true'
-      run: cd /home/runner/work/ && wget https://storage.googleapis.com/gwt-releases/gwt-2.8.2.zip
 
-    - name: Unpack GWT
+      run: cd /home/runner/work/ && wget https://storage.googleapis.com/gwt-releases/gwt-2.8.2.zip 
+    - name: Unpack GWT  
       if: steps.cache-gwt.outputs.cache-hit != 'true'
       run: unzip /home/runner/work/gwt-2.8.2.zip -d /home/runner/work/gwt
     - uses: actions/checkout@v1
