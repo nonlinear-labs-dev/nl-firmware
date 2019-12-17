@@ -68,7 +68,7 @@ class HWUI
   void deInit();
 
  private:
-  void undoableUpdateParameterSelection(UNDO::Transaction* transaction);
+  void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
   void onButtonPressed(Buttons buttonID, bool state);
 
@@ -88,6 +88,7 @@ class HWUI
   static FocusAndMode fixFocusAndModeWithAnys(FocusAndMode in);
 
   FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
+  FocusAndMode removeEditOnFocusChange(FocusAndMode in) const;
 
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;

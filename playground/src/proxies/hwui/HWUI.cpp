@@ -634,21 +634,44 @@ FocusAndMode HWUI::fixFocusAndModeWithAnys(FocusAndMode in)
   return in;
 }
 
-FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
+FocusAndMode HWUI::removeEditOnFocusChange(FocusAndMode in) const
 {
-  in = fixFocusAndModeWithAnys(in);
+  const bool isDesiredParameter = (in.focus == UIFocus::Parameters);
+  const bool isDesiredPresetManager = (in.focus == UIFocus::Banks) || (in.focus == UIFocus::Presets);
+  const bool isDesiredSound = in.focus == UIFocus::Sound;
 
-  bool isCurrentPresetManager = (m_focusAndMode.focus == UIFocus::Banks) || (m_focusAndMode.focus == UIFocus::Presets);
-  bool isDesiredParameter = (in.focus == UIFocus::Parameters);
-  bool isDesiredPresetManager = (in.focus == UIFocus::Banks) || (in.focus == UIFocus::Presets);
+  const bool isCurrentPresetManager
+      = (m_focusAndMode.focus == UIFocus::Banks) || (m_focusAndMode.focus == UIFocus::Presets);
+  const bool isCurrentParameter = m_focusAndMode.focus == UIFocus::Parameters;
+  const bool isCurrentSound = m_focusAndMode.focus == UIFocus::Sound;
 
-  bool switchFromPresetManagerToParameter = (isCurrentPresetManager && isDesiredParameter);
+  const bool switchFromPresetManagerToParameter = (isCurrentPresetManager && isDesiredParameter);
+  const bool switchFromPresetManagerToSound = (isCurrentPresetManager && isDesiredSound);
 
-  if(switchFromPresetManagerToParameter)
+  const bool switchFromParameterToPresetManager = (isCurrentParameter && isDesiredPresetManager);
+  const bool switchFromParameterToSound = (isCurrentParameter && isDesiredSound);
+
+  const bool switchFromSoundToPresetManager = (isCurrentSound && isDesiredPresetManager);
+  const bool switchFromSoundToParameter = (isCurrentSound && isDesiredParameter);
+
+  if(switchFromPresetManagerToParameter || switchFromParameterToPresetManager || switchFromSoundToPresetManager
+     || switchFromSoundToParameter || switchFromPresetManagerToSound || switchFromParameterToSound)
+  {
     if(m_focusAndMode.mode == UIMode::Edit)
     {
       in.mode = UIMode::Select;
     }
+  }
+
+  return in;
+}
+
+FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
+{
+  in = fixFocusAndModeWithAnys(in);
+  in = removeEditOnFocusChange(in);
+
+  const bool isDesiredPresetManager = (in.focus == UIFocus::Banks) || (in.focus == UIFocus::Presets);
 
   if(isDesiredPresetManager)
     if(in.mode == UIMode::Store && Application::get().getPresetManager()->getNumBanks() == 0)
