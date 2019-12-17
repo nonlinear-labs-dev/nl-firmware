@@ -61,4 +61,7 @@ void EnvelopeCGroup::init()
 
   appendParameter(new Parameter(this, { 52, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
                                 0.05, 100, 1000));
+
+  appendParameter(new Parameter(this, { 340, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
+                                0.0, 100, 1000));
 }

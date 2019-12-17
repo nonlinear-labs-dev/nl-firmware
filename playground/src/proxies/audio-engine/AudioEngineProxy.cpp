@@ -13,7 +13,6 @@
 #include <parameters/RibbonParameter.h>
 #include <parameters/ScaleParameter.h>
 #include <parameters/PhysicalControlParameter.h>
-#include <parameters/mono-mode-parameters/MonoParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlsGroup.h>
@@ -33,6 +32,8 @@ void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transac
       sendEditBuffer();
   });
 }
+
+constexpr auto cUnisonVoicesParameterNumber = 249;
 
 template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer *editBuffer)
 {
@@ -54,7 +55,6 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
         auto &pItem = msg.hwsources[hwSource++];
         pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
-        pItem.locked = p->isLocked();
         pItem.returnMode = hwSrcParam->getReturnMode();
       }
       else if(isMaster || isScale)
@@ -62,28 +62,24 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
         auto &pItem = msg.globalparams[globalParams++];
         pItem.id = p->getID().getNumber();
         pItem.controlPosition = p->getControlPositionValue();
-        pItem.locked = p->isLocked();
       }
       else if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
         auto &macro = msg.macros[mc++];
         macro.id = mcParameter->getID().getNumber();
         macro.controlPosition = mcParameter->getControlPositionValue();
-        macro.locked = mcParameter->isLocked();
       }
       else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
       {
         auto &hwAmount = msg.hwamounts[modR++];
         hwAmount.id = hwAmounts->getID().getNumber();
         hwAmount.controlPosition = hwAmounts->getControlPositionValue();
-        hwAmount.locked = hwAmounts->isLocked();
       }
       else if(MacroControlsGroup::isMacroTime(p->getID()))
       {
         auto &mcTime = msg.macrotimes[mcT++];
         mcTime.id = p->getID().getNumber();
         mcTime.controlPosition = p->getControlPositionValue();
-        mcTime.locked = p->isLocked();
       }
     }
   }
@@ -93,68 +89,6 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer 
   nltools_assertAlways(msg.macros.size() == mc);
   nltools_assertAlways(msg.hwamounts.size() == modR);
   nltools_assertAlways(msg.macrotimes.size() == mcT);
-}
-
-template <typename tMsg> void insertMockedParameters(tMsg &msg, size_t &unmod, size_t &mod)
-{
-  using MockParam = std::pair<int, double>;
-  using MockParams = std::vector<MockParam>;
-
-  for(auto p :
-      MockParams{ { 328, 0.0 }, { 330, 0.0 }, { 332, 0.0 }, { 334, 0.0 }, { 336, 0.0 }, { 338, 0.0 }, { 340, 0.0 } })
-  {
-    auto &item = msg.unmodulateables[unmod++];
-    item.id = p.first;
-    item.controlPosition = p.second;
-  }
-
-  for(auto p : MockParams{ { 346, 0.0 },
-                           { 348, 0.5 },
-                           { 350, 0.5 },
-                           { 352, 0.5 },
-                           { 354, 0.5 },
-                           { 389, 0.0 },
-                           { 342, 1.0 },
-                           { 344, 1.0 } })
-  {
-    auto &item = msg.modulateables[mod++];
-    item.id = p.first;
-    item.controlPosition = p.second;
-    item.modulationAmount = 0.0;
-    item.mc = MacroControls::NONE;
-  }
-}
-
-template <typename tMsg> void insertMockedParameters(tMsg &msg, VoiceGroup vg, size_t &unmod, size_t &mod)
-{
-  using MockParam = std::pair<int, double>;
-  using MockParams = std::vector<MockParam>;
-
-  const auto index = static_cast<int>(vg);
-
-  for(auto p :
-      MockParams{ { 328, 0.0 }, { 330, 0.0 }, { 332, 0.0 }, { 334, 0.0 }, { 336, 0.0 }, { 338, 0.0 }, { 340, 0.0 } })
-  {
-    auto &item = msg.unmodulateables[index][unmod++];
-    item.id = p.first;
-    item.controlPosition = p.second;
-  }
-
-  for(auto p : MockParams{ { 346, 0.0 },
-                           { 348, 0.5 },
-                           { 350, 0.5 },
-                           { 352, 0.5 },
-                           { 354, 0.5 },
-                           { 389, 0.0 },
-                           { 342, 0.0 },
-                           { 344, 0.0 } })
-  {
-    auto &item = msg.modulateables[index][mod++];
-    item.id = p.first;
-    item.controlPosition = p.second;
-    item.modulationAmount = 0.0;
-    item.mc = MacroControls::NONE;
-  }
 }
 
 template <typename tParameterType, typename tParameterArray>
@@ -167,7 +101,6 @@ void forEachParameterInGroup(EditBuffer *eb, const GroupId &group, tParameterArr
       auto &msgParam = array[index++];
       msgParam.controlPosition = param->getControlPositionValue();
       msgParam.id = param->getID().getNumber();
-      msgParam.locked = param->isLocked();
     }
   }
 }
@@ -182,10 +115,6 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
   size_t modR = 0;
   size_t modP = 0;
   size_t unMod = 0;
-
-  insertMockedParameters(msg, unMod, modP);
-  nltools_assertAlways(unMod == 7);
-  nltools_assertAlways(modP == 8);
 
   forEachParameterInGroup<MacroControlParameter>(editBuffer, { "MCs", VoiceGroup::Global }, msg.macros, mc);
   forEachParameterInGroup<ModulationRoutingParameter>(editBuffer, { "MCM", VoiceGroup::Global }, msg.hwamounts, modR);
@@ -204,19 +133,17 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
       }
       else
       {
-        if(p->getID().getNumber() == 249)
+        if(p->getID().getNumber() == cUnisonVoicesParameterNumber)
         {
           auto &unisonVoices = msg.unisonVoices;
-          unisonVoices.id = 249;
+          unisonVoices.id = cUnisonVoicesParameterNumber;
           unisonVoices.controlPosition = p->getControlPositionValue();
-          unisonVoices.locked = p->isLocked();
         }
         else
         {
           auto &unModulateable = msg.unmodulateables[unMod++];
           unModulateable.id = p->getID().getNumber();
           unModulateable.controlPosition = p->getControlPositionValue();
-          unModulateable.locked = p->isLocked();
         }
       }
     }
@@ -236,10 +163,6 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
     size_t modP = 0;
     size_t unMod = 0;
 
-    insertMockedParameters(msg, vg, unMod, modP);
-    nltools_assertAlways(unMod == 7);
-    nltools_assertAlways(modP == 8);
-
     auto arrayIndex = static_cast<int>(vg);
     for(auto &g : editBuffer->getParameterGroups(vg))
     {
@@ -255,19 +178,11 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
         }
         else
         {
-          if(p->getID().getNumber() == 249)
-          {
-            auto &unisonVoices = msg.unisonVoices[arrayIndex];
-            unisonVoices.id = 249;
-            unisonVoices.controlPosition = p->getControlPositionValue();
-            unisonVoices.locked = p->isLocked();
-          }
-          else
+          if(p->getID().getNumber() != cUnisonVoicesParameterNumber)
           {
             auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
             unModulateable.id = p->getID().getNumber();
             unModulateable.controlPosition = p->getControlPositionValue();
-            unModulateable.locked = p->isLocked();
           }
         }
       }
@@ -293,6 +208,16 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
     t.controlPosition = sp->getControlPositionValue();
   }
 
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    if(auto voicesParameter = editBuffer->findParameterByID({ cUnisonVoicesParameterNumber, vg }))
+    {
+      auto &unisonVoices = msg.unisonVoices[static_cast<int>(vg)];
+      unisonVoices.id = cUnisonVoicesParameterNumber;
+      unisonVoices.controlPosition = voicesParameter->getControlPositionValue();
+    }
+  }
+
   return msg;
 }
 
@@ -302,6 +227,14 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
   fillDualMessage(msg, editBuffer);
+
+  if(auto unisonVoicesParameter = editBuffer->findParameterByID({ cUnisonVoicesParameterNumber, VoiceGroup::I }))
+  {
+    auto &unisonVoices = msg.unisonVoices;
+    unisonVoices.id = cUnisonVoicesParameterNumber;
+    unisonVoices.controlPosition = unisonVoicesParameter->getControlPositionValue();
+  }
+
   return msg;
 }
 

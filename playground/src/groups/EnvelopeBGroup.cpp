@@ -12,6 +12,7 @@
 #include <parameters/scale-converters/LinearBipolar48DbScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModDenominator.h>
+#include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 
 EnvelopeBGroup::EnvelopeBGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Env B", vg }, "Envelope B", "Envelope B", "Envelope B")
@@ -64,4 +65,13 @@ void EnvelopeBGroup::init()
 
   appendParameter(new Parameter(this, { 37, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
                                 0.05, 100, 1000));
+
+  appendParameter(new Parameter(this, { 334, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60DbScaleConverter>(),
+                                0.0, 60, 600));
+
+  appendParameter(new Parameter(this, { 336, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60DbScaleConverter>(),
+                                0.0, 60, 600));
+
+  appendParameter(new Parameter(this, { 338, getVoiceGroup() },
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0.0, 100, 1000));
 }

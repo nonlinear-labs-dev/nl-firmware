@@ -1,12 +1,11 @@
 #pragma once
-#include "Parameter.h"
+#include "ModulateableParameter.h"
 
-class SplitPointParameter : public Parameter
+class SplitPointParameter : public ModulateableParameter
 {
  public:
   SplitPointParameter(ParameterGroup *group, const ParameterId& id);
   std::string getDisplayValue(VoiceGroup vg) const;
-  static void registerTests();
 
   Glib::ustring getLongName() const override;
   Glib::ustring getShortName() const override;

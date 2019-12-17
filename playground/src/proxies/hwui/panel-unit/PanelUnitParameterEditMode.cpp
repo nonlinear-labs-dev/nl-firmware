@@ -432,7 +432,6 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
     if(auto p = dynamic_cast<PhysicalControlParameter *>(selParam))
     {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       auto selModRouter = p->getUiSelectedModulationRouter();
 
       if(auto router = dynamic_cast<ModulationRoutingParameter *>(editBuffer->findParameterByID(selModRouter)))
@@ -558,7 +557,8 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
     for(auto t : mc->getTargets())
     {
       auto buttonID = m_mappings.findButton(t->getID().getNumber());
-      panelUnit.getLED(buttonID)->setState(TwoStateLED::BLINK);
+      if(buttonID != Buttons::INVALID)
+        panelUnit.getLED(buttonID)->setState(TwoStateLED::BLINK);
     }
 
     m_connectionToMacroControl

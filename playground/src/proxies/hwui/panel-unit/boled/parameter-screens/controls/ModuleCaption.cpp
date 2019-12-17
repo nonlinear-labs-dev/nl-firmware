@@ -2,6 +2,10 @@
 #include "ModuleCaption.h"
 #include "Application.h"
 #include <proxies/hwui/HWUI.h>
+#include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
+#include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
+#include <groups/MonoGroup.h>
+#include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -35,8 +39,9 @@ bool ModuleCaption::enableVoiceGroupSuffix() const
   if(selected->getVoiceGroup() == VoiceGroup::Global)
     return false;
 
-  if(dynamic_cast<MonoParameter *>(selected))
-    return eb->getType() == SoundType::Split;
+  if(MonoGroup::isMonoParameter(selected))
+    return eb->getType() == SoundType::Split
+        || (dynamic_cast<const MonoGlideTimeParameter *>(selected) && eb->getType() == SoundType::Layer);
   if(dynamic_cast<UnisonGroup *>(selected->getParent()))
     return eb->getType() == SoundType::Split;
 
@@ -55,7 +60,7 @@ void ModuleCaption::updateText(Parameter *newOne)
     if(enableVoiceGroupSuffix())
     {
       auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
-      auto suffix = std::string {};
+      auto suffix = std::string{};
       if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
         suffix = " " + toString(sel);
       setText(groupName + suffix);

@@ -12,13 +12,6 @@ class RawValue
   RawValue(const ScaleConverter *scale, tValueType def);
   virtual ~RawValue();
 
-  enum RawValueMeanings
-  {
-    CurrentState = 0,
-    MorphA = 1,
-    MorphB = 2
-  };
-
   tValueType getRawValue() const;
   bool setRawValue(Initiator initiator, tValueType newRawValue);
   bool differs(tValueType other) const;

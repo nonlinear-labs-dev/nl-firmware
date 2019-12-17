@@ -1,13 +1,12 @@
 #pragma once
+#include "UnmodulateableMonoParameter.h"
 
-#include "MonoParameter.h"
-
-class MonoLegatoParameter : public MonoParameter
+class MonoLegatoParameter : public UnmodulateableMonoParameter
 {
  public:
-  MonoLegatoParameter(ParameterGroup *group, ParameterId id);
-  Glib::ustring getDisplayString() const override;
+  MonoLegatoParameter(ParameterGroup *group, const ParameterId& id);
 
+  Glib::ustring getDisplayString() const override;
   Glib::ustring getLongName() const override;
   Glib::ustring getShortName() const override;
 };

@@ -175,7 +175,22 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
       g->copyFrom(transaction, c);
 
   for(auto &g : getParameterGroups(VoiceGroup::Global))
+  {
     for(auto &globalParam : g->getParameters())
-      if(auto presetGlobalParam = p->findParameterByID(globalParam->getID()))
-        globalParam->copyFrom(transaction, presetGlobalParam);
+    {
+      try
+      {
+        if(auto presetGlobalParam = p->findParameterByID(globalParam->getID()))
+        {
+          globalParam->copyFrom(transaction, presetGlobalParam);
+        }
+      }
+      catch(...)
+      {
+        nltools::Log::warning("Parameter with id", globalParam->getID(),
+                              "not found in Preset, falling back to default");
+        globalParam->setDefaultFromHwui(transaction);
+      }
+    }
+  }
 }

@@ -1,12 +1,11 @@
 #pragma once
-#include "MonoParameter.h"
+#include "ModulateableMonoParameter.h"
 
-class MonoGlideTimeParameter : public MonoParameter
+class MonoGlideTimeParameter : public ModulateableMonoParameter
 {
  public:
-  MonoGlideTimeParameter(ParameterGroup* group, ParameterId id);
+  MonoGlideTimeParameter(ParameterGroup* group, const ParameterId& id);
 
   Glib::ustring getLongName() const override;
-
   Glib::ustring getShortName() const override;
 };

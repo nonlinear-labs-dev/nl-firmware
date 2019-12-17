@@ -5,6 +5,8 @@
 #include "MonoModeParameterLayout.h"
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/HWUI.h>
+#include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
+#include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 
 Parameter *MonoModeParameterLayout::getCurrentParameter() const
 {
@@ -39,7 +41,9 @@ bool MonoModeParameterLayout::onButton(Buttons i, bool down, ButtonModifiers mod
 {
   if(down && i == Buttons::BUTTON_A)
   {
-    if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    if((Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+       && (!dynamic_cast<const MonoGlideTimeParameter *>(eb->getSelected()) && eb->getType() == SoundType::Layer))
     {
       return true;
     }
@@ -52,4 +56,59 @@ bool MonoModeParameterLayout::onButton(Buttons i, bool down, ButtonModifiers mod
   }
 
   return ParameterSelectLayout2::onButton(i, down, modifiers);
+}
+
+Parameter *MonoModeModulateableParameterLayout::getCurrentParameter() const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  return eb->getSelected();
+}
+
+MonoModeModulateableParameterLayout::MonoModeModulateableParameterLayout()
+    : ModulateableParameterSelectLayout2()
+{
+}
+
+void MonoModeModulateableParameterLayout::init()
+{
+  ModulateableParameterSelectLayout2::init();
+
+  for(auto &c : getControls<Button>())
+  {
+    if(c->getButtonPos(Buttons::BUTTON_C) == c->getPosition())
+    {
+      c->setText({ "^", 0 });
+    }
+  }
+}
+
+Carousel *MonoModeModulateableParameterLayout::createCarousel(const Rect &rect)
+{
+  return new MonoParameterCarousel(rect);
+}
+
+bool MonoModeModulateableParameterLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  if(down && i == Buttons::BUTTON_A)
+  {
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    if((Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Split)
+       && (!dynamic_cast<const MonoGlideTimeParameter *>(eb->getSelected()) && eb->getType() == SoundType::Layer))
+    {
+      return true;
+    }
+  }
+
+  if(down && i == Buttons::BUTTON_C)
+  {
+    auto current = dynamic_cast<const ModulateableMonoParameter *>(
+        Application::get().getPresetManager()->getEditBuffer()->getSelected());
+    if(current && current->getModulationSource() == MacroControls::NONE)
+    {
+      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
+      return true;
+    }
+  }
+
+  return ModulateableParameterSelectLayout2::onButton(i, down, modifiers);
 }

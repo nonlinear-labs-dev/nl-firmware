@@ -376,7 +376,7 @@ PresetParameterGroup *Preset::findOrCreateParameterGroup(const GroupId &id)
   else
   {
     auto &vgMap = m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())];
-    auto inserted = vgMap.insert(std::pair{ id.getName(), std::make_unique<PresetParameterGroup>() });
-    return inserted.first->second.get();
+    vgMap[id] = std::make_unique<PresetParameterGroup>();
+    return findParameterGroup(id);
   }
 }
