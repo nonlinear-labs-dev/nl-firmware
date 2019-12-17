@@ -29,10 +29,7 @@ void ScaleParameterSelectLayout::addButtons()
 
 void ScaleParameterSelectLayout::updateResetButton()
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
-  auto changed = scaleGroup->isAnyOffsetChanged();
-  m_resetButton->setText(changed ? "Reset" : "");
+  m_resetButton->setText(resetEnabled() ? "Reset" : "");
 }
 
 bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
@@ -46,8 +43,10 @@ bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers 
     {
 
       case Buttons::BUTTON_A:
-        toggleHightlight(m_resetButton);
-        reset();
+        if(resetEnabled())
+        {
+          toggleHightlight(m_resetButton);
+        }
         return true;
 
       case Buttons::BUTTON_B:
@@ -76,6 +75,13 @@ void ScaleParameterSelectLayout::reset()
   auto scope = Application::get().getUndoScope()->startTransaction("Reset Custom Scale");
   eb->getParameterGroupByID({ "Scale", VoiceGroup::Global })
       ->undoableReset(scope->getTransaction(), Initiator::EXPLICIT_HWUI);
+}
+
+bool ScaleParameterSelectLayout::resetEnabled() const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
+  return scaleGroup->isAnyOffsetChanged();
 }
 
 void ScaleParameterSelectLayout::selectParameter(int inc)
