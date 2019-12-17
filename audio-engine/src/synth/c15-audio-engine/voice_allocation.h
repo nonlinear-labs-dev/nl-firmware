@@ -129,8 +129,9 @@ template <uint32_t Voices> class VoiceAllocator
   }
 
  private:
-  uint32_t m_previous_assigned[Voices], m_next_assigned[Voices], m_next_released[Voices], m_assignable, m_num_assigned,
-      m_oldest_assigned, m_youngest_assigned, m_oldest_released, m_youngest_released, m_unison{};
+  uint32_t m_previous_assigned[Voices] = {}, m_next_assigned[Voices] = {}, m_next_released[Voices] = {},
+           m_assignable = {}, m_num_assigned = {}, m_oldest_assigned = {}, m_youngest_assigned = {},
+           m_oldest_released = {}, m_youngest_released = {}, m_unison = {};
 };
 
 // Main Structure
@@ -328,24 +329,28 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       case AllocatorId::Global:
         unisonVoices = m_global.getUnison();
         firstVoice = _keyState->m_voiceId * unisonVoices;
+        m_global.keyUp(_keyState->m_voiceId);
         // unison loop
         keyUp_unisonLoop(firstVoice, unisonVoices);
         break;
       case AllocatorId::Local_I:
         unisonVoices = m_local[0].getUnison();
         firstVoice = _keyState->m_voiceId * unisonVoices;
+        m_local[0].keyUp(_keyState->m_voiceId);
         // unison loop
         keyUp_unisonLoop(firstVoice, unisonVoices);
         break;
       case AllocatorId::Local_II:
         unisonVoices = m_local[1].getUnison();
         firstVoice = _keyState->m_voiceId * unisonVoices;
+        m_local[1].keyUp(_keyState->m_voiceId);
         // unison loop
         keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
         break;
       case AllocatorId::Dual:
         unisonVoices = m_local[0].getUnison();
         firstVoice = _keyState->m_voiceId * unisonVoices;
+        m_local[0].keyUp(_keyState->m_voiceId);
         // unison loop
         keyUp_unisonLoop(firstVoice, unisonVoices);
         keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
