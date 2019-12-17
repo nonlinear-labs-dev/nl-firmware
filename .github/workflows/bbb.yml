@@ -5,10 +5,19 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     
     steps:
+    - name: Cache Nonlinux-Dir
+      uses: actions/cache@v1
+      with:
+       path: /home/runner/work/nonlinux
+       key: ${{ runner.os }}-gwt-2.8.2
     - uses: actions/checkout@v1
-    - name: Do docker cross build
-      run: ./build-tools/cross-build.sh
+    - name: Clone
+      run: git -C /home/runner/work clone https://github.com/nonlinear-labs-dev/nonlinux.git
+    - name: Checkout
+      run: cd /home/runner/work/nonlinux && git fetch && git checkout project-restructuring 
+    - name: Build
+      run: cd /home/runner/work/nonlinux && make nonlinear_defconfig && make"
     
