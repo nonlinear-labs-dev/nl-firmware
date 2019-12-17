@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h																			
-	@date	2019-12-17, 15:51																			
-	@version	1.7B-2																			
-	@author	M. Seeber																			
-	@brief	complete list of parameters (and their properties) in TCD order																			
-	@todo																				
+/**	@file	parameter_list.h
+	@date	2019-12-17, 16:36
+	@version	1.7B-2
+	@author	M. Seeber
+	@brief	complete list of parameters (and their properties) in TCD order
+	@todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -1588,7 +1588,7 @@ namespace C15
       294,
       0.0f,
       { Smoothers::Poly_Sync::Env_A_Att_Curve, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { "", "Envelope A", "Envelope A", "Attack Curve", "Att Curve",
+      { "", "Envelope A", "Envelope A", "Attack Curve", "Curve",
         "Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: "
         "accelerating slope)" } },
     { Parameters::Local_Unmodulateables::Env_B_Att_Curve,
