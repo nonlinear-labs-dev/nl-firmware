@@ -14,11 +14,16 @@ MonoParameterCarousel::MonoParameterCarousel(const Rect &rect)
 {
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &MonoParameterCarousel::rebuild));
+
+  m_voiceGroupConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &MonoParameterCarousel::rebuild)));
 }
 
 void MonoParameterCarousel::setup(Parameter *selectedParameter)
 {
   clear();
+
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   if(MonoGroup::isMonoParameter(selectedParameter))
   {
@@ -37,19 +42,16 @@ void MonoParameterCarousel::setup(Parameter *selectedParameter)
   setDirty();
 }
 
-VoiceGroup MonoParameterCarousel::getVoiceGroup()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  if(eb->getType() == SoundType::Split)
-    return Application::get().getHWUI()->getCurrentVoiceGroup();
-  else
-    return VoiceGroup::I;
-}
-
 void MonoParameterCarousel::rebuild()
 {
   auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   setup(s);
+}
+
+MonoParameterCarousel::~MonoParameterCarousel()
+{
+  m_editbufferConnection.disconnect();
+  m_voiceGroupConnection.disconnect();
 }
 
 void MonoParameterCarousel::setupMonoControls(Parameter *parameter)
@@ -59,11 +61,10 @@ void MonoParameterCarousel::setupMonoControls(Parameter *parameter)
   const int miniParamWidth = 56;
   int yPos = ySpaceing;
 
-  const auto vg = getVoiceGroup();
-
-  for(int i : { 364, 365, 366, 367 })
+  const auto soundType = Application::get().getPresetManager()->getEditBuffer()->getType();
+  for(const auto &id : getParameterIdsForMode(soundType))
   {
-    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ i, vg });
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
     miniParam->setSelected(param == parameter);
     addControl(miniParam);
@@ -72,7 +73,19 @@ void MonoParameterCarousel::setupMonoControls(Parameter *parameter)
   }
 }
 
-MonoParameterCarousel::~MonoParameterCarousel()
+std::vector<ParameterId> MonoParameterCarousel::getParameterIdsForMode(SoundType type)
 {
-  m_editbufferConnection.disconnect();
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+  switch(type)
+  {
+    case SoundType::Split:
+      return { { 364, currentVG }, { 365, currentVG }, { 366, currentVG }, { 367, currentVG } };
+    case SoundType::Layer:
+      return { { 364, VoiceGroup::I }, { 365, VoiceGroup::I }, { 366, VoiceGroup::I }, { 367, currentVG } };
+    case SoundType::Single:
+      return { { 364, VoiceGroup::I }, { 365, VoiceGroup::I }, { 366, VoiceGroup::I }, { 367, VoiceGroup::I } };
+  }
+
+  nltools_assertNotReached();
 }
