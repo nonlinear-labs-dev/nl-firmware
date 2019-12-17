@@ -2,11 +2,11 @@
 
 /******************************************************************************/
 /**	@file	parameter_declarations.h
-    @date	2019-12-05, 17:36
-    @version	1.7B-2
-    @author	M. Seeber
-    @brief	descriptors for all parameter-related details
-    @todo
+	@date	2019-12-17, 15:51
+	@version	1.7B-2
+	@author	M. Seeber
+	@brief	descriptors for all parameter-related details
+	@todo
 *******************************************************************************/
 
 namespace C15
