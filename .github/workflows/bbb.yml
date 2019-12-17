@@ -8,12 +8,13 @@ jobs:
     runs-on: ubuntu-16.04
     
     steps:
+    - name: Install Packages
+      run: apt-get update -y; apt-get install -y git locales; apt-get update; apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash
     - name: Cache Nonlinux-Dir
       uses: actions/cache@v1
       with:
        path: /home/runner/work/nonlinux
        key: ${{ runner.os }}-nonlinux-${{ github.ref }}
-    - uses: actions/checkout@v1
     - name: Clone
       run: git -C /home/runner/work clone https://github.com/nonlinear-labs-dev/nonlinux.git
     - name: Checkout
