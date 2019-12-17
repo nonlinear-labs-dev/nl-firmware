@@ -15,7 +15,10 @@ class ScaleGroup : public ParameterGroup
   bool isAnyOffsetChanged() const;
   static int getScaleBaseParameterNumber();
 
- private:
+  static bool isScaleParameter(const ParameterId& id);
+  static bool isScaleParameter(const Parameter* parameter);
+
+private:
   void onBaseKeyParameterChanged(const Parameter *baseKeyParameter);
 
   Throttler m_updateNames;

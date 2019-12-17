@@ -83,7 +83,7 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
     auto param = eb->findParameterByID({ i, vg });
 
     if(!param)
-      param = eb->findParameterByID({i, VoiceGroup::Global});
+      param = eb->findParameterByID({ i, VoiceGroup::Global });
 
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
 
@@ -165,19 +165,14 @@ bool ParameterCarousel::containsSelectedParameter() const
 
 void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)
 {
-  switch(selectedParameter->getID().getNumber())
-  {
-    case 247:
-    case 248:
-    case 312:
-      setupChildControls(selectedParameter, { 247, 248, 312 });
-      break;
+  const auto paramID = selectedParameter->getID().getNumber();
 
-    case 249:
-    case 250:
-    case 252:
-    case 253:
-      setupChildControls(selectedParameter, { 249, 250, 252, 253 });
-      break;
+  if(ScaleGroup::isScaleParameter(selectedParameter) || paramID == 247 || paramID == 248)
+  {
+    setupChildControls(selectedParameter, { 247, 248, 312 });
+  }
+  else if(paramID == 249 || paramID == 250 || paramID == 252 || paramID == 253)
+  {
+    setupChildControls(selectedParameter, { 249, 250, 252, 253 });
   }
 }
