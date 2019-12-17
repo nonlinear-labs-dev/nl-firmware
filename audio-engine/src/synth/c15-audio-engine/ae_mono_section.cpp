@@ -24,6 +24,11 @@ void MonoSection::init(exponentiator *_convert, LayerSignalCollection *_z_self, 
   m_samplerate = _samplerate;
   m_reciprocal_samplerate = 1.0f / _samplerate;
   m_nyquist = 0.5f * _samplerate;
+  // init control shapers
+  m_flanger_fb_curve.setCurve(-1.0f, -0.5f, 0.5f, 1.0f);
+  m_flanger_rate_to_decay *= NlToolbox::Constants::twopi * m_reciprocal_samplerate;
+  m_reverb_color_curve_1.setCurve(66.0f, 137.0f, 130.0f);
+  m_reverb_color_curve_2.setCurve(29.0f, 29.0f, 85.0f);
   // init dsp components
   m_flanger.init(_samplerate, 1);  // todo: upsample factor currently not dynamic ...
   m_cabinet.init(_samplerate);
@@ -221,6 +226,14 @@ void MonoSection::postProcess_fast()
   m_signals.set(C15::Signals::Mono_Signals::Echo_Wet, (2.0f * tmp_val) - (tmp_val * tmp_val));
   tmp_val = 1.0f - tmp_val;
   m_signals.set(C15::Signals::Mono_Signals::Echo_Dry, (2.0f * tmp_val) - (tmp_val * tmp_val));
+  // reverb
+  tmp_val = m_smoothers.get(C15::Smoothers::Mono_Fast::Reverb_Mix);
+  tmp_dry = 1.0f - tmp_val;
+  tmp_dry = (2.0f - tmp_dry) * tmp_dry;
+  m_signals.set(C15::Signals::Mono_Signals::Reverb_Dry, tmp_dry);
+  tmp_wet = tmp_val;
+  tmp_wet = (2.0f - tmp_wet) * tmp_wet;
+  m_signals.set(C15::Signals::Mono_Signals::Reverb_Wet, tmp_wet);
 }
 
 void MonoSection::postProcess_slow()
@@ -283,11 +296,4 @@ void MonoSection::postProcess_slow()
                 evalNyquist(m_convert->eval_lin_pitch(m_reverb_color_curve_1.applyCurve(tmp_val)) * 440.0f));
   m_signals.set(C15::Signals::Mono_Signals::Reverb_HPF,
                 evalNyquist(m_convert->eval_lin_pitch(m_reverb_color_curve_2.applyCurve(tmp_val)) * 440.0f));
-  tmp_val = m_smoothers.get(C15::Smoothers::Mono_Fast::Reverb_Mix);
-  tmp_dry = 1.0f - tmp_val;
-  tmp_dry = (2.0f - tmp_dry) * tmp_dry;
-  m_signals.set(C15::Signals::Mono_Signals::Reverb_Dry, tmp_dry);
-  tmp_wet = tmp_val;
-  tmp_wet = (2.0f - tmp_wet) * tmp_wet;
-  m_signals.set(C15::Signals::Mono_Signals::Reverb_Wet, tmp_wet);
 }
