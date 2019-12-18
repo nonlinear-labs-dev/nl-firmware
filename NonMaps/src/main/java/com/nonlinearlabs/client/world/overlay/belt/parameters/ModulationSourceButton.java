@@ -14,7 +14,8 @@ public class ModulationSourceButton extends SVGImage {
 	MacroControls which;
 
 	public ModulationSourceButton(ModulationButtons parent, MacroControls which) {
-		super(parent, "MC_" + which.name() + "_Enabled.svg", "MC_" + which.name() + "_Disabled.svg");
+		super(parent, "MC_" + which.name() + "_Enabled.svg", "MC_" + which.name() + "_Disabled.svg",
+				"MC_" + which.name() + "_Deselected.svg");
 		this.which = which;
 	}
 
@@ -50,10 +51,15 @@ public class ModulationSourceButton extends SVGImage {
 	@Override
 	public int getSelectedPhase() {
 		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		
-		if (p.modulation.isModulateable) 
-			return (MacroControls.from(p.modulation.modulationSource) == which) ? 0 : 1;
-		
+
+		if (p.modulation.isModulateable) {
+			if (p.modulation.modulationSource != p.modulation.ogModSource)
+				if (p.modulation.ogModSource == which.toModSource())
+					return 2;
+
+			return p.modulation.modulationSource == which.toModSource() ? 0 : 1;
+		}
+
 		return 0;
 	}
 }

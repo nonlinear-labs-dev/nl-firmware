@@ -192,7 +192,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		final double editorModeLeft = (Millimeter.toPixels(70) / 4) + (buttonDim / 2);
 		final double modSrcDim = Millimeter.toPixels(10);
 		final double modulationButtonsDimX = Millimeter.toPixels(25);
-		final double modulationButtonsDimY = Millimeter.toPixels(25);
+		final double modulationButtonsDimY = h - Millimeter.toPixels(3);
 
 		final double modulationButtonsLeft = Millimeter.toPixels(19.5 - 22.5 / 2);
 		final double sliderLeft = modulationButtonsLeft + modulationButtonsDimX + Millimeter.toPixels(10);
