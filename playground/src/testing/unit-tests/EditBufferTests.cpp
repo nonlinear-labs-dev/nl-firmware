@@ -759,3 +759,48 @@ TEST_CASE("Convert Dual To Single Label Naming")
     }
   }
 }
+
+TEST_CASE("Init Sound initializes VG Labels to 'init'")
+{
+  MockPresetStorage presets;
+  auto eb = TestHelper::getEditBuffer();
+
+  WHEN("Split Sound Init")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
+    eb->undoableInitSound(scope->getTransaction());
+
+    THEN("Labels initialized")
+    {
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "Init");
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "Init");
+    }
+  }
+
+  WHEN("Layer Sound Init")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+    eb->undoableInitSound(scope->getTransaction());
+
+    THEN("Labels initialized")
+    {
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "Init");
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "Init");
+    }
+  }
+
+  WHEN("Single Sound Init")
+  {
+    auto scope = TestHelper::createTestScope();
+    eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+    eb->undoableInitSound(scope->getTransaction());
+
+    THEN("Labels initialized")
+    {
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "Init");
+      REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == "Init");
+    }
+  }
+}

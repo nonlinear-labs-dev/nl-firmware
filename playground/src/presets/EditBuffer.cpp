@@ -512,8 +512,8 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 
   resetModifiedIndicator(transaction);
 
-  setVoiceGroupName(transaction, "\uE071", VoiceGroup::I);
-  setVoiceGroupName(transaction, "\uE072", VoiceGroup::II);
+  setVoiceGroupName(transaction, "Init", VoiceGroup::I);
+  setVoiceGroupName(transaction, "Init", VoiceGroup::II);
   setName(transaction, "Init Sound");
 
   m_recallSet.copyFromEditBuffer(transaction, this);
