@@ -5,11 +5,11 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - name: Install Packages
-      run: sudo apt-get install ccache libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
+      run: sudo apt-get install ccache bash libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
 
     - name: Cache GWT
       uses: actions/cache@v1
@@ -37,10 +37,10 @@ jobs:
       run: mkdir -p /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt/gwt-2.8.2 -DCMAKE_INSTALL_PREFIX=/home/runner/work/out
 
     - name: Make
-      run: cd /home/runner/work/build && make install
+      run: bash -c "cd /home/runner/work/build && make -j4 install"
 
     - name: Run tests
-      run: cd /home/runner/work/build && make test
+      run: bash -c "cd /home/runner/work/build && make test"
 
     - name: Pack artifacts
       uses: actions/upload-artifact@v1
