@@ -65,7 +65,7 @@ public class ModulationRoutingButton extends SVGImage {
 
 	@Override
 	protected double getPadding() {
-		return 2;
+		return 4;
 	}
 
 }

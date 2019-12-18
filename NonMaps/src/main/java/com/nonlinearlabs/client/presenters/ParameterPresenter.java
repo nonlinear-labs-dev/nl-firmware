@@ -1,7 +1,9 @@
 package com.nonlinearlabs.client.presenters;
 
 import com.nonlinearlabs.client.Checksum;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 
 public class ParameterPresenter {
@@ -10,7 +12,7 @@ public class ParameterPresenter {
 		public double right = 0;
 	}
 
-	public int id = 0;
+	public ParameterId id = new ParameterId(0, VoiceGroup.Global);
 	public String[] displayValues = new String[] { "" };
 	public double controlPosition = 0;
 	public boolean bipolar = false;
@@ -65,7 +67,8 @@ public class ParameterPresenter {
 	public boolean updateHash() {
 		Checksum c = new Checksum();
 
-		c.eat(id);
+		c.eat(id.getNumber());
+		c.eat(id.getVoiceGroup().ordinal());
 		c.eat(displayValues);
 		c.eat(controlPosition);
 		c.eat(bipolar);

@@ -1,12 +1,14 @@
 name: cross building for beagle bone
 
-on: [push]
+on:
+  push:
+    branches:
+      - not-existing-branch-name-to-disable-workflow
 
 jobs:
   build:
-
     runs-on: ubuntu-16.04
-    
+
     steps:
     - name: Install Packages
       run: sudo apt-get update -y; sudo apt-get install -y git locales; sudo apt-get update; sudo apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash
@@ -18,7 +20,6 @@ jobs:
     - name: Clone
       run: git -C /home/runner/work clone https://github.com/nonlinear-labs-dev/nonlinux.git
     - name: Checkout
-      run: cd /home/runner/work/nonlinux && git fetch && git checkout project-restructuring 
+      run: cd /home/runner/work/nonlinux && git fetch && git checkout project-restructuring
     - name: Build
       run: cd /home/runner/work/nonlinux && make nonlinear_defconfig && make
-    

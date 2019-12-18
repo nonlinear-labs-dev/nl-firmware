@@ -2,7 +2,6 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters.recall;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
-import com.nonlinearlabs.client.presenters.ParameterPresenter;
 
 public class MCPositionRecallValue extends RecallValue {
 

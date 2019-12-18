@@ -22,6 +22,52 @@ import com.nonlinearlabs.client.world.pointer.TouchPinch;
 
 public class BeltParameterLayout extends OverlayLayout {
 
+	int lastSelectedParameterNumber = -1;
+
+	private final class MCUpperBoundButton extends MCRadioButton {
+		private MCUpperBoundButton(BeltParameterLayout parent) {
+			super(parent, Mode.mcUpper, new String[] { "MC_High_Aktiv.svg", "MC_High_Inaktiv.svg" });
+		}
+
+		@Override
+		public boolean isChanged() {
+			return EditBufferPresenterProvider.getPresenter().selectedParameter.modulation.isModAmountChanged;
+		}
+	}
+
+	private final class MCLowerBoundButton extends MCRadioButton {
+		private MCLowerBoundButton(BeltParameterLayout parent) {
+			super(parent, Mode.mcLower, new String[] { "MC_Low_Aktiv.svg", "MC_Low_Inaktiv.svg" });
+		}
+
+		@Override
+		public boolean isChanged() {
+			return EditBufferPresenterProvider.getPresenter().selectedParameter.modulation.isModAmountChanged;
+		}
+	}
+
+	private final class MCAmountButton extends MCRadioButton {
+		private MCAmountButton(BeltParameterLayout parent) {
+			super(parent, Mode.mcAmount, new String[] { "MC_Amt_Aktiv.svg", "MC_Amt_Inaktiv.svg" });
+		}
+
+		@Override
+		public boolean isChanged() {
+			return EditBufferPresenterProvider.getPresenter().selectedParameter.modulation.isModAmountChanged;
+		}
+	}
+
+	private final class MCPosButton extends MCRadioButton {
+		private MCPosButton(BeltParameterLayout parent) {
+			super(parent, Mode.mcValue, new String[] { "MC_Pos_Aktiv.svg", "MC_Pos_Inaktiv.svg" });
+		}
+
+		@Override
+		public boolean isChanged() {
+			return EditBufferPresenterProvider.getPresenter().selectedParameter.modulation.isMCPosChanged;
+		}
+	}
+
 	public enum Mode {
 		unmodulateableParameter, modulateableParameter, paramValue, mcValue, mcAmount, mcLower, mcUpper, mcSource;
 
@@ -71,23 +117,26 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		addChild(contextMenu = new ContextMenuButton(this));
 
-		addChild(mcPositionRadioButton = new MCRadioButton(this, Mode.mcValue, "MC_Pos_Aktiv.svg",
-				"MC_Pos_Inaktiv.svg"));
-		addChild(
-				mcAmountRadioButton = new MCRadioButton(this, Mode.mcAmount, "MC_Amt_Aktiv.svg", "MC_Amt_Inaktiv.svg"));
-		addChild(mcLowerBoundRadioButton = new MCRadioButton(this, Mode.mcLower, "MC_Low_Aktiv.svg",
-				"MC_Low_Inaktiv.svg"));
-		addChild(mcUpperBoundRadioButton = new MCRadioButton(this, Mode.mcUpper, "MC_High_Aktiv.svg",
-				"MC_High_Inaktiv.svg"));
+		addChild(mcPositionRadioButton = new MCPosButton(this));
+		addChild(mcAmountRadioButton = new MCAmountButton(this));
+		addChild(mcLowerBoundRadioButton = new MCLowerBoundButton(this));
+		addChild(mcUpperBoundRadioButton = new MCUpperBoundButton(this));
 
 		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
-
 		addChild(currentRecall = new ParameterRecallArea(this));
 
 		EditBufferPresenterProvider.get().onChange(p -> {
-			// todo: handle mode change if modulateable / unmodulateable
+			if (p.selectedParameter.id.getNumber() != lastSelectedParameterNumber) {
+				lastSelectedParameterNumber = p.selectedParameter.id.getNumber();
 
+				if (p.selectedParameter.modulation.isModulateable)
+					setMode(Mode.modulateableParameter);
+				else
+					setMode(Mode.unmodulateableParameter);
+			} else {
+				fixMode();
+			}
 			return true;
 		});
 	}
@@ -108,6 +157,16 @@ public class BeltParameterLayout extends OverlayLayout {
 	}
 
 	private void fixMode() {
+		if (!isModulateable()) {
+			setMode(Mode.unmodulateableParameter);
+			return;
+		}
+
+		if (isModulateable() && mode == Mode.unmodulateableParameter) {
+			setMode(Mode.modulateableParameter);
+			return;
+		}
+
 		if (!isModulationAssigned()) {
 			if (isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcLower, Mode.mcUpper))
 				setMode(Mode.mcSource);
@@ -283,6 +342,11 @@ public class BeltParameterLayout extends OverlayLayout {
 	public boolean isModulationAssigned() {
 		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		return p.modulation.isModulated;
+	}
+
+	public boolean isModulateable() {
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.modulation.isModulateable;
 	}
 
 	public boolean isOneOf(final Mode... m) {

@@ -2,8 +2,6 @@ package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
-import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
@@ -11,7 +9,7 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout.Mode;
 
-class MCRadioButton extends SVGImage {
+abstract class MCRadioButton extends SVGImage {
 	Mode mode;
 
 	MCRadioButton(BeltParameterLayout parent, Mode m, String... imageNames) {
@@ -24,10 +22,7 @@ class MCRadioButton extends SVGImage {
 		return (BeltParameterLayout) super.getParent();
 	}
 
-	private boolean isChanged() {
-		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		return p.changed;
-	}
+	abstract public boolean isChanged();
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {

@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -103,8 +104,7 @@ public class ParameterInfoDialog extends GWTDialog {
 			@Override
 			public void onBlur(BlurEvent event) {
 				focusOwner = null;
-				int id = presenter.id;
-				EditBufferUseCases.get().setMacroControlInfo(id, infoField.getText());
+				EditBufferUseCases.get().setMacroControlInfo(presenter.id, infoField.getText());
 				update(EditBufferPresenterProvider.getPresenter().selectedParameter);
 			}
 		});
@@ -174,7 +174,7 @@ public class ParameterInfoDialog extends GWTDialog {
 			@Override
 			public void onBlur(BlurEvent event) {
 				focusOwner = null;
-				int id = EditBufferPresenterProvider.getPresenter().selectedParameter.id;
+				ParameterId id = EditBufferPresenterProvider.getPresenter().selectedParameter.id;
 				EditBufferUseCases.get().renameMacroControl(id, paramNameEditEditor.getText());
 			}
 		});
