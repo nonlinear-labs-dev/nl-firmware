@@ -5,6 +5,7 @@ project(C15)
 include( CTest )
 
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"C15-%aI--%h\" -n 1" OUTPUT_VARIABLE C15_VERSION)
+string(REGEX REPLACE "\:" "-" C15_VERSION ${C15_VERSION})
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
