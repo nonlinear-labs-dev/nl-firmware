@@ -41,3 +41,25 @@ void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected,
   else
     setText({ getTextFor(newSelectionVoiceGroup), 0 });
 }
+
+std::unique_ptr<UNDO::TransactionCreationScope>
+    SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope()
+{
+  auto pm = Application::get().getPresetManager();
+  auto eb = pm->getEditBuffer();
+  auto selected = eb->getSelected();
+
+  auto hasCounterPart = selected->getVoiceGroup() != VoiceGroup::Global;
+
+  if(hasCounterPart)
+  {
+    auto otherVG = selected->getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
+    auto other = eb->findParameterByID({ selected->getID().getNumber(), otherVG });
+    return pm->getUndoScope().startContinuousTransaction(&other, std::chrono::hours(1), "Select '%0'",
+                                                         other->getGroupAndParameterNameWithVoiceGroup());
+  }
+  else
+  {
+    return UNDO::Scope::startTrashTransaction();
+  }
+}

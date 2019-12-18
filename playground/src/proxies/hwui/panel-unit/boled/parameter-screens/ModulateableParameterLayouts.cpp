@@ -208,8 +208,7 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue)
         {
-          auto scope
-              = Application::get().getPresetManager()->getUndoScope().startTransaction("Toggle Part Selection");
+          auto scope = SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope();
           Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
           return true;
         }

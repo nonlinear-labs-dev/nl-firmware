@@ -16,6 +16,7 @@
 #include "proxies/hwui/Layout.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
+#include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 
 namespace DescriptiveLayouts
 {
@@ -90,7 +91,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [eb]() {
-      auto scope = eb->getParent()->getUndoScope().startTransaction("Toggle Part Selection");
+      auto scope = SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope();
       Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
     });
 
