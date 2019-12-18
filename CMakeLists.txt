@@ -2,14 +2,12 @@ cmake_minimum_required(VERSION 3.2)
 
 project(C15)
 
-EXEC_PROGRAM("git"
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ARGS "log -1 --pretty=format:\"%ad\" --date=format:\"%Y-%m-%d %H:%M\""
-  OUTPUT_VARIABLE C15_VERSION)
+EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"-%aI--%h\" -n 1" OUTPUT_VARIABLE C15_VERSION)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    message("This build will use CCache.")
 endif()
 
 message("building C15 firmware version: ${C15_VERSION}")
