@@ -2,7 +2,7 @@
 #include "proxies/audio-engine/AudioEngineProxy.h"
 #include "presets/EditBuffer.h"
 #include "testing/TestHelper.h"
-#include "MockPresetStorage.h"
+#include "mock/MockPresetStorage.h"
 
 template <typename T> void collectID(const T &t, std::unordered_map<int, int> &counts)
 {

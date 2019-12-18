@@ -25,10 +25,9 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
 
   typedef Parameter *tParameterPtr;
 
-  size_t countParameters() const;
-  tParameterPtr getParameterByID(ParameterId id) const;
-  tParameterPtr getParameterByNumber(uint16_t number) const;
-  tParameterPtr findParameterByID(ParameterId id) const;
+  tParameterPtr getParameterByID(const ParameterId& id) const;
+
+  tParameterPtr findParameterByID(const ParameterId& id) const;
 
   const IntrusiveList<tParameterPtr> &getParameters() const
   {

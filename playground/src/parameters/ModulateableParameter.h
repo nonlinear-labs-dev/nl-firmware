@@ -39,6 +39,8 @@ class ModulateableParameter : public Parameter
   uint16_t getModulationSourceAndAmountPacked() const;
   void applyLpcMacroControl(tDisplayValue diff);
 
+  void copyFrom(UNDO::Transaction *transaction, const Parameter *other) override;
+
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
   void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
 

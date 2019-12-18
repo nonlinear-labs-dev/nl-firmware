@@ -4,6 +4,7 @@
 #include "presets/ParameterDualGroupSet.h"
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
+#include <parameters/ModulateableParameter.h>
 
 ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                                const char *webUIName)
@@ -45,17 +46,7 @@ Glib::ustring ParameterGroup::getLongName() const
   return m_longName;
 }
 
-size_t ParameterGroup::countParameters() const
-{
-  size_t i = 0;
-
-  for(const auto _unused : m_parameters)
-    i++;
-
-  return i;
-}
-
-ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(ParameterId id) const
+ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(const ParameterId &id) const
 {
   for(auto a : m_parameters)
     if(a->getID() == id)
@@ -65,17 +56,7 @@ ParameterGroup::tParameterPtr ParameterGroup::getParameterByID(ParameterId id) c
   return nullptr;
 }
 
-ParameterGroup::tParameterPtr ParameterGroup::getParameterByNumber(uint16_t number) const
-{
-  for(auto a : m_parameters)
-    if(a->getID().getNumber() == number)
-      return a;
-
-  nltools::throwException("Parameter not found!");
-  return nullptr;
-}
-
-ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(ParameterId id) const
+ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(const ParameterId &id) const
 {
   return getParameterByID(id);
 }
@@ -223,7 +204,7 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGro
 {
   for(auto &g : getParameters())
   {
-    if(auto c = other->getParameterByNumber(g->getID().getNumber()))
+    if(auto c = other->findParameterByID({ g->getID().getNumber(), other->getVoiceGroup() }))
     {
       g->copyFrom(transaction, c);
     }

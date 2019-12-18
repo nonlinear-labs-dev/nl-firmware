@@ -493,3 +493,14 @@ void ModulateableParameter::undoableRecallMCAmount()
   }
   onChange(ChangeFlags::Generic);
 }
+
+void ModulateableParameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
+{
+  Parameter::copyFrom(transaction, other);
+
+  if(auto otherMod = dynamic_cast<const ModulateableParameter *>(other))
+  {
+    setModulationSource(transaction, otherMod->getModulationSource());
+    setModulationAmount(transaction, otherMod->getModulationAmount());
+  }
+}
