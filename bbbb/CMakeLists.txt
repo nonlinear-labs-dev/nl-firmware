@@ -20,10 +20,6 @@ IF(DEV_PC)
   set(LIBS ${LIBS} gtkmm-3.0 gdkmm-3.0 libpng)
 ENDIF(DEV_PC)
 
-IF(NOT DEFINED SYSTEMD_CONFIGURATION_FILES_DIR)
-  set(SYSTEMD_CONFIGURATION_FILES_DIR "${CMAKE_INSTALL_PREFIX}/etc/systemd/system")
-ENDIF()
-
 function(addLib name)
   pkg_check_modules(${name} REQUIRED ${name})
   include_directories(${${name}_INCLUDE_DIRS})
@@ -63,19 +59,8 @@ foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
 
-configure_file(${PROJECT_SOURCE_DIR}/systemd/bbbb.service.in
-	${PROJECT_BINARY_DIR}/systemd/bbbb.service @ONLY)
-
-install(FILES ${PROJECT_BINARY_DIR}/systemd/bbbb.service
-  DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init
-  )
-
-install(TARGETS bbbb
-  DESTINATION ${C15_INSTALL_PATH}/bbbb
-  )
-
-ADD_CUSTOM_TARGET(
-	touch-bbb-cmakelists ALL
-	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE}
-)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/bbbb.service.in ${PROJECT_BINARY_DIR}/systemd/bbbb.service @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/bbbb.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(TARGETS bbbb DESTINATION ${C15_INSTALL_PATH}/bbbb)
+ADD_CUSTOM_TARGET(touch-bbb-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 

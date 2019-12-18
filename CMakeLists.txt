@@ -9,6 +9,25 @@ EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse --abbrev-ref HEAD
 SET(C15_VERSION "C15--${BRANCH_NAME}--${LAST_COMMIT_STAMP}")
 string(REGEX REPLACE "\:" "-" C15_VERSION ${C15_VERSION})
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SYSTEMD "systemd")
+
+if (SYSTEMD_FOUND AND "${SYSTEMD_SERVICES_INSTALL_DIR}" STREQUAL "")
+    execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=systemdsystemunitdir systemd OUTPUT_VARIABLE SYSTEMD_SERVICES_INSTALL_DIR)
+    string(REGEX REPLACE "[ \t\n]+" "" SYSTEMD_SERVICES_INSTALL_DIR "${SYSTEMD_SERVICES_INSTALL_DIR}")
+elseif (NOT SYSTEMD_FOUND AND SYSTEMD_SERVICES_INSTALL_DIR)
+    message (FATAL_ERROR "Variable SYSTEMD_SERVICES_INSTALL_DIR is defined, but we can't find systemd using pkg-config")
+endif()
+
+if (SYSTEMD_FOUND)
+    set(WITH_SYSTEMD "ON")
+    set(SYSTEMD_SERVICES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}${SYSTEMD_SERVICES_INSTALL_DIR})
+    message(STATUS "systemd services install dir: ${SYSTEMD_SERVICES_INSTALL_DIR}")
+else()
+    set(WITH_SYSTEMD "OFF")
+    message(STATUS "systemd not found.")
+endif (SYSTEMD_FOUND)
+
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
@@ -56,3 +75,4 @@ IF(BUILD_ONLINEHELP)
 ENDIF(BUILD_ONLINEHELP)
 
 add_subdirectory(scripts)
+

@@ -54,9 +54,5 @@ install(TARGETS audio-engine DESTINATION ${C15_INSTALL_PATH}/audio-engine)
 
 ADD_CUSTOM_TARGET(audio-engine-touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 
-if(NOT DEFINED SYSTEMD_CONFIGURATION_FILES_DIR)
-    set(SYSTEMD_CONFIGURATION_FILES_DIR "${CMAKE_INSTALL_PREFIX}/etc/systemd/system")
-ENDIF()
-
 configure_file(${PROJECT_SOURCE_DIR}/systemd/audio-engine.service.in ${PROJECT_BINARY_DIR}/systemd/audio-engine.service @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/systemd/audio-engine.service DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/audio-engine.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)

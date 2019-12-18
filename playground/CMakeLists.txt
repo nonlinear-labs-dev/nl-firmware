@@ -34,10 +34,6 @@ OPTION(DEV_PC "Enable some tests and tools not suitable for embedded device" OFF
 OPTION(PROFILING "Enable built in profiler" OFF)
 OPTION(DSL_LAYOUTS "Enable experimental and not yet working DSL for HWUI layouts" OFF)
 
-IF(NOT DEFINED SYSTEMD_CONFIGURATION_FILES_DIR)
-  set(SYSTEMD_CONFIGURATION_FILES_DIR "${CMAKE_INSTALL_PREFIX}/etc/systemd/system")
-ENDIF()
-
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
@@ -125,13 +121,9 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/playground.service.in ${PROJECT_BIN
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
 
-IF(BUILD_TESTING)
-message ("Tests are built.")
-ENDIF()
-
 add_test(NAME playground COMMAND playground-test)
 
-install(FILES ${PROJECT_BINARY_DIR}/systemd/playground.service DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/playground.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PARAMETER_DESCRIPTIONS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/parameter-descriptions)
 install(FILES ${VERSION_INFOS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/version-infos)
 install(DIRECTORY resources USE_SOURCE_PERMISSIONS DESTINATION ${C15_INSTALL_PATH}/playground)

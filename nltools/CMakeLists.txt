@@ -41,9 +41,5 @@ include_directories(nltools ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(nltools ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
-
-set(headers_install_dir ${CMAKE_INSTALL_INCLUDEDIR}/nltools)
-
-install(FILES ${HEADER_FILES} DESTINATION ${headers_install_dir})
 install(TARGETS nltools DESTINATION ${C15_INSTALL_PATH}/nltools)
 
