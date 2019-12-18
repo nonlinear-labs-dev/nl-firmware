@@ -12,10 +12,6 @@ endif()
 
 message("building C15 firmware version: ${C15_VERSION}")
 
-EXEC_PROGRAM("sh" ${CMAKE_SOURCE_DIR} ARGS "-c \"git branch | grep '^\\* ' | sed 's/^\\* //'\" " OUTPUT_VARIABLE GIT_BRANCH)
-EXEC_PROGRAM("git" ${CMAKE_SOURCE_DIR} ARGS "rev-parse --short HEAD" OUTPUT_VARIABLE GIT_COMMIT)
-
-SET(C15_VERSION C15-${GIT_BRANCH}-${GIT_COMMIT})
 SET(C15_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${C15_VERSION})
 
 message("Installing into: ${C15_INSTALL_PATH}")
