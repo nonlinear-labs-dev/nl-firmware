@@ -5,10 +5,9 @@ StartLimitIntervalSec=0
 StartLimitInterval=0
 
 [Service]
-Environment="LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/nonlinear/C15/audio-engine/"
-WorkingDirectory=@CMAKE_INSTALL_PREFIX@/nonlinear/C15/audio-engine
+WorkingDirectory=@CMAKE_INSTALL_PREFIX@/audio-engine
 ExecStartPre=amixer -D hw:PCH set Master 100%
-ExecStart=@CMAKE_INSTALL_PREFIX@/nonlinear/C15/audio-engine/audio-engine -m hw:EMPHASE -a hw:PCH -n 3 -s 49 --playground-host=192.168.10.11
+ExecStart=@C15_INSTALL_PATH@/audio-engine/audio-engine -m hw:EMPHASE -a hw:PCH -n 3 -s 49 --playground-host=192.168.10.11
 Restart=on-failure
 RestartSec=1
 

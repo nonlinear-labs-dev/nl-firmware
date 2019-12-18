@@ -111,7 +111,7 @@ function prepareBuild() {
 function injectC15Dir() {
     echo ${FUNCNAME[0]}
     shopt -s dotglob
-    rsync -av --delete $C15DIR/* $WORKDIR/nonlinux/output/build/playground-HEAD/
+    rsync -av --delete --exclude=buildroot-build $C15DIR/* $WORKDIR/nonlinux/output/build/playground-HEAD/
 }
 
 function injectC15Branch() {

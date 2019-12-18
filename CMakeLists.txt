@@ -4,7 +4,9 @@ project(C15)
 
 include( CTest )
 
-EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"C15-%aI--%h\" -n 1" OUTPUT_VARIABLE C15_VERSION)
+EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"%aI--%h\" -n 1" OUTPUT_VARIABLE LAST_COMMIT_STAMP)
+EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse --abbrev-ref HEAD" OUTPUT_VARIABLE BRANCH_NAME)
+SET(C15_VERSION "C15--${BRANCH_NAME}--${LAST_COMMIT_STAMP}")
 string(REGEX REPLACE "\:" "-" C15_VERSION ${C15_VERSION})
 
 find_program(CCACHE_PROGRAM ccache)
@@ -53,4 +55,4 @@ IF(BUILD_ONLINEHELP)
     add_subdirectory(online-help)
 ENDIF(BUILD_ONLINEHELP)
 
-INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ./${C15_VERSION} ${CMAKE_INSTALL_PREFIX}/C15)")
+add_subdirectory(scripts)
