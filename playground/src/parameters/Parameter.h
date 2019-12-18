@@ -109,6 +109,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual Glib::ustring getShortName() const;
   virtual Glib::ustring getMiniParameterEditorName() const;
   virtual Glib::ustring getGroupAndParameterName() const;
+  virtual Glib::ustring getGroupAndParameterNameWithVoiceGroup() const;
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const;
 
   virtual void onUnselected();

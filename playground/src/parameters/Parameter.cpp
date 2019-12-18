@@ -321,6 +321,11 @@ Glib::ustring Parameter::getGroupAndParameterName() const
   return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName());
 }
 
+Glib::ustring Parameter::getGroupAndParameterNameWithVoiceGroup() const
+{
+  return UNDO::StringTools::buildString(getGroupAndParameterName(), "-", toString(getVoiceGroup()));
+}
+
 void Parameter::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
