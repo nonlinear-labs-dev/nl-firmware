@@ -7,6 +7,11 @@ EXEC_PROGRAM("git"
   ARGS "log -1 --pretty=format:\"%ad\" --date=format:\"%Y-%m-%d %H:%M\""
   OUTPUT_VARIABLE C15_VERSION)
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
+
 message("building C15 firmware version: ${C15_VERSION}")
 
 EXEC_PROGRAM("sh" ${CMAKE_SOURCE_DIR} ARGS "-c \"git branch | grep '^\\* ' | sed 's/^\\* //'\" " OUTPUT_VARIABLE GIT_BRANCH)
