@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -34,12 +35,12 @@ public class MCValueEdit extends MCSomething {
 	}
 
 	@Override
-	protected void inc(int id, boolean fine) {
+	protected void inc(ParameterId id, boolean fine) {
 		EditBufferUseCases.get().startEditMacroControlValue(id, 100).inc(fine);
 	}
 
 	@Override
-	protected void dec(int id, boolean fine) {
+	protected void dec(ParameterId id, boolean fine) {
 		EditBufferUseCases.get().startEditMacroControlValue(id, 100).dec(fine);
 	}
 }

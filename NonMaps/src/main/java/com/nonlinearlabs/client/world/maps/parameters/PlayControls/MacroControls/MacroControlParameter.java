@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControl
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.Renameable;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
@@ -79,7 +80,8 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	@Override
 	public void setName(String newName) {
-		EditBufferUseCases.get().renameMacroControl(getParameterNumber(), newName);
+		ParameterId id = EditBufferUseCases.get().toParamId(getParameterNumber());
+		EditBufferUseCases.get().renameMacroControl(id, newName);
 	}
 
 	@Override

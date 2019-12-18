@@ -10,7 +10,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BenderParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
@@ -28,28 +27,27 @@ import com.nonlinearlabs.client.world.Range;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();
-	private VoiceGroup vg;
 
 	static Set<Integer> handleOnlyParameters = new TreeSet<Integer>(
 			Arrays.asList(135, 155, 254, 259, 264, 269, 284, 289, 274, 279, 243, 244, 245, 246));
 
-	public ParameterPresenterProvider(int parameterId, VoiceGroup vg) {
-		this.vg = vg;
-		NonMaps.get().getServerProxy().loadParameterDescription(parameterId, v -> {
+	public ParameterPresenterProvider(ParameterId parameterId) {
+
+		NonMaps.get().getServerProxy().loadParameterDescription(parameterId.getNumber(), v -> {
 			presenter.parameterInfo = v;
 			notifyChanges();
 		});
 
 		presenter.id = parameterId;
 
-		BasicParameterModel p = EditBufferModel.get().getParameter(new ParameterId(parameterId, vg));
+		BasicParameterModel p = EditBufferModel.get().getParameter(parameterId);
 		p.onChange(e -> {
 			updatePresenter(e);
 			return true;
 		});
 
 		EditBufferModel.get().selectedParameter.onChange(id -> {
-			boolean isSelected = parameterId == id;
+			boolean isSelected = presenter.id.getNumber() == id;
 			if (isSelected != presenter.selected) {
 				presenter.selected = isSelected;
 				presenter.updateHash();
@@ -58,7 +56,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			return true;
 		});
 
-		if (parameterId == 356) {
+		if (parameterId.getNumber() == 356) {
 			EditBufferModel.get().voiceGroup.onChange(v -> {
 				updatePresenter(p);
 				return true;
@@ -145,7 +143,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.modulation.isMCPosChanged = false;
 
 		if (p.modSource.getValue() != ModSource.None) {
-			BasicParameterModel mcBPM = EditBufferModel.get().getParameter(p.modSource.getValue(), vg);
+			BasicParameterModel mcBPM = EditBufferModel.get().getParameter(new ParameterId(p.modSource.getValue()));
 			if (mcBPM != null && mcBPM instanceof MacroControlParameterModel) {
 				presenter.modulation.isMCPosChanged = isValueChanged(mcBPM);
 			}
@@ -168,14 +166,15 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			double modAmount = p.modAmount.getQuantizedAndClipped(true);
 			double value = p.value.getQuantized(true);
 			boolean isBiPolar = p.value.metaData.bipolar.getBool();
+			double bipolarFactor = isBiPolar ? 2 : 1;
 
 			double modLeft = 0;
 			double modRight = 0;
 
-			if (isBiPolar)
-				modAmount *= 2;
+			modAmount *= bipolarFactor;
 
-			MacroControlParameterModel mc = EditBufferModel.get().getParameter(p.modSource.getValue(), vg);
+			MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get()
+					.getParameter(new ParameterId(p.modSource.getValue()));
 
 			modLeft = value - modAmount * mc.value.getQuantizedAndClipped(true);
 			modRight = modLeft + modAmount;
@@ -221,8 +220,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 				String clip = bounds.outOfRange(modAmount >= 0 ? l : r) ? "! " : "";
 				mod.clipTo(bounds);
-				String with = p.modAmount.getDecoratedValue(true, mod.getLeft(), true);
-				String without = p.modAmount.getDecoratedValue(false, mod.getLeft(), true);
+				String with = p.value.getDecoratedValue(true, mod.getLeft() / bipolarFactor, true);
+				String without = p.value.getDecoratedValue(false, mod.getLeft() / bipolarFactor, true);
 				presenter.modulation.amountLowerBoundDisplayValues = new String[] { clip + "Lower Limit: " + with,
 						clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without,
 						clip + without };
@@ -231,8 +230,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			{
 				String clip = bounds.outOfRange(modAmount >= 0 ? r : l) ? "! " : "";
 				mod.clipTo(bounds);
-				String with = p.modAmount.getDecoratedValue(true, mod.getRight(), true);
-				String without = p.modAmount.getDecoratedValue(false, mod.getRight(), true);
+				String with = p.value.getDecoratedValue(true, mod.getRight() / bipolarFactor, true);
+				String without = p.value.getDecoratedValue(false, mod.getRight() / bipolarFactor, true);
 				presenter.modulation.amountUpperBoundDisplayValues = new String[] { clip + "Upper Limit: " + with,
 						clip + "Upper Limit: " + without, clip + "Upper: " + without, clip + "Up: " + without,
 						clip + without };
@@ -249,8 +248,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 				presenter.modulation.originalModulationAmountDecoratedString = p.modAmount.getDecoratedValue(true,
 						p.ogModAmount.getValue(), true);
 
-				MacroControlParameterModel macroControl = EditBufferModel.get().getParameter(p.modSource.getValue(),
-						vg);
+				MacroControlParameterModel macroControl = (MacroControlParameterModel) EditBufferModel.get()
+						.getParameter(new ParameterId(p.modSource.getValue()));
 				presenter.modulation.originalModulationPositionDecoratedString = macroControl.value
 						.getDecoratedValue(true, macroControl.originalValue.getValue(), true);
 
@@ -272,7 +271,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updateClipping(ModulateableParameterModel m) {
 		if (m.modSource.getValue() != ModSource.None) {
-			MacroControlParameterModel mc = EditBufferModel.get().getParameter(m.modSource.getValue(), vg);
+			MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get()
+					.getParameter(new ParameterId(m.modSource.getValue()));
 			double modAmount = m.modAmount.getClippedValue();
 			boolean bipolar = m.value.metaData.bipolar.getBool();
 

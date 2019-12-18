@@ -13,6 +13,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
+import com.nonlinearlabs.client.tools.NLMath;
 
 public class EditBufferUseCases {
 	private static EditBufferUseCases theInstance = new EditBufferUseCases();
@@ -172,7 +173,7 @@ public class EditBufferUseCases {
 		setParameterValue(id, v, true);
 	}
 
-	private ParameterId toParamId(int paramNumber) {
+	public ParameterId toParamId(int paramNumber) {
 		return new ParameterId(paramNumber, getVoiceGroupFor(paramNumber));
 	}
 
@@ -216,20 +217,19 @@ public class EditBufferUseCases {
 			setParameterValue(id, 1, true);
 	}
 
-	public void decModulationAmount(int paramNumber, boolean fine) {
-		incDecModulationAmount(paramNumber, fine, -1);
+	public void decModulationAmount(ParameterId id, boolean fine) {
+		incDecModulationAmount(id, fine, -1);
 	}
 
-	public void incModulationAmount(int paramNumber, boolean fine) {
-		incDecModulationAmount(paramNumber, fine, 1);
+	public void incModulationAmount(ParameterId id, boolean fine) {
+		incDecModulationAmount(id, fine, 1);
 	}
 
-	public void resetModulationAmount(int paramNumber) {
-		setModulationAmount(toParamId(paramNumber), 0, false);
+	public void resetModulationAmount(ParameterId id) {
+		setModulationAmount(id, 0, false);
 	}
 
-	private void incDecModulationAmount(int paramNumber, boolean fine, int inc) {
-		ParameterId id = toParamId(paramNumber);
+	private void incDecModulationAmount(ParameterId id, boolean fine, int inc) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		double v = p.modAmount.getIncDecValue(fine, inc);
 		setModulationAmount(id, v, true);
@@ -257,6 +257,14 @@ public class EditBufferUseCases {
 		double mcValue = mc.value.getClippedValue();
 		double oldLowerBound = oldValue - (factor * oldAmount) * mcValue;
 
+		if (p.value.metaData.bipolar.getBool()) {
+			double oldLowerCP = NLMath.clamp((oldLowerBound + 1) / 2, 0, 1.0);
+			newAmount = NLMath.clamp(newAmount, -oldLowerCP, 1.0 - oldLowerCP);
+		} else {
+			double oldLowerCP = NLMath.clamp(oldLowerBound, 0, 1.0);
+			newAmount = NLMath.clamp(newAmount, -oldLowerCP, 1.0 - oldLowerCP);
+		}
+
 		setModulationAmount(id, newAmount, true);
 
 		double newLowerBound = oldValue - (factor * newAmount) * mcValue;
@@ -276,6 +284,14 @@ public class EditBufferUseCases {
 		double mcValue = mc.value.getClippedValue();
 		double oldUpperBound = oldValue + (factor * oldAmount) * (1.0 - mcValue);
 
+		if (p.value.metaData.bipolar.getBool()) {
+			double oldUpperCP = NLMath.clamp((oldUpperBound + 1) / 2, 0, 1.0);
+			newAmount = NLMath.clamp(newAmount, oldUpperCP - 1, oldUpperCP);
+		} else {
+			double oldUpperCP = NLMath.clamp(oldUpperBound, 0, 1.0);
+			newAmount = NLMath.clamp(newAmount, oldUpperCP - 1, oldUpperCP);
+		}
+
 		setModulationAmount(id, newAmount, true);
 
 		double newUpperBound = oldValue + (factor * newAmount) * (1.0 - mcValue);
@@ -283,8 +299,7 @@ public class EditBufferUseCases {
 		setParameterValue(id, oldValue - upperBoundDiff, true);
 	}
 
-	public void setModulationSource(int paramNumber, ModSource src) {
-		ParameterId id = toParamId(paramNumber);
+	public void setModulationSource(ParameterId id, ModSource src) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		if (p.modSource.setValue(src))
 			NonMaps.get().getServerProxy().setModulationSource(src);
@@ -306,14 +321,12 @@ public class EditBufferUseCases {
 		return startEditParameterValue(id, pixelsPerRange);
 	}
 
-	public IncrementalChanger startEditMCAmount(int paramNumber, double pixelsPerRange) {
-		ParameterId id = toParamId(paramNumber);
+	public IncrementalChanger startEditMCAmount(ParameterId id, double pixelsPerRange) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationAmount(id, v, true), null);
 	}
 
-	public IncrementalChanger startEditMacroControlValue(int paramNumber, double pixelsPerRange) {
-		ParameterId id = toParamId(paramNumber);
+	public IncrementalChanger startEditMacroControlValue(ParameterId id, double pixelsPerRange) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 
 		if (p.modSource.getValue() != ModSource.None)
@@ -322,8 +335,7 @@ public class EditBufferUseCases {
 		return null;
 	}
 
-	public IncrementalChanger startEditModulationAmountLowerBound(int paramNumber, double pixelsPerRange) {
-		ParameterId id = toParamId(paramNumber);
+	public IncrementalChanger startEditModulationAmountLowerBound(ParameterId id, double pixelsPerRange) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationLowerBound(id, v, true),
 				null) {
@@ -334,8 +346,7 @@ public class EditBufferUseCases {
 		};
 	}
 
-	public IncrementalChanger startEditModulationAmountUpperBound(int paramNumber, double pixelsPerRange) {
-		ParameterId id = toParamId(paramNumber);
+	public IncrementalChanger startEditModulationAmountUpperBound(ParameterId id, double pixelsPerRange) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		return new IncrementalChanger(p.modAmount, pixelsPerRange, (v, b) -> setModulationUpperBound(id, v, true),
 				null) {
@@ -346,15 +357,13 @@ public class EditBufferUseCases {
 		};
 	}
 
-	public void renameMacroControl(int paramNumber, String newName) {
-		ParameterId id = toParamId(paramNumber);
+	public void renameMacroControl(ParameterId id, String newName) {
 		MacroControlParameterModel m = this.<MacroControlParameterModel>findParameter(id);
 		m.givenName.setValue(newName);
 		NonMaps.theMaps.getServerProxy().renameMacroControl(id, newName);
 	}
 
-	public void setMacroControlInfo(int paramNumber, String text) {
-		ParameterId id = toParamId(paramNumber);
+	public void setMacroControlInfo(ParameterId id, String text) {
 		MacroControlParameterModel m = this.<MacroControlParameterModel>findParameter(id);
 		m.info.setValue(text);
 		NonMaps.theMaps.getServerProxy().setMacroControlInfo(id, text);

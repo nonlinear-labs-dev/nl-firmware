@@ -118,9 +118,9 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     }
 
     private void monitorSelectedParameter() {
-        int localSubscription = ++selectedParameterSubscription;
-
         EditBufferModel.get().selectedParameter.onChange(selectedParameterID -> {
+            int localSubscription = ++selectedParameterSubscription;
+            
             ParameterPresenterProviders.get().registerForCurrentVoiceGroup(selectedParameterID, v -> {
                 if (localSubscription != selectedParameterSubscription)
                     return false;

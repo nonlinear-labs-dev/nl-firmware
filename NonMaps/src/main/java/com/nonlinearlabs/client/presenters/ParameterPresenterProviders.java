@@ -48,10 +48,10 @@ public class ParameterPresenterProviders {
 	private ParameterPresenterProviders() {
 		for (int id : ParameterFactory.getAllParameters()) {
 			if (ParameterFactory.isGlobalParameter(id)) {
-				findMap(VoiceGroup.Global).put(id, new ParameterPresenterProvider(id, VoiceGroup.Global));
+				findMap(VoiceGroup.Global).put(id, new ParameterPresenterProvider(new ParameterId(id, VoiceGroup.Global)));
 			} else {
-				findMap(VoiceGroup.I).put(id, new ParameterPresenterProvider(id, VoiceGroup.I));
-				findMap(VoiceGroup.II).put(id, new ParameterPresenterProvider(id, VoiceGroup.II));
+				findMap(VoiceGroup.I).put(id, new ParameterPresenterProvider(new ParameterId(id, VoiceGroup.I)));
+				findMap(VoiceGroup.II).put(id, new ParameterPresenterProvider(new ParameterId(id, VoiceGroup.II)));
 			}
 		}
 
