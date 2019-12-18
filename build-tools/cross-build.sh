@@ -165,6 +165,7 @@ main() {
     doFinalBuild
       
     echo "Everything worked perfectly. Your stuff is in ${WORKDIR}/nonlinux/output/target."
+    echo "maybe: rsync -zz -av /home/hhoegelo/dev/builds/c15-cross/nonlinux/output/target/usr/ root@192.168.8.2:/usr??"
 
     if [ -n "${STARTSHELL}" ]; then 
         runShell "bash  "
