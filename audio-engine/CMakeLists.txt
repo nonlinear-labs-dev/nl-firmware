@@ -10,11 +10,6 @@ EXEC_PROGRAM("sh"
 
 SET(EXECUTABLE_NAME_WITH_BRANCH "audio-engine-${GIT_BRANCH}")
 
-IF(CLANG)
-    SET (CMAKE_C_COMPILER "/usr/bin/clang")
-    SET (CMAKE_CXX_COMPILER "/usr/bin/clang++")
-ENDIF(CLANG)
-
 find_package(OpenMP)
 
 IF(OPENMP_FOUND)
@@ -40,14 +35,6 @@ include_directories(src)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -march=native")
 
-IF(GPO_COLLECT)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -fprofile-dir=/tmp/data/pgo -fprofile-generate=/tmp/data/pgo")
-ENDIF(GPO_COLLECT)
-
-IF(GPO_APPLY)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -fprofile-dir=/tmp/data/pgo -fprofile-use=/tmp/data/pgo -fprofile-correction")
-ENDIF(GPO_APPLY)
-
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
 add_executable(audio-engine ${SOURCE_FILES})
@@ -70,27 +57,11 @@ foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
 
-add_custom_command(TARGET audio-engine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:audio-engine> ${EXECUTABLE_NAME_WITH_BRANCH}
-)
+add_custom_command(TARGET audio-engine POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:audio-engine> ${EXECUTABLE_NAME_WITH_BRANCH})
 
-add_custom_command(TARGET audio-engine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../nltools/libnltools.so ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine/libnltools.so
-    )
+install(TARGETS audio-engine DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine)
 
-add_custom_command(TARGET audio-engine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../parameter-db/libparameterDB.so ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine/libparameterDB.so
-    )
-
-
-install(TARGETS audio-engine
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/audio-engine
-  )
-
-ADD_CUSTOM_TARGET(
-	audio-engine-touch-cmakelists ALL
-	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE}
-)
+ADD_CUSTOM_TARGET(audio-engine-touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 
 if(NOT DEFINED SYSTEMD_CONFIGURATION_FILES_DIR)
        set(SYSTEMD_CONFIGURATION_FILES_DIR "${CMAKE_INSTALL_PREFIX}/etc/systemd/system")
