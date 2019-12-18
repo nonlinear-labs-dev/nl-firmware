@@ -1,6 +1,6 @@
 #include "third-party/include/catch.hpp"
 #include "testing/TestHelper.h"
-#include "MockPresetStorage.h"
+#include "mock/MockPresetStorage.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>
@@ -50,8 +50,8 @@ SCENARIO("Ribbon Return Mode")
         REQUIRE(rToA->getValue().isBoolean());
         REQUIRE(rToB->getValue().isBoolean());
 
-        REQUIRE(rToA->getValue().getRawValue() == 0.0); //Gets reset to 0
-        REQUIRE(rToB->getValue().getRawValue() == 0.2); //stays at 0.2 but appears bidirectional as it is boolean value
+        REQUIRE(rToA->getValue().getRawValue() == 0.0);  //Gets reset to 0
+        REQUIRE(rToB->getValue().getRawValue() == 0.2);  //stays at 0.2 but appears bidirectional as it is boolean value
       }
     }
   }
