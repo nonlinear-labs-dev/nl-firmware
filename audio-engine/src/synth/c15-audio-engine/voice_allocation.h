@@ -292,14 +292,14 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           _keyState->m_origin = AllocatorId::Local_II;
           _keyState->m_voiceId = m_local[1].keyDown();
           unisonVoices = m_local[1].getUnison();
-          firstVoice = _keyState->m_voiceId * unisonVoices;
+          firstVoice = LocalVoices + (_keyState->m_voiceId * unisonVoices);
           // clear stolen key first (all associated voices will be lost)
           if(m_voiceState[firstVoice].m_active)
           {
             keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
           }
           // unison loop
-          keyDown_unisonLoop(_keyPos, LocalVoices + firstVoice, unisonVoices);
+          keyDown_unisonLoop(_keyPos, firstVoice, unisonVoices);
         }
         break;
       case LayerMode::Layer:
