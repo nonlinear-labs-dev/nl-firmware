@@ -32,18 +32,18 @@ class RibbonParameter : public PhysicalControlParameter
 
   void boundToMacroControl(tControlPositionValue v);
 
-  virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
-  virtual void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
+  DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
-  virtual void onPresetSentToLpc() const override;
-  virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
-  virtual bool hasBehavior() const override;
-  virtual Glib::ustring getCurrentBehavior() const override;
-  virtual void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
-  virtual size_t getHash() const override;
+  void onPresetSentToLpc() const override;
+  bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
+  bool hasBehavior() const override;
+  Glib::ustring getCurrentBehavior() const override;
+  void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
+  size_t getHash() const override;
 
  private:
   void ensureExclusiveRoutingIfNeeded();
