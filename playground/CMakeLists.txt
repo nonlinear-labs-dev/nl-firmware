@@ -125,12 +125,17 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/playground.service.in ${PROJECT_BIN
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
 
+IF(BUILD_TESTING)
+message ("Tests are built.")
+ENDIF()
+
+add_test(NAME playground COMMAND playground-test)
+
 install(FILES ${PROJECT_BINARY_DIR}/systemd/playground.service DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init)
 install(FILES ${PARAMETER_DESCRIPTIONS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/parameter-descriptions)
 install(FILES ${VERSION_INFOS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/version-infos)
 install(DIRECTORY resources USE_SOURCE_PERMISSIONS DESTINATION ${C15_INSTALL_PATH}/playground)
 install(TARGETS playground DESTINATION ${C15_INSTALL_PATH}/playground)
-install(TARGETS playground-test DESTINATION ${C15_INSTALL_PATH}/playground)
 
 ADD_CUSTOM_TARGET(touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 
