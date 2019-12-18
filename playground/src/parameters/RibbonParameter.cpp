@@ -166,8 +166,9 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
       auto highest = *routers.begin();
 
       for(auto router : routers)
-        if(abs(router->getControlPositionValue()) > abs(highest->getControlPositionValue()))
-          highest = router;
+        if(highest != router)
+          if(std::abs(router->getValue().getRawValue()) > std::abs(highest->getValue().getRawValue()))
+            highest = router;
 
       for(auto router : routers)
         if(router != highest)
