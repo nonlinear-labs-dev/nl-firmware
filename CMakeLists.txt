@@ -4,7 +4,7 @@ project(C15)
 
 include( CTest )
 
-EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"-%aI--%h\" -n 1" OUTPUT_VARIABLE C15_VERSION)
+EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"C15-%aI--%h\" -n 1" OUTPUT_VARIABLE C15_VERSION)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -14,7 +14,7 @@ endif()
 
 message("building C15 firmware version: ${C15_VERSION}")
 
-SET(C15_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/C15-${C15_VERSION})
+SET(C15_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${C15_VERSION})
 
 message("Installing into: ${C15_INSTALL_PATH}")
 
