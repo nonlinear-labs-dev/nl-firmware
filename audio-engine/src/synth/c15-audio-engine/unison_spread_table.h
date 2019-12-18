@@ -26,14 +26,13 @@ template <uint32_t Size> struct UnisonSpreadTable
       u_index = -(static_cast<int32_t>(i) >> 1);
       for(uint32_t p = 0; p <= i; p++)
       {
-        m_detune[i][p] = static_cast<float>(u_index);
+        m_detune[i][p] = m_phase[i][p] = static_cast<float>(u_index);
         u_index += 1;
       }
       // unison phase and pan
       u_index = -static_cast<int32_t>(i);
       for(uint32_t p = 0; p <= i; p++)
       {
-        m_phase[i][p] = static_cast<float>(u_index) / static_cast<float>(2 * u_voice);
         m_pan[i][p] = static_cast<float>(u_index) / static_cast<float>(i < 1 ? 1 : i);
         u_index += 2;
       }
