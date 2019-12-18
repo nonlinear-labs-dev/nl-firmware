@@ -34,7 +34,7 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
   int xPos = 0;
 
-  int numItemsInColumn = 0;
+  int numItemsInRow = 0;
 
   if(auto p = dynamic_cast<PhysicalControlParameter *>(newOne))
   {
@@ -45,19 +45,18 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
     for(auto routingParam : routingParams)
     {
-      if(numItemsInColumn == 3)
+      if(numItemsInRow == 2)
       {
-        xPos += paramWidth + 1;
-        yPos = startY;
-        numItemsInColumn = 0;
+        yPos += ySpaceing + sliderHeight;
+        xPos = 0;
+        numItemsInRow = 0;
       }
 
       auto miniParam = new MiniModulationRouter(routingParam, Rect(xPos, yPos, paramWidth, sliderHeight));
       addControl(miniParam);
-      numItemsInColumn++;
+      numItemsInRow++;
 
-      yPos += sliderHeight;
-      yPos += ySpaceing;
+      xPos += paramWidth + 1;
     }
   }
 
