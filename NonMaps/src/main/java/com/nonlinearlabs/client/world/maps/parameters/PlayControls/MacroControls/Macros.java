@@ -16,23 +16,7 @@ public class Macros extends ParameterGroup {
 		}
 
 		public String toPrettyString() {
-			switch (this) {
-			case A:
-				return "\uE000";
-			case B:
-				return "\uE001";
-			case C:
-				return "\uE002";
-			case D:
-				return "\uE003";
-			case E:
-				return "\uE004";
-			case F:
-				return "\uE005";
-			case NONE:
-				return "";
-			}
-			return "";
+			return toModSource().toString();
 		}
 
 		public int toInt() {

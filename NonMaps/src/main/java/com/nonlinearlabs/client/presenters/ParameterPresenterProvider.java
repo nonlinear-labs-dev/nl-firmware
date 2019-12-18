@@ -154,6 +154,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		int nowRounded = (int) (p.modAmount.value.getValue() * denominator);
 		presenter.modulation.isModAmountChanged = ogRounded != nowRounded;
 		presenter.modulation.isModSourceChanged = p.ogModSource.getValue() != p.modSource.getValue();
+		presenter.modulation.ogModSource = p.ogModSource.getValue();
 
 		presenter.showContextMenu = true;
 		presenter.modulation.isModulateable = true;
@@ -161,7 +162,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		if (presenter.modulation.isModulated) {
 			presenter.modulation.modulationSource = p.modSource.getValue();
-			presenter.modulation.modulationSourceLabel = toString(p.modSource.getValue());
+			presenter.modulation.modulationSourceLabel = p.modSource.getValue().toString();
 
 			double modAmount = p.modAmount.getQuantizedAndClipped(true);
 			double value = p.value.getQuantized(true);
@@ -332,26 +333,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.userGivenName = p.givenName.getValue();
 		presenter.showContextMenu = true;
 		presenter.isMacroControl = false;
-	}
-
-	private String toString(ModSource s) {
-		switch (s) {
-		case A:
-			return "\uE000";
-
-		case B:
-			return "\uE001";
-
-		case C:
-			return "\uE002";
-
-		case D:
-			return "\uE003";
-
-		default:
-		}
-
-		return "";
 	}
 
 	@Override

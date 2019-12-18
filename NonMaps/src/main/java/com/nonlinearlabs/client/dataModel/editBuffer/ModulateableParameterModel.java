@@ -18,6 +18,32 @@ public class ModulateableParameterModel extends BasicParameterModel {
 			return ordinal();
 		}
 
+		public String toString() {
+			switch (this) {
+			case A:
+				return "\uE000";
+	
+			case B:
+				return "\uE001";
+	
+			case C:
+				return "\uE002";
+	
+			case D:
+				return "\uE003";
+	
+			case E:
+				return "\uE200";
+	
+			case F:
+				return "\uE201";
+	
+			default:
+			}
+	
+			return "";
+		}
+
 		public ParameterId toParameterId() {
 			switch (this) {
 			case E:

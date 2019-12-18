@@ -46,6 +46,7 @@ public class ParameterPresenter {
 		public boolean isMCPosChanged = false;
 		public boolean isModAmountChanged = false;
 		public boolean isModSourceChanged = false;
+		public ModSource ogModSource = ModSource.None;
 	}
 
 	public Modulation modulation = new Modulation();
