@@ -1,6 +1,6 @@
 #include "third-party/include/catch.hpp"
 #include "testing/TestHelper.h"
-#include "MockPresetStorage.h"
+#include "mock/MockPresetStorage.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>
