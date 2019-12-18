@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	c15_config.h
-	@date	2019-12-17, 15:51
-	@version	1.7B-2
-	@author	M. Seeber
-	@brief	crucial information about the audio engine
-	@todo
+/**	@file       c15_config.h
+    @date       2019-12-17, 17:58
+    @version	1.7B-2
+    @author     M. Seeber
+    @brief      crucial information about the audio engine
+    @todo
 *******************************************************************************/
 
 #include <stdint.h>

@@ -249,9 +249,10 @@ void PolySection::postProcess_poly_audio(const uint32_t _voiceId, const float _m
   tmp_amt = m_smoothers.get(C15::Smoothers::Poly_Fast::Shp_A_Drive);
   tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Shp_A_Drive_Env_A);
   m_signals.set(C15::Signals::Truepoly_Signals::Shp_A_Drive_Env_A, _voiceId,
-                NlToolbox::Crossfades::unipolarCrossFade(
-                    1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_A_Tmb, _voiceId), tmp_env)
-                    * tmp_amt);
+                (NlToolbox::Crossfades::unipolarCrossFade(
+                     1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_A_Tmb, _voiceId), tmp_env)
+                 * tmp_amt)
+                    + 0.18f);
   tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Shp_A_FB_Env_C);
   m_signals.set(C15::Signals::Truepoly_Signals::Shp_A_FB_Env_C, _voiceId,
                 NlToolbox::Crossfades::unipolarCrossFade(
@@ -280,9 +281,10 @@ void PolySection::postProcess_poly_audio(const uint32_t _voiceId, const float _m
   tmp_amt = m_smoothers.get(C15::Smoothers::Poly_Fast::Shp_B_Drive);
   tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Shp_B_Drive_Env_B);
   m_signals.set(C15::Signals::Truepoly_Signals::Shp_B_Drive_Env_B, _voiceId,
-                NlToolbox::Crossfades::unipolarCrossFade(
-                    1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_B_Tmb, _voiceId), tmp_env)
-                    * tmp_amt);
+                (NlToolbox::Crossfades::unipolarCrossFade(
+                     1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_B_Tmb, _voiceId), tmp_env)
+                 * tmp_amt)
+                    + 0.18f);
   tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Shp_B_FB_Env_C);
   m_signals.set(C15::Signals::Truepoly_Signals::Shp_B_FB_Env_C, _voiceId,
                 NlToolbox::Crossfades::unipolarCrossFade(

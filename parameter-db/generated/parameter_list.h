@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h
-	@date	2019-12-17, 16:36
-	@version	1.7B-2
-	@author	M. Seeber
-	@brief	complete list of parameters (and their properties) in TCD order
-	@todo
+/**	@file       parameter_list.h
+    @date       2019-12-17, 17:58
+    @version	1.7B-2
+    @author     M. Seeber
+    @brief      complete list of parameters (and their properties) in TCD order
+    @todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -1178,19 +1178,19 @@ namespace C15
     { Parameters::Local_Modulateables::Reverb_Size,
       235,
       0.33f,
-      { Smoothers::Mono_Fast::Reverb_Size, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { Smoothers::Mono_Slow::Reverb_Size, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "", "Reverb", "Reverb", "Size", "Size", "The room size and reverb time are set here." } },
     { None },
     { Parameters::Local_Unmodulateables::Reverb_Pre_Dly,
       237,
       0.33f,
-      { Smoothers::Mono_Fast::Reverb_Pre_Dly, None, Properties::SmootherScale::Cubic, 1.0f, 0.0f, false },
+      { Smoothers::Mono_Slow::Reverb_Pre_Dly, None, Properties::SmootherScale::Cubic, 1.0f, 0.0f, false },
       { "", "Reverb", "Reverb", "Pre Delay", "Pre Delay",
         "Pre delay time, shifting the late reflections. This has a profound effect on the perceived room size." } },
     { Parameters::Local_Modulateables::Reverb_Color,
       238,
       0.5f,
-      { Smoothers::Mono_Fast::Reverb_Color, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { Smoothers::Mono_Slow::Reverb_Color, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "", "Reverb", "Reverb", "Color", "Color",
         "Cutoff of the filter that damps the lower frequencies of the reverberation signal." } },
     { None },
@@ -1595,14 +1595,14 @@ namespace C15
       295,
       0.0f,
       { Smoothers::Poly_Sync::Env_B_Att_Curve, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { "", "Envelope B", "Envelope B", "Attack Curve", "Att Curve",
+      { "", "Envelope B", "Envelope B", "Attack Curve", "Curve",
         "Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: "
         "accelerating slope)" } },
     { Parameters::Local_Unmodulateables::Env_C_Att_Curve,
       296,
       0.0f,
       { Smoothers::Poly_Sync::Env_C_Att_Curve, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { "", "Envelope C", "Envelope C", "Attack Curve", "Att Curve",
+      { "", "Envelope C", "Envelope C", "Attack Curve", "Curve",
         "Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: "
         "accelerating slope)" } },
     { Parameters::Local_Modulateables::Env_C_Sus,
