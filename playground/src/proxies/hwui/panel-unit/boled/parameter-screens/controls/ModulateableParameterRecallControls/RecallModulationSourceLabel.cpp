@@ -6,6 +6,7 @@
 #include <presets/EditBuffer.h>
 #include <groups/MacroControlsGroup.h>
 #include "RecallModulationSourceLabel.h"
+#include <presets/recall/RecallParameter.h>
 
 RecallModulationSourceLabel::RecallModulationSourceLabel(Rect pos)
     : Label(pos)

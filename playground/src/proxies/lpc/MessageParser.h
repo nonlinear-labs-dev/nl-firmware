@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include <vector>
 
 class MessageParser
 {
@@ -35,7 +36,6 @@ class MessageParser
     uint16_t type;
     uint16_t length;
     std::vector<uint16_t> params;
-
   };
 
   const NLMessage &getMessage() const;

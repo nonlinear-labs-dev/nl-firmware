@@ -2,9 +2,6 @@
 
 #include <cstddef>
 #include <functional>
-#include <type_traits>
-#include <memory>
-#include <glib.h>
 #include <nltools/Uncopyable.h>
 
 template <typename TItemPtr> class IntrusiveList;

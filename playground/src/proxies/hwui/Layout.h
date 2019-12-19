@@ -3,6 +3,7 @@
 #include "playground.h"
 #include <proxies/hwui/HWUIEnums.h>
 #include <nltools/Uncopyable.h>
+#include <sigc++/trackable.h>
 
 class OLEDProxy;
 

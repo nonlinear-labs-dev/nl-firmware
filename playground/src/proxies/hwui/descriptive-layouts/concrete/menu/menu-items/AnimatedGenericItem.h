@@ -2,6 +2,8 @@
 
 #include <nltools/logging/Log.h>
 #include "GenericItem.h"
+#include <sigc++/connection.h>
+#include <glibmm/main.h>
 
 class Animator
 {

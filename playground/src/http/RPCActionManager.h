@@ -1,9 +1,11 @@
 #pragma once
 
 #include "playground.h"
-#include <libsoup/soup.h>
+#include <map>
+#include <memory>
 #include <functional>
-#include "http/NetworkRequest.h"
+
+class NetworkRequest;
 
 class RPCActionManager
 {

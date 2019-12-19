@@ -6,6 +6,7 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Animator;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IPreset;
 import com.nonlinearlabs.client.world.Position;
@@ -175,7 +176,7 @@ public class Belt extends OverlayLayout {
 			if (!isPresetView())
 				setPresetView(true);
 
-			getPresetLayout().toggleDirectLoad();
+			EditBufferUseCases.get().toggleDirectLoad();
 			return this;
 		} else if (event.getNativeKeyCode() == KeyCodes.KEY_R) {
 			getPresetLayout().renameCurrentPreset();

@@ -2,6 +2,7 @@
 
 #include "proxies/hwui/controls/Label.h"
 #include <ParameterId.h>
+#include <sigc++/connection.h>
 
 class Application;
 class Parameter;

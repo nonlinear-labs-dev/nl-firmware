@@ -5,6 +5,7 @@
 #include <presets/PresetParameter.h>
 #include <presets/EditBuffer.h>
 #include <groups/MacroControlsGroup.h>
+#include <presets/recall/RecallParameter.h>
 
 RecallMCAmountLabel::RecallMCAmountLabel(Rect pos)
     : Label(pos)

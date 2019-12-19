@@ -18,6 +18,7 @@
 #include <testing/TestRootDocument.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/messaging/ParameterMessageFactory.h>
+#include <presets/recall/RecallParameter.h>
 
 ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                              tDisplayValue def, tControlPositionValue coarseDenominator,

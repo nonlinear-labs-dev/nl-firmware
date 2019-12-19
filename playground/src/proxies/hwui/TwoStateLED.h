@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LED.h"
+#include <sigc++/connection.h>
 
 class Application;
 

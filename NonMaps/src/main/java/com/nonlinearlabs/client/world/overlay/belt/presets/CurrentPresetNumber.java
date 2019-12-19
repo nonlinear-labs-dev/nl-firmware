@@ -2,7 +2,7 @@ package com.nonlinearlabs.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.presenters.PresetManagerProvider;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
@@ -18,7 +18,7 @@ public class CurrentPresetNumber extends Label {
 
 	@Override
 	public String getDrawText(Context2d ctx) {
-		return PresetManagerProvider.get().getPresenter().getLoadedPresetNumberString();
+		return PresetManagerPresenterProvider.get().getPresenter().getLoadedPresetNumberString();
 	}
 
 	public double getDesiredWidth() {

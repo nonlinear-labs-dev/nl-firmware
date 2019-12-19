@@ -20,6 +20,7 @@
 #include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
 #include <parameters/messaging/ParameterMessageFactory.h>
+#include <presets/recall/RecallParameter.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 

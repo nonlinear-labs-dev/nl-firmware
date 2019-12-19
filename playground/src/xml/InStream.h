@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include <vector>
 
 class InStream
 {

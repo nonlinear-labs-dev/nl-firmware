@@ -2,7 +2,6 @@
 
 #include "playground.h"
 #include "OutStream.h"
-#include "Compatibility.h"
 #include "Attribute.h"
 #include <functional>
 

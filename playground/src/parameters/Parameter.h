@@ -7,7 +7,6 @@
 #include "value/QuantizedValue.h"
 #include <proxies/hwui/HWUIEnums.h>
 #include <tools/FlagOwner.h>
-#include <presets/recall/RecallParameter.h>
 #include <ParameterId.h>
 #include <tools/Signal.h>
 
@@ -22,6 +21,7 @@ class ParameterGroup;
 class MessageComposer;
 class FrameBuffer;
 class PresetParameter;
+class RecallParameter;
 
 enum ParameterFlags
 {

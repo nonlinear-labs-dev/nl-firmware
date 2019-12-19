@@ -1,5 +1,8 @@
 #pragma once
+
 #include <proxies/hwui/controls/ControlWithChildren.h>
+#include <sigc++/connection.h>
+#include <sigc++/signal.h>
 
 class Preset;
 

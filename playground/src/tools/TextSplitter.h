@@ -3,6 +3,7 @@
 #include "playground.h"
 #include <proxies/hwui/Font.h>
 #include <list>
+#include <memory>
 
 class TextSplitter
 {

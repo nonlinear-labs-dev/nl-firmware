@@ -1,4 +1,5 @@
 #include <proxies/hwui/FineButton.h>
+#include <glibmm/main.h>
 
 FineButton::FineButton()
     : m_shifted(false)

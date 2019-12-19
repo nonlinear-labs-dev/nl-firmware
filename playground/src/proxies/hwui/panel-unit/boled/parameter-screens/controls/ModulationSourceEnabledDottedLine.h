@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/DottedLine.h"
+#include <sigc++/connection.h>
 
 class Application;
 class Parameter;

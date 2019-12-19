@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/Button.h"
+#include <sigc++/connection.h>
 
 class Parameter;
 

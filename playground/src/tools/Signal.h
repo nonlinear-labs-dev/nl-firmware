@@ -3,7 +3,8 @@
 #include "playground.h"
 #include <atomic>
 #include <sigc++/signal.h>
-#include <type_traits>
+#include <sigc++/connection.h>
+#include <glibmm/main.h>
 #include <tuple>
 
 using namespace Glib;

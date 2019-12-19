@@ -3,6 +3,7 @@
 #include "playground.h"
 #include "UpdateDocumentContributor.h"
 #include <libsoup/soup.h>
+#include <glibmm.h>
 
 class Writer;
 class NetworkRequest;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "playground.h"
+#include <memory>
+#include <map>
 #include <functional>
-#include <libsoup/soup.h>
 
 class OutStream;
 

@@ -26,6 +26,7 @@
 #include <nltools/Types.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include <device-settings/LoadModeSetting.h>
+#include <presets/recall/RecallParameter.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)

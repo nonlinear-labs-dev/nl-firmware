@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Control.h"
+#include <memory>
 
 class Label : public Control
 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include <glibmm/refptr.h>
 
 class DeviceInformation;
 class WatchDog;
@@ -14,6 +15,12 @@ class UndoScope;
 class Settings;
 class EmbeddedPC;
 class Clipboard;
+
+namespace Glib
+{
+  class MainContext;
+  class MainLoop;
+}
 
 class Application
 {

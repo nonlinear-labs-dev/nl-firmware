@@ -8,6 +8,7 @@
 #include <Application.h>
 #include <tools/StringTools.h>
 #include <device-settings/DebugLevel.h>
+#include <http/NetworkRequest.h>
 
 Clipboard::Clipboard(UpdateDocumentContributor *parent)
     : ContentSection(parent)
