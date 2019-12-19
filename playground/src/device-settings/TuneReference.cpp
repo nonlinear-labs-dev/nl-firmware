@@ -4,7 +4,7 @@
 
 TuneReference::TuneReference(Settings& parent)
     : Setting(parent)
-    , m_value(nullptr, ScaleConverter::get<LinearHerzScaleConverter>(), 0, 60, 600)
+    , m_value(nullptr, ScaleConverter::get<LinearHerzScaleConverter>(), 0, 80, 800)
 {
 }
 
