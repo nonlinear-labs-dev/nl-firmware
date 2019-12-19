@@ -37,8 +37,9 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset);
+  void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
 
-  void undoableLoadSelectedPreset();
+  void undoableLoadSelectedPreset(VoiceGroup loadInto);
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
   void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator);
@@ -61,9 +62,6 @@ class EditBuffer : public ParameterDualGroupSet
 
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset) override;
 
-  //void copyFrom(UNDO::Transaction *transaction, const LayerPreset *preset);
-  //void copyFrom(UNDO::Transaction *transaction, const SplitPreset *preset);
-
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
   bool hasLocks(VoiceGroup vg) const;
@@ -80,7 +78,7 @@ class EditBuffer : public ParameterDualGroupSet
   sigc::connection onSoundTypeChanged(sigc::slot<void> s);
 
   bool isModified() const;
-  static void sendToAudioEngine();
+  void sendToAudioEngine();
 
   //RECALL
   RecallParameterGroups &getRecallParameterSet();

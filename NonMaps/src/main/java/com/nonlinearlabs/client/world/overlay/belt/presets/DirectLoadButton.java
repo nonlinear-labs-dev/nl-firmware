@@ -51,7 +51,7 @@ public class DirectLoadButton extends SVGImage {
 
 	public void update(Node settingsNode) {
 		if (ServerProxy.didChange(settingsNode)) {
-			String str = ServerProxy.getChildText(settingsNode, "AutoLoadSelectedPreset", "value");
+			String str = ServerProxy.getChildText(settingsNode, "LoadMode", "value");
 			if (str != null && !str.isEmpty()) {
 				boolean m = str.toLowerCase().equals("on");
 				if (married != m) {
@@ -69,6 +69,6 @@ public class DirectLoadButton extends SVGImage {
 
 	public void toggle() {
 		married = !married;
-		NonMaps.theMaps.getServerProxy().setSetting("AutoLoadSelectedPreset", married ? "on" : "off");
+		NonMaps.theMaps.getServerProxy().setSetting("LoadMode", married ? "on" : "off");
 	}
 }

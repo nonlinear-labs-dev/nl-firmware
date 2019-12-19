@@ -32,6 +32,7 @@ class ParameterDualGroupSet : public AttributesOwner
   void loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target);
   virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
+  virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup from, VoiceGroup to);
 
   void copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
 

@@ -4,7 +4,7 @@
 #include <presets/EditBuffer.h>
 #include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/Settings.h>
-#include <device-settings/AutoLoadSelectedPreset.h>
+#include <device-settings/LoadModeSetting.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnitPresetsAndBanksMode.h>
 #include <proxies/hwui/buttons.h>
@@ -14,7 +14,10 @@ BaseUnitPresetsAndBanksMode::BaseUnitPresetsAndBanksMode()
     : m_modeButtonHandler(std::bind(&BaseUnitPresetsAndBanksMode::modeButtonShortPress, this),
                           std::bind(&BaseUnitPresetsAndBanksMode::modeButtonLongPress, this))
     , m_funcButtonHandler([] {},
-                          [] { cycle(); })
+                          [] {
+                            auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
+                            Application::get().getSettings()->getSetting<LoadModeSetting>()->cycleForSoundType(type);
+                          })
 {
 }
 
@@ -61,39 +64,4 @@ void BaseUnitPresetsAndBanksMode::installButtonRepeat(const std::function<void()
 void BaseUnitPresetsAndBanksMode::removeButtonRepeat()
 {
   m_buttonRepeat.reset();
-}
-
-void BaseUnitPresetsAndBanksMode::cycle()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto setting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
-
-  if(eb->getType() == SoundType::Single)
-  {
-    switch(setting->get())
-    {
-      case LoadPresetMode::PresetSelect:
-      case LoadPresetMode::PartSelect:
-        setting->set(LoadPresetMode::DirectLoad);
-        break;
-      case LoadPresetMode::DirectLoad:
-        setting->set(LoadPresetMode::PresetSelect);
-        break;
-    }
-  }
-  else
-  {
-    switch(setting->get())
-    {
-      case LoadPresetMode::PartSelect:
-        setting->set(LoadPresetMode::PresetSelect);
-        break;
-      case LoadPresetMode::PresetSelect:
-        setting->set(LoadPresetMode::DirectLoad);
-        break;
-      case LoadPresetMode::DirectLoad:
-        setting->set(LoadPresetMode::PartSelect);
-        break;
-    }
-  }
 }

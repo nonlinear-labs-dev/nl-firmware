@@ -17,7 +17,7 @@
 #include <xml/VersionAttribute.h>
 #include <proxies/hwui/HWUI.h>
 #include <serialization/PresetSerializer.h>
-#include <device-settings/AutoLoadSelectedPreset.h>
+#include <device-settings/LoadModeSetting.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -528,7 +528,7 @@ void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void PresetManager::onPresetSelectionChanged()
 {
-  if(Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad)
+  if(Application::get().getSettings()->getSetting<LoadModeSetting>()->get() == LoadMode::DirectLoad)
     doAutoLoadSelectedPreset();
 }
 
@@ -829,4 +829,14 @@ void PresetManager::incAllParamsFine()
               param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
       },
       20);
+}
+
+const Preset *PresetManager::getSelectedPreset() const
+{
+  if(auto bank = getSelectedBank())
+  {
+    return bank->getSelectedPreset();
+  }
+
+  return nullptr;
 }
