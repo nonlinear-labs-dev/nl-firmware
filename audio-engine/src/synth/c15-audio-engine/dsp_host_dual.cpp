@@ -669,6 +669,14 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
       nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
     }
   }
+  switch(static_cast<C15::Parameters::Local_Modulateables>(_id))
+  {
+    case C15::Parameters::Local_Modulateables::Mono_Grp_Glide:
+      // ...
+      break;
+    default:
+      break;
+  }
 }
 
 void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
@@ -694,6 +702,20 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
     {
       localTransition(layerId, param, m_edit_time.m_dx);
     }
+  }
+  switch(static_cast<C15::Parameters::Local_Unmodulateables>(_id))
+  {
+    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable:
+      m_alloc.setMonoEnable(layerId, param->m_scaled);
+      break;
+    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Prio:
+      m_alloc.setMonoPriority(layerId, param->m_scaled);
+      break;
+    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Legato:
+      m_alloc.setMonoLegato(layerId, param->m_scaled);
+      break;
+    default:
+      break;
   }
 }
 

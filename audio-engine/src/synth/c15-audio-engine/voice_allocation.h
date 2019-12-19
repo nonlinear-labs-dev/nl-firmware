@@ -31,6 +31,13 @@ enum class AllocatorId
   Dual
 };
 
+enum class MonoPriority
+{
+  Lowest,
+  Latest,
+  Highest
+};
+
 // Primitive Data Structures
 
 struct KeyAssignment
@@ -51,6 +58,8 @@ struct VoiceAssignment
 template <uint32_t Voices> class VoiceAllocator
 {
  public:
+  MonoPriority m_priority = MonoPriority::Latest;
+  bool m_mono = {}, m_legato = {};
   inline VoiceAllocator()
   {
     m_unison = 1;
@@ -237,6 +246,15 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     }
     m_unison = voices;
     return validity;
+  }
+  inline void setMonoEnable(const uint32_t _layerId, const float _value)
+  {
+  }
+  inline void setMonoPriority(const uint32_t _layerId, const float _value)
+  {
+  }
+  inline void setMonoLegato(const uint32_t _layerId, const float _value)
+  {
   }
   // resets everything
   inline void reset()
