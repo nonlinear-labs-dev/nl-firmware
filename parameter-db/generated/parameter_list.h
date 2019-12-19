@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2019-12-17, 17:58
+    @date       2019-12-19, 15:44
     @version	1.7B-2
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1889,7 +1889,7 @@ namespace C15
       356,
       0.4f,
       { Smoothers::Poly_Sync::Split_Split_Point, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
-      { "", "Split", "Split", "Split Point", "Split Pnt", "" } },
+      { "", "Split", "Split", "Split Point", "Split P.", "" } },
     { None },
     { Parameters::Local_Modulateables::Voice_Grp_Volume,
       358,

@@ -125,6 +125,12 @@ void MonoSection::flushDSP()
   m_reverb.resetDSP();
 }
 
+void MonoSection::resetDSP()
+{
+  flushDSP();
+  m_out_l = m_out_r = 0.0f;
+}
+
 float MonoSection::evalNyquist(const float _value)
 {
   return _value > m_nyquist ? m_nyquist : _value;

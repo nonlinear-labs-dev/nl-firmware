@@ -592,6 +592,10 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Modulat
       nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
     }
   }
+  if(_id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
+  {
+    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
+  }
 }
 
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
@@ -665,6 +669,14 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
       nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
     }
   }
+  switch(static_cast<C15::Parameters::Local_Modulateables>(_id))
+  {
+    case C15::Parameters::Local_Modulateables::Mono_Grp_Glide:
+      // ...
+      break;
+    default:
+      break;
+  }
 }
 
 void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
@@ -690,6 +702,20 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
     {
       localTransition(layerId, param, m_edit_time.m_dx);
     }
+  }
+  switch(static_cast<C15::Parameters::Local_Unmodulateables>(_id))
+  {
+    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable:
+      m_alloc.setMonoEnable(layerId, param->m_scaled);
+      break;
+    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Prio:
+      m_alloc.setMonoPriority(layerId, param->m_scaled);
+      break;
+    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Legato:
+      m_alloc.setMonoLegato(layerId, param->m_scaled);
+      break;
+    default:
+      break;
   }
 }
 
@@ -925,7 +951,6 @@ void dsp_host_dual::render()
   m_poly[0].render_feedback(m_z_layers[1]);  // pass other layer's signals as arg
   m_poly[1].render_feedback(m_z_layers[0]);  // pass other layer's signals as arg
   // - audio dsp global - main out: combine layers, apply test_tone and soft clip
-  //m_global.render_audio(m_mono[0].m_out_l, m_mono[0].m_out_r, m_mono[1].m_out_l, m_mono[1].m_out_r);
   m_global.render_audio(m_mono[0].m_out_l + m_mono[1].m_out_l, m_mono[0].m_out_r + m_mono[1].m_out_r);
   // - final: main out, output mute
   m_mainOut_L = m_global.m_out_l * mute;
@@ -934,9 +959,17 @@ void dsp_host_dual::render()
 
 void dsp_host_dual::reset()
 {
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    m_z_layers[layerId].reset();
+    m_poly[layerId].resetDSP();
+    m_mono[layerId].resetDSP();
+  }
+  m_global.resetDSP();
+  m_mainOut_L = m_mainOut_R = 0.0f;
   if(LOG_RESET)
   {
-    nltools::Log::info("dsp_reset()");
+    nltools::Log::info("DSP has been reset.");
   }
 }
 

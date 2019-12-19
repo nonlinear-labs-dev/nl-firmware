@@ -34,20 +34,20 @@ C15Synth::C15Synth()
   receive<Setting::EditSmoothingTimeMessage>(EndPoint::AudioEngine,
                                              sigc::mem_fun(this, &C15Synth::onEditSmoothingTimeMessage));
 
-  receive<Keyboard::NoteUp>(EndPoint::AudioEngine, [this](const Keyboard::NoteUp& noteUp) {
-      MidiEvent keyUp;
-      keyUp.raw[0] = 0;
-      keyUp.raw[1] = noteUp.m_keyPos;
-      keyUp.raw[2] = 0;
-      doMidi(keyUp);
+  receive<Keyboard::NoteUp>(EndPoint::AudioEngine, [this](const Keyboard::NoteUp &noteUp) {
+    MidiEvent keyUp;
+    keyUp.raw[0] = 0;
+    keyUp.raw[1] = noteUp.m_keyPos;
+    keyUp.raw[2] = 0;
+    doMidi(keyUp);
   });
 
-  receive<Keyboard::NoteDown>(EndPoint::AudioEngine, [this](const Keyboard::NoteDown& noteDown) {
-      MidiEvent keyDown;
-      keyDown.raw[0] = 1 << 4;
-      keyDown.raw[1] = noteDown.m_keyPos;
-      keyDown.raw[2] = 127;
-      doMidi(keyDown);
+  receive<Keyboard::NoteDown>(EndPoint::AudioEngine, [this](const Keyboard::NoteDown &noteDown) {
+    MidiEvent keyDown;
+    keyDown.raw[0] = 1 << 4;
+    keyDown.raw[1] = noteDown.m_keyPos;
+    keyDown.raw[2] = 127;
+    doMidi(keyDown);
   });
 }
 
@@ -79,9 +79,7 @@ void C15Synth::printAndResetTcdInputLog()
 
 void C15Synth::resetDSP()
 {
-  //m_dsp->reset();
-  //nltools::Log::info("DSP has been reset.");
-  m_dsp->onSettingInitialSinglePreset();
+  m_dsp->reset();
 }
 
 void C15Synth::toggleTestTone()
