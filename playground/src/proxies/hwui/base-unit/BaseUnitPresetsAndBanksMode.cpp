@@ -4,7 +4,7 @@
 #include <presets/EditBuffer.h>
 #include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadPresetSetting.h>
+#include <device-settings/LoadModeSetting.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnitPresetsAndBanksMode.h>
 #include <proxies/hwui/buttons.h>
@@ -16,7 +16,7 @@ BaseUnitPresetsAndBanksMode::BaseUnitPresetsAndBanksMode()
     , m_funcButtonHandler([] {},
                           [] {
                             auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
-                            LoadPresetSetting::cycleForSoundType(type);
+                            Application::get().getSettings()->getSetting<LoadModeSetting>()->cycleForSoundType(type);
                           })
 {
 }

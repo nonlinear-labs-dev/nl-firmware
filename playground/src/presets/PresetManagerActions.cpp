@@ -22,7 +22,7 @@
 #include <boost/algorithm/string.hpp>
 #include <tools/StringTools.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadPresetSetting.h>
+#include <device-settings/LoadModeSetting.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <tools/TimeTools.h>
@@ -171,7 +171,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       auto ae = Application::get().getAudioEngineProxy();
       ae->toggleSuppressParameterChanges(loadtransaction);
 
-      auto autoLoadSetting = Application::get().getSettings()->getSetting<LoadPresetSetting>();
+      auto autoLoadSetting = Application::get().getSettings()->getSetting<LoadModeSetting>();
       auto scopedLock = autoLoadSetting->scopedOverlay(LoadMode::Select);
       editBuffer->copyFrom(loadtransaction, &p);
       editBuffer->undoableSetLoadedPresetInfo(loadtransaction, &p);

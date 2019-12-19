@@ -11,7 +11,7 @@
 #include <presets/EditBuffer.h>
 #include <presets/Bank.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadPresetSetting.h>
+#include <device-settings/LoadModeSetting.h>
 #include <proxies/hwui/TextCropper.h>
 #include "SoledHeader.h"
 #include "DirectLoadIndicator.h"
@@ -50,7 +50,7 @@ PresetsLayout::PresetsLayout()
 
   pm->onBankSelection(sigc::mem_fun(this, &PresetsLayout::onBankSelected));
 
-  Application::get().getSettings()->getSetting<LoadPresetSetting>()->onChange(
+  Application::get().getSettings()->getSetting<LoadModeSetting>()->onChange(
       sigc::mem_fun(this, &PresetsLayout::onAutoLoadSettingChanged));
 }
 
@@ -138,7 +138,7 @@ void PresetsLayout::updateDirectLoadLabel()
   auto currentlyLoadedPresetUUID = eb->getUUIDOfLastLoadedPreset();
   auto currentlySelectedPresetUUID = getCurrentlySelectedPresetUUID();
 
-  if(app.getSettings()->getSetting<LoadPresetSetting>()->get() == LoadMode::DirectLoad)
+  if(app.getSettings()->getSetting<LoadModeSetting>()->get() == LoadMode::DirectLoad)
   {
     m_directLoad->setMode(DirectLoadIndicator::Mode::DirectLoad);
   }

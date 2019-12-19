@@ -3,10 +3,11 @@
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadPresetSetting.h>
+#include <device-settings/LoadModeSetting.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnitPresetsMode.h>
 #include <proxies/hwui/buttons.h>
+#include <proxies/hwui/HWUI.h>
 
 void BaseUnitPresetsMode::setup()
 {
@@ -49,10 +50,12 @@ void BaseUnitPresetsMode::onFuncButtonDown()
 {
   auto &app = Application::get();
   auto eb = app.getPresetManager()->getEditBuffer();
+  auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+
 
 #warning "TODO load preset dual/part foo"
-  if(!(app.getSettings()->getSetting<LoadPresetSetting>()->get() == LoadMode::DirectLoad))
-    eb->undoableLoadSelectedPreset();
+  if(!(app.getSettings()->getSetting<LoadModeSetting>()->get() == LoadMode::DirectLoad))
+    eb->undoableLoadSelectedPreset(currentVoiceGroup);
   else if(eb->isModified())
-    eb->undoableLoadSelectedPreset();
+    eb->undoableLoadSelectedPreset(currentVoiceGroup);
 }

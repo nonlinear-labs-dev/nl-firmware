@@ -109,7 +109,9 @@ class PresetManager : public ContentSection
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
 
- private:
+  const Preset *getSelectedPreset() const;
+
+private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);

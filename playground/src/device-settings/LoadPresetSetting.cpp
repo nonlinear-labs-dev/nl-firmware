@@ -1,28 +1,28 @@
 #include <Application.h>
-#include <device-settings/LoadPresetSetting.h>
+#include <device-settings/LoadModeSetting.h>
 #include <device-settings/EnumSetting.h>
 #include <device-settings/Settings.h>
 #include <presets/PresetManager.h>
 
-LoadPresetSetting::LoadPresetSetting(Settings &settings)
+LoadModeSetting::LoadModeSetting(Settings &settings)
     : super(settings, LoadMode::Select)
 {
 }
 
-const std::vector<ustring> &LoadPresetSetting::enumToString() const
+const std::vector<ustring> &LoadModeSetting::enumToString() const
 {
   static auto strs = getAllStrings<LoadMode>();
   static auto ret = std::vector<Glib::ustring>(strs.begin(), strs.end());
   return ret;
 }
 
-const std::vector<ustring> &LoadPresetSetting::enumToDisplayString() const
+const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
 {
   static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select Preset", "Direct Load" };
   return ret;
 }
 
-bool LoadPresetSetting::set(tEnum m)
+bool LoadModeSetting::set(tEnum m)
 {
   bool ret = super::set(m);
 
@@ -34,35 +34,33 @@ bool LoadPresetSetting::set(tEnum m)
   return ret;
 }
 
-void LoadPresetSetting::cycleForSoundType(SoundType type)
+void LoadModeSetting::cycleForSoundType(SoundType type)
 {
-  auto setting = Application::get().getSettings()->getSetting<LoadPresetSetting>();
-
   if(type == SoundType::Single)
   {
-    switch(setting->get())
+    switch(get())
     {
       case LoadMode::Select:
       case LoadMode::LoadToPart:
-        setting->set(LoadMode::DirectLoad);
+        set(LoadMode::DirectLoad);
         break;
       case LoadMode::DirectLoad:
-        setting->set(LoadMode::Select);
+        set(LoadMode::Select);
         break;
     }
   }
   else
   {
-    switch(setting->get())
+    switch(get())
     {
       case LoadMode::LoadToPart:
-        setting->set(LoadMode::Select);
+        set(LoadMode::Select);
         break;
       case LoadMode::Select:
-        setting->set(LoadMode::DirectLoad);
+        set(LoadMode::DirectLoad);
         break;
       case LoadMode::DirectLoad:
-        setting->set(LoadMode::LoadToPart);
+        set(LoadMode::LoadToPart);
         break;
     }
   }

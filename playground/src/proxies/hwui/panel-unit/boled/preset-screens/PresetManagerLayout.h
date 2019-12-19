@@ -13,7 +13,7 @@ class NumPresetsInBankLabel;
 class PresetManager;
 class PresetListBase;
 class Setting;
-class LoadPresetSetting;
+class LoadModeSetting;
 class ButtonMenu;
 class Button;
 

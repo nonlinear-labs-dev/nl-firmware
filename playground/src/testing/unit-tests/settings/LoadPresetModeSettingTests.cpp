@@ -1,10 +1,10 @@
 #include <testing/TestHelper.h>
 #include <third-party/include/catch.hpp>
-#include <device-settings/LoadPresetSetting.h>
+#include <device-settings/LoadModeSetting.h>
 
 SCENARIO("'toggle' Load Mode Setting")
 {
-  auto setting = Application::get().getSettings()->getSetting<LoadPresetSetting>();
+  auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
   auto getValue = [&]() { return setting->get(); };
 
   REQUIRE(setting);
@@ -13,19 +13,19 @@ SCENARIO("'toggle' Load Mode Setting")
 
   WHEN("Sound type Single")
   {
-    LoadPresetSetting::cycleForSoundType(SoundType::Single);
+    setting->cycleForSoundType(SoundType::Single);
     REQUIRE(getValue() == LoadMode::Select);
-    LoadPresetSetting::cycleForSoundType(SoundType::Single);
+    setting->cycleForSoundType(SoundType::Single);
     REQUIRE(getValue() == LoadMode::DirectLoad);
   }
 
   WHEN("Sound type Dual")
   {
-    LoadPresetSetting::cycleForSoundType(SoundType::Layer);
+    setting->cycleForSoundType(SoundType::Layer);
     REQUIRE(getValue() == LoadMode::LoadToPart);
-    LoadPresetSetting::cycleForSoundType(SoundType::Layer);
+    setting->cycleForSoundType(SoundType::Layer);
     REQUIRE(getValue() == LoadMode::Select);
-    LoadPresetSetting::cycleForSoundType(SoundType::Layer);
+    setting->cycleForSoundType(SoundType::Layer);
     REQUIRE(getValue() == LoadMode::DirectLoad);
   }
 }

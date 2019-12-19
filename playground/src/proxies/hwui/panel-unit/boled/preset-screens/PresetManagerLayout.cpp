@@ -1,7 +1,7 @@
 #include <utility>
 
 #include <Application.h>
-#include <device-settings/LoadPresetSetting.h>
+#include <device-settings/LoadModeSetting.h>
 #include <device-settings/Settings.h>
 #include <presets/EditBuffer.h>
 #include <presets/Bank.h>
@@ -130,7 +130,7 @@ void PresetManagerLayout::setupBankSelect()
   m_autoLoad = addControl(new Button("Direct Load", Buttons::BUTTON_D));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   m_presets->setBankFocus();
-  Application::get().getSettings()->getSetting<LoadPresetSetting>()->onChange(
+  Application::get().getSettings()->getSetting<LoadModeSetting>()->onChange(
       sigc::mem_fun(this, &PresetManagerLayout::updateAutoLoadButton));
 }
 
@@ -212,7 +212,7 @@ void PresetManagerLayout::setupPresetSelect()
   addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
   addControl(new CurrentVoiceGroupSelectionIndicator(Rect{ 20, 15, 24, 8 }));
 
-  Application::get().getSettings()->getSetting<LoadPresetSetting>()->onChange(
+  Application::get().getSettings()->getSetting<LoadModeSetting>()->onChange(
       sigc::mem_fun(this, &PresetManagerLayout::updateAutoLoadButton));
 }
 
@@ -275,7 +275,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
         else if(m_autoLoad)
         {
           auto type = getPresetManager()->getEditBuffer()->getType();
-          LoadPresetSetting::cycleForSoundType(type);
+          Application::get().getSettings()->getSetting<LoadModeSetting>()->cycleForSoundType(type);
         }
 
         return true;
@@ -328,7 +328,7 @@ void PresetManagerLayout::updateAutoLoadButton(const Setting *setting)
 {
   if(m_autoLoad)
   {
-    const auto *s = dynamic_cast<const LoadPresetSetting *>(setting);
+    const auto *s = dynamic_cast<const LoadModeSetting *>(setting);
     m_autoLoad->setText({ s->getDisplayString() });
   }
 }
@@ -367,24 +367,25 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
 {
   auto pm = getPresetManager();
   auto eb = pm->getEditBuffer();
+  auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   if(auto bank = pm->getSelectedBank())
   {
     if(auto selPreset = bank->getSelectedPreset())
     {
-      auto loadSetting = Application::get().getSettings()->getSetting<LoadPresetSetting>();
+      auto loadSetting = Application::get().getSettings()->getSetting<LoadModeSetting>();
 
       switch(selPreset->getType())
       {
         case SoundType::Single:
-          eb->undoableLoadSelectedPreset();
+          eb->undoableLoadSelectedPreset(currentVoiceGroup);
           break;
         case SoundType::Layer:
         case SoundType::Split:
           if(loadSetting->get() == LoadMode::LoadToPart)
             openPartChooser();
           else
-            eb->undoableLoadSelectedPreset();
+            eb->undoableLoadSelectedPreset(currentVoiceGroup);
           break;
       }
     }

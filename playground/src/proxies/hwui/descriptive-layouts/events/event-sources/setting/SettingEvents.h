@@ -1,8 +1,8 @@
 #pragma once
 #include "SettingEvent.h"
-#include "device-settings/LoadPresetSetting.h"
+#include "device-settings/LoadModeSetting.h"
 
 namespace DescriptiveLayouts
 {
-  using DirectLoadStatus = SettingEvent<bool, LoadPresetSetting>;
+  using DirectLoadStatus = SettingEvent<bool, LoadModeSetting>;
 }
