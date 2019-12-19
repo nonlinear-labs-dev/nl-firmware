@@ -988,4 +988,11 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-layer");
 		queueJob(new StaticURI(path), false);
 	}
+
+	public void loadPresetPartIntoPart(VoiceGroup presetPart, VoiceGroup editbufferPart) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-part-into-editbuffer-part");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()),
+				new StaticURI.KeyValue("editbuffer-part", editbufferPart.toString()));
+		queueJob(uri, false);
+	}
 }

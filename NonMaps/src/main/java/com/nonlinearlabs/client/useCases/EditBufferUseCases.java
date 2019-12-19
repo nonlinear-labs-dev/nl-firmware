@@ -424,4 +424,8 @@ public class EditBufferUseCases {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
 
+	public void loadPresetPart(VoiceGroup i) {
+		NonMaps.theMaps.getServerProxy().loadPresetPartIntoPart(i, EditBufferModel.get().voiceGroup.getValue());
+	}
+
 }

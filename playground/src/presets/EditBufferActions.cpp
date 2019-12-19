@@ -209,6 +209,12 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     editBuffer->undoableConvertToDual(transaction, SoundType::Layer);
     Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
+
+  addAction("load-preset-part-into-editbuffer-part", [=](auto request) {
+    auto presetPart = to<VoiceGroup>(request->get("preset-part"));
+    auto editbufferPartPart = to<VoiceGroup>(request->get("editbuffer-part"));
+    editBuffer->undoableLoadSelectedPresetPartIntoPart(presetPart, editbufferPartPart);
+  });
 }
 
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer)
