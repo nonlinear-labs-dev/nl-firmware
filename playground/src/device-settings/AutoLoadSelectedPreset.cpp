@@ -5,24 +5,29 @@
 #include <presets/PresetManager.h>
 
 AutoLoadSelectedPreset::AutoLoadSelectedPreset(Settings &settings)
-    : super(settings, false)
+    : super(settings, LoadPresetMode::PresetSelect)
 {
 }
 
-AutoLoadSelectedPreset::~AutoLoadSelectedPreset()
+const std::vector<ustring> &AutoLoadSelectedPreset::enumToString() const
 {
+  auto strs = getAllStrings<LoadPresetMode>();
+  static auto ret = std::vector<Glib::ustring>(strs.begin(), strs.end());
+  return ret;
 }
 
-void AutoLoadSelectedPreset::cheat(tEnum m)
+const std::vector<ustring> &AutoLoadSelectedPreset::enumToDisplayString() const
 {
-  super::set(m);
+  auto strs = getAllStrings<LoadPresetMode>();
+  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select Preset", "Direct Load" };
+  return ret;
 }
 
 bool AutoLoadSelectedPreset::set(tEnum m)
 {
   bool ret = super::set(m);
 
-  if(m == BooleanSettings::BOOLEAN_SETTING_TRUE && !getSettings()->isLoading())
+  if(m == LoadPresetMode::DirectLoad && !getSettings()->isLoading())
   {
     Application::get().getPresetManager()->doAutoLoadSelectedPreset();
   }

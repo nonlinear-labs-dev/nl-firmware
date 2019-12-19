@@ -1,19 +1,23 @@
 #pragma once
 
-#include "BooleanSetting.h"
+#include <nltools/enums/EnumTools.h>
+#include "EnumSetting.h"
 
-class AutoLoadSelectedPreset : public BooleanSetting
+ENUM(LoadPresetMode, uint8_t, PartSelect, PresetSelect, DirectLoad);
+
+class AutoLoadSelectedPreset : public EnumSetting<LoadPresetMode>
 {
  private:
-  typedef BooleanSetting super;
+  typedef EnumSetting<LoadPresetMode> super;
 
  public:
-  AutoLoadSelectedPreset(Settings& settings);
-  virtual ~AutoLoadSelectedPreset();
+  explicit AutoLoadSelectedPreset(Settings& settings);
 
-  virtual bool set(tEnum m) override;
-  void cheat(tEnum m);
+  bool set(tEnum m) override;
 
   AutoLoadSelectedPreset(const AutoLoadSelectedPreset& other) = delete;
   AutoLoadSelectedPreset& operator=(const AutoLoadSelectedPreset&) = delete;
+
+  const std::vector<ustring>& enumToString() const override;
+  const std::vector<ustring>& enumToDisplayString() const override;
 };

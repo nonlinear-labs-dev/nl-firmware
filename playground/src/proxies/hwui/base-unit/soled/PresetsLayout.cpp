@@ -138,7 +138,8 @@ void PresetsLayout::updateDirectLoadLabel()
   auto currentlyLoadedPresetUUID = eb->getUUIDOfLastLoadedPreset();
   auto currentlySelectedPresetUUID = getCurrentlySelectedPresetUUID();
 
-  if(app.getSettings()->getSetting<AutoLoadSelectedPreset>()->get())
+#warning "todo loadMode"
+  if(app.getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad)
   {
     m_directLoad->setMode(DirectLoadIndicator::Mode::DirectLoad);
   }

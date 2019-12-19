@@ -11,6 +11,7 @@ class DirectLoadIndicator : public LabelRegular8
   DirectLoadIndicator(const Rect &pos);
   virtual ~DirectLoadIndicator();
 
+#warning "todo Extend for loadPart"
   enum class Mode
   {
     Off,

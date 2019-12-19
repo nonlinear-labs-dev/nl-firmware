@@ -172,7 +172,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       ae->toggleSuppressParameterChanges(loadtransaction);
 
       auto autoLoadSetting = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>();
-      auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
+      auto scopedLock = autoLoadSetting->scopedOverlay(LoadPresetMode::PresetSelect);
       editBuffer->copyFrom(loadtransaction, &p);
       editBuffer->undoableSetLoadedPresetInfo(loadtransaction, &p);
 

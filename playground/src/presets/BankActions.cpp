@@ -402,7 +402,8 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         UNDO::Scope::tTransactionScopePtr scope;
 
-        bool autoLoad = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get();
+        bool autoLoad = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get()
+            == LoadPresetMode::DirectLoad;
 
         if(autoLoad)
           scope = m_presetManager.getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
@@ -907,8 +908,7 @@ Bank *BankActions::importBank(InStream &stream, Glib::ustring x, Glib::ustring y
   UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();
 
-  auto autoLoadOff = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->scopedOverlay(
-      BooleanSettings::BOOLEAN_SETTING_FALSE);
+  auto autoLoadOff = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->scopedOverlay(LoadPresetMode::PresetSelect);
 
   auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
 

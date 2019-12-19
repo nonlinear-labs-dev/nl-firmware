@@ -129,7 +129,10 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::ToggleDirectLoad,
-                  [] { Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle(); });
+                  [] {
+#warning "Cycle here!"
+      //Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
+    });
 
     registerEvent(EventSinks::SwitchToMCAmtDetail, [hwui, eb]() {
       if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected()))
