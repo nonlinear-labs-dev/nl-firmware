@@ -50,7 +50,7 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto &app = Application::get();
   auto eb = app.getPresetManager()->getEditBuffer();
 
-  if(!app.getSettings()->getSetting<AutoLoadSelectedPreset>()->get())
+  if(!(app.getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad))
     eb->undoableLoadSelectedPreset();
   else if(eb->isModified())
     eb->undoableLoadSelectedPreset();

@@ -528,18 +528,13 @@ void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void PresetManager::onPresetSelectionChanged()
 {
-  if(Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get())
+  if(Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad)
     doAutoLoadSelectedPreset();
 }
 
 void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<Bank *> &banks)
 {
   m_banks.sort(transaction, banks);
-}
-
-void PresetManager::invalidateAllBanks()
-{
-  m_banks.forEach([](auto b) { b->invalidate(); });
 }
 
 void PresetManager::storeInitSound(UNDO::Transaction *transaction)
@@ -720,7 +715,7 @@ void PresetManager::stress(int numTransactions)
 
         {
           auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
-          m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), {parameterId, VoiceGroup::I});
+          m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), { parameterId, VoiceGroup::I });
 
           if(auto p = m_editBuffer->getSelected())
           {
@@ -752,7 +747,7 @@ void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
   {
     m_editBuffer->undoableSelectParameter(trans, param);
   }
-  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers {});
+  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers{});
 }
 
 void PresetManager::stressAllParams(int numParamChangedForEachParameter)
@@ -776,7 +771,7 @@ void PresetManager::stressBlocking(int numTransactions)
   int parameterId = g_random_int_range(0, 200);
   {
     auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
-    m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), {parameterId, VoiceGroup::I});
+    m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), { parameterId, VoiceGroup::I });
 
     if(auto p = m_editBuffer->getSelected())
     {
@@ -831,7 +826,7 @@ void PresetManager::incAllParamsFine()
         for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
           for(auto &group : m_editBuffer->getParameterGroups(vg))
             for(auto &param : group->getParameters())
-              param->stepCPFromHwui(trans, 1, ButtonModifiers { ButtonModifier::FINE });
+              param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
       },
       20);
 }

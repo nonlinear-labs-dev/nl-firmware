@@ -44,7 +44,8 @@ namespace DescriptiveLayouts
     switch(e)
     {
       case EventSinks::ToggleDirectLoad:
-        Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
+#warning "todo cycle instead of toggle"
+        //Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
         break;
 
       case EventSinks::Left:
@@ -166,8 +167,9 @@ namespace DescriptiveLayouts
 
   void PresetManagerEvents::updateDirectLoad()
   {
+#warning "Adlerauge"
     setBool(EventSources::DirectLoadStatus,
-            Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get());
+            Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad);
   }
 
   void PresetManagerEvents::setString(EventSources e, const std::string &str)

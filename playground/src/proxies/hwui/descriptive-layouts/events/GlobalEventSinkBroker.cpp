@@ -128,8 +128,11 @@ namespace DescriptiveLayouts
       hwui->getPanelUnit().getEditPanel().getBoled().bruteForce();
     });
 
-    registerEvent(EventSinks::ToggleDirectLoad,
-                  [] { Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle(); });
+    registerEvent(EventSinks::ToggleDirectLoad, [] {
+#warning "Cycle here!"
+      auto eb = Application::get().getPresetManager()->getEditBuffer();
+      AutoLoadSelectedPreset::cycleForSoundType(eb->getType());
+    });
 
     registerEvent(EventSinks::SwitchToMCAmtDetail, [hwui, eb]() {
       if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected()))

@@ -268,7 +268,8 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
         }
         else if(m_autoLoad)
         {
-          Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
+#warning "todo cycle"
+          //Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
         }
 
         return true;
@@ -320,7 +321,8 @@ void PresetManagerLayout::updateAutoLoadButton(const Setting *setting)
   if(m_autoLoad)
   {
     const auto *s = dynamic_cast<const AutoLoadSelectedPreset *>(setting);
-    m_autoLoad->setHighlight(s->get());
+#warning "Adlerauge"
+    m_autoLoad->setHighlight(s->get() == LoadPresetMode::DirectLoad);
   }
 }
 

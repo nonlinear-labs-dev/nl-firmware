@@ -132,7 +132,6 @@ class PresetManager : public ContentSection
   size_t getNextBankPosition() const;
   void selectBank(size_t idx);
   bool selectBank(UNDO::Transaction *transaction, size_t idx);
-  void invalidateAllBanks();
 
   UndoableVector<PresetManager, Bank> m_banks;
 
