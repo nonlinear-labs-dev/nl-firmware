@@ -1,6 +1,9 @@
 #pragma once
 
 #include "playground.h"
+#include <sigc++/trackable.h>
+#include <sigc++/connection.h>
+#include <functional>
 
 class ButtonRepeat : public sigc::trackable
 {

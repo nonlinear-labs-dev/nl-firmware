@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
+#include <sigc++/connection.h>
 
 class Application;
 class Parameter;

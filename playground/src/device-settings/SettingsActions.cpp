@@ -4,6 +4,7 @@
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
 #include <proxies/hwui/HWUI.h>
+#include <http/NetworkRequest.h>
 
 SettingsActions::SettingsActions(Settings &settings)
     : super("/settings/")

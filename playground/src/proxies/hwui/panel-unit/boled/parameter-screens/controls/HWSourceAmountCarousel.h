@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Carousel.h"
+#include <sigc++/connection.h>
 
 class Application;
 class Parameter;

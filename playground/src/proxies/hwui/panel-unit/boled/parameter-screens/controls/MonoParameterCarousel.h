@@ -3,6 +3,7 @@
 #include <nltools/Types.h>
 #include <ParameterId.h>
 #include "ParameterCarousel.h"
+#include <sigc++/connection.h>
 
 class MonoParameterCarousel : public ParameterCarousel
 {

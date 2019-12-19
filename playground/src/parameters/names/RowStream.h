@@ -2,6 +2,7 @@
 
 #include <playground.h>
 #include <fstream>
+#include <functional>
 
 class RowStream
 {

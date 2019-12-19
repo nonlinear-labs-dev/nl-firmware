@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tools/StateMachine.h"
+#include <sigc++/connection.h>
 
 enum FineButtonEvents
 {

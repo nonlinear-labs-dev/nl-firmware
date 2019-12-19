@@ -3,8 +3,11 @@ package com.nonlinearlabs.client.world.overlay.belt.presets;
 import java.util.LinkedList;
 
 import com.google.gwt.xml.client.Node;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenter;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.belt.Belt;
 import com.nonlinearlabs.client.world.overlay.belt.LockSymbol;
 
@@ -14,8 +17,10 @@ public class BeltPresetLayout extends OverlayLayout {
 	BankControlArea bank;
 	LoadButtonArea load;
 	CurrentPresetNumber currentPreset;
-	DirectLoadButton autoLoad;
+	SVGImage autoLoad;
 	LockSymbol lock;
+	PresetManagerPresenter presenter;
+	boolean showLoadModeMenu = false;
 
 	private LinkedList<PresetBeltLayouter> layouters = new LinkedList<PresetBeltLayouter>();
 
@@ -27,7 +32,7 @@ public class BeltPresetLayout extends OverlayLayout {
 		addChild(bank = new BankControlArea(this));
 		addChild(load = new LoadButtonArea(this));
 		addChild(currentPreset = new CurrentPresetNumber(this));
-		addChild(autoLoad = new DirectLoadButton(this));
+		addChild(autoLoad = new LoadModeButton(this));
 		addChild(lock = new LockSymbol(this));
 
 		layouters.add(new PresetBeltLayouterXXL(this));
@@ -38,6 +43,22 @@ public class BeltPresetLayout extends OverlayLayout {
 		layouters.add(new PresetBeltLayouterXS(this));
 		layouters.add(new PresetBeltLayouterXXS(this));
 
+		PresetManagerPresenterProvider.get().register(p -> {
+			presenter = p;
+
+			if (showLoadModeMenu != p.showLoadModeMenu) {
+				showLoadModeMenu = p.showLoadModeMenu;
+
+				if (p.showLoadModeButton)
+					addChild(autoLoad = new LoadModeButton(this));
+				else
+					addChild(autoLoad = new LoadModeMenu(this));
+
+				requestLayout();
+			}
+
+			return true;
+		});
 	}
 
 	@Override
@@ -49,25 +70,18 @@ public class BeltPresetLayout extends OverlayLayout {
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
 
-		for (PresetBeltLayouter layouter : layouters) {
-			if (layouter.doLayout(w, h)) {
+		for (PresetBeltLayouter layouter : layouters)
+			if (layouter.doLayout(w, h))
 				return;
-			}
-		}
 	}
 
 	public void update(Node settingsNode, Node editBufferNode, Node presetManagerNode) {
 		bank.update(presetManagerNode);
-		autoLoad.update(settingsNode);
 		store.update(settingsNode, presetManagerNode);
 	}
 
 	public BankControl getBankControl() {
 		return bank.getBankControl();
-	}
-
-	public void toggleDirectLoad() {
-		autoLoad.toggle();
 	}
 
 	public void renameCurrentPreset() {
@@ -92,7 +106,4 @@ public class BeltPresetLayout extends OverlayLayout {
 		store.storeSelectOff();
 	}
 
-	public boolean isDirectLoadActive() {
-		return autoLoad.isDirectLoadActive();
-	}
 }

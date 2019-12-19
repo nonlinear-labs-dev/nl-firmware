@@ -1,6 +1,7 @@
 #pragma once
 
 #include <proxies/hwui/DFBLayout.h>
+#include <sigc++/connection.h>
 
 class Label;
 class Bank;

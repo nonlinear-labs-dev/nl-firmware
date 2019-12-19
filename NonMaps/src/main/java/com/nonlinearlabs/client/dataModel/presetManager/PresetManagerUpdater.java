@@ -8,9 +8,9 @@ import com.nonlinearlabs.client.dataModel.Updater;
 
 public class PresetManagerUpdater extends Updater {
 
-	protected PresetManager target;
+	protected PresetManagerModel target;
 
-	public PresetManagerUpdater(Node c, PresetManager pm) {
+	public PresetManagerUpdater(Node c, PresetManagerModel pm) {
 		super(c);
 		target = pm;
 	}
@@ -20,7 +20,7 @@ public class PresetManagerUpdater extends Updater {
 			processChildrenElements(root, "banks", t -> updateBanks(target, t));
 	}
 
-	private void updateBanks(PresetManager pm, Node banks) {
+	private void updateBanks(PresetManagerModel pm, Node banks) {
 		BankMapDataModelEntity existingBanksEntity = pm.getBanks();
 		Map<String, Bank> existingBanks = new HashMap<String, Bank>(existingBanksEntity.getValue());
 		existingBanks.forEach((uuid, bank) -> bank.setDoomed());

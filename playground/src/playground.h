@@ -1,9 +1,8 @@
 #pragma once
 
 #include <stdlib.h>
-#include <glibmm.h>
 #include <iomanip>
-#include <Compatibility.h>
+#include <glibmm/ustring.h>
 
 #define TRACE_LOC_AND_ARGS(loc, arg) std::cout << loc << ": " << arg << std::endl
 #define TRACE(arg) TRACE_LOC_AND_ARGS(G_STRLOC, arg)
@@ -31,9 +30,15 @@ namespace std
     target = str;
     return res;
   }
+
   template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true> std::string to_string(const T& e)
   {
     return to_string(static_cast<int>(e));
+  }
+
+  inline Glib::ustring to_string(const Glib::ustring& in)
+  {
+    return in;
   }
 }
 
@@ -62,7 +67,7 @@ inline std::string to_string(double d)
   return ss.str();
 }
 
-typedef gint16 tTcdValue;
+typedef int16_t tTcdValue;
 typedef double tDisplayValue;
 typedef double tControlPositionValue;
 

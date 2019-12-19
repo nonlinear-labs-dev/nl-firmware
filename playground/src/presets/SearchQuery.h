@@ -1,6 +1,9 @@
 #pragma once
 
 #include "playground.h"
+#include <vector>
+#include <list>
+#include <functional>
 
 class SearchQuery
 {

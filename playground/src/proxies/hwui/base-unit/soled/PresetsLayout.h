@@ -2,6 +2,7 @@
 
 #include <proxies/hwui/DFBLayout.h>
 #include <tools/Uuid.h>
+#include <sigc++/connection.h>
 
 class Label;
 class Setting;

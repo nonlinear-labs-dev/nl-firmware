@@ -8,11 +8,14 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
+import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.LoadMode;
 import com.nonlinearlabs.client.tools.NLMath;
 
 public class EditBufferUseCases {
@@ -387,6 +390,38 @@ public class EditBufferUseCases {
 
 	public void resetModulation(int id) {
 		NonMaps.theMaps.getServerProxy().resetModulation(id, getVoiceGroupFor(id));
+	}
+
+	public void toggleDirectLoad() {
+		LoadMode l = SetupModel.get().systemSettings.loadMode.getValue();
+		SoundType s = EditBufferModel.get().soundType.getValue();
+
+		if (s == SoundType.Single) {
+			if (l != LoadMode.DirectLoad) {
+				l = LoadMode.DirectLoad;
+			} else {
+				l = LoadMode.Select;
+			}
+		} else {
+			if (l == LoadMode.DirectLoad) {
+				l = LoadMode.LoadToPart;
+			} else if (l == LoadMode.LoadToPart) {
+				l = LoadMode.Select;
+			} else {
+				l = LoadMode.Select;
+			}
+		}
+
+		setLoadMode(l);
+	}
+
+	public void setLoadMode(LoadMode l) {
+		SetupModel.get().systemSettings.loadMode.setValue(l);
+		NonMaps.theMaps.getServerProxy().setSetting("LoadMode", l.toString());
+	}
+
+	public void loadPreset(String uuid) {
+		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
 
 }

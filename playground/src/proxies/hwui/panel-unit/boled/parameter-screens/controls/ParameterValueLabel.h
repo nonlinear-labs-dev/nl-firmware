@@ -1,5 +1,7 @@
 #pragma once
+
 #include <proxies/hwui/controls/Label.h>
+#include <sigc++/connection.h>
 
 class Parameter;
 
@@ -11,7 +13,8 @@ class ParameterValueLabel : public Label
  public:
   ParameterValueLabel(const Parameter *param, const Rect &pos);
   ~ParameterValueLabel();
-  void updateParameter(const Parameter* param);
+  void updateParameter(const Parameter *param);
+
  private:
   void updateText(const Parameter *param);
   void updateVoiceGroup();

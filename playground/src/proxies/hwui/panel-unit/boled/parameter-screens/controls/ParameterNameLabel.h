@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
+#include <sigc++/connection.h>
 
 class Application;
 class Parameter;
@@ -14,7 +15,7 @@ class ParameterNameLabel : public Label
   ParameterNameLabel(const Rect &pos);
   virtual ~ParameterNameLabel();
 
-  void updateParameter(const Parameter* parameter);
+  void updateParameter(const Parameter *parameter);
 
  protected:
   virtual void setSuffixFontColor(FrameBuffer &fb) const;

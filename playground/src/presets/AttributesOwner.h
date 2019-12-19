@@ -1,6 +1,7 @@
 #pragma once
 
 #include <http/UpdateDocumentContributor.h>
+#include <map>
 
 namespace UNDO
 {

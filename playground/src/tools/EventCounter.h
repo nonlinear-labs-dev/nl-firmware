@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include <array>
+#include <sigc++/trackable.h>
 
 class EventCounter : public sigc::trackable
 {

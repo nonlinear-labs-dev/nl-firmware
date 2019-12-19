@@ -21,7 +21,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
-import com.nonlinearlabs.client.dataModel.presetManager.PresetManager;
+import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
@@ -122,7 +122,7 @@ public class ServerProxy {
 			EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 			ebu.doUpdate();
 
-			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManager.get());
+			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
 			pmu.doUpdate();
 
 			documentFromPlayground.notifyChanges();
@@ -208,10 +208,6 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "select-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
-	}
-
-	public void loadPreset(IPreset preset) {
-		loadPreset(preset.getUUID());
 	}
 
 	public void loadPreset(String presetuuid) {

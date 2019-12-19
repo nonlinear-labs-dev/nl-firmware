@@ -15,6 +15,8 @@ import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IPreset;
 import com.nonlinearlabs.client.world.NonLinearWorld;
@@ -279,7 +281,7 @@ public class PresetManager extends MapsLayout {
 			if (bank.getNodeName().equals("preset-bank")) {
 				Renameable ui = updateBank(bank);
 				banksChanged = ServerProxy.didChange(bank) || banksChanged;
-				currentChildren.remove(ui);
+				currentChildren.remove((MapsControl) ui);
 			}
 		}
 
@@ -740,9 +742,8 @@ public class PresetManager extends MapsLayout {
 	public void loadSelectedPreset() {
 		Preset p = findSelectedPreset();
 
-		if (p != null) {
-			getNonMaps().getServerProxy().loadPreset(p);
-		}
+		if (p != null)
+			p.load();
 	}
 
 	public Preset findSelectedPreset() {
@@ -947,8 +948,7 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean isChangingPresetWhileInDirectLoad() {
-		boolean directLoadActive = getNonMaps().getNonLinearWorld().getViewport().getOverlay().getBelt()
-				.getPresetLayout().isDirectLoadActive();
+		boolean directLoadActive = PresetManagerPresenterProvider.get().getPresenter().loadModeButtonState;
 
 		if (!directLoadActive)
 			return false;

@@ -1,5 +1,6 @@
 #include "RPCActionManager.h"
 #include "device-settings/DebugLevel.h"
+#include <http/NetworkRequest.h>
 
 RPCActionManager::RPCActionManager(const Glib::ustring &basePath)
     : m_basePath(basePath)

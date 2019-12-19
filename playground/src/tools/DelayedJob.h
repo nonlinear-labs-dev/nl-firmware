@@ -1,6 +1,8 @@
 #pragma once
 
 #include "playground.h"
+#include <functional>
+#include <sigc++/connection.h>
 
 class DelayedJob
 {

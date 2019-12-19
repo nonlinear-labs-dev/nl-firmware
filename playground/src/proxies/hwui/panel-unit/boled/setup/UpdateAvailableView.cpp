@@ -1,4 +1,5 @@
 #include <proxies/hwui/panel-unit/boled/setup/UpdateAvailableView.h>
+#include <glibmm/main.h>
 
 static const auto c_updateFileName = "/mnt/usb-stick/nonlinear-c15-update.tar";
 

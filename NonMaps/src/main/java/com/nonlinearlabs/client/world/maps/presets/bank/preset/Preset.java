@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.NonMaps;
@@ -11,9 +12,12 @@ import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.Tracer;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.LoadMode;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.IPreset;
@@ -44,6 +48,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private boolean filterActive = false;
 	private boolean isInFilterSet = false;
 	private boolean isCurrentFilterMatch = false;
+	private SoundType type = SoundType.Single;
 
 	private static final PresetColorPack loadedColor = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
 	private static final PresetColorPack standardColor = new PresetColorPack(new Gray(0), new Gray(25), new Gray(77));
@@ -148,6 +153,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		String name = preset.getAttributes().getNamedItem("name").getNodeValue();
 		this.number.setText(NumberFormat.getFormat("#000").format(i));
 		this.name.setText(name);
+
+		String typeStr = preset.getAttributes().getNamedItem("type").getNodeValue();
+		this.type = SoundType.valueOf(typeStr);
 		updateAttributes(preset);
 
 		if (isSelected() && getParent().isSelected() && PresetInfoDialog.isShown())
@@ -452,7 +460,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void load() {
-		getNonMaps().getServerProxy().loadPreset(this);
+		LoadMode loadMode = SetupModel.get().systemSettings.loadMode.getValue();
+		if (loadMode == LoadMode.LoadToPart && type != SoundType.Single) {
+			new ChoosePresetPartDialog(this);
+		}
+		EditBufferUseCases.get().loadPreset(getUUID());
 	}
 
 	private void updateAttributes(Node node) {

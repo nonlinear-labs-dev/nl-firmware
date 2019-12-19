@@ -1,4 +1,5 @@
 #include "DelayedJob.h"
+#include <glibmm/main.h>
 
 DelayedJob::DelayedJob(int maxDelay, tJob job)
     : m_maxDelay(maxDelay)

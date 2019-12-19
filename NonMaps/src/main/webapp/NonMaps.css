@@ -124,26 +124,14 @@ select {
   color: #141414;
 }
 
-.gwt-Button:hover {
-  /* border-color: #939393; */
-}
-
 .gwt-Button[disabled] {
   cursor: default;
   color: #888;
 }
 
-.gwt-Button[disabled]:hover {
-  /* border: 1px outset #ccc; */
-}
-
-.gwt-CheckBox {}
-
 .gwt-CheckBox-disabled {
   color: #888;
 }
-
-.gwt-DecoratorPanel {}
 
 .gwt-DecoratorPanel .topCenter {
   border-top: 1px solid #bbb;
@@ -253,12 +241,6 @@ select {
   zoom: 1;
 }
 
-.gwt-DisclosurePanel {}
-
-.gwt-DisclosurePanel-open {}
-
-.gwt-DisclosurePanel-closed {}
-
 .gwt-DisclosurePanel .header,
 .gwt-DisclosurePanel .header a,
 .gwt-DisclosurePanel .header td {
@@ -274,8 +256,6 @@ select {
   margin-left: 6px;
 }
 
-.gwt-FileUpload {}
-
 .gwt-Frame {
   border-top: 2px solid #666;
   border-left: 2px solid #666;
@@ -283,16 +263,12 @@ select {
   border-bottom: 2px solid #bbb;
 }
 
-.gwt-HorizontalSplitPanel {}
-
 .gwt-HorizontalSplitPanel .hsplitter {
   cursor: move;
   border: 0px;
   background: #e7e7e7;
   line-height: 0px;
 }
-
-.gwt-VerticalSplitPanel {}
 
 .gwt-VerticalSplitPanel .vsplitter {
   cursor: move;
@@ -309,14 +285,10 @@ select {
   cursor: pointer;
 }
 
-.gwt-Image {}
-
 .gwt-Label {
   padding: 7px 5px;
   color: #bbb;
 }
-
-.gwt-ListBox {}
 
 .gwt-MenuBar {
   cursor: default;
@@ -465,8 +437,6 @@ select {
   background: white;
 }
 
-.gwt-DecoratedPopupPanel .popupContent {}
-
 .gwt-DecoratedPopupPanel .popupMiddleCenter {
   padding: 3px;
   background: #f1f1f1;
@@ -603,13 +573,9 @@ select {
   zoom: 1;
 }
 
-.gwt-RadioButton {}
-
 .gwt-RadioButton-disabled {
   color: #888;
 }
-
-.gwt-RichTextArea {}
 
 .hasRichTextToolbar {
   border: 0px;
@@ -785,8 +751,6 @@ select {
   font-family: Arial Unicode MS, Arial, sans-serif;
 }
 
-.gwt-SuggestBoxPopup {}
-
 .gwt-SuggestBoxPopup .item {
   padding: 2px 6px;
   color: #000;
@@ -888,8 +852,6 @@ select {
   /* first tab distance from the left */
 }
 
-.gwt-TabBar .gwt-TabBarRest {}
-
 .gwt-TabBar .gwt-TabBarItem {
   margin-left: 4px;
   padding: 4px 8px 4px 8px;
@@ -915,8 +877,6 @@ select {
   color: #999999;
 }
 
-.gwt-TabPanel {}
-
 .gwt-TabPanelBottom {
   border-color: #ccc;
   border-style: solid;
@@ -934,8 +894,6 @@ select {
   width: 5px;
   /* first tab distance from the left */
 }
-
-.gwt-DecoratedTabBar .gwt-TabBarRest {}
 
 .gwt-DecoratedTabBar .gwt-TabBarItem {
   border-collapse: collapse;
@@ -1150,8 +1108,6 @@ select {
   background: #ffcccc;
 }
 
-.dateBoxPopup {}
-
 .gwt-DatePicker {
   border: 1px solid #ccc;
   border-top: 1px solid #999;
@@ -1284,8 +1240,6 @@ td.datePickerYear {
   background: white;
   padding: 2px 2px 10px 5px;
 }
-
-.gwt-TabLayoutPanel {}
 
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
   background: #ccc;
@@ -1558,6 +1512,7 @@ textarea[disabled],
 select[disabled='disabled'] {
   -webkit-text-fill-color: #c2c2c2;
   -webkit-opacity: 1;
+  opacity: 1;
 }
 
 .gwt-DialogBox .horizontal {
@@ -1825,15 +1780,13 @@ button {
   border-bottom: none;
 }
 
-.preset-info-dialog .tabs {}
-
 .preset-info-dialog.gwt-DialogBox .dialogMiddleCenter {
   border: none;
   border-radius: 0;
   background-color: inherit;
 }
 
-.preset-info-dialog td:nth-of-type (2) {
+.preset-info-dialog td:nth-of-type(2) {
   display: flex;
 }
 
@@ -1841,7 +1794,7 @@ button {
   width: 100%;
 }
 
-.preset-info-dialog td:nth-of-type (2)>* {
+.preset-info-dialog td:nth-of-type(2)>* {
   flex-grow: 1;
 }
 
@@ -1851,7 +1804,7 @@ button {
   justify-content: space-between;
 }
 
-.bank-info-dialog td:nth-of-type (2) {
+.bank-info-dialog td:nth-of-type(2) {
   display: flex;
 }
 
@@ -1863,7 +1816,7 @@ button {
   width: 100%;
 }
 
-.bank-info-dialog td:nth-of-type (2)>* {
+.bank-info-dialog td:nth-of-type(2)>* {
   flex-grow: 1;
 }
 

@@ -1,19 +1,17 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
-import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.ServerProxy;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
-public class DirectLoadButton extends SVGImage {
+public class LoadModeButton extends SVGImage {
 
-	private boolean married;
-
-	DirectLoadButton(OverlayLayout parent) {
+	LoadModeButton(OverlayLayout parent) {
 		super(parent, "Link_Enabled.svg", "Link_Active.svg", "Link_Disabled.svg");
 	}
 
@@ -34,7 +32,7 @@ public class DirectLoadButton extends SVGImage {
 	public int getSelectedPhase() {
 		if (isInStoreSelectMode())
 			return drawStates.disabled.ordinal();
-		else if (married)
+		else if (isDirectLoadActive())
 			return drawStates.active.ordinal();
 
 		return drawStates.normal.ordinal();
@@ -49,26 +47,11 @@ public class DirectLoadButton extends SVGImage {
 		return this;
 	}
 
-	public void update(Node settingsNode) {
-		if (ServerProxy.didChange(settingsNode)) {
-			String str = ServerProxy.getChildText(settingsNode, "LoadMode", "value");
-			if (str != null && !str.isEmpty()) {
-				boolean m = str.toLowerCase().equals("on");
-				if (married != m) {
-					married = m;
-					invalidate(INVALIDATION_FLAG_UI_CHANGED);
-					requestLayout();
-				}
-			}
-		}
-	}
-
 	public boolean isDirectLoadActive() {
-		return married;
+		return PresetManagerPresenterProvider.get().getPresenter().directLoadActive;
 	}
 
 	public void toggle() {
-		married = !married;
-		NonMaps.theMaps.getServerProxy().setSetting("LoadMode", married ? "on" : "off");
+		EditBufferUseCases.get().toggleDirectLoad();
 	}
 }

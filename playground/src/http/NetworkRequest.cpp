@@ -1,4 +1,5 @@
 #include "NetworkRequest.h"
+#include <libsoup/soup.h>
 
 NetworkRequest::NetworkRequest()
 {

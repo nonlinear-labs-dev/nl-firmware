@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include "parameters/ValueRange.h"
+#include <map>
 
 class QuantizedValue;
 

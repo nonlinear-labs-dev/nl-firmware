@@ -1,6 +1,7 @@
 #include "UndoActions.h"
 #include "libundo/undo/Scope.h"
 #include <libundo/undo/Algorithm.h>
+#include <http/NetworkRequest.h>
 
 UndoActions::UndoActions(UNDO::Scope &scope)
     : super("/undo/")

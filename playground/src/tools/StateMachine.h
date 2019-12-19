@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include <map>
+#include <functional>
 
 template <typename tStates, typename tEvents, tStates initalState, tStates invalidState> class StateMachine
 {

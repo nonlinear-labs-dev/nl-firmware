@@ -6,6 +6,7 @@
 #include <proxies/hwui/UsageMode.h>
 #include <ParameterId.h>
 #include <sigc++/trackable.h>
+#include <sigc++/connection.h>
 #include <array>
 #include <list>
 #include <vector>

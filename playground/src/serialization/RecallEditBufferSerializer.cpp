@@ -3,6 +3,7 @@
 #include "RecallEditBufferSerializer.h"
 #include "PresetParameterGroupSerializer.h"
 #include "RecallParameterSerializer.h"
+#include <presets/recall/RecallParameter.h>
 
 RecallEditBufferSerializer::RecallEditBufferSerializer(EditBuffer *edit)
     : Serializer(getTagName())

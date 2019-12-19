@@ -5,6 +5,9 @@
 #include <playground.h>
 #include <linux/fb.h>
 #include <nltools/Uncopyable.h>
+#include <stack>
+#include <vector>
+#include <sigc++/trackable.h>
 
 class Font;
 class UDPSender;

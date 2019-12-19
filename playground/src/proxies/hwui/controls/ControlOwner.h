@@ -4,6 +4,8 @@
 #include "Rect.h"
 #include <nltools/Uncopyable.h>
 #include <list>
+#include <memory>
+#include <functional>
 
 class Control;
 class FrameBuffer;

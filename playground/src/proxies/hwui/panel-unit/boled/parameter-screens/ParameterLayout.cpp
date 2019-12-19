@@ -17,6 +17,7 @@
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <parameters/ModulateableParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
+#include <presets/recall/RecallParameter.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())

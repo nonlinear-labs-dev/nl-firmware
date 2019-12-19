@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.Millimeter;
@@ -67,7 +68,7 @@ public class Overlay extends OverlayLayout {
 
 		@Override
 		public Control mouseDown(Position eventPoint) {
-			if (isVisible()) 
+			if (isVisible())
 				return this;
 			return super.mouseDown(eventPoint);
 		}
@@ -92,7 +93,7 @@ public class Overlay extends OverlayLayout {
 	private GlobalMenu globalMenu;
 	private UndoTreeWindow undo;
 	private List<CompareDialog> compareDialogs;
-	private ModalDialog modalDialog;
+	private GWTDialog modalDialog;
 	private LayerDisplay layerDisplay;
 
 	public Overlay(Viewport parent) {
@@ -163,7 +164,9 @@ public class Overlay extends OverlayLayout {
 		r.setBottom(belt.getPixRect().getTop());
 
 		Rect gbr = buttons.getPixRect();
-		Rect ldr = layerDisplay.getPixRect();
+		Rect ldr = layerDisplay.getPixRect().copy();
+		ldr.setTop(ldr.getTop() + 1);
+		r.setTop(ldr.getTop() + 1);
 
 		double w = 2;
 		double corner = Millimeter.toPixels(1);
@@ -172,13 +175,13 @@ public class Overlay extends OverlayLayout {
 		ctx.beginPath();
 		ctx.moveTo(r.getLeft() + corner, r.getTop());
 		ctx.lineTo(ldr.getLeft() - corner, r.getTop());
-		ctx.arcTo(ldr.getLeft(), ldr.getTop(), ldr.getLeft(), ldr.getTop() + corner, corner);
+		ctx.arcTo(ldr.getLeft(), ldr.getTop(), ldr.getLeft(), r.getTop() + corner, corner);
 		ctx.lineTo(ldr.getLeft(), ldr.getBottom() - corner);
 		ctx.arcTo(ldr.getLeft(), ldr.getBottom(), ldr.getLeft() + corner, ldr.getBottom(), corner);
 		ctx.lineTo(ldr.getRight() - corner, ldr.getBottom());
 		ctx.arcTo(ldr.getRight(), ldr.getBottom(), ldr.getRight(), ldr.getBottom() - corner, corner);
-		ctx.lineTo(ldr.getRight(), ldr.getTop() + corner);
-		ctx.arcTo(ldr.getRight(), ldr.getTop(), ldr.getRight() + corner, ldr.getTop(), corner);
+		ctx.lineTo(ldr.getRight(), r.getTop() + corner);
+		ctx.arcTo(ldr.getRight(), r.getTop(), ldr.getRight() + corner, r.getTop(), corner);
 
 		ctx.lineTo(r.getRight() - corner, r.getTop());
 		ctx.arcTo(r.getRight(), r.getTop(), r.getRight(), r.getTop() + corner, corner);
@@ -187,8 +190,8 @@ public class Overlay extends OverlayLayout {
 		ctx.arcTo(r.getRight(), gbr.getTop(), r.getRight() - corner, gbr.getTop(), corner);
 		ctx.lineTo(gbr.getLeft() + corner, gbr.getTop());
 		ctx.arcTo(gbr.getLeft(), gbr.getTop(), gbr.getLeft(), gbr.getTop() + corner, corner);
-		ctx.lineTo(gbr.getLeft(), gbr.getBottom() - corner);
-		ctx.arcTo(gbr.getLeft(), gbr.getBottom(), gbr.getLeft() - corner, gbr.getBottom(), corner);
+		ctx.lineTo(gbr.getLeft(), r.getBottom() - corner);
+		ctx.arcTo(gbr.getLeft(), r.getBottom(), gbr.getLeft() - corner, r.getBottom(), corner);
 		ctx.lineTo(r.getLeft() + corner, r.getBottom());
 		ctx.arcTo(r.getLeft(), r.getBottom(), r.getLeft(), r.getBottom() - corner, corner);
 		ctx.lineTo(r.getLeft(), r.getTop() + corner);
@@ -556,7 +559,7 @@ public class Overlay extends OverlayLayout {
 		return compareDialogs;
 	}
 
-	public void removeModal(ModalDialog modal) {
+	public void removeModal(GWTDialog modal) {
 		if (modal == modalDialog)
 			modalDialog = null;
 	}

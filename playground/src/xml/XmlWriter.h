@@ -3,7 +3,6 @@
 #include "playground.h"
 #include "XmlClass.h"
 #include "OutStream.h"
-#include "Compatibility.h"
 #include "Writer.h"
 #include <functional>
 
