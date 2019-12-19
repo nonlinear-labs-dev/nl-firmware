@@ -81,7 +81,6 @@ void BanksLayout::onAutoLoadSettingChanged(const Setting *s)
 {
   bool on = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad;
   m_directLoad->setMode(on ? DirectLoadIndicator::Mode::DirectLoad : DirectLoadIndicator::Mode::Off);
-#warning "TODO"
 }
 
 void BanksLayout::onBankChanged()

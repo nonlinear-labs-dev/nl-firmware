@@ -128,10 +128,10 @@ namespace DescriptiveLayouts
       hwui->getPanelUnit().getEditPanel().getBoled().bruteForce();
     });
 
-    registerEvent(EventSinks::ToggleDirectLoad,
-                  [] {
+    registerEvent(EventSinks::ToggleDirectLoad, [] {
 #warning "Cycle here!"
-      //Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->toggle();
+      auto eb = Application::get().getPresetManager()->getEditBuffer();
+      AutoLoadSelectedPreset::cycleForSoundType(eb->getType());
     });
 
     registerEvent(EventSinks::SwitchToMCAmtDetail, [hwui, eb]() {

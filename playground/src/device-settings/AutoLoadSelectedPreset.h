@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nltools/enums/EnumTools.h>
+#include <nltools/Types.h>
 #include "EnumSetting.h"
 
 ENUM(LoadPresetMode, uint8_t, PartSelect, PresetSelect, DirectLoad);
@@ -20,4 +21,6 @@ class AutoLoadSelectedPreset : public EnumSetting<LoadPresetMode>
 
   const std::vector<ustring>& enumToString() const override;
   const std::vector<ustring>& enumToDisplayString() const override;
+
+  static void cycleForSoundType(SoundType type);
 };
