@@ -130,6 +130,11 @@ void GlobalSection::update_tone_mode(const uint32_t _mode)
   m_combinationMode = _mode;
 }
 
+void GlobalSection::resetDSP()
+{
+  m_out_l = m_out_r = 0.0f;
+}
+
 void GlobalSection::postProcess_audio()
 {
   auto traversal = &m_smoothers.m_copy_audio;

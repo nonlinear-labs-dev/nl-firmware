@@ -34,6 +34,7 @@ class GlobalSection
   void update_tone_amplitude(const float _db);
   void update_tone_frequency(const float _freq);
   void update_tone_mode(const uint32_t _mode);
+  void resetDSP();
 
  private:
   SmootherHandle<C15::Smoothers::Global_Sync, C15::Smoothers::Global_Audio, C15::Smoothers::Global_Fast,
