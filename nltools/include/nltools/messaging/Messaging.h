@@ -27,9 +27,7 @@ namespace nltools
          SinglePreset, LayerPreset, SplitPreset, UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
          HWAmountParameter, HWSourceParameter,
 
-         EditBufferContext,
-
-         NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting,
+         NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,
 
          NoteDown, NoteUp);
 

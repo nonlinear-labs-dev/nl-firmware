@@ -1,4 +1,7 @@
 #include <parameters/scale-converters/LinearHerzScaleConverter.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
+#include <nltools/messaging/Message.h>
+#include <Application.h>
 #include "xml/Writer.h"
 #include "TuneReference.h"
 
@@ -51,4 +54,10 @@ void TuneReference::writeDocument(Writer& writer, tUpdateID knownRevision) const
     writer.writeTextElement("coarse-denominator", to_string(m_value.getCoarseDenominator()));
     writer.writeTextElement("fine-denominator", to_string(m_value.getFineDenominator()));
   }
+}
+
+void TuneReference::sendToLPC() const
+{
+  nltools::msg::Setting::TuneReference msg{ m_value.getRawValue() };
+  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TuneReference>(msg);
 }

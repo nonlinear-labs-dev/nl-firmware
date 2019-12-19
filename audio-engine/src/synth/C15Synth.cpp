@@ -34,6 +34,8 @@ C15Synth::C15Synth()
   receive<Setting::EditSmoothingTimeMessage>(EndPoint::AudioEngine,
                                              sigc::mem_fun(this, &C15Synth::onEditSmoothingTimeMessage));
 
+  receive<Setting::TuneReference>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onTuneReferenceMessage));
+
   receive<Keyboard::NoteUp>(EndPoint::AudioEngine, [this](const Keyboard::NoteUp &noteUp) {
     MidiEvent keyUp;
     keyUp.raw[0] = 0;
@@ -261,4 +263,9 @@ void C15Synth::onTransitionTimeMessage(const nltools::msg::Setting::TransitionTi
 void C15Synth::onEditSmoothingTimeMessage(const nltools::msg::Setting::EditSmoothingTimeMessage &msg)
 {
   m_dsp->onSettingEditTime(msg.m_time);
+}
+
+void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference& msg)
+{
+  #warning "TODO"
 }

@@ -57,6 +57,16 @@ namespace nltools
         bool m_enabled;
       };
 
+      struct TuneReference
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::TuneReference;
+        }
+
+        double m_tuneReference;
+      };
+
       struct TransitionTimeMessage
       {
         constexpr static MessageType getType()
