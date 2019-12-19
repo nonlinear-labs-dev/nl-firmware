@@ -158,6 +158,20 @@ const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
   return m_parameterGroups.at(static_cast<size_t>(vg));
 }
 
+void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                     VoiceGroup to)
+{
+  nltools_assertAlways(preset->getType() != SoundType::Single);
+
+  for(auto myGroup : getParameterGroups(to))
+  {
+    if(auto other = preset->findParameterGroup({ myGroup->getID().getName(), from }))
+    {
+      myGroup->copyFrom(transaction, other);
+    }
+  }
+}
+
 void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
 {
   for(auto &group : getParameterGroups(to))

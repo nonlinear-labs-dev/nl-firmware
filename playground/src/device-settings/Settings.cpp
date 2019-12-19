@@ -1,5 +1,5 @@
 #include <Application.h>
-#include <device-settings/AutoLoadSelectedPreset.h>
+#include <device-settings/LoadModeSetting.h>
 #include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/DebugLevel.h>
 #include <device-settings/DeviceName.h>
@@ -50,7 +50,7 @@ Settings::Settings(UpdateDocumentMaster *master)
     , m_actions(*this)
     , m_saveJob(5000, std::bind(&Settings::save, this))
 {
-  addSetting("AutoLoadSelectedPreset", new AutoLoadSelectedPreset(*this));
+  addSetting("LoadMode", new LoadModeSetting(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsLPCWriteFallback(*this));
   addSetting("PresetStoreModeSetting", new PresetStoreModeSetting(*this));
   addSetting("BaseUnitUIMode", new BaseUnitUIMode(*this));
