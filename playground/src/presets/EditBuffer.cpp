@@ -644,10 +644,6 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initRecallValues(transaction);
   undoableSetType(transaction, SoundType::Single);
 
-  transaction->addPostfixCommand([&](auto state) {
-
-  });
-
   transaction->addPostfixCommand([this](auto state) { sendToAudioEngine(); });
 }
 
