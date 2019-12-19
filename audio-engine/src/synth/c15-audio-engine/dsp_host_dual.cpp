@@ -592,6 +592,10 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Modulat
       nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
     }
   }
+  if(_id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
+  {
+    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
+  }
 }
 
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
