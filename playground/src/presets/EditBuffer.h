@@ -37,6 +37,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset);
+  void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
 
   void undoableLoadSelectedPreset();
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
@@ -60,9 +61,6 @@ class EditBuffer : public ParameterDualGroupSet
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
 
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset) override;
-
-  //void copyFrom(UNDO::Transaction *transaction, const LayerPreset *preset);
-  //void copyFrom(UNDO::Transaction *transaction, const SplitPreset *preset);
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 

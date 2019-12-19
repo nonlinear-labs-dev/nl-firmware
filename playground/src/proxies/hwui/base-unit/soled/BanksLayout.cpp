@@ -8,7 +8,7 @@
 #include <proxies/hwui/base-unit/PlayPanel.h>
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
-#include <device-settings/AutoLoadSelectedPreset.h>
+#include <device-settings/LoadPresetSetting.h>
 #include <device-settings/Settings.h>
 #include <proxies/hwui/controls/LabelRegular8.h>
 #include <proxies/hwui/controls/DottedLine.h>
@@ -43,7 +43,7 @@ BanksLayout::BanksLayout()
   addControl(new DottedLine(Rect(31, headlineHeight, 96, 1)));
 
   Application::get().getPresetManager()->onBankSelection(sigc::mem_fun(this, &BanksLayout::onBankSelected));
-  Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->onChange(
+  Application::get().getSettings()->getSetting<LoadPresetSetting>()->onChange(
       sigc::mem_fun(this, &BanksLayout::onAutoLoadSettingChanged));
 }
 
@@ -79,7 +79,7 @@ void BanksLayout::updateFromBank(const Bank *bank) const
 
 void BanksLayout::onAutoLoadSettingChanged(const Setting *s)
 {
-  bool on = Application::get().getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad;
+  bool on = Application::get().getSettings()->getSetting<LoadPresetSetting>()->get() == LoadMode::DirectLoad;
   m_directLoad->setMode(on ? DirectLoadIndicator::Mode::DirectLoad : DirectLoadIndicator::Mode::Off);
 }
 

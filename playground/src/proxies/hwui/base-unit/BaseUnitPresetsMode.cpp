@@ -3,7 +3,7 @@
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
-#include <device-settings/AutoLoadSelectedPreset.h>
+#include <device-settings/LoadPresetSetting.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnitPresetsMode.h>
 #include <proxies/hwui/buttons.h>
@@ -50,7 +50,8 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto &app = Application::get();
   auto eb = app.getPresetManager()->getEditBuffer();
 
-  if(!(app.getSettings()->getSetting<AutoLoadSelectedPreset>()->get() == LoadPresetMode::DirectLoad))
+#warning "TODO load preset dual/part foo"
+  if(!(app.getSettings()->getSetting<LoadPresetSetting>()->get() == LoadMode::DirectLoad))
     eb->undoableLoadSelectedPreset();
   else if(eb->isModified())
     eb->undoableLoadSelectedPreset();

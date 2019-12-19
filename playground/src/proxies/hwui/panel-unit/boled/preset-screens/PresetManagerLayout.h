@@ -10,9 +10,10 @@ class BankAndPresetNumberLabel;
 
 class NumPresetsInBankLabel;
 
+class PresetManager;
 class PresetListBase;
 class Setting;
-class AutoLoadSelectedPreset;
+class LoadPresetSetting;
 class ButtonMenu;
 class Button;
 
@@ -38,7 +39,7 @@ class PresetManagerLayout : public DFBLayout
  private:
   void updateAutoLoadButton(const Setting *setting);
   void setup();
-  auto getPresetManager();
+  PresetManager *getPresetManager() const;
 
   void setupBankFocus();
   void setupPresetFocus();
@@ -57,4 +58,8 @@ class PresetManagerLayout : public DFBLayout
   FocusAndMode m_focusAndMode;
   StoreModeData *getStoreModeData();
   void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
+
+  void loadSelectedPresetAccordingToLoadType();
+
+  static void openPartChooser();
 };

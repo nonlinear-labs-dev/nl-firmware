@@ -10,7 +10,7 @@
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <tools/EditBufferNotifier.h>
-#include <device-settings/AutoLoadSelectedPreset.h>
+#include <device-settings/LoadPresetSetting.h>
 #include <proxies/hwui/descriptive-layouts/concrete/preset/GenericPresetList.h>
 #include <proxies/hwui/descriptive-layouts/events/event-sources/hwui/HWUIEvents.h>
 

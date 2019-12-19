@@ -36,6 +36,8 @@ namespace nltools
 #define nltools_detailedAssertAlways(expr, description)                                                                \
   (static_cast<bool>(expr) ? void(0) : nltools::fail(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__, #description))
 
+#define nltools_assertNotReachedOnDevPC() nltools_assertOnDevPC(false)
+
 #define nltools_assertNotReached() nltools_assertAlways(false)
 
 #if _DEVELOPMENT_PC

@@ -28,6 +28,4 @@ class BaseUnitPresetsAndBanksMode : public UsageMode
   ShortVsLongPress m_funcButtonHandler;
 
   std::unique_ptr<ButtonRepeat> m_buttonRepeat;
-
-  static void cycle();
 };

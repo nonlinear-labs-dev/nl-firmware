@@ -25,6 +25,7 @@
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
+#include <device-settings/LoadPresetSetting.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -411,7 +412,22 @@ void EditBuffer::undoableLoadSelectedPreset()
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      undoableLoad(preset);
+      auto setting = Application::get().getSettings()->getSetting<LoadPresetSetting>();
+      auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+      if(setting->get() == LoadMode::LoadToPart && preset->getType() == SoundType::Single)
+      {
+        undoableLoadPresetIntoDualSound(preset, currentVG);
+      }
+      else if(setting->get() != LoadMode::LoadToPart)
+      {
+        undoableLoad(preset);
+      }
+      else
+      {
+        nltools_assertNotReachedOnDevPC();
+        nltools::Log::error("use: undoableLoadSelectedPresetPartIntoPart!");
+      }
     }
   }
 }
@@ -482,22 +498,18 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator)
 {
-  UNDO::ActionCommand::tAction sendEditBuffer([](auto) -> void { EditBuffer::sendToAudioEngine(); });
-  transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
+  transaction->addPostfixCommand([](auto) -> void { EditBuffer::sendToAudioEngine(); });
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto &group : getParameterGroups(vg))
       group->undoableRandomize(transaction, initiator, amount);
-
-  transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
 }
 
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
-  UNDO::ActionCommand::tAction sendEditBuffer([](auto) -> void { EditBuffer::sendToAudioEngine(); });
-  transaction->addSimpleCommand(UNDO::ActionCommand::tAction(), sendEditBuffer);
+  transaction->addPostfixCommand([](auto) { EditBuffer::sendToAudioEngine(); });
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto &group : getParameterGroups(vg))
@@ -517,8 +529,6 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   setName(transaction, "Init Sound");
 
   m_recallSet.copyFromEditBuffer(transaction, this);
-
-  transaction->addSimpleCommand(sendEditBuffer, UNDO::ActionCommand::tAction());
 }
 
 void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *other)
@@ -639,6 +649,12 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
   initRecallValues(transaction);
   undoableSetType(transaction, SoundType::Single);
+
+  transaction->addPostfixCommand([&](auto state) {
+    auto setting = Application::get().getSettings()->getSetting<LoadPresetSetting>();
+    if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
+      setting->cycleForSoundType(SoundType::Single);
+  });
 
   transaction->addPostfixCommand([this](auto state) { sendToAudioEngine(); });
 }
@@ -777,4 +793,35 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 {
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
   return m_voiceGroupLabels[static_cast<size_t>(vg)];
+}
+
+void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo)
+{
+  auto dualPreset = [&]() -> const Preset * {
+    if(auto bank = getParent()->getSelectedBank())
+      if(auto preset = bank->getSelectedPreset())
+        return preset;
+
+    return nullptr;
+  }();
+
+  if(!dualPreset)
+    return;
+
+  if(dualPreset->getType() == SoundType::Single)
+  {
+    nltools::Log::error("Not a dual Preset!");
+    return;
+  }
+
+  if(getType() == SoundType::Single)
+  {
+    nltools::Log::error("not a dual editbuffer");
+    return;
+  }
+
+  auto transString = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(copyTo));
+  auto scope = getParent()->getUndoScope().startTransaction("Load Preset Part");
+  setVoiceGroupName(scope->getTransaction(), dualPreset->getName(), copyTo);
+  super::copyFrom(scope->getTransaction(), dualPreset, from, copyTo);
 }

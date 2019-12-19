@@ -4,7 +4,7 @@
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationCarousel.h>
-#include <device-settings/AutoLoadSelectedPreset.h>
+#include <device-settings/LoadPresetSetting.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetList.h>
 #include <proxies/hwui/descriptive-layouts/concrete/preset/GenericPresetList.h>
 #include "Application.h"
@@ -129,9 +129,8 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::ToggleDirectLoad, [] {
-#warning "Cycle here!"
       auto eb = Application::get().getPresetManager()->getEditBuffer();
-      AutoLoadSelectedPreset::cycleForSoundType(eb->getType());
+      LoadPresetSetting::cycleForSoundType(eb->getType());
     });
 
     registerEvent(EventSinks::SwitchToMCAmtDetail, [hwui, eb]() {
