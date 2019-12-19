@@ -413,20 +413,14 @@ void EditBuffer::undoableLoadSelectedPreset()
     if(auto preset = bank->getSelectedPreset())
     {
       auto setting = Application::get().getSettings()->getSetting<LoadPresetSetting>();
-      auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
 
       if(setting->get() == LoadMode::LoadToPart && preset->getType() == SoundType::Single)
       {
-        undoableLoadPresetIntoDualSound(preset, currentVG);
+        undoableLoadPresetIntoDualSound(preset, Application::get().getHWUI()->getCurrentVoiceGroup());
       }
       else if(setting->get() != LoadMode::LoadToPart)
       {
         undoableLoad(preset);
-      }
-      else
-      {
-        nltools_assertNotReachedOnDevPC();
-        nltools::Log::error("use: undoableLoadSelectedPresetPartIntoPart!");
       }
     }
   }

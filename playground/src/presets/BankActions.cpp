@@ -402,8 +402,8 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         UNDO::Scope::tTransactionScopePtr scope;
 
-        bool autoLoad = Application::get().getSettings()->getSetting<LoadPresetSetting>()->get()
-                        == LoadMode::DirectLoad;
+        bool autoLoad
+            = Application::get().getSettings()->getSetting<LoadPresetSetting>()->get() == LoadMode::DirectLoad;
 
         if(autoLoad)
           scope = m_presetManager.getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
