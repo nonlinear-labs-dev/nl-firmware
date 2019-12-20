@@ -6,6 +6,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.overlay.GWTDialog;
 
 public class ChoosePresetPartDialog extends GWTDialog {
@@ -13,7 +15,7 @@ public class ChoosePresetPartDialog extends GWTDialog {
     static int modalPopupLeft = 0;
     static int modalPopupTop = 0;
 
-    public ChoosePresetPartDialog(Preset p) {
+    public ChoosePresetPartDialog() {
         setModal(true);
         setWidth("20em");
         addHeader("Part of Dual Preset?");
@@ -22,24 +24,36 @@ public class ChoosePresetPartDialog extends GWTDialog {
         HTMLPanel buttons = new HTMLPanel("");
         panel.add(new Label("Which part of the dual preset do you want to load?", true));
 
-        Button okButton, cancelButton;
+        Button part1, part2, cancelButton;
 
-        buttons.add(okButton = new Button("Part I", new ClickHandler() {
+        buttons.add(part1 = new Button("Part I", new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent arg0) {
+                EditBufferUseCases.get().loadPresetPart(VoiceGroup.I);
+                commit();
+            }
+        }));
+
+        buttons.add(part2 = new Button("Part II", new ClickHandler() {
+
+            @Override
+            public void onClick(ClickEvent arg0) {
+                EditBufferUseCases.get().loadPresetPart(VoiceGroup.II);
+                commit();
+            }
+        }));
+
+        buttons.add(cancelButton = new Button("Cancel", new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent arg0) {
                 commit();
             }
         }));
-        buttons.add(cancelButton = new Button("Part II", new ClickHandler() {
 
-            @Override
-            public void onClick(ClickEvent arg0) {
-                commit();
-            }
-        }));
-
-        okButton.getElement().addClassName("modal-button-button");
+        part1.getElement().addClassName("modal-button-button");
+        part2.getElement().addClassName("modal-button-button");
         cancelButton.getElement().addClassName("modal-button-button");
         buttons.getElement().addClassName("modal-button-div");
         panel.add(buttons);
