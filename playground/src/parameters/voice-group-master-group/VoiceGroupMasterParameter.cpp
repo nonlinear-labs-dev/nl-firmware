@@ -38,7 +38,7 @@ DFBLayout *VoiceGroupMasterParameter::createLayout(FocusAndMode focusAndMode) co
     case UIMode::Info:
       return new ParameterInfoLayout();
     case UIMode::Edit:
-      return new UnmodulateableParameterEditLayout2();
+      return new ModulateableParameterEditLayout2();
     case UIMode::Select:
     default:
       return new DualVoiceGroupMasterAndSplitPointLayout();

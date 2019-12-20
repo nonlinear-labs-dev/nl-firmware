@@ -7,12 +7,16 @@
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <groups/MonoGroup.h>
 #include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
+#include <proxies/hwui/HWUI.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged));
+
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
 }
 
 Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
@@ -25,21 +29,52 @@ Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
     return "Select I";
 }
 
+void SwitchVoiceGroupButton::rebuild()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto ebType = eb->getType();
+  auto selected = eb->getSelected();
+  auto selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+  switch(ebType)
+  {
+    case SoundType::Layer:
+    {
+      if(MonoGroup::isMonoParameter(selected) && !dynamic_cast<const MonoGlideTimeParameter*>(selected))
+      {
+        setText({ "", 0 });
+        return;
+      }
+    }
+    break;
+    case SoundType::Split:
+    {
+      if(dynamic_cast<SplitPointParameter*>(selected) != nullptr)
+      {
+        setText({ getTextFor(selectedVoiceGroup), 0 });
+        return;
+      }
+    }
+    break;
+    case SoundType::Single:
+    {
+      setText({ "", 0 });
+      return;
+    }
+    break;
+  }
+
+  setText({ getTextFor(selected->getVoiceGroup()), 0 });
+}
+
 void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected, Parameter* newSelection)
 {
-  if(!newSelection)
-    return;
+  rebuild();
+}
 
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto newSelectionVoiceGroup = newSelection->getID().getVoiceGroup();
-
-  if(eb->getType() == SoundType::Single || newSelectionVoiceGroup == VoiceGroup::Global)
-    setText({ "", 0 });
-  else if(eb->getType() == SoundType::Layer && MonoGroup::isMonoParameter(newSelection)
-          && !dynamic_cast<const MonoGlideTimeParameter*>(newSelection))
-    setText({ "", 0 });
-  else
-    setText({ getTextFor(newSelectionVoiceGroup), 0 });
+void SwitchVoiceGroupButton::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
+{
+  rebuild();
 }
 
 std::unique_ptr<UNDO::TransactionCreationScope>
