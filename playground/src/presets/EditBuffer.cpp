@@ -27,6 +27,7 @@
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include <device-settings/LoadModeSetting.h>
 #include <presets/recall/RecallParameter.h>
+#include <parameters/UnisonVoicesParameter.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -34,9 +35,11 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
+
+  onSoundTypeChanged(sigc::mem_fun(this, &EditBuffer::initUnisonVoices));
 }
 
 EditBuffer::~EditBuffer()
@@ -218,7 +221,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -734,7 +737,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -766,7 +769,7 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -812,4 +815,11 @@ void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGr
   auto scope = getParent()->getUndoScope().startTransaction(transString);
   setVoiceGroupName(scope->getTransaction(), selectedPreset->getName(), copyTo);
   super::copyFrom(scope->getTransaction(), selectedPreset, from, copyTo);
+}
+
+void EditBuffer::initUnisonVoices()
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+    if(auto unisonParam = dynamic_cast<UnisonVoicesParameter *>(findParameterByID({ 249, vg })))
+      unisonParam->updateScaling(getType());
 }

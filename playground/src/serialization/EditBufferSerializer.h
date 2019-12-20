@@ -8,7 +8,7 @@ class EditBufferSerializer : public Serializer
 {
  public:
   EditBufferSerializer(EditBuffer* editBuffer);
-  virtual ~EditBufferSerializer();
+  ~EditBufferSerializer() override;
 
   static Glib::ustring getTagName();
 
