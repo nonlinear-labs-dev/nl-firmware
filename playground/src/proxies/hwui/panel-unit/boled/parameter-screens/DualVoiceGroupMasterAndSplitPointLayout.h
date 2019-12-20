@@ -2,16 +2,15 @@
 
 #include <proxies/hwui/buttons.h>
 #include "UnmodulatebaleParameterLayouts.h"
+#include "ModulateableParameterLayouts.h"
 
-class DualVoiceGroupMasterAndSplitPointLayout : public UnmodulateableParameterSelectLayout2
+class DualVoiceGroupMasterAndSplitPointLayout : public ModulateableParameterSelectLayout2
 {
  public:
   DualVoiceGroupMasterAndSplitPointLayout();
   ~DualVoiceGroupMasterAndSplitPointLayout();
  protected:
   Carousel *createCarousel(const Rect &rect) override;
-
-  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 
   ModuleCaption *createModuleCaption() const override;
 

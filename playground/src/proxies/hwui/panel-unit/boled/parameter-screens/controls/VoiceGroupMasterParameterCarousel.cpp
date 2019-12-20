@@ -30,13 +30,13 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Split)
-    setupMasterParameters({ { 356, VoiceGroup::Global }, { 358, vg }, { 360, vg } });
+    setupMasterParameters({ { 356, VoiceGroup::Global }, { 358, vg }, { 360, vg }, { 362, vg } });
   else
-    setupMasterParameters({ { 358, vg }, { 360, vg } });
+    setupMasterParameters({ { 358, vg }, { 360, vg }, { 362, vg } });
 
   if(getNumChildren() == 0)
   {
-    addControl(new NeverHighlitButton("", Rect(0, 51, 58, 11)));
+    addControl(new NeverHighlitButton("", Buttons::BUTTON_D));
   }
   else
   {
@@ -64,7 +64,8 @@ void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<
   for(const auto &p : parameters)
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(p);
-    if(param) {
+    if(param)
+    {
       auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
       miniParam->setSelected(param == selected);
       addControl(miniParam);

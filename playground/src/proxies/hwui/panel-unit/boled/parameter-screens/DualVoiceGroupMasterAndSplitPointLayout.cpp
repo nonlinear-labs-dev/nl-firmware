@@ -8,7 +8,7 @@
 #include "DualVoiceGroupMasterAndSplitPointLayout.h"
 
 DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout()
-    : UnmodulateableParameterSelectLayout2()
+    : ModulateableParameterSelectLayout2()
 {
 }
 
@@ -26,24 +26,4 @@ Carousel *DualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &re
 ModuleCaption *DualVoiceGroupMasterAndSplitPointLayout::createModuleCaption() const
 {
   return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
-}
-
-bool DualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
-{
-  if(down && i == Buttons::BUTTON_D)
-  {
-    if(modifiers[ButtonModifier::SHIFT])
-      getCarousel()->antiTurn();
-    else
-      getCarousel()->turn();
-    return true;
-  }
-
-  if(down && i == Buttons::BUTTON_EDIT)
-  {
-    Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Edit, UIDetail::Init });
-    return true;
-  }
-
-  return ParameterSelectLayout2::onButton(i, down, modifiers);
 }
