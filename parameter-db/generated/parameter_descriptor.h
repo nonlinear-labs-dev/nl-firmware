@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**   @file       parameter_descriptor.h
-      @date       2019-11-07
-      @version    1.7B-2
+      @date       2019-12-20, 17:38
+      @version    1.7B-3
       @author     M. Seeber
       @brief      provide a flexible descriptor structure
       @todo
