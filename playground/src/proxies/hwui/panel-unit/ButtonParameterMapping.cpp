@@ -3,25 +3,25 @@
 ButtonParameterMapping::ButtonParameterMapping()
 {
   addMapping(Buttons::BUTTON_0, { 0, 15, 294 });
-  addMapping(Buttons::BUTTON_1, { 38, 49, 296 });
+  addMapping(Buttons::BUTTON_1, { 38, 49, 296, 340 });
   addMapping(Buttons::BUTTON_2, { 46, 50 });
   addMapping(Buttons::BUTTON_3, { 19, 34, 295 });
-  addMapping(Buttons::BUTTON_4, { 2 });
+  addMapping(Buttons::BUTTON_4, { 2, 328 });
   addMapping(Buttons::BUTTON_5, { 40, 42 });
   addMapping(Buttons::BUTTON_6, { 48 });
-  addMapping(Buttons::BUTTON_7, { 21 });
+  addMapping(Buttons::BUTTON_7, { 21, 334 });
   addMapping(Buttons::BUTTON_8, { 4 });
   addMapping(Buttons::BUTTON_9, { 44, 297 });
   addMapping(Buttons::BUTTON_10, { 51, 52 });
   addMapping(Buttons::BUTTON_11, { 23 });
-  addMapping(Buttons::BUTTON_12, { 6 });
+  addMapping(Buttons::BUTTON_12, { 6, 330 });
   addMapping(Buttons::BUTTON_13, { 14 });
   addMapping(Buttons::BUTTON_14, { 33 });
-  addMapping(Buttons::BUTTON_15, { 25 });
-  addMapping(Buttons::BUTTON_16, { 8 });
+  addMapping(Buttons::BUTTON_15, { 25, 336 });
+  addMapping(Buttons::BUTTON_16, { 8, 332 });
   addMapping(Buttons::BUTTON_17, { 17, 18 });
   addMapping(Buttons::BUTTON_18, { 36, 37 });
-  addMapping(Buttons::BUTTON_19, { 27 });
+  addMapping(Buttons::BUTTON_19, { 27, 338 });
   addMapping(Buttons::BUTTON_20, { 10, 16 });
   addMapping(Buttons::BUTTON_21, { 12 });
   addMapping(Buttons::BUTTON_22, { 31 });
@@ -50,19 +50,19 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_45, { 81 });
   addMapping(Buttons::BUTTON_46, { 111 });
   addMapping(Buttons::BUTTON_47, { 98, 100, 304 });
-  addMapping(Buttons::BUTTON_48, { 156 });
+  addMapping(Buttons::BUTTON_48, { 346, 348 });
   addMapping(Buttons::BUTTON_49, { 113 });
   addMapping(Buttons::BUTTON_50, { 136 });
   addMapping(Buttons::BUTTON_51, { 169, 171 });
-  addMapping(Buttons::BUTTON_52, { 158 });
+  addMapping(Buttons::BUTTON_52, { 156, 350 });
   addMapping(Buttons::BUTTON_53, { 115, 118, 117 });
   addMapping(Buttons::BUTTON_54, { 138 });
   addMapping(Buttons::BUTTON_55, { 172, 174 });
-  addMapping(Buttons::BUTTON_56, { 160 });
+  addMapping(Buttons::BUTTON_56, { 158, 352 });
   addMapping(Buttons::BUTTON_57, { 119, 305, 121 });
   addMapping(Buttons::BUTTON_58, { 140, 143, 142 });
   addMapping(Buttons::BUTTON_59, { 175, 177 });
-  addMapping(Buttons::BUTTON_60, { 162 });
+  addMapping(Buttons::BUTTON_60, { 160, 162, 354 });
   addMapping(Buttons::BUTTON_61, { 123, 126, 125, 127 });
   addMapping(Buttons::BUTTON_62, { 144, 147, 146 });
   addMapping(Buttons::BUTTON_63, { 178, 180 });
@@ -73,7 +73,7 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_68, { 299, 168 });
   addMapping(Buttons::BUTTON_69, { 133, 135 });
   addMapping(Buttons::BUTTON_70, { 153, 155 });
-  addMapping(Buttons::BUTTON_71, { 185, 187 });
+  addMapping(Buttons::BUTTON_71, { 185, 187, 362 });
 
   addMapping(Buttons::BUTTON_72, { 214 });
   addMapping(Buttons::BUTTON_73, { 188, 190, 191 });
@@ -90,7 +90,7 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_80, { 211, 216, 218 });
   addMapping(Buttons::BUTTON_81, { 199, 197 });
 
-  addMapping(Buttons::BUTTON_82, { 233 });
+  addMapping(Buttons::BUTTON_82, { 233, 342 });
   addMapping(Buttons::BUTTON_83, { 245 });
 
   addMapping(Buttons::BUTTON_84, { 308, 310 });
@@ -105,10 +105,10 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_90, { 238, 240 });
   addMapping(Buttons::BUTTON_91, { 369 });
 
-  addMapping(Buttons::BUTTON_92, { 223 });
-  addMapping(Buttons::BUTTON_93, { 209 });
+  addMapping(Buttons::BUTTON_92, { 209 });
+  addMapping(Buttons::BUTTON_93, { 223, 389 });
 
-  addMapping(Buttons::BUTTON_94, { 241 });
+  addMapping(Buttons::BUTTON_94, { 241, 344 });
   addMapping(Buttons::BUTTON_95, { 371 });
 }
 
