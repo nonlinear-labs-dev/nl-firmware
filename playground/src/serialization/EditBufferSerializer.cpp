@@ -18,7 +18,10 @@ EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
 {
 }
 
-EditBufferSerializer::~EditBufferSerializer() = default;
+EditBufferSerializer::~EditBufferSerializer()
+{
+  m_editBuffer->initUnisonVoices();
+}
 
 Glib::ustring EditBufferSerializer::getTagName()
 {
@@ -34,7 +37,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
     for(auto group : m_editBuffer->getParameterGroups(vg))
     {
       ParameterGroupSerializer s(group);
-      s.write(writer, Attribute{ "id", group->getID().toString() });
+      s.write(writer, Attribute { "id", group->getID().toString() });
     }
   }
 

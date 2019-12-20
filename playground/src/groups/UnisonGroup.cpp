@@ -16,6 +16,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/scale-converters/dimension/VoicesDimension.h>
 #include <parameters/scale-converters/LinearCountScaleConverter.h>
+#include <parameters/UnisonVoicesParameter.h>
 
 UnisonGroup::UnisonGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Unison", vg }, "Unison", "Unison", "Unison")
@@ -104,9 +105,7 @@ class ModulateableUnisonParameterWithUnusualModUnit : public ModulateableParamet
 
 void UnisonGroup::init()
 {
-  appendParameter(new UnmodulateableUnisonParameter(
-      this, ParameterId{ 249, getVoiceGroup() }, ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension> >(),
-      0, 23, 23));
+  appendParameter(new UnisonVoicesParameter(this, getVoiceGroup()));
 
   appendParameter(new ModulateableUnisonParameterWithUnusualModUnit(this, ParameterId{250, getVoiceGroup() },
                                                                     ScaleConverter::get<Fine12STScaleConverter>(),
