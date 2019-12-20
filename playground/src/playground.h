@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <iomanip>
 #include <glibmm/ustring.h>
+#include <limits>
 
 #define TRACE_LOC_AND_ARGS(loc, arg) std::cout << loc << ": " << arg << std::endl
 #define TRACE(arg) TRACE_LOC_AND_ARGS(G_STRLOC, arg)

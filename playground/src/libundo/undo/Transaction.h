@@ -4,6 +4,7 @@
 #include <http/UpdateDocumentContributor.h>
 #include <memory>
 #include <list>
+#include <vector>
 
 class Writer;
 

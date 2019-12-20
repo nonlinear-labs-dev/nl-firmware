@@ -2,6 +2,7 @@
 #include "testing/TestDriver.h"
 #include <cmath>
 #include <math.h>
+#include <typeinfo>
 
 static TestDriver<Dimension> tests;
 

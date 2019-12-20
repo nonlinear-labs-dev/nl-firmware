@@ -493,7 +493,7 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator)
 {
-  transaction->addPostfixCommand([this](auto) -> void { sendToAudioEngine(); });
+  transaction->addPostfixCommand([this](auto) -> void { this->sendToAudioEngine(); });
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
@@ -504,7 +504,7 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
-  transaction->addPostfixCommand([this](auto) { sendToAudioEngine(); });
+  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto &group : getParameterGroups(vg))
@@ -645,7 +645,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initRecallValues(transaction);
   undoableSetType(transaction, SoundType::Single);
 
-  transaction->addPostfixCommand([this](auto state) { sendToAudioEngine(); });
+  transaction->addPostfixCommand([this](auto state) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
@@ -675,7 +675,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
 
-  transaction->addPostfixCommand([this](auto state) { sendToAudioEngine(); });
+  transaction->addPostfixCommand([this](auto state) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
