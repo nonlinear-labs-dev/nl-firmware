@@ -2,7 +2,7 @@
 #include "MonoPriorityParameter.h"
 
 MonoPriorityParameter::MonoPriorityParameter(ParameterGroup *parent, const ParameterId &id)
-    : UnmodulateableMonoParameter(parent, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 2, 2)
+    : UnmodulateableMonoParameter(parent, id, ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 2, 2)
 {
 }
 
