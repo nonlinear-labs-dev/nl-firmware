@@ -98,10 +98,10 @@ void PolySection::render_audio(const float _mute)
   m_z_self->m_comb = m_combfilter.m_out;
   m_z_self->m_svf = m_svfilter.m_out;
   // eval sends
-  float send = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_To_FX);
+  float send = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX);
   m_send_self_l = m_outputmixer.m_out_l * send;
   m_send_self_r = m_outputmixer.m_out_r * send;
-  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_To_FX);
+  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX);
   m_send_other_l = m_outputmixer.m_out_l * send;
   m_send_other_r = m_outputmixer.m_out_r * send;
 }

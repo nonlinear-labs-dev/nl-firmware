@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       c15_config.h
-    @date       2019-12-19, 15:44
-    @version	1.7B-2
+    @date       2019-12-20, 17:38
+    @version	1.7B-3
     @author     M. Seeber
     @brief      crucial information about the audio engine
     @todo
@@ -17,7 +17,7 @@ namespace C15
   namespace Config
   {
 
-    const char milestone[7] = "1.7B-2";
+    const char milestone[7] = "1.7B-3";
     const uint32_t total_polyphony = 24;
     const uint32_t local_polyphony = total_polyphony >> 1;
     const uint32_t tcd_elements = 400;

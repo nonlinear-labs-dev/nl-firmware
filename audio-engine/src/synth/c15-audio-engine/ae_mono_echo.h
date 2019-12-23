@@ -3,8 +3,8 @@
 /******************************************************************************/
 /** @file       ae_mono_echo.h
     @date
-    @version    1.7-0
-    @author     M. Seeber
+    @version    1.7-3
+    @author     A. Schmied, M. Seeber
     @brief      ...
     @todo
 *******************************************************************************/
@@ -28,19 +28,25 @@ namespace Engine
     void resetDSP();
 
    private:
-    std::vector<float> m_buffer_L, m_buffer_R;
-    float
-        // prewarp
-        m_warpConst_PI,
-        m_freqClip_min, m_freqClip_max,
-        // 1 pole highpass
-        m_hp_b0, m_hp_b1, m_hp_a1, m_hp_stateVar_L1, m_hp_stateVar_L2, m_hp_stateVar_R1, m_hp_stateVar_R2,
-        // 1 pole lowpass
-        m_lp_b0, m_lp_b1, m_lp_a1, m_lp_stateVar_L1, m_lp_stateVar_L2, m_lp_stateVar_R1, m_lp_stateVar_R2,
-        // 2 Hz lowpass
-        m_lp2hz_b0, m_lp2hz_stateVar_L, m_lp2hz_stateVar_R,
-        // delay buffer
-        m_stateVar_L, m_stateVar_R;
-    int32_t m_buffer_indx, m_buffer_sz_m1;
+    // prewarp
+    float m_warpConst_PI;
+    float m_freqClip_min, m_freqClip_max;
+    // 1p hp
+    float m_hp_b0, m_hp_b1, m_hp_a1;
+    float m_hp_stateVar_L1, m_hp_stateVar_L2;
+    float m_hp_stateVar_R1, m_hp_stateVar_R2;
+    // 1p lp
+    float m_lp_b0, m_lp_b1, m_lp_a1;
+    float m_lp_stateVar_L1, m_lp_stateVar_L2;
+    float m_lp_stateVar_R1, m_lp_stateVar_R2;
+    // 2 Hz lp
+    float m_lp2hz_b0;
+    float m_lp2hz_stateVar_L, m_lp2hz_stateVar_R;
+    // delay buffer
+    float m_stateVar_L, m_stateVar_R;
+    int32_t m_buffer_indx;
+    int32_t m_buffer_sz_m1;
+    std::vector<float> m_buffer_L;
+    std::vector<float> m_buffer_R;
   };
 }  // namespace Engine

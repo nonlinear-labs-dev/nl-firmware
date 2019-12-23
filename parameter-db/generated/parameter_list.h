@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2019-12-19, 15:44
-    @version	1.7B-2
+    @date       2019-12-20, 17:38
+    @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
     @todo
@@ -1855,35 +1855,35 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Osc, Signals::Quasipoly_Signals::FB_Mix_Osc, Properties::SmootherScale::Linear,
         1.0f, 0.0f, true },
-      { "0", "Feedback Mixer", "FB Mixer", "!! Dyn. Label !!", "Osc  II", "" } },
+      { "0", "Feedback Mixer", "FB Mixer", "A/B @VG", "A/B @VG", "" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Osc_Src,
       348,
       0.5f,
       { Smoothers::Poly_Fast::FB_Mix_Osc_Src, Signals::Quasipoly_Signals::FB_Mix_Osc_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { "", "Feedback Mixer", "FB Mixer", "!! Dyn. Label !!", "A - B", "" } },
+      { "", "Feedback Mixer", "FB Mixer", "A - B", "A - B", "" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Comb_Src,
       350,
       0.5f,
       { Smoothers::Poly_Fast::FB_Mix_Comb_Src, Signals::Quasipoly_Signals::FB_Mix_Comb_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { "", "Feedback Mixer", "FB Mixer", "!! Dyn. Label !!", "From II", "" } },
+      { "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG", "" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_SVF_Src,
       352,
       0.5f,
       { Smoothers::Poly_Fast::FB_Mix_SVF_Src, Signals::Quasipoly_Signals::FB_Mix_SVF_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { "", "Feedback Mixer", "FB Mixer", "!! Dyn. Label !!", "From II", "" } },
+      { "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG", "" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_FX_Src,
       354,
       0.5f,
       { Smoothers::Poly_Fast::FB_Mix_FX_Src, Signals::Quasipoly_Signals::FB_Mix_FX_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { "", "Feedback Mixer", "FB Mixer", "!! Dyn. Label !!", "From II", "" } },
+      { "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG", "" } },
     { None },
     { Parameters::Global_Modulateables::Split_Split_Point,
       356,
@@ -1903,11 +1903,11 @@ namespace C15
       { Smoothers::Poly_Slow::Voice_Grp_Tune, None, Properties::SmootherScale::Linear, 48.0f, 0.0f, true },
       { "", "Voices", "Voices", "Part Tune", "Part Tune", "" } },
     { None },
-    { Parameters::Local_Modulateables::Voice_Grp_To_FX,
+    { Parameters::Local_Modulateables::Out_Mix_To_FX,
       362,
       0.0f,
-      { Smoothers::Poly_Fast::Voice_Grp_To_FX, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { "0", "Voices", "Voices", "!! Dyn. Label !!", "To FX II", "" } },
+      { Smoothers::Poly_Fast::Out_Mix_To_FX, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { "0", "Output Mixer", "Output Mixer", "To FX @VG", "To FX @VG", "" } },
     { None },
     { Parameters::Local_Unmodulateables::Mono_Grp_Enable,
       364,

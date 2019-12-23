@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2019-12-19, 15:44
-    @version	1.7B-2
+    @date       2019-12-20, 17:38
+    @version	1.7B-3
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
     @todo
@@ -198,7 +198,6 @@ namespace C15
       Unison_Detune,
       Voice_Grp_Volume,
       Voice_Grp_Tune,
-      Voice_Grp_To_FX,
       Mono_Grp_Glide,
       Env_A_Att,
       Env_A_Dec_1,
@@ -270,6 +269,7 @@ namespace C15
       Out_Mix_SVF_Lvl,
       Out_Mix_Drive,
       Out_Mix_Lvl,
+      Out_Mix_To_FX,
       Flanger_Time_Mod,
       Flanger_Rate,
       Flanger_Time,
@@ -487,7 +487,6 @@ namespace C15
     {
       Unison_Pan,
       Voice_Grp_Volume,
-      Voice_Grp_To_FX,
       Env_A_BP,
       Env_A_Sus,
       Env_A_Gain,
@@ -545,6 +544,7 @@ namespace C15
       Out_Mix_Asym,
       Out_Mix_Lvl,
       Out_Mix_Key_Pan,
+      Out_Mix_To_FX,
       _LENGTH_
     };
 

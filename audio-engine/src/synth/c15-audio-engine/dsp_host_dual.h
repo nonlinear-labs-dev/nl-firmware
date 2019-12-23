@@ -76,6 +76,7 @@ class dsp_host_dual
   void onSettingTransitionTime(const float _position);
   void onSettingNoteShift(const float _shift);
   void onSettingGlitchSuppr(const bool _enabled);
+  void onSettingTuneReference(const float _position);
   void onSettingInitialSinglePreset();
   uint32_t onSettingToneToggle();
   // dsp-related
