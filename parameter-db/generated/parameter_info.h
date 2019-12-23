@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**   @file       parameter_info.h
-      @date       2019-12-20, 17:38
+      @date       2019-12-23, 13:10
       @version    1.7B-3
       @author     M. Seeber
       @brief      parameter-related details outside of the parameter definition

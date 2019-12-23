@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2019-12-20, 17:38
+    @date       2019-12-23, 13:10
     @version	1.7B-3
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -224,6 +224,7 @@ namespace C15
       Osc_A_PM_Self,
       Osc_A_PM_B,
       Osc_A_PM_FB,
+      Osc_A_Phase,
       Shp_A_Drive,
       Shp_A_Mix,
       Shp_A_FB_Mix,
@@ -233,6 +234,7 @@ namespace C15
       Osc_B_PM_Self,
       Osc_B_PM_A,
       Osc_B_PM_FB,
+      Osc_B_Phase,
       Shp_B_Drive,
       Shp_B_Mix,
       Shp_B_FB_Mix,
@@ -340,7 +342,6 @@ namespace C15
       Osc_A_PM_B_Env_B,
       Osc_A_PM_B_Shp,
       Osc_A_PM_FB_Env_C,
-      Osc_A_Phase,
       Osc_A_Chirp,
       Shp_A_Drive_Env_A,
       Shp_A_Fold,
@@ -354,7 +355,6 @@ namespace C15
       Osc_B_PM_A_Env_A,
       Osc_B_PM_A_Shp,
       Osc_B_PM_FB_Env_C,
-      Osc_B_Phase,
       Osc_B_Chirp,
       Shp_B_Drive_Env_B,
       Shp_B_Fold,
