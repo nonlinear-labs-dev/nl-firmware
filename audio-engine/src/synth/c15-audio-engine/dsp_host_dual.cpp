@@ -797,6 +797,20 @@ void dsp_host_dual::onSettingGlitchSuppr(const bool _enabled)
   }
 }
 
+void dsp_host_dual::onSettingTuneReference(const float _position)
+{
+  // inconvenient clamping of odd position range ...
+  if(m_reference.update_position(_position < 0.0f ? 0.0f : _position > 1.0f ? 1.0f : _position))
+  {
+    m_reference.m_scaled = scale(m_reference.m_scaling, m_reference.m_position);
+    m_global.update_tone_frequency(m_reference.m_scaled);
+    if(LOG_SETTINGS)
+    {
+      nltools::Log::info("tune_reference:", _position);
+    }
+  }
+}
+
 void dsp_host_dual::onSettingInitialSinglePreset()
 {
   if(LOG_RECALL)
