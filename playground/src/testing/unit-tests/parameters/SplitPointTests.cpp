@@ -18,16 +18,15 @@ TEST_CASE("Split Point Display Value")
   auto transScope = UNDO::Scope::startTrashTransaction();
   auto transaction = transScope->getTransaction();
 
-  parameter->stepCPFromHwui(transaction, 1, {});
+  parameter->setCPFromHwui(transaction, 0);
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "C1");
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "C#1");
+
+  parameter->setCPFromHwui(transaction, 0.5);
   REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "F#3");
   REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "G3");
 
-  parameter->stepCPFromHwui(transaction, 1, {});
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "G3");
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "G#3");
-
-
-  parameter->setCPFromHwui(transaction, 0.5);
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "F3");
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "F#3");
+  parameter->setCPFromHwui(transaction, 1);
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "B5");
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "C6");
 }

@@ -5,6 +5,7 @@
 #include "groups/ParameterGroup.h"
 #include "proxies/hwui/HWUI.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
+#include <parameters/scale-converters/dimension/NoteWithOctaveDimension.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, const ParameterId &id)
     : ModulateableParameter(group, id, ScaleConverter::get<KeyWithOctaveScaleConverter>(), 0.5, 60, 60)
@@ -32,12 +33,10 @@ DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 
 std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 {
-  auto converter = ScaleConverter::get<KeyWithOctaveScaleConverter>();
-
-  if(vg == VoiceGroup::II)
-    return converter->getDimension().stringize(getValue().getRawValue());
-  else if(vg == VoiceGroup::I)
-    return converter->getDimension().stringize(getNextStepValue(-1, {}));
+  if(vg == VoiceGroup::I)
+    return NoteWithOctaveDimension::stringizeNote(static_cast<int>(std::ceil(getValue().getRawValue() * 59)));
+  else if(vg == VoiceGroup::II)
+    return NoteWithOctaveDimension::stringizeNote(static_cast<int>(std::ceil(getValue().getRawValue() * 59)) + 1);
 
   return "";
 }
