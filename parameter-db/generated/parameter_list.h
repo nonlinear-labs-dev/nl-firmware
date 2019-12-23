@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2019-12-20, 17:38
+    @date       2019-12-23, 13:10
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1618,14 +1618,14 @@ namespace C15
       { Smoothers::Poly_Fast::FB_Mix_Lvl, None, Properties::SmootherScale::Parabolic, 4.0f, 0.0f, false },
       { "", "Feedback Mixer", "FB Mixer", "Level", "Level", "Level of the (global) Feedback mix [in dB]." } },
     { None },
-    { Parameters::Local_Unmodulateables::Osc_A_Phase,
+    { Parameters::Local_Modulateables::Osc_A_Phase,
       301,
       0.0f,
       { Smoothers::Poly_Audio::Osc_A_Phase, Signals::Quasipoly_Signals::Osc_A_Phase, Properties::SmootherScale::Linear,
         0.5f, 0.0f, true },
       { "0", "Oscillator A", "Oscillator A", "Phase", "Phase",
         "Start phase [in degrees]. The Oscillator will be set to this phase position with each Note-On." } },
-    { Parameters::Local_Unmodulateables::Osc_B_Phase,
+    { Parameters::Local_Modulateables::Osc_B_Phase,
       302,
       0.0f,
       { Smoothers::Poly_Audio::Osc_B_Phase, Signals::Quasipoly_Signals::Osc_B_Phase, Properties::SmootherScale::Linear,
