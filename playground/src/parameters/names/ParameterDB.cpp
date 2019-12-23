@@ -57,6 +57,7 @@ Glib::ustring ParameterDB::getShortName(int id) const
     nltools::Log::error("there is no short name entry in parameter list for parameter", id);
     return "MISSING!!!";
   }
+
   return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_short);
 }
 
