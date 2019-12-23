@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2019-12-23, 15:29
+    @date       2019-12-23, 16:42
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1859,28 +1859,28 @@ namespace C15
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Osc_Src,
       348,
-      0.5f,
+      0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Osc_Src, Signals::Quasipoly_Signals::FB_Mix_Osc_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "", "Feedback Mixer", "FB Mixer", "A - B", "A - B", "" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Comb_Src,
       350,
-      0.5f,
+      0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Comb_Src, Signals::Quasipoly_Signals::FB_Mix_Comb_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG", "" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_SVF_Src,
       352,
-      0.5f,
+      0.0f,
       { Smoothers::Poly_Fast::FB_Mix_SVF_Src, Signals::Quasipoly_Signals::FB_Mix_SVF_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG", "" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_FX_Src,
       354,
-      0.5f,
+      0.0f,
       { Smoothers::Poly_Fast::FB_Mix_FX_Src, Signals::Quasipoly_Signals::FB_Mix_FX_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG", "" } },
