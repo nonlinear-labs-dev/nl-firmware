@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2019-12-23, 13:10
+    @date       2019-12-23, 14:03
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1107,7 +1107,7 @@ namespace C15
     { Parameters::Local_Modulateables::Flanger_Feedback,
       219,
       0.0f,
-      { Smoothers::Mono_Fast::Flanger_Feedback, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
+      { Smoothers::Mono_Fast::Flanger_Feedback, None, Properties::SmootherScale::Linear, 0.5f, 0.5f, true },
       { "", "Flanger", "Flanger", "Feedback", "Feedback",
         "Amount of the internal feedback. At negative values, the feedback is inverted and will emphasize other "
         "frequencies than in the non-inverted mode." } },
