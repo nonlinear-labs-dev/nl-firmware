@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2019-12-23, 14:03
+    @date       2019-12-23, 15:29
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -837,7 +837,7 @@ namespace C15
       164,
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Drive, Signals::Quasipoly_Signals::FB_Mix_Drive,
-        Properties::SmootherScale::Expon_Mix_Drive, 2.5f, 0.0f, false },
+        Properties::SmootherScale::Expon_Mix_Drive, 50.0f, 2.5f, false },
       { "", "Feedback Mixer", "FB Mixer", "Drive", "Drive",
         "Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics." } },
     { None },
@@ -922,7 +922,7 @@ namespace C15
       181,
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_Drive, Signals::Quasipoly_Signals::Out_Mix_Drive,
-        Properties::SmootherScale::Expon_Mix_Drive, 0.25f, 0.0f, false },
+        Properties::SmootherScale::Expon_Mix_Drive, 50.0f, 0.25f, false },
       { "", "Output Mixer", "Output Mixer", "Drive", "Drive",
         "Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics." } },
     { None },
@@ -964,7 +964,7 @@ namespace C15
       188,
       0.4f,
       { Smoothers::Mono_Fast::Cabinet_Drive, Signals::Mono_Signals::Cabinet_Drive,
-        Properties::SmootherScale::Expon_Gain, 1.0f, 0.0f, false },
+        Properties::SmootherScale::Expon_Gain, 50.0f, 0.0f, false },
       { "", "Cabinet", "Cabinet", "Drive", "Drive",
         "Gain [in dB] for the input signal. Higher gains will increase the amount of distortion/saturation." } },
     { None },
@@ -1077,7 +1077,7 @@ namespace C15
     { Parameters::Local_Unmodulateables::Flanger_Phase,
       213,
       0.5f,
-      { Smoothers::Mono_Slow::Flanger_Phase, None, Properties::SmootherScale::Linear, 0.5f, 0.0f, false },
+      { Smoothers::Mono_Slow::Flanger_Phase, None, Properties::SmootherScale::Linear, 180.0f, 0.0f, false },
       { "", "Flanger", "Flanger", "Phase", "Phase",
         "Phase offset between the LFO signals modulating the delay times in the left and the right channel." } },
     { Parameters::Local_Modulateables::Flanger_Rate,

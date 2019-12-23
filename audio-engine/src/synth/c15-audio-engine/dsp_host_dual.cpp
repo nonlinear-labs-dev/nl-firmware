@@ -1161,7 +1161,7 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
       result = (m_convert.eval_level(_value * _scl.m_factor) * _scl.m_offset) - _scl.m_offset;
       break;
     case C15::Properties::SmootherScale::Expon_Mix_Drive:
-      result = _scl.m_offset + (_scl.m_factor * m_convert.eval_level(_value));
+      result = _scl.m_offset * m_convert.eval_level(_scl.m_factor * _value);
       break;
     case C15::Properties::SmootherScale::Expon_Env_Time:
       result = m_convert.eval_time((_value * _scl.m_factor * 104.0781f) + _scl.m_offset);
