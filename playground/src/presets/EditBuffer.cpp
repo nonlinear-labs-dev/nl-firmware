@@ -693,6 +693,8 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
     if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
       setting->cycleForSoundType(SoundType::Single);
 
+    initUnisonVoices();
+
     onChange();
   });
 }

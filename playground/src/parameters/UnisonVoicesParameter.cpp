@@ -12,6 +12,8 @@ UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup* group, VoiceGroup v
 
 void UnisonVoicesParameter::updateScaling(SoundType type)
 {
+  auto value = getValue().getRawValue();
+
   if(type == SoundType::Single)
   {
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>());
@@ -24,6 +26,8 @@ void UnisonVoicesParameter::updateScaling(SoundType type)
     getValue().setCoarseDenominator(11);
     getValue().setFineDenominator(11);
   }
+
+  getValue().setRawValue(Initiator::INDIRECT, value);
 
   onChange();
 }

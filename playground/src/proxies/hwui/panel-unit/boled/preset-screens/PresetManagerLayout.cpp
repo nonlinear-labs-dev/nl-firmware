@@ -329,7 +329,8 @@ void PresetManagerLayout::updateAutoLoadButton(const Setting *setting)
   if(m_autoLoad)
   {
     const auto *s = dynamic_cast<const LoadModeSetting *>(setting);
-    m_autoLoad->setText({ s->getDisplayString() });
+    auto selectedVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+    m_autoLoad->setText({ s->getDisplayStringAccordingToCurrentVoiceGroup(selectedVG) });
   }
 }
 
