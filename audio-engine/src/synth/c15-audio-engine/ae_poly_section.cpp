@@ -144,9 +144,10 @@ void PolySection::render_slow(const float _masterTune)
   }
 }
 
-void PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
+bool PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
                           const float _vel)
 {
+  const bool retrigger_mono = m_key_active == 0;
   const float noteShift = m_shift[_voiceId] = m_note_shift,
               unisonDetune = m_smoothers.get(C15::Smoothers::Poly_Slow::Unison_Detune),
               masterTune = m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune);
@@ -164,6 +165,7 @@ void PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, 
   }
   startEnvelopes(_voiceId, notePitch, _vel);
   m_key_active++;
+  return retrigger_mono;
 }
 
 void PolySection::keyUp(const uint32_t _voiceId, const uint32_t _unisonIndex, const float _tune, const float _vel)
