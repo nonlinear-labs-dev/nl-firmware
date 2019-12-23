@@ -304,12 +304,12 @@ void Parameter::invalidate()
 
 Glib::ustring Parameter::getLongName() const
 {
-  return ParameterDB::get().getLongName(getID().getNumber());
+  return ParameterDB::get().getLongName(getID());
 }
 
 Glib::ustring Parameter::getShortName() const
 {
-  return ParameterDB::get().getShortName(getID().getNumber());
+  return ParameterDB::get().getShortName(getID());
 }
 
 Glib::ustring Parameter::getMiniParameterEditorName() const
