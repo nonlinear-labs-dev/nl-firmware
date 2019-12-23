@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2019-12-23, 16:42
+    @date       2019-12-23, 17:06
     @version	1.7B-3
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -455,7 +455,6 @@ namespace C15
       Env_A_Lvl_KT,
       Env_A_Time_KT,
       Env_A_Att_Curve,
-      Env_A_Split,
       Env_B_Lvl_Vel,
       Env_B_Att_Vel,
       Env_B_Dec_1_Vel,
@@ -464,7 +463,6 @@ namespace C15
       Env_B_Lvl_KT,
       Env_B_Time_KT,
       Env_B_Att_Curve,
-      Env_B_Split,
       Env_C_Lvl_Vel,
       Env_C_Att_Vel,
       Env_C_Rel_Vel,
@@ -490,9 +488,11 @@ namespace C15
       Env_A_BP,
       Env_A_Sus,
       Env_A_Gain,
+      Env_A_Split,
       Env_B_BP,
       Env_B_Sus,
       Env_B_Gain,
+      Env_B_Split,
       Env_C_BP,
       Env_C_Sus,
       Osc_A_PM_Self,
