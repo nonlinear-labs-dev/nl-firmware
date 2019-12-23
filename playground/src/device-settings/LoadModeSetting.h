@@ -25,4 +25,7 @@ class LoadModeSetting : public EnumSetting<LoadMode>
   const std::vector<ustring>& enumToDisplayString() const override;
 
   void cycleForSoundType(SoundType type);
+
+ private:
+  bool m_inToggle = false;
 };
