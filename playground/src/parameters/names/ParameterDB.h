@@ -23,5 +23,7 @@ class ParameterDB
   bool isActive(const Parameter *p) const;
 
  private:
+
+  Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name) const;
   ParameterDB();
 };

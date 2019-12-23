@@ -7,6 +7,7 @@
 #include <parameters/Parameter.h>
 #include <parameter-db/generated/parameter_list.h>
 #include <assert.h>
+#include <proxies/hwui/HWUI.h>
 #include <nltools/logging/Log.h>
 
 ParameterDB &ParameterDB::get()
@@ -16,6 +17,7 @@ ParameterDB &ParameterDB::get()
 }
 
 ParameterDB::ParameterDB() = default;
+
 ParameterDB::~ParameterDB() = default;
 
 std::string sanitize(const std::string &in)
@@ -40,7 +42,8 @@ Glib::ustring ParameterDB::getLongName(int id) const
     nltools::Log::error("there is no long name entry in parameter list for parameter", id);
     return "MISSING!!!";
   }
-  return d.m_pg.m_param_label_long;
+
+  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long);
 }
 
 Glib::ustring ParameterDB::getShortName(int id) const
@@ -54,7 +57,7 @@ Glib::ustring ParameterDB::getShortName(int id) const
     nltools::Log::error("there is no short name entry in parameter list for parameter", id);
     return "MISSING!!!";
   }
-  return d.m_pg.m_param_label_short;
+  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_short);
 }
 
 tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
@@ -72,4 +75,17 @@ bool ParameterDB::isActive(const Parameter *p) const
   const auto inActiveCP = getSignalPathIndication(p->getID().getNumber());
   const auto diff = std::abs(inActiveCP - p->getControlPositionValue());
   return diff > std::numeric_limits<tControlPositionValue>::epsilon();
+}
+
+Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(ustring name) const
+{
+  if(name.find("@VG") != Glib::ustring::npos)
+  {
+    auto invert = [](VoiceGroup v) { return v == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I; };
+    auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    name.replace(name.find("@VG"), 3, toString(invert(currentVg)));
+    return name;
+  }
+
+  return name;
 }
