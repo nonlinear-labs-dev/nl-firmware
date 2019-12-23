@@ -29,3 +29,13 @@ bool MonoGroup::isMonoParameter(const Parameter* parameter)
     return isMonoParameter(parameter->getID());
   return false;
 }
+
+bool MonoGroup::isMonoGlideParameter(const Parameter* parameter)
+{
+  return isMonoGlideParameter(parameter->getID());
+}
+
+bool MonoGroup::isMonoGlideParameter(const ParameterId& id)
+{
+  return id.getNumber() == 367;
+}

@@ -52,8 +52,6 @@ class PresetManagerLayout : public DFBLayout
 
   ButtonMenu *m_menu = nullptr;
   Button *m_autoLoad = nullptr;
-  NumPresetsInBankLabel *m_numPresetsInBank = nullptr;
-  BankAndPresetNumberLabel *m_bankAndPresetNumberLabel = nullptr;
   PresetListBase *m_presets = nullptr;
   FocusAndMode m_focusAndMode;
   StoreModeData *getStoreModeData();

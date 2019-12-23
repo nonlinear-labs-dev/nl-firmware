@@ -6,6 +6,8 @@
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
 #include <groups/MonoGroup.h>
 #include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
+#include <parameters/UnisonVoicesParameter.h>
+#include <groups/GlobalParameterGroups.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -34,20 +36,10 @@ void ModuleCaption::onParameterSelected(Parameter *newOne)
 bool ModuleCaption::enableVoiceGroupSuffix() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto ebType = eb->getType();
   auto selected = eb->getSelected();
 
-  if(selected->getVoiceGroup() == VoiceGroup::Global)
-    return false;
-
-  if(MonoGroup::isMonoParameter(selected))
-    return eb->getType() == SoundType::Split
-        || (dynamic_cast<const MonoGlideTimeParameter *>(selected) && eb->getType() == SoundType::Layer);
-  if(dynamic_cast<UnisonGroup *>(selected->getParent()))
-    return eb->getType() == SoundType::Split;
-
-  if(dynamic_cast<MasterGroup *>(selected->getParent()))
-    return false;
-  return dynamic_cast<ScaleGroup *>(selected->getParent()) == nullptr;
+  return EditBuffer::isDualParameterForSoundType(selected, ebType);
 };
 
 void ModuleCaption::updateText(Parameter *newOne)

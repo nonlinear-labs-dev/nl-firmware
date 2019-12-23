@@ -1,7 +1,7 @@
 #pragma once
 #include "SpecialParameterCarousel.h"
 
-class MonoParameterCarousel : public SpecialParameterCarousel
+class UnisonParameterCarousel : public SpecialParameterCarousel
 {
  public:
   using SpecialParameterCarousel::SpecialParameterCarousel;

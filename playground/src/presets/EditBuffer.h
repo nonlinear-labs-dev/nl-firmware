@@ -95,6 +95,8 @@ class EditBuffer : public ParameterDualGroupSet
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();
 
+  static bool isDualParameterForSoundType(const Parameter* parameter, SoundType type);
+
  private:
   Glib::ustring getEditBufferName() const;
   bool anyParameterChanged(VoiceGroup vg) const;

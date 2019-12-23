@@ -75,6 +75,7 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
   auto maxNumParameters = 4;
   auto missingParams = maxNumParameters - buttonAssignments.size();
   yPos += missingParams * (miniParamHeight + ySpaceing);
+
   for(int i : buttonAssignments)
   {
     auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
