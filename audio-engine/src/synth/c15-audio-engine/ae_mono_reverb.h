@@ -4,7 +4,7 @@
 /** @file       ae_mono_reverb.h
     @date
     @version    1.7-0
-    @author     M. Seeber
+    @author     A.Schmied, M. Seeber
     @brief      ...
     @todo
 *******************************************************************************/
