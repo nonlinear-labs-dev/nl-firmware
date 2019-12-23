@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       ae_mono_section.cpp
     @date
-    @version    1.7-0
+    @version    1.7-3
     @author     M. Seeber
     @brief      new container for all monophonic parameters and dsp
     @todo

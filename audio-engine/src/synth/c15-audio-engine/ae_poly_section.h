@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       ae_poly_section.h
     @date
-    @version    1.7-0
+    @version    1.7-3
     @author     M. Seeber
     @brief      new container for all polyphonic parameters and dsp
     @todo
@@ -42,7 +42,7 @@ class PolySection
   void render_feedback(const LayerSignalCollection &_z_other);
   void render_fast();
   void render_slow(const float _masterTune);
-  void keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
+  bool keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
                const float _vel);
   void keyUp(const uint32_t _voiceId, const uint32_t _unisonIndex, const float _tune, const float _vel);
   void resetEnvelopes();

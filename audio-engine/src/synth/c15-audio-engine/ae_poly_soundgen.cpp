@@ -1,5 +1,14 @@
 #include "ae_poly_soundgen.h"
 
+/******************************************************************************/
+/** @file       ae_poly_soundgen.cpp
+    @date
+    @version    1.7-3
+    @author     A. Schmied, M. Seeber
+    @brief      new soundgenerator
+    @todo
+*******************************************************************************/
+
 Engine::PolySoundGenerator::PolySoundGenerator()
 {
 }
