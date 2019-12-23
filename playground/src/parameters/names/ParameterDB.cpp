@@ -7,7 +7,6 @@
 #include <parameters/Parameter.h>
 #include <parameter-db/generated/parameter_list.h>
 #include <assert.h>
-#include <proxies/hwui/HWUI.h>
 #include <nltools/logging/Log.h>
 
 ParameterDB &ParameterDB::get()
@@ -31,34 +30,38 @@ std::string sanitize(const std::string &in)
   return mod;
 }
 
-Glib::ustring ParameterDB::getLongName(int id) const
+Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
 {
-  assert(id >= 0);
-  assert(id < C15::Config::tcd_elements);
+  auto num = id.getNumber();
 
-  auto d = C15::ParameterList[id];
+  assert(num >= 0);
+  assert(num < C15::Config::tcd_elements);
+
+  auto d = C15::ParameterList[num];
   if(!d.m_pg.m_param_label_long)
   {
-    nltools::Log::error("there is no long name entry in parameter list for parameter", id);
+    nltools::Log::error("there is no long name entry in parameter list for parameter", num);
     return "MISSING!!!";
   }
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long);
+  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long, id.getVoiceGroup());
 }
 
-Glib::ustring ParameterDB::getShortName(int id) const
+Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
 {
-  assert(id >= 0);
-  assert(id < C15::Config::tcd_elements);
+  auto num = id.getNumber();
 
-  auto d = C15::ParameterList[id];
+  assert(num >= 0);
+  assert(num < C15::Config::tcd_elements);
+
+  auto d = C15::ParameterList[num];
   if(!d.m_pg.m_param_label_short)
   {
-    nltools::Log::error("there is no short name entry in parameter list for parameter", id);
+    nltools::Log::error("there is no short name entry in parameter list for parameter", num);
     return "MISSING!!!";
   }
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_short);
+  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_short, id.getVoiceGroup());
 }
 
 tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
@@ -78,13 +81,12 @@ bool ParameterDB::isActive(const Parameter *p) const
   return diff > std::numeric_limits<tControlPositionValue>::epsilon();
 }
 
-Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(ustring name) const
+Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(ustring name, VoiceGroup originGroup) const
 {
   if(name.find("@VG") != Glib::ustring::npos)
   {
     auto invert = [](VoiceGroup v) { return v == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I; };
-    auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
-    name.replace(name.find("@VG"), 3, toString(invert(currentVg)));
+    name.replace(name.find("@VG"), 3, toString(invert(originGroup)));
     return name;
   }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <nltools/Types.h>
+#include <ParameterId.h>
 #include "playground.h"
 
 class Parameter;
@@ -11,8 +13,8 @@ class ParameterDB
 
   virtual ~ParameterDB();
 
-  Glib::ustring getLongName(int id) const;
-  Glib::ustring getShortName(int id) const;
+  Glib::ustring getLongName(const ParameterId& id) const;
+  Glib::ustring getShortName(const ParameterId& id) const;
   tControlPositionValue getSignalPathIndication(int id) const;
 
   static constexpr tControlPositionValue getInvalidSignalPathIndication()
@@ -24,6 +26,6 @@ class ParameterDB
 
  private:
 
-  Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name) const;
+  Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const;
   ParameterDB();
 };
