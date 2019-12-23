@@ -28,6 +28,9 @@
 #include <device-settings/LoadModeSetting.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
+#include <groups/GlobalParameterGroups.h>
+#include <groups/MonoGroup.h>
+#include <groups/UnisonGroup.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -35,7 +38,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter { 0, VoiceGroup::I }
+    , m_lastSelectedParameter{ 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 
@@ -221,7 +224,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name {};
+    Glib::ustring name{};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -693,6 +696,8 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
     if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
       setting->cycleForSoundType(SoundType::Single);
 
+    initUnisonVoices();
+
     onChange();
   });
 }
@@ -737,7 +742,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -769,7 +774,7 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -822,4 +827,32 @@ void EditBuffer::initUnisonVoices()
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     if(auto unisonParam = dynamic_cast<UnisonVoicesParameter *>(findParameterByID({ 249, vg })))
       unisonParam->updateScaling(getType());
+}
+
+bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundType type)
+{
+  auto selectedIsNotGlobal = parameter->getVoiceGroup() != VoiceGroup::Global;
+
+  if(type == SoundType::Single)
+  {
+    return false;
+  }
+
+  if(type == SoundType::Layer)
+  {
+    if(UnisonGroup::isUnisonParameter(parameter))
+      return !UnisonGroup::isUnisonVoicesParameter(parameter);
+
+    if(MonoGroup::isMonoParameter(parameter))
+      return MonoGroup::isMonoGlideParameter(parameter);
+
+    return GlobalParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+  }
+
+  if(type == SoundType::Split)
+  {
+    return GlobalParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+  }
+
+  return false;
 }

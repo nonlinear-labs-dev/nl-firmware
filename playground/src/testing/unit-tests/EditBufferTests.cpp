@@ -58,6 +58,9 @@ TEST_CASE("Simple EditBuffer Conversion")
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
+
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::I})->getValue().getFineDenominator() == 11);
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::II})->getValue().getFineDenominator() == 11);
   }
 
   SECTION("Undo Convert Single to Split")
@@ -69,9 +72,15 @@ TEST_CASE("Simple EditBuffer Conversion")
 
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
     REQUIRE(editBuffer->getType() == SoundType::Split);
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::I})->getValue().getFineDenominator() == 11);
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::II})->getValue().getFineDenominator() == 11);
+
     editBuffer->getParent()->getUndoScope().undo();
+
     REQUIRE(editBuffer->getType() == SoundType::Single);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::I})->getValue().getFineDenominator() == 23);
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::II})->getValue().getFineDenominator() == 23); // Ignored
   }
 
   SECTION("Undo Convert Single to Layer")
@@ -83,9 +92,14 @@ TEST_CASE("Simple EditBuffer Conversion")
 
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::I})->getValue().getFineDenominator() == 11);
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::II})->getValue().getFineDenominator() == 11);
+
     editBuffer->getParent()->getUndoScope().undo();
     REQUIRE(editBuffer->getType() == SoundType::Single);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::I})->getValue().getFineDenominator() == 23);
+    REQUIRE(editBuffer->findParameterByID({249, VoiceGroup::II})->getValue().getFineDenominator() == 23);
   }
 }
 

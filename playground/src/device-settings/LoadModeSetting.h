@@ -14,6 +14,8 @@ class LoadModeSetting : public EnumSetting<LoadMode>
  public:
   explicit LoadModeSetting(Settings& settings);
 
+  Glib::ustring getDisplayStringAccordingToCurrentVoiceGroup(VoiceGroup vg) const;
+
   bool set(tEnum m) override;
 
   LoadModeSetting(const LoadModeSetting& other) = delete;

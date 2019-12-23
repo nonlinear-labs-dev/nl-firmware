@@ -13,3 +13,13 @@ void GlobalParameterGroups::init()
 {
   appendParameter(new SplitPointParameter(this, { 356, VoiceGroup::Global }));
 }
+
+bool GlobalParameterGroups::isSplitPoint(const Parameter *p)
+{
+  return isSplitPoint(p->getID());
+}
+
+bool GlobalParameterGroups::isSplitPoint(const ParameterId &id)
+{
+  return id.getNumber() == 356 && id.getVoiceGroup() == VoiceGroup::Global;
+}

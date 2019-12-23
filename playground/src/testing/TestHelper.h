@@ -2,6 +2,7 @@
 #include <libundo/undo/TransactionCreationScope.h>
 #include <memory>
 #include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 #include <parameters/Parameter.h>
 
 namespace TestHelper
@@ -50,25 +51,11 @@ namespace TestHelper
       nltools_detailedAssertAlways(false, "Unable to change Parameter Value in either direction");
   }
 
-  namespace MainLoop
+  template <typename tCB> inline void forEachParameter(const tCB& cb, EditBuffer* eb)
   {
-    namespace detail
-    {
-      inline Glib::RefPtr<MainContext> getMainLoop()
-      {
-        return Application::get().getMainContext();
-      }
-    }
-
-    inline bool hasPending()
-    {
-      return detail::getMainLoop()->pending();
-    }
-
-    inline bool iterateLoopOnce()
-    {
-      auto mainloop = detail::getMainLoop();
-      return mainloop->iteration(true);
-    }
+    for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+      for(auto& g : eb->getParameterGroups(vg))
+        for(auto& p : g->getParameters())
+          cb(p);
   }
 }
