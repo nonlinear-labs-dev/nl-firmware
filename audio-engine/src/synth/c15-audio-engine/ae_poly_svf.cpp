@@ -3,8 +3,8 @@
 /******************************************************************************/
 /** @file       ae_poly_svf.cpp
     @date
-    @version    1.7-0
-    @author     M. Seeber
+    @version    1.7-3
+    @author     A. Schmied, M. Seeber
     @brief      state variable filter
     @todo
 *******************************************************************************/
