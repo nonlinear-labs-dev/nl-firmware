@@ -66,17 +66,15 @@ void LoadModeSetting::cycleForSoundType(SoundType type)
   }
 }
 
-Glib::ustring LoadModeSetting::getDisplayStringAccordingToCurrentVoiceGroup(VoiceGroup vg) const
+Glib::ustring LoadModeSetting::getDisplayStringForVoiceGroup(VoiceGroup vg) const
 {
-  auto invert = [](VoiceGroup vg) { return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I; };
-
   switch(get())
   {
     case LoadMode::Select:
     case LoadMode::DirectLoad:
       return getDisplayString();
     case LoadMode::LoadToPart:
-      return UNDO::StringTools::buildString("Load to ", toString(invert(vg)));
+      return UNDO::StringTools::buildString("Load to ", toString(vg));
   }
 
   return Glib::ustring();
