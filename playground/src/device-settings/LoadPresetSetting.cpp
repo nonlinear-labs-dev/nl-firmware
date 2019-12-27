@@ -18,7 +18,7 @@ const std::vector<ustring> &LoadModeSetting::enumToString() const
 
 const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
 {
-  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select Preset", "Direct Load" };
+  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select only", "Direct Load" };
   return ret;
 }
 
