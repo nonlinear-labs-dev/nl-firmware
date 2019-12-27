@@ -239,7 +239,7 @@ namespace DescriptiveLayouts
       eb->undoableSelectParameter({ 364, vg });
     });
 
-    registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
+    registerEvent(EventSinks::OpenPartScreen, [hwui, eb]() {
       if(eb->getType() != SoundType::Split)
         eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
       else

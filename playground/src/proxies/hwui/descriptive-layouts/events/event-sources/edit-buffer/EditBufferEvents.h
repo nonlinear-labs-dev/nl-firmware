@@ -11,16 +11,7 @@ namespace DescriptiveLayouts
     {
       const auto type = eb->getType();
       const auto typeStr = toString(type);
-
-      if(type == SoundType::Single)
-      {
-        setValue({ typeStr, 0 });
-      }
-      else
-      {
-        const auto suffix = " " + toString(Application::get().getHWUI()->getCurrentVoiceGroup());
-        setValue({ typeStr + suffix, suffix.size() });
-      }
+      setValue({ typeStr, 0 });
     }
   };
 
@@ -68,7 +59,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto base = "Params..";
+      auto base = "Part..";
       auto suffix = isChanged(eb) ? "*" : "";
       setValue({ std::string(base) + suffix, 0 });
     }

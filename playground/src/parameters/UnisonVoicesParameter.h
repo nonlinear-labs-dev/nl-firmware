@@ -1,7 +1,7 @@
 #pragma once
-#include "Parameter.h"
+#include "parameters/unison-parameters/UnmodulateableUnisonParameter.h"
 
-class UnisonVoicesParameter : public Parameter
+class UnisonVoicesParameter : public UnmodulateableUnisonParameter
 {
  public:
   explicit UnisonVoicesParameter(ParameterGroup* group, VoiceGroup vg);

@@ -18,6 +18,6 @@ void DualSpecialParameterModuleCaption::updateText(Parameter *newOne)
   }
   else
   {
-    setText({ toString(type) + " " + toString(vg), 0 });
+    setText({ "Part " + toString(vg), 0 });
   }
 }

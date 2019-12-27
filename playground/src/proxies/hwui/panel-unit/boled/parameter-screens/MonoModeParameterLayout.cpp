@@ -27,7 +27,7 @@ void MonoModeParameterLayout::init()
   {
     if(c->getButtonPos(Buttons::BUTTON_C) == c->getPosition())
     {
-      c->setText({ "^", 0 });
+      c->setText({ "back..", 0 });
     }
   }
 }
@@ -77,7 +77,7 @@ void MonoModeModulateableParameterLayout::init()
   {
     if(c->getButtonPos(Buttons::BUTTON_C) == c->getPosition())
     {
-      c->setText({ "^", 0 });
+      c->setText({ "back..", 0 });
     }
   }
 }

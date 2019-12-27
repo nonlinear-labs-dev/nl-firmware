@@ -13,11 +13,11 @@ namespace DescriptiveLayouts
       auto type = eb->getType();
       auto typeStr = toString(type);
       if(type == SoundType::Single)
-        setValue({ typeStr + " " + eb->getName(), 0 });
+        setValue({ "Sound Edit", 0 });
       else
       {
         auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
-        setValue({ typeStr + (sel == VoiceGroup::I ? " I" : " II") + " " + eb->getVoiceGroupName(sel), 0 });
+        setValue({ "Sound Edit - Part " + toString(sel), 0 });
       }
     }
   };

@@ -5,8 +5,8 @@
 #include <presets/PresetManager.h>
 
 UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup* group, VoiceGroup vg)
-    : Parameter(group, ParameterId { 249, vg },
-                ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23)
+    : UnmodulateableUnisonParameter(group, ParameterId{ 249, vg },
+                                    ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23)
 {
 }
 
