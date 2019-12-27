@@ -39,19 +39,6 @@ Carousel *ModulateableUnisonParameterLayout::createCarousel(const Rect &rect)
   return new UnisonParameterCarousel(rect);
 }
 
-void ModulateableUnisonParameterLayout::init()
-{
-  ModulateableParameterSelectLayout2::init();
-
-  for(auto &c : getControls<MCAmountButton>())
-  {
-    if(c->getButtonPos(Buttons::BUTTON_C) == c->getPosition() && !isCurrentParameterModulated())
-    {
-      c->setText({ "back..", 0 });
-    }
-  }
-}
-
 bool ModulateableUnisonParameterLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down && i == Buttons::BUTTON_C)

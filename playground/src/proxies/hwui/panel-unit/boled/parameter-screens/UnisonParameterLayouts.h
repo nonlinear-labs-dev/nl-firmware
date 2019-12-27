@@ -9,8 +9,6 @@ class ModulateableUnisonParameterLayout : public ModulateableParameterSelectLayo
   using ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2;
 
  protected:
-  void init() override;
-
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 
   bool isCurrentParameterModulated() const;

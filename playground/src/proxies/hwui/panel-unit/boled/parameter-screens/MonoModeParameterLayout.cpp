@@ -69,19 +69,6 @@ MonoModeModulateableParameterLayout::MonoModeModulateableParameterLayout()
 {
 }
 
-void MonoModeModulateableParameterLayout::init()
-{
-  ModulateableParameterSelectLayout2::init();
-
-  for(auto &c : getControls<Button>())
-  {
-    if(c->getButtonPos(Buttons::BUTTON_C) == c->getPosition())
-    {
-      c->setText({ "back..", 0 });
-    }
-  }
-}
-
 Carousel *MonoModeModulateableParameterLayout::createCarousel(const Rect &rect)
 {
   return new MonoParameterCarousel(rect);
