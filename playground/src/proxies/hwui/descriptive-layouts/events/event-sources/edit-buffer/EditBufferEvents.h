@@ -76,8 +76,8 @@ namespace DescriptiveLayouts
         case SoundType::Layer:
         case SoundType::Split:
         {
-          auto vgI = eb->getParameterGroupByID({ "PART", VoiceGroup::I })->isAnyParameterChanged();
-          auto vgII = eb->getParameterGroupByID({ "PART", VoiceGroup::II })->isAnyParameterChanged();
+          auto vgI = eb->getParameterGroupByID({ "Part", VoiceGroup::I })->isAnyParameterChanged();
+          auto vgII = eb->getParameterGroupByID({ "Part", VoiceGroup::II })->isAnyParameterChanged();
           if(type == SoundType::Split)
             return vgI || vgII || (eb->getSplitPoint() != nullptr && eb->getSplitPoint()->isChangedFromLoaded());
           return vgI || vgII;

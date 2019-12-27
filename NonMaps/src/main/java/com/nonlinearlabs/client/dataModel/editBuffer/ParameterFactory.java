@@ -47,7 +47,7 @@ public class ParameterFactory {
 			{ 280, 281, 282, 283, 383, 384 }, { 285, 286, 287, 288, 385, 386 }, { 290, 291, 292, 293, 387, 388 } };
 
 	static private String[] parameterGroups = { "CS", "Cab", "Comb", "Echo", "Env A", "Env B", "Env C", "FB", "Flang",
-			"Gap Filt", "MCM", "MCs", "Master", "Mixer", "Mono", "Osc A", "Osc B", "PART", "Reverb", "SVF", "Scale",
+			"Gap Filt", "MCM", "MCs", "Master", "Mixer", "Mono", "Osc A", "Osc B", "Part", "Reverb", "SVF", "Scale",
 			"Sh A", "Sh B", "Split", "Unison", "VGM" };
 	static private String[] globalParameterGroups = { "CS", "MCM", "MCs", "Master", "Scale", "Split" };
 

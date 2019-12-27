@@ -5,7 +5,7 @@
 #include "VoiceGroupMasterGroup.h"
 
 VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
-    : ParameterGroup(parent, { "PART", vg }, "Part", "Part Master", "Part Master")
+    : ParameterGroup(parent, { "Part", vg }, "Part", "Part", "Part")
 {
 }
 
