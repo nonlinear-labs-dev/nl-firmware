@@ -38,6 +38,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset);
   void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
+  void undoableLoadPresetPartIntoPart(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup copyTo);
 
   void undoableLoadSelectedPreset(VoiceGroup loadInto);
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);

@@ -804,7 +804,18 @@ void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGr
   if(!selectedPreset)
     return;
 
-  if(selectedPreset->getType() == SoundType::Single)
+  auto transString = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(copyTo));
+  auto scope = getParent()->getUndoScope().startTransaction(transString);
+  undoableLoadPresetPartIntoPart(scope->getTransaction(), selectedPreset, from, copyTo);
+}
+
+void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                                VoiceGroup copyTo)
+{
+  if(!preset)
+    return;
+
+  if(preset->getType() == SoundType::Single)
   {
     nltools::Log::error("Not a dual Preset!");
     return;
@@ -816,10 +827,8 @@ void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGr
     return;
   }
 
-  auto transString = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(copyTo));
-  auto scope = getParent()->getUndoScope().startTransaction(transString);
-  setVoiceGroupName(scope->getTransaction(), selectedPreset->getName(), copyTo);
-  super::copyFrom(scope->getTransaction(), selectedPreset, from, copyTo);
+  setVoiceGroupName(transaction, preset->getName(), copyTo);
+  super::copyFrom(transaction, preset, from, copyTo);
 }
 
 void EditBuffer::initUnisonVoices()

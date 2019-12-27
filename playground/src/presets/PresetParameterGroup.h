@@ -25,6 +25,7 @@ class PresetParameterGroup
 
   // accessors
   PresetParameter *findParameterByID(ParameterId id) const;
+  PresetParameter *findParameterByNumber(uint16_t number) const;
 
   void writeDocument(Writer &writer) const;
 

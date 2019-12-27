@@ -86,11 +86,11 @@ ParameterGroup::tUpdateID ParameterGroup::onChange(uint64_t flags)
 
 void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other)
 {
-  for(auto &g : getParameters())
+  for(auto &myParameter : getParameters())
   {
-    if(auto c = other->findParameterByID(g->getID()))
+    if(auto otherParameter = other->findParameterByNumber(myParameter->getID().getNumber()))
     {
-      g->copyFrom(transaction, c);
+      myParameter->copyFrom(transaction, otherParameter);
     }
   }
 }
