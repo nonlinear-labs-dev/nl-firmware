@@ -18,7 +18,7 @@ TEST_CASE("Load Dual Part into Part")
     auto scope = TestHelper::createTestScope();
 
     presetTuneI->setValue(scope->getTransaction(), 0.555);
-    presetTuneII->setValue(scope->getTransaction(), 0.000187);
+    presetTuneII->setValue(scope->getTransaction(), 0.187);
   }
 
   WHEN("Init Sound is Split")
@@ -50,14 +50,14 @@ TEST_CASE("Load Dual Part into Part")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), splitPreset, VoiceGroup::II, VoiceGroup::I);
-      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::I })->getControlPositionValue() == 0.000187);
+      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::I })->getControlPositionValue() == 0.187);
     }
 
     THEN("Load Split Part II into II")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), splitPreset, VoiceGroup::II, VoiceGroup::II);
-      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::II })->getControlPositionValue() == 0.000187);
+      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::II })->getControlPositionValue() == 0.187);
     }
   }
 }

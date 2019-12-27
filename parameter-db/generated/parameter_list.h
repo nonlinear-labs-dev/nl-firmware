@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file       parameter_list.h
-    @date       2019-12-23, 17:06
-    @version	1.7B-3
-    @author     M. Seeber
-    @brief      complete list of parameters (and their properties) in TCD order
-    @todo
+/**	@file	parameter_list.h
+	@date	2019-12-27, 15:45
+	@version	1.7B-3
+	@author	M. Seeber
+	@brief	complete list of parameters (and their properties) in TCD order
+	@todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -1236,14 +1236,14 @@ namespace C15
       247,
       0.5f,
       { Smoothers::Global_Fast::Master_Volume, None, Properties::SmootherScale::Parabolic, 4.0f, 0.0f, false },
-      { "", "Master", "Master", "Volume", "Volume",
+      { "", "Master", "Master", "Master Volume", "Volume",
         "Master volume [in dB], applied at the end of the effect chain, before the soft clipper." } },
     { Parameters::Global_Unmodulateables::Master_Tune,
       248,
       0.0f,
       { Smoothers::Global_Slow::Master_Tune, Signals::Global_Signals::Master_Tune, Properties::SmootherScale::Linear,
         48.0f, 0.0f, true },
-      { "", "Master", "Master", "Tune", "Tune", "Global pitch transposition [in semitones]." } },
+      { "", "Master", "Master", "Master Tune", "Tune", "Global pitch transposition [in semitones]." } },
     { Parameters::Local_Unmodulateables::Unison_Voices,
       249,
       0.0f,
