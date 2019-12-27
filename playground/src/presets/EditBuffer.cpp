@@ -513,8 +513,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
-    for(auto &group : getParameterGroups(vg))
-      group->undoableClear(transaction);
+    undoableInitPart(transaction, vg);
 
   auto swap = UNDO::createSwapData(Uuid::init());
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
@@ -525,8 +524,6 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 
   resetModifiedIndicator(transaction);
 
-  setVoiceGroupName(transaction, "Init", VoiceGroup::I);
-  setVoiceGroupName(transaction, "Init", VoiceGroup::II);
   setName(transaction, "Init Sound");
 
   m_recallSet.copyFromEditBuffer(transaction, this);
@@ -864,4 +861,17 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
   }
 
   return false;
+}
+
+void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
+{
+  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+
+  for(auto &group : getParameterGroups(vg))
+    group->undoableClear(transaction);
+
+  if(vg != VoiceGroup::Global)
+    setVoiceGroupName(transaction, "Init", vg);
+
+  m_recallSet.copyFromEditBuffer(transaction, this, vg);
 }

@@ -98,7 +98,9 @@ class EditBuffer : public ParameterDualGroupSet
 
   static bool isDualParameterForSoundType(const Parameter* parameter, SoundType type);
 
- private:
+  void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group);
+
+private:
   Glib::ustring getEditBufferName() const;
   bool anyParameterChanged(VoiceGroup vg) const;
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
