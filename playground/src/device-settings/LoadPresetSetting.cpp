@@ -26,7 +26,7 @@ bool LoadModeSetting::set(tEnum m)
 {
   bool ret = super::set(m);
 
-  if(m == LoadMode::DirectLoad && !getSettings()->isLoading())
+  if(m == LoadMode::DirectLoad && !getSettings()->isLoading() && !m_inToggle)
   {
     Application::get().getPresetManager()->doAutoLoadSelectedPreset();
   }
@@ -36,6 +36,8 @@ bool LoadModeSetting::set(tEnum m)
 
 void LoadModeSetting::cycleForSoundType(SoundType type)
 {
+  m_inToggle = true;
+
   if(type == SoundType::Single)
   {
     switch(get())
@@ -64,6 +66,8 @@ void LoadModeSetting::cycleForSoundType(SoundType type)
         break;
     }
   }
+
+  m_inToggle = false;
 }
 
 Glib::ustring LoadModeSetting::getDisplayStringForVoiceGroup(VoiceGroup vg) const

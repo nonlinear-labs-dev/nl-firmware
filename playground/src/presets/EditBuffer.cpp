@@ -626,6 +626,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
+  initToFX(transaction);
+
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);
   masterTuneParameter->setCPFromHwui(transaction, newTune);
 
@@ -671,6 +673,8 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
+
+  initToFX(transaction);
 
   undoableSetType(transaction, type);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
@@ -874,4 +878,10 @@ void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
     setVoiceGroupName(transaction, "Init", vg);
 
   m_recallSet.copyFromEditBuffer(transaction, this, vg);
+}
+
+void EditBuffer::initToFX(UNDO::Transaction *transaction)
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+    findParameterByID({ 362, vg })->setDefaultFromHwui(transaction);
 }
