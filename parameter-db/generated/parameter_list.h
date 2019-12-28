@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h
-	@date	2019-12-27, 15:45
-	@version	1.7B-3
-	@author	M. Seeber
-	@brief	complete list of parameters (and their properties) in TCD order
-	@todo
+/**	@file       parameter_list.h
+    @date       2019-12-28, 14:02
+    @version	1.7B-3
+    @author     M. Seeber
+    @brief      complete list of parameters (and their properties) in TCD order
+    @todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -996,14 +996,14 @@ namespace C15
     { Parameters::Local_Modulateables::Cabinet_Hi_Cut,
       194,
       50.0f / 80.0f,
-      { Smoothers::Mono_Slow::Cabinet_Hi_Cut, None, Properties::SmootherScale::Expon_Lin_Pitch, 60.0f, 80.0f, false },
+      { Smoothers::Mono_Slow::Cabinet_Hi_Cut, None, Properties::SmootherScale::Expon_Lin_Pitch, 80.0f, 60.0f, false },
       { "", "Cabinet", "Cabinet", "Hi Cut", "Hi Cut",
         "Cutoff frequency [in semitones] of the lowpass filter at the output." } },
     { None },
     { Parameters::Local_Unmodulateables::Cabinet_Lo_Cut,
       196,
       10.0f / 80.0f,
-      { Smoothers::Mono_Slow::Cabinet_Lo_Cut, None, Properties::SmootherScale::Expon_Lin_Pitch, 20.0f, 80.0f, false },
+      { Smoothers::Mono_Slow::Cabinet_Lo_Cut, None, Properties::SmootherScale::Expon_Lin_Pitch, 80.0f, 20.0f, false },
       { "", "Cabinet", "Cabinet", "Lo Cut", "Lo Cut",
         "Cutoff frequency [in semitones] of the highpass filter at the input." } },
     { Parameters::Local_Modulateables::Cabinet_Cab_Lvl,
