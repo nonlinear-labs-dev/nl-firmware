@@ -211,6 +211,8 @@ TEST_CASE("poly groups initialization")
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
     REQUIRE_FALSE(editBuffer->anyParameterChanged());
+    TestHelper::forceParameterChange(scope->getTransaction(), editBuffer->findParameterByID({ 362, VoiceGroup::I }));
+    TestHelper::forceParameterChange(scope->getTransaction(), editBuffer->findParameterByID({ 362, VoiceGroup::II }));
   }
 
   const auto unisonVoices = editBuffer->findParameterByID({ 249, VoiceGroup::I })->getControlPositionValue();
@@ -242,6 +244,11 @@ TEST_CASE("poly groups initialization")
       const auto vgLegato = editBuffer->findParameterByID({ 367, vg })->getControlPositionValue();
       const auto vgGlide = editBuffer->findParameterByID({ 365, vg })->getControlPositionValue();
 
+      const auto toFX = editBuffer->findParameterByID({ 362, vg })->getControlPositionValue();
+      const auto toFXDefault = editBuffer->findParameterByID({ 362, vg })->getDefaultValue();
+
+      REQUIRE(toFX == toFXDefault);
+
       REQUIRE(unisonVoices == vgVoices);
       REQUIRE(unisonDetune == vgDetune);
       REQUIRE(unisonPhase == vgPhase);
@@ -272,6 +279,11 @@ TEST_CASE("poly groups initialization")
       const auto vgPrio = editBuffer->findParameterByID({ 366, vg })->getControlPositionValue();
       const auto vgLegato = editBuffer->findParameterByID({ 367, vg })->getControlPositionValue();
       const auto vgGlide = editBuffer->findParameterByID({ 365, vg })->getControlPositionValue();
+
+      const auto toFX = editBuffer->findParameterByID({ 362, vg })->getControlPositionValue();
+      const auto toFXDefault = editBuffer->findParameterByID({ 362, vg })->getDefaultValue();
+
+      REQUIRE(toFX == toFXDefault);
 
       REQUIRE(unisonVoices == vgVoices);
       REQUIRE(unisonDetune == vgDetune);

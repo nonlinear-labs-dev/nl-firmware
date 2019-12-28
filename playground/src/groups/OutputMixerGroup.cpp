@@ -65,4 +65,7 @@ void OutputMixerGroup::init()
 
   appendParameter(new Parameter(this, { 187, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
                                 0, 100, 1000));
+
+  appendParameter(new ModulateableParameter(this, { 362, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
 }

@@ -149,4 +149,6 @@ class EditBuffer : public ParameterDualGroupSet
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
   void initUnisonVoices();
+
+  void initToFX(UNDO::Transaction *transaction);
 };
