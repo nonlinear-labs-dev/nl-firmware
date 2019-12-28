@@ -18,7 +18,7 @@ const std::vector<ustring> &LoadModeSetting::enumToString() const
 
 const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
 {
-  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select Preset", "Direct Load" };
+  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select only", "Direct Load" };
   return ret;
 }
 
@@ -70,17 +70,15 @@ void LoadModeSetting::cycleForSoundType(SoundType type)
   m_inToggle = false;
 }
 
-Glib::ustring LoadModeSetting::getDisplayStringAccordingToCurrentVoiceGroup(VoiceGroup vg) const
+Glib::ustring LoadModeSetting::getDisplayStringForVoiceGroup(VoiceGroup vg) const
 {
-  auto invert = [](VoiceGroup vg) { return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I; };
-
   switch(get())
   {
     case LoadMode::Select:
     case LoadMode::DirectLoad:
       return getDisplayString();
     case LoadMode::LoadToPart:
-      return UNDO::StringTools::buildString("Load to ", toString(invert(vg)));
+      return UNDO::StringTools::buildString("Load to ", toString(vg));
   }
 
   return Glib::ustring();

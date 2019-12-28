@@ -31,7 +31,7 @@
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
-            "Text[Text]": "^"
+            "Text[Text]": "back.."
           }
         },
         "ButtonD": {

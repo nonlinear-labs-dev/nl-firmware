@@ -49,9 +49,14 @@ RecallParameter *RecallParameterGroups::findParameterByID(const ParameterId &id)
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
 {
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
-    for(auto &g : other->getParameterGroups(vg))
-      for(auto &parameter : g->getParameters())
-        m_parameters.at(parameter->getID())->copyFrom(transaction, parameter);
+    copyFromEditBuffer(transaction, other, vg);
+}
+
+void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other, VoiceGroup from)
+{
+  for(auto &g : other->getParameterGroups(from))
+    for(auto &parameter : g->getParameters())
+      m_parameters.at(parameter->getID())->copyFrom(transaction, parameter);
 }
 
 void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const

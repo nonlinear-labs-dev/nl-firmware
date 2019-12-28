@@ -513,8 +513,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
-    for(auto &group : getParameterGroups(vg))
-      group->undoableClear(transaction);
+    undoableInitPart(transaction, vg);
 
   auto swap = UNDO::createSwapData(Uuid::init());
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
@@ -525,8 +524,6 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 
   resetModifiedIndicator(transaction);
 
-  setVoiceGroupName(transaction, "Init", VoiceGroup::I);
-  setVoiceGroupName(transaction, "Init", VoiceGroup::II);
   setName(transaction, "Init Sound");
 
   m_recallSet.copyFromEditBuffer(transaction, this);
@@ -742,8 +739,8 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
 
   auto globalMaster = getParameterGroupByID({ "Master", VoiceGroup::Global });
-  auto vgMasterI = getParameterGroupByID({ "PART", VoiceGroup::I });
-  auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
+  auto vgMasterI = getParameterGroupByID({ "Part", VoiceGroup::I });
+  auto vgMasterII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Global Master to VG Master
   for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
@@ -774,8 +771,8 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction)
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
 
   auto globalMaster = getParameterGroupByID({ "Master", VoiceGroup::Global });
-  auto vgMasterI = getParameterGroupByID({ "PART", VoiceGroup::I });
-  auto vgMasterII = getParameterGroupByID({ "PART", VoiceGroup::II });
+  auto vgMasterI = getParameterGroupByID({ "Part", VoiceGroup::I });
+  auto vgMasterII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Global Master to VG Master
   for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
@@ -808,7 +805,18 @@ void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGr
   if(!selectedPreset)
     return;
 
-  if(selectedPreset->getType() == SoundType::Single)
+  auto transString = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(copyTo));
+  auto scope = getParent()->getUndoScope().startTransaction(transString);
+  undoableLoadPresetPartIntoPart(scope->getTransaction(), selectedPreset, from, copyTo);
+}
+
+void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                                VoiceGroup copyTo)
+{
+  if(!preset)
+    return;
+
+  if(preset->getType() == SoundType::Single)
   {
     nltools::Log::error("Not a dual Preset!");
     return;
@@ -820,10 +828,8 @@ void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGr
     return;
   }
 
-  auto transString = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(copyTo));
-  auto scope = getParent()->getUndoScope().startTransaction(transString);
-  setVoiceGroupName(scope->getTransaction(), selectedPreset->getName(), copyTo);
-  super::copyFrom(scope->getTransaction(), selectedPreset, from, copyTo);
+  setVoiceGroupName(transaction, preset->getName(), copyTo);
+  super::copyFrom(transaction, preset, from, copyTo);
 }
 
 void EditBuffer::initUnisonVoices()
@@ -859,6 +865,19 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
   }
 
   return false;
+}
+
+void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
+{
+  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+
+  for(auto &group : getParameterGroups(vg))
+    group->undoableClear(transaction);
+
+  if(vg != VoiceGroup::Global)
+    setVoiceGroupName(transaction, "Init", vg);
+
+  m_recallSet.copyFromEditBuffer(transaction, this, vg);
 }
 
 void EditBuffer::initToFX(UNDO::Transaction *transaction)

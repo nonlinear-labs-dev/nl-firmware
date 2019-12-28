@@ -9,7 +9,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 public class VoiceGroupMaster extends ParameterGroup {
 
 	public VoiceGroupMaster(MapsLayout parent) {
-		super(parent, "PART");
+		super(parent, "Part");
 		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {

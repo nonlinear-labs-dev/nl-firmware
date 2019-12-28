@@ -6,3 +6,9 @@ class InitSound : public AnimatedGenericItem
  public:
   InitSound(const Rect &rect);
 };
+
+class InitPart : public AnimatedGenericItem
+{
+public:
+  InitPart(const Rect& r);
+};

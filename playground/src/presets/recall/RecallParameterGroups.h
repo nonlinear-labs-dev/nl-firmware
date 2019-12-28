@@ -16,11 +16,12 @@ class RecallParameterGroups : public UpdateDocumentContributor
 
   RecallParameterGroups(EditBuffer *editBuffer);
 
-  RecallParameter *findParameterByID(const ParameterId& id) const;
+  RecallParameter *findParameterByID(const ParameterId &id) const;
   RecallParameterGroups::tParameterMap &getParameters();
   const RecallParameterGroups::tParameterMap &getParameters() const;
 
   void copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other);
+  void copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other, VoiceGroup vg);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   tUpdateID onChange(uint64_t flags) override;

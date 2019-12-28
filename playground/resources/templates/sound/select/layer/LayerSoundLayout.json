@@ -28,9 +28,6 @@
         "ButtonB": {
           "Class": "Button",
           "Position": "BUTTON_B",
-          "Init": {
-            "Text[Text]": "Params.."
-          },
           "Events": "SoundParamsButtonText => Text[Text]"
         },
         "ButtonC": {
@@ -70,7 +67,7 @@
       },
       "EventSinks": {
         "BUTTON_A": "ToggleVoiceGroup",
-        "BUTTON_B": "OpenParamsScreen",
+        "BUTTON_B": "OpenPartScreen",
         "BUTTON_C": "SwitchToVoicesDetail",
         "BUTTON_D": "OpenMasterParameter"
       }

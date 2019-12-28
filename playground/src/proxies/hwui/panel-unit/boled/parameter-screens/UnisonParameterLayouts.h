@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ModulateableParameterLayouts.h"
 #include "UnmodulatebaleParameterLayouts.h"
 
@@ -6,6 +7,11 @@ class ModulateableUnisonParameterLayout : public ModulateableParameterSelectLayo
 {
  public:
   using ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2;
+
+ protected:
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+
+  bool isCurrentParameterModulated() const;
 
  protected:
   Carousel *createCarousel(const Rect &rect) override;
@@ -17,4 +23,8 @@ class UnmodulateableUnisonParameterLayout : public UnmodulateableParameterSelect
 
  protected:
   Carousel *createCarousel(const Rect &rect) override;
+
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+
+  void init() override;
 };
