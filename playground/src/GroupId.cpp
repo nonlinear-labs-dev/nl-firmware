@@ -1,7 +1,6 @@
 #include "GroupId.h"
-#include "GroupId.h"
-
 #include <utility>
+#include <glibmm/ustring.h>
 
 static VoiceGroup parseGroup(const std::string &in)
 {

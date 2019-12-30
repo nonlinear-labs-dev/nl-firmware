@@ -278,7 +278,7 @@ void LPCProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const
   if(Application::get().getSettings()->getSetting<DebugLevel>()->get() == DebugLevels::DEBUG_LEVEL_GASSY)
   {
     gsize numBytes = 0;
-    auto *data = (uint8_t *) bytes->get_data(numBytes);
+    auto data = static_cast<const uint8_t *>(bytes->get_data(numBytes));
 
     char txt[numBytes * 4];
     char *ptr = txt;

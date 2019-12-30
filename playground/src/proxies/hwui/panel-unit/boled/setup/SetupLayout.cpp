@@ -81,6 +81,8 @@ namespace NavTree
     {
     }
 
+    virtual ~Node() = default;
+
     virtual Control *createSelectionControl()
     {
       return new SetupSelectionLabel(name);

@@ -60,7 +60,7 @@ void ScaleGroup::init()
       new ScaleParameter(this, { 323, VoiceGroup::Global }, ScaleConverter::get<KeyScaleConverter>(), 0, 800, 8000));
 }
 
-void ScaleGroup::onBaseKeyParameterChanged(const Parameter* baseKeyParameter)
+void ScaleGroup::onBaseKeyParameterChanged(const Parameter*)
 {
   m_updateNames.doTask([=]() {
     for(auto a : getParameters())

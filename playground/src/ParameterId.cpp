@@ -1,6 +1,7 @@
 #include "ParameterId.h"
 #include <utility>
 #include <parameter-db/generated/parameter_list.h>
+#include <glibmm/ustring.h>
 
 static int parseNumber(const std::string &in)
 {
@@ -86,5 +87,5 @@ bool ParameterId::isGlobal(int number)
 
 ParameterId ParameterId::invalid()
 {
-  return ParameterId{ std::numeric_limits<decltype(m_num)>::max(), VoiceGroup::NumGroups };
+  return ParameterId { std::numeric_limits<decltype(m_num)>::max(), VoiceGroup::NumGroups };
 }

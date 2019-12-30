@@ -2,19 +2,19 @@
 
 #include <string>
 #include <map>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/classification.hpp>
+#include <assert.h>
 #include <nltools/ExceptionTools.h>
 
 namespace EnumTools
 {
+  std::vector<std::string> parseDef(const std::string &def);
+
   template <typename enum_type, typename base_type, typename struct_type>
   std::map<enum_type, std::string> createMap(const std::string &def)
   {
     std::map<enum_type, std::string> ret;
 
-    auto invalidValue = (base_type) -1;
+    auto invalidValue = static_cast<base_type>(-1);
     auto numEnums = sizeof(struct_type) / sizeof(base_type);
     base_type plain[numEnums];
 
@@ -33,21 +33,11 @@ namespace EnumTools
       currentValue++;
     }
 
-    std::vector<std::string> strs;
-    boost::split(strs, def, boost::is_any_of(","));
-
-    g_assert(strs.size() == numEnums);
+    auto strs = parseDef(def);
+    assert(strs.size() == numEnums);
 
     for(size_t idx = 0; idx < numEnums; idx++)
-    {
-      std::string key = strs[idx];
-      key = boost::trim_copy(key);
-      auto pos = key.find_first_of(" =,;\n\r");
-      if(pos != std::string::npos)
-        key = key.substr(0, pos);
-
-      ret[(enum_type) plain[idx]] = key;
-    }
+      ret[static_cast<enum_type>(plain[idx])] = strs[idx];
 
     return ret;
   }

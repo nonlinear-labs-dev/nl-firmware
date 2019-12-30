@@ -8,7 +8,7 @@
 
 MonoGroupControl::MonoGroupControl(const Rect &r)
     : ControlWithChildren(r)
-    , m_grid{ nullptr }
+    , m_grid { nullptr }
 {
   m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged([this](auto) { this->rebuild(); });
 }
@@ -37,7 +37,7 @@ void MonoGroupControl::rebuild()
   {
     for(auto x = 0; x < 2; x++)
     {
-      auto param = eb->findParameterByID({paramid[index++], vg});
+      auto param = eb->findParameterByID({ paramid[index++], vg });
 
       if(paramid[y + x] != 364)
       {

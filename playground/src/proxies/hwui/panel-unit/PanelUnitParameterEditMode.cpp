@@ -86,7 +86,7 @@ static EditPanel &getEditPanel()
 void PanelUnitParameterEditMode::setup()
 {
   m_mappings.forEachButton([=](Buttons buttonID, std::list<int> parameterIDs) {
-    std::vector<int> para{ parameterIDs.begin(), parameterIDs.end() };
+    std::vector<int> para { parameterIDs.begin(), parameterIDs.end() };
 
     if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
        && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
@@ -524,7 +524,7 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterI
   auto button = m_mappings.findButton(selectedParameterID.getNumber());
 
   if(button != Buttons::INVALID)
-    states[(int) button] = true;
+    states[static_cast<size_t>(button)] = true;
 }
 
 const BOLED &PanelUnitParameterEditMode::getBoled() const
