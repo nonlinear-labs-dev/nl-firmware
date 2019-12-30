@@ -1,14 +1,7 @@
 #pragma once
 
-#include <glib.h>
-#include <glibmm.h>
-#include <giomm.h>
-#include <sigc++/sigc++.h>
-#include <sigc++/trackable.h>
-#include <memory>
-#include <atomic>
-#include <stdio.h>
-#include <iostream>
+#include <stdint.h>
+#include <glibmm/refptr.h>
 
 enum class Domain : uint8_t
 {
@@ -17,3 +10,18 @@ enum class Domain : uint8_t
 
 void printCurrentTime(const char *s);
 void printCurrentTime(const char *s, int64_t ms);
+
+namespace Gio
+{
+  class File;
+  class InputStream;
+  class AsyncResult;
+  class Cancellable;
+}
+
+namespace Glib
+{
+  class Bytes;
+  class IOChannel;
+
+}

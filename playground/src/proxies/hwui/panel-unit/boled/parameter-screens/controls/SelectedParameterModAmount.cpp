@@ -5,6 +5,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "groups/MacroControlsGroup.h"
+#include <math.h>
 
 SelectedParameterModAmount::SelectedParameterModAmount(const Rect &rect)
     : super(rect)

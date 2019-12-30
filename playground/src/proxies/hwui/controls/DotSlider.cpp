@@ -1,4 +1,5 @@
 #include "DotSlider.h"
+#include <math.h>
 
 static const int c_borderLeft = 1;
 static const int c_borderRight = 1;

@@ -1,6 +1,9 @@
 #pragma once
 
 #include "bbbb.h"
+#include <sigc++/trackable.h>
+#include <functional>
+#include <glibmm/bytes.h>
 
 class Receiver : public sigc::trackable
 {

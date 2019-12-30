@@ -7,6 +7,7 @@
 #include <parameters/ModulateableParameter.h>
 #include <parameters/MacroControlParameter.h>
 #include <nltools/logging/Log.h>
+#include <libundo/undo/Scope.h>
 
 ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                                const char *webUIName)

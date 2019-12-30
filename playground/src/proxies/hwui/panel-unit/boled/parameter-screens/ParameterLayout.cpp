@@ -18,6 +18,7 @@
 #include <parameters/ModulateableParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <presets/recall/RecallParameter.h>
+#include <parameters/scale-converters/ScaleConverter.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -317,7 +318,7 @@ bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
   if(i == Buttons::BUTTON_PRESET)
   {
     if(down)
-      Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
+      Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
     return true;
   }
 

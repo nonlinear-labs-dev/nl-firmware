@@ -6,6 +6,8 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
+#include <math.h>
+#include <parameters/scale-converters/ScaleConverter.h>
 
 UpperModulationBoundControl::UpperModulationBoundControl(const Rect &r)
     : super(r)

@@ -2,6 +2,7 @@
 #include <xml/Writer.h>
 #include <math.h>
 #include <device-settings/DebugLevel.h>
+#include <parameters/scale-converters/ScaleConverter.h>
 
 ModulateableParameterWithUnusualModUnit::ModulateableParameterWithUnusualModUnit(
     ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, const ScaleConverter *modAmountScaling,

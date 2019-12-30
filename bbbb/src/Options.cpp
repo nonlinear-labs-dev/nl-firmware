@@ -1,5 +1,6 @@
 #include "Options.h"
 #include <glibmm/optiongroup.h>
+#include <glibmm/optioncontext.h>
 
 namespace OptionDetail
 {

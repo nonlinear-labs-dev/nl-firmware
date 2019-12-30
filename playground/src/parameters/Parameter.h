@@ -21,6 +21,11 @@ enum ParameterFlags
   Loaded = 1
 };
 
+namespace UNDO
+{
+  class Transaction;
+}
+
 class Parameter : public UpdateDocumentContributor,
                   public IntrusiveListItem<Parameter *>,
                   public FlagOwner<ParameterFlags, uint8_t>

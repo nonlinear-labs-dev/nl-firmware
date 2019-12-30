@@ -1,4 +1,5 @@
 #include "BarSlider.h"
+#include <math.h>
 
 BarSlider::BarSlider(Parameter *param, const Rect &rect)
     : super(param, rect)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bbbb.h"
+#include <vector>
 
 class MessageParser
 {

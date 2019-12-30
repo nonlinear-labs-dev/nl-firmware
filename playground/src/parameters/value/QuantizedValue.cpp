@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <math.h>
+#include <parameters/scale-converters/ScaleConverter.h>
 
 size_t QuantizedValue::getHash() const
 {

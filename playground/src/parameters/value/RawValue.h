@@ -1,8 +1,8 @@
 #pragma once
 
 #include "playground.h"
-#include "parameters/scale-converters/ScaleConverter.h"
-#include <libundo/undo/Scope.h>
+
+class ScaleConverter;
 
 class RawValue
 {

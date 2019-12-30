@@ -3,7 +3,6 @@
 #include <map>
 #include <giomm/file.h>
 #include <giomm/init.h>
-#include <iostream>
 
 namespace FileTools
 {

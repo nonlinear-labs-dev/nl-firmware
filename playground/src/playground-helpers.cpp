@@ -1,4 +1,6 @@
 #include "playground-helpers.h"
+#include <device-settings/DebugLevel.h>
+#include <execinfo.h>
 
 namespace Environment
 {

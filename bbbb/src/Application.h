@@ -1,6 +1,8 @@
 #pragma once
 
 #include "bbbb.h"
+#include <memory>
+#include <glibmm/ustring.h>
 
 class Options;
 class Bridges;

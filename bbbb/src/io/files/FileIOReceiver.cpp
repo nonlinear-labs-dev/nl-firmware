@@ -1,5 +1,8 @@
 #include <io/files/FileIOReceiver.h>
 #include <nltools/logging/Log.h>
+#include <giomm/cancellable.h>
+#include <giomm/file.h>
+#include <giomm/bufferedinputstream.h>
 
 FileIOReceiver::FileIOReceiver(const char *path, size_t blockSize)
     : m_cancel(Gio::Cancellable::create())

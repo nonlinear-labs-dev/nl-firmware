@@ -7,6 +7,7 @@
 #include <presets/EditBuffer.h>
 #include <groups/MacroControlsGroup.h>
 #include <presets/recall/RecallParameter.h>
+#include <parameters/scale-converters/ScaleConverter.h>
 
 RecallMCPositionLabel::RecallMCPositionLabel(Rect pos)
     : Label(pos)

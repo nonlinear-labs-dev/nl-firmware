@@ -3,6 +3,7 @@
 #include "MidiInput.h"
 #include <giomm.h>
 #include <memory>
+#include <alsa/asoundlib.h>
 
 class HighPriorityTask;
 

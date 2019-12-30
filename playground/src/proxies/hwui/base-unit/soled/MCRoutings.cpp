@@ -7,6 +7,7 @@
 #include "parameters/PhysicalControlParameter.h"
 #include <groups/HardwareSourcesGroup.h>
 #include <proxies/hwui/HWUI.h>
+#include <math.h>
 
 MCRoutings::MCRoutings(const ParameterId &ribbonParamID, const Rect &pos)
     : super(pos)
@@ -82,12 +83,12 @@ void MCRoutings::drawRoutingParameters(FrameBuffer &fb, MacroControlMappingGroup
 void MCRoutings::drawRoutingParameter(FrameBuffer &fb, MacroControlMappingGroup::tModRoutingParam param, int yPos)
 {
   auto pos = getPosition();
-  int val = ceil(abs(param->getControlPositionValue()) * 5);
+  auto val = std::ceil(abs(param->getControlPositionValue()) * 5);
   int height = getPosition().getHeight() / 4;
 
   yPos += height / 2;
   fb.setPixel(pos.getX(), yPos);
 
   if(val > 0)
-    fb.drawHorizontalLine(pos.getX() + 2, yPos, (val - 1));
+    fb.drawHorizontalLine(pos.getX() + 2, yPos, static_cast<int>(val - 1));
 }
