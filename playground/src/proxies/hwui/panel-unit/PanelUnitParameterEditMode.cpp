@@ -368,7 +368,6 @@ bool PanelUnitParameterEditMode::setParameterSelection(const ParameterId &audioI
     DebugLevel::gassy("setParameterSelection - state == true");
 
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
     if(auto p = editBuffer->findParameterByID(audioID))
     {
