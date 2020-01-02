@@ -34,6 +34,7 @@ void AudioEngineProxy::toggleSuppressParameterChanges(UNDO::Transaction *transac
 }
 
 constexpr auto cUnisonVoicesParameterNumber = 249;
+constexpr auto cMonoEnableParameterNumber = 364;
 
 template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, EditBuffer *editBuffer)
 {
@@ -107,7 +108,7 @@ void forEachParameterInGroup(EditBuffer *eb, const GroupId &group, tParameterArr
 
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
 {
-  nltools::msg::SinglePresetMessage msg {};
+  nltools::msg::SinglePresetMessage msg{};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
 
@@ -138,6 +139,12 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
           auto &unisonVoices = msg.unisonVoices;
           unisonVoices.id = cUnisonVoicesParameterNumber;
           unisonVoices.controlPosition = p->getControlPositionValue();
+        }
+        else if(p->getID().getNumber() == cMonoEnableParameterNumber)
+        {
+          auto &monoEnable = msg.monoEnable;
+          monoEnable.id = cMonoEnableParameterNumber;
+          monoEnable.controlPosition = p->getControlPositionValue();
         }
         else
         {
@@ -178,7 +185,8 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
         }
         else
         {
-          if(p->getID().getNumber() != cUnisonVoicesParameterNumber)
+          if(p->getID().getNumber() != cUnisonVoicesParameterNumber
+             && p->getID().getNumber() != cMonoEnableParameterNumber)
           {
             auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
             unModulateable.id = p->getID().getNumber();
@@ -195,7 +203,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
 
 nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage()
 {
-  nltools::msg::SplitPresetMessage msg {};
+  nltools::msg::SplitPresetMessage msg{};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
 
@@ -210,11 +218,20 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
+    auto vgIndex = static_cast<int>(vg);
+
     if(auto voicesParameter = editBuffer->findParameterByID({ cUnisonVoicesParameterNumber, vg }))
     {
-      auto &unisonVoices = msg.unisonVoices[static_cast<int>(vg)];
+      auto &unisonVoices = msg.unisonVoices[vgIndex];
       unisonVoices.id = cUnisonVoicesParameterNumber;
       unisonVoices.controlPosition = voicesParameter->getControlPositionValue();
+    }
+
+    if(auto monoParameter = editBuffer->findParameterByID({ cMonoEnableParameterNumber, vg }))
+    {
+      auto &monoEnable = msg.monoEnable[vgIndex];
+      monoEnable.id = cMonoEnableParameterNumber;
+      monoEnable.controlPosition = monoParameter->getControlPositionValue();
     }
   }
 
@@ -223,7 +240,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 
 nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage()
 {
-  nltools::msg::LayerPresetMessage msg {};
+  nltools::msg::LayerPresetMessage msg{};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
   fillDualMessage(msg, editBuffer);
@@ -233,6 +250,13 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
     auto &unisonVoices = msg.unisonVoices;
     unisonVoices.id = cUnisonVoicesParameterNumber;
     unisonVoices.controlPosition = unisonVoicesParameter->getControlPositionValue();
+  }
+
+  if(auto monoParameter = editBuffer->findParameterByID({ cMonoEnableParameterNumber, VoiceGroup::I }))
+  {
+    auto &monoEnable = msg.monoEnable;
+    monoEnable.id = cMonoEnableParameterNumber;
+    monoEnable.controlPosition = monoParameter->getControlPositionValue();
   }
 
   return msg;
