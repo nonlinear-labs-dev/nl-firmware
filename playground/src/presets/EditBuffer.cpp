@@ -856,7 +856,7 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
     if(MonoGroup::isMonoParameter(parameter))
       return false;
 
-    return selectedIsNotGlobal;
+    return GlobalParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
   }
 
   if(type == SoundType::Split)
