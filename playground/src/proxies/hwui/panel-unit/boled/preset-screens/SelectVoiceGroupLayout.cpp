@@ -7,8 +7,9 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 
-SelectVoiceGroupLayout::SelectVoiceGroupLayout()
+SelectVoiceGroupLayout::SelectVoiceGroupLayout(PresetManagerLayout *parent)
     : DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
+    , m_parent{ parent }
 {
   addControl(new Label("Load Part I or II from Preset?", { 0, 0, 256, 64 }));
   addControl(new Button("I", Buttons::BUTTON_B));
@@ -26,12 +27,18 @@ bool SelectVoiceGroupLayout::onButton(Buttons i, bool down, ::ButtonModifiers mo
     switch(i)
     {
       case Buttons::BUTTON_B:
-        eb->undoableLoadSelectedPresetPartIntoPart(VoiceGroup::I, currentVG);
-        hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+        m_parent->animateSelectedPreset([=]() {
+          eb->undoableLoadSelectedPresetPartIntoPart(VoiceGroup::I, currentVG);
+          hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+        });
+        hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
         return true;
       case Buttons::BUTTON_C:
-        eb->undoableLoadSelectedPresetPartIntoPart(VoiceGroup::II, currentVG);
-        hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+        m_parent->animateSelectedPreset([=]() {
+          eb->undoableLoadSelectedPresetPartIntoPart(VoiceGroup::II, currentVG);
+          hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+        });
+        hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
         return true;
     }
   }
