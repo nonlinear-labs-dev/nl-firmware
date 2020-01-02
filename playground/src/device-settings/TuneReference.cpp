@@ -7,13 +7,13 @@
 
 TuneReference::TuneReference(Settings& parent)
     : Setting(parent)
-    , m_value(nullptr, ScaleConverter::get<LinearHerzScaleConverter>(), 0, 80, 800)
+    , m_value(nullptr, ScaleConverter::get<LinearHerzScaleConverter>(), 0.5, 80, 800)
 {
 }
 
 void TuneReference::load(const Glib::ustring& text)
 {
-  m_value.setRawValue(Initiator::EXPLICIT_OTHER, std::stof(text));
+  m_value.setRawValue(Initiator::EXPLICIT_OTHER, std::stod(text));
 }
 
 Glib::ustring TuneReference::save() const

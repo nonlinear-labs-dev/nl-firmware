@@ -52,12 +52,12 @@ namespace DescriptiveLayouts
   ENUM(EventSinks, uint8_t, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
        SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail, SwitchToButtonDDetail,
-       SwitchToMCModRangeDetail, SwitchToMCAmtDetail, SelectPresetForVoiceGroup, IncMCSel, DecMCSel, IncMCAmt, DecMCAmt,
+       SwitchToMCModRangeDetail, SwitchToMCAmtDetail, IncMCSel, DecMCSel, IncMCAmt, DecMCAmt,
        IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu, IncModulationCarousel, DecModulationCarousel,
        ToggleVoiceGroup, ToggleVoiceGroupWithParameterSelection, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
        DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter, SwitchToVoicesDetail,
-       OpenMonoParameterScreen, OpenParamsScreen,
+       OpenMonoParameterScreen, OpenPartScreen,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Left, Right, Up, Down, IncParam, DecParam, Commit);

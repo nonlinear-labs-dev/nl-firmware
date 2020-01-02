@@ -5,13 +5,15 @@
 #include <presets/PresetManager.h>
 
 UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup* group, VoiceGroup vg)
-    : Parameter(group, ParameterId { 249, vg },
-                ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23)
+    : UnmodulateableUnisonParameter(group, ParameterId{ 249, vg },
+                                    ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23)
 {
 }
 
 void UnisonVoicesParameter::updateScaling(SoundType type)
 {
+  auto value = getValue().getRawValue();
+
   if(type == SoundType::Single)
   {
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>());
@@ -24,6 +26,8 @@ void UnisonVoicesParameter::updateScaling(SoundType type)
     getValue().setCoarseDenominator(11);
     getValue().setFineDenominator(11);
   }
+
+  getValue().setRawValue(Initiator::INDIRECT, value);
 
   onChange();
 }

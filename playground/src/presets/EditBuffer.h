@@ -38,6 +38,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset);
   void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
+  void undoableLoadPresetPartIntoPart(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup copyTo);
 
   void undoableLoadSelectedPreset(VoiceGroup loadInto);
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
@@ -95,7 +96,11 @@ class EditBuffer : public ParameterDualGroupSet
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();
 
- private:
+  static bool isDualParameterForSoundType(const Parameter* parameter, SoundType type);
+
+  void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group);
+
+private:
   Glib::ustring getEditBufferName() const;
   bool anyParameterChanged(VoiceGroup vg) const;
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
@@ -147,4 +152,6 @@ class EditBuffer : public ParameterDualGroupSet
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
   void initUnisonVoices();
+
+  void initToFX(UNDO::Transaction *transaction);
 };

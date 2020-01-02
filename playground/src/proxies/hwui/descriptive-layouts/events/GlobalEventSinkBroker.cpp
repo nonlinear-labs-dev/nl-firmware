@@ -123,10 +123,6 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::SwitchToButtonCDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonC); });
     registerEvent(EventSinks::SwitchToButtonDDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonD); });
     registerEvent(EventSinks::SwitchToVoicesDetail, [hwui] { hwui->setUiModeDetail(UIDetail::Voices); });
-    registerEvent(EventSinks::SelectPresetForVoiceGroup, [hwui] {
-      hwui->setUiModeDetail(UIDetail::SoundSelectPresetForVoiceGroup);
-      hwui->getPanelUnit().getEditPanel().getBoled().bruteForce();
-    });
 
     registerEvent(EventSinks::ToggleDirectLoad, [] {
       auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -243,7 +239,7 @@ namespace DescriptiveLayouts
       eb->undoableSelectParameter({ 364, vg });
     });
 
-    registerEvent(EventSinks::OpenParamsScreen, [hwui, eb]() {
+    registerEvent(EventSinks::OpenPartScreen, [hwui, eb]() {
       if(eb->getType() != SoundType::Split)
         eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
       else

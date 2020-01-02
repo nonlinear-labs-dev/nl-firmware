@@ -240,30 +240,30 @@ namespace nltools
     {
       struct Parameter
       {
-        uint16_t id {};
+        uint16_t id{};
         double controlPosition = 0;
       };
 
       struct RibbonParameter : Parameter
       {
-        RibbonTouchBehaviour ribbonTouchBehaviour {};
-        RibbonReturnMode ribbonReturnMode {};
+        RibbonTouchBehaviour ribbonTouchBehaviour{};
+        RibbonReturnMode ribbonReturnMode{};
       };
 
       struct PedalParameter : Parameter
       {
-        PedalModes pedalMode {};
-        ReturnMode returnMode {};
+        PedalModes pedalMode{};
+        ReturnMode returnMode{};
       };
 
       struct AftertouchParameter : Parameter
       {
-        ReturnMode returnMode {};
+        ReturnMode returnMode{};
       };
 
       struct BenderParameter : Parameter
       {
-        ReturnMode returnMode {};
+        ReturnMode returnMode{};
       };
 
       struct MacroParameter : Parameter
@@ -308,8 +308,8 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<ParameterGroups::ModulateableParameter, 101> modulateables;
-      std::array<ParameterGroups::UnmodulateableParameter, 96> unmodulateables;
+      std::array<ParameterGroups::ModulateableParameter, 103> modulateables;
+      std::array<ParameterGroups::UnmodulateableParameter, 94> unmodulateables;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
@@ -324,8 +324,8 @@ namespace nltools
         return MessageType::SplitPreset;
       }
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 96>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 103>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnmodulateableParameter, 2> unisonVoices;
 
@@ -352,8 +352,8 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 96>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 103>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
 
       ParameterGroups::UnmodulateableParameter unisonVoices;
 

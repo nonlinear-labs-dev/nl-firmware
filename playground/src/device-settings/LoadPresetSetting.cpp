@@ -18,7 +18,7 @@ const std::vector<ustring> &LoadModeSetting::enumToString() const
 
 const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
 {
-  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select Preset", "Direct Load" };
+  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select only", "Direct Load" };
   return ret;
 }
 
@@ -26,7 +26,7 @@ bool LoadModeSetting::set(tEnum m)
 {
   bool ret = super::set(m);
 
-  if(m == LoadMode::DirectLoad && !getSettings()->isLoading())
+  if(m == LoadMode::DirectLoad && !getSettings()->isLoading() && !m_inToggle)
   {
     Application::get().getPresetManager()->doAutoLoadSelectedPreset();
   }
@@ -36,6 +36,8 @@ bool LoadModeSetting::set(tEnum m)
 
 void LoadModeSetting::cycleForSoundType(SoundType type)
 {
+  m_inToggle = true;
+
   if(type == SoundType::Single)
   {
     switch(get())
@@ -64,4 +66,20 @@ void LoadModeSetting::cycleForSoundType(SoundType type)
         break;
     }
   }
+
+  m_inToggle = false;
+}
+
+Glib::ustring LoadModeSetting::getDisplayStringForVoiceGroup(VoiceGroup vg) const
+{
+  switch(get())
+  {
+    case LoadMode::Select:
+    case LoadMode::DirectLoad:
+      return getDisplayString();
+    case LoadMode::LoadToPart:
+      return UNDO::StringTools::buildString("Load to ", toString(vg));
+  }
+
+  return Glib::ustring();
 }

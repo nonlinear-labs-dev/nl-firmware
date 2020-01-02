@@ -4,10 +4,13 @@
 
 class MonoGroup : public ParameterGroup
 {
-public:
-  MonoGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+ public:
+  MonoGroup(ParameterDualGroupSet* parent, VoiceGroup voicegroup);
   void init();
 
   static bool isMonoParameter(const ParameterId& id);
   static bool isMonoParameter(const Parameter* param);
+
+  static bool isMonoGlideParameter(const Parameter* parameter);
+  static bool isMonoGlideParameter(const ParameterId& id);
 };

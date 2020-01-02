@@ -265,7 +265,7 @@ void C15Synth::onEditSmoothingTimeMessage(const nltools::msg::Setting::EditSmoot
   m_dsp->onSettingEditTime(msg.m_time);
 }
 
-void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference& msg)
+void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference &msg)
 {
-  #warning "TODO"
+  m_dsp->onSettingTuneReference(static_cast<float>(msg.m_tuneReference));
 }

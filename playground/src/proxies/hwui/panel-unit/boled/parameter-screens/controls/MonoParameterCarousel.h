@@ -1,22 +1,11 @@
 #pragma once
+#include "SpecialParameterCarousel.h"
 
-#include <nltools/Types.h>
-#include <ParameterId.h>
-#include "ParameterCarousel.h"
-#include <sigc++/connection.h>
-
-class MonoParameterCarousel : public ParameterCarousel
+class MonoParameterCarousel : public SpecialParameterCarousel
 {
  public:
-  explicit MonoParameterCarousel(const Rect &rect);
-  ~MonoParameterCarousel() override;
-  void setup(Parameter *selectedParameter) override;
+  using SpecialParameterCarousel::SpecialParameterCarousel;
 
  private:
-  static std::vector<ParameterId> getParameterIdsForMode(SoundType type);
-  void setupMonoControls(Parameter *parameter);
-  void rebuild();
-
-  sigc::connection m_editbufferConnection;
-  sigc::connection m_voiceGroupConnection;
+  std::vector<ParameterId> getParameterIdsForMode(SoundType type) override;
 };

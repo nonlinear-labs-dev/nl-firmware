@@ -2,10 +2,10 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2019-12-19, 15:44
-    @version	1.7B-2
+    @date       2019-12-30, 15:47
+    @version	1.7B-3
     @author     M. Seeber
-    @brief      descriptors for all parameter-related details
+    @brief  	descriptors for all parameter-related details
     @todo
 *******************************************************************************/
 
@@ -198,7 +198,6 @@ namespace C15
       Unison_Detune,
       Voice_Grp_Volume,
       Voice_Grp_Tune,
-      Voice_Grp_To_FX,
       Mono_Grp_Glide,
       Env_A_Att,
       Env_A_Dec_1,
@@ -225,6 +224,7 @@ namespace C15
       Osc_A_PM_Self,
       Osc_A_PM_B,
       Osc_A_PM_FB,
+      Osc_A_Phase,
       Shp_A_Drive,
       Shp_A_Mix,
       Shp_A_FB_Mix,
@@ -234,6 +234,7 @@ namespace C15
       Osc_B_PM_Self,
       Osc_B_PM_A,
       Osc_B_PM_FB,
+      Osc_B_Phase,
       Shp_B_Drive,
       Shp_B_Mix,
       Shp_B_FB_Mix,
@@ -270,6 +271,7 @@ namespace C15
       Out_Mix_SVF_Lvl,
       Out_Mix_Drive,
       Out_Mix_Lvl,
+      Out_Mix_To_FX,
       Flanger_Time_Mod,
       Flanger_Rate,
       Flanger_Time,
@@ -340,7 +342,6 @@ namespace C15
       Osc_A_PM_B_Env_B,
       Osc_A_PM_B_Shp,
       Osc_A_PM_FB_Env_C,
-      Osc_A_Phase,
       Osc_A_Chirp,
       Shp_A_Drive_Env_A,
       Shp_A_Fold,
@@ -354,7 +355,6 @@ namespace C15
       Osc_B_PM_A_Env_A,
       Osc_B_PM_A_Shp,
       Osc_B_PM_FB_Env_C,
-      Osc_B_Phase,
       Osc_B_Chirp,
       Shp_B_Drive_Env_B,
       Shp_B_Fold,
@@ -455,7 +455,6 @@ namespace C15
       Env_A_Lvl_KT,
       Env_A_Time_KT,
       Env_A_Att_Curve,
-      Env_A_Split,
       Env_B_Lvl_Vel,
       Env_B_Att_Vel,
       Env_B_Dec_1_Vel,
@@ -464,7 +463,6 @@ namespace C15
       Env_B_Lvl_KT,
       Env_B_Time_KT,
       Env_B_Att_Curve,
-      Env_B_Split,
       Env_C_Lvl_Vel,
       Env_C_Att_Vel,
       Env_C_Rel_Vel,
@@ -487,13 +485,14 @@ namespace C15
     {
       Unison_Pan,
       Voice_Grp_Volume,
-      Voice_Grp_To_FX,
       Env_A_BP,
       Env_A_Sus,
       Env_A_Gain,
+      Env_A_Split,
       Env_B_BP,
       Env_B_Sus,
       Env_B_Gain,
+      Env_B_Split,
       Env_C_BP,
       Env_C_Sus,
       Osc_A_PM_Self,
@@ -545,6 +544,7 @@ namespace C15
       Out_Mix_Asym,
       Out_Mix_Lvl,
       Out_Mix_Key_Pan,
+      Out_Mix_To_FX,
       _LENGTH_
     };
 

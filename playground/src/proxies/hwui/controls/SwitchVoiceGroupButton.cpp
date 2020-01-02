@@ -36,35 +36,10 @@ void SwitchVoiceGroupButton::rebuild()
   auto selected = eb->getSelected();
   auto selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  switch(ebType)
-  {
-    case SoundType::Layer:
-    {
-      if(MonoGroup::isMonoParameter(selected) && !dynamic_cast<const MonoGlideTimeParameter*>(selected))
-      {
-        setText({ "", 0 });
-        return;
-      }
-    }
-    break;
-    case SoundType::Split:
-    {
-      if(dynamic_cast<SplitPointParameter*>(selected) != nullptr)
-      {
-        setText({ getTextFor(selectedVoiceGroup), 0 });
-        return;
-      }
-    }
-    break;
-    case SoundType::Single:
-    {
-      setText({ "", 0 });
-      return;
-    }
-    break;
-  }
-
-  setText({ getTextFor(selected->getVoiceGroup()), 0 });
+  if(EditBuffer::isDualParameterForSoundType(selected, ebType))
+    setText({ getTextFor(selectedVoiceGroup), 0 });
+  else
+    setText({ "", 0 });
 }
 
 void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected, Parameter* newSelection)

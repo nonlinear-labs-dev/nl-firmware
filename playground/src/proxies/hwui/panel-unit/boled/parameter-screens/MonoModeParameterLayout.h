@@ -29,6 +29,4 @@ class MonoModeModulateableParameterLayout : public ModulateableParameterSelectLa
   Carousel *createCarousel(const Rect &rect) override;
 
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
-
-  void init() override;
 };

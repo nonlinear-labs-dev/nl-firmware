@@ -20,7 +20,6 @@ EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
 
 EditBufferSerializer::~EditBufferSerializer()
 {
-  m_editBuffer->initUnisonVoices();
 }
 
 Glib::ustring EditBufferSerializer::getTagName()
@@ -37,7 +36,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
     for(auto group : m_editBuffer->getParameterGroups(vg))
     {
       ParameterGroupSerializer s(group);
-      s.write(writer, Attribute { "id", group->getID().toString() });
+      s.write(writer, Attribute{ "id", group->getID().toString() });
     }
   }
 
@@ -62,7 +61,7 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
 {
   SplashLayout::addStatus("Reading Edit Buffer");
 
-  reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable { m_editBuffer->m_type = to<SoundType>(text); });
+  reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable { m_editBuffer->undoableSetType(reader.getTransaction(), to<SoundType>(text)); });
 
   reader.onTag(ParameterGroupSerializer::getTagName(), [&](auto attr) -> ParameterGroupSerializer * {
     auto id = attr.get("id");

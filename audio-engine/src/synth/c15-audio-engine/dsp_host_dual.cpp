@@ -797,6 +797,20 @@ void dsp_host_dual::onSettingGlitchSuppr(const bool _enabled)
   }
 }
 
+void dsp_host_dual::onSettingTuneReference(const float _position)
+{
+  // inconvenient clamping of odd position range ...
+  if(m_reference.update_position(_position < 0.0f ? 0.0f : _position > 1.0f ? 1.0f : _position))
+  {
+    m_reference.m_scaled = scale(m_reference.m_scaling, m_reference.m_position);
+    m_global.update_tone_frequency(m_reference.m_scaled);
+    if(LOG_SETTINGS)
+    {
+      nltools::Log::info("tune_reference:", _position);
+    }
+  }
+}
+
 void dsp_host_dual::onSettingInitialSinglePreset()
 {
   if(LOG_RECALL)
@@ -1068,34 +1082,16 @@ void dsp_host_dual::keyDown(const float _vel)
     }
     for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
     {
-      m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel);
+      if(m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel))
+      {
+        // mono legato
+        m_mono[key->m_localIndex].keyDown(_vel);
+      }
       if(LOG_KEYS_POLY)
       {
         nltools::Log::info("key_down_poly(group:", key->m_localIndex, "voice:", key->m_voiceId,
                            ", unisonIndex:", key->m_unisonIndex, ", stolen:", key->m_stolen, ", tune:", keyTune,
                            ", velocity:", _vel, ")");
-      }
-    }
-    const uint32_t index = m_alloc.m_traversal.first()->m_localIndex;
-    if(m_layer_mode == LayerMode::Split)
-    {
-      // only in split mode, the mono flanger envelope should be started in corresponding mono section
-      // flanger legato
-      if(m_poly[index].m_key_active == 0)
-      {
-        m_mono[index].keyDown(_vel);
-      }
-    }
-    else
-    {
-      // in single and layer mode, both mono flanger envelopes should be started
-      // flanger legato
-      for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-      {
-        if(m_poly[layerId].m_key_active == 0)
-        {
-          m_mono[layerId].keyDown(_vel);
-        }
       }
     }
   }
@@ -1165,7 +1161,7 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
       result = (m_convert.eval_level(_value * _scl.m_factor) * _scl.m_offset) - _scl.m_offset;
       break;
     case C15::Properties::SmootherScale::Expon_Mix_Drive:
-      result = _scl.m_offset + (_scl.m_factor * m_convert.eval_level(_value));
+      result = _scl.m_offset * m_convert.eval_level(_scl.m_factor * _value);
       break;
     case C15::Properties::SmootherScale::Expon_Env_Time:
       result = m_convert.eval_time((_value * _scl.m_factor * 104.0781f) + _scl.m_offset);

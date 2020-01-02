@@ -26,7 +26,7 @@
 inline constexpr bool LOG_MISSING = true;
 inline constexpr bool LOG_FAIL = true;
 inline constexpr bool LOG_INIT = true;
-inline constexpr bool LOG_MIDI = false;
+inline constexpr bool LOG_MIDI = true;
 inline constexpr bool LOG_MIDI_DETAIL = true;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = true;
@@ -76,6 +76,7 @@ class dsp_host_dual
   void onSettingTransitionTime(const float _position);
   void onSettingNoteShift(const float _shift);
   void onSettingGlitchSuppr(const bool _enabled);
+  void onSettingTuneReference(const float _position);
   void onSettingInitialSinglePreset();
   uint32_t onSettingToneToggle();
   // dsp-related

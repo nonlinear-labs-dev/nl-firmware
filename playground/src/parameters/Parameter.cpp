@@ -304,12 +304,12 @@ void Parameter::invalidate()
 
 Glib::ustring Parameter::getLongName() const
 {
-  return ParameterDB::get().getLongName(getID().getNumber());
+  return ParameterDB::get().getLongName(getID());
 }
 
 Glib::ustring Parameter::getShortName() const
 {
-  return ParameterDB::get().getShortName(getID().getNumber());
+  return ParameterDB::get().getShortName(getID());
 }
 
 Glib::ustring Parameter::getMiniParameterEditorName() const
@@ -451,6 +451,12 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
     case 246:
     case 244:
     case 245:
+    case 348:
+    case 350:
+    case 352:
+    case 354:
+    case 362:
+    case 389:
       return VisualizationStyle::Dot;
   }
   return VisualizationStyle::Bar;

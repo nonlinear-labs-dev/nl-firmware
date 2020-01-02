@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       ae_poly_section.cpp
     @date
-    @version    1.7-0
+    @version    1.7-3
     @author     M. Seeber
     @brief      new container for all polyphonic parameters and dsp
     @todo
@@ -98,10 +98,10 @@ void PolySection::render_audio(const float _mute)
   m_z_self->m_comb = m_combfilter.m_out;
   m_z_self->m_svf = m_svfilter.m_out;
   // eval sends
-  float send = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_To_FX);
+  float send = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX);
   m_send_self_l = m_outputmixer.m_out_l * send;
   m_send_self_r = m_outputmixer.m_out_r * send;
-  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_To_FX);
+  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX);
   m_send_other_l = m_outputmixer.m_out_l * send;
   m_send_other_r = m_outputmixer.m_out_r * send;
 }
@@ -144,9 +144,10 @@ void PolySection::render_slow(const float _masterTune)
   }
 }
 
-void PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
+bool PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, const bool _stolen, const float _tune,
                           const float _vel)
 {
+  const bool retrigger_mono = m_key_active == 0;
   const float noteShift = m_shift[_voiceId] = m_note_shift,
               unisonDetune = m_smoothers.get(C15::Smoothers::Poly_Slow::Unison_Detune),
               masterTune = m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune);
@@ -164,6 +165,7 @@ void PolySection::keyDown(const uint32_t _voiceId, const uint32_t _unisonIndex, 
   }
   startEnvelopes(_voiceId, notePitch, _vel);
   m_key_active++;
+  return retrigger_mono;
 }
 
 void PolySection::keyUp(const uint32_t _voiceId, const uint32_t _unisonIndex, const float _tune, const float _vel)
@@ -589,15 +591,15 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Time_KT) * _pitch;
   levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Vel) * _vel;
-  decay1Vel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_1_Vel) * _vel;
-  decay2Vel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_2_Vel) * _vel;
+  decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_1_Vel) * _vel;
+  decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_KT) * _pitch;
   peak = std::min(m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT), env_clip_peak);
   m_env_a.m_levelFactor[_voiceId] = peak;
   m_env_a.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
-  m_env_a.setSplitValue(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Split));
+  m_env_a.setSplitValue(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Split));
   m_env_a.setAttackCurve(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Curve));
   m_env_a.setPeakLevel(_voiceId, peak);
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Att) * m_env_a.m_timeFactor[_voiceId][0];
@@ -615,15 +617,15 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Time_KT) * _pitch;
   levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Vel) * _vel;
-  decay1Vel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_1_Vel) * _vel;
-  decay2Vel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_2_Vel) * _vel;
+  decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_1_Vel) * _vel;
+  decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_KT) * _pitch;
   peak = std::min(m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT), env_clip_peak);
   m_env_b.m_levelFactor[_voiceId] = peak;
   m_env_b.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
-  m_env_b.setSplitValue(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Split));
+  m_env_b.setSplitValue(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Split));
   m_env_b.setAttackCurve(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Curve));
   m_env_b.setPeakLevel(_voiceId, peak);
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Att) * m_env_b.m_timeFactor[_voiceId][0];
@@ -725,12 +727,14 @@ void PolySection::updateEnvLevels(const uint32_t _voiceId)
 {
   float peak, dest;
   // env a
+  m_env_a.setSplitValue(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Split));
   peak = m_env_a.m_levelFactor[_voiceId];
   dest = peak * m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_BP);
   m_env_a.setSegmentDest(_voiceId, 2, true, dest);
   dest = peak * m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Sus);
   m_env_a.setSegmentDest(_voiceId, 3, true, dest);
   // env b
+  m_env_b.setSplitValue(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Split));
   peak = m_env_b.m_levelFactor[_voiceId];
   dest = peak * m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_BP);
   m_env_b.setSegmentDest(_voiceId, 2, true, dest);
