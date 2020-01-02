@@ -309,11 +309,14 @@ namespace nltools
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
       std::array<ParameterGroups::ModulateableParameter, 103> modulateables;
-      std::array<ParameterGroups::UnmodulateableParameter, 94> unmodulateables;
+      std::array<ParameterGroups::UnmodulateableParameter, 93> unmodulateables;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+
       ParameterGroups::UnmodulateableParameter unisonVoices;
+      ParameterGroups::UnmodulateableParameter monoEnable;
+
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
 
@@ -325,9 +328,10 @@ namespace nltools
       }
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 103>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 93>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnmodulateableParameter, 2> unisonVoices;
+      std::array<ParameterGroups::UnmodulateableParameter, 2> monoEnable;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
@@ -353,9 +357,10 @@ namespace nltools
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 103>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 93>, 2> unmodulateables;
 
       ParameterGroups::UnmodulateableParameter unisonVoices;
+      ParameterGroups::UnmodulateableParameter monoEnable;
 
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
