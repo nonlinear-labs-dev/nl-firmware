@@ -63,6 +63,8 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   sigc::connection m_paramConnection;
 
   bool handleMCRecall(Buttons i, bool down);
+
+  void installModulationCarousel(const Mode &mode);
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2

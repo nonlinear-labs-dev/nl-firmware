@@ -128,6 +128,7 @@ void ModulateableParameterSelectLayout2::onModfiersChanged(ButtonModifiers modif
 void ModulateableParameterSelectLayout2::onCurrentParameterChanged(const Parameter *p)
 {
   fixModeIfNecessary(p);
+  installModulationCarousel(m_mode);
 }
 
 void ModulateableParameterSelectLayout2::fixModeIfNecessary(const Parameter *p)
@@ -397,7 +398,7 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       m_modeOverlay->addControl(new ModulationSourceLabel(Rect(0, 21, 55, 12), Font::Justification::Right));
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(57, 27, 17, 1)));
 
-      setCarousel(new ParameterCarousel(Rect(195, 0, 58, 62)));
+      setCarousel(createCarousel(Rect(195, 0, 58, 62)));
 
       m_modeOverlay->highlight<SelectedParameterValue>();
       m_modeOverlay->highlight<SelectedParameterBarSlider>();
@@ -468,7 +469,7 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(60, 27, 13, 1)));
       m_modeOverlay->addControl(new SelectedParamsMacroControlSlider(Rect(8, 25, 48, 4)));
 
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 1, 58, 62)));
+      installModulationCarousel(Mode::MacroControlSelection);
 
       m_modeOverlay->highlight<ModulationSourceLabel>();
       highlight<MCSelectButton>();
@@ -564,6 +565,21 @@ bool ModulateableParameterSelectLayout2::isModeOf(std::vector<ModulateableParame
       return true;
   }
   return false;
+}
+
+void ModulateableParameterSelectLayout2::installModulationCarousel(const Mode &mode)
+{
+  if(auto mod = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
+  {
+    if(mod->getModulationSource() != MacroControls::NONE && mode == Mode::MacroControlSelection)
+    {
+      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 1, 58, 62)));
+    }
+    else
+    {
+      setCarousel(createCarousel(Rect(195, 0, 58, 62)));
+    }
+  }
 }
 
 ModulateableParameterEditLayout2::ModulateableParameterEditLayout2()
