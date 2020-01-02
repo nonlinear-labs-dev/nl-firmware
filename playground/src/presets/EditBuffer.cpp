@@ -851,12 +851,12 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
   if(type == SoundType::Layer)
   {
     if(UnisonGroup::isUnisonParameter(parameter))
-      return !UnisonGroup::isUnisonVoicesParameter(parameter);
+      return false;
 
     if(MonoGroup::isMonoParameter(parameter))
-      return MonoGroup::isMonoGlideParameter(parameter);
+      return false;
 
-    return GlobalParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+    return selectedIsNotGlobal;
   }
 
   if(type == SoundType::Split)

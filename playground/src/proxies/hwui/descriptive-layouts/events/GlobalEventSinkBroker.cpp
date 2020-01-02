@@ -91,8 +91,13 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [eb]() {
-      auto scope = SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope();
-      Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
+      auto selected = eb->getSelected();
+      if(SwitchVoiceGroupButton::allowToggling(selected, eb))
+      {
+        auto scope = SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope();
+        Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
+      }
+
     });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() { Application::get().getHWUI()->toggleCurrentVoiceGroup(); });

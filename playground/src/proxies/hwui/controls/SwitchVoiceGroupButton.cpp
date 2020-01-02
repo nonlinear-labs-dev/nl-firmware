@@ -8,6 +8,7 @@
 #include <groups/MonoGroup.h>
 #include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 #include <proxies/hwui/HWUI.h>
+#include <groups/UnisonGroup.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)
@@ -59,9 +60,7 @@ std::unique_ptr<UNDO::TransactionCreationScope>
   auto eb = pm->getEditBuffer();
   auto selected = eb->getSelected();
 
-  auto hasCounterPart = selected->getVoiceGroup() != VoiceGroup::Global;
-
-  if(hasCounterPart)
+  if(allowToggling(selected, eb))
   {
     auto otherVG = selected->getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
     auto other = eb->findParameterByID({ selected->getID().getNumber(), otherVG });
@@ -72,4 +71,15 @@ std::unique_ptr<UNDO::TransactionCreationScope>
   {
     return UNDO::Scope::startTrashTransaction();
   }
+}
+
+bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const EditBuffer* editBuffer)
+{
+  auto hasCounterPart = selected->getVoiceGroup() != VoiceGroup::Global;
+  auto layerAndGroupAllowToggling
+      = ((editBuffer->getType() == SoundType::Layer)
+         && (!MonoGroup::isMonoParameter(selected) && !UnisonGroup::isUnisonParameter(selected)))
+      || (editBuffer->getType() != SoundType::Layer);
+
+  return hasCounterPart && layerAndGroupAllowToggling;
 }
