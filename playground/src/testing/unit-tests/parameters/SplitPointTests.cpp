@@ -1,3 +1,4 @@
+#include <parameters/scale-converters/dimension/SplitPointDimension.h>
 #include "testing/parameter/TestGroupSet.h"
 #include "testing/parameter/TestGroup.h"
 #include "testing/TestRootDocument.h"
@@ -18,16 +19,24 @@ TEST_CASE("Split Point Display Value")
   auto transScope = UNDO::Scope::startTrashTransaction();
   auto transaction = transScope->getTransaction();
 
-  parameter->stepCPFromHwui(transaction, 1, {});
+  parameter->setCPFromHwui(transaction, 0);
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "C1");
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "C#1");
+
+  parameter->setCPFromHwui(transaction, 0.5);
   REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "F#3");
   REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "G3");
 
-  parameter->stepCPFromHwui(transaction, 1, {});
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "G3");
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "G#3");
+  parameter->setCPFromHwui(transaction, 1);
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "B5");
+  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "C6");
+}
 
-
-  parameter->setCPFromHwui(transaction, 0.5);
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "F3");
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "F#3");
+TEST_CASE("Note to Display")
+{
+  REQUIRE(SplitPointDimension::stringizeNote(0) == "C1");
+  REQUIRE(SplitPointDimension::stringizeNote(1) == "C#1");
+  REQUIRE(SplitPointDimension::stringizeNote(60) == "C6");
+  REQUIRE(SplitPointDimension::stringizeNote(30) == "F#3");
+  REQUIRE(SplitPointDimension::stringizeNote(29) == "F3");
 }

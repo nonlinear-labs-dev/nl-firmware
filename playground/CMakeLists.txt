@@ -74,7 +74,7 @@ endforeach(lib)
 include_directories(src)
 include_directories(${PROJECT_BINARY_DIR}/src)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -Wno-deprecated-declarations --time")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -Wno-deprecated-declarations")
 
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
