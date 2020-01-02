@@ -11,7 +11,7 @@ namespace DescriptiveLayouts
     {
       const auto type = eb->getType();
       const auto typeStr = toString(type);
-      setValue({ typeStr, 0 });
+      setValue({ typeStr + " Sound", 0 });
     }
   };
 
