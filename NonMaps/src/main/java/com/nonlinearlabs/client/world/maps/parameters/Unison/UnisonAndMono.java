@@ -6,9 +6,9 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 
-public class Unison extends ParameterGroup {
+public class UnisonAndMono extends ParameterGroup {
 
-	public Unison(MapsLayout parent) {
+	public UnisonAndMono(MapsLayout parent) {
 		super(parent, "Unison");
 		addChild(new LabelModuleHeader(this) {
 			@Override
