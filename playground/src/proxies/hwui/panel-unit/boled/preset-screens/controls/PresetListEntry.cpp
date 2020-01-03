@@ -111,6 +111,10 @@ bool PresetListEntry::animationProgress()
     m_animationProgress = 0;
     doAnimationCallback();
   }
+  else
+  {
+    setDirty();
+  }
 
   return m_animationProgress != 0;
 }

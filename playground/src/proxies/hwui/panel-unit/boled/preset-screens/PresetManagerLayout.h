@@ -59,5 +59,5 @@ class PresetManagerLayout : public DFBLayout
 
   void loadSelectedPresetAccordingToLoadType();
 
-  static void openPartChooser();
+  void openPartChooser();
 };

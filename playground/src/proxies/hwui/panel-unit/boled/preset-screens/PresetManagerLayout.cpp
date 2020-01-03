@@ -321,7 +321,7 @@ void PresetManagerLayout::updateAutoLoadButton(const Setting *setting)
   {
     const auto *s = dynamic_cast<const LoadModeSetting *>(setting);
     auto selectedVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-    m_autoLoad->setText({s->getDisplayStringForVoiceGroup(selectedVG) });
+    m_autoLoad->setText({ s->getDisplayStringForVoiceGroup(selectedVG) });
   }
 }
 
@@ -370,14 +370,14 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
       switch(selPreset->getType())
       {
         case SoundType::Single:
-          eb->undoableLoadSelectedPreset(currentVoiceGroup);
+          animateSelectedPreset([=]() { eb->undoableLoadSelectedPreset(currentVoiceGroup); });
           break;
         case SoundType::Layer:
         case SoundType::Split:
           if(loadSetting->get() == LoadMode::LoadToPart)
             openPartChooser();
           else
-            eb->undoableLoadSelectedPreset(currentVoiceGroup);
+            animateSelectedPreset([=]() { eb->undoableLoadSelectedPreset(currentVoiceGroup); });
           break;
       }
     }
@@ -386,5 +386,6 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
 
 void PresetManagerLayout::openPartChooser()
 {
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new SelectVoiceGroupLayout());
+  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+  boled.setOverlay(new SelectVoiceGroupLayout(this));
 }
