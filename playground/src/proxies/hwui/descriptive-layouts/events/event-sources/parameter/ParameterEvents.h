@@ -1,5 +1,7 @@
 #pragma once
+
 #include "ParameterEvent.h"
+#include <proxies/hwui/HWUIEnums.h>
 
 namespace DescriptiveLayouts
 {

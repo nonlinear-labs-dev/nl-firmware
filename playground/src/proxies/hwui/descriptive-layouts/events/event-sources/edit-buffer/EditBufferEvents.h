@@ -7,12 +7,7 @@ namespace DescriptiveLayouts
   class EditBufferTypeStringEvent : public EditBufferEvent<DisplayString>
   {
    public:
-    void onChange(const EditBuffer *eb) override
-    {
-      const auto type = eb->getType();
-      const auto typeStr = toString(type);
-      setValue({ typeStr + " Sound", 0 });
-    }
+    void onChange(const EditBuffer *eb) override;
   };
 
   class EditBufferName : public EditBufferEvent<DisplayString>

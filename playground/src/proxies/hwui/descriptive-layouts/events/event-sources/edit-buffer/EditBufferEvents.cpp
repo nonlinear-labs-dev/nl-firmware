@@ -9,7 +9,7 @@ void DescriptiveLayouts::EditBufferTypeStringEvent::onChange(const EditBuffer *e
 {
   const auto type = eb->getType();
   const auto typeStr = toString(type);
-  setValue({ typeStr, 0 });
+  setValue({ typeStr + " Sound", 0 });
 }
 
 void DescriptiveLayouts::EditBufferName::onChange(const EditBuffer *eb)

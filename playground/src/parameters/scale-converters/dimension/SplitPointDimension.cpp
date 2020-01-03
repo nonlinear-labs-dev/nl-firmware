@@ -2,7 +2,7 @@
 #include <cmath>
 #include "SplitPointDimension.h"
 
-Glib::ustring SplitPointDimension::stringizeSplitPointDisplay(tControlPositionValue value, VoiceGroup seenFrom)
+std::string SplitPointDimension::stringizeSplitPointDisplay(tControlPositionValue value, VoiceGroup seenFrom)
 {
   int note = std::round(value * 59);
 
@@ -12,7 +12,7 @@ Glib::ustring SplitPointDimension::stringizeSplitPointDisplay(tControlPositionVa
   return stringizeNote(note);
 }
 
-Glib::ustring SplitPointDimension::stringizeNote(int note)
+std::string SplitPointDimension::stringizeNote(int note)
 {
   const std::array<const char *, SplitPointDimension::KeysPerOctave> keyLabels
       = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
@@ -23,13 +23,13 @@ Glib::ustring SplitPointDimension::stringizeNote(int note)
   return base + std::to_string(octave);
 }
 
-Glib::ustring SplitPointDimension::stringize(const tDisplayValue &displayValue) const
+std::string SplitPointDimension::stringize(const tDisplayValue &displayValue) const
 {
 #warning TODO
   return stringizeSplitPointDisplay(displayValue, VoiceGroup::I);
 }
 
-Glib::ustring SplitPointDimension::getStingizerJS() const
+std::string SplitPointDimension::getStingizerJS() const
 {
   return "formatNote(cpValue)";
 }

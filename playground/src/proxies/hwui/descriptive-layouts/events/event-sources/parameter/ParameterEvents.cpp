@@ -2,6 +2,7 @@
 #include <groups/ParameterGroup.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
 
 void DescriptiveLayouts::ParameterGroupNameEventSource::onSelectedParameterChanged(const Parameter *p)
