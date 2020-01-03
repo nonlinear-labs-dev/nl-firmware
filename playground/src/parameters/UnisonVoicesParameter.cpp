@@ -10,6 +10,16 @@ UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup* group, VoiceGroup v
 {
 }
 
+bool UnisonVoicesParameter::shouldWriteDocProperties(UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  auto ret = Parameter::shouldWriteDocProperties(knownRevision) || didScalingChange();
+
+  if(ret)
+    m_scalingChanged = false;
+
+  return ret;
+}
+
 void UnisonVoicesParameter::updateScaling(SoundType type)
 {
   auto value = getValue().getRawValue();
@@ -29,5 +39,11 @@ void UnisonVoicesParameter::updateScaling(SoundType type)
 
   getValue().setRawValue(Initiator::INDIRECT, value);
 
+  m_scalingChanged = true;
   onChange();
+}
+
+bool UnisonVoicesParameter::didScalingChange() const
+{
+  return m_scalingChanged;
 }
