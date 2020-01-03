@@ -31,7 +31,6 @@ class ParameterLayout2 : public DFBLayout
   virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   virtual bool onRotary(int inc, ButtonModifiers modifiers) override;
   virtual void setDefault();
-  Control *m_lock = nullptr;
   void handlePresetValueRecall();
   void copyFrom(Layout *src) override;
 
