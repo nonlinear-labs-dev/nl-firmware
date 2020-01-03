@@ -102,7 +102,15 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
 
     if(parameter != nullptr)
     {
-      if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
+      if(isSpecialCaseParameterForActivityOverview(parameter))
+      {
+        if(specialCaseParameterMatches(parameter))
+        {
+          states[(int) buttonId] = TwoStateLED::ON;
+          break;
+        }
+      }
+      else if(auto mc = dynamic_cast<MacroControlParameter*>(parameter))
       {
         if(!mc->getTargets().empty())
         {
@@ -122,6 +130,49 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
   }
 }
 
+bool PanelUnitPresetMode::specialCaseParameterMatches(Parameter* selParam)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  if(selParam)
+  {
+    switch(selParam->getID().getNumber())
+    {
+      //Env A/B Sustain
+      case 8:
+      {
+        auto splitLevel = eb->findParameterByID({ 332, selParam->getVoiceGroup() });
+        return splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0;
+      }
+      case 27:
+      {
+        auto splitLevel = eb->findParameterByID({ 338, selParam->getVoiceGroup() });
+        return splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0;
+      }
+      //Flanger Mix
+      case 223:
+      {
+        auto tremolo = eb->findParameterByID({ 389, selParam->getVoiceGroup() });
+        return tremolo->getControlPositionValue() > 0 || selParam->getControlPositionValue() != 0;
+      }
+      //Echo Mix
+      case 233:
+      {
+        auto echoSend = eb->findParameterByID({ 342, selParam->getVoiceGroup() });
+        return echoSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0;
+      }
+      //Reverb Mix
+      case 241:
+      {
+        auto reverbSend = eb->findParameterByID({ 344, selParam->getVoiceGroup() });
+        return reverbSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0;
+      }
+      default:
+        return false;
+    }
+  }
+  return false;
+}
+
 void PanelUnitPresetMode::applyStateToLeds(std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto& panelUnit = Application::get().getHWUI()->getPanelUnit();
@@ -129,6 +180,21 @@ void PanelUnitPresetMode::applyStateToLeds(std::array<TwoStateLED::LedState, num
   {
     panelUnit.getLED((Buttons) i)->setState(states[i]);
   }
+}
+
+bool PanelUnitPresetMode::isSpecialCaseParameterForActivityOverview(Parameter* selParam) const
+{
+  if(selParam)
+  {
+    for(auto id : { 8, 27, 223, 233, 241 })
+    {
+      if(id == selParam->getID().getNumber())
+      {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 PanelUnitSoundMode::PanelUnitSoundMode()
