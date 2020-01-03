@@ -13,7 +13,6 @@ namespace OptionDetail
     entry.set_short_name(s);
     entry.set_description(desc);
     ctx.add_entry(entry, dest);
- 
     return entry;
   }
 }
@@ -43,6 +42,15 @@ Options::Options(int &argc, char **&argv)
   pg.set_short_name('p');
   pg.set_description("Where to find the audioengine");
   mainGroup.add_entry(ae, m_audioengineHost);
+
+  auto heartBeatLog
+      = OptionDetail::createOption(mainGroup, "log-heart-beat", 'h', "log lpc heart beat to console", m_logHeartBeat);
+  auto rawLpcLog
+      = OptionDetail::createOption(mainGroup, "log-lpc-raw", 'l', "log raw lpc messages to console", m_logLpcRaw);
+  auto pgHost
+      = OptionDetail::createOption(mainGroup, "playground-host", 'p', "where to find the playground", m_playgroundHost);
+  auto aeHost = OptionDetail::createOption(mainGroup, "audioengine-host", 'a', "where to find the audio engine",
+                                           m_audioengineHost);
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
