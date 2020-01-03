@@ -11,11 +11,6 @@ class Name extends Label {
 	}
 
 	@Override
-	public boolean setText(String text) {
-		return super.setText(text);
-	}
-
-	@Override
 	protected TextAlign getTextAlignment() {
 		return TextAlign.LEFT;
 	}

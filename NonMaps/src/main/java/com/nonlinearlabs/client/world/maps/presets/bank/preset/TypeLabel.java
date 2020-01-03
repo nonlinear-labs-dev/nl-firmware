@@ -14,7 +14,7 @@ class TypeLabel extends Label {
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
-		setNonSize(15 + getWidthMargin(), getNonPosition().getHeight());
+		setNonSize(getBaseWidth() + getWidthMargin(), getNonPosition().getHeight());
 	}
 
 	@Override
@@ -40,5 +40,9 @@ class TypeLabel extends Label {
 	@Override
 	public double getLeftMargin() {
 		return 5;
+	}
+
+	private double getBaseWidth() {
+		return 15;
 	}
 }
