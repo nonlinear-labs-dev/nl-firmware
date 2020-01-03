@@ -5,6 +5,7 @@
 #include <libundo/undo/TransactionCreationScope.h>
 
 class Parameter;
+class EditBuffer;
 
 class SwitchVoiceGroupButton : public Button
 {
@@ -12,6 +13,7 @@ class SwitchVoiceGroupButton : public Button
   explicit SwitchVoiceGroupButton(Buttons pos);
 
   static std::unique_ptr<UNDO::TransactionCreationScope> createToggleVoiceGroupWithParameterHighlightScope();
+  static bool allowToggling(const Parameter* selected, const EditBuffer* editBuffer);
 
  private:
   static Glib::ustring getTextFor(VoiceGroup vg);

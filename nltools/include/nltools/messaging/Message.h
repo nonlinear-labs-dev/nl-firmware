@@ -296,6 +296,22 @@ namespace nltools
       struct SplitPoint : ModulateableParameter
       {
       };
+
+      struct UnisonGroup
+      {
+        ParameterGroups::UnmodulateableParameter unisonVoices;
+        ParameterGroups::ModulateableParameter detune;
+        ParameterGroups::UnmodulateableParameter phase;
+        ParameterGroups::UnmodulateableParameter pan;
+      };
+
+      struct MonoGroup
+      {
+        ParameterGroups::UnmodulateableParameter monoEnable;
+        ParameterGroups::UnmodulateableParameter legato;
+        ParameterGroups::UnmodulateableParameter priority;
+        ParameterGroups::ModulateableParameter glide;
+      };
     }
 
     struct SinglePresetMessage
@@ -308,14 +324,14 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<ParameterGroups::ModulateableParameter, 103> modulateables;
-      std::array<ParameterGroups::UnmodulateableParameter, 93> unmodulateables;
+      std::array<ParameterGroups::ModulateableParameter, 101> modulateables;
+      std::array<ParameterGroups::UnmodulateableParameter, 89> unmodulateables;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
 
-      ParameterGroups::UnmodulateableParameter unisonVoices;
-      ParameterGroups::UnmodulateableParameter monoEnable;
+      ParameterGroups::UnisonGroup unison;
+      ParameterGroups::MonoGroup mono;
 
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
@@ -327,11 +343,11 @@ namespace nltools
         return MessageType::SplitPreset;
       }
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 103>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 93>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 89>, 2> unmodulateables;
 
-      std::array<ParameterGroups::UnmodulateableParameter, 2> unisonVoices;
-      std::array<ParameterGroups::UnmodulateableParameter, 2> monoEnable;
+      std::array<ParameterGroups::UnisonGroup, 2> unison;
+      std::array<ParameterGroups::MonoGroup, 2> mono;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
@@ -356,11 +372,11 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 103>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 93>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 89>, 2> unmodulateables;
 
-      ParameterGroups::UnmodulateableParameter unisonVoices;
-      ParameterGroups::UnmodulateableParameter monoEnable;
+      ParameterGroups::UnisonGroup unison;
+      ParameterGroups::MonoGroup mono;
 
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };

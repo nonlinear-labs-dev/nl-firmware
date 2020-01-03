@@ -167,7 +167,8 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
       case Buttons::BUTTON_A:
         if(auto x = findControlOfType<SwitchVoiceGroupButton>())
         {
-          if(x->isVisible())
+          auto eb = Application::get().getPresetManager()->getEditBuffer();
+          if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(), eb))
           {
             auto scope = SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope();
             Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());

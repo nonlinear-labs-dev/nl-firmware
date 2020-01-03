@@ -2,6 +2,7 @@
 
 #include <nltools/messaging/Message.h>
 #include <parameters/messaging/ParameterMessageFactory.h>
+#include <groups/MonoGroup.h>
 #include "playground.h"
 
 namespace UNDO
@@ -44,4 +45,7 @@ class AudioEngineProxy
 
  private:
   bool m_suppressParamChanges = false;
+
+  static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
+  static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
 };
