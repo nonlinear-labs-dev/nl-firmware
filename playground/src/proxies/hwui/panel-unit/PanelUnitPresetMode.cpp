@@ -92,14 +92,10 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
 
     Parameter* parameter = nullptr;
 
-    try
-    {
-      parameter = editBuffer->findParameterByID({ i, vg });
-    }
-    catch(...)
-    {
+    parameter = editBuffer->findParameterByID({ i, vg });
+
+    if(!parameter)
       parameter = editBuffer->findParameterByID({ i, VoiceGroup::Global });
-    }
 
     if(parameter != nullptr)
     {
