@@ -22,6 +22,9 @@ PanelUnitPresetMode::PanelUnitPresetMode()
 
   Application::get().getPresetManager()->getEditBuffer()->onChange(
       mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds));
+
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds)));
 }
 
 PanelUnitPresetMode::~PanelUnitPresetMode()
@@ -37,7 +40,7 @@ void PanelUnitPresetMode::bruteForceUpdateLeds()
     if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
       return;
 
-    std::array<TwoStateLED::LedState, numLeds> states{ TwoStateLED::OFF };
+    std::array<TwoStateLED::LedState, numLeds> states { TwoStateLED::OFF };
 
     if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
       getMappings().forEachButton([&](Buttons buttonId, const std::list<int>& parameters) {
