@@ -27,6 +27,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 	private OverlayControl color;
 	private PresetNumber number;
 	private PresetName name;
+	private TypeLabel type;
 	private DropPosition dropPosition = DropPosition.NONE;
 
 	protected BeltPreset(PresetList parent, Preset mapsPreset) {
@@ -36,6 +37,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		color = addChild(new PresetColorTag(this));
 		number = addChild(new PresetNumber(this));
 		name = addChild(new PresetName(this));
+		type = addChild(new TypeLabel(this));
 		name.setFontHeightInMM(4.5);
 		number.setFontHeightInMM(4.5);
 	}
@@ -61,11 +63,15 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		super.doLayout(x, y, w, h);
 
 		double numberWidth = Millimeter.toPixels(10);
+		double typeWidth = Millimeter.toPixels(5);
 		double xSpace = Millimeter.toPixels(5);
 
 		color.doLayout(2, 0, 7, h);
 		number.doLayout(7, 0, numberWidth, h);
-		name.doLayout(numberWidth + xSpace, 0, w - (numberWidth + xSpace), h);
+
+		double nameWidth = w - (numberWidth + xSpace + typeWidth);
+		name.doLayout(numberWidth + xSpace, 0, nameWidth, h);
+		type.doLayout(numberWidth + xSpace + nameWidth, 0, typeWidth, h);
 	}
 
 	private boolean isInStoreMode() {

@@ -41,6 +41,7 @@ import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDial
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 	private String uuid = null;
 	private ColorTag tag = null;
+	private TypeLabel typeLabel = null;
 	private Name name = null;
 	private Number number = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
@@ -68,6 +69,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		tag = addChild(new ColorTag(this));
 		number = addChild(new Number(this, ""));
 		name = addChild(new Name(this, ""));
+		typeLabel = addChild(new TypeLabel(this, ""));
 
 		PresetSearch.get().searchActive.onChange(b -> {
 			boolean a = b == BooleanValues.on;
@@ -153,6 +155,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		String name = preset.getAttributes().getNamedItem("name").getNodeValue();
 		this.number.setText(NumberFormat.getFormat("#000").format(i));
 		this.name.setText(name);
+		this.typeLabel.updateType(this.type);
 
 		String typeStr = preset.getAttributes().getNamedItem("type").getNodeValue();
 		this.type = SoundType.valueOf(typeStr);
@@ -182,6 +185,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 				tag.getNonPosition().getDimension().setHeight(0);
 				number.getNonPosition().getDimension().setHeight(0);
 				name.getNonPosition().getDimension().setHeight(0);
+				typeLabel.getNonPosition().getDimension().setHeight(0);
 				getNonPosition().getDimension().setHeight(0);
 			}
 		}
@@ -190,7 +194,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
 		name.setNonSize(
-				parentsWidthFromFirstPass - number.getNonPosition().getWidth() - tag.getNonPosition().getWidth(),
+				parentsWidthFromFirstPass - number.getNonPosition().getWidth() - tag.getNonPosition().getWidth() - typeLabel.getNonPosition().getWidth(),
 				name.getNonPosition().getHeight());
 		setNonSize(parentsWidthFromFirstPass, Math.ceil(getNonPosition().getHeight()));
 	}
@@ -443,6 +447,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public String getUUID() {
 		return uuid;
+	}
+
+	public SoundType getType() {
+		return type;
 	}
 
 	@Override
