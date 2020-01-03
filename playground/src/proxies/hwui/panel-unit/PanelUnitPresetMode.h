@@ -26,8 +26,8 @@ class PanelUnitPresetMode : public PanelUnitParameterEditMode
   void letChangedButtonsBlink(Buttons buttonId, const std::list<int>& parameters,
                               std::array<TwoStateLED::LedState, numLeds>& states);
   void applyStateToLeds(std::array<TwoStateLED::LedState, numLeds>& states);
-  bool specialCaseParameterMatches(Parameter* selParam);
-  bool isSpecialCaseParameterForActivityOverview(Parameter* selParam) const;
+  std::pair<bool, bool> trySpecialCaseParameter(const Parameter* selParam) const;
+
 };
 
 class PanelUnitSoundMode : public PanelUnitPresetMode
