@@ -4,6 +4,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 Slider::Slider(Parameter *param, const Rect &rect)
     : super(rect)
@@ -15,10 +16,6 @@ Slider::Slider(Parameter *param, const Rect &rect)
 
 Slider::Slider(const Rect &rect)
     : Slider(nullptr, rect)
-{
-}
-
-Slider::~Slider()
 {
 }
 

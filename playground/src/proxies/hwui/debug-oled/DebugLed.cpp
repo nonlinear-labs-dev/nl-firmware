@@ -1,13 +1,10 @@
 #include "DebugLed.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 DebugLed::DebugLed(const Rect &pos, int led)
     : super(pos)
     , m_ledId(led)
     , m_onOrOff(false)
-{
-}
-
-DebugLed::~DebugLed()
 {
 }
 

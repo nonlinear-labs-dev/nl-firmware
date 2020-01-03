@@ -1,7 +1,7 @@
 #pragma once
 
 #include <proxies/hwui/DFBLayout.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
+#include <sigc++/connection.h>
 
 class Overlay;
 class Carousel;
@@ -11,6 +11,7 @@ class Parameter;
 class Slider;
 class Label;
 class Button;
+class ModuleCaption;
 
 class ParameterLayout2 : public DFBLayout
 {

@@ -8,6 +8,7 @@
 #include "parameters/PhysicalControlParameter.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
+#include <sigc++/sigc++.h>
 
 SelectedMacroControlsHWSourceAmount::SelectedMacroControlsHWSourceAmount(const Rect &rect)
     : super(rect)

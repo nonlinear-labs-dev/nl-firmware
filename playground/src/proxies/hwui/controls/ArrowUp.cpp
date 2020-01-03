@@ -1,5 +1,6 @@
 #include "ArrowUp.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <proxies/hwui/Oleds.h>
 
 ArrowUp::ArrowUp(const Rect &pos)
     : super(true, false, "q", pos)

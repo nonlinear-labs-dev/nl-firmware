@@ -1,11 +1,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterDotSlider.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 MiniParameterDotSlider::MiniParameterDotSlider(Parameter *param, const Rect &rect)
     : super(param, rect)
-{
-}
-
-MiniParameterDotSlider::~MiniParameterDotSlider()
 {
 }
 

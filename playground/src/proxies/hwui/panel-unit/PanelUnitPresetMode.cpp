@@ -11,6 +11,7 @@
 #include <memory>
 #include "PanelUnitPresetMode.h"
 #include <device-settings/HighlightChangedParametersSetting.h>
+#include <sigc++/sigc++.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(std::chrono::milliseconds(40))

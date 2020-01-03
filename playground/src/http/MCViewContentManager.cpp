@@ -6,11 +6,15 @@
 #include <tools/StringTools.h>
 #include "WebSocketRequest.h"
 #include <ParameterId.h>
+#include "groups/ParameterGroup.h"
+#include <string>
 
 MCViewContentManager::MCViewContentManager() = default;
 
 void MCViewContentManager::connectWebSocket(SoupWebsocketConnection *connection)
 {
+  using namespace std::string_literals;
+
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   g_signal_connect(connection, "message", G_CALLBACK(&MCViewContentManager::onWebSocketMessage), this);
   m_webSockets.emplace_back(std::make_shared<WebsocketConnection>(connection));

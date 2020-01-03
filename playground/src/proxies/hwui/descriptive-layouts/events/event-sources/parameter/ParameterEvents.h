@@ -6,93 +6,43 @@ namespace DescriptiveLayouts
   class ParameterGroupNameEventSource : public ParameterEvent<DisplayString>
   {
    public:
-    void onSelectedParameterChanged(const Parameter *p) override
-    {
-      setValue({ p ? p->getParentGroup()->getShortName() : "", 0 });
-    }
+    void onSelectedParameterChanged(const Parameter *p) override;
   };
 
   class ParameterIsBipolarEventSource : public ParameterEvent<bool>
   {
    public:
-    void onSelectedParameterChanged(const Parameter *p) override
-    {
-      setValue(p ? p->isBiPolar() : false);
-    }
+    void onSelectedParameterChanged(const Parameter *p) override;
   };
 
   class CurrentParameterControlPosition : public ParameterEvent<tControlPositionValue>
   {
    public:
-    void onSelectedParameterChanged(const Parameter *p) override
-    {
-      if(p)
-      {
-        setValue(p->getControlPositionValue());
-      }
-    }
+    void onSelectedParameterChanged(const Parameter *p) override;
   };
 
   class ParameterNameEventSource : public ParameterEvent<DisplayString>
   {
-    void onSelectedParameterChanged(const Parameter *p) override
-    {
-      if(p)
-        setValue({ p->getLongName(), 0 });
-    }
+    void onSelectedParameterChanged(const Parameter *p) override;
   };
 
   class ParameterNameWithStateSuffixEventSource : public ParameterEvent<DisplayString>
   {
    public:
-    void onSelectedParameterChanged(const Parameter *parameter) override
-    {
-      if(parameter)
-      {
-        auto changed = parameter->isChangedFromLoaded();
-        auto displayStr = parameter->getLongName().append(changed ? "*" : "");
-        setValue(DisplayString{ displayStr, changed ? 1 : 0 });
-      }
-      else
-      {
-        setValue(DisplayString{ "", 0 });
-      }
-    }
+    void onSelectedParameterChanged(const Parameter *parameter) override;
   };
 
   class ParameterDisplayStringEventSource : public ParameterEvent<DisplayString>
   {
    public:
-    explicit ParameterDisplayStringEventSource()
-    {
-      m_modifierConnection = Application::get().getHWUI()->onModifiersChanged(
-          sigc::mem_fun(this, &ParameterDisplayStringEventSource::onModifierChanged));
-    }
+    explicit ParameterDisplayStringEventSource();
 
-    ~ParameterDisplayStringEventSource()
-    {
-      m_modifierConnection.disconnect();
-    }
+    ~ParameterDisplayStringEventSource();
 
-    void onSelectedParameterChanged(const Parameter *p) override
-    {
-      auto str = p ? p->getDisplayString() : Glib::ustring{};
-
-      if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
-      {
-        setValue({ str + " F", 2 });
-      }
-      else
-      {
-        setValue({ str, 0 });
-      }
-    }
+    void onSelectedParameterChanged(const Parameter *p) override;
 
    private:
-    void onModifierChanged(::ButtonModifiers mods)
-    {
-      onSelectedParameterChanged(Application::get().getPresetManager()->getEditBuffer()->getSelected());
-    }
+    void onModifierChanged(::ButtonModifiers mods);
 
    private:
     sigc::connection m_modifierConnection;
@@ -101,9 +51,6 @@ namespace DescriptiveLayouts
   class ParameterValueChanged : public ParameterEvent<bool>
   {
    public:
-    void onSelectedParameterChanged(const Parameter *p) override
-    {
-      setValue(p && p->isChangedFromLoaded());
-    }
+    void onSelectedParameterChanged(const Parameter *p) override;
   };
 }

@@ -10,6 +10,7 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
 #include "VoiceGroupsLockSerializer.h"
+#include <groups/ParameterGroup.h>
 #include <nltools/logging/Log.h>
 
 EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
@@ -36,7 +37,7 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
     for(auto group : m_editBuffer->getParameterGroups(vg))
     {
       ParameterGroupSerializer s(group);
-      s.write(writer, Attribute{ "id", group->getID().toString() });
+      s.write(writer, Attribute { "id", group->getID().toString() });
     }
   }
 
@@ -61,7 +62,9 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
 {
   SplashLayout::addStatus("Reading Edit Buffer");
 
-  reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable { m_editBuffer->undoableSetType(reader.getTransaction(), to<SoundType>(text)); });
+  reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable {
+    m_editBuffer->undoableSetType(reader.getTransaction(), to<SoundType>(text));
+  });
 
   reader.onTag(ParameterGroupSerializer::getTagName(), [&](auto attr) -> ParameterGroupSerializer * {
     auto id = attr.get("id");

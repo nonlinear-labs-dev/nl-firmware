@@ -1,11 +1,8 @@
 #include <proxies/hwui/panel-unit/boled/setup/SetupSelectionEntry.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 SetupSelectionEntry::SetupSelectionEntry(int i, const Rect &pos)
     : super(pos)
-{
-}
-
-SetupSelectionEntry::~SetupSelectionEntry()
 {
 }
 

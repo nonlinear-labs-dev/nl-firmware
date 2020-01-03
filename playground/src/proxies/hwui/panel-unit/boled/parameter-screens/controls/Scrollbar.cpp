@@ -1,5 +1,6 @@
 #include "Scrollbar.h"
 #include "Scrollable.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 Scrollbar::Scrollbar(Scrollable *content, const Rect &pos)
     : super(pos)

@@ -5,6 +5,7 @@
 #include "ConvertSoundMenu.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
+#include <libundo/undo/Scope.h>
 
 ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
     : ButtonMenu(rect, 2)
@@ -20,7 +21,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
     auto scope = pm->getUndoScope().startTransaction("Convert to " + toString(newType));
     auto transaction = scope->getTransaction();
     Application::get().getPresetManager()->getEditBuffer()->undoableConvertToDual(transaction, newType);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }
   else
   {
@@ -28,7 +29,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
     auto transaction = scope->getTransaction();
     auto copyFromVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
     Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction, copyFromVoiceGroup);
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode{ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }
 }
 

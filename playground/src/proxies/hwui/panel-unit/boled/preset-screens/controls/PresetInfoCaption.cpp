@@ -7,6 +7,7 @@
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetInfoCaption.h>
+#include <proxies/hwui/Oleds.h>
 
 PresetInfoCaption::PresetInfoCaption(const Rect &pos)
     : super(pos)

@@ -1,4 +1,5 @@
 #include "BarSlider.h"
+#include <proxies/hwui/FrameBuffer.h>
 #include <math.h>
 
 BarSlider::BarSlider(Parameter *param, const Rect &rect)
@@ -8,10 +9,6 @@ BarSlider::BarSlider(Parameter *param, const Rect &rect)
 
 BarSlider::BarSlider(const Rect &rect)
     : super(rect)
-{
-}
-
-BarSlider::~BarSlider()
 {
 }
 

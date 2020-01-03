@@ -14,6 +14,7 @@
 #include <tools/TimeTools.h>
 #include <presets/EditBuffer.h>
 #include <nltools/Types.h>
+#include <groups/ParameterGroup.h>
 
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
@@ -50,14 +51,14 @@ Preset::~Preset()
       eb->resetOriginIf(this);
 }
 
-void Preset::load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> presetPath)
+void Preset::load(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &presetPath)
 {
   auto strUUID = getUuid();
   Serializer::read<PresetSerializer>(transaction, std::move(presetPath), strUUID.raw(), this);
   m_lastSavedUpdateID = getUpdateIDOfLastChange();
 }
 
-bool Preset::save(Glib::RefPtr<Gio::File> bankPath)
+bool Preset::save(const Glib::RefPtr<Gio::File> &bankPath)
 {
   if(m_lastSavedUpdateID != getUpdateIDOfLastChange())
   {

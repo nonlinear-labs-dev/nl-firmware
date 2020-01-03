@@ -1,11 +1,11 @@
 #include "SplitPointParameter.h"
-
 #include <parameters/scale-converters/SplitPointScaleConverter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
 #include "proxies/hwui/HWUI.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <parameters/scale-converters/dimension/SplitPointDimension.h>
+#include <Application.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, const ParameterId &id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),

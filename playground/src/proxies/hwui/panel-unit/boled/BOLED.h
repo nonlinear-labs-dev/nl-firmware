@@ -2,6 +2,8 @@
 
 #include "proxies/hwui/OLEDProxy.h"
 #include "proxies/hwui/buttons.h"
+#include "proxies/hwui/HWUIEnums.h"
+#include <sigc++/trackable.h>
 
 class Application;
 class Parameter;

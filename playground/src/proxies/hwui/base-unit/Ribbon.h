@@ -1,7 +1,6 @@
 #pragma once
 
 #include "proxies/hwui/FourStateLED.h"
-#include "parameters/Parameter.h"
 
 #define NUM_LEDS_PER_RIBBON 33
 

@@ -6,6 +6,8 @@
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <proxies/hwui/Oleds.h>
+#include <sigc++/sigc++.h>
 
 ParameterNameLabel::ParameterNameLabel(const Rect &pos)
     : Label(pos)

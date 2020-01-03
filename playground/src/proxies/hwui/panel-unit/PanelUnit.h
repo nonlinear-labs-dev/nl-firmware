@@ -2,7 +2,6 @@
 
 #include "EditPanel.h"
 #include "proxies/hwui/HardwareUserInterfaceUnit.h"
-#include <proxies/hwui/TwoStateLED.h>
 #include "MacroControlAssignmentStateMachine.h"
 
 class Application;

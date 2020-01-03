@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Control.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 class Rectangle : public Control
 {

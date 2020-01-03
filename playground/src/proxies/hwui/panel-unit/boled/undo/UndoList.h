@@ -10,7 +10,6 @@ class UndoList : public ControlWithChildren
 
  public:
   UndoList(const Rect &pos);
-  virtual ~UndoList();
 
   void assignTransactions(UNDO::Transaction *tip);
   bool redraw(FrameBuffer &fb) override;

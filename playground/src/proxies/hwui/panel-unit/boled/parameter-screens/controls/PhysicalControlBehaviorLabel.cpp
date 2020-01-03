@@ -3,6 +3,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/PhysicalControlParameter.h>
+#include <sigc++/sigc++.h>
 
 PhysicalControlBehaviorLabel::PhysicalControlBehaviorLabel(const Rect &pos)
     : Label(pos)

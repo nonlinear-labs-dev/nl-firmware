@@ -10,16 +10,10 @@ class BarSlider : public Slider
  public:
   BarSlider(Parameter *param, const Rect &rect);
   BarSlider(const Rect &rect);
-  virtual ~BarSlider();
 
   bool redraw(FrameBuffer &fb) override;
   virtual tDisplayValue getDrawValue() const;
 
  protected:
   virtual bool drawCenterMark() const;
-
- private:
-  // private methods
-  BarSlider(const BarSlider &other);
-  BarSlider &operator=(const BarSlider &);
 };

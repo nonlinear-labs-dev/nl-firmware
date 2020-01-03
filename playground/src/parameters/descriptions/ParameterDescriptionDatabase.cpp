@@ -5,6 +5,7 @@
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <tools/Signal.h>
+#include <giomm/file.h>
 
 class ParameterDescriptionDatabase::Job
 {

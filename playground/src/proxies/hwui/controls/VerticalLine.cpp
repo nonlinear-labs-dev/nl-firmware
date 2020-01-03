@@ -1,11 +1,8 @@
 #include "VerticalLine.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 VerticalLine::VerticalLine(const Rect &rect)
     : super(rect)
-{
-}
-
-VerticalLine::~VerticalLine()
 {
 }
 

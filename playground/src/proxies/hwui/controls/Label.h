@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Control.h"
+#include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/Font.h>
 #include <memory>
 
 class Label : public Control

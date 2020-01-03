@@ -11,7 +11,6 @@ class TransitionTimeLabel : public Label
 
  public:
   TransitionTimeLabel(const Rect &rect);
-  virtual ~TransitionTimeLabel();
 
   void setSuffixFontColor(FrameBuffer &fb) const override;
 

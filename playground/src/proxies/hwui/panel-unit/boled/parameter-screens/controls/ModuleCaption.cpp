@@ -12,6 +12,8 @@
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <proxies/hwui/Oleds.h>
+#include <sigc++/sigc++.h>
 
 ModuleCaption::ModuleCaption(const Rect &pos)
     : super(pos)

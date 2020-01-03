@@ -4,6 +4,7 @@
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <groups/ParameterGroup.h>
 
 AnyParameterLockedIndicator::AnyParameterLockedIndicator(const Rect &pos)
     : LockedIndicator(Rect(pos.getX(), pos.getY(), pos.getWidth(), pos.getHeight()))

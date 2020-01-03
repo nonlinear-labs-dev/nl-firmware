@@ -8,6 +8,7 @@
 #include <groups/HardwareSourcesGroup.h>
 #include <proxies/hwui/HWUI.h>
 #include <math.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 MCRoutings::MCRoutings(const ParameterId &ribbonParamID, const Rect &pos)
     : super(pos)

@@ -10,6 +10,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <groups/UnisonGroup.h>
 #include <nltools/Types.h>
+#include <libundo/undo/Scope.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)

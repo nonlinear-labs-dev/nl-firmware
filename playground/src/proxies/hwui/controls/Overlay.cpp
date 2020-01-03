@@ -1,4 +1,5 @@
 #include "Overlay.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 Overlay::Overlay(const Rect &pos)
     : super(pos)

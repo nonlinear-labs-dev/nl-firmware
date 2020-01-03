@@ -3,7 +3,10 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
+#include <groups/ParameterGroup.h>
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <sigc++/sigc++.h>
+#include <proxies/hwui/Oleds.h>
 
 LockedIndicator::LockedIndicator(const Rect &pos)
     : super(pos)

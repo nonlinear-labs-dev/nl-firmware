@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
+#include <sigc++/sigc++.h>
 
 Carousel::Carousel(const Rect &pos)
     : super(pos)

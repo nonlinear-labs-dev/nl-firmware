@@ -2,6 +2,8 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include "MiniParameterLabel.h"
+#include <parameters/Parameter.h>
+#include <sigc++/sigc++.h>
 
 MiniParameterLabel::MiniParameterLabel(Parameter *parameter, const Rect &pos)
     : super(parameter->getMiniParameterEditorName(), pos)

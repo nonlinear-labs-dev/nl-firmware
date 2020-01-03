@@ -98,6 +98,25 @@ enum class SaveResult : uint8_t
 
 std::string getStackTrace(const std::string& prefix);
 
+
+namespace Gio
+{
+  class File;
+  class InputStream;
+  class AsyncResult;
+  class Cancellable;
+  class DataInputStream;
+}
+
+namespace Glib
+{
+  class Bytes;
+  class IOChannel;
+
+  template <class T_CppObject> class RefPtr;
+
+}
+
 #ifdef _TESTS
 #define FOR_TESTS(expression) expression
 #else

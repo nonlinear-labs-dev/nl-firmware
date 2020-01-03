@@ -7,6 +7,8 @@
 #include "ControlRegistry.h"
 #include "EventProvider.h"
 #include <tools/ExceptionTools.h>
+#include <glib.h>
+#include <sigc++/sigc++.h>
 
 namespace DescriptiveLayouts
 {

@@ -1,6 +1,7 @@
 #include "../TestHelper.h"
 #include "third-party/include/catch.hpp"
 #include "presets/EditBuffer.h"
+#include <groups/ParameterGroup.h>
 
 namespace parameterdetail
 {

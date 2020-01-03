@@ -5,6 +5,7 @@
 #include <array>
 #include <list>
 #include <parameters/names/ParameterDB.h>
+#include <proxies/hwui/TwoStateLED.h>
 
 class PanelUnitPresetMode : public PanelUnitParameterEditMode
 {

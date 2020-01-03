@@ -3,6 +3,7 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <proxies/hwui/HWUI.h>
+#include <sigc++/sigc++.h>
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)

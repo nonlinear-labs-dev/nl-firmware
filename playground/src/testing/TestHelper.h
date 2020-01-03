@@ -5,6 +5,7 @@
 #include <presets/EditBuffer.h>
 #include <parameters/Parameter.h>
 #include <third-party/include/catch.hpp>
+#include <libundo/undo/Scope.h>
 
 namespace TestHelper
 {

@@ -1,13 +1,11 @@
 #pragma once
 
 #include "LED.h"
-#include <fstream>
 
 class FourStateLED : public LED
 {
  public:
   FourStateLED();
-  ~FourStateLED() override;
 
   void setState(char state);
   char getState() const;

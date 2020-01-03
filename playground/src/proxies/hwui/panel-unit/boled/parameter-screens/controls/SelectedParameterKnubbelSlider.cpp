@@ -1,4 +1,5 @@
 #include "SelectedParameterKnubbelSlider.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 static const int c_borderLeft = 1;
 static const int c_borderRight = 1;
@@ -6,10 +7,6 @@ static const int c_handleWidth = 4;
 
 SelectedParameterKnubbelSlider::SelectedParameterKnubbelSlider(const Rect &rect)
     : super(rect)
-{
-}
-
-SelectedParameterKnubbelSlider::~SelectedParameterKnubbelSlider()
 {
 }
 

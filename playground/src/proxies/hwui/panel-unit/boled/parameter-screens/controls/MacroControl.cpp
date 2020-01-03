@@ -8,6 +8,7 @@
 #include <proxies/hwui/HWUI.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
+#include <sigc++/sigc++.h>
 
 MacroControl::MacroControl(const Rect &pos)
     : super(pos)

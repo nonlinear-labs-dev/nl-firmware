@@ -3,6 +3,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
+#include <sigc++/sigc++.h>
 
 inline static Glib::ustring currentVoiceGroupToString()
 {

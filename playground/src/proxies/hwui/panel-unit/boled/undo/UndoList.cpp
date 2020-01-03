@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoList.h>
 #include <Application.h>
 #include <http/UndoScope.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include "UndoListEntry.h"
 
 UndoList::UndoList(const Rect &pos)
@@ -10,10 +11,6 @@ UndoList::UndoList(const Rect &pos)
   {
     addControl(new UndoListEntry(Rect(0, i * 16, pos.getWidth(), 16)));
   }
-}
-
-UndoList::~UndoList()
-{
 }
 
 void UndoList::assignTransactions(UNDO::Transaction *tip)

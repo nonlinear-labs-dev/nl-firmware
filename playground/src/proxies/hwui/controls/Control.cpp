@@ -1,5 +1,6 @@
 #include "Control.h"
 #include "proxies/hwui/Oleds.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 Control::Control(const Rect &pos)
     : m_rect(pos)

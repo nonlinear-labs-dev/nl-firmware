@@ -5,12 +5,12 @@
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
-#include <parameters/SplitPointParameter.h>
 
 class Application;
 class Writer;
 class PresetManager;
 class HWUI;
+class SplitPointParameter;
 
 class EditBuffer : public ParameterDualGroupSet
 {

@@ -1,7 +1,7 @@
 #pragma once
-#include "glibmm/ustring.h"
 #include "proxies/hwui/controls/Rect.h"
 #include "proxies/hwui/controls/Control.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 template <typename tLabelType> class CaptionLabel : public tLabelType
 {

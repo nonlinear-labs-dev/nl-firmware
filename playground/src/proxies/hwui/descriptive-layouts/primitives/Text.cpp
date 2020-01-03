@@ -2,6 +2,7 @@
 #include <tools/ExceptionTools.h>
 #include "Text.h"
 #include "proxies/hwui/descriptive-layouts/PrimitiveInstance.h"
+#include <proxies/hwui/Oleds.h>
 
 namespace DescriptiveLayouts
 {

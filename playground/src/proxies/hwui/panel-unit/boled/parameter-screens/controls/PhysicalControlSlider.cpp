@@ -1,5 +1,6 @@
 #include "PhysicalControlSlider.h"
 #include <parameters/PhysicalControlParameter.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 void PhysicalControlSlider::drawSliderBackground(FrameBuffer &fb)
 {

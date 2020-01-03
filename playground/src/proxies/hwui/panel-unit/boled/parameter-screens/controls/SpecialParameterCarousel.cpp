@@ -8,6 +8,7 @@
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
 #include <groups/MonoGroup.h>
+#include <sigc++/sigc++.h>
 
 SpecialParameterCarousel::SpecialParameterCarousel(const Rect &rect)
     : ParameterCarousel(rect)

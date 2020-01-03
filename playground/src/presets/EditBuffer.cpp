@@ -22,6 +22,7 @@
 #include <parameters/PedalParameter.h>
 #include <parameters/RibbonParameter.h>
 #include <parameters/PitchbendParameter.h>
+#include <parameters/SplitPointParameter.h>
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>

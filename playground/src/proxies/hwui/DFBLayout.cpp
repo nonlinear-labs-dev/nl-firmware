@@ -12,6 +12,7 @@
 #include "proxies/hwui/OLEDProxy.h"
 
 #include <proxies/hwui/buttons.h>
+#include <proxies/hwui/Oleds.h>
 
 #include <memory>
 #include "ButtonRepeat.h"

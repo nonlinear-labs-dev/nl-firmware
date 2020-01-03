@@ -2,6 +2,9 @@
 #include <proxies/hwui/DFBLayout.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/OLEDProxy.h>
+#include <glib.h>
+#include <proxies/hwui/Oleds.h>
+
 
 OLEDProxy::OLEDProxy(const Rect &posInFrameBuffer)
     : m_posInFrameBuffer(posInFrameBuffer)

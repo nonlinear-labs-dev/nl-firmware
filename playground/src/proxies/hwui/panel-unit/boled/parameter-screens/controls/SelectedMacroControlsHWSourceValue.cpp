@@ -4,6 +4,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/MacroControlParameter.h"
+#include <sigc++/sigc++.h>
 
 SelectedMacroControlsHWSourceValue::SelectedMacroControlsHWSourceValue(const Rect &rect)
     : super(rect)

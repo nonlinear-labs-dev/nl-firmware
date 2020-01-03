@@ -8,6 +8,7 @@
 #include <parameters/ModulationRoutingParameter.h>
 #include <parameters/MacroControlParameter.h>
 #include <libundo/undo/Transaction.h>
+#include <groups/ParameterGroup.h>
 
 EditBufferSnapshotMaker &EditBufferSnapshotMaker::get()
 {

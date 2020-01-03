@@ -6,6 +6,7 @@
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankInfoCaption.h>
+#include <proxies/hwui/Oleds.h>
 
 BankInfoCaption::BankInfoCaption(const Rect &pos)
     : super(pos)

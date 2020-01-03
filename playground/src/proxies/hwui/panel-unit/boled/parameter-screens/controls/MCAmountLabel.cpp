@@ -6,6 +6,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/scale-converters/LinearBipolar100PercentScaleConverter.h"
+#include <sigc++/sigc++.h>
 
 MCAmountLabel::MCAmountLabel(const Rect &rect)
     : super(rect)

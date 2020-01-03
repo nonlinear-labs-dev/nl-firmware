@@ -1,4 +1,5 @@
 #include "DotSlider.h"
+#include <proxies/hwui/FrameBuffer.h>
 #include <math.h>
 
 static const int c_borderLeft = 1;
@@ -13,10 +14,6 @@ DotSlider::DotSlider(Parameter *param, const Rect &rect)
 
 DotSlider::DotSlider(const Rect &rect)
     : super(rect)
-{
-}
-
-DotSlider::~DotSlider()
 {
 }
 

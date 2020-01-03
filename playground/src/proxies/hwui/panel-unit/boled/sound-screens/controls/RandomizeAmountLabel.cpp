@@ -3,6 +3,7 @@
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/RandomizeAmountLabel.h>
 #include <proxies/hwui/HWUI.h>
+#include <sigc++/sigc++.h>
 
 RandomizeAmountLabel::RandomizeAmountLabel(const Rect &rect)
     : super(rect)

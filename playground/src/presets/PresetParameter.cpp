@@ -8,9 +8,11 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
+#include <groups/ParameterGroup.h>
+#include <libundo/undo/Scope.h>
 
 PresetParameter::PresetParameter(const ParameterId &id)
-    : m_id{ id }
+    : m_id { id }
 {
 }
 
@@ -199,9 +201,9 @@ enum PedalModes PresetParameter::getPedalMode() const
 void PresetParameter::writeDocument(Writer &writer) const
 {
   writer.writeTag("param",
-                  { Attribute{ "id", m_id.toString() }, Attribute{ "value", to_string(m_value) },
-                    Attribute{ "mod-src", to_string(static_cast<int>(getModulationSource())) },
-                    Attribute{ "mod-amt", to_string(getModulationAmount()) } },
+                  { Attribute { "id", m_id.toString() }, Attribute { "value", to_string(m_value) },
+                    Attribute { "mod-src", to_string(static_cast<int>(getModulationSource())) },
+                    Attribute { "mod-amt", to_string(getModulationAmount()) } },
                   []() {});
 }
 

@@ -6,6 +6,7 @@
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
+#include <sigc++/sigc++.h>
 
 VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect &r)
     : ParameterCarousel(r)

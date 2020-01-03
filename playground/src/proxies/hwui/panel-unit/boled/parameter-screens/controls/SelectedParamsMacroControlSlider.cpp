@@ -4,6 +4,7 @@
 #include "presets/EditBuffer.h"
 #include "parameters/ModulateableParameter.h"
 #include "groups/MacroControlsGroup.h"
+#include <sigc++/sigc++.h>
 
 SelectedParamsMacroControlSlider::SelectedParamsMacroControlSlider(const Rect &rect)
     : super(rect)

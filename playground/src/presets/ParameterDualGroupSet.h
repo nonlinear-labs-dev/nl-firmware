@@ -1,13 +1,16 @@
 #pragma once
 
 #include "playground.h"
-#include "groups/ParameterGroup.h"
 #include <presets/AttributesOwner.h>
-#include <vector>
 #include "tools/IntrusiveList.h"
+#include "GroupId.h"
+#include "ParameterId.h"
+#include <vector>
+#include <array>
 
 class Parameter;
 class Preset;
+class ParameterGroup;
 
 class ParameterDualGroupSet : public AttributesOwner
 {

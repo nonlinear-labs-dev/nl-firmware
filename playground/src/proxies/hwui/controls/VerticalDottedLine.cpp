@@ -1,11 +1,8 @@
 #include "VerticalDottedLine.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 VerticalDottedLine::VerticalDottedLine(const Rect &rect)
     : super(rect)
-{
-}
-
-VerticalDottedLine::~VerticalDottedLine()
 {
 }
 

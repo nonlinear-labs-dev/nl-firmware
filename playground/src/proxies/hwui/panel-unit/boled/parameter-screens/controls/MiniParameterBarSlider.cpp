@@ -1,11 +1,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterBarSlider.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 MiniParameterBarSlider::MiniParameterBarSlider(Parameter *param, const Rect &rect)
     : super(param, rect)
-{
-}
-
-MiniParameterBarSlider::~MiniParameterBarSlider()
 {
 }
 

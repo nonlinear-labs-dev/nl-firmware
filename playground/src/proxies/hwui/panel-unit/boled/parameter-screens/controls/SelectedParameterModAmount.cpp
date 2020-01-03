@@ -6,6 +6,8 @@
 #include "presets/EditBuffer.h"
 #include "groups/MacroControlsGroup.h"
 #include <math.h>
+#include <sigc++/sigc++.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 SelectedParameterModAmount::SelectedParameterModAmount(const Rect &rect)
     : super(rect)

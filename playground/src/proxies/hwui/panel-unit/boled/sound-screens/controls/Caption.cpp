@@ -1,5 +1,6 @@
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/Caption.h>
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <proxies/hwui/Oleds.h>
 
 Caption::Caption(const Glib::ustring &text, const Rect &pos)
     : super(text, pos)

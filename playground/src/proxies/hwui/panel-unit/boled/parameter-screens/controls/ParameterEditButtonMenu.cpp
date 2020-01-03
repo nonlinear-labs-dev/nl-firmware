@@ -10,6 +10,7 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <http/UndoScope.h>
+#include <groups/ParameterGroup.h>
 
 int ParameterEditButtonMenu::s_lastAction = 0;
 

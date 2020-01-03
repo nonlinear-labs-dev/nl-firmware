@@ -3,6 +3,7 @@
 #include <device-settings/EnumSetting.h>
 #include <device-settings/Settings.h>
 #include <presets/PresetManager.h>
+#include <libundo/undo/StringTools.h>
 
 LoadModeSetting::LoadModeSetting(Settings &settings)
     : super(settings, LoadMode::Select)

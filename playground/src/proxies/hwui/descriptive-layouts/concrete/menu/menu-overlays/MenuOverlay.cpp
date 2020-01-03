@@ -1,4 +1,5 @@
 #include "MenuOverlay.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 MenuOverlay::MenuOverlay(const Rect& r)
     : ControlWithChildren(r)

@@ -1,5 +1,8 @@
 #include "DualSpecialParameterModuleCaption.h"
 #include <proxies/hwui/HWUI.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 DualSpecialParameterModuleCaption::DualSpecialParameterModuleCaption(const Rect &pos)
     : ModuleCaption(pos)

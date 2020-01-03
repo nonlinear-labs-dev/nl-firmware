@@ -3,6 +3,7 @@
 #include "DebugLayout.h"
 #include "Application.h"
 #include "proxies/hwui/HWUI.h"
+#include <glibmm/main.h>
 
 DebugLayout::DebugLayout(Glib::ustring e)
     : DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())

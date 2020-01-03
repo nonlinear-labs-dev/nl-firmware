@@ -4,6 +4,8 @@
 #include "PresetDualParameterGroups.h"
 #include "PresetManager.h"
 #include "Preset.h"
+#include <groups/ParameterGroup.h>
+#include <presets/PresetParameterGroup.h>
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent)
     : AttributesOwner(parent)

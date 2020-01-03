@@ -4,6 +4,7 @@
 #include "presets/EditBuffer.h"
 #include "parameters/PhysicalControlParameter.h"
 #include "proxies/hwui/HWUI.h"
+#include <groups/ParameterGroup.h>
 
 RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
     : super(rect)

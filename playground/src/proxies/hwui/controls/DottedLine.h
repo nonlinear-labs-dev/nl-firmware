@@ -9,7 +9,6 @@ class DottedLine : public Control
 
  public:
   DottedLine(const Rect& rect);
-  virtual ~DottedLine();
 
   bool redraw(FrameBuffer& fb);
 

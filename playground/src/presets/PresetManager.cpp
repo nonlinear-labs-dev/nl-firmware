@@ -18,6 +18,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <serialization/PresetSerializer.h>
 #include <device-settings/LoadModeSetting.h>
+#include <groups/ParameterGroup.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 

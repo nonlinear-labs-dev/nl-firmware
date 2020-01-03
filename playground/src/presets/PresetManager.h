@@ -6,8 +6,6 @@
 #include <vector>
 #include <string>
 
-#include <http/UpdateDocumentContributor.h>
-#include <serialization/PresetManagerSerializer.h>
 #include <tools/ScopedGuard.h>
 #include <nltools/threading/Throttler.h>
 #include <tools/Uuid.h>
@@ -18,6 +16,7 @@ class Bank;
 class Preset;
 class EditBuffer;
 class Parameter;
+class PresetManagerSerializer;
 
 class PresetManager : public ContentSection
 {
