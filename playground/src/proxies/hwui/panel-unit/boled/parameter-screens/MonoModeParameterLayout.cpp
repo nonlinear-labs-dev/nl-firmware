@@ -5,6 +5,8 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MonoUnisonModuleCaption.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 Parameter *MonoModeParameterLayout::getCurrentParameter() const
 {

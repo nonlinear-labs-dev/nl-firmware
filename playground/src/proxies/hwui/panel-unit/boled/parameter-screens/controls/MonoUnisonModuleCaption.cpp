@@ -1,6 +1,9 @@
 #include "MonoUnisonModuleCaption.h"
 #include <proxies/hwui/HWUI.h>
 #include <groups/MonoGroup.h>
+#include <presets/EditBuffer.h>
+#include <groups/UnisonGroup.h>
+#include <Application.h>
 
 void MonoUnisonModuleCaption::updateText(Parameter *newOne)
 {

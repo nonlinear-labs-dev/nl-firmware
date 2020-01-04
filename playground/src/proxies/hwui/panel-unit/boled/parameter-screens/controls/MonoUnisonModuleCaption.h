@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ModuleCaption.h"
 
 class MonoUnisonModuleCaption : public ModuleCaption
