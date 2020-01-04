@@ -2,10 +2,10 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2019-12-30, 15:47
+    @date       2020-01-04, 22:52
     @version	1.7B-3
     @author     M. Seeber
-    @brief  	descriptors for all parameter-related details
+    @brief      descriptors for all parameter-related details
     @todo
 *******************************************************************************/
 
@@ -409,17 +409,6 @@ namespace C15
     enum class Global_Sync
     {
       Scale_Base_Key,
-      Scale_Offset_1,
-      Scale_Offset_2,
-      Scale_Offset_3,
-      Scale_Offset_4,
-      Scale_Offset_5,
-      Scale_Offset_6,
-      Scale_Offset_7,
-      Scale_Offset_8,
-      Scale_Offset_9,
-      Scale_Offset_10,
-      Scale_Offset_11,
       _LENGTH_
     };
 
@@ -437,6 +426,17 @@ namespace C15
     enum class Global_Slow
     {
       Master_Tune,
+      Scale_Offset_1,
+      Scale_Offset_2,
+      Scale_Offset_3,
+      Scale_Offset_4,
+      Scale_Offset_5,
+      Scale_Offset_6,
+      Scale_Offset_7,
+      Scale_Offset_8,
+      Scale_Offset_9,
+      Scale_Offset_10,
+      Scale_Offset_11,
       _LENGTH_
     };
 
@@ -686,6 +686,19 @@ namespace C15
     enum class Global_Signals
     {
       Master_Tune,
+      Scale_Base_Key,
+      Scale_Offset_0,
+      Scale_Offset_1,
+      Scale_Offset_2,
+      Scale_Offset_3,
+      Scale_Offset_4,
+      Scale_Offset_5,
+      Scale_Offset_6,
+      Scale_Offset_7,
+      Scale_Offset_8,
+      Scale_Offset_9,
+      Scale_Offset_10,
+      Scale_Offset_11,
       _LENGTH_
     };
 
