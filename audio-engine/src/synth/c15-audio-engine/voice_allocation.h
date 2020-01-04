@@ -19,8 +19,9 @@
 #include "mappable_list.h"
 
 // temporary:
+inline constexpr bool ENABLE_MONO = false;         // enable/disable mono mode completely
 inline constexpr bool ENABLE_MONO_LEGATO = false;  // enable/disable mono legato
-inline constexpr bool APPLY_MONO_PHASE = false;    // enable/disable mono mode phase reset
+inline constexpr bool APPLY_MONO_PHASE = false;    // enable/disable mono phase reset
 
 // Descriptors
 
@@ -476,15 +477,15 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     {
       case LayerMode::Single:
         clear_keyState(AllocatorId::Global);
-        m_global_mono.m_enabled = static_cast<bool>(_value);
+        m_global_mono.m_enabled = static_cast<bool>(_value) && ENABLE_MONO;
         break;
       case LayerMode::Split:
         clear_keyState(m_layerId[_layerId]);
-        m_local_mono[_layerId].m_enabled = static_cast<bool>(_value);
+        m_local_mono[_layerId].m_enabled = static_cast<bool>(_value) && ENABLE_MONO;
         break;
       case LayerMode::Layer:
         clear_keyState(AllocatorId::Dual);
-        m_local_mono[0].m_enabled = static_cast<bool>(_value);
+        m_local_mono[0].m_enabled = static_cast<bool>(_value) && ENABLE_MONO;
         break;
     }
   }
