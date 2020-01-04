@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       smoother_handle.h
     @date
-    @version    1.7-0
+    @version    1.7-3
     @author     M. Seeber
     @brief      provide smoothing functionality and abstraction in order to
                 perform smoothing within a section
@@ -35,6 +35,12 @@ class ProtoSmoother
       m_x = m_dx = _dx;
     }
   }
+  // syncing
+  inline void sync(const float _dest)
+  {
+    m_state = false;
+    m_value = _dest;
+  }
   // rendering
   inline void render()
   {
@@ -65,12 +71,24 @@ class ProtoSmoother
 // smoother copy handle (for parameter smoothers that directly translate to signals)
 template <uint32_t Length> struct SmootherCopyHandle
 {
-  uint32_t m_smootherId[Length], m_signalId[Length], m_length = {};
+  uint32_t m_smootherId[Length] = {}, m_signalId[Length] = {}, m_length = {};
   inline void add_copy_id(const uint32_t _smootherId, const uint32_t _signalId)
   {
     m_smootherId[m_length] = _smootherId;
     m_signalId[m_length] = _signalId;
     m_length++;
+  }
+};
+
+// sync copy handle (for sync-type parameters that directly translate to signals)
+template <uint32_t Length> struct SyncCopyHandle
+{
+  uint32_t m_signalId[Length] = {};
+  bool m_smootherId[Length] = {};
+  inline void add_copy_id(const uint32_t _smootherId, const uint32_t _signalId)
+  {
+    m_smootherId[_smootherId] = true;
+    m_signalId[_smootherId] = _signalId;
   }
 };
 
@@ -82,6 +100,7 @@ template <class Sync, class Audio, class Fast, class Slow> class SmootherHandle
   SmootherCopyHandle<static_cast<uint32_t>(Audio::_LENGTH_)> m_copy_audio;
   SmootherCopyHandle<static_cast<uint32_t>(Fast::_LENGTH_)> m_copy_fast;
   SmootherCopyHandle<static_cast<uint32_t>(Slow::_LENGTH_)> m_copy_slow;
+  SyncCopyHandle<static_cast<uint32_t>(Sync::_LENGTH_)> m_copy_sync;
   // constructor
   inline SmootherHandle()
   {

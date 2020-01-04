@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       dsp_host_dual.cpp
     @date
-    @version    1.7-0
+    @version    1.7-3
     @author     M. Seeber
     @brief      new main engine container.
     @todo
@@ -44,10 +44,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.update_tone_frequency(m_reference.m_scaled);
   m_global.update_tone_mode(0);
   // init poly dsp: exponentiator, feedback pointers
-  m_poly[0].init(&m_convert, &m_z_layers[0], &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
-                 samplerate);
-  m_poly[1].init(&m_convert, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
-                 samplerate);
+  m_poly[0].init(&m_global.m_signals, &m_convert, &m_z_layers[0], &m_reference.m_scaled, m_time.m_millisecond,
+                 env_init_gateRelease, samplerate);
+  m_poly[1].init(&m_global.m_signals, &m_convert, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond,
+                 env_init_gateRelease, samplerate);
   // init mono dsp
   m_mono[0].init(&m_convert, &m_z_layers[0], m_time.m_millisecond, samplerate);
   m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate);
@@ -66,12 +66,18 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Global_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_global.add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_global.add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Fast:
                 m_global.add_copy_fast_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Slow:
                 m_global.add_copy_slow_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
             }
             break;
         }
@@ -84,12 +90,18 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Global_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_global.add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_global.add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Fast:
                 m_global.add_copy_fast_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Slow:
                 m_global.add_copy_slow_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
             }
             break;
         }
@@ -106,6 +118,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Quasipoly_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_poly[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_poly[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_poly[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_poly[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -123,6 +139,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Mono_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_mono[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_mono[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_mono[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_mono[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -147,6 +167,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Quasipoly_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_poly[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_poly[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_poly[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_poly[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -164,6 +188,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Mono_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_mono[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_mono[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_mono[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_mono[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -936,8 +964,8 @@ void dsp_host_dual::render()
   {
     // render components
     m_global.render_slow();
-    m_poly[0].render_slow(m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune));
-    m_poly[1].render_slow(m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune));
+    m_poly[0].render_slow();
+    m_poly[1].render_slow();
     m_mono[0].render_slow();
     m_mono[1].render_slow();
   }
@@ -1072,26 +1100,26 @@ uint32_t dsp_host_dual::getLayerId(const VoiceGroup _vg)
 
 void dsp_host_dual::keyDown(const float _vel)
 {
-  if(m_alloc.keyDown(m_key_pos))
+  if(m_alloc.keyDown(m_key_pos, _vel))
   {
-    // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
-    const float keyTune = m_global.key_position(m_key_pos);
     if(LOG_KEYS)
     {
-      nltools::Log::info("key_down(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+      nltools::Log::info("key_down(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
     }
-    for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
     {
-      if(m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel))
+      if(m_poly[event->m_localIndex].keyDown(event))
       {
         // mono legato
-        m_mono[key->m_localIndex].keyDown(_vel);
+        m_mono[event->m_localIndex].keyDown(event);
       }
       if(LOG_KEYS_POLY)
       {
-        nltools::Log::info("key_down_poly(group:", key->m_localIndex, "voice:", key->m_voiceId,
-                           ", unisonIndex:", key->m_unisonIndex, ", stolen:", key->m_stolen, ", tune:", keyTune,
-                           ", velocity:", _vel, ")");
+        nltools::Log::info("key_down_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", unisonIndex:", event->m_unisonIndex, ", stolen:", event->m_stolen,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ", trigger_phase:", event->m_trigger_phase, ")");
       }
     }
   }
@@ -1104,21 +1132,21 @@ void dsp_host_dual::keyDown(const float _vel)
 
 void dsp_host_dual::keyUp(const float _vel)
 {
-  if(m_alloc.keyUp(m_key_pos))
+  if(m_alloc.keyUp(m_key_pos, _vel))
   {
-    // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
-    const float keyTune = m_global.key_position(m_key_pos);
     if(LOG_KEYS)
     {
-      nltools::Log::info("key_up(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+      nltools::Log::info("key_up(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
     }
-    for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
     {
-      m_poly[key->m_localIndex].keyUp(key->m_voiceId, key->m_unisonIndex, keyTune, _vel);
+      m_poly[event->m_localIndex].keyUp(event);
       if(LOG_KEYS_POLY)
       {
-        nltools::Log::info("key_up_poly(group:", key->m_localIndex, "voice:", key->m_voiceId, ", tune:", keyTune,
-                           ", velocity:", _vel, ")");
+        nltools::Log::info("key_up_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ", trigger_phase:", event->m_trigger_phase, ")");
       }
     }
   }

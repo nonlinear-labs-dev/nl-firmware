@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       dsp_host_dual.h
     @date
-    @version    1.7-0
+    @version    1.7-3
     @author     M. Seeber
     @brief      new main engine container
     @todo
