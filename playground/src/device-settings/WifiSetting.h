@@ -8,7 +8,7 @@ class WifiSetting : public BooleanSetting
 {
  public:
   typedef BooleanSetting super;
-  explicit WifiSetting(Settings& settings);
+  explicit WifiSetting(UpdateDocumentContributor& settings);
 
   ~WifiSetting() override;
 

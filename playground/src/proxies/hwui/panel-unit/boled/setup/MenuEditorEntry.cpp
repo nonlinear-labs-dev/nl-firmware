@@ -1,4 +1,5 @@
 #include <proxies/hwui/panel-unit/boled/setup/MenuEditorEntry.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 MenuEditorEntry::MenuEditorEntry()
     : super(Rect(0, 0, 0, 0))
@@ -22,7 +23,7 @@ void MenuEditorEntry::assign(const std::vector<Glib::ustring> &entries, int idx,
 void MenuEditorEntry::setFontColor(FrameBuffer &fb) const
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
     super::setFontColor(fb);
 }
@@ -30,7 +31,7 @@ void MenuEditorEntry::setFontColor(FrameBuffer &fb) const
 void MenuEditorEntry::setBackgroundColor(FrameBuffer &fb) const
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::C103);
+    fb.setColor(FrameBufferColors::C103);
   else
     super::setBackgroundColor(fb);
 }

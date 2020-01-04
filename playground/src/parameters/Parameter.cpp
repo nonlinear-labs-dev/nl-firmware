@@ -21,6 +21,7 @@
 #include <nltools/Assert.h>
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <presets/recall/RecallParameter.h>
+#include <xml/Attribute.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -30,7 +31,7 @@ Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
-    , m_voiceGroup{ group->getVoiceGroup() }
+    , m_voiceGroup { group->getVoiceGroup() }
 {
 }
 

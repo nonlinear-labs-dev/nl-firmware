@@ -74,7 +74,7 @@ void SelectedParamValueWithFrame::showName()
 
 void SelectedParamValueWithFrame::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void SelectedParamValueWithFrame::onModifiersChanged(ButtonModifiers mods)

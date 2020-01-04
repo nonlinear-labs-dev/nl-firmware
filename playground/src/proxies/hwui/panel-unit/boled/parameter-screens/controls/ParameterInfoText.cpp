@@ -27,7 +27,7 @@ void ParameterInfoText::loadInfoText(Parameter *oldParam, Parameter *newParam)
 
 void ParameterInfoText::onTextLoaded(const Glib::ustring &text)
 {
-  setText(text, FrameBuffer::Colors::C128);
+  setText(text, FrameBufferColors::C128);
 }
 
 void ParameterInfoText::setPosition(const Rect &rect)

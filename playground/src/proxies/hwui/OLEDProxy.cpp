@@ -95,6 +95,6 @@ bool OLEDProxy::redraw()
 void OLEDProxy::clear()
 {
   auto &fb = FrameBuffer::get();
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
   fb.fillRect(Rect(0, 0, m_posInFrameBuffer.getWidth(), m_posInFrameBuffer.getHeight()));
 }

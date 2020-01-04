@@ -1,6 +1,7 @@
 #include <tools/ExceptionTools.h>
 #include "Border.h"
 #include "proxies/hwui/descriptive-layouts/PrimitiveInstance.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 namespace DescriptiveLayouts
 {

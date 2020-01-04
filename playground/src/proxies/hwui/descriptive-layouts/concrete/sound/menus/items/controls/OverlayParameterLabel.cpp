@@ -10,7 +10,7 @@ OverlayParameterLabel::OverlayParameterLabel(const Rect &r, const Parameter *par
         = parameter->onParameterChanged(sigc::hide(sigc::mem_fun(this, &OverlayParameterLabel::updateText)));
   }
 
-  setFontColor(FrameBuffer::C179);
+  setFontColor(FrameBufferColors::C179);
 }
 
 void OverlayParameterLabel::updateText()

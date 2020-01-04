@@ -91,8 +91,8 @@ IF(NOT DSL_LAYOUTS)
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${DSL_SOURCE_FILES})
 ENDIF()
 
-list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/playground.cpp)
-list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/testing/unit-tests/playground-tests.cpp)
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/playground.cpp)
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/testing/unit-tests/playground-tests.cpp)
 
 file(GLOB_RECURSE UNIT_TEST_FILES src/testing/unit-tests/*.cpp)
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UNIT_TEST_FILES})
@@ -116,12 +116,8 @@ foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
 
-set(PLAYGROUND_SOURCES
-        "src/playground.cpp"
-        )
-
-set(PLAYGROUND_TEST_SOURCES
-        ${UNIT_TEST_FILES})
+set(PLAYGROUND_SOURCES "src/playground.cpp")
+set(PLAYGROUND_TEST_SOURCES ${UNIT_TEST_FILES})
 
 add_executable(playground ${PLAYGROUND_SOURCES})
 add_executable(playground-test ${PLAYGROUND_TEST_SOURCES})

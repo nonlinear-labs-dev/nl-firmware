@@ -16,7 +16,7 @@ class PedalType : public EnumSetting<PedalTypes>
   typedef EnumSetting<PedalTypes> super;
 
  public:
-  PedalType(Settings &settings, uint16_t lpcKey);
+  PedalType(UpdateDocumentContributor &settings, uint16_t lpcKey);
   virtual ~PedalType();
 
   const std::vector<Glib::ustring> &enumToDisplayString() const override;

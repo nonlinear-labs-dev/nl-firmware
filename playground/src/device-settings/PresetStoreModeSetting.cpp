@@ -1,6 +1,6 @@
 #include "PresetStoreModeSetting.h"
 
-PresetStoreModeSetting::PresetStoreModeSetting(Settings &settings)
+PresetStoreModeSetting::PresetStoreModeSetting(UpdateDocumentContributor &settings)
     : super(settings, PresetStoreModeSettings::PRESET_STORE_MODE_INSERT)
 {
 }

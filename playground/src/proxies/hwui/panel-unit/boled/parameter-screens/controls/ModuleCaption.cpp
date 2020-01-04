@@ -13,6 +13,7 @@
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 #include <proxies/hwui/Oleds.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
 ModuleCaption::ModuleCaption(const Rect &pos)
@@ -83,7 +84,7 @@ bool ModuleCaption::redraw(FrameBuffer &fb)
 {
   const Rect &r = getPosition();
 
-  fb.setColor(FrameBuffer::Colors::C128);
+  fb.setColor(FrameBufferColors::C128);
   fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 
   super::redraw(fb);
@@ -92,7 +93,7 @@ bool ModuleCaption::redraw(FrameBuffer &fb)
 
 void ModuleCaption::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
 }
 
 std::shared_ptr<Font> ModuleCaption::getFont() const

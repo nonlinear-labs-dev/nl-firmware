@@ -15,7 +15,7 @@ class BenderCurve : public EnumSetting<BenderCurves>
   typedef EnumSetting<BenderCurves> super;
 
  public:
-  BenderCurve(Settings &settings);
+  BenderCurve(UpdateDocumentContributor &settings);
   virtual ~BenderCurve();
 
   void sendToLPC() const override;

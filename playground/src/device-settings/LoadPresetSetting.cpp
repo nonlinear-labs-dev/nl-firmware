@@ -22,6 +22,19 @@ const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
   return ret;
 }
 
+bool LoadModeSetting::set(tEnum m)
+{
+  bool ret = super::set(m);
+
+  auto settings = static_cast<Settings *>(getParent());
+  if(m == LoadMode::DirectLoad && !settings->isLoading() && !m_inToggle)
+  {
+    Application::get().getPresetManager()->doAutoLoadSelectedPreset();
+  }
+
+  return ret;
+}
+
 void LoadModeSetting::cycleForSoundType(SoundType type)
 {
   if(type == SoundType::Single)

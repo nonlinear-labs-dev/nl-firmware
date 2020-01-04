@@ -8,6 +8,7 @@
 #include "parameters/PhysicalControlParameter.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
 SelectedMacroControlsHWSourceAmount::SelectedMacroControlsHWSourceAmount(const Rect &rect)
@@ -87,7 +88,7 @@ void SelectedMacroControlsHWSourceAmount::updateText(const Parameter *param)
 
 void SelectedMacroControlsHWSourceAmount::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void SelectedMacroControlsHWSourceAmount::updateTextFromRouter(const Parameter *param)

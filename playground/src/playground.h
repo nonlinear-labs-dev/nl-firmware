@@ -1,13 +1,11 @@
 #pragma once
 
 #include <stdlib.h>
-#include <iomanip>
+#include <type_traits>
+#include <string>
+#include <memory>
+#include "playground-helpers.h"
 #include <glibmm/ustring.h>
-#include <limits>
-
-#define TRACE_LOC_AND_ARGS(loc, arg) std::cout << loc << ": " << arg << std::endl
-#define TRACE(arg) TRACE_LOC_AND_ARGS(G_STRLOC, arg)
-#define TRACE_CALL() TRACE_LOC_AND_ARGS(G_STRLOC, "called")
 
 void printLastFunctions();
 
@@ -46,7 +44,7 @@ namespace std
 template <typename T, std::enable_if_t<std::is_enum<T>::value, bool> = true>
 std::ostream& operator<<(std::ostream& stream, const T& e)
 {
-  stream << static_cast<int>(e);
+  wirteIntToStream(stream, static_cast<int>(e));
   return stream;
 }
 
@@ -61,11 +59,9 @@ template <typename T> inline std::string to_string(const T& t)
   return std::to_string(t);
 }
 
-inline std::string to_string(double d)
+template <> inline std::string to_string<std::string>(const std::string& t)
 {
-  std::stringstream ss;
-  ss << std::setprecision(std::numeric_limits<double>::max_digits10) << d;
-  return ss.str();
+  return t;
 }
 
 typedef int16_t tTcdValue;

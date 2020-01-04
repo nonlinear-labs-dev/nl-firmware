@@ -1,9 +1,8 @@
 #pragma once
 
 #include <playground.h>
-#include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/HWUIEnums.h>
 #include <nltools/enums/EnumTools.h>
-#include <device-settings/DebugLevel.h>
 #include <proxies/hwui/buttons.h>
 
 namespace DescriptiveLayouts
@@ -19,9 +18,11 @@ namespace DescriptiveLayouts
   namespace StyleValues
   {
     ENUM(Font, uint8_t, Undefined, Regular, Bold);
-    ENUM(Color, int, Undefined = FrameBuffer::Undefined, Transparent = FrameBuffer::Transparent, C43 = FrameBuffer::C43,
-         C77 = FrameBuffer::C77, C103 = FrameBuffer::C103, C128 = FrameBuffer::C128, C179 = FrameBuffer::C179,
-         C204 = FrameBuffer::C204, C255 = FrameBuffer::C255);
+    ENUM(Color, int, Undefined = static_cast<int>(FrameBufferColors::Undefined),
+         Transparent = static_cast<int>(FrameBufferColors::Transparent), C43 = static_cast<int>(FrameBufferColors::C43),
+         C77 = static_cast<int>(FrameBufferColors::C77), C103 = static_cast<int>(FrameBufferColors::C103),
+         C128 = static_cast<int>(FrameBufferColors::C128), C179 = static_cast<int>(FrameBufferColors::C179),
+         C204 = static_cast<int>(FrameBufferColors::C204), C255 = static_cast<int>(FrameBufferColors::C255));
     ENUM(Alignment, uint8_t, Undefined, Left, Center, Right);
     ENUM(BorderStyle, uint8_t, Undefined, Solid, Rounded, None);
   }
@@ -52,9 +53,9 @@ namespace DescriptiveLayouts
   ENUM(EventSinks, uint8_t, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
        SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail, SwitchToButtonDDetail,
-       SwitchToMCModRangeDetail, SwitchToMCAmtDetail, IncMCSel, DecMCSel, IncMCAmt, DecMCAmt,
-       IncMCPos, DecMCPos, IncButtonMenu, DecButtonMenu, FireButtonMenu, IncModulationCarousel, DecModulationCarousel,
-       ToggleVoiceGroup, ToggleVoiceGroupWithParameterSelection, CommitPresetForButtonMenu, ToggleDirectLoad,
+       SwitchToMCModRangeDetail, SwitchToMCAmtDetail, IncMCSel, DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos,
+       IncButtonMenu, DecButtonMenu, FireButtonMenu, IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup,
+       ToggleVoiceGroupWithParameterSelection, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
        DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter, SwitchToVoicesDetail,
        OpenMonoParameterScreen, OpenPartScreen, InitSound,

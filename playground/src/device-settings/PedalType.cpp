@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "proxies/lpc/LPCProxy.h"
 
-PedalType::PedalType(Settings &settings, uint16_t lpcKey)
+PedalType::PedalType(UpdateDocumentContributor &settings, uint16_t lpcKey)
     : super(settings, PedalTypes::PotTipActive)
     , m_lpcKey(lpcKey)
 {

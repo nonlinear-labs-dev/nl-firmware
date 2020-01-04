@@ -1,5 +1,7 @@
 #include "Bar.h"
 #include "proxies/hwui/descriptive-layouts/PrimitiveInstance.h"
+#include <proxies/hwui/FrameBuffer.h>
+#include <math.h>
 
 namespace DescriptiveLayouts
 {

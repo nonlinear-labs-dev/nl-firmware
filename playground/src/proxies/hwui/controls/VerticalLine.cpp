@@ -8,7 +8,7 @@ VerticalLine::VerticalLine(const Rect &rect)
 
 bool VerticalLine::redraw(FrameBuffer &fb)
 {
-  fb.setColor(FrameBuffer::Colors::C128);
+  fb.setColor(FrameBufferColors::C128);
 
   Rect r = getPosition();
   Point c = r.getCenter();

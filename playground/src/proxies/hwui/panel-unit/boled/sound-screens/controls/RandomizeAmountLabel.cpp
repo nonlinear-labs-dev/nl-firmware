@@ -3,6 +3,7 @@
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/RandomizeAmountLabel.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
 RandomizeAmountLabel::RandomizeAmountLabel(const Rect &rect)
@@ -35,7 +36,7 @@ void RandomizeAmountLabel::onSettingChanged(const Setting *s)
 
 void RandomizeAmountLabel::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void RandomizeAmountLabel::onModifiersChanged()

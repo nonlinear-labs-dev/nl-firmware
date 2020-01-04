@@ -7,6 +7,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MultiLineLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/Scrollable.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include <Application.h>
 
 namespace DETAIL
@@ -30,7 +31,7 @@ namespace DETAIL
 
     void setFontColor(FrameBuffer &fb) const override
     {
-      fb.setColor(FrameBuffer::Colors::C255);
+      fb.setColor(FrameBufferColors::C255);
     }
   };
 
@@ -106,7 +107,7 @@ void SplashLayout::addStatus(const std::string &msg)
 void SplashLayout::setMessage(const std::string &txt)
 {
   m_text = txt;
-  m_message->setText(m_text, FrameBuffer::C179);
+  m_message->setText(m_text, FrameBufferColors::C179);
   Oleds::get().syncRedraw();
 }
 
@@ -116,7 +117,7 @@ void SplashLayout::addMessage(const std::string &txt)
     m_text += "\n";
 
   m_text += txt;
-  m_message->setText(m_text, FrameBuffer::C179);
+  m_message->setText(m_text, FrameBufferColors::C179);
   scrollToMax();
 
   Oleds::get().syncRedraw();

@@ -3,6 +3,7 @@
 #include <Application.h>
 #include <Options.h>
 #include <proxies/hwui/debug-oled/DebugLayout.h>
+#include <proxies/hwui/HWUI.h>
 #include <tools/ExceptionTools.h>
 #include <tools/FileTools.h>
 #include "LayoutParser.h"
@@ -12,6 +13,7 @@
 #include "StyleParser.h"
 #include "tools/SpawnCommandLine.h"
 #include "ConsistencyChecker.h"
+#include <iostream>
 
 LayoutFolderMonitor& LayoutFolderMonitor::get()
 {

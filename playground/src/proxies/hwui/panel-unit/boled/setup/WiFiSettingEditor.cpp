@@ -1,6 +1,7 @@
 #include <device-settings/WifiSetting.h>
 #include <Application.h>
 #include "WiFiSettingEditor.h"
+#include <device-settings/Settings.h>
 
 WiFiSettingEditor::WiFiSettingEditor()
 {

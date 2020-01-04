@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <list>
 #include <proxies/hwui/DFBLayout.h>
-#include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/controls/Rect.h>
 #include "GenericLayout.h"
 #include "proxies/hwui/descriptive-layouts/events/GlobalEventSourceBroker.h"

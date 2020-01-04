@@ -2,6 +2,7 @@
 
 #include "TemplateEnums.h"
 #include <experimental/any>
+#include <sigc++/connection.h>
 
 namespace DescriptiveLayouts
 {

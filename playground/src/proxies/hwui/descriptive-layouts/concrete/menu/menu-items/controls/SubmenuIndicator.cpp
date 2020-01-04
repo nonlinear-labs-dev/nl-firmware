@@ -1,5 +1,6 @@
 #include <proxies/hwui/controls/SymbolLabel.h>
 #include "SubmenuIndicator.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 static Rect getArrowLineRect(const Rect &full)
 {
@@ -26,17 +27,17 @@ SubmenuIndicator::SubmenuIndicator(const Rect &rect)
 bool SubmenuIndicator::redraw(FrameBuffer &fb)
 {
   if(isHighlight())
-    m_label.setFontColor(FrameBuffer::Colors::C255);
+    m_label.setFontColor(FrameBufferColors::C255);
   else
-    m_label.setFontColor(FrameBuffer::Colors::C179);
+    m_label.setFontColor(FrameBufferColors::C179);
 
   m_label.redraw(fb);
   auto pos = getArrowLineRect(m_label.getPosition());
 
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C179);
+    fb.setColor(FrameBufferColors::C179);
 
   fb.drawHorizontalLine(pos.getLeft() + 2, pos.getCenter().getY() + 1, 3);
   fb.drawVerticalLine(pos.getLeft() + 4, pos.getCenter().getY() - 2, 4);

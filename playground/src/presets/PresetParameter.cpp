@@ -10,6 +10,7 @@
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 #include <groups/ParameterGroup.h>
 #include <libundo/undo/Scope.h>
+#include <xml/Attribute.h>
 
 PresetParameter::PresetParameter(const ParameterId &id)
     : m_id { id }

@@ -3,6 +3,7 @@
 #include <proxies/hwui/controls/Control.h>
 #include <proxies/hwui/descriptive-layouts/Styleable.h>
 #include <proxies/hwui/descriptive-layouts/PropertyOwner.h>
+#include <proxies/hwui/descriptive-layouts/PrimitiveInstance.h>
 #include <experimental/any>
 
 namespace DescriptiveLayouts

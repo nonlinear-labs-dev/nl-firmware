@@ -1,14 +1,15 @@
-#include <proxies/hwui/descriptive-layouts/TemplateEnums.h>
 #include "Circle.h"
+#include <proxies/hwui/descriptive-layouts/TemplateEnums.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 namespace DescriptiveLayouts
 {
 
   Circle::Circle(const PrimitiveInstance &e)
       : Control(e.relativePosition)
-      , m_range(0.0, 1.0)
       , m_valueDimension(e.relativePosition.getX() + e.relativePosition.getHeight() / 2, e.relativePosition.getY(),
                          e.relativePosition.getWidth() - e.relativePosition.getHeight(), e.relativePosition.getHeight())
+      , m_range(0.0, 1.0)
       , m_primitive(e)
       , m_drawPosition(getPosition().getLeftTop())
   {

@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include "scale-converters/dimension/Dimension.h"
+#include <sstream>
 #include <functional>
 #include <cmath>
 #include <math.h>

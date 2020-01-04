@@ -1,6 +1,6 @@
 #include "SendPresetAsLPCWriteFallback.h"
 
-SendPresetAsLPCWriteFallback::SendPresetAsLPCWriteFallback(Settings &settings)
+SendPresetAsLPCWriteFallback::SendPresetAsLPCWriteFallback(UpdateDocumentContributor &settings)
     : super(settings, true)
 {
 }

@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "proxies/lpc/LPCProxy.h"
 
-VelocityCurve::VelocityCurve(Settings &settings)
+VelocityCurve::VelocityCurve(UpdateDocumentContributor &settings)
     : super(settings, VelocityCurves::VELOCITY_CURVE_NORMAL)
 {
 }

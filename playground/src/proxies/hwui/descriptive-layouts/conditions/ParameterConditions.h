@@ -5,7 +5,6 @@
 #include <Application.h>
 #include <parameters/ModulateableParameter.h>
 #include "ConditionBase.h"
-#include <proxies/hwui/HWUI.h>
 
 namespace DescriptiveLayouts
 {

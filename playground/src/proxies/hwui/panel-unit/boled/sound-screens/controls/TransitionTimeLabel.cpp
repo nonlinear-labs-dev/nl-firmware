@@ -3,6 +3,7 @@
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/boled/sound-screens/controls/TransitionTimeLabel.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
 TransitionTimeLabel::TransitionTimeLabel(const Rect &rect)
@@ -30,7 +31,7 @@ void TransitionTimeLabel::onSettingChanged(const Setting *s)
 
 void TransitionTimeLabel::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void TransitionTimeLabel::onModifiersChanged()

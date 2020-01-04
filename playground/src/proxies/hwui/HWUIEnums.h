@@ -16,6 +16,20 @@ enum ButtonModifier
   NUM_MODIFIERS
 };
 
+enum class FrameBufferColors : uint8_t
+{
+  Undefined = 0xFF,
+  Transparent = 0x10,
+  C43 = 0x00,
+  C77 = 0x02,
+  C103 = 0x05,
+  C128 = 0x06,
+  C179 = 0x0A,
+  C204 = 0x0B,
+  C255 = 0x0F,
+  SYNC = 0xFF
+};
+
 class ButtonModifiers : public std::bitset<ButtonModifier::NUM_MODIFIERS>
 {
   typedef std::bitset<ButtonModifier::NUM_MODIFIERS> super;
@@ -43,9 +57,9 @@ struct FocusAndMode
   }
 
   FocusAndMode(UIFocus f, UIMode m, UIDetail d)
-      : focus{ f }
-      , mode{ m }
-      , detail{ d }
+      : focus { f }
+      , mode { m }
+      , detail { d }
   {
   }
 

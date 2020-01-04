@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "proxies/lpc/LPCProxy.h"
 
-AftertouchCurve::AftertouchCurve(Settings &settings)
+AftertouchCurve::AftertouchCurve(UpdateDocumentContributor &settings)
     : super(settings, AftertouchCurves::AFTERTOUCH_CURVE_NORMAL)
 {
 }

@@ -7,6 +7,7 @@
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 #include <sigc++/sigc++.h>
 #include <proxies/hwui/Oleds.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 LockedIndicator::LockedIndicator(const Rect &pos)
     : super(pos)
@@ -37,7 +38,7 @@ void LockedIndicator::onParameterGroupChanged()
 
 void LockedIndicator::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C255);
+  fb.setColor(FrameBufferColors::C255);
 }
 
 std::shared_ptr<Font> LockedIndicator::getFont() const

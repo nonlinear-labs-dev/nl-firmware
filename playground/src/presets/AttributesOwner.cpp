@@ -3,6 +3,7 @@
 #include <xml/Writer.h>
 #include <unordered_set>
 #include <device-settings/DebugLevel.h>
+#include <xml/Attribute.h>
 
 AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent)
     : UpdateDocumentContributor(parent)

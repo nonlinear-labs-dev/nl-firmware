@@ -18,9 +18,7 @@ ButtonMenu::ButtonMenu(const Rect &rect, size_t numButtonPlaces)
 {
 }
 
-ButtonMenu::~ButtonMenu()
-{
-}
+ButtonMenu::~ButtonMenu() = default;
 
 void ButtonMenu::setHighlight(bool isHighlight)
 {

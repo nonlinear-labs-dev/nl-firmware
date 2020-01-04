@@ -2,6 +2,7 @@
 #include "PrevUndoTransactionSiblingControl.h"
 #include "NextUndoTransactionSiblingControl.h"
 #include "UndoTransactionNameControl.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 UndoListEntry::UndoListEntry(const Rect &pos)
     : super(pos)
@@ -27,13 +28,13 @@ bool UndoListEntry::redraw(FrameBuffer &fb)
 
   if(m_selected)
   {
-    fb.setColor(FrameBuffer::Colors::C179);
+    fb.setColor(FrameBufferColors::C179);
     const Rect &r = getPosition();
     fb.drawRect(r.getLeft() + 1, r.getTop(), r.getWidth() - 2, r.getHeight());
 
     if(m_current)
     {
-      fb.setColor(FrameBuffer::Colors::C43);
+      fb.setColor(FrameBufferColors::C43);
       const Rect &r = getPosition();
       fb.drawRect(r.getLeft() + 2, r.getTop() + 1, r.getWidth() - 4, r.getHeight() - 2);
     }

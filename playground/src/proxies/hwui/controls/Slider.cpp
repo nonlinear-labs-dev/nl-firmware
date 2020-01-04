@@ -64,9 +64,9 @@ tDisplayValue Slider::getValue() const
 void Slider::setSliderColor(FrameBuffer &fb)
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
 }
 
 bool Slider::hasBorder() const

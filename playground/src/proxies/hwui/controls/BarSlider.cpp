@@ -29,7 +29,7 @@ bool BarSlider::redraw(FrameBuffer &fb)
   if(isBiPolar())
   {
     Point center = smaller.getCenter();
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
 
     if(drawCenterMark())
       fb.fillRect(center.getX() - 1, smaller.getTop(), 2, smaller.getHeight());
@@ -62,7 +62,7 @@ bool BarSlider::redraw(FrameBuffer &fb)
   if(hasBorder())
   {
     r = getPosition();
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
     fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
   }
   return true;

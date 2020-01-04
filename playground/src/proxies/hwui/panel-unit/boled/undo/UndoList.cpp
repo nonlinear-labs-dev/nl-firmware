@@ -48,7 +48,7 @@ bool UndoList::redraw(FrameBuffer &fb)
 {
   super::redraw(fb);
 
-  fb.setColor(FrameBuffer::Colors::C128);
+  fb.setColor(FrameBufferColors::C128);
   const Rect &r = getPosition();
   fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 

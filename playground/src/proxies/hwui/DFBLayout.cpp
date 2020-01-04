@@ -1,7 +1,4 @@
-#include <memory>
-
 #include "DFBLayout.h"
-
 #include "Application.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/controls/Control.h"
@@ -10,12 +7,11 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include "proxies/hwui/OLEDProxy.h"
-
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/Oleds.h>
-
-#include <memory>
+#include <proxies/hwui/FrameBuffer.h>
 #include "ButtonRepeat.h"
+#include <memory>
 
 DFBLayout::DFBLayout(OLEDProxy &oled)
     : m_oled(oled)

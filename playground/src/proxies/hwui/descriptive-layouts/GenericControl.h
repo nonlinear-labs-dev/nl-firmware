@@ -2,6 +2,7 @@
 
 #include "ControlInstance.h"
 #include "proxies/hwui/controls/ControlWithChildren.h"
+#include <sigc++/connection.h>
 
 namespace DescriptiveLayouts
 {

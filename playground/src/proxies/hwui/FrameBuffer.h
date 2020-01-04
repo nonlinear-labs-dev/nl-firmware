@@ -8,6 +8,7 @@
 #include <stack>
 #include <vector>
 #include <sigc++/trackable.h>
+#include <proxies/hwui/HWUIEnums.h>
 
 class Font;
 class UDPSender;
@@ -24,22 +25,8 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   }
 
   typedef int32_t tCoordinate;
-
   typedef uint8_t tPixel;
-
-  enum Colors : tPixel
-  {
-    Undefined = 0xFF,
-    Transparent = 0x10,
-    C43 = 0x00,
-    C77 = 0x02,
-    C103 = 0x05,
-    C128 = 0x06,
-    C179 = 0x0A,
-    C204 = 0x0B,
-    C255 = 0x0F,
-    SYNC = 0xFF
-  };
+  using Colors = ::FrameBufferColors;
 
   tPixel interpolateColor(float normalized)
   {
@@ -114,7 +101,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
 
   long getIndex(tCoordinate x, tCoordinate y) const;
 
-  Colors m_currentColor = C43;
+  Colors m_currentColor = Colors::C43;
   std::vector<tPixel> m_backBuffer;
   std::stack<Rect> m_clips;
   std::stack<Point> m_offsets;

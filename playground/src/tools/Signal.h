@@ -7,8 +7,24 @@
 #include <glibmm/main.h>
 #include <tuple>
 
-using namespace Glib;
-using namespace sigc;
+class SignalBase
+{
+ public:
+  typedef std::function<void()> tCallback;
+
+  SignalBase();
+  virtual ~SignalBase();
+  virtual bool findCookie(const void *) const = 0;
+  void scheduleInitCallback(const void *cookie, tCallback &&cb);
+  bool emitDefered();
+  bool doTheCallbacks();
+  void deferedSend();
+
+  struct Record
+  {
+    tCallback cb;
+    const void *cookie;
+  };
 
 template <typename tFirst, typename... tArgs> class Signal : public sigc::signal<tFirst, tArgs...>
 {
@@ -33,7 +49,7 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
     auto ret = super::connect(slot);
     const auto &addedSlot = *this->slots().rbegin();
     const void *cookie = &addedSlot;
-    scheduleInitCallback(cookie, cb);
+    scheduleInitCallback(cookie, std::move(cb));
     return ret;
   }
 

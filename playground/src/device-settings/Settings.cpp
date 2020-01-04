@@ -41,13 +41,14 @@
 #include <xml/VersionAttribute.h>
 #include <proxies/lpc/LPCProxy.h>
 #include "WifiSetting.h"
+#include "SettingsActions.h"
 #include "CrashOnError.h"
 #include "LayoutMode.h"
 #include "TuneReference.h"
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
-    , m_actions(*this)
+    , m_actions(std::make_unique<SettingsActions>(*this))
     , m_saveJob(5000, std::bind(&Settings::save, this))
 {
   addSetting("LoadMode", new LoadModeSetting(*this));
@@ -103,7 +104,7 @@ Settings::tUpdateID Settings::onChange(uint64_t flags)
 
 Glib::ustring Settings::getPrefix() const
 {
-  return m_actions.getBasePath().substr(1);
+  return m_actions->getBasePath().substr(1);
 }
 
 void Settings::init()
@@ -196,7 +197,7 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 
 void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
-  m_actions.handleRequest(request);
+  m_actions->handleRequest(request);
 }
 
 void Settings::sendToLPC()

@@ -9,9 +9,9 @@ VerticalDottedLine::VerticalDottedLine(const Rect &rect)
 bool VerticalDottedLine::redraw(FrameBuffer &fb)
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
   else
-    fb.setColor(FrameBuffer::Colors::C204);
+    fb.setColor(FrameBufferColors::C204);
 
   Rect r = getPosition();
   Point c = r.getCenter();

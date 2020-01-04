@@ -1,6 +1,5 @@
 #pragma once
 
-#include <proxies/hwui/descriptive-layouts/LayoutFactory.h>
 #include <experimental/any>
 #include "TemplateEnums.h"
 

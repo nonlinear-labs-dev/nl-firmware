@@ -4,6 +4,7 @@
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNameHeadlineLabel.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 PresetNameHeadlineLabel::PresetNameHeadlineLabel(const Rect &pos)
     : super(pos)
@@ -23,14 +24,14 @@ int PresetNameHeadlineLabel::getFontHeight() const
 
 void PresetNameHeadlineLabel::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C255);
+  fb.setColor(FrameBufferColors::C255);
 }
 
 bool PresetNameHeadlineLabel::redraw(FrameBuffer &fb)
 {
   const Rect &r = getPosition();
 
-  fb.setColor(FrameBuffer::Colors::C77);
+  fb.setColor(FrameBufferColors::C77);
   fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 
   super::redraw(fb);

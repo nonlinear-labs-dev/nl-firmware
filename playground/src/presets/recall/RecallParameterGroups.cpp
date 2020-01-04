@@ -7,6 +7,7 @@
 #include "RecallParameter.h"
 #include "presets/PresetParameter.h"
 #include <groups/ParameterGroup.h>
+#include <xml/Attribute.h>
 
 RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)

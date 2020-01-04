@@ -1,8 +1,9 @@
 #include "Rectangle.h"
+#include <proxies/hwui/FrameBuffer.h>
 
-Rectangle::Rectangle(const Rect& r, FrameBuffer::Colors color)
+Rectangle::Rectangle(const Rect& r, FrameBufferColors color)
     : Control(r)
-    , m_color{ color }
+    , m_color { color }
 {
 }
 

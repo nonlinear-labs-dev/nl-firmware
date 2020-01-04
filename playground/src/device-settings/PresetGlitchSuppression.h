@@ -8,7 +8,7 @@ class PresetGlitchSuppression : public BooleanSetting
   typedef BooleanSetting super;
 
  public:
-  PresetGlitchSuppression(Settings &settings);
+  PresetGlitchSuppression(UpdateDocumentContributor &settings);
   virtual ~PresetGlitchSuppression();
 
  private:

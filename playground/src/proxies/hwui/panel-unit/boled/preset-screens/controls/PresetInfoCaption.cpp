@@ -58,7 +58,7 @@ bool PresetInfoCaption::redraw(FrameBuffer &fb)
 {
   const Rect &r = getPosition();
 
-  fb.setColor(FrameBuffer::Colors::C128);
+  fb.setColor(FrameBufferColors::C128);
   fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 
   super::redraw(fb);
@@ -67,7 +67,7 @@ bool PresetInfoCaption::redraw(FrameBuffer &fb)
 
 void PresetInfoCaption::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
 }
 
 std::shared_ptr<Font> PresetInfoCaption::getFont() const

@@ -8,7 +8,7 @@ class SendPresetAsLPCWriteFallback : public BooleanSetting
   typedef BooleanSetting super;
 
  public:
-  SendPresetAsLPCWriteFallback(Settings& settings);
+  SendPresetAsLPCWriteFallback(UpdateDocumentContributor& settings);
   virtual ~SendPresetAsLPCWriteFallback();
 
  private:

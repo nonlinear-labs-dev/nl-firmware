@@ -14,7 +14,7 @@ class BooleanSetting : public EnumSetting<BooleanSettings>
   typedef EnumSetting<BooleanSettings> super;
 
  public:
-  BooleanSetting(Settings &settings, bool def);
+  BooleanSetting(UpdateDocumentContributor &settings, bool def);
   virtual ~BooleanSetting();
 
   void toggle();

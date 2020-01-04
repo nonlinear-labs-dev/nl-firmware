@@ -3,6 +3,7 @@
 #include <presets/EditBuffer.h>
 #include "MiniParameterLabel.h"
 #include <parameters/Parameter.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
 MiniParameterLabel::MiniParameterLabel(Parameter *parameter, const Rect &pos)
@@ -48,7 +49,7 @@ bool MiniParameterLabel::redraw(FrameBuffer &fb)
 
   if(m_selected)
   {
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
     fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
   }
 
@@ -58,13 +59,10 @@ bool MiniParameterLabel::redraw(FrameBuffer &fb)
 
 void MiniParameterLabel::setFontColor(FrameBuffer &fb) const
 {
-  if(m_selected)
-    if(isHighlight())
-      fb.setColor(FrameBuffer::Colors::C255);
-    else
-      fb.setColor(FrameBuffer::Colors::C128);
+  if(m_selected && isHighlight())
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
 }
 
 const std::pair<Glib::ustring, size_t> MiniParameterLabel::prepareDisplayString(const Parameter *p) const

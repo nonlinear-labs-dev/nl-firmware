@@ -54,9 +54,9 @@ void BankInfoContent::fillFromBank(Bank *bank)
 {
   if(bank)
   {
-    infoFields["name"]->setInfo(bank->getName(true), FrameBuffer::Colors::C128);
+    infoFields["name"]->setInfo(bank->getName(true), FrameBufferColors::C128);
     infoFields["size"]->setInfo(to_string(bank->getNumPresets()));
-    infoFields["comment"]->setInfo(bank->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
+    infoFields["comment"]->setInfo(bank->getAttribute("Comment", "---"), FrameBufferColors::C128);
     infoFields["state"]->setInfo(bank->calcStateString());
     infoFields["dateofchange"]->setInfo(TimeTools::getDisplayStringFromStamp(bank->getLastChangedTimestamp()));
     infoFields["importdate"]->setInfo(
@@ -68,8 +68,8 @@ void BankInfoContent::fillFromBank(Bank *bank)
   }
   else
   {
-    infoFields["name"]->setInfo("---", FrameBuffer::Colors::C128);
-    infoFields["comment"]->setInfo("---", FrameBuffer::Colors::C128);
+    infoFields["name"]->setInfo("---", FrameBufferColors::C128);
+    infoFields["comment"]->setInfo("---", FrameBufferColors::C128);
     infoFields["size"]->setInfo("---");
     infoFields["state"]->setInfo("Not saved by Export!");
     infoFields["dateofchange"]->setInfo("---");

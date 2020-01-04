@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstddef>
-#include <functional>
 #include <nltools/Uncopyable.h>
 
 template <typename TItemPtr> class IntrusiveList;
@@ -113,9 +111,7 @@ template <typename TItemPtr> class IntrusiveList
       remove(first);
   }
 
-  using tCallback = std::function<void(tItemPtr)>;
-
-  void forEach(tCallback cb)
+  template <typename Callback> void forEach(Callback cb)
   {
     tItemPtr walker = first;
 

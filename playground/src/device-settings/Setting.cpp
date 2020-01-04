@@ -1,15 +1,13 @@
 #include "Setting.h"
-#include "Settings.h"
-#include "xml/Writer.h"
+#include <xml/Writer.h>
+#include <xml/Attribute.h>
 
-Setting::Setting(Settings &parent)
+Setting::Setting(UpdateDocumentContributor &parent)
     : super(&parent)
 {
 }
 
-Setting::~Setting()
-{
-}
+Setting::~Setting() = default;
 
 bool Setting::persistent() const
 {

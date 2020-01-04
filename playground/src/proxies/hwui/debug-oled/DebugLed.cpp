@@ -30,9 +30,9 @@ bool DebugLed::redraw(FrameBuffer &fb)
   r.reduceByMargin(2);
 
   if(m_onOrOff)
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C77);
+    fb.setColor(FrameBufferColors::C77);
 
   fb.fillRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
   return true;

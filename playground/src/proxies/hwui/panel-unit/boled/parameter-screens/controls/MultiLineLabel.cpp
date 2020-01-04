@@ -3,13 +3,14 @@
 #include <proxies/hwui/controls/Label.h>
 #include <tools/TextSplitter.h>
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 namespace DETAIL
 {
   class ChildLabel : public LeftAlignedLabel
   {
    public:
-    ChildLabel(const Glib::ustring &line, FrameBuffer::Colors color, Oleds::tFont font, const Rect &pos)
+    ChildLabel(const Glib::ustring &line, FrameBufferColors color, Oleds::tFont font, const Rect &pos)
         : LeftAlignedLabel(line, pos)
         , m_font(font)
     {
@@ -32,12 +33,12 @@ MultiLineLabel::MultiLineLabel(const Glib::ustring &text)
 {
 }
 
-void MultiLineLabel::setColor(FrameBuffer::Colors c)
+void MultiLineLabel::setColor(FrameBufferColors c)
 {
   m_color = c;
 }
 
-bool MultiLineLabel::setText(const Glib::ustring &text, FrameBuffer::Colors c)
+bool MultiLineLabel::setText(const Glib::ustring &text, FrameBufferColors c)
 {
   if(m_text != text || m_color != c)
   {

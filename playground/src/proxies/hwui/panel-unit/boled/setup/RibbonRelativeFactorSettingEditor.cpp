@@ -3,6 +3,7 @@
 #include <device-settings/RibbonRelativeFactor.h>
 #include <proxies/hwui/panel-unit/boled/setup/RibbonRelativeFactorSettingEditor.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include "SetupLabel.h"
 
 RibbonRelativeFactorSettingEditor::RibbonRelativeFactorSettingEditor()
@@ -24,19 +25,19 @@ Font::Justification RibbonRelativeFactorSettingEditor::getJustification() const
 bool RibbonRelativeFactorSettingEditor::redraw(FrameBuffer &fb)
 {
   super::redraw(fb);
-  fb.setColor(FrameBuffer::C179);
+  fb.setColor(FrameBufferColors::C179);
   fb.drawRect(getPosition());
   return true;
 }
 
 void RibbonRelativeFactorSettingEditor::setBackgroundColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void RibbonRelativeFactorSettingEditor::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C255);
+  fb.setColor(FrameBufferColors::C255);
 }
 
 void RibbonRelativeFactorSettingEditor::onSettingChanged(const Setting *s)

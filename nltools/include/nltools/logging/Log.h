@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <mutex>
 #include "../StringTools.h"
 
 namespace nltools
@@ -38,66 +36,59 @@ namespace nltools
     };
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
-    static void debug(const Args&... args)
+    static void debug(const Args &... args)
     {
       if(s_level <= Level::Debug)
         output<mode>("Debug: ", args...);
     }
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
-    static void info(const Args&... args)
+    static void info(const Args &... args)
     {
       if(s_level <= Level::Info)
         output<mode>("Info: ", args...);
     }
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
-    static void warning(const Args&... args)
+    static void warning(const Args &... args)
     {
       if(s_level <= Level::Warning)
         output<mode>("Warning: ", args...);
     }
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
-    static void error(const Args&... args)
+    static void error(const Args &... args)
     {
       if(s_level <= Level::Error)
         output<mode>("Error: ", args...);
     }
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
-    static void notify(const Args&... args)
+    static void notify(const Args &... args)
     {
       if(s_level <= Level::Notify)
         output<mode>("Notify: ", args...);
     }
 
-    static void flush()
-    {
-      std::cout << std::flush;
-    }
+    static void flush();
+    static void print(const std::string &str);
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
-    static void output(const Args&... args)
+    static void output(const Args &... args)
     {
-      static std::mutex m;
-      std::unique_lock<std::mutex> l(m);
-
       constexpr auto addNewLine = mode == LogMode::AppendNewLine || mode == LogMode::InsertSpacesAndAppendNewLine;
       constexpr auto insertSpaces = mode == LogMode::InsertSpaces || mode == LogMode::InsertSpacesAndAppendNewLine;
 
       if(insertSpaces)
-        std::initializer_list<bool>({ (std::cout << args, std::cout << " ", false)... });
+        print(nltools::string::concatWithDelimiter(' ', args...));
       else
-        std::initializer_list<bool>({ (std::cout << args, false)... });
+        print(nltools::string::concat(args...));
 
       if(addNewLine)
-      {
-        std::cout << std::endl;
-      }
+        print("\n");
     }
 
-    template <typename... tArgs> static void throwException(const tArgs&... args)
+    template <typename... tArgs> static void throwException(const tArgs &... args)
     {
       auto str = nltools::string::concat(args...);
       throw std::runtime_error(str);

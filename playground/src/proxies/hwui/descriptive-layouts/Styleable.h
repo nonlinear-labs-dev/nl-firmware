@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Styles.h"
-#include "TemplateEnums.h"
 
 namespace DescriptiveLayouts
 {
@@ -19,16 +18,8 @@ namespace DescriptiveLayouts
     int getStyleValue(StyleKey s) const;
     virtual const PrimitiveInstance &getPrimitive() const = 0;
 
-    void setHighlight(bool b)
-    {
-      m_highlight = b;
-    }
-
-    bool isHighlight() const
-    {
-      return m_highlight;
-    }
-
+    void setHighlight(bool b);
+    bool isHighlight() const;
     static int getDefaultStyleValueForKey(StyleKey s);
 
    protected:

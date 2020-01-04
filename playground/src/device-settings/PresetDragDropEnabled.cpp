@@ -1,6 +1,6 @@
 #include "PresetDragDropEnabled.h"
 
-PresetDragDropEnabled::PresetDragDropEnabled(Settings &settings)
+PresetDragDropEnabled::PresetDragDropEnabled(UpdateDocumentContributor &settings)
     : super(settings, true)
 {
 }

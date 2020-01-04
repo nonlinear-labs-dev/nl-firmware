@@ -38,7 +38,7 @@ void PresetLabel::setText(const Glib::ustring &text, bool selected, bool loaded)
 void PresetLabel::setFontColor(FrameBuffer &fb) const
 {
   if(m_selected)
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C204);
+    fb.setColor(FrameBufferColors::C204);
 }

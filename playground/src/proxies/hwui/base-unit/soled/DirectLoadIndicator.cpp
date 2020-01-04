@@ -1,4 +1,5 @@
 #include <proxies/hwui/base-unit/soled/DirectLoadIndicator.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 DirectLoadIndicator::DirectLoadIndicator(const Rect &pos)
     : base_type(pos)

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "EnumSetting.h"
-#include <sys/time.h>
 #include <nltools/logging/Log.h>
 
 enum class DebugLevels
@@ -119,19 +118,10 @@ class DebugLevel : public EnumSetting<DebugLevels>
   template <typename tFirst> static void printTrace(std::stringstream& str, const tFirst& first)
   {
     str << first;
-    g_printerr("%8" G_GUINT64_FORMAT ": %s\n", getTimestamp(), str.str().c_str());
+    printError(str.str());
   }
 
-  static uint64_t getTimestamp()
-  {
-    static uint64_t epoch = getCurrentMilliseconds();
-    return getCurrentMilliseconds() - epoch;
-  }
-
-  static uint64_t getCurrentMilliseconds()
-  {
-    struct timeval spec;
-    gettimeofday(&spec, nullptr);
-    return spec.tv_sec * 1000 + spec.tv_usec / 1000;
-  }
+  static void printError(const std::string& str);
+  static uint64_t getTimestamp();
+  static uint64_t getCurrentMilliseconds();
 };

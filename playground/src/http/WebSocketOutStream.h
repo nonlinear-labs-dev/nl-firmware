@@ -2,6 +2,7 @@
 
 #include <xml/OutStream.h>
 #include <libsoup/soup.h>
+#include <sstream>
 
 class WebSocketOutStream : public OutStream
 {

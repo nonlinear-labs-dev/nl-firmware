@@ -5,6 +5,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "groups/MacroControlsGroup.h"
+#include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
 MCPositionLabel::MCPositionLabel(const Rect &rect)
@@ -74,7 +75,7 @@ void MCPositionLabel::updateSource(const Parameter *parameter)
 }
 void MCPositionLabel::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void MCPositionLabel::onModifiersChanged()

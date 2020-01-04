@@ -4,6 +4,7 @@
 #include <groups/ParameterGroup.h>
 #include <sigc++/sigc++.h>
 #include <parameters/SplitPointParameter.h>
+#include <presets/EditBuffer.h>
 
 void DescriptiveLayouts::EditBufferTypeStringEvent::onChange(const EditBuffer *eb)
 {

@@ -42,7 +42,7 @@ bool MCRoutings::redraw(FrameBuffer &fb)
 
   if(numAmounts > 1)
   {
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
     drawRoutingParameters(fb, params);
   }
 

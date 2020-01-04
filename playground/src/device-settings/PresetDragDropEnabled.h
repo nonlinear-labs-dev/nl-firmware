@@ -8,6 +8,6 @@ class PresetDragDropEnabled : public BooleanSetting
   typedef BooleanSetting super;
 
  public:
-  PresetDragDropEnabled(Settings &settings);
+  PresetDragDropEnabled(UpdateDocumentContributor &settings);
   virtual ~PresetDragDropEnabled();
 };

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "logging/Log.h"
-#include <stdexcept>
 
 namespace nltools
 {
@@ -9,7 +8,7 @@ namespace nltools
   {
   }
 
-  inline void fail[[noreturn]](const char *expr, const char *file, int line, const char *function)
+  inline void fail [[noreturn]] (const char *expr, const char *file, int line, const char *function)
   {
     Log::error("Assertion failed:");
     Log::output<Log::LogMode::AppendNewLine>("\tExpression: ", expr);
@@ -18,8 +17,8 @@ namespace nltools
     throw std::runtime_error("Assertion failed!");
   }
 
-  inline void fail[[noreturn]](const char *expr, const char *file, int line, const char *function,
-                               const char *description)
+  inline void fail
+      [[noreturn]] (const char *expr, const char *file, int line, const char *function, const char *description)
   {
     Log::error("Assertion failed:");
     Log::output<Log::LogMode::AppendNewLine>("\tExpression: ", expr);

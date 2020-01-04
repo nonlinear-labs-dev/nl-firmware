@@ -12,7 +12,7 @@ class Setting : public UpdateDocumentContributor
   typedef UpdateDocumentContributor super;
 
  public:
-  Setting(Settings &parent);
+  Setting(UpdateDocumentContributor &parent);
   virtual ~Setting();
 
   virtual void setSetting(Initiator initiator, const Glib::ustring &text);

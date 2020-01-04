@@ -1,5 +1,6 @@
 #include <proxies/hwui/panel-unit/boled/undo/NextUndoTransactionSiblingControl.h>
 #include <proxies/hwui/Oleds.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 NextUndoTransactionSiblingControl::NextUndoTransactionSiblingControl(const Rect &r)
     : super(r)
@@ -51,5 +52,5 @@ std::shared_ptr<Font> NextUndoTransactionSiblingControl::getFont() const
 
 void NextUndoTransactionSiblingControl::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C255);
+  fb.setColor(FrameBufferColors::C255);
 }

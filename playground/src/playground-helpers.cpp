@@ -2,6 +2,22 @@
 #include <device-settings/DebugLevel.h>
 #include <execinfo.h>
 
+#include <glib.h>
+#include <iomanip>
+#include <limits>
+
+std::string to_string(double d)
+{
+  std::stringstream ss;
+  ss << std::setprecision(std::numeric_limits<double>::max_digits10) << d;
+  return ss.str();
+}
+
+std::ostream& wirteIntToStream(std::ostream& stream, int i)
+{
+  return stream << i;
+}
+
 namespace Environment
 {
   void printStackTrace(int i)

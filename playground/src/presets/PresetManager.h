@@ -17,6 +17,7 @@ class Preset;
 class EditBuffer;
 class Parameter;
 class PresetManagerSerializer;
+class RPCActionManager;
 
 class PresetManager : public ContentSection
 {

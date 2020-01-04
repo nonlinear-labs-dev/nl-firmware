@@ -1,5 +1,6 @@
 #include <proxies/hwui/descriptive-layouts/ConditionRegistry.h>
 #include "ParameterConditions.h"
+#include <proxies/hwui/HWUI.h>
 
 using namespace DescriptiveLayouts;
 

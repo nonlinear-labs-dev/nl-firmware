@@ -1,6 +1,6 @@
 #include "BooleanSetting.h"
 
-BooleanSetting::BooleanSetting(Settings &settings, bool def)
+BooleanSetting::BooleanSetting(UpdateDocumentContributor &settings, bool def)
     : super(settings, def ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE)
 {
 }

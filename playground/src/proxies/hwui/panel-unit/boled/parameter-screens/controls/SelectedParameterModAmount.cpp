@@ -81,7 +81,7 @@ void SelectedParameterModAmount::onParamValueChanged(const Parameter *param)
 void SelectedParameterModAmount::setSliderColor(FrameBuffer &fb)
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C179);
+    fb.setColor(FrameBufferColors::C179);
 }

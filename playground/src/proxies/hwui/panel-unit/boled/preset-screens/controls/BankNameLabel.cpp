@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
 #include <presets/Bank.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 BankNameLabel::BankNameLabel(const Rect &pos)
     : super(pos)
@@ -38,14 +39,14 @@ Label::StringAndSuffix BankNameLabel::shortenStringIfNeccessary(std::shared_ptr<
 void BankNameLabel::setBackgroundColor(FrameBuffer &fb) const
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
 }
 
 void BankNameLabel::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
 }
 
 Font::Justification BankNameLabel::getJustification() const

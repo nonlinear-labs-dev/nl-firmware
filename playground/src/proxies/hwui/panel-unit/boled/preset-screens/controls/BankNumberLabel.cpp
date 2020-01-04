@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
 #include "presets/Bank.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 BankNumberLabel::BankNumberLabel(const Rect &pos)
     : super(pos)
@@ -24,14 +25,14 @@ void BankNumberLabel::onBankSelectionChanged(const Uuid &selectedBank)
 void BankNumberLabel::setBackgroundColor(FrameBuffer &fb) const
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
 }
 
 void BankNumberLabel::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
 }
 
 Font::Justification BankNumberLabel::getJustification() const

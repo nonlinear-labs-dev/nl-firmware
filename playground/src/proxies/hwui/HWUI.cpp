@@ -28,6 +28,7 @@
 #include <device-settings/LayoutMode.h>
 #include <xml/StandardOutStream.h>
 #include <serialization/EditBufferSerializer.h>
+#include <iostream>
 
 HWUI::HWUI()
     : m_readersCancel(Gio::Cancellable::create())
@@ -476,8 +477,9 @@ sigc::connection HWUI::connectToBlinkTimer(const sigc::slot<void, int> &cb)
   if(m_blinkTimer.empty())
   {
     m_blinkTimerConnection.disconnect();
-    m_blinkTimerConnection
-        = Application::get().getMainContext()->signal_timeout().connect(mem_fun(this, &HWUI::onBlinkTimeout), 500);
+
+    m_blinkTimerConnection = Application::get().getMainContext()->signal_timeout().connect(
+        sigc::mem_fun(this, &HWUI::onBlinkTimeout), 500);
     m_blinkCount = 1;
   }
 

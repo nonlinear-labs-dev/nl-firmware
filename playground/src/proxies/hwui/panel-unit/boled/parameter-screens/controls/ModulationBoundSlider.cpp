@@ -34,9 +34,9 @@ bool ModulationBoundSlider::redraw(FrameBuffer &fb)
   if(m_param && m_param->getModulationSource() != MacroControls::NONE)
   {
     if(isHighlight())
-      fb.setColor(FrameBuffer::C255);
+      fb.setColor(FrameBufferColors::C255);
     else
-      fb.setColor(FrameBuffer::C103);
+      fb.setColor(FrameBufferColors::C103);
 
     const Rect &pos = getPosition();
 

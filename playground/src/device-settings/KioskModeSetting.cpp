@@ -2,7 +2,7 @@
 #include <xml/FileOutStream.h>
 #include <device-settings/DebugLevel.h>
 
-KioskModeSetting::KioskModeSetting(Settings& settings)
+KioskModeSetting::KioskModeSetting(UpdateDocumentContributor& settings)
     : BooleanSetting(settings, FileOutStream::getKioskMode())
 {
 }

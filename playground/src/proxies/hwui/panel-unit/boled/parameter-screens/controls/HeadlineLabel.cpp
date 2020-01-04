@@ -4,11 +4,13 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 HeadlineLabel::HeadlineLabel(const Rect &pos)
     : super(pos)
 {
-  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(mem_fun(this, &HeadlineLabel::updateText));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &HeadlineLabel::updateText));
   Application::get().getPresetManager()->getEditBuffer()->getSelected()->onParameterChanged(
       mem_fun(this, &HeadlineLabel::updateMc));
 }
@@ -25,14 +27,14 @@ int HeadlineLabel::getFontHeight() const
 
 void HeadlineLabel::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C255);
+  fb.setColor(FrameBufferColors::C255);
 }
 
 bool HeadlineLabel::redraw(FrameBuffer &fb)
 {
   const Rect &r = getPosition();
 
-  fb.setColor(FrameBuffer::Colors::C77);
+  fb.setColor(FrameBufferColors::C77);
   fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 
   super::redraw(fb);

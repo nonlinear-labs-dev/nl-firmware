@@ -1,5 +1,6 @@
 #include "InfoLabel.h"
 #include <proxies/hwui/Oleds.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 InfoLabel::InfoLabel(const Rect &pos, const Glib::ustring &text)
     : super("Info " + text, pos)
@@ -18,14 +19,14 @@ int InfoLabel::getFontHeight() const
 
 void InfoLabel::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C179);
+  fb.setColor(FrameBufferColors::C179);
 }
 
 bool InfoLabel::redraw(FrameBuffer &fb)
 {
   const Rect &r = getPosition();
 
-  fb.setColor(FrameBuffer::Colors::C77);
+  fb.setColor(FrameBufferColors::C77);
   fb.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 
   super::redraw(fb);

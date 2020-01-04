@@ -17,7 +17,7 @@ class VelocityCurve : public EnumSetting<VelocityCurves>
   typedef EnumSetting<VelocityCurves> super;
 
  public:
-  VelocityCurve(Settings &settings);
+  VelocityCurve(UpdateDocumentContributor &settings);
   virtual ~VelocityCurve();
 
   void sendToLPC() const override;

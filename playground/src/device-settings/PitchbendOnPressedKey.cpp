@@ -2,7 +2,7 @@
 #include <device-settings/PitchbendOnPressedKey.h>
 #include <proxies/lpc/LPCProxy.h>
 
-PitchbendOnPressedKey::PitchbendOnPressedKey(Settings &settings)
+PitchbendOnPressedKey::PitchbendOnPressedKey(UpdateDocumentContributor &settings)
     : super(settings, false)
 {
 }
