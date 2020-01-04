@@ -1,16 +1,7 @@
 package com.nonlinearlabs.client.world.maps.parameters.MonoAndUnison;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
-import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
-import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
-import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.RGB;
-import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelSmall;
@@ -25,15 +16,11 @@ public class UnisonAndMonoModuleHeader extends LabelSmall {
     @Override
     public String getText() {
         return "Voices";
-    }
-
-    @Override
-	public RGB getColorFont() {
-		return new RGBA(getFontColor(), 0.9);
-    }
-    
-    private RGB getFontColor() {
-		return super.getColorSliderHighlight();
+	}
+	
+	@Override
+	protected String getDisplayText() {
+		return getText();
 	}
 
 	@Override

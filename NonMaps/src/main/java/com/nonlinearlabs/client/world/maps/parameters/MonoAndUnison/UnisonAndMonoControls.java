@@ -19,13 +19,19 @@ class UnisonAndMonoControls extends LayoutResizingHorizontal {
             Rect pix = getPixRect();
             pix.fill(ctx, getParent().getColorModuleBackground());
         }
-
     };
 
 	UnisonAndMonoControls(MapsLayout parent) {
         super(parent);
+        addChild(new Spacer(this, 2, 1));
         addChild(new MonoControls(this));
         addChild(new Fill(this));
-		addChild(new UnisonControls(this));
-	}
+        addChild(new UnisonControls(this));
+        addChild(new Spacer(this, 2, 1));
+    }
+    
+    @Override
+    public void doFirstLayoutPass(double levelOfDetail) {
+        super.doFirstLayoutPass(levelOfDetail);
+    }
 }
