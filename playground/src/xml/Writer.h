@@ -14,7 +14,6 @@ class Writer
 
   typedef std::function<void()> tTagContentWriter;
 
-
   void writeTextElement(const Glib::ustring &name, const std::string &text);
   void writeTextElement(const Glib::ustring &name, const std::string &text, const Attribute &a);
   void writeTextElement(const Glib::ustring &name, const std::string &text, const Attribute &a, const Attribute &b);

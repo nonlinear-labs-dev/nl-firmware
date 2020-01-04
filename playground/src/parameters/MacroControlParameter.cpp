@@ -218,7 +218,6 @@ void MacroControlParameter::undoableSetInfo(const Glib::ustring &info) {
   }
 }
 
-
 void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &info) {
   if (m_info != info) {
     auto swapData = UNDO::createSwapData(info);

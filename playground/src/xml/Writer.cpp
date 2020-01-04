@@ -16,84 +16,84 @@ void Writer::writeAttributes(const tFirst &first, const tAttributes &... attribu
   writeAttributes(attributes...);
 }
 
-void Writer::writeTextElement(const std::string &name, const std::string &text)
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text)
 {
   implWriteTextElement(name, text, {});
 }
 
-void Writer::writeTextElement(const std::string &name, const std::string &text, const Attribute &a)
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a)
 {
   implWriteTextElement(name, text, { a });
 }
 
-void Writer::writeTextElement(const std::string &name, const std::string &text, const Attribute &a, const Attribute &b)
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b)
 {
   implWriteTextElement(name, text, { a, b });
 }
 
-void Writer::writeTextElement(const std::string &name, const std::string &text, const Attribute &a, const Attribute &b,
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b,
                               const Attribute &c)
 {
   implWriteTextElement(name, text, { a, b, c });
 }
 
-void Writer::writeTextElement(const std::string &name, const std::string &text, const Attribute &a, const Attribute &b,
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b,
                               const Attribute &c, const Attribute &d)
 {
   implWriteTextElement(name, text, { a, b, c, d });
 }
 
-void Writer::writeTag(const std::string &name)
+void Writer::writeTag(const Glib::ustring &name)
 {
   implWriteTag(name, {}, []() {});
 }
 
-void Writer::writeTag(const std::string &name, const Writer::tTagContentWriter &w)
+void Writer::writeTag(const Glib::ustring &name, const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, {}, w);
 }
 
-void Writer::writeTag(const std::string &name, std::initializer_list<Attribute> &&a, const Writer::tTagContentWriter &w)
+void Writer::writeTag(const Glib::ustring &name, std::initializer_list<Attribute> &&a, const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, a, w);
 }
 
-void Writer::writeTag(const std::string &name, const Attribute &a, const Writer::tTagContentWriter &w)
+void Writer::writeTag(const Glib::ustring &name, const Attribute &a, const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, { a }, w);
 }
 
-void Writer::writeTag(const std::string &name, const Attribute &a, const Attribute &b,
+void Writer::writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b,
                       const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, { a, b }, w);
 }
 
-void Writer::writeTag(const std::string &name, const Attribute &a, const Attribute &b, const Attribute &c,
+void Writer::writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
                       const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, { a, b, c }, w);
 }
 
-void Writer::writeTag(const std::string &name, const Attribute &a, const Attribute &b, const Attribute &c,
+void Writer::writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
                       const Attribute &d, const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, { a, b, c, d }, w);
 }
 
-void Writer::writeTag(const std::string &name, const Attribute &a, const Attribute &b, const Attribute &c,
+void Writer::writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
                       const Attribute &d, const Attribute &e, const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, { a, b, c, d, e }, w);
 }
 
-void Writer::writeTag(const std::string &name, const Attribute &a, const Attribute &b, const Attribute &c,
+void Writer::writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
                       const Attribute &d, const Attribute &e, const Attribute &f, const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, { a, b, c, d, e, f }, w);
 }
 
-void Writer::writeTag(const std::string &name, const Attribute &a, const Attribute &b, const Attribute &c,
+void Writer::writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
                       const Attribute &d, const Attribute &e, const Attribute &f, const Attribute &g,
                       const Writer::tTagContentWriter &w)
 {
