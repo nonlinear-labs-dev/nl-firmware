@@ -12,14 +12,14 @@
     @todo
 *******************************************************************************/
 
-#include <stdint.h>
+#include "parameter-db/generated/c15_config.h"
 
 // basic smoothing unit
 class ProtoSmoother
 {
  public:
   // smoothed value
-  float m_value = 0.0f;
+  float m_value = 0.0f, m_dx = 0.0f;
   // constructor
   inline ProtoSmoother()
   {
@@ -64,7 +64,7 @@ class ProtoSmoother
 
  private:
   // segment-specific private variables
-  float m_start, m_diff, m_x, m_dx = 0.0f;
+  float m_start, m_diff, m_x;
   bool m_state = false;
 };
 
@@ -205,3 +205,38 @@ template <class Sync, class Audio, class Fast, class Slow> class SmootherHandle
       m_slow[static_cast<uint32_t>(Slow::_LENGTH_)] = {};
   float m_sync[static_cast<uint32_t>(Sync::_LENGTH_)] = {};
 };
+
+namespace Engine
+{
+  namespace Handle
+  {
+    struct Time_Handle
+    {
+      float m_convert[4] = {}, m_dx_audio = 0.0f, m_dx_fast = 0.0f, m_dx_slow = 0.0f, m_millisecond = 0.0f,
+            m_sample_inc = 0.0f;
+      inline void init(const uint32_t _samplerate)
+      {
+        float rate = static_cast<float>(_samplerate);
+        m_millisecond = 1e-3f * rate;
+        m_sample_inc = 1.0f / rate;
+        m_convert[1] = 1.0f;
+        m_convert[2] = rate / static_cast<float>(C15::Config::clock_rates[0][1]);
+        m_convert[3] = rate / static_cast<float>(C15::Config::clock_rates[0][2]);
+      }
+      inline float clip(const float _value)
+      {
+        return _value > 1.0f ? 1.0f : _value;
+      }
+      inline float eval_ms(const uint32_t _type, const float _value)
+      {
+        return clip(m_convert[_type] / ((_value * m_millisecond) + 1.0f));
+      }
+      inline void update_ms(const float _value)
+      {
+        m_dx_audio = eval_ms(1, _value);
+        m_dx_fast = eval_ms(2, _value);
+        m_dx_slow = eval_ms(3, _value);
+      }
+    };
+  }
+}

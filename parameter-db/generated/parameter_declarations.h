@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2020-01-04, 22:52
+    @date       2020-01-05, 13:24
     @version	1.7B-3
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -443,10 +443,6 @@ namespace C15
     enum class Poly_Sync
     {
       Split_Split_Point,
-      Mono_Grp_Enable,
-      Mono_Grp_Prio,
-      Mono_Grp_Legato,
-      Mono_Grp_Glide,
       Env_A_Lvl_Vel,
       Env_A_Att_Vel,
       Env_A_Dec_1_Vel,
@@ -552,6 +548,7 @@ namespace C15
     {
       Unison_Detune,
       Voice_Grp_Tune,
+      Mono_Grp_Glide,
       Env_A_Att,
       Env_A_Dec_1,
       Env_A_Dec_2,

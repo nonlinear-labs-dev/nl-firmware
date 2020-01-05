@@ -13,12 +13,14 @@ PolySection::PolySection()
 {
 }
 
-void PolySection::init(GlobalSignals *_globalsignals, exponentiator *_convert, LayerSignalCollection *_z_self,
-                       float *_reference, const float _ms, const float _gateRelease, const float _samplerate)
+void PolySection::init(GlobalSignals *_globalsignals, exponentiator *_convert, Engine::Handle::Time_Handle *_time,
+                       LayerSignalCollection *_z_self, float *_reference, const float _ms, const float _gateRelease,
+                       const float _samplerate)
 {
   // pointer linking (from dsp_host_dual)
   m_globalsignals = _globalsignals;
   m_convert = _convert;
+  m_time = _time;
   m_z_self = _z_self;
   // init crucial variables
   m_reference = _reference;
@@ -140,6 +142,8 @@ void PolySection::render_fast()
 void PolySection::render_slow()
 {
   m_smoothers.render_slow();
+  // update glide time and render glide smoother
+  m_mono_glide.m_dx = m_time->eval_ms(3, m_smoothers.get(C15::Smoothers::Poly_Slow::Mono_Grp_Glide));
   m_mono_glide.render();
   auto traversal = &m_smoothers.m_copy_slow;
   for(uint32_t i = 0; i < traversal->m_length; i++)

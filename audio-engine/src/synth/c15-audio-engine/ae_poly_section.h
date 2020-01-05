@@ -33,8 +33,9 @@ class PolySection
         m_millisecond = 0.0f;
   uint32_t m_uVoice = 0, m_key_active = 0;
   PolySection();
-  void init(GlobalSignals *_globalsignals, exponentiator *_convert, LayerSignalCollection *_z_self, float *_reference,
-            const float _ms, const float _gateRelease, const float _samplerate);
+  void init(GlobalSignals *_globalsignals, exponentiator *_convert, Engine::Handle::Time_Handle *_time,
+            LayerSignalCollection *_z_self, float *_reference, const float _ms, const float _gateRelease,
+            const float _samplerate);
   void add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_fast_id(const uint32_t _smootherId, const uint32_t _signalId);
@@ -60,6 +61,7 @@ class PolySection
       m_smoothers;
   GlobalSignals *m_globalsignals;
   exponentiator *m_convert;
+  Engine::Handle::Time_Handle *m_time;
   LayerSignalCollection *m_z_self;
   UnisonSpreadTable<C15::Config::total_polyphony> m_spread;
   Engine::Envelopes::SplitEnvelope<C15::Config::local_polyphony> m_env_a, m_env_b;

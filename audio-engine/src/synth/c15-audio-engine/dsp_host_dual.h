@@ -26,20 +26,20 @@
 inline constexpr bool LOG_MISSING = true;
 inline constexpr bool LOG_FAIL = true;
 inline constexpr bool LOG_INIT = true;
-inline constexpr bool LOG_MIDI = true;
-inline constexpr bool LOG_MIDI_DETAIL = true;
+inline constexpr bool LOG_MIDI = false;
+inline constexpr bool LOG_MIDI_DETAIL = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = true;
-inline constexpr bool LOG_TIMES = true;
-inline constexpr bool LOG_SETTINGS = true;
-inline constexpr bool LOG_RECALL = true;
+inline constexpr bool LOG_TIMES = false;
+inline constexpr bool LOG_SETTINGS = false;
+inline constexpr bool LOG_RECALL = false;
 inline constexpr bool LOG_RECALL_COMPARE_INITIAL = false;
-inline constexpr bool LOG_RECALL_LEVELS = true;
+inline constexpr bool LOG_RECALL_LEVELS = false;
 inline constexpr bool LOG_KEYS = true;
 inline constexpr bool LOG_KEYS_POLY = true;
 inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = true;
-inline constexpr bool LOG_HW = true;
+inline constexpr bool LOG_HW = false;
 
 class dsp_host_dual
 {
@@ -70,7 +70,10 @@ class dsp_host_dual
   void globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
   void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage &_msg);
   void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
-  void localUnisonChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
+  void localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg);
   // evend bindings: Settings
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
@@ -137,8 +140,8 @@ class dsp_host_dual
   void localTransition(const uint32_t _layer, const Direct_Param *_param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Target_Param *_param, const Time_Aspect _time);
   void evalFadePoint();
-  Direct_Param *evalVoiceChg(const C15::Properties::LayerId _layerId,
-                             const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices);
+  void evalPolyChg(const C15::Properties::LayerId _layerId, const nltools::msg::ParameterGroups::UnisonGroup &_unison,
+                   const nltools::msg::ParameterGroups::MonoGroup &_mono);
   void recallSingle();
   void recallSplit();
   void recallLayer();

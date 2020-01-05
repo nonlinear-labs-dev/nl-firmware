@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-01-04, 22:53
+    @date       2020-01-05, 13:24
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1924,22 +1924,22 @@ namespace C15
     { Parameters::Local_Unmodulateables::Mono_Grp_Enable,
       364,
       0.0f,
-      { Smoothers::Poly_Sync::Mono_Grp_Enable, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { None, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "0", "Mono", "Mono", "Enable", "Enable", "" } },
     { Parameters::Local_Unmodulateables::Mono_Grp_Prio,
       365,
       0.0f,
-      { Smoothers::Poly_Sync::Mono_Grp_Prio, None, Properties::SmootherScale::Linear, 2.0f, 0.0f, false },
+      { None, None, Properties::SmootherScale::Linear, 2.0f, 0.0f, false },
       { "", "Mono", "Mono", "Key Priority", "Key Prio", "" } },
     { Parameters::Local_Unmodulateables::Mono_Grp_Legato,
       366,
       0.0f,
-      { Smoothers::Poly_Sync::Mono_Grp_Legato, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { None, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "0", "Mono", "Mono", "Legato", "Legato", "" } },
     { Parameters::Local_Modulateables::Mono_Grp_Glide,
       367,
       0.0f,
-      { Smoothers::Poly_Sync::Mono_Grp_Glide, None, Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, false },
+      { Smoothers::Poly_Slow::Mono_Grp_Glide, None, Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, false },
       { "", "Mono", "Mono", "Glide Time", "Glide", "" } },
     { None },
     { Parameters::Macro_Controls::MC_E,
