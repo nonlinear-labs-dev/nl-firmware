@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-01-05, 13:24
+    @date       2020-01-05, 13:59
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -835,9 +835,9 @@ namespace C15
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Drive,
       164,
-      0.0f,
+      2.0f / 7.0f,
       { Smoothers::Poly_Fast::FB_Mix_Drive, Signals::Quasipoly_Signals::FB_Mix_Drive,
-        Properties::SmootherScale::Expon_Mix_Drive, 50.0f, 2.5f, false },
+        Properties::SmootherScale::Expon_Mix_Drive, 70.0f, 0.25f, false },
       { "", "Feedback Mixer", "FB Mixer", "Drive", "Drive",
         "Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics." } },
     { None },
