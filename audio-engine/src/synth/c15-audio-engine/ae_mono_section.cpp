@@ -37,6 +37,11 @@ void MonoSection::init(exponentiator *_convert, LayerSignalCollection *_z_self, 
   m_reverb.init(_samplerate, 1);  // todo: upsample factor currently not dynamic ...
 }
 
+void MonoSection::add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId)
+{
+  m_smoothers.m_copy_sync.add_copy_id(_smootherId, _signalId);
+}
+
 void MonoSection::add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId)
 {
   m_smoothers.m_copy_audio.add_copy_id(_smootherId, _signalId);
@@ -55,6 +60,10 @@ void MonoSection::add_copy_slow_id(const uint32_t _smootherId, const uint32_t _s
 void MonoSection::start_sync(const uint32_t _id, const float _dest)
 {
   m_smoothers.start_sync(_id, _dest);
+  if(m_smoothers.m_copy_sync.m_smootherId[_id])
+  {
+    m_signals.set(m_smoothers.m_copy_sync.m_signalId[_id], _dest);
+  }
 }
 
 void MonoSection::start_audio(const uint32_t _id, const float _dx, const float _dest)
@@ -110,9 +119,9 @@ void MonoSection::render_slow()
   m_reverb.set(m_signals);
 }
 
-void MonoSection::keyDown(const float _vel)
+void MonoSection::keyDown(PolyKeyEvent *_event)
 {
-  m_flanger_env.setSegmentDest(0, 1, _vel);
+  m_flanger_env.setSegmentDest(0, 1, _event->m_velocity);
   m_flanger_env.start(0);
 }
 

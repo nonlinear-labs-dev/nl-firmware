@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       dsp_host_dual.cpp
     @date
-    @version    1.7-0
+    @version    1.7-3
     @author     M. Seeber
     @brief      new main engine container.
     @todo
@@ -44,10 +44,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.update_tone_frequency(m_reference.m_scaled);
   m_global.update_tone_mode(0);
   // init poly dsp: exponentiator, feedback pointers
-  m_poly[0].init(&m_convert, &m_z_layers[0], &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
-                 samplerate);
-  m_poly[1].init(&m_convert, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond, env_init_gateRelease,
-                 samplerate);
+  m_poly[0].init(&m_global.m_signals, &m_convert, &m_time, &m_z_layers[0], &m_reference.m_scaled, m_time.m_millisecond,
+                 env_init_gateRelease, samplerate);
+  m_poly[1].init(&m_global.m_signals, &m_convert, &m_time, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond,
+                 env_init_gateRelease, samplerate);
   // init mono dsp
   m_mono[0].init(&m_convert, &m_z_layers[0], m_time.m_millisecond, samplerate);
   m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate);
@@ -66,12 +66,18 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Global_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_global.add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_global.add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Fast:
                 m_global.add_copy_fast_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Slow:
                 m_global.add_copy_slow_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
             }
             break;
         }
@@ -84,12 +90,18 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Global_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_global.add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_global.add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Fast:
                 m_global.add_copy_fast_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Slow:
                 m_global.add_copy_slow_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
             }
             break;
         }
@@ -106,6 +118,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Quasipoly_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_poly[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_poly[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_poly[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_poly[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -123,6 +139,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Mono_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_mono[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_mono[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_mono[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_mono[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -147,6 +167,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Quasipoly_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_poly[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_poly[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_poly[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_poly[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -164,6 +188,10 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
           case C15::Descriptors::ParameterSignal::Mono_Signal:
             switch(element.m_ae.m_smoother.m_clock)
             {
+              case C15::Descriptors::SmootherClock::Sync:
+                m_mono[0].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                m_mono[1].add_copy_sync_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
+                break;
               case C15::Descriptors::SmootherClock::Audio:
                 m_mono[0].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
                 m_mono[1].add_copy_audio_id(element.m_ae.m_smoother.m_index, element.m_ae.m_signal.m_index);
@@ -719,15 +747,15 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
   }
 }
 
-void dsp_host_dual::localUnisonChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
+void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
   const uint32_t layerId = getLayerId(_msg.voiceGroup);
-  auto param = m_params.get_local_unison(getLayer(_msg.voiceGroup));
+  auto param = m_params.get_local_unison_voices(getLayer(_msg.voiceGroup));
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
     if(LOG_EDITS)
     {
-      nltools::Log::info("unison_edit(layer:", layerId, ", pos:", param->m_position, ")");
+      nltools::Log::info("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
     m_alloc.setUnison(layerId, param->m_position);
     const uint32_t uVoice = m_alloc.m_unison - 1;
@@ -746,10 +774,62 @@ void dsp_host_dual::localUnisonChg(const nltools::msg::UnmodulateableParameterCh
         m_poly[lId].m_key_active = 0;
       }
     }
-    if(LOG_MISSING)
+  }
+}
+
+void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
+{
+  const uint32_t layerId = getLayerId(_msg.voiceGroup);
+  auto param = m_params.get_local_mono_enable(getLayer(_msg.voiceGroup));
+  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  {
+    if(LOG_EDITS)
     {
-      nltools::Log::info("todo: unison voices should not possess a smoother ...");
+      nltools::Log::info("mono_enable_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
+    param->m_scaled = scale(param->m_scaling, param->m_position);
+    m_alloc.setMonoEnable(layerId, param->m_scaled);
+    if(m_layer_mode == LayerMode::Split)
+    {
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_key_active = 0;
+    }
+    else
+    {
+      for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+      {
+        m_poly[lId].resetEnvelopes();
+        m_poly[lId].m_key_active = 0;
+      }
+    }
+  }
+}
+void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
+{
+  const uint32_t layerId = getLayerId(_msg.voiceGroup);
+  auto param = m_params.get_local_mono_priority(getLayer(_msg.voiceGroup));
+  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  {
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("mono_priority_edit(layer:", layerId, ", pos:", param->m_position, ")");
+    }
+    param->m_scaled = scale(param->m_scaling, param->m_position);
+    m_alloc.setMonoPriority(layerId, param->m_scaled);
+  }
+}
+void dsp_host_dual::localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
+{
+  const uint32_t layerId = getLayerId(_msg.voiceGroup);
+  auto param = m_params.get_local_mono_legato(getLayer(_msg.voiceGroup));
+  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  {
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("mono_leagto_edit(layer:", layerId, ", pos:", param->m_position, ")");
+    }
+    param->m_scaled = scale(param->m_scaling, param->m_position);
+    m_alloc.setMonoLegato(layerId, param->m_scaled);
   }
 }
 
@@ -818,7 +898,7 @@ void dsp_host_dual::onSettingInitialSinglePreset()
     nltools::Log::info("recallInitialSinglePreset(@", m_clock.m_index, ")");
   }
   m_layer_mode = LayerMode::Single;
-  auto unison = m_params.get_local_unison(C15::Properties::LayerId::I);
+  auto unison = m_params.get_local_unison_voices(C15::Properties::LayerId::I);
   unison->update_position(unison->m_initial);
   if(LOG_RESET)
   {
@@ -936,8 +1016,8 @@ void dsp_host_dual::render()
   {
     // render components
     m_global.render_slow();
-    m_poly[0].render_slow(m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune));
-    m_poly[1].render_slow(m_global.m_signals.get(C15::Signals::Global_Signals::Master_Tune));
+    m_poly[0].render_slow();
+    m_poly[1].render_slow();
     m_mono[0].render_slow();
     m_mono[1].render_slow();
   }
@@ -1072,26 +1152,26 @@ uint32_t dsp_host_dual::getLayerId(const VoiceGroup _vg)
 
 void dsp_host_dual::keyDown(const float _vel)
 {
-  if(m_alloc.keyDown(m_key_pos))
+  if(m_alloc.keyDown(m_key_pos, _vel))
   {
-    // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
-    const float keyTune = m_global.key_position(m_key_pos);
     if(LOG_KEYS)
     {
-      nltools::Log::info("key_down(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+      nltools::Log::info("key_down(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
     }
-    for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
     {
-      if(m_poly[key->m_localIndex].keyDown(key->m_voiceId, key->m_unisonIndex, key->m_stolen, keyTune, _vel))
+      if(m_poly[event->m_localIndex].keyDown(event))
       {
         // mono legato
-        m_mono[key->m_localIndex].keyDown(_vel);
+        m_mono[event->m_localIndex].keyDown(event);
       }
       if(LOG_KEYS_POLY)
       {
-        nltools::Log::info("key_down_poly(group:", key->m_localIndex, "voice:", key->m_voiceId,
-                           ", unisonIndex:", key->m_unisonIndex, ", stolen:", key->m_stolen, ", tune:", keyTune,
-                           ", velocity:", _vel, ")");
+        nltools::Log::info("key_down_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", unisonIndex:", event->m_unisonIndex, ", stolen:", event->m_stolen,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ", trigger_phase:", event->m_trigger_phase, ")");
       }
     }
   }
@@ -1104,21 +1184,21 @@ void dsp_host_dual::keyDown(const float _vel)
 
 void dsp_host_dual::keyUp(const float _vel)
 {
-  if(m_alloc.keyUp(m_key_pos))
+  if(m_alloc.keyUp(m_key_pos, _vel))
   {
-    // get centered, scaled, note_shifted keyTune from position (C3 -> 0.0 - relative tuning is added smoothed, in post processing)
-    const float keyTune = m_global.key_position(m_key_pos);
     if(LOG_KEYS)
     {
-      nltools::Log::info("key_up(tune:", keyTune, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+      nltools::Log::info("key_up(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
     }
-    for(auto key = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); key = m_alloc.m_traversal.next())
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
     {
-      m_poly[key->m_localIndex].keyUp(key->m_voiceId, key->m_unisonIndex, keyTune, _vel);
+      m_poly[event->m_localIndex].keyUp(event);
       if(LOG_KEYS_POLY)
       {
-        nltools::Log::info("key_up_poly(group:", key->m_localIndex, "voice:", key->m_voiceId, ", tune:", keyTune,
-                           ", velocity:", _vel, ")");
+        nltools::Log::info("key_up_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ", trigger_phase:", event->m_trigger_phase, ")");
       }
     }
   }
@@ -1605,12 +1685,26 @@ void dsp_host_dual::evalFadePoint()
   }
 }
 
-Direct_Param *dsp_host_dual::evalVoiceChg(const C15::Properties::LayerId _layerId,
-                                          const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices)
+void dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
+                                const nltools::msg::ParameterGroups::UnisonGroup &_unison,
+                                const nltools::msg::ParameterGroups::MonoGroup &_mono)
 {
-  auto param = m_params.get_local_unison(_layerId);
-  m_layer_changed |= param->update_position(static_cast<float>(_unisonVoices.controlPosition));
-  return param;
+  // two goals:
+  // - 1: detect changes in unison voices and mono enable
+  // - 2: update all parameters belonging to unison and mono groups
+  const uint32_t layerId = static_cast<uint32_t>(_layerId);
+  auto unison_voices = m_params.get_local_unison_voices(_layerId);
+  m_layer_changed |= unison_voices->update_position(static_cast<float>(_unison.unisonVoices.controlPosition));
+  localParRcl(layerId, _unison.detune);
+  localParRcl(layerId, _unison.phase);
+  localParRcl(layerId, _unison.pan);
+  auto mono_enable = m_params.get_local_mono_enable(_layerId);
+  m_layer_changed |= mono_enable->update_position(static_cast<float>(_mono.monoEnable.controlPosition));
+  localParRcl(layerId, _mono.priority);
+  m_alloc.setMonoPriority(layerId, m_params.get_local_mono_priority(_layerId)->m_scaled);
+  localParRcl(layerId, _mono.legato);
+  m_alloc.setMonoLegato(layerId, m_params.get_local_mono_legato(_layerId)->m_scaled);
+  localParRcl(layerId, _mono.glide);
 }
 
 void dsp_host_dual::recallSingle()
@@ -1620,20 +1714,24 @@ void dsp_host_dual::recallSingle()
     nltools::Log::info("recallSingle(@", m_clock.m_index, ")");
   }
   auto msg = &m_preloaded_single_data;
+  // update unison and mono groups
+  evalPolyChg(C15::Properties::LayerId::I, msg->unison, msg->mono);
   // reset detection
-  auto unison = evalVoiceChg(C15::Properties::LayerId::I, msg->unison.unisonVoices);
   if(m_layer_changed)
   {
     if(LOG_RESET)
     {
       nltools::Log::info("recall single voice reset");
     }
-    m_alloc.setUnison(0, unison->m_position);
+    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position);
+    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position);
     const uint32_t uVoice = m_alloc.m_unison - 1;
-    m_poly[0].resetEnvelopes();
-    m_poly[1].resetEnvelopes();
-    m_poly[0].m_uVoice = m_poly[1].m_uVoice = uVoice;
-    m_poly[0].m_key_active = m_poly[1].m_key_active = 0;
+    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+    {
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = uVoice;
+      m_poly[layerId].m_key_active = 0;
+    }
   }
   // reset macro assignments
   m_params.m_global.m_assignment.reset();
@@ -1754,16 +1852,19 @@ void dsp_host_dual::recallSplit()
   auto msg = &m_preloaded_split_data;
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
+    const C15::Properties::LayerId layer = static_cast<C15::Properties::LayerId>(layerId);
     m_layer_changed = layer_changed;
+    // update unison and mono groups
+    evalPolyChg(layer, msg->unison[layerId], msg->mono[layerId]);
     // reset detection
-    auto unison = evalVoiceChg(static_cast<C15::Properties::LayerId>(layerId), msg->unison[layerId].unisonVoices);
     if(m_layer_changed)
     {
       if(LOG_RESET)
       {
-        nltools::Log::info("recall single voice reset(layerId:", layerId, ")");
+        nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
       }
-      m_alloc.setUnison(layerId, unison->m_position);
+      m_alloc.setUnison(layerId, m_params.get_local_unison_voices(layer)->m_position);
+      m_alloc.setMonoEnable(layerId, m_params.get_local_mono_enable(layer)->m_position);
       const uint32_t uVoice = m_alloc.m_unison - 1;
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_uVoice = uVoice;
@@ -1884,22 +1985,23 @@ void dsp_host_dual::recallLayer()
     nltools::Log::info("recallLayer(@", m_clock.m_index, ")");
   }
   auto msg = &m_preloaded_layer_data;
-  // reset detection: currently only unison voices (mono stuff should be taken into account as well)
-  auto unison = evalVoiceChg(C15::Properties::LayerId::I,
-                             msg->unison.unisonVoices);  // temporary: unison array instead of single unison param
+  // update unison and mono groups
+  evalPolyChg(C15::Properties::LayerId::I, msg->unison, msg->mono);
+  // reset detection
   if(m_layer_changed)
   {
     if(LOG_RESET)
     {
       nltools::Log::info("recall layer voice reset");
-      m_alloc.setUnison(0, unison->m_position);
-      const uint32_t uVoice = m_alloc.m_unison - 1;
-      for(uint32_t layerId; layerId < m_params.m_layer_count; layerId++)
-      {
-        m_poly[layerId].resetEnvelopes();
-        m_poly[layerId].m_uVoice = uVoice;
-        m_poly[layerId].m_key_active = 0;
-      }
+    }
+    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position);
+    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position);
+    const uint32_t uVoice = m_alloc.m_unison - 1;
+    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+    {
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = uVoice;
+      m_poly[layerId].m_key_active = 0;
     }
   }
   // reset macro assignments
