@@ -78,7 +78,7 @@ template <uint32_t Keys> class MonoVoiceAllocator
   inline MonoVoiceAllocator()
   {
   }
-  inline bool keyDown(const uint32_t _keyPosition)
+  inline void keyDown(const uint32_t _keyPosition)
   {
     // prior states
     const bool priorKeysPressed = (m_latest.m_assigned > 0);
@@ -165,9 +165,8 @@ template <uint32_t Keys> class MonoVoiceAllocator
         }
         break;
     }
-    //return m_valid;
   }
-  inline bool keyUp(const uint32_t _keyPosition)
+  inline void keyUp(const uint32_t _keyPosition)
   {
     // prior states
     const bool keyIsLatest = m_latest.isLastElement(_keyPosition), keyIsHighest = m_highest.isLastElement(_keyPosition),
