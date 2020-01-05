@@ -21,7 +21,7 @@
 // temporary:
 inline constexpr bool ENABLE_MONO = true;         // enable/disable mono mode completely
 inline constexpr bool ENABLE_MONO_LEGATO = true;  // enable/disable mono legato
-inline constexpr bool APPLY_MONO_PHASE = false;   // enable/disable mono phase reset
+inline constexpr bool APPLY_MONO_PHASE = true;    // enable/disable mono phase reset
 
 // Descriptors
 

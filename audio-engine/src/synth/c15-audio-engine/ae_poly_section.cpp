@@ -172,7 +172,7 @@ bool PolySection::keyDown(PolyKeyEvent *_event)
     if(_event->m_trigger_glide)
     {
       m_mono_glide.sync(0.0f);
-      m_mono_glide.start(TEMP_GLIDE_DX, 1.0f);  // temporary: constant glide dx
+      m_mono_glide.start(m_time->eval_ms(3, m_smoothers.get(C15::Smoothers::Poly_Slow::Mono_Grp_Glide)), 1.0f);
     }
     else
     {
@@ -210,7 +210,7 @@ void PolySection::keyUp(PolyKeyEvent *_event)
     if(_event->m_trigger_glide)
     {
       m_mono_glide.sync(0.0f);
-      m_mono_glide.start(TEMP_GLIDE_DX, 1.0f);  // temporary: constant glide dx
+      m_mono_glide.start(m_time->eval_ms(3, m_smoothers.get(C15::Smoothers::Poly_Slow::Mono_Grp_Glide)), 1.0f);
     }
     else
     {

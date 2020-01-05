@@ -21,9 +21,6 @@
 #include "ae_poly_fb_mix.h"
 #include "ae_poly_out_mix.h"
 
-// temporary:
-inline constexpr float TEMP_GLIDE_DX = 1e-2f;  // constant glide dx
-
 class PolySection
 {
  public:

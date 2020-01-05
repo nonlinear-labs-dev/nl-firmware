@@ -26,20 +26,20 @@
 inline constexpr bool LOG_MISSING = true;
 inline constexpr bool LOG_FAIL = true;
 inline constexpr bool LOG_INIT = true;
-inline constexpr bool LOG_MIDI = false;
-inline constexpr bool LOG_MIDI_DETAIL = false;
+inline constexpr bool LOG_MIDI = true;
+inline constexpr bool LOG_MIDI_DETAIL = true;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = true;
-inline constexpr bool LOG_TIMES = false;
-inline constexpr bool LOG_SETTINGS = false;
-inline constexpr bool LOG_RECALL = false;
+inline constexpr bool LOG_TIMES = true;
+inline constexpr bool LOG_SETTINGS = true;
+inline constexpr bool LOG_RECALL = true;
 inline constexpr bool LOG_RECALL_COMPARE_INITIAL = false;
 inline constexpr bool LOG_RECALL_LEVELS = false;
 inline constexpr bool LOG_KEYS = true;
 inline constexpr bool LOG_KEYS_POLY = true;
 inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = true;
-inline constexpr bool LOG_HW = false;
+inline constexpr bool LOG_HW = true;
 
 class dsp_host_dual
 {
