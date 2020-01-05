@@ -102,7 +102,9 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
 
     if(parameter != nullptr)
     {
-      auto [isSpecialCase, enabledLed] = trySpecialCaseParameter(parameter);
+      auto result = trySpecialCaseParameter(parameter);
+      auto isSpecialCase = result.first;
+      auto enabledLed = result.second;
       if(isSpecialCase)
       {
         if(enabledLed)
