@@ -72,16 +72,27 @@ public class Overlay extends OverlayLayout {
 			RGB c = new RGBA(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor, 0.25);
 			getPixRect().fill(ctx, c);
 			super.draw(ctx, invalidationMask);
+
 			if(isLoadIntoPartEnabled())
 			{
-				Rect px = getPixRect();
-				ctx.moveTo(px.getLeft(), px.getBottom());
-				ctx.lineTo(px.getRight(), px.getBottom());
-				ctx.lineTo(px.getCenterPoint().getX(), px.getBottom() - 15);
-				ctx.closePath();
-				ctx.setFillStyle(c.toString());
-				ctx.fill();
+				drawLoadToPartIndication(ctx, c, RGBA.black().withAlpha(0.5));
 			}
+		}
+
+		private void drawLoadToPartIndication(Context2d ctx, RGB fillColor, RGB strokeColor)
+		{
+			Rect px = getPixRect();
+			ctx.beginPath();
+			double width = px.getWidth();
+			ctx.moveTo(px.getLeft() + width / 4, px.getBottom() - 1);
+			ctx.lineTo(px.getRight() - width / 4, px.getBottom() - 1);
+			ctx.lineTo(px.getCenterPoint().getX(), px.getBottom() - px.getHeight() / 4);
+			ctx.closePath();
+			ctx.setFillStyle(fillColor.toString());
+			ctx.setLineWidth(1);
+			ctx.setStrokeStyle(strokeColor.toString());
+			ctx.fill();
+			ctx.stroke();
 		}
 
 		@Override
