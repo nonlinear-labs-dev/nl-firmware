@@ -9,9 +9,7 @@ LPCReceiver::LPCReceiver()
 {
 }
 
-LPCReceiver::~LPCReceiver()
-{
-}
+LPCReceiver::~LPCReceiver() = default;
 
 void LPCReceiver::onDataReceived(Glib::RefPtr<Glib::Bytes> bytes)
 {
