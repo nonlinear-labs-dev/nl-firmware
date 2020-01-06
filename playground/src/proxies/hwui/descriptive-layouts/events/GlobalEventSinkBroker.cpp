@@ -90,15 +90,8 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [eb]() {
-      auto selected = eb->getSelected();
-      if(SwitchVoiceGroupButton::allowToggling(selected, eb))
-      {
-        auto scope = SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope();
-        Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
-      }
-
-    });
+    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection,
+                  []() { SwitchVoiceGroupButton::toggleVoiceGroup(); });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() { Application::get().getHWUI()->toggleCurrentVoiceGroup(); });
 
@@ -245,10 +238,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenPartScreen, [hwui, eb]() {
-      if(eb->getType() != SoundType::Split)
-        eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
-      else
-        eb->undoableSelectParameter({ 356, VoiceGroup::Global });
+      eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter({ 247, VoiceGroup::Global }); });

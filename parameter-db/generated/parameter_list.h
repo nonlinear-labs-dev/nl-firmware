@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file       parameter_list.h
-    @date       2020-01-05, 13:59
-    @version	1.7B-3
-    @author     M. Seeber
-    @brief      complete list of parameters (and their properties) in TCD order
-    @todo
+/**	@file	parameter_list.h
+	@date	2020-01-06, 17:24
+	@version	1.7B-3
+	@author	M. Seeber
+	@brief	complete list of parameters (and their properties) in TCD order
+	@todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -1901,7 +1901,7 @@ namespace C15
       356,
       0.4f,
       { Smoothers::Poly_Sync::Split_Split_Point, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
-      { "", "Split", "Split", "Split Point", "Split P.", "" } },
+      { "", "Split", "Split", "Split Point", "Split Point", "" } },
     { None },
     { Parameters::Local_Modulateables::Voice_Grp_Volume,
       358,
