@@ -12,7 +12,10 @@ import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.presenters.DeviceSettingsProvider;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenter;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -46,6 +49,11 @@ public class Overlay extends OverlayLayout {
 			return EditBufferPresenterProvider.getPresenter().voiceGroup;
 		}
 
+		public boolean isLoadIntoPartEnabled() {
+			PresetManagerPresenter p = PresetManagerPresenterProvider.get().getPresenter();
+			return p.loadToPartActive;
+		}
+
 		@Override
 		protected void drawText(Context2d ctx, String text, Position left) {
 			ctx.setStrokeStyle(RGB.black().toString());
@@ -64,6 +72,16 @@ public class Overlay extends OverlayLayout {
 			RGB c = new RGBA(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor, 0.25);
 			getPixRect().fill(ctx, c);
 			super.draw(ctx, invalidationMask);
+			if(isLoadIntoPartEnabled())
+			{
+				Rect px = getPixRect();
+				ctx.moveTo(px.getLeft(), px.getBottom());
+				ctx.lineTo(px.getRight(), px.getBottom());
+				ctx.lineTo(px.getCenterPoint().getX(), px.getBottom() - 15);
+				ctx.closePath();
+				ctx.setFillStyle(c.toString());
+				ctx.fill();
+			}
 		}
 
 		@Override
