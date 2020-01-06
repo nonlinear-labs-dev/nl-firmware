@@ -18,8 +18,8 @@ PresetListEntry::PresetListEntry(const Rect &pos)
     , m_animationProgress(0)
 {
   m_number = addControl(new PresetNumberLabel(Rect(0, 0, 21, 16)));
-  m_name = addControl(new PresetNameLabel(Rect(21, 0, 95, 16)));
-  m_type = addControl(new PresetTypeLabel(Rect(105, 0, 21, 16)));
+  m_name = addControl(new PresetNameLabel(Rect(21, 0, 92, 16)));
+  m_type = addControl(new PresetTypeLabel(Rect(110, 0, 16, 16)));
 }
 
 PresetListEntry::~PresetListEntry()

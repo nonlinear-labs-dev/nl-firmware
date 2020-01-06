@@ -330,6 +330,20 @@ bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
   return m_presets->animateSelectedPreset(std::move(cb));
 }
 
+bool PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
+{
+  auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
+  if(setting->get() == LoadMode::LoadToPart)
+  {
+    return m_presets->animateSelectedPreset(std::move(cb));
+  }
+  else
+  {
+    cb();
+    return true;
+  }
+}
+
 std::pair<size_t, size_t> PresetManagerLayout::getSelectedPosition() const
 {
   if(m_presets)
@@ -370,14 +384,14 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
       switch(selPreset->getType())
       {
         case SoundType::Single:
-          animateSelectedPreset([=]() { eb->undoableLoadSelectedPreset(currentVoiceGroup); });
+          animateSelectedPresetIfInLoadPartMode([=]() { eb->undoableLoadSelectedPreset(currentVoiceGroup); });
           break;
         case SoundType::Layer:
         case SoundType::Split:
           if(loadSetting->get() == LoadMode::LoadToPart)
             openPartChooser();
           else
-            animateSelectedPreset([=]() { eb->undoableLoadSelectedPreset(currentVoiceGroup); });
+            animateSelectedPresetIfInLoadPartMode([=]() { eb->undoableLoadSelectedPreset(currentVoiceGroup); });
           break;
       }
     }

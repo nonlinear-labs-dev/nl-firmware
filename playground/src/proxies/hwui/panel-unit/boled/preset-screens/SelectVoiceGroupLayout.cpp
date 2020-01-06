@@ -27,14 +27,14 @@ bool SelectVoiceGroupLayout::onButton(Buttons i, bool down, ::ButtonModifiers mo
     switch(i)
     {
       case Buttons::BUTTON_B:
-        m_parent->animateSelectedPreset([eb, hwui, currentVG]() {
+        m_parent->animateSelectedPresetIfInLoadPartMode([eb, hwui, currentVG]() {
           eb->undoableLoadSelectedPresetPartIntoPart(VoiceGroup::I, currentVG);
           hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
         });
         hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
         return true;
       case Buttons::BUTTON_C:
-        m_parent->animateSelectedPreset([eb, hwui, currentVG]() {
+        m_parent->animateSelectedPresetIfInLoadPartMode([eb, hwui, currentVG]() {
           eb->undoableLoadSelectedPresetPartIntoPart(VoiceGroup::II, currentVG);
           hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
         });
