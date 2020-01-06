@@ -15,7 +15,6 @@ class Options
 
  private:
   bool m_doTimeStamps = false;
-
   Glib::ustring m_playgroundHost = "localhost";
   Glib::ustring m_audioengineHost = "localhost";
 };
