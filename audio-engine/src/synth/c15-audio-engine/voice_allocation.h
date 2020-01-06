@@ -372,7 +372,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
 {
  public:
   PolyKeyPacket<GlobalVoices> m_traversal;
-  uint32_t m_unison;
+  uint32_t m_unison, m_splitPoint = {};
   inline VoiceAllocation()
   {
   }
@@ -534,7 +534,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   MonoVoiceAllocator<Keys> m_local_mono[2];
   KeyAssignment m_keyState[Keys];
   VoiceAssignment m_voiceState[GlobalVoices];
-  uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {}, m_splitPoint = {};
+  uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {};
   const AllocatorId m_layerId[2] = { AllocatorId::Local_I, AllocatorId::Local_II };
   LayerMode *m_current, *m_next;
   inline void keyDown_apply(KeyAssignment* _keyState)
