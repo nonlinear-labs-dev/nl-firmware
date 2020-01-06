@@ -22,12 +22,10 @@ Options::Options(int& argc, char**& argv)
 
   auto timeStamps = OptionDetail::createOption(
       mainGroup, "timestamps", 't', "measure turn around time encoder -> playground -> oled", m_doTimeStamps);
-  auto heartBeatLog
-      = OptionDetail::createOption(mainGroup, "log-heart-beat", 'h', "log lpc heart beat to console", m_logHeartBeat);
-  auto rawLpcLog
-      = OptionDetail::createOption(mainGroup, "log-lpc-raw", 'l', "log raw lpc messages to console", m_logLpcRaw);
+
   auto pgHost
       = OptionDetail::createOption(mainGroup, "playground-host", 'p', "where to find the playground", m_playgroundHost);
+
   auto aeHost = OptionDetail::createOption(mainGroup, "audioengine-host", 'a', "where to find the audio engine",
                                            m_audioengineHost);
 
@@ -50,14 +48,4 @@ Glib::ustring Options::getAudioEngineHost() const
 bool Options::doTimeStamps() const
 {
   return m_doTimeStamps;
-}
-
-bool Options::logLPCRaw() const
-{
-  return m_logLpcRaw;
-}
-
-bool Options::logHeartBeat() const
-{
-  return m_logHeartBeat;
 }
