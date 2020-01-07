@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h
-	@date	2020-01-06, 17:24
-	@version	1.7B-3
-	@author	M. Seeber
-	@brief	complete list of parameters (and their properties) in TCD order
-	@todo
+/**	@file       parameter_list.h
+    @date       2020-01-07, 13:45
+    @version	1.7B-3
+    @author     M. Seeber
+    @brief      complete list of parameters (and their properties) in TCD order
+    @todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -955,7 +955,7 @@ namespace C15
     { Parameters::Local_Unmodulateables::Out_Mix_Key_Pan,
       187,
       0.0f,
-      { Smoothers::Poly_Fast::Out_Mix_Key_Pan, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { Smoothers::Poly_Fast::Out_Mix_Key_Pan, None, Properties::SmootherScale::Linear, 1.0f / 60.0f, 0.0f, false },
       { "", "Output Mixer", "Output Mixer", "Key Pan", "Key Pan",
         "Amount of key panning for each note (referring to the key position relative to the center at C3 = 60 "
         "semitones). At zero, each note is centered before being passed to the panning section in the mix. At maximum, "
@@ -1899,8 +1899,8 @@ namespace C15
     { None },
     { Parameters::Global_Modulateables::Split_Split_Point,
       356,
-      0.4f,
-      { Smoothers::Poly_Sync::Split_Split_Point, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
+      30.0f / 59.0f,
+      { Smoothers::Poly_Sync::Split_Split_Point, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
       { "", "Split", "Split", "Split Point", "Split Point", "" } },
     { None },
     { Parameters::Local_Modulateables::Voice_Grp_Volume,
