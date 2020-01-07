@@ -7,7 +7,7 @@
 #include "parameters/scale-converters/Linear50DbScaleConverter.h"
 #include "parameters/scale-converters/LinearBipolar50DbScaleConverter.h"
 #include "parameters/scale-converters/ParabolicGainDbScaleConverter.h"
-#include "LinearBipolar70DbScaleConverter.h"
+#include "parameters/scale-converters/LinearBipolar70DbScaleConverter.h"
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar1DbstScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
