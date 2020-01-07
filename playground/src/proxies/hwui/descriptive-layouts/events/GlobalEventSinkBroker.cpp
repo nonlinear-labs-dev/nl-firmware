@@ -97,7 +97,6 @@ namespace DescriptiveLayouts
         auto scope = SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope();
         Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
       }
-
     });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [eb]() { Application::get().getHWUI()->toggleCurrentVoiceGroup(); });
@@ -252,6 +251,12 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter({ 247, VoiceGroup::Global }); });
+
+    registerEvent(EventSinks::InitSound, [eb, hwui] {
+      auto scope = eb->getParent()->getUndoScope().startTransaction("Init Sound");
+      eb->undoableInitSound(scope->getTransaction());
+      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    });
 
     registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();

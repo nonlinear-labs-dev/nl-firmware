@@ -13,5 +13,16 @@ SoundEditMenu::SoundEditMenu(const Rect &r)
 
 void SoundEditMenu::onTypeChanged()
 {
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+  if(!m_supressOnTypeChanged)
+    Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+}
+
+void SoundEditMenu::blockOnTypeChanged()
+{
+  m_supressOnTypeChanged = true;
+}
+
+void SoundEditMenu::removeBlockOnTypeChanged()
+{
+  m_supressOnTypeChanged = false;
 }
