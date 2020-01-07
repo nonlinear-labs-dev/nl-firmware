@@ -12,10 +12,15 @@
 #include <thread>
 #include <testing/unit-tests/mock/PresetSenderAndReceiverWithTest.h>
 #include <nltools/Types.h>
+#include <groups/HardwareSourcesGroup.h>
+#include <presets/EditBuffer.h>
 
 /** to test:
  *  modamount in preset message
  */
+
+void setPresetValuesLoadAndSendVerify(EditBuffer* eb, Preset* preset, tControlPositionValue cp,
+                                      tControlPositionValue modAmt, MacroControls mc);
 
 TEST_CASE("msg parameter operators")
 {
@@ -38,7 +43,7 @@ TEST_CASE("msg parameter operators")
   REQUIRE(single == single);
 }
 
-TEST_CASE("test messages get send accordingly")
+TEST_CASE("working simple tests single preset with 0 and 1 respectively")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -48,8 +53,8 @@ TEST_CASE("test messages get send accordingly")
 
   {
     auto scope = TestHelper::createTestScope();
-    presetWithAllOnes = MockPresetStorage::createSinglePreset(scope->getTransaction());
-    presetWithAllZeros = MockPresetStorage::createSinglePreset(scope->getTransaction());
+    presetWithAllOnes = presets.createSinglePreset(scope->getTransaction());
+    presetWithAllZeros = presets.createSinglePreset(scope->getTransaction());
   }
 
   REQUIRE(presetWithAllOnes);
@@ -95,37 +100,97 @@ TEST_CASE("test messages get send accordingly")
         REQUIRE(isExpected);
     });
   }
+}
+
+TEST_CASE("test messages get send accordingly")
+{
+  using namespace nltools::msg;
+
+  PresetSenderAndReceiverWithTest<SinglePresetMessage> t1;
+  PresetSenderAndReceiverWithTest<SplitPresetMessage> t2;
+  PresetSenderAndReceiverWithTest<LayerPresetMessage> t3;
+}
+
+TEST_CASE("Load Preset Works!")
+{
+  auto eb = TestHelper::getEditBuffer();
+  MockPresetStorage presets;
+
+  SECTION("validate single preset loading")
+  {
+    setPresetValuesLoadAndSendVerify(eb, presets.getSinglePreset(), 0.16, 0.2, MacroControls::MC5);
+  }
+
+  SECTION("validate layer preset loading")
+  {
+    setPresetValuesLoadAndSendVerify(eb, presets.getLayerPreset(), 0.45, 0.67, MacroControls::MC1);
+  }
+}
+
+bool isControlPositionCorrect(Parameter* p, tControlPositionValue expected)
+{
+  auto cp = p->getControlPositionValue();
+  auto fine = p->getValue().getFineDenominator();
+
+  auto stepSize = 1.0 / fine;
+  return std::abs(cp - expected) <= stepSize;
+}
+
+void setPresetValuesLoadAndSendVerify(EditBuffer* eb, Preset* preset, tControlPositionValue cp,
+                                      tControlPositionValue modAmt, MacroControls mc)
+{
 
   {
-    using namespace nltools::msg;
-    auto singleMessage = AudioEngineProxy::createSingleEditBufferMessage();
+    auto scope = TestHelper::createTestScope();
+    auto trans = scope->getTransaction();
 
-    PresetSenderAndReceiverWithTest<SinglePresetMessage> t1(
-        [&](const SinglePresetMessage& received) {
-          auto ret = received == singleMessage;
-          REQUIRE(ret);
-          return ret;
-        },
-        [&]() { send(EndPoint::TestEndPoint, singleMessage); });
+    preset->forEachParameter([&](PresetParameter* pp) {
+      pp->setValue(trans, cp);
+      if(auto realParameter = eb->findParameterByID(pp->getID()))
+      {
+        if(auto modParam = dynamic_cast<ModulateableParameter*>(realParameter))
+        {
+          pp->setField(trans, PresetParameter::Fields::ModAmount, std::to_string(modAmt));
+          pp->setField(trans, PresetParameter::Fields::ModSource, std::to_string(static_cast<int>(mc)));
+        }
+      }
+    });
+  }
 
-    auto splitMessage = AudioEngineProxy::createSplitEditBufferMessage();
+  preset->forEachParameter([&](PresetParameter* pp) {
+    WHEN(pp->getID().toString() + " kept preset value")
+    {
+      REQUIRE(pp->getValue() == cp);
+    }
+  });
 
-    PresetSenderAndReceiverWithTest<SplitPresetMessage> t2(
-        [&](const SplitPresetMessage& received) {
-          auto ret = received == splitMessage;
-          REQUIRE(ret);
-          return ret;
-        },
-        [&]() { send(EndPoint::TestEndPoint, splitMessage); });
+  THEN("load and verify")
+  {
+    {
+      auto scope = TestHelper::createTestScope();
+      REQUIRE_FALSE(eb->hasLocks(VoiceGroup::I));
+      REQUIRE_FALSE(eb->hasLocks(VoiceGroup::II));
+      REQUIRE_FALSE(eb->hasLocks(VoiceGroup::Global));
+      eb->undoableLoad(scope->getTransaction(), preset);
+    }
 
-    auto layerMessage = AudioEngineProxy::createLayerEditBufferMessage();
+    eb->forEachParameter([modAmt, mc, cp](Parameter* p) {
+      if(dynamic_cast<HardwareSourcesGroup*>(p->getParent()))
+      {
+        auto ret = isControlPositionCorrect(p, cp);
 
-    PresetSenderAndReceiverWithTest<LayerPresetMessage> t3(
-        [&](const LayerPresetMessage& received) {
-          auto ret = received == layerMessage;
-          REQUIRE(ret);
-          return ret;
-        },
-        [&]() { send(EndPoint::TestEndPoint, layerMessage); });
+        if(!ret)
+          nltools::Log::error(p->getID().toString()
+                              + " did not load! got: " + std::to_string(p->getControlPositionValue()));
+
+        REQUIRE(isControlPositionCorrect(p, cp));
+
+        if(auto modParam = dynamic_cast<ModulateableParameter*>(p))
+        {
+          REQUIRE(modParam->getModulationAmount() == modAmt);
+          REQUIRE(modParam->getModulationSource() == mc);
+        }
+      }
+    });
   }
 }

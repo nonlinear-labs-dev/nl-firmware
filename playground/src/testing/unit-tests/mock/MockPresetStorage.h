@@ -1,5 +1,7 @@
 #pragma once
 #include <libundo/undo/Transaction.h>
+#include <tools/Uuid.h>
+#include <presets/Bank.h>
 
 class Preset;
 
@@ -11,19 +13,19 @@ class MockPresetStorage
   ~MockPresetStorage();
 
   Preset* getSinglePreset();
-
   Preset* getSplitPreset();
-
   Preset* getLayerPreset();
 
-  static Preset* createSinglePreset(UNDO::Transaction* transaction);
-  static Preset* createSplitPreset(UNDO::Transaction* transaction);
-  static Preset* createLayerPreset(UNDO::Transaction* transaction);
+  Preset* createSinglePreset(UNDO::Transaction* transaction);
+  Preset* createSplitPreset(UNDO::Transaction* transaction);
+  Preset* createLayerPreset(UNDO::Transaction* transaction);
 
-private:
+ private:
   Preset* m_single;
   Preset* m_split;
   Preset* m_layer;
+  Bank* m_bank;
 
-  static void removeBankOfPreset(UNDO::Transaction* transaction, Preset* presetToDelete);
+  void removeBankOfPreset(UNDO::Transaction* transaction, Preset* presetToDelete);
+  Bank* createBank(UNDO::Transaction* transaction);
 };

@@ -2,11 +2,12 @@
 
 #include <nltools/messaging/Messaging.h>
 #include <nltools/threading/Expiration.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 template <typename tMessageType> class PresetSenderAndReceiverWithTest
 {
  public:
-  template <typename tOnMessageReceived, typename tSendMessageCB> PresetSenderAndReceiverWithTest(const tOnMessageReceived& onMessageCB, const tSendMessageCB& sendMessage)
+  PresetSenderAndReceiverWithTest()
   {
     using namespace nltools::msg;
     using namespace std::chrono_literals;
@@ -16,11 +17,16 @@ template <typename tMessageType> class PresetSenderAndReceiverWithTest
 
     nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
 
-    auto testPassed = false;
-    auto c = nltools::msg::receive<tMessageType>(nltools::msg::EndPoint::TestEndPoint,
-                                                 [&](const tMessageType& msg) { testPassed = onMessageCB(msg); });
+    auto message = AudioEngineProxy::createMessage<tMessageType>();
 
-    sendMessage();
+    auto testPassed = false;
+    auto c = nltools::msg::receive<tMessageType>(nltools::msg::EndPoint::TestEndPoint, [&](const tMessageType& msg) {
+      auto ret = msg == message;
+      REQUIRE(ret);
+      testPassed = ret;
+    });
+
+    send(EndPoint::TestEndPoint, message);
 
     doMainLoop(0s, 2s, [&] { return testPassed; });
     c.disconnect();
@@ -44,8 +50,6 @@ template <typename tMessageType> class PresetSenderAndReceiverWithTest
 
     while((exp.isPending() && !test()) || min.isPending())
       g_main_context_iteration(nullptr, TRUE);
-
-    nltools_assertInTest(test());
 
     nltools::Log::notify(__LINE__, test());
   }
