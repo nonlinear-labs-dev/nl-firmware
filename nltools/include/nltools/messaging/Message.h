@@ -333,6 +333,40 @@ namespace nltools
         ParameterGroups::UnmodulateableParameter priority;
         ParameterGroups::ModulateableParameter glide;
       };
+
+      inline bool operator==(const Parameter &lhs, const Parameter &rhs)
+      {
+        auto ret = lhs.id == rhs.id;
+        ret &= lhs.controlPosition == rhs.controlPosition;
+        return ret;
+      }
+
+      inline bool operator==(const ModulateableParameter &lhs, const ModulateableParameter &rhs)
+      {
+        auto ret = lhs.id == rhs.id;
+        ret &= lhs.controlPosition == rhs.controlPosition;
+        ret &= lhs.modulationAmount == rhs.modulationAmount;
+        ret &= lhs.mc == rhs.mc;
+        return ret;
+      }
+
+      inline bool operator==(const MonoGroup &lhs, const MonoGroup &rhs)
+      {
+        auto ret = lhs.glide == rhs.glide;
+        ret &= lhs.monoEnable == rhs.monoEnable;
+        ret &= lhs.priority == rhs.priority;
+        ret &= lhs.legato == rhs.legato;
+        return ret;
+      }
+
+      inline bool operator==(const UnisonGroup &lhs, const UnisonGroup &rhs)
+      {
+        auto ret = lhs.unisonVoices == rhs.unisonVoices;
+        ret &= lhs.detune == rhs.detune;
+        ret &= lhs.pan == rhs.pan;
+        ret &= lhs.phase == rhs.phase;
+        return ret;
+      }
     }
 
     struct SinglePresetMessage
@@ -357,6 +391,20 @@ namespace nltools
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
 
+    inline bool operator==(const SinglePresetMessage &lhs, const SinglePresetMessage &rhs)
+    {
+      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      ret &= lhs.modulateables == rhs.modulateables;
+      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.mono == rhs.mono;
+      ret &= lhs.unison == rhs.unison;
+      ret &= lhs.hwamounts == rhs.hwamounts;
+      ret &= lhs.hwsources == rhs.hwsources;
+      ret &= lhs.macros == rhs.macros;
+      ret &= lhs.macrotimes == rhs.macrotimes;
+      return ret;
+    }
+
     struct SplitPresetMessage
     {
       constexpr static MessageType getType()
@@ -380,6 +428,21 @@ namespace nltools
       ParameterGroups::SplitPoint splitpoint;
     };
 
+    inline bool operator==(const SplitPresetMessage &lhs, const SplitPresetMessage &rhs)
+    {
+      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      ret &= lhs.modulateables == rhs.modulateables;
+      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.mono == rhs.mono;
+      ret &= lhs.unison == rhs.unison;
+      ret &= lhs.hwamounts == rhs.hwamounts;
+      ret &= lhs.hwsources == rhs.hwsources;
+      ret &= lhs.macros == rhs.macros;
+      ret &= lhs.macrotimes == rhs.macrotimes;
+      ret &= lhs.splitpoint == rhs.splitpoint;
+      return ret;
+    }
+
     struct LayerPresetMessage
     {
       constexpr static MessageType getType()
@@ -401,5 +464,19 @@ namespace nltools
 
       std::array<ParameterGroups::GlobalParameter, 14> globalparams;
     };
+
+    inline bool operator==(const LayerPresetMessage &lhs, const LayerPresetMessage &rhs)
+    {
+      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      ret &= lhs.modulateables == rhs.modulateables;
+      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.mono == rhs.mono;
+      ret &= lhs.unison == rhs.unison;
+      ret &= lhs.hwamounts == rhs.hwamounts;
+      ret &= lhs.hwsources == rhs.hwsources;
+      ret &= lhs.macros == rhs.macros;
+      ret &= lhs.macrotimes == rhs.macrotimes;
+      return ret;
+    }
   }
 }

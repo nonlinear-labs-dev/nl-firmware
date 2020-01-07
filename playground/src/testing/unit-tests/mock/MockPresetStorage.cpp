@@ -4,7 +4,7 @@
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 
-inline EditBuffer* getEditBuffer()
+inline EditBuffer *getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
 }
@@ -90,3 +90,4 @@ void MockPresetStorage::removeBankOfPreset(UNDO::Transaction *transaction, Prese
   if(auto bank = dynamic_cast<Bank *>(presetToDelete->getParent()))
     pm->deleteBank(transaction, bank->getUuid());
 }
+

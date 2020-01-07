@@ -121,6 +121,22 @@ Parameter *ParameterDualGroupSet::findParameterByID(const ParameterId &id) const
   }
 }
 
+void ParameterDualGroupSet::forEachParameter(const std::function<void(Parameter *)> &cb)
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto g : getParameterGroups(vg))
+      for(auto p : g->getParameters())
+        cb(p);
+}
+
+void ParameterDualGroupSet::forEachParameter(const std::function<void(const Parameter *)> &cb) const
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto g : getParameterGroups(vg))
+      for(auto p : g->getParameters())
+        cb(p);
+}
+
 std::map<int, Parameter *> ParameterDualGroupSet::getParametersSortedByNumber(VoiceGroup vg) const
 {
   std::map<int, Parameter *> sorted;

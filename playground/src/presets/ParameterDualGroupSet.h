@@ -26,6 +26,9 @@ class ParameterDualGroupSet : public AttributesOwner
   virtual std::map<int, Parameter *> getParametersSortedByNumber(VoiceGroup vg) const;
   virtual Parameter *findParameterByID(const ParameterId &id) const;
 
+  void forEachParameter(const std::function<void(Parameter *)> &cb);
+  void forEachParameter(const std::function<void(const Parameter *)> &cb) const;
+
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  protected:
