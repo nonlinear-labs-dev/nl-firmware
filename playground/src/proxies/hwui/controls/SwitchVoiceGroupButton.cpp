@@ -61,6 +61,12 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
 
   auto didToggleAction = false;
 
+  if(dynamic_cast<const SplitPointParameter*>(selected))
+  {
+    Application::get().getHWUI()->toggleCurrentVoiceGroup();
+    return true;
+  }
+
   if(allowToggling(selected, eb))
   {
     auto otherVG = selected->getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
@@ -69,17 +75,11 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
       auto scope = pm->getUndoScope().startContinuousTransaction(&other, std::chrono::hours(1), "Select '%0'",
                                                                  other->getGroupAndParameterNameWithVoiceGroup());
       Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
-      didToggleAction = true;
+      return true;
     }
   }
-
-  if(dynamic_cast<const SplitPointParameter*>(selected))
-  {
-    Application::get().getHWUI()->toggleCurrentVoiceGroup();
-    didToggleAction = true;
-  }
-
-  return didToggleAction;
+  
+  return false;
 }
 
 bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const EditBuffer* editBuffer)
