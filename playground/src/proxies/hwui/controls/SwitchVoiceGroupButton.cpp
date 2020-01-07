@@ -59,8 +59,6 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
   auto eb = pm->getEditBuffer();
   auto selected = eb->getSelected();
 
-  auto didToggleAction = false;
-
   if(dynamic_cast<const SplitPointParameter*>(selected))
   {
     Application::get().getHWUI()->toggleCurrentVoiceGroup();
@@ -78,7 +76,7 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
       return true;
     }
   }
-  
+
   return false;
 }
 
