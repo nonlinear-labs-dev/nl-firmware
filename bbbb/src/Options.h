@@ -11,7 +11,10 @@ class Options
   Glib::ustring getPlaygroundHost() const;
   Glib::ustring getAudioEngineHost() const;
 
+  bool doTimeStamps() const;
+
  private:
+  bool m_doTimeStamps = false;
   Glib::ustring m_playgroundHost = "localhost";
   Glib::ustring m_audioengineHost = "localhost";
 };

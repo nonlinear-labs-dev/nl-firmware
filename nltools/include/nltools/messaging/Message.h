@@ -54,6 +54,7 @@ namespace nltools
         {
           return MessageType::PresetGlitchSetting;
         }
+
         bool m_enabled;
       };
 
@@ -73,6 +74,7 @@ namespace nltools
         {
           return MessageType::TransitionTimeSetting;
         }
+
         float m_value;
       };
 
@@ -82,6 +84,7 @@ namespace nltools
         {
           return MessageType::EditSmoothingTimeSetting;
         }
+
         float m_time;
       };
     }
@@ -154,7 +157,19 @@ namespace nltools
       {
         return MessageType::RotaryChanged;
       }
+
       int8_t increment;
+    };
+
+    struct TimestampedRotaryChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::TimestampedRotaryChanged;
+      }
+
+      int8_t increment;
+      uint64_t timestamp;
     };
 
     struct ButtonChangedMessage
@@ -163,6 +178,7 @@ namespace nltools
       {
         return MessageType::ButtonChanged;
       }
+
       int8_t buttonId;
       bool pressed;
     };
@@ -173,6 +189,7 @@ namespace nltools
       {
         return MessageType::SetRibbonLED;
       }
+
       uint8_t id;
       uint8_t brightness;
     };
@@ -183,6 +200,7 @@ namespace nltools
       {
         return MessageType::SetPanelLED;
       }
+
       uint8_t id;
       bool on;
     };
@@ -193,7 +211,19 @@ namespace nltools
       {
         return MessageType::SetOLED;
       }
+
       uint8_t pixels[256][96];
+    };
+
+    struct SetTimestampedOledMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetOLEDTimestamped;
+      }
+
+      SetOLEDMessage m_oledMessage;
+      int64_t m_timestamp;
     };
 
     struct LPCMessage
@@ -202,6 +232,7 @@ namespace nltools
       {
         return MessageType::LPC;
       }
+
       Glib::RefPtr<Glib::Bytes> message;
     };
 
@@ -215,20 +246,20 @@ namespace nltools
 
     namespace detail
     {
-      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage& s)
+      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage &s)
       {
         LPCMessage ret;
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
+        auto data = reinterpret_cast<const uint8_t *>(s->get_data(numBytes));
         ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
         return ret;
       }
 
-      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage& msg)
+      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage &msg)
       {
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
-        auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
+        auto data = reinterpret_cast<const uint8_t *>(msg.message->get_data(numBytes));
+        auto scratch = reinterpret_cast<uint16_t *>(g_malloc(numBytes + 2));
         scratch[0] = static_cast<uint16_t>(MessageType::LPC);
         std::memcpy(&scratch[1], data, numBytes);
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
@@ -253,16 +284,6 @@ namespace nltools
       struct PedalParameter : Parameter
       {
         PedalModes pedalMode{};
-        ReturnMode returnMode{};
-      };
-
-      struct AftertouchParameter : Parameter
-      {
-        ReturnMode returnMode{};
-      };
-
-      struct BenderParameter : Parameter
-      {
         ReturnMode returnMode{};
       };
 
