@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-01-07, 12:32
+    @date       2020-01-07, 13:45
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -955,7 +955,7 @@ namespace C15
     { Parameters::Local_Unmodulateables::Out_Mix_Key_Pan,
       187,
       0.0f,
-      { Smoothers::Poly_Fast::Out_Mix_Key_Pan, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { Smoothers::Poly_Fast::Out_Mix_Key_Pan, None, Properties::SmootherScale::Linear, 1.0f / 60.0f, 0.0f, false },
       { "", "Output Mixer", "Output Mixer", "Key Pan", "Key Pan",
         "Amount of key panning for each note (referring to the key position relative to the center at C3 = 60 "
         "semitones). At zero, each note is centered before being passed to the panning section in the mix. At maximum, "
