@@ -74,7 +74,7 @@ void C15Synth::doAudio(SampleFrame *target, size_t numFrames)
   }
 }
 
-void C15Synth::printAndResetTcdInputLog()
+void C15Synth::logStatus()
 {
   m_dsp->logStatus();
 }

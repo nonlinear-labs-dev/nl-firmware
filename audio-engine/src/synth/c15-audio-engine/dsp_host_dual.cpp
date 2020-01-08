@@ -251,11 +251,98 @@ C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
 
 void dsp_host_dual::logStatus()
 {
-  nltools::Log::info("engine status:");
-  nltools::Log::info("-clock(index:", m_clock.m_index, ", fast:", m_clock.m_fast, ", slow:", m_clock.m_slow, ")");
-  nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_output_mute.get_value(), ")");
-  nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
-  // maybe, log parameter values by groups?
+  if(LOG_ENGINE_STATUS)
+  {
+    nltools::Log::info("engine status:");
+    nltools::Log::info("-clock(index:", m_clock.m_index, ", fast:", m_clock.m_fast, ", slow:", m_clock.m_slow, ")");
+    nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_output_mute.get_value(),
+                       ")");
+    nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
+  }
+  else if(LOG_ENGINE_EDITS)
+  {
+    nltools::Log::info("Engine Param Status - - - - - - - - - - - - - - - \n\n");
+    for(uint32_t i = 0; i < LOG_PARAMS_LENGTH; i++)
+    {
+      auto element = C15::ParameterList[LOG_PARAMS[i]];
+      switch(element.m_param.m_type)
+      {
+        case C15::Descriptors::ParameterType::None:
+          break;
+        case C15::Descriptors::ParameterType::Hardware_Source:
+          nltools::Log::info("HW[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_hw_src(element.m_param.m_index)->m_position,
+                             ", beh:", static_cast<int>(m_params.get_hw_src(element.m_param.m_index)->m_behavior), ")");
+          break;
+        case C15::Descriptors::ParameterType::Hardware_Amount:
+          nltools::Log::info("HA[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_hw_amt(element.m_param.m_index)->m_position, ")");
+          break;
+        case C15::Descriptors::ParameterType::Macro_Control:
+          nltools::Log::info("MC[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_macro(element.m_param.m_index)->m_position, ")");
+          break;
+        case C15::Descriptors::ParameterType::Macro_Time:
+          nltools::Log::info("MT[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_macro_time(element.m_param.m_index)->m_position,
+                             ", scl:", m_params.get_macro_time(element.m_param.m_index)->m_scaled, ")");
+          break;
+        case C15::Descriptors::ParameterType::Global_Modulateable:
+          nltools::Log::info("GT[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short, ":(pos:",
+                             m_params.get_global_target(element.m_param.m_index)
+                                 ->depolarize(m_params.get_global_target(element.m_param.m_index)->m_position),
+                             ", scl:", m_params.get_global_target(element.m_param.m_index)->m_scaled,
+                             ", amt:", m_params.get_global_target(element.m_param.m_index)->m_amount,
+                             ", src:", static_cast<int>(m_params.get_global_target(element.m_param.m_index)->m_source),
+                             ")");
+          break;
+        case C15::Descriptors::ParameterType::Global_Unmodulateable:
+          nltools::Log::info("GD[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_global_direct(element.m_param.m_index)->m_position,
+                             ", scl:", m_params.get_global_direct(element.m_param.m_index)->m_scaled, ")");
+          break;
+        case C15::Descriptors::ParameterType::Local_Modulateable:
+          nltools::Log::info("LT[I, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short, ":(pos:",
+                             m_params.get_local_target(0, element.m_param.m_index)
+                                 ->depolarize(m_params.get_local_target(0, element.m_param.m_index)->m_position),
+                             ", scl:", m_params.get_local_target(0, element.m_param.m_index)->m_scaled,
+                             ", amt:", m_params.get_local_target(0, element.m_param.m_index)->m_amount, ", src:",
+                             static_cast<int>(m_params.get_local_target(0, element.m_param.m_index)->m_source), ")");
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+          {
+            nltools::Log::info("LT[II, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                               element.m_pg.m_param_label_short, ":(pos:",
+                               m_params.get_local_target(1, element.m_param.m_index)
+                                   ->depolarize(m_params.get_local_target(1, element.m_param.m_index)->m_position),
+                               ", scl:", m_params.get_local_target(1, element.m_param.m_index)->m_scaled,
+                               ", amt:", m_params.get_local_target(1, element.m_param.m_index)->m_amount, ", src:",
+                               static_cast<int>(m_params.get_local_target(1, element.m_param.m_index)->m_source), ")");
+          }
+          break;
+        case C15::Descriptors::ParameterType::Local_Unmodulateable:
+          nltools::Log::info("LD[I, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_local_direct(0, element.m_param.m_index)->m_position,
+                             ", scl:", m_params.get_local_direct(0, element.m_param.m_index)->m_scaled, ")");
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+          {
+            nltools::Log::info("LD[II, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+                               element.m_pg.m_param_label_short,
+                               ":(pos:", m_params.get_local_direct(1, element.m_param.m_index)->m_position,
+                               ", scl:", m_params.get_local_direct(1, element.m_param.m_index)->m_scaled, ")");
+          }
+          break;
+      }
+    }
+    nltools::Log::info("\n\n - - - - - - - - - - - - - - - Engine Param Status");
+  }
 }
 
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
