@@ -712,9 +712,14 @@ void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg)
 
 void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup vg)
 {
+  auto ae = Application::get().getAudioEngineProxy();
+  ae->toggleSuppressParameterChanges(transaction);
+
   setVoiceGroupName(transaction, preset->getName(), vg);
   loadIntoVoiceGroup(transaction, preset, vg);
   initRecallValues(transaction);
+
+  ae->toggleSuppressParameterChanges(transaction);
 }
 
 const SplitPointParameter *EditBuffer::getSplitPoint() const
@@ -826,8 +831,13 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
     copyTo = VoiceGroup::I;
   }
 
+  auto ae = Application::get().getAudioEngineProxy();
+  ae->toggleSuppressParameterChanges(transaction);
+
   setVoiceGroupName(transaction, preset->getName(), copyTo);
   super::copyFrom(transaction, preset, from, copyTo);
+
+  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::initUnisonVoices()

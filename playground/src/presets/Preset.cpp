@@ -13,6 +13,7 @@
 #include <device-info/DeviceInformation.h>
 #include <tools/TimeTools.h>
 #include <presets/EditBuffer.h>
+#include <nltools/Types.h>
 
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
@@ -191,6 +192,22 @@ PresetParameterGroup *Preset::findParameterGroup(const GroupId &id) const
   {
     return nullptr;
   }
+}
+
+void Preset::forEachParameter(const std::function<void(PresetParameter *)> &cb)
+{
+  for(auto vg: {VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global})
+    for(auto& g: m_parameterGroups[static_cast<int>(vg)])
+      for(auto& p: g.second->getParameters())
+        cb(p.second.get());
+}
+
+void Preset::forEachParameter(const std::function<void(const PresetParameter *)> &cb) const
+{
+  for(auto vg: {VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global})
+    for(auto& g: m_parameterGroups[static_cast<int>(vg)])
+      for(auto& p: g.second->getParameters())
+        cb(p.second.get());
 }
 
 void Preset::copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid)

@@ -339,3 +339,18 @@ void AudioEngineProxy::sendEditBuffer()
 
   Application::get().getSettings()->sendToLPC();
 }
+
+template <> nltools::msg::SinglePresetMessage AudioEngineProxy::createMessage<nltools::msg::SinglePresetMessage>()
+{
+  return AudioEngineProxy::createSingleEditBufferMessage();
+}
+
+template <> nltools::msg::SplitPresetMessage AudioEngineProxy::createMessage<nltools::msg::SplitPresetMessage>()
+{
+  return AudioEngineProxy::createSplitEditBufferMessage();
+}
+
+template <> nltools::msg::LayerPresetMessage AudioEngineProxy::createMessage<nltools::msg::LayerPresetMessage>()
+{
+  return AudioEngineProxy::createLayerEditBufferMessage();
+}

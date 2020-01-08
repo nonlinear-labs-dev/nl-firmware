@@ -557,9 +557,5 @@ void Parameter::sendParameterMessage() const
 
 bool Parameter::isValueDifferentFrom(double d) const
 {
-
-  const auto fac = m_value.getFineDenominator();
-  const auto a = static_cast<int>(getControlPositionValue() * fac);
-  const auto b = static_cast<int>(d * fac);
-  return a != b;
+  return m_value.differs(d);
 }
