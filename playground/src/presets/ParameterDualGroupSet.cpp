@@ -121,6 +121,13 @@ Parameter *ParameterDualGroupSet::findParameterByID(const ParameterId &id) const
   }
 }
 
+void ParameterDualGroupSet::forEachParameter(VoiceGroup vg, const std::function<void(Parameter *)> &cb)
+{
+  for(auto g : getParameterGroups(vg))
+    for(auto p : g->getParameters())
+      cb(p);
+}
+
 void ParameterDualGroupSet::forEachParameter(const std::function<void(Parameter *)> &cb)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
@@ -177,8 +184,6 @@ const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &
 void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
                                      VoiceGroup to)
 {
-  nltools_assertAlways(preset->getType() != SoundType::Single);
-
   for(auto myGroup : getParameterGroups(to))
   {
     if(auto other = preset->findParameterGroup({ myGroup->getID().getName(), from }))
