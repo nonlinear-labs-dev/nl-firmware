@@ -20,24 +20,33 @@ bool UnisonVoicesParameter::shouldWriteDocProperties(UpdateDocumentContributor::
   return ret;
 }
 
-void UnisonVoicesParameter::updateScaling(SoundType type)
+void UnisonVoicesParameter::updateScaling(UNDO::Transaction* transaction, SoundType type)
 {
-  auto value = getValue().getRawValue();
+  auto oldCP = getControlPositionValue();
+
+  auto oldDisplay = getDisplayString();
 
   if(type == SoundType::Single)
   {
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>());
     getValue().setCoarseDenominator(23);
     getValue().setFineDenominator(23);
+
+    oldCP *= 0.5;
   }
   else
   {
+
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<12, VoicesDimension>>());
     getValue().setCoarseDenominator(11);
     getValue().setFineDenominator(11);
+
+    if(oldCP >= 0.5)
+      setCpValue(transaction, Initiator::INDIRECT, 1.0, false);
+    else
+      setCpValue(transaction, Initiator::INDIRECT, oldCP / 2.0, false);
   }
 
-  getValue().setRawValue(Initiator::INDIRECT, value);
 
   m_scalingChanged = true;
   onChange();

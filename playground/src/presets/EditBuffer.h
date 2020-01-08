@@ -152,7 +152,7 @@ private:
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
-  void initUnisonVoices();
+  void initUnisonVoices(UNDO::Transaction* transaction, SoundType newType);
 
   void initToFX(UNDO::Transaction *transaction);
 };

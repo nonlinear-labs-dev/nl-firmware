@@ -41,8 +41,6 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_lastSelectedParameter{ 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
-
-  onSoundTypeChanged(sigc::mem_fun(this, &EditBuffer::initUnisonVoices));
 }
 
 EditBuffer::~EditBuffer()
@@ -689,6 +687,8 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 {
   auto swap = UNDO::createSwapData(type);
 
+  initUnisonVoices(transaction, type);
+
   transaction->addSimpleCommand([=](auto) {
     swap->swapWith(m_type);
     m_signalTypeChanged.send();
@@ -696,9 +696,6 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
     auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
     if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
       setting->cycleForSoundType(SoundType::Single);
-
-    initUnisonVoices();
-
     onChange();
   });
 }
@@ -830,11 +827,11 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   super::copyFrom(transaction, preset, from, copyTo);
 }
 
-void EditBuffer::initUnisonVoices()
+void EditBuffer::initUnisonVoices(UNDO::Transaction *transaction, SoundType newType)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     if(auto unisonParam = dynamic_cast<UnisonVoicesParameter *>(findParameterByID({ 249, vg })))
-      unisonParam->updateScaling(getType());
+      unisonParam->updateScaling(transaction, newType);
 }
 
 bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundType type)
