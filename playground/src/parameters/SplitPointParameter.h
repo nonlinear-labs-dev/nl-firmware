@@ -1,7 +1,7 @@
 #pragma once
-#include "ModulateableParameter.h"
+#include "ModulateableParameterWithUnusualModUnit.h"
 
-class SplitPointParameter : public ModulateableParameter
+class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
 {
  public:
   SplitPointParameter(ParameterGroup *group, const ParameterId &id);
@@ -9,4 +9,9 @@ class SplitPointParameter : public ModulateableParameter
 
   DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
   Glib::ustring getDisplayString() const override;
+
+  ustring stringizeModulationAmount(tControlPositionValue amount) const override;
+
+ protected:
+  ustring modulationValueToDisplayString(tControlPositionValue v) const override;
 };
