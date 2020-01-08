@@ -165,6 +165,10 @@ namespace Engine
       {
         return &m_layer[_layerId].m_target[_id];
       }
+      inline Target_Param* get_global_split_point()
+      {
+        return &m_global.m_target[static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point)];
+      }
       inline Direct_Param* get_local_unison_voices(const Layer _layerId)
       {
         return &m_layer[static_cast<uint32_t>(_layerId)]

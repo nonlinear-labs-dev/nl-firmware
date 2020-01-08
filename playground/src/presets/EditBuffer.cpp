@@ -712,9 +712,14 @@ void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg)
 
 void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup vg)
 {
+  auto ae = Application::get().getAudioEngineProxy();
+  ae->toggleSuppressParameterChanges(transaction);
+
   setVoiceGroupName(transaction, preset->getName(), vg);
   loadIntoVoiceGroup(transaction, preset, vg);
   initRecallValues(transaction);
+
+  ae->toggleSuppressParameterChanges(transaction);
 }
 
 const SplitPointParameter *EditBuffer::getSplitPoint() const
@@ -818,18 +823,21 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
 
   if(preset->getType() == SoundType::Single)
   {
-    nltools::Log::error("Not a dual Preset!");
-    return;
+    from = VoiceGroup::I;
   }
 
   if(getType() == SoundType::Single)
   {
-    nltools::Log::error("not a dual editbuffer");
-    return;
+    copyTo = VoiceGroup::I;
   }
+
+  auto ae = Application::get().getAudioEngineProxy();
+  ae->toggleSuppressParameterChanges(transaction);
 
   setVoiceGroupName(transaction, preset->getName(), copyTo);
   super::copyFrom(transaction, preset, from, copyTo);
+
+  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::initUnisonVoices()
@@ -884,4 +892,14 @@ void EditBuffer::initToFX(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     findParameterByID({ 362, vg })->setDefaultFromHwui(transaction);
+}
+
+void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
+{
+  if(preset && preset->getType() == SoundType::Single)
+  {
+    auto scope = getParent()->getUndoScope().startTransaction(
+        nltools::string::concat("Load '", preset->getName(), "' into ", toString(to)));
+    undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, to);
+  }
 }

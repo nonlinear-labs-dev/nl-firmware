@@ -52,6 +52,8 @@ class Preset : public PresetDualParameterGroups
   Glib::ustring getName() const;
   PresetParameter *findParameterByID(ParameterId id) const;
   PresetParameterGroup *findParameterGroup(const GroupId &id) const;
+  void forEachParameter(const std::function<void(PresetParameter *)> &cb);
+  void forEachParameter(const std::function<void(const PresetParameter *)> &cb) const;
 
   // transactions
   void copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid);
@@ -98,5 +100,5 @@ class Preset : public PresetDualParameterGroups
 
   friend class RecallParameterGroups;
 
-  PresetParameterGroup *findOrCreateParameterGroup(const GroupId& id);
+  PresetParameterGroup *findOrCreateParameterGroup(const GroupId &id);
 };

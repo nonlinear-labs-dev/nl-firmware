@@ -623,6 +623,7 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Modulat
   if(_id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
   {
     m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
+    nltools::Log::info("set split point:", m_alloc.m_splitPoint);
   }
 }
 
@@ -1905,6 +1906,17 @@ void dsp_host_dual::recallSplit()
   {
     globalTimeRcl(msg->macrotimes[i]);
   }
+  // update split point!
+  const uint32_t macroId = getMacroId(msg->splitpoint.mc);
+  auto splitpoint = m_params.get_global_split_point();
+  splitpoint->update_source(getMacro(msg->splitpoint.mc));
+  splitpoint->update_amount(static_cast<float>(msg->splitpoint.modulationAmount));
+  splitpoint->update_position(splitpoint->depolarize(static_cast<float>(msg->splitpoint.controlPosition)));
+  splitpoint->m_scaled = scale(splitpoint->m_scaling, splitpoint->polarize(splitpoint->m_position));
+  m_params.m_global.m_assignment.reassign(getParameter(msg->splitpoint.id).m_param.m_index, macroId);
+  splitpoint->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
+  m_alloc.setSplitPoint(static_cast<uint32_t>(splitpoint->m_scaled));
+  nltools::Log::info("set split point:", m_alloc.m_splitPoint);
   // global updates: parameters (currently only unmodulateables)
   if(LOG_RECALL)
   {

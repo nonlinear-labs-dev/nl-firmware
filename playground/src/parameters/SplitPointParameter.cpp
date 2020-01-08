@@ -12,11 +12,6 @@ SplitPointParameter::SplitPointParameter(ParameterGroup *group, const ParameterI
 {
 }
 
-Glib::ustring SplitPointParameter::getGroupAndParameterName() const
-{
-  return "Split Point";
-}
-
 DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 {
   switch(focusAndMode.mode)
@@ -39,14 +34,4 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 Glib::ustring SplitPointParameter::getDisplayString() const
 {
   return getDisplayValue(Application::get().getHWUI()->getCurrentVoiceGroup());
-}
-
-Glib::ustring SplitPointParameter::getLongName() const
-{
-  return "Split Point";
-}
-
-Glib::ustring SplitPointParameter::getShortName() const
-{
-  return "Split P.";
 }
