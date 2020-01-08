@@ -295,7 +295,7 @@ void dsp_host_dual::logStatus()
           nltools::Log::info("GT[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
                              element.m_pg.m_param_label_short, ":(pos:",
                              m_params.get_global_target(element.m_param.m_index)
-                                 ->depolarize(m_params.get_global_target(element.m_param.m_index)->m_position),
+                                 ->polarize(m_params.get_global_target(element.m_param.m_index)->m_position),
                              ", scl:", m_params.get_global_target(element.m_param.m_index)->m_scaled,
                              ", amt:", m_params.get_global_target(element.m_param.m_index)->m_amount,
                              ", src:", static_cast<int>(m_params.get_global_target(element.m_param.m_index)->m_source),
@@ -311,7 +311,7 @@ void dsp_host_dual::logStatus()
           nltools::Log::info("LT[I, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
                              element.m_pg.m_param_label_short, ":(pos:",
                              m_params.get_local_target(0, element.m_param.m_index)
-                                 ->depolarize(m_params.get_local_target(0, element.m_param.m_index)->m_position),
+                                 ->polarize(m_params.get_local_target(0, element.m_param.m_index)->m_position),
                              ", scl:", m_params.get_local_target(0, element.m_param.m_index)->m_scaled,
                              ", amt:", m_params.get_local_target(0, element.m_param.m_index)->m_amount, ", src:",
                              static_cast<int>(m_params.get_local_target(0, element.m_param.m_index)->m_source), ")");
@@ -320,7 +320,7 @@ void dsp_host_dual::logStatus()
             nltools::Log::info("LT[II, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
                                element.m_pg.m_param_label_short, ":(pos:",
                                m_params.get_local_target(1, element.m_param.m_index)
-                                   ->depolarize(m_params.get_local_target(1, element.m_param.m_index)->m_position),
+                                   ->polarize(m_params.get_local_target(1, element.m_param.m_index)->m_position),
                                ", scl:", m_params.get_local_target(1, element.m_param.m_index)->m_scaled,
                                ", amt:", m_params.get_local_target(1, element.m_param.m_index)->m_amount, ", src:",
                                static_cast<int>(m_params.get_local_target(1, element.m_param.m_index)->m_source), ")");
