@@ -53,24 +53,31 @@ void SwitchVoiceGroupButton::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
   rebuild();
 }
 
-std::unique_ptr<UNDO::TransactionCreationScope>
-    SwitchVoiceGroupButton::createToggleVoiceGroupWithParameterHighlightScope()
+bool SwitchVoiceGroupButton::toggleVoiceGroup()
 {
   auto pm = Application::get().getPresetManager();
   auto eb = pm->getEditBuffer();
   auto selected = eb->getSelected();
 
+  if(dynamic_cast<const SplitPointParameter*>(selected))
+  {
+    Application::get().getHWUI()->toggleCurrentVoiceGroup();
+    return true;
+  }
+
   if(allowToggling(selected, eb))
   {
     auto otherVG = selected->getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
-    auto other = eb->findParameterByID({ selected->getID().getNumber(), otherVG });
-    return pm->getUndoScope().startContinuousTransaction(&other, std::chrono::hours(1), "Select '%0'",
-                                                         other->getGroupAndParameterNameWithVoiceGroup());
+    if(auto other = eb->findParameterByID({ selected->getID().getNumber(), otherVG }))
+    {
+      auto scope = pm->getUndoScope().startContinuousTransaction(&other, std::chrono::hours(1), "Select '%0'",
+                                                                 other->getGroupAndParameterNameWithVoiceGroup());
+      Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
+      return true;
+    }
   }
-  else
-  {
-    return UNDO::Scope::startTrashTransaction();
-  }
+
+  return false;
 }
 
 bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const EditBuffer* editBuffer)
