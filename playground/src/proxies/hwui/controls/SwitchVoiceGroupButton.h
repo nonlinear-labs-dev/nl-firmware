@@ -15,8 +15,8 @@ class SwitchVoiceGroupButton : public Button
   static bool toggleVoiceGroup();
 
  private:
-  static Glib::ustring getTextFor(VoiceGroup vg);
   static bool allowToggling(const Parameter* selected, const EditBuffer* editBuffer);
+
 
   void rebuild();
 

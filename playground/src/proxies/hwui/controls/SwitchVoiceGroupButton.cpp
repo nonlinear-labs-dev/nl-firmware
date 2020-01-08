@@ -9,25 +9,16 @@
 #include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 #include <proxies/hwui/HWUI.h>
 #include <groups/UnisonGroup.h>
+#include <nltools/Types.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
-    : Button(getTextFor(Application::get().getHWUI()->getCurrentVoiceGroup()), pos)
+    : Button("", pos)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged));
 
   Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
-}
-
-Glib::ustring SwitchVoiceGroupButton::getTextFor(VoiceGroup vg)
-{
-  if(vg == VoiceGroup::Global)
-    return "";
-  if(vg == VoiceGroup::I)
-    return "Select II";
-  else
-    return "Select I";
 }
 
 void SwitchVoiceGroupButton::rebuild()
@@ -38,7 +29,7 @@ void SwitchVoiceGroupButton::rebuild()
   auto selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   if(EditBuffer::isDualParameterForSoundType(selected, ebType))
-    setText({ getTextFor(selectedVoiceGroup), 0 });
+    setText({ "I/II", 0 });
   else
     setText({ "", 0 });
 }
