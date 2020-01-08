@@ -573,7 +573,13 @@ void ModulateableParameterSelectLayout2::installModulationCarousel(const Mode &m
   {
     if(mod->getModulationSource() != MacroControls::NONE && !isModeOf({ Mode::Recall, Mode::ParameterValue }))
     {
-      setCarousel(new ModulationCarousel(ModulationCarousel::Mode::None, Rect(195, 1, 58, 62)));
+      ModulationCarousel::Mode mode = ModulationCarousel::Mode::None;
+      if(auto modCarousel = dynamic_cast<ModulationCarousel *>(getCarousel()))
+      {
+        mode = modCarousel->getMode();
+      }
+
+      setCarousel(new ModulationCarousel(mode, Rect(195, 1, 58, 62)));
     }
     else
     {
