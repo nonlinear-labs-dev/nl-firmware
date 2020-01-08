@@ -8,7 +8,8 @@
 #include <parameters/scale-converters/dimension/SplitPointDimension.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, const ParameterId &id)
-    : ModulateableParameter(group, id, ScaleConverter::get<SplitPointScaleConverter>(), 0.5, 59, 59)
+    : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
+                                              ScaleConverter::get<SplitPointScaleConverter>(), 0.5, 59, 59)
 {
 }
 
@@ -34,4 +35,15 @@ std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 Glib::ustring SplitPointParameter::getDisplayString() const
 {
   return getDisplayValue(Application::get().getHWUI()->getCurrentVoiceGroup());
+}
+
+Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionValue amount) const
+{
+  return std::to_string(static_cast<int>(60 * amount)) + " st";
+}
+
+ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
+{
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  return SplitPointDimension::get().stringizeSplitPointDisplay(v, vg);
 }
