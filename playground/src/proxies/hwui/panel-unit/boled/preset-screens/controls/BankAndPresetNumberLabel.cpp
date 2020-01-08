@@ -43,7 +43,7 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
     presetPosStr << presetPos;
 
     if(bank->findPreset(uuid)->getType() != SoundType::Single)
-      text = nltools::string::concat(bankPos, "-", presetPosStr.str(), " (", toString(voiceGroup), ")");
+      text = nltools::string::concat(bankPos, "-", presetPosStr.str(), "-", toString(voiceGroup));
     else
       text = nltools::string::concat(bankPos, "-", presetPosStr.str());
   }
