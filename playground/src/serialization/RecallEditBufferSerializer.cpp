@@ -2,7 +2,6 @@
 #include <nltools/logging/Log.h>
 #include "RecallEditBufferSerializer.h"
 #include "PresetParameterGroupSerializer.h"
-#include "RecallParameterSerializer.h"
 #include <presets/recall/RecallParameter.h>
 
 RecallEditBufferSerializer::RecallEditBufferSerializer(EditBuffer *edit)
@@ -22,18 +21,24 @@ void RecallEditBufferSerializer::writeTagContent(Writer &writer) const
   for(auto &param : parameters)
   {
     auto parameter = param.second.get();
-    RecallParameterSerializer serializer(parameter);
-    serializer.write(writer, Attribute("id", parameter->getID().toString()));
+
+    writer.writeTextElement("recall-param", to_string(parameter->getRecallValue()),
+                            Attribute("id", parameter->getID().toString()),
+                            Attribute("mod-amt", to_string(parameter->getRecallModulationAmount())),
+                            Attribute("mod-src", to_string(parameter->getRecallModSource())));
   }
 }
 
 void RecallEditBufferSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTag(RecallParameterSerializer::getTagName(), [&, this](const Attributes &attr) {
+  reader.onTextElement("recall-param", [=](const Glib::ustring &text, const Attributes &attr) {
     auto id = ParameterId(attr.get("id"));
     auto &rps = m_editBuffer->getRecallParameterSet();
     if(auto param = rps.findParameterByID(id))
-      return new RecallParameterSerializer(param);
-    return static_cast<RecallParameterSerializer *>(nullptr);
+    {
+      param->m_recallValue = std::stod(text);
+      param->m_recallModAmount = std::stod(attr.get("mod-amt"));
+      param->m_recallModSource = static_cast<MacroControls>(std::stoi(attr.get("mod-src")));
+    }
   });
 }
