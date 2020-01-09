@@ -18,8 +18,8 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_type{ SoundType::Single }
-    , m_voiceGroupLabels{ { "", "" } }
+    , m_type { SoundType::Single }
+    , m_voiceGroupLabels { { "", "" } }
 {
 }
 
@@ -27,14 +27,14 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_type{ other.getType() }
-    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
+    , m_type { other.getType() }
+    , m_voiceGroupLabels { other.m_voiceGroupLabels }
 {
 }
 
 Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, bool copyUUID)
     : super(parent, editBuffer)
-    , m_type{ editBuffer.getType() }
+    , m_type { editBuffer.getType() }
 {
   m_name = editBuffer.getName();
   m_voiceGroupLabels[0] = editBuffer.getVoiceGroupName(VoiceGroup::I);
@@ -87,7 +87,7 @@ void Preset::setAttribute(UNDO::Transaction *transaction, const std::string &key
 
   auto eb = getEditBuffer();
 
-  if(eb->getUUIDOfLastLoadedPreset() == getUuid() && !eb->anyParameterChanged())
+  if(eb->getUUIDOfLastLoadedPreset() == getUuid() && !eb->findAnyParameterChanged())
     eb->setAttribute(transaction, key, value);
 }
 
@@ -196,17 +196,17 @@ PresetParameterGroup *Preset::findParameterGroup(const GroupId &id) const
 
 void Preset::forEachParameter(const std::function<void(PresetParameter *)> &cb)
 {
-  for(auto vg: {VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global})
-    for(auto& g: m_parameterGroups[static_cast<int>(vg)])
-      for(auto& p: g.second->getParameters())
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto &g : m_parameterGroups[static_cast<int>(vg)])
+      for(auto &p : g.second->getParameters())
         cb(p.second.get());
 }
 
 void Preset::forEachParameter(const std::function<void(const PresetParameter *)> &cb) const
 {
-  for(auto vg: {VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global})
-    for(auto& g: m_parameterGroups[static_cast<int>(vg)])
-      for(auto& p: g.second->getParameters())
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto &g : m_parameterGroups[static_cast<int>(vg)])
+      for(auto &p : g.second->getParameters())
         cb(p.second.get());
 }
 
@@ -346,7 +346,7 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
   auto getButtonStatesPresets = [&](const Preset *p, const Preset *other) {
     std::pair<bool, bool> active;
-    auto ebChanged = eb->anyParameterChanged();
+    auto ebChanged = eb->isModified();
     active.first = p->getUuid() != ebUUID || ebChanged;
     active.second = other->getUuid() != ebUUID || ebChanged;
     return active;
@@ -355,8 +355,8 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
   auto getButtonStates = [&](const Preset *p, const Preset *other) {
     std::pair<bool, bool> active;
     auto isLoaded = (p->getUuid() == ebUUID);
-    active.first = !isLoaded || eb->anyParameterChanged();
-    active.second = eb->anyParameterChanged() & !active.first;
+    active.first = !isLoaded || eb->isModified();
+    active.second = eb->isModified() & !active.first;
     return active;
   };
 

@@ -9,7 +9,7 @@
 
 SelectVoiceGroupLayout::SelectVoiceGroupLayout(PresetManagerLayout *parent)
     : DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
-    , m_parent{ parent }
+    , m_parent { parent }
 {
   addControl(new Label("Load Part I or II from Preset?", { 0, 0, 256, 64 }));
   addControl(new Button("Cancel", Buttons::BUTTON_A));
@@ -60,8 +60,9 @@ void SelectVoiceGroupLayout::load()
   auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto from = m_loadFrom;
 
-  m_parent->animateSelectedPresetIfInLoadPartMode([eb, hwui, currentVG, from]() {
-    eb->undoableLoadSelectedPresetPartIntoPart(from, currentVG);
+  eb->undoableLoadSelectedPresetPartIntoPart(from, currentVG);
+
+  m_parent->animateSelectedPresetIfInLoadPartMode([hwui]() {
     hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
   });
 

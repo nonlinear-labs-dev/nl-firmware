@@ -10,8 +10,8 @@
 #include <functional>
 #include "PresetTypeLabel.h"
 
-const float c_numAnimationSteps = 30;
-const float c_animationLength = 1000;  // ms
+const float c_numAnimationSteps = 15;
+const float c_animationLength = 500;  // ms
 
 PresetListEntry::PresetListEntry(const Rect &pos)
     : super(pos)
@@ -109,6 +109,7 @@ bool PresetListEntry::animationProgress()
   if(m_animationProgress > 100)
   {
     m_animationProgress = 0;
+    setDirty();
     doAnimationCallback();
   }
   else

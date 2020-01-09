@@ -68,14 +68,3 @@ void PresetParameterGroup::writeDocument(Writer &writer) const
     param->writeDocument(writer);
   }
 }
-
-PresetParameter *PresetParameterGroup::findParameterByNumber(uint16_t number) const
-{
-  for(auto &entry : m_parameters)
-  {
-    if(entry.first.getNumber() == number)
-      return entry.second.get();
-  }
-
-  return nullptr;
-}
