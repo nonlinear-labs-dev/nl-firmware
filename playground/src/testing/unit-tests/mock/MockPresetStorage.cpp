@@ -11,7 +11,7 @@ inline EditBuffer *getEditBuffer()
 
 MockPresetStorage::MockPresetStorage()
 {
-  auto scope = TestHelper::createTestScope();
+  auto scope = UNDO::Scope::startTrashTransaction();
   auto transaction = scope->getTransaction();
 
   m_bank = createBank(transaction);
@@ -23,7 +23,7 @@ MockPresetStorage::MockPresetStorage()
 
 MockPresetStorage::~MockPresetStorage()
 {
-  auto scope = TestHelper::createTestScope();
+  auto scope = UNDO::Scope::startTrashTransaction();
   auto transaction = scope->getTransaction();
   auto editBuffer = getEditBuffer();
   auto pm = editBuffer->getParent();

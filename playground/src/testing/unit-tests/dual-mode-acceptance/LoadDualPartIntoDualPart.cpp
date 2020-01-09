@@ -21,7 +21,7 @@ template <SoundType tType, VoiceGroup tLoadFromPart, VoiceGroup tLoadToVoiceGrou
 void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPositionValue paramValue)
 {
   WHEN("converted to " + toString(tType) + " load into " + toString(tLoadToVoiceGroup) + " from "
-       + toString(tLoadFromPart) + "of type " + toString(preset->getType()))
+       + toString(tLoadFromPart) + " of type " + toString(preset->getType()))
   {
     static_assert(tType == SoundType::Split || tType == SoundType::Layer, "");
 

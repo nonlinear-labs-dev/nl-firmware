@@ -4,6 +4,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/Parameter.h>
+#include <third-party/include/catch.hpp>
 
 namespace TestHelper
 {
@@ -58,4 +59,23 @@ namespace TestHelper
         for(auto& p : g->getParameters())
           cb(p);
   }
+
 }
+
+inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double v)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+  auto oldCP = p->getControlPositionValue();
+  p->setCPFromHwui(scope->getTransaction(), v);
+  auto ret
+      = std::make_pair<double, double>(p->getValue().getNextStepValue(-1, {}), p->getValue().getNextStepValue(1, {}));
+  p->setCPFromHwui(scope->getTransaction(), oldCP);
+  return ret;
+}
+
+#define CHECK_PARAMETER_CP_EQUALS_FICTION(p, v)                                                                        \
+  {                                                                                                                    \
+    auto range = getNextStepValuesFromValue(p, v);                                                                     \
+    CHECK(p->getControlPositionValue() >= range.first);                                                                \
+    CHECK(p->getControlPositionValue() <= range.second);                                                               \
+  }
