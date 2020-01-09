@@ -241,7 +241,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
     auto arrayIndex = static_cast<int>(vg);
     for(auto &g : editBuffer->getParameterGroups(vg))
     {
-      if(dynamic_cast<UnisonGroup*>(g) || dynamic_cast<MonoGroup*>(g))
+      if(dynamic_cast<UnisonGroup *>(g) || dynamic_cast<MonoGroup *>(g))
         continue;
 
       for(auto p : g->getParameters())
@@ -285,6 +285,8 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
     auto &t = msg.splitpoint;
     t.id = sp->getID().getNumber();
     t.controlPosition = sp->getControlPositionValue();
+    t.modulationAmount = sp->getModulationAmount();
+    t.mc = sp->getModulationSource();
   }
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })

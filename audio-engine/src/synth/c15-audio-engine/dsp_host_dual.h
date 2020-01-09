@@ -26,20 +26,26 @@
 inline constexpr bool LOG_MISSING = true;
 inline constexpr bool LOG_FAIL = true;
 inline constexpr bool LOG_INIT = true;
-inline constexpr bool LOG_MIDI = true;
-inline constexpr bool LOG_MIDI_DETAIL = true;
+inline constexpr bool LOG_MIDI = false;
+inline constexpr bool LOG_MIDI_DETAIL = false;
 inline constexpr bool LOG_DISPATCH = false;
-inline constexpr bool LOG_EDITS = true;
-inline constexpr bool LOG_TIMES = true;
-inline constexpr bool LOG_SETTINGS = true;
-inline constexpr bool LOG_RECALL = true;
+inline constexpr bool LOG_EDITS = false;
+inline constexpr bool LOG_TIMES = false;
+inline constexpr bool LOG_SETTINGS = false;
+inline constexpr bool LOG_RECALL = false;
 inline constexpr bool LOG_RECALL_COMPARE_INITIAL = false;
 inline constexpr bool LOG_RECALL_LEVELS = false;
-inline constexpr bool LOG_KEYS = true;
-inline constexpr bool LOG_KEYS_POLY = true;
+inline constexpr bool LOG_KEYS = false;
+inline constexpr bool LOG_KEYS_POLY = false;
 inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = true;
-inline constexpr bool LOG_HW = true;
+inline constexpr bool LOG_HW = false;
+// more detailed logging of specific parameters
+inline constexpr bool LOG_ENGINE_STATUS = false;
+inline constexpr bool LOG_ENGINE_EDITS = true;
+inline constexpr uint32_t LOG_PARAMS_LENGTH = 3;
+// use tcd ids here (currently: Split Point, Unison Detune)
+static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
 
 class dsp_host_dual
 {
@@ -149,6 +155,7 @@ class dsp_host_dual
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter &_param);
   void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter &_param);
   void globalParRcl(const nltools::msg::ParameterGroups::ModulateableParameter &_param);
+  void globalParRcl(const nltools::msg::ParameterGroups::SplitPoint &_param);
   void globalParRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param);
   void globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter &_param);
   void globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param);
