@@ -60,7 +60,7 @@ bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
     text = "";
   }
 
-  if(pm->getEditBuffer()->anyParameterChanged() && !text.empty())
+  if(pm->getEditBuffer()->isModified() && !text.empty())
     text += "*";
 
   setText(text);

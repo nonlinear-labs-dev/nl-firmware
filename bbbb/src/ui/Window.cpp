@@ -31,7 +31,7 @@ Window::Window()
   m_box.pack_start(m_playPanel, true, true);
   m_box.pack_end(m_editPanel, false, false);
   m_box.pack_start(m_ribbonBox, false, false);
-  m_box.pack_end(m_keyboard, false, false);
+  //m_box.pack_end(m_keyboard, false, false);
   add(m_box);
 
   show_all_children(true);
