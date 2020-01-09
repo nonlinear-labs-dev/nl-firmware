@@ -23,7 +23,7 @@ void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPo
   WHEN("converted to " + toString(tType) + " load into " + toString(tLoadToVoiceGroup) + " from "
        + toString(tLoadFromPart) + "of type " + toString(preset->getType()))
   {
-    static_assert(tType == SoundType::Split || tType == SoundType::Layer);
+    static_assert(tType == SoundType::Split || tType == SoundType::Layer, "");
 
     auto editBuffer = TestHelper::getEditBuffer();
 

@@ -23,7 +23,7 @@ void LoadSinglePresetWithValueIntoInitDualSound(Preset *preset, tControlPosition
   WHEN("converted to " + toString(tType) + " (" + toString(tLoadToVoiceGroup) + ")")
   {
 
-    static_assert(tType == SoundType::Split || tType == SoundType::Layer);
+    static_assert(tType == SoundType::Split || tType == SoundType::Layer, "");
 
     auto editBuffer = TestHelper::getEditBuffer();
 
