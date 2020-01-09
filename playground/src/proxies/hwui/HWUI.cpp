@@ -29,6 +29,7 @@
 #include <xml/StandardOutStream.h>
 #include <serialization/EditBufferSerializer.h>
 #include <iostream>
+#include <giomm.h>
 
 HWUI::HWUI()
     : m_readersCancel(Gio::Cancellable::create())

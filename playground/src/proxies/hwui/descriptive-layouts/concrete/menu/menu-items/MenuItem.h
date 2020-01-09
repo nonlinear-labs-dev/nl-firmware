@@ -1,4 +1,5 @@
 #pragma once
+
 #include <proxies/hwui/controls/ControlWithChildren.h>
 
 class MenuItem : public ControlWithChildren

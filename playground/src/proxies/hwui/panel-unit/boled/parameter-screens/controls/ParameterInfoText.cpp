@@ -4,6 +4,7 @@
 #include <presets/EditBuffer.h>
 #include <parameters/descriptions/ParameterDescriptionDatabase.h>
 #include <parameters/Parameter.h>
+#include <proxies/hwui/Oleds.h>
 
 ParameterInfoText::ParameterInfoText(ControlOwner *parent)
     : super("")
@@ -46,7 +47,7 @@ void ParameterInfoText::setDirty()
   notifyDirty(true);
 }
 
-Oleds::tFont ParameterInfoText::getFont()
+std::shared_ptr<Font> ParameterInfoText::getFont()
 {
   return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
 }

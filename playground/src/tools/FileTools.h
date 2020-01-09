@@ -6,7 +6,7 @@
 #include "SpawnCommandLine.h"
 #include <device-settings/DebugLevel.h>
 #include <fstream>
-#include <giomm.h>
+#include <giomm/file.h>
 
 namespace FileTools
 {

@@ -13,6 +13,8 @@
 #include "StyleParser.h"
 #include "tools/SpawnCommandLine.h"
 #include "ConsistencyChecker.h"
+
+#include <tools/json.h>
 #include <iostream>
 
 LayoutFolderMonitor& LayoutFolderMonitor::get()

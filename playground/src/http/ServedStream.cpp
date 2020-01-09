@@ -3,10 +3,11 @@
 #include "HTTPRequest.h"
 #include "Application.h"
 #include <device-settings/DebugLevel.h>
+#include <giomm.h>
 
 ServedStream::ServedStream(HTTPServer &server, std::shared_ptr<HTTPRequest> request)
-    : m_server(server)
-    , m_request(request)
+    : m_request(request)
+    , m_server(server)
 {
   m_cancellable = Gio::Cancellable::create();
 }

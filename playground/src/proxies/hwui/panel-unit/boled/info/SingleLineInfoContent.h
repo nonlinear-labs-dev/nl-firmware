@@ -1,4 +1,5 @@
 #pragma once
+
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
 
 class SingleLineInfoContent : public LeftAlignedLabel

@@ -7,6 +7,7 @@
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
+#include <glibmm/regex.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 

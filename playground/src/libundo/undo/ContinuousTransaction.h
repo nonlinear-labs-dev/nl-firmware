@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Transaction.h"
-#include <glibmm/timeval.h>
 #include <memory>
 #include <chrono>
 

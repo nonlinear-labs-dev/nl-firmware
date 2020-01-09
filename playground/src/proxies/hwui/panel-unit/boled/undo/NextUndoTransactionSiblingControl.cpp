@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/undo/NextUndoTransactionSiblingControl.h>
 #include <proxies/hwui/Oleds.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <libundo/undo/Transaction.h>
 
 NextUndoTransactionSiblingControl::NextUndoTransactionSiblingControl(const Rect &r)
     : super(r)

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <glibmm.h>
+#include <nltools/Types.h>
+#include <chrono>
 
 class Options
 {

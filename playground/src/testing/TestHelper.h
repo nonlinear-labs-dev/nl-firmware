@@ -1,4 +1,5 @@
 #pragma once
+
 #include <libundo/undo/TransactionCreationScope.h>
 #include <memory>
 #include <presets/PresetManager.h>

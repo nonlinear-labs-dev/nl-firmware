@@ -1,13 +1,12 @@
 #pragma once
 
 #include "playground.h"
-#include <libundo/undo/Scope.h>
 #include "xml/BinaryReader.h"
 #include "xml/BinaryWriter.h"
 #include "xml/XmlReader.h"
 #include "xml/XmlWriter.h"
 #include "xml/FileInStream.h"
-#include <giomm.h>
+#include <giomm/file.h>
 
 class Writer;
 class Reader;

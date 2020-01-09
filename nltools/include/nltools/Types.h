@@ -17,3 +17,24 @@ template <typename T> inline std::enable_if_t<std::is_floating_point_v<T>, bool>
 {
   return std::abs(a - b) > std::numeric_limits<T>::epsilon();
 }
+
+namespace Gio
+{
+  class File;
+  class FileInfo;
+  class InputStream;
+  class AsyncResult;
+  class Cancellable;
+  class DataInputStream;
+  class DataOutputStream;
+  class ZlibCompressor;
+  class FileMonitor;
+}
+
+namespace Glib
+{
+  class Bytes;
+  class IOChannel;
+
+  template <class T_CppObject> class RefPtr;
+}

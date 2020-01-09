@@ -1,4 +1,5 @@
 #pragma once
+
 #include <glibmm/ustring.h>
 #include <memory>
 #include "Font.h"

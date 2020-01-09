@@ -5,7 +5,6 @@
 #include "MCViewContentManager.h"
 #include <libsoup/soup.h>
 #include <map>
-#include <glib.h>
 #include <memory>
 
 class Application;

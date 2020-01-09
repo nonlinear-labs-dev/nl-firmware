@@ -6,6 +6,7 @@
 #include <io/ToOledsBridge.h>
 #include <io/ToPanelLEDsBridge.h>
 #include <io/ToRibbonLEDsBridge.h>
+#include <glibmm/bytes.h>
 
 Bridges::Bridges()
 {

@@ -2,7 +2,7 @@
 
 #include "xml/OutStream.h"
 #include <libsoup/soup.h>
-#include <giomm/zlibcompressor.h>
+#include <glibmm/refptr.h>
 
 class SoupOutStream : public OutStream
 {

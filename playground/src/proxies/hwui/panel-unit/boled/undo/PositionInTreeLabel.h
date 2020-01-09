@@ -10,6 +10,5 @@ class PositionInTreeLabel : public Label, public UndoTransactionClient
 
  public:
   explicit PositionInTreeLabel(const Rect &pos);
-  ~PositionInTreeLabel() override;
   void assignTransaction(UNDO::Transaction *transaction, bool selected, bool current) override;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
+#include <nltools/Types.h>
 #include <sstream>
-#include <glibmm.h>
 #include <stdlib.h>
 
 namespace UNDO

@@ -12,6 +12,7 @@
 #include "SoupOutStream.h"
 #include <parameters/MacroControlParameter.h>
 #include <nltools/threading/Throttler.h>
+#include <giomm.h>
 
 #ifdef _DEVELOPMENT_PC
 static const guint port = 8080;

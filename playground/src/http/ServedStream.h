@@ -2,7 +2,7 @@
 
 #include "playground.h"
 #include <libsoup/soup.h>
-#include <giomm.h>
+#include <glibmm/refptr.h>
 
 class HTTPServer;
 class HTTPRequest;

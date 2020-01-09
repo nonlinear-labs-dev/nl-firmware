@@ -1,10 +1,9 @@
 #pragma once
 
-#include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
-#include <Application.h>
-#include <parameters/ModulateableParameter.h>
 #include "ConditionBase.h"
+#include <sigc++/connection.h>
+
+class Parameter;
 
 namespace DescriptiveLayouts
 {

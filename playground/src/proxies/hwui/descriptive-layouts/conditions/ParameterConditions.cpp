@@ -1,6 +1,10 @@
 #include <proxies/hwui/descriptive-layouts/ConditionRegistry.h>
+#include <parameters/ModulateableParameter.h>
 #include "ParameterConditions.h"
 #include <proxies/hwui/HWUI.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 using namespace DescriptiveLayouts;
 

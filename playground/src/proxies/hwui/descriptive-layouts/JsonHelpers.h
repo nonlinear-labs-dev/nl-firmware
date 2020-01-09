@@ -1,6 +1,6 @@
 #pragma once
+
 #include <glibmm/ustring.h>
-#include <iostream>
 #include "tools/json.h"
 
 namespace JSONTools
@@ -13,7 +13,7 @@ namespace JSONTools
       auto value = j.at(key).get<std::string>();
       return static_cast<T>(value);
     }
-    return T{};
+    return T {};
   }
 
   template <class T> T getFromJson(const nlohmann::json& j, std::string key, std::function<T(std::string)> converter)
@@ -23,7 +23,7 @@ namespace JSONTools
     {
       return converter(itProp.value());
     }
-    return T{};
+    return T {};
   }
 
   template <class T, class tList>

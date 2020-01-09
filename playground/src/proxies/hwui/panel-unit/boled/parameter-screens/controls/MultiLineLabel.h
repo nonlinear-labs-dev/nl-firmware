@@ -2,7 +2,6 @@
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
 #include <proxies/hwui/HWUIEnums.h>
-#include <proxies/hwui/Oleds.h>
 
 class MultiLineLabel : public ControlWithChildren
 {
@@ -23,7 +22,7 @@ class MultiLineLabel : public ControlWithChildren
   virtual void setPosition(const Rect &rect) override;
 
  protected:
-  virtual Oleds::tFont getFont();
+  virtual std::shared_ptr<Font> getFont();
 
  private:
   bool m_forceUpdateOnSetPos = false;

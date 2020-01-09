@@ -1,4 +1,6 @@
 #include "InfoContent.h"
+#include "SingleLineInfoContent.h"
+#include "InfoField.h"
 #include <nltools/Assert.h>
 
 InfoContent::InfoContent()

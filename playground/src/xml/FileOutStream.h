@@ -1,8 +1,9 @@
 #pragma once
 
 #include "OutStream.h"
-#include <fstream>
-#include <giomm.h>
+
+struct _GDataOutputStream;
+typedef struct _GDataOutputStream GDataOutputStream;
 
 class FileOutStream : public OutStream
 {

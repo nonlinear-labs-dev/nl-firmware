@@ -1,8 +1,7 @@
 #pragma once
 
-#include <presets/EditBuffer.h>
-#include <tools/EditBufferNotifier.h>
 #include "ConditionBase.h"
+#include <sigc++/connection.h>
 
 namespace DescriptiveLayouts
 {

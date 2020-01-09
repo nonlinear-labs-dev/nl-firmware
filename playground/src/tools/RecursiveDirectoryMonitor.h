@@ -1,8 +1,11 @@
 #pragma once
-#include <gio/gio.h>
-#include <map>
-#include <giomm/file.h>
-#include <giomm/init.h>
+
+#include <nltools/Types.h>
+#include <list>
+#include <vector>
+#include <sigc++/trackable.h>
+#include <glibmm/refptr.h>
+#include <giomm/filemonitor.h>
 
 namespace FileTools
 {

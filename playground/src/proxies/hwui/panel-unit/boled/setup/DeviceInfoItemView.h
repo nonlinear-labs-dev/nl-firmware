@@ -2,7 +2,6 @@
 
 #include <proxies/hwui/panel-unit/boled/setup/SetupLabel.h>
 #include <nltools/threading/Expiration.h>
-#include <chrono>
 
 class DeviceInformationItem;
 

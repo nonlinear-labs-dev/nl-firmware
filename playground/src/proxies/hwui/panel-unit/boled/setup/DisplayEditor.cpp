@@ -1,5 +1,6 @@
 #include "DisplayEditor.h"
 #include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/controls/LeftAlignedLabel.h>
 
 DisplayEditor::DisplayEditor()
     : ControlWithChildren(Rect(0, 0, 0, 0))

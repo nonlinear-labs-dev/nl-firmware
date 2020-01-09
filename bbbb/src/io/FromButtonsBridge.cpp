@@ -15,7 +15,7 @@ void FromButtonsBridge::sendKey(int8_t key, bool down)
   nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
 }
 
-void FromButtonsBridge::transmit(Receiver::tMessage msg)
+void FromButtonsBridge::transmit(const Receiver::tMessage &msg)
 {
   gsize numBytes = 0;
   auto buffer = (const char *) msg->get_data(numBytes);

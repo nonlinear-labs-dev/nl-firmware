@@ -2,6 +2,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include "testing/TestDriver.h"
+#include <proxies/hwui/Font.h>
 
 TextSplitter::TextSplitter(std::shared_ptr<Font> font, double width, const Glib::ustring &text)
 {

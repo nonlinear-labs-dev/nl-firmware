@@ -3,6 +3,7 @@
 #include <libundo/undo/StringTools.h>
 #include <set>
 #include <tools/TimeTools.h>
+#include <glibmm.h>
 
 DeviceName::DeviceName(Settings &parent)
     : super(parent)

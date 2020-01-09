@@ -1,12 +1,14 @@
 #pragma once
 
+#include <nltools/Types.h>
 #include "nltools/Assert.h"
 #include <memory>
-#include <giomm.h>
+#include <chrono>
 #include <sigc++/sigc++.h>
 #include <cstring>
 #include <nltools/logging/Log.h>
 #include <nltools/enums/EnumTools.h>
+#include <glibmm/bytes.h>
 
 namespace nltools
 {

@@ -21,7 +21,7 @@ class ParameterInfoText : public MultiLineLabel, public Scrollable
   virtual void setDirty() override;
 
  protected:
-  virtual Oleds::tFont getFont() override;
+  virtual std::shared_ptr<Font> getFont() override;
 
  private:
   void loadInfoText(Parameter *oldParam, Parameter *newParam);

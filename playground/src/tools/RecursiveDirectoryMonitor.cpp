@@ -1,8 +1,8 @@
 #include <utility>
 #include <nltools/logging/Log.h>
 #include <nltools/ExceptionTools.h>
-
 #include "RecursiveDirectoryMonitor.h"
+#include <giomm.h>
 
 namespace FileTools
 {

@@ -24,6 +24,7 @@
 #include <nltools/messaging/Messaging.h>
 #include <device-settings/LayoutMode.h>
 #include <presets/EditBuffer.h>
+#include <giomm.h>
 
 Application *Application::theApp = nullptr;
 

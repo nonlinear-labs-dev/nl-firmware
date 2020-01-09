@@ -2,6 +2,7 @@
 #include <nltools/logging/Log.h>
 #include "io/HighPriorityTask.h"
 #include <nltools/ExceptionTools.h>
+#include <giomm.h>
 
 AlsaMidiInput::AlsaMidiInput(const std::string &deviceName, Callback cb)
     : MidiInput(cb)

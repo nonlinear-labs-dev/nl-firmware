@@ -3,6 +3,7 @@
 #include <nltools/messaging/Message.h>
 #include <Application.h>
 #include <Options.h>
+#include <glibmm/main.h>
 
 ToOledsBridge::ToOledsBridge()
     : super(new FrameBufferSender(), nullptr)

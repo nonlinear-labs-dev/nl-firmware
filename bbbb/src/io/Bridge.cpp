@@ -2,6 +2,7 @@
 #include "Receiver.h"
 #include "Sender.h"
 #include <functional>
+#include <giomm.h>
 
 Bridge::Bridge(Sender *sender, Receiver *receiver)
     : m_sender(sender)
@@ -15,7 +16,7 @@ Bridge::~Bridge()
 {
 }
 
-void Bridge::transmit(Receiver::tMessage msg)
+void Bridge::transmit(const Receiver::tMessage &msg)
 {
   if(m_sender)
     m_sender->send(msg);

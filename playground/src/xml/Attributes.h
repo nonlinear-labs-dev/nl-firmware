@@ -2,8 +2,6 @@
 
 #include "playground.h"
 #include <map>
-#include <glib.h>
-#include <glibmm/markup.h>
 
 class Attributes
 {
@@ -20,6 +18,5 @@ class Attributes
 
  private:
   std::map<size_t, Glib::ustring> m_attributes;
-
   std::hash<Glib::ustring> m_hash;
 };

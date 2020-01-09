@@ -1,7 +1,11 @@
 #pragma once
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
-#include <libundo/undo/Transaction.h>
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class UndoList : public ControlWithChildren
 {

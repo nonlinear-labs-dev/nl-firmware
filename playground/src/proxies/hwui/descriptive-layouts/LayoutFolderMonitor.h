@@ -1,6 +1,5 @@
 #pragma once
 
-#include <giomm/file.h>
 #include <tools/Signal.h>
 #include <tools/RecursiveDirectoryMonitor.h>
 

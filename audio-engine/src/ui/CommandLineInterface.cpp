@@ -8,6 +8,8 @@
 #include <sys/select.h>
 #include <termios.h>
 
+#include <glibmm.h>
+
 int kbhit()
 {
   termios old_termios;

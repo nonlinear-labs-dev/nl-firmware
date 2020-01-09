@@ -6,6 +6,7 @@
 #include <proxies/hwui/controls/Button.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include "PresetManagerLayout.h"
 
 SelectVoiceGroupLayout::SelectVoiceGroupLayout(PresetManagerLayout *parent)
     : DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())

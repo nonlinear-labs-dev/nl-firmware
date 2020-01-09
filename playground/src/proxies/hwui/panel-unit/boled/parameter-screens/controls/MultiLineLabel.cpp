@@ -62,7 +62,7 @@ void MultiLineLabel::setPosition(const Rect &rect)
   }
 }
 
-Oleds::tFont MultiLineLabel::getFont()
+std::shared_ptr<Font> MultiLineLabel::getFont()
 {
   return Oleds::get().getFont("Emphase_8_Regular", 8);
 }

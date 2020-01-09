@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNumberLabel.h>
 #include <functional>
 #include "PresetTypeLabel.h"
+#include <glibmm/main.h>
 
 const float c_numAnimationSteps = 15;
 const float c_animationLength = 500;  // ms

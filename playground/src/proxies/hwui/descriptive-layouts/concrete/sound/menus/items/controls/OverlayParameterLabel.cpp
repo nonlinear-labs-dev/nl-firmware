@@ -1,4 +1,5 @@
 #include "OverlayParameterLabel.h"
+#include <parameters/Parameter.h>
 #include <sigc++/sigc++.h>
 
 OverlayParameterLabel::OverlayParameterLabel(const Rect &r, const Parameter *parameter)

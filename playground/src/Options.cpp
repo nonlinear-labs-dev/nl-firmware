@@ -3,6 +3,7 @@
 #include <glibmm/optiongroup.h>
 #include "device-settings/DebugLevel.h"
 #include "Application.h"
+#include <giomm.h>
 
 Options::Options(int &argc, char **&argv)
 {

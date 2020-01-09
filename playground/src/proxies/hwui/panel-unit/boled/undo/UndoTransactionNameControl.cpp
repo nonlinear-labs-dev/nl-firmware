@@ -1,4 +1,5 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoTransactionNameControl.h>
+#include <libundo/undo/Transaction.h>
 
 UndoTransactionNameControl::UndoTransactionNameControl(const Rect &r)
     : super(r)

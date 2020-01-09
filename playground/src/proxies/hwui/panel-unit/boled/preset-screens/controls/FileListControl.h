@@ -2,10 +2,11 @@
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
 #include <tools/FileTools.h>
-#include <proxies/hwui/controls/Label.h>
 #include <experimental/filesystem>
 
 namespace fs = std::experimental::filesystem;
+
+class Label;
 
 class FileListControl : public ControlWithChildren
 {

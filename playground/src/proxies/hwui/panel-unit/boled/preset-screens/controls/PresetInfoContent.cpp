@@ -10,6 +10,8 @@
 #include <iomanip>
 #include <sstream>
 #include <tools/TimeTools.h>
+#include <proxies/hwui/panel-unit/boled/info/MultiLineInfoContent.h>
+#include <proxies/hwui/panel-unit/boled/info/InfoField.h>
 
 PresetInfoContent::PresetInfoContent()
 {

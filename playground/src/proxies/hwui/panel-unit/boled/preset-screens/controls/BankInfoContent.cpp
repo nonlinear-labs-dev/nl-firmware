@@ -11,6 +11,8 @@
 #include <sstream>
 #include <device-info/DateTimeInfo.h>
 #include <tools/TimeTools.h>
+#include <proxies/hwui/panel-unit/boled/info/MultiLineInfoContent.h>
+#include <proxies/hwui/panel-unit/boled/info/InfoField.h>
 
 BankInfoContent::BankInfoContent()
 {

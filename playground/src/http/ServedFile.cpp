@@ -3,6 +3,7 @@
 #include "HTTPRequest.h"
 #include "Application.h"
 #include <device-settings/DebugLevel.h>
+#include <giomm.h>
 
 ServedFile::ServedFile(HTTPServer &server, std::shared_ptr<HTTPRequest> request)
     : ServedStream(server, request)

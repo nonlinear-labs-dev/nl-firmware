@@ -19,6 +19,7 @@
 #include <serialization/PresetSerializer.h>
 #include <device-settings/LoadModeSetting.h>
 #include <groups/ParameterGroup.h>
+#include <glibmm.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 

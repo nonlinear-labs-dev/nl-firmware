@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <giomm.h>
 
 FrameBufferSender::FrameBufferSender()
     : m_throttler(std::chrono::milliseconds(10))

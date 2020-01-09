@@ -1,4 +1,5 @@
 #include <nltools/threading/Expiration.h>
+#include <glibmm/main.h>
 
 Expiration::Expiration(Expiration::Callback cb, Expiration::Duration d, int priority)
 {

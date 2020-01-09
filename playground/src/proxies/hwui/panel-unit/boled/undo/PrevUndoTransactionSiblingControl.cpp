@@ -1,13 +1,10 @@
 #include <proxies/hwui/panel-unit/boled/undo/PrevUndoTransactionSiblingControl.h>
 #include <proxies/hwui/Oleds.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <libundo/undo/Transaction.h>
 
 PrevUndoTransactionSiblingControl::PrevUndoTransactionSiblingControl(const Rect &r)
     : super(r)
-{
-}
-
-PrevUndoTransactionSiblingControl::~PrevUndoTransactionSiblingControl()
 {
 }
 

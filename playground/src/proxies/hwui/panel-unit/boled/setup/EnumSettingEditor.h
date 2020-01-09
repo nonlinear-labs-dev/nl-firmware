@@ -1,4 +1,5 @@
 #pragma once
+
 #include "MenuEditor.h"
 #include "device-settings/Settings.h"
 #include "device-settings/Setting.h"

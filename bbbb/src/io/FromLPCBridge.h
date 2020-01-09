@@ -9,5 +9,5 @@ class FromLPCBridge : public Bridge
   void sendRibbonPosition(bool m_upperRibon, double value);
 
  private:
-  void transmit(Receiver::tMessage msg) override;
+  void transmit(const Receiver::tMessage &msg) override;
 };

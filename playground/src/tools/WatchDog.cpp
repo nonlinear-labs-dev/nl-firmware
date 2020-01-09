@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <string>
+#include <glibmm.h>
 #include <profiling/Profiler.h>
 
 WatchDog::WatchDog()

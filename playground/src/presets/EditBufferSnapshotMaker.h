@@ -1,7 +1,12 @@
 #pragma once
 
 #include "playground.h"
-#include <libundo/undo/Scope.h>
+#include <sigc++/trackable.h>
+
+namespace UNDO
+{
+  class Transaction;
+};
 
 class EditBuffer;
 class Parameter;

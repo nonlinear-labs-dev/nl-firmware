@@ -11,5 +11,5 @@ class FromEncoderBridge : public Bridge
   void sendRotary(int8_t inc);
 
  private:
-  void transmit(Receiver::tMessage msg) override;
+  void transmit(const Receiver::tMessage &msg) override;
 };

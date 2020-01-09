@@ -1,5 +1,7 @@
 #pragma once
+
 #include <proxies/hwui/controls/LabelRegular8.h>
+#include <sigc++/connection.h>
 
 class Parameter;
 

@@ -3,6 +3,7 @@
 #include <http/UndoScope.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include "UndoListEntry.h"
+#include <libundo/undo/Transaction.h>
 
 UndoList::UndoList(const Rect &pos)
     : super(pos)

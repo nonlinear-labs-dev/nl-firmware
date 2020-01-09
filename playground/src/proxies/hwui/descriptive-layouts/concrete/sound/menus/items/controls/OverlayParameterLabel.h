@@ -1,6 +1,9 @@
 #pragma once
+
 #include <proxies/hwui/controls/Label.h>
-#include <parameters/Parameter.h>
+#include <sigc++/connection.h>
+
+class Parameter;
 
 class OverlayParameterLabel : public Label
 {

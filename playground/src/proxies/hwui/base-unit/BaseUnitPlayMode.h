@@ -2,7 +2,6 @@
 
 #include "proxies/hwui/UsageMode.h"
 #include "NoteShiftStateMachine.h"
-
 #include <proxies/hwui/ShortVsLongPress.h>
 
 class BaseUnitPlayMode : public UsageMode

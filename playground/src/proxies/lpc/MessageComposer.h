@@ -1,7 +1,7 @@
 #pragma once
 
 #include "playground.h"
-#include <giomm.h>
+#include <glibmm/refptr.h>
 
 class MessageComposer
 {

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <parameters/Parameter.h>
 
 class UnmodulateableMonoParameter : public Parameter
