@@ -112,8 +112,7 @@ tControlPositionValue ParameterImportConversions::driveV2ToV3(tControlPositionVa
 tControlPositionValue ParameterImportConversions::driveV5ToV6(tControlPositionValue in) const
 {
   // 0 .. 50 -> 0 .. 70
-  // old 0db is new 20db
-  return std::min(in + (2.0 / 7.0), 1.0);
+  return std::min((5.0/7.0) * in + (2.0/7.0) , 1.0);
 }
 
 void ParameterImportConversions::registerConverter(const tParameterID parameterID, const tFileVersion srcVersion,
