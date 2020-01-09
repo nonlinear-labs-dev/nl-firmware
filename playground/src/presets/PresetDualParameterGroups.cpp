@@ -29,6 +29,8 @@ PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *
       m_parameterGroups[static_cast<size_t>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
 }
 
+PresetDualParameterGroups::~PresetDualParameterGroups() = default;
+
 void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })

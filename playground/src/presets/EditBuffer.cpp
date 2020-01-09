@@ -50,7 +50,6 @@ EditBuffer::EditBuffer(PresetManager *parent)
 EditBuffer::~EditBuffer()
 {
   m_voiceGroupConnection.disconnect();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
@@ -845,6 +844,11 @@ void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
     setVoiceGroupName(transaction, "Init", vg);
 
   m_recallSet.copyFromEditBuffer(transaction, this, vg);
+}
+
+void EditBuffer::TEST_doDeferredJobs()
+{
+  doDeferedJobs();
 }
 
 void EditBuffer::initToFX(UNDO::Transaction *transaction)

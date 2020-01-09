@@ -4,6 +4,7 @@
 #include "SetupEditor.h"
 #include <Application.h>
 #include <device-settings/Settings.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 template <typename tSetting> class NumericSettingEditor : public SetupLabel, public SetupEditor
 {

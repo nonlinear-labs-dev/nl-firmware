@@ -12,6 +12,11 @@ Animator::Animator(std::chrono::milliseconds length, ProgressCB pcb, FinishedCB 
   m_signal = Application::get().getMainContext()->signal_idle().connect(sigc::mem_fun(this, &Animator::doAnimation));
 }
 
+Animator::~Animator()
+{
+  m_signal.disconnect();
+}
+
 float Animator::getAnimationPosition() const  // 0 ... 1
 {
   auto now = std::chrono::steady_clock::now();
@@ -38,10 +43,6 @@ bool Animator::finishAnimation()
 {
   m_animationFinishedCB();
   return false;
-}
-
-AnimatedGenericItem::~AnimatedGenericItem()
-{
 }
 
 void AnimatedGenericItem::startAnimation()

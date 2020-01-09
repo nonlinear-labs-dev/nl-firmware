@@ -8,7 +8,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   std::string getDisplayValue(VoiceGroup vg) const;
 
   DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
-  Glib::ustring getDisplayString() const override;
+  std::string getDisplayString() const override;
 
   ustring stringizeModulationAmount(tControlPositionValue amount) const override;
 

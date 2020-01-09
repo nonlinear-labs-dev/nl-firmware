@@ -83,3 +83,4 @@ void PresetParameterGroup::writeDocument(Writer &writer) const
     param->writeDocument(writer);
   }
 }
+

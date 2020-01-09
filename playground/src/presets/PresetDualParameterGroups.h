@@ -15,6 +15,7 @@ class PresetDualParameterGroups : public AttributesOwner
   PresetDualParameterGroups(UpdateDocumentContributor* parent);
   PresetDualParameterGroups(UpdateDocumentContributor* parent, const Preset& other);
   PresetDualParameterGroups(UpdateDocumentContributor* parent, const EditBuffer& eb);
+  ~PresetDualParameterGroups() override;
 
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
   void init(const Preset* preset);

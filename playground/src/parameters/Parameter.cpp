@@ -134,7 +134,7 @@ void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPos
 
 void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
-  if(value != m_value.getRawValue())
+  if(differs(value, m_value.getRawValue()))
   {
     auto swapData = UNDO::createSwapData(value);
 

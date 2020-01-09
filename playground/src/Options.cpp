@@ -37,7 +37,7 @@ Options::Options(int &argc, char **&argv)
   ae.set_description("Where to find the audio-engine");
   mainGroup.add_entry(ae, m_audioEngineHost);
 
-  OptionEntry turn;
+  Glib::OptionEntry turn;
   turn.set_long_name("bbbb-turnaround-times");
   turn.set_short_name('t');
   turn.set_arg_description("measure turn around times for knob to BOLED messages");

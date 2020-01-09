@@ -8,7 +8,6 @@
 
 int main(int numArgs, char **argv)
 {
-
   nltools::Log::setLevel(nltools::Log::Silent);
 
   Gio::init();

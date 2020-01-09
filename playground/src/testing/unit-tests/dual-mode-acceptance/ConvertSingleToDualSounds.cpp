@@ -19,7 +19,6 @@ template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tCo
 
   WHEN("converted to " + toString(tType))
   {
-
     static_assert(tType == SoundType::Split || tType == SoundType::Layer, "");
 
     auto editBuffer = TestHelper::getEditBuffer();

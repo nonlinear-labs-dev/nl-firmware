@@ -23,8 +23,10 @@ template <SoundType tNewSoundType> void loadPreset(Preset *newPreset)
   auto editBuffer = getEditBuffer();
   auto scope = TestHelper::createTestScope();
   editBuffer->undoableLoad(scope->getTransaction(), newPreset);
+  editBuffer->TEST_doDeferredJobs();
 
   REQUIRE(editBuffer->getType() == tNewSoundType);
+  REQUIRE_FALSE(editBuffer->isModified());
   REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
   REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == newPreset->getUuid());
 }
@@ -46,8 +48,10 @@ TEST_CASE("Simple EditBuffer Conversion")
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+    editBuffer->TEST_doDeferredJobs();
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
+    REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
   }
 
@@ -55,8 +59,10 @@ TEST_CASE("Simple EditBuffer Conversion")
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+    editBuffer->TEST_doDeferredJobs();
 
     REQUIRE(editBuffer->getType() == SoundType::Split);
+    REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
 
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::I })->getValue().getFineDenominator() == 11);
@@ -68,16 +74,20 @@ TEST_CASE("Simple EditBuffer Conversion")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+      editBuffer->TEST_doDeferredJobs();
     }
 
+    REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE(editBuffer->getType() == SoundType::Split);
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::I })->getValue().getFineDenominator() == 11);
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::II })->getValue().getFineDenominator() == 11);
 
     editBuffer->getParent()->getUndoScope().undo();
+    editBuffer->TEST_doDeferredJobs();
 
     REQUIRE(editBuffer->getType() == SoundType::Single);
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::I })->getValue().getFineDenominator() == 23);
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::II })->getValue().getFineDenominator() == 23);  // Ignored
@@ -88,15 +98,20 @@ TEST_CASE("Simple EditBuffer Conversion")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+      editBuffer->TEST_doDeferredJobs();
     }
 
+    REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::I })->getValue().getFineDenominator() == 11);
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::II })->getValue().getFineDenominator() == 11);
 
     editBuffer->getParent()->getUndoScope().undo();
+    editBuffer->TEST_doDeferredJobs();
+
     REQUIRE(editBuffer->getType() == SoundType::Single);
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::I })->getValue().getFineDenominator() == 23);
     REQUIRE(editBuffer->findParameterByID({ 249, VoiceGroup::II })->getValue().getFineDenominator() == 23);
@@ -139,7 +154,10 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableConvertToSingle(scope->getTransaction(), tVoiceGroup);
+    editBuffer->TEST_doDeferredJobs();
+
     REQUIRE(editBuffer->getType() == SoundType::Single);
+    REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE(vgParameter->getControlPositionValue() == vgParameter->getDefaultValue());
     REQUIRE(globalParameter->getDisplayValue() == globalParameterPreConversion + vGroupParameterPreConversion);
@@ -231,6 +249,7 @@ TEST_CASE("Load Presets Complete")
       editBuffer->undoableLoad(scope->getTransaction(), singlePreset);
 
       REQUIRE(editBuffer->getType() == SoundType::Single);
+      REQUIRE_FALSE(editBuffer->isModified());
       REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     }
 
@@ -242,6 +261,7 @@ TEST_CASE("Load Presets Complete")
 
       REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == layerPreset->getUuid());
       REQUIRE(editBuffer->getType() == SoundType::Layer);
+      REQUIRE_FALSE(editBuffer->isModified());
       REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     }
 
@@ -253,6 +273,7 @@ TEST_CASE("Load Presets Complete")
 
       REQUIRE(editBuffer->getUUIDOfLastLoadedPreset() == splitPreset->getUuid());
       REQUIRE(editBuffer->getType() == SoundType::Split);
+      REQUIRE_FALSE(editBuffer->isModified());
       REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     }
   }
@@ -270,6 +291,7 @@ TEST_CASE("Editbuffer Contents loaded")
     editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
 
     REQUIRE(editBuffer->getType() == SoundType::Layer);
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
   }
 
@@ -280,6 +302,7 @@ TEST_CASE("Editbuffer Contents loaded")
 
     REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
   }
 
@@ -287,9 +310,11 @@ TEST_CASE("Editbuffer Contents loaded")
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::II);
+    editBuffer->TEST_doDeferredJobs();
 
     REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::II) == presets.getSinglePreset()->getName());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
+    REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
   }
 }
@@ -303,7 +328,9 @@ TEST_CASE("Load <-> Changed")
   {
     auto scope = TestHelper::createTestScope();
     editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
+    editBuffer->TEST_doDeferredJobs();
 
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
 
     auto param = editBuffer->findParameterByID({ 2, VoiceGroup::I });
@@ -312,8 +339,10 @@ TEST_CASE("Load <-> Changed")
     REQUIRE_FALSE(param->isChangedFromLoaded());
 
     TestHelper::forceParameterChange(scope->getTransaction(), param);
+    editBuffer->TEST_doDeferredJobs();
 
     REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
   }
 
@@ -322,6 +351,9 @@ TEST_CASE("Load <-> Changed")
     auto scope = TestHelper::createTestScope();
 
     editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+    editBuffer->TEST_doDeferredJobs();
+
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
 
     auto param = editBuffer->findParameterByID({ 2, VoiceGroup::I });
@@ -329,9 +361,15 @@ TEST_CASE("Load <-> Changed")
     REQUIRE_FALSE(param->isChangedFromLoaded());
 
     TestHelper::forceParameterChange(scope->getTransaction(), param);
+    editBuffer->TEST_doDeferredJobs();
+
     REQUIRE(param->isChangedFromLoaded());
+
+    REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
     editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+    REQUIRE_FALSE(editBuffer->isModified());
+
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
   }
 
@@ -348,16 +386,20 @@ TEST_CASE("Load <-> Changed")
       REQUIRE_FALSE(param->isChangedFromLoaded());
 
       TestHelper::forceParameterChange(scope->getTransaction(), param);
+      editBuffer->TEST_doDeferredJobs();
 
       REQUIRE(param->isChangedFromLoaded());
     }
 
     REQUIRE(param != nullptr);
     REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
 
     param->undoableRecallFromPreset();
+    editBuffer->TEST_doDeferredJobs();
 
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE_FALSE(param->isChangedFromLoaded());
   }
@@ -369,22 +411,27 @@ TEST_CASE("Load <-> Changed")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+      editBuffer->TEST_doDeferredJobs();
 
       param = editBuffer->findParameterByID({ 15, VoiceGroup::II });
       REQUIRE(param != nullptr);
       REQUIRE_FALSE(param->isChangedFromLoaded());
 
       TestHelper::forceParameterChange(scope->getTransaction(), param);
+      editBuffer->TEST_doDeferredJobs();
 
       REQUIRE(param->isChangedFromLoaded());
     }
 
     REQUIRE(param != nullptr);
     REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
 
     param->undoableRecallFromPreset();
+    editBuffer->TEST_doDeferredJobs();
 
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE_FALSE(param->isChangedFromLoaded());
   }
@@ -396,22 +443,27 @@ TEST_CASE("Load <-> Changed")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
+      editBuffer->TEST_doDeferredJobs();
 
       param = editBuffer->findParameterByID({ 247, VoiceGroup::Global });
       REQUIRE(param != nullptr);
       REQUIRE_FALSE(param->isChangedFromLoaded());
 
       TestHelper::forceParameterChange(scope->getTransaction(), param);
+      editBuffer->TEST_doDeferredJobs();
 
       REQUIRE(param->isChangedFromLoaded());
     }
 
     REQUIRE(param != nullptr);
     REQUIRE(param->isChangedFromLoaded());
+    REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
 
     param->undoableRecallFromPreset();
+    editBuffer->TEST_doDeferredJobs();
 
+    REQUIRE_FALSE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE_FALSE(param->isChangedFromLoaded());
   }
@@ -439,6 +491,7 @@ TEST_CASE("Part Label")
     eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I).empty());
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::II).empty());
+    REQUIRE_FALSE(eb->isModified());
     REQUIRE_FALSE(eb->findAnyParameterChanged());
   }
 
@@ -458,6 +511,7 @@ TEST_CASE("Part Label")
     eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == ebName);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::II) == ebName);
+    REQUIRE_FALSE(eb->isModified());
     REQUIRE_FALSE(eb->findAnyParameterChanged());
   }
 }
@@ -470,11 +524,14 @@ void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
 
     //setup randomize amount
     Application::get().getSettings()->getSetting<RandomizeAmount>()->set(0.5);
-
     eb->undoableRandomize(scope->getTransaction(), Initiator::EXPLICIT_OTHER);
+    eb->TEST_doDeferredJobs();
+    REQUIRE(eb->isModified());
     REQUIRE(eb->findAnyParameterChanged());
     eb->undoableInitSound(scope->getTransaction());
-    REQUIRE(!eb->findAnyParameterChanged());
+    REQUIRE_FALSE(eb->isModified());
+    REQUIRE_FALSE(eb->findAnyParameterChanged());
+
     auto masterVolume = eb->findParameterByID({ 247, VoiceGroup::Global });
     REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getDefaultValue()));
     auto masterTune = eb->findParameterByID({ 248, VoiceGroup::Global });
