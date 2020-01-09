@@ -1,6 +1,7 @@
 #pragma once
 
 #include <proxies/hwui/HWUIEnums.h>
+#include <nltools/Types.h>
 
 class SingleLineInfoContent;
 class Control;

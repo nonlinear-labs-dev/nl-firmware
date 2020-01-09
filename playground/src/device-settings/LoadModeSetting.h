@@ -19,8 +19,8 @@ class LoadModeSetting : public EnumSetting<LoadMode>
   LoadModeSetting(const LoadModeSetting& other) = delete;
   LoadModeSetting& operator=(const LoadModeSetting&) = delete;
 
-  const std::vector<ustring>& enumToString() const override;
-  const std::vector<ustring>& enumToDisplayString() const override;
+  const std::vector<Glib::ustring>& enumToString() const override;
+  const std::vector<Glib::ustring>& enumToDisplayString() const override;
 
   void cycleForSoundType(SoundType type);
 };

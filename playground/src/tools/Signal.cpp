@@ -96,8 +96,6 @@ template <> void Signal<void, bool>::registerTests()
     g_assert(r->received[senderB.get()] == 1);
   });
 }
-<<<<<<< HEAD
-=======
 
 SignalBase::SignalBase()
     : m_initCallbackScheduled(false)
@@ -159,4 +157,3 @@ bool SignalBase::emitDefered()
 
   return false;
 }
->>>>>>> e05122b9... WIP

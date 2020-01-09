@@ -45,6 +45,8 @@ inline std::ostream& operator<<(std::ostream& out, const DebugLevels& level)
   return out;
 }
 
+class Settings;
+
 class DebugLevel : public EnumSetting<DebugLevels>
 {
  private:
@@ -97,7 +99,7 @@ class DebugLevel : public EnumSetting<DebugLevels>
   template <typename... tArgs> static std::string concat(tArgs&... args)
   {
     std::stringstream str;
-    (void) std::initializer_list<bool>{ (str << args << " ", false)... };
+    (void) std::initializer_list<bool> { (str << args << " ", false)... };
     return str.str();
   }
 

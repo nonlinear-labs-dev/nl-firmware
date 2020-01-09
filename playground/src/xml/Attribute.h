@@ -1,8 +1,9 @@
 #pragma once
 
 #include "playground.h"
-#include "ParameterId.h"
-#include "GroupId.h"
+
+class ParameterId;
+class GroupId;
 
 namespace attribute_detail
 {
@@ -11,21 +12,9 @@ namespace attribute_detail
     return std::to_string(v);
   }
 
-  template <> inline Glib::ustring toString(const ParameterId &v)
-  {
-    return v.toString();
-  }
-
-
-  template <> inline std::string toString(const GroupId &v)
-  {
-    return v.toString();
-  }
-
-  template <> inline std::string toString(const Glib::ustring &v)
-  {
-    return v;
-  }
+  Glib::ustring toString(const ParameterId &v);
+  Glib::ustring toString(const GroupId &v);
+  Glib::ustring toString(const Glib::ustring &v);
 }
 
 class Attribute

@@ -76,7 +76,7 @@ void MacroControlParameter::unregisterTarget(ModulateableParameter *target)
   m_targetListChanged();
 }
 
-void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid) {
+void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid)
 {
   m_lastMCViewUuid = uuid;
 }
@@ -191,15 +191,19 @@ ParameterId MacroControlParameter::getUiSelectedHardwareSource() const
   return m_UiSelectedHardwareSourceParameterID;
 }
 
-void MacroControlParameter::undoableSetGivenName(const Glib::ustring &newName) {
-  if (m_givenName != newName) {
+void MacroControlParameter::undoableSetGivenName(const Glib::ustring &newName)
+{
+  if(m_givenName != newName)
+  {
     auto scope = getUndoScope().startTransaction("Rename MacroControl '%0'", getLongName());
     undoableSetGivenName(scope->getTransaction(), newName);
   }
 }
 
-void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction, const Glib::ustring &newName) {
-  if (m_givenName != newName) {
+void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction, const Glib::ustring &newName)
+{
+  if(m_givenName != newName)
+  {
     auto swapData = UNDO::createSwapData(newName);
 
     DebugLevel::info("Set given name of MC to", newName);
@@ -211,15 +215,19 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   }
 }
 
-void MacroControlParameter::undoableSetInfo(const Glib::ustring &info) {
-  if (m_info != info) {
+void MacroControlParameter::undoableSetInfo(const Glib::ustring &info)
+{
+  if(m_info != info)
+  {
     auto scope = getUndoScope().startTransaction("Set MacroControl Info '%0'", getLongName());
     undoableSetInfo(scope->getTransaction(), info);
   }
 }
 
-void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &info) {
-  if (m_info != info) {
+void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &info)
+{
+  if(m_info != info)
+  {
     auto swapData = UNDO::createSwapData(info);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
@@ -267,15 +275,18 @@ void MacroControlParameter::copyTo(UNDO::Transaction *transaction, PresetParamet
   other->setField(transaction, PresetParameter::Fields::Info, getInfo());
 }
 
-const Glib::ustring &MacroControlParameter::getGivenName() const {
+const Glib::ustring &MacroControlParameter::getGivenName() const
+{
   return m_givenName;
 }
 
-const Glib::ustring &MacroControlParameter::getInfo() const {
+const Glib::ustring &MacroControlParameter::getInfo() const
+{
   return m_info;
 }
 
-Glib::ustring MacroControlParameter::getLongName() const {
+Glib::ustring MacroControlParameter::getLongName() const
+{
   Glib::ustring b = super::getLongName();
 
   if(!m_givenName.empty())

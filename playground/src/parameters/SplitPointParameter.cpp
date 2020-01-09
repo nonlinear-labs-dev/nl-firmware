@@ -27,7 +27,7 @@ DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
   }
 }
 
-std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
+Glib::ustring SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 {
   return SplitPointDimension::stringizeSplitPointDisplay(getValue().getRawValue(), vg);
 }
@@ -42,7 +42,7 @@ Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionVal
   return std::to_string(static_cast<int>(60 * amount)) + " st";
 }
 
-ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
+Glib::ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
 {
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   return SplitPointDimension::get().stringizeSplitPointDisplay(v, vg);

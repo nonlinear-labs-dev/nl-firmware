@@ -1,8 +1,9 @@
 #include "OverlayParameterLabel.h"
+#include <sigc++/sigc++.h>
 
 OverlayParameterLabel::OverlayParameterLabel(const Rect &r, const Parameter *parameter)
     : Label(r)
-    , m_parameter{ parameter }
+    , m_parameter { parameter }
 {
   if(parameter)
   {

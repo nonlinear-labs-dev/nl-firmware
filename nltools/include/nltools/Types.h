@@ -3,6 +3,7 @@
 #include "nltools/enums/EnumTools.h"
 #include <limits>
 #include <type_traits>
+#include <glibmm/ustring.h>
 
 ENUM(SoundType, int8_t, Single, Split, Layer, Invalid);
 ENUM(MacroControls, int8_t, NONE = 0, MC1 = 1, MC2 = 2, MC3 = 3, MC4 = 4, MC5 = 5, MC6 = 6, NUM_CHOICES = 7);

@@ -14,12 +14,12 @@ class Writer
 
   typedef std::function<void()> tTagContentWriter;
 
-  void writeTextElement(const Glib::ustring &name, const std::string &text);
-  void writeTextElement(const Glib::ustring &name, const std::string &text, const Attribute &a);
-  void writeTextElement(const Glib::ustring &name, const std::string &text, const Attribute &a, const Attribute &b);
-  void writeTextElement(const Glib::ustring &name, const std::string &text, const Attribute &a, const Attribute &b,
+  void writeTextElement(const Glib::ustring &name, const Glib::ustring &text);
+  void writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a);
+  void writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b);
+  void writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b,
                         const Attribute &c);
-  void writeTextElement(const Glib::ustring &name, const std::string &text, const Attribute &a, const Attribute &b,
+  void writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b,
                         const Attribute &c, const Attribute &d);
 
   void writeTag(const Glib::ustring &name);
@@ -29,14 +29,15 @@ class Writer
   void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const tTagContentWriter &w);
   void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
                 const tTagContentWriter &w);
-  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c, const Attribute &d,
+  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
+                const Attribute &d, const tTagContentWriter &w);
+  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
+                const Attribute &d, const Attribute &e, const tTagContentWriter &w);
+  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
+                const Attribute &d, const Attribute &e, const Attribute &f, const tTagContentWriter &w);
+  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c,
+                const Attribute &d, const Attribute &e, const Attribute &f, const Attribute &g,
                 const tTagContentWriter &w);
-  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c, const Attribute &d,
-                const Attribute &e, const tTagContentWriter &w);
-  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c, const Attribute &d,
-                const Attribute &e, const Attribute &f, const tTagContentWriter &w);
-  void writeTag(const Glib::ustring &name, const Attribute &a, const Attribute &b, const Attribute &c, const Attribute &d,
-                const Attribute &e, const Attribute &f, const Attribute &g, const tTagContentWriter &w);
 
  protected:
   void writeToStream(const Glib::ustring &str);

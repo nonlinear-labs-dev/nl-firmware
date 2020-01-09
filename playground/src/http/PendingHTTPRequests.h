@@ -1,8 +1,9 @@
 #pragma once
 
 #include "playground.h"
-#include <set>
 #include "NetworkRequest.h"
+#include <set>
+#include <memory>
 #include <libsoup/soup-message.h>
 
 class PendingHTTPRequests

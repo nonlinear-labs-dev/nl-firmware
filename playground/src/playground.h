@@ -94,7 +94,6 @@ enum class SaveResult : uint8_t
 
 std::string getStackTrace(const std::string& prefix);
 
-
 namespace Gio
 {
   class File;
@@ -110,7 +109,6 @@ namespace Glib
   class IOChannel;
 
   template <class T_CppObject> class RefPtr;
-
 }
 
 #ifdef _TESTS

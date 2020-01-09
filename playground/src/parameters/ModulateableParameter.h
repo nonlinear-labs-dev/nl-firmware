@@ -74,7 +74,7 @@ class ModulateableParameter : public Parameter
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
-  virtual std::string modulationValueToDisplayString(tControlPositionValue v) const;
+  virtual Glib::ustring modulationValueToDisplayString(tControlPositionValue v) const;
 
  private:
   int getModAmountDenominator(const ButtonModifiers &modifiers) const;

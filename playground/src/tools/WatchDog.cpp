@@ -9,15 +9,13 @@
 #include <profiling/Profiler.h>
 
 WatchDog::WatchDog()
-    : m_regularTimer(mem_fun(this, &WatchDog::onTimer))
+    : m_regularTimer(sigc::mem_fun(this, &WatchDog::onTimer))
 {
 }
 
 WatchDog::~WatchDog()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   stop();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 bool WatchDog::isDebuggerPreset()

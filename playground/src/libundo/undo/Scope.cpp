@@ -107,7 +107,7 @@ namespace UNDO
   }
 
   Scope::tTransactionScopePtr Scope::startContinuousTransaction(void *id, std::chrono::milliseconds timeout,
-                                                                const std::string &name)
+                                                                const Glib::ustring &name)
   {
     nltools_assertAlways(m_undoPosition == nullptr || m_undoPosition->isClosed());
 

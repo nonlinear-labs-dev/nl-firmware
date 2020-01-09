@@ -1,6 +1,6 @@
 #include "EventCounter.h"
 #include <device-settings/DebugLevel.h>
-#include <glib.h>
+#include <glibmm.h>
 
 EventCounter::EventCounter(const char *name)
     : m_name(name)

@@ -4,8 +4,8 @@
 #include <atomic>
 #include <sigc++/signal.h>
 #include <sigc++/connection.h>
-#include <glibmm/main.h>
 #include <tuple>
+#include <functional>
 
 class SignalBase
 {
@@ -26,22 +26,23 @@ class SignalBase
     const void *cookie;
   };
 
-template <typename tFirst, typename... tArgs> class Signal : public sigc::signal<tFirst, tArgs...>
+  typedef std::list<Record> tInitRecords;
+  tInitRecords m_initRecords;
+  std::atomic<bool> m_initCallbackScheduled;
+  sigc::connection m_initCallbackConnection;
+
+  tCallback m_deferedSend;
+  sigc::connection m_deferedCallbackConnection;
+};
+
+template <typename tFirst, typename... tArgs> class Signal : public sigc::signal<tFirst, tArgs...>, private SignalBase
 {
  private:
   typedef sigc::signal<tFirst, tArgs...> super;
 
  public:
-  Signal()
-      : m_initCallbackScheduled(false)
-  {
-  }
-
-  virtual ~Signal()
-  {
-    m_initCallbackConnection.disconnect();
-    m_deferedCallbackConnection.disconnect();
-  }
+  Signal() = default;
+  virtual ~Signal() = default;
 
   sigc::connection connectAndInit(const typename super::slot_type &slot, const tArgs &... args)
   {
@@ -62,13 +63,7 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
   void deferedSend(const tArgs &... args)
   {
     m_deferedSend = [=]() { send(args...); };
-
-    if(!m_deferedCallbackConnection.connected())
-    {
-      auto ctx = Glib::MainContext::get_default();
-      m_deferedCallbackConnection
-          = ctx->signal_idle().connect(mem_fun(this, &Signal::emitDefered), Glib::PRIORITY_DEFAULT);
-    }
+    SignalBase::deferedSend();
   }
 
   static void registerTests();
@@ -77,64 +72,17 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
   Signal(const Signal &other);
   Signal &operator=(const Signal &);
 
-  typedef std::function<void()> tCallback;
-  struct Record
+  bool findCookie(const void *c) const override
   {
-    tCallback cb;
-    const void *cookie;
-  };
+    for(auto &s : this->slots())
+      if(&s == c)
+        return true;
 
-  typedef std::list<Record> tInitRecords;
-  tInitRecords m_initRecords;
-  std::atomic<bool> m_initCallbackScheduled;
-  sigc::connection m_initCallbackConnection;
-
-  tCallback m_deferedSend;
-  sigc::connection m_deferedCallbackConnection;
+    return false;
+  }
 
   using super::emit;
   using super::operator();
-
-  void scheduleInitCallback(const void *cookie, tCallback cb)
-  {
-    m_initRecords.push_back({ cb, cookie });
-
-    if(!m_initCallbackScheduled.exchange(true))
-    {
-      m_initCallbackConnection = Glib::MainContext::get_default()->signal_idle().connect(
-          mem_fun(this, &Signal::doTheCallbacks), Glib::PRIORITY_HIGH);
-    }
-  }
-
-  bool doTheCallbacks()
-  {
-    m_initCallbackScheduled.exchange(false);
-
-    tInitRecords initRecords;
-    swap(initRecords, m_initRecords);
-
-    m_initCallbackConnection.disconnect();
-
-    for(const auto &r : initRecords)
-      for(auto &s : this->slots())
-        if(&s == r.cookie)
-          r.cb();
-
-    return false;
-  }
-
-  bool emitDefered()
-  {
-    m_deferedCallbackConnection.disconnect();
-
-    tCallback c;
-    std::swap(c, m_deferedSend);
-
-    if(c)
-      c();
-
-    return false;
-  }
 };
 
 template <typename tFirst, typename... tArgs> class SignalWithCache : public Signal<tFirst, tArgs...>

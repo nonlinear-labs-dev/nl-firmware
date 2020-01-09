@@ -54,12 +54,12 @@ void LPCProxy::onLPCMessage(const nltools::msg::LPCMessage &msg)
   }
 }
 
-connection LPCProxy::onRibbonTouched(sigc::slot<void, int> s)
+sigc::connection LPCProxy::onRibbonTouched(sigc::slot<void, int> s)
 {
   return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
 }
 
-connection LPCProxy::onLPCSoftwareVersionChanged(sigc::slot<void, int> s)
+sigc::connection LPCProxy::onLPCSoftwareVersionChanged(sigc::slot<void, int> s)
 {
   return m_signalLPCSoftwareVersionChanged.connectAndInit(s, m_lpcSoftwareVersion);
 }

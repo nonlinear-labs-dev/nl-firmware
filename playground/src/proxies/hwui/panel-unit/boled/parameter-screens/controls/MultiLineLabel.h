@@ -14,7 +14,7 @@ class MultiLineLabel : public ControlWithChildren
 
   bool setText(const Glib::ustring &text, FrameBufferColors c);
   const Glib::ustring &getText() const;
-  void setColor(FrameBuffer::Colors c);
+  void setColor(FrameBufferColors c);
 
   void drawBackground(FrameBuffer &fb) override;
   bool redraw(FrameBuffer &fb) override;

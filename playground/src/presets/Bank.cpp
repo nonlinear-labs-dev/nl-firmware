@@ -473,7 +473,7 @@ void Bank::deletePreset(UNDO::Transaction *transaction, const Uuid &uuid)
   updateLastModifiedTimestamp(transaction);
 }
 
-connection Bank::onBankChanged(sigc::slot<void> cb)
+sigc::connection Bank::onBankChanged(sigc::slot<void> cb)
 {
   return m_sigBankChanged.connectAndInit(cb);
 }

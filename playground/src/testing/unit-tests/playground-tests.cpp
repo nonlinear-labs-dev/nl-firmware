@@ -5,6 +5,7 @@
 #include "testing/TestDriver.h"
 #include "device-settings/DebugLevel.h"
 #include "playground-helpers.h"
+#include <giomm.h>
 
 int main(int numArgs, char **argv)
 {

@@ -396,7 +396,7 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
   auto displayValue = scaleConverter->controlPositionToDisplay(clipped);
   auto ret = scaleConverter->getDimension().stringize(displayValue);
 
-  if(clipped != v)
+  if(differs(clipped, v))
     ret = "! " + ret;
 
   return ret;

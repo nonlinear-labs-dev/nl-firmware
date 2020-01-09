@@ -81,7 +81,7 @@ bool ParameterDB::isActive(const Parameter *p) const
   return diff > std::numeric_limits<tControlPositionValue>::epsilon();
 }
 
-Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(ustring name, VoiceGroup originGroup) const
+Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const
 {
   if(name.find("@VG") != Glib::ustring::npos)
   {

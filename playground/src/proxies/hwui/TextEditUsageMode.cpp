@@ -275,7 +275,7 @@ bool TextEditUsageMode::handleSpecialChar(gunichar c)
   return false;
 }
 
-connection TextEditUsageMode::onTextChanged(const sigc::slot<void, const Glib::ustring &> &cb)
+sigc::connection TextEditUsageMode::onTextChanged(const sigc::slot<void, const Glib::ustring &> &cb)
 {
   return m_sigTextChanged.connectAndInit(cb, m_text);
 }

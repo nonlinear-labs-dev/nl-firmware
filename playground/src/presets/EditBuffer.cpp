@@ -130,32 +130,32 @@ bool EditBuffer::isModified() const
   return m_isModified;
 }
 
-connection EditBuffer::onModificationStateChanged(const sigc::slot<void, bool> &s)
+sigc::connection EditBuffer::onModificationStateChanged(const sigc::slot<void, bool> &s)
 {
   return m_signalModificationState.connectAndInit(s, m_isModified);
 }
 
-connection EditBuffer::onChange(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onChange(const sigc::slot<void> &s)
 {
   return m_signalChange.connectAndInit(s);
 }
 
-connection EditBuffer::onPresetLoaded(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onPresetLoaded(const sigc::slot<void> &s)
 {
   return m_signalPresetLoaded.connect(s);
 }
 
-connection EditBuffer::onLocksChanged(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onLocksChanged(const sigc::slot<void> &s)
 {
   return m_signalLocksChanged.connectAndInit(s);
 }
 
-connection EditBuffer::onRecallValuesChanged(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onRecallValuesChanged(const sigc::slot<void> &s)
 {
   return m_recallSet.m_signalRecallValues.connect(s);
 }
 
-connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
+sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
 {
   return m_signalTypeChanged.connect(s);
 }
