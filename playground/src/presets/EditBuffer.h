@@ -39,7 +39,8 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableLoad(Preset *preset);
   void undoableLoadSinglePreset(Preset *preset, VoiceGroup to);
   void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
-  void undoableLoadPresetPartIntoPart(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup copyTo);
+  void undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                      VoiceGroup copyTo);
 
   void undoableLoadSelectedPreset(VoiceGroup loadInto);
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
@@ -67,7 +68,7 @@ class EditBuffer : public ParameterDualGroupSet
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
   bool hasLocks(VoiceGroup vg) const;
-  bool anyParameterChanged() const;
+  bool findAnyParameterChanged() const;
   void resetOriginIf(const Preset *p);
 
   // CALLBACKS
@@ -97,13 +98,13 @@ class EditBuffer : public ParameterDualGroupSet
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();
 
-  static bool isDualParameterForSoundType(const Parameter* parameter, SoundType type);
+  static bool isDualParameterForSoundType(const Parameter *parameter, SoundType type);
 
   void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group);
 
-private:
+ private:
   Glib::ustring getEditBufferName() const;
-  bool anyParameterChanged(VoiceGroup vg) const;
+  bool findAnyParameterChanged(VoiceGroup vg) const;
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
   UNDO::Scope &getUndoScope() override;
   void setParameter(ParameterId id, double cpValue);
@@ -147,7 +148,7 @@ private:
   SoundType m_type;
   size_t m_hashOnStore;
 
-  mutable Preset *m_originCache{ nullptr };
+  mutable Preset *m_originCache { nullptr };
   RecallParameterGroups m_recallSet;
 
   friend class PresetManager;

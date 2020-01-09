@@ -38,7 +38,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 
@@ -224,7 +224,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -263,7 +263,7 @@ bool EditBuffer::hasLocks(VoiceGroup vg) const
   return searchForAnyParameterWithLock(vg) != nullptr;
 }
 
-bool EditBuffer::anyParameterChanged(VoiceGroup vg) const
+bool EditBuffer::findAnyParameterChanged(VoiceGroup vg) const
 {
   for(auto &paramGroup : getParameterGroups(vg))
     for(auto &param : paramGroup->getParameters())
@@ -276,16 +276,16 @@ bool EditBuffer::anyParameterChanged(VoiceGroup vg) const
   return false;
 }
 
-bool EditBuffer::anyParameterChanged() const
+bool EditBuffer::findAnyParameterChanged() const
 {
   if(m_type == SoundType::Single)
   {
-    return anyParameterChanged(VoiceGroup::I) || anyParameterChanged(VoiceGroup::Global);
+    return findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::Global);
   }
   else
   {
-    return anyParameterChanged(VoiceGroup::I) || anyParameterChanged(VoiceGroup::II)
-        || anyParameterChanged(VoiceGroup::Global);
+    return findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::II)
+        || findAnyParameterChanged(VoiceGroup::Global);
   }
 }
 
@@ -748,7 +748,7 @@ void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -780,7 +780,7 @@ void EditBuffer::undoableConvertToLayer(UNDO::Transaction *transaction)
   auto vgMasterII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Global Master to VG Master
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto mI = vgMasterI->findParameterByID({ ids.first, VoiceGroup::I });
     auto mII = vgMasterII->findParameterByID({ ids.first, VoiceGroup::II });
