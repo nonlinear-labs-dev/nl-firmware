@@ -10,15 +10,14 @@ TEST_CASE("Load Dual Part into Part")
   auto editBuffer = TestHelper::getEditBuffer();
 
   auto splitPreset = presets.getSplitPreset();
-  auto presetTuneI = splitPreset->findParameterByID({ 358, VoiceGroup::I });
-  auto presetTuneII = splitPreset->findParameterByID({ 358, VoiceGroup::II });
 
+  auto presetValue = 0.1;
   //Prepare Presets
   {
     auto scope = TestHelper::createTestScope();
+    auto transaction = scope->getTransaction();
 
-    presetTuneI->setValue(scope->getTransaction(), 0.555);
-    presetTuneII->setValue(scope->getTransaction(), 0.187);
+    splitPreset->forEachParameter([&](PresetParameter* pp) { pp->setValue(transaction, presetValue); });
   }
 
   WHEN("Init Sound is Split")
@@ -36,28 +35,32 @@ TEST_CASE("Load Dual Part into Part")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), splitPreset, VoiceGroup::I, VoiceGroup::I);
-      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::I })->getControlPositionValue() == 0.555);
+      REQUIRE(editBuffer->findParameterByID({ parameterNumber, VoiceGroup::I })->getControlPositionValue()
+              == presetValue);
     }
 
     THEN("Load Split Part I into II")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), splitPreset, VoiceGroup::I, VoiceGroup::II);
-      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::II })->getControlPositionValue() == 0.555);
+      REQUIRE(editBuffer->findParameterByID({ parameterNumber, VoiceGroup::II })->getControlPositionValue()
+              == presetValue);
     }
 
     THEN("Load Split Part II into I")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), splitPreset, VoiceGroup::II, VoiceGroup::I);
-      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::I })->getControlPositionValue() == 0.187);
+      REQUIRE(editBuffer->findParameterByID({ parameterNumber, VoiceGroup::I })->getControlPositionValue()
+              == presetValue);
     }
 
     THEN("Load Split Part II into II")
     {
       auto scope = TestHelper::createTestScope();
       editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), splitPreset, VoiceGroup::II, VoiceGroup::II);
-      REQUIRE(editBuffer->findParameterByID({ 358, VoiceGroup::II })->getControlPositionValue() == 0.187);
+      REQUIRE(editBuffer->findParameterByID({ parameterNumber, VoiceGroup::II })->getControlPositionValue()
+              == presetValue);
     }
   }
 }

@@ -5,7 +5,7 @@
 #include <presets/PresetManager.h>
 
 UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup* group, VoiceGroup vg)
-    : UnmodulateableUnisonParameter(group, ParameterId{ 249, vg },
+    : UnmodulateableUnisonParameter(group, ParameterId { 249, vg },
                                     ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23)
 {
 }
@@ -24,19 +24,16 @@ void UnisonVoicesParameter::updateScaling(UNDO::Transaction* transaction, SoundT
 {
   auto oldCP = getControlPositionValue();
 
-  auto oldDisplay = getDisplayString();
+  auto oldVoices = getDisplayValue();
 
   if(type == SoundType::Single)
   {
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>());
     getValue().setCoarseDenominator(23);
     getValue().setFineDenominator(23);
-
-    oldCP *= 0.5;
   }
   else
   {
-
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<12, VoicesDimension>>());
     getValue().setCoarseDenominator(11);
     getValue().setFineDenominator(11);
@@ -44,9 +41,16 @@ void UnisonVoicesParameter::updateScaling(UNDO::Transaction* transaction, SoundT
     if(oldCP >= 0.5)
       setCpValue(transaction, Initiator::INDIRECT, 1.0, false);
     else
-      setCpValue(transaction, Initiator::INDIRECT, oldCP / 2.0, false);
+    {
+      if(oldVoices == 1)
+        setCpValue(transaction, Initiator::INDIRECT, oldCP * 2, false);
+      else
+      {
+        setCPFromHwui(transaction, 0);
+        stepCPFromHwui(transaction, oldVoices - 1, {});
+      }
+    }
   }
-
 
   m_scalingChanged = true;
   onChange();

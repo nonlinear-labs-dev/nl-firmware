@@ -30,7 +30,6 @@ int main(int numArgs, char **argv)
 
   std::vector<const char *> args;
   args.emplace_back(argv[0]);
-  args.emplace_back("\"Convert Single to Dual Sound Changes Unison Accordingly\"");
   int result = Catch::Session().run(args.size(), args.data());
   return result;
 }

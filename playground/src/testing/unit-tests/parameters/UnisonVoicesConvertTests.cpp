@@ -12,30 +12,8 @@ TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly")
   eb->undoableInitSound(transaction);
 
   auto unisonVoices = eb->findParameterByID({ 249, VoiceGroup::I });
-
-  WHEN("Unison Voices: 14")
-  {
-    unisonVoices->setCPFromHwui(transaction, 0.583333338);  // -> 14
-    REQUIRE(unisonVoices->getDisplayString() == "14 voices");
-
-    WHEN("Convert to Dual")
-    {
-      eb->undoableConvertToDual(transaction, SoundType::Layer);
-      REQUIRE(unisonVoices->getDisplayString() == "12 voices");
-    }
-  }
-
-  WHEN("Unison Voices: 2")
-  {
-    unisonVoices->stepCPFromHwui(transaction, 1, {});  // -> 2
-    REQUIRE(unisonVoices->getDisplayString() == "2 voices");
-
-    WHEN("Converted to Dual")
-    {
-      eb->undoableConvertToDual(transaction, SoundType::Layer);
-      REQUIRE(unisonVoices->getDisplayString() == "2 voices");
-    }
-  }
+  unisonVoices->setCPFromHwui(scope->getTransaction(), 0);
+  REQUIRE(unisonVoices->getDisplayString() == "1 voice (off)");
 
   WHEN("Unison Voices: 1")
   {
@@ -46,6 +24,29 @@ TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly")
     {
       eb->undoableConvertToDual(transaction, SoundType::Layer);
       REQUIRE(unisonVoices->getDisplayString() == "1 voice (off)");
+    }
+  }
+
+  for(auto steps = 1; steps < 24; steps++)
+  {
+    auto voices = steps + 1;
+
+    WHEN("Unison Voices: " + std::to_string(voices))
+    {
+      unisonVoices->setCPFromHwui(transaction, 0);
+      unisonVoices->stepCPFromHwui(transaction, steps, {});
+      REQUIRE(unisonVoices->getDisplayString() == std::to_string(voices) + " voices");
+
+      eb->undoableConvertToDual(transaction, SoundType::Layer);
+
+      if(voices >= 12)
+      {
+        CHECK(unisonVoices->getDisplayString() == "12 voices");
+      }
+      else
+      {
+        CHECK(unisonVoices->getDisplayString() == std::to_string(voices) + " voices");
+      }
     }
   }
 }
