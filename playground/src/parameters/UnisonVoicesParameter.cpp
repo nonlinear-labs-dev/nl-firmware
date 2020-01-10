@@ -5,7 +5,7 @@
 #include <presets/PresetManager.h>
 
 UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup* group, VoiceGroup vg)
-    : UnmodulateableUnisonParameter(group, ParameterId{ 249, vg },
+    : UnmodulateableUnisonParameter(group, ParameterId { 249, vg },
                                     ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23)
 {
 }
@@ -20,24 +20,40 @@ bool UnisonVoicesParameter::shouldWriteDocProperties(UpdateDocumentContributor::
   return ret;
 }
 
-void UnisonVoicesParameter::updateScaling(SoundType type)
+void UnisonVoicesParameter::updateScaling(UNDO::Transaction* transaction, SoundType type)
 {
-  auto value = getValue().getRawValue();
+  auto oldCP = getControlPositionValue();
+
+  auto oldVoices = getDisplayValue();
 
   if(type == SoundType::Single)
   {
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>());
     getValue().setCoarseDenominator(23);
     getValue().setFineDenominator(23);
+
+    setCPFromHwui(transaction, 0);
+    stepCPFromHwui(transaction, oldVoices -1, {});
   }
   else
   {
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<12, VoicesDimension>>());
     getValue().setCoarseDenominator(11);
     getValue().setFineDenominator(11);
-  }
 
-  getValue().setRawValue(Initiator::INDIRECT, value);
+    if(oldCP >= 0.5)
+      setCpValue(transaction, Initiator::INDIRECT, 1.0, false);
+    else
+    {
+      if(oldVoices == 1)
+        setCpValue(transaction, Initiator::INDIRECT, oldCP * 2, false);
+      else
+      {
+        setCPFromHwui(transaction, 0);
+        stepCPFromHwui(transaction, oldVoices - 1, {});
+      }
+    }
+  }
 
   m_scalingChanged = true;
   onChange();
