@@ -1,4 +1,6 @@
 #include <nltools/threading/ContextBoundMessageQueue.h>
+#include <nltools/logging/Log.h>
+#include <glibmm.h>
 
 namespace nltools
 {

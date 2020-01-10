@@ -1,6 +1,7 @@
 #include <testing/TestHelper.h>
 #include <third-party/include/catch.hpp>
 #include <device-settings/LoadModeSetting.h>
+#include <device-settings/Settings.h>
 
 SCENARIO("'toggle' Load Mode Setting")
 {

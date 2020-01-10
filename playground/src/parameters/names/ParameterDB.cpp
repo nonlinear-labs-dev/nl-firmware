@@ -3,7 +3,6 @@
 #include <boost/tokenizer.hpp>
 #include <parameters/names/ParameterDB.h>
 #include <tools/StringTools.h>
-#include "RowStream.h"
 #include <parameters/Parameter.h>
 #include <parameter-db/generated/parameter_list.h>
 #include <assert.h>

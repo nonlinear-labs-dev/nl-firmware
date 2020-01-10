@@ -1,9 +1,9 @@
 #pragma once
 
 #include "nltools/enums/EnumTools.h"
+#include <nltools/GlibFwd.h>
 #include <limits>
 #include <type_traits>
-#include <glibmm/ustring.h>
 
 ENUM(SoundType, int8_t, Single, Split, Layer, Invalid);
 ENUM(MacroControls, int8_t, NONE = 0, MC1 = 1, MC2 = 2, MC3 = 3, MC4 = 4, MC5 = 5, MC6 = 6, NUM_CHOICES = 7);
@@ -16,25 +16,4 @@ ENUM(ReturnMode, int8_t, None, Center, Zero);
 template <typename T> inline std::enable_if_t<std::is_floating_point_v<T>, bool> differs(T a, T b)
 {
   return std::abs(a - b) > std::numeric_limits<T>::epsilon();
-}
-
-namespace Gio
-{
-  class File;
-  class FileInfo;
-  class InputStream;
-  class AsyncResult;
-  class Cancellable;
-  class DataInputStream;
-  class DataOutputStream;
-  class ZlibCompressor;
-  class FileMonitor;
-}
-
-namespace Glib
-{
-  class Bytes;
-  class IOChannel;
-
-  template <class T_CppObject> class RefPtr;
 }

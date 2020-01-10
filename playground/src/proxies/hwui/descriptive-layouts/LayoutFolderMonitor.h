@@ -14,7 +14,7 @@ class LayoutFolderMonitor : public sigc::trackable
  private:
   LayoutFolderMonitor();
 
-  void onFileChanged(const Glib::RefPtr<Gio::File> &, const Glib::RefPtr<Gio::File> &, Gio::FileMonitorEvent);
+  void onFileChanged(const Glib::RefPtr<Gio::File> &, const Glib::RefPtr<Gio::File> &, int);
   Signal<void> m_onChange;
   Glib::RefPtr<Gio::File> m_rootFolder;
   FileTools::RecursiveDirectoryMonitor m_recMonitor;

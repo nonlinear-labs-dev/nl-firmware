@@ -1,7 +1,9 @@
 #pragma once
 
-#include <glibmm/main.h>
+#include <nltools/GlibFwd.h>
 #include <functional>
+#include <sigc++/trackable.h>
+#include <glibmm/refptr.h>
 
 namespace nltools
 {

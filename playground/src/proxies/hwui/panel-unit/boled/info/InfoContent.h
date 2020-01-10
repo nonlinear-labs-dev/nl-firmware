@@ -2,6 +2,7 @@
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/Scrollable.h>
+#include <map>
 
 class InfoField;
 
@@ -12,6 +13,7 @@ class InfoContent : public Scrollable, public ControlWithChildren
 
  public:
   InfoContent();
+  ~InfoContent();
 
   void setPosition(const Rect& rect) override;
   const Rect& getPosition() const override;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nltools/Types.h>
+#include <nltools/GlibFwd.h>
 #include <thread>
 
 class CommandLineInterface

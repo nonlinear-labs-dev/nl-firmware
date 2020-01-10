@@ -1,14 +1,21 @@
 #pragma once
 
+#include <nltools/GlibFwd.h>
 #include <nltools/messaging/InChannel.h>
-#include <nltools/threading/ContextBoundMessageQueue.h>
 #include <nltools/threading/BackgroundThreadWaiter.h>
 #include <libsoup/soup.h>
 #include <memory>
+#include <list>
 #include <thread>
+#include <glibmm/refptr.h>
 
 namespace nltools
 {
+  namespace threading
+  {
+    class ContextBoundMessageQueue;
+
+  }
   namespace msg
   {
     namespace ws

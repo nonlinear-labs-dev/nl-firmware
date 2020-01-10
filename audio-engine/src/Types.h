@@ -1,6 +1,5 @@
 #pragma once
 
-#include <nltools/Types.h>
 #include <stdint.h>
 #include <chrono>
 

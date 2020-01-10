@@ -33,7 +33,7 @@ LayoutFolderMonitor::LayoutFolderMonitor()
 }
 
 void LayoutFolderMonitor::onFileChanged(const Glib::RefPtr<Gio::File>& o, const Glib::RefPtr<Gio::File>& n,
-                                        Gio::FileMonitorEvent e)
+                                        int e)
 {
   bruteForce();
 }

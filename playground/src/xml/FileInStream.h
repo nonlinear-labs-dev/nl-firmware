@@ -1,7 +1,9 @@
 #pragma once
 
-#include <giomm/datainputstream.h>
 #include "InStream.h"
+
+struct _GDataInputStream;
+using GDataInputStream = struct _GDataInputStream;
 
 class FileInStream : public InStream
 {

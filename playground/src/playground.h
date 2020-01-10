@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nltools/Types.h>
+#include <nltools/GlibFwd.h>
 #include <stdlib.h>
 #include <type_traits>
 #include <string>

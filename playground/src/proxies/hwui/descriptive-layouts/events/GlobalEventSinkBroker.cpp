@@ -17,6 +17,8 @@
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
+#include <Application.h>
+#include <device-settings/Settings.h>
 
 namespace DescriptiveLayouts
 {

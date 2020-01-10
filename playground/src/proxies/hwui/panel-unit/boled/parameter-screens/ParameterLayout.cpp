@@ -20,6 +20,7 @@
 #include <presets/recall/RecallParameter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <libundo/undo/Scope.h>
+#include <device-settings/Settings.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())

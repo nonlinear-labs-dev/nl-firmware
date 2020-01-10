@@ -8,6 +8,8 @@ InfoContent::InfoContent()
 {
 }
 
+InfoContent::~InfoContent() = default;
+
 void InfoContent::setPosition(const Rect& rect)
 {
   super::setPosition(rect);

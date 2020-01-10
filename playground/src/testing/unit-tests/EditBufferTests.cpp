@@ -12,6 +12,8 @@
 #include <presets/PresetParameter.h>
 #include <device-settings/RandomizeAmount.h>
 #include "mock/MockPresetStorage.h"
+#include <Application.h>
+#include <device-settings/Settings.h>
 
 inline EditBuffer *getEditBuffer()
 {

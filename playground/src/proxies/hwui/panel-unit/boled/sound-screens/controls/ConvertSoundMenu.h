@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/ButtonMenu.h"
+#include <nltools/Types.h>
 
 class ConvertSoundMenu : public ButtonMenu
 {

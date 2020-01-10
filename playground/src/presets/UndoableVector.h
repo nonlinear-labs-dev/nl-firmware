@@ -7,25 +7,46 @@
 #include <tools/Uuid.h>
 #include "libundo/undo/SwapData.h"
 #include "libundo/undo/Transaction.h"
-#include <device-settings/CrashOnError.h>
-#include <Application.h>
-#include <device-settings/Settings.h>
 #include <nltools/Assert.h>
 #include <playground-helpers.h>
 
-template <typename Owner, typename Element> class UndoableVector
+class UndoableVectorBase
+{
+ public:
+  UndoableVectorBase()
+      : m_selection(Uuid::none())
+  {
+  }
+
+  static constexpr size_t invalidPosition = std::numeric_limits<size_t>::max();
+  bool shouldCrashOnError();
+
+  bool select(UNDO::Transaction *transaction, const Uuid &uuid);
+
+  struct Checker
+  {
+    Checker(UndoableVectorBase *p);
+    ~Checker();
+
+    UndoableVectorBase *m_p;
+  };
+
+  virtual void check() = 0;
+  virtual void invalidate() = 0;
+
+  Uuid m_selection;
+};
+
+template <typename Owner, typename Element> class UndoableVector : private UndoableVectorBase
 {
  public:
   using ElementPtr = std::unique_ptr<Element>;
   using Elements = std::vector<ElementPtr>;
   using CloneFactory = std::function<Element *(const Element *)>;
 
-  static constexpr size_t invalidPosition = std::numeric_limits<size_t>::max();
-
   UndoableVector(Owner &owner, CloneFactory &&f)
       : m_owner(owner)
       , m_factory(f)
-      , m_selection(Uuid::none())
   {
   }
 
@@ -69,10 +90,8 @@ template <typename Owner, typename Element> class UndoableVector
     }
     catch(std::out_of_range &)
     {
-      if(Application::get().getSettings()->getSetting<CrashOnError>()->get())
-        std::rethrow_exception(std::current_exception());
-      else
-        return nullptr;
+      // if(shouldCrashOnError())
+      std::rethrow_exception(std::current_exception());
     }
   }
 
@@ -141,21 +160,6 @@ template <typename Owner, typename Element> class UndoableVector
       return ret->get();
 
     return nullptr;
-  }
-
-  bool select(UNDO::Transaction *transaction, const Uuid &uuid)
-  {
-    Checker checker(this);
-    if(m_selection != uuid)
-    {
-      transaction->addSimpleCommand([this, swap = UNDO::createSwapData(uuid)](auto) {
-        Checker checker(this);
-        swap->swapWith(m_selection);
-        m_owner.invalidate();
-      });
-      return true;
-    }
-    return false;
   }
 
   Element *append(UNDO::Transaction *transaction, ElementPtr p)
@@ -392,6 +396,8 @@ template <typename Owner, typename Element> class UndoableVector
     return invalidPosition;
   }
 
+  using UndoableVectorBase::select;
+
  private:
   void invalidateAllChildren()
   {
@@ -399,22 +405,12 @@ template <typename Owner, typename Element> class UndoableVector
     forEach([&](auto a) { a->invalidate(); });
   }
 
-  struct Checker
+  void invalidate() override
   {
-    Checker(UndoableVector *p)
-        : m_p(p)
-    {
-      m_p->check();
-    }
+    m_owner.invalidate();
+  }
 
-    ~Checker()
-    {
-      m_p->check();
-    }
-
-    UndoableVector *m_p;
-  };
-  void check()
+  void check() override
   {
 #if _DEVELOPMENT_PC
     if(!empty())
@@ -432,5 +428,4 @@ template <typename Owner, typename Element> class UndoableVector
   Owner &m_owner;
   CloneFactory m_factory;
   Elements m_elements;
-  Uuid m_selection;
 };

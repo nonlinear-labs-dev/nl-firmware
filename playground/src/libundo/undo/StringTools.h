@@ -1,8 +1,8 @@
 #pragma once
 
-#include <nltools/Types.h>
 #include <sstream>
 #include <stdlib.h>
+#include <glibmm/ustring.h>
 
 namespace UNDO
 {

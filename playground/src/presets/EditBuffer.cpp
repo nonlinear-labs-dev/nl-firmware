@@ -34,7 +34,7 @@
 #include <groups/UnisonGroup.h>
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
-
+#include <device-settings/Settings.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)

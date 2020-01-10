@@ -3,9 +3,13 @@
 #include <http/ContentSection.h>
 #include <http/RPCActionManager.h>
 #include <tools/Signal.h>
-#include <libundo/undo/Scope.h>
-#include <presets/Bank.h>
-#include "MultiplePresetSelection.h"
+
+class Uuid;
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class Clipboard : public ContentSection
 {

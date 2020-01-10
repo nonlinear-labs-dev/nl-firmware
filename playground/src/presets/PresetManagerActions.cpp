@@ -21,6 +21,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
+#include <Application.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     : RPCActionManager("/presets/")

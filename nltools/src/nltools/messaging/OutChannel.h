@@ -1,12 +1,16 @@
 #pragma once
 
-#include <nltools/messaging/Messaging.h>
 #include <memory>
+#include <chrono>
+#include <functional>
+#include <nltools/GlibFwd.h>
 
 namespace nltools
 {
   namespace msg
   {
+    using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
+
     class OutChannel
     {
      public:

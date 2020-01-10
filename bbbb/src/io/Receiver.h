@@ -1,7 +1,6 @@
 #pragma once
 
 #include "bbbb.h"
-#include <nltools/Types.h>
 #include <sigc++/trackable.h>
 #include <functional>
 

@@ -28,10 +28,6 @@ set(LIBS
     uuid
     libsoup-2.4
     freetype2
-    avahi-glib
-    avahi-gobject
-    avahi-core
-    avahi-client
 )
 
 OPTION(DEV_PC "Enable some tests and tools not suitable for embedded device" OFF)

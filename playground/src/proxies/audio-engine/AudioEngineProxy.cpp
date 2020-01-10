@@ -21,6 +21,7 @@
 #include <groups/MonoGroup.h>
 #include <groups/UnisonGroup.h>
 #include <groups/ScaleGroup.h>
+#include <device-settings/Settings.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {

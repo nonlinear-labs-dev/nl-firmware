@@ -22,6 +22,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
+#include <http/UndoScope.h>
 
 ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                              tDisplayValue def, tControlPositionValue coarseDenominator,

@@ -18,8 +18,10 @@
 #include <proxies/hwui/HWUI.h>
 #include <serialization/PresetSerializer.h>
 #include <device-settings/LoadModeSetting.h>
+#include <device-settings/Settings.h>
 #include <groups/ParameterGroup.h>
 #include <glibmm.h>
+#include <giomm/file.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 

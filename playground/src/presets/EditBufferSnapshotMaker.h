@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include <sigc++/trackable.h>
+#include <vector>
 
 namespace UNDO
 {

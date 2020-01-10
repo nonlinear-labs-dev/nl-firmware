@@ -6,7 +6,6 @@
 #include "xml/XmlWriter.h"
 #include "ServedFile.h"
 #include "ServedJournal.h"
-#include "AvahiService.h"
 #include <memory>
 #include "device-settings/DebugLevel.h"
 #include "SoupOutStream.h"
@@ -22,7 +21,6 @@ static const guint port = 80;
 
 HTTPServer::HTTPServer()
     : m_contentManager()
-    , m_avahi(new AvahiService())
 {
   startServer();
 }

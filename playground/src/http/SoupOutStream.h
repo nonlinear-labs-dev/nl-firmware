@@ -3,6 +3,7 @@
 #include "xml/OutStream.h"
 #include <libsoup/soup.h>
 #include <glibmm/refptr.h>
+#include <vector>
 
 class SoupOutStream : public OutStream
 {

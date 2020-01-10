@@ -4,6 +4,7 @@
 #include "xml/CommitableFileOutStream.h"
 #include "xml/VersionAttribute.h"
 #include "tools/PerformanceTimer.h"
+#include <giomm/file.h>
 
 Serializer::Serializer(const Glib::ustring &tagName)
     : m_tagName(tagName)
@@ -38,6 +39,27 @@ void Serializer::read(Reader &reader) const
 
 void Serializer::readProlog(Reader &reader) const
 {
+}
+
+Glib::ustring Serializer::getFilePath(const Glib::RefPtr<Gio::File> &file)
+{
+  return file->get_path();
+}
+
+uint64_t Serializer::getFileModificationTime(const Glib::RefPtr<Gio::File> &file)
+{
+  auto info = file->query_info(G_FILE_ATTRIBUTE_TIME_CHANGED);
+  return info->get_attribute_uint64(G_FILE_ATTRIBUTE_TIME_CHANGED);
+}
+
+Glib::RefPtr<Gio::File> Serializer::getChild(const Glib::RefPtr<Gio::File> &file, const std::string &name)
+{
+  return file->get_child(name);
+}
+
+bool Serializer::exists(const Glib::RefPtr<Gio::File> &file)
+{
+  return file->query_exists();
 }
 
 void Serializer::write(Glib::RefPtr<Gio::File> folder, const std::string &name)

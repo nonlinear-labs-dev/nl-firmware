@@ -1,7 +1,9 @@
 #include "WebSocketInChannel.h"
+#include <nltools/messaging/Message.h>
+#include <nltools/threading/ContextBoundMessageQueue.h>
 #include <nltools/logging/Log.h>
 #include <netinet/tcp.h>
-#include <glib.h>
+#include <glibmm.h>
 #include <utility>
 
 namespace nltools

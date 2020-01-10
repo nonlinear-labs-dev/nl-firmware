@@ -13,6 +13,7 @@
 #include <groups/ParameterGroup.h>
 #include <boost/algorithm/string.hpp>
 #include <presets/PresetManager.h>
+#include <http/UndoScope.h>
 
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);

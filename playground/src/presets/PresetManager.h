@@ -11,6 +11,8 @@
 #include <tools/Uuid.h>
 #include <presets/SearchQuery.h>
 #include <tools/RecursionGuard.h>
+#include <http/ContentSection.h>
+#include <tools/Signal.h>
 
 class Bank;
 class Preset;
@@ -18,6 +20,7 @@ class EditBuffer;
 class Parameter;
 class PresetManagerSerializer;
 class RPCActionManager;
+class NetworkRequest;
 
 class PresetManager : public ContentSection
 {

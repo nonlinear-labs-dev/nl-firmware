@@ -1,8 +1,6 @@
 #pragma once
 
 #include <io/Bridge.h>
-#include <nltools/threading/Throttler.h>
-#include <list>
 
 class FromEncoderBridge : public Bridge
 {

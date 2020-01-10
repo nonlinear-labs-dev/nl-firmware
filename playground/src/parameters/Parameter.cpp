@@ -22,6 +22,7 @@
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <presets/recall/RecallParameter.h>
 #include <xml/Attribute.h>
+#include <http/UndoScope.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
