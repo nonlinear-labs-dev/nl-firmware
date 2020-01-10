@@ -15,6 +15,8 @@ PresetParameterGroup::PresetParameterGroup(const ::ParameterGroup &other)
 {
   for(auto &g : other.getParameters())
     m_parameters[g->getID()] = std::make_unique<PresetParameter>(*g);
+
+  m_voiceGroup = other.getVoiceGroup();
 }
 
 PresetParameterGroup::PresetParameterGroup(const PresetParameterGroup &other)
@@ -31,6 +33,14 @@ PresetParameter *PresetParameterGroup::findParameterByID(ParameterId id) const
   if(it != m_parameters.end())
     return it->second.get();
   return nullptr;
+}
+
+VoiceGroup PresetParameterGroup::getVoiceGroup() const
+{
+  for(auto& p: m_parameters)
+    return p.first.getVoiceGroup();
+
+  nltools_assertAlways(false);
 }
 
 void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other)

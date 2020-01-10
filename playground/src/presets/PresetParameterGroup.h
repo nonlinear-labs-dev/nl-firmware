@@ -37,11 +37,14 @@ class PresetParameterGroup
     return m_parameters;
   }
 
+  VoiceGroup getVoiceGroup() const;
+
   // algorithm
   void writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const;
 
  protected:
   std::map<ParameterId, ParameterPtr> m_parameters;
+  VoiceGroup m_voiceGroup;
 
   friend class PresetParameterGroupSerializer;
 };

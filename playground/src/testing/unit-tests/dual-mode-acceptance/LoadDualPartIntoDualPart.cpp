@@ -10,13 +10,6 @@
 #include <presets/PresetParameter.h>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 
-inline bool isValueCloseEnoughToExpectedToMakeSense(const Parameter *p, double expected)
-{
-  auto denom = p->getValue().getCoarseDenominator();
-  auto step = 1.0 / denom;
-  return std::abs(p->getControlPositionValue() - expected) <= step;
-}
-
 template <SoundType tType, VoiceGroup tLoadFromPart, VoiceGroup tLoadToVoiceGroup>
 void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPositionValue paramValue)
 {
@@ -29,8 +22,7 @@ void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPo
 
     {
       auto scope = TestHelper::createTestScope();
-      editBuffer->undoableConvertToDual(scope->getTransaction(), tType);
-      editBuffer->undoableInitSound(scope->getTransaction());
+      TestHelper::initDualEditBuffer<tType>();
 
       preset->forEachParameter([&](PresetParameter *pp) { pp->setValue(scope->getTransaction(), paramValue); });
 
@@ -39,19 +31,19 @@ void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPo
 
     THEN(toString(tLoadToVoiceGroup) + " has preset values")
     {
-      editBuffer->forEachParameter(
-          tLoadToVoiceGroup, [&](Parameter *p) { REQUIRE(isValueCloseEnoughToExpectedToMakeSense(p, paramValue)); });
+      editBuffer->forEachParameter<tLoadToVoiceGroup>(
+          [&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue); });
     }
   }
 }
 
-TEST_CASE("Load Dual Part into Dual Part")
+TEST_CASE("Load Dual Part into Dual Part", "[EditBuffer][Loading]")
 {
   MockPresetStorage presets;
   auto layerpreset = presets.getLayerPreset();
   auto splitpreset = presets.getSplitPreset();
 
-  for(auto val : std::vector<double>{ 0.187, 0.845, 0.34, 0, 1, 0.94 })
+  for(auto val : std::vector<double> { 0.5, 0.0, 1.0 })
   {
     WHEN("Test with value: " + std::to_string(val))
     {

@@ -203,29 +203,7 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
 {
   nltools_assertOnDevPC(p->getType() == SoundType::Single);
 
-  super::copyFrom(transaction, p);
-
   for(auto &g : getParameterGroups(target))
     if(auto c = p->findParameterGroup({ g->getID().getName(), VoiceGroup::I }))
       g->copyFrom(transaction, c);
-
-  for(auto &g : getParameterGroups(VoiceGroup::Global))
-  {
-    for(auto &globalParam : g->getParameters())
-    {
-      try
-      {
-        if(auto presetGlobalParam = p->findParameterByID(globalParam->getID()))
-        {
-          globalParam->copyFrom(transaction, presetGlobalParam);
-        }
-      }
-      catch(...)
-      {
-        nltools::Log::warning("Parameter with id", globalParam->getID(),
-                              "not found in Preset, falling back to default");
-        globalParam->setDefaultFromHwui(transaction);
-      }
-    }
-  }
 }
