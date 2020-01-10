@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-01-07, 13:45
+    @date       2020-01-10, 13:50
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -324,7 +324,7 @@ namespace C15
     { Parameters::Local_Modulateables::Osc_A_PM_B,
       64,
       0.0f,
-      { Smoothers::Poly_Fast::Osc_A_PM_B, None, Properties::SmootherScale::Parabolic, 0.5f, 0.0f, true },
+      { Smoothers::Poly_Fast::Osc_A_PM_B, None, Properties::SmootherScale::Parabolic, 1.0f, 0.0f, true },
       { "0", "Oscillator A", "Oscillator A", "PM B", "PM B",
         "Amount of phase modulation by Oscillator & Shaper B (cross feedback)." } },
     { None },
@@ -484,7 +484,7 @@ namespace C15
     { Parameters::Local_Modulateables::Osc_B_PM_A,
       94,
       0.0f,
-      { Smoothers::Poly_Fast::Osc_B_PM_A, None, Properties::SmootherScale::Parabolic, 0.5f, 0.0f, true },
+      { Smoothers::Poly_Fast::Osc_B_PM_A, None, Properties::SmootherScale::Parabolic, 1.0f, 0.0f, true },
       { "0", "Oscillator B", "Oscillator B", "PM A", "PM A",
         "Amount of phase modulation by Oscillator & Shaper A (cross feedback)." } },
     { None },
