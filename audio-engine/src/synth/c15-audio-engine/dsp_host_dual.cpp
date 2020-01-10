@@ -1777,25 +1777,14 @@ void dsp_host_dual::evalFadePoint()
 }
 
 void dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
-                                const nltools::msg::ParameterGroups::UnisonGroup &_unison,
-                                const nltools::msg::ParameterGroups::MonoGroup &_mono)
+                                const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices,
+                                const nltools::msg::ParameterGroups::UnmodulateableParameter &_monoEnable)
 {
-  // two goals:
-  // - 1: detect changes in unison voices and mono enable
-  // - 2: update all parameters belonging to unison and mono groups
   const uint32_t layerId = static_cast<uint32_t>(_layerId);
   auto unison_voices = m_params.get_local_unison_voices(_layerId);
-  m_layer_changed |= unison_voices->update_position(static_cast<float>(_unison.unisonVoices.controlPosition));
-  localParRcl(layerId, _unison.detune);
-  localParRcl(layerId, _unison.phase);
-  localParRcl(layerId, _unison.pan);
+  m_layer_changed |= unison_voices->update_position(static_cast<float>(_unisonVoices.controlPosition));
   auto mono_enable = m_params.get_local_mono_enable(_layerId);
-  m_layer_changed |= mono_enable->update_position(static_cast<float>(_mono.monoEnable.controlPosition));
-  localParRcl(layerId, _mono.priority);
-  m_alloc.setMonoPriority(layerId, m_params.get_local_mono_priority(_layerId)->m_scaled);
-  localParRcl(layerId, _mono.legato);
-  m_alloc.setMonoLegato(layerId, m_params.get_local_mono_legato(_layerId)->m_scaled);
-  localParRcl(layerId, _mono.glide);
+  m_layer_changed |= mono_enable->update_position(static_cast<float>(_monoEnable.controlPosition));
 }
 
 void dsp_host_dual::recallSingle()
@@ -1806,7 +1795,7 @@ void dsp_host_dual::recallSingle()
   }
   auto msg = &m_preloaded_single_data;
   // update unison and mono groups
-  evalPolyChg(C15::Properties::LayerId::I, msg->unison, msg->mono);
+  evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
   if(m_layer_changed)
   {
@@ -1870,6 +1859,8 @@ void dsp_host_dual::recallSingle()
   {
     globalParRcl(msg->globalparams[i]);
   }
+  // local updates: unison, mono
+  localPolyRcl(0, msg->unison, msg->mono);
   // local updates: unmodulateables
   if(LOG_RECALL)
   {
@@ -1942,7 +1933,7 @@ void dsp_host_dual::recallSplit()
     const C15::Properties::LayerId layer = static_cast<C15::Properties::LayerId>(layerId);
     m_layer_changed = layer_changed;
     // update unison and mono groups
-    evalPolyChg(layer, msg->unison[layerId], msg->mono[layerId]);
+    evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
     // reset detection
     if(m_layer_changed)
     {
@@ -2009,6 +2000,8 @@ void dsp_host_dual::recallSplit()
   // local updates (each layer)
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
+    // local updates: unison, mono
+    localPolyRcl(layerId, msg->unison[layerId], msg->mono[layerId]);
     // local updates: unmodulateables
     if(LOG_RECALL)
     {
@@ -2074,7 +2067,7 @@ void dsp_host_dual::recallLayer()
   }
   auto msg = &m_preloaded_layer_data;
   // update unison and mono groups
-  evalPolyChg(C15::Properties::LayerId::I, msg->unison, msg->mono);
+  evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
   if(m_layer_changed)
   {
@@ -2138,6 +2131,8 @@ void dsp_host_dual::recallLayer()
   {
     globalParRcl(msg->globalparams[i]);
   }
+  // local updates: unison, mono
+  localPolyRcl(0, msg->unison, msg->mono);
   // local updates (each layer)
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
@@ -2401,6 +2396,20 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   {
     nltools::Log::warning("failed to recall Local Direct(id:", _param.id, ")");
   }
+}
+
+void dsp_host_dual::localPolyRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::UnisonGroup &_unison,
+                                 const nltools::msg::ParameterGroups::MonoGroup &_mono)
+{
+  localParRcl(_layerId, _unison.detune);
+  localParRcl(_layerId, _unison.pan);
+  localParRcl(_layerId, _unison.phase);
+  localParRcl(_layerId, _mono.priority);
+  const C15::Properties::LayerId layerId = static_cast<C15::Properties::LayerId>(_layerId);
+  m_alloc.setMonoPriority(_layerId, m_params.get_local_mono_priority(layerId)->m_scaled);
+  localParRcl(_layerId, _mono.legato);
+  m_alloc.setMonoLegato(_layerId, m_params.get_local_mono_legato(layerId)->m_scaled);
+  localParRcl(_layerId, _mono.glide);
 }
 
 void dsp_host_dual::debugLevels()

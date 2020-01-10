@@ -146,8 +146,9 @@ class dsp_host_dual
   void localTransition(const uint32_t _layer, const Direct_Param *_param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Target_Param *_param, const Time_Aspect _time);
   void evalFadePoint();
-  void evalPolyChg(const C15::Properties::LayerId _layerId, const nltools::msg::ParameterGroups::UnisonGroup &_unison,
-                   const nltools::msg::ParameterGroups::MonoGroup &_mono);
+  void evalPolyChg(const C15::Properties::LayerId _layerId,
+                   const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices,
+                   const nltools::msg::ParameterGroups::UnmodulateableParameter &_monoEnable);
   void recallSingle();
   void recallSplit();
   void recallLayer();
@@ -161,5 +162,7 @@ class dsp_host_dual
   void globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter &_param);
   void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::ModulateableParameter &_param);
   void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::UnmodulateableParameter &_param);
+  void localPolyRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::UnisonGroup &_unison,
+                    const nltools::msg::ParameterGroups::MonoGroup &_mono);
   void debugLevels();
 };
