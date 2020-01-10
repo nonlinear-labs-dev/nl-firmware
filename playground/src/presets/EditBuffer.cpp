@@ -661,6 +661,9 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   initToFX(transaction);
 
+#warning "adlerauge"
+  //transaction->addSimpleCommand([&](auto state) { undoableConvertToSplit(transaction); });
+
   undoableSetType(transaction, type);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
@@ -698,16 +701,11 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 {
   auto swap = UNDO::createSwapData(type);
 
-  initUnisonVoices(transaction, type);
-
   transaction->addSimpleCommand([=](auto) {
     swap->swapWith(m_type);
     m_signalTypeChanged.send();
 
-    if(m_type == SoundType::Split)
-    {
-      undoableConvertToSplit(transaction);
-    }
+    initUnisonVoices(m_type);
 
     auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
     if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
@@ -794,11 +792,11 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   ae->toggleSuppressParameterChanges(transaction);
 }
 
-void EditBuffer::initUnisonVoices(UNDO::Transaction *transaction, SoundType newType)
+void EditBuffer::initUnisonVoices(SoundType newType)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     if(auto unisonParam = dynamic_cast<UnisonVoicesParameter *>(findParameterByID({ 249, vg })))
-      unisonParam->updateScaling(transaction, newType);
+      unisonParam->updateScaling(newType);
 }
 
 bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundType type)

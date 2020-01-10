@@ -18,6 +18,14 @@ void MonoUnisonModuleCaption::updateText(Parameter *newOne)
           return;
         }
       }
+      else if(editBuffer->getType() == SoundType::Single)
+      {
+        if(UnisonGroup::isUnisonParameter(newOne) || MonoGroup::isMonoParameter(newOne))
+        {
+          setText({ groupStr, 0 });
+          return;
+        }
+      }
     }
 
     setText({ groupStr + " " + toString(Application::get().getHWUI()->getCurrentVoiceGroup()), 0 });

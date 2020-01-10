@@ -20,8 +20,10 @@ bool UnisonVoicesParameter::shouldWriteDocProperties(UpdateDocumentContributor::
   return ret;
 }
 
-void UnisonVoicesParameter::updateScaling(UNDO::Transaction* transaction, SoundType type)
+void UnisonVoicesParameter::updateScaling(SoundType type)
 {
+  auto scope = UNDO::Scope::startTrashTransaction();
+
   auto oldCP = getControlPositionValue();
 
   auto oldVoices = getDisplayValue();
@@ -32,8 +34,8 @@ void UnisonVoicesParameter::updateScaling(UNDO::Transaction* transaction, SoundT
     getValue().setCoarseDenominator(23);
     getValue().setFineDenominator(23);
 
-    setCPFromHwui(transaction, 0);
-    stepCPFromHwui(transaction, oldVoices -1, {});
+    setCPFromHwui(scope->getTransaction(), 0);
+    stepCPFromHwui(scope->getTransaction(), oldVoices - 1, {});
   }
   else
   {
@@ -42,15 +44,15 @@ void UnisonVoicesParameter::updateScaling(UNDO::Transaction* transaction, SoundT
     getValue().setFineDenominator(11);
 
     if(oldCP >= 0.5)
-      setCpValue(transaction, Initiator::INDIRECT, 1.0, false);
+      setCpValue(scope->getTransaction(), Initiator::INDIRECT, 1.0, false);
     else
     {
       if(oldVoices == 1)
-        setCpValue(transaction, Initiator::INDIRECT, oldCP * 2, false);
+        setCpValue(scope->getTransaction(), Initiator::INDIRECT, oldCP * 2, false);
       else
       {
-        setCPFromHwui(transaction, 0);
-        stepCPFromHwui(transaction, oldVoices - 1, {});
+        setCPFromHwui(scope->getTransaction(), 0);
+        stepCPFromHwui(scope->getTransaction(), oldVoices - 1, {});
       }
     }
   }
