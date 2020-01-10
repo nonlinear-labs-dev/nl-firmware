@@ -85,10 +85,6 @@ inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double
 #define CHECK_PARAMETER_CP_EQUALS_FICTION(p, v)                                                                        \
   {                                                                                                                    \
     auto range = getNextStepValuesFromValue(p, v);                                                                     \
-    THEN(p->getLongName() + " " + toString(p->getVoiceGroup()) + " expects ~" + std::to_string(v) + " got "            \
-         + std::to_string(p->getControlPositionValue()))                                                               \
-    {                                                                                                                  \
-      CHECK(p->getControlPositionValue() >= range.first);                                                              \
-      CHECK(p->getControlPositionValue() <= range.second);                                                             \
-    }                                                                                                                  \
+    CHECK(p->getControlPositionValue() >= range.first);                                                                \
+    CHECK(p->getControlPositionValue() <= range.second);                                                               \
   }

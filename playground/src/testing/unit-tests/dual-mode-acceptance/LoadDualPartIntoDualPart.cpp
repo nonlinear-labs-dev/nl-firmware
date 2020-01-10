@@ -13,35 +13,41 @@
 template <SoundType tType, VoiceGroup tLoadFromPart, VoiceGroup tLoadToVoiceGroup>
 void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPositionValue paramValue)
 {
-  WHEN("converted to " + toString(tType) + " load into " + toString(tLoadToVoiceGroup) + " from "
-       + toString(tLoadFromPart) + " of type " + toString(preset->getType()))
+  //WHEN("converted to " + toString(tType) + " load into " + toString(tLoadToVoiceGroup) + " from "
+  //    + toString(tLoadFromPart) + " of type " + toString(preset->getType()))
+  //{
+  static_assert(tType == SoundType::Split || tType == SoundType::Layer, "");
+
+  constexpr auto globalValue = 0.75;
+
+  auto editBuffer = TestHelper::getEditBuffer();
+
   {
-    static_assert(tType == SoundType::Split || tType == SoundType::Layer, "");
+    auto scope = TestHelper::createTestScope();
+    TestHelper::initDualEditBuffer<tType>();
 
-    auto editBuffer = TestHelper::getEditBuffer();
+    preset->forEachParameter([&](PresetParameter *pp) { pp->setValue(scope->getTransaction(), paramValue); });
+    editBuffer->forEachParameter<VoiceGroup::Global>(
+        [&](Parameter *p) { p->setCPFromHwui(scope->getTransaction(), globalValue); });
 
-    {
-      auto scope = TestHelper::createTestScope();
-      TestHelper::initDualEditBuffer<tType>();
-
-      preset->forEachParameter([&](PresetParameter *pp) { pp->setValue(scope->getTransaction(), paramValue); });
-
-      editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, tLoadFromPart, tLoadToVoiceGroup);
-    }
-
-    THEN(toString(tLoadToVoiceGroup) + " has preset values")
-    {
-      editBuffer->forEachParameter<tLoadToVoiceGroup>(
-          [&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue); });
-    }
+    editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, tLoadFromPart, tLoadToVoiceGroup);
   }
+
+  //THEN(toString(tLoadToVoiceGroup) + " has preset values and GLOBAL was not touched")
+  //{
+  editBuffer->forEachParameter<tLoadToVoiceGroup>(
+      [&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue); });
+
+  editBuffer->forEachParameter<VoiceGroup::Global>(
+      [&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, globalValue); });
+  //}
+  //}
 }
 
 TEST_CASE("Load Dual Part into Dual Part", "[EditBuffer][Loading]")
 {
   MockPresetStorage presets;
   auto layerpreset = presets.getLayerPreset();
-  auto splitpreset = presets.getSplitPreset();
 
   for(auto val : std::vector<double> { 0.5, 0.0, 1.0 })
   {
@@ -49,42 +55,14 @@ TEST_CASE("Load Dual Part into Dual Part", "[EditBuffer][Loading]")
     {
       LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::I, VoiceGroup::I>(layerpreset,
                                                                                                        val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::I, VoiceGroup::I>(layerpreset,
-                                                                                                       val);
-
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::I, VoiceGroup::I>(splitpreset,
-                                                                                                       val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::I, VoiceGroup::I>(splitpreset,
-                                                                                                       val);
 
       LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::I, VoiceGroup::II>(layerpreset,
-                                                                                                        val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::I, VoiceGroup::II>(layerpreset,
-                                                                                                        val);
-
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::I, VoiceGroup::II>(splitpreset,
-                                                                                                        val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::I, VoiceGroup::II>(splitpreset,
                                                                                                         val);
 
       LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::II, VoiceGroup::I>(layerpreset,
                                                                                                         val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::II, VoiceGroup::I>(layerpreset,
-                                                                                                        val);
-
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::II, VoiceGroup::I>(splitpreset,
-                                                                                                        val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::II, VoiceGroup::I>(splitpreset,
-                                                                                                        val);
 
       LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::II, VoiceGroup::II>(layerpreset,
-                                                                                                         val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::II, VoiceGroup::II>(layerpreset,
-                                                                                                         val);
-
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Layer, VoiceGroup::II, VoiceGroup::II>(splitpreset,
-                                                                                                         val);
-      LoadDualPresetPartWithValueIntoInitDualSoundPart<SoundType::Split, VoiceGroup::II, VoiceGroup::II>(splitpreset,
                                                                                                          val);
     }
   }
