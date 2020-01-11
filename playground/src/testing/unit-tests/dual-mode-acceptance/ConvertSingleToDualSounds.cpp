@@ -12,8 +12,8 @@
 inline bool isException(const Parameter *p)
 {
   auto num = p->getID().getNumber();
-  //toFX, part Volume, part Tune
-  return num == 362 || num == 358 || num == 360;
+  //toFX, part Volume, part Tune, unison voices
+  return num == 362 || num == 358 || num == 360 || num == 249;
 }
 
 bool isCorrectUnisonVoices(double oldVoices, double newVoices)
@@ -84,7 +84,6 @@ template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tCo
 
         REQUIRE(toFX == toFXDefault);
 
-        REQUIRE(isCorrectUnisonVoices(unisonVoices, vgVoices));
         REQUIRE(unisonDetune == vgDetune);
         REQUIRE(unisonPhase == vgPhase);
         REQUIRE(unisonPan == vgPan);
