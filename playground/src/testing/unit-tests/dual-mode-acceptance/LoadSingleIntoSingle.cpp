@@ -3,6 +3,7 @@
 
 #include <presets/EditBuffer.h>
 #include <parameters/ModulateableParameter.h>
+#include <parameters/RibbonParameter.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <nltools/Types.h>
 #include <presets/Bank.h>
@@ -16,7 +17,7 @@ TEST_CASE("Load Single into Single", "[EditBuffer][Loading]")
   auto preset = presets.getSinglePreset();
   auto globalValue = 0.25;
 
-  for(auto val : std::vector<double>{ 0.5 })
+  for(auto val : std::vector<double> { 0.5 })
   {
     WHEN("Test with value: " + std::to_string(val))
     {
@@ -33,7 +34,12 @@ TEST_CASE("Load Single into Single", "[EditBuffer][Loading]")
 
       REQUIRE_FALSE(eb->findAnyParameterChanged());
 
-      eb->forEachParameter<VoiceGroup::Global>([&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, globalValue) });
+      eb->forEachParameter<VoiceGroup::Global>([&](Parameter *p) {
+        if(dynamic_cast<PhysicalControlParameter *>(p) && !dynamic_cast<RibbonParameter *>(p))
+          return;
+
+        CHECK_PARAMETER_CP_EQUALS_FICTION(p, globalValue)
+      });
 
       eb->forEachParameter<VoiceGroup::I>([&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, val) });
     }
