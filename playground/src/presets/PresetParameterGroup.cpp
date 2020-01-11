@@ -8,7 +8,7 @@
 #include <presets/EditBuffer.h>
 
 PresetParameterGroup::PresetParameterGroup()
-    : m_voiceGroup { VoiceGroup::NumGroups }
+    : m_voiceGroup { VoiceGroup::I }
 {
 }
 
@@ -40,8 +40,6 @@ PresetParameter *PresetParameterGroup::findParameterByID(ParameterId id) const
 
 VoiceGroup PresetParameterGroup::getVoiceGroup() const
 {
-#warning "adlerauge"
-  nltools_assertAlways(m_voiceGroup != VoiceGroup::NumGroups);
   return m_voiceGroup;
 }
 
