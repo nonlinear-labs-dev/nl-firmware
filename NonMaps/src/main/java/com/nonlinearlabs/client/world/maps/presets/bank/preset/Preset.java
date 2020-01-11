@@ -3,9 +3,7 @@ package com.nonlinearlabs.client.world.maps.presets.bank.preset;
 import java.util.HashMap;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.NonMaps;
@@ -365,7 +363,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
 		} else {
-			getParent().getPresetList().selectPreset(getUUID());
+			getParent().getPresetList().selectPreset(getUUID(), true);
 
 		}
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -466,7 +464,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void select() {
-		getParent().getPresetList().selectPreset(getUUID());
+		getParent().getPresetList().selectPreset(getUUID(), true);
 	}
 
 	public void load() {
