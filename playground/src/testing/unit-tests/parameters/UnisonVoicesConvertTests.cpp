@@ -2,14 +2,12 @@
 #include <parameters/UnisonVoicesParameter.h>
 #include "testing/TestHelper.h"
 
-TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly")
+TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
   auto scope = TestHelper::createTestScope();
   auto transaction = scope->getTransaction();
-
-  eb->undoableConvertToSingle(transaction, VoiceGroup::I);
-  eb->undoableInitSound(transaction);
+  TestHelper::initSingleEditBuffer(transaction);
 
   auto unisonVoices = eb->findParameterByID({ 249, VoiceGroup::I });
   unisonVoices->setCPFromHwui(scope->getTransaction(), 0);
@@ -51,7 +49,7 @@ TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly")
   }
 }
 
-TEST_CASE("Convert Dual to Single Sound")
+TEST_CASE("Convert Dual to Single Sound", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
   auto scope = TestHelper::createTestScope();
@@ -94,7 +92,7 @@ TEST_CASE("Convert Dual to Single Sound")
   }
 }
 
-TEST_CASE("Undo Convert Sound resets Scaling")
+TEST_CASE("Undo Convert Sound resets Scaling", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
   auto unisonVoicesI = eb->findParameterByID({ 249, VoiceGroup::I });

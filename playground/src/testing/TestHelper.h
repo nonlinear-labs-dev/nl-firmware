@@ -46,6 +46,14 @@ namespace TestHelper
     eb->undoableInitSound(scope->getTransaction());
   }
 
+  inline void initSingleEditBuffer(UNDO::Transaction* transaction)
+  {
+    auto eb = getEditBuffer();
+    eb->undoableUnlockAllGroups(transaction);
+    eb->undoableConvertToSingle(transaction, VoiceGroup::I);
+    eb->undoableInitSound(transaction);
+  }
+
   inline void forceParameterChange(UNDO::Transaction* transaction, Parameter* param)
   {
     auto currentValue = param->getControlPositionValue();

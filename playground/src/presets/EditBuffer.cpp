@@ -38,7 +38,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -222,7 +222,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -681,7 +681,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Volume and Tune
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
     auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -701,11 +701,11 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 {
   auto swap = UNDO::createSwapData(type);
 
+  initUnisonVoices(transaction, type);
+
   transaction->addSimpleCommand([=](auto state) {
     swap->swapWith(m_type);
     m_signalTypeChanged.send();
-
-    initUnisonVoices(m_type);
 
     auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
     if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
@@ -792,11 +792,11 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   ae->toggleSuppressParameterChanges(transaction);
 }
 
-void EditBuffer::initUnisonVoices(SoundType newType)
+void EditBuffer::initUnisonVoices(UNDO::Transaction *transaction, SoundType newType)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     if(auto unisonParam = dynamic_cast<UnisonVoicesParameter *>(findParameterByID({ 249, vg })))
-      unisonParam->updateScaling(newType);
+      unisonParam->updateScaling(transaction, newType);
 }
 
 bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundType type)
