@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-01-07, 13:45
+    @date       2020-01-11, 16:33
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1253,7 +1253,7 @@ namespace C15
     { Parameters::Local_Modulateables::Unison_Detune,
       250,
       50.0f / 12000.0f,
-      { Smoothers::Poly_Slow::Unison_Detune, None, Properties::SmootherScale::Linear, 12.0f, 0.0f, true },
+      { Smoothers::Poly_Slow::Unison_Detune, None, Properties::SmootherScale::Linear, 12.0f, 0.0f, false },
       { "", "Unison", "Unison", "Detune", "Detune",
         "Spreading of the pitches of the unison voices [in semitones]. The Fine mode allows for adjustments in steps "
         "of 0.001 semitones (0.1 cents)." } },
