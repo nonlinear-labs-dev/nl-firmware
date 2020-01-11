@@ -110,8 +110,6 @@ class EditBuffer : public ParameterDualGroupSet
   void setParameter(ParameterId id, double cpValue);
 
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
-  void undoableConvertToSplit(UNDO::Transaction *transaction);
-  void undoableConvertToLayer(UNDO::Transaction *transaction);
   void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
   void setModulationSource(MacroControls src);

@@ -743,12 +743,6 @@ SplitPointParameter *EditBuffer::getSplitPoint()
   return static_cast<SplitPointParameter *>(findParameterByID({ 356, VoiceGroup::Global }));
 }
 
-void EditBuffer::undoableConvertToSplit(UNDO::Transaction *transaction)
-{
-  auto splitParam = getSplitPoint();
-  splitParam->setCPFromHwui(transaction, 0.5);
-}
-
 Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 {
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);

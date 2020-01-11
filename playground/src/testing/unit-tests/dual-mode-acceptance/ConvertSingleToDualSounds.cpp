@@ -16,12 +16,6 @@ inline bool isException(const Parameter *p)
   return num == 362 || num == 358 || num == 360 || num == 249;
 }
 
-bool isCorrectUnisonVoices(double oldVoices, double newVoices)
-{
-  constexpr auto maxStepSize = 1 / 12.0;
-  return std::abs(newVoices - oldVoices) <= maxStepSize;
-}
-
 template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tControlPositionValue paramValue)
 {
   WHEN("converted to " + toString(tType))
