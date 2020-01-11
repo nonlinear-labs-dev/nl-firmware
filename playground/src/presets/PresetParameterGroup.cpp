@@ -7,8 +7,8 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 
-PresetParameterGroup::PresetParameterGroup()
-    : m_voiceGroup { VoiceGroup::I }
+PresetParameterGroup::PresetParameterGroup(VoiceGroup vg)
+    : m_voiceGroup { vg }
 {
 }
 
