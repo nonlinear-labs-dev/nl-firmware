@@ -110,8 +110,6 @@ class EditBuffer : public ParameterDualGroupSet
   void setParameter(ParameterId id, double cpValue);
 
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
-  void undoableConvertToSplit(UNDO::Transaction *transaction);
-  void undoableConvertToLayer(UNDO::Transaction *transaction);
   void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
   void setModulationSource(MacroControls src);
@@ -153,7 +151,8 @@ class EditBuffer : public ParameterDualGroupSet
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
-  void initUnisonVoices();
+  void initUnisonVoices(UNDO::Transaction *transaction, SoundType newType);
 
   void initToFX(UNDO::Transaction *transaction);
+  void copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transaction *transaction);
 };

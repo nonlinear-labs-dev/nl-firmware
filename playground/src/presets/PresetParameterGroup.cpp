@@ -8,6 +8,7 @@
 #include <presets/EditBuffer.h>
 
 PresetParameterGroup::PresetParameterGroup()
+    : m_voiceGroup { VoiceGroup::I }
 {
 }
 
@@ -15,12 +16,16 @@ PresetParameterGroup::PresetParameterGroup(const ::ParameterGroup &other)
 {
   for(auto &g : other.getParameters())
     m_parameters[g->getID()] = std::make_unique<PresetParameter>(*g);
+
+  m_voiceGroup = other.getVoiceGroup();
 }
 
 PresetParameterGroup::PresetParameterGroup(const PresetParameterGroup &other)
 {
   for(auto &g : other.m_parameters)
     m_parameters[g.first] = std::make_unique<PresetParameter>(*g.second);
+
+  m_voiceGroup = other.getVoiceGroup();
 }
 
 PresetParameterGroup::~PresetParameterGroup() = default;
@@ -33,11 +38,18 @@ PresetParameter *PresetParameterGroup::findParameterByID(ParameterId id) const
   return nullptr;
 }
 
+VoiceGroup PresetParameterGroup::getVoiceGroup() const
+{
+  return m_voiceGroup;
+}
+
 void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other)
 {
   for(auto &g : m_parameters)
     if(auto o = other->findParameterByID(g.first))
       g.second->copyFrom(transaction, o);
+
+  transaction->addUndoSwap(m_voiceGroup, other->getVoiceGroup());
 }
 
 void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other)
@@ -45,6 +57,8 @@ void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::Para
   for(auto &g : m_parameters)
     if(auto o = other->getParameterByID(g.first))
       g.second->copyFrom(transaction, o);
+
+  transaction->addUndoSwap(m_voiceGroup, other->getVoiceGroup());
 }
 
 void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const

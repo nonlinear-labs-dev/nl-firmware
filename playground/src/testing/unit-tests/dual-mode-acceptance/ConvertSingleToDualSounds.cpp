@@ -9,24 +9,11 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-inline bool isValueCloseEnoughToExpectedToMakeSense(const Parameter *p, double expected)
-{
-  auto denom = p->getValue().getCoarseDenominator();
-  auto step = 1.0 / denom;
-  return std::abs(p->getControlPositionValue() - expected) <= step;
-}
-
 inline bool isException(const Parameter *p)
 {
   auto num = p->getID().getNumber();
-  //toFX, part Volume, part Tune
-  return num == 362 || num == 358 || num == 360;
-}
-
-bool isCorrectUnisonVoices(double oldVoices, double newVoices)
-{
-  constexpr auto maxStepSize = 1 / 12.0;
-  return std::abs(newVoices - oldVoices) <= maxStepSize;
+  //toFX, part Volume, part Tune, unison voices
+  return num == 362 || num == 358 || num == 360 || num == 249;
 }
 
 template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tControlPositionValue paramValue)
@@ -39,6 +26,7 @@ template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tCo
     auto editBuffer = TestHelper::getEditBuffer();
 
     auto scope = TestHelper::createTestScope();
+    editBuffer->undoableUnlockAllGroups(scope->getTransaction());
     editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
     editBuffer->undoableInitSound(scope->getTransaction());
 
@@ -83,14 +71,13 @@ template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tCo
             THEN(p->getLongName() + " got: " + std::to_string(p->getControlPositionValue())
                  + " expected: " + std::to_string(paramValue))
             {
-              REQUIRE(isValueCloseEnoughToExpectedToMakeSense(p, paramValue));
+              CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue);
             }
           }
         });
 
         REQUIRE(toFX == toFXDefault);
 
-        REQUIRE(isCorrectUnisonVoices(unisonVoices, vgVoices));
         REQUIRE(unisonDetune == vgDetune);
         REQUIRE(unisonPhase == vgPhase);
         REQUIRE(unisonPan == vgPan);
@@ -104,9 +91,9 @@ template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tCo
   }
 }
 
-TEST_CASE("Convert Single to Dual Sound")
+TEST_CASE("Convert Single to Dual Sound", "[EditBuffer][Convert]")
 {
-  for(auto val : std::vector<double>{ 0.187, 0.845, 0.34, 0, 1, 0.94 })
+  for(auto val : std::vector<double> { 0.187, 0.845, 0.34, 0, 1, 0.94 })
   {
     WHEN("Test with value: " + std::to_string(val))
     {
