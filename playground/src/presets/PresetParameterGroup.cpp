@@ -40,6 +40,7 @@ PresetParameter *PresetParameterGroup::findParameterByID(ParameterId id) const
 
 VoiceGroup PresetParameterGroup::getVoiceGroup() const
 {
+#warning "adlerauge"
   nltools_assertAlways(m_voiceGroup != VoiceGroup::NumGroups);
   return m_voiceGroup;
 }
