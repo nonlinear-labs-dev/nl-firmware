@@ -117,6 +117,7 @@ SaveResult PresetManager::saveMetadata(Glib::RefPtr<Gio::File> pmFolder)
 {
   if(m_lastSavedMetaDataUpdateID != getUpdateIDOfLastChange())
   {
+    PerformanceTimer timer(__PRETTY_FUNCTION__);
     PresetManagerMetadataSerializer serializer(this);
     serializer.write(pmFolder, ".metadata");
     m_lastSavedMetaDataUpdateID = getUpdateIDOfLastChange();
@@ -188,7 +189,7 @@ void PresetManager::scheduleSave()
   if(!m_saveJob.isPending())
   {
     m_saveTasks = createListOfSaveSubTasks();
-    m_saveJob.refresh(s_saveInterval);
+    m_saveJob.refresh(s_saveInterval, Glib::PRIORITY_LOW);
   }
   else
   {
@@ -223,6 +224,7 @@ void PresetManager::doAutoLoadSelectedPreset()
 {
   if(auto lock = m_isLoading.lock())
   {
+    nltools::Log::warning(__FILE__, __LINE__);
     FocusAndMode focusAndMode = Application::get().getHWUI()->getFocusAndMode();
 
     bool isPresetManagerActive = (focusAndMode.focus == UIFocus::Banks || focusAndMode.focus == UIFocus::Presets);
@@ -238,6 +240,8 @@ void PresetManager::doAutoLoadSelectedPreset()
 
 void PresetManager::scheduleAutoLoadSelectedPreset()
 {
+  nltools::Log::warning(__FILE__, __LINE__);
+
   m_autoLoadThrottler.doTask([=]() {
     if(auto b = getSelectedBank())
     {
@@ -265,6 +269,7 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
           }
 
           auto scope = getUndoScope().startTransaction(p->buildUndoTransactionTitle("Load"));
+          nltools::Log::warning(__FILE__, __LINE__);
           eb->undoableLoad(scope->getTransaction(), p);
         }
       }

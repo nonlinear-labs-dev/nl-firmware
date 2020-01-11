@@ -32,6 +32,8 @@
 #include <groups/MonoGroup.h>
 #include <groups/UnisonGroup.h>
 #include <presets/PresetParameter.h>
+#include <tools/PerformanceTimer.h>
+
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -113,9 +115,13 @@ void EditBuffer::resetModifiedIndicator(UNDO::Transaction *transaction, size_t h
   auto swap = UNDO::createSwapData(false, hash);
 
   transaction->addSimpleCommand([=](UNDO::Command::State) {
+    auto oldState = m_isModified;
+
     swap->swapWith<0>(m_isModified);
     swap->swapWith<1>(m_hashOnStore);
-    m_signalModificationState.send(m_isModified);
+
+    if(oldState != m_isModified)
+      m_signalModificationState.send(m_isModified);
   });
 }
 
@@ -440,6 +446,8 @@ void EditBuffer::undoableLoad(Preset *preset)
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
+  PerformanceTimer timer(__PRETTY_FUNCTION__);
+
   auto ae = Application::get().getAudioEngineProxy();
   ae->toggleSuppressParameterChanges(transaction);
 
