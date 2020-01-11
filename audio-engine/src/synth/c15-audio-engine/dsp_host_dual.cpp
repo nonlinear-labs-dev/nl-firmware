@@ -644,10 +644,6 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWAmoun
     {
       nltools::Log::info("ha_edit(srcId:", param->m_sourceId, ", amtId:", _id, ", pos:", param->m_position, ")");
     }
-    if(LOG_MISSING)
-    {
-      nltools::Log::info("todo: trigger (silent) mc offset update ...");
-    }
   }
 }
 
