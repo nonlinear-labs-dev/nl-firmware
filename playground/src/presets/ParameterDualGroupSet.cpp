@@ -107,6 +107,8 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
     for(auto &g : getParameterGroups(vg))
       if(auto c = other->findParameterGroup(g->getID()))
         g->copyFrom(transaction, c);
+      else
+        g->forEachParameter([&](Parameter *p) { p->setDefaultFromHwui(transaction); });
 }
 
 Parameter *ParameterDualGroupSet::findParameterByID(const ParameterId &id) const
