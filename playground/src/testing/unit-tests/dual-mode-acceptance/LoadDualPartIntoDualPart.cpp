@@ -10,12 +10,15 @@
 #include <presets/PresetParameter.h>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 
+inline bool isException(const Parameter *p)
+{
+  auto num = p->getID().getNumber();
+  return num == 358 || num == 360;
+}
+
 template <SoundType tType, VoiceGroup tLoadFromPart, VoiceGroup tLoadToVoiceGroup>
 void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPositionValue paramValue)
 {
-  //WHEN("converted to " + toString(tType) + " load into " + toString(tLoadToVoiceGroup) + " from "
-  //    + toString(tLoadFromPart) + " of type " + toString(preset->getType()))
-  //{
   static_assert(tType == SoundType::Split || tType == SoundType::Layer, "");
 
   constexpr auto globalValue = 0.75;
@@ -27,21 +30,35 @@ void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPo
     TestHelper::initDualEditBuffer<tType>();
 
     preset->forEachParameter([&](PresetParameter *pp) { pp->setValue(scope->getTransaction(), paramValue); });
+
     editBuffer->forEachParameter<VoiceGroup::Global>(
         [&](Parameter *p) { p->setCPFromHwui(scope->getTransaction(), globalValue); });
 
     editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, tLoadFromPart, tLoadToVoiceGroup);
   }
 
-  //THEN(toString(tLoadToVoiceGroup) + " has preset values and GLOBAL was not touched")
-  //{
-  editBuffer->forEachParameter<tLoadToVoiceGroup>(
-      [&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue); });
+  auto presetPartVolume = preset->findParameterByID({ 358, tLoadFromPart });
+  auto presetPartTune = preset->findParameterByID({ 360, tLoadFromPart });
+  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global });
+  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global });
+
+  editBuffer->forEachParameter<tLoadToVoiceGroup>([&](Parameter *p) {
+    if(!isException(p))
+    {
+      CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue)
+    }
+    else if(p->getID().getNumber() == 358)
+    {
+      CHECK_PARAMETER_CP_EQUALS_FICTION(p, presetPartVolume->getValue() + presetGlobalVolume->getValue())
+    }
+    else if(p->getID().getNumber() == 360)
+    {
+      CHECK_PARAMETER_CP_EQUALS_FICTION(p, presetPartTune->getValue() + presetGlobalTune->getValue())
+    }
+  });
 
   editBuffer->forEachParameter<VoiceGroup::Global>(
       [&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, globalValue); });
-  //}
-  //}
 }
 
 TEST_CASE("Load Dual Part into Dual Part", "[EditBuffer][Loading]")
@@ -49,7 +66,7 @@ TEST_CASE("Load Dual Part into Dual Part", "[EditBuffer][Loading]")
   MockPresetStorage presets;
   auto layerpreset = presets.getLayerPreset();
 
-  for(auto val : std::vector<double> { 0.5, 0.0, 1.0 })
+  for(auto val : std::vector<double>{ 0.5, 0.0, 1.0 })
   {
     WHEN("Test with value: " + std::to_string(val))
     {
