@@ -10,6 +10,12 @@
 #include <presets/PresetParameter.h>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 
+bool isException(const Parameter *p)
+{
+  auto num = p->getID().getNumber();
+  return num == 248 || num == 249 || num == 358 || num == 360;
+}
+
 template <SoundType tType, VoiceGroup tLoadToVoiceGroup>
 void LoadSinglePresetWithValueIntoInitDualSound(Preset *preset, tControlPositionValue paramValue)
 {
@@ -19,19 +25,35 @@ void LoadSinglePresetWithValueIntoInitDualSound(Preset *preset, tControlPosition
 
     auto editBuffer = TestHelper::getEditBuffer();
 
+    auto presetMasterVolume = preset->findParameterByID({ 247, VoiceGroup::Global });
+    auto presetMasterTune = preset->findParameterByID({ 248, VoiceGroup::Global });
+
     {
       auto scope = TestHelper::createTestScope();
       TestHelper::initDualEditBuffer<tType>();
 
       preset->forEachParameter([&](PresetParameter *pp) { pp->setValue(scope->getTransaction(), paramValue); });
+      presetMasterVolume->setValue(scope->getTransaction(), paramValue / 2.0);
+      presetMasterTune->setValue(scope->getTransaction(), paramValue / 2.0);
 
       editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), preset, tLoadToVoiceGroup);
     }
 
     THEN(toString(tLoadToVoiceGroup) + " has preset values")
     {
-      editBuffer->forEachParameter<tLoadToVoiceGroup>(
-          [&](Parameter *p) { CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue); });
+      editBuffer->forEachParameter<tLoadToVoiceGroup>([&](Parameter *p) {
+        if(!isException(p))
+          CHECK_PARAMETER_CP_EQUALS_FICTION(p, paramValue);
+      });
+    }
+
+    THEN(toString(tLoadToVoiceGroup) + " part master got loaded into preset global master")
+    {
+      auto partVolume = editBuffer->findParameterByID({ 358, tLoadToVoiceGroup });
+      auto partTune = editBuffer->findParameterByID({ 360, tLoadToVoiceGroup });
+
+      CHECK_PARAMETER_CP_EQUALS_FICTION(partVolume, presetMasterVolume->getValue());
+      CHECK_PARAMETER_CP_EQUALS_FICTION(partTune, presetMasterTune->getValue());
     }
   }
 }
@@ -41,7 +63,7 @@ TEST_CASE("Load Single into Dual Part", "[EditBuffer][Loading]")
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 
-  for(auto val : std::vector<double> { 0.5 })
+  for(auto val : std::vector<double>{ 0.5 })
   {
     WHEN("Test with value: " + std::to_string(val))
     {

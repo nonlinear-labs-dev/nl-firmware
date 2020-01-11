@@ -155,4 +155,10 @@ class EditBuffer : public ParameterDualGroupSet
 
   void initToFX(UNDO::Transaction *transaction);
   void copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transaction *transaction);
+
+  void loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset, VoiceGroup copyTo);
+
+  void
+  copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
+                                              VoiceGroup copyFrom, VoiceGroup copyTo);
 };

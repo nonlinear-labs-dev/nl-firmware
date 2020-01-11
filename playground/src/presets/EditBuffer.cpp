@@ -31,6 +31,7 @@
 #include <groups/GlobalParameterGroups.h>
 #include <groups/MonoGroup.h>
 #include <groups/UnisonGroup.h>
+#include <presets/PresetParameter.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -38,7 +39,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter { 0, VoiceGroup::I }
+    , m_lastSelectedParameter{ 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -222,7 +223,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name {};
+    Glib::ustring name{};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -681,7 +682,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Volume and Tune
-  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
     auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -728,6 +729,7 @@ void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction,
 
   setVoiceGroupName(transaction, preset->getName(), vg);
   loadIntoVoiceGroup(transaction, preset, vg);
+  loadPresetGlobalMasterIntoVoiceGroupMaster(transaction, preset, vg);
   initRecallValues(transaction);
 
   ae->toggleSuppressParameterChanges(transaction);
@@ -782,6 +784,8 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
 
   setVoiceGroupName(transaction, preset->getName(), copyTo);
   super::copyFrom(transaction, preset, from, copyTo);
+
+  copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
 
   ae->toggleSuppressParameterChanges(transaction);
 }
@@ -848,4 +852,36 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
         nltools::string::concat("Load '", preset->getName(), "' into ", toString(to)));
     undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, to);
   }
+}
+
+void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset,
+                                                            VoiceGroup copyTo)
+{
+  auto partI = getParameterGroupByID({ "Part", VoiceGroup::I });
+  auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
+
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  {
+    auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
+    auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
+    auto pGlobal = preset->findParameterByID({ ids.second, VoiceGroup::Global });
+
+    pI->copyFrom(transaction, pGlobal);
+    pII->copyFrom(transaction, pGlobal);
+  }
+}
+
+void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
+                                                             VoiceGroup copyFrom, VoiceGroup copyTo)
+{
+  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global });
+  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global });
+  auto presetPartVolume = preset->findParameterByID({ 358, copyFrom });
+  auto presetPartTune = preset->findParameterByID({ 360, copyFrom });
+
+  auto partVolume = findParameterByID({ 358, copyTo });
+  auto partTune = findParameterByID({ 360, copyTo });
+
+  partVolume->setCPFromHwui(transaction, presetGlobalVolume->getValue() + presetPartVolume->getValue());
+  partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() + presetPartTune->getValue());
 }
