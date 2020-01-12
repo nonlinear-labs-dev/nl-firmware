@@ -3,7 +3,7 @@ name: cross building for beagle bone
 on:
   push:
     branches:
-      - not-existing-branch-name-to-disable-workflow
+      - project-restructuring
 
 jobs:
   build:
@@ -12,14 +12,14 @@ jobs:
     steps:
     - name: Install Packages
       run: sudo apt-get update -y; sudo apt-get install -y git locales; sudo apt-get update; sudo apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash
-    - name: Cache Nonlinux-Dir
+    
+    - name: Cache NonLinux-Prebuilt
       uses: actions/cache@v1
+      id: cache-nonlinux-prebuilt
       with:
-       path: /home/runner/work/nonlinux
-       key: ${{ runner.os }}-nonlinux-${{ github.ref }}
-    - name: Clone
-      run: git -C /home/runner/work clone https://github.com/nonlinear-labs-dev/nonlinux.git
-    - name: Checkout
-      run: cd /home/runner/work/nonlinux && git fetch && git checkout project-restructuring
-    - name: Build
-      run: cd /home/runner/work/nonlinux && make nonlinear_defconfig && make
+        path: /home/runner/work/nonlinux-prebuilt
+        key: ${{ runner.os }}-nonlinux-prebuilt
+
+    - name: Download Nonlinux Prebuilt
+      if: steps.cache-nonlinux-prebuilt.cache-hit != 'true'
+      run: mkdir -p /home/runner/work/nonlinux-prebuilt cd /home/runner/work/nonlinux-prebuilt && wget http://hoegelow.com/nl/nonlinux-prebuilt.zip
