@@ -857,17 +857,14 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
 void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset,
                                                             VoiceGroup copyTo)
 {
-  auto partI = getParameterGroupByID({ "Part", VoiceGroup::I });
-  auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
+  auto part = getParameterGroupByID({ "Part", copyTo });
 
   for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
-    auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
-    auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
+    auto p = part->findParameterByID({ ids.first, part->getVoiceGroup() });
     auto pGlobal = preset->findParameterByID({ ids.second, VoiceGroup::Global });
 
-    pI->copyFrom(transaction, pGlobal);
-    pII->copyFrom(transaction, pGlobal);
+    p->copyFrom(transaction, pGlobal);
   }
 }
 
