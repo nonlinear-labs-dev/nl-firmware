@@ -53,19 +53,3 @@ HardwareSourcesGroup::tPhysicalControlParameters HardwareSourcesGroup::getPhysic
   return ret;
 }
 
-bool HardwareSourcesGroup::isHardwareSourceParameter(const Parameter* parameter)
-{
-  if(parameter)
-    return isHardwareSourceParameter(parameter->getID());
-  return false;
-}
-
-bool HardwareSourcesGroup::isHardwareSourceParameter(const ParameterId& id)
-{
-  const auto isRibbon = getLowerRibbonParameterID() == id || getUpperRibbonParameterID() == id;
-  const auto isBender = getPitchbendParameterID() == id;
-  const auto isPedal = getPedal1ParameterID() == id || getPedal2ParameterID() == id || getPedal3ParameterID() == id
-      || getPedal4ParameterID() == id;
-  const auto isAfter = getAftertouchParameterID() == id;
-  return isRibbon || isBender || isPedal || isAfter;
-}

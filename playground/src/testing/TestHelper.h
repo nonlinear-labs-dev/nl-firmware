@@ -76,7 +76,6 @@ namespace TestHelper
         for(auto& p : g->getParameters())
           cb(p);
   }
-
 }
 
 inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double v)
@@ -93,6 +92,14 @@ inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double
 #define CHECK_PARAMETER_CP_EQUALS_FICTION(p, v)                                                                        \
   {                                                                                                                    \
     auto range = getNextStepValuesFromValue(p, v);                                                                     \
+    auto inRange = p->getControlPositionValue() >= range.first && p->getControlPositionValue() <= range.second;        \
+    if(!inRange)                                                                                                       \
+    {                                                                                                                  \
+      nltools::Log::error(p->getLongName(), '(', p->getID().toString(), ") got", p->getControlPositionValue(),         \
+                          "expected ~", v);                                                                            \
+      CHECK(inRange);                                                                                                  \
+      return;                                                                                                          \
+    }                                                                                                                  \
     CHECK(p->getControlPositionValue() >= range.first);                                                                \
     CHECK(p->getControlPositionValue() <= range.second);                                                               \
   }
