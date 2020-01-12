@@ -18,11 +18,11 @@ jobs:
       id: nonlinux-prebuilt
       with:
         path: /home/runner/work/nonlinux-prebuilt
-        key: nonlinux-prebuilt
+        key: nonlinux-prebuilt2
 
     - name: Download Nonlinux Prebuilt
       if: steps.nonlinux-prebuilt.cache-hit != 'true'
-      run: mkdir -p /home/runner/work/nonlinux-prebuilt && cd /home/runner/work/nonlinux-prebuilt && wget http://hoegelow.com/nl/nonlinux-prebuilt.zip
+      run: mkdir -p /home/runner/work/nonlinux-prebuilt && cd /home/runner/work/nonlinux-prebuilt && wget http://hoegelow.com/nl/nonlinux-prebuilt2.zip
 
     - name: Unpack Nonlinux-Prebuilt
       run: cd /home/runner/work && unzip nonlinux-prebuilt/nonlinux-prebuilt.zip -d ./
