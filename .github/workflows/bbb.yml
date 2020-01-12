@@ -27,5 +27,3 @@ jobs:
     - name: Unpack Nonlinux-Prebuilt
       run: cd /home/runner/work && unzip nonlinux-prebuilt/nonlinux-prebuilt.zip -d ./
 
-    - name: make playground
-      run: cd /home/runner/work/nonlinux && make
