@@ -15,18 +15,18 @@ jobs:
     
     - name: Cache NonLinux-Prebuilt
       uses: actions/cache@v1
-      id: nonlinux-prebuilt
+      id: nonlinux-prebuilt2
       with:
         path: /home/runner/work/nonlinux-prebuilt
         key: nonlinux-prebuilt2
 
     - name: Download Nonlinux Prebuilt
-      if: steps.nonlinux-prebuilt.cache-hit != 'true'
+      if: steps.nonlinux-prebuilt2.outputs.cache-hit != 'true'
       run: mkdir -p /home/runner/work/nonlinux-prebuilt && cd /home/runner/work/nonlinux-prebuilt && wget http://hoegelow.com/nl/nonlinux-prebuilt2.zip
 
     - name: Unpack Nonlinux-Prebuilt
       run: cd /home/runner/work && unzip nonlinux-prebuilt/nonlinux-prebuilt2.zip -d ./
 
     - name: build
-      run: cd /home/runner/work/nonlinux-prebuilt/nonlinux && make playground-rebuild 
+      run: cd /home/runner/work/nonlinux && make playground-rebuild 
 
