@@ -5,6 +5,7 @@
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
 #include <parameters/ModulateableParameter.h>
+#include <nltools/logging/Log.h>
 
 ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                                const char *webUIName)
@@ -91,6 +92,12 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParame
     if(auto otherParameter = other->findParameterByID({ myParameter->getID().getNumber(), other->getVoiceGroup() }))
     {
       myParameter->copyFrom(transaction, otherParameter);
+    }
+    else
+    {
+      nltools::Log::warning("could not copy", myParameter->getID().toString(), " not present in other! defaulting...",
+                            __LINE__);
+      myParameter->setDefaultFromHwui(transaction);
     }
   }
 }
@@ -207,6 +214,11 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGro
     if(auto c = other->findParameterByID({ g->getID().getNumber(), other->getVoiceGroup() }))
     {
       g->copyFrom(transaction, c);
+    }
+    else
+    {
+      nltools::Log::warning("could not copy", g->getID().toString(), " not present in other! defaulting...", __LINE__);
+      g->setDefaultFromHwui(transaction);
     }
   }
 }
