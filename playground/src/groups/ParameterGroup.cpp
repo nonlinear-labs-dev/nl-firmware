@@ -5,6 +5,7 @@
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
 #include <parameters/ModulateableParameter.h>
+#include <parameters/MacroControlParameter.h>
 #include <nltools/logging/Log.h>
 
 ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
@@ -98,10 +99,16 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParame
       nltools::Log::warning("could not copy", myParameter->getID().toString(), " not present in other! defaulting...",
                             __LINE__);
       myParameter->setDefaultFromHwui(transaction);
-      if(auto mod = dynamic_cast<ModulateableParameter*>(myParameter))
+      if(auto mod = dynamic_cast<ModulateableParameter *>(myParameter))
       {
         mod->setModulationAmount(transaction, 0);
         mod->setModulationSource(transaction, MacroControls::NONE);
+      }
+
+      if(auto mc = dynamic_cast<MacroControlParameter *>(myParameter))
+      {
+        mc->undoableSetGivenName(transaction, "");
+        mc->undoableSetInfo(transaction, "");
       }
     }
   }
@@ -214,20 +221,27 @@ bool ParameterGroup::areAllParametersLocked() const
 
 void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other)
 {
-  for(auto &g : getParameters())
+  for(auto &myParameter : getParameters())
   {
-    if(auto c = other->findParameterByID({ g->getID().getNumber(), other->getVoiceGroup() }))
+    if(auto c = other->findParameterByID({ myParameter->getID().getNumber(), other->getVoiceGroup() }))
     {
-      g->copyFrom(transaction, c);
+      myParameter->copyFrom(transaction, c);
     }
     else
     {
-      nltools::Log::warning("could not copy", g->getID().toString(), " not present in other! defaulting...", __LINE__);
-      g->setDefaultFromHwui(transaction);
-      if(auto mod = dynamic_cast<ModulateableParameter*>(g))
+      nltools::Log::warning("could not copy", myParameter->getID().toString(), " not present in other! defaulting...",
+                            __LINE__);
+      myParameter->setDefaultFromHwui(transaction);
+      if(auto mod = dynamic_cast<ModulateableParameter *>(myParameter))
       {
         mod->setModulationAmount(transaction, 0);
         mod->setModulationSource(transaction, MacroControls::NONE);
+      }
+
+      if(auto mc = dynamic_cast<MacroControlParameter *>(myParameter))
+      {
+        mc->undoableSetGivenName(transaction, "");
+        mc->undoableSetInfo(transaction, "");
       }
     }
   }
