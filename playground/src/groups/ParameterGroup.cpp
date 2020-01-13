@@ -98,6 +98,11 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParame
       nltools::Log::warning("could not copy", myParameter->getID().toString(), " not present in other! defaulting...",
                             __LINE__);
       myParameter->setDefaultFromHwui(transaction);
+      if(auto mod = dynamic_cast<ModulateableParameter*>(g))
+      {
+        mod->setModulationAmount(transaction, 0);
+        mod->setModulationSource(transaction, MacroControls::NONE);
+      }
     }
   }
 }
@@ -219,6 +224,11 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGro
     {
       nltools::Log::warning("could not copy", g->getID().toString(), " not present in other! defaulting...", __LINE__);
       g->setDefaultFromHwui(transaction);
+      if(auto mod = dynamic_cast<ModulateableParameter*>(g))
+      {
+        mod->setModulationAmount(transaction, 0);
+        mod->setModulationSource(transaction, MacroControls::NONE);
+      }
     }
   }
 }
