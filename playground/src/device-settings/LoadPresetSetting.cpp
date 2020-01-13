@@ -23,8 +23,6 @@ const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
 
 void LoadModeSetting::cycleForSoundType(SoundType type)
 {
-  m_inToggle = true;
-
   if(type == SoundType::Single)
   {
     switch(get())
@@ -53,8 +51,6 @@ void LoadModeSetting::cycleForSoundType(SoundType type)
         break;
     }
   }
-
-  m_inToggle = false;
 }
 
 Glib::ustring LoadModeSetting::getDisplayStringForVoiceGroup(VoiceGroup vg) const
