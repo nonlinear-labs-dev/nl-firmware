@@ -53,16 +53,20 @@ void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPo
     }
     else if(p->getID().getNumber() == 358)
     {
-      auto sc = dynamic_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
-      auto partV = sc->controlPositionToDisplay(presetPartVolume->getValue());
-      auto globalV = sc->controlPositionToDisplay(presetGlobalVolume->getValue());
-      auto sum = partV + globalV;
-      auto sumCP = sc->displayToControlPosition(sum);
-      CHECK_PARAMETER_CP_EQUALS_FICTION(p, sumCP)
+      double displayValueExpected = 0.0;
+
+      if(paramValue == 0)
+        displayValueExpected = -128;
+      else if(paramValue == 0.5)
+        displayValueExpected = 0;
+      else if(paramValue == 1.0)
+        displayValueExpected = 12;
+
+      REQUIRE(partVolume->getDisplayValue() == Approx(displayValueExpected).margin(0.05));
     }
     else if(p->getID().getNumber() == 360)
     {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(p, presetPartTune->getValue() + presetGlobalTune->getValue())
+      CHECK_PARAMETER_CP_EQUALS_FICTION(partTune, presetPartTune->getValue() + presetGlobalTune->getValue())
     }
   });
 

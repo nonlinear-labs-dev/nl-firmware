@@ -879,7 +879,7 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto partVolume = findParameterByID({ 358, copyTo });
   auto partTune = findParameterByID({ 360, copyTo });
 
-  auto volumeScaleConverter = dynamic_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
+  auto volumeScaleConverter = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
   auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
   auto partVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetPartVolume->getValue());
 
