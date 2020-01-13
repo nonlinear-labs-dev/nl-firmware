@@ -11,26 +11,13 @@ LoadModeSetting::LoadModeSetting(Settings &settings)
 
 const std::vector<ustring> &LoadModeSetting::enumToString() const
 {
-  static auto strs = getAllStrings<LoadMode>();
-  static auto ret = std::vector<Glib::ustring>(strs.begin(), strs.end());
+  static auto ret = std::vector<Glib::ustring>{ "loadtopart", "select", "directload" };
   return ret;
 }
 
 const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
 {
   static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select only", "Direct Load" };
-  return ret;
-}
-
-bool LoadModeSetting::set(tEnum m)
-{
-  bool ret = super::set(m);
-
-  if(m == LoadMode::DirectLoad && !getSettings()->isLoading() && !m_inToggle)
-  {
-    Application::get().getPresetManager()->doAutoLoadSelectedPreset();
-  }
-
   return ret;
 }
 
