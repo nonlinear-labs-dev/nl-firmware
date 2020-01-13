@@ -9,6 +9,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
+#include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 
 inline bool isException(const Parameter *p)
 {
@@ -42,6 +43,9 @@ void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPo
   auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global });
   auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global });
 
+  auto partVolume = editBuffer->findParameterByID({ 358, tLoadToVoiceGroup });
+  auto partTune = editBuffer->findParameterByID({ 360, tLoadToVoiceGroup });
+
   editBuffer->forEachParameter<tLoadToVoiceGroup>([&](Parameter *p) {
     if(!isException(p))
     {
@@ -49,7 +53,12 @@ void LoadDualPresetPartWithValueIntoInitDualSoundPart(Preset *preset, tControlPo
     }
     else if(p->getID().getNumber() == 358)
     {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(p, presetPartVolume->getValue() + presetGlobalVolume->getValue())
+      auto sc = dynamic_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
+      auto partV = sc->controlPositionToDisplay(presetPartVolume->getValue());
+      auto globalV = sc->controlPositionToDisplay(presetGlobalVolume->getValue());
+      auto sum = partV + globalV;
+      auto sumCP = sc->displayToControlPosition(sum);
+      CHECK_PARAMETER_CP_EQUALS_FICTION(p, sumCP)
     }
     else if(p->getID().getNumber() == 360)
     {

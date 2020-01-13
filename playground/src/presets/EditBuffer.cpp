@@ -879,6 +879,13 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto partVolume = findParameterByID({ 358, copyTo });
   auto partTune = findParameterByID({ 360, copyTo });
 
-  partVolume->setCPFromHwui(transaction, presetGlobalVolume->getValue() + presetPartVolume->getValue());
+  auto volumeScaleConverter = dynamic_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
+  auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+  auto partVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetPartVolume->getValue());
+
+  auto newVolumeDV = globalVolumeDV + partVolumeDV;
+  auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
+
+  partVolume->setCPFromHwui(transaction, newVolumeCP);
   partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() + presetPartTune->getValue());
 }
