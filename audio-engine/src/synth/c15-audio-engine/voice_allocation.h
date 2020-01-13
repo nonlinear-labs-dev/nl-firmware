@@ -460,7 +460,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     switch(*m_next)
     {
       case LayerMode::Single:
-        voices += static_cast<uint32_t>(_value * (static_cast<float>(GlobalVoices - 1)));
+        voices += static_cast<uint32_t>((_value + 0.01f) * (static_cast<float>(GlobalVoices - 1)));
         m_global.setUnison(voices);
         validity = true;
         break;
