@@ -114,10 +114,10 @@
         "ControlClasses": "ParameterPairTop"
       },
       "styles": {
-        "Color": "C77",
+        "Color": "C255",
         "HighlightColor": "C255",
-        "BackgroundColor": "C179",
-        "HighlightBackgroundColor": "C179"
+        "BackgroundColor": "C128",
+        "HighlightBackgroundColor": "C128"
       }
     },
     "ParameterPair-Bottom": {
@@ -131,14 +131,14 @@
         "HighlightBackgroundColor": "C77"
       }
     },
-    "ParameterPair-border": {
+    "ParameterPairTop-border": {
       "selector": {
         "ControlClasses": "ParameterPairTop",
         "PrimitiveClasses": "Bar"
       },
       "styles": {
-        "Color": "C179",
-        "HighlightColor": "C179"
+        "Color": "C128",
+        "HighlightColor": "C128"
       }
     },
     "ParameterPair-background": {
@@ -170,7 +170,17 @@
       },
       "styles": {
         "Color": "C128",
-        "HighlightColor": "C179"
+        "HighlightColor": "C128"
+      }
+    },
+    "ParameterPair-middle-border": {
+      "selector": {
+        "ControlClasses": "ParameterPair",
+        "PrimitiveClasses": "Bar"
+      },
+      "styles": {
+        "Color": "C128",
+        "HighlightColor": "C128"
       }
     },
     "ParameterPair-DefaultStyle": {
@@ -179,7 +189,7 @@
       },
       "styles": {
         "Color": "C128",
-        "HighlightColor": "C179",
+        "HighlightColor": "C204",
         "BackgroundColor": "C77",
         "HighlightBackgroundColor": "C77"
       }
@@ -192,7 +202,7 @@
       "styles": {
         "TextAlign": "Right",
         "Color": "C128",
-        "HighlightColor": "C179",
+        "HighlightColor": "C204",
         "BackgroundColor": "C77",
         "HighlightBackgroundColor": "C77"
       }
@@ -205,7 +215,7 @@
       "styles": {
         "TextAlign": "Left",
         "Color": "C128",
-        "HighlightColor": "C179",
+        "HighlightColor": "C204",
         "BackgroundColor": "C77",
         "HighlightBackgroundColor": "C77"
       }
@@ -225,7 +235,11 @@
         "Tag": "Value"
       },
       "styles": {
-        "TextAlign": "Right"
+        "TextAlign": "Right",
+        "Color": "C128",
+        "HighlightColor": "C204",
+        "BackgroundColor": "C77",
+        "HighlightBackgroundColor": "C77"
       }
     },
     "ParamPair-Bottom-Label": {
@@ -234,7 +248,11 @@
         "Tag": "Label"
       },
       "styles": {
-        "TextAlign": "Left"
+        "TextAlign": "Left",
+        "Color": "C128",
+        "HighlightColor": "C204",
+        "BackgroundColor": "C77",
+        "HighlightBackgroundColor": "C77"
       }
     }
   }
