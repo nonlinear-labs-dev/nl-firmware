@@ -43,8 +43,7 @@ namespace std
   {
     size_t operator()(const ParameterId &p) const noexcept
     {
-      std::hash<std::string> h;
-      return h(p.toString());
+      return (p.getNumber() << 16) | static_cast<uint16_t>(p.getVoiceGroup());
     }
   };
 }

@@ -15,11 +15,11 @@ inline void preparePresets(MockPresetStorage& presets, double value)
   presets.getSplitPreset()->forEachParameter([&](PresetParameter* p) { p->setValue(scope->getTransaction(), value); });
 }
 
-class Averager
+class
 {
  public:
   Averager(std::string name, size_t size)
-      : m_name {std::move( name )}
+      : m_name { std::move(name) }
   {
     m_values.reserve(size);
   }
@@ -27,7 +27,8 @@ class Averager
   ~Averager()
   {
     auto total = std::accumulate(m_values.begin(), m_values.end(), 0ul);
-    std::chrono::milliseconds totalMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::nanoseconds(total));
+    std::chrono::milliseconds totalMs
+        = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::nanoseconds(total));
     nltools::Log::error(m_name, " took on avg: ", totalMs.count() / m_values.size(), "ms");
   }
 
@@ -41,13 +42,12 @@ class Averager
   std::string m_name;
 };
 
-template<typename T>
-inline long measure(const T& cb)
+template <typename T> inline long measure(const T& cb)
 {
-    auto start = std::chrono::high_resolution_clock::now();
-    cb();
-    auto end = std::chrono::high_resolution_clock::now();
-    return std::chrono::nanoseconds(end - start).count();
+  auto start = std::chrono::high_resolution_clock::now();
+  cb();
+  auto end = std::chrono::high_resolution_clock::now();
+  return std::chrono::nanoseconds(end - start).count();
 }
 
 TEST_CASE("Load Presets", "[Benchmark]")
@@ -60,25 +60,26 @@ TEST_CASE("Load Presets", "[Benchmark]")
 
   auto eb = TestHelper::getEditBuffer();
 
-  Averager avgSingle("Single", 1000);
-  Averager avgLayer("Layer", 1000);
-  Averager avgSplit("Split", 1000);
+  Averager avgSingle("Single", 100);
+  Averager avgLayer("Layer", 100);
+  Averager avgSplit("Split", 100);
 
-  for(auto i = 0; i < 1000; i++)
+  for(auto i = 0; i < 100; i++)
   {
+
     avgSingle.put(measure([&]() {
-        eb->undoableLoad(presets1.getSinglePreset());
-        eb->undoableLoad(presets2.getSinglePreset());
+      eb->undoableLoad(presets1.getSinglePreset());
+      eb->undoableLoad(presets2.getSinglePreset());
     }));
 
     avgLayer.put(measure([&]() {
-        eb->undoableLoad(presets1.getLayerPreset());
-        eb->undoableLoad(presets2.getLayerPreset());
+      eb->undoableLoad(presets1.getLayerPreset());
+      eb->undoableLoad(presets2.getLayerPreset());
     }));
 
     avgSplit.put(measure([&] {
-        eb->undoableLoad(presets1.getSplitPreset());
-        eb->undoableLoad(presets2.getSplitPreset());
+      eb->undoableLoad(presets1.getSplitPreset());
+      eb->undoableLoad(presets2.getSplitPreset());
     }));
   }
 }
