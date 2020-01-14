@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-01-11, 17:51
+    @date       2020-01-12, 20:13
     @version	1.7B-3
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -691,7 +691,7 @@ namespace C15
       135,
       0.0f,
       { Smoothers::Poly_Slow::Comb_Flt_PM_A_B, Signals::Quasipoly_Signals::Comb_Flt_PM_A_B,
-        Properties::SmootherScale::Linear, -1.0f, 1.0f, false },
+        Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { "", "Comb Filter", "Comb Filter", "PM - A-B", "A-B",
         "The (phase) modulation signal for the Comb Filter as a crossfade between the outputs of Oscillator & Shaper A "
         "and Oscillator & Shaper B." } },
@@ -757,7 +757,7 @@ namespace C15
     { Parameters::Local_Modulateables::SV_Flt_Spread,
       148,
       0.2f,
-      { Smoothers::Poly_Slow::SV_Flt_Spread, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
+      { Smoothers::Poly_Slow::SV_Flt_Spread, None, Properties::SmootherScale::Linear, 30.0f, 0.0f, true },
       { "", "State Variable Filter", "SV Filter", "Spread", "Spread",
         "Amount of splitting of the cutoffs of the two 2-pole filters. Half of the value is applied as a positive "
         "offset to the adjusted cutoff for the first stage and as a negative offset for the second stage [in "

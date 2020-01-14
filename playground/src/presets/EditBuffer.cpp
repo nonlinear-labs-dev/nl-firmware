@@ -865,17 +865,14 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
 void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset,
                                                             VoiceGroup copyTo)
 {
-  auto partI = getParameterGroupByID({ "Part", VoiceGroup::I });
-  auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
+  auto part = getParameterGroupByID({ "Part", copyTo });
 
   for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
-    auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
-    auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
+    auto p = part->findParameterByID({ ids.first, part->getVoiceGroup() });
     auto pGlobal = preset->findParameterByID({ ids.second, VoiceGroup::Global });
 
-    pI->copyFrom(transaction, pGlobal);
-    pII->copyFrom(transaction, pGlobal);
+    p->copyFrom(transaction, pGlobal);
   }
 }
 
@@ -890,6 +887,13 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto partVolume = findParameterByID({ 358, copyTo });
   auto partTune = findParameterByID({ 360, copyTo });
 
-  partVolume->setCPFromHwui(transaction, presetGlobalVolume->getValue() + presetPartVolume->getValue());
+  auto volumeScaleConverter = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
+  auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+  auto partVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetPartVolume->getValue());
+
+  auto newVolumeDV = globalVolumeDV + partVolumeDV;
+  auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
+
+  partVolume->setCPFromHwui(transaction, newVolumeCP);
   partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() + presetPartTune->getValue());
 }

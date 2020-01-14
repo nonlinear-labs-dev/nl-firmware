@@ -80,7 +80,7 @@ VoiceGroup ParameterGroup::getVoiceGroup() const
 ParameterGroup::tUpdateID ParameterGroup::onChange(uint64_t flags)
 {
   auto ret = super::onChange(flags);
-  m_signalGroupChanged.send();
+  m_signalGroupChanged.deferedSend();
   return ret;
 }
 

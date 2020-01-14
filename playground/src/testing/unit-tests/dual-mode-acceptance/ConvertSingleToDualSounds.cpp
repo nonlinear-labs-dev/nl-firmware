@@ -9,15 +9,14 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-inline bool isException(const Parameter *p)
-{
-  auto num = p->getID().getNumber();
-  //toFX, part Volume, part Tune, unison voices
-  return num == 362 || num == 358 || num == 360 || num == 249;
-}
-
 template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tControlPositionValue paramValue)
 {
+  const auto isException = [](const Parameter *p) -> bool {
+    auto num = p->getID().getNumber();
+    //toFX, part Volume, part Tune, unison voices
+    return num == 362 || num == 358 || num == 360 || num == 249;
+  };
+
   WHEN("converted to " + toString(tType))
   {
 
@@ -26,16 +25,13 @@ template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tCo
     auto editBuffer = TestHelper::getEditBuffer();
 
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableUnlockAllGroups(scope->getTransaction());
-    editBuffer->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
-    editBuffer->undoableInitSound(scope->getTransaction());
+    TestHelper::initSingleEditBuffer(scope->getTransaction());
 
     editBuffer->forEachParameter<VoiceGroup::I>(
         [&](Parameter *p) { p->setCPFromHwui(scope->getTransaction(), paramValue); });
 
     editBuffer->forEachParameter<VoiceGroup::II>([&](Parameter *p) { p->setCPFromHwui(scope->getTransaction(), 0); });
 
-    const auto unisonVoices = editBuffer->findParameterByID({ 249, VoiceGroup::I })->getControlPositionValue();
     const auto unisonDetune = editBuffer->findParameterByID({ 250, VoiceGroup::I })->getControlPositionValue();
     const auto unisonPhase = editBuffer->findParameterByID({ 252, VoiceGroup::I })->getControlPositionValue();
     const auto unisonPan = editBuffer->findParameterByID({ 253, VoiceGroup::I })->getControlPositionValue();
@@ -52,7 +48,6 @@ template <SoundType tType> void ConvertToDualInitializesPartsFromVoiceGroupI(tCo
       THEN(toString(vg) + " has VG I parameter values")
       {
 
-        const auto vgVoices = editBuffer->findParameterByID({ 249, vg })->getControlPositionValue();
         const auto vgDetune = editBuffer->findParameterByID({ 250, vg })->getControlPositionValue();
         const auto vgPhase = editBuffer->findParameterByID({ 252, vg })->getControlPositionValue();
         const auto vgPan = editBuffer->findParameterByID({ 253, vg })->getControlPositionValue();

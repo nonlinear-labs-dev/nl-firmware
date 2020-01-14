@@ -16,9 +16,6 @@ class HardwareSourcesGroup : public ParameterGroup
   typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;
   tPhysicalControlParameters getPhysicalControlParameters();
 
-  static bool isHardwareSourceParameter(const Parameter* parameter);
-  static bool isHardwareSourceParameter(const ParameterId& id);
-
   static ParameterId getUpperRibbonParameterID()
   {
     return { 284, VoiceGroup::Global };
