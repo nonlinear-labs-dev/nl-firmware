@@ -3,17 +3,22 @@
     "ParameterPair": {
       "BackG": {
         "Class": "Bar",
-        "Rect": "1, 0, 1, 11",
+        "Rect": "1, 0, 2, 11",
+        "Tag": "Background"
+      },
+      "BackG2": {
+        "Class": "Bar",
+        "Rect": "89, 0, 2, 11",
         "Tag": "Background"
       },
       "Label": {
         "Class": "Text",
-        "Rect": "2, 0, 35, 11",
+        "Rect": "3, 0, 35, 11",
         "Tag": "Label"
       },
       "Value": {
         "Class": "Text",
-        "Rect": "36, 0, 55, 11",
+        "Rect": "36, 0, 54, 11",
         "Tag": "Value"
       },
       "Left": {
@@ -59,17 +64,22 @@
     "ParameterPairBottom": {
       "BackG": {
         "Class": "Bar",
-        "Rect": "1, 0, 1, 11",
+        "Rect": "1, 0, 2, 11",
+        "Tag": "Background"
+      },
+      "BackG2": {
+        "Class": "Bar",
+        "Rect": "89, 0, 2, 11",
         "Tag": "Background"
       },
       "Label": {
         "Class": "Text",
-        "Rect": "2, 0, 35, 11",
+        "Rect": "3, 0, 35, 11",
         "Tag": "Label"
       },
       "Value": {
         "Class": "Text",
-        "Rect": "36, 0, 55, 11",
+        "Rect": "36, 0, 54, 11",
         "Tag": "Value"
       },
       "Bottom2": {
