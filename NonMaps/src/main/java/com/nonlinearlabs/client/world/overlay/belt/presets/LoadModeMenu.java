@@ -20,7 +20,7 @@ import com.nonlinearlabs.client.world.overlay.SVGImage;
 public class LoadModeMenu extends SVGImage {
 
     LoadModeMenu(OverlayLayout parent) {
-        super(parent, "Load_Menu_Disabled.svg", "Load_Menu_Load_To_I.svg", "Load_Menu_Load_To_II.svg", "Load_Menu_Select.svg", "Load_Menu_DL.svg");
+        super(parent, "Menu_Dir-Load_Disabled.svg", "Menu_Load-I_Active.svg", "Menu_Load-II_Active.svg", "Menu_Select_Enabled.svg", "Menu_Dir-Load_Enabled.svg");
 
         SetupModel.get().systemSettings.loadMode.onChange((LoadMode mode) -> {
             requestLayout();
