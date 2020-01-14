@@ -1,9 +1,14 @@
 {
   "controls": {
     "ParameterPair": {
+      "BackG": {
+        "Class": "Bar",
+        "Rect": "1, 0, 1, 11",
+        "Tag": "Background"
+      },
       "Label": {
         "Class": "Text",
-        "Rect": "1, 0, 35, 11",
+        "Rect": "2, 0, 35, 11",
         "Tag": "Label"
       },
       "Value": {
@@ -27,13 +32,8 @@
     "ParameterPairTop": {
       "Label": {
         "Class": "Text",
-        "Rect": "1, 2, 35, 9",
+        "Rect": "1, 2, 90, 9",
         "Tag": "Label"
-      },
-      "Value": {
-        "Class": "Text",
-        "Rect": "36, 2, 55, 9",
-        "Tag": "Value"
       },
       "Left": {
         "Class": "Bar",
@@ -57,9 +57,14 @@
       }
     },
     "ParameterPairBottom": {
+      "BackG": {
+        "Class": "Bar",
+        "Rect": "1, 0, 1, 11",
+        "Tag": "Background"
+      },
       "Label": {
         "Class": "Text",
-        "Rect": "1, 0, 35, 11",
+        "Rect": "2, 0, 35, 11",
         "Tag": "Label"
       },
       "Value": {
@@ -69,15 +74,27 @@
       },
       "Bottom2": {
         "Class": "Bar",
-        "Rect": "1, 11, 90, 1"
+        "Rect": "2, 11, 88, 1"
+      },
+      "Bottom3": {
+        "Class": "Bar",
+        "Rect": "1, 10, 1, 1"
       },
       "left": {
         "Class": "Bar",
-        "Rect": "0, 0, 1, 11"
+        "Rect": "0, 0, 1, 10"
+      },
+      "left2": {
+        "Class": "Bar",
+        "Rect": "1, 10, 1, 1"
       },
       "right": {
         "Class": "Bar",
-        "Rect": "91, 0, 1, 11"
+        "Rect": "91, 0, 1, 10"
+      },
+      "right2": {
+        "Class": "Bar",
+        "Rect": "90, 10, 1, 1"
       }
     }
   },
@@ -112,6 +129,28 @@
       "styles": {
         "Color": "C179",
         "HighlightColor": "C179"
+      }
+    },
+    "ParameterPair-background": {
+      "selector": {
+        "ControlClasses": "ParameterPair",
+        "PrimitiveClasses": "Bar",
+        "Tag": "Background"
+      },
+      "styles": {
+        "Color": "C77",
+        "HighlightColor": "C77"
+      }
+    },
+    "ParameterPairBottom-background": {
+      "selector": {
+        "ControlClasses": "ParameterPairBottom",
+        "PrimitiveClasses": "Bar",
+        "Tag": "Background"
+      },
+      "styles": {
+        "Color": "C77",
+        "HighlightColor": "C77"
       }
     },
     "ParameterPair-border-bottom": {
@@ -154,7 +193,7 @@
         "Tag": "Label"
       },
       "styles": {
-        "TextAlign": "Center",
+        "TextAlign": "Left",
         "Color": "C128",
         "HighlightColor": "C179",
         "BackgroundColor": "C77",
@@ -170,13 +209,22 @@
         "TextAlign": "Right"
       }
     },
-    "ParamPair-Bottom-Label": {
+    "ParamPair-Bottom-Value": {
       "selector": {
         "ControlClasses": "ParameterPairBottom",
         "Tag": "Value"
       },
       "styles": {
         "TextAlign": "Right"
+      }
+    },
+    "ParamPair-Bottom-Label": {
+      "selector": {
+        "ControlClasses": "ParameterPairBottom",
+        "Tag": "Label"
+      },
+      "styles": {
+        "TextAlign": "Left"
       }
     }
   }
