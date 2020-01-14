@@ -5,6 +5,8 @@
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
 #include <parameters/ModulateableParameter.h>
+#include <parameters/MacroControlParameter.h>
+#include <nltools/logging/Log.h>
 
 ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                                const char *webUIName)
@@ -91,6 +93,10 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParame
     if(auto otherParameter = other->findParameterByID({ myParameter->getID().getNumber(), other->getVoiceGroup() }))
     {
       myParameter->copyFrom(transaction, otherParameter);
+    }
+    else
+    {
+      myParameter->loadDefault(transaction);
     }
   }
 }
@@ -202,11 +208,15 @@ bool ParameterGroup::areAllParametersLocked() const
 
 void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGroup *other)
 {
-  for(auto &g : getParameters())
+  for(auto &myParameter : getParameters())
   {
-    if(auto c = other->findParameterByID({ g->getID().getNumber(), other->getVoiceGroup() }))
+    if(auto c = other->findParameterByID({ myParameter->getID().getNumber(), other->getVoiceGroup() }))
     {
-      g->copyFrom(transaction, c);
+      myParameter->copyFrom(transaction, c);
+    }
+    else
+    {
+      myParameter->loadDefault(transaction);
     }
   }
 }
