@@ -15,7 +15,7 @@ inline void preparePresets(MockPresetStorage& presets, double value)
   presets.getSplitPreset()->forEachParameter([&](PresetParameter* p) { p->setValue(scope->getTransaction(), value); });
 }
 
-class
+class Averager
 {
  public:
   Averager(std::string name, size_t size)
