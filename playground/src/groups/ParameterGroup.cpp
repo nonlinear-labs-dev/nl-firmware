@@ -96,20 +96,7 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParame
     }
     else
     {
-      nltools::Log::warning("could not copy", myParameter->getID().toString(), " not present in other! defaulting...",
-                            __LINE__);
-      myParameter->setDefaultFromHwui(transaction);
-      if(auto mod = dynamic_cast<ModulateableParameter *>(myParameter))
-      {
-        mod->setModulationAmount(transaction, 0);
-        mod->setModulationSource(transaction, MacroControls::NONE);
-      }
-
-      if(auto mc = dynamic_cast<MacroControlParameter *>(myParameter))
-      {
-        mc->undoableSetGivenName(transaction, "");
-        mc->undoableSetInfo(transaction, "");
-      }
+      myParameter->loadDefault(transaction);
     }
   }
 }
@@ -229,20 +216,7 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGro
     }
     else
     {
-      nltools::Log::warning("could not copy", myParameter->getID().toString(), " not present in other! defaulting...",
-                            __LINE__);
-      myParameter->setDefaultFromHwui(transaction);
-      if(auto mod = dynamic_cast<ModulateableParameter *>(myParameter))
-      {
-        mod->setModulationAmount(transaction, 0);
-        mod->setModulationSource(transaction, MacroControls::NONE);
-      }
-
-      if(auto mc = dynamic_cast<MacroControlParameter *>(myParameter))
-      {
-        mc->undoableSetGivenName(transaction, "");
-        mc->undoableSetInfo(transaction, "");
-      }
+      myParameter->loadDefault(transaction);
     }
   }
 }
