@@ -16,8 +16,6 @@ class LoadModeSetting : public EnumSetting<LoadMode>
 
   Glib::ustring getDisplayStringForVoiceGroup(VoiceGroup vg) const;
 
-  bool set(tEnum m) override;
-
   LoadModeSetting(const LoadModeSetting& other) = delete;
   LoadModeSetting& operator=(const LoadModeSetting&) = delete;
 
@@ -25,7 +23,4 @@ class LoadModeSetting : public EnumSetting<LoadMode>
   const std::vector<ustring>& enumToDisplayString() const override;
 
   void cycleForSoundType(SoundType type);
-
- private:
-  bool m_inToggle = false;
 };
