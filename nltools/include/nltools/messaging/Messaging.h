@@ -7,6 +7,7 @@
 #include <nltools/logging/Log.h>
 #include <nltools/enums/EnumTools.h>
 #include <glibmm/bytes.h>
+#include <string.h>
 
 namespace nltools
 {
