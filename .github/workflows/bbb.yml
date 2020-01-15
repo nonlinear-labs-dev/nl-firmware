@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Install Packages
-      run: sudo apt-get update -y; sudo apt-get install -y git locales; sudo apt-get update; sudo apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash fuse-overlayfs squashfuse
+      run: sudo apt-get update -y; sudo apt-get install -y git locales; sudo apt-get update; sudo apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash unionfs-fuse squashfuse
     
     - name: Cache NonLinux-Prebuilt
       uses: actions/cache@v1
@@ -25,13 +25,13 @@ jobs:
       run: mkdir -p /home/runner/work/ && cd /home/runner/work/ && wget http://hoegelow.com/nl/nonlinux-prebuilt.img
 
     - name: Create overlayfs folders
-      run: cd /home/runner/work && mkdir nonlinux nonlinux-squash nonlinux-overlay nonlinux-workdir
+      run: cd /home/runner/work && mkdir nonlinux nonlinux-squash nonlinux-overlay
 
     - name: Setup squashfs
       run: cd /home/runner/work && squashfuse nonlinux-prebuilt.img ./nonlinux-squash
 
     - name: Setup overlayfs
-      run: cd /home/runner/work && fuse-overlayfs -o lowerdir=nonlinux-squash,upperdir=nonlinux-overlay,workdir=nonlinux-workdir ./nonlinux
+      run: cd /home/runner/work && unionfs-fuse ./nonlinux-squash/:./nonlinux-overlay ./nonlinux
 
     - name: build
       run: cd /home/runner/work/nonlinux && make
