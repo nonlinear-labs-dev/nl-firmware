@@ -1,20 +1,3 @@
-# Remove strings matching given regular expression from a list.
-# @param(in,out) aItems Reference of a list variable to filter.
-# @param aRegEx Value of regular expression to match.
-function (filter_items aItems aRegEx)
-    # For each item in our list
-    foreach (item ${${aItems}})
-        # Check if our items matches our regular expression
-        if ("${item}" MATCHES ${aRegEx})
-            # Remove current item from our list
-            list (REMOVE_ITEM ${aItems} ${item})
-        endif ("${item}" MATCHES ${aRegEx})
-    endforeach(item)
-    # Provide output parameter
-    set(${aItems} ${${aItems}} PARENT_SCOPE)
-endfunction (filter_items)
-
-
 cmake_minimum_required(VERSION 3.0)
 project(bbbb)
 
@@ -37,10 +20,6 @@ IF(DEV_PC)
   set(LIBS ${LIBS} gtkmm-3.0 gdkmm-3.0 libpng)
 ENDIF(DEV_PC)
 
-IF(NOT DEFINED SYSTEMD_CONFIGURATION_FILES_DIR)
-  set(SYSTEMD_CONFIGURATION_FILES_DIR "${CMAKE_INSTALL_PREFIX}/etc/systemd/system")
-ENDIF()
-
 function(addLib name)
   pkg_check_modules(${name} REQUIRED ${name})
   include_directories(${${name}_INCLUDE_DIRS})
@@ -59,11 +38,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
-    IF(DEV_PC)
-        ELSE()
-filter_items(SOURCE_FILES "/ui/")
-    ENDIF(DEV_PC)
 
+IF(NOT DEV_PC)
+    file(GLOB_RECURSE UI_SOURCES src/ui/*.cpp)
+    list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UI_SOURCES})
+ENDIF(NOT DEV_PC)
 
 add_executable(bbbb ${SOURCE_FILES})
 
@@ -80,19 +59,8 @@ foreach(lib ${LIBS})
   linkLib(${lib})
 endforeach(lib)
 
-configure_file(${PROJECT_SOURCE_DIR}/systemd/bbbb.service.in
-	${PROJECT_BINARY_DIR}/systemd/bbbb.service @ONLY)
-
-install(FILES ${PROJECT_BINARY_DIR}/systemd/bbbb.service
-  DESTINATION ${SYSTEMD_CONFIGURATION_FILES_DIR} COMPONENT init
-  )
-
-install(TARGETS bbbb
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/nonlinear/playground
-  )
-
-ADD_CUSTOM_TARGET(
-	touch-bbb-cmakelists ALL
-	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE}
-)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/bbbb.service.in ${PROJECT_BINARY_DIR}/systemd/bbbb.service @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/bbbb.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(TARGETS bbbb DESTINATION ${C15_INSTALL_PATH}/bbbb)
+ADD_CUSTOM_TARGET(touch-bbb-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 

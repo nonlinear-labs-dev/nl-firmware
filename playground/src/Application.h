@@ -29,9 +29,6 @@ class Application
   Application(int numArgs, char **argv);
   virtual ~Application();
 
-  Glib::ustring getResourcePath() const;
-  Glib::ustring getNonMapsPath() const;
-
   static Application &get();
 
   void run();

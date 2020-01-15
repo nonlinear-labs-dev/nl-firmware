@@ -5,7 +5,7 @@
 
 SoftwareVersion::SoftwareVersion(DeviceInformation *parent)
     : DeviceInformationItem(parent)
-    , m_versionString("@PLAYGROUND_VERSION@")
+    , m_versionString("@C15_VERSION@")
 {
 }
 

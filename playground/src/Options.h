@@ -16,8 +16,6 @@ class Options
   const Glib::ustring &getAudioEngineHost() const;
   bool sendBBBBTurnaroundTimestamps() const;
 
-  Glib::ustring getInstallDir() const;
-
  private:
   void setDefaults();
 

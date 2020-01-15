@@ -4,6 +4,7 @@
 #include "Application.h"
 #include <device-settings/DebugLevel.h>
 #include <giomm.h>
+#include <CompileTimeOptions.h>
 
 ServedFile::ServedFile(HTTPServer &server, std::shared_ptr<HTTPRequest> request)
     : ServedStream(server, request)
@@ -27,11 +28,7 @@ void ServedFile::startServing()
 
 Glib::ustring ServedFile::getFilePathFromMessagePath() const
 {
-  Glib::ustring p = Application::get().getNonMapsPath();
-  size_t lastSlash = p.rfind('/');
-  Glib::ustring path = m_request->getPath();
-  p = p.substr(0, lastSlash) + path;
-  return p;
+  return getInstallDir() + "/" + m_request->getPath();
 }
 
 void ServedFile::startServingLocalFile(Glib::RefPtr<Gio::File> file)

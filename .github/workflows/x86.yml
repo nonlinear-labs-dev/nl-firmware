@@ -4,13 +4,11 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-18.04
 
     steps:
     - name: Install Packages
-      shell: bash
-      run: sudo apt-get install ccache bash libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
+      run: sudo apt-get install ccache libboost-dev libavahi-gobject-dev libasound2-dev libglibmm-2.4-dev uuid-dev libsoup2.4-dev libfreetype6-dev libavahi-glib-dev libavahi-core-dev libavahi-client-dev
 
     - name: Cache GWT
       uses: actions/cache@v1
@@ -18,18 +16,18 @@ jobs:
       with:
         path: /home/runner/work/gwt/gwt-2.8.2
         key: ${{ runner.os }}-gwt-2.8.2
-
+    
     - name: Cache CCache
       uses: actions/cache@v1
       with:
         path: /home/runner/.ccache
         key: ${{ runner.os }}-ccache-${{ github.ref }}
-
+    
     - name: Download GWT
       if: steps.cache-gwt.outputs.cache-hit != 'true'
-      run: cd /home/runner/work/ && wget https://storage.googleapis.com/gwt-releases/gwt-2.8.2.zip
-
-    - name: Unpack GWT
+      run: cd /home/runner/work/ && wget https://storage.googleapis.com/gwt-releases/gwt-2.8.2.zip 
+    
+    - name: Unpack GWT  
       if: steps.cache-gwt.outputs.cache-hit != 'true'
       run: unzip /home/runner/work/gwt-2.8.2.zip -d /home/runner/work/gwt
     - uses: actions/checkout@v1
