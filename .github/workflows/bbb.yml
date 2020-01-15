@@ -31,7 +31,7 @@ jobs:
       run: cd /home/runner/work && squashfuse nonlinux-prebuilt.img ./nonlinux-squash
 
     - name: Setup overlayfs
-      run: cd /home/runner/work && unionfs-fuse ./nonlinux-squash/:./nonlinux-overlay ./nonlinux
+      run: cd /home/runner/work && unionfs-fuse -o cow ./nonlinux-squash/:./nonlinux-overlay=RW ./nonlinux
 
     - name: build
       run: cd /home/runner/work/nonlinux && make
