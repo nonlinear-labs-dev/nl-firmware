@@ -43,7 +43,7 @@ namespace std
   {
     size_t operator()(const ParameterId &p) const noexcept
     {
-      return (p.getNumber() << 16) | static_cast<uint16_t>(p.getVoiceGroup());
+      return (static_cast<size_t>(p.getNumber()) << 16) | static_cast<size_t>(p.getVoiceGroup());
     }
   };
 }
