@@ -2,6 +2,7 @@
 
 #include "AttributesOwner.h"
 #include "PresetDualParameterGroups.h"
+#include "PresetParameterGroup.h"
 #include "ParameterId.h"
 #include <memory>
 #include <unordered_map>

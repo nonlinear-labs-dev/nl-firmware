@@ -3,7 +3,7 @@
 #include <device-settings/Settings.h>
 #include <Application.h>
 
-bool UndoableVectorBase::shouldCrashOnError()
+bool UndoableVectorBase::shouldCrashOnError() const
 {
   return Application::get().getSettings()->getSetting<CrashOnError>()->get();
 }

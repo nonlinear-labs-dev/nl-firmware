@@ -19,7 +19,7 @@ class UndoableVectorBase
   }
 
   static constexpr size_t invalidPosition = std::numeric_limits<size_t>::max();
-  bool shouldCrashOnError();
+  bool shouldCrashOnError() const;
 
   bool select(UNDO::Transaction *transaction, const Uuid &uuid);
 
@@ -90,8 +90,8 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
     }
     catch(std::out_of_range &)
     {
-      // if(shouldCrashOnError())
-      std::rethrow_exception(std::current_exception());
+      if(shouldCrashOnError())
+        std::rethrow_exception(std::current_exception());
     }
   }
 
