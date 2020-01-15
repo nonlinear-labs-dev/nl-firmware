@@ -198,6 +198,7 @@ void ParameterImportConversions::registerTests()
 
 tControlPositionValue ParameterImportConversions::voicesV5ToV6(tControlPositionValue unisonVoices) const
 {
+#warning "check!"
   if(unisonVoices == 1.0)
     return 0.5 - (1.0 / 24.0);
   return unisonVoices * 0.5;
