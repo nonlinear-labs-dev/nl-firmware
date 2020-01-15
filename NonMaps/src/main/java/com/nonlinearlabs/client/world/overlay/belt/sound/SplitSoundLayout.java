@@ -107,8 +107,9 @@ public class SplitSoundLayout extends SoundLayout {
 			double yunit = (h - 2 * margin) / parts;
 
 			double middleLine = h / 2;
+			double labelHeight = ((h / 20) * 9) - margin * 2;
 
-			getChildren().get(0).doLayout(margin, middleLine - 3 * yunit, 2 * xunit, 5 * yunit);
+			getChildren().get(0).doLayout(margin, middleLine - labelHeight / 2, 2 * xunit, labelHeight);
 			getChildren().get(1).doLayout(margin + 4 * xunit, margin, 16 * xunit, 5 * yunit);
 			getChildren().get(2).doLayout(margin + 4 * xunit, margin + 8 * yunit, 6 * xunit, 5 * yunit);
 			getChildren().get(3).doLayout(margin + 10 * xunit, margin + 8 * yunit, 10 * xunit, 5 * yunit);
