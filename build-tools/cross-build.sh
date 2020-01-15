@@ -26,7 +26,7 @@ function printHelpAndQuit() {
     echo " -c local C15 folder => point to a local C15 folder in order to x-build it"
     echo " -b branchname => instead of pointing to local C15 folder, use a fresh checkout of the given branch"
     echo " -s => start a bash in the running docker after building, useful for debugging"
-    echo " -t 'p|r' => buildroot-targets to build, p=playground, r=rootfs. Default is 'pr'"
+    echo " -t 'c|r' => buildroot-targets to build, c=C15, r=rootfs. Default is 'cr'"
     exit 0
 }
 
@@ -82,15 +82,15 @@ function checkPreconditions() {
 function checkoutNonlinux() {
     echo ${FUNCNAME[0]}
     if [ ! -d "$WORKDIR/nonlinux" ]; then
-        git -C "$WORKDIR" clone https://github.com/nonlinear-labs-dev/nonlinux.git || quit "Could not clone nonlinux repo!"
+        git -C "$WORKDIR" clone -b nonlinear_2020.01 --single-branch https://github.com/nonlinear-labs-dev/nonlinux.git || quit "Could not clone nonlinux repo!"
     fi
     git -C "$WORKDIR/nonlinux" fetch
-    git -C "$WORKDIR/nonlinux" checkout project-restructuring || quit "Could not checkout branch 'nonlinear_2016.05' in nonlinux repo!"
+    git -C "$WORKDIR/nonlinux" checkout nonlinear_2020.01 || quit "Could not checkout branch 'nonlinear_2016.05' in nonlinux repo!"
 }
 
 function prepareBuild() {
     echo ${FUNCNAME[0]}
-    if [ -f "$WORKDIR/nonlinux/output/images/rootfs.tar.gz" ] && [ -d "$WORKDIR/nonlinux/output/build/playground-HEAD" ]; then
+    if [ -f "$WORKDIR/nonlinux/output/images/rootfs.tar.gz" ] && [ -d "$WORKDIR/nonlinux/output/build/C15-master" ]; then
         echo "Build looks already prepared, skipping..."
         return 0
     fi
@@ -111,13 +111,13 @@ function prepareBuild() {
 function injectC15Dir() {
     echo ${FUNCNAME[0]}
     shopt -s dotglob
-    rsync -av --delete --exclude=buildroot-build $C15DIR/* $WORKDIR/nonlinux/output/build/playground-HEAD/
+    rsync -av --delete --exclude=buildroot-build $C15DIR/* $WORKDIR/nonlinux/output/build/C15-master/
 }
 
 function injectC15Branch() {
     echo ${FUNCNAME[0]}
     if [ ! -d "$WORKDIR/C15" ]; then
-        git -C "$WORKDIR" clone https://github.com/nonlinear-labs-dev/C15.git || quit "Could not clone C15 repo!"
+        git -C "$WORKDIR" clone -b $BRANCH --single-branch https://github.com/nonlinear-labs-dev/C15.git || quit "Could not clone C15 repo!"
     fi 
 
     C15DIR="$WORKDIR/C15" 
@@ -134,9 +134,9 @@ function doFinalBuild() {
 
     COMMANDS="cd /workdir/nonlinux"
 
-    if [[ ${TARGETS} =~ "p" ]]
+    if [[ ${TARGETS} =~ "c" ]]
     then
-        COMMANDS="${COMMANDS} && make playground-clean-for-reconfigure && make playground-rebuild"  
+        COMMANDS="${COMMANDS} && make C15-clean-for-reconfigure && make C15-rebuild"
     fi
 
     if [[ ${TARGETS} =~ "r" ]]

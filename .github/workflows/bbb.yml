@@ -3,7 +3,7 @@ name: cross building for beagle bone
 on:
   push:
     branches:
-      - project-restructuring
+      - master
 
 jobs:
   build:
@@ -11,22 +11,28 @@ jobs:
 
     steps:
     - name: Install Packages
-      run: sudo apt-get update -y; sudo apt-get install -y git locales; sudo apt-get update; sudo apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash
+      run: sudo apt-get update -y; sudo apt-get install -y git locales; sudo apt-get update; sudo apt-get install -y git cmake build-essential wget cpio python unzip bc doxygen curl libcurl4-openssl-dev openjdk-8-jdk bash fuse-overlayfs squashfuse
     
     - name: Cache NonLinux-Prebuilt
       uses: actions/cache@v1
-      id: nonlinux-prebuilt2
+      id: nonlinux-prebuilt-img
       with:
         path: /home/runner/work/nonlinux-prebuilt
-        key: nonlinux-prebuilt2
+        key: nonlinux-prebuilt-img
 
     - name: Download Nonlinux Prebuilt
-      if: steps.nonlinux-prebuilt2.outputs.cache-hit != 'true'
-      run: mkdir -p /home/runner/work/nonlinux-prebuilt && cd /home/runner/work/nonlinux-prebuilt && wget http://hoegelow.com/nl/nonlinux-prebuilt2.zip
+      if: steps.nonlinux-prebuilt-img.outputs.cache-hit != 'true'
+      run: mkdir -p /home/runner/work/ && cd /home/runner/work/ && wget http://hoegelow.com/nl/nonlinux-prebuilt.img
 
-    - name: Unpack Nonlinux-Prebuilt
-      run: cd /home/runner/work && unzip nonlinux-prebuilt/nonlinux-prebuilt2.zip -d ./
+    - name: Create overlayfs folders
+      run: cd /home/runner/work && mkdir nonlinux nonlinux-squash nonlinux-overlay nonlinux-workdir
+
+    - name: Setup squashfs
+      run: cd /home/runner/work && squashfuse nonlinux-prebuilt.img ./nonlinux-squash
+
+    - name: Setup overlayfs
+      run: cd /home/runner/work && fuse-overlayfs -o lowerdir=nonlinux-squash,upperdir=nonlinux-overlay,workdir=nonlinux-workdir ./nonlinux
 
     - name: build
-      run: cd /home/runner/work/nonlinux && make playground-rebuild 
+      run: cd /home/runner/work/nonlinux && make
 
